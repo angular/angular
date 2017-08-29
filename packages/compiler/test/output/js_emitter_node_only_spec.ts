@@ -23,12 +23,14 @@ export function main() {
     let emitter: JavaScriptEmitter;
     let someVar: o.ReadVarExpr;
 
-    beforeEach(() => { emitter = new JavaScriptEmitter(); });
+    beforeEach(() => {
+      emitter = new JavaScriptEmitter();
+    });
 
-    function emitSourceMap(stmt: o.Statement | o.Statement[], preamble?: string): SourceMap {
+    function emitSourceMap(stmt: o.Statement|o.Statement[], preamble?: string): SourceMap {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
       const source = emitter.emitStatements(someSourceFilePath, someGenFilePath, stmts, preamble);
-      return extractSourceMap(source) !;
+      return extractSourceMap(source)!;
     }
 
     describe('source maps', () => {

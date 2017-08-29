@@ -20,18 +20,23 @@ export class HtmlTagDefinition implements TagDefinition {
   ignoreFirstLf: boolean;
   canSelfClose: boolean = false;
 
-  constructor(
-      {closedByChildren, requiredParents, implicitNamespacePrefix,
-       contentType = TagContentType.PARSABLE_DATA, closedByParent = false, isVoid = false,
-       ignoreFirstLf = false}: {
-        closedByChildren?: string[],
-        closedByParent?: boolean,
-        requiredParents?: string[],
-        implicitNamespacePrefix?: string,
-        contentType?: TagContentType,
-        isVoid?: boolean,
-        ignoreFirstLf?: boolean
-      } = {}) {
+  constructor({
+    closedByChildren,
+    requiredParents,
+    implicitNamespacePrefix,
+    contentType = TagContentType.PARSABLE_DATA,
+    closedByParent = false,
+    isVoid = false,
+    ignoreFirstLf = false
+  }: {
+    closedByChildren?: string[],
+    closedByParent?: boolean,
+    requiredParents?: string[],
+    implicitNamespacePrefix?: string,
+    contentType?: TagContentType,
+    isVoid?: boolean,
+    ignoreFirstLf?: boolean
+  } = {}) {
     if (closedByChildren && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
     }

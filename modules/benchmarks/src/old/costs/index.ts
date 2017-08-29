@@ -10,7 +10,7 @@ import {NgFor, NgIf} from '@angular/common';
 import {Component, Directive, DynamicComponentLoader, ViewContainerRef} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ListWrapper} from '@angular/facade/src/lang';
-import {BrowserModule, bootstrap} from '@angular/platform-browser';
+import {bootstrap, BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {bindAction, getIntParameter} from '@angular/testing/src/benchmark_util';
 
@@ -52,12 +52,10 @@ export function main() {
 
 
 @Component({selector: 'dummy', template: `<div></div>`})
-class DummyComponent {
-}
+class DummyComponent {}
 
 @Directive({selector: '[dummy-decorator]'})
-class DummyDirective {
-}
+class DummyDirective {}
 
 @Directive({selector: 'dynamic-dummy'})
 class DynamicDummy {
@@ -89,7 +87,9 @@ class AppComponent {
   testingWithDirectives: boolean;
   testingDynamicComponents: boolean;
 
-  constructor() { this.reset(); }
+  constructor() {
+    this.reset();
+  }
 
   reset(): void {
     this.list = [];
@@ -117,5 +117,4 @@ class AppComponent {
 
 
 @NgModule({imports: [BrowserModule], bootstrap: [AppComponent]})
-class AppModule {
-}
+class AppModule {}

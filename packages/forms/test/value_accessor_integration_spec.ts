@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, EventEmitter, Input, Output, Type} from '@angular/core';
-import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -64,7 +64,11 @@ export function main() {
       fixture.detectChanges();
 
       const input = fixture.debugElement.query(By.css('input'));
-      form.valueChanges.subscribe({next: (value) => { throw 'Should not happen'; }});
+      form.valueChanges.subscribe({
+        next: (value) => {
+          throw 'Should not happen';
+        }
+      });
       input.nativeElement.value = 'updatedValue';
 
       dispatchEvent(input.nativeElement, 'change');
@@ -195,7 +199,7 @@ export function main() {
 
         it('should throw an error if compareWith is not a function', () => {
           const fixture = initTest(FormControlSelectWithCompareFn);
-          fixture.componentInstance.compareFn = null !;
+          fixture.componentInstance.compareFn = null!;
           expect(() => fixture.detectChanges())
               .toThrowError(/compareWith must be a function, but received null/);
         });
@@ -320,7 +324,7 @@ export function main() {
              const fixture = initTest(NgModelSelectWithNullForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
-             comp.selectedCity = null !;
+             comp.selectedCity = null!;
              fixture.detectChanges();
 
              const select = fixture.debugElement.query(By.css('select'));
@@ -341,7 +345,7 @@ export function main() {
         it('should throw an error when compareWith is not a function', () => {
           const fixture = initTest(NgModelSelectWithCustomCompareFnForm);
           const comp = fixture.componentInstance;
-          comp.compareFn = null !;
+          comp.compareFn = null!;
           expect(() => fixture.detectChanges())
               .toThrowError(/compareWith must be a function, but received null/);
         });
@@ -421,7 +425,7 @@ export function main() {
 
         it('should throw an error when compareWith is not a function', () => {
           const fixture = initTest(FormControlSelectMultipleWithCompareFn);
-          fixture.componentInstance.compareFn = null !;
+          fixture.componentInstance.compareFn = null!;
           expect(() => fixture.detectChanges())
               .toThrowError(/compareWith must be a function, but received null/);
         });
@@ -506,7 +510,7 @@ export function main() {
       it('should throw an error when compareWith is not a function', () => {
         const fixture = initTest(NgModelSelectMultipleWithCustomCompareFnForm);
         const comp = fixture.componentInstance;
-        comp.compareFn = null !;
+        comp.compareFn = null!;
         expect(() => fixture.detectChanges())
             .toThrowError(/compareWith must be a function, but received null/);
       });
@@ -547,10 +551,10 @@ export function main() {
           fixture.detectChanges();
 
           // view -> model
-          expect(form.get('food') !.value).toEqual('chicken');
+          expect(form.get('food')!.value).toEqual('chicken');
           expect(inputs[1].nativeElement.checked).toEqual(false);
 
-          form.get('food') !.setValue('fish');
+          form.get('food')!.setValue('fish');
           fixture.detectChanges();
 
           // programmatic change -> view
@@ -591,16 +595,16 @@ export function main() {
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
-          form.get('food') !.setValue(null);
+          form.get('food')!.setValue(null);
           fixture.detectChanges();
 
           const inputs = fixture.debugElement.queryAll(By.css('input'));
           expect(inputs[0].nativeElement.checked).toEqual(false);
 
-          form.get('food') !.setValue('chicken');
+          form.get('food')!.setValue('chicken');
           fixture.detectChanges();
 
-          form.get('food') !.setValue(undefined);
+          form.get('food')!.setValue(undefined);
           fixture.detectChanges();
           expect(inputs[0].nativeElement.checked).toEqual(false);
         });
@@ -691,8 +695,8 @@ export function main() {
           fixture.detectChanges();
 
           // view -> model
-          expect(form.get('food') !.value).toEqual('chicken');
-          expect(form.get('nested.food') !.value).toEqual('fish');
+          expect(form.get('food')!.value).toEqual('chicken');
+          expect(form.get('nested.food')!.value).toEqual('fish');
 
           expect(inputs[1].nativeElement.checked).toEqual(false);
           expect(inputs[2].nativeElement.checked).toEqual(false);
@@ -713,7 +717,7 @@ export function main() {
           expect(inputs[2].nativeElement.disabled).toEqual(false);
           expect(inputs[3].nativeElement.disabled).toEqual(false);
 
-          form.get('food') !.disable();
+          form.get('food')!.disable();
           expect(inputs[0].nativeElement.disabled).toEqual(true);
           expect(inputs[1].nativeElement.disabled).toEqual(true);
           expect(inputs[2].nativeElement.disabled).toEqual(false);
@@ -845,7 +849,7 @@ export function main() {
              fixture.detectChanges();
              tick();
 
-             fixture.componentInstance.food = null !;
+             fixture.componentInstance.food = null!;
              fixture.detectChanges();
              tick();
 
@@ -857,7 +861,7 @@ export function main() {
              fixture.detectChanges();
              tick();
 
-             fixture.componentInstance.food = undefined !;
+             fixture.componentInstance.food = undefined!;
              fixture.detectChanges();
              tick();
              expect(inputs[0].nativeElement.checked).toEqual(false);
@@ -871,7 +875,7 @@ export function main() {
              tick();
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
-             form.control.get('food') !.disable();
+             form.control.get('food')!.disable();
              tick();
 
              const inputs = fixture.debugElement.queryAll(By.css('input'));
@@ -972,7 +976,7 @@ export function main() {
              tick();
              // view -> model
              fixture.detectChanges();
-             expect(typeof(fixture.componentInstance.val)).toBe('number');
+             expect(typeof (fixture.componentInstance.val)).toBe('number');
            }));
 
       });
@@ -999,9 +1003,9 @@ export function main() {
           expect(form.value).toEqual({'login': 'bb'});
 
           // custom validator
-          expect(form.get('login') !.errors).toEqual({'err': true});
+          expect(form.get('login')!.errors).toEqual({'err': true});
           form.setValue({login: 'expected'});
-          expect(form.get('login') !.errors).toEqual(null);
+          expect(form.get('login')!.errors).toEqual(null);
         });
 
         it('should support non builtin input elements that fire a change event without a \'target\' property',
@@ -1027,7 +1031,7 @@ export function main() {
           });
           fixture.detectChanges();
           expect(fixture.componentInstance.form.status).toEqual('DISABLED');
-          expect(fixture.componentInstance.form.get('login') !.status).toEqual('DISABLED');
+          expect(fixture.componentInstance.form.get('login')!.status).toEqual('DISABLED');
         });
 
         it('should support custom accessors without setDisabledState - formControlDirective',
@@ -1072,9 +1076,7 @@ export function main() {
 }
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
-export class FormControlComp {
-  control: FormControl;
-}
+export class FormControlComp { control: FormControl; }
 
 @Component({
   selector: 'form-group-comp',
@@ -1137,7 +1139,7 @@ class FormControlSelectNgValue {
 })
 class FormControlSelectWithCompareFn {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2;
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
 }
@@ -1181,7 +1183,7 @@ class FormControlSelectMultipleNgValue {
 })
 class FormControlSelectMultipleWithCompareFn {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2;
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl([{id: 1, name: 'SF'}])});
 }
@@ -1224,7 +1226,7 @@ class NgModelSelectWithNullForm {
 })
 class NgModelSelectWithCustomCompareFnForm {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2;
   selectedCity: any = {};
   cities: any[] = [];
 }
@@ -1240,7 +1242,7 @@ class NgModelSelectWithCustomCompareFnForm {
 })
 class NgModelSelectMultipleWithCustomCompareFnForm {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2 ? o1.id === o2.id : o1 === o2;
   selectedCities: any[] = [];
   cities: any[] = [];
 }
@@ -1317,14 +1319,22 @@ class WrappedValue implements ControlValueAccessor {
   value: any;
   onChange: Function;
 
-  writeValue(value: any) { this.value = `!${value}!`; }
+  writeValue(value: any) {
+    this.value = `!${value}!`;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.onChange = fn; }
+  registerOnChange(fn: (value: any) => void) {
+    this.onChange = fn;
+  }
   registerOnTouched(fn: any) {}
 
-  handleOnInput(value: any) { this.onChange(value.substring(1, value.length - 1)); }
+  handleOnInput(value: any) {
+    this.onChange(value.substring(1, value.length - 1));
+  }
 
-  validate(c: AbstractControl) { return c.value === 'expected' ? null : {'err': true}; }
+  validate(c: AbstractControl) {
+    return c.value === 'expected' ? null : {'err': true};
+  }
 }
 
 @Component({selector: 'my-input', template: ''})
@@ -1332,15 +1342,23 @@ export class MyInput implements ControlValueAccessor {
   @Output('input') onInput = new EventEmitter();
   value: string;
 
-  constructor(cd: NgControl) { cd.valueAccessor = this; }
+  constructor(cd: NgControl) {
+    cd.valueAccessor = this;
+  }
 
-  writeValue(value: any) { this.value = `!${value}!`; }
+  writeValue(value: any) {
+    this.value = `!${value}!`;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.onInput.subscribe({next: fn}); }
+  registerOnChange(fn: (value: any) => void) {
+    this.onInput.subscribe({next: fn});
+  }
 
   registerOnTouched(fn: any) {}
 
-  dispatchChangeEvent() { this.onInput.emit(this.value.substring(1, this.value.length - 1)); }
+  dispatchChangeEvent() {
+    this.onInput.emit(this.value.substring(1, this.value.length - 1));
+  }
 }
 
 @Component({
@@ -1350,9 +1368,7 @@ export class MyInput implements ControlValueAccessor {
       <my-input formControlName="login"></my-input>
     </div>`
 })
-export class MyInputForm {
-  form: FormGroup;
-}
+export class MyInputForm { form: FormGroup; }
 
 @Component({
   selector: 'wrapped-value-form',
@@ -1377,13 +1393,19 @@ export class NgModelCustomComp implements ControlValueAccessor {
   @Input('disabled') isDisabled: boolean = false;
   changeFn: (value: any) => void;
 
-  writeValue(value: any) { this.model = value; }
+  writeValue(value: any) {
+    this.model = value;
+  }
 
-  registerOnChange(fn: (value: any) => void) { this.changeFn = fn; }
+  registerOnChange(fn: (value: any) => void) {
+    this.changeFn = fn;
+  }
 
   registerOnTouched() {}
 
-  setDisabledState(isDisabled: boolean) { this.isDisabled = isDisabled; }
+  setDisabledState(isDisabled: boolean) {
+    this.isDisabled = isDisabled;
+  }
 }
 
 @Component({

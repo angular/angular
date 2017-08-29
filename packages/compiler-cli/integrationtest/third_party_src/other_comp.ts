@@ -13,5 +13,4 @@ import {Component} from '@angular/core';
   template: `<div i18n>other-3rdP-component
 multi-lines</div>`,
 })
-export class AnotherThirdpartyComponent {
-}
+export class AnotherThirdpartyComponent {}

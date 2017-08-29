@@ -24,8 +24,10 @@ import {MessageBasedPlatformLocation} from './platform_location';
  * @experimental
  */
 export const WORKER_UI_LOCATION_PROVIDERS = <StaticProvider[]>[
-  {provide: MessageBasedPlatformLocation, deps: [ServiceMessageBrokerFactory,
-    BrowserPlatformLocation, MessageBus, Serializer]},
+  {
+    provide: MessageBasedPlatformLocation,
+    deps: [ServiceMessageBrokerFactory, BrowserPlatformLocation, MessageBus, Serializer]
+  },
   {provide: BrowserPlatformLocation, deps: [DOCUMENT]},
   {provide: PLATFORM_INITIALIZER, useFactory: initUiLocation, multi: true, deps: [Injector]}
 ];

@@ -79,7 +79,7 @@ export class Extractor {
               const interpolationConfig =
                   InterpolationConfig.fromArray(compMeta.template !.interpolation);
               errors.push(...this.messageBundle.updateFromTemplate(
-                  html, file.srcUrl, interpolationConfig) !);
+                  html, file.srcUrl, interpolationConfig)!);
             });
           });
 

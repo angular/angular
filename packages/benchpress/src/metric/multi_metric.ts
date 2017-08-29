@@ -26,7 +26,9 @@ export class MultiMetric extends Metric {
     ];
   }
 
-  constructor(private _metrics: Metric[]) { super(); }
+  constructor(private _metrics: Metric[]) {
+    super();
+  }
 
   /**
    * Starts measuring
@@ -56,7 +58,11 @@ export class MultiMetric extends Metric {
 
 function mergeStringMaps(maps: {[key: string]: string}[]): {[key: string]: string} {
   const result: {[key: string]: string} = {};
-  maps.forEach(map => { Object.keys(map).forEach(prop => { result[prop] = map[prop]; }); });
+  maps.forEach(map => {
+    Object.keys(map).forEach(prop => {
+      result[prop] = map[prop];
+    });
+  });
   return result;
 }
 

@@ -9,23 +9,27 @@
 import {CompilerHostContext} from '@angular/compiler-cli/src/compiler_host';
 import * as ts from 'typescript';
 
-export type Entry = string | Directory;
+export type Entry = string|Directory;
 
 export interface Directory { [name: string]: Entry; }
 
 export class MockAotContext implements CompilerHostContext {
   constructor(public currentDirectory: string, private files: Entry) {}
 
-  fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }
+  fileExists(fileName: string): boolean {
+    return typeof this.getEntry(fileName) === 'string';
+  }
 
-  directoryExists(path: string): boolean { return typeof this.getEntry(path) === 'object'; }
+  directoryExists(path: string): boolean {
+    return typeof this.getEntry(path) === 'object';
+  }
 
   readFile(fileName: string): string {
     const data = this.getEntry(fileName);
     if (typeof data === 'string') {
       return data;
     }
-    return undefined !;
+    return undefined!;
   }
 
   readResource(fileName: string): Promise<string> {
@@ -38,14 +42,16 @@ export class MockAotContext implements CompilerHostContext {
 
   writeFile(fileName: string, data: string): void {
     const parts = fileName.split('/');
-    const name = parts.pop() !;
+    const name = parts.pop()!;
     const entry = this.getEntry(parts);
     if (entry && typeof entry !== 'string') {
       entry[name] = data;
     }
   }
 
-  assumeFileExists(fileName: string): void { this.writeFile(fileName, ''); }
+  assumeFileExists(fileName: string): void {
+    this.writeFile(fileName, '');
+  }
 
   getEntry(fileName: string|string[]): Entry|undefined {
     let parts = typeof fileName === 'string' ? fileName.split('/') : fileName;
@@ -56,7 +62,7 @@ export class MockAotContext implements CompilerHostContext {
     parts = normalize(parts);
     let current = this.files;
     while (parts.length) {
-      const part = parts.shift() !;
+      const part = parts.shift()!;
       if (typeof current === 'string') {
         return undefined;
       }
@@ -82,7 +88,7 @@ export class MockAotContext implements CompilerHostContext {
 function normalize(parts: string[]): string[] {
   const result: string[] = [];
   while (parts.length) {
-    const part = parts.shift() !;
+    const part = parts.shift()!;
     switch (part) {
       case '.':
         break;
@@ -99,9 +105,13 @@ function normalize(parts: string[]): string[] {
 export class MockCompilerHost implements ts.CompilerHost {
   constructor(private context: MockAotContext) {}
 
-  fileExists(fileName: string): boolean { return this.context.fileExists(fileName); }
+  fileExists(fileName: string): boolean {
+    return this.context.fileExists(fileName);
+  }
 
-  readFile(fileName: string): string { return this.context.readFile(fileName); }
+  readFile(fileName: string): string {
+    return this.context.readFile(fileName);
+  }
 
   directoryExists(directoryName: string): boolean {
     return this.context.directoryExists(directoryName);
@@ -114,7 +124,7 @@ export class MockCompilerHost implements ts.CompilerHost {
     if (sourceText) {
       return ts.createSourceFile(fileName, sourceText, languageVersion);
     } else {
-      return undefined !;
+      return undefined!;
     }
   }
 
@@ -122,15 +132,27 @@ export class MockCompilerHost implements ts.CompilerHost {
     return ts.getDefaultLibFileName(options);
   }
 
-  writeFile: ts.WriteFileCallback = (fileName, text) => { this.context.writeFile(fileName, text); };
+  writeFile: ts.WriteFileCallback = (fileName, text) => {
+    this.context.writeFile(fileName, text);
+  };
 
-  getCurrentDirectory(): string { return this.context.currentDirectory; }
+  getCurrentDirectory(): string {
+    return this.context.currentDirectory;
+  }
 
-  getCanonicalFileName(fileName: string): string { return fileName; }
+  getCanonicalFileName(fileName: string): string {
+    return fileName;
+  }
 
-  useCaseSensitiveFileNames(): boolean { return false; }
+  useCaseSensitiveFileNames(): boolean {
+    return false;
+  }
 
-  getNewLine(): string { return '\n'; }
+  getNewLine(): string {
+    return '\n';
+  }
 
-  getDirectories(path: string): string[] { return this.context.getDirectories(path); }
+  getDirectories(path: string): string[] {
+    return this.context.getDirectories(path);
+  }
 }

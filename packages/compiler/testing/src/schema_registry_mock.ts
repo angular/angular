@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementSchemaRegistry, core} from '@angular/compiler';
+import {core, ElementSchemaRegistry} from '@angular/compiler';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(
@@ -25,15 +25,21 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
     return value === void 0 ? true : value;
   }
 
-  allKnownElementNames(): string[] { return Object.keys(this.existingElements); }
+  allKnownElementNames(): string[] {
+    return Object.keys(this.existingElements);
+  }
 
   securityContext(selector: string, property: string, isAttribute: boolean): core.SecurityContext {
     return core.SecurityContext.NONE;
   }
 
-  getMappedPropName(attrName: string): string { return this.attrPropMapping[attrName] || attrName; }
+  getMappedPropName(attrName: string): string {
+    return this.attrPropMapping[attrName] || attrName;
+  }
 
-  getDefaultComponentElementName(): string { return 'ng-component'; }
+  getDefaultComponentElementName(): string {
+    return 'ng-component';
+  }
 
   validateProperty(name: string): {error: boolean, msg?: string} {
     if (this.invalidProperties.indexOf(name) > -1) {
@@ -54,9 +60,11 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
     }
   }
 
-  normalizeAnimationStyleProperty(propName: string): string { return propName; }
+  normalizeAnimationStyleProperty(propName: string): string {
+    return propName;
+  }
   normalizeAnimationStyleValue(camelCaseProp: string, userProvidedProp: string, val: string|number):
       {error: string, value: string} {
-    return {error: null !, value: val.toString()};
+    return {error: null!, value: val.toString()};
   }
 }

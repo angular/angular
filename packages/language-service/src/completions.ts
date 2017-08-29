@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, TagContentType, TemplateAst, TemplateAstVisitor, Text, TextAst, VariableAst, findNode, getHtmlTagDefinition, splitNsName, templateVisitAll} from '@angular/compiler';
+import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, findNode, getHtmlTagDefinition, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, splitNsName, TagContentType, TemplateAst, TemplateAstVisitor, templateVisitAll, Text, TextAst, VariableAst} from '@angular/compiler';
 import {DiagnosticTemplateInfo, getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult, AttrInfo, SelectorInfo, TemplateInfo} from './common';
@@ -147,7 +147,7 @@ function getAttributeInfosForElement(
     const selectorAndAttributeNames =
         applicableSelectors.map(selector => ({selector, attrs: selector.attrs.filter(a => !!a)}));
     let attrs = flatten(selectorAndAttributeNames.map<AttrInfo[]>(selectorAndAttr => {
-      const directive = selectorMap.get(selectorAndAttr.selector) !;
+      const directive = selectorMap.get(selectorAndAttr.selector)!;
       const result = selectorAndAttr.attrs.map<AttrInfo>(
           name => ({name, input: name in directive.inputs, output: name in directive.outputs}));
       return result;
@@ -166,7 +166,7 @@ function getAttributeInfosForElement(
     // All input and output properties of the matching directives should be added.
     let elementSelector = element ?
         createElementCssSelector(element) :
-        createElementCssSelector(new Element(elementName, [], [], null !, null, null));
+        createElementCssSelector(new Element(elementName, [], [], null!, null, null));
 
     let matcher = new SelectorMatcher();
     matcher.addSelectables(selectors);
@@ -215,9 +215,9 @@ function elementCompletions(info: TemplateInfo, path: AstPath<HtmlAst>): Complet
   let htmlNames = elementNames().filter(name => !(name in hiddenHtmlElements));
 
   // Collect the elements referenced by the selectors
-  let directiveElements = getSelectors(info)
-                              .selectors.map(selector => selector.element)
-                              .filter(name => !!name) as string[];
+  let directiveElements =
+      getSelectors(info).selectors.map(selector => selector.element).filter(name => !!name) as
+      string[];
 
   let components =
       directiveElements.map<Completion>(name => ({kind: 'component', name, sort: name}));
@@ -295,7 +295,9 @@ class ExpressionVisitor extends NullTemplateVisitor {
     this.attributeValueCompletions(ast.value);
   }
 
-  visitEvent(ast: BoundEventAst): void { this.attributeValueCompletions(ast.handler); }
+  visitEvent(ast: BoundEventAst): void {
+    this.attributeValueCompletions(ast.handler);
+  }
 
   visitElement(ast: ElementAst): void {
     if (this.attr && getSelectors(this.info) && this.attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, InjectionToken, Optional, Renderer2, forwardRef} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Inject, InjectionToken, Optional, Renderer2} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
+
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const DEFAULT_VALUE_ACCESSOR: any = {
@@ -76,8 +77,12 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     this._renderer.setProperty(this._elementRef.nativeElement, 'value', normalizedValue);
   }
 
-  registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
-  registerOnTouched(fn: () => void): void { this.onTouched = fn; }
+  registerOnChange(fn: (_: any) => void): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
 
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
@@ -91,7 +96,9 @@ export class DefaultValueAccessor implements ControlValueAccessor {
   }
 
   /** @internal */
-  _compositionStart(): void { this._composing = true; }
+  _compositionStart(): void {
+    this._composing = true;
+  }
 
   /** @internal */
   _compositionEnd(value: any): void {

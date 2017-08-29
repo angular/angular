@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstPath as AstPathBase, NullAstVisitor, visitAstChildren} from '@angular/compiler';
+import {AST, AstPath as AstPathBase, ASTWithSource, NullAstVisitor, visitAstChildren} from '@angular/compiler';
 import {AstType} from '@angular/compiler-cli/src/language_services';
 
 import {BuiltinType, Span, Symbol, SymbolQuery, SymbolTable} from './types';
@@ -40,10 +40,12 @@ export function getExpressionCompletions(
     scope: SymbolTable, ast: AST, position: number, query: SymbolQuery): Symbol[]|undefined {
   const path = findAstAt(ast, position);
   if (path.empty) return undefined;
-  const tail = path.tail !;
+  const tail = path.tail!;
   let result: SymbolTable|undefined = scope;
 
-  function getType(ast: AST): Symbol { return new AstType(scope, query, {}).getType(ast); }
+  function getType(ast: AST): Symbol {
+    return new AstType(scope, query, {}).getType(ast);
+  }
 
   // If the completion request is in a not in a pipe or property access then the global scope
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
@@ -54,7 +56,9 @@ export function getExpressionCompletions(
     visitConditional(ast) {},
     visitFunctionCall(ast) {},
     visitImplicitReceiver(ast) {},
-    visitInterpolation(ast) { result = undefined; },
+    visitInterpolation(ast) {
+      result = undefined;
+    },
     visitKeyedRead(ast) {},
     visitKeyedWrite(ast) {},
     visitLiteralArray(ast) {},
@@ -100,9 +104,11 @@ export function getExpressionSymbol(
     query: SymbolQuery): {symbol: Symbol, span: Span}|undefined {
   const path = findAstAt(ast, position, /* excludeEmpty */ true);
   if (path.empty) return undefined;
-  const tail = path.tail !;
+  const tail = path.tail!;
 
-  function getType(ast: AST): Symbol { return new AstType(scope, query, {}).getType(ast); }
+  function getType(ast: AST): Symbol {
+    return new AstType(scope, query, {}).getType(ast);
+  }
 
   let symbol: Symbol|undefined = undefined;
   let span: Span|undefined = undefined;

@@ -8,7 +8,7 @@
 
 import {StaticSymbol} from '@angular/compiler';
 import {AngularCompilerOptions, CompilerHost} from '@angular/compiler-cli';
-import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, isSource, settings, setup, toMockFileArray} from '@angular/compiler/test/aot/test_util';
+import {arrayToMockDir, arrayToMockMap, EmittingCompilerHost, isSource, MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, settings, setup, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
 
 import {Symbol, SymbolQuery, SymbolTable} from '../../src/diagnostics/symbols';
@@ -20,9 +20,15 @@ import {DiagnosticContext, MockLanguageServiceHost} from './mocks';
 function emptyPipes(): SymbolTable {
   return {
     size: 0,
-    get(key: string) { return undefined; },
-    has(key: string) { return false; },
-    values(): Symbol[]{return [];}
+    get(key: string) {
+      return undefined;
+    },
+    has(key: string) {
+      return false;
+    },
+    values(): Symbol[] {
+      return [];
+    }
   };
 }
 

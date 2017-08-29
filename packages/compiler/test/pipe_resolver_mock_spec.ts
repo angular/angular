@@ -36,5 +36,4 @@ export function main() {
 }
 
 @Pipe({name: 'somePipe'})
-class SomePipe {
-}
+class SomePipe {}

@@ -17,7 +17,7 @@
 
 export const VERSION = 3;
 
-export type MetadataEntry = ClassMetadata | InterfaceMetadata | FunctionMetadata | MetadataValue;
+export type MetadataEntry = ClassMetadata|InterfaceMetadata|FunctionMetadata|MetadataValue;
 
 export interface ModuleMetadata {
   __symbolic: 'module';
@@ -42,7 +42,7 @@ export interface ClassMetadata {
   arity?: number;
   decorators?: (MetadataSymbolicExpression|MetadataError)[];
   members?: MetadataMap;
-  statics?: {[name: string]: MetadataValue | FunctionMetadata};
+  statics?: {[name: string]: MetadataValue|FunctionMetadata};
 }
 export function isClassMetadata(value: any): value is ClassMetadata {
   return value && value.__symbolic === 'class';
@@ -97,8 +97,8 @@ export function isFunctionMetadata(value: any): value is FunctionMetadata {
   return value && value.__symbolic === 'function';
 }
 
-export type MetadataValue = string | number | boolean | undefined | null | MetadataObject |
-    MetadataArray | MetadataSymbolicExpression | MetadataError;
+export type MetadataValue = string|number|boolean|undefined|null|MetadataObject|MetadataArray|
+    MetadataSymbolicExpression|MetadataError;
 
 export interface MetadataObject { [name: string]: MetadataValue; }
 
@@ -211,18 +211,17 @@ export function isMetadataImportedSymbolReferenceExpression(value: any):
 export interface MetadataImportedDefaultReferenceExpression extends MetadataSymbolicExpression {
   __symbolic: 'reference';
   module: string;
-  default:
-    boolean;
-    arguments?: MetadataValue[];
+  default: boolean;
+  arguments?: MetadataValue[];
 }
 export function isMetadataImportDefaultReference(value: any):
     value is MetadataImportedDefaultReferenceExpression {
   return value.module && value.default && isMetadataSymbolicReferenceExpression(value);
 }
 
-export type MetadataSymbolicReferenceExpression = MetadataGlobalReferenceExpression |
-    MetadataModuleReferenceExpression | MetadataImportedSymbolReferenceExpression |
-    MetadataImportedDefaultReferenceExpression;
+export type MetadataSymbolicReferenceExpression =
+    MetadataGlobalReferenceExpression|MetadataModuleReferenceExpression|
+    MetadataImportedSymbolReferenceExpression|MetadataImportedDefaultReferenceExpression;
 export function isMetadataSymbolicReferenceExpression(value: any):
     value is MetadataSymbolicReferenceExpression {
   return value && value.__symbolic === 'reference';

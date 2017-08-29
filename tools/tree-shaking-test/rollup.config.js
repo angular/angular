@@ -22,7 +22,8 @@ class RollupNG2 {
 export default {
   entry: 'test.js',
   format: 'es6',
-  plugins: [
-    new RollupNG2(),
-  ]
+  plugins:
+      [
+        new RollupNG2(),
+      ]
 };

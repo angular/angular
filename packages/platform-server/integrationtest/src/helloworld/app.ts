@@ -16,5 +16,4 @@ import {HelloWorldComponent} from './hello-world.component';
   bootstrap: [HelloWorldComponent],
   imports: [BrowserModule.withServerTransition({appId: 'hlw'})],
 })
-export class HelloWorldModule {
-}
+export class HelloWorldModule {}

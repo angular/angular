@@ -13,7 +13,9 @@ export function main() {
   let innerPlayer: MockDomAnimation|null = null;
   beforeEach(() => {
     element = {};
-    element['animate'] = () => { return innerPlayer = new MockDomAnimation(); };
+    element['animate'] = () => {
+      return innerPlayer = new MockDomAnimation();
+    };
   });
 
   describe('WebAnimationsPlayer tests', () => {
@@ -26,7 +28,7 @@ export function main() {
       const player = new WebAnimationsPlayer(element, keyframes, {duration: 1000});
 
       player.init();
-      const p = innerPlayer !;
+      const p = innerPlayer!;
       expect(p.log).toEqual(['pause']);
 
       player.play();
@@ -42,7 +44,7 @@ export function main() {
       const player = new WebAnimationsPlayer(element, keyframes, {duration: 1000});
 
       player.play();
-      const p = innerPlayer !;
+      const p = innerPlayer!;
       expect(p.log).toEqual(['play']);
     });
   });
@@ -50,10 +52,18 @@ export function main() {
 
 class MockDomAnimation implements DOMAnimation {
   log: string[] = [];
-  cancel(): void { this.log.push('cancel'); }
-  play(): void { this.log.push('play'); }
-  pause(): void { this.log.push('pause'); }
-  finish(): void { this.log.push('finish'); }
+  cancel(): void {
+    this.log.push('cancel');
+  }
+  play(): void {
+    this.log.push('play');
+  }
+  pause(): void {
+    this.log.push('pause');
+  }
+  finish(): void {
+    this.log.push('finish');
+  }
   onfinish: Function = () => {};
   position: number = 0;
   currentTime: number = 0;

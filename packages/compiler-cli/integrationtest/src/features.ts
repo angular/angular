@@ -7,7 +7,7 @@
  */
 
 import * as common from '@angular/common';
-import {CUSTOM_ELEMENTS_SCHEMA, Component, Directive, EventEmitter, Inject, InjectionToken, NgModule, Output} from '@angular/core';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, Directive, EventEmitter, Inject, InjectionToken, NgModule, Output} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
 import {wrapInArray} from './funcs';
@@ -35,13 +35,10 @@ export class CompWithProviders {
     <div *ngIf="true">{{a.value}}</div>
   `
 })
-export class CompWithReferences {
-  foo: string;
-}
+export class CompWithReferences { foo: string; }
 
 @Component({selector: 'cmp-pipes', template: `<div *ngIf>{{test | somePipe}}</div>`})
-export class CompUsingPipes {
-}
+export class CompUsingPipes {}
 
 @Component({
   selector: 'cmp-custom-els',
@@ -49,8 +46,7 @@ export class CompUsingPipes {
     <some-custom-element [someUnknownProp]="true"></some-custom-element>
   `,
 })
-export class CompUsingCustomElements {
-}
+export class CompUsingCustomElements {}
 
 @Component({
   selector: 'cmp-event',
@@ -62,7 +58,9 @@ export class CompUsingCustomElements {
 })
 export class CompConsumingEvents {
   handleDomEventVoid(e: any): void {}
-  handleDomEventPreventDefault(e: any): boolean { return false; }
+  handleDomEventPreventDefault(e: any): boolean {
+    return false;
+  }
   handleDirEvent(e: any): void {}
 }
 
@@ -75,5 +73,4 @@ export class DirPublishingEvents {
 }
 
 @NgModule({schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: wrapInArray(CompUsingCustomElements)})
-export class ModuleUsingCustomElements {
-}
+export class ModuleUsingCustomElements {}

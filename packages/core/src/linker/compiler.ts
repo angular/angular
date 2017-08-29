@@ -47,12 +47,16 @@ export class Compiler {
    * Compiles the given NgModule and all of its components. All templates of the components listed
    * in `entryComponents` have to be inlined.
    */
-  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> { throw _throwError(); }
+  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> {
+    throw _throwError();
+  }
 
   /**
    * Compiles the given NgModule and all of its components
    */
-  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> { throw _throwError(); }
+  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
+    throw _throwError();
+  }
 
   /**
    * Same as {@link #compileModuleSync} but also creates ComponentFactories for all components.
@@ -77,7 +81,9 @@ export class Compiler {
    *
    * @deprecated since v4. Use ComponentFactory.ngContentSelectors instead.
    */
-  getNgContentSelectors(component: Type<any>): string[] { throw _throwError(); }
+  getNgContentSelectors(component: Type<any>): string[] {
+    throw _throwError();
+  }
 
   /**
    * Clears all caches.

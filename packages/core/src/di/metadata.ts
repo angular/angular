@@ -42,7 +42,7 @@ export interface InjectDecorator {
    * @stable
    */
   (token: any): any;
-  new (token: any): Inject;
+  new(token: any): Inject;
 }
 
 /**
@@ -88,7 +88,7 @@ export interface OptionalDecorator {
    * @stable
    */
   (): any;
-  new (): Optional;
+  new(): Optional;
 }
 
 /**
@@ -135,7 +135,7 @@ export interface InjectableDecorator {
    * @stable
    */
   (): any;
-  new (): Injectable;
+  new(): Injectable;
 }
 
 /**
@@ -179,7 +179,7 @@ export interface SelfDecorator {
    * @stable
    */
   (): any;
-  new (): Self;
+  new(): Self;
 }
 
 /**
@@ -224,7 +224,7 @@ export interface SkipSelfDecorator {
    * @stable
    */
   (): any;
-  new (): SkipSelf;
+  new(): SkipSelf;
 }
 
 /**
@@ -269,7 +269,7 @@ export interface HostDecorator {
    * @stable
    */
   (): any;
-  new (): Host;
+  new(): Host;
 }
 
 /**

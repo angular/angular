@@ -42,5 +42,4 @@ class SomeDirective {}
 class SomeOtherDirective {}
 
 @NgModule({declarations: [SomeDirective]})
-class SomeNgModule {
-}
+class SomeNgModule {}

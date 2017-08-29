@@ -9,13 +9,10 @@
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, Directive, Injectable, InjectionToken, Input, NgModule, Pipe} from '@angular/core';
 
 @Injectable()
-export class SomeService {
-  public prop = 'someValue';
-}
+export class SomeService { public prop = 'someValue'; }
 
 @Injectable()
-export class ServiceUsingLibModule {
-}
+export class ServiceUsingLibModule {}
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 export class SomeDirectiveInRootModule {
@@ -31,21 +28,23 @@ export class SomeDirectiveInLibModule {
 
 @Pipe({name: 'somePipe'})
 export class SomePipeInRootModule {
-  transform(value: string): any { return `transformed ${value}`; }
+  transform(value: string): any {
+    return `transformed ${value}`;
+  }
 }
 
 @Pipe({name: 'somePipe'})
 export class SomePipeInLibModule {
-  transform(value: string): any { return `transformed ${value}`; }
+  transform(value: string): any {
+    return `transformed ${value}`;
+  }
 }
 
 @Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
-export class CompUsingRootModuleDirectiveAndPipe {
-}
+export class CompUsingRootModuleDirectiveAndPipe {}
 
 @Component({selector: 'comp', template: `<div  [someDir]="'someValue' | somePipe"></div>`})
-export class CompUsingLibModuleDirectiveAndPipe {
-}
+export class CompUsingLibModuleDirectiveAndPipe {}
 
 export const SOME_TOKEN = new InjectionToken('someToken');
 
@@ -66,8 +65,9 @@ export class SomeLibModule {
     return {
       ngModule: SomeLibModule,
       providers: [
-        ServiceUsingLibModule, provideValueWithEntryComponents(
-                                   [{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
+        ServiceUsingLibModule,
+        provideValueWithEntryComponents(
+            [{a: 'b', component: CompUsingLibModuleDirectiveAndPipe}])
       ]
     };
   }

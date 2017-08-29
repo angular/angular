@@ -16,9 +16,7 @@ export function main() {
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
-export class GreetingService {
-  greeting: string = 'hello';
-}
+export class GreetingService { greeting: string = 'hello'; }
 
 // Directives are light-weight. They don't allow new
 // expression contexts (use @Component for those needs).
@@ -52,11 +50,14 @@ export class RedDec {
 export class HelloCmp {
   greeting: string;
 
-  constructor(service: GreetingService) { this.greeting = service.greeting; }
+  constructor(service: GreetingService) {
+    this.greeting = service.greeting;
+  }
 
-  changeGreeting(): void { this.greeting = 'howdy'; }
+  changeGreeting(): void {
+    this.greeting = 'howdy';
+  }
 }
 
 @NgModule({declarations: [HelloCmp, RedDec], bootstrap: [HelloCmp], imports: [BrowserModule]})
-class ExampleModule {
-}
+class ExampleModule {}

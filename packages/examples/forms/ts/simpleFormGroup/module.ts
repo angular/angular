@@ -16,5 +16,4 @@ import {SimpleFormGroup} from './simple_form_group_example';
   declarations: [SimpleFormGroup],
   bootstrap: [SimpleFormGroup]
 })
-export class AppModule {
-}
+export class AppModule {}

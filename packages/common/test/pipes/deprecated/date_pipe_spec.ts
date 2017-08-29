@@ -18,7 +18,7 @@ export function main() {
     let pipe: DeprecatedDatePipe;
 
     // Check the transformation of a date into a pattern
-    function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
+    function expectDateFormatAs(date: Date|string, pattern: any, output: string): void {
       expect(pipe.transform(date, pattern)).toEqual(output);
     }
 
@@ -36,19 +36,25 @@ export function main() {
     });
 
     it('should be marked as pure', () => {
-      expect(new PipeResolver(new JitReflector()).resolve(DeprecatedDatePipe) !.pure).toEqual(true);
+      expect(new PipeResolver(new JitReflector()).resolve(DeprecatedDatePipe)!.pure).toEqual(true);
     });
 
     describe('supports', () => {
-      it('should support date', () => { expect(() => pipe.transform(date)).not.toThrow(); });
+      it('should support date', () => {
+        expect(() => pipe.transform(date)).not.toThrow();
+      });
 
-      it('should support int', () => { expect(() => pipe.transform(123456789)).not.toThrow(); });
+      it('should support int', () => {
+        expect(() => pipe.transform(123456789)).not.toThrow();
+      });
 
-      it('should support numeric strings',
-         () => { expect(() => pipe.transform('123456789')).not.toThrow(); });
+      it('should support numeric strings', () => {
+        expect(() => pipe.transform('123456789')).not.toThrow();
+      });
 
-      it('should support decimal strings',
-         () => { expect(() => pipe.transform('123456789.11')).not.toThrow(); });
+      it('should support decimal strings', () => {
+        expect(() => pipe.transform('123456789.11')).not.toThrow();
+      });
 
       it('should support ISO string',
          () => expect(() => pipe.transform('2015-06-15T21:43:11Z')).not.toThrow());
@@ -57,8 +63,9 @@ export function main() {
 
       it('should return null for NaN', () => expect(pipe.transform(Number.NaN)).toEqual(null));
 
-      it('should support ISO string without time',
-         () => { expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow(); });
+      it('should support ISO string without time', () => {
+        expect(() => pipe.transform(isoStringWithoutTime)).not.toThrow();
+      });
 
       it('should not support other objects',
          () => expect(() => pipe.transform({})).toThrowError(/InvalidPipeArgument/));
@@ -202,7 +209,7 @@ export function main() {
          () => expect(pipe.transform('2017-01-20T19:00:00+0000')).toEqual('Jan 20, 2017'));
 
       it('should remove bidi control characters',
-         () => expect(pipe.transform(date, 'MM/dd/yyyy') !.length).toEqual(10));
+         () => expect(pipe.transform(date, 'MM/dd/yyyy')!.length).toEqual(10));
     });
   });
 }

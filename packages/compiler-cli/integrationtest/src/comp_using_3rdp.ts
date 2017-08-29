@@ -13,6 +13,4 @@ import {Component} from '@angular/core';
   template: '<third-party-comp [thirdParty]="title"></third-party-comp>' +
       '<another-third-party-comp></another-third-party-comp>',
 })
-export class ComponentUsingThirdParty {
-  title: string = 'from 3rd party';
-}
+export class ComponentUsingThirdParty { title: string = 'from 3rd party'; }

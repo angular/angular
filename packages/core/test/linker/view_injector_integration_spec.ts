@@ -7,7 +7,7 @@
  */
 
 import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, DebugElement, Directive, ElementRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -17,12 +17,10 @@ class SimpleDirective {
 }
 
 @Component({selector: '[simpleComponent]', template: ''})
-class SimpleComponent {
-}
+class SimpleComponent {}
 
 @Directive({selector: '[someOtherDirective]'})
-class SomeOtherDirective {
-}
+class SomeOtherDirective {}
 
 @Directive({selector: '[cycleDirective]'})
 class CycleDirective {
@@ -32,61 +30,81 @@ class CycleDirective {
 @Directive({selector: '[needsDirectiveFromSelf]'})
 class NeedsDirectiveFromSelf {
   dependency: SimpleDirective;
-  constructor(@Self() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Self() dependency: SimpleDirective) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[optionallyNeedsDirective]'})
 class OptionallyNeedsDirective {
   dependency: SimpleDirective;
-  constructor(@Self() @Optional() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Self() @Optional() dependency: SimpleDirective) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[needsComponentFromHost]'})
 class NeedsComponentFromHost {
   dependency: SimpleComponent;
-  constructor(@Host() dependency: SimpleComponent) { this.dependency = dependency; }
+  constructor(@Host() dependency: SimpleComponent) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[needsDirectiveFromHost]'})
 class NeedsDirectiveFromHost {
   dependency: SimpleDirective;
-  constructor(@Host() dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(@Host() dependency: SimpleDirective) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[needsDirective]'})
 class NeedsDirective {
   dependency: SimpleDirective;
-  constructor(dependency: SimpleDirective) { this.dependency = dependency; }
+  constructor(dependency: SimpleDirective) {
+    this.dependency = dependency;
+  }
 }
 
 @Directive({selector: '[needsService]'})
 class NeedsService {
   service: any;
-  constructor(@Inject('service') service: any) { this.service = service; }
+  constructor(@Inject('service') service: any) {
+    this.service = service;
+  }
 }
 
 @Directive({selector: '[needsAppService]'})
 class NeedsAppService {
   service: any;
-  constructor(@Inject('appService') service: any) { this.service = service; }
+  constructor(@Inject('appService') service: any) {
+    this.service = service;
+  }
 }
 
 @Component({selector: '[needsHostAppService]', template: ''})
 class NeedsHostAppService {
   service: any;
-  constructor(@Host() @Inject('appService') service: any) { this.service = service; }
+  constructor(@Host() @Inject('appService') service: any) {
+    this.service = service;
+  }
 }
 
 @Component({selector: '[needsServiceComponent]', template: ''})
 class NeedsServiceComponent {
   service: any;
-  constructor(@Inject('service') service: any) { this.service = service; }
+  constructor(@Inject('service') service: any) {
+    this.service = service;
+  }
 }
 
 @Directive({selector: '[needsServiceFromHost]'})
 class NeedsServiceFromHost {
   service: any;
-  constructor(@Host() @Inject('service') service: any) { this.service = service; }
+  constructor(@Host() @Inject('service') service: any) {
+    this.service = service;
+  }
 }
 
 @Directive({selector: '[needsAttribute]'})
@@ -146,53 +164,66 @@ class PushComponentNeedsChangeDetectorRef {
 @Pipe({name: 'purePipe', pure: true})
 class PurePipe implements PipeTransform {
   constructor() {}
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'impurePipe', pure: false})
 class ImpurePipe implements PipeTransform {
   constructor() {}
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'pipeNeedsChangeDetectorRef'})
 class PipeNeedsChangeDetectorRef {
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'pipeNeedsService'})
 export class PipeNeedsService implements PipeTransform {
   service: any;
-  constructor(@Inject('service') service: any) { this.service = service; }
-  transform(value: any): any { return this; }
+  constructor(@Inject('service') service: any) {
+    this.service = service;
+  }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'duplicatePipe'})
 export class DuplicatePipe1 implements PipeTransform {
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Pipe({name: 'duplicatePipe'})
 export class DuplicatePipe2 implements PipeTransform {
-  transform(value: any): any { return this; }
+  transform(value: any): any {
+    return this;
+  }
 }
 
 @Component({selector: 'root', template: ''})
-class TestComp {
-}
+class TestComp {}
 
 export function main() {
   function createComponentFixture<T>(
-      template: string, providers?: Provider[] | null, comp?: Type<T>): ComponentFixture<T> {
+      template: string, providers?: Provider[]|null, comp?: Type<T>): ComponentFixture<T> {
     if (!comp) {
       comp = <any>TestComp;
     }
-    TestBed.overrideComponent(comp !, {set: {template}});
+    TestBed.overrideComponent(comp!, {set: {template}});
     if (providers && providers.length) {
-      TestBed.overrideComponent(comp !, {add: {providers: providers}});
+      TestBed.overrideComponent(comp!, {add: {providers: providers}});
     }
-    return TestBed.createComponent(comp !);
+    return TestBed.createComponent(comp!);
   }
 
   function createComponent(
@@ -394,7 +425,9 @@ export function main() {
            @Component({providers: [{provide: 'a', useFactory: () => 'aValue'}], template: ''})
            class SomeComponent {
              public a: string;
-             constructor(injector: Injector) { this.a = injector.get('a'); }
+             constructor(injector: Injector) {
+               this.a = injector.get('a');
+             }
            }
 
            const comp = TestBed.configureTestingModule({declarations: [SomeComponent]})
@@ -407,13 +440,16 @@ export function main() {
         let destroyed = false;
 
         class SomeInjectable {
-          constructor() { created = true; }
-          ngOnDestroy() { destroyed = true; }
+          constructor() {
+            created = true;
+          }
+          ngOnDestroy() {
+            destroyed = true;
+          }
         }
 
         @Component({providers: [SomeInjectable], template: ''})
-        class SomeComp {
-        }
+        class SomeComp {}
 
         TestBed.configureTestingModule({declarations: [SomeComp]});
 
@@ -770,12 +806,11 @@ export function main() {
           declarations: [TestComp],
           entryComponents: [TestComp],
         })
-        class TestModule {
-        }
+        class TestModule {}
 
         const testInjector = <Injector>{
           get: (token: any, notFoundValue: any) =>
-                   token === 'someToken' ? 'someNewValue' : notFoundValue
+              token === 'someToken' ? 'someNewValue' : notFoundValue
         };
 
         const compFactory = TestBed.configureTestingModule({imports: [TestModule]})

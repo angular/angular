@@ -25,18 +25,26 @@ export class Host implements ts.LanguageServiceHost {
     };
   }
 
-  getScriptFileNames(): string[] { return this.scripts; }
+  getScriptFileNames(): string[] {
+    return this.scripts;
+  }
 
-  getScriptVersion(fileName: string): string { return this.version.toString(); }
+  getScriptVersion(fileName: string): string {
+    return this.version.toString();
+  }
 
   getScriptSnapshot(fileName: string): ts.IScriptSnapshot|undefined {
     const content = this.getFileContent(fileName);
     if (content) return ts.ScriptSnapshot.fromString(content);
   }
 
-  getCurrentDirectory(): string { return '/'; }
+  getCurrentDirectory(): string {
+    return '/';
+  }
 
-  getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
+  getDefaultLibFileName(options: ts.CompilerOptions): string {
+    return 'lib.d.ts';
+  }
 
   overrideFile(fileName: string, content: string) {
     this.overrides.set(fileName, content);
@@ -77,20 +85,48 @@ export class MockNode implements ts.Node {
   constructor(
       public kind: ts.SyntaxKind = ts.SyntaxKind.Identifier, public flags: ts.NodeFlags = 0,
       public pos: number = 0, public end: number = 0) {}
-  getSourceFile(): ts.SourceFile { return null as any as ts.SourceFile; }
-  getChildCount(sourceFile?: ts.SourceFile): number { return 0; }
-  getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
-  getChildren(sourceFile?: ts.SourceFile): ts.Node[] { return []; }
-  getStart(sourceFile?: ts.SourceFile): number { return 0; }
-  getFullStart(): number { return 0; }
-  getEnd(): number { return 0; }
-  getWidth(sourceFile?: ts.SourceFile): number { return 0; }
-  getFullWidth(): number { return 0; }
-  getLeadingTriviaWidth(sourceFile?: ts.SourceFile): number { return 0; }
-  getFullText(sourceFile?: ts.SourceFile): string { return ''; }
-  getText(sourceFile?: ts.SourceFile): string { return ''; }
-  getFirstToken(sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
-  getLastToken(sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
+  getSourceFile(): ts.SourceFile {
+    return null as any as ts.SourceFile;
+  }
+  getChildCount(sourceFile?: ts.SourceFile): number {
+    return 0;
+  }
+  getChildAt(index: number, sourceFile?: ts.SourceFile): ts.Node {
+    return null as any as ts.Node;
+  }
+  getChildren(sourceFile?: ts.SourceFile): ts.Node[] {
+    return [];
+  }
+  getStart(sourceFile?: ts.SourceFile): number {
+    return 0;
+  }
+  getFullStart(): number {
+    return 0;
+  }
+  getEnd(): number {
+    return 0;
+  }
+  getWidth(sourceFile?: ts.SourceFile): number {
+    return 0;
+  }
+  getFullWidth(): number {
+    return 0;
+  }
+  getLeadingTriviaWidth(sourceFile?: ts.SourceFile): number {
+    return 0;
+  }
+  getFullText(sourceFile?: ts.SourceFile): string {
+    return '';
+  }
+  getText(sourceFile?: ts.SourceFile): string {
+    return '';
+  }
+  getFirstToken(sourceFile?: ts.SourceFile): ts.Node {
+    return null as any as ts.Node;
+  }
+  getLastToken(sourceFile?: ts.SourceFile): ts.Node {
+    return null as any as ts.Node;
+  }
   forEachChild<T>(cbNode: (node: ts.Node) => T, cbNodeArray?: (nodes: ts.Node[]) => T): T {
     return null as any as T;
   }
@@ -126,7 +162,7 @@ export class MockVariableDeclaration extends MockNode implements ts.VariableDecl
     super(kind, flags, pos, end);
   }
 
-  static of (name: string): MockVariableDeclaration {
+  static of(name: string): MockVariableDeclaration {
     return new MockVariableDeclaration(new MockIdentifier(name));
   }
 }
@@ -136,14 +172,26 @@ export class MockSymbol implements ts.Symbol {
       public name: string, private node: ts.Declaration = MockVariableDeclaration.of(name),
       public flags: ts.SymbolFlags = 0) {}
 
-  getFlags(): ts.SymbolFlags { return this.flags; }
-  getName(): string { return this.name; }
-  getDeclarations(): ts.Declaration[] { return [this.node]; }
-  getDocumentationComment(): ts.SymbolDisplayPart[] { return []; }
+  getFlags(): ts.SymbolFlags {
+    return this.flags;
+  }
+  getName(): string {
+    return this.name;
+  }
+  getDeclarations(): ts.Declaration[] {
+    return [this.node];
+  }
+  getDocumentationComment(): ts.SymbolDisplayPart[] {
+    return [];
+  }
   // TODO(vicb): removed in TS 2.2
-  getJsDocTags(): any[] { return []; }
+  getJsDocTags(): any[] {
+    return [];
+  }
 
-  static of (name: string): MockSymbol { return new MockSymbol(name); }
+  static of(name: string): MockSymbol {
+    return new MockSymbol(name);
+  }
 }
 
 export function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
@@ -187,14 +235,14 @@ export function findVar(sourceFile: ts.SourceFile, name: string): ts.VariableDec
 export function findVarInitializer(sourceFile: ts.SourceFile, name: string): ts.Expression {
   const v = findVar(sourceFile, name);
   expect(v && v.initializer).toBeDefined();
-  return v !.initializer !;
+  return v!.initializer!;
 }
 
 export function isClass(node: ts.Node): node is ts.ClassDeclaration {
   return node.kind === ts.SyntaxKind.ClassDeclaration;
 }
 
-export function isNamed(node: ts.Node | undefined, name: string): node is ts.Identifier {
+export function isNamed(node: ts.Node|undefined, name: string): node is ts.Identifier {
   return !!node && node.kind === ts.SyntaxKind.Identifier && (<ts.Identifier>node).text === name;
 }
 

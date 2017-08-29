@@ -8,14 +8,16 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, QueryList, StaticProvider, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {TestBed, async, fakeAsync} from '@angular/core/testing';
+import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NO_ERRORS_SCHEMA, Optional, QueryList, StaticProvider, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {async, fakeAsync, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('insert/remove', () => {
 
-    beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [TestModule]});
+    });
 
     it('should do nothing if component is null', async(() => {
          const template = `<ng-template *ngComponentOutlet="currentComponent"></ng-template>`;
@@ -52,7 +54,7 @@ export function main() {
          fixture.detectChanges();
          expect(fixture.nativeElement).toHaveText('foo');
          expect(fixture.componentInstance.cmpRef).toBeAnInstanceOf(ComponentRef);
-         expect(fixture.componentInstance.cmpRef !.instance).toBeAnInstanceOf(InjectedComponent);
+         expect(fixture.componentInstance.cmpRef!.instance).toBeAnInstanceOf(InjectedComponent);
        }));
 
 
@@ -100,7 +102,7 @@ export function main() {
              [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
 
          fixture.detectChanges();
-         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
          expect(cmpRef).toBeAnInstanceOf(ComponentRef);
          expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
          expect(cmpRef.instance.testToken).toBe(uniqueValue);
@@ -113,7 +115,7 @@ export function main() {
          fixture.componentInstance.cmpRef = null;
          fixture.componentInstance.currentComponent = InjectedComponent;
          fixture.detectChanges();
-         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+         let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
          expect(cmpRef).toBeAnInstanceOf(ComponentRef);
          expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
          expect(cmpRef.instance.testToken).toBeNull();
@@ -169,9 +171,9 @@ export function main() {
          const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
          spyOn(moduleRef, 'destroy').and.callThrough();
 
-         expect(moduleRef !.destroy).not.toHaveBeenCalled();
+         expect(moduleRef!.destroy).not.toHaveBeenCalled();
          fixture.destroy();
-         expect(moduleRef !.destroy).toHaveBeenCalled();
+         expect(moduleRef!.destroy).toHaveBeenCalled();
        }));
 
     it('should not re-create moduleRef when it didn\'t actually change', async(() => {
@@ -217,8 +219,7 @@ class InjectedComponent {
 
 
 @Component({selector: 'injected-component-again', template: 'bar'})
-class InjectedComponentAgain {
-}
+class InjectedComponentAgain {}
 
 const TEST_CMP_TEMPLATE =
     `<ng-template *ngComponentOutlet="currentComponent; injector: injector; content: projectables; ngModuleFactory: module;"></ng-template>`;
@@ -229,8 +230,12 @@ class TestComponent {
   projectables: any[][];
   module: NgModuleFactory<any>;
 
-  get cmpRef(): ComponentRef<any>|null { return this.ngComponentOutlet['_componentRef']; }
-  set cmpRef(value: ComponentRef<any>|null) { this.ngComponentOutlet['_componentRef'] = value; }
+  get cmpRef(): ComponentRef<any>|null {
+    return this.ngComponentOutlet['_componentRef'];
+  }
+  set cmpRef(value: ComponentRef<any>|null) {
+    this.ngComponentOutlet['_componentRef'] = value;
+  }
 
   @ViewChildren(TemplateRef) tplRefs: QueryList<TemplateRef<any>>;
   @ViewChild(NgComponentOutlet) ngComponentOutlet: NgComponentOutlet;
@@ -244,16 +249,13 @@ class TestComponent {
   exports: [TestComponent, InjectedComponent, InjectedComponentAgain],
   entryComponents: [InjectedComponent, InjectedComponentAgain]
 })
-export class TestModule {
-}
+export class TestModule {}
 
 @Component({selector: 'module-2-injected-component', template: 'baz'})
-class Module2InjectedComponent {
-}
+class Module2InjectedComponent {}
 
 @Component({selector: 'module-2-injected-component-2', template: 'baz2'})
-class Module2InjectedComponent2 {
-}
+class Module2InjectedComponent2 {}
 
 @NgModule({
   imports: [CommonModule],
@@ -261,12 +263,10 @@ class Module2InjectedComponent2 {
   exports: [Module2InjectedComponent, Module2InjectedComponent2],
   entryComponents: [Module2InjectedComponent, Module2InjectedComponent2]
 })
-export class TestModule2 {
-}
+export class TestModule2 {}
 
 @Component({selector: 'module-3-injected-component', template: 'bat'})
-class Module3InjectedComponent {
-}
+class Module3InjectedComponent {}
 
 @NgModule({
   imports: [CommonModule],
@@ -274,5 +274,4 @@ class Module3InjectedComponent {
   exports: [Module3InjectedComponent],
   entryComponents: [Module3InjectedComponent]
 })
-export class TestModule3 {
-}
+export class TestModule3 {}

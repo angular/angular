@@ -13,8 +13,7 @@ import {platformWorkerAppDynamic} from '@angular/platform-webworker-dynamic';
 import {ImageDemo} from './index_common';
 
 @NgModule({imports: [WorkerAppModule], bootstrap: [ImageDemo], declarations: [ImageDemo]})
-class ExampleModule {
-}
+class ExampleModule {}
 
 export function main() {
   platformWorkerAppDynamic().bootstrapModule(ExampleModule);

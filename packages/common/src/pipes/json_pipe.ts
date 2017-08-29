@@ -23,5 +23,7 @@ import {Pipe, PipeTransform} from '@angular/core';
  */
 @Pipe({name: 'json', pure: false})
 export class JsonPipe implements PipeTransform {
-  transform(value: any): string { return JSON.stringify(value, null, 2); }
+  transform(value: any): string {
+    return JSON.stringify(value, null, 2);
+  }
 }

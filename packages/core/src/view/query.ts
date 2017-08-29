@@ -9,7 +9,7 @@
 import {ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 
-import {NodeDef, NodeFlags, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, ViewData, asElementData, asProviderData, asQueryList} from './types';
+import {asElementData, asProviderData, asQueryList, NodeDef, NodeFlags, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, ViewData} from './types';
 import {declaredViewContainer, filterQueryId, isEmbeddedView} from './util';
 
 export function queryDef(
@@ -55,7 +55,7 @@ export function createQuery(): QueryList<any> {
 export function dirtyParentQueries(view: ViewData) {
   const queryIds = view.def.nodeMatchedQueries;
   while (view.parent && isEmbeddedView(view)) {
-    let tplDef = view.parentNodeDef !;
+    let tplDef = view.parentNodeDef!;
     view = view.parent;
     // content queries
     const end = tplDef.index + tplDef.childCount;
@@ -63,7 +63,7 @@ export function dirtyParentQueries(view: ViewData) {
       const nodeDef = view.def.nodes[i];
       if ((nodeDef.flags & NodeFlags.TypeContentQuery) &&
           (nodeDef.flags & NodeFlags.DynamicQuery) &&
-          (nodeDef.query !.filterId & queryIds) === nodeDef.query !.filterId) {
+          (nodeDef.query!.filterId & queryIds) === nodeDef.query!.filterId) {
         asQueryList(view, i).setDirty();
       }
       if ((nodeDef.flags & NodeFlags.TypeElement && i + nodeDef.childCount < tplDef.index) ||
@@ -94,18 +94,18 @@ export function checkAndUpdateQuery(view: ViewData, nodeDef: NodeDef) {
     return;
   }
   let directiveInstance: any;
-  let newValues: any[] = undefined !;
+  let newValues: any[] = undefined!;
   if (nodeDef.flags & NodeFlags.TypeContentQuery) {
-    const elementDef = nodeDef.parent !.parent !;
+    const elementDef = nodeDef.parent!.parent!;
     newValues = calcQueryValues(
-        view, elementDef.index, elementDef.index + elementDef.childCount, nodeDef.query !, []);
-    directiveInstance = asProviderData(view, nodeDef.parent !.index).instance;
+        view, elementDef.index, elementDef.index + elementDef.childCount, nodeDef.query!, []);
+    directiveInstance = asProviderData(view, nodeDef.parent!.index).instance;
   } else if (nodeDef.flags & NodeFlags.TypeViewQuery) {
-    newValues = calcQueryValues(view, 0, view.def.nodes.length - 1, nodeDef.query !, []);
+    newValues = calcQueryValues(view, 0, view.def.nodes.length - 1, nodeDef.query!, []);
     directiveInstance = view.component;
   }
   queryList.reset(newValues);
-  const bindings = nodeDef.query !.bindings;
+  const bindings = nodeDef.query!.bindings;
   let notify = false;
   for (let i = 0; i < bindings.length; i++) {
     const binding = bindings[i];
@@ -135,8 +135,8 @@ function calcQueryValues(
     if (valueType != null) {
       values.push(getQueryValue(view, nodeDef, valueType));
     }
-    if (nodeDef.flags & NodeFlags.TypeElement && nodeDef.element !.template &&
-        (nodeDef.element !.template !.nodeMatchedQueries & queryDef.filterId) ===
+    if (nodeDef.flags & NodeFlags.TypeElement && nodeDef.element!.template &&
+        (nodeDef.element!.template !.nodeMatchedQueries & queryDef.filterId) ===
             queryDef.filterId) {
       const elementData = asElementData(view, i);
       // check embedded views that were attached at the place of their template,
@@ -146,7 +146,7 @@ function calcQueryValues(
         i += nodeDef.childCount;
       }
       if (nodeDef.flags & NodeFlags.EmbeddedViews) {
-        const embeddedViews = elementData.viewContainer !._embeddedViews;
+        const embeddedViews = elementData.viewContainer!._embeddedViews;
         for (let k = 0; k < embeddedViews.length; k++) {
           const embeddedView = embeddedViews[k];
           const dvc = declaredViewContainer(embeddedView);

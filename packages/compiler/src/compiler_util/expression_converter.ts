@@ -24,7 +24,7 @@ export class ConvertActionBindingResult {
  * used in an action binding (e.g. an event handler).
  */
 export function convertActionBinding(
-    localResolver: LocalResolver | null, implicitReceiver: o.Expression, action: cdAst.AST,
+    localResolver: LocalResolver|null, implicitReceiver: o.Expression, action: cdAst.AST,
     bindingId: string): ConvertActionBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
@@ -57,7 +57,7 @@ export function convertActionBinding(
   flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
   const lastIndex = actionStmts.length - 1;
-  let preventDefaultVar: o.ReadVarExpr = null !;
+  let preventDefaultVar: o.ReadVarExpr = null!;
   if (lastIndex >= 0) {
     const lastStatement = actionStmts[lastIndex];
     const returnExpr = convertStmtIntoExpression(lastStatement);
@@ -96,7 +96,7 @@ export class ConvertPropertyBindingResult {
  * `convertPropertyBindingBuiltins`.
  */
 export function convertPropertyBinding(
-    localResolver: LocalResolver | null, implicitReceiver: o.Expression,
+    localResolver: LocalResolver|null, implicitReceiver: o.Expression,
     expressionWithoutBuiltins: cdAst.AST, bindingId: string): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
@@ -162,7 +162,9 @@ function convertToStatementIfNeeded(mode: _Mode, expr: o.Expression): o.Expressi
 }
 
 class _BuiltinAstConverter extends cdAst.AstTransformer {
-  constructor(private _converterFactory: BuiltinConverterFactory) { super(); }
+  constructor(private _converterFactory: BuiltinConverterFactory) {
+    super();
+  }
   visitPipe(ast: cdAst.BindingPipe, context: any): any {
     const args = [ast.exp, ...ast.args].map(ast => ast.visit(this, context));
     return new BuiltinFunctionCall(
@@ -257,9 +259,10 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   visitConditional(ast: cdAst.Conditional, mode: _Mode): any {
     const value: o.Expression = this._visit(ast.condition, _Mode.Expression);
     return convertToStatementIfNeeded(
-        mode, value.conditional(
-                  this._visit(ast.trueExp, _Mode.Expression),
-                  this._visit(ast.falseExp, _Mode.Expression)));
+        mode,
+        value.conditional(
+            this._visit(ast.trueExp, _Mode.Expression),
+            this._visit(ast.falseExp, _Mode.Expression)));
   }
 
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
@@ -273,7 +276,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     if (ast instanceof BuiltinFunctionCall) {
       fnResult = ast.converter(convertedArgs);
     } else {
-      fnResult = this._visit(ast.target !, _Mode.Expression).callFn(convertedArgs);
+      fnResult = this._visit(ast.target!, _Mode.Expression).callFn(convertedArgs);
     }
     return convertToStatementIfNeeded(mode, fnResult);
   }
@@ -326,7 +329,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(mode, o.literal(ast.value));
   }
 
-  private _getLocal(name: string): o.Expression|null { return this._localResolver.getLocal(name); }
+  private _getLocal(name: string): o.Expression|null {
+    return this._localResolver.getLocal(name);
+  }
 
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
     const leftMostSafe = this.leftMostSafeNode(ast);
@@ -395,7 +400,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
   }
 
-  visitAll(asts: cdAst.AST[], mode: _Mode): any { return asts.map(ast => this._visit(ast, mode)); }
+  visitAll(asts: cdAst.AST[], mode: _Mode): any {
+    return asts.map(ast => this._visit(ast, mode));
+  }
 
   visitQuote(ast: cdAst.Quote, mode: _Mode): any {
     throw new Error(`Quotes are not supported for evaluation!
@@ -450,7 +457,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // which comes in as leftMostSafe to this routine.
 
     let guardedExpression = this._visit(leftMostSafe.receiver, _Mode.Expression);
-    let temporary: o.ReadVarExpr = undefined !;
+    let temporary: o.ReadVarExpr = undefined!;
     if (this.needsTemporary(leftMostSafe.receiver)) {
       // If the expression has method calls or pipes then we need to save the result into a
       // temporary variable to avoid calling stateful or impure code more than once.
@@ -505,25 +512,63 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return (this._nodeMap.get(ast) || ast).visit(visitor);
     };
     return ast.visit({
-      visitBinary(ast: cdAst.Binary) { return null; },
-      visitChain(ast: cdAst.Chain) { return null; },
-      visitConditional(ast: cdAst.Conditional) { return null; },
-      visitFunctionCall(ast: cdAst.FunctionCall) { return null; },
-      visitImplicitReceiver(ast: cdAst.ImplicitReceiver) { return null; },
-      visitInterpolation(ast: cdAst.Interpolation) { return null; },
-      visitKeyedRead(ast: cdAst.KeyedRead) { return visit(this, ast.obj); },
-      visitKeyedWrite(ast: cdAst.KeyedWrite) { return null; },
-      visitLiteralArray(ast: cdAst.LiteralArray) { return null; },
-      visitLiteralMap(ast: cdAst.LiteralMap) { return null; },
-      visitLiteralPrimitive(ast: cdAst.LiteralPrimitive) { return null; },
-      visitMethodCall(ast: cdAst.MethodCall) { return visit(this, ast.receiver); },
-      visitPipe(ast: cdAst.BindingPipe) { return null; },
-      visitPrefixNot(ast: cdAst.PrefixNot) { return null; },
-      visitNonNullAssert(ast: cdAst.NonNullAssert) { return null; },
-      visitPropertyRead(ast: cdAst.PropertyRead) { return visit(this, ast.receiver); },
-      visitPropertyWrite(ast: cdAst.PropertyWrite) { return null; },
-      visitQuote(ast: cdAst.Quote) { return null; },
-      visitSafeMethodCall(ast: cdAst.SafeMethodCall) { return visit(this, ast.receiver) || ast; },
+      visitBinary(ast: cdAst.Binary) {
+        return null;
+      },
+      visitChain(ast: cdAst.Chain) {
+        return null;
+      },
+      visitConditional(ast: cdAst.Conditional) {
+        return null;
+      },
+      visitFunctionCall(ast: cdAst.FunctionCall) {
+        return null;
+      },
+      visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
+        return null;
+      },
+      visitInterpolation(ast: cdAst.Interpolation) {
+        return null;
+      },
+      visitKeyedRead(ast: cdAst.KeyedRead) {
+        return visit(this, ast.obj);
+      },
+      visitKeyedWrite(ast: cdAst.KeyedWrite) {
+        return null;
+      },
+      visitLiteralArray(ast: cdAst.LiteralArray) {
+        return null;
+      },
+      visitLiteralMap(ast: cdAst.LiteralMap) {
+        return null;
+      },
+      visitLiteralPrimitive(ast: cdAst.LiteralPrimitive) {
+        return null;
+      },
+      visitMethodCall(ast: cdAst.MethodCall) {
+        return visit(this, ast.receiver);
+      },
+      visitPipe(ast: cdAst.BindingPipe) {
+        return null;
+      },
+      visitPrefixNot(ast: cdAst.PrefixNot) {
+        return null;
+      },
+      visitNonNullAssert(ast: cdAst.NonNullAssert) {
+        return null;
+      },
+      visitPropertyRead(ast: cdAst.PropertyRead) {
+        return visit(this, ast.receiver);
+      },
+      visitPropertyWrite(ast: cdAst.PropertyWrite) {
+        return null;
+      },
+      visitQuote(ast: cdAst.Quote) {
+        return null;
+      },
+      visitSafeMethodCall(ast: cdAst.SafeMethodCall) {
+        return visit(this, ast.receiver) || ast;
+      },
       visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
         return visit(this, ast.receiver) || ast;
       }
@@ -541,29 +586,66 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return ast.some(ast => visit(visitor, ast));
     };
     return ast.visit({
-      visitBinary(ast: cdAst.Binary):
-          boolean{return visit(this, ast.left) || visit(this, ast.right);},
-      visitChain(ast: cdAst.Chain) { return false; },
-      visitConditional(ast: cdAst.Conditional):
-          boolean{return visit(this, ast.condition) || visit(this, ast.trueExp) ||
-                      visit(this, ast.falseExp);},
-      visitFunctionCall(ast: cdAst.FunctionCall) { return true; },
-      visitImplicitReceiver(ast: cdAst.ImplicitReceiver) { return false; },
-      visitInterpolation(ast: cdAst.Interpolation) { return visitSome(this, ast.expressions); },
-      visitKeyedRead(ast: cdAst.KeyedRead) { return false; },
-      visitKeyedWrite(ast: cdAst.KeyedWrite) { return false; },
-      visitLiteralArray(ast: cdAst.LiteralArray) { return true; },
-      visitLiteralMap(ast: cdAst.LiteralMap) { return true; },
-      visitLiteralPrimitive(ast: cdAst.LiteralPrimitive) { return false; },
-      visitMethodCall(ast: cdAst.MethodCall) { return true; },
-      visitPipe(ast: cdAst.BindingPipe) { return true; },
-      visitPrefixNot(ast: cdAst.PrefixNot) { return visit(this, ast.expression); },
-      visitNonNullAssert(ast: cdAst.PrefixNot) { return visit(this, ast.expression); },
-      visitPropertyRead(ast: cdAst.PropertyRead) { return false; },
-      visitPropertyWrite(ast: cdAst.PropertyWrite) { return false; },
-      visitQuote(ast: cdAst.Quote) { return false; },
-      visitSafeMethodCall(ast: cdAst.SafeMethodCall) { return true; },
-      visitSafePropertyRead(ast: cdAst.SafePropertyRead) { return false; }
+      visitBinary(ast: cdAst.Binary): boolean {
+        return visit(this, ast.left) || visit(this, ast.right);
+      },
+      visitChain(ast: cdAst.Chain) {
+        return false;
+      },
+      visitConditional(ast: cdAst.Conditional): boolean {
+        return visit(this, ast.condition) || visit(this, ast.trueExp) || visit(this, ast.falseExp);
+      },
+      visitFunctionCall(ast: cdAst.FunctionCall) {
+        return true;
+      },
+      visitImplicitReceiver(ast: cdAst.ImplicitReceiver) {
+        return false;
+      },
+      visitInterpolation(ast: cdAst.Interpolation) {
+        return visitSome(this, ast.expressions);
+      },
+      visitKeyedRead(ast: cdAst.KeyedRead) {
+        return false;
+      },
+      visitKeyedWrite(ast: cdAst.KeyedWrite) {
+        return false;
+      },
+      visitLiteralArray(ast: cdAst.LiteralArray) {
+        return true;
+      },
+      visitLiteralMap(ast: cdAst.LiteralMap) {
+        return true;
+      },
+      visitLiteralPrimitive(ast: cdAst.LiteralPrimitive) {
+        return false;
+      },
+      visitMethodCall(ast: cdAst.MethodCall) {
+        return true;
+      },
+      visitPipe(ast: cdAst.BindingPipe) {
+        return true;
+      },
+      visitPrefixNot(ast: cdAst.PrefixNot) {
+        return visit(this, ast.expression);
+      },
+      visitNonNullAssert(ast: cdAst.PrefixNot) {
+        return visit(this, ast.expression);
+      },
+      visitPropertyRead(ast: cdAst.PropertyRead) {
+        return false;
+      },
+      visitPropertyWrite(ast: cdAst.PropertyWrite) {
+        return false;
+      },
+      visitQuote(ast: cdAst.Quote) {
+        return false;
+      },
+      visitSafeMethodCall(ast: cdAst.SafeMethodCall) {
+        return true;
+      },
+      visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
+        return false;
+      }
     });
   }
 

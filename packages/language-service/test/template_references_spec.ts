@@ -21,7 +21,7 @@ describe('references', () => {
   let service: ts.LanguageService;
   let program: ts.Program;
   let ngHost: TypeScriptServiceHost;
-  let ngService: LanguageService = createLanguageService(undefined !);
+  let ngService: LanguageService = createLanguageService(undefined!);
 
   beforeEach(() => {
     mockHost = new MockTypescriptHost(['/app/main.ts', '/app/parsing-cases.ts'], toh);
@@ -32,11 +32,13 @@ describe('references', () => {
     ngHost.setSite(ngService);
   });
 
-  it('should be able to get template references',
-     () => { expect(() => ngService.getTemplateReferences()).not.toThrow(); });
+  it('should be able to get template references', () => {
+    expect(() => ngService.getTemplateReferences()).not.toThrow();
+  });
 
-  it('should be able to determine that test.ng is a template reference',
-     () => { expect(ngService.getTemplateReferences()).toContain('/app/test.ng'); });
+  it('should be able to determine that test.ng is a template reference', () => {
+    expect(ngService.getTemplateReferences()).toContain('/app/test.ng');
+  });
 
   it('should be able to get template references for an invalid project', () => {
     const moduleCode = `
@@ -52,7 +54,9 @@ describe('references', () => {
     `;
     mockHost.addScript('/app/test.module.ts', moduleCode);
     mockHost.addScript('/app/test.component.ts', classCode);
-    expect(() => { ngService.getTemplateReferences(); }).not.toThrow();
+    expect(() => {
+      ngService.getTemplateReferences();
+    }).not.toThrow();
   });
 
 });

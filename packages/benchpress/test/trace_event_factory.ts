@@ -20,13 +20,21 @@ export class TraceEventFactory {
     return res;
   }
 
-  markStart(name: string, time: number) { return this.create('B', name, time); }
+  markStart(name: string, time: number) {
+    return this.create('B', name, time);
+  }
 
-  markEnd(name: string, time: number) { return this.create('E', name, time); }
+  markEnd(name: string, time: number) {
+    return this.create('E', name, time);
+  }
 
-  start(name: string, time: number, args: any = null) { return this.create('B', name, time, args); }
+  start(name: string, time: number, args: any = null) {
+    return this.create('B', name, time, args);
+  }
 
-  end(name: string, time: number, args: any = null) { return this.create('E', name, time, args); }
+  end(name: string, time: number, args: any = null) {
+    return this.create('E', name, time, args);
+  }
 
   instant(name: string, time: number, args: any = null) {
     return this.create('I', name, time, args);

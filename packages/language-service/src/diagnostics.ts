@@ -59,7 +59,8 @@ export function getDeclarationDiagnostics(
     const report = (message: string, span?: Span) => {
       results.push(<Diagnostic>{
         kind: DiagnosticKind.Error,
-        span: span || declaration.declarationSpan, message
+        span: span || declaration.declarationSpan,
+        message
       });
     };
     for (const error of declaration.errors) {
@@ -68,8 +69,9 @@ export function getDeclarationDiagnostics(
     if (declaration.metadata) {
       if (declaration.metadata.isComponent) {
         if (!modules.ngModuleByPipeOrDirective.has(declaration.type)) {
-          report(
-              `Component '${declaration.type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
+          report(`Component '${
+              declaration
+                  .type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
         }
         if (!declaration.metadata.template !.template &&
             !declaration.metadata.template !.templateUrl) {
@@ -79,13 +81,15 @@ export function getDeclarationDiagnostics(
         if (!directives) {
           directives = new Set();
           modules.ngModules.forEach(module => {
-            module.declaredDirectives.forEach(
-                directive => { directives !.add(directive.reference); });
+            module.declaredDirectives.forEach(directive => {
+              directives!.add(directive.reference);
+            });
           });
         }
         if (!directives.has(declaration.type)) {
-          report(
-              `Directive '${declaration.type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
+          report(`Directive '${
+              declaration
+                  .type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
         }
       }
     }

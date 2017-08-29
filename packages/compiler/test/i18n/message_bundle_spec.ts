@@ -18,7 +18,9 @@ export function main(): void {
     describe('Messages', () => {
       let messages: MessageBundle;
 
-      beforeEach(() => { messages = new MessageBundle(new HtmlParser, [], {}); });
+      beforeEach(() => {
+        messages = new MessageBundle(new HtmlParser, [], {});
+      });
 
       it('should extract the message to the catalog', () => {
         messages.updateFromTemplate(
@@ -48,11 +50,13 @@ class _TestSerializer extends Serializer {
   }
 
   load(content: string, url: string):
-      {locale: string | null, i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
+      {locale: string|null, i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
     return {locale: null, i18nNodesByMsgId: {}};
   }
 
-  digest(msg: i18n.Message): string { return msg.id || `default`; }
+  digest(msg: i18n.Message): string {
+    return msg.id || `default`;
+  }
 }
 
 function humanizeMessages(catalog: MessageBundle): string[] {

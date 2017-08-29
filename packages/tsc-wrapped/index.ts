@@ -7,9 +7,9 @@
  */
 
 export {MetadataWriterHost} from './src/compiler_host';
-export {CodegenExtension, UserError, createBundleIndexHost, main} from './src/main';
-
+export {CodegenExtension, createBundleIndexHost, main, UserError} from './src/main';
 export {default as AngularCompilerOptions} from './src/options';
+
 export * from './src/bundler';
 export * from './src/cli_options';
 export * from './src/collector';

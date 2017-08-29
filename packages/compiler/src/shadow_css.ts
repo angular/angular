@@ -138,13 +138,13 @@ export class ShadowCss {
   constructor() {}
 
   /*
-  * Shim some cssText with the given selector. Returns cssText that can
-  * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
-  *
-  * When strictStyling is true:
-  * - selector is the attribute added to all elements inside the host,
-  * - hostSelector is the attribute added to the host itself.
-  */
+   * Shim some cssText with the given selector. Returns cssText that can
+   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
+   *
+   * When strictStyling is true:
+   * - selector is the attribute added to all elements inside the host,
+   * - hostSelector is the attribute added to the host itself.
+   */
   shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
     const sourceMappingUrl: string = extractSourceMappingUrl(cssText);
     cssText = stripComments(cssText);
@@ -170,11 +170,12 @@ export class ShadowCss {
    *
    * scopeName menu-item {
    *
-  **/
+   **/
   private _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
-    return cssText.replace(
-        _cssContentNextSelectorRe, function(...m: string[]) { return m[2] + '{'; });
+    return cssText.replace(_cssContentNextSelectorRe, function(...m: string[]) {
+      return m[2] + '{';
+    });
   }
 
   /*
@@ -191,7 +192,7 @@ export class ShadowCss {
    *
    * scopeName menu-item {...}
    *
-  **/
+   **/
   private _insertPolyfillRulesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return cssText.replace(_cssContentRuleRe, (...m: string[]) => {
@@ -207,7 +208,7 @@ export class ShadowCss {
    *  and converts this to
    *
    *  scopeName .foo { ... }
-  */
+   */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
     const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
     // replace :host and :host-context -shadowcsshost and -shadowcsshost respectively
@@ -236,7 +237,7 @@ export class ShadowCss {
    *
    * menu-item {...}
    *
-  **/
+   **/
   private _extractUnscopedRulesFromCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     let r = '';
@@ -255,7 +256,7 @@ export class ShadowCss {
    * to
    *
    * .foo<scopeName> > .bar
-  */
+   */
   private _convertColonHost(cssText: string): string {
     return this._convertColonRule(cssText, _cssColonHostRe, this._colonHostPartReplacer);
   }
@@ -274,7 +275,7 @@ export class ShadowCss {
    * to
    *
    * .foo<scopeName> .bar { ... }
-  */
+   */
   private _convertColonHostContext(cssText: string): string {
     return this._convertColonRule(
         cssText, _cssColonHostContextRe, this._colonHostContextPartReplacer);
@@ -313,7 +314,7 @@ export class ShadowCss {
   /*
    * Convert combinators like ::shadow and pseudo-elements like ::content
    * by replacing with space.
-  */
+   */
   private _convertShadowDOMSelectors(cssText: string): string {
     return _shadowDOMSelectorsRe.reduce((result, pattern) => result.replace(pattern, ' '), cssText);
   }
@@ -488,7 +489,9 @@ class SafeSelector {
     return content.replace(/__ph-(\d+)__/g, (ph, index) => this.placeholders[+index]);
   }
 
-  content(): string { return this._content; }
+  content(): string {
+    return this._content;
+  }
 }
 
 const _cssContentNextSelectorRe =

@@ -12,8 +12,7 @@ import {Component, ContentChild, ContentChildren, Directive, HostBinding, HostLi
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 @Directive({selector: 'someDirective'})
-class SomeDirective {
-}
+class SomeDirective {}
 
 @Directive({selector: 'someDirective', inputs: ['c']})
 class SomeDirectiveWithInputs {
@@ -38,7 +37,9 @@ class SomeDirectiveWithSetterProps {
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithGetterOutputs {
   @Output('renamed')
-  get a(): any { return null; }
+  get a(): any {
+    return null;
+  }
 }
 
 @Directive({selector: 'someDirective', host: {'[c]': 'c'}})
@@ -86,8 +87,7 @@ class SomeDirectiveWithViewChild {
   styles: ['some styles'],
   preserveWhitespaces: true
 })
-class ComponentWithTemplate {
-}
+class ComponentWithTemplate {}
 
 @Directive({
   selector: 'someDirective',
@@ -116,7 +116,9 @@ export function main() {
   describe('DirectiveResolver', () => {
     let resolver: DirectiveResolver;
 
-    beforeEach(() => { resolver = new DirectiveResolver(new JitReflector()); });
+    beforeEach(() => {
+      resolver = new DirectiveResolver(new JitReflector());
+    });
 
     it('should read out the Directive metadata', () => {
       const directiveMetadata = resolver.resolve(SomeDirective);
@@ -139,14 +141,12 @@ export function main() {
 
     it('should support inheriting the Directive metadata', function() {
       @Directive({selector: 'p'})
-      class Parent {
-      }
+      class Parent {}
 
       class ChildNoDecorator extends Parent {}
 
       @Directive({selector: 'c'})
-      class ChildWithDecorator extends Parent {
-      }
+      class ChildWithDecorator extends Parent {}
 
       expect(resolver.resolve(ChildNoDecorator)).toEqual(core.createDirective({
         selector: 'p',
@@ -182,8 +182,7 @@ export function main() {
 
       it('should remove duplicate inputs', () => {
         @Directive({selector: 'someDirective', inputs: ['a', 'a']})
-        class SomeDirectiveWithDuplicateInputs {
-        }
+        class SomeDirectiveWithDuplicateInputs {}
 
         const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateInputs);
         expect(directiveMetadata.inputs).toEqual(['a']);
@@ -191,8 +190,7 @@ export function main() {
 
       it('should use the last input if duplicate inputs (with rename)', () => {
         @Directive({selector: 'someDirective', inputs: ['a', 'localA: a']})
-        class SomeDirectiveWithDuplicateInputs {
-        }
+        class SomeDirectiveWithDuplicateInputs {}
 
         const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateInputs);
         expect(directiveMetadata.inputs).toEqual(['localA: a']);
@@ -242,8 +240,7 @@ export function main() {
 
       it('should remove duplicate outputs', () => {
         @Directive({selector: 'someDirective', outputs: ['a', 'a']})
-        class SomeDirectiveWithDuplicateOutputs {
-        }
+        class SomeDirectiveWithDuplicateOutputs {}
 
         const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateOutputs);
         expect(directiveMetadata.outputs).toEqual(['a']);
@@ -251,8 +248,7 @@ export function main() {
 
       it('should use the last output if duplicate outputs (with rename)', () => {
         @Directive({selector: 'someDirective', outputs: ['a', 'localA: a']})
-        class SomeDirectiveWithDuplicateOutputs {
-        }
+        class SomeDirectiveWithDuplicateOutputs {}
 
         const directiveMetadata = resolver.resolve(SomeDirectiveWithDuplicateOutputs);
         expect(directiveMetadata.outputs).toEqual(['localA: a']);

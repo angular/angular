@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, Testability, destroyPlatform} from '@angular/core';
+import {destroyPlatform, NgModule, Testability} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
@@ -29,7 +29,7 @@ export function main() {
 
     it('should handle deferred bootstrap', fakeAsync(() => {
          let applicationRunning = false;
-         let stayedInTheZone: boolean = undefined !;
+         let stayedInTheZone: boolean = undefined!;
          const ng1Module = angular.module('ng1', []).run(() => {
            applicationRunning = true;
            stayedInTheZone = NgZone.isInAngularZone();
@@ -40,7 +40,9 @@ export function main() {
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module);
 
-         setTimeout(() => { (<any>window).angular.resumeBootstrap(); }, 100);
+         setTimeout(() => {
+           (<any>window).angular.resumeBootstrap();
+         }, 100);
 
          expect(applicationRunning).toEqual(false);
          tick(100);
@@ -59,7 +61,9 @@ export function main() {
            let ng2Stable = false;
            let ng1Stable = false;
 
-           angular.getTestability(element).whenStable(() => { ng1Stable = true; });
+           angular.getTestability(element).whenStable(() => {
+             ng1Stable = true;
+           });
 
            setTimeout(() => {
              ng2Stable = true;
@@ -95,7 +99,9 @@ export function main() {
              expect(arg).toEqual('passed argument');
            }, 200, 0, true, 'passed argument');
 
-           ng2Testability.whenStable(() => { ng2Stable = true; });
+           ng2Testability.whenStable(() => {
+             ng2Stable = true;
+           });
 
            tick(100);
 

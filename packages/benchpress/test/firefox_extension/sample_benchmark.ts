@@ -34,7 +34,9 @@ describe('deep tree baseline', function() {
     runner
         .sample({
           id: 'baseline',
-          execute: function() { $('button').click(); },
+          execute: function() {
+            $('button').click();
+          },
           providers: [benchpress.bind(benchpress.Options.SAMPLE_DESCRIPTION).toValue({depth: 9})]
         })
         .then(done, done.fail);

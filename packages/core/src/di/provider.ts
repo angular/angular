@@ -240,8 +240,8 @@ export interface FactoryProvider {
  *
  * @stable
  */
-export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider |
-    ConstructorProvider | FactoryProvider | any[];
+export type StaticProvider =
+    ValueProvider|ExistingProvider|StaticClassProvider|ConstructorProvider|FactoryProvider|any[];
 
 
 /**
@@ -325,4 +325,4 @@ export interface ClassProvider {
  * @stable
  */
 export type Provider =
-    TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];
+    TypeProvider|ValueProvider|ClassProvider|ExistingProvider|FactoryProvider|any[];

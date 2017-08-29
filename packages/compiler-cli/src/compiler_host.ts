@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, StaticSymbol, UrlResolver, createOfflineCompileUrlResolver, syntaxError} from '@angular/compiler';
+import {AotCompilerHost, createOfflineCompileUrlResolver, StaticSymbol, syntaxError, UrlResolver} from '@angular/compiler';
 import {AngularCompilerOptions, CollectorOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -244,8 +244,8 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
       metadataProvider: MetadataProvider = new MetadataCollector(collectorOptions)) {
     super(program, options, context, metadataProvider);
     // normalize the path so that it never ends with '/'.
-    this.basePath = path.normalize(path.join(this.options.basePath !, '.')).replace(/\\/g, '/');
-    this.genDir = path.normalize(path.join(this.options.genDir !, '.')).replace(/\\/g, '/');
+    this.basePath = path.normalize(path.join(this.options.basePath!, '.')).replace(/\\/g, '/');
+    this.genDir = path.normalize(path.join(this.options.genDir!, '.')).replace(/\\/g, '/');
 
     const genPath: string = path.relative(this.basePath, this.genDir);
     this.isGenDirChildOfRootDir = genPath === '' || !genPath.startsWith('..');
@@ -276,11 +276,13 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
     return fileName.replace(EXT, '') + '.d.ts';
   }
 
-  fromSummaryFileName(fileName: string, referringLibFileName: string): string { return fileName; }
+  fromSummaryFileName(fileName: string, referringLibFileName: string): string {
+    return fileName;
+  }
 
   calculateEmitPath(filePath: string): string {
     // Write codegen in a directory structure matching the sources.
-    let root = this.options.basePath !;
+    let root = this.options.basePath!;
     for (const eachRootDir of this.options.rootDirs || []) {
       if (this.options.trace) {
         console.error(`Check if ${filePath} is under rootDirs element ${eachRootDir}`);
@@ -298,11 +300,13 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
       relativePath = relativePath.substr(3);
     }
 
-    return path.join(this.options.genDir !, relativePath);
+    return path.join(this.options.genDir!, relativePath);
   }
 
   // We use absolute paths on disk as canonical.
-  getCanonicalFileName(fileName: string): string { return fileName; }
+  getCanonicalFileName(fileName: string): string {
+    return fileName;
+  }
 
   moduleNameToFileName(m: string, containingFile: string): string|null {
     const key = m + ':' + (containingFile || '');
@@ -414,7 +418,9 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
 export class CompilerHostContextAdapter {
   protected assumedExists: {[fileName: string]: boolean} = {};
 
-  assumeFileExists(fileName: string): void { this.assumedExists[fileName] = true; }
+  assumeFileExists(fileName: string): void {
+    this.assumedExists[fileName] = true;
+  }
 }
 
 export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter implements
@@ -424,7 +430,7 @@ export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter impl
   constructor(private host: ts.ModuleResolutionHost) {
     super();
     if (host.directoryExists) {
-      this.directoryExists = (directoryName: string) => host.directoryExists !(directoryName);
+      this.directoryExists = (directoryName: string) => host.directoryExists!(directoryName);
     }
   }
 
@@ -432,7 +438,9 @@ export class ModuleResolutionHostAdapter extends CompilerHostContextAdapter impl
     return this.assumedExists[fileName] || this.host.fileExists(fileName);
   }
 
-  readFile(fileName: string): string { return this.host.readFile(fileName); }
+  readFile(fileName: string): string {
+    return this.host.readFile(fileName);
+  }
 
   readResource(s: string) {
     if (!this.host.fileExists(s)) {
@@ -457,7 +465,9 @@ export class NodeCompilerHostContext extends CompilerHostContextAdapter implemen
     }
   }
 
-  readFile(fileName: string): string { return fs.readFileSync(fileName, 'utf8'); }
+  readFile(fileName: string): string {
+    return fs.readFileSync(fileName, 'utf8');
+  }
 
   readResource(s: string) {
     if (!this.fileExists(s)) {

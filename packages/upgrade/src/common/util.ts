@@ -34,12 +34,12 @@ export function directiveNormalize(name: string): string {
 
 export function getAttributesAsArray(node: Node): [string, string][] {
   const attributes = node.attributes;
-  let asArray: [string, string][] = undefined !;
+  let asArray: [string, string][] = undefined!;
   if (attributes) {
     let attrLen = attributes.length;
     asArray = new Array(attrLen);
     for (let i = 0; i < attrLen; i++) {
-      asArray[i] = [attributes[i].nodeName, attributes[i].nodeValue !];
+      asArray[i] = [attributes[i].nodeName, attributes[i].nodeValue!];
     }
   }
   return asArray || [];
@@ -91,7 +91,9 @@ function supportsNgModel(component: any) {
  */
 export function hookupNgModel(ngModel: angular.INgModelController, component: any) {
   if (ngModel && supportsNgModel(component)) {
-    ngModel.$render = () => { component.writeValue(ngModel.$viewValue); };
+    ngModel.$render = () => {
+      component.writeValue(ngModel.$viewValue);
+    };
     component.registerOnChange(ngModel.$setViewValue.bind(ngModel));
     if (typeof component.registerOnTouched === 'function') {
       component.registerOnTouched(ngModel.$setTouched.bind(ngModel));

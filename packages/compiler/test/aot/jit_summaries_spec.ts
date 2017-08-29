@@ -8,7 +8,7 @@
 
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, CompileSummaryKind, GeneratedFile, toTypeScript} from '@angular/compiler';
 
-import {MockDirectory, compile, setup} from './test_util';
+import {compile, MockDirectory, setup} from './test_util';
 
 describe('aot summaries for jit', () => {
   let angularFiles = setup();

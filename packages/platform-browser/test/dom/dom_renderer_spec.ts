@@ -113,8 +113,7 @@ export function main() {
   styles: [`.native { color: red; }`],
   encapsulation: ViewEncapsulation.Native
 })
-class CmpEncapsulationNative {
-}
+class CmpEncapsulationNative {}
 
 @Component({
   selector: 'cmp-emulated',
@@ -122,8 +121,7 @@ class CmpEncapsulationNative {
   styles: [`.emulated { color: blue; }`],
   encapsulation: ViewEncapsulation.Emulated
 })
-class CmpEncapsulationEmulated {
-}
+class CmpEncapsulationEmulated {}
 
 @Component({
   selector: 'cmp-none',
@@ -131,8 +129,7 @@ class CmpEncapsulationEmulated {
   styles: [`.none { color: lime; }`],
   encapsulation: ViewEncapsulation.None
 })
-class CmpEncapsulationNone {
-}
+class CmpEncapsulationNone {}
 
 @Component({
   selector: 'some-app',
@@ -142,8 +139,7 @@ class CmpEncapsulationNone {
 	  <cmp-none></cmp-none>
   `,
 })
-export class SomeApp {
-}
+export class SomeApp {}
 
 @Component({selector: 'test-cmp', template: ''})
 class TestCmp {

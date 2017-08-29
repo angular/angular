@@ -16,5 +16,4 @@ import {SimpleFormComp} from './simple_form_example';
   declarations: [SimpleFormComp],
   bootstrap: [SimpleFormComp]
 })
-export class AppModule {
-}
+export class AppModule {}

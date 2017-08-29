@@ -30,7 +30,9 @@ export abstract class Ast {
   abstract visit(ast: AstVisitor, context: any): any;
   public options: AnimationOptions = EMPTY_ANIMATION_OPTIONS;
 
-  get params(): {[name: string]: any}|null { return this.options['params'] || null; }
+  get params(): {[name: string]: any}|null {
+    return this.options['params'] || null;
+  }
 }
 
 export class TriggerAst extends Ast {
@@ -41,13 +43,19 @@ export class TriggerAst extends Ast {
     super();
   }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitTrigger(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitTrigger(this, context);
+  }
 }
 
 export class StateAst extends Ast {
-  constructor(public name: string, public style: StyleAst) { super(); }
+  constructor(public name: string, public style: StyleAst) {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitState(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitState(this, context);
+  }
 }
 
 export class TransitionAst extends Ast {
@@ -59,25 +67,39 @@ export class TransitionAst extends Ast {
     super();
   }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitTransition(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitTransition(this, context);
+  }
 }
 
 export class SequenceAst extends Ast {
-  constructor(public steps: Ast[]) { super(); }
+  constructor(public steps: Ast[]) {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitSequence(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitSequence(this, context);
+  }
 }
 
 export class GroupAst extends Ast {
-  constructor(public steps: Ast[]) { super(); }
+  constructor(public steps: Ast[]) {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitGroup(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitGroup(this, context);
+  }
 }
 
 export class AnimateAst extends Ast {
-  constructor(public timings: TimingAst, public style: StyleAst|KeyframesAst) { super(); }
+  constructor(public timings: TimingAst, public style: StyleAst|KeyframesAst) {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitAnimate(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitAnimate(this, context);
+  }
 }
 
 export class StyleAst extends Ast {
@@ -90,31 +112,49 @@ export class StyleAst extends Ast {
     super();
   }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitStyle(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitStyle(this, context);
+  }
 }
 
 export class KeyframesAst extends Ast {
-  constructor(public styles: StyleAst[]) { super(); }
+  constructor(public styles: StyleAst[]) {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitKeyframes(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitKeyframes(this, context);
+  }
 }
 
 export class ReferenceAst extends Ast {
-  constructor(public animation: Ast) { super(); }
+  constructor(public animation: Ast) {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitReference(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitReference(this, context);
+  }
 }
 
 export class AnimateChildAst extends Ast {
-  constructor() { super(); }
+  constructor() {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitAnimateChild(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitAnimateChild(this, context);
+  }
 }
 
 export class AnimateRefAst extends Ast {
-  constructor(public animation: ReferenceAst) { super(); }
+  constructor(public animation: ReferenceAst) {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitAnimateRef(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitAnimateRef(this, context);
+  }
 }
 
 export class QueryAst extends Ast {
@@ -126,13 +166,19 @@ export class QueryAst extends Ast {
     super();
   }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitQuery(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitQuery(this, context);
+  }
 }
 
 export class StaggerAst extends Ast {
-  constructor(public timings: AnimateTimings, public animation: Ast) { super(); }
+  constructor(public timings: AnimateTimings, public animation: Ast) {
+    super();
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitStagger(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitStagger(this, context);
+  }
 }
 
 export class TimingAst extends Ast {
@@ -141,11 +187,17 @@ export class TimingAst extends Ast {
     super();
   }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitTiming(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitTiming(this, context);
+  }
 }
 
 export class DynamicTimingAst extends TimingAst {
-  constructor(public value: string) { super(0, 0, ''); }
+  constructor(public value: string) {
+    super(0, 0, '');
+  }
 
-  visit(visitor: AstVisitor, context: any): any { return visitor.visitTiming(this, context); }
+  visit(visitor: AstVisitor, context: any): any {
+    return visitor.visitTiming(this, context);
+  }
 }

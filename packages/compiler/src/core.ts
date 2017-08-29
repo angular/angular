@@ -34,14 +34,17 @@ export const createContentChildren = makeMetadataFactory<Query>(
     (selector?: any, data: any = {}) =>
         ({selector, first: false, isViewQuery: false, descendants: false, ...data}));
 export const createContentChild = makeMetadataFactory<Query>(
-    'ContentChild', (selector?: any, data: any = {}) =>
-                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}));
+    'ContentChild',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: true, isViewQuery: false, descendants: true, ...data}));
 export const createViewChildren = makeMetadataFactory<Query>(
-    'ViewChildren', (selector?: any, data: any = {}) =>
-                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}));
+    'ViewChildren',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: false, isViewQuery: true, descendants: true, ...data}));
 export const createViewChild = makeMetadataFactory<Query>(
-    'ViewChild', (selector: any, data: any) =>
-                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}));
+    'ViewChild',
+    (selector: any, data: any) =>
+        ({selector, first: true, isViewQuery: true, descendants: true, ...data}));
 
 export interface Directive {
   selector?: string;
@@ -142,7 +145,7 @@ export const createSelf = makeMetadataFactory('Self');
 export const createSkipSelf = makeMetadataFactory('SkipSelf');
 export const createHost = makeMetadataFactory('Host');
 
-export interface Type extends Function { new (...args: any[]): any; }
+export interface Type extends Function { new(...args: any[]): any; }
 export const Type = Function;
 
 export enum SecurityContext {
@@ -206,7 +209,10 @@ export const enum DepFlags {
   Value = 2 << 2,
 }
 
-export const enum ArgumentType {Inline = 0, Dynamic = 1}
+export const enum ArgumentType {
+  Inline = 0,
+  Dynamic = 1
+}
 
 export const enum BindingFlags {
   TypeElementAttribute = 1 << 0,
@@ -221,7 +227,10 @@ export const enum BindingFlags {
   Types = TypeElementAttribute | TypeElementClass | TypeElementStyle | TypeProperty
 }
 
-export const enum QueryBindingType {First = 0, All = 1}
+export const enum QueryBindingType {
+  First = 0,
+  All = 1
+}
 
 export const enum QueryValueType {
   ElementRef = 0,

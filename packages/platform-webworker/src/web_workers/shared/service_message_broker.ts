@@ -83,7 +83,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
 
   private _handleMessage(message: ReceivedMessage): void {
     if (this._methods.has(message.method)) {
-      this._methods.get(message.method) !(message);
+      this._methods.get(message.method)!(message);
     }
   }
 

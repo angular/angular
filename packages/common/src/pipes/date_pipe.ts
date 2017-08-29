@@ -155,14 +155,13 @@ export class DatePipe implements PipeTransform {
       date = new Date(parseFloat(value));
     } else if (typeof value === 'string' && /^(\d{4}-\d{1,2}-\d{1,2})$/.test(value)) {
       /**
-      * For ISO Strings without time the day, month and year must be extracted from the ISO String
-      * before Date creation to avoid time offset and errors in the new Date.
-      * If we only replace '-' with ',' in the ISO String ("2015,01,01"), and try to create a new
-      * date, some browsers (e.g. IE 9) will throw an invalid Date error
-      * If we leave the '-' ("2015-01-01") and try to create a new Date("2015-01-01") the timeoffset
-      * is applied
-      * Note: ISO months are 0 for January, 1 for February, ...
-      */
+       * For ISO Strings without time the day, month and year must be extracted from the ISO String
+       * before Date creation to avoid time offset and errors in the new Date.
+       * If we only replace '-' with ',' in the ISO String ("2015,01,01"), and try to create a new
+       * date, some browsers (e.g. IE 9) will throw an invalid Date error
+       * If we leave the '-' ("2015-01-01") and try to create a new Date("2015-01-01") the
+       * timeoffset is applied Note: ISO months are 0 for January, 1 for February, ...
+       */
       const [y, m, d] = value.split('-').map((val: string) => +val);
       date = new Date(y, m - 1, d);
     } else {

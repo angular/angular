@@ -12,7 +12,7 @@
  * This API should be stable for NG 2. It can be removed in NG 4..., but should be replaced by
  * something else.
  */
-import {AotCompilerHost, StaticReflector, StaticSymbol, core} from '@angular/compiler';
+import {AotCompilerHost, core, StaticReflector, StaticSymbol} from '@angular/compiler';
 
 
 // We cannot depend directly to @angular/router.
@@ -54,7 +54,7 @@ export function listLazyRoutesOfModule(
   const entryRouteDef = RouteDef.fromString(entryModule);
   const containingFile = _resolveModule(entryRouteDef.path, entryRouteDef.path, host);
   const modulePath = `./${containingFile.replace(/^(.*)\//, '')}`;
-  const className = entryRouteDef.className !;
+  const className = entryRouteDef.className!;
 
   // List loadChildren of this single module.
   const appStaticSymbol = reflector.findDeclaration(modulePath, className, containingFile);
@@ -119,7 +119,7 @@ function _assertRoute(map: LazyRouteMap, route: LazyRoute) {
 }
 
 export function flatten<T>(list: Array<T|T[]>): T[] {
-  return list.reduce((flat: any[], item: T | T[]): T[] => {
+  return list.reduce((flat: any[], item: T|T[]): T[] => {
     const flatItem = Array.isArray(item) ? flatten(item) : item;
     return (<T[]>flat).concat(flatItem);
   }, []);

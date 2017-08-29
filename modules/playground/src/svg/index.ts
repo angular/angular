@@ -11,8 +11,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({selector: '[svg-group]', template: `<svg:text x="20" y="20">Hello</svg:text>`})
-class SvgGroup {
-}
+class SvgGroup {}
 
 @Component({
   selector: 'svg-app',
@@ -20,12 +19,10 @@ class SvgGroup {
     <g svg-group></g>
   </svg>`
 })
-class SvgApp {
-}
+class SvgApp {}
 
 @NgModule({bootstrap: [SvgApp], declarations: [SvgApp, SvgGroup], imports: [BrowserModule]})
-class ExampleModule {
-}
+class ExampleModule {}
 
 export function main() {
   platformBrowserDynamic().bootstrapModule(ExampleModule);

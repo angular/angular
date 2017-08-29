@@ -18,5 +18,4 @@ import {FlatComponent} from './flat.component';
     FlatComponent,
   ]
 })
-export class FlatModule {
-}
+export class FlatModule {}

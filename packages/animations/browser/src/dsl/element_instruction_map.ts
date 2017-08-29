@@ -28,7 +28,11 @@ export class ElementInstructionMap {
     existingInstructions.push(...instructions);
   }
 
-  has(element: any): boolean { return this._map.has(element); }
+  has(element: any): boolean {
+    return this._map.has(element);
+  }
 
-  clear() { this._map.clear(); }
+  clear() {
+    this._map.clear();
+  }
 }

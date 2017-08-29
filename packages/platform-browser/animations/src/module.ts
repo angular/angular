@@ -17,8 +17,7 @@ import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from '.
   exports: [BrowserModule],
   providers: BROWSER_ANIMATIONS_PROVIDERS,
 })
-export class BrowserAnimationsModule {
-}
+export class BrowserAnimationsModule {}
 
 /**
  * @experimental Animation support is experimental.
@@ -27,5 +26,4 @@ export class BrowserAnimationsModule {
   exports: [BrowserModule],
   providers: BROWSER_NOOP_ANIMATIONS_PROVIDERS,
 })
-export class NoopAnimationsModule {
-}
+export class NoopAnimationsModule {}

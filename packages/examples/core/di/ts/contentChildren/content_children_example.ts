@@ -10,9 +10,7 @@
 import {Component, ContentChildren, Directive, Input, QueryList} from '@angular/core';
 
 @Directive({selector: 'pane'})
-export class Pane {
-  @Input() id: string;
-}
+export class Pane { @Input() id: string; }
 
 @Component({
   selector: 'tab',
@@ -53,6 +51,8 @@ export class Tab {
 export class ContentChildrenComp {
   shouldShow = false;
 
-  show() { this.shouldShow = true; }
+  show() {
+    this.shouldShow = true;
+  }
 }
 // #enddocregion

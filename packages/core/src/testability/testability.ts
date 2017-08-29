@@ -43,7 +43,9 @@ export class Testability implements PublicTestability {
   _didWork: boolean = false;
   /** @internal */
   _callbacks: Function[] = [];
-  constructor(private _ngZone: NgZone) { this._watchAngularEvents(); }
+  constructor(private _ngZone: NgZone) {
+    this._watchAngularEvents();
+  }
 
   /** @internal */
   _watchAngularEvents(): void {
@@ -92,7 +94,7 @@ export class Testability implements PublicTestability {
       // Schedules the call backs in a new frame so that it is always async.
       scheduleMicroTask(() => {
         while (this._callbacks.length !== 0) {
-          (this._callbacks.pop() !)(this._didWork);
+          (this._callbacks.pop()!)(this._didWork);
         }
         this._didWork = false;
       });
@@ -107,7 +109,9 @@ export class Testability implements PublicTestability {
     this._runCallbacksIfReady();
   }
 
-  getPendingRequestCount(): number { return this._pendingCount; }
+  getPendingRequestCount(): number {
+    return this._pendingCount;
+  }
 
   findProviders(using: any, provider: string, exactMatch: boolean): any[] {
     // TODO(juliemr): implement.
@@ -124,17 +128,25 @@ export class TestabilityRegistry {
   /** @internal */
   _applications = new Map<any, Testability>();
 
-  constructor() { _testabilityGetter.addToWindow(this); }
+  constructor() {
+    _testabilityGetter.addToWindow(this);
+  }
 
   registerApplication(token: any, testability: Testability) {
     this._applications.set(token, testability);
   }
 
-  getTestability(elem: any): Testability|null { return this._applications.get(elem) || null; }
+  getTestability(elem: any): Testability|null {
+    return this._applications.get(elem) || null;
+  }
 
-  getAllTestabilities(): Testability[] { return Array.from(this._applications.values()); }
+  getAllTestabilities(): Testability[] {
+    return Array.from(this._applications.values());
+  }
 
-  getAllRootElements(): any[] { return Array.from(this._applications.keys()); }
+  getAllRootElements(): any[] {
+    return Array.from(this._applications.keys());
+  }
 
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability|null {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);

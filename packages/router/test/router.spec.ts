@@ -7,24 +7,26 @@
  */
 
 import {Location} from '@angular/common';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {ResolveData} from '../src/config';
 import {PreActivation} from '../src/pre_activation';
 import {Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
+import {ActivatedRouteSnapshot, createEmptyStateSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 import {RouterTestingModule} from '../testing/src/router_testing_module';
 
-import {Logger, createActivatedRouteSnapshot, provideTokenLogger} from './helpers';
+import {createActivatedRouteSnapshot, Logger, provideTokenLogger} from './helpers';
 
 describe('Router', () => {
   describe('resetRootComponentType', () => {
     class NewRootComponent {}
 
-    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [RouterTestingModule]});
+    });
 
     it('should not change root route when updating the root component', () => {
       const r: Router = TestBed.get(Router);
@@ -37,7 +39,9 @@ describe('Router', () => {
   });
 
   describe('setUpLocationChangeListener', () => {
-    beforeEach(() => { TestBed.configureTestingModule({imports: [RouterTestingModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [RouterTestingModule]});
+    });
 
     it('should be idempotent', inject([Router, Location], (r: Router, location: Location) => {
          r.setUpLocationChangeListener();
@@ -86,7 +90,7 @@ describe('Router', () => {
     });
 
     beforeEach(inject([Logger], (_logger: Logger) => {
-      empty = createEmptyStateSnapshot(serializer.parse('/'), null !);
+      empty = createEmptyStateSnapshot(serializer.parse('/'), null!);
       logger = _logger;
     }));
 
@@ -297,7 +301,7 @@ describe('Router', () => {
         const s = new RouterStateSnapshot('url', new TreeNode(empty.root, [new TreeNode(n, [])]));
 
         checkResolveData(s, empty, inj, () => {
-          expect(s.root.firstChild !.data).toEqual({data: 'resolver_value'});
+          expect(s.root.firstChild!.data).toEqual({data: 'resolver_value'});
         });
       });
 
@@ -312,7 +316,7 @@ describe('Router', () => {
         const parentResolve = {data: 'resolver'};
         const childResolve = {};
 
-        const parent = createActivatedRouteSnapshot({component: null !, resolve: parentResolve});
+        const parent = createActivatedRouteSnapshot({component: null!, resolve: parentResolve});
         const child = createActivatedRouteSnapshot({component: 'b', resolve: childResolve});
 
         const s = new RouterStateSnapshot(
@@ -321,7 +325,7 @@ describe('Router', () => {
         const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
 
         checkResolveData(s, empty, inj, () => {
-          expect(s.root.firstChild !.firstChild !.data).toEqual({data: 'resolver_value'});
+          expect(s.root.firstChild!.firstChild!.data).toEqual({data: 'resolver_value'});
         });
       });
 
@@ -345,8 +349,8 @@ describe('Router', () => {
         const s2 = new RouterStateSnapshot(
             'url', new TreeNode(empty.root, [new TreeNode(n21, [new TreeNode(n22, [])])]));
         checkResolveData(s2, s1, inj, () => {
-          expect(s2.root.firstChild !.data).toEqual({data: 'resolver1_value'});
-          expect(s2.root.firstChild !.firstChild !.data).toEqual({data: 'resolver2_value'});
+          expect(s2.root.firstChild!.data).toEqual({data: 'resolver1_value'});
+          expect(s2.root.firstChild!.firstChild!.data).toEqual({data: 'resolver2_value'});
         });
       });
     });
@@ -357,7 +361,9 @@ function checkResolveData(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any, check: any): void {
   const p = new PreActivation(future, curr, injector);
   p.initalize(new ChildrenOutletContexts());
-  p.resolveData().subscribe(check, (e) => { throw e; });
+  p.resolveData().subscribe(check, (e) => {
+    throw e;
+  });
 }
 
 function checkGuards(
@@ -365,5 +371,7 @@ function checkGuards(
     check: (result: boolean) => void): void {
   const p = new PreActivation(future, curr, injector);
   p.initalize(new ChildrenOutletContexts());
-  p.checkGuards().subscribe(check, (e) => { throw e; });
+  p.checkGuards().subscribe(check, (e) => {
+    throw e;
+  });
 }

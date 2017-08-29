@@ -15,9 +15,13 @@ import {Directory, Entry, MockAotContext, MockCompilerHost} from '../mocks';
 const dummyModule = 'export let foo: any[];';
 
 describe('NgCompilerHost', () => {
-  function createHost(
-      {files = {}, options = {basePath: '/tmp'}}: {files?: Directory,
-                                                   options?: CompilerOptions} = {}) {
+  function createHost({
+    files = {},
+    options =
+    {
+      basePath: '/tmp'
+    }
+  }: {files?: Directory, options?: CompilerOptions} = {}) {
     const context = new MockAotContext('/tmp/', files);
     const tsHost = new MockCompilerHost(context);
     return createCompilerHost({tsHost, options});
@@ -25,7 +29,9 @@ describe('NgCompilerHost', () => {
 
   describe('fileNameToModuleName', () => {
     let ngHost: CompilerHost;
-    beforeEach(() => { ngHost = createHost(); });
+    beforeEach(() => {
+      ngHost = createHost();
+    });
 
     it('should use a package import when accessing a package from a source file', () => {
       expect(ngHost.fileNameToModuleName('/tmp/node_modules/@angular/core.d.ts', '/tmp/main.ts'))

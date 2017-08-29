@@ -31,7 +31,7 @@ function getSourcePositionForStack(stack: string): {source: string, line: number
   const htmlLocations = stack
                             .split('\n')
                             // e.g. at View_MyComp_0 (...html:153:40)
-                            .map(line => /\((.*\.html):(\d+):(\d+)/.exec(line) !)
+                            .map(line => /\((.*\.html):(\d+):(\d+)/.exec(line)!)
                             .filter(match => !!match)
                             .map(match => ({
                                    source: match[1],

@@ -10,9 +10,7 @@ import {Component, Directive, ElementRef, Injectable, Renderer} from '@angular/c
 
 // A service available to the Injector, used by the HelloCmp component.
 @Injectable()
-export class GreetingService {
-  greeting: string = 'hello';
-}
+export class GreetingService { greeting: string = 'hello'; }
 
 // Directives are light-weight. They don't allow new
 // expression contexts (use @Component for those needs).
@@ -49,9 +47,15 @@ export class HelloCmp {
   greeting: string;
   lastKey: string = '(none)';
 
-  constructor(service: GreetingService) { this.greeting = service.greeting; }
+  constructor(service: GreetingService) {
+    this.greeting = service.greeting;
+  }
 
-  changeGreeting(): void { this.greeting = 'howdy'; }
+  changeGreeting(): void {
+    this.greeting = 'howdy';
+  }
 
-  onKeyDown(event: KeyboardEvent): void { this.lastKey = String.fromCharCode(event.keyCode); }
+  onKeyDown(event: KeyboardEvent): void {
+    this.lastKey = String.fromCharCode(event.keyCode);
+  }
 }

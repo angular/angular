@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, VariableAst, findNode, identifierName, templateVisitAll, tokenReference} from '@angular/compiler';
+import {AST, AstPath, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CompileDirectiveSummary, CompileTypeMetadata, DirectiveAst, ElementAst, EmbeddedTemplateAst, findNode, identifierName, Node, ParseSourceSpan, RecursiveTemplateAstVisitor, ReferenceAst, TemplateAst, TemplateAstPath, templateVisitAll, tokenReference, VariableAst} from '@angular/compiler';
 
 import {AstType, DiagnosticKind, ExpressionDiagnosticsContext, TypeDiagnostic} from './expression_type';
 import {BuiltinType, Definition, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
@@ -29,8 +29,9 @@ export interface ExpressionDiagnostic {
 export function getTemplateExpressionDiagnostics(info: DiagnosticTemplateInfo):
     ExpressionDiagnostic[] {
   const visitor = new ExpressionDiagnosticsVisitor(
-      info, (path: TemplateAstPath, includeEvent: boolean) =>
-                getExpressionScope(info, path, includeEvent));
+      info,
+      (path: TemplateAstPath, includeEvent: boolean) =>
+          getExpressionScope(info, path, includeEvent));
   templateVisitAll(visitor, info.templateAst);
   return visitor.diagnostics;
 }
@@ -56,7 +57,9 @@ function getReferences(info: DiagnosticTemplateInfo): SymbolDeclaration[] {
         name: reference.name,
         kind: 'reference',
         type: type || info.query.getBuiltinType(BuiltinType.Any),
-        get definition() { return getDefinitionOf(info, reference); }
+        get definition() {
+          return getDefinitionOf(info, reference);
+        }
       });
     }
   }
@@ -110,7 +113,7 @@ function getVarDeclarations(
         if (context) {
           const value = context.get(variable.value);
           if (value) {
-            type = value.type !;
+            type = value.type!;
             let kind = info.query.getTypeKind(type);
             if (kind === BuiltinType.Any || kind == BuiltinType.Unbound) {
               // The any type is not very useful here. For special cases, such as ngFor, we can do
@@ -124,7 +127,11 @@ function getVarDeclarations(
         }
         result.push({
           name,
-          kind: 'variable', type, get definition() { return getDefinitionOf(info, variable); }
+          kind: 'variable',
+          type,
+          get definition() {
+            return getDefinitionOf(info, variable);
+          }
         });
       }
     }
@@ -230,7 +237,7 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
   visitVariable(ast: VariableAst): void {
     const directive = this.directiveSummary;
     if (directive && ast.value) {
-      const context = this.info.query.getTemplateContext(directive.type.reference) !;
+      const context = this.info.query.getTemplateContext(directive.type.reference)!;
       if (context && !context.has(ast.value)) {
         if (ast.value === '$implicit') {
           this.reportError(
@@ -257,7 +264,7 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
 
     // Find directive that refernces this template
     this.directiveSummary =
-        ast.directives.map(d => d.directive).find(d => hasTemplateReference(d.type)) !;
+        ast.directives.map(d => d.directive).find(d => hasTemplateReference(d.type))!;
 
     // Process children
     super.visitEmbeddedTemplate(ast, context);
@@ -288,9 +295,13 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
                                  })));
   }
 
-  private push(ast: TemplateAst) { this.path.push(ast); }
+  private push(ast: TemplateAst) {
+    this.path.push(ast);
+  }
 
-  private pop() { this.path.pop(); }
+  private pop() {
+    this.path.pop();
+  }
 
   private reportError(message: string, span: Span|undefined) {
     if (span) {
@@ -309,7 +320,7 @@ function hasTemplateReference(type: CompileTypeMetadata): boolean {
   if (type.diDeps) {
     for (let diDep of type.diDeps) {
       if (diDep.token && diDep.token.identifier &&
-          identifierName(diDep.token !.identifier !) == 'TemplateRef')
+          identifierName(diDep.token!.identifier!) == 'TemplateRef')
         return true;
     }
   }

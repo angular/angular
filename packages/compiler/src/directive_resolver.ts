@@ -7,7 +7,7 @@
  */
 
 import {CompileReflector} from './compile_reflector';
-import {Component, Directive, Type, createComponent, createContentChild, createContentChildren, createDirective, createHostBinding, createHostListener, createInput, createOutput, createViewChild, createViewChildren} from './core';
+import {Component, createComponent, createContentChild, createContentChildren, createDirective, createHostBinding, createHostListener, createInput, createOutput, createViewChild, createViewChildren, Directive, Type} from './core';
 import {resolveForwardRef, splitAtColon, stringify} from './util';
 
 const QUERY_METADATA_IDENTIFIERS = [
@@ -108,7 +108,9 @@ export class DirectiveResolver {
     return this._merge(dm, inputs, outputs, host, queries, directiveType);
   }
 
-  private _extractPublicName(def: string) { return splitAtColon(def, [null !, def])[1].trim(); }
+  private _extractPublicName(def: string) {
+    return splitAtColon(def, [null!, def])[1].trim();
+  }
 
   private _dedupeBindings(bindings: string[]): string[] {
     const names = new Set<string>();

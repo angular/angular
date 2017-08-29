@@ -8,13 +8,13 @@
 
 import {CommonModule, Location} from '@angular/common';
 import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteEvent, RouteReuseStrategy, Router, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ParamMap, Params, PreloadAllModules, PreloadingStrategy, PRIMARY_OUTLET, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteEvent, Router, RouteReuseStrategy, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
+import {of} from 'rxjs/observable/of';
 import {Observer} from 'rxjs/Observer';
-import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 
 import {forEach} from '../src/utils/collection';
@@ -88,18 +88,24 @@ describe('Integration', () => {
       @Component({template: '<router-outlet></router-outlet>'})
       class Parent {
         constructor(route: ActivatedRoute) {
-          route.params.subscribe((s: any) => { log.push(s); });
+          route.params.subscribe((s: any) => {
+            log.push(s);
+          });
         }
       }
 
       @Component({template: 'child1'})
       class Child1 {
-        ngOnDestroy() { log.push('child1 destroy'); }
+        ngOnDestroy() {
+          log.push('child1 destroy');
+        }
       }
 
       @Component({template: 'child2'})
       class Child2 {
-        constructor() { log.push('child2 constructor'); }
+        constructor() {
+          log.push('child2 constructor');
+        }
       }
 
       @NgModule({
@@ -107,8 +113,7 @@ describe('Integration', () => {
         entryComponents: [Parent, Child1, Child2],
         imports: [RouterModule]
       })
-      class TestModule {
-      }
+      class TestModule {}
 
       beforeEach(() => {
         log = [];
@@ -188,20 +193,17 @@ describe('Integration', () => {
          template: `<router-outlet></router-outlet>`,
          changeDetection: ChangeDetectionStrategy.OnPush,
        })
-       class OnPushOutlet {
-       }
+       class OnPushOutlet {}
 
        @Component({selector: 'need-cd', template: `{{'it works!'}}`})
-       class NeedCdCmp {
-       }
+       class NeedCdCmp {}
 
        @NgModule({
          declarations: [OnPushOutlet, NeedCdCmp],
          entryComponents: [OnPushOutlet, NeedCdCmp],
          imports: [RouterModule],
        })
-       class TestModule {
-       }
+       class TestModule {}
 
        TestBed.configureTestingModule({imports: [TestModule]});
 
@@ -301,12 +303,13 @@ describe('Integration', () => {
        @Component({template: `record`})
        class RecordLocationCmp {
          private storedPath: string;
-         constructor(loc: Location) { this.storedPath = loc.path(); }
+         constructor(loc: Location) {
+           this.storedPath = loc.path();
+         }
        }
 
        @NgModule({declarations: [RecordLocationCmp], entryComponents: [RecordLocationCmp]})
-       class TestModule {
-       }
+       class TestModule {}
 
        TestBed.configureTestingModule({imports: [TestModule]});
 
@@ -694,8 +697,8 @@ describe('Integration', () => {
        const user = fixture.debugElement.children[1].componentInstance;
 
        let r1: any, r2: any;
-       router.navigateByUrl('/user/victor') !.then(_ => r1 = _);
-       router.navigateByUrl('/user/fedor') !.then(_ => r2 = _);
+       router.navigateByUrl('/user/victor')!.then(_ => r1 = _);
+       router.navigateByUrl('/user/fedor')!.then(_ => r2 = _);
        advance(fixture);
 
        expect(r1).toEqual(false);  // returns false because it was canceled
@@ -727,7 +730,7 @@ describe('Integration', () => {
        router.events.forEach(e => recordedEvents.push(e));
 
        let e: any;
-       router.navigateByUrl('/invalid') !.catch(_ => e = _);
+       router.navigateByUrl('/invalid')!.catch(_ => e = _);
        advance(fixture);
        expect(e.message).toContain('Cannot match any routes');
 
@@ -756,7 +759,7 @@ describe('Integration', () => {
        router.events.forEach(e => recordedEvents.push(e));
 
        let e: any;
-       router.navigateByUrl('/invalid') !.then(_ => e = _);
+       router.navigateByUrl('/invalid')!.then(_ => e = _);
        advance(fixture);
        expect(e).toEqual('resolvedValue');
 
@@ -873,9 +876,13 @@ describe('Integration', () => {
          activations: any[] = [];
          deactivations: any[] = [];
 
-         recordActivate(component: any): void { this.activations.push(component); }
+         recordActivate(component: any): void {
+           this.activations.push(component);
+         }
 
-         recordDeactivate(component: any): void { this.deactivations.push(component); }
+         recordDeactivate(component: any): void {
+           this.deactivations.push(component);
+         }
        }
 
        TestBed.configureTestingModule({declarations: [Container]});
@@ -924,7 +931,9 @@ describe('Integration', () => {
 
   describe('data', () => {
     class ResolveSix implements Resolve<number> {
-      resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number { return 6; }
+      resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): number {
+        return 6;
+      }
     }
 
     beforeEach(() => {
@@ -989,7 +998,7 @@ describe('Integration', () => {
          router.events.subscribe(e => e instanceof RouteEvent || recordedEvents.push(e));
 
          let e: any = null;
-         router.navigateByUrl('/simple') !.catch(error => e = error);
+         router.navigateByUrl('/simple')!.catch(error => e = error);
          advance(fixture);
 
          expectEvents(recordedEvents, [
@@ -1067,7 +1076,7 @@ describe('Integration', () => {
             {
               provide: 'resolver2',
               useValue: () => {
-                return map.call(of (null), () => {
+                return map.call(of(null), () => {
                   log.push('resolver2');
                   observer.next(null);
                   observer.complete();
@@ -1159,8 +1168,7 @@ describe('Integration', () => {
            selector: 'someRoot',
            template: `<router-outlet></router-outlet><a routerLink="/home">Link</a>`
          })
-         class RootCmpWithLink {
-         }
+         class RootCmpWithLink {}
 
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
          const router: Router = TestBed.get(Router);
@@ -1182,8 +1190,7 @@ describe('Integration', () => {
            template:
                `<router-outlet></router-outlet><a [routerLink]="null">Link</a><button [routerLink]="null">Button</button>`
          })
-         class CmpWithLink {
-         }
+         class CmpWithLink {}
 
          TestBed.configureTestingModule({declarations: [CmpWithLink]});
          const router: Router = TestBed.get(Router);
@@ -1203,8 +1210,7 @@ describe('Integration', () => {
            template:
                `<router-outlet></router-outlet><a routerLink="/home" preserveQueryParams preserveFragment>Link</a>`
          })
-         class RootCmpWithLink {
-         }
+         class RootCmpWithLink {}
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
          const router: Router = TestBed.get(Router);
          const fixture = createRoot(router, RootCmpWithLink);
@@ -1233,8 +1239,7 @@ describe('Integration', () => {
            template:
                `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="preserve">Link</a>`
          })
-         class RootCmpWithLink {
-         }
+         class RootCmpWithLink {}
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
          const router: Router = TestBed.get(Router);
          const fixture = createRoot(router, RootCmpWithLink);
@@ -1255,8 +1260,7 @@ describe('Integration', () => {
            template:
                `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="merge">Link</a>`
          })
-         class RootCmpWithLink {
-         }
+         class RootCmpWithLink {}
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
          const router: Router = TestBed.get(Router);
          const fixture = createRoot(router, RootCmpWithLink);
@@ -1525,7 +1529,9 @@ describe('Integration', () => {
           }
         }
 
-        beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
+        beforeEach(() => {
+          TestBed.configureTestingModule({providers: [AlwaysTrue]});
+        });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
@@ -1546,7 +1552,9 @@ describe('Integration', () => {
             providers: [{
               provide: 'CanActivate',
               useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return Observable.create((observer: any) => { observer.next(false); });
+                return Observable.create((observer: any) => {
+                  observer.next(false);
+                });
               }
             }]
           });
@@ -1603,7 +1611,9 @@ describe('Integration', () => {
           TestBed.configureTestingModule({
             providers: [{
               provide: 'alwaysFalse',
-              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return false; }
+              useValue: (a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return false;
+              }
             }]
           });
         });
@@ -1873,14 +1883,15 @@ describe('Integration', () => {
             {
               provide: 'RecordingDeactivate',
               useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                log.push({path: a.routeConfig !.path, component: c});
+                log.push({path: a.routeConfig!.path, component: c});
                 return true;
               }
             },
             {
               provide: 'alwaysFalse',
-              useValue:
-                  (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => { return false; }
+              useValue: (c: any, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
+                return false;
+              }
             },
             {
               provide: 'alwaysFalseAndLogging',
@@ -1922,13 +1933,13 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/team/22');
 
              let successStatus: boolean = false;
-             router.navigateByUrl('/team/33') !.then(res => successStatus = res);
+             router.navigateByUrl('/team/33')!.then(res => successStatus = res);
              advance(fixture);
              expect(location.path()).toEqual('/team/33');
              expect(successStatus).toEqual(true);
 
              let canceledStatus: boolean = false;
-             router.navigateByUrl('/team/44') !.then(res => canceledStatus = res);
+             router.navigateByUrl('/team/44')!.then(res => canceledStatus = res);
              advance(fixture);
              expect(location.path()).toEqual('/team/33');
              expect(canceledStatus).toEqual(false);
@@ -2130,11 +2141,12 @@ describe('Integration', () => {
             providers: [
               ClassWithNextState, {
                 provide: 'FunctionWithNextState',
-                useValue: (cmp: any, currentRoute: ActivatedRouteSnapshot,
-                           currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => {
-                  log.push(currentState.url, nextState.url);
-                  return true;
-                }
+                useValue:
+                    (cmp: any, currentRoute: ActivatedRouteSnapshot,
+                     currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => {
+                      log.push(currentState.url, nextState.url);
+                      return true;
+                    }
               }
             ]
           });
@@ -2185,7 +2197,9 @@ describe('Integration', () => {
           }
         }
 
-        beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
+        beforeEach(() => {
+          TestBed.configureTestingModule({providers: [AlwaysTrue]});
+        });
 
         it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
              const fixture = createRoot(router, RootCmp);
@@ -2210,7 +2224,9 @@ describe('Integration', () => {
             providers: [{
               provide: 'CanDeactivate',
               useValue: (c: TeamCmp, a: ActivatedRouteSnapshot, b: RouterStateSnapshot) => {
-                return Observable.create((observer: any) => { observer.next(false); });
+                return Observable.create((observer: any) => {
+                  observer.next(false);
+                });
               }
             }]
           });
@@ -2258,7 +2274,7 @@ describe('Integration', () => {
 
              expect(location.path()).toEqual('/team/22');
 
-             router.navigateByUrl('/team/33') !.catch(() => {});
+             router.navigateByUrl('/team/33')!.catch(() => {});
              advance(fixture);
 
              expect(location.path()).toEqual('/team/22');
@@ -2271,12 +2287,10 @@ describe('Integration', () => {
              (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
 
                @Component({selector: 'admin', template: '<router-outlet></router-outlet>'})
-               class AdminComponent {
-               }
+               class AdminComponent {}
 
                @Component({selector: 'lazy', template: 'lazy-loaded'})
-               class LazyLoadedComponent {
-               }
+               class LazyLoadedComponent {}
 
                @NgModule({
                  declarations: [AdminComponent, LazyLoadedComponent],
@@ -2291,8 +2305,7 @@ describe('Integration', () => {
                  }])],
                  providers: [{provide: 'alwaysTrue', useValue: () => true}],
                })
-               class LazyLoadedModule {
-               }
+               class LazyLoadedModule {}
 
                loader.stubbedModules = {lazy: LazyLoadedModule};
                const fixture = createRoot(router, RootCmp);
@@ -2339,16 +2352,14 @@ describe('Integration', () => {
              (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
 
                @Component({selector: 'lazy', template: 'lazy-loaded'})
-               class LazyLoadedComponent {
-               }
+               class LazyLoadedComponent {}
 
                @NgModule({
                  declarations: [LazyLoadedComponent],
                  imports:
                      [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])]
                })
-               class LoadedModule {
-               }
+               class LoadedModule {}
 
                loader.stubbedModules = {lazyFalse: LoadedModule, lazyTrue: LoadedModule};
                const fixture = createRoot(router, RootCmp);
@@ -2434,16 +2445,14 @@ describe('Integration', () => {
              (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
 
                @Component({selector: 'lazy', template: 'lazy-loaded'})
-               class LazyLoadedComponent {
-               }
+               class LazyLoadedComponent {}
 
                @NgModule({
                  declarations: [LazyLoadedComponent],
                  imports:
                      [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])]
                })
-               class LazyLoadedModule {
-               }
+               class LazyLoadedModule {}
 
                loader.stubbedModules = {lazy: LazyLoadedModule};
                const fixture = createRoot(router, RootCmp);
@@ -2470,7 +2479,9 @@ describe('Integration', () => {
 
       class Logger {
         logs: string[] = [];
-        add(thing: string) { this.logs.push(thing); }
+        add(thing: string) {
+          this.logs.push(thing);
+        }
       }
 
       beforeEach(() => {
@@ -2593,8 +2604,7 @@ describe('Integration', () => {
            template:
                '<router-outlet></router-outlet><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ></a>'
          })
-         class RootCmpWithLink {
-         }
+         class RootCmpWithLink {}
 
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
          const router: Router = TestBed.get(Router);
@@ -2678,8 +2688,7 @@ describe('Integration', () => {
               <span [ngClass]="{'highlight': rla.isActive}"></span>
               <router-outlet></router-outlet>`
          })
-         class ComponentWithRouterLink {
-         }
+         class ComponentWithRouterLink {}
 
          TestBed.configureTestingModule({declarations: [ComponentWithRouterLink]});
          const router: Router = TestBed.get(Router);
@@ -2720,12 +2729,10 @@ describe('Integration', () => {
                selector: 'lazy',
                template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'
              })
-             class ParentLazyLoadedComponent {
-             }
+             class ParentLazyLoadedComponent {}
 
              @Component({selector: 'lazy', template: 'lazy-loaded-child'})
-             class ChildLazyLoadedComponent {
-             }
+             class ChildLazyLoadedComponent {}
 
              @NgModule({
                declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
@@ -2735,8 +2742,7 @@ describe('Integration', () => {
                  children: [{path: 'child', component: ChildLazyLoadedComponent}]
                }])]
              })
-             class LoadedModule {
-             }
+             class LoadedModule {}
 
 
              loader.stubbedModules = {expected: LoadedModule};
@@ -2763,12 +2769,10 @@ describe('Integration', () => {
                  {provide: 'shadow', useValue: 'from parent component'},
                ],
              })
-             class Parent {
-             }
+             class Parent {}
 
              @Component({selector: 'lazy', template: 'child'})
-             class Child {
-             }
+             class Child {}
 
              @NgModule({
                declarations: [Parent],
@@ -2784,8 +2788,7 @@ describe('Integration', () => {
                  {provide: 'fromParent', useValue: 'from parent'},
                ],
              })
-             class ParentModule {
-             }
+             class ParentModule {}
 
              @NgModule({
                declarations: [Child],
@@ -2796,8 +2799,7 @@ describe('Integration', () => {
                  {provide: 'shadow', useValue: 'from child module'},
                ],
              })
-             class ChildModule {
-             }
+             class ChildModule {}
 
              loader.stubbedModules = {
                parent: ParentModule,
@@ -2811,8 +2813,8 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/lazy/parent/child');
              expect(fixture.nativeElement).toHaveText('parent[child]');
 
-             const pInj = fixture.debugElement.query(By.directive(Parent)).injector !;
-             const cInj = fixture.debugElement.query(By.directive(Child)).injector !;
+             const pInj = fixture.debugElement.query(By.directive(Parent)).injector!;
+             const cInj = fixture.debugElement.query(By.directive(Child)).injector!;
 
              expect(pInj.get('moduleName')).toEqual('parent');
              expect(pInj.get('fromParent')).toEqual('from parent');
@@ -2849,12 +2851,10 @@ describe('Integration', () => {
                selector: 'lazy',
                template: 'lazy-loaded-parent [<router-outlet></router-outlet>]'
              })
-             class ParentLazyLoadedComponent {
-             }
+             class ParentLazyLoadedComponent {}
 
              @Component({selector: 'lazy', template: 'lazy-loaded-child'})
-             class ChildLazyLoadedComponent {
-             }
+             class ChildLazyLoadedComponent {}
 
              @NgModule({
                declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
@@ -2866,7 +2866,9 @@ describe('Integration', () => {
              })
              class LoadedModule {
                static instances = 0;
-               constructor() { LoadedModule.instances++; }
+               constructor() {
+                 LoadedModule.instances++;
+               }
              }
 
              loader.stubbedModules = {expected: LoadedModule};
@@ -2884,8 +2886,7 @@ describe('Integration', () => {
            [Router, Location, NgModuleFactoryLoader],
            (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
              @Injectable()
-             class Service {
-             }
+             class Service {}
 
              @Injectable()
              class Resolver implements Resolve<Service> {
@@ -2914,8 +2915,7 @@ describe('Integration', () => {
                  }]),
                ]
              })
-             class LoadedModule {
-             }
+             class LoadedModule {}
 
              loader.stubbedModules = {expected: LoadedModule};
              const fixture = createRoot(router, RootCmp);
@@ -2938,12 +2938,10 @@ describe('Integration', () => {
                selector: 'lazy',
                template: 'lazy-loaded-parent [<router-outlet></router-outlet>]',
              })
-             class ParentLazyLoadedComponent {
-             }
+             class ParentLazyLoadedComponent {}
 
              @Component({selector: 'lazy', template: 'lazy-loaded-child'})
-             class ChildLazyLoadedComponent {
-             }
+             class ChildLazyLoadedComponent {}
 
              @NgModule({
                declarations: [ParentLazyLoadedComponent, ChildLazyLoadedComponent],
@@ -2953,8 +2951,7 @@ describe('Integration', () => {
                  children: [{path: 'child', component: ChildLazyLoadedComponent}],
                }])]
              })
-             class LoadedModule {
-             }
+             class LoadedModule {}
 
              const events: Array<RouteConfigLoadStart|RouteConfigLoadEnd> = [];
 
@@ -2981,15 +2978,13 @@ describe('Integration', () => {
            [Router, Location, NgModuleFactoryLoader],
            (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
              @Component({selector: 'lazy', template: 'should not show'})
-             class LazyLoadedComponent {
-             }
+             class LazyLoadedComponent {}
 
              @NgModule({
                declarations: [LazyLoadedComponent],
                imports: [RouterModule.forRoot([{path: 'loaded', component: LazyLoadedComponent}])]
              })
-             class LoadedModule {
-             }
+             class LoadedModule {}
 
              loader.stubbedModules = {expected: LoadedModule};
 
@@ -2998,7 +2993,7 @@ describe('Integration', () => {
              router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
              let recordedError: any = null;
-             router.navigateByUrl('/lazy/loaded') !.catch(err => recordedError = err);
+             router.navigateByUrl('/lazy/loaded')!.catch(err => recordedError = err);
              advance(fixture);
              expect(recordedError.message)
                  .toEqual(
@@ -3010,19 +3005,16 @@ describe('Integration', () => {
            [Router, Location, NgModuleFactoryLoader],
            (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
              @Component({selector: 'lazy', template: 'lazy-loaded-2'})
-             class LazyComponent2 {
-             }
+             class LazyComponent2 {}
 
              @NgModule({
                declarations: [LazyComponent2],
                imports: [RouterModule.forChild([{path: 'loaded', component: LazyComponent2}])]
              })
-             class SiblingOfLoadedModule {
-             }
+             class SiblingOfLoadedModule {}
 
              @Component({selector: 'lazy', template: 'lazy-loaded-1'})
-             class LazyComponent1 {
-             }
+             class LazyComponent1 {}
 
              @NgModule({
                declarations: [LazyComponent1],
@@ -3031,8 +3023,7 @@ describe('Integration', () => {
                  SiblingOfLoadedModule
                ]
              })
-             class LoadedModule {
-             }
+             class LoadedModule {}
 
              loader.stubbedModules = {expected1: LoadedModule, expected2: SiblingOfLoadedModule};
 
@@ -3060,15 +3051,13 @@ describe('Integration', () => {
         selector: 'eager-parent',
         template: 'eager-parent <router-outlet></router-outlet>',
       })
-      class EagerParentComponent {
-      }
+      class EagerParentComponent {}
 
       @Component({
         selector: 'lazy-parent',
         template: 'lazy-parent <router-outlet></router-outlet>',
       })
-      class LazyParentComponent {
-      }
+      class LazyParentComponent {}
 
       @Component({
         selector: 'lazy-child',
@@ -3080,7 +3069,7 @@ describe('Integration', () => {
             lazyService: LazyLoadedServiceDefinedInModule,  // should be able to inject lazy service
             eager:
                 EagerParentComponent  // should use the injector of the location to create a parent
-            ) {}
+        ) {}
       }
 
       @NgModule({
@@ -3095,16 +3084,14 @@ describe('Integration', () => {
         }])],
         providers: [LazyLoadedServiceDefinedInModule]
       })
-      class LoadedModule {
-      }
+      class LoadedModule {}
 
       @NgModule({
         declarations: [EagerParentComponent],
         entryComponents: [EagerParentComponent],
         imports: [RouterModule]
       })
-      class TestModule {
-      }
+      class TestModule {}
 
       beforeEach(() => {
         TestBed.configureTestingModule({
@@ -3138,15 +3125,13 @@ describe('Integration', () => {
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader], (router: Router, location: Location) => {
              @Component({selector: 'lazy', template: 'lazy-loaded'})
-             class LazyLoadedComponent {
-             }
+             class LazyLoadedComponent {}
 
              @NgModule({
                declarations: [LazyLoadedComponent],
                imports: [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])],
              })
-             class LoadedModule {
-             }
+             class LoadedModule {}
 
              const fixture = createRoot(router, RootCmp);
 
@@ -3171,7 +3156,7 @@ describe('Integration', () => {
              const recordedEvents: any[] = [];
              router.events.forEach(e => recordedEvents.push(e));
 
-             router.navigateByUrl('/lazy/loaded') !.catch(s => {});
+             router.navigateByUrl('/lazy/loaded')!.catch(s => {});
              advance(fixture);
 
              expect(location.path()).toEqual('/');
@@ -3188,15 +3173,13 @@ describe('Integration', () => {
            [Router, Location, NgModuleFactoryLoader],
            (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
              @Component({selector: 'lazy', template: 'lazy-loaded'})
-             class LazyLoadedComponent {
-             }
+             class LazyLoadedComponent {}
 
              @NgModule({
                declarations: [LazyLoadedComponent],
                imports: [RouterModule.forChild([{path: 'loaded', component: LazyLoadedComponent}])],
              })
-             class LoadedModule {
-             }
+             class LoadedModule {}
 
              loader.stubbedModules = {lazy: LoadedModule};
              const fixture = createRoot(router, RootCmp);
@@ -3215,15 +3198,13 @@ describe('Integration', () => {
            [Router, Location, NgModuleFactoryLoader],
            (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
              @Component({selector: 'lazy', template: 'lazy-loaded'})
-             class LazyLoadedComponent {
-             }
+             class LazyLoadedComponent {}
 
              @NgModule({
                declarations: [LazyLoadedComponent],
                imports: [RouterModule.forChild([{path: '', component: LazyLoadedComponent}])],
              })
-             class LoadedModule {
-             }
+             class LoadedModule {}
 
              loader.stubbedModules = {lazy: LoadedModule};
              const fixture = createRoot(router, RootCmp);
@@ -3249,23 +3230,20 @@ describe('Integration', () => {
              [Router, Location, NgModuleFactoryLoader],
              (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
                @Component({selector: 'lazy', template: 'should not show'})
-               class LazyLoadedComponent {
-               }
+               class LazyLoadedComponent {}
 
                @NgModule({
                  declarations: [LazyLoadedComponent],
                  imports: [RouterModule.forChild(
                      [{path: 'LoadedModule2', component: LazyLoadedComponent}])]
                })
-               class LoadedModule2 {
-               }
+               class LoadedModule2 {}
 
                @NgModule({
                  imports:
                      [RouterModule.forChild([{path: 'LoadedModule1', loadChildren: 'expected2'}])]
                })
-               class LoadedModule1 {
-               }
+               class LoadedModule1 {}
 
                loader.stubbedModules = {expected: LoadedModule1, expected2: LoadedModule2};
 
@@ -3279,12 +3257,12 @@ describe('Integration', () => {
                advance(fixture);
 
                const config = router.config;
-               const firstConfig = config[1]._loadedConfig !;
+               const firstConfig = config[1]._loadedConfig!;
 
                expect(firstConfig).toBeDefined();
                expect(firstConfig.routes[0].path).toEqual('LoadedModule1');
 
-               const secondConfig = firstConfig.routes[0]._loadedConfig !;
+               const secondConfig = firstConfig.routes[0]._loadedConfig!;
                expect(secondConfig).toBeDefined();
                expect(secondConfig.routes[0].path).toEqual('LoadedModule2');
              })));
@@ -3445,19 +3423,19 @@ describe('Integration', () => {
       stored: {[k: string]: DetachedRouteHandle} = {};
 
       shouldDetach(route: ActivatedRouteSnapshot): boolean {
-        return route.routeConfig !.path === 'a';
+        return route.routeConfig!.path === 'a';
       }
 
       store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {
-        this.stored[route.routeConfig !.path !] = detachedTree;
+        this.stored[route.routeConfig!.path!] = detachedTree;
       }
 
       shouldAttach(route: ActivatedRouteSnapshot): boolean {
-        return !!this.stored[route.routeConfig !.path !];
+        return !!this.stored[route.routeConfig!.path!];
       }
 
       retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle {
-        return this.stored[route.routeConfig !.path !];
+        return this.stored[route.routeConfig!.path!];
       }
 
       shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
@@ -3466,10 +3444,16 @@ describe('Integration', () => {
     }
 
     class ShortLifecycle implements RouteReuseStrategy {
-      shouldDetach(route: ActivatedRouteSnapshot): boolean { return false; }
+      shouldDetach(route: ActivatedRouteSnapshot): boolean {
+        return false;
+      }
       store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void {}
-      shouldAttach(route: ActivatedRouteSnapshot): boolean { return false; }
-      retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null { return null; }
+      shouldAttach(route: ActivatedRouteSnapshot): boolean {
+        return false;
+      }
+      retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle|null {
+        return null;
+      }
       shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
         if (future.routeConfig !== curr.routeConfig) {
           return false;
@@ -3556,19 +3540,16 @@ function expectEvents(events: Event[], pairs: any[]) {
 
 @Component(
     {selector: 'link-cmp', template: `<a routerLink="/team/33/simple" [target]="'_self'">link</a>`})
-class StringLinkCmp {
-}
+class StringLinkCmp {}
 
 @Component({selector: 'link-cmp', template: `<button routerLink="/team/33/simple">link</button>`})
-class StringLinkButtonCmp {
-}
+class StringLinkButtonCmp {}
 
 @Component({
   selector: 'link-cmp',
   template: `<router-outlet></router-outlet><a [routerLink]="['/team/33/simple']">link</a>`
 })
-class AbsoluteLinkCmp {
-}
+class AbsoluteLinkCmp {}
 
 @Component({
   selector: 'link-cmp',
@@ -3585,19 +3566,16 @@ class DummyLinkCmp {
 }
 
 @Component({selector: 'link-cmp', template: `<a [routerLink]="['../simple']">link</a>`})
-class RelativeLinkCmp {
-}
+class RelativeLinkCmp {}
 
 @Component({
   selector: 'link-cmp',
   template: `<a [routerLink]="['../simple']" [queryParams]="{q: '1'}" fragment="f">link</a>`
 })
-class LinkWithQueryParamsAndFragment {
-}
+class LinkWithQueryParamsAndFragment {}
 
 @Component({selector: 'simple-cmp', template: `simple`})
-class SimpleCmp {
-}
+class SimpleCmp {}
 
 @Component({selector: 'collect-params-cmp', template: `collect-params`})
 class CollectParamsCmp {
@@ -3615,8 +3593,7 @@ class CollectParamsCmp {
 }
 
 @Component({selector: 'blank-cmp', template: ``})
-class BlankCmp {
-}
+class BlankCmp {}
 
 @Component({
   selector: 'team-cmp',
@@ -3644,8 +3621,7 @@ class TeamCmp {
   selector: 'two-outlets-cmp',
   template: `[ <router-outlet></router-outlet>, aux: <router-outlet name="aux"></router-outlet> ]`
 })
-class TwoOutletsCmp {
-}
+class TwoOutletsCmp {}
 
 
 @Component({selector: 'user-cmp', template: `user {{name | async}}`})
@@ -3664,8 +3640,7 @@ class UserCmp {
 }
 
 @Component({selector: 'wrapper', template: `<router-outlet></router-outlet>`})
-class WrapperCmp {
-}
+class WrapperCmp {}
 
 @Component(
     {selector: 'query-cmp', template: `query: {{name | async}} fragment: {{fragment | async}}`})
@@ -3717,7 +3692,9 @@ class OutletInNgIf {
 })
 class DummyLinkWithParentCmp {
   private exact: boolean;
-  constructor(route: ActivatedRoute) { this.exact = (<any>route.snapshot.params).exact === 'true'; }
+  constructor(route: ActivatedRoute) {
+    this.exact = (<any>route.snapshot.params).exact === 'true';
+  }
 }
 
 @Component({selector: 'cmp', template: ''})
@@ -3732,14 +3709,15 @@ class ComponentRecordingRoutePathAndUrl {
 }
 
 @Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
-class RootCmp {
-}
+class RootCmp {}
 
 @Component({selector: 'root-cmp-on-init', template: `<router-outlet></router-outlet>`})
 class RootCmpWithOnInit {
   constructor(private router: Router) {}
 
-  ngOnInit(): void { this.router.navigate(['one']); }
+  ngOnInit(): void {
+    this.router.navigate(['one']);
+  }
 }
 
 @Component({
@@ -3747,8 +3725,7 @@ class RootCmpWithOnInit {
   template:
       `primary [<router-outlet></router-outlet>] right [<router-outlet name="right"></router-outlet>]`
 })
-class RootCmpWithTwoOutlets {
-}
+class RootCmpWithTwoOutlets {}
 
 
 function advance(fixture: ComponentFixture<any>): void {
@@ -3847,5 +3824,4 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     EmptyQueryParamsCmp,
   ]
 })
-class TestModule {
-}
+class TestModule {}

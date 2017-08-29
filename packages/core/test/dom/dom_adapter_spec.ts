@@ -78,8 +78,9 @@ export function main() {
       describe('getBaseHref', () => {
         beforeEach(() => getDOM().resetBaseElement());
 
-        it('should return null if base element is absent',
-           () => { expect(getDOM().getBaseHref(defaultDoc)).toBeNull(); });
+        it('should return null if base element is absent', () => {
+          expect(getDOM().getBaseHref(defaultDoc)).toBeNull();
+        });
 
         it('should return the value of the base element', () => {
           const baseEl = getDOM().createElement('base');
@@ -100,7 +101,7 @@ export function main() {
           const headEl = defaultDoc.head;
           getDOM().appendChild(headEl, baseEl);
 
-          const baseHref = getDOM().getBaseHref(defaultDoc) !;
+          const baseHref = getDOM().getBaseHref(defaultDoc)!;
           getDOM().removeChild(headEl, baseEl);
           getDOM().resetBaseElement();
 

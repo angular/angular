@@ -14,9 +14,13 @@ const {patch} = require('incremental-dom');
 export function main() {
   let tree: TreeComponent;
 
-  function destroyDom() { tree.data = emptyTree; }
+  function destroyDom() {
+    tree.data = emptyTree;
+  }
 
-  function createDom() { tree.data = buildTree(); }
+  function createDom() {
+    tree.data = buildTree();
+  }
 
   function noop() {}
 

@@ -6,25 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationBuilder, animate, style, transition, trigger} from '@angular/animations';
-import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
+import {animate, AnimationBuilder, style, transition, trigger} from '@angular/animations';
+import {APP_BASE_HREF, isPlatformServer, PlatformLocation} from '@angular/common';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
-import {TestBed, async, inject} from '@angular/core/testing';
+import {ApplicationRef, CompilerFactory, Component, destroyPlatform, getPlatform, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation} from '@angular/core';
+import {async, inject, TestBed} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import {BrowserModule, DOCUMENT, Title} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
-import {Subscription} from 'rxjs/Subscription';
+import {INITIAL_CONFIG, platformDynamicServer, PlatformState, renderModule, renderModuleFactory, ServerModule} from '@angular/platform-server';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
 import {toPromise} from 'rxjs/operator/toPromise';
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({selector: 'app', template: `Works!`})
-class MyServerApp {
-}
+class MyServerApp {}
 
 @NgModule({
   bootstrap: [MyServerApp],
@@ -35,26 +34,24 @@ class MyServerApp {
     {provide: XHRBackend, useExisting: MockBackend},
   ]
 })
-class ExampleModule {
-}
+class ExampleModule {}
 
 @Component({selector: 'app', template: `Works too!`})
-class MyServerApp2 {
-}
+class MyServerApp2 {}
 
 @NgModule({declarations: [MyServerApp2], imports: [ServerModule], bootstrap: [MyServerApp2]})
-class ExampleModule2 {
-}
+class ExampleModule2 {}
 
 @Component({selector: 'app', template: ``})
 class TitleApp {
   constructor(private title: Title) {}
-  ngOnInit() { this.title.setTitle('Test App Title'); }
+  ngOnInit() {
+    this.title.setTitle('Test App Title');
+  }
 }
 
 @NgModule({declarations: [TitleApp], imports: [ServerModule], bootstrap: [TitleApp]})
-class TitleAppModule {
-}
+class TitleAppModule {}
 
 @Component({selector: 'app', template: '{{text}}<h1 [innerText]="h1"></h1>'})
 class MyAsyncServerApp {
@@ -62,7 +59,9 @@ class MyAsyncServerApp {
   h1 = '';
 
   @HostListener('window:scroll')
-  track() { console.error('scroll'); }
+  track() {
+    console.error('scroll');
+  }
 
   ngOnInit() {
     Promise.resolve(null).then(() => setTimeout(() => {
@@ -77,20 +76,17 @@ class MyAsyncServerApp {
   imports: [BrowserModule.withServerTransition({appId: 'async-server'}), ServerModule],
   bootstrap: [MyAsyncServerApp]
 })
-class AsyncServerModule {
-}
+class AsyncServerModule {}
 
 @Component({selector: 'app', template: '<svg><use xlink:href="#clear"></use></svg>'})
-class SVGComponent {
-}
+class SVGComponent {}
 
 @NgModule({
   declarations: [SVGComponent],
   imports: [BrowserModule.withServerTransition({appId: 'svg-server'}), ServerModule],
   bootstrap: [SVGComponent]
 })
-class SVGServerModule {
-}
+class SVGServerModule {}
 
 @Component({
   selector: 'app',
@@ -110,20 +106,17 @@ class MyAnimationApp {
   imports: [BrowserModule.withServerTransition({appId: 'anim-server'}), ServerModule],
   bootstrap: [MyAnimationApp]
 })
-class AnimationServerModule {
-}
+class AnimationServerModule {}
 
 @Component({selector: 'app', template: `Works!`, styles: [':host { color: red; }']})
-class MyStylesApp {
-}
+class MyStylesApp {}
 
 @NgModule({
   declarations: [MyStylesApp],
   imports: [BrowserModule.withServerTransition({appId: 'example-styles'}), ServerModule],
   bootstrap: [MyStylesApp]
 })
-class ExampleStylesModule {
-}
+class ExampleStylesModule {}
 
 @NgModule({
   bootstrap: [MyServerApp],
@@ -134,8 +127,7 @@ class ExampleStylesModule {
     {provide: XHRBackend, useExisting: MockBackend},
   ]
 })
-export class HttpBeforeExampleModule {
-}
+export class HttpBeforeExampleModule {}
 
 @NgModule({
   bootstrap: [MyServerApp],
@@ -146,24 +138,20 @@ export class HttpBeforeExampleModule {
     {provide: XHRBackend, useExisting: MockBackend},
   ]
 })
-export class HttpAfterExampleModule {
-}
+export class HttpAfterExampleModule {}
 
 @NgModule({
   bootstrap: [MyServerApp],
   declarations: [MyServerApp],
   imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
 })
-export class HttpClientExmapleModule {
-}
+export class HttpClientExmapleModule {}
 
 @Component({selector: 'app', template: `<img [src]="'link'">`})
-class ImageApp {
-}
+class ImageApp {}
 
 @NgModule({declarations: [ImageApp], imports: [ServerModule], bootstrap: [ImageApp]})
-class ImageExampleModule {
-}
+class ImageExampleModule {}
 
 @Component({
   selector: 'app',
@@ -171,16 +159,14 @@ class ImageExampleModule {
   encapsulation: ViewEncapsulation.Native,
   styles: [':host { color: red; }']
 })
-class NativeEncapsulationApp {
-}
+class NativeEncapsulationApp {}
 
 @NgModule({
   declarations: [NativeEncapsulationApp],
   imports: [BrowserModule.withServerTransition({appId: 'test'}), ServerModule],
   bootstrap: [NativeEncapsulationApp]
 })
-class NativeExampleModule {
-}
+class NativeExampleModule {}
 
 @Component({selector: 'my-child', template: 'Works!'})
 class MyChildComponent {
@@ -188,16 +174,14 @@ class MyChildComponent {
 }
 
 @Component({selector: 'app', template: '<my-child [attr]="false"></my-child>'})
-class MyHostComponent {
-}
+class MyHostComponent {}
 
 @NgModule({
   declarations: [MyHostComponent, MyChildComponent],
   bootstrap: [MyHostComponent],
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'false-attributes'})]
 })
-class FalseAttributesModule {
-}
+class FalseAttributesModule {}
 
 @Component({selector: 'app', template: '<input [name]="name">'})
 class MyInputComponent {
@@ -210,8 +194,7 @@ class MyInputComponent {
   bootstrap: [MyInputComponent],
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'name-attributes'})]
 })
-class NameModule {
-}
+class NameModule {}
 
 export function main() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
@@ -390,7 +373,9 @@ export function main() {
         doc = '<html><head></head><body><app></app></body></html>';
         called = false;
       });
-      afterEach(() => { expect(called).toBe(true); });
+      afterEach(() => {
+        expect(called).toBe(true);
+      });
 
       it('using long from should work', async(() => {
            const platform =

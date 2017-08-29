@@ -8,21 +8,25 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, Injectable, NO_ERRORS_SCHEMA, OnDestroy, QueryList, TemplateRef} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('NgTemplateOutlet', () => {
     let fixture: ComponentFixture<any>;
 
-    function setTplRef(value: any): void { fixture.componentInstance.currentTplRef = value; }
+    function setTplRef(value: any): void {
+      fixture.componentInstance.currentTplRef = value;
+    }
 
     function detectChangesAndExpectText(text: string): void {
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement).toHaveText(text);
     }
 
-    afterEach(() => { fixture = null as any; });
+    afterEach(() => {
+      fixture = null as any;
+    });
 
     beforeEach(() => {
       TestBed.configureTestingModule({
@@ -59,7 +63,7 @@ export function main() {
              `<ng-container [ngTemplateOutlet]="currentTplRef"></ng-container>`;
          fixture = createTestComponent(template);
          fixture.detectChanges();
-         const refs = fixture.debugElement.children[0].references !['refs'];
+         const refs = fixture.debugElement.children[0].references!['refs'];
 
          setTplRef(refs.tplRefs.first);
          detectChangesAndExpectText('foo');
@@ -75,7 +79,7 @@ export function main() {
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
-         const refs = fixture.debugElement.children[0].references !['refs'];
+         const refs = fixture.debugElement.children[0].references!['refs'];
 
          setTplRef(refs.tplRefs.first);
          detectChangesAndExpectText('foo');
@@ -219,7 +223,9 @@ class DestroyedSpyService {
 class DestroyableCmpt implements OnDestroy {
   constructor(private _spyService: DestroyedSpyService) {}
 
-  ngOnDestroy(): void { this._spyService.destroyed = true; }
+  ngOnDestroy(): void {
+    this._spyService.destroyed = true;
+  }
 }
 
 @Directive({selector: 'tpl-refs', exportAs: 'tplRefs'})

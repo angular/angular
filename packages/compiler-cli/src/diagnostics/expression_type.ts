@@ -29,7 +29,9 @@ export class AstType implements AstVisitor {
       private scope: SymbolTable, private query: SymbolQuery,
       private context: ExpressionDiagnosticsContext) {}
 
-  getType(ast: AST): Symbol { return ast.visit(this); }
+  getType(ast: AST): Symbol {
+    return ast.visit(this);
+  }
 
   getDiagnostics(ast: AST): TypeDiagnostic[] {
     this.diagnostics = [];
@@ -199,7 +201,7 @@ export class AstType implements AstVisitor {
     // support contextual typing of arguments so this is simpler than TypeScript's
     // version.
     const args = ast.args.map(arg => this.getType(arg));
-    const target = this.getType(ast.target !);
+    const target = this.getType(ast.target!);
     if (!target || !target.callable) return this.reportError('Call target is not callable', ast);
     const signature = target.selectSignature(args);
     if (signature) return signature.result;
@@ -222,10 +224,20 @@ export class AstType implements AstVisitor {
       nullable: false,
       public: true,
       definition: undefined,
-      members(): SymbolTable{return _this.scope;},
-      signatures(): Signature[]{return [];},
-      selectSignature(types): Signature | undefined{return undefined;},
-      indexed(argument): Symbol | undefined{return undefined;}
+      members(): SymbolTable {
+        return _this.scope;
+      },
+      signatures(): Signature[] {
+        return [];
+      },
+      selectSignature(types): Signature |
+          undefined {
+            return undefined;
+          },
+      indexed(argument): Symbol |
+          undefined {
+            return undefined;
+          }
     };
   }
 

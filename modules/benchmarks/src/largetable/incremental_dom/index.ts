@@ -13,9 +13,13 @@ import {TableComponent} from './table';
 export function main() {
   let table: TableComponent;
 
-  function destroyDom() { table.data = emptyTable; }
+  function destroyDom() {
+    table.data = emptyTable;
+  }
 
-  function createDom() { table.data = buildTable(); }
+  function createDom() {
+    table.data = buildTable();
+  }
 
   function noop() {}
 

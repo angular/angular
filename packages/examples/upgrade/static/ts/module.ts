@@ -8,7 +8,7 @@
 import {Component, Directive, DoCheck, ElementRef, EventEmitter, Inject, Injectable, Injector, Input, NgModule, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {UpgradeComponent, UpgradeModule, downgradeComponent, downgradeInjectable} from '@angular/upgrade/static';
+import {downgradeComponent, downgradeInjectable, UpgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
 interface Hero {
   name: string;
@@ -58,7 +58,9 @@ class HeroesService {
         this.heroes.concat([{name: 'Kamala Khan', description: 'Epic shape-shifting healer'}]);
   }
 
-  removeHero(hero: Hero) { this.heroes = this.heroes.filter((item: Hero) => item !== hero); }
+  removeHero(hero: Hero) {
+    this.heroes = this.heroes.filter((item: Hero) => item !== hero);
+  }
 }
 // #enddocregion
 
@@ -66,7 +68,7 @@ class HeroesService {
 // This Angular directive will act as an interface to the "upgraded" AngularJS component
 @Directive({selector: 'ng1-hero'})
 class Ng1HeroComponentWrapper extends UpgradeComponent implements OnInit, OnChanges, DoCheck,
-    OnDestroy {
+                                                                  OnDestroy {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped
   @Input() hero: Hero;
@@ -78,13 +80,21 @@ class Ng1HeroComponentWrapper extends UpgradeComponent implements OnInit, OnChan
 
   // For this class to work when compiled with AoT, we must implement these lifecycle hooks
   // because the AoT compiler will not realise that the super class implements them
-  ngOnInit() { super.ngOnInit(); }
+  ngOnInit() {
+    super.ngOnInit();
+  }
 
-  ngOnChanges(changes: SimpleChanges) { super.ngOnChanges(changes); }
+  ngOnChanges(changes: SimpleChanges) {
+    super.ngOnChanges(changes);
+  }
 
-  ngDoCheck() { super.ngDoCheck(); }
+  ngDoCheck() {
+    super.ngDoCheck();
+  }
 
-  ngOnDestroy() { super.ngOnDestroy(); }
+  ngOnDestroy() {
+    super.ngOnDestroy();
+  }
 }
 // #enddocregion
 
@@ -155,7 +165,10 @@ ng1AppModule.component('exampleApp', {
   // (We don't need the `HeroesService` type for AngularJS DI - it just helps with TypeScript
   // compilation)
   controller: [
-    'heroesService', function(heroesService: HeroesService) { this.heroesService = heroesService; }
+    'heroesService',
+    function(heroesService: HeroesService) {
+      this.heroesService = heroesService;
+    }
   ],
   // This template make use of the downgraded `ng2-heroes` component
   // Note that because its element is compiled by AngularJS we must use kebab-case attributes for

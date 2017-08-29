@@ -10,7 +10,7 @@ import {ResourceLoader} from '@angular/compiler';
 import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
 import {Component, Directive, Injectable, NgModule, Pipe, Type} from '@angular/core';
-import {TestBed, async, getTestBed} from '@angular/core/testing';
+import {async, getTestBed, TestBed} from '@angular/core/testing';
 
 export function main() {
   describe('Jit Summaries', () => {
@@ -28,7 +28,7 @@ export function main() {
     }
 
     function expectInstanceCreated(type: any) {
-      const instance = instances.get(type) !;
+      const instance = instances.get(type)!;
       expect(instance).toBeDefined();
       expect(instance.dep instanceof SomeDep).toBe(true);
     }
@@ -42,7 +42,9 @@ export function main() {
     class SomeDirective extends Base {}
 
     class SomePipe extends Base {
-      transform(value: any) { return value; }
+      transform(value: any) {
+        return value;
+      }
     }
 
     class SomeService extends Base {}
@@ -126,12 +128,13 @@ export function main() {
       createSummaries();
     }));
 
-    afterEach(() => { resetTestEnvironmentWithSummaries(); });
+    afterEach(() => {
+      resetTestEnvironmentWithSummaries();
+    });
 
     it('should use directive metadata from summaries', () => {
       @Component({template: '<div someDir></div>'})
-      class TestComp {
-      }
+      class TestComp {}
 
       TestBed
           .configureTestingModule({providers: [SomeDep], declarations: [TestComp, SomeDirective]})
@@ -141,8 +144,7 @@ export function main() {
 
     it('should use pipe metadata from summaries', () => {
       @Component({template: '{{1 | somePipe}}'})
-      class TestComp {
-      }
+      class TestComp {}
 
       TestBed.configureTestingModule({providers: [SomeDep], declarations: [TestComp, SomePipe]})
           .createComponent(TestComp);

@@ -44,14 +44,19 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 })
 export class MyExpandoCmp {
   stateExpression: string;
-  constructor() { this.collapse(); }
-  expand() { this.stateExpression = 'expanded'; }
-  collapse() { this.stateExpression = 'collapsed'; }
+  constructor() {
+    this.collapse();
+  }
+  expand() {
+    this.stateExpression = 'expanded';
+  }
+  collapse() {
+    this.stateExpression = 'collapsed';
+  }
 }
 
 @NgModule(
     {imports: [BrowserAnimationsModule], declarations: [MyExpandoCmp], bootstrap: [MyExpandoCmp]})
-export class AppModule {
-}
+export class AppModule {}
 
 // #enddocregion

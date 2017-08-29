@@ -104,12 +104,14 @@ describe('validate-commit-message.js', function() {
     });
 
 
-    it('should allow empty scope',
-       function() { expect(validateMessage('fix: blablabla')).toBe(VALID); });
+    it('should allow empty scope', function() {
+      expect(validateMessage('fix: blablabla')).toBe(VALID);
+    });
 
     // we don't want to allow WIP. it's ok to fail the PR build in this case to show that there is
     // work still to be done.
-    it('should not ignore msg prefixed with "WIP: "',
-       function() { expect(validateMessage('WIP: bullshit')).toBe(INVALID); });
+    it('should not ignore msg prefixed with "WIP: "', function() {
+      expect(validateMessage('WIP: bullshit')).toBe(INVALID);
+    });
   });
 });

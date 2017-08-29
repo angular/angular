@@ -28,10 +28,11 @@ export class ConsoleReporter extends Reporter {
     },
     {provide: ConsoleReporter.COLUMN_WIDTH, useValue: 18}, {
       provide: ConsoleReporter.PRINT,
-      useValue: function(v: any) {
-        // tslint:disable-next-line:no-console
-        console.log(v);
-      }
+      useValue:
+          function(v: any) {
+            // tslint:disable-next-line:no-console
+            console.log(v);
+          }
     }
   ];
 
@@ -58,7 +59,9 @@ export class ConsoleReporter extends Reporter {
     this._print(`BENCHMARK ${sampleDescription.id}`);
     this._print('Description:');
     const props = sortedProps(sampleDescription.description);
-    props.forEach((prop) => { this._print(`- ${prop}: ${sampleDescription.description[prop]}`); });
+    props.forEach((prop) => {
+      this._print(`- ${prop}: ${sampleDescription.description[prop]}`);
+    });
     this._print('Metrics:');
     this._metricNames.forEach((metricName) => {
       this._print(`- ${metricName}: ${sampleDescription.metrics[metricName]}`);

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CurrencyPipe, DecimalPipe, PercentPipe, registerLocaleData} from '@angular/common';
+import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
+
 import localeEn from '../../i18n_data/locale_en';
 import localeEsUS from '../../i18n_data/locale_es-US';
-import {registerLocaleData, CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 export function main() {
   describe('Number pipes', () => {
@@ -18,12 +19,16 @@ export function main() {
       registerLocaleData(localeEsUS);
     });
 
-    function isNumeric(value: any): boolean { return !isNaN(value - parseFloat(value)); }
+    function isNumeric(value: any): boolean {
+      return !isNaN(value - parseFloat(value));
+    }
 
     describe('DecimalPipe', () => {
       describe('transform', () => {
         let pipe: DecimalPipe;
-        beforeEach(() => { pipe = new DecimalPipe('en-US'); });
+        beforeEach(() => {
+          pipe = new DecimalPipe('en-US');
+        });
 
         it('should return correct value for numbers', () => {
           expect(pipe.transform(12345)).toEqual('12,345');
@@ -66,7 +71,9 @@ export function main() {
     describe('PercentPipe', () => {
       let pipe: PercentPipe;
 
-      beforeEach(() => { pipe = new PercentPipe('en-US'); });
+      beforeEach(() => {
+        pipe = new PercentPipe('en-US');
+      });
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
@@ -74,15 +81,18 @@ export function main() {
           expect(pipe.transform(1.2, '.2')).toEqual('120.00%');
         });
 
-        it('should not support other objects',
-           () => { expect(() => pipe.transform({})).toThrowError(); });
+        it('should not support other objects', () => {
+          expect(() => pipe.transform({})).toThrowError();
+        });
       });
     });
 
     describe('CurrencyPipe', () => {
       let pipe: CurrencyPipe;
 
-      beforeEach(() => { pipe = new CurrencyPipe('en-US'); });
+      beforeEach(() => {
+        pipe = new CurrencyPipe('en-US');
+      });
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
@@ -95,8 +105,9 @@ export function main() {
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow')).toEqual('$5.12');
         });
 
-        it('should not support other objects',
-           () => { expect(() => pipe.transform({})).toThrowError(); });
+        it('should not support other objects', () => {
+          expect(() => pipe.transform({})).toThrowError();
+        });
 
         it('should warn if you are using the v4 signature', () => {
           const warnSpy = spyOn(console, 'warn');
@@ -108,23 +119,29 @@ export function main() {
     });
 
     describe('isNumeric', () => {
-      it('should return true when passing correct numeric string',
-         () => { expect(isNumeric('2')).toBe(true); });
+      it('should return true when passing correct numeric string', () => {
+        expect(isNumeric('2')).toBe(true);
+      });
 
-      it('should return true when passing correct double string',
-         () => { expect(isNumeric('1.123')).toBe(true); });
+      it('should return true when passing correct double string', () => {
+        expect(isNumeric('1.123')).toBe(true);
+      });
 
-      it('should return true when passing correct negative string',
-         () => { expect(isNumeric('-2')).toBe(true); });
+      it('should return true when passing correct negative string', () => {
+        expect(isNumeric('-2')).toBe(true);
+      });
 
-      it('should return true when passing correct scientific notation string',
-         () => { expect(isNumeric('1e5')).toBe(true); });
+      it('should return true when passing correct scientific notation string', () => {
+        expect(isNumeric('1e5')).toBe(true);
+      });
 
-      it('should return false when passing incorrect numeric',
-         () => { expect(isNumeric('a')).toBe(false); });
+      it('should return false when passing incorrect numeric', () => {
+        expect(isNumeric('a')).toBe(false);
+      });
 
-      it('should return false when passing parseable but non numeric',
-         () => { expect(isNumeric('2a')).toBe(false); });
+      it('should return false when passing parseable but non numeric', () => {
+        expect(isNumeric('2a')).toBe(false);
+      });
     });
   });
 }

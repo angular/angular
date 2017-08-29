@@ -22,7 +22,9 @@ function render<T>(moduleFactory: NgModuleFactory<T>, html: string) {
     renderModuleFactory(moduleFactory, {
       document: html,
       url: req.url,
-    }).then((response) => { res.send(response); });
+    }).then((response) => {
+      res.send(response);
+    });
   };
 }
 
@@ -32,9 +34,13 @@ enableProdMode();
 app.use('/built', express.static('built'));
 
 // Keep the browser logs free of errors.
-app.get('/favicon.ico', (req, res) => { res.send(''); });
+app.get('/favicon.ico', (req, res) => {
+  res.send('');
+});
 
 //-----------ADD YOUR SERVER SIDE RENDERED APP HERE ----------------------
 app.get('/helloworld', render(HelloWorldServerModuleNgFactory, helloworld));
 
-app.listen(9876, function() { console.log('Server listening on port 9876!'); });
+app.listen(9876, function() {
+  console.log('Server listening on port 9876!');
+});

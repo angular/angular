@@ -23,6 +23,8 @@ import {Component} from '@angular/core';
 export class SimpleNgModelComp {
   name: string = '';
 
-  setValue() { this.name = 'Nancy'; }
+  setValue() {
+    this.name = 'Nancy';
+  }
 }
 // #enddocregion

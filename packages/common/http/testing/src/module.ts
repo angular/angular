@@ -30,5 +30,4 @@ import {HttpClientTestingBackend} from './backend';
     {provide: HttpTestingController, useExisting: HttpClientTestingBackend},
   ],
 })
-export class HttpClientTestingModule {
-}
+export class HttpClientTestingModule {}

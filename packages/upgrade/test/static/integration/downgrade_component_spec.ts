@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
+import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, destroyPlatform, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
-import {UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
+import {downgradeComponent, UpgradeModule} from '@angular/upgrade/static';
 
 import {$apply, bootstrap, html, multiTrim} from '../test_helpers';
 
@@ -22,18 +22,21 @@ export function main() {
     afterEach(() => destroyPlatform());
 
     it('should bind properties, events', async(() => {
-         const ng1Module =
-             angular.module('ng1', []).value('$exceptionHandler', (err: any) => {
-                                        throw err;
-                                      }).run(($rootScope: angular.IScope) => {
-               $rootScope['name'] = 'world';
-               $rootScope['dataA'] = 'A';
-               $rootScope['dataB'] = 'B';
-               $rootScope['modelA'] = 'initModelA';
-               $rootScope['modelB'] = 'initModelB';
-               $rootScope['eventA'] = '?';
-               $rootScope['eventB'] = '?';
-             });
+         const ng1Module = angular.module('ng1', [])
+                               .value(
+                                   '$exceptionHandler',
+                                   (err: any) => {
+                                     throw err;
+                                   })
+                               .run(($rootScope: angular.IScope) => {
+                                 $rootScope['name'] = 'world';
+                                 $rootScope['dataA'] = 'A';
+                                 $rootScope['dataB'] = 'B';
+                                 $rootScope['modelA'] = 'initModelA';
+                                 $rootScope['modelB'] = 'initModelB';
+                                 $rootScope['eventA'] = '?';
+                                 $rootScope['eventB'] = '?';
+                               });
 
          @Component({
            selector: 'ng2',
@@ -75,8 +78,8 @@ export function main() {
                }
                const actualValue = changes[prop].currentValue;
                if (actualValue != value) {
-                 throw new Error(
-                     `Expected changes record for'${prop}' to be '${value}' but was '${actualValue}'`);
+                 throw new Error(`Expected changes record for'${prop}' to be '${value}' but was '${
+                     actualValue}'`);
                }
              };
 
@@ -156,7 +159,9 @@ export function main() {
            @Input() value1 = -1;
            @Input() value2 = -1;
 
-           constructor() { ng2Component = this; }
+           constructor() {
+             ng2Component = this;
+           }
          }
 
          @NgModule({
@@ -219,7 +224,9 @@ export function main() {
            @Input() value1 = -1;
            @Input() value2 = -1;
 
-           constructor() { ng2Component = this; }
+           constructor() {
+             ng2Component = this;
+           }
          }
 
          @NgModule({
@@ -333,8 +340,9 @@ export function main() {
        }));
 
     it('should bind to ng-model', async(() => {
-         const ng1Module = angular.module('ng1', []).run(
-             ($rootScope: angular.IScope) => { $rootScope['modelA'] = 'A'; });
+         const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
+           $rootScope['modelA'] = 'A';
+         });
 
          let ng2Instance: Ng2;
          @Component({selector: 'ng2', template: '<span>{{_value}}</span>'})
@@ -342,11 +350,21 @@ export function main() {
            private _value: any = '';
            private _onChangeCallback: (_: any) => void = () => {};
            private _onTouchedCallback: () => void = () => {};
-           constructor() { ng2Instance = this; }
-           writeValue(value: any) { this._value = value; }
-           registerOnChange(fn: any) { this._onChangeCallback = fn; }
-           registerOnTouched(fn: any) { this._onTouchedCallback = fn; }
-           doTouch() { this._onTouchedCallback(); }
+           constructor() {
+             ng2Instance = this;
+           }
+           writeValue(value: any) {
+             this._value = value;
+           }
+           registerOnChange(fn: any) {
+             this._onChangeCallback = fn;
+           }
+           registerOnTouched(fn: any) {
+             this._onTouchedCallback = fn;
+           }
+           doTouch() {
+             this._onTouchedCallback();
+           }
            doChange(newValue: string) {
              this._value = newValue;
              this._onChangeCallback(newValue);
@@ -392,7 +410,9 @@ export function main() {
          let destroyed = false;
          @Component({selector: 'ng2', template: 'test'})
          class Ng2Component implements OnDestroy {
-           ngOnDestroy() { destroyed = true; }
+           ngOnDestroy() {
+             destroyed = true;
+           }
          }
 
          @NgModule({
@@ -404,12 +424,13 @@ export function main() {
            ngDoBootstrap() {}
          }
 
-         const ng1Module =
-             angular.module('ng1', [])
-                 .directive(
-                     'ng1',
-                     () => { return {template: '<div ng-if="!destroyIt"><ng2></ng2></div>'}; })
-                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+         const ng1Module = angular.module('ng1', [])
+                               .directive(
+                                   'ng1',
+                                   () => {
+                                     return {template: '<div ng-if="!destroyIt"><ng2></ng2></div>'};
+                                   })
+                               .directive('ng2', downgradeComponent({component: Ng2Component}));
          const element = html('<ng1></ng1>');
          platformBrowserDynamic().bootstrapModule(Ng2Module).then((ref) => {
            const adapter = ref.injector.get(UpgradeModule) as UpgradeModule;
@@ -429,8 +450,7 @@ export function main() {
        async(() => {
 
          @Component({selector: 'ng2', template: 'test'})
-         class Ng2Component {
-         }
+         class Ng2Component {}
 
          @NgModule({
            declarations: [Ng2Component],
@@ -457,7 +477,7 @@ export function main() {
                              // an ng2 injector so it should use the `moduleInjector` instead.
                              const compiled = $compile('<ng2></ng2>');
                              const template = compiled($scope);
-                             $element.append !(template);
+                             $element.append!(template);
                            }
                          };
                        }
@@ -475,8 +495,7 @@ export function main() {
 
     it('should allow attribute selectors for downgraded components', async(() => {
          @Component({selector: '[itWorks]', template: 'It works'})
-         class WorksComponent {
-         }
+         class WorksComponent {}
 
          @NgModule({
            declarations: [WorksComponent],
@@ -499,12 +518,10 @@ export function main() {
 
     it('should allow attribute selectors for components in ng2', async(() => {
          @Component({selector: '[itWorks]', template: 'It works'})
-         class WorksComponent {
-         }
+         class WorksComponent {}
 
          @Component({selector: 'root-component', template: '<span itWorks></span>!'})
-         class RootComponent {
-         }
+         class RootComponent {}
 
          @NgModule({
            declarations: [RootComponent, WorksComponent],
@@ -527,8 +544,7 @@ export function main() {
 
     it('should respect hierarchical dependency injection for ng2', async(() => {
          @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
-         class ParentComponent {
-         }
+         class ParentComponent {}
 
          @Component({selector: 'child', template: 'child'})
          class ChildComponent {
@@ -562,7 +578,9 @@ export function main() {
 
          @Component({selector: 'ng2', template: ''})
          class Ng2Component {
-           constructor(injector: Injector) { componentInjector = injector; }
+           constructor(injector: Injector) {
+             componentInjector = injector;
+           }
          }
 
          @NgModule({
@@ -576,15 +594,14 @@ export function main() {
 
          @Component({template: ''})
          class LazyLoadedComponent {
-           constructor(public module: NgModuleRef<any>){};
+           constructor(public module: NgModuleRef<any>) {};
          }
 
          @NgModule({
            declarations: [LazyLoadedComponent],
            entryComponents: [LazyLoadedComponent],
          })
-         class LazyLoadedModule {
-         }
+         class LazyLoadedModule {}
 
          const ng1Module = angular.module('ng1', []).directive(
              'ng2', downgradeComponent({component: Ng2Component}));
@@ -598,7 +615,7 @@ export function main() {
            const modFactory = compiler.compileModuleSync(LazyLoadedModule);
            const childMod = modFactory.create(modInjector);
            const cmpFactory =
-               childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent) !;
+               childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent)!;
            const lazyCmp = cmpFactory.create(componentInjector);
 
            expect(lazyCmp.instance.module).toBe(childMod.injector);

@@ -4,7 +4,9 @@ module.exports = (gulp) => (done) => {
   const dependencyObject = madge(['dist/all/'], {
     format: 'cjs',
     extensions: ['.js'],
-    onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, '//'); }
+    onParseFile: function(data) {
+      data.src = data.src.replace(/\/\* circular \*\//g, '//');
+    }
   });
   const circularDependencies = dependencyObject.circular().getArray();
   if (circularDependencies.length > 0) {

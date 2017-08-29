@@ -8,7 +8,7 @@
 
 import {Provider} from '../di';
 import {Type} from '../type';
-import {TypeDecorator, makeDecorator} from '../util/decorators';
+import {makeDecorator, TypeDecorator} from '../util/decorators';
 
 /**
  * A wrapper around a module that also includes the providers.
@@ -59,7 +59,7 @@ export interface NgModuleDecorator {
    * Defines an NgModule.
    */
   (obj?: NgModule): TypeDecorator;
-  new (obj?: NgModule): NgModule;
+  new(obj?: NgModule): NgModule;
 }
 
 /**

@@ -16,7 +16,9 @@ function loadPage(url: string) {
 }
 
 describe('upgrade(static)', () => {
-  beforeEach(() => { loadPage('/upgrade/static/ts/'); });
+  beforeEach(() => {
+    loadPage('/upgrade/static/ts/');
+  });
   afterEach(verifyNoBrowserErrors);
 
   it('should render the `ng2-heroes` component', () => {

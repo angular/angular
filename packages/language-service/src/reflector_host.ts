@@ -13,10 +13,12 @@ import * as ts from 'typescript';
 class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
   constructor(private host: ts.LanguageServiceHost) {
     if (host.directoryExists)
-      this.directoryExists = directoryName => this.host.directoryExists !(directoryName);
+      this.directoryExists = directoryName => this.host.directoryExists!(directoryName);
   }
 
-  fileExists(fileName: string): boolean { return !!this.host.getScriptSnapshot(fileName); }
+  fileExists(fileName: string): boolean {
+    return !!this.host.getScriptSnapshot(fileName);
+  }
 
   readFile(fileName: string): string {
     let snapshot = this.host.getScriptSnapshot(fileName);
@@ -25,7 +27,7 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
     }
 
     // Typescript readFile() declaration should be `readFile(fileName: string): string | undefined
-    return undefined !;
+    return undefined!;
   }
 
   directoryExists: (directoryName: string) => boolean;
@@ -40,12 +42,14 @@ export class ReflectorHost extends CompilerHost {
       options: AngularCompilerOptions) {
     super(
         // The ancestor value for program is overridden below so passing null here is safe.
-        /* program */ null !, options,
+        /* program */ null!, options,
         new ModuleResolutionHostAdapter(new ReflectorModuleModuleResolutionHost(serviceHost)),
         {verboseInvalidExpression: true});
   }
 
-  protected get program() { return this.getProgram(); }
+  protected get program() {
+    return this.getProgram();
+  }
   protected set program(value: ts.Program) {
     // Discard the result set by ancestor constructor
   }

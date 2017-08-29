@@ -53,7 +53,9 @@ export class RouterOutlet implements OnDestroy, OnInit {
     parentContexts.onChildOutletCreated(this.name, this);
   }
 
-  ngOnDestroy(): void { this.parentContexts.onChildOutletDestroyed(this.name); }
+  ngOnDestroy(): void {
+    this.parentContexts.onChildOutletDestroyed(this.name);
+  }
 
   ngOnInit(): void {
     if (!this.activated) {
@@ -73,11 +75,17 @@ export class RouterOutlet implements OnDestroy, OnInit {
   }
 
   /** @deprecated since v4 **/
-  get locationInjector(): Injector { return this.location.injector; }
+  get locationInjector(): Injector {
+    return this.location.injector;
+  }
   /** @deprecated since v4 **/
-  get locationFactoryResolver(): ComponentFactoryResolver { return this.resolver; }
+  get locationFactoryResolver(): ComponentFactoryResolver {
+    return this.resolver;
+  }
 
-  get isActivated(): boolean { return !!this.activated; }
+  get isActivated(): boolean {
+    return !!this.activated;
+  }
 
   get component(): Object {
     if (!this.activated) throw new Error('Outlet is not activated');
@@ -133,7 +141,7 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
     this._activatedRoute = activatedRoute;
     const snapshot = activatedRoute._futureSnapshot;
-    const component = <any>snapshot._routeConfig !.component;
+    const component = <any>snapshot._routeConfig!.component;
     resolver = resolver || this.resolver;
     const factory = resolver.resolveComponentFactory(component);
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;

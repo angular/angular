@@ -35,7 +35,7 @@ function angularOnlyFilter(ls: ts.LanguageService): ts.LanguageService {
     getEncodedSemanticClassifications: (fileName, span) => <ts.Classifications><any>undefined,
     getCompletionsAtPosition: (fileName, position) => <ts.CompletionInfo><any>undefined,
     getCompletionEntryDetails: (fileName, position, entryName) =>
-                                   <ts.CompletionEntryDetails><any>undefined,
+        <ts.CompletionEntryDetails><any>undefined,
     getCompletionEntrySymbol: (fileName, position, entryName) => <ts.Symbol><any>undefined,
     getQuickInfoAtPosition: (fileName, position) => <ts.QuickInfo><any>undefined,
     getNameOrDottedNameSpan: (fileName, startPos, endPos) => <ts.TextSpan><any>undefined,
@@ -43,7 +43,7 @@ function angularOnlyFilter(ls: ts.LanguageService): ts.LanguageService {
     getSignatureHelpItems: (fileName, position) => <ts.SignatureHelpItems><any>undefined,
     getRenameInfo: (fileName, position) => <ts.RenameInfo><any>undefined,
     findRenameLocations: (fileName, position, findInStrings, findInComments) =>
-                             <ts.RenameLocation[]>[],
+        <ts.RenameLocation[]>[],
     getDefinitionAtPosition: (fileName, position) => <ts.DefinitionInfo[]>[],
     getTypeDefinitionAtPosition: (fileName, position) => <ts.DefinitionInfo[]>[],
     getImplementationAtPosition: (fileName, position) => <ts.ImplementationLocation[]>[],
@@ -80,7 +80,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
     oldLS = angularOnlyFilter(oldLS);
   }
 
-  function tryCall<T>(fileName: string | undefined, callback: () => T): T {
+  function tryCall<T>(fileName: string|undefined, callback: () => T): T {
     if (fileName && !oldLS.getProgram().getSourceFile(fileName)) {
       return undefined as any as T;
     }
@@ -144,10 +144,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getDocumentHighlights: tryFilenameTwoCall(ls.getDocumentHighlights),
       /** @deprecated */
       getOccurrencesAtPosition: tryFilenameOneCall(ls.getOccurrencesAtPosition),
-      getNavigateToItems:
-          (searchValue, maxResultCount, fileName, excludeDtsFiles) => tryCall(
-              fileName,
-              () => ls.getNavigateToItems(searchValue, maxResultCount, fileName, excludeDtsFiles)),
+      getNavigateToItems: (searchValue, maxResultCount, fileName, excludeDtsFiles) => tryCall(
+          fileName,
+          () => ls.getNavigateToItems(searchValue, maxResultCount, fileName, excludeDtsFiles)),
       getNavigationBarItems: tryFilenameCall(ls.getNavigationBarItems),
       getNavigationTree: tryFilenameCall(ls.getNavigationTree),
       getOutliningSpans: tryFilenameCall(ls.getOutliningSpans),
@@ -169,7 +168,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   oldLS = typescriptOnly(oldLS);
 
   for (const k in oldLS) {
-    (<any>proxy)[k] = function() { return (oldLS as any)[k].apply(oldLS, arguments); };
+    (<any>proxy)[k] = function() {
+      return (oldLS as any)[k].apply(oldLS, arguments);
+    };
   }
 
   function completionToEntry(c: Completion): ts.CompletionEntry {

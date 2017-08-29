@@ -44,7 +44,9 @@ export class TypeScriptNodeEmitter {
 // A recorded node is a subtype of the node that is marked as being recoreded. This is used
 // to ensure that NodeEmitterVisitor.record has been called on all nodes returned by the
 // NodeEmitterVisitor
-type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any; }) | null;
+type RecordedNode<T extends ts.Node = ts.Node> = (T&{
+  __recorded: any;
+})|null;
 
 function createLiteral(value: any) {
   if (value === null) {
@@ -69,8 +71,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
         .map(
             ([exportedFilePath, reexports]) => ts.createExportDeclaration(
                 /* decorators */ undefined,
-                /* modifiers */ undefined, ts.createNamedExports(reexports.map(
-                                               ({name, as}) => ts.createExportSpecifier(name, as))),
+                /* modifiers */ undefined,
+                ts.createNamedExports(
+                    reexports.map(({name, as}) => ts.createExportSpecifier(name, as))),
                 /* moduleSpecifier */ createLiteral(exportedFilePath)));
   }
 
@@ -80,13 +83,16 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
             ([namespace, prefix]) => ts.createImportDeclaration(
                 /* decorators */ undefined,
                 /* modifiers */ undefined,
-                /* importClause */ ts.createImportClause(
+                /* importClause */
+                ts.createImportClause(
                     /* name */<ts.Identifier>(undefined as any),
                     ts.createNamespaceImport(ts.createIdentifier(prefix))),
                 /* moduleSpecifier */ createLiteral(namespace)));
   }
 
-  getNodeMap() { return this._nodeMap; }
+  getNodeMap() {
+    return this._nodeMap;
+  }
 
   private record<T extends ts.Node>(ngNode: Node, tsNode: T|null): RecordedNode<T> {
     if (tsNode && !this._nodeMap.has(tsNode)) {
@@ -116,7 +122,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
           reexports = [];
           this._reexports.set(moduleName, reexports);
         }
-        reexports.push({name: name !, as: stmt.name});
+        reexports.push({name: name!, as: stmt.name});
         return null;
       }
     }
@@ -132,9 +138,10 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       const tsVarStmt =
           this.record(stmt, ts.createVariableStatement(/* modifiers */[], varDeclList));
       const exportStmt = this.record(
-          stmt, ts.createExportDeclaration(
-                    /*decorators*/ undefined, /*modifiers*/ undefined,
-                    ts.createNamedExports([ts.createExportSpecifier(stmt.name, stmt.name)])));
+          stmt,
+          ts.createExportDeclaration(
+              /*decorators*/ undefined, /*modifiers*/ undefined,
+              ts.createNamedExports([ts.createExportSpecifier(stmt.name, stmt.name)])));
       return [tsVarStmt, exportStmt];
     }
     return this.record(stmt, ts.createVariableStatement(this.getModifiers(stmt), varDeclList));
@@ -142,14 +149,15 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any) {
     return this.record(
-        stmt, ts.createFunctionDeclaration(
-                  /* decorators */ undefined, this.getModifiers(stmt),
-                  /* asteriskToken */ undefined, stmt.name, /* typeParameters */ undefined,
-                  stmt.params.map(
-                      p => ts.createParameter(
-                          /* decorators */ undefined, /* modifiers */ undefined,
-                          /* dotDotDotToken */ undefined, p.name)),
-                  /* type */ undefined, this._visitStatements(stmt.statements)));
+        stmt,
+        ts.createFunctionDeclaration(
+            /* decorators */ undefined, this.getModifiers(stmt),
+            /* asteriskToken */ undefined, stmt.name, /* typeParameters */ undefined,
+            stmt.params.map(
+                p => ts.createParameter(
+                    /* decorators */ undefined, /* modifiers */ undefined,
+                    /* dotDotDotToken */ undefined, p.name)),
+            /* type */ undefined, this._visitStatements(stmt.statements)));
   }
 
   visitExpressionStmt(stmt: ExpressionStatement) {
@@ -177,7 +185,8 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
         (stmt.constructorMethod && [ts.createConstructor(
                                        /* decorators */ undefined,
                                        /* modifiers */ undefined,
-                                       /* parameters */ stmt.constructorMethod.params.map(
+                                       /* parameters */
+                                       stmt.constructorMethod.params.map(
                                            p => ts.createParameter(
                                                /* decorators */ undefined,
                                                /* modifiers */ undefined,
@@ -190,7 +199,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                         .map(
                             method => ts.createMethodDeclaration(
                                 /* decorators */ undefined, /* modifiers */ undefined,
-                                /* astriskToken */ undefined, method.name !/* guarded by filter */,
+                                /* astriskToken */ undefined, method.name!/* guarded by filter */,
                                 /* questionToken */ undefined, /* typeParameters */ undefined,
                                 method.params.map(
                                     p => ts.createParameter(
@@ -198,13 +207,14 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                                         /* dotDotDotToken */ undefined, p.name)),
                                 /* type */ undefined, this._visitStatements(method.body)));
     return this.record(
-        stmt, ts.createClassDeclaration(
-                  /* decorators */ undefined, modifiers, stmt.name, /* typeParameters*/ undefined,
-                  stmt.parent && [ts.createHeritageClause(
-                                     ts.SyntaxKind.ExtendsKeyword,
-                                     [stmt.parent.visitExpression(this, null)])] ||
-                      [],
-                  [...fields, ...getters, ...constructor, ...methods]));
+        stmt,
+        ts.createClassDeclaration(
+            /* decorators */ undefined, modifiers, stmt.name, /* typeParameters*/ undefined,
+            stmt.parent &&
+                    [ts.createHeritageClause(
+                        ts.SyntaxKind.ExtendsKeyword, [stmt.parent.visitExpression(this, null)])] ||
+                [],
+            [...fields, ...getters, ...constructor, ...methods]));
   }
 
   visitIfStmt(stmt: IfStmt) {
@@ -218,26 +228,30 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitTryCatchStmt(stmt: TryCatchStmt): RecordedNode<ts.TryStatement> {
     return this.record(
-        stmt, ts.createTry(
-                  this._visitStatements(stmt.bodyStmts),
-                  ts.createCatchClause(
-                      CATCH_ERROR_NAME, this._visitStatementsPrefix(
-                                            [ts.createVariableStatement(
-                                                /* modifiers */ undefined,
-                                                [ts.createVariableDeclaration(
-                                                    CATCH_STACK_NAME, /* type */ undefined,
-                                                    ts.createPropertyAccess(
-                                                        ts.createIdentifier(CATCH_ERROR_NAME),
-                                                        ts.createIdentifier(CATCH_STACK_NAME)))])],
-                                            stmt.catchStmts)),
-                  /* finallyBlock */ undefined));
+        stmt,
+        ts.createTry(
+            this._visitStatements(stmt.bodyStmts),
+            ts.createCatchClause(
+                CATCH_ERROR_NAME,
+                this._visitStatementsPrefix(
+                    [ts.createVariableStatement(
+                        /* modifiers */ undefined,
+                        [ts.createVariableDeclaration(
+                            CATCH_STACK_NAME, /* type */ undefined,
+                            ts.createPropertyAccess(
+                                ts.createIdentifier(CATCH_ERROR_NAME),
+                                ts.createIdentifier(CATCH_STACK_NAME)))])],
+                    stmt.catchStmts)),
+            /* finallyBlock */ undefined));
   }
 
   visitThrowStmt(stmt: ThrowStmt) {
     return this.record(stmt, ts.createThrow(stmt.error.visitExpression(this, null)));
   }
 
-  visitCommentStmt(stmt: CommentStmt) { return null; }
+  visitCommentStmt(stmt: CommentStmt) {
+    return null;
+  }
 
   // ExpressionVisitor
   visitReadVarExpr(expr: ReadVarExpr) {
@@ -259,8 +273,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitWriteVarExpr(expr: WriteVarExpr): RecordedNode<ts.BinaryExpression> {
     return this.record(
-        expr, ts.createAssignment(
-                  ts.createIdentifier(expr.name), expr.value.visitExpression(this, null)));
+        expr,
+        ts.createAssignment(
+            ts.createIdentifier(expr.name), expr.value.visitExpression(this, null)));
   }
 
   visitWriteKeyExpr(expr: WriteKeyExpr): RecordedNode<ts.BinaryExpression> {
@@ -274,9 +289,10 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitWritePropExpr(expr: WritePropExpr): RecordedNode<ts.BinaryExpression> {
     return this.record(
-        expr, ts.createAssignment(
-                  ts.createPropertyAccess(expr.receiver.visitExpression(this, null), expr.name),
-                  expr.value.visitExpression(this, null)));
+        expr,
+        ts.createAssignment(
+            ts.createPropertyAccess(expr.receiver.visitExpression(this, null), expr.name),
+            expr.value.visitExpression(this, null)));
   }
 
   visitInvokeMethodExpr(expr: InvokeMethodExpr): RecordedNode<ts.CallExpression> {
@@ -290,19 +306,23 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitInvokeFunctionExpr(expr: InvokeFunctionExpr): RecordedNode<ts.CallExpression> {
     return this.record(
-        expr, ts.createCall(
-                  expr.fn.visitExpression(this, null), /* typeArguments */ undefined,
-                  expr.args.map(arg => arg.visitExpression(this, null))));
+        expr,
+        ts.createCall(
+            expr.fn.visitExpression(this, null), /* typeArguments */ undefined,
+            expr.args.map(arg => arg.visitExpression(this, null))));
   }
 
   visitInstantiateExpr(expr: InstantiateExpr): RecordedNode<ts.NewExpression> {
     return this.record(
-        expr, ts.createNew(
-                  expr.classExpr.visitExpression(this, null), /* typeArguments */ undefined,
-                  expr.args.map(arg => arg.visitExpression(this, null))));
+        expr,
+        ts.createNew(
+            expr.classExpr.visitExpression(this, null), /* typeArguments */ undefined,
+            expr.args.map(arg => arg.visitExpression(this, null))));
   }
 
-  visitLiteralExpr(expr: LiteralExpr) { return this.record(expr, createLiteral(expr.value)); }
+  visitLiteralExpr(expr: LiteralExpr) {
+    return this.record(expr, createLiteral(expr.value));
+  }
 
   visitExternalExpr(expr: ExternalExpr) {
     return this.record(expr, this._visitIdentifier(expr.value));
@@ -314,14 +334,15 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
         expr,
         ts.createConditional(
             expr.condition.visitExpression(this, null), expr.trueCase.visitExpression(this, null),
-            expr.falseCase !.visitExpression(this, null)));
+            expr.falseCase!.visitExpression(this, null)));
     ;
   }
 
   visitNotExpr(expr: NotExpr): RecordedNode<ts.PrefixUnaryExpression> {
     return this.record(
-        expr, ts.createPrefix(
-                  ts.SyntaxKind.ExclamationToken, expr.condition.visitExpression(this, null)));
+        expr,
+        ts.createPrefix(
+            ts.SyntaxKind.ExclamationToken, expr.condition.visitExpression(this, null)));
   }
 
   visitAssertNotNullExpr(expr: AssertNotNull): RecordedNode<ts.Expression> {
@@ -334,14 +355,15 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitFunctionExpr(expr: FunctionExpr) {
     return this.record(
-        expr, ts.createFunctionExpression(
-                  /* modifiers */ undefined, /* astriskToken */ undefined, /* name */ undefined,
-                  /* typeParameters */ undefined,
-                  expr.params.map(
-                      p => ts.createParameter(
-                          /* decorators */ undefined, /* modifiers */ undefined,
-                          /* dotDotDotToken */ undefined, p.name)),
-                  /* type */ undefined, this._visitStatements(expr.statements)));
+        expr,
+        ts.createFunctionExpression(
+            /* modifiers */ undefined, /* astriskToken */ undefined, /* name */ undefined,
+            /* typeParameters */ undefined,
+            expr.params.map(
+                p => ts.createParameter(
+                    /* decorators */ undefined, /* modifiers */ undefined,
+                    /* dotDotDotToken */ undefined, p.name)),
+            /* type */ undefined, this._visitStatements(expr.statements)));
   }
 
   visitBinaryOperatorExpr(expr: BinaryOperatorExpr): RecordedNode<ts.BinaryExpression> {
@@ -396,9 +418,10 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
         throw new Error(`Unknown operator: ${expr.operator}`);
     }
     return this.record(
-        expr, ts.createBinary(
-                  expr.lhs.visitExpression(this, null), binaryOperator,
-                  expr.rhs.visitExpression(this, null)));
+        expr,
+        ts.createBinary(
+            expr.lhs.visitExpression(this, null), binaryOperator,
+            expr.rhs.visitExpression(this, null)));
   }
 
   visitReadPropExpr(expr: ReadPropExpr): RecordedNode<ts.PropertyAccessExpression> {
@@ -420,21 +443,23 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   visitLiteralMapExpr(expr: LiteralMapExpr): RecordedNode<ts.ObjectLiteralExpression> {
     return this.record(
-        expr, ts.createObjectLiteral(expr.entries.map(
-                  entry => ts.createPropertyAssignment(
-                      entry.quoted || !_VALID_IDENTIFIER_RE.test(entry.key) ?
-                          ts.createLiteral(entry.key) :
-                          entry.key,
-                      entry.value.visitExpression(this, null)))));
+        expr,
+        ts.createObjectLiteral(expr.entries.map(
+            entry => ts.createPropertyAssignment(
+                entry.quoted || !_VALID_IDENTIFIER_RE.test(entry.key) ?
+                    ts.createLiteral(entry.key) :
+                    entry.key,
+                entry.value.visitExpression(this, null)))));
   }
 
   visitCommaExpr(expr: CommaExpr): RecordedNode<ts.Expression> {
     return this.record(
-        expr, expr.parts.map(e => e.visitExpression(this, null))
-                  .reduce<ts.Expression|null>(
-                      (left, right) =>
-                          left ? ts.createBinary(left, ts.SyntaxKind.CommaToken, right) : right,
-                      null));
+        expr,
+        expr.parts.map(e => e.visitExpression(this, null))
+            .reduce<ts.Expression|null>(
+                (left, right) =>
+                    left ? ts.createBinary(left, ts.SyntaxKind.CommaToken, right) : right,
+                null));
   }
 
   private _visitStatements(statements: Statement[]): ts.Block {
@@ -460,13 +485,13 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     }
     // name can only be null during JIT which never executes this code.
     let result: ts.Expression =
-        prefixIdent ? ts.createPropertyAccess(prefixIdent, name !) : ts.createIdentifier(name !);
+        prefixIdent ? ts.createPropertyAccess(prefixIdent, name!) : ts.createIdentifier(name!);
     return result;
   }
 }
 
 
-function getMethodName(methodRef: {name: string | null; builtin: BuiltinMethod | null}): string {
+function getMethodName(methodRef: {name: string|null; builtin: BuiltinMethod | null}): string {
   if (methodRef.name) {
     return methodRef.name;
   } else {

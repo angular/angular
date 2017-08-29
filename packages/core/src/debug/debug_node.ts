@@ -9,7 +9,9 @@
 import {Injector} from '../di';
 import {DebugContext} from '../view/index';
 
-export class EventListener { constructor(public name: string, public callback: Function){}; }
+export class EventListener {
+  constructor(public name: string, public callback: Function) {};
+}
 
 /**
  * @experimental All debugging apis are currently experimental.
@@ -29,15 +31,25 @@ export class DebugNode {
     this.listeners = [];
   }
 
-  get injector(): Injector { return this._debugContext.injector; }
+  get injector(): Injector {
+    return this._debugContext.injector;
+  }
 
-  get componentInstance(): any { return this._debugContext.component; }
+  get componentInstance(): any {
+    return this._debugContext.component;
+  }
 
-  get context(): any { return this._debugContext.context; }
+  get context(): any {
+    return this._debugContext.context;
+  }
 
-  get references(): {[key: string]: any} { return this._debugContext.references; }
+  get references(): {[key: string]: any} {
+    return this._debugContext.references;
+  }
 
-  get providerTokens(): any[] { return this._debugContext.providerTokens; }
+  get providerTokens(): any[] {
+    return this._debugContext.providerTokens;
+  }
 }
 
 /**
@@ -46,9 +58,9 @@ export class DebugNode {
 export class DebugElement extends DebugNode {
   name: string;
   properties: {[key: string]: any};
-  attributes: {[key: string]: string | null};
+  attributes: {[key: string]: string|null};
   classes: {[key: string]: boolean};
-  styles: {[key: string]: string | null};
+  styles: {[key: string]: string|null};
   childNodes: DebugNode[];
   nativeElement: any;
 

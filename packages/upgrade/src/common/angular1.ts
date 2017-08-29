@@ -8,13 +8,13 @@
 
 export type Ng1Token = string;
 
-export type Ng1Expression = string | Function;
+export type Ng1Expression = string|Function;
 
 export interface IAnnotatedFunction extends Function { $inject?: Ng1Token[]; }
 
-export type IInjectable = (Ng1Token | Function)[] | IAnnotatedFunction;
+export type IInjectable = (Ng1Token|Function)[]|IAnnotatedFunction;
 
-export type SingleOrListOrMap<T> = T | T[] | {[key: string]: T};
+export type SingleOrListOrMap<T> = T|T[]|{[key: string]: T};
 
 export interface IModule {
   name: string;
@@ -79,7 +79,7 @@ export interface IDirective {
   transclude?: DirectiveTranscludeProperty;
 }
 export type DirectiveRequireProperty = SingleOrListOrMap<string>;
-export type DirectiveTranscludeProperty = boolean | 'element' | {[key: string]: string};
+export type DirectiveTranscludeProperty = boolean|'element'|{[key: string]: string};
 export interface IDirectiveCompileFn {
   (templateElement: IAugmentedJQuery, templateAttributes: IAttributes,
    transclude: ITranscludeFunction): IDirectivePrePost;
@@ -115,7 +115,7 @@ export interface ICloneAttachFunction {
   // Let's hint but not force cloneAttachFn's signature
   (clonedElement?: IAugmentedJQuery, scope?: IScope): any;
 }
-export type IAugmentedJQuery = Node[] & {
+export type IAugmentedJQuery = Node[]&{
   on?: (name: string, fn: () => void) => void;
   data?: (name: string, value?: any) => any;
   text?: () => string;
@@ -123,7 +123,7 @@ export type IAugmentedJQuery = Node[] & {
   contents?: () => IAugmentedJQuery;
   parent?: () => IAugmentedJQuery;
   empty?: () => void;
-  append?: (content: IAugmentedJQuery | string) => IAugmentedJQuery;
+  append?: (content: IAugmentedJQuery|string) => IAugmentedJQuery;
   controller?: (name: string) => any;
   isolateScope?: () => IScope;
   injector?: () => IInjectorService;
@@ -155,7 +155,7 @@ export interface ITemplateRequestService {
   (template: string|any /* TrustedResourceUrl */, ignoreRequestError?: boolean): Promise<string>;
   totalPendingRequests: number;
 }
-export type IController = string | IInjectable;
+export type IController = string|IInjectable;
 export interface IControllerService {
   (controllerConstructor: IController, locals?: any, later?: any, ident?: any): any;
   (controllerName: string, locals?: any): any;
@@ -217,10 +217,10 @@ function noNg() {
 
 
 let angular: {
-  bootstrap: (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
-                 IInjectorService,
+  bootstrap: (e: Element, modules: (string|IInjectable)[], config?: IAngularBootstrapConfig) =>
+      IInjectorService,
   module: (prefix: string, dependencies?: string[]) => IModule,
-  element: (e: Element | string) => IAugmentedJQuery,
+  element: (e: Element|string) => IAugmentedJQuery,
   version: {major: number},
   resumeBootstrap: () => void,
   getTestability: (e: Element) => ITestabilityService
@@ -262,13 +262,13 @@ export function getAngularLib(): any {
 }
 
 export const bootstrap =
-    (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
+    (e: Element, modules: (string|IInjectable)[], config?: IAngularBootstrapConfig) =>
         angular.bootstrap(e, modules, config);
 
 export const module = (prefix: string, dependencies?: string[]) =>
     angular.module(prefix, dependencies);
 
-export const element = (e: Element | string) => angular.element(e);
+export const element = (e: Element|string) => angular.element(e);
 
 export const resumeBootstrap = () => angular.resumeBootstrap();
 

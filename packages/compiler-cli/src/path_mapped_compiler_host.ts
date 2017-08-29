@@ -91,7 +91,7 @@ export class PathMappedCompilerHost extends CompilerHost {
 
     const importModuleName = importedFile.replace(EXT, '');
     const parts = importModuleName.split(path.sep).filter(p => !!p);
-    let foundRelativeImport: string = undefined !;
+    let foundRelativeImport: string = undefined!;
     for (let index = parts.length - 1; index >= 0; index--) {
       let candidate = parts.slice(index, parts.length).join(path.sep);
       if (resolvable(candidate)) {
@@ -136,6 +136,6 @@ export class PathMappedCompilerHost extends CompilerHost {
         return metadata ? [metadata] : [];
       }
     }
-    return null !;
+    return null!;
   }
 }

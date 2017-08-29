@@ -7,7 +7,7 @@
  */
 
 import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
-import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
+import {browser, by, element, ExpectedConditions, protractor} from 'protractor';
 
 const URL = 'all/playground/src/web_workers/message_broker/index.html';
 

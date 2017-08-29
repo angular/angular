@@ -14,8 +14,7 @@ import {BrowserModule} from '@angular/platform-browser';
 
 // #docregion SimpleExample
 @Component({selector: 'hello-world', template: 'Hello World!'})
-class HelloWorld {
-}
+class HelloWorld {}
 
 @Component({
   selector: 'ng-component-outlet-simple-example',
@@ -63,8 +62,7 @@ class NgTemplateOutletCompleteExample {
 
 // #docregion NgModuleFactoryExample
 @Component({selector: 'other-module-component', template: `Other Module Component!`})
-class OtherModuleComponent {
-}
+class OtherModuleComponent {}
 
 @Component({
   selector: 'ng-component-outlet-other-module-example',
@@ -77,7 +75,9 @@ class NgTemplateOutletOtherModuleExample {
   OtherModuleComponent = OtherModuleComponent;
   myModule: NgModuleFactory<any>;
 
-  constructor(compiler: Compiler) { this.myModule = compiler.compileModuleSync(OtherModule); }
+  constructor(compiler: Compiler) {
+    this.myModule = compiler.compileModuleSync(OtherModule);
+  }
 }
 // #enddocregion
 
@@ -90,8 +90,7 @@ class NgTemplateOutletOtherModuleExample {
              <hr/>
              <ng-component-outlet-other-module-example></ng-component-outlet-other-module-example>`
 })
-class ExampleApp {
-}
+class ExampleApp {}
 
 @NgModule({
   imports: [BrowserModule],
@@ -102,13 +101,11 @@ class ExampleApp {
   entryComponents: [HelloWorld, CompleteComponent],
   bootstrap: [ExampleApp]
 })
-export class AppModule {
-}
+export class AppModule {}
 
 @NgModule({
   imports: [CommonModule],
   declarations: [OtherModuleComponent],
   entryComponents: [OtherModuleComponent]
 })
-export class OtherModule {
-}
+export class OtherModule {}

@@ -37,9 +37,13 @@ export class NestedFormGroupComp {
     email: new FormControl()
   });
 
-  get first(): any { return this.form.get('name.first'); }
+  get first(): any {
+    return this.form.get('name.first');
+  }
 
-  get name(): any { return this.form.get('name'); }
+  get name(): any {
+    return this.form.get('name');
+  }
 
   onSubmit() {
     console.log(this.first.value);  // 'Nancy'
@@ -48,6 +52,8 @@ export class NestedFormGroupComp {
     console.log(this.form.status);  // VALID
   }
 
-  setPreset() { this.name.setValue({first: 'Bess', last: 'Marvin'}); }
+  setPreset() {
+    this.name.setValue({first: 'Bess', last: 'Marvin'});
+  }
 }
 // #enddocregion

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, EventEmitter, forwardRef, Host, Inject, Input, OnChanges, OnDestroy, Optional, Output, Self, SimpleChanges} from '@angular/core';
 
 import {FormControl, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
@@ -108,8 +108,7 @@ const resolvedPromise = Promise.resolve(null);
   providers: [formControlBinding],
   exportAs: 'ngModel'
 })
-export class NgModel extends NgControl implements OnChanges,
-    OnDestroy {
+export class NgModel extends NgControl implements OnChanges, OnDestroy {
   /** @internal */
   _control = new FormControl();
   /** @internal */
@@ -186,17 +185,25 @@ export class NgModel extends NgControl implements OnChanges,
                 }
               }
 
-              ngOnDestroy(): void { this.formDirective && this.formDirective.removeControl(this); }
+              ngOnDestroy(): void {
+                this.formDirective && this.formDirective.removeControl(this);
+              }
 
-              get control(): FormControl { return this._control; }
+              get control(): FormControl {
+                return this._control;
+              }
 
               get path(): string[] {
                 return this._parent ? controlPath(this.name, this._parent) : [this.name];
               }
 
-              get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
+              get formDirective(): any {
+                return this._parent ? this._parent.formDirective : null;
+              }
 
-              get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
+              get validator(): ValidatorFn|null {
+                return composeValidators(this._rawValidators);
+              }
 
               get asyncValidator(): AsyncValidatorFn|null {
                 return composeAsyncValidators(this._rawAsyncValidators);
@@ -255,8 +262,9 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _updateValue(value: any): void {
-                resolvedPromise.then(
-                    () => { this.control.setValue(value, {emitViewToModelChange: false}); });
+                resolvedPromise.then(() => {
+                  this.control.setValue(value, {emitViewToModelChange: false});
+                });
               }
 
               private _updateDisabled(changes: SimpleChanges) {

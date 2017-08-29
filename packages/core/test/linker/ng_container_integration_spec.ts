@@ -13,8 +13,12 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
-  describe('jit', () => { declareTests({useJit: true}); });
-  describe('no jit', () => { declareTests({useJit: false}); });
+  describe('jit', () => {
+    declareTests({useJit: true});
+  });
+  describe('no jit', () => {
+    declareTests({useJit: false});
+  });
 }
 
 function declareTests({useJit}: {useJit: boolean}) {
@@ -132,7 +136,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
-      const q = fixture.debugElement.children[0].references !['q'];
+      const q = fixture.debugElement.children[0].references!['q'];
       fixture.detectChanges();
 
       expect(q.textDirChildren.length).toEqual(1);
@@ -145,7 +149,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       const fixture = TestBed.createComponent(MyComp);
 
       fixture.detectChanges();
-      const q = fixture.debugElement.children[0].references !['q'];
+      const q = fixture.debugElement.children[0].references!['q'];
       fixture.detectChanges();
 
       expect(q.textDirChildren.length).toEqual(1);
@@ -164,7 +168,9 @@ class NeedsContentChildren implements AfterContentInit {
   @ContentChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterContentInit: number;
 
-  ngAfterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
+  ngAfterContentInit() {
+    this.numberOfChildrenAfterContentInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'needs-view-children', template: '<div text></div>'})
@@ -172,12 +178,13 @@ class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
   numberOfChildrenAfterViewInit: number;
 
-  ngAfterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
+  ngAfterViewInit() {
+    this.numberOfChildrenAfterViewInit = this.textDirChildren.length;
+  }
 }
 
 @Component({selector: 'simple', template: 'SIMPLE(<ng-content></ng-content>)'})
-class Simple {
-}
+class Simple {}
 
 @Component({selector: 'my-comp', template: ''})
 class MyComp {

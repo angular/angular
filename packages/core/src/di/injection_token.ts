@@ -32,7 +32,9 @@
 export class OpaqueToken {
   constructor(protected _desc: string) {}
 
-  toString(): string { return `Token ${this._desc}`; }
+  toString(): string {
+    return `Token ${this._desc}`;
+  }
 }
 
 /**
@@ -61,10 +63,16 @@ export class InjectionToken<T> extends OpaqueToken {
   // This unused property is needed here so that TS can differentiate InjectionToken from
   // OpaqueToken since otherwise they would have the same shape and be treated as equivalent.
   private _differentiate_from_OpaqueToken_structurally: any;
-  constructor(desc: string) { super(desc); }
+  constructor(desc: string) {
+    super(desc);
+  }
 
-  toString(): string { return `InjectionToken ${this._desc}`; }
+  toString(): string {
+    return `InjectionToken ${this._desc}`;
+  }
 
   /** @internal */
-  get ngMetadataName() { return 'InjectionToken'; }
+  get ngMetadataName() {
+    return 'InjectionToken';
+  }
 }

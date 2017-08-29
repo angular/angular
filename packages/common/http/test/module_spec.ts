@@ -40,11 +40,15 @@ class TestInterceptor implements HttpInterceptor {
 }
 
 class InterceptorA extends TestInterceptor {
-  constructor() { super('A'); }
+  constructor() {
+    super('A');
+  }
 }
 
 class InterceptorB extends TestInterceptor {
-  constructor() { super('B'); }
+  constructor() {
+    super('B');
+  }
 }
 
 export function main() {

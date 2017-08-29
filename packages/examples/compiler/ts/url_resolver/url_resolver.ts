@@ -29,8 +29,7 @@ class MyUrlResolver extends UrlResolver {
   providers: [{provide: UrlResolver, useClass: MyUrlResolver}],
   bootstrap: [MyApp]
 })
-class AppModule {
-}
+class AppModule {}
 
 export function main() {
   platformBrowserDynamic().bootstrapModule(AppModule);

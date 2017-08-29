@@ -52,9 +52,11 @@ function codeGenTest(forceError = false) {
 
   const config = tsc.readConfiguration(project, basePath);
   const delegateHost = ts.createCompilerHost(config.parsed.options, true);
-  const host: ts.CompilerHost = Object.assign(
-      {}, delegateHost,
-      {writeFile: (fileName: string, ...rest: any[]) => { wroteFiles.push(fileName); }});
+  const host: ts.CompilerHost = Object.assign({}, delegateHost, {
+    writeFile: (fileName: string, ...rest: any[]) => {
+      wroteFiles.push(fileName);
+    }
+  });
   const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
 
   config.ngOptions.basePath = basePath;
@@ -66,7 +68,9 @@ function codeGenTest(forceError = false) {
   return __NGTOOLS_PRIVATE_API_2
       .codeGen({
         basePath,
-        compilerOptions: config.parsed.options, program, host,
+        compilerOptions: config.parsed.options,
+        program,
+        host,
 
         angularCompilerOptions: config.ngOptions,
 
@@ -131,9 +135,11 @@ function i18nTest() {
 
   const config = tsc.readConfiguration(project, basePath);
   const delegateHost = ts.createCompilerHost(config.parsed.options, true);
-  const host: ts.CompilerHost = Object.assign(
-      {}, delegateHost,
-      {writeFile: (fileName: string, ...rest: any[]) => { wroteFiles.push(fileName); }});
+  const host: ts.CompilerHost = Object.assign({}, delegateHost, {
+    writeFile: (fileName: string, ...rest: any[]) => {
+      wroteFiles.push(fileName);
+    }
+  });
   const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
 
   config.ngOptions.basePath = basePath;
@@ -142,7 +148,9 @@ function i18nTest() {
   return __NGTOOLS_PRIVATE_API_2
       .extractI18n({
         basePath,
-        compilerOptions: config.parsed.options, program, host,
+        compilerOptions: config.parsed.options,
+        program,
+        host,
         angularCompilerOptions: config.ngOptions,
         i18nFormat: 'xlf',
         locale: undefined,
@@ -227,7 +235,8 @@ function lazyRoutesTest() {
 
   // Verify that all expectations were met.
   assert.deepEqual(
-      Object.keys(lazyRoutes), Object.keys(expectations), `Expected routes listed to be: \n` +
+      Object.keys(lazyRoutes), Object.keys(expectations),
+      `Expected routes listed to be: \n` +
           `  ${JSON.stringify(Object.keys(expectations))}\n` +
           `Actual:\n` +
           `  ${JSON.stringify(Object.keys(lazyRoutes))}\n`);

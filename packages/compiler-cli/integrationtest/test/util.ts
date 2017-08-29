@@ -13,7 +13,7 @@ import {platformServerTesting} from '@angular/platform-server/testing';
 import {MainModule} from '../src/module';
 import {MainModuleNgFactory} from '../src/module.ngfactory';
 
-let mainModuleRef: NgModuleRef<MainModule> = null !;
+let mainModuleRef: NgModuleRef<MainModule> = null!;
 beforeEach((done) => {
   platformServerTesting().bootstrapModuleFactory(MainModuleNgFactory).then((moduleRef: any) => {
     mainModuleRef = moduleRef;

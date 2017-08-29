@@ -82,7 +82,10 @@ export interface NodeCheckFn {
    v3?: any, v4?: any, v5?: any, v6?: any, v7?: any, v8?: any, v9?: any): any;
 }
 
-export const enum ArgumentType {Inline = 0, Dynamic = 1}
+export const enum ArgumentType {
+  Inline = 0,
+  Dynamic = 1
+}
 
 export interface ViewHandleEventFn {
   (view: ViewData, nodeIndex: number, eventName: string, event: any): boolean;
@@ -222,7 +225,10 @@ export interface OutputDef {
   propName: string|null;
 }
 
-export const enum OutputType {ElementOutput, DirectiveOutput}
+export const enum OutputType {
+  ElementOutput,
+  DirectiveOutput
+}
 
 export const enum QueryValueType {
   ElementRef = 0,
@@ -301,7 +307,10 @@ export interface QueryBindingDef {
   bindingType: QueryBindingType;
 }
 
-export const enum QueryBindingType {First = 0, All = 1}
+export const enum QueryBindingType {
+  First = 0,
+  All = 1
+}
 
 export interface NgContentDef {
   /**
@@ -495,7 +504,10 @@ export abstract class DebugContext {
 // Other
 // -------------------------------------
 
-export const enum CheckType {CheckAndUpdate, CheckNoChanges}
+export const enum CheckType {
+  CheckAndUpdate,
+  CheckNoChanges
+}
 
 export interface ProviderOverride {
   token: any;
@@ -536,20 +548,20 @@ export interface Services {
  * debug mode can hook it. It is lazily filled when `isDevMode` is known.
  */
 export const Services: Services = {
-  setCurrentNode: undefined !,
-  createRootView: undefined !,
-  createEmbeddedView: undefined !,
-  createComponentView: undefined !,
-  createNgModuleRef: undefined !,
-  overrideProvider: undefined !,
-  clearProviderOverrides: undefined !,
-  checkAndUpdateView: undefined !,
-  checkNoChangesView: undefined !,
-  destroyView: undefined !,
-  resolveDep: undefined !,
-  createDebugContext: undefined !,
-  handleEvent: undefined !,
-  updateDirectives: undefined !,
-  updateRenderer: undefined !,
-  dirtyParentQueries: undefined !,
+  setCurrentNode: undefined!,
+  createRootView: undefined!,
+  createEmbeddedView: undefined!,
+  createComponentView: undefined!,
+  createNgModuleRef: undefined!,
+  overrideProvider: undefined!,
+  clearProviderOverrides: undefined!,
+  checkAndUpdateView: undefined!,
+  checkNoChangesView: undefined!,
+  destroyView: undefined!,
+  resolveDep: undefined!,
+  createDebugContext: undefined!,
+  handleEvent: undefined!,
+  updateDirectives: undefined!,
+  updateRenderer: undefined!,
+  dirtyParentQueries: undefined!,
 };

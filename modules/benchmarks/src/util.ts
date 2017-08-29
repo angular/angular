@@ -35,7 +35,7 @@ export function getStringParameter(name: string) {
 }
 
 export function bindAction(selector: string, callback: () => void) {
-  document.querySelector(selector) !.addEventListener('click', callback);
+  document.querySelector(selector)!.addEventListener('click', callback);
 }
 
 

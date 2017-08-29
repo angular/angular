@@ -18,7 +18,5 @@ import {Component} from '@angular/core';
     <p>The custom date is {{today | date:'yyyy-mm-dd HH:mm'}}</p>
   </div>`
 })
-export class DatePipeComponent {
-  today: number = Date.now();
-}
+export class DatePipeComponent { today: number = Date.now(); }
 // #enddocregion

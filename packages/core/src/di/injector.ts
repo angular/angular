@@ -137,7 +137,7 @@ export class StaticInjector implements Injector {
 }
 
 type SupportedProvider =
-    ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider;
+    ValueProvider|ExistingProvider|StaticClassProvider|ConstructorProvider|FactoryProvider;
 
 interface Record {
   fn: Function;
@@ -233,7 +233,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
 }
 
 function tryResolveToken(
-    token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
+    token: any, record: Record|undefined, records: Map<any, Record>, parent: Injector,
     notFoundValue: any): any {
   try {
     return resolveToken(token, record, records, parent, notFoundValue);
@@ -253,7 +253,7 @@ function tryResolveToken(
 }
 
 function resolveToken(
-    token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
+    token: any, record: Record|undefined, records: Map<any, Record>, parent: Injector,
     notFoundValue: any): any {
   let value;
   if (record) {

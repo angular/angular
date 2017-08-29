@@ -13,7 +13,9 @@ export function main() {
   describe('EventEmitter', () => {
     let emitter: EventEmitter<any>;
 
-    beforeEach(() => { emitter = new EventEmitter(); });
+    beforeEach(() => {
+      emitter = new EventEmitter();
+    });
 
     it('should call the next callback',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -40,20 +42,34 @@ export function main() {
 
     it('should work when no throw callback is provided',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         emitter.subscribe({next: () => {}, error: (_: any) => { async.done(); }});
+         emitter.subscribe({
+           next: () => {},
+           error: (_: any) => {
+             async.done();
+           }
+         });
          emitter.error('Boom');
        }));
 
     it('should call the return callback',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         emitter.subscribe(
-             {next: () => {}, error: (_: any) => {}, complete: () => { async.done(); }});
+         emitter.subscribe({
+           next: () => {},
+           error: (_: any) => {},
+           complete: () => {
+             async.done();
+           }
+         });
          emitter.complete();
        }));
 
     it('should subscribe to the wrapper synchronously', () => {
       let called = false;
-      emitter.subscribe({next: (value: any) => { called = true; }});
+      emitter.subscribe({
+        next: (value: any) => {
+          called = true;
+        }
+      });
       emitter.emit(99);
 
       expect(called).toBe(true);

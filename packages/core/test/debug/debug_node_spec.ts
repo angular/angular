@@ -9,7 +9,7 @@
 
 import {EventEmitter, Injectable, NO_ERRORS_SCHEMA} from '@angular/core';
 import {Component, Directive, Input} from '@angular/core/src/metadata';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -18,18 +18,26 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 class Logger {
   logs: string[];
 
-  constructor() { this.logs = []; }
+  constructor() {
+    this.logs = [];
+  }
 
-  add(thing: string) { this.logs.push(thing); }
+  add(thing: string) {
+    this.logs.push(thing);
+  }
 }
 
 @Directive({selector: '[message]', inputs: ['message']})
 class MessageDir {
   logger: Logger;
 
-  constructor(logger: Logger) { this.logger = logger; }
+  constructor(logger: Logger) {
+    this.logger = logger;
+  }
 
-  set message(newMessage: string) { this.logger.add(newMessage); }
+  set message(newMessage: string) {
+    this.logger.add(newMessage);
+  }
 }
 
 @Component({
@@ -42,7 +50,9 @@ class MessageDir {
 class ChildComp {
   childBinding: string;
 
-  constructor() { this.childBinding = 'Original'; }
+  constructor() {
+    this.childBinding = 'Original';
+  }
 }
 
 @Component({
@@ -56,14 +66,18 @@ class ChildComp {
 })
 class ParentComp {
   parentBinding: string;
-  constructor() { this.parentBinding = 'OriginalParent'; }
+  constructor() {
+    this.parentBinding = 'OriginalParent';
+  }
 }
 
 @Directive({selector: 'custom-emitter', outputs: ['myevent']})
 class CustomEmitter {
   myevent: EventEmitter<any>;
 
-  constructor() { this.myevent = new EventEmitter(); }
+  constructor() {
+    this.myevent = new EventEmitter();
+  }
 }
 
 @Component({
@@ -80,9 +94,13 @@ class EventsComp {
     this.customed = false;
   }
 
-  handleClick() { this.clicked = true; }
+  handleClick() {
+    this.clicked = true;
+  }
 
-  handleCustom() { this.customed = true; }
+  handleCustom() {
+    this.customed = true;
+  }
 }
 
 @Component({
@@ -104,7 +122,9 @@ class ConditionalContentComp {
 })
 class ConditionalParentComp {
   parentBinding: string;
-  constructor() { this.parentBinding = 'OriginalParent'; }
+  constructor() {
+    this.parentBinding = 'OriginalParent';
+  }
 }
 
 @Component({
@@ -117,12 +137,13 @@ class ConditionalParentComp {
 })
 class UsingFor {
   stuff: string[];
-  constructor() { this.stuff = ['one', 'two', 'three']; }
+  constructor() {
+    this.stuff = ['one', 'two', 'three'];
+  }
 }
 
 @Directive({selector: '[mydir]', exportAs: 'mydir'})
-class MyDir {
-}
+class MyDir {}
 
 @Component({
   selector: 'locals-comp',
@@ -130,8 +151,7 @@ class MyDir {
    <div mydir #alice="mydir"></div>
  `,
 })
-class LocalsComp {
-}
+class LocalsComp {}
 
 @Component({
   selector: 'bank-account',
@@ -318,7 +338,7 @@ export function main() {
       fixture = TestBed.createComponent(LocalsComp);
       fixture.detectChanges();
 
-      expect(fixture.debugElement.children[0].references !['alice']).toBeAnInstanceOf(MyDir);
+      expect(fixture.debugElement.children[0].references!['alice']).toBeAnInstanceOf(MyDir);
     });
 
     it('should allow injecting from the element injector', () => {

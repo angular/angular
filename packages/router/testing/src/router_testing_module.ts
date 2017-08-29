@@ -9,7 +9,7 @@
 import {Location, LocationStrategy} from '@angular/common';
 import {MockLocationStrategy, SpyLocation} from '@angular/common/testing';
 import {Compiler, Injectable, Injector, ModuleWithProviders, NgModule, NgModuleFactory, NgModuleFactoryLoader, Optional} from '@angular/core';
-import {ChildrenOutletContexts, NoPreloading, PreloadingStrategy, ROUTES, Route, Router, RouterModule, Routes, UrlHandlingStrategy, UrlSerializer, provideRoutes, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS, ɵflatten as flatten} from '@angular/router';
+import {ChildrenOutletContexts, NoPreloading, PreloadingStrategy, provideRoutes, Route, Router, RouterModule, ROUTES, Routes, UrlHandlingStrategy, UrlSerializer, ɵflatten as flatten, ɵROUTER_PROVIDERS as ROUTER_PROVIDERS} from '@angular/router';
 
 
 
@@ -63,7 +63,9 @@ export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
   /**
    * @docsNotRequired
    */
-  get stubbedModules(): {[path: string]: any} { return this._stubbedModules; }
+  get stubbedModules(): {[path: string]: any} {
+    return this._stubbedModules;
+  }
 
   constructor(private compiler: Compiler) {}
 
@@ -86,7 +88,7 @@ export function setupTestingRouter(
     loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][],
     urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
-      null !, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
+      null!, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
   if (urlHandlingStrategy) {
     router.urlHandlingStrategy = urlHandlingStrategy;
   }

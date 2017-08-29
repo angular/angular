@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Injector} from '@angular/core';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 import {MockDirectiveResolver} from '../testing';
@@ -42,13 +42,10 @@ export function main() {
 }
 
 @Directive({selector: 'some-directive'})
-class SomeDirective {
-}
+class SomeDirective {}
 
 @Component({selector: 'cmp', template: 'template'})
-class SomeComponent {
-}
+class SomeComponent {}
 
 @Directive({selector: 'some-other-directive'})
-class SomeOtherDirective {
-}
+class SomeOtherDirective {}

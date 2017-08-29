@@ -46,7 +46,9 @@ export function devModeEqual(a: any, b: any): boolean {
 export class WrappedValue {
   constructor(public wrapped: any) {}
 
-  static wrap(value: any): WrappedValue { return new WrappedValue(value); }
+  static wrap(value: any): WrappedValue {
+    return new WrappedValue(value);
+  }
 }
 
 /**
@@ -63,7 +65,9 @@ export class ValueUnwrapper {
     return value;
   }
 
-  reset() { this.hasWrappedValue = false; }
+  reset() {
+    this.hasWrappedValue = false;
+  }
 }
 
 /**
@@ -76,7 +80,9 @@ export class SimpleChange {
   /**
    * Check whether the new value is the first value assigned.
    */
-  isFirstChange(): boolean { return this.firstChange; }
+  isFirstChange(): boolean {
+    return this.firstChange;
+  }
 }
 
 export function isListLikeIterable(obj: any): boolean {

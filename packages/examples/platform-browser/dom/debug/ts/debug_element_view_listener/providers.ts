@@ -12,12 +12,10 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 @Component({selector: 'my-component'})
-class MyAppComponent {
-}
+class MyAppComponent {}
 
 // #docregion providers
 @NgModule({imports: [BrowserModule], bootstrap: [MyAppComponent]})
-class AppModule {
-}
+class AppModule {}
 platformBrowserDynamic().bootstrapModule(AppModule);
 // #enddocregion

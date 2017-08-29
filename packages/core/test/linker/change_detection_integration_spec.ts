@@ -9,7 +9,7 @@
 import {DomElementSchemaRegistry, ElementSchemaRegistry, ResourceLoader, UrlResolver} from '@angular/compiler';
 import {MockResourceLoader, MockSchemaRegistry} from '@angular/compiler/testing';
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -117,31 +117,37 @@ export function main() {
     });
 
     describe('expressions', () => {
-      it('should support literals',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue(10)).toEqual(['someProp=10']); }));
+      it('should support literals', fakeAsync(() => {
+           expect(_bindAndCheckSimpleValue(10)).toEqual(['someProp=10']);
+         }));
 
-      it('should strip quotes from literals',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"str"')).toEqual(['someProp=str']); }));
+      it('should strip quotes from literals', fakeAsync(() => {
+           expect(_bindAndCheckSimpleValue('"str"')).toEqual(['someProp=str']);
+         }));
 
       it('should support newlines in literals', fakeAsync(() => {
            expect(_bindAndCheckSimpleValue('"a\n\nb"')).toEqual(['someProp=a\n\nb']);
          }));
 
-      it('should support + operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 + 2')).toEqual(['someProp=12']); }));
+      it('should support + operations', fakeAsync(() => {
+           expect(_bindAndCheckSimpleValue('10 + 2')).toEqual(['someProp=12']);
+         }));
 
-      it('should support - operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 - 2')).toEqual(['someProp=8']); }));
+      it('should support - operations', fakeAsync(() => {
+           expect(_bindAndCheckSimpleValue('10 - 2')).toEqual(['someProp=8']);
+         }));
 
-      it('should support * operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('10 * 2')).toEqual(['someProp=20']); }));
+      it('should support * operations', fakeAsync(() => {
+           expect(_bindAndCheckSimpleValue('10 * 2')).toEqual(['someProp=20']);
+         }));
 
       it('should support / operations', fakeAsync(() => {
            expect(_bindAndCheckSimpleValue('10 / 2')).toEqual([`someProp=${5.0}`]);
          }));  // dart exp=5.0, js exp=5
 
-      it('should support % operations',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('11 % 2')).toEqual(['someProp=1']); }));
+      it('should support % operations', fakeAsync(() => {
+           expect(_bindAndCheckSimpleValue('11 % 2')).toEqual(['someProp=1']);
+         }));
 
       it('should support == operations on identical', fakeAsync(() => {
            expect(_bindAndCheckSimpleValue('1 == 1')).toEqual(['someProp=true']);
@@ -270,14 +276,14 @@ export function main() {
       describe('safe navigation operator', () => {
         it('should support reading properties of nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.city', Person);
-             ctx.componentInstance.address = null !;
+             ctx.componentInstance.address = null!;
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
 
         it('should support calling methods on nulls', fakeAsync(() => {
              const ctx = _bindSimpleValue('address?.toString()', Person);
-             ctx.componentInstance.address = null !;
+             ctx.componentInstance.address = null!;
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
@@ -298,7 +304,7 @@ export function main() {
 
         it('should support short-circuting safe navigation', fakeAsync(() => {
              const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
-             ctx.componentInstance.value = null !;
+             ctx.componentInstance.value = null!;
              ctx.detectChanges(false);
              expect(renderLog.log).toEqual(['someProp=null']);
            }));
@@ -326,7 +332,7 @@ export function main() {
              expect(() => {
                const ctx = _bindSimpleValue('value?.address.city', PersonHolder);
                const person = new Person();
-               person.address = null !;
+               person.address = null!;
                ctx.componentInstance.value = person;
                ctx.detectChanges(false);
              }).toThrow();
@@ -469,8 +475,9 @@ export function main() {
            expect(renderLog.log).toEqual(['someProp=BA']);
          }));
 
-      it('should escape values in literals that indicate interpolation',
-         fakeAsync(() => { expect(_bindAndCheckSimpleValue('"$"')).toEqual(['someProp=$']); }));
+      it('should escape values in literals that indicate interpolation', fakeAsync(() => {
+           expect(_bindAndCheckSimpleValue('"$"')).toEqual(['someProp=$']);
+         }));
 
       it('should read locals', fakeAsync(() => {
            const ctx = createCompFixture(
@@ -562,7 +569,7 @@ export function main() {
         it('should call pure pipes only if the arguments change', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingPipe', Person);
              // change from undefined -> null
-             ctx.componentInstance.name = null !;
+             ctx.componentInstance.name = null!;
              ctx.detectChanges(false);
              expect(renderLog.loggedValues).toEqual(['null state:0']);
              ctx.detectChanges(false);
@@ -1335,7 +1342,9 @@ export function main() {
         })
         class MainComp {
           constructor(public cdRef: ChangeDetectorRef) {}
-          log(id: string) { log.push(`main-${id}`); }
+          log(id: string) {
+            log.push(`main-${id}`);
+          }
         }
 
         @Component({
@@ -1348,7 +1357,9 @@ export function main() {
           tpl: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
-          log(id: string) { log.push(`outer-${id}`); }
+          log(id: string) {
+            log.push(`outer-${id}`);
+          }
         }
 
         @Component({
@@ -1364,7 +1375,9 @@ export function main() {
           outerTpl: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
-          log(id: string) { log.push(`inner-${id}`); }
+          log(id: string) {
+            log.push(`inner-${id}`);
+          }
         }
 
         let ctx: ComponentFixture<MainComp>;
@@ -1527,7 +1540,9 @@ class DirectiveLog {
     this.entries.push(new DirectiveLogEntry(directiveName, method));
   }
 
-  clear() { this.entries = []; }
+  clear() {
+    this.entries = [];
+  }
 
   filter(methods: string[]): string[] {
     return this.entries.filter((entry) => methods.indexOf(entry.method) !== -1)
@@ -1539,32 +1554,44 @@ class DirectiveLog {
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  transform(value: any) { return `${value} state:${this.state ++}`; }
+  transform(value: any) {
+    return `${value} state:${this.state++}`;
+  }
 }
 
 @Pipe({name: 'countingImpurePipe', pure: false})
 class CountingImpurePipe implements PipeTransform {
   state: number = 0;
-  transform(value: any) { return `${value} state:${this.state ++}`; }
+  transform(value: any) {
+    return `${value} state:${this.state++}`;
+  }
 }
 
 @Pipe({name: 'pipeWithOnDestroy'})
 class PipeWithOnDestroy implements PipeTransform, OnDestroy {
   constructor(private directiveLog: DirectiveLog) {}
 
-  ngOnDestroy() { this.directiveLog.add('pipeWithOnDestroy', 'ngOnDestroy'); }
+  ngOnDestroy() {
+    this.directiveLog.add('pipeWithOnDestroy', 'ngOnDestroy');
+  }
 
-  transform(value: any): any { return null; }
+  transform(value: any): any {
+    return null;
+  }
 }
 
 @Pipe({name: 'identityPipe'})
 class IdentityPipe implements PipeTransform {
-  transform(value: any) { return value; }
+  transform(value: any) {
+    return value;
+  }
 }
 
 @Pipe({name: 'wrappedPipe'})
 class WrappedPipe implements PipeTransform {
-  transform(value: any) { return WrappedValue.wrap(value); }
+  transform(value: any) {
+    return WrappedValue.wrap(value);
+  }
 }
 
 @Pipe({name: 'multiArgPipe'})
@@ -1582,8 +1609,7 @@ class TestComponent {
 }
 
 @Component({selector: 'other-cmp', template: 'empty'})
-class AnotherComponent {
-}
+class AnotherComponent {}
 
 @Component({
   selector: 'comp-with-ref',
@@ -1633,12 +1659,14 @@ class Gh9882 implements AfterContentInit {
   constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<Object>) {
   }
 
-  ngAfterContentInit(): any { this._viewContainer.createEmbeddedView(this._templateRef); }
+  ngAfterContentInit(): any {
+    this._viewContainer.createEmbeddedView(this._templateRef);
+  }
 }
 
 @Directive({selector: '[testDirective]', exportAs: 'testDirective'})
 class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, AfterContentChecked,
-    AfterViewInit, AfterViewChecked, OnDestroy {
+                               AfterViewInit, AfterViewChecked, OnDestroy {
   @Input() a: any;
   @Input() b: any;
   changes: SimpleChanges;
@@ -1651,9 +1679,13 @@ class TestDirective implements OnInit, DoCheck, OnChanges, AfterContentInit, Aft
 
   constructor(public log: DirectiveLog) {}
 
-  onEvent(event: any) { this.event = event; }
+  onEvent(event: any) {
+    this.event = event;
+  }
 
-  ngDoCheck() { this.log.add(this.name, 'ngDoCheck'); }
+  ngDoCheck() {
+    this.log.add(this.name, 'ngDoCheck');
+  }
 
   ngOnInit() {
     this.log.add(this.name, 'ngOnInit');
@@ -1711,14 +1743,18 @@ class InjectableWithLifecycle {
   name = 'injectable';
   constructor(public log: DirectiveLog) {}
 
-  ngOnDestroy() { this.log.add(this.name, 'ngOnDestroy'); }
+  ngOnDestroy() {
+    this.log.add(this.name, 'ngOnDestroy');
+  }
 }
 
 @Directive({selector: '[onDestroyDirective]'})
 class OnDestroyDirective implements OnDestroy {
   @Output('destroy') emitter = new EventEmitter<string>(false);
 
-  ngOnDestroy() { this.emitter.emit('destroyed'); }
+  ngOnDestroy() {
+    this.emitter.emit('destroyed');
+  }
 }
 
 @Directive({selector: '[orderCheck0]'})
@@ -1783,9 +1819,13 @@ class Person {
     this.address = address;
   }
 
-  sayHi(m: any): string { return `Hi, ${m}`; }
+  sayHi(m: any): string {
+    return `Hi, ${m}`;
+  }
 
-  passThrough(val: any): any { return val; }
+  passThrough(val: any): any {
+    return val;
+  }
 
   toString(): string {
     const address = this.address == null ? '' : ' address=' + this.address.toString();
@@ -1810,11 +1850,17 @@ class Address {
     return this._zipcode;
   }
 
-  set city(v) { this._city = v; }
+  set city(v) {
+    this._city = v;
+  }
 
-  set zipcode(v) { this._zipcode = v; }
+  set zipcode(v) {
+    this._zipcode = v;
+  }
 
-  toString(): string { return this.city || '-'; }
+  toString(): string {
+    return this.city || '-';
+  }
 }
 
 @Component({selector: 'root', template: 'empty'})
@@ -1831,7 +1877,9 @@ class TestData {
 class TestDataWithGetter {
   public fn: Function;
 
-  get a() { return this.fn(); }
+  get a() {
+    return this.fn();
+  }
 }
 
 class Holder<T> {
@@ -1839,9 +1887,7 @@ class Holder<T> {
 }
 
 @Component({selector: 'root', template: 'empty'})
-class PersonHolder extends Holder<Person> {
-}
+class PersonHolder extends Holder<Person> {}
 
 @Component({selector: 'root', template: 'empty'})
-class PersonHolderHolder extends Holder<Holder<Person>> {
-}
+class PersonHolderHolder extends Holder<Holder<Person>> {}

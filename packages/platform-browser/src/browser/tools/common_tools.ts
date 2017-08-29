@@ -21,7 +21,9 @@ export class ChangeDetectionPerfRecord {
 export class AngularProfiler {
   appRef: ApplicationRef;
 
-  constructor(ref: ComponentRef<any>) { this.appRef = ref.injector.get(ApplicationRef); }
+  constructor(ref: ComponentRef<any>) {
+    this.appRef = ref.injector.get(ApplicationRef);
+  }
 
   // tslint:disable:no-console
   /**

@@ -8,7 +8,7 @@
 
 import {Attribute, Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {NgLocalization, getPluralCategory} from '../i18n/localization';
+import {getPluralCategory, NgLocalization} from '../i18n/localization';
 
 import {SwitchView} from './ng_switch';
 
@@ -58,7 +58,9 @@ export class NgPlural {
     this._updateView();
   }
 
-  addCase(value: string, switchView: SwitchView): void { this._caseViews[value] = switchView; }
+  addCase(value: string, switchView: SwitchView): void {
+    this._caseViews[value] = switchView;
+  }
 
   private _updateView(): void {
     this._clearViews();

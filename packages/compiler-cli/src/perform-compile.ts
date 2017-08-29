@@ -114,8 +114,7 @@ export function performCompilation(
       customTransformers?: api.CustomTransformers
     }): {
   program?: api.Program,
-  emitResult?: ts.EmitResult,
-  diagnostics: Diagnostics,
+  emitResult?: ts.EmitResult, diagnostics: Diagnostics,
 } {
   const [major, minor] = ts.version.split('.');
 
@@ -125,7 +124,7 @@ export function performCompilation(
 
   const allDiagnostics: Diagnostics = [];
 
-  function checkDiagnostics(diags: Diagnostics | undefined) {
+  function checkDiagnostics(diags: Diagnostics|undefined) {
     if (diags) {
       allDiagnostics.push(...diags);
       return diags.every(d => d.category !== ts.DiagnosticCategory.Error);
@@ -144,24 +143,23 @@ export function performCompilation(
 
     let shouldEmit = true;
     // Check parameter diagnostics
-    shouldEmit = shouldEmit && checkDiagnostics([
-                   ...program !.getTsOptionDiagnostics(), ...program !.getNgOptionDiagnostics()
-                 ]);
+    shouldEmit = shouldEmit &&
+        checkDiagnostics(
+                     [...program!.getTsOptionDiagnostics(), ...program!.getNgOptionDiagnostics()]);
 
     // Check syntactic diagnostics
-    shouldEmit = shouldEmit && checkDiagnostics(program !.getTsSyntacticDiagnostics());
+    shouldEmit = shouldEmit && checkDiagnostics(program!.getTsSyntacticDiagnostics());
 
     // Check TypeScript semantic and Angular structure diagnostics
-    shouldEmit =
-        shouldEmit &&
-        checkDiagnostics(
-            [...program !.getTsSemanticDiagnostics(), ...program !.getNgStructuralDiagnostics()]);
+    shouldEmit = shouldEmit && checkDiagnostics([
+                   ...program!.getTsSemanticDiagnostics(), ...program!.getNgStructuralDiagnostics()
+                 ]);
 
     // Check Angular semantic diagnostics
-    shouldEmit = shouldEmit && checkDiagnostics(program !.getNgSemanticDiagnostics());
+    shouldEmit = shouldEmit && checkDiagnostics(program!.getNgSemanticDiagnostics());
 
     if (shouldEmit) {
-      emitResult = program !.emit({
+      emitResult = program!.emit({
         emitCallback,
         customTransformers,
         emitFlags: api.EmitFlags.Default |

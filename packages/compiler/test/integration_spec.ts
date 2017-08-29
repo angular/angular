@@ -7,7 +7,7 @@
  */
 
 import {Component, Directive, Input} from '@angular/core';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -46,8 +46,7 @@ export function main() {
                template:
                    '<svg><ng-container *ngIf="1"><rect x="10" y="10" width="30" height="30"></rect></ng-container></svg>',
              })
-             class MyCmp {
-             }
+             class MyCmp {}
 
              const f =
                  TestBed.configureTestingModule({declarations: [MyCmp]}).createComponent(MyCmp);
@@ -61,8 +60,7 @@ export function main() {
 }
 
 @Component({selector: 'test-cmp', template: ''})
-class TestComponent {
-}
+class TestComponent {}
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
   return TestBed.overrideComponent(TestComponent, {set: {template: template}})

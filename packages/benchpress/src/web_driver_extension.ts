@@ -12,7 +12,7 @@ import {Options} from './common_options';
 
 export type PerfLogEvent = {
   [key: string]: any
-} & {
+}&{
   ph?: 'X' | 'B' | 'E' | 'I',
   ts?: number,
   dur?: number,
@@ -43,7 +43,7 @@ export abstract class WebDriverExtension {
       {
         provide: WebDriverExtension,
         useFactory: (children: WebDriverExtension[], capabilities: {[key: string]: any}) => {
-          let delegate: WebDriverExtension = undefined !;
+          let delegate: WebDriverExtension = undefined!;
           children.forEach(extension => {
             if (extension.supports(capabilities)) {
               delegate = extension;
@@ -60,11 +60,17 @@ export abstract class WebDriverExtension {
     return res;
   }
 
-  gc(): Promise<any> { throw new Error('NYI'); }
+  gc(): Promise<any> {
+    throw new Error('NYI');
+  }
 
-  timeBegin(name: string): Promise<any> { throw new Error('NYI'); }
+  timeBegin(name: string): Promise<any> {
+    throw new Error('NYI');
+  }
 
-  timeEnd(name: string, restartName: string|null): Promise<any> { throw new Error('NYI'); }
+  timeEnd(name: string, restartName: string|null): Promise<any> {
+    throw new Error('NYI');
+  }
 
   /**
    * Format:
@@ -78,11 +84,17 @@ export abstract class WebDriverExtension {
    * Based on [Chrome Trace Event
    *Format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
    **/
-  readPerfLog(): Promise<PerfLogEvent[]> { throw new Error('NYI'); }
+  readPerfLog(): Promise<PerfLogEvent[]> {
+    throw new Error('NYI');
+  }
 
-  perfLogFeatures(): PerfLogFeatures { throw new Error('NYI'); }
+  perfLogFeatures(): PerfLogFeatures {
+    throw new Error('NYI');
+  }
 
-  supports(capabilities: {[key: string]: any}): boolean { return true; }
+  supports(capabilities: {[key: string]: any}): boolean {
+    return true;
+  }
 }
 
 export class PerfLogFeatures {

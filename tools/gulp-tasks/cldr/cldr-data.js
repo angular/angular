@@ -31,7 +31,8 @@ function jsonFiles(dirName) {
 
 function cldrData(path /*, ...*/) {
   assert(
-      typeof path === 'string', 'must include path (e.g., ' +
+      typeof path === 'string',
+      'must include path (e.g., ' +
           '"main/en/numbers" or "supplemental/likelySubtags")');
 
   if (arguments.length > 1) {
@@ -46,7 +47,9 @@ function cldrData(path /*, ...*/) {
 function mainPathsFor(locales) {
   return locales.reduce(function(sum, locale) {
     const mainFiles = jsonFiles(_path.join('main', locale));
-    mainFiles.forEach(function(mainFile) { sum.push(_path.join('main', locale, mainFile)); });
+    mainFiles.forEach(function(mainFile) {
+      sum.push(_path.join('main', locale, mainFile));
+    });
     return sum;
   }, []);
 }
@@ -59,9 +62,11 @@ function supplementalPaths() {
   });
 }
 
-Object.defineProperty(
-    cldrData, 'availableLocales',
-    {get: function() { return cldrData('availableLocales').availableLocales; }});
+Object.defineProperty(cldrData, 'availableLocales', {
+  get: function() {
+    return cldrData('availableLocales').availableLocales;
+  }
+});
 
 cldrData.all = function() {
   const paths = supplementalPaths().concat(mainPathsFor(this.availableLocales));
@@ -70,7 +75,8 @@ cldrData.all = function() {
 
 cldrData.entireMainFor = function(locale /*, ...*/) {
   assert(
-      typeof locale === 'string', 'must include locale (e.g., ' +
+      typeof locale === 'string',
+      'must include locale (e.g., ' +
           '"en")');
   return cldrData.apply({}, mainPathsFor(argsToArray(arguments)));
 };

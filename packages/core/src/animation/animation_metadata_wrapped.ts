@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationMetadataType, animate as _animate, group as _group, keyframes as _keyframes, sequence as _sequence, state as _state, style as _style, transition as _transition, trigger as _trigger} from './dsl';
+import {animate as _animate, AnimateTimings, AnimationMetadataType, group as _group, keyframes as _keyframes, sequence as _sequence, state as _state, style as _style, transition as _transition, trigger as _trigger} from './dsl';
 
 
 /**
@@ -86,8 +86,8 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * @deprecated This symbol has moved. Please Import from @angular/animations instead!
  */
 export function animate(
-    timings: string | number, styles?: AnimationStyleMetadata |
-        AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata {
+    timings: string|number,
+    styles?: AnimationStyleMetadata|AnimationKeyframesSequenceMetadata): AnimationAnimateMetadata {
   return _animate(timings, styles);
 }
 
@@ -108,9 +108,8 @@ export function sequence(steps: AnimationMetadata[]): AnimationSequenceMetadata 
 /**
  * @deprecated This symbol has moved. Please Import from @angular/animations instead!
  */
-export function style(
-    tokens: {[key: string]: string | number} |
-    Array<{[key: string]: string | number}>): AnimationStyleMetadata {
+export function style(tokens: {[key: string]: string|number}|
+                      Array<{[key: string]: string | number}>): AnimationStyleMetadata {
   return _style(tokens);
 }
 
@@ -131,7 +130,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
 /**
  * @deprecated This symbol has moved. Please Import from @angular/animations instead!
  */
-export function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[]):
+export function transition(stateChangeExpr: string, steps: AnimationMetadata|AnimationMetadata[]):
     AnimationTransitionMetadata {
   return _transition(stateChangeExpr, steps);
 }

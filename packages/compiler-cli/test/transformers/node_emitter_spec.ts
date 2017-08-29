@@ -34,7 +34,7 @@ describe('TypeScriptNodeEmitter', () => {
     someVar = o.variable('someVar', null, null);
   });
 
-  function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
+  function emitStmt(stmt: o.Statement|o.Statement[], preamble?: string): string {
     const stmts = Array.isArray(stmt) ? stmt : [stmt];
 
     const program = ts.createProgram(
@@ -229,11 +229,13 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(new o.DeclareFunctionStmt(
                'someFn', [], [new o.ReturnStatement(o.literal(1))], o.INT_TYPE)))
         .toEqual(`function someFn() { return 1; }`);
-    expect(emitStmt(new o.DeclareFunctionStmt('someFn', [new o.FnParam('param1', o.INT_TYPE)], [
-    ]))).toEqual(`function someFn(param1) { }`);
+    expect(emitStmt(new o.DeclareFunctionStmt('someFn', [new o.FnParam('param1', o.INT_TYPE)], [])))
+        .toEqual(`function someFn(param1) { }`);
   });
 
-  it('should support comments', () => { expect(emitStmt(new o.CommentStmt('a\nb'))).toEqual(''); });
+  it('should support comments', () => {
+    expect(emitStmt(new o.CommentStmt('a\nb'))).toEqual('');
+  });
 
   it('should support if stmt', () => {
     const trueCase = o.variable('trueCase').callFn([]).toStmt();
@@ -252,86 +254,90 @@ describe('TypeScriptNodeEmitter', () => {
             `try { body(); } catch (error) { var stack = error.stack; catchFn(error, stack); }`);
   });
 
-  it('should support support throwing',
-     () => { expect(emitStmt(new o.ThrowStmt(someVar))).toEqual('throw someVar;'); });
+  it('should support support throwing', () => {
+    expect(emitStmt(new o.ThrowStmt(someVar))).toEqual('throw someVar;');
+  });
 
   describe('classes', () => {
     let callSomeMethod: o.Statement;
 
-    beforeEach(() => { callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt(); });
+    beforeEach(() => {
+      callSomeMethod = o.THIS_EXPR.callMethod('someMethod', []).toStmt();
+    });
 
 
     it('should support declaring classes', () => {
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
-      ]))).toEqual('class SomeClass { }');
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [], [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [])))
+          .toEqual('class SomeClass { }');
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [], [
         o.StmtModifier.Exported
       ]))).toEqual('class SomeClass { } exports.SomeClass = SomeClass;');
-      expect(emitStmt(new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null !, [
-      ]))).toEqual('class SomeClass extends SomeSuperClass { }');
+      expect(
+          emitStmt(new o.ClassStmt('SomeClass', o.variable('SomeSuperClass'), [], [], null!, [])))
+          .toEqual('class SomeClass extends SomeSuperClass { }');
     });
 
     it('should support declaring constructors', () => {
       const superCall = o.SUPER_EXPR.callFn([o.variable('someParam')]).toStmt();
-      expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [], new o.ClassMethod(null !, [], []), [])))
+      expect(emitStmt(
+                 new o.ClassStmt('SomeClass', null!, [], [], new o.ClassMethod(null!, [], []), [])))
           .toEqual(`class SomeClass { constructor() { } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [],
-                 new o.ClassMethod(null !, [new o.FnParam('someParam', o.INT_TYPE)], []), [])))
+                 'SomeClass', null!, [], [],
+                 new o.ClassMethod(null!, [new o.FnParam('someParam', o.INT_TYPE)], []), [])))
           .toEqual(`class SomeClass { constructor(someParam) { } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [], new o.ClassMethod(null !, [], [superCall]), [])))
+                 'SomeClass', null!, [], [], new o.ClassMethod(null!, [], [superCall]), [])))
           .toEqual(`class SomeClass { constructor() { super(someParam); } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [], new o.ClassMethod(null !, [], [callSomeMethod]), [])))
+                 'SomeClass', null!, [], [], new o.ClassMethod(null!, [], [callSomeMethod]), [])))
           .toEqual(`class SomeClass { constructor() { this.someMethod(); } }`);
     });
 
     it('should support declaring fields', () => {
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [new o.ClassField('someField')], [], null !, [])))
+                 'SomeClass', null!, [new o.ClassField('someField')], [], null!, [])))
           .toEqual(`class SomeClass { constructor() { this.someField = null; } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [new o.ClassField('someField', o.INT_TYPE)], [], null !, [])))
+                 'SomeClass', null!, [new o.ClassField('someField', o.INT_TYPE)], [], null!, [])))
           .toEqual(`class SomeClass { constructor() { this.someField = null; } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !,
-                 [new o.ClassField('someField', o.INT_TYPE, [o.StmtModifier.Private])], [], null !,
+                 'SomeClass', null!,
+                 [new o.ClassField('someField', o.INT_TYPE, [o.StmtModifier.Private])], [], null!,
                  [])))
           .toEqual(`class SomeClass { constructor() { this.someField = null; } }`);
     });
 
     it('should support declaring getters', () => {
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [new o.ClassGetter('someGetter', [])], null !, [])))
+                 'SomeClass', null!, [], [new o.ClassGetter('someGetter', [])], null!, [])))
           .toEqual(`class SomeClass { get someGetter() { } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [new o.ClassGetter('someGetter', [], o.INT_TYPE)], null !,
+                 'SomeClass', null!, [], [new o.ClassGetter('someGetter', [], o.INT_TYPE)], null!,
                  [])))
           .toEqual(`class SomeClass { get someGetter() { } }`);
       expect(emitStmt(new o.ClassStmt(
-                 'SomeClass', null !, [], [new o.ClassGetter('someGetter', [callSomeMethod])],
-                 null !, [])))
+                 'SomeClass', null!, [], [new o.ClassGetter('someGetter', [callSomeMethod])], null!,
+                 [])))
           .toEqual(`class SomeClass { get someGetter() { this.someMethod(); } }`);
       expect(
           emitStmt(new o.ClassStmt(
-              'SomeClass', null !, [],
-              [new o.ClassGetter('someGetter', [], null !, [o.StmtModifier.Private])], null !, [])))
+              'SomeClass', null!, [],
+              [new o.ClassGetter('someGetter', [], null!, [o.StmtModifier.Private])], null!, [])))
           .toEqual(`class SomeClass { get someGetter() { } }`);
     });
 
     it('should support methods', () => {
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [
         new o.ClassMethod('someMethod', [], [])
       ]))).toEqual(`class SomeClass { someMethod() { } }`);
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [
         new o.ClassMethod('someMethod', [], [], o.INT_TYPE)
       ]))).toEqual(`class SomeClass { someMethod() { } }`);
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [
         new o.ClassMethod('someMethod', [new o.FnParam('someParam', o.INT_TYPE)], [])
       ]))).toEqual(`class SomeClass { someMethod(someParam) { } }`);
-      expect(emitStmt(new o.ClassStmt('SomeClass', null !, [], [], null !, [
+      expect(emitStmt(new o.ClassStmt('SomeClass', null!, [], [], null!, [
         new o.ClassMethod('someMethod', [], [callSomeMethod])
       ]))).toEqual(`class SomeClass { someMethod() { this.someMethod(); } }`);
     });
@@ -369,7 +375,7 @@ describe('TypeScriptNodeEmitter', () => {
 
   it('should support combined types', () => {
     const writeVarExpr = o.variable('a').set(o.NULL_EXPR);
-    expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(null !)))).toEqual('var a = null;');
+    expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(null!)))).toEqual('var a = null;');
     expect(emitStmt(writeVarExpr.toDeclStmt(new o.ArrayType(o.INT_TYPE)))).toEqual('var a = null;');
 
     expect(emitStmt(writeVarExpr.toDeclStmt(new o.MapType(null)))).toEqual('var a = null;');

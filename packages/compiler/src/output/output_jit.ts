@@ -51,7 +51,9 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   private _evalArgValues: any[] = [];
   private _evalExportedVars: string[] = [];
 
-  constructor(private reflector: CompileReflector) { super(); }
+  constructor(private reflector: CompileReflector) {
+    super();
+  }
 
   createReturnStmt(ctx: EmitterVisitorContext) {
     const stmt = new o.ReturnStatement(new o.LiteralMapExpr(this._evalExportedVars.map(

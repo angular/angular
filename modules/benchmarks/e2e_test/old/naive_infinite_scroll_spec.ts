@@ -20,43 +20,53 @@ describe('ng2 naive infinite scroll benchmark', function() {
     const expectedRowCount = 18;
     const expectedCellsPerRow = 27;
     const allScrollItems = 'scroll-app #testArea scroll-item';
-    const cells = `${ allScrollItems } .row *`;
-    const stageButtons = `${ allScrollItems } .row stage-buttons button`;
+    const cells = `${allScrollItems} .row *`;
+    const stageButtons = `${allScrollItems} .row stage-buttons button`;
 
     const count = function(selector) {
       return browser.executeScript(
           `return ` +
-          `document.querySelectorAll("${ selector }").length;`);
+          `document.querySelectorAll("${selector}").length;`);
     };
 
     const clickFirstOf = function(selector) {
-      return browser.executeScript(`document.querySelector("${ selector }").click();`);
+      return browser.executeScript(`document.querySelector("${selector}").click();`);
     };
 
     const firstTextOf = function(selector) {
       return browser.executeScript(
           `return ` +
-          `document.querySelector("${ selector }").innerText;`);
+          `document.querySelector("${selector}").innerText;`);
     };
 
     // Make sure rows are rendered
-    count(allScrollItems).then(function(c) { expect(c).toEqual(expectedRowCount); });
+    count(allScrollItems).then(function(c) {
+      expect(c).toEqual(expectedRowCount);
+    });
 
     // Make sure cells are rendered
-    count(cells).then(function(c) { expect(c).toEqual(expectedRowCount * expectedCellsPerRow); });
+    count(cells).then(function(c) {
+      expect(c).toEqual(expectedRowCount * expectedCellsPerRow);
+    });
 
     // Click on first enabled button and verify stage changes
-    firstTextOf(`${ stageButtons }:enabled`).then(function(text) {
+    firstTextOf(`${stageButtons}:enabled`).then(function(text) {
       expect(text).toEqual('Pitched');
-      clickFirstOf(`${ stageButtons }:enabled`).then(function() {
-        firstTextOf(`${ stageButtons }:enabled`).then((text) => expect(text).toEqual('Won'));
+      clickFirstOf(`${stageButtons}:enabled`).then(function() {
+        firstTextOf(`${stageButtons}:enabled`).then((text) => expect(text).toEqual('Won'));
       });
     });
 
     $('#reset-btn').click();
     $('#run-btn').click();
     browser.wait(() => {
-      return $('#done').getText().then(function() { return true; }, function() { return false; });
+      return $('#done').getText().then(
+          function() {
+            return true;
+          },
+          function() {
+            return false;
+          });
     }, 10000);
   });
 

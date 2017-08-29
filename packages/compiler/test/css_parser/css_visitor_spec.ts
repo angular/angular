@@ -8,7 +8,7 @@
 
 
 import {beforeEach, describe, expect, it} from '../../../core/testing/src/testing_internal';
-import {CssAst, CssAstVisitor, CssAtRulePredicateAst, CssBlockAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStyleSheetAst, CssStyleValueAst, CssStylesBlockAst, CssUnknownRuleAst, CssUnknownTokenListAst} from '../../src/css_parser/css_ast';
+import {CssAst, CssAstVisitor, CssAtRulePredicateAst, CssBlockAst, CssDefinitionAst, CssInlineRuleAst, CssKeyframeDefinitionAst, CssKeyframeRuleAst, CssMediaQueryRuleAst, CssPseudoSelectorAst, CssRuleAst, CssSelectorAst, CssSelectorRuleAst, CssSimpleSelectorAst, CssStylesBlockAst, CssStyleSheetAst, CssStyleValueAst, CssUnknownRuleAst, CssUnknownTokenListAst} from '../../src/css_parser/css_ast';
 import {BlockType, CssParseError, CssParser, CssToken} from '../../src/css_parser/css_parser';
 
 function _assertTokens(tokens: CssToken[], valuesArr: string[]): void {
@@ -29,7 +29,9 @@ class MyVisitor implements CssAstVisitor {
     this.captures[method].push([ast, context]);
   }
 
-  constructor(ast: CssStyleSheetAst, context: any) { ast.visit(this, context); }
+  constructor(ast: CssStyleSheetAst, context: any) {
+    ast.visit(this, context);
+  }
 
   visitCssValue(ast: CssStyleValueAst, context: any): void {
     this._capture('visitCssValue', ast, context);
@@ -61,20 +63,24 @@ class MyVisitor implements CssAstVisitor {
 
   visitCssSelectorRule(ast: CssSelectorRuleAst, context: any): void {
     this._capture('visitCssSelectorRule', ast, context);
-    ast.selectors.forEach((selAst: CssSelectorAst) => { selAst.visit(this, context); });
+    ast.selectors.forEach((selAst: CssSelectorAst) => {
+      selAst.visit(this, context);
+    });
     ast.block.visit(this, context);
   }
 
   visitCssSelector(ast: CssSelectorAst, context: any): void {
     this._capture('visitCssSelector', ast, context);
-    ast.selectorParts.forEach(
-        (simpleAst: CssSimpleSelectorAst) => { simpleAst.visit(this, context); });
+    ast.selectorParts.forEach((simpleAst: CssSimpleSelectorAst) => {
+      simpleAst.visit(this, context);
+    });
   }
 
   visitCssSimpleSelector(ast: CssSimpleSelectorAst, context: any): void {
     this._capture('visitCssSimpleSelector', ast, context);
-    ast.pseudoSelectors.forEach(
-        (pseudoAst: CssPseudoSelectorAst) => { pseudoAst.visit(this, context); });
+    ast.pseudoSelectors.forEach((pseudoAst: CssPseudoSelectorAst) => {
+      pseudoAst.visit(this, context);
+    });
   }
 
   visitCssDefinition(ast: CssDefinitionAst, context: any): void {
@@ -84,18 +90,23 @@ class MyVisitor implements CssAstVisitor {
 
   visitCssBlock(ast: CssBlockAst, context: any): void {
     this._capture('visitCssBlock', ast, context);
-    ast.entries.forEach((entryAst: CssAst) => { entryAst.visit(this, context); });
+    ast.entries.forEach((entryAst: CssAst) => {
+      entryAst.visit(this, context);
+    });
   }
 
   visitCssStylesBlock(ast: CssStylesBlockAst, context: any): void {
     this._capture('visitCssStylesBlock', ast, context);
-    ast.definitions.forEach(
-        (definitionAst: CssDefinitionAst) => { definitionAst.visit(this, context); });
+    ast.definitions.forEach((definitionAst: CssDefinitionAst) => {
+      definitionAst.visit(this, context);
+    });
   }
 
   visitCssStyleSheet(ast: CssStyleSheetAst, context: any): void {
     this._capture('visitCssStyleSheet', ast, context);
-    ast.rules.forEach((ruleAst: CssRuleAst) => { ruleAst.visit(this, context); });
+    ast.rules.forEach((ruleAst: CssRuleAst) => {
+      ruleAst.visit(this, context);
+    });
   }
 
   visitCssUnknownRule(ast: CssUnknownRuleAst, context: any): void {
@@ -257,7 +268,7 @@ export function main() {
       expect(captures.length).toEqual(1);
 
       const keyframe1 = <CssKeyframeRuleAst>_getCaptureAst(captures, 0);
-      expect(keyframe1.name !.strValue).toEqual('rotate');
+      expect(keyframe1.name!.strValue).toEqual('rotate');
       expect(keyframe1.block.entries.length).toEqual(2);
     });
 

@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {MetadataCollector} from './collector';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION} from './schema';
 
 
 
@@ -75,7 +75,7 @@ export interface MetadataBundlerHost {
 }
 
 type StaticsMetadata = {
-  [name: string]: MetadataValue | FunctionMetadata;
+  [name: string]: MetadataValue|FunctionMetadata;
 };
 
 export class MetadataBundler {
@@ -100,14 +100,14 @@ export class MetadataBundler {
     const privates = Array.from(this.symbolMap.values())
                          .filter(s => s.referenced && s.isPrivate)
                          .map(s => ({
-                                privateName: s.privateName !,
-                                name: s.declaration !.name,
-                                module: s.declaration !.module
+                                privateName: s.privateName!,
+                                name: s.declaration!.name,
+                                module: s.declaration!.module
                               }));
     const origins = Array.from(this.symbolMap.values())
                         .filter(s => s.referenced && !s.reexport)
                         .reduce<{[name: string]: string}>((p, s) => {
-                          p[s.isPrivate ? s.privateName ! : s.name] = s.declaration !.module;
+                          p[s.isPrivate ? s.privateName! : s.name] = s.declaration!.module;
                           return p;
                         }, {});
     const exports = this.getReExports(exportedSymbols);
@@ -115,8 +115,10 @@ export class MetadataBundler {
       metadata: {
         __symbolic: 'module',
         version: VERSION,
-        exports: exports.length ? exports : undefined, metadata, origins,
-        importAs: this.importAs !
+        exports: exports.length ? exports : undefined,
+        metadata,
+        origins,
+        importAs: this.importAs!
       },
       privates
     };
@@ -150,7 +152,7 @@ export class MetadataBundler {
 
     const exportSymbol = (exportedSymbol: Symbol, exportAs: string) => {
       const symbol = this.symbolOf(moduleName, exportAs);
-      result !.push(symbol);
+      result!.push(symbol);
       exportedSymbol.reexportedAs = symbol;
       symbol.exports = exportedSymbol;
     };
@@ -268,7 +270,7 @@ export class MetadataBundler {
           name = newPrivateName();
           symbol.privateName = name;
         }
-        result[name] = symbol.value !;
+        result[name] = symbol.value!;
       }
     });
 
@@ -282,9 +284,9 @@ export class MetadataBundler {
     for (const symbol of exportedSymbols) {
       if (symbol.reexport) {
         // symbol.declaration is guarenteed to be defined during the phase this method is called.
-        const declaration = symbol.declaration !;
+        const declaration = symbol.declaration!;
         const module = declaration.module;
-        if (declaration !.name == '*') {
+        if (declaration!.name == '*') {
           // Reexport all the symbols.
           exportAlls.add(declaration.module);
         } else {
@@ -308,12 +310,12 @@ export class MetadataBundler {
 
   private convertSymbol(symbol: Symbol) {
     // canonicalSymbol is ensured to be defined before this is called.
-    const canonicalSymbol = symbol.canonicalSymbol !;
+    const canonicalSymbol = symbol.canonicalSymbol!;
 
     if (!canonicalSymbol.referenced) {
       canonicalSymbol.referenced = true;
       // declaration is ensured to be definded before this method is called.
-      const declaration = canonicalSymbol.declaration !;
+      const declaration = canonicalSymbol.declaration!;
       const module = this.getMetadata(declaration.module);
       if (module) {
         const value = module.metadata[declaration.name];
@@ -341,10 +343,10 @@ export class MetadataBundler {
     return {
       __symbolic: 'class',
       arity: value.arity,
-      extends: this.convertExpression(moduleName, value.extends) !,
+      extends: this.convertExpression(moduleName, value.extends)!,
       decorators:
-          value.decorators && value.decorators.map(d => this.convertExpression(moduleName, d) !),
-      members: this.convertMembers(moduleName, value.members !),
+          value.decorators && value.decorators.map(d => this.convertExpression(moduleName, d)!),
+      members: this.convertMembers(moduleName, value.members!),
       statics: value.statics && this.convertStatics(moduleName, value.statics)
     };
   }
@@ -361,11 +363,11 @@ export class MetadataBundler {
   private convertMember(moduleName: string, member: MemberMetadata) {
     const result: MemberMetadata = {__symbolic: member.__symbolic};
     result.decorators =
-        member.decorators && member.decorators.map(d => this.convertExpression(moduleName, d) !);
+        member.decorators && member.decorators.map(d => this.convertExpression(moduleName, d)!);
     if (isMethodMetadata(member)) {
       (result as MethodMetadata).parameterDecorators = member.parameterDecorators &&
           member.parameterDecorators.map(
-              d => d && d.map(p => this.convertExpression(moduleName, p) !));
+              d => d && d.map(p => this.convertExpression(moduleName, p)!));
       if (isConstructorMetadata(member)) {
         if (member.parameters) {
           (result as ConstructorMetadata).parameters =
@@ -402,7 +404,7 @@ export class MetadataBundler {
       return this.convertError(moduleName, value);
     }
     if (isMetadataSymbolicExpression(value)) {
-      return this.convertExpression(moduleName, value) !;
+      return this.convertExpression(moduleName, value)!;
     }
     if (Array.isArray(value)) {
       return value.map(v => this.convertValue(moduleName, v));
@@ -418,8 +420,8 @@ export class MetadataBundler {
   }
 
   private convertExpression(
-      moduleName: string, value: MetadataSymbolicExpression|MetadataError|null|
-      undefined): MetadataSymbolicExpression|MetadataError|undefined|null {
+      moduleName: string, value: MetadataSymbolicExpression|MetadataError|null|undefined):
+      MetadataSymbolicExpression|MetadataError|undefined|null {
     if (value) {
       switch (value.__symbolic) {
         case 'error':
@@ -439,14 +441,15 @@ export class MetadataBundler {
       message: value.message,
       line: value.line,
       character: value.character,
-      context: value.context, module
+      context: value.context,
+      module
     };
   }
 
   private convertReference(moduleName: string, value: MetadataSymbolicReferenceExpression):
       MetadataSymbolicReferenceExpression|MetadataError|undefined {
     const createReference = (symbol: Symbol): MetadataSymbolicReferenceExpression => {
-      const declaration = symbol.declaration !;
+      const declaration = symbol.declaration!;
       if (declaration.module.startsWith('.')) {
         // Reference to a symbol defined in the module. Ensure it is converted then return a
         // references to the final symbol.
@@ -455,11 +458,11 @@ export class MetadataBundler {
           __symbolic: 'reference',
           get name() {
             // Resolved lazily because private names are assigned late.
-            const canonicalSymbol = symbol.canonicalSymbol !;
+            const canonicalSymbol = symbol.canonicalSymbol!;
             if (canonicalSymbol.isPrivate == null) {
               throw Error('Invalid state: isPrivate was not initialized');
             }
-            return canonicalSymbol.isPrivate ? canonicalSymbol.privateName ! : canonicalSymbol.name;
+            return canonicalSymbol.isPrivate ? canonicalSymbol.privateName! : canonicalSymbol.name;
           }
         };
       } else {

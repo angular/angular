@@ -11,16 +11,15 @@ import {platformBrowser} from '@angular/platform-browser';
 
 import * as angular from '../common/angular1';
 import {$INJECTOR, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_MODULE_NAME} from '../common/constants';
-import {LazyModuleRef, isFunction} from '../common/util';
+import {isFunction, LazyModuleRef} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
 
 
 /** @experimental */
-export function downgradeModule<T>(
-    moduleFactoryOrBootstrapFn: NgModuleFactory<T>|
-    ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
+export function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T>|(
+    (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
   const LAZY_MODULE_NAME = UPGRADE_MODULE_NAME + '.lazy';
   const bootstrapFn = isFunction(moduleFactoryOrBootstrapFn) ?
       moduleFactoryOrBootstrapFn :

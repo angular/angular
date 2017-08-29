@@ -48,8 +48,7 @@ const creditCardValidatorBinding = {
 };
 
 @Directive({selector: '[credit-card]', providers: [creditCardValidatorBinding]})
-class CreditCardValidator {
-}
+class CreditCardValidator {}
 
 /**
  * This is a component that displays an error message.
@@ -78,7 +77,9 @@ class ShowError {
   controlPath: string;
   errorTypes: string[];
 
-  constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
+  constructor(@Host() formDir: NgForm) {
+    this.formDir = formDir;
+  }
 
   get errorMessage(): string {
     const form: FormGroup = this.formDir.form;
@@ -175,8 +176,7 @@ class TemplateDrivenForms {
   bootstrap: [TemplateDrivenForms],
   imports: [BrowserModule, FormsModule]
 })
-class ExampleModule {
-}
+class ExampleModule {}
 
 export function main() {
   platformBrowserDynamic().bootstrapModule(ExampleModule);

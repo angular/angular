@@ -37,7 +37,9 @@ export class JsonFileReporter extends Reporter {
     super();
   }
 
-  reportMeasureValues(measureValues: MeasureValues): Promise<any> { return Promise.resolve(null); }
+  reportMeasureValues(measureValues: MeasureValues): Promise<any> {
+    return Promise.resolve(null);
+  }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
     const stats: {[key: string]: string} = {};

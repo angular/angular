@@ -35,7 +35,7 @@ export function createOfflineCompileUrlResolver(): UrlResolver {
  */
 export interface UrlResolver { resolve(baseUrl: string, url: string): string; }
 
-export interface UrlResolverCtor { new (packagePrefix?: string|null): UrlResolver; }
+export interface UrlResolverCtor { new(packagePrefix?: string|null): UrlResolver; }
 
 export const UrlResolver: UrlResolverCtor = class UrlResolverImpl {
   constructor(private _packagePrefix: string|null = null) {}
@@ -242,16 +242,16 @@ enum _ComponentIndex {
  *     arbitrary strings may still look like path names.
  */
 function _split(uri: string): Array<string|any> {
-  return uri.match(_splitRe) !;
+  return uri.match(_splitRe)!;
 }
 
 /**
-  * Removes dot segments in given path component, as described in
-  * RFC 3986, section 5.2.4.
-  *
-  * @param path A non-empty path component.
-  * @return Path component with removed dot segments.
-  */
+ * Removes dot segments in given path component, as described in
+ * RFC 3986, section 5.2.4.
+ *
+ * @param path A non-empty path component.
+ * @return Path component with removed dot segments.
+ */
 function _removeDotSegments(path: string): string {
   if (path == '/') return '/';
 

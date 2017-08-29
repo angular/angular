@@ -28,8 +28,7 @@ import {COMMON_PIPES} from './pipes/index';
     {provide: NgLocalization, useClass: NgLocaleLocalization},
   ],
 })
-export class CommonModule {
-}
+export class CommonModule {}
 
 /**
  * A module that contains the deprecated i18n pipes.
@@ -37,5 +36,4 @@ export class CommonModule {
  * @deprecated from v5
  */
 @NgModule({declarations: [COMMON_DEPRECATED_I18N_PIPES], exports: [COMMON_DEPRECATED_I18N_PIPES]})
-export class DeprecatedI18NPipesModule {
-}
+export class DeprecatedI18NPipesModule {}

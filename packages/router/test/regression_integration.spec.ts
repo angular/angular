@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {Component, NgModule, Type} from '@angular/core';
-import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
@@ -17,8 +17,7 @@ describe('Integration', () => {
   describe('routerLinkActive', () => {
     it('should not cause infinite loops in the change detection - #15825', fakeAsync(() => {
          @Component({selector: 'simple', template: 'simple'})
-         class SimpleCmp {
-         }
+         class SimpleCmp {}
 
          @Component({
            selector: 'some-root',
@@ -40,8 +39,7 @@ describe('Integration', () => {
            declarations: [MyCmp, SimpleCmp],
            entryComponents: [SimpleCmp],
          })
-         class MyModule {
-         }
+         class MyModule {}
 
          TestBed.configureTestingModule({imports: [MyModule]});
 

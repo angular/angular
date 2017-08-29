@@ -20,7 +20,9 @@ export function bootstrap(
   return platform.bootstrapModule(Ng2Module).then(ref => {
     const upgrade = ref.injector.get(UpgradeModule);
     const failHardModule: any = ($provide: angular.IProvideService) => {
-      $provide.value('$exceptionHandler', (err: any) => { throw err; });
+      $provide.value('$exceptionHandler', (err: any) => {
+        throw err;
+      });
     };
     upgrade.bootstrap(element, [failHardModule, ng1Module.name]);
     return upgrade;

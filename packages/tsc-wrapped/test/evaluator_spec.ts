@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {Evaluator} from '../src/evaluator';
 import {Symbols} from '../src/symbols';
 
-import {Directory, Host, expectNoDiagnostics, findVar, findVarInitializer} from './typescript.mocks';
+import {Directory, expectNoDiagnostics, findVar, findVarInitializer, Host} from './typescript.mocks';
 
 describe('Evaluator', () => {
   const documentRegistry = ts.createDocumentRegistry();
@@ -161,8 +161,8 @@ describe('Evaluator', () => {
 
   it('should support referene to a declared module type', () => {
     const declared = program.getSourceFile('declared.ts');
-    const aDecl = findVar(declared, 'a') !;
-    expect(evaluator.evaluateNode(aDecl.type !)).toEqual({
+    const aDecl = findVar(declared, 'a')!;
+    expect(evaluator.evaluateNode(aDecl.type!)).toEqual({
       __symbolic: 'select',
       expression: {__symbolic: 'reference', name: 'Foo'},
       member: 'A'
@@ -171,28 +171,28 @@ describe('Evaluator', () => {
 
   it('should return errors for unsupported expressions', () => {
     const errors = program.getSourceFile('errors.ts');
-    const fDecl = findVar(errors, 'f') !;
-    expect(evaluator.evaluateNode(fDecl.initializer !))
+    const fDecl = findVar(errors, 'f')!;
+    expect(evaluator.evaluateNode(fDecl.initializer!))
         .toEqual(
             {__symbolic: 'error', message: 'Function call not supported', line: 1, character: 12});
-    const eDecl = findVar(errors, 'e') !;
-    expect(evaluator.evaluateNode(eDecl.type !)).toEqual({
+    const eDecl = findVar(errors, 'e')!;
+    expect(evaluator.evaluateNode(eDecl.type!)).toEqual({
       __symbolic: 'error',
       message: 'Could not resolve type',
       line: 2,
       character: 11,
       context: {typeName: 'NotFound'}
     });
-    const sDecl = findVar(errors, 's') !;
-    expect(evaluator.evaluateNode(sDecl.initializer !)).toEqual({
+    const sDecl = findVar(errors, 's')!;
+    expect(evaluator.evaluateNode(sDecl.initializer!)).toEqual({
       __symbolic: 'error',
       message: 'Name expected',
       line: 3,
       character: 14,
       context: {received: '1'}
     });
-    const tDecl = findVar(errors, 't') !;
-    expect(evaluator.evaluateNode(tDecl.initializer !)).toEqual({
+    const tDecl = findVar(errors, 't')!;
+    expect(evaluator.evaluateNode(tDecl.initializer!)).toEqual({
       __symbolic: 'error',
       message: 'Expression form not supported',
       line: 4,
@@ -203,14 +203,14 @@ describe('Evaluator', () => {
   it('should be able to fold an array spread', () => {
     const expressions = program.getSourceFile('expressions.ts');
     symbols.define('arr', [1, 2, 3, 4]);
-    const arrSpread = findVar(expressions, 'arrSpread') !;
-    expect(evaluator.evaluateNode(arrSpread.initializer !)).toEqual([0, 1, 2, 3, 4, 5]);
+    const arrSpread = findVar(expressions, 'arrSpread')!;
+    expect(evaluator.evaluateNode(arrSpread.initializer!)).toEqual([0, 1, 2, 3, 4, 5]);
   });
 
   it('should be able to produce a spread expression', () => {
     const expressions = program.getSourceFile('expressions.ts');
-    const arrSpreadRef = findVar(expressions, 'arrSpreadRef') !;
-    expect(evaluator.evaluateNode(arrSpreadRef.initializer !)).toEqual([
+    const arrSpreadRef = findVar(expressions, 'arrSpreadRef')!;
+    expect(evaluator.evaluateNode(arrSpreadRef.initializer!)).toEqual([
       0, {__symbolic: 'spread', expression: {__symbolic: 'reference', name: 'arrImport'}}, 5
     ]);
   });
@@ -219,8 +219,8 @@ describe('Evaluator', () => {
     const source = sourceFileOf(`
       export var a = new f;
     `);
-    const expr = findVar(source, 'a') !;
-    expect(evaluator.evaluateNode(expr.initializer !))
+    const expr = findVar(source, 'a')!;
+    expect(evaluator.evaluateNode(expr.initializer!))
         .toEqual({__symbolic: 'new', expression: {__symbolic: 'reference', name: 'f'}});
   });
 
@@ -245,7 +245,7 @@ describe('Evaluator', () => {
         export var a = () => b;
       `);
       const expr = findVar(source, 'a');
-      expect(evaluator.evaluateNode(expr !.initializer !))
+      expect(evaluator.evaluateNode(expr!.initializer!))
           .toEqual({__symbolic: 'reference', name: lambdaTemp});
     });
 
@@ -257,7 +257,7 @@ describe('Evaluator', () => {
         ];
       `);
       const expr = findVar(source, 'a');
-      expect(evaluator.evaluateNode(expr !.initializer !)).toEqual([
+      expect(evaluator.evaluateNode(expr!.initializer!)).toEqual([
         {provide: 'someValue', useFactory: {__symbolic: 'reference', name: lambdaTemp}}
       ]);
     });

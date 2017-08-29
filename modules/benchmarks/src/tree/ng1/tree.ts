@@ -67,6 +67,8 @@ export function addTreeToModule(mod: any): any {
           ])
       .config([
         '$compileProvider',
-        function($compileProvider: any) { $compileProvider.debugInfoEnabled(false); }
+        function($compileProvider: any) {
+          $compileProvider.debugInfoEnabled(false);
+        }
       ]);
 }

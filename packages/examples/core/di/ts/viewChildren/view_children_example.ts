@@ -10,9 +10,7 @@
 import {AfterViewInit, Component, Directive, Input, QueryList, ViewChildren} from '@angular/core';
 
 @Directive({selector: 'pane'})
-export class Pane {
-  @Input() id: string;
-}
+export class Pane { @Input() id: string; }
 
 @Component({
   selector: 'example-app',
@@ -32,15 +30,21 @@ export class ViewChildrenComp implements AfterViewInit {
 
   shouldShow = false;
 
-  show() { this.shouldShow = true; }
+  show() {
+    this.shouldShow = true;
+  }
 
   ngAfterViewInit() {
     this.calculateSerializedPanes();
-    this.panes.changes.subscribe((r) => { this.calculateSerializedPanes(); });
+    this.panes.changes.subscribe((r) => {
+      this.calculateSerializedPanes();
+    });
   }
 
   calculateSerializedPanes() {
-    setTimeout(() => { this.serializedPanes = this.panes.map(p => p.id).join(', '); }, 0);
+    setTimeout(() => {
+      this.serializedPanes = this.panes.map(p => p.id).join(', ');
+    }, 0);
   }
 }
 // #enddocregion

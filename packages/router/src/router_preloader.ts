@@ -1,21 +1,22 @@
 /**
-*@license
-*Copyright Google Inc. All Rights Reserved.
-*
-*Use of this source code is governed by an MIT-style license that can be
-*found in the LICENSE file at https://angular.io/license
-*/
+ *@license
+ *Copyright Google Inc. All Rights Reserved.
+ *
+ *Use of this source code is governed by an MIT-style license that can be
+ *found in the LICENSE file at https://angular.io/license
+ */
 
 import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, OnDestroy} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import {Subscription} from 'rxjs/Subscription';
 import {from} from 'rxjs/observable/from';
-import {of } from 'rxjs/observable/of';
+import {of} from 'rxjs/observable/of';
 import {_catch} from 'rxjs/operator/catch';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {filter} from 'rxjs/operator/filter';
 import {mergeAll} from 'rxjs/operator/mergeAll';
 import {mergeMap} from 'rxjs/operator/mergeMap';
+import {Subscription} from 'rxjs/Subscription';
+
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
 import {Router} from './router';
@@ -43,7 +44,7 @@ export abstract class PreloadingStrategy {
  */
 export class PreloadAllModules implements PreloadingStrategy {
   preload(route: Route, fn: () => Observable<any>): Observable<any> {
-    return _catch.call(fn(), () => of (null));
+    return _catch.call(fn(), () => of(null));
   }
 }
 
@@ -57,7 +58,9 @@ export class PreloadAllModules implements PreloadingStrategy {
  * @experimental
  */
 export class NoPreloading implements PreloadingStrategy {
-  preload(route: Route, fn: () => Observable<any>): Observable<any> { return of (null); }
+  preload(route: Route, fn: () => Observable<any>): Observable<any> {
+    return of (null);
+  }
 }
 
 /**
@@ -99,7 +102,9 @@ export class RouterPreloader implements OnDestroy {
   // TODO(jasonaden): This class relies on code external to the class to call setUpPreloading. If
   // this hasn't been done, ngOnDestroy will fail as this.subscription will be undefined. This
   // should be refactored.
-  ngOnDestroy(): void { this.subscription.unsubscribe(); }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 
   private processRoutes(ngModule: NgModuleRef<any>, routes: Routes): Observable<void> {
     const res: Observable<any>[] = [];

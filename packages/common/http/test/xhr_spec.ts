@@ -27,8 +27,8 @@ const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
 
 export function main() {
   describe('XhrBackend', () => {
-    let factory: MockXhrFactory = null !;
-    let backend: HttpXhrBackend = null !;
+    let factory: MockXhrFactory = null!;
+    let backend: HttpXhrBackend = null!;
     beforeEach(() => {
       factory = new MockXhrFactory();
       backend = new HttpXhrBackend(factory);
@@ -90,14 +90,14 @@ export function main() {
       factory.mock.mockFlush(200, 'OK', {data: 'some data'});
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
-      expect(res.body !.data).toBe('some data');
+      expect(res.body!.data).toBe('some data');
     });
     it('handles a json response that comes via responseText', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
       factory.mock.mockFlush(200, 'OK', JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
-      expect(res.body !.data).toBe('some data');
+      expect(res.body!.data).toBe('some data');
     });
     it('emits unsuccessful responses via the error path', (done: DoneFn) => {
       backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {

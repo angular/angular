@@ -9,7 +9,7 @@
 import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {fromPromise} from 'rxjs/observable/fromPromise';
-import {of } from 'rxjs/observable/of';
+import {of} from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {LoadChildren, LoadedRouterConfig, Route} from './config';
@@ -32,7 +32,7 @@ export class RouterConfigLoader {
       this.onLoadStartListener(route);
     }
 
-    const moduleFactory$ = this.loadModuleFactory(route.loadChildren !);
+    const moduleFactory$ = this.loadModuleFactory(route.loadChildren!);
 
     return map.call(moduleFactory$, (factory: NgModuleFactory<any>) => {
       if (this.onLoadEndListener) {

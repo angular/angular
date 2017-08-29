@@ -11,7 +11,7 @@ import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from
 import * as angular from './angular1';
 import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
-import {LazyModuleRef, controllerKey, getComponentName, isFunction} from './util';
+import {controllerKey, getComponentName, isFunction, LazyModuleRef} from './util';
 
 
 interface Thenable<T> {
@@ -85,8 +85,9 @@ export function downgradeComponent(info: {
       restrict: 'E',
       terminal: true,
       require: [REQUIRE_INJECTOR, REQUIRE_NG_MODEL],
-      link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
-             required: any[]) => {
+      link: (
+          scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
+          required: any[]) => {
         // We might have to compile the contents asynchronously, because this might have been
         // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
         // been compiled.
@@ -105,7 +106,7 @@ export function downgradeComponent(info: {
           const componentFactoryResolver: ComponentFactoryResolver =
               injector.get(ComponentFactoryResolver);
           const componentFactory: ComponentFactory<any> =
-              componentFactoryResolver.resolveComponentFactory(info.component) !;
+              componentFactoryResolver.resolveComponentFactory(info.component)!;
 
           if (!componentFactory) {
             throw new Error('Expecting ComponentFactory for: ' + getComponentName(info.component));
@@ -169,7 +170,7 @@ class ParentInjectorPromise {
 
   constructor(private element: angular.IAugmentedJQuery) {
     // Store the promise on the element.
-    element.data !(this.injectorKey, this);
+    element.data!(this.injectorKey, this);
   }
 
   then(callback: (injector: Injector) => any) {
@@ -184,10 +185,10 @@ class ParentInjectorPromise {
     this.injector = injector;
 
     // Store the real injector on the element.
-    this.element.data !(this.injectorKey, injector);
+    this.element.data!(this.injectorKey, injector);
 
     // Release the element to prevent memory leaks.
-    this.element = null !;
+    this.element = null!;
 
     // Run the queued callbacks.
     this.callbacks.forEach(callback => callback(injector));

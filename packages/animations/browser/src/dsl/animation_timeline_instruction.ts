@@ -23,7 +23,7 @@ export interface AnimationTimelineInstruction extends AnimationEngineInstruction
 
 export function createTimelineInstruction(
     element: any, keyframes: ɵStyleData[], preStyleProps: string[], postStyleProps: string[],
-    duration: number, delay: number, easing: string | null = null,
+    duration: number, delay: number, easing: string|null = null,
     subTimeline: boolean = false): AnimationTimelineInstruction {
   return {
     type: AnimationTransitionInstructionType.TimelineAnimation,
@@ -33,6 +33,8 @@ export function createTimelineInstruction(
     postStyleProps,
     duration,
     delay,
-    totalTime: duration + delay, easing, subTimeline
+    totalTime: duration + delay,
+    easing,
+    subTimeline
   };
 }

@@ -32,7 +32,7 @@ export function main() {
     const normEvents = new TraceEventFactory('timeline', 'pid0');
 
     function createExtension(
-        perfRecords: any[] | null = null, userAgent: string | null = null,
+        perfRecords: any[]|null = null, userAgent: string|null = null,
         messageMethod = 'Tracing.dataCollected'): WebDriverExtension {
       if (!perfRecords) {
         perfRecords = [];
@@ -170,7 +170,8 @@ export function main() {
              [
                chromeTimelineV8Events.start('MajorGC', 1000, {'usedHeapSizeBefore': 1000}),
                chromeTimelineV8Events.end('MajorGC', 2000, {'usedHeapSizeAfter': 0}),
-             ], )
+             ],
+             )
              .readPerfLog()
              .then((events) => {
                expect(events.length).toEqual(2);
@@ -189,7 +190,8 @@ export function main() {
                [
                  chrome45TimelineEvents.start(recordType, 1234),
                  chrome45TimelineEvents.end(recordType, 2345)
-               ], )
+               ],
+               )
                .readPerfLog()
                .then((events) => {
                  expect(events).toEqual([
@@ -207,7 +209,8 @@ export function main() {
              [
                chromeBlinkTimelineEvents.start('UpdateLayoutTree', 1234),
                chromeBlinkTimelineEvents.end('UpdateLayoutTree', 2345)
-             ], )
+             ],
+             )
              .readPerfLog()
              .then((events) => {
                expect(events).toEqual([
@@ -251,8 +254,10 @@ export function main() {
        }));
 
     it('should report receivedData', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createExtension([chrome45TimelineEvents.instant(
-                             'ResourceReceivedData', 1234, {'data': {'encodedDataLength': 987}})], )
+         createExtension(
+             [chrome45TimelineEvents.instant(
+                 'ResourceReceivedData', 1234, {'data': {'encodedDataLength': 987}})],
+             )
              .readPerfLog()
              .then((events) => {
                expect(events).toEqual(
@@ -262,9 +267,11 @@ export function main() {
        }));
 
     it('should report sendRequest', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         createExtension([chrome45TimelineEvents.instant(
-                             'ResourceSendRequest', 1234,
-                             {'data': {'url': 'http://here', 'requestMethod': 'GET'}})], )
+         createExtension(
+             [chrome45TimelineEvents.instant(
+                 'ResourceSendRequest', 1234,
+                 {'data': {'url': 'http://here', 'requestMethod': 'GET'}})],
+             )
              .readPerfLog()
              .then((events) => {
                expect(events).toEqual([normEvents.instant(
@@ -293,7 +300,8 @@ export function main() {
                  [
                    chromeTimelineEvents.start(recordType, 1234),
                    chromeTimelineEvents.end(recordType, 2345)
-                 ], )
+                 ],
+                 )
                  .readPerfLog()
                  .then((events) => {
                    expect(events).toEqual([
@@ -416,7 +424,7 @@ class MockDriverAdapter extends WebDriverAdapter {
                 {'message': {'method': this._messageMethod, 'params': event}}, null, 2)
           })));
     } else {
-      return null !;
+      return null!;
     }
   }
 }

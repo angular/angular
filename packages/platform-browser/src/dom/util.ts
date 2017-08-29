@@ -29,7 +29,7 @@ export function dashCaseToCamelCase(input: string): string {
  */
 export function exportNgVar(name: string, value: any): void {
   if (!ng) {
-    global['ng'] = ng = (global['ng'] as{[key: string]: any} | undefined) || {};
+    global['ng'] = ng = (global['ng'] as {[key: string]: any} | undefined) || {};
   }
   ng[name] = value;
 }

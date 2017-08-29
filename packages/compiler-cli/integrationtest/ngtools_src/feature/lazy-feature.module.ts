@@ -10,8 +10,7 @@ import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
 @Component({selector: 'lazy-feature-comp', template: 'lazy feature!'})
-export class LazyFeatureComponent {
-}
+export class LazyFeatureComponent {}
 
 @NgModule({
   imports: [RouterModule.forChild([
@@ -23,5 +22,4 @@ export class LazyFeatureComponent {
   ])],
   declarations: [LazyFeatureComponent]
 })
-export class LazyFeatureModule {
-}
+export class LazyFeatureModule {}

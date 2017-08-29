@@ -12,7 +12,9 @@ import {ErrorHandler, wrappedError} from '../src/error_handler';
 
 class MockConsole {
   res: any[][] = [];
-  error(...s: any[]): void { this.res.push(s); }
+  error(...s: any[]): void {
+    this.res.push(s);
+  }
 }
 
 export function main() {
@@ -33,7 +35,12 @@ export function main() {
     describe('context', () => {
       it('should print nested context', () => {
         const cause = new Error('message!');
-        const context = { source: 'context!', toString() { return 'Context'; } } as any;
+        const context = {
+          source: 'context!',
+          toString() {
+            return 'Context';
+          }
+        } as any;
         const original = debugError(cause, context);
         const e = errorToString(wrappedError('message', original));
         expect(e).toEqual(`ERROR#Error: message caused by: Error in context! caused by: message!

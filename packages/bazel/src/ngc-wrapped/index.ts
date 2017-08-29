@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ng from '@angular/compiler-cli';
-import {CompilerHost, UncachedFileLoader, parseTsconfig} from '@bazel/typescript';
+import {CompilerHost, parseTsconfig, UncachedFileLoader} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';

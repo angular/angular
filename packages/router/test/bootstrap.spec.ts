@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF} from '@angular/common';
-import {ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, Component, NgModule, destroyPlatform} from '@angular/core';
+import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, NgModule} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -16,16 +16,17 @@ import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 
 describe('bootstrap', () => {
   let log: any[] = [];
-  let testProviders: any[] = null !;
+  let testProviders: any[] = null!;
 
   @Component({selector: 'test-app', template: 'root <router-outlet></router-outlet>'})
   class RootCmp {
-    constructor() { log.push('RootCmp'); }
+    constructor() {
+      log.push('RootCmp');
+    }
   }
 
   @Component({selector: 'test-app2', template: 'root <router-outlet></router-outlet>'})
-  class SecondRootCmp {
-  }
+  class SecondRootCmp {}
 
   class TestResolver implements Resolve<any> {
     resolve() {
@@ -57,14 +58,14 @@ describe('bootstrap', () => {
 
   it('should wait for resolvers to complete when initialNavigation = enabled', (done) => {
     @Component({selector: 'test', template: 'test'})
-    class TestCmpEnabled {
-    }
+    class TestCmpEnabled {}
 
     @NgModule({
       imports: [
-        BrowserModule, RouterModule.forRoot(
-                           [{path: '**', component: TestCmpEnabled, resolve: {test: TestResolver}}],
-                           {useHash: true, initialNavigation: 'enabled'})
+        BrowserModule,
+        RouterModule.forRoot(
+            [{path: '**', component: TestCmpEnabled, resolve: {test: TestResolver}}],
+            {useHash: true, initialNavigation: 'enabled'})
       ],
       declarations: [RootCmp, TestCmpEnabled],
       bootstrap: [RootCmp],
@@ -80,7 +81,7 @@ describe('bootstrap', () => {
 
     platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
       const router = res.injector.get(Router);
-      const data = router.routerState.snapshot.root.firstChild !.data;
+      const data = router.routerState.snapshot.root.firstChild!.data;
       expect(data['test']).toEqual('test-data');
       expect(log).toEqual([
         'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart', 'GuardsCheckEnd',
@@ -93,8 +94,7 @@ describe('bootstrap', () => {
   it('should NOT wait for resolvers to complete when initialNavigation = legacy_enabled',
      (done) => {
        @Component({selector: 'test', template: 'test'})
-       class TestCmpLegacyEnabled {
-       }
+       class TestCmpLegacyEnabled {}
 
        @NgModule({
          imports: [
@@ -134,14 +134,14 @@ describe('bootstrap', () => {
 
   it('should not run navigation when initialNavigation = disabled', (done) => {
     @Component({selector: 'test', template: 'test'})
-    class TestCmpDiabled {
-    }
+    class TestCmpDiabled {}
 
     @NgModule({
       imports: [
-        BrowserModule, RouterModule.forRoot(
-                           [{path: '**', component: TestCmpDiabled, resolve: {test: TestResolver}}],
-                           {useHash: true, initialNavigation: 'disabled'})
+        BrowserModule,
+        RouterModule.forRoot(
+            [{path: '**', component: TestCmpDiabled, resolve: {test: TestResolver}}],
+            {useHash: true, initialNavigation: 'disabled'})
       ],
       declarations: [RootCmp, TestCmpDiabled],
       bootstrap: [RootCmp],
@@ -164,8 +164,7 @@ describe('bootstrap', () => {
 
   it('should not run navigation when initialNavigation = legacy_disabled', (done) => {
     @Component({selector: 'test', template: 'test'})
-    class TestCmpLegacyDisabled {
-    }
+    class TestCmpLegacyDisabled {}
 
     @NgModule({
       imports: [
@@ -203,8 +202,7 @@ describe('bootstrap', () => {
          providers: testProviders,
          schemas: [CUSTOM_ELEMENTS_SCHEMA]
        })
-       class TestModule {
-       }
+       class TestModule {}
 
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
          const router = res.injector.get(Router);
@@ -229,8 +227,7 @@ describe('bootstrap', () => {
          providers: testProviders,
          schemas: [CUSTOM_ELEMENTS_SCHEMA]
        })
-       class TestModule {
-       }
+       class TestModule {}
 
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
          const router = res.injector.get(Router);

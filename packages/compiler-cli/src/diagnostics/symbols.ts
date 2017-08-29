@@ -38,7 +38,7 @@ export interface Location {
 /**
  * A defnition location(s).
  */
-export type Definition = Location[] | undefined;
+export type Definition = Location[]|undefined;
 
 /**
  * A symbol describing a language element that can be referenced by expressions
@@ -220,8 +220,8 @@ export enum BuiltinType {
  *
  * @experimental
  */
-export type DeclarationKind = 'attribute' | 'html attribute' | 'component' | 'element' | 'entity' |
-    'key' | 'method' | 'pipe' | 'property' | 'type' | 'reference' | 'variable';
+export type DeclarationKind = 'attribute'|'html attribute'|'component'|'element'|'entity'|'key'|
+    'method'|'pipe'|'property'|'type'|'reference'|'variable';
 
 /**
  * Describes a symbol to type binding used to build a symbol table.
@@ -272,7 +272,7 @@ export interface PipeInfo {
  *
  * @experimental
  */
-export type Pipes = PipeInfo[] | undefined;
+export type Pipes = PipeInfo[]|undefined;
 
 /**
  * Describes the language context in which an Angular expression is evaluated.

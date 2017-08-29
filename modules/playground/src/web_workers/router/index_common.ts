@@ -15,8 +15,7 @@ import {Contact} from './components/contact';
 import {Start} from './components/start';
 
 @Component({selector: 'app', templateUrl: 'app.html'})
-export class App {
-}
+export class App {}
 
 export const ROUTES = [
   {path: '', component: Start}, {path: 'contact', component: Contact},
@@ -31,5 +30,4 @@ export const ROUTES = [
   bootstrap: [App],
   declarations: [App, Start, Contact, About]
 })
-export class AppModule {
-}
+export class AppModule {}

@@ -9,7 +9,7 @@ export const ANY_STATE = '*';
 export declare type TransitionMatcherFn = (fromState: any, toState: any) => boolean;
 
 export function parseTransitionExpr(
-    transitionValue: string | TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {
+    transitionValue: string|TransitionMatcherFn, errors: string[]): TransitionMatcherFn[] {
   const expressions: TransitionMatcherFn[] = [];
   if (typeof transitionValue == 'string') {
     (<string>transitionValue)

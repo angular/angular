@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {UrlResolver, createOfflineCompileUrlResolver} from '@angular/compiler/src/url_resolver';
+import {createOfflineCompileUrlResolver, UrlResolver} from '@angular/compiler/src/url_resolver';
 import {beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
 export function main() {
@@ -89,14 +89,14 @@ export function main() {
     describe('packages', () => {
       it('should resolve a url based on the application package', () => {
         resolver = new UrlResolver('my_packages_dir');
-        expect(resolver.resolve(null !, 'package:some/dir/file.txt'))
+        expect(resolver.resolve(null!, 'package:some/dir/file.txt'))
             .toEqual('my_packages_dir/some/dir/file.txt');
-        expect(resolver.resolve(null !, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
+        expect(resolver.resolve(null!, 'some/dir/file.txt')).toEqual('some/dir/file.txt');
       });
 
       it('should contain a default value of "/" when nothing is provided',
          inject([UrlResolver], (resolver: UrlResolver) => {
-           expect(resolver.resolve(null !, 'package:file')).toEqual('/file');
+           expect(resolver.resolve(null!, 'package:file')).toEqual('/file');
          }));
 
       it('should resolve a package value when present within the baseurl', () => {
@@ -107,11 +107,11 @@ export function main() {
     });
 
     describe('corner and error cases', () => {
-      it('should encode URLs before resolving',
-         () => {
-           expect(resolver.resolve('foo/baz', `<p #p>Hello
-        </p>`)).toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
-         });
+      it('should encode URLs before resolving', () => {
+        expect(resolver.resolve('foo/baz', `<p #p>Hello
+        </p>`))
+            .toEqual('foo/%3Cp%20#p%3EHello%0A%20%20%20%20%20%20%20%20%3C/p%3E');
+      });
     });
   });
 }

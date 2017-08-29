@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 
 import {CompilerHostAdapter, MetadataBundler} from './bundler';
 import {CliOptions} from './cli_options';
-import {MetadataWriterHost, createSyntheticIndexHost} from './compiler_host';
+import {createSyntheticIndexHost, MetadataWriterHost} from './compiler_host';
 import {privateEntriesToIndex} from './index_writer';
 import NgOptions from './options';
 import {check, tsc} from './tsc';
@@ -58,7 +58,7 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
   const metadataBundle = bundler.getMetadataBundle();
   const metadata = JSON.stringify(metadataBundle.metadata);
   const name =
-      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile !.replace(JS_EXT, '.ts'));
+      path.join(path.dirname(indexModule), ngOptions.flatModuleOutFile!.replace(JS_EXT, '.ts'));
   const libraryIndex = `./${path.basename(indexModule)}`;
   const content = privateEntriesToIndex(libraryIndex, metadataBundle.privates);
   host = createSyntheticIndexHost(host, {name, content, metadata});
@@ -66,7 +66,7 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
 }
 
 export function main(
-    project: string | VinylFile, cliOptions: CliOptions, codegen?: CodegenExtension,
+    project: string|VinylFile, cliOptions: CliOptions, codegen?: CodegenExtension,
     options?: ts.CompilerOptions): Promise<any> {
   try {
     let projectDir = project;
@@ -184,8 +184,9 @@ export function main(
       tsc.emit(programWithCodegen);
 
       if (diagnostics) {
-        (ts as any).performance.forEachMeasure(
-            (name: string, duration: number) => { console.error(`TS ${name}: ${duration}ms`); });
+        (ts as any).performance.forEachMeasure((name: string, duration: number) => {
+          console.error(`TS ${name}: ${duration}ms`);
+        });
       }
     });
   } catch (e) {

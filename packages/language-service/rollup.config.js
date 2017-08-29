@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import commonjs from 'rollup-plugin-commonjs';
 import * as path from 'path';
+import commonjs from 'rollup-plugin-commonjs';
 
 var m = /^\@angular\/((\w|\-)+)(\/(\w|\d|\/|\-)+)?$/;
 var location = normalize('../../dist/packages-dist') + '/';
@@ -74,11 +74,12 @@ export default {
   format: 'amd',
   moduleName: 'ng.language_service',
   exports: 'named',
-  external: [
-    'fs',
-    'path',
-    'typescript',
-  ],
+  external:
+      [
+        'fs',
+        'path',
+        'typescript',
+      ],
   globals: {
     'typescript': 'ts',
     'path': 'path',

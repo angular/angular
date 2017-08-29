@@ -34,8 +34,12 @@ export abstract class NgControl extends AbstractControlDirective {
   /** @internal */
   _rawAsyncValidators: Array<AsyncValidator|AsyncValidatorFn> = [];
 
-  get validator(): ValidatorFn|null { return <ValidatorFn>unimplemented(); }
-  get asyncValidator(): AsyncValidatorFn|null { return <AsyncValidatorFn>unimplemented(); }
+  get validator(): ValidatorFn|null {
+    return <ValidatorFn>unimplemented();
+  }
+  get asyncValidator(): AsyncValidatorFn|null {
+    return <AsyncValidatorFn>unimplemented();
+  }
 
   abstract viewToModelUpdate(newValue: any): void;
 }

@@ -97,7 +97,13 @@ System.import('@angular/core/testing')
                                });
                              }));
     })
-    .then(function() { __karma__.start(); }, function(error) { console.error(error); });
+    .then(
+        function() {
+          __karma__.start();
+        },
+        function(error) {
+          console.error(error);
+        });
 
 
 function onlySpecFiles(path) {

@@ -45,20 +45,32 @@ export class ServerPlatformLocation implements PlatformLocation {
     }
   }
 
-  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc) !; }
+  getBaseHrefFromDOM(): string {
+    return getDOM().getBaseHref(this._doc)!;
+  }
 
   onPopState(fn: LocationChangeListener): void {
     // No-op: a state stack is not implemented, so
     // no events will ever come.
   }
 
-  onHashChange(fn: LocationChangeListener): void { this._hashUpdate.subscribe(fn); }
+  onHashChange(fn: LocationChangeListener): void {
+    this._hashUpdate.subscribe(fn);
+  }
 
-  get pathname(): string { return this._path; }
-  get search(): string { return this._search; }
-  get hash(): string { return this._hash; }
+  get pathname(): string {
+    return this._path;
+  }
+  get search(): string {
+    return this._search;
+  }
+  get hash(): string {
+    return this._hash;
+  }
 
-  get url(): string { return `${this.pathname}${this.search}${this.hash}`; }
+  get url(): string {
+    return `${this.pathname}${this.search}${this.hash}`;
+  }
 
   private setHash(value: string, oldUrl: string) {
     if (this._hash === value) {
@@ -68,7 +80,7 @@ export class ServerPlatformLocation implements PlatformLocation {
     this._hash = value;
     const newUrl = this.url;
     scheduleMicroTask(
-        () => this._hashUpdate.next({ type: 'hashchange', oldUrl, newUrl } as LocationChangeEvent));
+        () => this._hashUpdate.next({type: 'hashchange', oldUrl, newUrl} as LocationChangeEvent));
   }
 
   replaceState(state: any, title: string, newUrl: string): void {
@@ -83,9 +95,13 @@ export class ServerPlatformLocation implements PlatformLocation {
     this.replaceState(state, title, newUrl);
   }
 
-  forward(): void { throw new Error('Not implemented'); }
+  forward(): void {
+    throw new Error('Not implemented');
+  }
 
-  back(): void { throw new Error('Not implemented'); }
+  back(): void {
+    throw new Error('Not implemented');
+  }
 }
 
 export function scheduleMicroTask(fn: Function) {

@@ -15,9 +15,13 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
 export class IOsDriverExtension extends WebDriverExtension {
   static PROVIDERS = [{provide: IOsDriverExtension, deps: [WebDriverAdapter]}];
 
-  constructor(private _driver: WebDriverAdapter) { super(); }
+  constructor(private _driver: WebDriverAdapter) {
+    super();
+  }
 
-  gc(): Promise<any> { throw new Error('Force GC is not supported on iOS'); }
+  gc(): Promise<any> {
+    throw new Error('Force GC is not supported on iOS');
+  }
 
   timeBegin(name: string): Promise<any> {
     return this._driver.executeScript(`console.time('${name}');`);
@@ -62,16 +66,16 @@ export class IOsDriverExtension extends WebDriverExtension {
       const endTime = record['endTime'];
 
       if (type === 'FunctionCall' && (data == null || data['scriptName'] !== 'InjectedScript')) {
-        events !.push(createStartEvent('script', startTime));
+        events!.push(createStartEvent('script', startTime));
         endEvent = createEndEvent('script', endTime);
       } else if (type === 'Time') {
-        events !.push(createMarkStartEvent(data['message'], startTime));
+        events!.push(createMarkStartEvent(data['message'], startTime));
       } else if (type === 'TimeEnd') {
-        events !.push(createMarkEndEvent(data['message'], startTime));
+        events!.push(createMarkEndEvent(data['message'], startTime));
       } else if (
           type === 'RecalculateStyles' || type === 'Layout' || type === 'UpdateLayerTree' ||
           type === 'Paint' || type === 'Rasterize' || type === 'CompositeLayers') {
-        events !.push(createStartEvent('render', startTime));
+        events!.push(createStartEvent('render', startTime));
         endEvent = createEndEvent('render', endTime);
       }
       // Note: ios used to support GCEvent up until iOS 6 :-(
@@ -79,21 +83,22 @@ export class IOsDriverExtension extends WebDriverExtension {
         this._convertPerfRecordsToEvents(record['children'], events);
       }
       if (endEvent != null) {
-        events !.push(endEvent);
+        events!.push(endEvent);
       }
     });
     return events;
   }
 
-  perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true}); }
+  perfLogFeatures(): PerfLogFeatures {
+    return new PerfLogFeatures({render: true});
+  }
 
   supports(capabilities: {[key: string]: any}): boolean {
     return capabilities['browserName'].toLowerCase() === 'safari';
   }
 }
 
-function createEvent(
-    ph: 'X' | 'B' | 'E' | 'B' | 'E', name: string, time: number, args: any = null) {
+function createEvent(ph: 'X'|'B'|'E'|'B'|'E', name: string, time: number, args: any = null) {
   const result: PerfLogEvent = {
     'cat': 'timeline',
     'name': name,

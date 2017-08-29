@@ -18,8 +18,8 @@ export function serializeSummaries(
     srcFileName: string, forJitCtx: OutputContext, summaryResolver: SummaryResolver<StaticSymbol>,
     symbolResolver: StaticSymbolResolver, symbols: ResolvedStaticSymbol[], types: {
       summary: CompileTypeSummary,
-      metadata: CompileNgModuleMetadata | CompileDirectiveMetadata | CompilePipeMetadata |
-          CompileTypeMetadata
+      metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|CompilePipeMetadata|
+      CompileTypeMetadata
     }[]): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
   const toJsonSerializer = new ToJsonSerializer(symbolResolver, summaryResolver);
   const forJitSerializer = new ForJitSerializer(forJitCtx, symbolResolver);
@@ -154,7 +154,7 @@ class ToJsonSerializer extends ValueTransformer {
       summaries: this.processedSummaries,
       symbols: this.symbols.map((symbol, index) => {
         symbol.assertNoMembers();
-        let importAs: string = undefined !;
+        let importAs: string = undefined!;
         if (this.summaryResolver.isLibraryFile(symbol.filePath)) {
           const summary = this.unprocessedSymbolSummariesBySymbol.get(symbol);
           if (!summary || !summary.metadata || summary.metadata.__symbolic !== 'interface') {
@@ -197,7 +197,7 @@ class ToJsonSerializer extends ValueTransformer {
       if (this.unprocessedSymbolSummariesBySymbol.has(baseSymbol)) {
         // the summary for this symbol was already added
         // -> nothing to do.
-        return index !;
+        return index!;
       }
       summary = this.loadSummary(baseSymbol);
       if (summary && summary.metadata instanceof StaticSymbol) {
@@ -249,8 +249,9 @@ class ForJitSerializer {
   constructor(private outputCtx: OutputContext, private symbolResolver: StaticSymbolResolver) {}
 
   addSourceType(
-      summary: CompileTypeSummary, metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|
-      CompilePipeMetadata|CompileTypeMetadata) {
+      summary: CompileTypeSummary,
+      metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|CompilePipeMetadata|
+      CompileTypeMetadata) {
     this.data.set(summary.type.reference, {summary, metadata, isLibrary: false});
   }
 
@@ -269,13 +270,15 @@ class ForJitSerializer {
         // See serializeSummaries for details.
         ngModuleSymbols.add(summary.type.reference);
         const modSummary = <CompileNgModuleSummary>summary;
-        modSummary.modules.forEach((mod) => { ngModuleSymbols.add(mod.reference); });
+        modSummary.modules.forEach((mod) => {
+          ngModuleSymbols.add(mod.reference);
+        });
       }
       if (!isLibrary) {
         const fnName = summaryForJitName(summary.type.reference.name);
         createSummaryForJitFunction(
             this.outputCtx, summary.type.reference,
-            this.serializeSummaryWithDeps(summary, metadata !));
+            this.serializeSummaryWithDeps(summary, metadata!));
       }
     });
 
@@ -292,8 +295,9 @@ class ForJitSerializer {
   }
 
   private serializeSummaryWithDeps(
-      summary: CompileTypeSummary, metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|
-      CompilePipeMetadata|CompileTypeMetadata): o.Expression {
+      summary: CompileTypeSummary,
+      metadata: CompileNgModuleMetadata|CompileDirectiveMetadata|CompilePipeMetadata|
+      CompileTypeMetadata): o.Expression {
     const expressions: o.Expression[] = [this.serializeSummary(summary)];
     let providers: CompileProviderMetadata[] = [];
     if (metadata instanceof CompileNgModuleMetadata) {
@@ -323,7 +327,8 @@ class ForJitSerializer {
     // i.e. we didn't generate .ngsummary.ts files for these.
     expressions.push(
         ...providers.filter(provider => !!provider.useClass).map(provider => this.serializeSummary({
-          summaryKind: CompileSummaryKind.Injectable, type: provider.useClass
+          summaryKind: CompileSummaryKind.Injectable,
+          type: provider.useClass
         } as CompileTypeSummary)));
     return o.literalArr(expressions);
   }
@@ -345,7 +350,9 @@ class ForJitSerializer {
         return new o.LiteralMapExpr(Object.keys(map).map(
             (key) => new o.LiteralMapEntry(key, visitValue(map[key], this, context), false)));
       }
-      visitPrimitive(value: any, context: any): any { return o.literal(value); }
+      visitPrimitive(value: any, context: any): any {
+        return o.literal(value);
+      }
       visitOther(value: any, context: any): any {
         if (value instanceof StaticSymbol) {
           return outputCtx.importExpr(value);

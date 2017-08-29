@@ -14,7 +14,9 @@ import {NoopAnimationsModule} from '../src/module';
 
 export function main() {
   describe('NoopAnimationsModule', () => {
-    beforeEach(() => { TestBed.configureTestingModule({imports: [NoopAnimationsModule]}); });
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [NoopAnimationsModule]});
+    });
 
     it('should flush and fire callbacks when the zone becomes stable', (async) => {
       @Component({
@@ -30,8 +32,12 @@ export function main() {
         exp: any;
         startEvent: any;
         doneEvent: any;
-        onStart(event: any) { this.startEvent = event; }
-        onDone(event: any) { this.doneEvent = event; }
+        onStart(event: any) {
+          this.startEvent = event;
+        }
+        onDone(event: any) {
+          this.doneEvent = event;
+        }
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -64,8 +70,12 @@ export function main() {
            exp: any;
            startEvent: any;
            doneEvent: any;
-           onStart(event: any) { this.startEvent = event; }
-           onDone(event: any) { this.doneEvent = event; }
+           onStart(event: any) {
+             this.startEvent = event;
+           }
+           onDone(event: any) {
+             this.doneEvent = event;
+           }
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});

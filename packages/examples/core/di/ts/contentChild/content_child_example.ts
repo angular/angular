@@ -10,9 +10,7 @@
 import {Component, ContentChild, Directive, Input} from '@angular/core';
 
 @Directive({selector: 'pane'})
-export class Pane {
-  @Input() id: string;
-}
+export class Pane { @Input() id: string; }
 
 @Component({
   selector: 'tab',
@@ -20,9 +18,7 @@ export class Pane {
     <div>pane: {{pane?.id}}</div> 
   `
 })
-export class Tab {
-  @ContentChild(Pane) pane: Pane;
-}
+export class Tab { @ContentChild(Pane) pane: Pane; }
 
 @Component({
   selector: 'example-app',
@@ -38,6 +34,8 @@ export class Tab {
 export class ContentChildComp {
   shouldShow = true;
 
-  toggle() { this.shouldShow = !this.shouldShow; }
+  toggle() {
+    this.shouldShow = !this.shouldShow;
+  }
 }
 // #enddocregion

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, animate, state, style, transition, trigger} from '@angular/core';
+import {animate, Component, state, style, transition, trigger} from '@angular/core';
 
 @Component({
   selector: 'animation-app',
@@ -37,6 +37,4 @@ import {Component, animate, state, style, transition, trigger} from '@angular/co
     </div>
   `
 })
-export class AnimationCmp {
-  animate = false;
-}
+export class AnimationCmp { animate = false; }

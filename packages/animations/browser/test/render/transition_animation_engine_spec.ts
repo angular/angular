@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationEvent, AnimationMetadata, AnimationTriggerMetadata, NoopAnimationPlayer, animate, state, style, transition, trigger} from '@angular/animations';
+import {animate, AnimationEvent, AnimationMetadata, AnimationTriggerMetadata, NoopAnimationPlayer, state, style, transition, trigger} from '@angular/animations';
 
 import {TriggerAst} from '../../src/dsl/animation_ast';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
@@ -31,7 +31,9 @@ export function main() {
       document.body.appendChild(element);
     });
 
-    afterEach(() => { document.body.removeChild(element); });
+    afterEach(() => {
+      document.body.removeChild(element);
+    });
 
     function makeEngine(normalizer?: AnimationStyleNormalizer) {
       const engine =
@@ -45,7 +47,9 @@ export function main() {
         // TODO (matsko): ask why this is avoided
         const engine = makeEngine();
         registerTrigger(element, engine, trigger('trig', []));
-        expect(() => { registerTrigger(element, engine, trigger('trig', [])); }).not.toThrow();
+        expect(() => {
+          registerTrigger(element, engine, trigger('trig', []));
+        }).not.toThrow();
       });
     });
 
@@ -182,14 +186,18 @@ export function main() {
         const trig = trigger('myTrigger', []);
         registerTrigger(element, engine, trig);
 
-        expect(() => { listen(element, engine, 'myTrigger', 'explode', () => {}); })
+        expect(() => {
+          listen(element, engine, 'myTrigger', 'explode', () => {});
+        })
             .toThrowError(
                 /The provided animation trigger event "explode" for the animation trigger "myTrigger" is not supported!/);
       });
 
       it('should throw an error when an event is listened for a trigger that doesn\'t exist', () => {
         const engine = makeEngine();
-        expect(() => { listen(element, engine, 'myTrigger', 'explode', () => {}); })
+        expect(() => {
+          listen(element, engine, 'myTrigger', 'explode', () => {});
+        })
             .toThrowError(
                 /Unable to listen on the animation trigger event "explode" because the animation trigger "myTrigger" doesn\'t exist!/);
       });
@@ -198,7 +206,9 @@ export function main() {
         const engine = makeEngine();
         const trig = trigger('myTrigger', []);
         registerTrigger(element, engine, trig);
-        expect(() => { listen(element, engine, 'myTrigger', '', () => {}); })
+        expect(() => {
+          listen(element, engine, 'myTrigger', '', () => {});
+        })
             .toThrowError(
                 /Unable to listen on the animation trigger "myTrigger" because the provided event is undefined!/);
       });
@@ -286,7 +296,7 @@ export function main() {
         setProperty(element, engine, 'myTrigger', '123');
         engine.flush();
 
-        let capture: AnimationEvent = null !;
+        let capture: AnimationEvent = null!;
         listen(element, engine, 'myTrigger', 'start', e => capture = e);
         listen(element, engine, 'myTrigger', 'done', e => capture = e);
         setProperty(element, engine, 'myTrigger', '456');
@@ -302,8 +312,8 @@ export function main() {
           totalTime: 1234
         });
 
-        capture = null !;
-        const player = engine.players.pop() !;
+        capture = null!;
+        const player = engine.players.pop()!;
         player.finish();
 
         delete (capture as any)['_data'];
@@ -381,7 +391,9 @@ export function main() {
            registerTrigger(element, engine, trig2);
 
            let doneCount = 0;
-           function doneCallback() { doneCount++; }
+           function doneCallback() {
+             doneCount++;
+           }
 
            setProperty(element, engine, trig1.name, 'a');
            setProperty(element, engine, trig1.name, 'b');
@@ -389,11 +401,11 @@ export function main() {
            setProperty(element, engine, trig2.name, 'y');
            engine.flush();
 
-           const player1 = engine.players[0] !;
+           const player1 = engine.players[0]!;
            player1.onDone(doneCallback);
            expect(doneCount).toEqual(0);
 
-           const player2 = engine.players[1] !;
+           const player2 = engine.players[1]!;
            player2.onDone(doneCallback);
            expect(doneCount).toEqual(0);
 
@@ -452,20 +464,20 @@ export function main() {
            setProperty(element, engine, trig.name, 'y');
            engine.flush();
 
-           const player1 = MockAnimationDriver.log.pop() !as MockAnimationPlayer;
+           const player1 = MockAnimationDriver.log.pop()! as MockAnimationPlayer;
            player1.setPosition(0.5);
 
            setProperty(element, engine, trig.name, 'z');
            engine.flush();
 
-           const player2 = MockAnimationDriver.log.pop() !as MockAnimationPlayer;
+           const player2 = MockAnimationDriver.log.pop()! as MockAnimationPlayer;
            expect(player2.previousPlayers).toEqual([player1]);
            player2.finish();
 
            setProperty(element, engine, trig.name, 'x');
            engine.flush();
 
-           const player3 = MockAnimationDriver.log.pop() !as MockAnimationPlayer;
+           const player3 = MockAnimationDriver.log.pop()! as MockAnimationPlayer;
            expect(player3.previousPlayers).toEqual([]);
          });
 
@@ -482,7 +494,9 @@ export function main() {
         engine.flush();
 
         let doneCount = 0;
-        function doneCallback() { doneCount++; }
+        function doneCallback() {
+          doneCount++;
+        }
 
         const player1 = engine.players[0];
         player1.onDone(doneCallback);
@@ -508,7 +522,7 @@ export function main() {
            setProperty(element, engine, trig.name, '1');
            engine.flush();
 
-           const player = engine.players[0] !;
+           const player = engine.players[0]!;
            expect(element.style.width).not.toEqual('100px');
 
            player.finish();
@@ -619,7 +633,9 @@ export function main() {
 }
 
 class SuffixNormalizer extends AnimationStyleNormalizer {
-  constructor(private _suffix: string) { super(); }
+  constructor(private _suffix: string) {
+    super();
+  }
 
   normalizePropertyName(propertyName: string, errors: string[]): string {
     return propertyName + this._suffix;
@@ -633,7 +649,9 @@ class SuffixNormalizer extends AnimationStyleNormalizer {
 }
 
 class ExactCssValueNormalizer extends AnimationStyleNormalizer {
-  constructor(private _allowedValues: {[propName: string]: any}) { super(); }
+  constructor(private _allowedValues: {[propName: string]: any}) {
+    super();
+  }
 
   normalizePropertyName(propertyName: string, errors: string[]): string {
     if (!this._allowedValues[propertyName]) {

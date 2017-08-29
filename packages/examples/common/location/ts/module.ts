@@ -17,8 +17,7 @@ import {PathLocationComponent} from './path_location_component';
   selector: 'example-app',
   template: `<hash-location></hash-location><path-location></path-location>`
 })
-export class ExampleAppComponent {
-}
+export class ExampleAppComponent {}
 
 @NgModule({
   declarations: [ExampleAppComponent, PathLocationComponent, HashLocationComponent],
@@ -26,5 +25,4 @@ export class ExampleAppComponent {
   imports: [BrowserModule],
   bootstrap: [ExampleAppComponent]
 })
-export class AppModule {
-}
+export class AppModule {}

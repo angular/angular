@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, animate, state, style, transition, trigger} from '@angular/animations';
+import {animate, AUTO_STYLE, state, style, transition, trigger} from '@angular/animations';
 import {Component} from '@angular/core';
 
 @Component({
@@ -30,8 +30,16 @@ import {Component} from '@angular/core';
 })
 export class AnimateCmp {
   stateExpression: string;
-  constructor() { this.setAsClosed(); }
-  setAsSomethingElse() { this.stateExpression = 'something'; }
-  setAsOpen() { this.stateExpression = 'open'; }
-  setAsClosed() { this.stateExpression = 'closed'; }
+  constructor() {
+    this.setAsClosed();
+  }
+  setAsSomethingElse() {
+    this.stateExpression = 'something';
+  }
+  setAsOpen() {
+    this.stateExpression = 'open';
+  }
+  setAsClosed() {
+    this.stateExpression = 'closed';
+  }
 }

@@ -48,7 +48,9 @@ export function main() {
 }
 
 class MockExtension extends WebDriverExtension {
-  constructor(public id: string) { super(); }
+  constructor(public id: string) {
+    super();
+  }
 
   supports(capabilities: {[key: string]: any}): boolean {
     return capabilities['browser'] === this.id;

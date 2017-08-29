@@ -18,13 +18,15 @@ const InjectorRefTokenKey = tokenKey(Injector);
 const NgModuleRefTokenKey = tokenKey(NgModuleRef);
 
 export function moduleProvideDef(
-    flags: NodeFlags, token: any, value: any,
-    deps: ([DepFlags, any] | any)[]): NgModuleProviderDef {
+    flags: NodeFlags, token: any, value: any, deps: ([DepFlags, any]|any)[]): NgModuleProviderDef {
   const depDefs = splitDepsDsl(deps);
   return {
     // will bet set by the module definition
     index: -1,
-    deps: depDefs, flags, token, value
+    deps: depDefs,
+    flags,
+    token,
+    value
   };
 }
 

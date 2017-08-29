@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationPlayer, animate, animateChild, query, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
+import {animate, animateChild, AnimationPlayer, AUTO_STYLE, query, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {matchesElement} from '@angular/animations/browser/src/render/shared';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
@@ -28,7 +28,9 @@ export function main() {
       return MockAnimationDriver.log as MockAnimationPlayer[];
     }
 
-    function resetLog() { MockAnimationDriver.log = []; }
+    function resetLog() {
+      MockAnimationDriver.log = [];
+    }
 
     beforeEach(() => {
       resetLog();
@@ -905,7 +907,9 @@ export function main() {
 
            cmp.items = [0, 1, 2, 3, 4];
 
-           expect(() => { fixture.detectChanges(); }).toThrow();
+           expect(() => {
+             fixture.detectChanges();
+           }).toThrow();
 
            const children = cmp.container.nativeElement.querySelectorAll('.child');
            expect(children.length).toEqual(5);
@@ -1072,7 +1076,7 @@ export function main() {
         expect(players.length).toEqual(5);
 
         for (let i = 0; i < 5; i++) {
-          let player = players[i] !;
+          let player = players[i]!;
           expect(player.keyframes).toEqual([
             {opacity: '0', offset: 0},
             {opacity: '1', offset: 1},
@@ -1092,7 +1096,7 @@ export function main() {
         expect(players.length).toEqual(5);
 
         for (let i = 0; i < 5; i++) {
-          let player = players[i] !;
+          let player = players[i]!;
           expect(player.keyframes).toEqual([
             {opacity: '1', offset: 0},
             {opacity: '0', offset: 1},
@@ -1128,7 +1132,7 @@ export function main() {
               ]),
             ])]
         })
-        class Cmp {
+           class Cmp {
              public exp: any;
              public items: any[];
            }
@@ -1368,7 +1372,9 @@ export function main() {
         expect(players.length).toEqual(5);
 
         let count = 0;
-        players.forEach(p => { p.onDone(() => count++); });
+        players.forEach(p => {
+          p.onDone(() => count++);
+        });
 
         expect(count).toEqual(0);
 
@@ -1420,7 +1426,9 @@ export function main() {
         expect(players.length).toEqual(5);
 
         let count = 0;
-        players.forEach(p => { p.onDone(() => count++); });
+        players.forEach(p => {
+          p.onDone(() => count++);
+        });
 
         expect(count).toEqual(0);
 
@@ -1482,7 +1490,9 @@ export function main() {
         expect(players.length).toEqual(5);
 
         let count = 0;
-        players.forEach(p => { p.onDone(() => count++); });
+        players.forEach(p => {
+          p.onDone(() => count++);
+        });
 
         resetLog();
 
@@ -1497,7 +1507,9 @@ export function main() {
         players = getLog();
         expect(players.length).toEqual(3);
 
-        players.forEach(p => { p.onDone(() => count++); });
+        players.forEach(p => {
+          p.onDone(() => count++);
+        });
 
         cmp.exp1 = 'off';
         fixture.detectChanges();
@@ -1551,7 +1563,9 @@ export function main() {
            expect(players.length).toEqual(5);
 
            let count = 0;
-           players.forEach(p => { p.onDone(() => count++); });
+           players.forEach(p => {
+             p.onDone(() => count++);
+           });
 
            expect(count).toEqual(0);
 
@@ -1585,7 +1599,7 @@ export function main() {
               ])
             ]
           })
-          class Cmp {
+           class Cmp {
              public exp: any;
              public items: any[];
            }
@@ -1970,28 +1984,19 @@ export function main() {
             </div>
           `,
           animations: [
-            trigger('w', [
-              transition('* => go', [
-                style({ width: 0 }),
-                animate(1800, style({ width: '100px' }))
-              ])
-            ]),
-            trigger('h', [
-              transition('* => go', [
-                style({ height: 0 }),
-                animate(1500, style({ height: '100px' }))
-              ])
-            ]),
-            trigger('parent', [
-              transition('* => go', [
-                style({ opacity: 0 }),
-                animate(1000, style({ opacity: 1 })),
-                query('.child', [
-                  animateChild()
-                ]),
-                animate(1000, style({ opacity: 0 }))
-              ])
-            ])
+            trigger(
+                'w', [transition(
+                         '* => go', [style({width: 0}), animate(1800, style({width: '100px'}))])]),
+            trigger('h', [transition(
+                             '* => go',
+                             [style({height: 0}), animate(1500, style({height: '100px'}))])]),
+            trigger('parent', [transition(
+                                  '* => go',
+                                  [
+                                    style({opacity: 0}), animate(1000, style({opacity: 1})),
+                                    query('.child', [animateChild()]),
+                                    animate(1000, style({opacity: 0}))
+                                  ])])
           ]
         })
         class Cmp {

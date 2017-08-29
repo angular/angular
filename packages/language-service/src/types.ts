@@ -75,7 +75,7 @@ export interface TemplateSource {
  *
  * @experimental
  */
-export type TemplateSources = TemplateSource[] | undefined;
+export type TemplateSources = TemplateSource[]|undefined;
 
 
 /**
@@ -235,7 +235,7 @@ export interface Completion {
  *
  * @experimental
  */
-export type Completions = Completion[] | undefined;
+export type Completions = Completion[]|undefined;
 
 /**
  * A file and span.

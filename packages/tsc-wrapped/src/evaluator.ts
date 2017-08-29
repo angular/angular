@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {CollectorOptions} from './collector';
-import {MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataValue, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression} from './schema';
+import {isMetadataError, isMetadataGlobalReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSpreadExpression, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataSymbolicCallExpression, MetadataValue} from './schema';
 import {Symbols} from './symbols';
 
 
@@ -69,7 +69,7 @@ export interface ImportMetadata {
 }
 
 
-function getSourceFileOfNode(node: ts.Node | undefined): ts.SourceFile {
+function getSourceFileOfNode(node: ts.Node|undefined): ts.SourceFile {
   while (node && node.kind != ts.SyntaxKind.SourceFile) {
     node = node.parent;
   }
@@ -417,7 +417,7 @@ export class Evaluator {
       case ts.SyntaxKind.TypeReference:
         const typeReferenceNode = <ts.TypeReferenceNode>node;
         const typeNameNode = typeReferenceNode.typeName;
-        const getReference: (typeNameNode: ts.Identifier | ts.QualifiedName) => MetadataValue =
+        const getReference: (typeNameNode: ts.Identifier|ts.QualifiedName) => MetadataValue =
             node => {
               if (typeNameNode.kind === ts.SyntaxKind.QualifiedName) {
                 const qualifiedName = <ts.QualifiedName>node;
@@ -673,6 +673,6 @@ function isPropertyAssignment(node: ts.Node): node is ts.PropertyAssignment {
 
 const empty = ts.createNodeArray<any>();
 
-function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>| undefined): ts.NodeArray<T> {
+function arrayOrEmpty<T extends ts.Node>(v: ts.NodeArray<T>|undefined): ts.NodeArray<T> {
   return v || empty;
 }

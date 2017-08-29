@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {animate, group, query, state, style, transition, trigger} from '@angular/animations';
-import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer, ɵsupportsWebAnimations} from '@angular/animations/browser';
+import {AnimationDriver, ɵAnimationEngine, ɵsupportsWebAnimations, ɵWebAnimationsDriver, ɵWebAnimationsPlayer} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
 import {Component} from '@angular/core';
@@ -209,7 +209,9 @@ export function main() {
       class Cmp {
         exp = false;
 
-        toggle() { this.exp = !this.exp; }
+        toggle() {
+          this.exp = !this.exp;
+        }
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -221,7 +223,7 @@ export function main() {
       cmp.exp = true;
       fixture.detectChanges();
 
-      let player = engine.players[0] !;
+      let player = engine.players[0]!;
       let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0},
@@ -232,7 +234,7 @@ export function main() {
       cmp.exp = false;
       fixture.detectChanges();
 
-      player = engine.players[0] !;
+      player = engine.players[0]!;
       webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
       expect(webPlayer.keyframes).toEqual([
         {height: '300px', offset: 0},
@@ -282,14 +284,20 @@ export function main() {
               ])
             ]
         })
-        class Cmp {
+         class Cmp {
            items: any[] = [];
 
-           get exp() { return this.items.length ? 'full' : 'empty'; }
+           get exp() {
+             return this.items.length ? 'full' : 'empty';
+           }
 
-           empty() { this.items = []; }
+           empty() {
+             this.items = [];
+           }
 
-           full() { this.items = [0, 1, 2, 3, 4]; }
+           full() {
+             this.items = [0, 1, 2, 3, 4];
+           }
          }
 
          TestBed.configureTestingModule({declarations: [Cmp]});
@@ -300,13 +308,13 @@ export function main() {
 
          cmp.empty();
          fixture.detectChanges();
-         let player = engine.players[0] !as TransitionAnimationPlayer;
+         let player = engine.players[0]! as TransitionAnimationPlayer;
          player.finish();
 
          cmp.full();
          fixture.detectChanges();
 
-         player = engine.players[0] !as TransitionAnimationPlayer;
+         player = engine.players[0]! as TransitionAnimationPlayer;
          let queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
          expect(queriedPlayers.length).toEqual(5);
 
@@ -323,7 +331,7 @@ export function main() {
          cmp.empty();
          fixture.detectChanges();
 
-         player = engine.players[0] !as TransitionAnimationPlayer;
+         player = engine.players[0]! as TransitionAnimationPlayer;
          queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
          expect(queriedPlayers.length).toEqual(5);
 
@@ -369,14 +377,14 @@ export function main() {
       cmp.exp = 'a';
       fixture.detectChanges();
 
-      let player = engine.players[0] !;
+      let player = engine.players[0]!;
       let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
       webPlayer.setPosition(0.5);
 
       cmp.exp = 'b';
       fixture.detectChanges();
 
-      player = engine.players[0] !;
+      player = engine.players[0]!;
       webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
       expect(approximate(parseFloat(webPlayer.previousStyles['width'] as string), 150))
           .toBeLessThan(0.05);
@@ -424,7 +432,7 @@ export function main() {
          cmp.items = [0, 1, 2, 3, 4];
          fixture.detectChanges();
 
-         let player = engine.players[0] !;
+         let player = engine.players[0]!;
          let groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
          let players = groupPlayer.players;
          expect(players.length).toEqual(5);

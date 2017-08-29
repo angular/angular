@@ -14,7 +14,9 @@ describe('SVG', function() {
   const URL = 'all/playground/src/svg/index.html';
 
   afterEach(verifyNoBrowserErrors);
-  beforeEach(() => { browser.get(URL); });
+  beforeEach(() => {
+    browser.get(URL);
+  });
 
   it('should display SVG component contents', function() {
     const svgText = element.all(by.css('g text')).get(0);

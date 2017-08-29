@@ -57,5 +57,7 @@ export class MessageBasedPlatformLocation {
     });
   }
 
-  private _setPathname(pathname: string): void { this._platformLocation.pathname = pathname; }
+  private _setPathname(pathname: string): void {
+    this._platformLocation.pathname = pathname;
+  }
 }

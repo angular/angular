@@ -94,7 +94,7 @@ export class Headers {
   /**
    * Deletes all header values for the given name.
    */
-  delete (name: string): void {
+  delete(name: string): void {
     const lcName = name.toLowerCase();
     this._normalizedNames.delete(lcName);
     this._headers.delete(lcName);
@@ -122,12 +122,16 @@ export class Headers {
   /**
    * Checks for existence of header by given name.
    */
-  has(name: string): boolean { return this._headers.has(name.toLowerCase()); }
+  has(name: string): boolean {
+    return this._headers.has(name.toLowerCase());
+  }
 
   /**
    * Returns the names of the headers
    */
-  keys(): string[] { return Array.from(this._normalizedNames.values()); }
+  keys(): string[] {
+    return Array.from(this._normalizedNames.values());
+  }
 
   /**
    * Sets or overrides header value for given name.
@@ -146,7 +150,9 @@ export class Headers {
   /**
    * Returns values of all headers.
    */
-  values(): string[][] { return Array.from(this._headers.values()); }
+  values(): string[][] {
+    return Array.from(this._headers.values());
+  }
 
   /**
    * Returns string of all headers.
@@ -158,7 +164,7 @@ export class Headers {
     this._headers.forEach((values: string[], name: string) => {
       const split: string[] = [];
       values.forEach(v => split.push(...v.split(',')));
-      serialized[this._normalizedNames.get(name) !] = split;
+      serialized[this._normalizedNames.get(name)!] = split;
     });
 
     return serialized;
@@ -174,7 +180,9 @@ export class Headers {
   /**
    * This method is not implemented.
    */
-  entries() { throw new Error('"entries" method is not implemented on Headers class'); }
+  entries() {
+    throw new Error('"entries" method is not implemented on Headers class');
+  }
 
   private mayBeSetNormalizedName(name: string): void {
     const lcName = name.toLowerCase();

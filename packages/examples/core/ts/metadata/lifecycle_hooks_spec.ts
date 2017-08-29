@@ -130,8 +130,7 @@ export function main() {
     const inputBindings = inputs.map(input => `[${input}] = true`).join(' ');
 
     @Component({template: `<my-cmp ${inputBindings}></my-cmp>`})
-    class ParentComponent {
-    }
+    class ParentComponent {}
 
 
     const fixture = TestBed.configureTestingModule({declarations: [ParentComponent, clazz]})
@@ -144,7 +143,9 @@ export function main() {
   function createLoggingSpiesFromProto(clazz: Type<any>, log: any[]) {
     const proto = clazz.prototype;
     Object.keys(proto).forEach((method) => {
-      proto[method] = (...args: any[]) => { log.push([method, args]); };
+      proto[method] = (...args: any[]) => {
+        log.push([method, args]);
+      };
     });
   }
 }

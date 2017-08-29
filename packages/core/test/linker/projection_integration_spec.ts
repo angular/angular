@@ -237,11 +237,13 @@ export function main() {
     });
 
     it('should support moving non projected light dom around', () => {
-      let sourceDirective: ManualViewportDirective = undefined !;
+      let sourceDirective: ManualViewportDirective = undefined!;
 
       @Directive({selector: '[manual]'})
       class ManualViewportDirective {
-        constructor(public templateRef: TemplateRef<Object>) { sourceDirective = this; }
+        constructor(public templateRef: TemplateRef<Object>) {
+          sourceDirective = this;
+        }
       }
 
       TestBed.configureTestingModule(
@@ -540,8 +542,7 @@ class Simple {
   encapsulation: ViewEncapsulation.Native,
   styles: ['div {color: red}']
 })
-class SimpleNative1 {
-}
+class SimpleNative1 {}
 
 @Component({
   selector: 'simple-native2',
@@ -549,86 +550,84 @@ class SimpleNative1 {
   encapsulation: ViewEncapsulation.Native,
   styles: ['div {color: blue}']
 })
-class SimpleNative2 {
-}
+class SimpleNative2 {}
 
 @Component({selector: 'empty', template: ''})
-class Empty {
-}
+class Empty {}
 
 @Component({
   selector: 'multiple-content-tags',
   template: '(<ng-content SELECT=".left"></ng-content>, <ng-content></ng-content>)',
 })
-class MultipleContentTagsComponent {
-}
+class MultipleContentTagsComponent {}
 
 @Directive({selector: '[manual]'})
 class ManualViewportDirective {
   constructor(public vc: ViewContainerRef, public templateRef: TemplateRef<Object>) {}
-  show() { this.vc.createEmbeddedView(this.templateRef); }
-  hide() { this.vc.clear(); }
+  show() {
+    this.vc.createEmbeddedView(this.templateRef);
+  }
+  hide() {
+    this.vc.clear();
+  }
 }
 
 @Directive({selector: '[project]'})
 class ProjectDirective {
   constructor(public vc: ViewContainerRef) {}
-  show(templateRef: TemplateRef<Object>) { this.vc.createEmbeddedView(templateRef); }
-  hide() { this.vc.clear(); }
+  show(templateRef: TemplateRef<Object>) {
+    this.vc.createEmbeddedView(templateRef);
+  }
+  hide() {
+    this.vc.clear();
+  }
 }
 
 @Component({
   selector: 'outer-with-indirect-nested',
   template: 'OUTER(<simple><div><ng-content></ng-content></div></simple>)',
 })
-class OuterWithIndirectNestedComponent {
-}
+class OuterWithIndirectNestedComponent {}
 
 @Component({
   selector: 'outer',
   template:
       'OUTER(<inner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></inner>)',
 })
-class OuterComponent {
-}
+class OuterComponent {}
 
 @Component({
   selector: 'inner',
   template:
       'INNER(<innerinner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></innerinner>)',
 })
-class InnerComponent {
-}
+class InnerComponent {}
 
 @Component({
   selector: 'innerinner',
   template: 'INNERINNER(<ng-content select=".left"></ng-content>,<ng-content></ng-content>)',
 })
-class InnerInnerComponent {
-}
+class InnerInnerComponent {}
 
 @Component({
   selector: 'conditional-content',
   template:
       '<div>(<div *manual><ng-content select=".left"></ng-content></div>, <ng-content></ng-content>)</div>',
 })
-class ConditionalContentComponent {
-}
+class ConditionalContentComponent {}
 
 @Component({
   selector: 'conditional-text',
   template:
       'MAIN(<ng-template manual>FIRST(<ng-template manual>SECOND(<ng-content></ng-content>)</ng-template>)</ng-template>)',
 })
-class ConditionalTextComponent {
-}
+class ConditionalTextComponent {}
 
 @Component({
   selector: 'tab',
   template: '<div><div *manual>TAB(<ng-content></ng-content>)</div></div>',
 })
-class Tab {
-}
+class Tab {}
 
 @Component({
   selector: 'tree2',
@@ -668,40 +667,32 @@ class CmpC {
 
 
 @Component({selector: 'cmp-b', template: `<ng-content></ng-content><cmp-d></cmp-d>`})
-class CmpB {
-}
+class CmpB {}
 
 
 @Component({selector: 'cmp-a', template: `<ng-content></ng-content><cmp-c></cmp-c>`})
-class CmpA {
-}
+class CmpA {}
 
 @Component({selector: 'cmp-b11', template: `{{'b11'}}`})
-class CmpB11 {
-}
+class CmpB11 {}
 
 @Component({selector: 'cmp-b12', template: `{{'b12'}}`})
-class CmpB12 {
-}
+class CmpB12 {}
 
 @Component({selector: 'cmp-b21', template: `{{'b21'}}`})
-class CmpB21 {
-}
+class CmpB21 {}
 
 @Component({selector: 'cmp-b22', template: `{{'b22'}}`})
-class CmpB22 {
-}
+class CmpB22 {}
 
 @Component({
   selector: 'cmp-a1',
   template: `{{'a1'}}<cmp-b11></cmp-b11><cmp-b12></cmp-b12>`,
 })
-class CmpA1 {
-}
+class CmpA1 {}
 
 @Component({
   selector: 'cmp-a2',
   template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`,
 })
-class CmpA2 {
-}
+class CmpA2 {}

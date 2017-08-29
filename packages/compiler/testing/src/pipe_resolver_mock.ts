@@ -6,17 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileReflector, PipeResolver, core} from '@angular/compiler';
+import {CompileReflector, core, PipeResolver} from '@angular/compiler';
 
 export class MockPipeResolver extends PipeResolver {
   private _pipes = new Map<core.Type, core.Pipe>();
 
-  constructor(refector: CompileReflector) { super(refector); }
+  constructor(refector: CompileReflector) {
+    super(refector);
+  }
 
   /**
    * Overrides the {@link Pipe} for a pipe.
    */
-  setPipe(type: core.Type, metadata: core.Pipe): void { this._pipes.set(type, metadata); }
+  setPipe(type: core.Type, metadata: core.Pipe): void {
+    this._pipes.set(type, metadata);
+  }
 
   /**
    * Returns the {@link Pipe} for a pipe:
@@ -27,7 +31,7 @@ export class MockPipeResolver extends PipeResolver {
   resolve(type: core.Type, throwIfNotFound = true): core.Pipe {
     let metadata = this._pipes.get(type);
     if (!metadata) {
-      metadata = super.resolve(type, throwIfNotFound) !;
+      metadata = super.resolve(type, throwIfNotFound)!;
     }
     return metadata;
   }

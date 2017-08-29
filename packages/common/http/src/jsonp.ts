@@ -52,7 +52,9 @@ export class JsonpClientBackend implements HttpBackend {
   /**
    * Get the name of the next callback method, by incrementing the global `nextRequestId`.
    */
-  private nextCallback(): string { return `ng_jsonp_callback_${nextRequestId++}`; }
+  private nextCallback(): string {
+    return `ng_jsonp_callback_${nextRequestId++}`;
+  }
 
   /**
    * Process a JSONP request and return an event stream of the results.
@@ -153,7 +155,8 @@ export class JsonpClientBackend implements HttpBackend {
         observer.next(new HttpResponse({
           body,
           status: 200,
-          statusText: 'OK', url,
+          statusText: 'OK',
+          url,
         }));
 
         // Complete the stream, the resposne is over.
@@ -174,7 +177,8 @@ export class JsonpClientBackend implements HttpBackend {
         observer.error(new HttpErrorResponse({
           error,
           status: 0,
-          statusText: 'JSONP Error', url,
+          statusText: 'JSONP Error',
+          url,
         }));
       };
 

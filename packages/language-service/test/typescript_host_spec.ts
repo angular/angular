@@ -25,13 +25,17 @@ describe('completions', () => {
     service = ts.createLanguageService(host);
   });
 
-  it('should be able to create a typescript host',
-     () => { expect(() => new TypeScriptServiceHost(host, service)).not.toThrow(); });
+  it('should be able to create a typescript host', () => {
+    expect(() => new TypeScriptServiceHost(host, service)).not.toThrow();
+  });
 
-  beforeEach(() => { ngHost = new TypeScriptServiceHost(host, service); });
+  beforeEach(() => {
+    ngHost = new TypeScriptServiceHost(host, service);
+  });
 
-  it('should be able to analyze modules',
-     () => { expect(ngHost.getAnalyzedModules()).toBeDefined(); });
+  it('should be able to analyze modules', () => {
+    expect(ngHost.getAnalyzedModules()).toBeDefined();
+  });
 
   it('should be able to analyze modules in without a tsconfig.json file', () => {
     host = new MockTypescriptHost(['foo.ts'], toh);

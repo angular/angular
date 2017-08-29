@@ -12,6 +12,4 @@ import {Directive, Input} from '@angular/core';
   selector: '[thirdParty]',
   host: {'[title]': 'thirdParty'},
 })
-export class ThirdPartyDirective {
-  @Input() thirdParty: string;
-}
+export class ThirdPartyDirective { @Input() thirdParty: string; }

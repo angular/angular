@@ -21,7 +21,7 @@ import {Serializer} from '../../../src/web_workers/shared/serializer';
 import {ServiceMessageBrokerFactory_} from '../../../src/web_workers/shared/service_message_broker';
 import {MessageBasedRenderer2} from '../../../src/web_workers/ui/renderer';
 import {WebWorkerRendererFactory2} from '../../../src/web_workers/worker/renderer';
-import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
+import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 
 let lastCreatedRenderer: Renderer2;
 
@@ -51,7 +51,7 @@ export function main() {
       const domRendererFactory = uiInjector.get(RendererFactory2);
 
       // Worker side
-      lastCreatedRenderer = null !;
+      lastCreatedRenderer = null!;
 
       wwRenderStore = new RenderStore();
 
@@ -62,9 +62,8 @@ export function main() {
           {provide: RenderStore, useValue: wwRenderStore},
           {
             provide: RendererFactory2,
-            useFactory:
-                (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
-                    wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
+            useFactory: (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
+                wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
             deps: [Serializer],
           },
         ],
@@ -72,7 +71,7 @@ export function main() {
     });
 
     function getRenderElement(workerEl: any): any {
-      const id = wwRenderStore.serialize(workerEl) !;
+      const id = wwRenderStore.serialize(workerEl)!;
       return uiRenderStore.deserialize(id);
     }
 

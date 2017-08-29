@@ -22,7 +22,9 @@ export class FirefoxDriverExtension extends WebDriverExtension {
     this._profilerStarted = false;
   }
 
-  gc() { return this._driver.executeScript('window.forceGC()'); }
+  gc() {
+    return this._driver.executeScript('window.forceGC()');
+  }
 
   timeBegin(name: string): Promise<any> {
     if (!this._profilerStarted) {
@@ -44,7 +46,9 @@ export class FirefoxDriverExtension extends WebDriverExtension {
     return this._driver.executeAsyncScript('var cb = arguments[0]; window.getProfile(cb);');
   }
 
-  perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true, gc: true}); }
+  perfLogFeatures(): PerfLogFeatures {
+    return new PerfLogFeatures({render: true, gc: true});
+  }
 
   supports(capabilities: {[key: string]: any}): boolean {
     return capabilities['browserName'].toLowerCase() === 'firefox';

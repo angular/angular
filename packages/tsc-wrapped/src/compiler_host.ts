@@ -10,8 +10,8 @@ import {writeFileSync} from 'fs';
 import {normalize} from 'path';
 import * as ts from 'typescript';
 
-import NgOptions from './options';
 import {MetadataCollector} from './collector';
+import NgOptions from './options';
 import {ModuleMetadata} from './schema';
 
 export function formatDiagnostics(d: ts.Diagnostic[]): string {
@@ -33,21 +33,21 @@ export abstract class DelegatingHost implements ts.CompilerHost {
       (fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void) =>
           this.delegate.getSourceFile(fileName, languageVersion, onError);
 
-  getCancellationToken = () => this.delegate.getCancellationToken !();
+  getCancellationToken = () => this.delegate.getCancellationToken!();
   getDefaultLibFileName = (options: ts.CompilerOptions) =>
       this.delegate.getDefaultLibFileName(options);
-  getDefaultLibLocation = () => this.delegate.getDefaultLibLocation !();
+  getDefaultLibLocation = () => this.delegate.getDefaultLibLocation!();
   writeFile: ts.WriteFileCallback = this.delegate.writeFile;
   getCurrentDirectory = () => this.delegate.getCurrentDirectory();
   getDirectories = (path: string): string[] =>
-      (this.delegate as any).getDirectories?(this.delegate as any).getDirectories(path): [];
+      (this.delegate as any).getDirectories ? (this.delegate as any).getDirectories(path) : [];
   getCanonicalFileName = (fileName: string) => this.delegate.getCanonicalFileName(fileName);
   useCaseSensitiveFileNames = () => this.delegate.useCaseSensitiveFileNames();
   getNewLine = () => this.delegate.getNewLine();
   fileExists = (fileName: string) => this.delegate.fileExists(fileName);
   readFile = (fileName: string) => this.delegate.readFile(fileName);
-  trace = (s: string) => this.delegate.trace !(s);
-  directoryExists = (directoryName: string) => this.delegate.directoryExists !(directoryName);
+  trace = (s: string) => this.delegate.trace!(s);
+  directoryExists = (directoryName: string) => this.delegate.directoryExists!(directoryName);
 }
 
 const IGNORED_FILES = /\.ngfactory\.js$|\.ngstyle\.js$/;

@@ -7,10 +7,10 @@
  */
 
 import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
+import {Observer} from 'rxjs/Observer';
 import {share} from 'rxjs/operator/share';
+import {Subscription} from 'rxjs/Subscription';
 
 import {ErrorHandler} from '../src/error_handler';
 import {scheduleMicroTask, stringify} from '../src/util';
@@ -25,7 +25,7 @@ import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
-import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
+import {wtfCreateScope, wtfLeave, WtfScopeFn} from './profile/profile';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
 import {NgZone} from './zone/ng_zone';
@@ -99,9 +99,8 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @experimental APIs related to application bootstrap are currently under review.
  */
 export function createPlatformFactory(
-    parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
-    name: string, providers: StaticProvider[] = []): (extraProviders?: StaticProvider[]) =>
-    PlatformRef {
+    parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef)|null, name: string,
+    providers: StaticProvider[] = []): (extraProviders?: StaticProvider[]) => PlatformRef {
   const marker = new InjectionToken(`Platform: ${name}`);
   return (extraProviders: StaticProvider[] = []) => {
     let platform = getPlatform();
@@ -262,13 +261,21 @@ export class PlatformRef_ extends PlatformRef {
   private _destroyListeners: Function[] = [];
   private _destroyed: boolean = false;
 
-  constructor(private _injector: Injector) { super(); }
+  constructor(private _injector: Injector) {
+    super();
+  }
 
-  onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
+  onDestroy(callback: () => void): void {
+    this._destroyListeners.push(callback);
+  }
 
-  get injector(): Injector { return this._injector; }
+  get injector(): Injector {
+    return this._injector;
+  }
 
-  get destroyed() { return this._destroyed; }
+  get destroyed() {
+    return this._destroyed;
+  }
 
   destroy() {
     if (this._destroyed) {
@@ -300,10 +307,12 @@ export class PlatformRef_ extends PlatformRef {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
       moduleRef.onDestroy(() => remove(this._modules, moduleRef));
-      ngZone !.runOutsideAngular(
-          () => ngZone !.onError.subscribe(
-              {next: (error: any) => { exceptionHandler.handleError(error); }}));
-      return _callAndReportToErrorHandler(exceptionHandler, ngZone !, () => {
+      ngZone!.runOutsideAngular(() => ngZone!.onError.subscribe({
+        next: (error: any) => {
+          exceptionHandler.handleError(error);
+        }
+      }));
+      return _callAndReportToErrorHandler(exceptionHandler, ngZone!, () => {
         const initStatus: ApplicationInitStatus = moduleRef.injector.get(ApplicationInitStatus);
         initStatus.runInitializers();
         return initStatus.donePromise.then(() => {
@@ -338,7 +347,10 @@ export class PlatformRef_ extends PlatformRef {
       moduleRef.instance.ngDoBootstrap(appRef);
     } else {
       throw new Error(
-          `The module ${stringify(moduleRef.instance.constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+          `The module ${
+              stringify(
+                  moduleRef.instance
+                      .constructor)} was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
           `Please define one of these.`);
     }
     this._modules.push(moduleRef);
@@ -442,8 +454,13 @@ export class ApplicationRef_ extends ApplicationRef {
     super();
     this._enforceNoNewChanges = isDevMode();
 
-    this._zone.onMicrotaskEmpty.subscribe(
-        {next: () => { this._zone.run(() => { this.tick(); }); }});
+    this._zone.onMicrotaskEmpty.subscribe({
+      next: () => {
+        this._zone.run(() => {
+          this.tick();
+        });
+      }
+    });
 
     const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
       this._stable = this._zone.isStable && !this._zone.hasPendingMacrotasks &&
@@ -478,7 +495,9 @@ export class ApplicationRef_ extends ApplicationRef {
         NgZone.assertInAngularZone();
         if (this._stable) {
           this._stable = false;
-          this._zone.runOutsideAngular(() => { observer.next(false); });
+          this._zone.runOutsideAngular(() => {
+            observer.next(false);
+          });
         }
       });
 
@@ -514,7 +533,7 @@ export class ApplicationRef_ extends ApplicationRef {
       componentFactory = componentOrFactory;
     } else {
       componentFactory =
-          this._componentFactoryResolver.resolveComponentFactory(componentOrFactory) !;
+          this._componentFactoryResolver.resolveComponentFactory(componentOrFactory)!;
     }
     this._rootComponentTypes.push(componentFactory.componentType);
 
@@ -525,7 +544,9 @@ export class ApplicationRef_ extends ApplicationRef {
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
 
-    compRef.onDestroy(() => { this._unloadComponent(compRef); });
+    compRef.onDestroy(() => {
+      this._unloadComponent(compRef);
+    });
     const testability = compRef.injector.get(Testability, null);
     if (testability) {
       compRef.injector.get(TestabilityRegistry)
@@ -581,13 +602,21 @@ export class ApplicationRef_ extends ApplicationRef {
     this._views.slice().forEach((view) => view.destroy());
   }
 
-  get viewCount() { return this._views.length; }
+  get viewCount() {
+    return this._views.length;
+  }
 
-  get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
+  get componentTypes(): Type<any>[] {
+    return this._rootComponentTypes;
+  }
 
-  get components(): ComponentRef<any>[] { return this._rootComponents; }
+  get components(): ComponentRef<any>[] {
+    return this._rootComponents;
+  }
 
-  get isStable(): Observable<boolean> { return this._isStable; }
+  get isStable(): Observable<boolean> {
+    return this._isStable;
+  }
 }
 
 function remove<T>(list: T[], el: T): void {
