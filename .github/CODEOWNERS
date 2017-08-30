@@ -64,3 +64,6 @@ scripts/**                         @devversion @jelbourn
 
 # Docs examples
 src/material-examples/**           @amcdnl @jelbourn
+
+# Moment adapter package
+src/material-moment-adapter/**     @mmalerba

@@ -97,6 +97,7 @@ task(':publish', async () => {
 
   if (releasePackages.length > 1) {
     console.warn(red('Warning: Multiple packages will be released if proceeding.'));
+    console.warn(red('Warning: Packages to be released: ', releasePackages.join(', ')));
   }
 
   // Iterate over every declared release package and publish it on NPM.
