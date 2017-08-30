@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdChipInputEvent} from '@angular/material';
+import {MdChipInputEvent, MdSnackBar} from '@angular/material';
 
 
 export interface Person {
@@ -29,6 +29,15 @@ export class ChipsAccessibilityDemo {
     { name: 'Paul' }
   ];
 
+  availableColors = [
+    { name: 'none', color: '' },
+    { name: 'Primary', color: 'primary' },
+    { name: 'Accent', color: 'accent' },
+    { name: 'Warn', color: 'warn' }
+  ];
+
+  constructor(public snackBar: MdSnackBar) {}
+
   displayMessage(message: string): void {
     this.message = message;
   }
@@ -39,13 +48,16 @@ export class ChipsAccessibilityDemo {
 
     // Add our person
     if ((value || '').trim()) {
-      this.people.push({ name: value.trim() });
+      const name = value.trim();
+      this.people.push({ name: name });
+      this.snackBar.open(`${name} added`, '', {duration: 2000});
     }
 
     // Reset the input value
     if (input) {
       input.value = '';
     }
+
   }
 
   remove(person: Person): void {
@@ -53,6 +65,7 @@ export class ChipsAccessibilityDemo {
 
     if (index >= 0) {
       this.people.splice(index, 1);
+      this.snackBar.open(`${person.name} deleted`, '', {duration: 2000});
     }
   }
 
@@ -61,10 +74,4 @@ export class ChipsAccessibilityDemo {
   }
 
 
-  availableColors = [
-    { name: 'none', color: '' },
-    { name: 'Primary', color: 'primary' },
-    { name: 'Accent', color: 'accent' },
-    { name: 'Warn', color: 'warn' }
-  ];
 }

@@ -23,8 +23,9 @@
 
   <md-form-field>
     <md-chip-list mdPrefix #chipList>
-      <md-chip *ngFor="let person of people" [color]="color">
+      <md-chip *ngFor="let person of people" [color]="color" (remove)="remove(person)">
         {{person.name}}
+        <md-icon mdChipRemove>cancel</md-icon>
       </md-chip>
     </md-chip-list>
     <input mdInput placeholder="New Contributor..."
