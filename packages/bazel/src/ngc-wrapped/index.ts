@@ -63,9 +63,15 @@ export function main(args) {
     ngOptions.annotationsAs = 'static fields';
   }
 
-  function relativeToRootDir(filePath: string): string {
-    if (tsOptions.rootDir) {
-      const rel = path.relative(tsOptions.rootDir, filePath);
+  if (!tsOptions.rootDirs) {
+    throw new Error('rootDirs is not set!');
+  }
+
+  function relativeToRootDirs(filePath: string, rootDirs: string[]): string {
+    if (!filePath) return filePath;
+    // NB: the rootDirs should have been sorted longest-first
+    for (const dir of rootDirs || []) {
+      const rel = path.relative(dir, filePath);
       if (rel.indexOf('.') != 0) return rel;
     }
     return filePath;
@@ -77,7 +83,7 @@ export function main(args) {
   tsHost.writeFile =
       (fileName: string, content: string, writeByteOrderMark: boolean,
        onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
-        const relative = relativeToRootDir(fileName);
+        const relative = relativeToRootDirs(fileName, [tsOptions.rootDir]);
         const expectedIdx = expectedOuts.findIndex(o => o === relative);
         if (expectedIdx >= 0) {
           expectedOuts.splice(expectedIdx, 1);
@@ -124,7 +130,7 @@ export function main(args) {
   const ngHost = ng.createCompilerHost({options: ngOptions, tsHost: bazelHost});
 
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) =>
-      relativeToRootDir(importedFilePath).replace(EXT, '');
+      relativeToRootDirs(importedFilePath, tsOptions.rootDirs).replace(EXT, '');
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
       ngHost.fileNameToModuleName(fileName, referringSrcFileName);
 
