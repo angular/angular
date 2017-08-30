@@ -55,7 +55,7 @@ class AngularCompilerProgram implements Program {
 
   constructor(
       private rootNames: string[], private options: CompilerOptions, private host: CompilerHost,
-      private oldProgram?: Program) {
+      oldProgram?: Program) {
     if (options.flatModuleOutFile && !options.skipMetadataEmit) {
       const {host: bundleHost, indexName, errors} = createBundleIndexHost(options, rootNames, host);
       if (errors) {
