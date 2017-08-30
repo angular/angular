@@ -142,7 +142,10 @@ class CompilerHostMixin {
   resourceNameToFileName(resourceName: string, containingFile: string): string|null {
     // Note: we convert package paths into relative paths to be compatible with the the
     // previous implementation of UrlResolver.
-    if (resourceName && resourceName.charAt(0) !== '.' && !path.isAbsolute(resourceName)) {
+    const firstChar = resourceName[0];
+    if (firstChar === '/') {
+      resourceName = resourceName.slice(1);
+    } else if (firstChar !== '.') {
       resourceName = `./${resourceName}`;
     }
     const filePathWithNgResource =

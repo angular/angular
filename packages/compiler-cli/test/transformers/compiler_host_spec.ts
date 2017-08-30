@@ -117,10 +117,10 @@ describe('NgCompilerHost', () => {
           .toBe('/tmp/src/a/child.html');
     });
 
-    it('should resolve absolute paths', () => {
-      const ngHost = createHost({files: {'tmp': {'src': {'a': {'child.html': '<div>'}}}}});
-      expect(ngHost.resourceNameToFileName('/tmp/src/a/child.html', '/tmp/src/index.ts'))
-          .toBe('/tmp/src/a/child.html');
+    it('should resolve absolute paths as package paths', () => {
+      const ngHost = createHost({files: {'tmp': {'node_modules': {'a': {'child.html': '<div>'}}}}});
+      expect(ngHost.resourceNameToFileName('/a/child.html', ''))
+          .toBe('/tmp/node_modules/a/child.html');
     });
   });
 });
