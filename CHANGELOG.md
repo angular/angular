@@ -48,84 +48,8 @@
 
 ### BREAKING CHANGES
 
+#### Deprecated code
 * router: `RouterOutlet` properties `locationInjector` and `locationFactoryResolver` have been removed as they were deprecated since v4.
-* compiler: - `@angular/platform-server` now additionally depends on
-  `@angular/platform-browser-dynamic` as a peer dependency.
-* common: Because of multiple bugs and browser inconsistencies, we have dropped the intl api in favor of data exported from the Unicode Common Locale Data Repository (CLDR).
-Unfortunately we had to change the i18n pipes (date, number, currency, percent) and there are some breaking changes.
-
-1. I18n pipes
-* Breaking change:
-  - By default Angular now only contains locale data for the language `en-US`, if you set the value of `LOCALE_ID` to another locale, you will have to import new locale data for this language because we don't use the intl API anymore.
-
-* Features:
-  - you don't need to use the intl polyfill for Angular anymore.
-  - all i18n pipes now have an additional last parameter `locale` which allows you to use a specific locale instead of the one defined in the token `LOCALE_ID` (whose value is `en-US` by default).
-  - the new locale data extracted from CLDR are now available to developers as well and can be used through an API (which should be especially useful for library authors).
-  - you can still use the old pipes for now, but their names have been changed and they are no longer included in the `CommonModule`. To use them, you will have to import the `DeprecatedI18NPipesModule` after the `CommonModule` (the order is important):
-
-  ```ts
-  import { NgModule } from '@angular/core';
-  import { CommonModule, DeprecatedI18NPipesModule } from '@angular/common';
-
-  @NgModule({
-    imports: [
-      CommonModule,
-      // import deprecated module after
-      DeprecatedI18NPipesModule
-    ]
-  })
-  export class AppModule { }
-  ```
-
-  Dont forget that you will still need to import the intl API polyfill if you want to use those deprecated pipes.
-
-2. Date pipe
-* Breaking changes:
-  - the predefined formats (`short`, `shortTime`, `shortDate`, `medium`, ...) now use the patterns given by CLDR (like it was in AngularJS) instead of the ones from the intl API. You might notice some changes, e.g. `shortDate` will be `8/15/17` instead of `8/15/2017` for `en-US`.
-  - the narrow version of eras is now `GGGGG` instead of `G`, the format `G` is now similar to `GG` and `GGG`.
-  - the narrow version of months is now `MMMMM` instead of `L`, the format `L` is now the short standalone version of months.
-  - the narrow version of the week day is now `EEEEE` instead of `E`, the format `E` is now similar to `EE` and `EEE`.
-  - the timezone `z` will now fallback to `O` and output `GMT+1` instead of the complete zone name (e.g. `Pacific Standard Time`), this is because the quantity of data required to have all the zone names in all of the existing locales is too big.
-  - the timezone `Z` will now output the ISO8601 basic format, e.g. `+0100`, you should now use `ZZZZ` to get `GMT+01:00`.
-
-  | Field type | Format        | Example value         | v4 | v5            |
-  |------------|---------------|-----------------------|----|---------------|
-  | Eras       | Narrow        | A for AD              | G  | GGGGG         |
-  | Months     | Narrow        | S for September       | L  | MMMMM         |
-  | Week day   | Narrow        | M for Monday          | E  | EEEEE         |
-  | Timezone   | Long location | Pacific Standard Time | z  | Not available |
-  | Timezone   | Long GMT      | GMT+01:00             | Z  | ZZZZ          |
-
-* Features
-  - new predefined formats `long`, `full`, `longTime`, `fullTime`.
-  - the format `yyy` is now supported, e.g. the year `52` will be `052` and the year `2017` will be `2017`.
-  - standalone months are now supported with the formats `L` to `LLLLL`.
-  - week of the year is now supported with the formats `w` and `ww`, e.g. weeks `5` and `05`.
-  - week of the month is now supported with the format `W`, e.g. week `3`.
-  - fractional seconds are now supported with the format `S` to `SSS`.
-  - day periods for AM/PM now supports additional formats `aa`, `aaa`, `aaaa` and `aaaaa`. The formats `a` to `aaa` are similar, while `aaaa` is the wide version if available (e.g. `ante meridiem` for `am`), or equivalent to `a` otherwise, and `aaaaa` is the narrow version (e.g. `a` for `am`).
-  - extra day periods are now supported with the formats `b` to `bbbbb` (and `B` to `BBBBB` for the standalone equivalents), e.g. `morning`, `noon`, `afternoon`, ....
-  - the short non-localized timezones are now available with the format `O` to `OOOO`. The formats `O` to `OOO` will output `GMT+1` while the format `OOOO` will be `GMT+01:00`.
-  - the ISO8601 basic time zones are now available with the formats `Z` to `ZZZZZ`. The formats `Z` to `ZZZ` will output `+0100`, while the format `ZZZZ` will be `GMT+01:00` and `ZZZZZ` will be `+01:00`.
-
-* Bug fixes
-  - the date pipe will now work exactly the same across all browsers, which will fix a lot of bugs for safari and IE.
-  - eras can now be used on their own without the date, e.g. the format `GG` will be `AD` instead of `8 15, 2017 AD`.
-
-3. Currency pipe
-* Breaking change:
-  - the default value for `symbolDisplay` is now `symbol` instead of `code`. This means that by default you will see `$4.99` for `en-US` instead of `USD4.99` previously.
-
-* Deprecation:
-  - the second parameter of the currency pipe (`symbolDisplay`) is no longer a boolean, it now takes the values `code`, `symbol` or `symbol-narrow`. A boolean value is still valid for now, but it is deprecated and it will print a warning message in the console.
-
-* Features:
-  - you can now choose between `code`, `symbol` or `symbol-narrow` which gives you access to more options for some currencies (e.g. the canadian dollar with the code `CAD` has the symbol `CA$` and the symbol-narrow `$`).
-
-4. Percent pipe
-* Breaking change
-  - if you don't specify the number of digits to round to, the local format will be used (and it usually rounds numbers to 0 digits, instead of not rounding previously), e.g. `{{ 3.141592 | percent }}` will output `314%` for the locale `en-US` instead of `314.1592%` previously.
 * common: `NgFor` has been removed as it was deprecated since v4. Use `NgForOf` instead. This does not impact the use of`*ngFor` in your templates.
 * common: `NgTemplateOutlet#ngOutletContext` has been removed as it was deprecated since v4. Use `NgTemplateOutlet#ngTemplateOutletContext` instead.
 * core: `Testability#findBindings` has been removed as it was deprecated since v4. Use `Testability#findProviders` instead.
@@ -137,6 +61,83 @@ Unfortunately we had to change the i18n pipes (date, number, currency, percent) 
 * platform-browser: `NgProbeToken` has been removed from `@angular/platform-browser` as it was deprecated since v4. Import it from `@angular/core` instead.
 * core: `ErrorHandler` no longer takes a parameter as it was not used and deprecated since v4.
 * compiler: the option `useDebug` for the compiler has been removed as it had no effect and was deprecated since v4.
+
+#### Other breaking changes
+* compiler: - `@angular/platform-server` now additionally depends on
+  `@angular/platform-browser-dynamic` as a peer dependency.
+* common: Because of multiple bugs and browser inconsistencies, we have dropped the intl api in favor of data exported from the Unicode Common Locale Data Repository (CLDR).
+Unfortunately we had to change the i18n pipes (date, number, currency, percent) and there are some breaking changes.
+  ##### I18n pipes:
+  - Breaking change:
+    - By default Angular now only contains locale data for the language `en-US`, if you set the value of `LOCALE_ID` to another locale, you will have to import new locale data for this language because we don't use the intl API anymore.
+  - Features:
+    - you don't need to use the intl polyfill for Angular anymore.
+    - all i18n pipes now have an additional last parameter `locale` which allows you to use a specific locale instead of the one defined in the token `LOCALE_ID` (whose default value is `en-US`).
+    - the new locale data extracted from CLDR are now available to developers as well and can be used through an API (which should be especially useful for library authors).
+    - you can still use the old pipes for now, but their names have been changed and they are no longer included in the `CommonModule`. To use them, you will have to import the `DeprecatedI18NPipesModule` after the `CommonModule` (the order is important):
+
+    ```ts
+    import { NgModule } from '@angular/core';
+    import { CommonModule, DeprecatedI18NPipesModule } from '@angular/common';
+
+    @NgModule({
+      imports: [
+        CommonModule,
+        // import deprecated module after
+        DeprecatedI18NPipesModule
+      ]
+    })
+    export class AppModule { }
+    ```
+
+    Don't forget that you will still need to import the intl API polyfill if you want to use those deprecated pipes.
+
+  ##### Date pipe
+  - Breaking changes:
+    - the predefined formats (`short`, `shortTime`, `shortDate`, `medium`, ...) now use the patterns given by CLDR (like it was in AngularJS) instead of the ones from the intl API. You might notice some changes, e.g. `shortDate` will be `8/15/17` instead of `8/15/2017` for `en-US`.
+    - the narrow version of eras is now `GGGGG` instead of `G`, the format `G` is now similar to `GG` and `GGG`.
+    - the narrow version of months is now `MMMMM` instead of `L`, the format `L` is now the short standalone version of months.
+    - the narrow version of the week day is now `EEEEE` instead of `E`, the format `E` is now similar to `EE` and `EEE`.
+    - the timezone `z` will now fallback to `O` and output `GMT+1` instead of the complete zone name (e.g. `Pacific Standard Time`), this is because the quantity of data required to have all the zone names in all of the existing locales is too big.
+    - the timezone `Z` will now output the ISO8601 basic format, e.g. `+0100`, you should now use `ZZZZ` to get `GMT+01:00`.
+
+    | Field type | Format        | Example value         | v4 | v5            |
+    |------------|---------------|-----------------------|----|---------------|
+    | Eras       | Narrow        | A for AD              | G  | GGGGG         |
+    | Months     | Narrow        | S for September       | L  | MMMMM         |
+    | Week day   | Narrow        | M for Monday          | E  | EEEEE         |
+    | Timezone   | Long location | Pacific Standard Time | z  | Not available |
+    | Timezone   | Long GMT      | GMT+01:00             | Z  | ZZZZ          |
+
+  - Features
+    - new predefined formats `long`, `full`, `longTime`, `fullTime`.
+    - the format `yyy` is now supported, e.g. the year `52` will be `052` and the year `2017` will be `2017`.
+    - standalone months are now supported with the formats `L` to `LLLLL`.
+    - week of the year is now supported with the formats `w` and `ww`, e.g. weeks `5` and `05`.
+    - week of the month is now supported with the format `W`, e.g. week `3`.
+    - fractional seconds are now supported with the format `S` to `SSS`.
+    - day periods for AM/PM now supports additional formats `aa`, `aaa`, `aaaa` and `aaaaa`. The formats `a` to `aaa` are similar, while `aaaa` is the wide version if available (e.g. `ante meridiem` for `am`), or equivalent to `a` otherwise, and `aaaaa` is the narrow version (e.g. `a` for `am`).
+    - extra day periods are now supported with the formats `b` to `bbbbb` (and `B` to `BBBBB` for the standalone equivalents), e.g. `morning`, `noon`, `afternoon`, ....
+    - the short non-localized timezones are now available with the format `O` to `OOOO`. The formats `O` to `OOO` will output `GMT+1` while the format `OOOO` will be `GMT+01:00`.
+    - the ISO8601 basic time zones are now available with the formats `Z` to `ZZZZZ`. The formats `Z` to `ZZZ` will output `+0100`, while the format `ZZZZ` will be `GMT+01:00` and `ZZZZZ` will be `+01:00`.
+
+  - Bug fixes
+    - the date pipe will now work exactly the same across all browsers, which will fix a lot of bugs for safari and IE.
+    - eras can now be used on their own without the date, e.g. the format `GG` will be `AD` instead of `8 15, 2017 AD`.
+
+  ##### Currency pipe
+  - Breaking change:
+    - the default value for `symbolDisplay` is now `symbol` instead of `code`. This means that by default you will see `$4.99` for `en-US` instead of `USD4.99` previously.
+
+  * Deprecation:
+    - the second parameter of the currency pipe (`symbolDisplay`) is no longer a boolean, it now takes the values `code`, `symbol` or `symbol-narrow`. A boolean value is still valid for now, but it is deprecated and it will print a warning message in the console.
+
+  - Features:
+    - you can now choose between `code`, `symbol` or `symbol-narrow` which gives you access to more options for some currencies (e.g. the canadian dollar with the code `CAD` has the symbol `CA$` and the symbol-narrow `$`).
+
+  ##### Percent pipe
+  - Breaking change
+    - if you don't specify the number of digits to round to, the local format will be used (and it usually rounds numbers to 0 digits, instead of not rounding previously), e.g. `{{ 3.141592 | percent }}` will output `314%` for the locale `en-US` instead of `314.1592%` previously.
 
 
 <a name="4.3.6"></a>
