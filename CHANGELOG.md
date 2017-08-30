@@ -20,21 +20,42 @@
 
 
 
+<<<<<<< HEAD
+=======
+<a name="5.0.0-beta.4"></a>
+# [5.0.0-beta.4](https://github.com/angular/angular/compare/5.0.0-beta.3...5.0.0-beta.4) (2017-08-16)
+
+
+### Bug Fixes
+
+* **compiler:** Don't strip CSS source maps ([64b4be9](https://github.com/angular/angular/commit/64b4be9))
+* **forms:** re-assigning options should not clear select ([32ff21c](https://github.com/angular/angular/commit/32ff21c)), closes [#18330](https://github.com/angular/angular/issues/18330)
+* **language-service:** remove tsickle dependency ([bc22ff1](https://github.com/angular/angular/commit/bc22ff1))
+
+
+### Features
+
+* **common:** mark NgTemplateOutlet API as stable ([0a73e8d](https://github.com/angular/angular/commit/0a73e8d))
+* **forms:** add status to `AbstractControlDirective` ([233ef93](https://github.com/angular/angular/commit/233ef93))
+* **forms:** add updateOn support to ngModelOptions ([1cfa79c](https://github.com/angular/angular/commit/1cfa79c))
+
+
+### Performance Improvements
+
+* **core:** add option to remove blank text nodes from compiled templates ([d2c0d98](https://github.com/angular/angular/commit/d2c0d98))
+* **core:** Remove decorator DSL which depends on Reflect ([cac130e](https://github.com/angular/angular/commit/cac130e))
+
+
+
+>>>>>>> db45df60a... build: fix changelog to remove AIO line items
 <a name="4.3.5"></a>
 ## [4.3.5](https://github.com/angular/angular/compare/4.3.4...4.3.5) (2017-08-16)
 
 
 ### Bug Fixes
 
-* **aio:** skip PWA test when redeploying non-public commit ([b9c1c91](https://github.com/angular/angular/commit/b9c1c91))
 * **core:** forbid destroyed views to be inserted or moved in VC ([972538b](https://github.com/angular/angular/commit/972538b)), closes [#18615](https://github.com/angular/angular/issues/18615)
 * **forms:** re-assigning options should not clear select ([a1624f2](https://github.com/angular/angular/commit/a1624f2)), closes [#18330](https://github.com/angular/angular/issues/18330)
-
-
-### Performance Improvements
-
-* **aio:** update to new version of build-optimizer ([d7be4f1](https://github.com/angular/angular/commit/d7be4f1))
-
 
 
 <a name="4.3.4"></a>
@@ -1143,7 +1164,6 @@ templates is unaffected. We expect no or little impact on apps from this change,
 
 ### Features
 
-* **aio:** add initial angular-cli scaffold ([#14118](https://github.com/angular/angular/issues/14118)) ([e130bc1](https://github.com/angular/angular/commit/e130bc1))
 * **common:** rename underlying `NgFor` class and add a type parameter ([#14104](https://github.com/angular/angular/issues/14104)) ([86b2b25](https://github.com/angular/angular/commit/86b2b25))
 * **compiler:** allow missing translations ([#14113](https://github.com/angular/angular/issues/14113)) ([8775ab9](https://github.com/angular/angular/commit/8775ab9)), closes [#13861](https://github.com/angular/angular/issues/13861)
 * **compiler:** do not parse xtb messages not needed by angular ([#14111](https://github.com/angular/angular/issues/14111)) ([f7fba74](https://github.com/angular/angular/commit/f7fba74)), closes [#14046](https://github.com/angular/angular/issues/14046)
