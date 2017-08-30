@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ng from '@angular/compiler-cli';
-import {CompilerHost, UncachedFileLoader, parseTsconfig} from '@bazel/typescript';
+import {CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, debug, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -18,6 +18,10 @@ const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const NGC_NON_TS_INPUTS =
     /(\.(ngsummary|ngstyle|ngfactory)(\.d)?\.ts|\.ngsummary\.json|\.css|\.html)$/;
 // FIXME should need only summary, css, html
+
+// TODO(alexeagle): probably not needed, see
+// https://github.com/bazelbuild/rules_typescript/issues/28
+const ALLOW_NON_HERMETIC_READS = true;
 
 function topologicalSort(
     result: tsickle.FileMap<boolean>, current: string, modulesManifest: tsickle.ModulesManifest,
@@ -53,7 +57,28 @@ export function constructManifest(
 }
 
 export function main(args) {
-  const project = args[1];
+  if (runAsWorker(args)) {
+    runWorkerLoop(runOneBuild);
+  } else {
+    return runOneBuild(args) ? 0 : 1;
+  }
+  return 0;
+}
+
+/** The one FileCache instance used in this process. */
+const fileCache = new FileCache<ts.SourceFile>(debug);
+
+function runOneBuild(args: string[], inputs?: {[path: string]: string}): boolean {
+  if (args[0] === '-p') args.shift();
+  // Strip leading at-signs, used to indicate a params file
+  const project = args[0].replace(/^@+/, '');
+  let fileLoader: FileLoader;
+  if (inputs) {
+    fileLoader = new CachedFileLoader(fileCache, ALLOW_NON_HERMETIC_READS);
+    fileCache.updateCache(inputs);
+  } else {
+    fileLoader = new UncachedFileLoader();
+  }
   const [{options: tsOptions, bazelOpts, files, config}] = parseTsconfig(project);
 
   const {basePath} = ng.calcProjectFileAndBasePath(project);
@@ -72,7 +97,7 @@ export function main(args) {
     // NB: the rootDirs should have been sorted longest-first
     for (const dir of rootDirs || []) {
       const rel = path.relative(dir, filePath);
-      if (rel.indexOf('.') != 0) return rel;
+      if (rel.indexOf('.') !== 0) return rel;
     }
     return filePath;
   }
@@ -121,9 +146,14 @@ export function main(args) {
   }
 
   const bazelHost = new CompilerHost(
-      files, tsOptions, bazelOpts, tsHost, new UncachedFileLoader(), generatedFileModuleResolver);
-  bazelHost.allowNonHermeticRead = (filePath: string) =>
-      NGC_NON_TS_INPUTS.test(filePath) || filePath.split(path.sep).indexOf('node_modules') != -1;
+      files, tsOptions, bazelOpts, tsHost, fileLoader, ALLOW_NON_HERMETIC_READS,
+      generatedFileModuleResolver);
+  // The file cache is populated by Bazel with workspace-relative filenames
+  // so we must relativize paths before looking them up in the cache.
+  const originalGetSourceFile = bazelHost.getSourceFile.bind(bazelHost);
+  bazelHost.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget) => {
+    return originalGetSourceFile(relativeToRootDirs(fileName, [tsOptions.rootDir]));
+  };
   bazelHost.shouldSkipTsickleProcessing = (fileName: string): boolean =>
       bazelOpts.compilationTargetSrc.indexOf(fileName) === -1 && !NGC_NON_TS_INPUTS.test(fileName);
 
@@ -185,7 +215,7 @@ export function main(args) {
     originalWriteFile(missing, '', false);
   }
 
-  return diagnostics.some(d => d.category === ts.DiagnosticCategory.Error) ? 1 : 0;
+  return diagnostics.every(d => d.category !== ts.DiagnosticCategory.Error);
 }
 
 if (require.main === module) {
