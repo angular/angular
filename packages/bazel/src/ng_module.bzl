@@ -75,7 +75,7 @@ def _collect_summaries_aspect_impl(target, ctx):
   results = target.angular.summaries if hasattr(target, "angular") else depset()
 
   # If we are visiting empty-srcs ts_library, this is a re-export
-  srcs = target.srcs if hasattr(target, "srcs") else []
+  srcs = ctx.rule.attr.srcs if hasattr(ctx.rule.attr, "srcs") else []
 
   # "re-export" rules should expose all the files of their deps
   if not srcs:
