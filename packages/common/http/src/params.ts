@@ -89,10 +89,24 @@ export class HttpParams {
 
   constructor(options: {
     fromString?: string,
+    fromObject?: {[param: string]: string | string[]},
     encoder?: HttpParameterCodec,
   } = {}) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
-    this.map = !!options.fromString ? paramParser(options.fromString, this.encoder) : null;
+    if (!!options.fromString) {
+      if (!!options.fromObject) {
+        throw new Error(`Cannot specify both fromString and fromObject.`);
+      }
+      this.map = paramParser(options.fromString, this.encoder);
+    } else if (!!options.fromObject) {
+      this.map = new Map<string, string[]>();
+      Object.keys(options.fromObject).forEach(key => {
+        const value = (options.fromObject as any)[key];
+        this.map !.set(key, Array.isArray(value) ? value : [value]);
+      });
+    } else {
+      this.map = null;
+    }
   }
 
   /**
