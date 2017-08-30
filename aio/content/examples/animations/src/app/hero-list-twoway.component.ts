@@ -13,7 +13,7 @@ import {
 } from '@angular/animations';
 // #enddocregion imports
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
  selector: 'hero-list-twoway',
@@ -54,5 +54,5 @@ import { Heroes } from './hero.service';
  // #enddocregion animationdef
 })
 export class HeroListTwowayComponent {
- @Input() heroes: Heroes;
+  @Input() heroes: Hero[];
 }

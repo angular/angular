@@ -10,7 +10,7 @@ import {
   transition
 } from '@angular/animations';
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
   selector: 'hero-list-auto',
@@ -43,5 +43,5 @@ import { Heroes } from './hero.service';
   // #enddocregion animationdef
 })
 export class HeroListAutoComponent {
-  @Input() heroes: Heroes;
+   @Input() heroes: Hero[];
 }

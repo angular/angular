@@ -11,7 +11,7 @@ import {
   group
 } from '@angular/animations';
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
   selector: 'hero-list-groups',
@@ -76,5 +76,5 @@ import { Heroes } from './hero.service';
   // #enddocregion animationdef
 })
 export class HeroListGroupsComponent {
-  @Input() heroes: Heroes;
+   @Input() heroes: Hero[];
 }

@@ -10,7 +10,7 @@ import {
   transition
 } from '@angular/animations';
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
   selector: 'hero-list-timings',
@@ -54,5 +54,5 @@ import { Heroes } from './hero.service';
   // #enddocregion animationdef
 })
 export class HeroListTimingsComponent {
-  @Input() heroes: Heroes;
+   @Input() heroes: Hero[];
 }
