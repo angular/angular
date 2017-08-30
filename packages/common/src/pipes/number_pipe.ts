@@ -71,7 +71,7 @@ export class DecimalPipe implements PipeTransform {
  *
  * ### Example
  *
- * {@example common/pipes/ts/number_pipe.ts region='PercentPipe'}
+ * {@example common/pipes/ts/percent_pipe.ts region='PercentPipe'}
  *
  * @stable
  */
@@ -117,7 +117,7 @@ export class PercentPipe implements PipeTransform {
  *
  * ### Example
  *
- * {@example common/pipes/ts/number_pipe.ts region='CurrencyPipe'}
+ * {@example common/pipes/ts/currency_pipe.ts region='CurrencyPipe'}
  *
  * @stable
  */
