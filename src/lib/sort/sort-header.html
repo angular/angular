@@ -7,8 +7,7 @@
 
   <div *ngIf="_isSorted()"
        class="mat-sort-header-arrow"
-       [class.mat-sort-header-asc]="_sort.direction == 'asc'"
-       [class.mat-sort-header-desc]="_sort.direction == 'desc'">
+       [@indicatorRotate]="_sort.direction">
     <div class="mat-sort-header-stem"></div>
     <div class="mat-sort-header-pointer-left"></div>
     <div class="mat-sort-header-pointer-right"></div>

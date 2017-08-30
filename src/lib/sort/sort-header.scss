@@ -25,26 +25,15 @@ $mat-sort-header-arrow-thickness: 2px;
 }
 
 .mat-sort-header-arrow {
-  display: none;
   height: $mat-sort-header-arrow-container-size;
   width: $mat-sort-header-arrow-container-size;
   position: relative;
   margin: 0 0 0 $mat-sort-header-arrow-margin;
+  transform: rotate(45deg);
 
   .mat-sort-header-position-before & {
     margin: 0 $mat-sort-header-arrow-margin 0 0;
   }
-}
-
-.mat-sort-header-asc {
-  display: block;
-  transform: rotate(45deg);
-}
-
-.mat-sort-header-desc {
-  display: block;
-  transform: rotate(225deg);
-  top: $mat-sort-header-arrow-thickness;
 }
 
 .mat-sort-header-stem {
