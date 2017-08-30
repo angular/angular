@@ -7,9 +7,8 @@
  */
 
 import {NgModule} from '@angular/core';
-
 import {COMMON_DIRECTIVES} from './directives/index';
-import {NgLocaleLocalization, NgLocalization} from './i18n/localization';
+import {NgLocaleLocalization, NgLocalization, USE_V4_PLURALS} from './i18n/localization';
 import {COMMON_DEPRECATED_I18N_PIPES} from './pipes/deprecated/index';
 import {COMMON_PIPES} from './pipes/index';
 
@@ -36,6 +35,10 @@ export class CommonModule {
  *
  * @deprecated from v5
  */
-@NgModule({declarations: [COMMON_DEPRECATED_I18N_PIPES], exports: [COMMON_DEPRECATED_I18N_PIPES]})
+@NgModule({
+  declarations: [COMMON_DEPRECATED_I18N_PIPES],
+  exports: [COMMON_DEPRECATED_I18N_PIPES],
+  providers: [{provide: USE_V4_PLURALS, useValue: true}],
+})
 export class DeprecatedI18NPipesModule {
 }
