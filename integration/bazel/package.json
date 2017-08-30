@@ -15,7 +15,6 @@
   "devDependencies": {
     "@angular/bazel": "file:../../dist/packages-dist/bazel",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@bazel/typescript": "0.0.7",
     "typescript": "~2.3.1"
   },
   "scripts": {
