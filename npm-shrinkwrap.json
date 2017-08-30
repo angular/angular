@@ -3,9 +3,9 @@
   "version": "5.0.0-beta.5",
   "dependencies": {
     "@bazel/typescript": {
-      "version": "0.0.7",
-      "from": "@bazel/typescript@0.0.7",
-      "resolved": "https://registry.npmjs.org/@bazel/typescript/-/typescript-0.0.7.tgz",
+      "version": "0.0.9",
+      "from": "@bazel/typescript@latest",
+      "resolved": "https://registry.npmjs.org/@bazel/typescript/-/typescript-0.0.9.tgz",
       "dependencies": {
         "@types/node": {
           "version": "7.0.18",

@@ -173,8 +173,7 @@ NG_MODULE_ATTRIBUTES = {
         cfg = "host",
     ),
 
-    # TODO(alexeagle): enable workers for ngc
-    "_supports_workers": attr.bool(default = False),
+    "_supports_workers": attr.bool(default = True),
 }
 
 ng_module = rule(
