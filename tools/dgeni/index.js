@@ -86,8 +86,13 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
     'cdk/a11y/index.ts',
     'cdk/bidi/index.ts',
     'cdk/coercion/index.ts',
+    'cdk/collections/index.ts',
+    'cdk/keycodes/index.ts',
+    'cdk/overlay/index.ts',
     'cdk/platform/index.ts',
     'cdk/portal/index.ts',
+    'cdk/rxjs/index.ts',
+    'cdk/scrolling/index.ts',
     'cdk/table/index.ts',
 
     // @angular/material
