@@ -34,15 +34,15 @@ const examplesPath = path.join(packagesDir, 'material-examples');
 /** Output path of the module that is being created */
 const outputModuleFilename = path.join(examplesPath, 'example-module.ts');
 
-/** Build ES module import statements */
+/** Build ES module import statements for the examples. */
 function buildImportsTemplate(metadata: ExampleMetadata): string {
   const components = metadata.additionalComponents.concat(metadata.component);
 
   // Create a relative path to the source file of the current example.
   // The relative path will be used inside of a TypeScript import statement.
   const relativeSrcPath = path
-    .relative('./src/material-examples', metadata.sourcePath)
-    .replace(/\\/g, '')
+    .relative(examplesPath, metadata.sourcePath)
+    .replace(/\\/g, '/')
     .replace('.ts', '');
 
   return `import {${components.join(',')}} from './${relativeSrcPath}';
@@ -195,8 +195,8 @@ function parseExampleMetadata(fileName: string, sourceContent: string): ParsedMe
  */
 task('build-examples-module', () => {
   const results: ExampleMetadata[] = [];
-
   const matchedFiles = glob(path.join(examplesPath, '**/*.ts'));
+
   for (const sourcePath of matchedFiles) {
     const sourceContent = fs.readFileSync(sourcePath, 'utf-8');
     const { primaryComponent, secondaryComponents } =
