@@ -9,10 +9,16 @@
 import {ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
+export const DEFAULT_ERROR_CODE = 100;
+export const UNKNOWN_ERROR_CODE = 500;
+export const SOURCE = 'angular' as 'angular';
+
 export interface Diagnostic {
-  message: string;
+  messageText: string;
   span?: ParseSourceSpan;
   category: ts.DiagnosticCategory;
+  code: number;
+  source: 'angular';
 }
 
 export interface CompilerOptions extends ts.CompilerOptions {
@@ -243,13 +249,6 @@ export interface Program {
    * will produce a diagnostic error message or, `getTsProgram()` or `emit` to throw.
    */
   loadNgStructureAsync(): Promise<void>;
-
-  /**
-   * Retrieve the lazy route references in the program.
-   *
-   * Angular structural information is required to produce these routes.
-   */
-  getLazyRoutes(cancellationToken?: ts.CancellationToken): {[route: string]: string};
 
   /**
    * Emit the files requested by emitFlags implied by the program.

@@ -12,6 +12,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
+export interface MetadataProvider { getMetadata(source: ts.SourceFile): ModuleMetadata|undefined; }
+
 let nodeModulesPath: string;
 let angularSourcePath: string;
 let rootPath: string;
@@ -327,12 +329,13 @@ const DTS = /\.d\.ts$/;
 const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$/;
 
 export class MockAotCompilerHost implements AotCompilerHost {
-  private metadataCollector = new MetadataCollector();
   private metadataVisible: boolean = true;
   private dtsAreSource: boolean = true;
   private resolveModuleNameHost: ts.ModuleResolutionHost;
 
-  constructor(private tsHost: MockCompilerHost) {
+  constructor(
+      private tsHost: MockCompilerHost,
+      private metadataProvider: MetadataProvider = new MetadataCollector()) {
     this.resolveModuleNameHost = Object.create(tsHost);
     this.resolveModuleNameHost.fileExists = (fileName) => {
       fileName = stripNgResourceSuffix(fileName);
@@ -359,7 +362,7 @@ export class MockAotCompilerHost implements AotCompilerHost {
       }
     } else {
       const sf = this.tsHost.getSourceFile(modulePath, ts.ScriptTarget.Latest);
-      const metadata = this.metadataCollector.getMetadata(sf);
+      const metadata = this.metadataProvider.getMetadata(sf);
       return metadata ? [metadata] : [];
     }
     return undefined;

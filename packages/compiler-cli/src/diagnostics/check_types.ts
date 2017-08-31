@@ -9,7 +9,7 @@
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, GeneratedFile, NgAnalyzedModules, ParseSourceSpan, Statement, StaticReflector, TypeScriptEmitter, createAotCompiler} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Diagnostic} from '../transformers/api';
+import {DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from '../transformers/api';
 
 interface FactoryInfo {
   source: ts.SourceFile;
@@ -142,8 +142,10 @@ export class TypeChecker {
           const fileName = span.start.file.url;
           const diagnosticsList = diagnosticsFor(fileName);
           diagnosticsList.push({
-            message: diagnosticMessageToString(diagnostic.messageText),
-            category: diagnostic.category, span
+            messageText: diagnosticMessageToString(diagnostic.messageText),
+            category: diagnostic.category, span,
+            source: SOURCE,
+            code: DEFAULT_ERROR_CODE
           });
         }
       }
@@ -166,9 +168,13 @@ function diagnosticMessageToString(message: ts.DiagnosticMessageChain | string):
   return ts.flattenDiagnosticMessageText(message, '\n');
 }
 
+const REWRITE_PREFIX = /^\u0275[0-9]+$/;
+
 function createFactoryInfo(emitter: TypeScriptEmitter, file: GeneratedFile): FactoryInfo {
-  const {sourceText, context} =
-      emitter.emitStatementsAndContext(file.srcFileUrl, file.genFileUrl, file.stmts !);
+  const {sourceText, context} = emitter.emitStatementsAndContext(
+      file.srcFileUrl, file.genFileUrl, file.stmts !,
+      /* preamble */ undefined, /* emitSourceMaps */ undefined,
+      /* referenceFilter */ reference => !!(reference.name && REWRITE_PREFIX.test(reference.name)));
   const source = ts.createSourceFile(
       file.genFileUrl, sourceText, ts.ScriptTarget.Latest, /* setParentNodes */ true);
   return {source, context};
