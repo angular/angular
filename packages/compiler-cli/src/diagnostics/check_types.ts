@@ -9,7 +9,7 @@
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, GeneratedFile, NgAnalyzedModules, ParseSourceSpan, Statement, StaticReflector, TypeScriptEmitter, createAotCompiler} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from '../transformers/api';
+import {Diagnostic} from '../transformers/api';
 
 interface FactoryInfo {
   source: ts.SourceFile;
@@ -142,10 +142,8 @@ export class TypeChecker {
           const fileName = span.start.file.url;
           const diagnosticsList = diagnosticsFor(fileName);
           diagnosticsList.push({
-            messageText: diagnosticMessageToString(diagnostic.messageText),
-            category: diagnostic.category, span,
-            source: SOURCE,
-            code: DEFAULT_ERROR_CODE
+            message: diagnosticMessageToString(diagnostic.messageText),
+            category: diagnostic.category, span
           });
         }
       }

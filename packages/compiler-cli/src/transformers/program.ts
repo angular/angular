@@ -15,7 +15,7 @@ import * as ts from 'typescript';
 import {BaseAotCompilerHost} from '../compiler_host';
 import {TypeChecker} from '../diagnostics/check_types';
 
-import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, EmitFlags, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
+import {CompilerHost, CompilerOptions, CustomTransformers, Diagnostic, EmitFlags, Program, TsEmitArguments, TsEmitCallback} from './api';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 
@@ -61,12 +61,8 @@ class AngularCompilerProgram implements Program {
       if (errors) {
         // TODO(tbosch): once we move MetadataBundler from tsc_wrapped into compiler_cli,
         // directly create ng.Diagnostic instead of using ts.Diagnostic here.
-        this._optionsDiagnostics.push(...errors.map(e => ({
-                                                      category: e.category,
-                                                      messageText: e.messageText as string,
-                                                      source: SOURCE,
-                                                      code: DEFAULT_ERROR_CODE
-                                                    })));
+        this._optionsDiagnostics.push(
+            ...errors.map(e => ({category: e.category, message: e.messageText as string})));
       } else {
         rootNames.push(indexName !);
         this.host = host = bundleHost;
@@ -223,19 +219,12 @@ class AngularCompilerProgram implements Program {
       if (parserErrors && parserErrors.length) {
         this._structuralDiagnostics =
             parserErrors.map<Diagnostic>(e => ({
-                                           messageText: e.contextualMessage(),
+                                           message: e.contextualMessage(),
                                            category: ts.DiagnosticCategory.Error,
-                                           span: e.span,
-                                           source: SOURCE,
-                                           code: DEFAULT_ERROR_CODE
+                                           span: e.span
                                          }));
       } else {
-        this._structuralDiagnostics = [{
-          messageText: e.message,
-          category: ts.DiagnosticCategory.Error,
-          source: SOURCE,
-          code: DEFAULT_ERROR_CODE
-        }];
+        this._structuralDiagnostics = [{message: e.message, category: ts.DiagnosticCategory.Error}];
       }
       this._analyzedModules = emptyModules;
       return emptyModules;
@@ -263,12 +252,8 @@ class AngularCompilerProgram implements Program {
       return this.options.skipTemplateCodegen ? [] : result;
     } catch (e) {
       if (isSyntaxError(e)) {
-        this._generatedFileDiagnostics = [{
-          messageText: e.message,
-          category: ts.DiagnosticCategory.Error,
-          source: SOURCE,
-          code: DEFAULT_ERROR_CODE
-        }];
+        this._generatedFileDiagnostics =
+            [{message: e.message, category: ts.DiagnosticCategory.Error}];
         return [];
       }
       throw e;
@@ -432,11 +417,9 @@ function getNgOptionDiagnostics(options: CompilerOptions): Diagnostic[] {
         break;
       default:
         return [{
-          messageText:
+          message:
               'Angular compiler options "annotationsAs" only supports "static fields" and "decorators"',
-          category: ts.DiagnosticCategory.Error,
-          source: SOURCE,
-          code: DEFAULT_ERROR_CODE
+          category: ts.DiagnosticCategory.Error
         }];
     }
   }
