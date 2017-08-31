@@ -280,13 +280,7 @@ Most importantly, the compiler only generates code to create instances of certai
 
 ### New instances
 
-The compiler only allows metadata that create instances of these Angular classes.
-
-Class            | Module
------------------|--------------
-`OpaqueToken`    | `@angular/core`
-`InjectionToken` | `@angular/core`
-
+The compiler only allows metadata that create instances of the class `InjectionToken` from `@angular/core`.
 
 ### Annotations/Decorators
 

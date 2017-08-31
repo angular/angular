@@ -17,7 +17,7 @@ PKGS=(
   jasmine@2.4.1
   webpack@2.1.0-beta.21
   source-map-loader@0.2.0
-  @angular2-material/{core,button}@2.0.0-alpha.8-1
+  @angular/{material,cdk}@2.0.0-beta.10
 )
 
 TMPDIR=${TMPDIR:-.}

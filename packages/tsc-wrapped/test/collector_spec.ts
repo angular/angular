@@ -734,10 +734,8 @@ describe('Collector', () => {
   it('should treat exported class expressions as a class', () => {
     const source = ts.createSourceFile(
         '', `
-    export const InjectionToken: {new<T>(desc: string): InjectionToken<T>;} = class extends OpaqueToken {
-      constructor(desc: string) {
-        super(desc);
-      }
+    export const InjectionToken: {new<T>(desc: string): InjectionToken<T>;} = class {
+      constructor(protected _desc: string) {}
 
       toString(): string { return \`InjectionToken ${this._desc}\`; }
     } as any;`,
