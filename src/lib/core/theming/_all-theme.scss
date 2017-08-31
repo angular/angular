@@ -23,6 +23,7 @@
 @import '../../sidenav/sidenav-theme';
 @import '../../slide-toggle/slide-toggle-theme';
 @import '../../slider/slider-theme';
+@import '../../stepper/stepper-theme';
 @import '../../tabs/tabs-theme';
 @import '../../toolbar/toolbar-theme';
 @import '../../tooltip/tooltip-theme';
@@ -57,6 +58,7 @@
   @include mat-sidenav-theme($theme);
   @include mat-slide-toggle-theme($theme);
   @include mat-slider-theme($theme);
+  @include mat-stepper-theme($theme);
   @include mat-tabs-theme($theme);
   @include mat-toolbar-theme($theme);
   @include mat-tooltip-theme($theme);

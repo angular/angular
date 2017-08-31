@@ -40,6 +40,7 @@ import {PeopleDatabase} from '../table/people-database';
 import {DatepickerDemo} from '../datepicker/datepicker-demo';
 import {TypographyDemo} from '../typography/typography-demo';
 import {ExpansionDemo} from '../expansion/expansion-demo';
+import {StepperDemo} from '../stepper/stepper-demo';
 import {DemoMaterialModule} from '../demo-material-module';
 import {
   FullscreenOverlayContainer,
@@ -92,6 +93,7 @@ import {TableHeaderDemo} from '../table/table-header-demo';
     SliderDemo,
     SlideToggleDemo,
     SpagettiPanel,
+    StepperDemo,
     StyleDemo,
     TableHeaderDemo,
     ToolbarDemo,

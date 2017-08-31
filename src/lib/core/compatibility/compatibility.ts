@@ -39,6 +39,9 @@ export const MAT_ELEMENTS_SELECTOR = `
   [matHeaderRowDef],
   [matLine],
   [matRowDef],
+  [matStepLabel],
+  [matStepperNext],
+  [matStepperPrevious],
   [matTabLabel],
   [matTabLink],
   [matTabNav],
@@ -73,6 +76,7 @@ export const MAT_ELEMENTS_SELECTOR = `
   mat-header-cell,
   mat-header-row,
   mat-hint,
+  mat-horizontal-stepper,
   mat-icon,
   mat-input-container,
   mat-form-field,
@@ -92,10 +96,12 @@ export const MAT_ELEMENTS_SELECTOR = `
   mat-sidenav-container,
   mat-slider,
   mat-spinner,
+  mat-step,
   mat-tab,
   mat-table,
   mat-tab-group,
-  mat-toolbar`;
+  mat-toolbar,
+  mat-vertical-stepper`;
 
 /** Selector that matches all elements that may have style collisions with AngularJS Material. */
 export const MD_ELEMENTS_SELECTOR = `
@@ -116,6 +122,9 @@ export const MD_ELEMENTS_SELECTOR = `
   [mdHeaderRowDef],
   [mdLine],
   [mdRowDef],
+  [mdStepLabel],
+  [mdStepperNext],
+  [mdStepperPrevious],
   [mdTabLabel],
   [mdTabLink],
   [mdTabNav],
@@ -150,6 +159,7 @@ export const MD_ELEMENTS_SELECTOR = `
   md-header-cell,
   md-header-row,
   md-hint,
+  md-horizontal-stepper,
   md-icon,
   md-input-container,
   md-form-field,
@@ -169,10 +179,12 @@ export const MD_ELEMENTS_SELECTOR = `
   md-sidenav-container,
   md-slider,
   md-spinner,
+  md-step,
   md-tab,
   md-table,
   md-tab-group,
-  md-toolbar`;
+  md-toolbar,
+  md-vertical-stepper`;
 
 /** Directive that enforces that the `mat-` prefix cannot be used. */
 @Directive({selector: MAT_ELEMENTS_SELECTOR})

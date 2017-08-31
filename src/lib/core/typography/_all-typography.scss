@@ -22,6 +22,7 @@
 @import '../../sidenav/sidenav-theme';
 @import '../../slide-toggle/slide-toggle-theme';
 @import '../../slider/slider-theme';
+@import '../../stepper/stepper-theme';
 @import '../../tabs/tabs-theme';
 @import '../../toolbar/toolbar-theme';
 @import '../../tooltip/tooltip-theme';
@@ -61,6 +62,7 @@
   @include mat-sidenav-typography($config);
   @include mat-slide-toggle-typography($config);
   @include mat-slider-typography($config);
+  @include mat-stepper-typography($config);
   @include mat-tabs-typography($config);
   @include mat-toolbar-typography($config);
   @include mat-tooltip-typography($config);

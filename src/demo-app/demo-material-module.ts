@@ -31,7 +31,8 @@ import {
   MdTabsModule,
   MdToolbarModule,
   MdTooltipModule,
-  StyleModule
+  StyleModule,
+  MdStepperModule,
 } from '@angular/material';
 import {CdkTableModule} from '@angular/cdk/table';
 import {A11yModule} from '@angular/cdk/a11y';
@@ -73,6 +74,7 @@ import {PortalModule} from '@angular/cdk/portal';
     MdSliderModule,
     MdSnackBarModule,
     MdSortModule,
+    MdStepperModule,
     MdTabsModule,
     MdToolbarModule,
     MdTooltipModule,

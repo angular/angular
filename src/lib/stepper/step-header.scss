@@ -1,0 +1,42 @@
+$mat-stepper-label-header-height: 24px !default;
+$mat-stepper-label-min-width: 50px !default;
+$mat-stepper-side-gap: 24px !default;
+$mat-vertical-stepper-content-margin: 36px !default;
+$mat-stepper-line-gap: 8px !default;
+$mat-step-optional-font-size: 12px;
+$mat-step-header-icon-size: 16px !default;
+
+.mat-step-optional {
+  font-size: $mat-step-optional-font-size;
+}
+
+.mat-step-icon,
+.mat-step-icon-not-touched {
+  border-radius: 50%;
+  height: $mat-stepper-label-header-height;
+  width: $mat-stepper-label-header-height;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.mat-step-icon .mat-icon {
+  font-size: $mat-step-header-icon-size;
+  height: $mat-step-header-icon-size;
+  width: $mat-step-header-icon-size;
+}
+
+.mat-step-label-active,
+.mat-step-label-inactive {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: $mat-stepper-label-min-width;
+  vertical-align: middle;
+}
+
+.mat-step-text-label {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
