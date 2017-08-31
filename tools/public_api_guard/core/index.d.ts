@@ -465,8 +465,9 @@ export interface InjectDecorator {
 }
 
 /** @stable */
-export declare class InjectionToken<T> extends OpaqueToken {
-    constructor(desc: string);
+export declare class InjectionToken<T> {
+    protected _desc: string;
+    constructor(_desc: string);
     toString(): string;
 }
 
@@ -659,13 +660,6 @@ export interface OnDestroy {
 /** @stable */
 export interface OnInit {
     ngOnInit(): void;
-}
-
-/** @deprecated */
-export declare class OpaqueToken {
-    protected _desc: string;
-    constructor(_desc: string);
-    toString(): string;
 }
 
 /** @stable */

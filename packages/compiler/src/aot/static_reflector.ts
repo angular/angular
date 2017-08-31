@@ -44,7 +44,6 @@ export class StaticReflector implements CompileReflector {
   private methodCache = new Map<StaticSymbol, {[key: string]: boolean}>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private injectionToken: StaticSymbol;
-  private opaqueToken: StaticSymbol;
   private ROUTES: StaticSymbol;
   private ANALYZE_FOR_ENTRY_COMPONENTS: StaticSymbol;
   private annotationForParentClassWithSummaryKind =
@@ -271,7 +270,6 @@ export class StaticReflector implements CompileReflector {
 
   private initializeConversionMap(): void {
     this.injectionToken = this.findDeclaration(ANGULAR_CORE, 'InjectionToken');
-    this.opaqueToken = this.findDeclaration(ANGULAR_CORE, 'OpaqueToken');
     this.ROUTES = this.tryFindDeclaration(ANGULAR_ROUTER, 'ROUTES');
     this.ANALYZE_FOR_ENTRY_COMPONENTS =
         this.findDeclaration(ANGULAR_CORE, 'ANALYZE_FOR_ENTRY_COMPONENTS');
@@ -435,8 +433,8 @@ export class StaticReflector implements CompileReflector {
         }
         if (expression instanceof StaticSymbol) {
           // Stop simplification at builtin symbols or if we are in a reference context
-          if (expression === self.injectionToken || expression === self.opaqueToken ||
-              self.conversionMap.has(expression) || references > 0) {
+          if (expression === self.injectionToken || self.conversionMap.has(expression) ||
+              references > 0) {
             return expression;
           } else {
             const staticSymbol = expression;
@@ -563,7 +561,7 @@ export class StaticReflector implements CompileReflector {
                 staticSymbol = simplifyInContext(
                     context, expression['expression'], depth + 1, /* references */ 0);
                 if (staticSymbol instanceof StaticSymbol) {
-                  if (staticSymbol === self.injectionToken || staticSymbol === self.opaqueToken) {
+                  if (staticSymbol === self.injectionToken) {
                     // if somebody calls new InjectionToken, don't create an InjectionToken,
                     // but rather return the symbol to which the InjectionToken is assigned to.
                     return context;
