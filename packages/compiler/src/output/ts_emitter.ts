@@ -35,14 +35,12 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
   return ctx.toSource();
 }
 
-export type ReferenceFilter = (reference: o.ExternalReference) => boolean;
 
 export class TypeScriptEmitter implements OutputEmitter {
   emitStatementsAndContext(
       srcFilePath: string, genFilePath: string, stmts: o.Statement[], preamble: string = '',
-      emitSourceMaps: boolean = true,
-      referenceFilter?: ReferenceFilter): {sourceText: string, context: EmitterVisitorContext} {
-    const converter = new _TsEmitterVisitor(referenceFilter);
+      emitSourceMaps: boolean = true): {sourceText: string, context: EmitterVisitorContext} {
+    const converter = new _TsEmitterVisitor();
 
     const ctx = EmitterVisitorContext.createRoot();
 
@@ -80,11 +78,10 @@ export class TypeScriptEmitter implements OutputEmitter {
   }
 }
 
-
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
   private typeExpression = 0;
 
-  constructor(private referenceFilter?: ReferenceFilter) { super(false); }
+  constructor() { super(false); }
 
   importsWithPrefixes = new Map<string, string>();
   reexports = new Map<string, {name: string, as: string}[]>();
@@ -380,10 +377,6 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   private _visitIdentifier(
       value: o.ExternalReference, typeParams: o.Type[]|null, ctx: EmitterVisitorContext): void {
     const {name, moduleName} = value;
-    if (this.referenceFilter && this.referenceFilter(value)) {
-      ctx.print(null, '(null as any)');
-      return;
-    }
     if (moduleName) {
       let prefix = this.importsWithPrefixes.get(moduleName);
       if (prefix == null) {

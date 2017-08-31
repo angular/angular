@@ -284,9 +284,7 @@ export class Evaluator {
                 error = propertyValue;
                 return true;  // Stop the forEachChild.
               } else {
-                obj[<string>propertyName] = isPropertyAssignment(assignment) ?
-                    recordEntry(propertyValue, assignment.initializer) :
-                    propertyValue;
+                obj[<string>propertyName] = propertyValue;
               }
           }
         });
