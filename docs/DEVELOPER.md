@@ -126,6 +126,8 @@ $ ./test.sh tools            # Run angular tooling (not framework) tests
 
 You should execute the 3 test suites before submitting a PR to github.
 
+See [DEBUG.md](DEBUG.md) for information on debugging the code while running the unit tests.
+
 All the tests are executed on our Continuous Integration infrastructure and a PR could only be merged once the tests pass.
 
 - CircleCI fails if your code is not formatted properly,
