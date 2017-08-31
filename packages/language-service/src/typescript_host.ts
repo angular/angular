@@ -151,7 +151,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           analyzeHost);
 
       analyzedModules = this.analyzedModules =
-          analyzeNgModules(programSymbols, analyzeHost, this.resolver);
+          analyzeNgModules(programSymbols, analyzeHost, this.staticSymbolResolver, this.resolver);
     }
     return analyzedModules;
   }
