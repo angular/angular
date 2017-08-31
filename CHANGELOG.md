@@ -1,5 +1,5 @@
 <a name="5.0.0-beta.5"></a>
-# [5.0.0-beta.5](https://github.com/angular/angular/compare/5.0.0-beta.4...5.0.0-beta.5) (2017-08-23)
+# [5.0.0-beta.5](https://github.com/angular/angular/compare/5.0.0-beta.4...5.0.0-beta.5) (2017-08-29)
 
 
 ### Bug Fixes
