@@ -9,16 +9,10 @@
 import {ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
-export const DEFAULT_ERROR_CODE = 100;
-export const UNKNOWN_ERROR_CODE = 500;
-export const SOURCE = 'angular' as 'angular';
-
 export interface Diagnostic {
-  messageText: string;
+  message: string;
   span?: ParseSourceSpan;
   category: ts.DiagnosticCategory;
-  code: number;
-  source: 'angular';
 }
 
 export interface CompilerOptions extends ts.CompilerOptions {

@@ -445,11 +445,6 @@
       "from": "@types/base64-js@latest",
       "resolved": "https://registry.npmjs.org/@types/base64-js/-/base64-js-1.2.5.tgz"
     },
-    "@types/chokidar": {
-      "version": "1.7.2",
-      "from": "@types/chokidar@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/@types/chokidar/-/chokidar-1.7.2.tgz"
-    },
     "@types/fs-extra": {
       "version": "0.0.22-alpha",
       "from": "@types/fs-extra@latest",

@@ -275,9 +275,6 @@
     "@types/base64-js": {
       "version": "1.2.5"
     },
-    "@types/chokidar": {
-      "version": "1.7.2"
-    },
     "@types/fs-extra": {
       "version": "0.0.22-alpha"
     },
