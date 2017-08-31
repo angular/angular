@@ -15,7 +15,8 @@
   "devDependencies": {
     "@angular/bazel": "file:../../dist/packages-dist/bazel",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "typescript": "~2.3.1"
+    "typescript": "~2.3.1",
+    "@types/source-map": "0.5.1"
   },
   "scripts": {
     "postinstall": "ngc -p angular.tsconfig.json",
