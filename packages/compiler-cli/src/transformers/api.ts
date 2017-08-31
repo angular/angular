@@ -251,6 +251,13 @@ export interface Program {
   loadNgStructureAsync(): Promise<void>;
 
   /**
+   * Retrieve the lazy route references in the program.
+   *
+   * Angular structural information is required to produce these routes.
+   */
+  getLazyRoutes(cancellationToken?: ts.CancellationToken): {[route: string]: string};
+
+  /**
    * Emit the files requested by emitFlags implied by the program.
    *
    * Angular structural information is required to emit files.
