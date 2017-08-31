@@ -90,6 +90,32 @@ export function main() {
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvent).toBe(null);
     });
+
+    it('should keep zone when addEventListener', () => {
+      const Zone = (window as any)['Zone'];
+
+      const element = el('<div><div></div></div>');
+      getDOM().appendChild(doc.body, element);
+      const dispatchedEvent = getDOM().createMouseEvent('click');
+      let receivedEvent: any /** TODO #9100 */ = null;
+      let receivedZone: any = null;
+      const handler = (e: any /** TODO #9100 */) => {
+        receivedEvent = e;
+        receivedZone = Zone.current;
+      };
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
+
+      let remover = null;
+      Zone.root.run(() => { remover = manager.addEventListener(element, 'click', handler); });
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvent).toBe(dispatchedEvent);
+      expect(receivedZone.name).toBe(Zone.root.name);
+
+      receivedEvent = null;
+      remover && remover();
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvent).toBe(null);
+    });
   });
 }
 
