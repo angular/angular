@@ -106,13 +106,14 @@ def _compile_action(ctx, inputs, outputs, config_file_path):
   if hasattr(ctx.attr, "tsconfig") and ctx.file.tsconfig:
     action_inputs += [ctx.file.tsconfig]
 
+  arguments = ["--node_options=--expose-gc"]
   # One at-sign makes this a params-file, enabling the worker strategy.
   # Two at-signs escapes the argument so it's passed through to ngc
   # rather than the contents getting expanded.
   if ctx.attr._supports_workers:
-    arguments = ["@@" + config_file_path]
+    arguments += ["@@" + config_file_path]
   else:
-    arguments = ["-p", config_file_path]
+    arguments += ["-p", config_file_path]
 
   ctx.action(
       progress_message = "Compiling Angular templates (ngc) %s" % ctx.label,

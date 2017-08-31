@@ -129,33 +129,26 @@ export function exitCodeFromResult(result: PerformCompilationResult | undefined)
       1;
 }
 
-export function performCompilation(
-    {rootNames, options, host, oldProgram, emitCallback, customTransformers}: {
-      rootNames: string[],
-      options: api.CompilerOptions,
-      host?: api.CompilerHost,
-      oldProgram?: api.Program,
-      emitCallback?: api.TsEmitCallback,
-      customTransformers?: api.CustomTransformers
-    }): PerformCompilationResult {
+export function performCompilation({rootNames, options, host, oldProgram, emitCallback,
+                                    gatherDiagnostics = defaultGatherDiagnostics,
+                                    customTransformers}: {
+  rootNames: string[],
+  options: api.CompilerOptions,
+  host?: api.CompilerHost,
+  oldProgram?: api.Program,
+  emitCallback?: api.TsEmitCallback,
+  gatherDiagnostics?: (program: api.Program) => Diagnostics,
+  customTransformers?: api.CustomTransformers
+}): PerformCompilationResult {
   const [major, minor] = ts.version.split('.');
 
   if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 3)) {
     throw new Error('Must use TypeScript > 2.3 to have transformer support');
   }
 
-  const allDiagnostics: Diagnostics = [];
-
-  function checkDiagnostics(diags: Diagnostics | undefined) {
-    if (diags) {
-      allDiagnostics.push(...diags);
-      return diags.every(d => d.category !== ts.DiagnosticCategory.Error);
-    }
-    return true;
-  }
-
   let program: api.Program|undefined;
   let emitResult: ts.EmitResult|undefined;
+  let allDiagnostics: Diagnostics = [];
   try {
     if (!host) {
       host = ng.createCompilerHost({options});
@@ -163,25 +156,9 @@ export function performCompilation(
 
     program = ng.createProgram({rootNames, host, options, oldProgram});
 
-    let shouldEmit = true;
-    // Check parameter diagnostics
-    shouldEmit = shouldEmit && checkDiagnostics([
-                   ...program !.getTsOptionDiagnostics(), ...program !.getNgOptionDiagnostics()
-                 ]);
+    allDiagnostics.push(...gatherDiagnostics(program !));
 
-    // Check syntactic diagnostics
-    shouldEmit = shouldEmit && checkDiagnostics(program !.getTsSyntacticDiagnostics());
-
-    // Check TypeScript semantic and Angular structure diagnostics
-    shouldEmit =
-        shouldEmit &&
-        checkDiagnostics(
-            [...program !.getTsSemanticDiagnostics(), ...program !.getNgStructuralDiagnostics()]);
-
-    // Check Angular semantic diagnostics
-    shouldEmit = shouldEmit && checkDiagnostics(program !.getNgSemanticDiagnostics());
-
-    if (shouldEmit) {
+    if (!hasErrors(allDiagnostics)) {
       emitResult = program !.emit({
         emitCallback,
         customTransformers,
@@ -209,4 +186,41 @@ export function performCompilation(
         {category: ts.DiagnosticCategory.Error, messageText: errMsg, code, source: api.SOURCE});
     return {diagnostics: allDiagnostics, program};
   }
+}
+
+function defaultGatherDiagnostics(program: api.Program): Diagnostics {
+  const allDiagnostics: Diagnostics = [];
+
+  function checkDiagnostics(diags: Diagnostics | undefined) {
+    if (diags) {
+      allDiagnostics.push(...diags);
+      return !hasErrors(diags);
+    }
+    return true;
+  }
+
+  let checkOtherDiagnostics = true;
+  // Check parameter diagnostics
+  checkOtherDiagnostics = checkOtherDiagnostics &&
+      checkDiagnostics([...program.getTsOptionDiagnostics(), ...program.getNgOptionDiagnostics()]);
+
+  // Check syntactic diagnostics
+  checkOtherDiagnostics =
+      checkOtherDiagnostics && checkDiagnostics(program.getTsSyntacticDiagnostics());
+
+  // Check TypeScript semantic and Angular structure diagnostics
+  checkOtherDiagnostics =
+      checkOtherDiagnostics &&
+      checkDiagnostics(
+          [...program.getTsSemanticDiagnostics(), ...program.getNgStructuralDiagnostics()]);
+
+  // Check Angular semantic diagnostics
+  checkOtherDiagnostics =
+      checkOtherDiagnostics && checkDiagnostics(program.getNgSemanticDiagnostics());
+
+  return allDiagnostics;
+}
+
+function hasErrors(diags: Diagnostics) {
+  return diags.some(d => d.category === ts.DiagnosticCategory.Error);
 }
