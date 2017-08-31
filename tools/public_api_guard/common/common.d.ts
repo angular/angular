@@ -287,7 +287,8 @@ export declare class NgIfContext {
 /** @experimental */
 export declare class NgLocaleLocalization extends NgLocalization {
     protected locale: string;
-    constructor(locale: string);
+    protected useV4Plurals: boolean;
+    constructor(locale: string, useV4Plurals?: boolean);
     getPluralCategory(value: any, locale?: string): string;
 }
 
