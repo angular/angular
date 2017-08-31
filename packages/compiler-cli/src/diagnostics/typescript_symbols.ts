@@ -193,7 +193,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
         const type = this.checker.getTypeAtLocation(parameter.type !);
         if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
           const typeReference = type as ts.TypeReference;
-          if (typeReference.typeArguments.length === 1) {
+          if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
             return typeReference.typeArguments[0].symbol;
           }
         }
@@ -739,8 +739,8 @@ function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|u
   }
 }
 
-function definitionFromTsSymbol(symbol: ts.Symbol): Definition {
-  const declarations = symbol.declarations;
+function definitionFromTsSymbol(symbol: ts.Symbol | undefined): Definition {
+  const declarations = symbol && symbol.declarations;
   if (declarations) {
     return declarations.map(declaration => {
       const sourceFile = declaration.getSourceFile();

@@ -66,6 +66,10 @@ function angularOnlyFilter(ls: ts.LanguageService): ts.LanguageService {
     isValidBraceCompletionAtPosition: (fileName, position, openingBrace) => <boolean><any>undefined,
     getCodeFixesAtPosition: (fileName, start, end, errorCodes) => <ts.CodeAction[]>[],
     getEmitOutput: fileName => <ts.EmitOutput><any>undefined,
+    getApplicableRefactors: (fileName, positionOrRaneg) => [],
+    getEditsForRefactor: (fileName, formatOptions, positionOrRange, refactorName, actionName) =>
+                             undefined,
+
     getProgram: () => ls.getProgram(),
     dispose: () => ls.dispose()
   };
@@ -161,6 +165,8 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       isValidBraceCompletionAtPosition: tryFilenameTwoCall(ls.isValidBraceCompletionAtPosition),
       getCodeFixesAtPosition: tryFilenameFourCall(ls.getCodeFixesAtPosition),
       getEmitOutput: tryFilenameCall(ls.getEmitOutput),
+      getApplicableRefactors: tryFilenameOneCall(ls.getApplicableRefactors),
+      getEditsForRefactor: tryFilenameFourCall(ls.getEditsForRefactor),
       getProgram: () => ls.getProgram(),
       dispose: () => ls.dispose()
     };
