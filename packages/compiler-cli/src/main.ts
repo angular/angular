@@ -97,6 +97,9 @@ function readCommandLineAndConfiguration(args: any): ParsedConfiguration {
   const allDiagnostics: Diagnostics = [];
   const config = readConfiguration(project);
   const options = mergeCommandLineParams(args, config.options);
+  if (options.locale) {
+    options.i18nInLocale = options.locale;
+  }
   return {project, rootNames: config.rootNames, options, errors: config.errors};
 }
 
