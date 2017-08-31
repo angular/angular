@@ -6,7 +6,6 @@
     "debug": true,
     "enableSummariesForJit": true,
     "alwaysCompileGeneratedCode": true,
-    "locale": "fi",
     "i18nFormat": "xlf"
   },
 
