@@ -130,8 +130,6 @@ class AngularCompilerProgram implements Program {
         });
   }
 
-  getLazyRoutes(cancellationToken?: ts.CancellationToken): {[route: string]: string} { return {}; }
-
   emit({emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
         emitCallback = defaultEmitCallback}: {
     emitFlags?: EmitFlags,
