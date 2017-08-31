@@ -49,3 +49,18 @@ afterEach(() => { removeNodes.forEach((node) => getDOM().remove(node)); });
 export function recordNodeToRemove(node: Node) {
   removeNodes.push(node);
 }
+
+export function callMostRecentEventListenerHandler(spy: any, params: any) {
+  const mostRecent = spy.calls.mostRecent();
+  if (!mostRecent) {
+    return;
+  }
+
+  const obj = mostRecent.object;
+  const args = mostRecent.args;
+
+  const eventName = args[0];
+  const handler = args[1];
+
+  handler && handler.apply(obj, [{type: eventName}]);
+}
