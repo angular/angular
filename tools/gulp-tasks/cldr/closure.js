@@ -68,21 +68,24 @@ module.exports = (gulp, done) => {
  * Tree shaking will only keep the data for the `goog.LOCALE` locale.
  */
 function generateAllLocalesFile(LOCALES, ALIASES) {
-  function generateCases(locale) {
-    let str = '';
-    let localeData;
-    const equivalentLocales = [locale];
+  const existingLocalesAliases = {};
+  const existingLocalesData = {};
+
+  // for each locale, get the data and the list of equivalent locales
+  LOCALES.forEach(locale => {
+    const eqLocales = new Set();
+    eqLocales.add(locale);
     if (locale.match(/-/)) {
-      equivalentLocales.push(locale.replace(/-/g, '_'));
+      eqLocales.add(locale.replace(/-/g, '_'));
     }
 
     // check for aliases
     const alias = ALIASES[locale];
     if (alias) {
-      equivalentLocales.push(alias);
+      eqLocales.add(alias);
 
       if (alias.match(/-/)) {
-        equivalentLocales.push(alias.replace(/-/g, '_'));
+        eqLocales.add(alias.replace(/-/g, '_'));
       }
 
       // to avoid duplicated "case" we regroup all locales in the same "case"
@@ -92,32 +95,46 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
       const aliasKeys = Object.keys(ALIASES);
       for (let i = 0; i < aliasKeys.length; i++) {
         const aliasValue = ALIASES[alias];
-        if (aliasKeys.indexOf(alias) !== -1 && equivalentLocales.indexOf(aliasValue) === -1) {
-          equivalentLocales.push(aliasValue);
+        if (aliasKeys.indexOf(alias) !== -1 && !eqLocales.has(aliasValue)) {
+          eqLocales.add(aliasValue);
 
           if (aliasValue.match(/-/)) {
-            equivalentLocales.push(aliasValue.replace(/-/g, '_'));
+            eqLocales.add(aliasValue.replace(/-/g, '_'));
           }
         }
       }
     }
 
-    for (let i = 0; i < equivalentLocales.length; i++) {
-      str += `case '${equivalentLocales[i]}':\n`;
-
+    for (let l of eqLocales) {
       // find the existing content file
-      const path = `${RELATIVE_I18N_DATA_FOLDER}/${equivalentLocales[i]}.ts`;
-      if (fs.existsSync(`${RELATIVE_I18N_DATA_FOLDER}/${equivalentLocales[i]}.ts`)) {
-        localeData = fs.readFileSync(path, 'utf8').replace(`${HEADER}\nexport default `, '');
+      const path = `${RELATIVE_I18N_DATA_FOLDER}/${l}.ts`;
+      if (fs.existsSync(`${RELATIVE_I18N_DATA_FOLDER}/${l}.ts`)) {
+        existingLocalesData[locale] =
+            fs.readFileSync(path, 'utf8').replace(`${HEADER}\nexport default `, '');
       }
     }
 
-    str += `  l = ${localeData}break;\n`;
+    existingLocalesAliases[locale] = eqLocales;
+  });
+
+  function generateCases(locale) {
+    let str = '';
+    const eqLocales = existingLocalesAliases[locale];
+    for (let l of eqLocales) {
+      str += `case '${l}':\n`;
+    }
+
+    str += `  l = ${formatLocale(locale)};
+    break;\n`;
     return str;
   }
+
+  function formatLocale(locale) { return `locale_${locale.replace(/-/g, '_')}`; }
   // clang-format off
   return `${HEADER}
 import {registerLocaleData} from '../src/i18n/locale_data';
+
+${LOCALES.map(locale => `export const ${formatLocale(locale)} = ${existingLocalesData[locale]}`).join('\n')}
 
 let l: any;
 
