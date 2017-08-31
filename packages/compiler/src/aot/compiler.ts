@@ -229,9 +229,10 @@ export class AotCompiler {
     const providers: CompileProviderMetadata[] = [];
 
     if (this._localeId) {
+      const normalizedLocale = this._localeId.replace(/_/g, '-');
       providers.push({
         token: createTokenForExternalReference(this._reflector, Identifiers.LOCALE_ID),
-        useValue: this._localeId,
+        useValue: normalizedLocale,
       });
     }
 
