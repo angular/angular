@@ -12,7 +12,8 @@ import {ArgumentType, BindingFlags, DebugContext, NodeDef, NodeFlags, OutputType
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser, recordNodeToRemove} from './helper';
+import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, createRootView, isBrowser, recordNodeToRemove} from './helper';
+
 
 /**
  * We map addEventListener to the Zones internal name. This is because we want to be fast
@@ -225,7 +226,7 @@ export function main() {
 
           expect(addListenerSpy).toHaveBeenCalled();
           expect(addListenerSpy.calls.mostRecent().args[0]).toBe('windowClick');
-          addListenerSpy.calls.mostRecent().args[1]({name: 'windowClick'});
+          callMostRecentEventListenerHandler(addListenerSpy, {name: 'windowClick'});
 
           expect(handleEventSpy).toHaveBeenCalled();
           const handleEventArgs = handleEventSpy.calls.mostRecent().args;
@@ -248,7 +249,7 @@ export function main() {
 
           expect(addListenerSpy).toHaveBeenCalled();
           expect(addListenerSpy.calls.mostRecent().args[0]).toBe('documentClick');
-          addListenerSpy.calls.mostRecent().args[1]({name: 'documentClick'});
+          callMostRecentEventListenerHandler(addListenerSpy, {name: 'windowClick'});
 
           expect(handleEventSpy).toHaveBeenCalled();
           const handleEventArgs = handleEventSpy.calls.mostRecent().args;
@@ -296,7 +297,7 @@ export function main() {
               NodeFlags.None, null !, null !, 0, 'button', null !, null !, [[null !, 'click']],
               () => { throw new Error('Test'); })]));
 
-          addListenerSpy.calls.mostRecent().args[1]('SomeEvent');
+          callMostRecentEventListenerHandler(addListenerSpy, 'SomeEvent');
           const err = handleErrorSpy.calls.mostRecent().args[0];
           expect(err).toBeTruthy();
           expect(err.message).toBe('Test');
