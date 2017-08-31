@@ -134,6 +134,32 @@ import {sanitizeHtml} from '../../src/security/html_sanitizer';
       }
     });
 
+    // See
+    // https://github.com/cure53/DOMPurify/blob/a992d3a75031cb8bb032e5ea8399ba972bdf9a65/src/purify.js#L439-L449
+    it('should not allow JavaScript execution when creating inert document', () => {
+      const output = sanitizeHtml(defaultDoc, '<svg><g onload="window.xxx = 100"></g></svg>');
+      const window = defaultDoc.defaultView;
+      if (window) {
+        expect(window.xxx).toBe(undefined);
+        window.xxx = undefined;
+      }
+      expect(output).toEqual('');
+    });
+
+    // See https://github.com/cure53/DOMPurify/releases/tag/0.6.7
+    it('should not allow JavaScript hidden in badly formed HTML to get through sanitization (Firefox bug)',
+       () => {
+         debugger;
+         expect(sanitizeHtml(
+                    defaultDoc, '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">'))
+             .toEqual(
+                 isDOMParserAvailable() ?
+                     // PlatformBrowser output
+                     '<p>&lt;img src=&#34;<img src="x"></p>' :
+                     // PlatformServer output
+                     '<p><img src="&lt;/style&gt;&lt;img src=x onerror=alert(1)//"></p>');
+       });
+
     if (browserDetection.isWebkit) {
       it('should prevent mXSS attacks', function() {
         // In Chrome Canary 62, the ideographic space character is kept as a stringified HTML entity
@@ -142,4 +168,19 @@ import {sanitizeHtml} from '../../src/security/html_sanitizer';
       });
     }
   });
+}
+
+/**
+ * We need to determine whether the DOMParser exists in the global context.
+ * The try-catch is because, on some browsers, trying to access this property
+ * on window can actually throw an error.
+ *
+ * @suppress {uselessCode}
+ */
+function isDOMParserAvailable() {
+  try {
+    return !!(window as any).DOMParser;
+  } catch (e) {
+    return false;
+  }
 }
