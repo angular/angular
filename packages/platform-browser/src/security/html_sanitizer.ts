@@ -10,34 +10,8 @@ import {isDevMode} from '@angular/core';
 
 import {DomAdapter, getDOM} from '../dom/dom_adapter';
 
+import {InertBodyHelper} from './inert_body';
 import {sanitizeSrcset, sanitizeUrl} from './url_sanitizer';
-
-/** A <body> element that can be safely used to parse untrusted HTML. Lazily initialized below. */
-let inertElement: HTMLElement|null = null;
-/** Lazily initialized to make sure the DOM adapter gets set before use. */
-let DOM: DomAdapter = null !;
-
-/** Returns an HTML element that is guaranteed to not execute code when creating elements in it. */
-function getInertElement() {
-  if (inertElement) return inertElement;
-  DOM = getDOM();
-
-  // Prefer using <template> element if supported.
-  const templateEl = DOM.createElement('template');
-  if ('content' in templateEl) return templateEl;
-
-  const doc = DOM.createHtmlDocument();
-  inertElement = DOM.querySelector(doc, 'body');
-  if (inertElement == null) {
-    // usually there should be only one body element in the document, but IE doesn't have any, so we
-    // need to create one.
-    const html = DOM.createElement('html', doc);
-    inertElement = DOM.createElement('body', doc);
-    DOM.appendChild(html, inertElement);
-    DOM.appendChild(doc, html);
-  }
-  return inertElement;
-}
 
 function tagSet(tags: string): {[k: string]: boolean} {
   const res: {[k: string]: boolean} = {};
@@ -121,53 +95,54 @@ class SanitizingHtmlSerializer {
   // because characters were re-encoded.
   public sanitizedSomething = false;
   private buf: string[] = [];
+  private DOM = getDOM();
 
   sanitizeChildren(el: Element): string {
     // This cannot use a TreeWalker, as it has to run on Angular's various DOM adapters.
     // However this code never accesses properties off of `document` before deleting its contents
     // again, so it shouldn't be vulnerable to DOM clobbering.
-    let current: Node = el.firstChild !;
+    let current: Node = this.DOM.firstChild(el) !;
     while (current) {
-      if (DOM.isElementNode(current)) {
+      if (this.DOM.isElementNode(current)) {
         this.startElement(current as Element);
-      } else if (DOM.isTextNode(current)) {
-        this.chars(DOM.nodeValue(current) !);
+      } else if (this.DOM.isTextNode(current)) {
+        this.chars(this.DOM.nodeValue(current) !);
       } else {
         // Strip non-element, non-text nodes.
         this.sanitizedSomething = true;
       }
-      if (DOM.firstChild(current)) {
-        current = DOM.firstChild(current) !;
+      if (this.DOM.firstChild(current)) {
+        current = this.DOM.firstChild(current) !;
         continue;
       }
       while (current) {
         // Leaving the element. Walk up and to the right, closing tags as we go.
-        if (DOM.isElementNode(current)) {
+        if (this.DOM.isElementNode(current)) {
           this.endElement(current as Element);
         }
 
-        let next = checkClobberedElement(current, DOM.nextSibling(current) !);
+        let next = this.checkClobberedElement(current, this.DOM.nextSibling(current) !);
 
         if (next) {
           current = next;
           break;
         }
 
-        current = checkClobberedElement(current, DOM.parentElement(current) !);
+        current = this.checkClobberedElement(current, this.DOM.parentElement(current) !);
       }
     }
     return this.buf.join('');
   }
 
   private startElement(element: Element) {
-    const tagName = DOM.nodeName(element).toLowerCase();
+    const tagName = this.DOM.nodeName(element).toLowerCase();
     if (!VALID_ELEMENTS.hasOwnProperty(tagName)) {
       this.sanitizedSomething = true;
       return;
     }
     this.buf.push('<');
     this.buf.push(tagName);
-    DOM.attributeMap(element).forEach((value: string, attrName: string) => {
+    this.DOM.attributeMap(element).forEach((value: string, attrName: string) => {
       const lower = attrName.toLowerCase();
       if (!VALID_ATTRS.hasOwnProperty(lower)) {
         this.sanitizedSomething = true;
@@ -186,7 +161,7 @@ class SanitizingHtmlSerializer {
   }
 
   private endElement(current: Element) {
-    const tagName = DOM.nodeName(current).toLowerCase();
+    const tagName = this.DOM.nodeName(current).toLowerCase();
     if (VALID_ELEMENTS.hasOwnProperty(tagName) && !VOID_ELEMENTS.hasOwnProperty(tagName)) {
       this.buf.push('</');
       this.buf.push(tagName);
@@ -195,14 +170,14 @@ class SanitizingHtmlSerializer {
   }
 
   private chars(chars: string) { this.buf.push(encodeEntities(chars)); }
-}
 
-function checkClobberedElement(node: Node, nextNode: Node): Node {
-  if (nextNode && DOM.contains(node, nextNode)) {
-    throw new Error(
-        `Failed to sanitize html because the element is clobbered: ${DOM.getOuterHTML(node)}`);
+  checkClobberedElement(node: Node, nextNode: Node): Node {
+    if (nextNode && this.DOM.contains(node, nextNode)) {
+      throw new Error(
+          `Failed to sanitize html because the element is clobbered: ${this.DOM.getOuterHTML(node)}`);
+    }
+    return nextNode;
   }
-  return nextNode;
 }
 
 // Regular Expressions for parsing tags and attributes
@@ -232,33 +207,20 @@ function encodeEntities(value: string) {
       .replace(/>/g, '&gt;');
 }
 
-/**
- * When IE9-11 comes across an unknown namespaced attribute e.g. 'xlink:foo' it adds 'xmlns:ns1'
- * attribute to declare ns1 namespace and prefixes the attribute with 'ns1' (e.g. 'ns1:xlink:foo').
- *
- * This is undesirable since we don't want to allow any of these custom attributes. This method
- * strips them all.
- */
-function stripCustomNsAttrs(el: Element) {
-  DOM.attributeMap(el).forEach((_, attrName) => {
-    if (attrName === 'xmlns:ns1' || attrName.indexOf('ns1:') === 0) {
-      DOM.removeAttribute(el, attrName);
-    }
-  });
-  for (const n of DOM.childNodesAsList(el)) {
-    if (DOM.isElementNode(n)) stripCustomNsAttrs(n as Element);
-  }
-}
+let inertBodyHelper: InertBodyHelper;
 
 /**
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
 export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
+  const DOM = getDOM();
+  let inertBodyElement: HTMLElement|null = null;
   try {
-    const containerEl = getInertElement();
+    inertBodyHelper = inertBodyHelper || new InertBodyHelper(defaultDoc, DOM);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
+    inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
 
     // mXSS protection. Repeatedly parse the document to make sure it stabilizes, so that a browser
     // trying to auto-correct incorrect HTML cannot cause formerly inert HTML to become dangerous.
@@ -272,31 +234,25 @@ export function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
       mXSSAttempts--;
 
       unsafeHtml = parsedHtml;
-      DOM.setInnerHTML(containerEl, unsafeHtml);
-      if (defaultDoc.documentMode) {
-        // strip custom-namespaced attributes on IE<=11
-        stripCustomNsAttrs(containerEl);
-      }
-      parsedHtml = DOM.getInnerHTML(containerEl);
+      parsedHtml = DOM.getInnerHTML(inertBodyElement);
+      inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
     } while (unsafeHtml !== parsedHtml);
 
     const sanitizer = new SanitizingHtmlSerializer();
-    const safeHtml = sanitizer.sanitizeChildren(DOM.getTemplateContent(containerEl) || containerEl);
-
-    // Clear out the body element.
-    const parent = DOM.getTemplateContent(containerEl) || containerEl;
-    for (const child of DOM.childNodesAsList(parent)) {
-      DOM.removeChild(parent, child);
-    }
-
+    const safeHtml =
+        sanitizer.sanitizeChildren(DOM.getTemplateContent(inertBodyElement) || inertBodyElement);
     if (isDevMode() && sanitizer.sanitizedSomething) {
       DOM.log('WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).');
     }
 
     return safeHtml;
-  } catch (e) {
+  } finally {
     // In case anything goes wrong, clear out inertElement to reset the entire DOM structure.
-    inertElement = null;
-    throw e;
+    if (inertBodyElement) {
+      const parent = DOM.getTemplateContent(inertBodyElement) || inertBodyElement;
+      for (const child of DOM.childNodesAsList(parent)) {
+        DOM.removeChild(parent, child);
+      }
+    }
   }
 }
