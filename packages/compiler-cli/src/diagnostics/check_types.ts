@@ -166,13 +166,9 @@ function diagnosticMessageToString(message: ts.DiagnosticMessageChain | string):
   return ts.flattenDiagnosticMessageText(message, '\n');
 }
 
-const REWRITE_PREFIX = /^\u0275[0-9]+$/;
-
 function createFactoryInfo(emitter: TypeScriptEmitter, file: GeneratedFile): FactoryInfo {
-  const {sourceText, context} = emitter.emitStatementsAndContext(
-      file.srcFileUrl, file.genFileUrl, file.stmts !,
-      /* preamble */ undefined, /* emitSourceMaps */ undefined,
-      /* referenceFilter */ reference => !!(reference.name && REWRITE_PREFIX.test(reference.name)));
+  const {sourceText, context} =
+      emitter.emitStatementsAndContext(file.srcFileUrl, file.genFileUrl, file.stmts !);
   const source = ts.createSourceFile(
       file.genFileUrl, sourceText, ts.ScriptTarget.Latest, /* setParentNodes */ true);
   return {source, context};
