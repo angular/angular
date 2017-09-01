@@ -70,6 +70,25 @@ describe('MdTabGroup', () => {
       });
     }));
 
+    it('should set to correct tab on fast change', async(() => {
+      let component = fixture.componentInstance;
+      component.selectedIndex = 0;
+      fixture.detectChanges();
+
+      setTimeout(() => {
+        component.selectedIndex = 1;
+        fixture.detectChanges();
+
+        setTimeout(() => {
+          component.selectedIndex = 0;
+          fixture.detectChanges();
+          fixture.whenStable().then(() => {
+            expect(component.selectedIndex).toBe(0);
+          });
+        }, 1);
+      }, 1);
+    }));
+
     it('should change tabs based on selectedIndex', fakeAsync(() => {
       let component = fixture.componentInstance;
       let tabComponent = fixture.debugElement.query(By.css('md-tab-group')).componentInstance;

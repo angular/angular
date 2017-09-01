@@ -25,8 +25,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {map} from '@angular/cdk/rxjs';
-import {Observable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {MdTab} from './tab';
 import {merge} from 'rxjs/observable/merge';
@@ -131,9 +129,7 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
   private _backgroundColor: ThemePalette;
 
   /** Output to enable support for two-way binding on `[(selectedIndex)]` */
-  @Output() get selectedIndexChange(): Observable<number> {
-    return map.call(this.selectChange, event => event.index);
-  }
+  @Output() selectedIndexChange: EventEmitter<number> = new EventEmitter();
 
   /** Event emitted when focus has changed within a tab group. */
   @Output() focusChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
@@ -157,9 +153,10 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
    * a new selected tab should transition in (from the left or right).
    */
   ngAfterContentChecked(): void {
-    // Clamp the next selected index to the bounds of 0 and the tabs length. Note the `|| 0`, which
-    // ensures that values like NaN can't get through and which would otherwise throw the
-    // component into an infinite loop (since Math.max(NaN, 0) === NaN).
+    // Clamp the next selected index to the boundsof 0 and the tabs length.
+    // Note the `|| 0`, which ensures that values like NaN can't get through
+    // and which would otherwise throw the component into an infinite loop
+    // (since Math.max(NaN, 0) === NaN).
     let indexToSelect = this._indexToSelect =
         Math.min(this._tabs.length - 1, Math.max(this._indexToSelect || 0, 0));
 
@@ -167,6 +164,9 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
     // the selected index has not yet been initialized.
     if (this._selectedIndex != indexToSelect && this._selectedIndex != null) {
       this.selectChange.emit(this._createChangeEvent(indexToSelect));
+      // Emitting this value after change detection has run
+      // since the checked content may contain this variable'
+      Promise.resolve().then(() => this.selectedIndexChange.emit(indexToSelect));
     }
 
     // Setup the position for each tab and optionally setup an origin on the next selected tab.
