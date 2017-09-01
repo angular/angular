@@ -9,34 +9,100 @@
 import {InjectionToken} from '@angular/core';
 
 /**
- * A bridge between a control and a native element.
+ * A `ControlValueAccessor` acts as a bridge between the Angular forms API and a
+ * native element in the DOM.
  *
- * A `ControlValueAccessor` abstracts the operations of writing a new value to a
- * DOM element representing an input control.
- *
- * Please see {@link DefaultValueAccessor} for more information.
+ * Implement this interface if you want to create a custom form control directive
+ * that integrates with Angular forms.
  *
  * @stable
  */
 export interface ControlValueAccessor {
   /**
-   * Write a new value to the element.
+   * Writes a new value to the element.
+   *
+   * This method will be called by the forms API to write to the view when programmatic
+   * (model -> view) changes are requested.
+   *
+   * Example implementation of `writeValue`:
+   *
+   * ```ts
+   * writeValue(value: any): void {
+   *   this._renderer.setProperty(this._elementRef.nativeElement, 'value', value);
+   * }
+   * ```
    */
   writeValue(obj: any): void;
 
   /**
-   * Set the function to be called when the control receives a change event.
+   * Registers a callback function that should be called when the control's value
+   * changes in the UI.
+   *
+   * This is called by the forms API on initialization so it can update the form
+   * model when values propagate from the view (view -> model).
+   *
+   * If you are implementing `registerOnChange` in your own value accessor, you
+   * will typically want to save the given function so your class can call it
+   * at the appropriate time.
+   *
+   * ```ts
+   * registerOnChange(fn: (_: any) => void): void {
+   *   this._onChange = fn;
+   * }
+   * ```
+   *
+   * When the value changes in the UI, your class should call the registered
+   * function to allow the forms API to update itself:
+   *
+   * ```ts
+   * host: {
+   *    (change): '_onChange($event.target.value)'
+   * }
+   * ```
+   *
    */
   registerOnChange(fn: any): void;
 
   /**
-   * Set the function to be called when the control receives a touch event.
+   * Registers a callback function that should be called when the control receives
+   * a blur event.
+   *
+   * This is called by the forms API on initialization so it can update the form model
+   * on blur.
+   *
+   * If you are implementing `registerOnTouched` in your own value accessor, you
+   * will typically want to save the given function so your class can call it
+   * when the control should be considered blurred (a.k.a. "touched").
+   *
+   * ```ts
+   * registerOnTouched(fn: any): void {
+   *   this._onTouched = fn;
+   * }
+   * ```
+   *
+   * On blur (or equivalent), your class should call the registered function to allow
+   * the forms API to update itself:
+   *
+   * ```ts
+   * host: {
+   *    '(blur)': '_onTouched()'
+   * }
+   * ```
    */
   registerOnTouched(fn: any): void;
 
   /**
-   * This function is called when the control status changes to or from "DISABLED".
-   * Depending on the value, it will enable or disable the appropriate DOM element.
+   * This function is called by the forms API when the control status changes to
+   * or from "DISABLED". Depending on the value, it should enable or disable the
+   * appropriate DOM element.
+   *
+   * Example implementation of `setDisabledState`:
+   *
+   * ```ts
+   * setDisabledState(isDisabled: boolean): void {
+   *   this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+   * }
+   * ```
    *
    * @param isDisabled
    */
