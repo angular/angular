@@ -224,6 +224,18 @@ describe('MdInput without forms', function () {
     expect(inputElement.id).toEqual(labelElement.getAttribute('for'));
   });
 
+  it('should add aria-owns to the label for the associated control', () => {
+    let fixture = TestBed.createComponent(MdInputTextTestController);
+    fixture.detectChanges();
+
+    const inputElement: HTMLInputElement =
+        fixture.debugElement.query(By.css('input')).nativeElement;
+    const labelElement: HTMLInputElement =
+        fixture.debugElement.query(By.css('label')).nativeElement;
+
+    expect(labelElement.getAttribute('aria-owns')).toBe(inputElement.id);
+  });
+
   it('should not overwrite existing id', () => {
     let fixture = TestBed.createComponent(MdInputWithId);
     fixture.detectChanges();
