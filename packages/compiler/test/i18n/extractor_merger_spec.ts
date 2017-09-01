@@ -405,6 +405,11 @@ export function main() {
     });
 
     describe('blocks', () => {
+      it('should console.warn if we use i18n comments', () => {
+        // TODO(ocombe): expect a warning message when we have a proper log service
+        extract('<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->');
+      });
+
       it('should merge blocks', () => {
         const HTML = `before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after`;
         expect(fakeTranslate(HTML))
