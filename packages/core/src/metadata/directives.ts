@@ -678,7 +678,7 @@ export interface Component extends Directive {
   entryComponents?: Array<Type<any>|any[]>;
 
   /**
-   * If {@link Component#preserveWhitespaces `Component.preserveWhitespaces`} is set to `false`
+   * If {@link Component#preserveWhitespaces Component.preserveWhitespaces} is set to `false`
    * potentially superfluous whitespace characters (ones matching the `\s` character class in
    * JavaScript regular expressions) will be removed from a compiled template. This can greatly
    * reduce AOT-generated code size as well as speed up view creation.
@@ -720,14 +720,24 @@ export interface Component extends Directive {
    *
    * will be compiled to the equivalent of:
    *
-   * * ```html
+   * ```html
    * <a>Spaces</a> <a>between</a> <a>links.</a>
    * ```
    *
    * Please note that sequences of `&ngsp;` are still collapsed to just one space character when
-   * the `preserveWhitespaces` option is set to `false` (ex.:
-   * `<a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>` would be equivalent to
-   * `<a>before</a> <a>after</a>`). The `&ngsp;` pseudo-entity is useful for forcing presence of
+   * the `preserveWhitespaces` option is set to `false`. Ex.:
+   *
+   * ```html
+   * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
+   * ```
+   *
+   * would be equivalent to:
+   *
+   * ```html
+   * <a>before</a> <a>after</a>
+   * ```
+   *
+   * The `&ngsp;` pseudo-entity is useful for forcing presence of
    * one space (a text node having `&ngsp;` pseudo-entities will never be removed), but it is not
    * meant to mark sequences of whitespace characters. The previously described
    * `ngPreserveWhitespaces` attribute is more useful for preserving sequences of whitespace
