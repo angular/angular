@@ -1,7 +1,7 @@
 <div class="mat-list-item-content">
   <div class="mat-list-item-ripple" md-ripple
        [mdRippleTrigger]="_getHostElement()"
-       [mdRippleDisabled]="!isRippleEnabled()">
+       [mdRippleDisabled]="_isRippleDisabled()">
   </div>
 
   <ng-content

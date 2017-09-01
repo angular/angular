@@ -125,7 +125,7 @@ describe('MdList', () => {
 
     const items: QueryList<MdListItem> = fixture.debugElement.componentInstance.listItems;
     expect(items.length).toBeGreaterThan(0);
-    items.forEach(item => expect(item.isRippleEnabled()).toBe(false));
+    items.forEach(item => expect(item._isRippleDisabled()).toBe(true));
   });
 
   it('should allow disabling ripples for specific nav-list items', () => {
@@ -136,12 +136,12 @@ describe('MdList', () => {
     expect(items.length).toBeGreaterThan(0);
 
     // Ripples should be enabled by default, and can be disabled with a binding.
-    items.forEach(item => expect(item.isRippleEnabled()).toBe(true));
+    items.forEach(item => expect(item._isRippleDisabled()).toBe(false));
 
     fixture.componentInstance.disableItemRipple = true;
     fixture.detectChanges();
 
-    items.forEach(item => expect(item.isRippleEnabled()).toBe(false));
+    items.forEach(item => expect(item._isRippleDisabled()).toBe(true));
   });
 
   it('should allow disabling ripples for the whole nav-list', () => {
@@ -152,12 +152,12 @@ describe('MdList', () => {
     expect(items.length).toBeGreaterThan(0);
 
     // Ripples should be enabled by default, and can be disabled with a binding.
-    items.forEach(item => expect(item.isRippleEnabled()).toBe(true));
+    items.forEach(item => expect(item._isRippleDisabled()).toBe(false));
 
     fixture.componentInstance.disableListRipple = true;
     fixture.detectChanges();
 
-    items.forEach(item => expect(item.isRippleEnabled()).toBe(false));
+    items.forEach(item => expect(item._isRippleDisabled()).toBe(true));
   });
 });
 

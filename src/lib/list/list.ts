@@ -156,8 +156,8 @@ export class MdListItem extends _MdListItemMixinBase implements AfterContentInit
   }
 
   /** Whether this list item should show a ripple effect when clicked.  */
-  isRippleEnabled() {
-    return !this.disableRipple && this._isNavList && !this._list.disableRipple;
+  _isRippleDisabled() {
+    return !this._isNavList || this.disableRipple || this._list.disableRipple;
   }
 
   _handleFocus() {

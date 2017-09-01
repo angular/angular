@@ -32,9 +32,13 @@ import {FocusableOption} from '../core/a11y/focus-key-manager';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {RxChain, switchMap, startWith} from '../core/rxjs/index';
 import {merge} from 'rxjs/observable/merge';
+import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
 
 export class MdSelectionListBase {}
-export const _MdSelectionListMixinBase = mixinDisabled(MdSelectionListBase);
+export const _MdSelectionListMixinBase = mixinDisableRipple(mixinDisabled(MdSelectionListBase));
+
+export class MdListOptionBase {}
+export const _MdListOptionMixinBase = mixinDisableRipple(MdListOptionBase);
 
 
 export interface MdSelectionListOptionEvent {
@@ -51,6 +55,7 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
 @Component({
   moduleId: module.id,
   selector: 'md-list-option, mat-list-option',
+  inputs: ['disableRipple'],
   host: {
     'role': 'option',
     'class': 'mat-list-item mat-list-option',
@@ -65,9 +70,10 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MdListOption implements AfterContentInit, OnDestroy, FocusableOption {
+export class MdListOption extends _MdListOptionMixinBase
+    implements AfterContentInit, OnDestroy, FocusableOption, CanDisableRipple {
+
   private _lineSetter: MdLineSetter;
-  private _disableRipple: boolean = false;
   private _selected: boolean = false;
   /** Whether the checkbox is disabled. */
   private _disabled: boolean = false;
@@ -75,15 +81,6 @@ export class MdListOption implements AfterContentInit, OnDestroy, FocusableOptio
 
   /** Whether the option has focus. */
   _hasFocus: boolean = false;
-
-  /**
-   * Whether the ripple effect on click should be disabled. This applies only to list items that are
-   * part of a selection list. The value of `disableRipple` on the `md-selection-list` overrides
-   * this flag
-   */
-  @Input()
-  get disableRipple() { return this._disableRipple; }
-  set disableRipple(value: boolean) { this._disableRipple = coerceBooleanProperty(value); }
 
   @ContentChildren(MdLine) _lines: QueryList<MdLine>;
 
@@ -119,7 +116,9 @@ export class MdListOption implements AfterContentInit, OnDestroy, FocusableOptio
               private _element: ElementRef,
               private _changeDetector: ChangeDetectorRef,
               @Optional() @Inject(forwardRef(() => MdSelectionList))
-                  public selectionList: MdSelectionList) {}
+                  public selectionList: MdSelectionList) {
+    super();
+  }
 
   ngAfterContentInit() {
     this._lineSetter = new MdLineSetter(this._lines, this._renderer, this._element);
@@ -146,8 +145,8 @@ export class MdListOption implements AfterContentInit, OnDestroy, FocusableOptio
   }
 
   /** Whether this list item should show a ripple effect when clicked.  */
-  isRippleEnabled() {
-    return !this.disableRipple && !this.selectionList.disableRipple;
+  _isRippleDisabled() {
+    return this.disableRipple || this.selectionList.disableRipple;
   }
 
   _handleClick() {
@@ -175,7 +174,7 @@ export class MdListOption implements AfterContentInit, OnDestroy, FocusableOptio
 @Component({
   moduleId: module.id,
   selector: 'md-selection-list, mat-selection-list',
-  inputs: ['disabled'],
+  inputs: ['disabled', 'disableRipple'],
   host: {
     'role': 'listbox',
     '[attr.tabindex]': '_tabIndex',
@@ -189,8 +188,7 @@ export class MdListOption implements AfterContentInit, OnDestroy, FocusableOptio
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MdSelectionList extends _MdSelectionListMixinBase
-  implements FocusableOption, CanDisable, AfterContentInit, OnDestroy {
-  private _disableRipple: boolean = false;
+    implements FocusableOption, CanDisable, CanDisableRipple, AfterContentInit, OnDestroy {
 
   /** Tab index for the selection-list. */
   _tabIndex = 0;
@@ -209,14 +207,6 @@ export class MdSelectionList extends _MdSelectionListMixinBase
 
   /** options which are selected. */
   selectedOptions: SelectionModel<MdListOption> = new SelectionModel<MdListOption>(true);
-
-  /**
-   * Whether the ripple effect should be disabled on the list-items or not.
-   * This flag only has an effect for `mat-selection-list` components.
-   */
-  @Input()
-  get disableRipple() { return this._disableRipple; }
-  set disableRipple(value: boolean) { this._disableRipple = coerceBooleanProperty(value); }
 
   constructor(private _element: ElementRef) {
     super();
