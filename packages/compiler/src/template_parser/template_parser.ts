@@ -18,6 +18,7 @@ import {Identifiers, createTokenForExternalReference, createTokenForReference} f
 import {CompilerInjectable} from '../injectable';
 import * as html from '../ml_parser/ast';
 import {ParseTreeResult} from '../ml_parser/html_parser';
+import {removeWhitespaces, replaceNgsp} from '../ml_parser/html_whitespaces';
 import {expandNodes} from '../ml_parser/icu_ast_expander';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {isNgTemplate, splitNsName} from '../ml_parser/tags';
@@ -113,9 +114,10 @@ export class TemplateParser {
 
   parse(
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveSummary[],
-      pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
-      templateUrl: string): {template: TemplateAst[], pipes: CompilePipeSummary[]} {
-    const result = this.tryParse(component, template, directives, pipes, schemas, templateUrl);
+      pipes: CompilePipeSummary[], schemas: SchemaMetadata[], templateUrl: string,
+      preserveWhitespaces: boolean): {template: TemplateAst[], pipes: CompilePipeSummary[]} {
+    const result = this.tryParse(
+        component, template, directives, pipes, schemas, templateUrl, preserveWhitespaces);
     const warnings =
         result.errors !.filter(error => error.level === ParseErrorLevel.WARNING)
             .filter(warnOnlyOnce(
@@ -137,12 +139,17 @@ export class TemplateParser {
 
   tryParse(
       component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveSummary[],
-      pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
-      templateUrl: string): TemplateParseResult {
+      pipes: CompilePipeSummary[], schemas: SchemaMetadata[], templateUrl: string,
+      preserveWhitespaces: boolean): TemplateParseResult {
+    let htmlParseResult = this._htmlParser !.parse(
+        template, templateUrl, true, this.getInterpolationConfig(component));
+
+    if (!preserveWhitespaces) {
+      htmlParseResult = removeWhitespaces(htmlParseResult);
+    }
+
     return this.tryParseHtml(
-        this.expandHtml(this._htmlParser !.parse(
-            template, templateUrl, true, this.getInterpolationConfig(component))),
-        component, directives, pipes, schemas);
+        this.expandHtml(htmlParseResult), component, directives, pipes, schemas);
   }
 
   tryParseHtml(
@@ -253,9 +260,10 @@ class TemplateParseVisitor implements html.Visitor {
 
   visitText(text: html.Text, parent: ElementContext): any {
     const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR) !;
-    const expr = this._bindingParser.parseInterpolation(text.value, text.sourceSpan !);
+    const valueNoNgsp = replaceNgsp(text.value);
+    const expr = this._bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan !);
     return expr ? new BoundTextAst(expr, ngContentIndex, text.sourceSpan !) :
-                  new TextAst(text.value, ngContentIndex, text.sourceSpan !);
+                  new TextAst(valueNoNgsp, ngContentIndex, text.sourceSpan !);
   }
 
   visitAttribute(attribute: html.Attribute, context: any): any {

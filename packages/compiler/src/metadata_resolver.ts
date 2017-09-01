@@ -219,7 +219,8 @@ export class CompileMetadataResolver {
         styles: template.styles,
         styleUrls: template.styleUrls,
         animations: template.animations,
-        interpolation: template.interpolation
+        interpolation: template.interpolation,
+        preserveWhitespaces: template.preserveWhitespaces
       });
       if (isPromise(templateMeta) && isSync) {
         this._reportError(componentStillLoadingError(directiveType), directiveType);
@@ -267,7 +268,8 @@ export class CompileMetadataResolver {
         interpolation: noUndefined(dirMeta.interpolation),
         isInline: !!dirMeta.template,
         externalStylesheets: [],
-        ngContentSelectors: []
+        ngContentSelectors: [],
+        preserveWhitespaces: noUndefined(dirMeta.preserveWhitespaces),
       });
     }
 
