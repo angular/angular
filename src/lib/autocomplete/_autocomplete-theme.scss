@@ -8,14 +8,15 @@
     background: mat-color($background, card);
     color: mat-color($foreground, text);
 
-    .mat-option {
-      // Selected options in autocompletes should not be gray, but we
-      // only want to override the background for selected options if
-      // they are *not* in hover or focus state. This change has to be
-      // made here because base option styles are shared between the
-      // autocomplete and the select.
-      &.mat-selected:not(.mat-active):not(:hover) {
-        background: mat-color($background, card);
+    // Selected options in autocompletes should not be gray, but we
+    // only want to override the background for selected options if
+    // they are *not* in hover or focus state. This change has to be
+    // made here because base option styles are shared between the
+    // autocomplete and the select.
+    .mat-option.mat-selected:not(.mat-active):not(:hover) {
+      background: mat-color($background, card);
+
+      &:not(.mat-option-disabled) {
         color: mat-color($foreground, text);
       }
     }
