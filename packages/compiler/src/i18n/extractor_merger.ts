@@ -182,7 +182,7 @@ class _Visitor implements html.Visitor {
             const details = comment.sourceSpan.details ? `, ${comment.sourceSpan.details}` : '';
             // TODO(ocombe): use a log service once there is a public one available
             console.warn(
-                ` I18n comments are deprecated, use an <ng - container> element instead (${comment.sourceSpan.start}${details})`);
+                `I18n comments are deprecated, use an <ng-container> element instead (${comment.sourceSpan.start}${details})`);
           }
           this._inI18nBlock = true;
           this._blockStartDepth = this._depth;
