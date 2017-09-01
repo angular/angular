@@ -31,6 +31,7 @@ export class AccessibilityDemo {
     {name: 'Icon', route: 'icon'},
     {name: 'Input', route: 'input'},
     {name: 'Menu', route: 'menu'},
+    {name: 'Progress bar', route: 'progress-bar'},
     {name: 'Progress spinner', route: 'progress-spinner'},
     {name: 'Radio buttons', route: 'radio'},
     {name: 'Slider', route: 'slider'},

@@ -27,6 +27,7 @@ import {DatepickerAccessibilityDemo} from './datepicker/datepicker-a11y';
 import {IconAccessibilityDemo} from './icon/icon-a11y';
 import {InputAccessibilityDemo} from './input/input-a11y';
 import {MenuAccessibilityDemo} from './menu/menu-a11y';
+import {ProgressBarAccessibilityDemo} from './progress-bar/progress-bar-a11y';
 import {ProgressSpinnerAccessibilityDemo} from './progress-spinner/progress-spinner-a11y';
 import {SliderAccessibilityDemo} from './slider/slider-a11y';
 import {SlideToggleAccessibilityDemo} from './slide-toggle/slide-toggle-a11y';
@@ -72,6 +73,7 @@ export class AccessibilityRoutingModule {}
     IconAccessibilityDemo,
     InputAccessibilityDemo,
     MenuAccessibilityDemo,
+    ProgressBarAccessibilityDemo,
     ProgressSpinnerAccessibilityDemo,
     RadioAccessibilityDemo,
     ToolbarAccessibilityDemo,
