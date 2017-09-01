@@ -16,6 +16,7 @@ import {
   OnDestroy,
   Renderer2,
   ElementRef,
+  Input,
 } from '@angular/core';
 import {
   trigger,
@@ -56,7 +57,13 @@ import {Subscription} from 'rxjs/Subscription';
     '[class.mat-expanded]': '_isExpanded()',
     '(click)': '_toggle()',
     '(keyup)': '_keyup($event)',
-    '[@expansionHeight]': '_getExpandedState()',
+    '[@expansionHeight]': `{
+        value: _getExpandedState(),
+        params: {
+          collapsedHeight: collapsedHeight,
+          expandedHeight: expandedHeight
+        }
+    }`,
   },
   animations: [
     trigger('indicatorRotate', [
@@ -65,8 +72,16 @@ import {Subscription} from 'rxjs/Subscription';
       transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
     ]),
     trigger('expansionHeight', [
-      state('collapsed', style({height: '48px'})),
-      state('expanded', style({height: '64px'})),
+      state('collapsed', style({
+        height: '{{collapsedHeight}}',
+      }), {
+        params: {collapsedHeight: '48px'},
+      }),
+      state('expanded', style({
+        height: '{{expandedHeight}}'
+      }), {
+        params: {expandedHeight: '64px'}
+      }),
       transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
     ]),
   ],
@@ -92,6 +107,12 @@ export class MdExpansionPanelHeader implements OnDestroy {
 
     _focusOriginMonitor.monitor(_element.nativeElement, _renderer, false);
   }
+
+  /** Height of the header while the panel is expanded. */
+  @Input() expandedHeight: string;
+
+  /** Height of the header while the panel is collapsed. */
+  @Input() collapsedHeight: string;
 
   /** Toggles the expanded state of the panel. */
   _toggle(): void {

@@ -1,6 +1,7 @@
 <h1>Single Expansion Panel</h1>
+
 <md-expansion-panel class="md-expansion-demo-width" #myPanel>
-  <md-expansion-panel-header>
+  <md-expansion-panel-header [expandedHeight]="expandedHeight" [collapsedHeight]="collapsedHeight">
     <mat-panel-description>This is a panel description.</mat-panel-description>
     <mat-panel-title>Panel Title</mat-panel-title>
   </md-expansion-panel-header>
@@ -10,7 +11,17 @@
     <button md-button>SAVE</button>
   </md-action-row>
 </md-expansion-panel>
+
 <br>
+<md-form-field>
+  <input mdInput [(ngModel)]="collapsedHeight" placeholder="Collapsed height">
+</md-form-field>
+
+<md-form-field>
+  <input mdInput [(ngModel)]="expandedHeight" placeholder="Expanded height">
+</md-form-field>
+<br>
+
 <h1>Accordion</h1>
 <div>
   <p>Accordion Options</p>

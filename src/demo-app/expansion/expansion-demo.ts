@@ -13,4 +13,6 @@ export class ExpansionDemo {
   hideToggle = false;
   disabled = false;
   showPanel3 = true;
+  expandedHeight: string;
+  collapsedHeight: string;
 }
