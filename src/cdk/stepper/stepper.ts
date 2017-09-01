@@ -57,6 +57,7 @@ export class StepperSelectionEvent {
 }
 
 @Component({
+  moduleId: module.id,
   selector: 'cdk-step',
   templateUrl: 'step.html',
   encapsulation: ViewEncapsulation.None

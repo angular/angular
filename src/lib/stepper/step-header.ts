@@ -11,6 +11,7 @@ import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion
 import {MdStepLabel} from './step-label';
 
 @Component({
+  moduleId: module.id,
   selector: 'md-step-header, mat-step-header',
   templateUrl: 'step-header.html',
   styleUrls: ['step-header.css'],
