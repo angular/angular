@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ng from '@angular/compiler-cli';
-import {CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, debug, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -22,39 +22,6 @@ const NGC_NON_TS_INPUTS =
 // TODO(alexeagle): probably not needed, see
 // https://github.com/bazelbuild/rules_typescript/issues/28
 const ALLOW_NON_HERMETIC_READS = true;
-
-function topologicalSort(
-    result: tsickle.FileMap<boolean>, current: string, modulesManifest: tsickle.ModulesManifest,
-    visiting: tsickle.FileMap<boolean>) {
-  const referencedModules = modulesManifest.getReferencedModules(current);
-  if (!referencedModules) return;  // not in the local set of sources.
-  for (const referencedModule of referencedModules) {
-    const referencedFileName = modulesManifest.getFileNameFromModule(referencedModule);
-    if (!referencedFileName) continue;  // Ambient modules.
-    if (!result[referencedFileName]) {
-      if (visiting[referencedFileName]) {
-        const path = current + ' -> ' + Object.keys(visiting).join(' -> ');
-        throw new Error('Cyclical dependency between files:\n' + path);
-      }
-      visiting[referencedFileName] = true;
-      topologicalSort(result, referencedFileName, modulesManifest, visiting);
-      delete visiting[referencedFileName];
-    }
-  }
-  result[current] = true;
-}
-// TODO(alexeagle): move to tsc-wrapped in third_party so it's shared
-export function constructManifest(
-    modulesManifest: tsickle.ModulesManifest,
-    host: {flattenOutDir: (f: string) => string}): string {
-  const result: tsickle.FileMap<boolean> = {};
-  for (const file of modulesManifest.fileNames) {
-    topologicalSort(result, file, modulesManifest, {});
-  }
-
-  // NB: The object literal maintains insertion order.
-  return Object.keys(result).map(fn => host.flattenOutDir(fn)).join('\n') + '\n';
-}
 
 export function main(args) {
   if (runAsWorker(args)) {
