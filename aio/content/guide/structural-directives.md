@@ -208,17 +208,7 @@ Here is `*ngIf` displaying the hero's name if `hero` exists.
 
 
 The asterisk is "syntactic sugar" for something a bit more complicated.
-Internally, Angular desugars it in two stages.
-First, it translates the `*ngIf="..."` into a template _attribute_, `template="ngIf ..."`,&nbsp; like this.
-
-
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template-attr)" region="ngif-template-attr">
-
-</code-example>
-
-
-
-Then it translates the template _attribute_ into a `<ng-template>` _element_, wrapped around the host element, like this.
+Internally, Angular translates the `*ngIf` _attribute_ into a `<ng-template>` _element_, wrapped around the host element, like this.
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template)" region="ngif-template">
@@ -230,8 +220,7 @@ Then it translates the template _attribute_ into a `<ng-template>` _element_, wr
 * The `*ngIf` directive moved to the `<ng-template>` element where it became a property binding,`[ngIf]`.
 * The rest of the `<div>`, including its class attribute, moved inside the `<ng-template>` element.
 
-None of these forms are actually rendered.
-Only the finished product ends up in the DOM.
+The first form is not actually rendered, only the finished product ends up in the DOM.
 
 
 <figure>
@@ -252,10 +241,9 @@ The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/struc
 
 ## Inside _*ngFor_
 
-Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax through
-template _attribute_ to `<ng-template>` _element_.
+Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax to `<ng-template>` _element_.
 
-Here's a full-featured application of `NgFor`, written all three ways:
+Here's a full-featured application of `NgFor`, written both ways:
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
@@ -415,16 +403,7 @@ The `<unknown-hero>` is the host element for the `*ngSwitchDefault`.
 
 
 As with other structural directives, the `NgSwitchCase` and `NgSwitchDefault`
-can be desugared into the template _attribute_ form.
-
-
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template-attr)" region="ngswitch-template-attr">
-
-</code-example>
-
-
-
-That, in turn, can be desugared into the `<ng-template>` element form.
+can be desugared into the `<ng-template>` element form.
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
@@ -438,7 +417,7 @@ That, in turn, can be desugared into the `<ng-template>` element form.
 
 ## Prefer the asterisk (*) syntax.
 
-The asterisk (*) syntax is more clear than the other desugared forms.
+The asterisk (*) syntax is more clear than the desugared form.
 Use [&lt;ng-container&gt;](guide/structural-directives#ng-container) when there's no single element
 to host the directive.
 

@@ -121,16 +121,19 @@ export function main() {
       schemas?: SchemaMetadata[], preserveWhitespaces?: boolean) => TemplateAst[];
   let console: ArrayConsole;
 
-  function commonBeforeEach() {
+  function configureCompiler() {
+    console = new ArrayConsole();
     beforeEach(() => {
-      console = new ArrayConsole();
       TestBed.configureCompiler({
         providers: [
           {provide: Console, useValue: console},
+          {provide: CompilerConfig, useValue: new CompilerConfig({enableLegacyTemplate: true})}
         ],
       });
     });
+  }
 
+  function commonBeforeEach() {
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
       const someAnimation = new CompileAnimationEntryMetadata('someAnimation', []);
       const someTemplate = compileTemplateMetadata({animations: [someAnimation]});
@@ -286,6 +289,7 @@ export function main() {
       });
     });
 
+    configureCompiler();
     commonBeforeEach();
 
     describe('security context', () => {
@@ -318,6 +322,7 @@ export function main() {
       TestBed.configureCompiler({providers: [TEST_COMPILER_PROVIDERS, MOCK_SCHEMA_REGISTRY]});
     });
 
+    configureCompiler();
     commonBeforeEach();
 
     describe('parse', () => {
@@ -2129,13 +2134,13 @@ The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
 
   });
 
-  describe('Template Parser - opt-out `<template>` support', () => {
+  describe('Template Parser - `<template>` support disabled by default', () => {
     beforeEach(() => {
       TestBed.configureCompiler({
-        providers: [{
-          provide: CompilerConfig,
-          useValue: new CompilerConfig({enableLegacyTemplate: false}),
-        }],
+        providers: [
+          {provide: Console, useValue: console},
+          {provide: CompilerConfig, useValue: new CompilerConfig()}
+        ],
       });
     });
 

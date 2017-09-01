@@ -78,11 +78,11 @@
 
 <p>Template input variable expression context (let hero)</p>
 <!-- template hides the following; plenty of examples later -->
-<template>
+<ng-template>
   <!-- #docregion context-var -->
   <div *ngFor="let hero of heroes">{{hero.name}}</div>
   <!-- #enddocregion context-var -->
-</template>
+</ng-template>
 
 <p>Template reference variable expression context (#heroInput)</p>
 <div (keyup)="0" class="context">
