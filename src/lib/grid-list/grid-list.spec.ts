@@ -253,6 +253,18 @@ describe('MdGridList', () => {
     let footer = fixture.debugElement.query(By.directive(MdGridTileText));
     expect(footer.nativeElement.classList.contains('mat-2-line')).toBe(true);
   });
+
+  it('should not use calc() that evaluates to 0', () => {
+    const fixture = TestBed.createComponent(GirdListWithRowHeightRatio);
+
+    fixture.componentInstance.heightRatio = '4:1';
+    fixture.detectChanges();
+
+    const firstTile = fixture.debugElement.query(By.directive(MdGridTile)).nativeElement;
+
+    expect(firstTile.style.marginTop).toBe('0px');
+    expect(firstTile.style.left).toBe('0px');
+  });
 });
 
 

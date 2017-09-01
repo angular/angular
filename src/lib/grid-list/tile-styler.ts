@@ -51,7 +51,7 @@ export abstract class TileStyler {
     // edges, each tile only uses a fraction (gutterShare = numGutters / numCells) of the gutter
     // size. (Imagine having one gutter per tile, and then breaking up the extra gutter on the
     // edge evenly among the cells).
-    return `(${sizePercent}% - ( ${this._gutterSize} * ${gutterFraction} ))`;
+    return `(${sizePercent}% - (${this._gutterSize} * ${gutterFraction}))`;
   }
 
 
@@ -64,7 +64,7 @@ export abstract class TileStyler {
   getTilePosition(baseSize: string, offset: number): string {
     // The position comes the size of a 1x1 tile plus gutter for each previous tile in the
     // row/column (offset).
-    return calc(`(${baseSize} + ${this._gutterSize}) * ${offset}`);
+    return offset === 0 ? '0' : calc(`(${baseSize} + ${this._gutterSize}) * ${offset}`);
   }
 
 
