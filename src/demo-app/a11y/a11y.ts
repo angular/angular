@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
 
 @Component({
   moduleId: module.id,
@@ -15,6 +15,8 @@ export class AccessibilityHome {}
   encapsulation: ViewEncapsulation.None,
 })
 export class AccessibilityDemo {
+  @ViewChild('maincontent') mainContent: ElementRef;
+
   navItems = [
     {name: 'Home', route: '.'},
     {name: 'Autocomplete', route: 'autocomplete'},
@@ -37,4 +39,9 @@ export class AccessibilityDemo {
     {name: 'Select', route: 'select'},
     {name: 'Toolbar', route: 'toolbar'},
   ];
+
+  skipNavigation() {
+    this.mainContent.nativeElement.scrollIntoView();
+    this.mainContent.nativeElement.focus();
+  }
 }

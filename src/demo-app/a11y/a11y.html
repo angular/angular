@@ -1,9 +1,12 @@
 <h1>Accessibility Demo</h1>
 
 <nav>
+  <a (click)="skipNavigation()" href="javascript:void(0)">Skip navigation</a>
   <a *ngFor="let navItem of navItems" [routerLink]="[navItem.route]">
     {{navItem.name}}
   </a>
 </nav>
 
-<router-outlet></router-outlet>
+<div #maincontent tabindex="0">
+  <router-outlet></router-outlet>
+</div>
