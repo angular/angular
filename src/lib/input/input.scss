@@ -22,7 +22,6 @@
 
   // Prevent textareas from being resized outside the form field.
   max-width: 100%;
-  resize: vertical;
 
   // Needed to make last line of the textarea line up with the baseline.
   vertical-align: bottom;
@@ -45,5 +44,7 @@
 
 // Prevents IE from always adding a scrollbar by default.
 textarea.mat-input-element {
+  // Only allow resizing along the Y axis.
+  resize: vertical;
   overflow: auto;
 }
