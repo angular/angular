@@ -229,3 +229,52 @@ application root module.
 })
 export class MyApp {}
 ```
+### Accessibility
+The `MdDatepickerInput` directive adds `aria-haspopup` attribute to the native input element, and it
+triggers a calendar dialog with `role="dialog"`.
+
+`MdDatepickerIntl` includes strings that are used for `aria-label`s. The datepicker input
+should have a placeholder or be given a meaningful label via `aria-label`, `aria-labelledby` or
+`MdDatepickerIntl`.
+
+#### Keyboard shortcuts
+The keyboard shortcuts to handle datepicker are:
+
+| Shortcut             | Action                              |
+|----------------------|-------------------------------------|
+| `ALT` + `DOWN_ARROW` | Open the calendar pop-up            |
+| `ESCAPE`             | Close the calendar pop-up           |
+
+
+In month view:
+
+| Shortcut             | Action                              |
+|----------------------|-------------------------------------|
+| `LEFT_ARROW`         | Go to previous day                  |
+| `RIGHT_ARROW`        | Go to next day                      |
+| `UP_ARROW`           | Go to same day in the previous week |
+| `DOWN_ARROW`         | Go to same day in the next week     |
+| `HOME`               | Go to the first day of the month    |
+| `END`                | Go to the last day of the month     |
+| `PAGE_UP`            | Go to previous month                |
+| `ALT` + `PAGE_UP`    | Go to previous year                 |
+| `PAGE_DOWN`          | Go to next month                    |
+| `ALT` + `PAGE_DOWN`  | Go to next year                     |
+| `ENTER`              | Select current date                 |
+
+
+In year view:
+
+| Shortcut             | Action                              |
+|----------------------|-------------------------------------|
+| `LEFT_ARROW`         | Go to previous month                |
+| `RIGHT_ARROW`        | Go to next month                    |
+| `UP_ARROW`           | Go to previous 6 months             |
+| `DOWN_ARROW`         | Go to next 6 months                 |
+| `HOME`               | Go to the first month of the year   |
+| `END`                | Go to the last month of the year    |
+| `PAGE_UP`            | Go to previous year                 |
+| `ALT` + `PAGE_UP`    | Go to previous 10 years             |
+| `PAGE_DOWN`          | Go to next year                     |
+| `ALT` + `PAGE_DOWN`  | Go to next 10 years                 |
+| `ENTER`              | Select current month                |

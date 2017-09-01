@@ -72,3 +72,8 @@ export class MessageArchivedComponent {
   constructor(@Inject(MD_SNACK_BAR_DATA) public data: any) { }
 }
 ```
+### Accessibility
+Snack-bar messages are announced via an `aria-live` region. Focus is not moved to
+the snack-bar element, as this would be disruptive to a user in the middle of a
+workflow. For any action offered in the snack-bar, the application should offer the
+user an alternative way to perform the action (typically via keyboard shortcut).

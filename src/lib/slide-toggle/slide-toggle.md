@@ -22,3 +22,11 @@ and `ReactiveFormsModule`.
 ### Theming
 The color of a `<md-slide-toggle>` can be changed by using the `color` property. By default, 
 slide-toggles use the theme's accent color. This can be changed to `'primary'` or `'warn'`.  
+
+### Accessibility
+The `<md-slide-toggle>` uses an internal `<input type="checkbox">` to provide an accessible
+experience. This internal checkbox receives focus and is automatically labelled by the text content
+of the `<md-slide-toggle>` element.
+
+Slide toggles without text or labels should be given a meaningful label via `aria-label` or
+`aria-labelledby`.

@@ -85,3 +85,7 @@ The slider has the following keyboard bindings:
 | Page down   | Decrement the slider value by 10 steps.                                            |
 | End         | Set the value to the maximum possible.                                             |
 | Home        | Set the value to the minimum possible.                                             |
+
+### Accessibility
+Sliders without text or labels should be given a meaningful label via `aria-label` or
+`aria-labelledby`.

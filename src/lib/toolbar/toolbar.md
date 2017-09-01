@@ -49,3 +49,13 @@ easily accomplished with `display: flex`:
 The color of a `<md-toolbar>` can be changed by using the `color` property. By default, toolbars
 use a neutral background color based on the current theme (light or dark). This can be changed to 
 `'primary'`, `'accent'`, or `'warn'`.  
+
+### Accessibility
+By default, the toolbar assumes that it will be used in a purely decorative fashion and thus sets
+no roles, ARIA attributes, or keyboard shortcuts. This is equivalent to having a sequence of `<div>`
+elements on the page.
+
+Generally, the toolbar is used as a header where `role="header"` would be appropriate.
+
+Only if the use-case of the toolbar match that of role="toolbar", the user should add the role and
+an appropriate label via `aria-label` or `aria-labelledby`.
