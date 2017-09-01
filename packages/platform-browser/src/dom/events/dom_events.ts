@@ -32,6 +32,20 @@ const ANGULAR = 'ANGULAR';
 const NATIVE_ADD_LISTENER = 'addEventListener';
 const NATIVE_REMOVE_LISTENER = 'removeEventListener';
 
+const blackListedEvents: string[] = Zone && Zone[__symbol__('BLACK_LISTED_EVENTS')];
+let blackListedMap: {[eventName: string]: string};
+if (blackListedEvents) {
+  blackListedMap = {};
+  blackListedEvents.forEach(eventName => { blackListedMap[eventName] = eventName; });
+}
+
+const isBlackListedEvent = function(eventName: string) {
+  if (!blackListedMap) {
+    return false;
+  }
+  return blackListedMap.hasOwnProperty(eventName);
+};
+
 interface TaskData {
   zone: any;
   handler: Function;
@@ -49,14 +63,29 @@ const globalListener = function(event: Event) {
     return;
   }
   const args: any = [event];
-  taskDatas.forEach(taskData => {
+  if (taskDatas.length === 1) {
+    // if taskDatas only have one element, just invoke it
+    const taskData = taskDatas[0];
     if (taskData.zone !== Zone.current) {
       // only use Zone.run when Zone.current not equals to stored zone
       return taskData.zone.run(taskData.handler, this, args);
     } else {
       return taskData.handler.apply(this, args);
     }
-  });
+  } else {
+    // copy tasks as a snapshot to avoid event handlers remove
+    // itself or others
+    const copiedTasks = taskDatas.slice();
+    for (let i = 0; i < copiedTasks.length; i++) {
+      const taskData = copiedTasks[i];
+      if (taskData.zone !== Zone.current) {
+        // only use Zone.run when Zone.current not equals to stored zone
+        taskData.zone.run(taskData.handler, this, args);
+      } else {
+        taskData.handler.apply(this, args);
+      }
+    }
+  }
 };
 
 @Injectable()
@@ -86,20 +115,34 @@ export class DomEventsPlugin extends EventManagerPlugin {
     let callback: EventListener = handler as EventListener;
     // if zonejs is loaded and current zone is not ngZone
     // we keep Zone.current on target for later restoration.
-    if (zoneJsLoaded && !NgZone.isInAngularZone()) {
+    if (zoneJsLoaded && (!NgZone.isInAngularZone() || isBlackListedEvent(eventName))) {
       let symbolName = symbolNames[eventName];
       if (!symbolName) {
         symbolName = symbolNames[eventName] = __symbol__(ANGULAR + eventName + FALSE);
       }
       let taskDatas: TaskData[] = (element as any)[symbolName];
-      const listenerRegistered = taskDatas && taskDatas.length > 0;
+      const globalListenerRegistered = taskDatas && taskDatas.length > 0;
       if (!taskDatas) {
         taskDatas = (element as any)[symbolName] = [];
       }
-      if (taskDatas.filter(taskData => taskData.handler === callback).length === 0) {
-        taskDatas.push({zone: Zone.current, handler: callback});
+
+      const zone = isBlackListedEvent(eventName) ? Zone.root : Zone.current;
+      if (taskDatas.length === 0) {
+        taskDatas.push({zone: zone, handler: callback});
+      } else {
+        let callbackRegistered = false;
+        for (let i = 0; i < taskDatas.length; i++) {
+          if (taskDatas[i].handler === callback) {
+            callbackRegistered = true;
+            break;
+          }
+        }
+        if (!callbackRegistered) {
+          taskDatas.push({zone: zone, handler: callback});
+        }
       }
-      if (!listenerRegistered) {
+
+      if (!globalListenerRegistered) {
         element[ADD_EVENT_LISTENER](eventName, globalListener, false);
       }
     } else {
