@@ -38,9 +38,9 @@ export class ViewerComponent {
   }
 
   constructor(private _service: FirebaseService,
-              private _route: ActivatedRoute,
-              public snackBar: MdSnackBar) {
-    _route.params.subscribe(p => {
+              public snackBar: MdSnackBar,
+              activatedRoute: ActivatedRoute) {
+    activatedRoute.params.subscribe(p => {
       this._service.prNumber = p['id'];
     });
   }

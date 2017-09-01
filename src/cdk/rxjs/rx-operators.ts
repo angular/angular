@@ -76,7 +76,7 @@ export interface StrictRxChain<T> {
   result(): Observable<T>;
 }
 
-
+/* tslint:disable:no-unused-variable */
 export class FinallyBrand { private _; }
 export class CatchBrand { private _; }
 export class DoBrand { private _; }
@@ -89,6 +89,7 @@ export class StartWithBrand { private _; }
 export class DebounceTimeBrand { private _; }
 export class AuditTimeBrand { private _; }
 export class TakeUntilBrand { private _; }
+/* tslint:enable:no-unused-variable */
 
 
 export type finallyOperatorType<T> = typeof _finallyOperator & FinallyBrand;

@@ -13,7 +13,6 @@ import {
   EmbeddedViewRef,
   EventEmitter,
   Inject,
-  NgZone,
   Optional,
   ChangeDetectorRef,
   ViewChild,
@@ -100,7 +99,6 @@ export class MdDialogContainer extends BasePortalHost {
   _isAnimating = false;
 
   constructor(
-    private _ngZone: NgZone,
     private _elementRef: ElementRef,
     private _focusTrapFactory: FocusTrapFactory,
     private _changeDetectorRef: ChangeDetectorRef,

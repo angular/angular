@@ -197,12 +197,12 @@ export class MdTooltip implements OnDestroy {
   private _leaveListener: Function;
 
   constructor(
+    renderer: Renderer2,
     private _overlay: Overlay,
     private _elementRef: ElementRef,
     private _scrollDispatcher: ScrollDispatcher,
     private _viewContainerRef: ViewContainerRef,
     private _ngZone: NgZone,
-    private _renderer: Renderer2,
     private _platform: Platform,
     @Inject(MD_TOOLTIP_SCROLL_STRATEGY) private _scrollStrategy,
     @Optional() private _dir: Directionality) {
@@ -211,9 +211,9 @@ export class MdTooltip implements OnDestroy {
     // they can prevent the first tap from firing its click event.
     if (!_platform.IOS) {
       this._enterListener =
-        _renderer.listen(_elementRef.nativeElement, 'mouseenter', () => this.show());
+        renderer.listen(_elementRef.nativeElement, 'mouseenter', () => this.show());
       this._leaveListener =
-        _renderer.listen(_elementRef.nativeElement, 'mouseleave', () => this.hide());
+        renderer.listen(_elementRef.nativeElement, 'mouseleave', () => this.hide());
     }
   }
 

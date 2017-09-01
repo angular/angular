@@ -301,12 +301,12 @@ class SlideToggleRenderer {
   /** Whether the thumb is currently being dragged. */
   dragging: boolean = false;
 
-  constructor(private _elementRef: ElementRef, platform: Platform) {
+  constructor(elementRef: ElementRef, platform: Platform) {
     // We only need to interact with these elements when we're on the browser, so only grab
     // the reference in that case.
     if (platform.isBrowser) {
-      this._thumbEl = _elementRef.nativeElement.querySelector('.mat-slide-toggle-thumb-container');
-      this._thumbBarEl = _elementRef.nativeElement.querySelector('.mat-slide-toggle-bar');
+      this._thumbEl = elementRef.nativeElement.querySelector('.mat-slide-toggle-thumb-container');
+      this._thumbBarEl = elementRef.nativeElement.querySelector('.mat-slide-toggle-bar');
     }
   }
 

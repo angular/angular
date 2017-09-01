@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {MdPaginatorModule} from './index';
 import {MdPaginator, PageEvent} from './paginator';
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {MdPaginatorIntl} from './paginator-intl';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {dispatchMouseEvent} from '@angular/cdk/testing';
@@ -280,8 +280,6 @@ class MdPaginatorApp {
   latestPageEvent: PageEvent | null;
 
   @ViewChild(MdPaginator) mdPaginator: MdPaginator;
-
-  constructor(private _elementRef: ElementRef) { }
 
   goToLastPage() {
     this.pageIndex = Math.ceil(this.length / this.pageSize);

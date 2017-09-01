@@ -36,6 +36,6 @@ export class OverlayPositionBuilder {
       elementRef: ElementRef,
       originPos: OriginConnectionPosition,
       overlayPos: OverlayConnectionPosition): ConnectedPositionStrategy {
-    return new ConnectedPositionStrategy(elementRef, originPos, overlayPos, this._viewportRuler);
+    return new ConnectedPositionStrategy(originPos, overlayPos, elementRef, this._viewportRuler);
   }
 }

@@ -29,7 +29,7 @@
     "no-var-keyword": true,
     "member-access": [true, "no-public"],
     "no-debugger": true,
-    "no-unused-variable": [true, {"ignore-pattern": "^_"}],
+    "no-unused-variable": true,
     "one-line": [
       true,
       "check-catch",

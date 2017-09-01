@@ -1,7 +1,7 @@
 import {
   async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks
 } from '@angular/core/testing';
-import {Component, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
@@ -328,7 +328,7 @@ class SimpleTabHeaderApp {
 
   @ViewChild(MdTabHeader) mdTabHeader: MdTabHeader;
 
-  constructor(private _viewContainerRef: ViewContainerRef) {
+  constructor() {
     this.tabs[this.disabledTabIndex].disabled = true;
   }
 

@@ -428,7 +428,6 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   constructor(
     private _viewportRuler: ViewportRuler,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _overlay: Overlay,
     private _platform: Platform,
     renderer: Renderer2,
     elementRef: ElementRef,

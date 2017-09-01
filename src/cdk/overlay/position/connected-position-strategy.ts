@@ -72,12 +72,12 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   }
 
   constructor(
+      originPos: OriginConnectionPosition,
+      overlayPos: OverlayConnectionPosition,
       private _connectedTo: ElementRef,
-      private _originPos: OriginConnectionPosition,
-      private _overlayPos: OverlayConnectionPosition,
       private _viewportRuler: ViewportRuler) {
     this._origin = this._connectedTo.nativeElement;
-    this.withFallbackPosition(_originPos, _overlayPos);
+    this.withFallbackPosition(originPos, overlayPos);
   }
 
   /** Ordered list of preferred positions, from most to least desirable. */
