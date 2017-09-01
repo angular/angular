@@ -6,7 +6,7 @@ $mat-tab-animation-duration: 500ms !default;
 // Mixin styles for labels that are contained within the tab header.
 @mixin tab-label {
   height: $mat-tab-bar-height;
-  padding: 0 12px;
+  padding: 0 24px;
   cursor: pointer;
   box-sizing: border-box;
   opacity: 0.6;

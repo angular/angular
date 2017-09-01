@@ -19,7 +19,13 @@
 
 @media ($mat-xsmall) {
   .mat-tab-label {
-    min-width: 72px;
+    padding: 0 12px;
+  }
+}
+
+@media ($mat-small) {
+  .mat-tab-label {
+    padding: 0 12px;
   }
 }
 
