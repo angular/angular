@@ -519,7 +519,6 @@ describe('ngc transformer command-line', () => {
       });
 
       function compile(): number {
-        errorSpy.calls.reset();
         const result = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
         expect(errorSpy).not.toHaveBeenCalled();
         return result;
@@ -622,8 +621,9 @@ describe('ngc transformer command-line', () => {
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
-        expect(mymoduleSource).toContain('var ɵ0 = function () { return new Foo(); }');
-        expect(mymoduleSource).toContain('export { ɵ0');
+        expect(mymoduleSource).toContain('var factory = function () { return new Foo(); }');
+        expect(mymoduleSource).toContain('var ɵ0 = factory;');
+        expect(mymoduleSource).toContain('export { ɵ0 };');
       });
 
       it('should not lower a lambda that is already exported', () => {
@@ -646,6 +646,72 @@ describe('ngc transformer command-line', () => {
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
         expect(mymoduleSource).not.toContain('ɵ0');
+      });
+
+      it('should be able to lower supported expressions', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "files": ["module.ts"]
+        }`);
+        write('module.ts', `
+          import {NgModule, InjectionToken} from '@angular/core';
+          import {AppComponent} from './app';
+
+          export interface Info {
+            route: string;
+            data: string;
+          }
+
+          export const T1 = new InjectionToken<string>('t1');
+          export const T2 = new InjectionToken<string>('t2');
+          export const T3 = new InjectionToken<number>('t3');
+          export const T4 = new InjectionToken<Info[]>('t4');
+
+          enum SomeEnum {
+            OK,
+            Cancel
+          }
+
+          function calculateString() {
+            return 'someValue';
+          }
+
+          const routeLikeData = [{
+             route: '/home',
+             data: calculateString()
+          }];
+
+          @NgModule({
+            declarations: [AppComponent],
+            providers: [
+              { provide: T1, useValue: calculateString() },
+              { provide: T2, useFactory: () => 'someValue' },
+              { provide: T3, useValue: SomeEnum.OK },
+              { provide: T4, useValue: routeLikeData }
+            ]
+          })
+          export class MyModule {}
+        `);
+        write('app.ts', `
+          import {Component, Inject} from '@angular/core';
+          import * as m from './module';
+
+          @Component({
+            selector: 'my-app',
+            template: ''
+          })
+          export class AppComponent {
+            constructor(
+              @Inject(m.T1) private t1: string,
+              @Inject(m.T2) private t2: string,
+              @Inject(m.T3) private t3: number,
+              @Inject(m.T4) private t4: m.Info[],
+            ) {}
+          }
+        `);
+
+        expect(mainSync(['-p', basePath], errorSpy)).toBe(0);
+        shouldExist('module.js');
       });
     });
 
@@ -846,80 +912,6 @@ describe('ngc transformer command-line', () => {
       // make `shouldExist` / `shouldNotExist` relative to `built`
       outDir = path.resolve(basePath, 'built');
       shouldExist('app/main.js');
-    });
-  });
-
-  describe('expression lowering', () => {
-    const shouldExist = (fileName: string) => {
-      if (!fs.existsSync(path.resolve(basePath, fileName))) {
-        throw new Error(`Expected ${fileName} to be emitted (basePath: ${basePath})`);
-      }
-    };
-
-    it('should be able to lower supported expressions', () => {
-      writeConfig(`{
-        "extends": "./tsconfig-base.json",
-        "files": ["module.ts"]
-      }`);
-      write('module.ts', `
-        import {NgModule, InjectionToken} from '@angular/core';
-        import {AppComponent} from './app';
-
-        export interface Info {
-          route: string;
-          data: string;
-        }
-
-        export const T1 = new InjectionToken<string>('t1');
-        export const T2 = new InjectionToken<string>('t2');
-        export const T3 = new InjectionToken<number>('t3');
-        export const T4 = new InjectionToken<Info[]>('t4');
-
-        enum SomeEnum {
-          OK,
-          Cancel
-        }
-
-        function calculateString() {
-          return 'someValue';
-        }
-
-        const routeLikeData = [{
-           route: '/home',
-           data: calculateString() 
-        }];
-
-        @NgModule({
-          declarations: [AppComponent],
-          providers: [
-            { provide: T1, useValue: calculateString() },
-            { provide: T2, useFactory: () => 'someValue' },
-            { provide: T3, useValue: SomeEnum.OK },
-            { provide: T4, useValue: routeLikeData }
-          ]
-        })
-        export class MyModule {}
-      `);
-      write('app.ts', `
-        import {Component, Inject} from '@angular/core';
-        import * as m from './module';
-
-        @Component({
-          selector: 'my-app',
-          template: ''
-        })
-        export class AppComponent {
-          constructor(
-            @Inject(m.T1) private t1: string,
-            @Inject(m.T2) private t2: string,
-            @Inject(m.T3) private t3: number,
-            @Inject(m.T4) private t4: m.Info[],
-          ) {}
-        }
-      `);
-
-      expect(mainSync(['-p', basePath], s => {})).toBe(0);
-      shouldExist('built/module.js');
     });
   });
 });

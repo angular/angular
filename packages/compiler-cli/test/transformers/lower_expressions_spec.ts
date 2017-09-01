@@ -28,6 +28,11 @@ describe('Expression lowering', () => {
           class MyClass {}
       `)).toContain('const l = () => null; exports.l = l;');
     });
+
+    it('should be able to export a variable if the whole value is lowered', () => {
+      expect(convert('/*a*/ const a =◊b: () => null◊;'))
+          .toBe('/*a*/ const a = () => null; const b = a; export { b };');
+    });
   });
 
   describe('collector', () => {

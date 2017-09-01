@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CollectorOptions, MetadataCollector, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '@angular/tsc-wrapped';
+import {CollectorOptions, MetadataCollector, MetadataError, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 export interface LoweringRequest {
@@ -18,14 +18,17 @@ export interface LoweringRequest {
 
 export type RequestLocationMap = Map<number, LoweringRequest>;
 
+const enum DeclarationOrder { BeforeStmt, AfterStmt }
+
 interface Declaration {
   name: string;
   node: ts.Node;
+  order: DeclarationOrder;
 }
 
 interface DeclarationInsert {
   declarations: Declaration[];
-  priorTo: ts.Node;
+  relativeTo: ts.Node;
 }
 
 function toMap<T, K>(items: T[], select: (item: T) => K): Map<K, T> {
@@ -72,17 +75,32 @@ function transformSourceFile(
 
       function visitNode(node: ts.Node): ts.Node {
         // Get the original node before tsickle
-        const {pos, end, kind} = ts.getOriginalNode(node);
+        const {pos, end, kind, parent: originalParent} = ts.getOriginalNode(node);
         const nodeRequest = requests.get(pos);
         if (nodeRequest && nodeRequest.kind == kind && nodeRequest.end == end) {
           // This node is requested to be rewritten as a reference to the exported name.
+          if (originalParent && originalParent.kind === ts.SyntaxKind.VariableDeclaration) {
+            // As the value represents the whole initializer of a variable declaration,
+            // just refer to that variable. This e.g. helps to preserve closure comments
+            // at the right place.
+            const varParent = originalParent as ts.VariableDeclaration;
+            if (varParent.name.kind === ts.SyntaxKind.Identifier) {
+              const varName = varParent.name.text;
+              const exportName = nodeRequest.name;
+              declarations.push({
+                name: exportName,
+                node: ts.createIdentifier(varName),
+                order: DeclarationOrder.AfterStmt
+              });
+              return node;
+            }
+          }
           // Record that the node needs to be moved to an exported variable with the given name
-          const name = nodeRequest.name;
-          declarations.push({name, node});
-          return ts.createIdentifier(name);
+          const exportName = nodeRequest.name;
+          declarations.push({name: exportName, node, order: DeclarationOrder.BeforeStmt});
+          return ts.createIdentifier(exportName);
         }
         let result = node;
-
         if (shouldVisit(pos, end) && !isLexicalScope(node)) {
           result = ts.visitEachChild(node, visitNode, context);
         }
@@ -91,35 +109,44 @@ function transformSourceFile(
 
       // Get the original node before tsickle
       const {pos, end} = ts.getOriginalNode(node);
-      const result = shouldVisit(pos, end) ? ts.visitEachChild(node, visitNode, context) : node;
+      let resultStmt: ts.Statement;
+      if (shouldVisit(pos, end)) {
+        resultStmt = ts.visitEachChild(node, visitNode, context);
+      } else {
+        resultStmt = node;
+      }
 
       if (declarations.length) {
-        inserts.push({priorTo: result, declarations});
+        inserts.push({relativeTo: resultStmt, declarations});
       }
-      return result;
+      return resultStmt;
     }
 
-    const newStatements = sourceFile.statements.map(topLevelStatement);
+    let newStatements = sourceFile.statements.map(topLevelStatement);
 
     if (inserts.length) {
-      // Insert the declarations before the rewritten statement that references them.
-      const insertMap = toMap(inserts, i => i.priorTo);
-      for (let i = newStatements.length; i >= 0; i--) {
-        const statement = newStatements[i];
+      // Insert the declarations relative to the rewritten statement that references them.
+      const insertMap = toMap(inserts, i => i.relativeTo);
+      const tmpStatements: ts.Statement[] = [];
+      newStatements.forEach(statement => {
         const insert = insertMap.get(statement);
         if (insert) {
-          const declarations = insert.declarations.map(
-              i => ts.createVariableDeclaration(
-                  i.name, /* type */ undefined, i.node as ts.Expression));
-          const statement = ts.createVariableStatement(
-              /* modifiers */ undefined,
-              ts.createVariableDeclarationList(declarations, ts.NodeFlags.Const));
-          newStatements.splice(i, 0, statement);
+          const before = insert.declarations.filter(d => d.order === DeclarationOrder.BeforeStmt);
+          if (before.length) {
+            tmpStatements.push(createVariableStatementForDeclarations(before));
+          }
+          tmpStatements.push(statement);
+          const after = insert.declarations.filter(d => d.order === DeclarationOrder.AfterStmt);
+          if (after.length) {
+            tmpStatements.push(createVariableStatementForDeclarations(after));
+          }
+        } else {
+          tmpStatements.push(statement);
         }
-      }
+      });
 
       // Insert an exports clause to export the declarations
-      newStatements.push(ts.createExportDeclaration(
+      tmpStatements.push(ts.createExportDeclaration(
           /* decorators */ undefined,
           /* modifiers */ undefined,
           ts.createNamedExports(
@@ -130,6 +157,8 @@ function transformSourceFile(
                   .map(
                       declaration => ts.createExportSpecifier(
                           /* propertyName */ undefined, declaration.name)))));
+
+      newStatements = tmpStatements;
     }
     // Note: We cannot use ts.updateSourcefile here as
     // it does not work well with decorators.
@@ -143,6 +172,13 @@ function transformSourceFile(
   }
 
   return visitSourceFile(sourceFile);
+}
+
+function createVariableStatementForDeclarations(declarations: Declaration[]): ts.VariableStatement {
+  const varDecls = declarations.map(
+      i => ts.createVariableDeclaration(i.name, /* type */ undefined, i.node as ts.Expression));
+  return ts.createVariableStatement(
+      /* modifiers */ undefined, ts.createVariableDeclarationList(varDecls, ts.NodeFlags.Const));
 }
 
 export function getExpressionLoweringTransformFactory(requestsMap: RequestsMap):
