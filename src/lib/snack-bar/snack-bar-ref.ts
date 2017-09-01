@@ -44,7 +44,7 @@ export class MdSnackBarRef<T> {
     this.containerInstance = containerInstance;
     // Dismiss snackbar on action.
     this.onAction().subscribe(() => this.dismiss());
-    containerInstance._onExit().subscribe(() => this._finishDismiss());
+    containerInstance._onExit.subscribe(() => this._finishDismiss());
   }
 
   /** Dismisses the snack bar. */
@@ -90,7 +90,7 @@ export class MdSnackBarRef<T> {
 
   /** Gets an observable that is notified when the snack bar has opened and appeared. */
   afterOpened(): Observable<void> {
-    return this.containerInstance._onEnter();
+    return this.containerInstance._onEnter;
   }
 
   /** Gets an observable that is notified when the snack bar action is called. */
