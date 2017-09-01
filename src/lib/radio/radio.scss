@@ -24,9 +24,12 @@ $mat-radio-ripple-size: $mat-radio-size * 0.75;
 .mat-radio-container {
   box-sizing: border-box;
   display: inline-block;
-  height: $mat-radio-size;
   position: relative;
   width: $mat-radio-size;
+  height: $mat-radio-size;
+  // The radio container is inside of a inline-flex element and may shrink if the label
+  // is wide and text-wrapping is enabled.
+  flex-shrink: 0;
 }
 
 // The outer circle for the radio, always present.
