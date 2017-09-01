@@ -15,11 +15,13 @@
     border-top-color: mat-color($foreground, divider);
   }
 
-  .mat-expansion-panel-header:not([aria-disabled='true']) {
-    &.cdk-keyboard-focused,
-    &.cdk-program-focused,
-    &:hover {
-      background: mat-color($background, hover);
+  .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header {
+    &:not([aria-disabled='true']) {
+      &.cdk-keyboard-focused,
+      &.cdk-program-focused,
+      &:hover {
+        background: mat-color($background, hover);
+      }
     }
   }
 
