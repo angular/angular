@@ -24,19 +24,21 @@ export class TypeScriptNodeEmitter {
     // stmts.
     const statements: any[] = [].concat(
         ...stmts.map(stmt => stmt.visitStatement(converter, null)).filter(stmt => stmt != null));
-    const newSourceFile = ts.updateSourceFileNode(
-        sourceFile, [...converter.getReexports(), ...converter.getImports(), ...statements]);
+    const preambleStmts: ts.Statement[] = [];
     if (preamble) {
       if (preamble.startsWith('/*') && preamble.endsWith('*/')) {
         preamble = preamble.substr(2, preamble.length - 4);
       }
-      if (!statements.length) {
-        statements.push(ts.createEmptyStatement());
-      }
-      statements[0] = ts.setSyntheticLeadingComments(
-          statements[0],
+      const commentStmt = ts.createNotEmittedStatement(sourceFile);
+      ts.setSyntheticLeadingComments(
+          commentStmt,
           [{kind: ts.SyntaxKind.MultiLineCommentTrivia, text: preamble, pos: -1, end: -1}]);
+      ts.setEmitFlags(commentStmt, ts.EmitFlags.CustomPrologue);
+      preambleStmts.push(commentStmt);
     }
+    const newSourceFile = ts.updateSourceFileNode(
+        sourceFile,
+        [...preambleStmts, ...converter.getReexports(), ...converter.getImports(), ...statements]);
     return [newSourceFile, converter.getNodeMap()];
   }
 }
