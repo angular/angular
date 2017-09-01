@@ -27,7 +27,7 @@ else
   readonly majorVersionStable=${STABLE_BRANCH%%.*}
 
   # Do not deploy if the major version is not less than the stable branch major version
-  if [[ $majorVersion -ge $majorVersionStable ]]; then
+  if [[ !( "$majorVersion" < "$majorVersionStable" ) ]]; then
     echo "Skipping deploy of branch \"${TRAVIS_BRANCH}\" to firebase."
     echo "We only deploy archive branches with the major version less than the stable branch: \"${STABLE_BRANCH}\""
     exit 0
