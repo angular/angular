@@ -12,6 +12,10 @@ import {Evaluator, errorSymbol} from './evaluator';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
+// hack for the browser bundle to get around thinking objects from ./schema are defined here
+export {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
+
+
 // In TypeScript 2.1 these flags moved
 // These helpers work for both 2.0 and 2.1.
 const isExport = (ts as any).ModifierFlags ?

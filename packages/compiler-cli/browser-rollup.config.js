@@ -18,7 +18,7 @@ var tslibLocation = normalize('../../node_modules/tslib');
 var esm = 'esm/';
 
 var locations = {
-  'tsc-wrapped': normalize('../../dist/tools/@angular') + '/',
+  'tsc-wrapped': normalize('../../dist/packages-dist') + '/',
   'compiler-cli': normalize('../../dist/packages') + '/'
 };
 
@@ -41,7 +41,8 @@ function resolve(id, from) {
     var esm_suffix = esm_suffixes[packageName] || '';
     var loc = locations[packageName] || location;
     var r = loc !== location && (loc + esm_suffix + packageName + (match[3] || '/index') + '.js') ||
-        loc + packageName + '/@angular/' + packageName + '.es5.js';
+        loc + packageName + '/esm5/' +
+            'index.js';
     // console.log('** ANGULAR MAPPED **: ', r);
     return r;
   }
@@ -55,10 +56,17 @@ function resolve(id, from) {
 }
 
 // hack to get around issues with default exports
-var banner = `ts['default'] = ts['default'] || ts; fs['default'] = fs['default'] || fs;`;
+var banner = `
+ts['default'] = ts['default'] || ts; fs['default'] = fs['default'] || fs;
+var commonjsHelpers = {
+  unwrapExports: function (x) {
+    return x && x.__esModule ? x['default'] : x;
+  }
+};
+`;
 
 export default {
-  entry: '../../dist/packages-dist/compiler-cli/src/ngc.js',
+  entry: '../../dist/packages-dist/compiler-cli/index.js',
   dest: './browser-bundle.umd.js',
   format: 'umd',
   moduleName: 'ng.compiler_cli_browser',

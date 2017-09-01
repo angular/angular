@@ -18,7 +18,7 @@ export {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from './s
 export {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './src/diagnostics/symbols';
 
 export * from './src/transformers/api';
-export * from './src/transformers/entry_points';
+export {createCompilerHost, createProgram} from './src/transformers/entry_points';
 
 export {performCompilation, readConfiguration, formatDiagnostics, calcProjectFileAndBasePath, createNgCompilerOptions} from './src/perform_compile';
 
