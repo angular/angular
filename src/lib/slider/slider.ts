@@ -19,7 +19,7 @@ import {
   Output,
   Renderer2,
   ViewEncapsulation,
-  ViewChild,
+  ViewChild, OnInit,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
@@ -125,7 +125,7 @@ export const _MdSliderMixinBase = mixinColor(mixinDisabled(MdSliderBase), 'accen
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSlider extends _MdSliderMixinBase
-    implements ControlValueAccessor, OnDestroy, CanDisable, CanColor {
+    implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit {
   /** Whether the slider is inverted. */
   @Input()
   get invert() { return this._invert; }
@@ -410,13 +410,25 @@ export class MdSlider extends _MdSliderMixinBase
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality) {
     super(renderer, elementRef);
+  }
+
+  ngOnInit() {
     this._focusOriginMonitor
-        .monitor(this._elementRef.nativeElement, renderer, true)
-        .subscribe((origin: FocusOrigin) => this._isActive = !!origin && origin !== 'keyboard');
+        .monitor(this._elementRef.nativeElement, this._renderer, true)
+        .subscribe((origin: FocusOrigin) => {
+          this._isActive = !!origin && origin !== 'keyboard';
+          this._changeDetectorRef.detectChanges();
+        });
+    if (this._dir) {
+      this._dir.change.subscribe(() => this._changeDetectorRef.markForCheck());
+    }
   }
 
   ngOnDestroy() {
     this._focusOriginMonitor.stopMonitoring(this._elementRef.nativeElement);
+    if (this._dir) {
+      this._dir.change.unsubscribe();
+    }
   }
 
   _onMouseenter() {
