@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Input, AfterViewInit, Optional, Self} from '@angular/core';
-import {NgControl} from '@angular/forms';
+import {Directive, ElementRef, Input, AfterViewInit, DoCheck} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 
 
@@ -19,13 +18,12 @@ import {Platform} from '@angular/cdk/platform';
              textarea[mat-autosize], textarea[matTextareaAutosize]`,
   exportAs: 'mdTextareaAutosize',
   host: {
-    '(input)': 'resizeToFitContent()',
     // Textarea elements that have the directive applied should have a single row by default.
     // Browsers normally show two rows by default and therefore this limits the minRows binding.
     'rows': '1',
   },
 })
-export class MdTextareaAutosize implements AfterViewInit {
+export class MdTextareaAutosize implements AfterViewInit, DoCheck {
   /** Keep track of the previous textarea value to avoid resizing when the value hasn't changed. */
   private _previousValue: string;
 
@@ -58,15 +56,7 @@ export class MdTextareaAutosize implements AfterViewInit {
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;
 
-  constructor(
-    private _elementRef: ElementRef,
-    private _platform: Platform,
-    @Optional() @Self() formControl: NgControl) {
-
-    if (formControl && formControl.valueChanges) {
-      formControl.valueChanges.subscribe(() => this.resizeToFitContent());
-    }
-  }
+  constructor(private _elementRef: ElementRef, private _platform: Platform) {}
 
   /** Sets the minimum height of the textarea as determined by minRows. */
   _setMinHeight(): void {
@@ -142,11 +132,17 @@ export class MdTextareaAutosize implements AfterViewInit {
     this._setMaxHeight();
   }
 
+  ngDoCheck() {
+    this.resizeToFitContent();
+  }
+
   /** Resize the textarea to fit its content. */
   resizeToFitContent() {
     const textarea = this._elementRef.nativeElement as HTMLTextAreaElement;
+    const value = textarea.value;
 
-    if (textarea.value === this._previousValue) {
+    // Only resize of the value changed since these calculations can be expensive.
+    if (value === this._previousValue) {
       return;
     }
 
@@ -159,6 +155,6 @@ export class MdTextareaAutosize implements AfterViewInit {
     textarea.style.height = `${textarea.scrollHeight}px`;
     textarea.style.overflow = '';
 
-    this._previousValue = textarea.value;
+    this._previousValue = value;
   }
 }

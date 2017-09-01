@@ -170,7 +170,7 @@ describe('MdTextareaAutosize', () => {
     textarea = fixtureWithForms.nativeElement.querySelector('textarea');
     fixtureWithForms.detectChanges();
 
-    const previousHeight =  textarea.clientHeight;
+    const previousHeight = textarea.clientHeight;
 
     fixtureWithForms.componentInstance.model = `
         And the silken, sad, uncertain rustling of each purple curtain
@@ -181,9 +181,26 @@ describe('MdTextareaAutosize', () => {
                 This it is and nothing more.” `;
     fixtureWithForms.detectChanges();
     flushMicrotasks();
+    fixtureWithForms.detectChanges();
 
     expect(textarea.clientHeight)
         .toBeGreaterThan(previousHeight, 'Expected increased height when ngModel is updated.');
+  }));
+
+  it('should resize when the textarea value is changed programmatically', fakeAsync(() => {
+    const previousHeight = textarea.clientHeight;
+
+    textarea.value = `
+      How much wood would a woodchuck chuck
+      if a woodchuck could chuck wood?
+    `;
+
+    fixture.detectChanges();
+    flushMicrotasks();
+    fixture.detectChanges();
+
+    expect(textarea.clientHeight)
+        .toBeGreaterThan(previousHeight, 'Expected the textarea height to have increased.');
   }));
 });
 
