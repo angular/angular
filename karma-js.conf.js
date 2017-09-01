@@ -35,6 +35,7 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/fake-async-test.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
+      'test-events.js',
       'shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
       {pattern: 'node_modules/rxjs/**', included: false, watched: false, served: true},
