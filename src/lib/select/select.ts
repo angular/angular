@@ -66,6 +66,7 @@ import {
   PlaceholderOptions
 } from '../core/placeholder/placeholder-options';
 import {Platform} from '@angular/cdk/platform';
+import {HasTabIndex, mixinTabIndex} from '../core/common-behaviors/tabindex';
 
 /**
  * The following style constants are necessary to save here in order
@@ -155,7 +156,8 @@ export class MdSelectChange {
 export class MdSelectBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdSelectMixinBase = mixinColor(mixinDisabled(MdSelectBase), 'primary');
+export const _MdSelectMixinBase =
+  mixinTabIndex(mixinColor(mixinDisabled(MdSelectBase), 'primary'));
 
 
 /**
@@ -172,7 +174,7 @@ export class MdSelectTrigger {}
   selector: 'md-select, mat-select',
   templateUrl: 'select.html',
   styleUrls: ['select.css'],
-  inputs: ['color', 'disabled'],
+  inputs: ['color', 'disabled', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -200,7 +202,7 @@ export class MdSelectTrigger {}
   exportAs: 'mdSelect',
 })
 export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, OnDestroy, OnInit,
-    ControlValueAccessor, CanColor, CanDisable {
+    ControlValueAccessor, CanColor, CanDisable, HasTabIndex {
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
@@ -233,9 +235,6 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** The animation state of the placeholder. */
   private _placeholderState = '';
-
-  /** Tab index for the element. */
-  private _tabIndex: number;
 
   /** Deals with configuring placeholder options */
   private _placeholderOptions: PlaceholderOptions;
@@ -371,15 +370,6 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   }
   private _floatPlaceholder: FloatPlaceholderType;
 
-  /** Tab index for the select element. */
-  @Input()
-  get tabIndex(): number { return this.disabled ? -1 : this._tabIndex; }
-  set tabIndex(value: number) {
-    if (typeof value !== 'undefined') {
-      this._tabIndex = value;
-    }
-  }
-
   /** Value of the select control. */
   @Input()
   get value() { return this._value; }
@@ -445,7 +435,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
       this._control.valueAccessor = this;
     }
 
-    this._tabIndex = parseInt(tabIndex) || 0;
+    this.tabIndex = parseInt(tabIndex) || 0;
     this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
     this.floatPlaceholder = this._placeholderOptions.float || 'auto';
   }

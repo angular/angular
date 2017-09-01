@@ -8,6 +8,7 @@
 
 import {
   AfterContentInit,
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -35,6 +36,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
 import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
+import {HasTabIndex, mixinTabIndex} from '../core/common-behaviors/tabindex';
 
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
@@ -57,7 +59,7 @@ export class MdSlideToggleBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
 export const _MdSlideToggleMixinBase =
-  mixinColor(mixinDisableRipple(mixinDisabled(MdSlideToggleBase)), 'accent');
+  mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MdSlideToggleBase)), 'accent'));
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({
@@ -73,12 +75,12 @@ export const _MdSlideToggleMixinBase =
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
   providers: [MD_SLIDE_TOGGLE_VALUE_ACCESSOR],
-  inputs: ['disabled', 'disableRipple', 'color'],
+  inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy, AfterContentInit,
-    ControlValueAccessor, CanDisable, CanColor, CanDisableRipple {
+    ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
 
   private onChange = (_: any) => {};
   private onTouched = () => {};
@@ -96,9 +98,6 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy,
 
   /** A unique id for the slide-toggle input. If none is supplied, it will be auto-generated. */
   @Input() id: string = this._uniqueId;
-
-  /** Used to specify the tabIndex value for the underlying input element. */
-  @Input() tabIndex: number = 0;
 
   /** Whether the label should appear after or before the slide-toggle. Defaults to 'after' */
   @Input() labelPosition: 'before' | 'after' = 'after';
@@ -139,8 +138,11 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy,
               renderer: Renderer2,
               private _platform: Platform,
               private _focusOriginMonitor: FocusOriginMonitor,
-              private _changeDetectorRef: ChangeDetectorRef) {
+              private _changeDetectorRef: ChangeDetectorRef,
+              @Attribute('tabindex') tabIndex: string) {
     super(renderer, elementRef);
+
+    this.tabIndex = parseInt(tabIndex) || 0;
   }
 
   ngAfterContentInit() {
