@@ -89,10 +89,10 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
   private _tabBodyWrapperHeight: number = 0;
 
   /** Subscription to tabs being added/removed. */
-  private _tabsSubscription: Subscription;
+  private _tabsSubscription = Subscription.EMPTY;
 
   /** Subscription to changes in the tab labels. */
-  private _tabLabelSubscription: Subscription;
+  private _tabLabelSubscription = Subscription.EMPTY;
 
   /** Whether the tab group should grow to the size of the active tab. */
   @Input()
@@ -199,13 +199,8 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
   }
 
   ngOnDestroy() {
-    if (this._tabsSubscription) {
-      this._tabsSubscription.unsubscribe();
-    }
-
-    if (this._tabLabelSubscription) {
-      this._tabLabelSubscription.unsubscribe();
-    }
+    this._tabsSubscription.unsubscribe();
+    this._tabLabelSubscription.unsubscribe();
   }
 
   /**
@@ -236,10 +231,7 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
    * manually.
    */
   private _subscribeToTabLabels() {
-    if (this._tabLabelSubscription) {
-      this._tabLabelSubscription.unsubscribe();
-    }
-
+    this._tabLabelSubscription.unsubscribe();
     this._tabLabelSubscription = merge(...this._tabs.map(tab => tab._labelChange)).subscribe(() => {
       this._changeDetectorRef.markForCheck();
     });

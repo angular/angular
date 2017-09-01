@@ -72,7 +72,7 @@ import {Subscription} from 'rxjs/Subscription';
   ],
 })
 export class MdExpansionPanelHeader implements OnDestroy {
-  private _parentChangeSubscription: Subscription | null = null;
+  private _parentChangeSubscription = Subscription.EMPTY;
 
   constructor(
     @Host() public panel: MdExpansionPanel,
@@ -135,11 +135,7 @@ export class MdExpansionPanelHeader implements OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this._parentChangeSubscription) {
-      this._parentChangeSubscription.unsubscribe();
-      this._parentChangeSubscription = null;
-    }
-
+    this._parentChangeSubscription.unsubscribe();
     this._focusOriginMonitor.stopMonitoring(this._element.nativeElement);
   }
 }

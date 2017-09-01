@@ -74,7 +74,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   private _previousElevation: string;
 
   /** Subscription to tab events on the menu panel */
-  private _tabSubscription: Subscription;
+  private _tabSubscription = Subscription.EMPTY;
 
   /** Config object to be passed into the menu's ngClass */
   _classList: any = {};
@@ -150,10 +150,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this._tabSubscription) {
-      this._tabSubscription.unsubscribe();
-    }
-
+    this._tabSubscription.unsubscribe();
     this.close.emit();
     this.close.complete();
   }

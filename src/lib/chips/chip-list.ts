@@ -66,7 +66,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
   protected _chipSet: WeakMap<MdChip, boolean> = new WeakMap();
 
   /** Subscription to tabbing out from the chip list. */
-  private _tabOutSubscription: Subscription;
+  private _tabOutSubscription = Subscription.EMPTY;
 
   /** Whether or not the chip is selectable. */
   protected _selectable: boolean = true;
@@ -126,9 +126,7 @@ export class MdChipList implements AfterContentInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this._tabOutSubscription) {
-      this._tabOutSubscription.unsubscribe();
-    }
+    this._tabOutSubscription.unsubscribe();
   }
 
   /**

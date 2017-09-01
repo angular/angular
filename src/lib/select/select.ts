@@ -205,13 +205,13 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
   private _panelOpen = false;
 
   /** Subscriptions to option events. */
-  private _optionSubscription: Subscription | null;
+  private _optionSubscription = Subscription.EMPTY;
 
   /** Subscription to changes in the option list. */
-  private _changeSubscription: Subscription;
+  private _changeSubscription = Subscription.EMPTY;
 
   /** Subscription to tab events while overlay is focused. */
-  private _tabSubscription: Subscription;
+  private _tabSubscription = Subscription.EMPTY;
 
   /** Whether filling out the select is required in the form.  */
   private _required: boolean = false;
@@ -466,14 +466,8 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   ngOnDestroy() {
     this._dropSubscriptions();
-
-    if (this._changeSubscription) {
-      this._changeSubscription.unsubscribe();
-    }
-
-    if (this._tabSubscription) {
-      this._tabSubscription.unsubscribe();
-    }
+    this._changeSubscription.unsubscribe();
+    this._tabSubscription.unsubscribe();
   }
 
   /** Toggles the overlay panel open or closed. */
@@ -852,10 +846,7 @@ export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, On
 
   /** Unsubscribes from all option subscriptions. */
   private _dropSubscriptions(): void {
-    if (this._optionSubscription) {
-      this._optionSubscription.unsubscribe();
-      this._optionSubscription = null;
-    }
+    this._optionSubscription.unsubscribe();
   }
 
   /** Emits change event to set the model value. */

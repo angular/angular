@@ -171,7 +171,7 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   private _validatorOnChange = () => {};
 
-  private _datepickerSubscription: Subscription;
+  private _datepickerSubscription = Subscription.EMPTY;
 
   /** The form control validator for whether the input parses. */
   private _parseValidator: ValidatorFn = (): ValidationErrors | null => {
@@ -235,9 +235,7 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
   }
 
   ngOnDestroy() {
-    if (this._datepickerSubscription) {
-      this._datepickerSubscription.unsubscribe();
-    }
+    this._datepickerSubscription.unsubscribe();
   }
 
   registerOnValidatorChange(fn: () => void): void {

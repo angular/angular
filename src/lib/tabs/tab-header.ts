@@ -92,7 +92,7 @@ export class MdTabHeader extends _MdTabHeaderMixinBase
   private _selectedIndexChanged = false;
 
   /** Combines listeners that will re-align the ink bar whenever they're invoked. */
-  private _realignInkBar: Subscription | null = null;
+  private _realignInkBar = Subscription.EMPTY;
 
   /** Whether the controls for pagination should be displayed */
   _showPaginationControls = false;
@@ -195,10 +195,7 @@ export class MdTabHeader extends _MdTabHeaderMixinBase
   }
 
   ngOnDestroy() {
-    if (this._realignInkBar) {
-      this._realignInkBar.unsubscribe();
-      this._realignInkBar = null;
-    }
+    this._realignInkBar.unsubscribe();
   }
 
   /**

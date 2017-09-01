@@ -200,7 +200,7 @@ export class MdDatepicker<D> implements OnDestroy {
   /** The element that was focused before the datepicker was opened. */
   private _focusedElementBeforeOpen: HTMLElement | null = null;
 
-  private _inputSubscription: Subscription;
+  private _inputSubscription = Subscription.EMPTY;
 
   constructor(private _dialog: MdDialog,
               private _overlay: Overlay,
@@ -217,11 +217,10 @@ export class MdDatepicker<D> implements OnDestroy {
 
   ngOnDestroy() {
     this.close();
+    this._inputSubscription.unsubscribe();
+
     if (this._popupRef) {
       this._popupRef.dispose();
-    }
-    if (this._inputSubscription) {
-      this._inputSubscription.unsubscribe();
     }
   }
 

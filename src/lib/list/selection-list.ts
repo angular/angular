@@ -196,10 +196,10 @@ export class MdSelectionList extends _MdSelectionListMixinBase
   _tabIndex = 0;
 
   /** Subscription to all list options' onFocus events */
-  private _optionFocusSubscription: Subscription;
+  private _optionFocusSubscription = Subscription.EMPTY;
 
   /** Subscription to all list options' destroy events  */
-  private _optionDestroyStream: Subscription;
+  private _optionDestroyStream = Subscription.EMPTY;
 
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MdListOption>;
@@ -234,13 +234,8 @@ export class MdSelectionList extends _MdSelectionListMixinBase
   }
 
   ngOnDestroy(): void {
-    if (this._optionDestroyStream) {
-      this._optionDestroyStream.unsubscribe();
-    }
-
-    if (this._optionFocusSubscription) {
-      this._optionFocusSubscription.unsubscribe();
-    }
+    this._optionDestroyStream.unsubscribe();
+    this._optionFocusSubscription.unsubscribe();
   }
 
   focus() {
