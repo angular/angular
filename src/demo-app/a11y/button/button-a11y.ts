@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-
+import {MdSnackBar} from '@angular/material';
 
 @Component({
   moduleId: module.id,
@@ -10,7 +10,16 @@ import {Component} from '@angular/core';
 export class ButtonAccessibilityDemo {
   counter: number = 0;
 
+  constructor(public snackBar: MdSnackBar) {}
+
+  openSnackBar(message: string) {
+    this.snackBar.open(message,  '',  {
+      duration: 2000,
+    });
+  }
+
   increase() {
     this.counter++;
+    this.openSnackBar(`Click counter is set to ${this.counter}`);
   }
 }

@@ -39,9 +39,9 @@
 
   <section>
     <h2>Buttons in different colors</h2>
-    <button md-button color="primary">Primary</button>
-    <button md-button color="accent">Accent</button>
-    <button md-button color="warn">Warn</button>
+    <button md-button color="primary" (click)="openSnackBar('Color is primary.')">Primary</button>
+    <button md-button color="accent" (click)="openSnackBar('Color is accent.')">Accent</button>
+    <button md-button color="warn" (click)="openSnackBar('Color is warn.')">Warn</button>
   </section>
 
   <section>
