@@ -214,26 +214,28 @@ $mat-slider-focus-ring-size: 30px !default;
 
 
 // Active slider.
-.cdk-focused {
-  &.mat-slider-thumb-label-showing .mat-slider-thumb {
-    transform: scale(0);
+.mat-slider:not(.mat-slider-disabled) {
+  &.cdk-focused {
+    &.mat-slider-thumb-label-showing .mat-slider-thumb {
+      transform: scale(0);
+    }
+
+    .mat-slider-thumb-label {
+      border-radius: 50% 50% 0;
+    }
+
+    .mat-slider-thumb-label-text {
+      opacity: 1;
+    }
   }
 
-  .mat-slider-thumb-label {
-    border-radius: 50% 50% 0;
-  }
-
-  .mat-slider-thumb-label-text {
-    opacity: 1;
-  }
-}
-
-.cdk-mouse-focused,
-.cdk-touch-focused,
-.cdk-program-focused {
-  .mat-slider-thumb {
-    border-width: $mat-slider-thumb-border-width-active;
-    transform: scale($mat-slider-thumb-focus-scale);
+  &.cdk-mouse-focused,
+  &.cdk-touch-focused,
+  &.cdk-program-focused {
+    .mat-slider-thumb {
+      border-width: $mat-slider-thumb-border-width-active;
+      transform: scale($mat-slider-thumb-focus-scale);
+    }
   }
 }
 
