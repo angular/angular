@@ -272,7 +272,12 @@ export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
 
   /** Builds the overlay config based on the directive's inputs */
   private _buildConfig(): OverlayState {
-    let overlayConfig = new OverlayState();
+    const positionStrategy = this._position = this._createPositionStrategy();
+    const overlayConfig = new OverlayState({
+      positionStrategy,
+      scrollStrategy: this.scrollStrategy,
+      hasBackdrop: this.hasBackdrop
+    });
 
     if (this.width || this.width === 0) {
       overlayConfig.width = this.width;
@@ -290,15 +295,9 @@ export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
       overlayConfig.minHeight = this.minHeight;
     }
 
-    overlayConfig.hasBackdrop = this.hasBackdrop;
-
     if (this.backdropClass) {
       overlayConfig.backdropClass = this.backdropClass;
     }
-
-    this._position = this._createPositionStrategy() as ConnectedPositionStrategy;
-    overlayConfig.positionStrategy = this._position;
-    overlayConfig.scrollStrategy = this.scrollStrategy;
 
     return overlayConfig;
   }

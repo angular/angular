@@ -33,8 +33,7 @@ describe('CloseScrollStrategy', () => {
   }));
 
   beforeEach(inject([Overlay], (overlay: Overlay) => {
-    let overlayState = new OverlayState();
-    overlayState.scrollStrategy = overlay.scrollStrategies.close();
+    let overlayState = new OverlayState({scrollStrategy: overlay.scrollStrategies.close()});
     overlayRef = overlay.create(overlayState);
     componentPortal = new ComponentPortal(MozarellaMsg);
   }));

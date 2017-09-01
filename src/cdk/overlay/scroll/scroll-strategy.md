@@ -11,9 +11,10 @@ scroll strategy, to the `OverlayState`. By default, all overlays will use the `n
 doesn't do anything. The other available strategies are `reposition`, `block` and `close`:
 
 ```ts
-let overlayState = new OverlayState();
+let overlayState = new OverlayState({
+  scrollStrategy: overlay.scrollStrategies.block()
+});
 
-overlayState.scrollStrategy = overlay.scrollStrategies.block();
 this._overlay.create(overlayState).attach(yourPortal);
 ```
 

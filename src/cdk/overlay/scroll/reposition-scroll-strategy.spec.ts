@@ -33,8 +33,7 @@ describe('RepositionScrollStrategy', () => {
   }));
 
   beforeEach(inject([Overlay], (overlay: Overlay) => {
-    let overlayState = new OverlayState();
-    overlayState.scrollStrategy = overlay.scrollStrategies.reposition();
+    let overlayState = new OverlayState({scrollStrategy: overlay.scrollStrategies.reposition()});
     overlayRef = overlay.create(overlayState);
     componentPortal = new ComponentPortal(PastaMsg);
   }));

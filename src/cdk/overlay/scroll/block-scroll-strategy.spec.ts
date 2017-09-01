@@ -23,9 +23,8 @@ describe('BlockScrollStrategy', () => {
   }));
 
   beforeEach(inject([Overlay, ViewportRuler], (overlay: Overlay, viewportRuler: ViewportRuler) => {
-    let overlayState = new OverlayState();
+    let overlayState = new OverlayState({scrollStrategy: overlay.scrollStrategies.block()});
 
-    overlayState.scrollStrategy = overlay.scrollStrategies.block();
     overlayRef = overlay.create(overlayState);
     componentPortal = new ComponentPortal(FocacciaMsg);
 

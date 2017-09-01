@@ -321,12 +321,13 @@ export class MdDatepicker<D> implements OnDestroy {
 
   /** Create the popup. */
   private _createPopup(): void {
-    const overlayState = new OverlayState();
-    overlayState.positionStrategy = this._createPopupPositionStrategy();
-    overlayState.hasBackdrop = true;
-    overlayState.backdropClass = 'md-overlay-transparent-backdrop';
-    overlayState.direction = this._dir ? this._dir.value : 'ltr';
-    overlayState.scrollStrategy = this._scrollStrategy();
+    const overlayState = new OverlayState({
+      positionStrategy: this._createPopupPositionStrategy(),
+      hasBackdrop: true,
+      backdropClass: 'md-overlay-transparent-backdrop',
+      direction: this._dir ? this._dir.value : 'ltr',
+      scrollStrategy: this._scrollStrategy()
+    });
 
     this._popupRef = this._overlay.create(overlayState);
   }

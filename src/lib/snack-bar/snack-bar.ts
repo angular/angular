@@ -153,9 +153,11 @@ export class MdSnackBar {
    * @param config The user-specified snack bar config.
    */
   private _createOverlay(config: MdSnackBarConfig): OverlayRef {
-    const state = new OverlayState();
-    state.direction = config.direction;
-    state.positionStrategy = this._overlay.position().global().centerHorizontally().bottom('0');
+    const state = new OverlayState({
+      direction: config.direction,
+      positionStrategy: this._overlay.position().global().centerHorizontally().bottom('0')
+    });
+
     return this._overlay.create(state);
   }
 

@@ -186,17 +186,19 @@ export class MdDialog {
    * @returns The overlay configuration.
    */
   private _getOverlayState(dialogConfig: MdDialogConfig): OverlayState {
-    const overlayState = new OverlayState();
-    overlayState.panelClass = dialogConfig.panelClass;
-    overlayState.hasBackdrop = dialogConfig.hasBackdrop;
-    overlayState.scrollStrategy = this._scrollStrategy();
-    overlayState.direction = dialogConfig.direction;
-    if (dialogConfig.backdropClass) {
-      overlayState.backdropClass = dialogConfig.backdropClass;
-    }
-    overlayState.positionStrategy = this._overlay.position().global();
+    const state = new OverlayState({
+      positionStrategy: this._overlay.position().global(),
+      scrollStrategy: this._scrollStrategy(),
+      panelClass: dialogConfig.panelClass,
+      hasBackdrop: dialogConfig.hasBackdrop,
+      direction: dialogConfig.direction
+    });
 
-    return overlayState;
+    if (dialogConfig.backdropClass) {
+      state.backdropClass = dialogConfig.backdropClass;
+    }
+
+    return state;
   }
 
   /**

@@ -18,10 +18,10 @@ import {NoopScrollStrategy} from './scroll/noop-scroll-strategy';
  */
 export class OverlayState {
   /** Strategy with which to position the overlay. */
-  positionStrategy: PositionStrategy;
+  positionStrategy?: PositionStrategy;
 
   /** Strategy to be used when handling scroll events while the overlay is open. */
-  scrollStrategy: ScrollStrategy = new NoopScrollStrategy();
+  scrollStrategy?: ScrollStrategy = new NoopScrollStrategy();
 
   /** Custom class to add to the overlay pane. */
   panelClass?: string | string[] = '';
@@ -52,6 +52,12 @@ export class OverlayState {
 
   /** The direction of the text in the overlay panel. */
   direction?: Direction = 'ltr';
+
+  constructor(state?: OverlayState) {
+    if (state) {
+      Object.keys(state).forEach(key => this[key] = state[key]);
+    }
+  }
 
   // TODO(jelbourn): configuration still to add
   // - focus trap
