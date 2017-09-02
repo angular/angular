@@ -1,3 +1,57 @@
+<a name="5.0.0-beta.6"></a>
+# [5.0.0-beta.6](https://github.com/angular/angular/compare/5.0.0-beta.5...5.0.0-beta.6) (2017-09-03)
+
+
+### Bug Fixes
+
+* **animations:** do not leak DOM nodes/styling for host triggered animations ([#18853](https://github.com/angular/angular/issues/18853)) ([fcadeb2](https://github.com/angular/angular/commit/fcadeb2)), closes [#18606](https://github.com/angular/angular/issues/18606)
+* **common:** fix a duplicate case in the locale switch ([#18941](https://github.com/angular/angular/issues/18941)) ([fdd5010](https://github.com/angular/angular/commit/fdd5010))
+* **common:** fix improper packaging for [@angular](https://github.com/angular)/common/http ([#18613](https://github.com/angular/angular/issues/18613)) ([65e26d7](https://github.com/angular/angular/commit/65e26d7))
+* **common:** fix XSSI prefix stripping by using JSON.parse always ([#18466](https://github.com/angular/angular/issues/18466)) ([452a7ae](https://github.com/angular/angular/commit/452a7ae)), closes [#18396](https://github.com/angular/angular/issues/18396) [#18453](https://github.com/angular/angular/issues/18453)
+* **common:** update closure-locale generation for tree shaking ([#18938](https://github.com/angular/angular/issues/18938)) ([946e5bd](https://github.com/angular/angular/commit/946e5bd))
+* **common:** use correct group separator for currency pipe ([#18932](https://github.com/angular/angular/issues/18932)) ([4ec5e28](https://github.com/angular/angular/commit/4ec5e28))
+* **common:** use v4 plurals when importing `DeprecatedI18NPipesModule` ([#18955](https://github.com/angular/angular/issues/18955)) ([30d53a8](https://github.com/angular/angular/commit/30d53a8))
+* **compiler:** always check summaries first before falling back to metadata from .d.ts files ([#18788](https://github.com/angular/angular/issues/18788)) ([f83b819](https://github.com/angular/angular/commit/f83b819))
+* **compiler:** always emit ngfactories with reexports ([#18788](https://github.com/angular/angular/issues/18788)) ([0262e37](https://github.com/angular/angular/commit/0262e37))
+* **compiler:** don’t emit stubs when we didn’t generate code for a file. ([#18788](https://github.com/angular/angular/issues/18788)) ([506d2e9](https://github.com/angular/angular/commit/506d2e9))
+* **compiler:** don’t reexport types in `.ngfactory` files ([#18788](https://github.com/angular/angular/issues/18788)) ([8c858d7](https://github.com/angular/angular/commit/8c858d7))
+* **compiler:** normalize the locale name ([#18963](https://github.com/angular/angular/issues/18963)) ([043f104](https://github.com/angular/angular/commit/043f104))
+* **compiler:** quote non identifiers in map keys. ([#18788](https://github.com/angular/angular/issues/18788)) ([2fbc92f](https://github.com/angular/angular/commit/2fbc92f))
+* **compiler:** treat absolute imports as package imports ([#18912](https://github.com/angular/angular/issues/18912)) ([fce7ae1](https://github.com/angular/angular/commit/fce7ae1))
+* **compiler:** use either summary or metadata information when reading .d.ts files ([#18912](https://github.com/angular/angular/issues/18912)) ([f1e526f](https://github.com/angular/angular/commit/f1e526f))
+* **compiler:** workaround bugs in TS when combining transformers ([#18912](https://github.com/angular/angular/issues/18912)) ([4059a72](https://github.com/angular/angular/commit/4059a72))
+* **compiler-cli:** fix memory leaks in watch mode ([#18961](https://github.com/angular/angular/issues/18961)) ([83e5deb](https://github.com/angular/angular/commit/83e5deb))
+* **compiler-cli:** use `--locale` parameter for transformers ([#18988](https://github.com/angular/angular/issues/18988)) ([22c4090](https://github.com/angular/angular/commit/22c4090))
+* **core:** complete EventEmitter in QueryList on component destroy ([#18902](https://github.com/angular/angular/issues/18902)) ([36d37cc](https://github.com/angular/angular/commit/36d37cc)), closes [#18741](https://github.com/angular/angular/issues/18741)
+* **tsc-wrapped:** decouple bundle index host from tsickle dependency ([#18999](https://github.com/angular/angular/issues/18999)) ([d1afadb](https://github.com/angular/angular/commit/d1afadb))
+* **upgrade:** deprecate the dynamic version of `ngUpgrade` ([450a13d](https://github.com/angular/angular/commit/450a13d))
+
+
+### Code Refactoring
+
+* **core:** remove deprecated `OpaqueToken` ([#18971](https://github.com/angular/angular/issues/18971)) ([3c4eef8](https://github.com/angular/angular/commit/3c4eef8))
+
+
+### Features
+
+* **http**: deprecate @angular/http in favor of @angular/common/http ([#18906](https://github.com/angular/angular/issues/18906)) ([72c7b6e](https://github.com/angular/angular/commit/72c7b6e))
+* **common:** accept object map for HttpClient headers & params ([#18490](https://github.com/angular/angular/issues/18490)) ([1b1d5f1](https://github.com/angular/angular/commit/1b1d5f1))
+* **common:** generate `closure-locale.ts` to tree shake locale data ([#18907](https://github.com/angular/angular/issues/18907)) ([4878936](https://github.com/angular/angular/commit/4878936))
+* **compiler:** set `enableLegacyTemplate` to false by default ([#18756](https://github.com/angular/angular/issues/18756)) ([56238fe](https://github.com/angular/angular/commit/56238fe))
+* **compiler-cli:** add watch mode to `ngc` ([#18818](https://github.com/angular/angular/issues/18818)) ([cf7d47d](https://github.com/angular/angular/commit/cf7d47d))
+* **compiler-cli:** add watch mode to `ngc` ([#18818](https://github.com/angular/angular/issues/18818)) ([06d01b2](https://github.com/angular/angular/commit/06d01b2))
+* **compiler-cli:** lower metadata `useValue` and `data` literal fields ([#18905](https://github.com/angular/angular/issues/18905)) ([0e64261](https://github.com/angular/angular/commit/0e64261))
+* **compiler-cli:** lower metadata `useValue` and `data` literal fields ([#18905](https://github.com/angular/angular/issues/18905)) ([c685cc2](https://github.com/angular/angular/commit/c685cc2))
+* **platform-server:** provide a DOM implementation on the server ([2f2d5f3](https://github.com/angular/angular/commit/2f2d5f3)), closes [#14638](https://github.com/angular/angular/issues/14638)
+
+
+### BREAKING CHANGES
+
+* core: `OpaqueToken` has been removed as it was deprecated since v4. Use `InjectionToken` instead.
+* compiler: the compiler option `enableLegacyTemplate` is now disabled by default as the `<template>` element has been deprecated since v4. Use `<ng-template>` instead. The option `enableLegacyTemplate` and the `<template>` element will both be removed in Angular v6.
+
+
+
 <a name="4.4.0-RC.0"></a>
 # [4.4.0-RC.0](https://github.com/angular/angular/compare/4.3.6...4.4.0-RC.0) (2017-09-02)
 
