@@ -723,7 +723,7 @@ export declare class QueryList<T> {
     readonly first: T;
     readonly last: T;
     readonly length: number;
-    destroy(): void
+    destroy(): void;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
     find(fn: (item: T, index: number, array: T[]) => boolean): T | undefined;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
