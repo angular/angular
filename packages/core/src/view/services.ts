@@ -121,7 +121,7 @@ function createRootData(
     projectableNodes: any[][], rootSelectorOrNode: any): RootData {
   const sanitizer = ngModule.injector.get(Sanitizer);
   const errorHandler = ngModule.injector.get(ErrorHandler);
-  const renderer = rendererFactory.createRenderer(null, null);
+  const renderer = elInjector.get(Renderer2, rendererFactory.createRenderer(null, null));
   return {
     ngModule,
     injector: elInjector, projectableNodes,
