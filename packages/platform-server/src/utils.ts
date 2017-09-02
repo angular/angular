@@ -8,13 +8,14 @@
 
 import {ApplicationRef, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider, Type} from '@angular/core';
 import {ɵTRANSITION_ID} from '@angular/platform-browser';
+import {Observable} from 'rxjs/Observable';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
 import {toPromise} from 'rxjs/operator/toPromise';
 
 import {PlatformState} from './platform_state';
 import {platformDynamicServer, platformServer} from './server';
-import {INITIAL_CONFIG} from './tokens';
+import {INITIAL_CONFIG, SERVER_BEFORE_RENDER_LISTENER} from './tokens';
 
 interface PlatformOptions {
   document?: string;
@@ -44,6 +45,18 @@ the server-rendered app can be properly bootstrapped into a client app.`);
     const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
     return toPromise
         .call(first.call(filter.call(applicationRef.isStable, (isStable: boolean) => isStable)))
+        .then(() => {
+          const hooks = moduleRef.injector.get(SERVER_BEFORE_RENDER_LISTENER, []);
+          return Promise.all(hooks.map(output => {
+            if (output instanceof Promise) {
+              return output;
+            } else if (output instanceof Observable) {
+              return toPromise.call(output);
+            } else {
+              return Promise.resolve(output);
+            }
+          }));
+        })
         .then(() => {
           const output = platform.injector.get(PlatformState).renderToString();
           platform.destroy();
