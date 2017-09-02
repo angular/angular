@@ -35,6 +35,9 @@ export declare function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>
 }): Promise<string>;
 
 /** @experimental */
+export declare const SERVER_BEFORE_RENDER_LISTENER: InjectionToken<(() => void | Observable<any> | Promise<any>)[]>;
+
+/** @experimental */
 export declare class ServerModule {
 }
 

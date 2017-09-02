@@ -21,7 +21,7 @@ import {ServerPlatformLocation} from './location';
 import {PlatformState} from './platform_state';
 import {ServerRendererFactory2} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+import {INITIAL_CONFIG, PlatformConfig, SERVER_BEFORE_RENDER_LISTENER} from './tokens';
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);

@@ -10,17 +10,20 @@ import {AnimationBuilder, animate, style, transition, trigger} from '@angular/an
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, RendererFactory2, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import {BrowserModule, DOCUMENT, Title} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+
+import {INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, SERVER_BEFORE_RENDER_LISTENER, renderModuleFactory,} from '@angular/platform-server';
 import {Subscription} from 'rxjs/Subscription';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
 import {toPromise} from 'rxjs/operator/toPromise';
+import {of } from 'rxjs/observable/of';
+import {_do} from 'rxjs/operator/do';
 
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
@@ -211,6 +214,45 @@ class MyInputComponent {
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'name-attributes'})]
 })
 class NameModule {
+}
+
+function renderHookModuleFactory(fns: Function[]) {
+  @NgModule({
+    imports: [AsyncServerModule],
+    bootstrap: [MyAsyncServerApp],
+    providers: [fns.map(fn => ({
+                          provide: SERVER_BEFORE_RENDER_LISTENER,
+                          useFactory: fn,
+                          multi: true,
+                        }))],
+  })
+  class RenderHookModule {
+  }
+  return RenderHookModule;
+}
+
+function renderHookInjectModuleFactory(injectionValue: string) {
+  function renderHookFactory(rendererFactory: RendererFactory2, document: any) {
+    const renderer = rendererFactory.createRenderer(
+        document, {id: '-1', encapsulation: ViewEncapsulation.None, styles: [], data: {}});
+
+    const textNode = renderer.createText(injectionValue);
+    renderer.appendChild(document.body, textNode);
+  }
+
+  @NgModule({
+    imports: [AsyncServerModule],
+    bootstrap: [MyAsyncServerApp],
+    providers: [{
+      provide: SERVER_BEFORE_RENDER_LISTENER,
+      deps: [RendererFactory2, DOCUMENT],
+      useFactory: renderHookFactory,
+      multi: true,
+    }],
+  })
+  class RenderHookModule {
+  }
+  return RenderHookModule;
 }
 
 export function main() {
@@ -411,6 +453,57 @@ export function main() {
       it('using renderModule should work', async(() => {
            renderModule(AsyncServerModule, {document: doc}).then(output => {
              expect(output).toBe(expectedOutput);
+             called = true;
+           });
+         }));
+      it('should run a render hook', async(() => {
+           let hookCalled = false;
+           function renderHookFactory() { hookCalled = true; }
+           const module = renderHookModuleFactory([renderHookFactory]);
+
+           renderModule(module, {document: doc}).then(output => {
+             expect(hookCalled).toBe(true);
+             called = true;
+           });
+         }));
+      it('should be able to edit document before being rendered to string', async(() => {
+           const injectionString = 'injected content';
+           const expected =
+               '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innertext="fine"></h1></app>injected content</body></html>';
+           const module = renderHookInjectModuleFactory(injectionString);
+
+           renderModule(module, {document: doc}).then(output => {
+             expect(output).toBe(expected);
+             called = true;
+           });
+         }));
+      it('should run multiple render hooks', async(() => {
+           let hooksCalled = '';
+           function renderHookFactoryA() { hooksCalled += 'A'; }
+           function renderHookFactoryB() { hooksCalled += 'B'; }
+           const module = renderHookModuleFactory([renderHookFactoryA, renderHookFactoryB]);
+
+           renderModule(module, {document: doc}).then(output => {
+             expect(hooksCalled).toContain('A');
+             expect(hooksCalled).toContain('B');
+             called = true;
+           });
+         }));
+      it('should run multiple async render hooks', async(() => {
+           let hooksCalled = '';
+           function renderHookFactoryA() {
+             return Promise.resolve(true).then(() => hooksCalled += 'A');
+           }
+           function renderHookFactoryB() {
+             const obs = of (true);
+             const observableDone = () => hooksCalled += 'B';
+             return _do.call(obs, observableDone);
+           }
+           const module = renderHookModuleFactory([renderHookFactoryA, renderHookFactoryB]);
+
+           renderModule(module, {document: doc}).then(output => {
+             expect(hooksCalled).toContain('A');
+             expect(hooksCalled).toContain('B');
              called = true;
            });
          }));
