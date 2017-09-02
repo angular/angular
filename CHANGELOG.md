@@ -1,3 +1,22 @@
+<a name="4.4.0-RC.0"></a>
+# [4.4.0-RC.0](https://github.com/angular/angular/compare/4.3.6...4.4.0-RC.0) (2017-09-02)
+
+
+### Bug Fixes
+
+* **animations:** do not leak DOM nodes/styling for host triggered animations ([#18853](https://github.com/angular/angular/issues/18853)) ([1cc3fe2](https://github.com/angular/angular/commit/1cc3fe2)), closes [#18606](https://github.com/angular/angular/issues/18606)
+* **common:** fix improper packaging for [@angular](https://github.com/angular)/common/http ([#18613](https://github.com/angular/angular/issues/18613)) ([a203a95](https://github.com/angular/angular/commit/a203a95))
+* **common:** fix XSSI prefix stripping by using JSON.parse always ([#18466](https://github.com/angular/angular/issues/18466)) ([8821723](https://github.com/angular/angular/commit/8821723)), closes [#18396](https://github.com/angular/angular/issues/18396) [#18453](https://github.com/angular/angular/issues/18453)
+* **compiler:** normalize the locale name ([#18963](https://github.com/angular/angular/issues/18963)) ([497e017](https://github.com/angular/angular/commit/497e017))
+* **core:** complete EventEmitter in QueryList on component destroy ([#18902](https://github.com/angular/angular/issues/18902)) ([7d137d7](https://github.com/angular/angular/commit/7d137d7)), closes [#18741](https://github.com/angular/angular/issues/18741)
+
+
+### Features
+
+* **compiler:** allow multiple exportAs names ([#18723](https://github.com/angular/angular/issues/18723)) ([7ec28fe](https://github.com/angular/angular/commit/7ec28fe))
+* **core:** add option to remove blank text nodes from compiled templates ([#18823](https://github.com/angular/angular/issues/18823)) ([b8b551c](https://github.com/angular/angular/commit/b8b551c))
+
+
 <a name="5.0.0-beta.5"></a>
 # [5.0.0-beta.5](https://github.com/angular/angular/compare/5.0.0-beta.4...5.0.0-beta.5) (2017-08-29)
 
