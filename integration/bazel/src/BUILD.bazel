@@ -4,8 +4,8 @@ load("@angular//:index.bzl", "ng_module")
 exports_files(["tsconfig.json"])
 
 ng_module(
-    name = "app",
-    srcs = ["app.module.ts"],
+    name = "src",
+    srcs = glob(["*.ts"]),
     deps = ["//src/hello-world"],
     tsconfig = ":tsconfig.json",
 )
