@@ -202,8 +202,8 @@ export class PreActivation {
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ = concatMap.call(
         checks$, (check: CanActivate) => andObservables(from([
-                   this.fireChildActivationStart(check.path), this.runCanActivateChild(check.path),
-                   this.runCanActivate(check.route)
+                   this.fireChildActivationStart(check.route.parent),
+                   this.runCanActivateChild(check.path), this.runCanActivate(check.route)
                  ])));
     return every.call(runningChecks$, (result: boolean) => result === true);
     // this.fireChildActivationStart(check.path),
@@ -217,16 +217,11 @@ export class PreActivation {
    * return
    * `true` so checks continue to run.
    */
-  private fireChildActivationStart(path: ActivatedRouteSnapshot[]): Observable<boolean> {
-    if (!this.forwardEvent) return of (true);
-    const childActivations = path.slice(0, path.length - 1).reverse().filter(_ => _ !== null);
-
-    return andObservables(map.call(from(childActivations), (snapshot: ActivatedRouteSnapshot) => {
-      if (this.forwardEvent && snapshot._routeConfig) {
-        this.forwardEvent(new ChildActivationStart(snapshot._routeConfig));
-      }
-      return of (true);
-    }));
+  private fireChildActivationStart(snapshot: ActivatedRouteSnapshot|null): Observable<boolean> {
+    if (snapshot !== null && this.forwardEvent) {
+      this.forwardEvent(new ChildActivationStart(snapshot));
+    }
+    return of (true);
   }
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
     const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;

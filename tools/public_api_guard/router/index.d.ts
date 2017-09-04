@@ -61,17 +61,17 @@ export interface CanLoad {
 
 /** @experimental */
 export declare class ChildActivationEnd {
-    route: Route;
+    snapshot: ActivatedRouteSnapshot;
     constructor(
-        route: Route);
+        snapshot: ActivatedRouteSnapshot);
     toString(): string;
 }
 
 /** @experimental */
 export declare class ChildActivationStart {
-    route: Route;
+    snapshot: ActivatedRouteSnapshot;
     constructor(
-        route: Route);
+        snapshot: ActivatedRouteSnapshot);
     toString(): string;
 }
 
