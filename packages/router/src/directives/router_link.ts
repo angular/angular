@@ -9,7 +9,6 @@
 import {LocationStrategy} from '@angular/common';
 import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
-
 import {QueryParamsHandling} from '../config';
 import {NavigationEnd} from '../events';
 import {Router} from '../router';
@@ -95,7 +94,7 @@ import {UrlTree} from '../url_tree';
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
-  @Input() queryParams: {[k: string]: any};
+  @Input() queryParams: {[name: string]: any | any[]};
   @Input() fragment: string;
   @Input() queryParamsHandling: QueryParamsHandling;
   @Input() preserveFragment: boolean;
@@ -166,7 +165,7 @@ export class RouterLink {
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
   @HostBinding('attr.target') @Input() target: string;
-  @Input() queryParams: {[k: string]: any};
+  @Input() queryParams: {[name: string]: any | any[]};
   @Input() fragment: string;
   @Input() queryParamsHandling: QueryParamsHandling;
   @Input() preserveFragment: boolean;

@@ -16,7 +16,6 @@ import {of } from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
-
 import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
@@ -28,9 +27,9 @@ import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrate
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
-import {Params, isNavigationCancelingError} from './shared';
+import {Params, convertToParams, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
-import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
+import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree, equalsTree} from './url_tree';
 import {forEach} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
@@ -84,7 +83,7 @@ export interface NavigationExtras {
   * this.router.navigate(['/results'], { queryParams: { page: 1 } });
   * ```
   */
-  queryParams?: Params|null;
+  queryParams?: {[name: string]: any | any[]}|null;
 
   /**
   * Sets the hash fragment for the URL.
@@ -385,20 +384,22 @@ export class Router {
     }
     const a = relativeTo || this.routerState.root;
     const f = preserveFragment ? this.currentUrlTree.fragment : fragment;
+    const convertedQueryParams = convertToParams(queryParams !);
+
     let q: Params|null = null;
     if (queryParamsHandling) {
       switch (queryParamsHandling) {
         case 'merge':
-          q = {...this.currentUrlTree.queryParams, ...queryParams};
+          q = {...this.currentUrlTree.queryParams, ...convertedQueryParams};
           break;
         case 'preserve':
           q = this.currentUrlTree.queryParams;
           break;
         default:
-          q = queryParams || null;
+          q = convertedQueryParams || null;
       }
     } else {
-      q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams || null;
+      q = preserveQueryParams ? this.currentUrlTree.queryParams : convertedQueryParams || null;
     }
     return createUrlTree(a, this.currentUrlTree, commands, q !, f !);
   }
@@ -425,7 +426,7 @@ export class Router {
    */
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
-    const urlTree = url instanceof UrlTree ? url : this.parseUrl(url);
+    const urlTree = typeof url === 'string' ? this.parseUrl(url) : url;
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
     return this.scheduleNavigation(mergedTree, 'imperative', extras);
@@ -455,7 +456,7 @@ export class Router {
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
     validateCommands(commands);
-    if (typeof extras.queryParams === 'object' && extras.queryParams !== null) {
+    if (extras.queryParams) {
       extras.queryParams = this.removeEmptyProps(extras.queryParams);
     }
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
@@ -469,22 +470,18 @@ export class Router {
 
   /** Returns whether the url is activated */
   isActive(url: string|UrlTree, exact: boolean): boolean {
-    if (url instanceof UrlTree) {
-      return containsTree(this.currentUrlTree, url, exact);
-    }
-
-    const urlTree = this.urlSerializer.parse(url);
-    return containsTree(this.currentUrlTree, urlTree, exact);
+    const tree = typeof url === 'string' ? this.urlSerializer.parse(url) : url;
+    return exact ? equalsTree(this.currentUrlTree, tree) : containsTree(this.currentUrlTree, tree);
   }
 
-  private removeEmptyProps(params: Params): Params {
-    return Object.keys(params).reduce((result: Params, key: string) => {
-      const value: any = params[key];
-      if (value !== null && value !== undefined) {
-        result[key] = value;
+  private removeEmptyProps(params: {[name: string]: any}): {[name: string]: any} {
+    const p: {[name: string]: any} = {};
+    forEach(params, (v: any, k: string) => {
+      if (v != null) {
+        p[k] = v;
       }
-      return result;
-    }, {});
+    });
+    return p;
   }
 
   private processNavigations(): void {

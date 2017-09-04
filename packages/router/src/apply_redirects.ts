@@ -17,7 +17,6 @@ import {first} from 'rxjs/operator/first';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {EmptyError} from 'rxjs/util/EmptyError';
-
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET, Params, defaultUrlMatcher, navigationCancelingError} from './shared';
@@ -342,14 +341,15 @@ class ApplyRedirects {
 
   private applyRedirectCommands(
       segments: UrlSegment[], redirectTo: string, posParams: {[k: string]: UrlSegment}): UrlTree {
-    return this.applyRedirectCreatreUrlTree(
+    return this.applyRedirectCreateUrlTree(
         redirectTo, this.urlSerializer.parse(redirectTo), segments, posParams);
   }
 
-  private applyRedirectCreatreUrlTree(
+  private applyRedirectCreateUrlTree(
       redirectTo: string, urlTree: UrlTree, segments: UrlSegment[],
       posParams: {[k: string]: UrlSegment}): UrlTree {
     const newRoot = this.createSegmentGroup(redirectTo, urlTree.root, segments, posParams);
+
     return new UrlTree(
         newRoot, this.createQueryParams(urlTree.queryParams, this.urlTree.queryParams),
         urlTree.fragment);
@@ -357,9 +357,10 @@ class ApplyRedirects {
 
   private createQueryParams(redirectToParams: Params, actualParams: Params): Params {
     const res: Params = {};
-    forEach(redirectToParams, (v: any, k: string) => {
-      const copySourceValue = typeof v === 'string' && v.startsWith(':');
-      if (copySourceValue) {
+    forEach(redirectToParams, (v: string | string[], k: string) => {
+      if (typeof v === 'string' && v.startsWith(':')) {
+        // On redirect to `url?target=:source`, `target` should take the value of the `source`
+        // parameter of the source url
         const sourceName = v.substring(1);
         res[k] = actualParams[sourceName];
       } else {
@@ -442,20 +443,20 @@ function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment
   const matcher = route.matcher || defaultUrlMatcher;
   const res = matcher(segments, segmentGroup, route);
 
-  if (!res) {
+  if (res) {
     return {
-      matched: false,
-      consumedSegments: <any[]>[],
-      lastChild: 0,
-      positionalParamSegments: {},
+      matched: true,
+      consumedSegments: res.consumed !,
+      lastChild: res.consumed.length !,
+      positionalParamSegments: res.posParams !
     };
   }
 
   return {
-    matched: true,
-    consumedSegments: res.consumed !,
-    lastChild: res.consumed.length !,
-    positionalParamSegments: res.posParams !,
+    matched: false,
+    consumedSegments: <any[]>[],
+    lastChild: 0,
+    positionalParamSegments: {},
   };
 }
 

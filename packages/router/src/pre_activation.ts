@@ -17,12 +17,12 @@ import {last} from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
-
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
 import {ActivationStart, ChildActivationStart, Event} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
-import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
+import {equalsParams} from './shared';
+import {andObservables, forEach, wrapIntoObservable} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
 class CanActivate {
@@ -159,7 +159,7 @@ export class PreActivation {
 
       case 'paramsOrQueryParamsChange':
         return !equalParamsAndUrlSegments(curr, future) ||
-            !shallowEqual(curr.queryParams, future.queryParams);
+            !equalsParams(curr.queryParams, future.queryParams);
 
       case 'paramsChange':
       default:

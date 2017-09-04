@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, encode, serializePath} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, encode} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
@@ -261,7 +261,7 @@ function expectSegment(
   if (segment.segments.filter(s => s.path === '').length > 0) {
     throw new Error(`UrlSegments cannot be empty ${segment.segments}`);
   }
-  const p = segment.segments.map(p => serializePath(p)).join('/');
+  const p = segment.segments.map(p => p.toString()).join('/');
   expect(p).toEqual(expected);
   expect(Object.keys(segment.children).length > 0).toEqual(hasChildren);
 }
