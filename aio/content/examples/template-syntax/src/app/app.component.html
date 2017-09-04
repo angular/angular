@@ -337,9 +337,9 @@ button</button>
 <div [class.special]="isSpecial">The class binding is special</div>
 <!-- #enddocregion class-binding-3a -->
 
-<!-- binding to `class.special` trumps the class attribute -->
-<div class="special"
-     [class.special]="!isSpecial">This one is not so special</div>
+<!-- binding to `class.not-so-special` trumps the class attribute -->
+<div class="not-so-special"
+     [class.not-so-special]="!isSpecial">This one is not so special</div>
 <!-- #enddocregion class-binding-3 -->
 
 <div bind-class.special="isSpecial">This class binding is special too</div>
