@@ -385,6 +385,12 @@
       "title": "API",
       "tooltip": "Details of the Angular classes and values.",
       "url": "api"
+    },
+    {
+      "url": "guide/change-log",
+      "title": "Change Log",
+      "tooltip": "Angular Documentation Change Log",
+      "hidden": true
     }
   ],
 
