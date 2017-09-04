@@ -705,15 +705,18 @@ describe('Integration', () => {
        expect(user.recordedParams).toEqual([{name: 'init'}, {name: 'fedor'}]);
 
        expectEvents(recordedEvents, [
-         [NavigationStart, '/user/init'], [RoutesRecognized, '/user/init'],
-         [GuardsCheckStart, '/user/init'], [GuardsCheckEnd, '/user/init'],
-         [ResolveStart, '/user/init'], [ResolveEnd, '/user/init'], [NavigationEnd, '/user/init'],
+         [NavigationStart, '/user/init'],   [RoutesRecognized, '/user/init'],
+         [GuardsCheckStart, '/user/init'],  [ChildActivationStart],
+         [GuardsCheckEnd, '/user/init'],    [ResolveStart, '/user/init'],
+         [ResolveEnd, '/user/init'],        [ChildActivationEnd],
+         [NavigationEnd, '/user/init'],
 
          [NavigationStart, '/user/victor'], [NavigationCancel, '/user/victor'],
 
-         [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
-         [GuardsCheckStart, '/user/fedor'], [GuardsCheckEnd, '/user/fedor'],
-         [ResolveStart, '/user/fedor'], [ResolveEnd, '/user/fedor'],
+         [NavigationStart, '/user/fedor'],  [RoutesRecognized, '/user/fedor'],
+         [GuardsCheckStart, '/user/fedor'], [ChildActivationStart],
+         [GuardsCheckEnd, '/user/fedor'],   [ResolveStart, '/user/fedor'],
+         [ResolveEnd, '/user/fedor'],       [ChildActivationEnd],
          [NavigationEnd, '/user/fedor']
        ]);
      })));
@@ -740,8 +743,8 @@ describe('Integration', () => {
          [NavigationStart, '/invalid'], [NavigationError, '/invalid'],
 
          [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
-         [GuardsCheckStart, '/user/fedor'], [GuardsCheckEnd, '/user/fedor'],
-         [ResolveStart, '/user/fedor'], [ResolveEnd, '/user/fedor'],
+         [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [GuardsCheckEnd, '/user/fedor'],
+         [ResolveStart, '/user/fedor'], [ResolveEnd, '/user/fedor'], [ChildActivationEnd],
          [NavigationEnd, '/user/fedor']
        ]);
      })));
@@ -1463,10 +1466,10 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/');
              expectEvents(recordedEvents, [
                [NavigationStart, '/team/22'], [RoutesRecognized, '/team/22'],
-               [GuardsCheckStart, '/team/22'], [GuardsCheckEnd, '/team/22'],
+               [GuardsCheckStart, '/team/22'], [ChildActivationStart], [GuardsCheckEnd, '/team/22'],
                [NavigationCancel, '/team/22']
              ]);
-             expect((recordedEvents[3] as GuardsCheckEnd).shouldActivate).toBe(false);
+             expect((recordedEvents[4] as GuardsCheckEnd).shouldActivate).toBe(false);
            })));
       });
 
@@ -2389,9 +2392,11 @@ describe('Integration', () => {
                  [RoutesRecognized, '/lazyTrue/loaded'],
                  [GuardsCheckStart, '/lazyTrue/loaded'],
                  [ChildActivationStart],
+                 [ChildActivationStart],
                  [GuardsCheckEnd, '/lazyTrue/loaded'],
                  [ResolveStart, '/lazyTrue/loaded'],
                  [ResolveEnd, '/lazyTrue/loaded'],
+                 [ChildActivationEnd],
                  [ChildActivationEnd],
                  [NavigationEnd, '/lazyTrue/loaded'],
                ]);
@@ -2423,8 +2428,9 @@ describe('Integration', () => {
              [NavigationCancel, '/lazyFalse/loaded'],
 
              [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
-             [GuardsCheckStart, '/blank'], [GuardsCheckEnd, '/blank'], [ResolveStart, '/blank'],
-             [ResolveEnd, '/blank'], [NavigationEnd, '/blank']
+             [GuardsCheckStart, '/blank'], [ChildActivationStart], [GuardsCheckEnd, '/blank'],
+             [ResolveStart, '/blank'], [ResolveEnd, '/blank'], [ChildActivationEnd],
+             [NavigationEnd, '/blank']
            ]);
          })));
 

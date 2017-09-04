@@ -7,7 +7,8 @@
  */
 
 import {Route} from './config';
-import {RouterStateSnapshot} from './router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
+
 
 /**
  * @whatItDoes Base for events the Router goes through, as opposed to events tied to a specific
@@ -264,8 +265,11 @@ export class RouteConfigLoadEnd {
 export class ChildActivationStart {
   constructor(
       /** @docsNotRequired */
-      public route: Route) {}
-  toString(): string { return `ChildActivationStart(path: '${this.route.path}')`; }
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `ChildActivationStart(path: '${path}')`;
+  }
 }
 
 /**
@@ -277,8 +281,11 @@ export class ChildActivationStart {
 export class ChildActivationEnd {
   constructor(
       /** @docsNotRequired */
-      public route: Route) {}
-  toString(): string { return `ChildActivationEnd(path: '${this.route.path}')`; }
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `ChildActivationEnd(path: '${path}')`;
+  }
 }
 
 /**
