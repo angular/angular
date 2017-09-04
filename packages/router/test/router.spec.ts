@@ -10,6 +10,7 @@ import {Location} from '@angular/common';
 import {TestBed, inject} from '@angular/core/testing';
 
 import {ResolveData} from '../src/config';
+import {ChildActivationStart} from '../src/events';
 import {PreActivation} from '../src/pre_activation';
 import {Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
@@ -60,6 +61,7 @@ describe('Router', () => {
     const inj = {get: (token: any) => () => `${token}_value`};
     let empty: RouterStateSnapshot;
     let logger: Logger;
+    let events: any[];
 
     const CA_CHILD = 'canActivate_child';
     const CA_CHILD_FALSE = 'canActivate_child_false';
@@ -88,7 +90,143 @@ describe('Router', () => {
     beforeEach(inject([Logger], (_logger: Logger) => {
       empty = createEmptyStateSnapshot(serializer.parse('/'), null !);
       logger = _logger;
+      events = [];
     }));
+
+    describe('ChildActivation', () => {
+      it('should run', () => {
+        /**
+         * R  -->  R (ChildActivationStart)
+         *          \
+         *           child
+         */
+        let result = false;
+        const childSnapshot =
+            createActivatedRouteSnapshot({component: 'child', routeConfig: {path: 'child'}});
+        const futureState = new RouterStateSnapshot(
+            'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
+
+        const p = new PreActivation(futureState, empty, TestBed, (evt) => { events.push(evt); });
+        p.initalize(new ChildrenOutletContexts());
+        p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
+        expect(result).toBe(true);
+        expect(events.length).toEqual(1);
+      });
+
+      it('should run from top to bottom', () => {
+        /**
+         * R  -->  R (ChildActivationStart)
+         *          \
+         *           child (ChildActivationStart)
+         *            \
+         *             grandchild (ChildActivationStart)
+         *              \
+         *               great grandchild
+         */
+        let result = false;
+        const childSnapshot =
+            createActivatedRouteSnapshot({component: 'child', routeConfig: {path: 'child'}});
+        const grandchildSnapshot = createActivatedRouteSnapshot(
+            {component: 'grandchild', routeConfig: {path: 'grandchild'}});
+        const greatGrandchildSnapshot = createActivatedRouteSnapshot(
+            {component: 'great-grandchild', routeConfig: {path: 'great-grandchild'}});
+        const futureState = new RouterStateSnapshot(
+            'url',
+            new TreeNode(
+                empty.root, [new TreeNode(childSnapshot, [
+                  new TreeNode(grandchildSnapshot, [new TreeNode(greatGrandchildSnapshot, [])])
+                ])]));
+
+        const p = new PreActivation(futureState, empty, TestBed, (evt) => { events.push(evt); });
+        p.initalize(new ChildrenOutletContexts());
+        p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
+
+        expect(result).toBe(true);
+        expect(events.length).toEqual(3);
+        expect(events[0].snapshot).toBe(events[0].snapshot.root);
+        expect(events[1].snapshot.routeConfig.path).toBe('child');
+        expect(events[2].snapshot.routeConfig.path).toBe('grandchild');
+      });
+
+      it('should not run for unchanged routes', () => {
+        /**
+         *         R  -->  R
+         *        / \
+         *   child   child (ChildActivationStart)
+         *            \
+         *             grandchild
+         */
+        let result = false;
+        const childSnapshot =
+            createActivatedRouteSnapshot({component: 'child', routeConfig: {path: 'child'}});
+        const grandchildSnapshot = createActivatedRouteSnapshot(
+            {component: 'grandchild', routeConfig: {path: 'grandchild'}});
+        const currentState = new RouterStateSnapshot(
+            'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
+        const futureState = new RouterStateSnapshot(
+            'url',
+            new TreeNode(
+                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+
+        const p =
+            new PreActivation(futureState, currentState, TestBed, (evt) => { events.push(evt); });
+        p.initalize(new ChildrenOutletContexts());
+        p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
+
+        expect(result).toBe(true);
+        expect(events.length).toEqual(1);
+        expect(events[0].snapshot).not.toBe(events[0].snapshot.root);
+        expect(events[0].snapshot.routeConfig.path).toBe('child');
+      });
+
+      it('should skip multiple unchanged routes but fire for all changed routes', () => {
+        /**
+         *         R  -->  R
+         *            / \
+         *       child   child
+         *          /     \
+         * grandchild      grandchild (ChildActivationStart)
+         *                  \
+         *                   greatgrandchild (ChildActivationStart)
+         *                    \
+         *                     great-greatgrandchild
+         */
+        let result = false;
+        const childSnapshot =
+            createActivatedRouteSnapshot({component: 'child', routeConfig: {path: 'child'}});
+        const grandchildSnapshot = createActivatedRouteSnapshot(
+            {component: 'grandchild', routeConfig: {path: 'grandchild'}});
+        const greatGrandchildSnapshot = createActivatedRouteSnapshot(
+            {component: 'greatgrandchild', routeConfig: {path: 'greatgrandchild'}});
+        const greatGreatGrandchildSnapshot = createActivatedRouteSnapshot(
+            {component: 'great-greatgrandchild', routeConfig: {path: 'great-greatgrandchild'}});
+        const currentState = new RouterStateSnapshot(
+            'url',
+            new TreeNode(
+                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+        const futureState = new RouterStateSnapshot(
+            'url',
+            new TreeNode(
+                empty.root,
+                [new TreeNode(
+                    childSnapshot, [new TreeNode(grandchildSnapshot, [
+                      new TreeNode(
+                          greatGrandchildSnapshot, [new TreeNode(greatGreatGrandchildSnapshot, [])])
+                    ])])]));
+
+        const p =
+            new PreActivation(futureState, currentState, TestBed, (evt) => { events.push(evt); });
+        p.initalize(new ChildrenOutletContexts());
+        p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
+
+        expect(result).toBe(true);
+        expect(events.length).toEqual(2);
+        expect(events[0] instanceof ChildActivationStart).toBe(true);
+        expect(events[0].snapshot).not.toBe(events[0].snapshot.root);
+        expect(events[0].snapshot.routeConfig.path).toBe('grandchild');
+        expect(events[1].snapshot.routeConfig.path).toBe('greatgrandchild');
+      });
+    });
 
     describe('guards', () => {
       it('should run CanActivate checks', () => {
