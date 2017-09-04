@@ -16,7 +16,7 @@ import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import {BrowserModule, DOCUMENT, Title} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
 import {Subscription} from 'rxjs/Subscription';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
@@ -36,6 +36,50 @@ class MyServerApp {
   ]
 })
 class ExampleModule {
+}
+
+function getTitleRenderHook(doc: any) {
+  return () => {
+    // Set the title as part of the render hook.
+    doc.title = 'RenderHook';
+  };
+}
+
+function exceptionRenderHook() {
+  throw new Error('error');
+}
+
+function getMetaRenderHook(doc: any) {
+  return () => {
+    // Add a meta tag before rendering the document.
+    const metaElement = doc.createElement('meta');
+    metaElement.setAttribute('name', 'description');
+    doc.head.appendChild(metaElement);
+  };
+}
+
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getTitleRenderHook, multi: true, deps: [DOCUMENT]},
+  ]
+})
+class RenderHookModule {
+}
+
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getTitleRenderHook, multi: true, deps: [DOCUMENT]},
+    {provide: BEFORE_APP_SERIALIZED, useValue: exceptionRenderHook, multi: true},
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getMetaRenderHook, multi: true, deps: [DOCUMENT]},
+  ]
+})
+class MultiRenderHookModule {
 }
 
 @Component({selector: 'app', template: `Works too!`})
@@ -466,6 +510,28 @@ export function main() {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
                  '<input name=""></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should call render hook', async(() => {
+           renderModule(RenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>RenderHook</title></head><body>' +
+                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should call mutliple render hooks', async(() => {
+           const consoleSpy = spyOn(console, 'warn');
+           renderModule(MultiRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>RenderHook</title><meta name="description"></head>' +
+                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             expect(consoleSpy).toHaveBeenCalled();
              called = true;
            });
          }));
