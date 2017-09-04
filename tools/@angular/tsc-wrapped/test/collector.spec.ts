@@ -35,6 +35,7 @@ describe('Collector', () => {
       'exported-functions.ts',
       'exported-enum.ts',
       'exported-consts.ts',
+      'exported-type.ts',
       'local-symbol-ref.ts',
       'local-function-ref.ts',
       'local-symbol-ref-func.ts',
@@ -64,6 +65,13 @@ describe('Collector', () => {
     const sourceFile = program.getSourceFile('app/empty.ts');
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toBeUndefined();
+  });
+
+  it('should return an interface reference for types', () => {
+    const sourceFile = program.getSourceFile('/exported-type.ts');
+    const metadata = collector.getMetadata(sourceFile);
+    expect(metadata).toEqual(
+         {__symbolic: 'module', version: 3, metadata: {SomeType: {__symbolic: 'interface'}}});
   });
 
   it('should return an interface reference for interfaces', () => {
@@ -1233,6 +1241,9 @@ const FILES: Directory = {
       }
     }
     export declare function declaredFn();
+  `,
+  'exported-type.ts': `
+    export type SomeType = 'a' | 'b';
   `,
   'exported-enum.ts': `
     import {constValue} from './exported-consts';
