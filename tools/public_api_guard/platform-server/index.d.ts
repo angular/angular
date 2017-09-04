@@ -1,4 +1,7 @@
 /** @experimental */
+export declare const BEFORE_APP_SERIALIZED: InjectionToken<(() => void)[]>;
+
+/** @experimental */
 export declare const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 /** @experimental */
