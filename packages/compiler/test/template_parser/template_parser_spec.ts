@@ -1212,7 +1212,7 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
 
         it('should report variables as errors', () => {
           expect(() => parse('<div let-a></div>', [])).toThrowError(`Template parse errors:
-"let-" is only supported on template elements. ("<div [ERROR ->]let-a></div>"): TestComp@0:5`);
+"let-" is only supported on ng-template elements. ("<div [ERROR ->]let-a></div>"): TestComp@0:5`);
         });
 
         it('should report duplicate reference names', () => {

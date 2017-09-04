@@ -443,7 +443,7 @@ class TemplateParseVisitor implements html.Visitor {
           const identifier = bindParts[IDENT_KW_IDX];
           this._parseVariable(identifier, value, srcSpan, targetVars);
         } else {
-          this._reportError(`"let-" is only supported on template elements.`, srcSpan);
+          this._reportError(`"let-" is only supported on ng-template elements.`, srcSpan);
         }
 
       } else if (bindParts[KW_REF_IDX]) {
