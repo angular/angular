@@ -265,12 +265,12 @@ export class MetadataCollector {
 
     const isExportedIdentifier = (identifier: ts.Identifier) => exportMap.has(identifier.text);
     const isExported =
-        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration | ts.TypeAliasDeclaration |
          ts.EnumDeclaration) => isExport(node) || isExportedIdentifier(node.name);
     const exportedIdentifierName = (identifier: ts.Identifier) =>
         exportMap.get(identifier.text) || identifier.text;
     const exportedName =
-        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration | ts.TypeAliasDeclaration |
          ts.EnumDeclaration) => exportedIdentifierName(node.name);
 
 
@@ -364,7 +364,16 @@ export class MetadataCollector {
           }
           // Otherwise don't record metadata for the class.
           break;
-
+        case ts.SyntaxKind.TypeAliasDeclaration:
+          const typeDeclaration = <ts.TypeAliasDeclaration>node;
+          if (typeDeclaration.name && isExported(typeDeclaration)) {
+            const name = exportedName(typeDeclaration);
+            if (name) {
+              if (!metadata) metadata = {};
+              metadata[name] = {__symbolic: 'interface'};
+            }
+          }
+          break;
         case ts.SyntaxKind.InterfaceDeclaration:
           const interfaceDeclaration = <ts.InterfaceDeclaration>node;
           if (interfaceDeclaration.name && isExported(interfaceDeclaration)) {
@@ -372,7 +381,6 @@ export class MetadataCollector {
             metadata[exportedName(interfaceDeclaration)] = {__symbolic: 'interface'};
           }
           break;
-
         case ts.SyntaxKind.FunctionDeclaration:
           // Record functions that return a single value. Record the parameter
           // names substitution will be performed by the StaticReflector.
