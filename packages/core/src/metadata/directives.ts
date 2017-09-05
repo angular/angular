@@ -653,7 +653,9 @@ export interface Component extends Directive {
    * - {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} to use shimmed CSS that
    *   emulates the native behavior,
    * - {@link ViewEncapsulation#None `ViewEncapsulation.None`} to use global CSS without any
-   *   encapsulation.
+   *   encapsulation,
+   * - {@link ViewEncapsulation#ShadowDom `ViewEncapsulation.ShadowDom`} to use shadow roots - only
+   *   works if natively available on the platform.
    *
    * When no `encapsulation` is defined for the component, the default value from the
    * {@link CompilerOptions} is used. The default is `ViewEncapsulation.Emulated`}. Provide a new

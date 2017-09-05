@@ -230,7 +230,10 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
         (renderParent.flags & NodeFlags.ComponentView) === 0 ||
         (renderParent.element !.componentRendererType &&
          renderParent.element !.componentRendererType !.encapsulation ===
-             ViewEncapsulation.Native)) {
+             ViewEncapsulation.Native) ||
+        (renderParent.element !.componentRendererType &&
+         renderParent.element !.componentRendererType !.encapsulation ===
+             ViewEncapsulation.ShadowDom)) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
       return asElementData(view, def.renderParent !.index).renderElement;

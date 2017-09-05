@@ -29,6 +29,7 @@ export class ServerRendererFactory2 implements RendererFactory2 {
       return this.defaultRenderer;
     }
     switch (type.encapsulation) {
+      case ViewEncapsulation.ShadowDom:
       case ViewEncapsulation.Native:
       case ViewEncapsulation.Emulated: {
         let renderer = this.rendererByCompId.get(type.id);
@@ -42,6 +43,8 @@ export class ServerRendererFactory2 implements RendererFactory2 {
       }
       case ViewEncapsulation.Native:
         throw new Error('Native encapsulation is not supported on the server!');
+      case ViewEncapsulation.ShadowDom:
+        throw new Error('ShadowDom encapsulation is not supported on the server!');
       default: {
         if (!this.rendererByCompId.has(type.id)) {
           const styles = flattenStyles(type.id, type.styles, []);

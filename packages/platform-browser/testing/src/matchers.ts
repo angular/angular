@@ -263,6 +263,10 @@ function elementText(n: any): string {
     return elementText(Array.prototype.slice.apply(getDOM().getDistributedNodes(n)));
   }
 
+  if (getDOM().isElementNode(n) && getDOM().tagName(n) == 'SLOT') {
+    return elementText(Array.prototype.slice.apply(getDOM().assignedNodes(n)));
+  }
+
   if (getDOM().hasShadowRoot(n)) {
     return elementText(getDOM().childNodesAsList(getDOM().getShadowRoot(n)));
   }
