@@ -1,15 +1,7 @@
 {
   "name": "angular-srcs",
-  "version": "5.0.0-beta.5",
+  "version": "5.0.0-beta.6",
   "dependencies": {
-    "@bazel/typescript": {
-      "version": "0.0.9",
-      "dependencies": {
-        "@types/node": {
-          "version": "7.0.18"
-        }
-      }
-    },
     "@google-cloud/common": {
       "version": "0.13.5",
       "dependencies": {
@@ -6743,7 +6735,7 @@
       "version": "3.1.2"
     },
     "rxjs": {
-      "version": "5.0.1"
+      "version": "5.4.3"
     },
     "safe-buffer": {
       "version": "5.0.1"

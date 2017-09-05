@@ -1,19 +1,7 @@
 {
   "name": "angular-srcs",
-  "version": "5.0.0-beta.5",
+  "version": "5.0.0-beta.6",
   "dependencies": {
-    "@bazel/typescript": {
-      "version": "0.0.9",
-      "from": "@bazel/typescript@latest",
-      "resolved": "https://registry.npmjs.org/@bazel/typescript/-/typescript-0.0.9.tgz",
-      "dependencies": {
-        "@types/node": {
-          "version": "7.0.18",
-          "from": "@types/node@7.0.18",
-          "resolved": "https://registry.npmjs.org/@types/node/-/node-7.0.18.tgz"
-        }
-      }
-    },
     "@google-cloud/common": {
       "version": "0.13.5",
       "from": "@google-cloud/common@>=0.13.0 <0.14.0",
@@ -10791,9 +10779,9 @@
       "resolved": "https://registry.npmjs.org/rx-lite/-/rx-lite-3.1.2.tgz"
     },
     "rxjs": {
-      "version": "5.0.1",
-      "from": "rxjs@5.0.1",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.1.tgz"
+      "version": "5.4.3",
+      "from": "rxjs@5.4.3",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.4.3.tgz"
     },
     "safe-buffer": {
       "version": "5.0.1",
