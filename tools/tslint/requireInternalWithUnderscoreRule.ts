@@ -35,8 +35,8 @@ class TypedefWalker extends RuleWalker {
     return comment.indexOf('@internal') >= 0;
   }
 
-  private assertInternalAnnotationPresent(node: ts.Declaration) {
-    if (node.name.getText().charAt(0) !== '_') return;
+  private assertInternalAnnotationPresent(node: ts.NamedDeclaration) {
+    if (node.name && node.name.getText().charAt(0) !== '_') return;
     if (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Private) return;
 
     const ranges = ts.getLeadingCommentRanges(this.getSourceFile().text, node.pos);

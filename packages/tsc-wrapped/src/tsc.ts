@@ -67,8 +67,10 @@ export function formatDiagnostics(diags: ts.Diagnostic[]): string {
         let res = ts.DiagnosticCategory[d.category];
         if (d.file) {
           res += ' at ' + d.file.fileName + ':';
-          const {line, character} = d.file.getLineAndCharacterOfPosition(d.start);
-          res += (line + 1) + ':' + (character + 1) + ':';
+          if (d.start !== undefined) {
+            const {line, character} = d.file.getLineAndCharacterOfPosition(d.start);
+            res += (line + 1) + ':' + (character + 1) + ':';
+          }
         }
         res += ' ' + ts.flattenDiagnosticMessageText(d.messageText, '\n');
         return res;
