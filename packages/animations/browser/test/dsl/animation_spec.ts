@@ -216,6 +216,26 @@ export function main() {
             .toThrowError(
                 /The provided animation property "abc" is not a supported CSS property for animations/);
       });
+
+      it('should allow a vendor-prefixed property to be used in an animation sequence without throwing an error',
+         () => {
+           const steps = [
+             style({webkitTransform: 'translateX(0px)'}),
+             animate(1000, style({webkitTransform: 'translateX(100px)'}))
+           ];
+
+           expect(() => validateAndThrowAnimationSequence(steps)).not.toThrow();
+         });
+
+      it('should allow for old CSS properties (like transform) to be auto-prefixed by webkit',
+         () => {
+           const steps = [
+             style({transform: 'translateX(-100px)'}),
+             animate(1000, style({transform: 'translateX(500px)'}))
+           ];
+
+           expect(() => validateAndThrowAnimationSequence(steps)).not.toThrow();
+         });
     });
 
     describe('keyframe building', () => {
