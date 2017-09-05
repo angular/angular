@@ -19,7 +19,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
-import {ChildActivationStart, RouteEvent} from './events';
+import {ChildActivationStart, Event} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
 import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
@@ -43,7 +43,7 @@ export class PreActivation {
 
   constructor(
       private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
-      private moduleInjector: Injector, private forwardEvent?: (evt: RouteEvent) => void) {}
+      private moduleInjector: Injector, private forwardEvent?: (evt: Event) => void) {}
 
   initalize(parentContexts: ChildrenOutletContexts): void {
     const futureRoot = this.future._root;

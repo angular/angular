@@ -21,7 +21,7 @@ import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
-import {ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteEvent, RoutesRecognized} from './events';
+import {ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouterEvent, RoutesRecognized} from './events';
 import {PreActivation} from './pre_activation';
 import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
@@ -628,7 +628,7 @@ export class Router {
             const moduleInjector = this.ngModule.injector;
             preActivation = new PreActivation(
                 snapshot, this.currentRouterState.snapshot, moduleInjector,
-                (evt: RouteEvent) => this.triggerEvent(evt));
+                (evt: Event) => this.triggerEvent(evt));
             preActivation.initalize(this.rootContexts);
             return {appliedUrl, snapshot};
           });
@@ -764,7 +764,7 @@ export class Router {
 class ActivateRoutes {
   constructor(
       private routeReuseStrategy: RouteReuseStrategy, private futureState: RouterState,
-      private currState: RouterState, private forwardEvent: (evt: RouteEvent) => void) {}
+      private currState: RouterState, private forwardEvent: (evt: Event) => void) {}
 
   activate(parentContexts: ChildrenOutletContexts): void {
     const futureRoot = this.futureState._root;
