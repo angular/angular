@@ -60,12 +60,18 @@ export interface CanLoad {
 }
 
 /** @experimental */
-export declare class ChildActivationEnd extends RouteEvent {
+export declare class ChildActivationEnd {
+    route: Route;
+    constructor(
+        route: Route);
     toString(): string;
 }
 
 /** @experimental */
-export declare class ChildActivationStart extends RouteEvent {
+export declare class ChildActivationStart {
+    route: Route;
+    constructor(
+        route: Route);
     toString(): string;
 }
 
@@ -97,7 +103,7 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 export declare type DetachedRouteHandle = {};
 
 /** @stable */
-export declare type Event = RouterEvent | RouteEvent;
+export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd;
 
 /** @stable */
 export interface ExtraOptions {
@@ -284,20 +290,19 @@ export interface Route {
 }
 
 /** @experimental */
-export declare class RouteConfigLoadEnd extends RouteEvent {
-    toString(): string;
-}
-
-/** @experimental */
-export declare class RouteConfigLoadStart extends RouteEvent {
-    toString(): string;
-}
-
-/** @experimental */
-export declare class RouteEvent {
+export declare class RouteConfigLoadEnd {
     route: Route;
     constructor(
         route: Route);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class RouteConfigLoadStart {
+    route: Route;
+    constructor(
+        route: Route);
+    toString(): string;
 }
 
 /** @stable */
@@ -337,6 +342,15 @@ export declare abstract class RouteReuseStrategy {
     abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
     abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
     abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
+}
+
+/** @experimental */
+export declare class RouterEvent {
+    id: number;
+    url: string;
+    constructor(
+        id: number,
+        url: string);
 }
 
 /** @stable */

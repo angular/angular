@@ -36,35 +36,6 @@ export class RouterEvent {
 }
 
 /**
- * @whatItDoes Base for events tied to a specific `Route`, as opposed to events for the Router
- * lifecycle. `RouteEvent`s may be fired multiple times during a single navigation and will
- * always receive the `Route` they pertain to.
- *
- * Example:
- *
- * ```
- * class MyService {
- *   constructor(public router: Router, spinner: Spinner) {
- *     router.events.filter(e => e instanceof RouteEvent).subscribe(e => {
- *       if (e instanceof ChildActivationStart) {
- *         spinner.start(e.route);
- *       } else if (e instanceof ChildActivationEnd) {
- *         spinner.end(e.route);
- *       }
- *     });
- *   }
- * }
- * ```
- *
- * @experimental
- */
-export class RouteEvent {
-  constructor(
-      /** @docsNotRequired */
-      public route: Route) {}
-}
-
-/**
  * @whatItDoes Represents an event triggered when a navigation starts.
  *
  * @stable
@@ -265,7 +236,10 @@ export class ResolveEnd extends RouterEvent {
  *
  * @experimental
  */
-export class RouteConfigLoadStart extends RouteEvent {
+export class RouteConfigLoadStart {
+  constructor(
+      /** @docsNotRequired */
+      public route: Route) {}
   toString(): string { return `RouteConfigLoadStart(path: ${this.route.path})`; }
 }
 
@@ -274,7 +248,10 @@ export class RouteConfigLoadStart extends RouteEvent {
  *
  * @experimental
  */
-export class RouteConfigLoadEnd extends RouteEvent {
+export class RouteConfigLoadEnd {
+  constructor(
+      /** @docsNotRequired */
+      public route: Route) {}
   toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
 }
 
@@ -284,7 +261,10 @@ export class RouteConfigLoadEnd extends RouteEvent {
  *
  * @experimental
  */
-export class ChildActivationStart extends RouteEvent {
+export class ChildActivationStart {
+  constructor(
+      /** @docsNotRequired */
+      public route: Route) {}
   toString(): string { return `ChildActivationStart(path: '${this.route.path}')`; }
 }
 
@@ -294,7 +274,10 @@ export class ChildActivationStart extends RouteEvent {
  *
  * @experimental
  */
-export class ChildActivationEnd extends RouteEvent {
+export class ChildActivationEnd {
+  constructor(
+      /** @docsNotRequired */
+      public route: Route) {}
   toString(): string { return `ChildActivationEnd(path: '${this.route.path}')`; }
 }
 
@@ -319,4 +302,5 @@ export class ChildActivationEnd extends RouteEvent {
  *
  * @stable
  */
-export type Event = RouterEvent | RouteEvent;
+export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
+    ChildActivationEnd;
