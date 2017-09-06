@@ -996,6 +996,23 @@ describe('MdMenu', () => {
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(0, 'Expected no open menus');
     }));
 
+    it('should toggle a nested menu when its trigger is added after init', fakeAsync(() => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
+
+      instance.showLazy = true;
+      fixture.detectChanges();
+
+      const lazyTrigger = overlay.querySelector('#lazy-trigger')!;
+
+      dispatchMouseEvent(lazyTrigger, 'mouseenter');
+      fixture.detectChanges();
+      expect(lazyTrigger.classList)
+          .toContain('mat-menu-item-highlighted', 'Expected the trigger to be highlighted');
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
+    }));
 
   });
 
@@ -1126,7 +1143,11 @@ class CustomMenu {
         [mdMenuTriggerFor]="levelOne"
         #levelOneTrigger="mdMenuTrigger">One</button>
       <button md-menu-item>Two</button>
-      <button md-menu-item>Three</button>
+      <button md-menu-item
+        *ngIf="showLazy"
+        id="lazy-trigger"
+        [mdMenuTriggerFor]="lazy"
+        #lazyTrigger="mdMenuTrigger">Three</button>
     </md-menu>
 
     <md-menu #levelOne="mdMenu">
@@ -1143,6 +1164,12 @@ class CustomMenu {
       <button md-menu-item>Eight</button>
       <button md-menu-item>Nine</button>
     </md-menu>
+
+    <md-menu #lazy="mdMenu">
+      <button md-menu-item>Ten</button>
+      <button md-menu-item>Eleven</button>
+      <button md-menu-item>Twelve</button>
+    </md-menu>
   `
 })
 class NestedMenu {
@@ -1156,6 +1183,10 @@ class NestedMenu {
 
   @ViewChild('levelTwo') levelTwoMenu: MdMenu;
   @ViewChild('levelTwoTrigger') levelTwoTrigger: MdMenuTrigger;
+
+  @ViewChild('lazy') lazyMenu: MdMenu;
+  @ViewChild('lazyTrigger') lazyTrigger: MdMenuTrigger;
+  showLazy = false;
 }
 
 @Component({

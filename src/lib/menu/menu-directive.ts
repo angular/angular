@@ -35,6 +35,7 @@ import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
 import {merge} from 'rxjs/observable/merge';
 import {Observable} from 'rxjs/Observable';
 import {Direction} from '@angular/cdk/bidi';
+import {RxChain, startWith, switchMap} from '@angular/cdk/rxjs';
 
 /** Default `md-menu` options that can be overridden. */
 export interface MdMenuDefaultOptions {
@@ -157,7 +158,10 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
 
   /** Stream that emits whenever the hovered menu item changes. */
   hover(): Observable<MdMenuItem> {
-    return merge(...this.items.map(item => item.hover));
+    return RxChain.from(this.items.changes)
+      .call(startWith, this.items)
+      .call(switchMap, (items: MdMenuItem[]) => merge(...items.map(item => item.hover)))
+      .result();
   }
 
   /** Handle a keyboard event from the menu, delegating to the appropriate action. */
