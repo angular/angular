@@ -23,12 +23,10 @@ import {MdStepLabel} from './step-label';
 })
 export class MdStepHeader {
   /** Icon for the given step. */
-  @Input()
-  icon: string;
+  @Input() icon: string;
 
   /** Label of the given step. */
-  @Input()
-  label: MdStepLabel | string;
+  @Input() label: MdStepLabel | string;
 
   /** Index of the given step. */
   @Input()
@@ -63,12 +61,12 @@ export class MdStepHeader {
   private _optional: boolean;
 
   /** Returns string label of given step if it is a text label. */
-  get _stringLabel(): string | null {
+  _stringLabel(): string | null {
     return this.label instanceof MdStepLabel ? null : this.label;
   }
 
   /** Returns MdStepLabel if the label of given step is a template label. */
-  get _templateLabel(): MdStepLabel | null {
+  _templateLabel(): MdStepLabel | null {
     return this.label instanceof MdStepLabel ? this.label : null;
   }
 }

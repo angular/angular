@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
-const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
 @Component({
   moduleId: module.id,
   selector: 'stepper-demo',
@@ -36,7 +34,7 @@ export class StepperDemo {
           lastNameFormCtrl: ['', Validators.required],
         }),
         this._formBuilder.group({
-          emailFormCtrl: ['', Validators.pattern(EMAIL_REGEX)]
+          emailFormCtrl: ['', Validators.email]
         }),
       ])
     });
@@ -47,7 +45,7 @@ export class StepperDemo {
     });
 
     this.emailFormGroup = this._formBuilder.group({
-      emailCtrl: ['', Validators.pattern(EMAIL_REGEX)]
+      emailCtrl: ['', Validators.email]
     });
   }
 }

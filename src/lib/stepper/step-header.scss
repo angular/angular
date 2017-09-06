@@ -26,8 +26,7 @@ $mat-step-header-icon-size: 16px !default;
   width: $mat-step-header-icon-size;
 }
 
-.mat-step-label-active,
-.mat-step-label-inactive {
+.mat-step-label {
   display: inline-block;
   white-space: nowrap;
   overflow: hidden;

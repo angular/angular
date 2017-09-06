@@ -5,12 +5,12 @@
                    [tabIndex]="_focusIndex == i ? 0 : -1"
                    [id]="_getStepLabelId(i)"
                    [attr.aria-controls]="_getStepContentId(i)"
-                   [attr.aria-selected]="selectedIndex == i"
+                   [attr.aria-selected]="selectedIndex === i"
                    [index]="i"
                    [icon]="_getIndicatorType(i)"
                    [label]="step.stepLabel || step.label"
-                   [selected]="selectedIndex == i"
-                   [active]="step.completed || selectedIndex == i"
+                   [selected]="selectedIndex === i"
+                   [active]="step.completed || selectedIndex === i"
                    [optional]="step.optional">
   </md-step-header>
 
@@ -19,7 +19,7 @@
          [@stepTransition]="_getAnimationDirection(i)"
          [id]="_getStepContentId(i)"
          [attr.aria-labelledby]="_getStepLabelId(i)"
-         [attr.aria-expanded]="selectedIndex == i">
+         [attr.aria-expanded]="selectedIndex === i">
       <div class="mat-vertical-content">
         <ng-container [ngTemplateOutlet]="step.content"></ng-container>
       </div>

@@ -3,15 +3,15 @@
     <md-step-header  class="mat-horizontal-stepper-header"
                      (click)="step.select()"
                      (keydown)="_onKeydown($event)"
-                     [tabIndex]="_focusIndex == i ? 0 : -1"
+                     [tabIndex]="_focusIndex === i ? 0 : -1"
                      [id]="_getStepLabelId(i)"
                      [attr.aria-controls]="_getStepContentId(i)"
                      [attr.aria-selected]="selectedIndex == i"
                      [index]="i"
                      [icon]="_getIndicatorType(i)"
                      [label]="step.stepLabel || step.label"
-                     [selected]="selectedIndex == i"
-                     [active]="step.completed || selectedIndex == i"
+                     [selected]="selectedIndex === i"
+                     [active]="step.completed || selectedIndex === i"
                      [optional]="step.optional">
     </md-step-header>
     <div *ngIf="!isLast" class="mat-stepper-horizontal-line"></div>
@@ -24,7 +24,7 @@
        [@stepTransition]="_getAnimationDirection(i)"
        [id]="_getStepContentId(i)"
        [attr.aria-labelledby]="_getStepLabelId(i)"
-       [attr.aria-expanded]="selectedIndex == i">
+       [attr.aria-expanded]="selectedIndex === i">
     <ng-container [ngTemplateOutlet]="step.content"></ng-container>
   </div>
 </div>

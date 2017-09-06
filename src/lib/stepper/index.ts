@@ -27,8 +27,17 @@ import {MdStepHeader} from './step-header';
     CdkStepperModule,
     MdIconModule
   ],
-  exports: [MdCommonModule, MdHorizontalStepper, MdVerticalStepper, MdStep, MdStepLabel, MdStepper,
-    MdStepperNext, MdStepperPrevious, MdStepHeader],
+  exports: [
+    MdCommonModule,
+    MdHorizontalStepper,
+    MdVerticalStepper,
+    MdStep,
+    MdStepLabel,
+    MdStepper,
+    MdStepperNext,
+    MdStepperPrevious,
+    MdStepHeader
+  ],
   declarations: [MdHorizontalStepper, MdVerticalStepper, MdStep, MdStepLabel, MdStepper,
     MdStepperNext, MdStepperPrevious, MdStepHeader],
 })

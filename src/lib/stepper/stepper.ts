@@ -55,9 +55,11 @@ export class MdStep extends _MdStep implements ErrorOptions {
   constructor(@Inject(forwardRef(() => MdStepper)) mdStepper: MdStepper,
               @Optional() @SkipSelf() @Inject(MD_ERROR_GLOBAL_OPTIONS) errorOptions: ErrorOptions) {
     super(mdStepper);
-    this._originalErrorStateMatcher =
-        errorOptions ? errorOptions.errorStateMatcher || defaultErrorStateMatcher
-            : defaultErrorStateMatcher;
+    if (errorOptions && errorOptions.errorStateMatcher) {
+      this._originalErrorStateMatcher = errorOptions.errorStateMatcher;
+    } else {
+      this._originalErrorStateMatcher = defaultErrorStateMatcher;
+    }
   }
 
   /** Custom error state matcher that additionally checks for validity of interacted form. */

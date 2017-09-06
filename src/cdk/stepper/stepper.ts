@@ -30,7 +30,7 @@ import {LEFT_ARROW, RIGHT_ARROW, ENTER, SPACE} from '@angular/cdk/keycodes';
 import {CdkStepLabel} from './step-label';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {AbstractControl} from '@angular/forms';
-import {Directionality} from '@angular/cdk/bidi';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 
 /** Used to generate unique ID for each stepper component. */
 let nextId = 0;
@@ -151,8 +151,7 @@ export class CdkStepper {
   @Input()
   get selected() { return this._steps[this.selectedIndex]; }
   set selected(step: CdkStep) {
-    let index = this._steps.toArray().indexOf(step);
-    this.selectedIndex = index;
+    this.selectedIndex = this._steps.toArray().indexOf(step);
   }
 
   /** Event emitted when the selected step has changed. */
@@ -192,12 +191,11 @@ export class CdkStepper {
   _getAnimationDirection(index: number): StepContentPositionState {
     const position = index - this._selectedIndex;
     if (position < 0) {
-      return 'previous';
+      return this._layoutDirection() === 'rtl' ? 'next' : 'previous';
     } else if (position > 0) {
-      return 'next';
-    } else {
-      return 'current';
+      return this._layoutDirection() === 'rtl' ? 'previous' : 'next';
     }
+    return 'current';
   }
 
   /** Returns the type of icon to be displayed. */
@@ -224,17 +222,17 @@ export class CdkStepper {
   _onKeydown(event: KeyboardEvent) {
     switch (event.keyCode) {
       case RIGHT_ARROW:
-        if (this._dir && this._dir.value === 'rtl') {
-          this._focusStep((this._focusIndex + this._steps.length - 1) % this._steps.length);
+        if (this._layoutDirection() === 'rtl') {
+          this._focusPreviousStep();
         } else {
-          this._focusStep((this._focusIndex + 1) % this._steps.length);
+          this._focusNextStep();
         }
         break;
       case LEFT_ARROW:
-        if (this._dir && this._dir.value === 'rtl') {
-          this._focusStep((this._focusIndex + 1) % this._steps.length);
+        if (this._layoutDirection() === 'rtl') {
+          this._focusNextStep();
         } else {
-          this._focusStep((this._focusIndex + this._steps.length - 1) % this._steps.length);
+          this._focusPreviousStep();
         }
         break;
       case SPACE:
@@ -248,17 +246,28 @@ export class CdkStepper {
     event.preventDefault();
   }
 
+  private _focusNextStep() {
+    this._focusStep((this._focusIndex + 1) % this._steps.length);
+  }
+
+  private _focusPreviousStep() {
+    this._focusStep((this._focusIndex + this._steps.length - 1) % this._steps.length);
+  }
+
   private _focusStep(index: number) {
     this._focusIndex = index;
     this._stepHeader.toArray()[this._focusIndex].nativeElement.focus();
   }
 
   private _anyControlsInvalid(index: number): boolean {
-    const stepsArray = this._steps.toArray();
-    stepsArray[this._selectedIndex].interacted = true;
-    if (this._linear) {
-      return stepsArray.slice(0, index).some(step => step.stepControl.invalid);
+    this._steps.toArray()[this._selectedIndex].interacted = true;
+    if (this._linear && index >= 0) {
+      return this._steps.toArray().slice(0, index).some(step => step.stepControl.invalid);
     }
     return false;
+  }
+
+  private _layoutDirection(): Direction {
+    return this._dir && this._dir.value === 'rtl' ? 'rtl' : 'ltr';
   }
 }
