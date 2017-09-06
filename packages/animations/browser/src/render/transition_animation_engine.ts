@@ -68,7 +68,7 @@ export class StateValue {
 
   get params(): {[key: string]: any} { return this.options.params as{[key: string]: any}; }
 
-  constructor(input: any, public namespaceId: string = '') {
+  constructor(input: any) {
     const isObj = input && input.hasOwnProperty('value');
     const value = isObj ? input['value'] : input;
     this.value = normalizeTriggerValue(value);
@@ -192,7 +192,7 @@ export class AnimationTransitionNamespace {
     }
 
     let fromState = triggersWithStates[triggerName];
-    const toState = new StateValue(value, this.id);
+    const toState = new StateValue(value);
 
     const isObj = value && value.hasOwnProperty('value');
     if (!isObj && fromState) {
@@ -306,13 +306,16 @@ export class AnimationTransitionNamespace {
   }
 
   private _destroyInnerNodes(rootElement: any, context: any, animate: boolean = false) {
-    // emulate a leave animation for all inner nodes within this node.
-    // If there are no animations found for any of the nodes then clear the cache
-    // for the element.
     this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true).forEach(elm => {
-      const namespaces = this._engine.fetchNamespacesByElement(elm);
-      if (namespaces.size) {
-        namespaces.forEach(ns => ns.removeNode(elm, context, true));
+      if (animate && containsClass(elm, this._hostClassName)) {
+        const innerNs = this._engine.namespacesByHostElement.get(elm);
+
+        // special case for a host element with animations on the same element
+        if (innerNs) {
+          innerNs.removeNode(elm, context, true);
+        }
+
+        this.removeNode(elm, context, true);
       } else {
         this.clearElementCache(elm);
       }
@@ -599,29 +602,6 @@ export class TransitionAnimationEngine {
   }
 
   private _fetchNamespace(id: string) { return this._namespaceLookup[id]; }
-
-  fetchNamespacesByElement(element: any): Set<AnimationTransitionNamespace> {
-    // normally there should only be one namespace per element, however
-    // if @triggers are placed on both the component element and then
-    // its host element (within the component code) then there will be
-    // two namespaces returned. We use a set here to simply the dedupe
-    // of namespaces incase there are multiple triggers both the elm and host
-    const namespaces = new Set<AnimationTransitionNamespace>();
-    const elementStates = this.statesByElement.get(element);
-    if (elementStates) {
-      const keys = Object.keys(elementStates);
-      for (let i = 0; i < keys.length; i++) {
-        const nsId = elementStates[keys[i]].namespaceId;
-        if (nsId) {
-          const ns = this._fetchNamespace(nsId);
-          if (ns) {
-            namespaces.add(ns);
-          }
-        }
-      }
-    }
-    return namespaces;
-  }
 
   trigger(namespaceId: string, element: any, name: string, value: any): boolean {
     if (isElementNode(element)) {
