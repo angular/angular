@@ -33,6 +33,8 @@ import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {RxChain, switchMap, startWith} from '../core/rxjs/index';
 import {merge} from 'rxjs/observable/merge';
 import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
+import {MATERIAL_COMPATIBILITY_MODE} from '../core/compatibility/compatibility';
+
 
 export class MdSelectionListBase {}
 export const _MdSelectionListMixinBase = mixinDisableRipple(mixinDisabled(MdSelectionListBase));
@@ -68,14 +70,14 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
   },
   templateUrl: 'list-option.html',
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: false}],
 })
 export class MdListOption extends _MdListOptionMixinBase
     implements AfterContentInit, OnDestroy, FocusableOption, CanDisableRipple {
 
   private _lineSetter: MdLineSetter;
   private _selected: boolean = false;
-  /** Whether the checkbox is disabled. */
   private _disabled: boolean = false;
   private _value: any;
 
