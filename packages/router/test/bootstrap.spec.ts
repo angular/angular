@@ -84,8 +84,8 @@ describe('bootstrap', () => {
       expect(data['test']).toEqual('test-data');
       expect(log).toEqual([
         'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
-        'ChildActivationStart', 'GuardsCheckEnd', 'ResolveStart', 'ResolveEnd', 'RootCmp',
-        'ChildActivationEnd', 'NavigationEnd'
+        'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart', 'ResolveEnd',
+        'RootCmp', 'ActivationEnd', 'ChildActivationEnd', 'NavigationEnd'
       ]);
       done();
     });
@@ -122,7 +122,7 @@ describe('bootstrap', () => {
          // ResolveEnd has not been emitted yet because bootstrap returned too early
          expect(log).toEqual([
            'TestModule', 'RootCmp', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
-           'ChildActivationStart', 'GuardsCheckEnd', 'ResolveStart'
+           'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart'
          ]);
 
          router.events.subscribe((e) => {

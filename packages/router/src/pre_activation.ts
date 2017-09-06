@@ -19,7 +19,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
-import {ChildActivationStart, Event} from './events';
+import {ActivationStart, ChildActivationStart, Event} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
 import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
@@ -201,12 +201,28 @@ export class PreActivation {
   private runCanActivateChecks(): Observable<boolean> {
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ = concatMap.call(
-        checks$, (check: CanActivate) => andObservables(from([
-                   this.fireChildActivationStart(check.route.parent),
-                   this.runCanActivateChild(check.path), this.runCanActivate(check.route)
-                 ])));
+        checks$,
+        (check: CanActivate) => andObservables(from([
+          this.fireChildActivationStart(check.route.parent), this.fireActivationStart(check.route),
+          this.runCanActivateChild(check.path), this.runCanActivate(check.route)
+        ])));
     return every.call(runningChecks$, (result: boolean) => result === true);
     // this.fireChildActivationStart(check.path),
+  }
+
+  /**
+   * This should fire off `ChildActivationStart` events for each route being activated at this
+   * level.
+   * In other words, if you're activating `a` and `b` below, `path` will contain the
+   * `ActivatedRouteSnapshot`s for both and we will fire `ChildActivationStart` for both. Always
+   * return
+   * `true` so checks continue to run.
+   */
+  private fireActivationStart(snapshot: ActivatedRouteSnapshot|null): Observable<boolean> {
+    if (snapshot !== null && this.forwardEvent) {
+      this.forwardEvent(new ActivationStart(snapshot));
+    }
+    return of (true);
   }
 
   /**
@@ -223,6 +239,7 @@ export class PreActivation {
     }
     return of (true);
   }
+
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
     const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;
     if (!canActivate || canActivate.length === 0) return of (true);

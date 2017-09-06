@@ -110,7 +110,9 @@ describe('Router', () => {
         p.initalize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
         expect(result).toBe(true);
-        expect(events.length).toEqual(1);
+        expect(events.length).toEqual(2);
+        expect(events[0].snapshot).toBe(events[0].snapshot.root);
+        expect(events[1].snapshot.routeConfig.path).toBe('child');
       });
 
       it('should run from top to bottom', () => {
@@ -142,10 +144,11 @@ describe('Router', () => {
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
         expect(result).toBe(true);
-        expect(events.length).toEqual(3);
+        expect(events.length).toEqual(6);
         expect(events[0].snapshot).toBe(events[0].snapshot.root);
-        expect(events[1].snapshot.routeConfig.path).toBe('child');
-        expect(events[2].snapshot.routeConfig.path).toBe('grandchild');
+        expect(events[2].snapshot.routeConfig.path).toBe('child');
+        expect(events[4].snapshot.routeConfig.path).toBe('grandchild');
+        expect(events[5].snapshot.routeConfig.path).toBe('great-grandchild');
       });
 
       it('should not run for unchanged routes', () => {
@@ -174,7 +177,7 @@ describe('Router', () => {
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
         expect(result).toBe(true);
-        expect(events.length).toEqual(1);
+        expect(events.length).toEqual(2);
         expect(events[0].snapshot).not.toBe(events[0].snapshot.root);
         expect(events[0].snapshot.routeConfig.path).toBe('child');
       });
@@ -220,11 +223,11 @@ describe('Router', () => {
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
         expect(result).toBe(true);
-        expect(events.length).toEqual(2);
+        expect(events.length).toEqual(4);
         expect(events[0] instanceof ChildActivationStart).toBe(true);
         expect(events[0].snapshot).not.toBe(events[0].snapshot.root);
         expect(events[0].snapshot.routeConfig.path).toBe('grandchild');
-        expect(events[1].snapshot.routeConfig.path).toBe('greatgrandchild');
+        expect(events[2].snapshot.routeConfig.path).toBe('greatgrandchild');
       });
     });
 

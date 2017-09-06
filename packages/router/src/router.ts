@@ -21,7 +21,7 @@ import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
-import {ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {PreActivation} from './pre_activation';
 import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
@@ -862,8 +862,10 @@ class ActivateRoutes {
       futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>|null,
       contexts: ChildrenOutletContexts): void {
     const children: {[outlet: string]: any} = nodeChildrenAsMap(currNode);
-    futureNode.children.forEach(
-        c => { this.activateRoutes(c, children[c.value.outlet], contexts); });
+    futureNode.children.forEach(c => {
+      this.activateRoutes(c, children[c.value.outlet], contexts);
+      this.forwardEvent(new ActivationEnd(c.value.snapshot));
+    });
     if (futureNode.children.length) {
       this.forwardEvent(new ChildActivationEnd(futureNode.value.snapshot));
     }
