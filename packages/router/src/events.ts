@@ -289,6 +289,38 @@ export class ChildActivationEnd {
 }
 
 /**
+ * @whatItDoes Represents the start of end of the Resolve phase of routing. See note on
+ * {@link ActivationEnd} for use of this experimental API.
+ *
+ * @experimental
+ */
+export class ActivationStart {
+  constructor(
+      /** @docsNotRequired */
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `ChildActivationStart(path: '${path}')`;
+  }
+}
+
+/**
+ * @whatItDoes Represents the start of end of the Resolve phase of routing. See note on
+ * {@link ActivationStart} for use of this experimental API.
+ *
+ * @experimental
+ */
+export class ActivationEnd {
+  constructor(
+      /** @docsNotRequired */
+      public snapshot: ActivatedRouteSnapshot) {}
+  toString(): string {
+    const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
+    return `ChildActivationEnd(path: '${path}')`;
+  }
+}
+
+/**
  * @whatItDoes Represents a router event, allowing you to track the lifecycle of the router.
  *
  * The sequence of router events is:
@@ -310,4 +342,5 @@ export class ChildActivationEnd {
  * @stable
  */
 export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
-    ChildActivationEnd;
+    ChildActivationEnd | ActivationStart | ActivationEnd;
+;

@@ -11,7 +11,7 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ActivatedRoute, ActivatedRouteSnapshot, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
@@ -705,18 +705,31 @@ describe('Integration', () => {
        expect(user.recordedParams).toEqual([{name: 'init'}, {name: 'fedor'}]);
 
        expectEvents(recordedEvents, [
-         [NavigationStart, '/user/init'],   [RoutesRecognized, '/user/init'],
-         [GuardsCheckStart, '/user/init'],  [ChildActivationStart],
-         [GuardsCheckEnd, '/user/init'],    [ResolveStart, '/user/init'],
-         [ResolveEnd, '/user/init'],        [ChildActivationEnd],
+         [NavigationStart, '/user/init'],
+         [RoutesRecognized, '/user/init'],
+         [GuardsCheckStart, '/user/init'],
+         [ChildActivationStart],
+         [ActivationStart],
+         [GuardsCheckEnd, '/user/init'],
+         [ResolveStart, '/user/init'],
+         [ResolveEnd, '/user/init'],
+         [ActivationEnd],
+         [ChildActivationEnd],
          [NavigationEnd, '/user/init'],
 
-         [NavigationStart, '/user/victor'], [NavigationCancel, '/user/victor'],
+         [NavigationStart, '/user/victor'],
+         [NavigationCancel, '/user/victor'],
 
-         [NavigationStart, '/user/fedor'],  [RoutesRecognized, '/user/fedor'],
-         [GuardsCheckStart, '/user/fedor'], [ChildActivationStart],
-         [GuardsCheckEnd, '/user/fedor'],   [ResolveStart, '/user/fedor'],
-         [ResolveEnd, '/user/fedor'],       [ChildActivationEnd],
+         [NavigationStart, '/user/fedor'],
+         [RoutesRecognized, '/user/fedor'],
+         [GuardsCheckStart, '/user/fedor'],
+         [ChildActivationStart],
+         [ActivationStart],
+         [GuardsCheckEnd, '/user/fedor'],
+         [ResolveStart, '/user/fedor'],
+         [ResolveEnd, '/user/fedor'],
+         [ActivationEnd],
+         [ChildActivationEnd],
          [NavigationEnd, '/user/fedor']
        ]);
      })));
@@ -743,8 +756,9 @@ describe('Integration', () => {
          [NavigationStart, '/invalid'], [NavigationError, '/invalid'],
 
          [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
-         [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [GuardsCheckEnd, '/user/fedor'],
-         [ResolveStart, '/user/fedor'], [ResolveEnd, '/user/fedor'], [ChildActivationEnd],
+         [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
+         [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
+         [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
          [NavigationEnd, '/user/fedor']
        ]);
      })));
@@ -924,6 +938,8 @@ describe('Integration', () => {
        expect(cmp.url).toBe('/cmp');
        expect(cmp.path.length).toEqual(2);
      })));
+
+
 
   describe('data', () => {
     class ResolveSix implements Resolve<number> {
@@ -1465,11 +1481,15 @@ describe('Integration', () => {
 
              expect(location.path()).toEqual('/');
              expectEvents(recordedEvents, [
-               [NavigationStart, '/team/22'], [RoutesRecognized, '/team/22'],
-               [GuardsCheckStart, '/team/22'], [ChildActivationStart], [GuardsCheckEnd, '/team/22'],
-               [NavigationCancel, '/team/22']
+               [NavigationStart, '/team/22'],
+               [RoutesRecognized, '/team/22'],
+               [GuardsCheckStart, '/team/22'],
+               [ChildActivationStart],
+               [ActivationStart],
+               [GuardsCheckEnd, '/team/22'],
+               [NavigationCancel, '/team/22'],
              ]);
-             expect((recordedEvents[4] as GuardsCheckEnd).shouldActivate).toBe(false);
+             expect((recordedEvents[5] as GuardsCheckEnd).shouldActivate).toBe(false);
            })));
       });
 
@@ -2392,11 +2412,15 @@ describe('Integration', () => {
                  [RoutesRecognized, '/lazyTrue/loaded'],
                  [GuardsCheckStart, '/lazyTrue/loaded'],
                  [ChildActivationStart],
+                 [ActivationStart],
                  [ChildActivationStart],
+                 [ActivationStart],
                  [GuardsCheckEnd, '/lazyTrue/loaded'],
                  [ResolveStart, '/lazyTrue/loaded'],
                  [ResolveEnd, '/lazyTrue/loaded'],
+                 [ActivationEnd],
                  [ChildActivationEnd],
+                 [ActivationEnd],
                  [ChildActivationEnd],
                  [NavigationEnd, '/lazyTrue/loaded'],
                ]);
@@ -2428,9 +2452,9 @@ describe('Integration', () => {
              [NavigationCancel, '/lazyFalse/loaded'],
 
              [NavigationStart, '/blank'], [RoutesRecognized, '/blank'],
-             [GuardsCheckStart, '/blank'], [ChildActivationStart], [GuardsCheckEnd, '/blank'],
-             [ResolveStart, '/blank'], [ResolveEnd, '/blank'], [ChildActivationEnd],
-             [NavigationEnd, '/blank']
+             [GuardsCheckStart, '/blank'], [ChildActivationStart], [ActivationStart],
+             [GuardsCheckEnd, '/blank'], [ResolveStart, '/blank'], [ResolveEnd, '/blank'],
+             [ActivationEnd], [ChildActivationEnd], [NavigationEnd, '/blank']
            ]);
          })));
 
@@ -2560,6 +2584,40 @@ describe('Integration', () => {
                expect(logger.logs).toEqual(['canDeactivate_simple', 'canDeactivate_team']);
              })));
     });
+  });
+
+  describe('route events', () => {
+    it('should fire matching (Child)ActivationStart/End events',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+
+         const recordedEvents: any[] = [];
+         router.events.forEach(e => recordedEvents.push(e));
+
+         router.navigateByUrl('/user/fedor');
+         advance(fixture);
+
+         expect(fixture.nativeElement).toHaveText('user fedor');
+         expect(recordedEvents[3] instanceof ChildActivationStart).toBe(true);
+         expect(recordedEvents[3].snapshot).toBe(recordedEvents[9].snapshot.root);
+         expect(recordedEvents[9] instanceof ChildActivationEnd).toBe(true);
+         expect(recordedEvents[9].snapshot).toBe(recordedEvents[9].snapshot.root);
+
+         expect(recordedEvents[4] instanceof ActivationStart).toBe(true);
+         expect(recordedEvents[4].snapshot.routeConfig.path).toBe('user/:name');
+         expect(recordedEvents[8] instanceof ActivationEnd).toBe(true);
+         expect(recordedEvents[8].snapshot.routeConfig.path).toBe('user/:name');
+
+         expectEvents(recordedEvents, [
+           [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
+           [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
+           [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
+           [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
+           [NavigationEnd, '/user/fedor']
+         ]);
+       })));
   });
 
   describe('routerActiveLink', () => {

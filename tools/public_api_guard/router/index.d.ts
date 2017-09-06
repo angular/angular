@@ -39,6 +39,22 @@ export declare class ActivatedRouteSnapshot {
     toString(): string;
 }
 
+/** @experimental */
+export declare class ActivationEnd {
+    snapshot: ActivatedRouteSnapshot;
+    constructor(
+        snapshot: ActivatedRouteSnapshot);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class ActivationStart {
+    snapshot: ActivatedRouteSnapshot;
+    constructor(
+        snapshot: ActivatedRouteSnapshot);
+    toString(): string;
+}
+
 /** @stable */
 export interface CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
@@ -103,7 +119,7 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 export declare type DetachedRouteHandle = {};
 
 /** @stable */
-export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd;
+export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd;
 
 /** @stable */
 export interface ExtraOptions {
