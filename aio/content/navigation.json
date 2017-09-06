@@ -424,7 +424,7 @@
       "title": "Help",
       "children": [
         {
-          "url": "http://stackoverflow.com/questions/tagged/angular2",
+          "url": "https://stackoverflow.com/questions/tagged/angular",
           "title": "Stack Overflow",
           "tooltip": "Stack Overflow: where the community answers your technical Angular questions."
         },
