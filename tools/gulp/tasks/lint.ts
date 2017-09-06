@@ -6,7 +6,6 @@ import {red} from 'chalk';
 
 // These types lack of type definitions
 const madge = require('madge');
-const resolveBin = require('resolve-bin');
 
 /** Glob that matches all SCSS or CSS files that should be linted. */
 const stylesGlob = '+(tools|src)/**/!(*.bundle).+(css|scss)';
@@ -28,10 +27,10 @@ task('stylelint', execNodeTask(
 ));
 
 /** Task to run TSLint against the e2e/ and src/ directories. */
-task('tslint', execTsLintTask());
+task('tslint', execNodeTask('tslint', tsLintBaseFlags));
 
 /** Task that automatically fixes TSLint warnings. */
-task('tslint:fix', execTsLintTask('--fix'));
+task('tslint:fix', execNodeTask('tslint', [...tsLintBaseFlags, '--fix']));
 
 /** Task that runs madge to detect circular dependencies. */
 task('madge', ['material:clean-build'], () => {
@@ -50,14 +49,4 @@ task('madge', ['material:clean-build'], () => {
 /** Returns a string that formats the graph of circular modules. */
 function formatMadgeCircularModules(circularModules: string[][]): string {
   return circularModules.map((modulePaths: string[]) => `\n - ${modulePaths.join(' > ')}`).join('');
-}
-
-/** Creates a gulp task function that will run TSLint together with ts-node. */
-function execTsLintTask(...flags: string[]) {
-  const tslintBinPath = resolveBin.sync('tslint');
-  const tsNodeOptions = ['-O', '{"module": "commonjs"}'];
-
-  // TS-Node needs the module compiler option to be set to `commonjs` because the transpiled
-  // TypeScript files will be running inside of NodeJS.
-  return execNodeTask('ts-node', [...tsNodeOptions, tslintBinPath, ...tsLintBaseFlags, ...flags]);
 }

@@ -35,17 +35,17 @@ class Walker extends Lint.RuleWalker {
     this._enabled = fileGlobs.some(p => minimatch(relativeFilePath, p));
   }
 
-  visitClassDeclaration(node) {
+  visitClassDeclaration(node: ts.ClassDeclaration) {
     if (!this._enabled || !node.decorators) {
       return;
     }
 
     node.decorators
-      .map(decorator => decorator.expression)
+      .map(decorator => decorator.expression as any)
       .filter(expression => expression.expression.getText() === 'Component')
       .filter(expression => expression.arguments.length && expression.arguments[0].properties)
       .forEach(expression => {
-        const hasTurnedOffEncapsulation = expression.arguments[0].properties.some(prop => {
+        const hasTurnedOffEncapsulation = expression.arguments[0].properties.some((prop: any) => {
           const value = prop.initializer.getText();
           return prop.name.getText() === 'encapsulation' && value.endsWith('.None');
         });

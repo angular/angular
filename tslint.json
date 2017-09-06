@@ -85,7 +85,7 @@
     "linebreak-style": [true, "LF"],
 
     // Custom Rules
-
+    "ts-loader": true,
     "no-exposed-todo": true,
     "no-view-encapsulation": [
       true,
