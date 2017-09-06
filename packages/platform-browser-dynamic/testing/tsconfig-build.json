@@ -28,6 +28,6 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/platform-browser-dymamic/testing"
+    "flatModuleId": "@angular/platform-browser-dynamic/testing"
   }
 }
