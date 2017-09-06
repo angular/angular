@@ -52,7 +52,7 @@ export class MdGridTile {
    * Sets the style of the grid-tile element.  Needs to be set manually to avoid
    * "Changed after checked" errors that would occur with HostBinding.
    */
-  _setStyle(property: string, value: string): void {
+  _setStyle(property: string, value: any): void {
     this._renderer.setStyle(this._element.nativeElement, property, value);
   }
 }

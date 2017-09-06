@@ -64,13 +64,13 @@ describe('MdGridList', () => {
   it('should use a ratio row height if passed in', () => {
     let fixture = TestBed.createComponent(GirdListWithRowHeightRatio);
 
-    fixture.componentInstance.heightRatio = '4:1';
+    fixture.componentInstance.rowHeight = '4:1';
     fixture.detectChanges();
 
     let tile = fixture.debugElement.query(By.directive(MdGridTile));
     expect(getStyle(tile, 'padding-top')).toBe('100px');
 
-    fixture.componentInstance.heightRatio = '2:1';
+    fixture.componentInstance.rowHeight = '2:1';
     fixture.detectChanges();
 
     expect(getStyle(tile, 'padding-top')).toBe('200px');
@@ -257,7 +257,7 @@ describe('MdGridList', () => {
   it('should not use calc() that evaluates to 0', () => {
     const fixture = TestBed.createComponent(GirdListWithRowHeightRatio);
 
-    fixture.componentInstance.heightRatio = '4:1';
+    fixture.componentInstance.rowHeight = '4:1';
     fixture.detectChanges();
 
     const firstTile = fixture.debugElement.query(By.directive(MdGridTile)).nativeElement;
@@ -265,6 +265,28 @@ describe('MdGridList', () => {
     expect(firstTile.style.marginTop).toBe('0px');
     expect(firstTile.style.left).toBe('0px');
   });
+
+  it('should reset the old styles when switching to a new tile styler', () => {
+    const fixture = TestBed.createComponent(GirdListWithRowHeightRatio);
+
+    fixture.componentInstance.rowHeight = '4:1';
+    fixture.detectChanges();
+
+    const list = fixture.debugElement.query(By.directive(MdGridList));
+    const tile = fixture.debugElement.query(By.directive(MdGridTile));
+
+    expect(getStyle(tile, 'padding-top')).toBe('100px');
+    expect(getStyle(list, 'padding-bottom')).toBe('100px');
+
+    fixture.componentInstance.rowHeight = '400px';
+    fixture.detectChanges();
+
+    expect(getStyle(tile, 'padding-top')).toBe('0px', 'Expected tile padding to be reset.');
+    expect(getStyle(list, 'padding-bottom')).toBe('0px', 'Expected list padding to be reset.');
+    expect(getStyle(tile, 'top')).toBe('0px');
+    expect(getStyle(tile, 'height')).toBe('400px');
+  });
+
 });
 
 
@@ -306,12 +328,12 @@ class GridListWithUnspecifiedRowHeight { }
 
 @Component({template: `
     <div style="width:400px">
-      <md-grid-list cols="1" [rowHeight]="heightRatio">
+      <md-grid-list cols="1" [rowHeight]="rowHeight">
         <md-grid-tile></md-grid-tile>
       </md-grid-list>
     </div>`})
 class GirdListWithRowHeightRatio {
-  heightRatio: string;
+  rowHeight: string;
 }
 
 @Component({template: `

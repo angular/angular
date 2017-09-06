@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MdGridList} from './grid-list';
 import {MdGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 
@@ -139,6 +140,13 @@ export abstract class TileStyler {
    * @docs-private
    */
   getComputedHeight(): [string, string] | null { return null; }
+
+  /**
+   * Called when the tile styler is swapped out with a different one. To be used for cleanup.
+   * @param list Grid list that the styler was attached to.
+   * @docs-private
+   */
+  abstract reset(list: MdGridList);
 }
 
 
@@ -165,6 +173,15 @@ export class FixedTileStyler extends TileStyler {
     return [
       'height', calc(`${this.getTileSpan(this.fixedRowHeight)} + ${this.getGutterSpan()}`)
     ];
+  }
+
+  reset(list: MdGridList) {
+    list._setListStyle(['height', null]);
+
+    list._tiles.forEach(tile => {
+      tile._setStyle('top', null);
+      tile._setStyle('height', null);
+    });
   }
 }
 
@@ -203,8 +220,17 @@ export class RatioTileStyler extends TileStyler {
     ];
   }
 
+  reset(list: MdGridList) {
+    list._setListStyle(['padding-bottom', null]);
+
+    list._tiles.forEach(tile => {
+      tile._setStyle('margin-top', null);
+      tile._setStyle('padding-top', null);
+    });
+  }
+
   private _parseRatio(value: string): void {
-    let ratioParts = value.split(':');
+    const ratioParts = value.split(':');
 
     if (ratioParts.length !== 2) {
       throw Error(`md-grid-list: invalid ratio given for row-height: "${value}"`);
@@ -237,6 +263,12 @@ export class FitTileStyler extends TileStyler {
     tile._setStyle('height', calc(this.getTileSize(baseTileHeight, tile.rowspan)));
   }
 
+  reset(list: MdGridList) {
+    list._tiles.forEach(tile => {
+      tile._setStyle('top', null);
+      tile._setStyle('height', null);
+    });
+  }
 }
 
 
