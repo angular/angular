@@ -126,3 +126,22 @@ that the AOT compiler knows to create the `ComponentFactory` for it.
 })
 export class AppModule() {}
 ```
+
+### Accessibility
+By default, each dialog has `role="dialog"` on the root element. The role can be changed to
+`alertdialog` via the `MdDialogConfig` when opening.
+
+The `aria-label`, `aria-labelledby`, and `aria-describedby` attributes can all be set to the
+dialog element via the `MdDialogConfig` as well. Each dialog should typically have a label
+set via `aria-label` or `aria-labelledby`.
+
+#### Focus management
+By default, the first tabbable element within the dialog will receive focus upon open.
+
+Tabbing through the elements of the dialog will keep focus inside of the dialog element,
+wrapping back to the first tabbable element when reaching the end of the tab sequence.
+
+#### Keyboard interaction
+By default pressing the escape key will close the dialog. While this behavior can
+be turned off via the `disableClose` option, users should generally avoid doing so
+as it breaks the expected interaction pattern for screen-reader users.

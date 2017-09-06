@@ -33,3 +33,6 @@ When used on an `md-table` header, it is not required to set an `md-sort-header`
 by default it will use the id of the column.
 
 <!-- example(table-sorting) -->
+
+### Accessibility
+The `aria-label` for the sort button can be set in `MdSortHeaderIntl`.

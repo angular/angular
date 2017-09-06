@@ -98,3 +98,12 @@ panel can be expanded at a given time:
 
 </md-accordion>
 ```
+
+### Accessibility
+The expansion-panel aims to mimic the experience of the native `<details>` and `<summary>` elements.
+The expansion panel header has `role="button"`. The expansion panel header has attribute
+`aria-controls` with the expansion panel's id as value.
+
+The expansion panel headers are buttons. Users can use the keyboard to activate the expansion panel
+header to switch between expanded state and collapsed state. Because the header acts as a button,
+additional interactive elements should not be put inside of the header.

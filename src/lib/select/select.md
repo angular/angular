@@ -92,3 +92,9 @@ Here are the available global options:
 - <kbd>DOWN_ARROW</kbd>: Focus next option
 - <kbd>UP_ARROW</kbd>: Focus previous option
 - <kbd>ENTER</kbd> or <kbd>SPACE</kbd>: Select focused item
+
+### Accessibility
+The select component without text or label should be given a meaningful label via
+`aria-label` or `aria-labelledby`.
+
+The select component has `role="listbox"` and options inside select have `role="option"`.

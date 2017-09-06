@@ -24,3 +24,6 @@ This will allow you to change the following:
  1. The label for the length of each page.
  2. The range text displayed to the user.
  3. The tooltip messages on the navigation buttons.
+
+### Accessibility
+The `aria-label`s for next page and previous page buttons can be set in `MdPaginatorIntl`.

@@ -38,3 +38,7 @@ also gain focus when clicked, ensuring keyboard navigation starts at the appropr
 The selected color of an `<md-chip>` can be changed by using the `color` property. By default, chips
 use a neutral background color based on the current theme (light or dark). This can be changed to 
 `'primary'`, `'accent'`, or `'warn'`.
+
+### Accessibility
+A chip-list behaves as a `role="listbox"`, with each chip being a `role="option"`. The chip input
+should have a placeholder or be given a meaningful label via `aria-label` or `aria-labelledby`.

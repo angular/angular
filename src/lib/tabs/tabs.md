@@ -79,3 +79,16 @@ provides a tab-like UI for navigating between routes.
 The tab-nav-bar is not tied to any particular router; it works with normal `<a>` elements and uses
 the `active` property to determine which tab is currently active. The corresponding
 `<router-outlet>` can be placed anywhere in the view.
+
+### Accessibility
+Tabs without text or labels should be given a meaningful label via `aria-label` or
+`aria-labelledby`. For `MdTabNav`, the `<nav>` element should have a label as well.
+
+
+#### Keyboard shortcuts
+
+| Shortcut             | Action                     |
+|----------------------|----------------------------|
+| `LEFT_ARROW`         | Move focus to previous tab |
+| `RIGHT_ARROW`        | Move focus to next tab     |
+| `SPACE` or 'ENTER'   | Switch to focused tab      |
