@@ -27,7 +27,7 @@ export function composeRelease(buildPackage: BuildPackage) {
   inlinePackageMetadataFiles(packageOut);
 
   copyFiles(packageOut, '**/*.+(d.ts|metadata.json)', join(releasePath, 'typings'));
-  copyFiles(bundlesDir, `${packageName}?(-*).umd.js?(.map)`, join(releasePath, 'bundles'));
+  copyFiles(bundlesDir, `${packageName}?(-*).umd?(.min).js?(.map)`, join(releasePath, 'bundles'));
   copyFiles(bundlesDir, `${packageName}?(.es5).js?(.map)`, join(releasePath, '@angular'));
   copyFiles(join(bundlesDir, packageName), '**', join(releasePath, '@angular', packageName));
   copyFiles(projectDir, 'LICENSE', releasePath);
