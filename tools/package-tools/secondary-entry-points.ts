@@ -92,7 +92,7 @@ function buildPackageImportStatementFindCommand(searchDirectory: string, package
   if (platform() === 'win32') {
     return {
       binary: 'findstr',
-      args: ['/r', `from.'@angular/${packageName}/.*'`, `${searchDirectory}\\*`]
+      args: ['/r', `from.'@angular/${packageName}/.*'`, `${searchDirectory}\\*.ts`]
     };
   } else {
     return {
