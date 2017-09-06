@@ -17,5 +17,12 @@
     "index.ts",
     "../../../node_modules/@types/jasmine/index.d.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
-  ]
+  ],
+
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/platform-browser-dynamic/testing"
+  }
 }
