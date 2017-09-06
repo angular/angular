@@ -31,7 +31,6 @@ export class DowngradeComponentAdapter {
       private parentInjector: Injector, private $injector: angular.IInjectorService,
       private $compile: angular.ICompileService, private $parse: angular.IParseService,
       private componentFactory: ComponentFactory<any>) {
-    (this.element[0] as any).id = id;
     this.componentScope = scope.$new();
   }
 
