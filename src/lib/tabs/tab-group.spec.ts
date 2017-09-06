@@ -207,6 +207,35 @@ describe('MdTabGroup', () => {
     });
   });
 
+  describe('disable tabs', () => {
+    let fixture: ComponentFixture<DisabledTabsTestApp>;
+    beforeEach(() => {
+      fixture = TestBed.createComponent(DisabledTabsTestApp);
+    });
+
+    it('should have one disabled tab', () => {
+      fixture.detectChanges();
+      const labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
+      expect(labels.length).toBe(1);
+    });
+
+    it('should set the disabled flag on tab', () => {
+      fixture.detectChanges();
+
+      const tabs = fixture.componentInstance.tabs.toArray();
+      let labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
+      expect(tabs[2].disabled).toBe(false);
+      expect(labels.length).toBe(1);
+
+      fixture.componentInstance.isDisabled = true;
+      fixture.detectChanges();
+
+      expect(tabs[2].disabled).toBe(true);
+      labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
+      expect(labels.length).toBe(2);
+    });
+  });
+
   describe('dynamic binding tabs', () => {
     let fixture: ComponentFixture<SimpleDynamicTabsTestApp>;
 
@@ -481,14 +510,17 @@ class BindedTabsTestApp {
         <ng-template md-tab-label>Tab Two</ng-template>
         Tab two content
       </md-tab>
-      <md-tab>
+      <md-tab [disabled]="isDisabled">
         <ng-template md-tab-label>Tab Three</ng-template>
         Tab three content
       </md-tab>
     </md-tab-group>
   `,
 })
-class DisabledTabsTestApp {}
+class DisabledTabsTestApp {
+  @ViewChildren(MdTab) tabs: QueryList<MdTab>;
+  isDisabled = false;
+}
 
 @Component({
   template: `
