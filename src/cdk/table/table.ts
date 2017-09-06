@@ -69,6 +69,7 @@ export const CDK_TABLE_TEMPLATE = `
  * a header row and data rows. Updates the rows when new data is provided by the data source.
  */
 @Component({
+  moduleId: module.id,
   selector: 'cdk-table',
   template: CDK_TABLE_TEMPLATE,
   host: {

@@ -141,6 +141,7 @@ export class CdkCellOutlet {
 
 /** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({
+  moduleId: module.id,
   selector: 'cdk-header-row',
   template: CDK_ROW_TEMPLATE,
   host: {
@@ -154,6 +155,7 @@ export class CdkHeaderRow { }
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
+  moduleId: module.id,
   selector: 'cdk-row',
   template: CDK_ROW_TEMPLATE,
   host: {

@@ -87,10 +87,12 @@
     // Custom Rules
     "ts-loader": true,
     "no-exposed-todo": true,
-    "no-view-encapsulation": [
-      true,
-      "src/+(lib|cdk)/**/!(*.spec).ts"
-    ],
+    "validate-decorators": [true, {
+      "Component": {
+        "encapsulation": "\\.None$",
+        "moduleId": "^module\\.id$"
+      }
+    }, "src/+(lib|cdk)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
       "src/+(lib|cdk)/**/!(*.spec).ts"

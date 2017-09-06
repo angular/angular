@@ -61,6 +61,7 @@ export class MatRowDef extends _MdCdkRowDef { }
 
 /** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({
+  moduleId: module.id,
   selector: 'md-header-row, mat-header-row',
   template: CDK_ROW_TEMPLATE,
   host: {
@@ -74,6 +75,7 @@ export class MdHeaderRow extends _MdHeaderRow { }
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
+  moduleId: module.id,
   selector: 'md-row, mat-row',
   template: CDK_ROW_TEMPLATE,
   host: {
