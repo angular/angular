@@ -1,9 +1,5 @@
 # Animations
 
-Motion is an important aspect in the design of modern web applications. Good
-user interfaces transition smoothly between states with engaging animations
-that call attention where it's needed. Well-designed animations can make a UI not only
-more fun but also easier to use.
 
 ## Overview
 
