@@ -43,6 +43,8 @@ use `//` style comments for everything else (explanations, background info, etc.
 
 In SCSS code, always use `//` style comments.
 
+In HTML code, use `<!-- ... -->` comments, which will be stripped when packaging a build.
+
 #### Prefer more focused, granular components vs. complex, configurable components.
 
 For example, rather than doing this:
@@ -198,6 +200,13 @@ Boolean properties and return values should use "Whether..." as opposed to "True
   disabled: boolean = false;
 ```
 
+#### Try-Catch
+
+Avoid `try-catch` blocks, instead preferring to prevent an error from being thrown in the first
+place. When impossible to avoid, the `try-catch` block must include a comment that explains the
+specific error being caught and why it cannot be prevented.
+
+
 #### Naming
 
 ##### General
@@ -221,7 +230,8 @@ Avoid suffixing a class with "Service", as it communicates nothing about what th
 think of the class name as a person's job title.
 
 Classes that correspond to a directive with an `md-` prefix should also be prefixed with `Md`.
-CDK classes should not have a prefix.
+CDK classes should only have a `Cdk` prefix when the class is a directive with a `cdk` selector
+prefix.
 
 ##### Methods
 The name of a method should capture the action that is performed *by* that method rather than
@@ -242,7 +252,8 @@ activateRipple() {
 #### Inheritance
 
 Avoid using inheritance to apply reusable behaviors to multiple components. This limits how many
-behaviors can be composed.
+behaviors can be composed. Instead, [TypeScript mixins][ts-mixins] can be used to compose multiple
+common behaviors into a single component.
 
 ### Angular
 
@@ -346,3 +357,5 @@ When it is not super obvious, include a brief description of what a class repres
 // Portion of the floating panel that sits, invisibly, on top of the input.
 .mat-datepicker-input-mask { }
 ```
+
+[ts-mixins]: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-mix-in-classes
