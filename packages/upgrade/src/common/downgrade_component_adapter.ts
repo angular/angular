@@ -28,13 +28,12 @@ export class DowngradeComponentAdapter {
   private appRef: ApplicationRef;
 
   constructor(
-      private id: string, private element: angular.IAugmentedJQuery,
-      private attrs: angular.IAttributes, private scope: angular.IScope,
-      private ngModel: angular.INgModelController, private parentInjector: Injector,
-      private $injector: angular.IInjectorService, private $compile: angular.ICompileService,
-      private $parse: angular.IParseService, private componentFactory: ComponentFactory<any>,
+      private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
+      private scope: angular.IScope, private ngModel: angular.INgModelController,
+      private parentInjector: Injector, private $injector: angular.IInjectorService,
+      private $compile: angular.ICompileService, private $parse: angular.IParseService,
+      private componentFactory: ComponentFactory<any>,
       private wrapCallback: <T>(cb: () => T) => () => T) {
-    (this.element[0] as any).id = id;
     this.componentScope = scope.$new();
     this.appRef = parentInjector.get(ApplicationRef);
   }
