@@ -232,6 +232,52 @@ describe('MdSelectionList', () => {
     });
   });
 
+  describe('with option disabled', () => {
+    let fixture: ComponentFixture<SelectionListWithDisabledOption>;
+    let listOptionEl: HTMLElement;
+    let listOption: MdListOption;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MdListModule],
+        declarations: [SelectionListWithDisabledOption]
+      });
+
+      TestBed.compileComponents();
+    }));
+
+    beforeEach(async(() => {
+      fixture = TestBed.createComponent(SelectionListWithDisabledOption);
+
+      const listOptionDebug = fixture.debugElement.query(By.directive(MdListOption));
+
+      listOption = listOptionDebug.componentInstance;
+      listOptionEl = listOptionDebug.nativeElement;
+
+      fixture.detectChanges();
+    }));
+
+    it('should disable ripples for disabled option', () => {
+      expect(listOption._isRippleDisabled())
+        .toBe(false, 'Expected ripples to be enabled by default');
+
+      fixture.componentInstance.disableItem = true;
+      fixture.detectChanges();
+
+      expect(listOption._isRippleDisabled())
+        .toBe(true, 'Expected ripples to be disabled if option is disabled');
+    });
+
+    it('should apply the "mat-list-item-disabled" class properly', () => {
+      expect(listOptionEl.classList).not.toContain('mat-list-item-disabled');
+
+      fixture.componentInstance.disableItem = true;
+      fixture.detectChanges();
+
+      expect(listOptionEl.classList).toContain('mat-list-item-disabled');
+    });
+  });
+
   describe('with list disabled', () => {
     let fixture: ComponentFixture<SelectionListWithListDisabled>;
     let listOption: DebugElement[];
@@ -361,6 +407,15 @@ class SelectionListWithCheckboxPositionAfter {
     </md-list-option>
   </mat-selection-list>`})
 class SelectionListWithListDisabled {
+}
+
+@Component({template: `
+  <mat-selection-list>
+    <md-list-option [disabled]="disableItem">Item</md-list-option>
+  </mat-selection-list>
+  `})
+class SelectionListWithDisabledOption {
+  disableItem: boolean = false;
 }
 
 @Component({template: `

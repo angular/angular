@@ -65,6 +65,7 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
     '(blur)': '_handleBlur()',
     '(click)': '_handleClick()',
     'tabindex': '-1',
+    '[class.mat-list-item-disabled]': 'disabled',
     '[attr.aria-selected]': 'selected.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
   },
@@ -148,7 +149,7 @@ export class MdListOption extends _MdListOptionMixinBase
 
   /** Whether this list item should show a ripple effect when clicked.  */
   _isRippleDisabled() {
-    return this.disableRipple || this.selectionList.disableRipple;
+    return this.disabled || this.disableRipple || this.selectionList.disableRipple;
   }
 
   _handleClick() {
