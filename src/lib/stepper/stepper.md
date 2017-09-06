@@ -1,5 +1,7 @@
 Angular Material's stepper provides a wizard-like workflow by dividing content into logical steps.
 
+<!-- example(stepper-overview) -->
+
 Material stepper builds on the foundation of the CDK stepper that is responsible for the logic
 that drives a stepped workflow. Material stepper extends the CDK stepper and has Material Design
 styling.

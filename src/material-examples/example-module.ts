@@ -74,6 +74,7 @@ import {SliderOverviewExample} from './slider-overview/slider-overview-example';
 import {PizzaPartyComponent,SnackBarComponentExample} from './snack-bar-component/snack-bar-component-example';
 import {SnackBarOverviewExample} from './snack-bar-overview/snack-bar-overview-example';
 import {SortOverviewExample} from './sort-overview/sort-overview-example';
+import {StepperOverviewExample} from './stepper-overview/stepper-overview-example';
 import {TableBasicExample} from './table-basic/table-basic-example';
 import {TableFilteringExample} from './table-filtering/table-filtering-example';
 import {TableHttpExample} from './table-http/table-http-example';
@@ -454,6 +455,12 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  'stepper-overview': {
+    title: 'Stepper overview',
+    component: StepperOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'table-basic': {
     title: 'Basic table',
     component: TableBasicExample,
@@ -590,6 +597,7 @@ export const EXAMPLE_LIST = [
   PizzaPartyComponent,SnackBarComponentExample,
   SnackBarOverviewExample,
   SortOverviewExample,
+  StepperOverviewExample,
   TableBasicExample,
   TableFilteringExample,
   TableHttpExample,

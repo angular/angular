@@ -1,0 +1,33 @@
+<button (click)="isLinear=!isLinear" id="toggle-linear">Enable linear</button>
+<md-horizontal-stepper [linear]="isLinear">
+  <md-step [stepControl]="firstFormGroup">
+    <form [formGroup]="firstFormGroup">
+      <ng-template mdStepLabel>Fill out your name</ng-template>
+      <md-form-field>
+        <input mdInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+      </md-form-field>
+      <div>
+        <button md-button mdStepperNext>Next</button>
+      </div>
+    </form>
+  </md-step>
+  <md-step [stepControl]="secondFormGroup">
+    <form [formGroup]="secondFormGroup">
+      <ng-template mdStepLabel>Fill out your address</ng-template>
+      <md-form-field>
+        <input mdInput placeholder="Address" formControlName="secondCtrl" required>
+      </md-form-field>
+      <div>
+        <button md-button mdStepperPrevious>Back</button>
+        <button md-button mdStepperNext>Next</button>
+      </div>
+    </form>
+  </md-step>
+  <md-step>
+    <ng-template mdStepLabel>Done</ng-template>
+    You are now done.
+    <div>
+      <button md-button mdStepperPrevious>Back</button>
+    </div>
+  </md-step>
+</md-horizontal-stepper>

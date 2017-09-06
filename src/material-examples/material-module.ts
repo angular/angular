@@ -8,7 +8,7 @@ import {
   MdListModule, MdMenuModule, MdProgressBarModule, MdProgressSpinnerModule,
   MdRadioModule, MdSelectModule, MdSidenavModule, MdSliderModule, MdSortModule,
   MdSlideToggleModule, MdSnackBarModule, MdTableModule, MdTabsModule, MdToolbarModule,
-  MdTooltipModule, MdFormFieldModule, MdExpansionModule
+  MdTooltipModule, MdFormFieldModule, MdExpansionModule, MdStepperModule
 } from '@angular/material';
 
 @NgModule({
@@ -37,6 +37,7 @@ import {
     MdSliderModule,
     MdSidenavModule,
     MdSnackBarModule,
+    MdStepperModule,
     MdTabsModule,
     MdToolbarModule,
     MdTooltipModule,

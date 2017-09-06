@@ -20,7 +20,8 @@ import {
   ListOverviewExample,
   ToolbarMultirowExample,
   ButtonToggleOverviewExample,
-  ExpansionOverviewExample
+  ExpansionOverviewExample,
+  StepperOverviewExample
 } from '@angular/material-examples';
 
 export const E2E_APP_ROUTES: Routes = [
@@ -42,6 +43,7 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'radio', component: SimpleRadioButtons},
   {path: 'sidenav', component: SidenavE2E},
   {path: 'slide-toggle', component: SlideToggleE2E},
+  {path: 'stepper', component: StepperOverviewExample},
   {path: 'tabs', component: BasicTabs},
   {path: 'cards', component: CardFancyExample},
   {path: 'toolbar', component: ToolbarMultirowExample},
