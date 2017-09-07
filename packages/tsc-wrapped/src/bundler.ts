@@ -261,14 +261,40 @@ export class MetadataBundler {
 
     exportedSymbols.forEach(symbol => this.convertSymbol(symbol));
 
+    const symbolsMap = new Map<string, string[]>();
     Array.from(this.symbolMap.values()).forEach(symbol => {
       if (symbol.referenced && !symbol.reexport) {
         let name = symbol.name;
+        const declaredName = symbol.declaration !.name;
         if (symbol.isPrivate && !symbol.privateName) {
           name = newPrivateName();
           symbol.privateName = name;
         }
+        if (symbolsMap.has(declaredName)) {
+          const names = symbolsMap.get(declaredName);
+          names !.push(name);
+        } else {
+          symbolsMap.set(declaredName, [name]);
+        }
         result[name] = symbol.value !;
+      }
+    });
+
+    // check for duplicated entries
+    symbolsMap.forEach((names: string[], declaredName: string) => {
+      if (names.length > 1) {
+        // prefer the export that uses the declared name (if any)
+        let reference = names.indexOf(declaredName);
+        if (reference === -1) {
+          reference = 0;
+        }
+
+        // keep one entry and replace the others by references
+        names.forEach((name: string, i: number) => {
+          if (i !== reference) {
+            result[name] = {__symbolic: 'reference', name: declaredName};
+          }
+        });
       }
     });
 
