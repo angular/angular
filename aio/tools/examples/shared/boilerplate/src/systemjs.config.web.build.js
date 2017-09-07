@@ -42,6 +42,7 @@
       '@angular/animations/browser': 'ng:animations-builds/master/bundles/animations-browser.umd.js',
       '@angular/core': 'ng:core-builds/master/bundles/core.umd.js',
       '@angular/common': 'ng:common-builds/master/bundles/common.umd.js',
+      '@angular/common/http': 'ng:common-builds/master/bundles/common-http.umd.js',
       '@angular/compiler': 'ng:compiler-builds/master/bundles/compiler.umd.js',
       '@angular/platform-browser': 'ng:platform-browser-builds/master/bundles/platform-browser.umd.js',
       '@angular/platform-browser/animations': 'ng:animations-builds/master/bundles/platform-browser-animations.umd.js',
@@ -56,6 +57,7 @@
       // angular testing umd bundles (overwrite the shim mappings)
       '@angular/core/testing': 'ng:core-builds/master/bundles/core-testing.umd.js',
       '@angular/common/testing': 'ng:common-builds/master/bundles/common-testing.umd.js',
+      '@angular/common/http/testing': 'ng:common-builds/master/bundles/common-http-testing.umd.js',
       '@angular/compiler/testing': 'ng:compiler-builds/master/bundles/compiler-testing.umd.js',
       '@angular/platform-browser/testing': 'ng:platform-browser-builds/master/bundles/platform-browser-testing.umd.js',
       '@angular/platform-browser-dynamic/testing': 'ng:platform-browser-dynamic-builds/master/bundles/platform-browser-dynamic-testing.umd.js',
@@ -65,6 +67,7 @@
 
       // other libraries
       'rxjs':                      'npm:rxjs@5.0.1',
+      'tslib':                     'npm:tslib/tslib.js',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js',
       'ts':                        'npm:plugin-typescript@5.2.7/lib/plugin.js',
       'typescript':                'npm:typescript@2.3.2/lib/typescript.js',
