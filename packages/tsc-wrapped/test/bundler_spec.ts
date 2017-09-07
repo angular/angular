@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {MetadataBundler, MetadataBundlerHost} from '../src/bundler';
 import {MetadataCollector} from '../src/collector';
-import {ModuleMetadata} from '../src/schema';
+import {ClassMetadata, MetadataGlobalReferenceExpression, ModuleMetadata} from '../src/schema';
 
 import {Directory, open} from './typescript.mocks';
 
@@ -191,6 +191,35 @@ describe('metadata bundler', () => {
       }
     ]);
     expect(result.metadata.origins !['E']).toBeUndefined();
+  });
+
+  it('should be able to de-duplicate symbols of re-exported modules', () => {
+    const host = new MockStringBundlerHost('/', {
+      'public-api.ts': `
+        export {A as A2, A, B as B1, B as B2} from './src/core';
+      `,
+      'src': {
+        'core.ts': `
+          export class A {}
+          export class B {}
+        `,
+      }
+    });
+
+    const bundler = new MetadataBundler('/public-api', undefined, host);
+    const result = bundler.getMetadataBundle();
+    const {A, A2, B1, B2} = result.metadata.metadata as{
+      A: ClassMetadata,
+      A2: MetadataGlobalReferenceExpression,
+      B1: ClassMetadata,
+      B2: MetadataGlobalReferenceExpression
+    };
+    expect(A.__symbolic).toEqual('class');
+    expect(A2.__symbolic).toEqual('reference');
+    expect(A2.name).toEqual('A');
+    expect(B1.__symbolic).toEqual('class');
+    expect(B2.__symbolic).toEqual('reference');
+    expect(B2.name).toEqual('B');
   });
 });
 
