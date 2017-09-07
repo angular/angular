@@ -9,12 +9,7 @@
 import * as o from './output/output_ast';
 import {ParseError} from './parse_util';
 
-const CAMEL_CASE_REGEXP = /([A-Z])/g;
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
-
-export function camelCaseToDashCase(input: string): string {
-  return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
-}
 
 export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
