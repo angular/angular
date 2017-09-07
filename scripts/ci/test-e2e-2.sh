@@ -27,3 +27,7 @@ travisFoldEnd "test.e2e.offlineCompiler"
 travisFoldStart "test.e2e.platform-server"
   ./packages/platform-server/integrationtest/run_tests.sh
 travisFoldEnd "test.e2e.platform-server"
+
+travisFoldStart "test.e2e.source-maps"
+  ./node_modules/.bin/gulp source-map-test
+travisFoldEnd "test.e2e.source-maps"

@@ -103,6 +103,7 @@
     "tslint-eslint-rules": "^3.1.0",
     "typescript": "^2.4.2",
     "universal-analytics": "^0.3.9",
+    "vlq": "^0.2.2",
     "vrsource-tslint-rules": "^4.0.0",
     "webpack": "^1.12.6",
     "xhr2": "^0.1.4",
