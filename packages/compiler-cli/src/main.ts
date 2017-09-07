@@ -58,7 +58,7 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback {
   const tsickleOptions: tsickle.TransformerOptions = {
     googmodule: false,
     untyped: true,
-    convertIndexImportShorthand: true,
+    convertIndexImportShorthand: false,
     transformDecorators: options.annotationsAs !== 'decorators',
     transformTypesToClosure: options.annotateForClosureCompiler,
   };
