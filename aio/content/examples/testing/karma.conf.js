@@ -52,6 +52,10 @@ module.exports = function(config) {
       { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },
       { pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false },
 
+      // tslib (TS helper fns such as `__extends`)
+      { pattern: 'node_modules/tslib/**/*.js', included: false, watched: false },
+      { pattern: 'node_modules/tslib/**/*.js.map', included: false, watched: false },
+
       // Paths loaded via module imports:
       // Angular itself
       { pattern: 'node_modules/@angular/**/*.js', included: false, watched: false },
