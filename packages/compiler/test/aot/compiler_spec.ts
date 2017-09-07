@@ -821,6 +821,7 @@ const LIBRARY: MockDirectory = {
     'public-api.ts': `
       export * from './src/bolder.component';
       export * from './src/bolder.module';
+      export {BolderModule as ReExportedModule} from './src/bolder.module';
     `,
     src: {
       'bolder.component.ts': `
