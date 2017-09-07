@@ -50,11 +50,11 @@ export const formGroupNameProvider: any = {
  *
  * **Set the value**: You can set an initial value for each child control when instantiating
  * the {@link FormGroup}, or you can set it programmatically later using
- * {@link AbstractControl#setValue} or {@link AbstractControl#patchValue}.
+ * {@link AbstractControl#setValue setValue} or {@link AbstractControl#patchValue patchValue}.
  *
  * **Listen to value**: If you want to listen to changes in the value of the group, you can
- * subscribe to the {@link AbstractControl#valueChanges} event.  You can also listen to
- * {@link AbstractControl#statusChanges} to be notified when the validation status is
+ * subscribe to the {@link AbstractControl#valueChanges valueChanges} event.  You can also listen to
+ * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
  * re-calculated.
  *
  * ### Example

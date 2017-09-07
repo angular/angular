@@ -34,12 +34,13 @@ export const formDirectiveProvider: any = {
  *
  * **Set value**: You can set the form's initial value when instantiating the
  * {@link FormGroup}, or you can set it programmatically later using the {@link FormGroup}'s
- * {@link AbstractControl#setValue} or {@link AbstractControl#patchValue} methods.
+ * {@link AbstractControl#setValue setValue} or {@link AbstractControl#patchValue patchValue}
+ * methods.
  *
  * **Listen to value**: If you want to listen to changes in the value of the form, you can subscribe
- * to the {@link FormGroup}'s {@link AbstractControl#valueChanges} event.  You can also listen to
- * its {@link AbstractControl#statusChanges} event to be notified when the validation status is
- * re-calculated.
+ * to the {@link FormGroup}'s {@link AbstractControl#valueChanges valueChanges} event.  You can also
+ * listen to its {@link AbstractControl#statusChanges statusChanges} event to be notified when the
+ * validation status is re-calculated.
  *
  * Furthermore, you can listen to the directive's `ngSubmit` event to be notified when the user has
  * triggered a form submission. The `ngSubmit` event will be emitted with the original form
