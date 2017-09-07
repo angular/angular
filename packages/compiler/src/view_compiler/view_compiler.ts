@@ -27,7 +27,6 @@ import {componentFactoryResolverProviderDef, depDef, lifecycleHookToNodeFlag, pr
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
-const NG_CONTAINER_TAG = 'ng-container';
 
 export class ViewCompileResult {
   constructor(public viewClassVar: string, public rendererTypeVar: string) {}

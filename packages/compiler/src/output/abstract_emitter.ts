@@ -17,8 +17,8 @@ const _INDENT_WITH = '  ';
 export const CATCH_ERROR_VAR = o.variable('error', null, null);
 export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
-export abstract class OutputEmitter {
-  abstract emitStatements(
+export interface OutputEmitter {
+  emitStatements(
       srcFilePath: string, genFilePath: string, stmts: o.Statement[],
       preamble?: string|null): string;
 }
