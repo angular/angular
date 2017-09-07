@@ -16,7 +16,7 @@
     "chokidar": "^1.4.2"
   },
   "peerDependencies": {
-    "typescript": "^2.0.2",
+    "typescript": "2.4.x",
     "@angular/compiler": "0.0.0-PLACEHOLDER"
   },
   "repository": {

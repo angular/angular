@@ -19,7 +19,7 @@
     "@angular/platform-server": "file:../../../dist/packages-dist/platform-server",
     "express": "^4.14.1",
     "rxjs": "file:../../../node_modules/rxjs",
-    "typescript": "2.3.x",
+    "typescript": "2.4.x",
     "zone.js": "^0.8.10"
   },
   "devDependencies": {

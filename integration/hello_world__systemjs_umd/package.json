@@ -19,8 +19,8 @@
     "plugin-typescript": "6.0.4",
     "rxjs": "file:../../node_modules/rxjs",
     "systemjs": "0.20.2",
-    "typescript": "2.1.6",
-    "zone.js": "0.7.6"
+    "typescript": "2.4.2",
+    "zone.js": "0.8.7"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
