@@ -346,6 +346,20 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(tc.injector.get(EventDir)).not.toBeNull();
       });
 
+      it('should display correct error message for uninitialized @Output', () => {
+        @Directive({selector: '[uninitializedOuput]'})
+        class UninitializedOuput {
+          @Output() customEvent;
+          doSomething() {
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp, UninitializedOuput]});
+        const template = '<p (customEvent)="doNothing()"></p>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        TestBed.createComponent(MyComp).toThrowError('@Output customEvent not initialized in \'UninitializedOuput\'.');
+      });
+
       it('should read directives metadata from their binding token', () => {
         TestBed.configureTestingModule({declarations: [MyComp, PrivateImpl, NeedsPublicApi]});
         const template = '<div public-api><div needs-public-api></div></div>';
