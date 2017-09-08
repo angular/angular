@@ -67,12 +67,18 @@ export class Testability implements PublicTestability {
     });
   }
 
+  /**
+   * Increases the number of pending request
+   */
   increasePendingRequestCount(): number {
     this._pendingCount += 1;
     this._didWork = true;
     return this._pendingCount;
   }
 
+  /**
+   * Decreases the number of pending request
+   */
   decreasePendingRequestCount(): number {
     this._pendingCount -= 1;
     if (this._pendingCount < 0) {
@@ -82,6 +88,9 @@ export class Testability implements PublicTestability {
     return this._pendingCount;
   }
 
+  /**
+   * Whether an associated application is stable
+   */
   isStable(): boolean {
     return this._isZoneStable && this._pendingCount == 0 && !this._ngZone.hasPendingMacrotasks;
   }
@@ -102,13 +111,26 @@ export class Testability implements PublicTestability {
     }
   }
 
+  /**
+   * Run callback when the application is stable
+   * @param callback function to be called after the application is stable
+   */
   whenStable(callback: Function): void {
     this._callbacks.push(callback);
     this._runCallbacksIfReady();
   }
 
+  /**
+   * Get the number of pending requests
+   */
   getPendingRequestCount(): number { return this._pendingCount; }
 
+  /**
+   * Find providers by name
+   * @param using The root element to search from
+   * @param provider The name of binding variable
+   * @param exactMatch Whether using exactMatch
+   */
   findProviders(using: any, provider: string, exactMatch: boolean): any[] {
     // TODO(juliemr): implement.
     return [];
@@ -126,16 +148,48 @@ export class TestabilityRegistry {
 
   constructor() { _testabilityGetter.addToWindow(this); }
 
+  /**
+   * Registers an application with a testability hook so that it can be tracked
+   * @param token token of application, root element
+   * @param testability Testability hook
+   */
   registerApplication(token: any, testability: Testability) {
     this._applications.set(token, testability);
   }
 
+  /**
+   * Unregisters an application.
+   * @param token token of application, root element
+   */
+  unregisterApplication(token: any) { this._applications.delete(token); }
+
+  /**
+   * Unregisters all applications
+   */
+  unregisterAllApplications() { this._applications.clear(); }
+
+  /**
+   * Get a testability hook associated with the application
+   * @param elem root element
+   */
   getTestability(elem: any): Testability|null { return this._applications.get(elem) || null; }
 
+  /**
+   * Get all registered testabilities
+   */
   getAllTestabilities(): Testability[] { return Array.from(this._applications.values()); }
 
+  /**
+   * Get all registered applications(root elements)
+   */
   getAllRootElements(): any[] { return Array.from(this._applications.keys()); }
 
+  /**
+   * Find testability of a node in the Tree
+   * @param elem node
+   * @param findInAncestors whether finding testability in ancestors if testability was not found in
+   * current node
+   */
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability|null {
     return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
   }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Testability, TestabilityRegistry, Type} from '@angular/core';
 
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
@@ -63,6 +63,16 @@ export class DowngradeComponentAdapter {
         this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
+
+    // testability hook is commonly added during component bootstrap in
+    // packages/core/src/application_ref.bootstrap()
+    // in downgraded application, component creation will take place here as well as adding the
+    // testability hook.
+    const testability = this.componentRef.injector.get(Testability, null);
+    if (testability) {
+      this.componentRef.injector.get(TestabilityRegistry)
+          .registerApplication(this.componentRef.location.nativeElement, testability);
+    }
 
     hookupNgModel(this.ngModel, this.component);
   }
@@ -195,6 +205,8 @@ export class DowngradeComponentAdapter {
   registerCleanup(needsNgZone: boolean) {
     this.element.on !('$destroy', () => {
       this.componentScope.$destroy();
+      this.componentRef.injector.get(TestabilityRegistry)
+          .unregisterApplication(this.componentRef.location.nativeElement);
       this.componentRef.destroy();
       if (needsNgZone) {
         this.appRef.detachView(this.componentRef.hostView);
