@@ -20,6 +20,8 @@ import {SliderAccessibilityDemo} from './slider/slider-a11y';
 import {SlideToggleAccessibilityDemo} from './slide-toggle/slide-toggle-a11y';
 import {SnackBarAccessibilityDemo} from './snack-bar/snack-bar-a11y';
 import {SelectAccessibilityDemo} from './select/select-a11y';
+import {TabsAccessibilityDemo} from './tabs/tabs-a11y';
+import {TABS_DEMO_ROUTES} from './tabs/routes';
 
 export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: '', component: AccessibilityHome},
@@ -42,5 +44,6 @@ export const ACCESSIBILITY_DEMO_ROUTES: Routes = [
   {path: 'slide-toggle', component: SlideToggleAccessibilityDemo},
   {path: 'snack-bar', component: SnackBarAccessibilityDemo},
   {path: 'select', component: SelectAccessibilityDemo},
+  {path: 'tabs', component: TabsAccessibilityDemo, children: TABS_DEMO_ROUTES},
   {path: 'toolbar', component: ToolbarAccessibilityDemo},
 ];

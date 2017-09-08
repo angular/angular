@@ -33,6 +33,12 @@ import {SliderAccessibilityDemo} from './slider/slider-a11y';
 import {SlideToggleAccessibilityDemo} from './slide-toggle/slide-toggle-a11y';
 import {SnackBarAccessibilityDemo} from './snack-bar/snack-bar-a11y';
 import {SelectAccessibilityDemo} from './select/select-a11y';
+import {
+  TabsAccessibilityDemo,
+  SunnyTabContent,
+  RainyTabContent,
+  FoggyTabContent,
+} from './tabs/tabs-a11y';
 
 
 @NgModule({
@@ -81,6 +87,10 @@ export class AccessibilityRoutingModule {}
     SlideToggleAccessibilityDemo,
     SnackBarAccessibilityDemo,
     SelectAccessibilityDemo,
+    TabsAccessibilityDemo,
+    SunnyTabContent,
+    RainyTabContent,
+    FoggyTabContent,
   ],
   entryComponents: [
     DialogAccessibilityDemo,
@@ -89,6 +99,9 @@ export class AccessibilityRoutingModule {}
     DialogNeptuneExampleDialog,
     DialogNeptuneIFrameDialog,
     DialogWelcomeExampleDialog,
+    SunnyTabContent,
+    RainyTabContent,
+    FoggyTabContent,
   ]
 })
 export class AccessibilityDemoModule {}
