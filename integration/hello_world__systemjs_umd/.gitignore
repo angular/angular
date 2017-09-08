@@ -1,3 +1,0 @@
-**/*.js
-**/*.js.map
-!src/systemjs.config.js

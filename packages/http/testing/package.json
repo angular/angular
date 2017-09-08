@@ -1,7 +1,0 @@
-{
-  "name": "@angular/http/testing",
-  "typings": "./index.d.ts",
-  "main": "../bundles/http-testing.umd.js",
-  "module": "../esm5/testing/index.js",
-  "es2015": "../esm15/testing/index.js"
-}

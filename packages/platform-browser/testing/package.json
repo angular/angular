@@ -1,7 +1,0 @@
-{
-  "name": "@angular/platform-browser/testing",
-  "typings": "./index.d.ts",
-  "main": "../bundles/platform-browser-testing.umd.js",
-  "module": "../esm5/testing/index.js",
-  "es2015": "../esm15/testing/index.js"
-}

@@ -1,9 +1,0 @@
-# Auto detect text files and perform LF normalization
-* text=auto
-
-# JS and TS files must always use LF for tools to work
-*.js eol=lf
-*.ts eol=lf
-
-# Must keep Windows line ending to be parsed correctly
-scripts/windows/packages.txt eol=crlf
