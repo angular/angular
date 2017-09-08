@@ -137,9 +137,15 @@ export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
   if (def.outputs.length) {
     for (let i = 0; i < def.outputs.length; i++) {
       const output = def.outputs[i];
-      const subscription = instance[output.propName !].subscribe(
-          eventHandlerClosure(view, def.parent !.nodeIndex, output.eventName));
-      view.disposables ![def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
+      const outputObservable = instance[output.propName !];
+      if (typeof outputObservable === 'object') {
+        const subscription = outputObservable.subscribe(
+            eventHandlerClosure(view, def.parent !.nodeIndex, output.eventName));
+        view.disposables ![def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
+      } else {
+        throw new Error(
+            `@Output ${output.propName} not initialized in '${instance.constructor.name}'.`);
+      }
     }
   }
   return instance;

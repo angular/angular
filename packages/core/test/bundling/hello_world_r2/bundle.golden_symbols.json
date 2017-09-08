@@ -3171,6 +3171,9 @@
     "name": "isObservable"
   },
   {
+    "name": "isObservable$1"
+  },
+  {
     "name": "isPrefixEnd"
   },
   {
