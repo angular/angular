@@ -977,6 +977,8 @@ export declare class TestabilityRegistry {
     getAllTestabilities(): Testability[];
     getTestability(elem: any): Testability | null;
     registerApplication(token: any, testability: Testability): void;
+    unregisterAllApplications(): void;
+    unregisterApplication(token: any): void;
 }
 
 /** @stable */
