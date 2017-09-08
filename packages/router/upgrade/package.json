@@ -1,7 +1,0 @@
-{
-  "name": "@angular/router/upgrade",
-  "typings": "./index.d.ts",
-  "main": "../bundles/router-upgrade.umd.js",
-  "module": "../esm5/upgrade/index.js",
-  "es2015": "../esm15/upgrade/index.js"
-}

@@ -1,9 +1,0 @@
-{% import "lib/memberHelpers.html" as memberHelper -%}
-{% import "lib/paramList.html" as params -%}
-{% extends 'export-base.template.html' %}
-
-{% block overview %}{% include "includes/decorator-overview.html" %}{% endblock %}
-{% block details %}
-  {% include "includes/description.html" %}
-  {$ memberHelper.renderMemberDetails(doc.members, 'metadata-members', 'metadata-member', 'Metadata Properties') $}
-{% endblock %}

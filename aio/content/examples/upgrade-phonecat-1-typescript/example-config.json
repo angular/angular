@@ -1,4 +1,0 @@
-{
-  "build": "build:upgrade",
-  "run": "serve:upgrade"
-}
