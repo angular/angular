@@ -455,6 +455,11 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  {
+    'table-basic': {
+    title: 'Basic table',
+    component: TableBasicExample,
+  },
   'stepper-overview': {
     title: 'Stepper overview',
     component: StepperOverviewExample,
@@ -504,7 +509,7 @@ export const EXAMPLE_COMPONENTS = {
     selectorName: null
   },
   'tabs-template-label': {
-    title: 'Coming soon!',
+    title: 'Complex Example',
     component: TabsTemplateLabelExample,
     additionalFiles: null,
     selectorName: null
