@@ -1,0 +1,9 @@
+<md-selection-list #shoes>
+  <md-list-option *ngFor="let shoe of typesOfShoes">
+    {{shoe}}
+  </md-list-option>
+</md-selection-list>
+
+<p>
+  Options selected: {{shoes.selectedOptions.selected.length}}
+</p>

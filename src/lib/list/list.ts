@@ -33,6 +33,7 @@ export class MdListItemBase {}
 export const _MdListItemMixinBase = mixinDisableRipple(MdListItemBase);
 
 
+/** Divider between items within a list. */
 @Directive({
   selector: 'md-divider, mat-divider',
   host: {
@@ -42,6 +43,7 @@ export const _MdListItemMixinBase = mixinDisableRipple(MdListItemBase);
 })
 export class MdListDivider {}
 
+/** A Material Design list component. */
 @Component({
   moduleId: module.id,
   selector: 'md-list, mat-list, md-nav-list, mat-nav-list',
@@ -114,6 +116,7 @@ export class MdListIconCssMatStyler {}
 })
 export class MdListSubheaderCssMatStyler {}
 
+/** An item within a Material Design list. */
 @Component({
   moduleId: module.id,
   selector: 'md-list-item, mat-list-item, a[md-list-item], a[mat-list-item]',

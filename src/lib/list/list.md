@@ -42,6 +42,15 @@ element in an `<md-list-item>`.
 </md-nav-list>
 ```
 
+### Selection lists
+A selection list provides an interface for selecting values, where each list item is an option.
+
+<!-- example(list-selection) -->
+
+The options within a selection-list should not contain further interactive controls, such
+as buttons and anchors.
+
+
 ### Multi-line lists
 For lists that require multiple lines per item, annotate each line with an `mdLine` attribute.
 Whichever heading tag is appropriate for your DOM hierarchy should be used (not necessarily `<h3>`

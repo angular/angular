@@ -52,6 +52,7 @@ import {InputOverviewExample} from './input-overview/input-overview-example';
 import {InputPrefixSuffixExample} from './input-prefix-suffix/input-prefix-suffix-example';
 import {ListOverviewExample} from './list-overview/list-overview-example';
 import {ListSectionsExample} from './list-sections/list-sections-example';
+import {ListSelectionExample} from './list-selection/list-selection-example';
 import {MenuIconsExample} from './menu-icons/menu-icons-example';
 import {MenuOverviewExample} from './menu-overview/menu-overview-example';
 import {PaginatorConfigurableExample} from './paginator-configurable/paginator-configurable-example';
@@ -323,6 +324,12 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  'list-selection': {
+    title: 'List with selection',
+    component: ListSelectionExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'menu-icons': {
     title: 'Menu with icons',
     component: MenuIconsExample,
@@ -580,6 +587,7 @@ export const EXAMPLE_LIST = [
   InputPrefixSuffixExample,
   ListOverviewExample,
   ListSectionsExample,
+  ListSelectionExample,
   MenuIconsExample,
   MenuOverviewExample,
   PaginatorConfigurableExample,
