@@ -31,6 +31,7 @@ import {ESCAPE} from '../core/keyboard/keycodes';
 import {first, takeUntil, startWith} from '../core/rxjs/index';
 import {DOCUMENT} from '@angular/platform-browser';
 import {merge} from 'rxjs/observable/merge';
+import {Subscription} from 'rxjs/Subscription';
 
 
 /** Throws an exception when two MdDrawer are matching the same position. */
@@ -313,7 +314,7 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MdDrawerContainer implements AfterContentInit {
+export class MdDrawerContainer implements AfterContentInit, OnDestroy {
   @ContentChildren(MdDrawer) _drawers: QueryList<MdDrawer>;
 
   /** The drawer child with the `start` position. */
@@ -338,6 +339,9 @@ export class MdDrawerContainer implements AfterContentInit {
   private _left: MdDrawer | null;
   private _right: MdDrawer | null;
 
+  /** Subscription to the Directionality change EventEmitter. */
+  private _dirChangeSubscription = Subscription.EMPTY;
+
   /** Inline styles to be applied to the container. */
   _styles: { marginLeft: string; marginRight: string; transform: string; };
 
@@ -347,7 +351,7 @@ export class MdDrawerContainer implements AfterContentInit {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
-      _dir.change.subscribe(() => this._validateDrawers());
+      this._dirChangeSubscription = _dir.change.subscribe(() => this._validateDrawers());
     }
   }
 
@@ -359,6 +363,10 @@ export class MdDrawerContainer implements AfterContentInit {
         this._watchDrawerPosition(drawer);
       });
     });
+  }
+
+  ngOnDestroy() {
+    this._dirChangeSubscription.unsubscribe();
   }
 
   /** Calls `open` of both start and end drawers */

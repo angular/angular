@@ -38,7 +38,7 @@ import {HammerInput} from '../core';
 import {FocusOrigin, FocusOriginMonitor} from '../core/style/focus-origin-monitor';
 import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
 import {CanColor, mixinColor} from '../core/common-behaviors/color';
-
+import {Subscription} from 'rxjs/Subscription';
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
@@ -385,6 +385,9 @@ export class MdSlider extends _MdSliderMixinBase
   /** Decimal places to round to, based on the step amount. */
   private _roundLabelTo: number;
 
+  /** Subscription to the Directionality change EventEmitter. */
+  private _dirChangeSubscription = Subscription.EMPTY;
+
   /** The value of the slider when the slide start event fires. */
   private _valueOnSlideStart: number | null;
 
@@ -420,15 +423,15 @@ export class MdSlider extends _MdSliderMixinBase
           this._changeDetectorRef.detectChanges();
         });
     if (this._dir) {
-      this._dir.change.subscribe(() => this._changeDetectorRef.markForCheck());
+      this._dirChangeSubscription = this._dir.change.subscribe(() => {
+        this._changeDetectorRef.markForCheck();
+      });
     }
   }
 
   ngOnDestroy() {
     this._focusOriginMonitor.stopMonitoring(this._elementRef.nativeElement);
-    if (this._dir) {
-      this._dir.change.unsubscribe();
-    }
+    this._dirChangeSubscription.unsubscribe();
   }
 
   _onMouseenter() {
