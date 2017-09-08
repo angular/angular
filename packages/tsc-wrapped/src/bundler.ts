@@ -292,7 +292,7 @@ export class MetadataBundler {
         // keep one entry and replace the others by references
         names.forEach((name: string, i: number) => {
           if (i !== reference) {
-            result[name] = {__symbolic: 'reference', name: declaredName};
+            result[name] = {__symbolic: 'reference', name: names[reference]};
           }
         });
       }
