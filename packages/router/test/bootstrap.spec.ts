@@ -163,37 +163,6 @@ describe('bootstrap', () => {
     });
   });
 
-  it('should not run navigation when initialNavigation = legacy_disabled', (done) => {
-    @Component({selector: 'test', template: 'test'})
-    class TestCmpLegacyDisabled {
-    }
-
-    @NgModule({
-      imports: [
-        BrowserModule,
-        RouterModule.forRoot(
-            [{path: '**', component: TestCmpLegacyDisabled, resolve: {test: TestResolver}}],
-            {useHash: true, initialNavigation: 'legacy_disabled'})
-      ],
-      declarations: [RootCmp, TestCmpLegacyDisabled],
-      bootstrap: [RootCmp],
-      providers: [...testProviders, TestResolver],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    class TestModule {
-      constructor(router: Router) {
-        log.push('TestModule');
-        router.events.subscribe(e => log.push(e.constructor.name));
-      }
-    }
-
-    platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
-      const router = res.injector.get(Router);
-      expect(log).toEqual(['TestModule', 'RootCmp']);
-      done();
-    });
-  });
-
   it('should not init router navigation listeners if a non root component is bootstrapped',
      (done) => {
        @NgModule({
