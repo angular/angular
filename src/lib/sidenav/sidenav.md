@@ -70,3 +70,15 @@ html, body, material-app, md-sidenav-container, .my-content {
 ### FABs inside sidenav
 For a sidenav with a FAB (Floating Action Button) or other floating element, the recommended approach is to place the FAB
 outside of the scrollable region and absolutely position it.
+
+
+### Disabling closing of sidenav
+By default, sidenav can be closed either by clicking on the backdrop or by pressing <kbd>ESCAPE</kbd>.
+The `disableClose` attribute can be set on `md-sidenav` to disable automatic closing when the backdrop
+is clicked or <kbd>ESCAPE</kbd> is pressed. To add custom logic on backdrop click, add a `(backdropClick)` listener to
+`md-sidenav-container`. For custom <kbd>ESCAPE</kbd> logic, a standard `(keydown)` listener will suffice.
+```html
+<md-sidenav-container (backdropClick)="customBackdropClickHandler()">
+  <md-sidenav disableClose (keydown)="customKeydownHandler($event)"></md-sidenav>
+</md-sidenav-container>
+```

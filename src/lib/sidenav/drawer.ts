@@ -119,7 +119,7 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
   /** Mode of the drawer; one of 'over', 'push' or 'side'. */
   @Input() mode: 'over' | 'push' | 'side' = 'over';
 
-  /** Whether the drawer can be closed with the escape key or not. */
+  /** Whether the drawer can be closed with the escape key or by clicking on the backdrop. */
   @Input()
   get disableClose(): boolean { return this._disableClose; }
   set disableClose(value: boolean) { this._disableClose = coerceBooleanProperty(value); }
