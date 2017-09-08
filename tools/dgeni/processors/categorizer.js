@@ -43,6 +43,10 @@ module.exports = function categorizer() {
 
     decoratePublicDoc(classDoc);
 
+    // Sort members
+    classDoc.methods.sort(sortMembers);
+    classDoc.properties.sort(sortMembers);
+
     // Categorize the current visited classDoc into its Angular type.
     if (isDirective(classDoc)) {
       classDoc.isDirective = true;
@@ -93,6 +97,40 @@ module.exports = function categorizer() {
 /** Filters any duplicate classDoc members from an array */
 function filterDuplicateMembers(item, _index, array) {
   return array.filter((memberDoc, i) => memberDoc.name === item.name)[0] === item;
+}
+
+/** Sorts members by deprecated status, member decorator, and name. */
+function sortMembers(docA, docB) {
+  // Sort deprecated docs to the end
+  if (!docA.isDeprecated && docB.isDeprecated) {
+    return -1;
+  }
+
+  if (docA.isDeprecated && !docB.isDeprecated) {
+    return 1;
+  }
+
+  // Sort in the order of: Inputs, Outputs, neither
+  if ((isDirectiveInput(docA) && !isDirectiveInput(docB)) ||
+      (isDirectiveOutput(docA) && !isDirectiveInput(docB) && !isDirectiveOutput(docB))) {
+    return -1;
+  }
+
+  if ((isDirectiveInput(docB) && !isDirectiveInput(docA)) ||
+      (isDirectiveOutput(docB) && !isDirectiveInput(docA) && !isDirectiveOutput(docA))) {
+    return 1;
+  }
+
+  // Break ties by sorting alphabetically on the name
+  if (docA.name < docB.name) {
+    return -1;
+  }
+
+  if (docA.name > docB.name) {
+    return 1;
+  }
+
+  return 0;
 }
 
 /**
