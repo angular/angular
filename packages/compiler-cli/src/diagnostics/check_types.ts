@@ -137,7 +137,7 @@ export class TypeChecker {
       if (this._currentCancellationToken.isCancellationRequested()) return result;
       const sourceFile = program.getSourceFile(factoryName);
       for (const diagnostic of this.diagnosticProgram.getSemanticDiagnostics(sourceFile)) {
-        const span = this.sourceSpanOf(diagnostic.file, diagnostic.start, diagnostic.length);
+        const span = this.sourceSpanOf(diagnostic.file !, diagnostic.start !, diagnostic.length !);
         if (span) {
           const fileName = span.start.file.url;
           const diagnosticsList = diagnosticsFor(fileName);
