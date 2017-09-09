@@ -142,8 +142,8 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
 }): PerformCompilationResult {
   const [major, minor] = ts.version.split('.');
 
-  if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 3)) {
-    throw new Error('Must use TypeScript > 2.3 to have transformer support');
+  if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 4)) {
+    throw new Error('The Angular Compiler requires TypeScript >= 2.4.');
   }
 
   let program: api.Program|undefined;

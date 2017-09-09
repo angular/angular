@@ -550,9 +550,10 @@ export class UpgradeAdapter {
       (ng1Injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
         UpgradeNg1ComponentAdapterBuilder.resolve(this.ng1ComponentsToBeUpgraded, ng1Injector)
             .then(() => {
-              // At this point we have ng1 injector and we have prepared
-              // ng1 components to be upgraded, we now can bootstrap ng2.
-              @NgModule({
+              // Note: There is a bug in TS 2.4 that prevents us from
+              // inlining this into @NgModule
+              // TODO(tbosch): find or file a bug against TypeScript for this.
+              const ngModule = {
                 providers: [
                   {provide: $INJECTOR, useFactory: () => ng1Injector},
                   {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
@@ -560,7 +561,10 @@ export class UpgradeAdapter {
                 ],
                 imports: [this.ng2AppModule],
                 entryComponents: this.downgradedComponents
-              })
+              };
+              // At this point we have ng1 injector and we have prepared
+              // ng1 components to be upgraded, we now can bootstrap ng2.
+              @NgModule(ngModule)
               class DynamicNgUpgradeModule {
                 constructor() {}
                 ngDoBootstrap() {}

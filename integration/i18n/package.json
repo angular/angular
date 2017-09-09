@@ -12,9 +12,9 @@
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "@angular/tsc-wrapped": "file:../../dist/packages-dist/tsc-wrapped",
     "google-closure-compiler": "git+https://github.com/alexeagle/closure-compiler.git#packagejson.dist",
-    "rxjs": "5.3.1",
-    "typescript": "~2.3.1",
-    "zone.js": "0.8.6"
+    "rxjs": "file:../../node_modules/rxjs",
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",

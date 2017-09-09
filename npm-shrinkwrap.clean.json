@@ -1,9 +1,9 @@
 {
   "name": "angular-srcs",
-  "version": "5.0.0-beta.5",
+  "version": "5.0.0-beta.6",
   "dependencies": {
     "@bazel/typescript": {
-      "version": "0.0.9",
+      "version": "0.1.0",
       "dependencies": {
         "@types/node": {
           "version": "7.0.18"
@@ -294,7 +294,7 @@
       "version": "0.0.32"
     },
     "@types/selenium-webdriver": {
-      "version": "2.53.35"
+      "version": "3.0.6"
     },
     "@types/systemjs": {
       "version": "0.19.32"
@@ -567,6 +567,9 @@
     },
     "block-stream": {
       "version": "0.0.9"
+    },
+    "blocking-proxy": {
+      "version": "0.0.5"
     },
     "bluebird": {
       "version": "2.10.2"
@@ -3740,8 +3743,17 @@
     "globby": {
       "version": "5.0.0",
       "dependencies": {
+        "balanced-match": {
+          "version": "1.0.0"
+        },
+        "brace-expansion": {
+          "version": "1.1.8"
+        },
         "glob": {
-          "version": "7.1.1"
+          "version": "7.1.2"
+        },
+        "minimatch": {
+          "version": "3.0.4"
         }
       }
     },
@@ -5221,7 +5233,7 @@
       "version": "2.4.1"
     },
     "jasminewd2": {
-      "version": "0.0.10"
+      "version": "2.1.0"
     },
     "jetpack-id": {
       "version": "0.0.4"
@@ -6316,31 +6328,40 @@
       "version": "1.0.5"
     },
     "protractor": {
-      "version": "4.0.14",
+      "version": "5.1.2",
       "dependencies": {
-        "@types/jasmine": {
-          "version": "2.5.47"
-        },
-        "@types/node": {
-          "version": "6.0.68"
-        },
         "@types/selenium-webdriver": {
-          "version": "2.53.37"
+          "version": "2.53.42"
+        },
+        "balanced-match": {
+          "version": "1.0.0"
+        },
+        "brace-expansion": {
+          "version": "1.1.8"
         },
         "caseless": {
           "version": "0.12.0"
         },
         "glob": {
-          "version": "7.1.1"
+          "version": "7.1.2"
         },
         "har-validator": {
           "version": "4.2.1"
         },
+        "jasmine": {
+          "version": "2.8.0"
+        },
+        "jasmine-core": {
+          "version": "2.8.0"
+        },
         "mime-db": {
-          "version": "1.27.0"
+          "version": "1.30.0"
         },
         "mime-types": {
-          "version": "2.1.15"
+          "version": "2.1.17"
+        },
+        "minimatch": {
+          "version": "3.0.4"
         },
         "qs": {
           "version": "6.4.0"
@@ -6355,7 +6376,7 @@
           "version": "1.3.0"
         },
         "semver": {
-          "version": "5.3.0"
+          "version": "5.4.1"
         },
         "tough-cookie": {
           "version": "2.3.2"
@@ -6364,10 +6385,16 @@
           "version": "0.6.0"
         },
         "uuid": {
-          "version": "3.0.1"
+          "version": "3.1.0"
         },
         "webdriver-manager": {
-          "version": "10.3.0"
+          "version": "12.0.6"
+        },
+        "xml2js": {
+          "version": "0.4.19"
+        },
+        "xmlbuilder": {
+          "version": "9.0.4"
         }
       }
     },
@@ -6743,7 +6770,7 @@
       "version": "3.1.2"
     },
     "rxjs": {
-      "version": "5.0.1"
+      "version": "5.4.3"
     },
     "safe-buffer": {
       "version": "5.0.1"
@@ -6789,19 +6816,31 @@
       "version": "1.0.0"
     },
     "selenium-webdriver": {
-      "version": "2.53.3",
+      "version": "3.0.1",
       "dependencies": {
-        "adm-zip": {
-          "version": "0.4.4"
+        "balanced-match": {
+          "version": "1.0.0"
         },
-        "sax": {
-          "version": "0.6.1"
+        "brace-expansion": {
+          "version": "1.1.8"
+        },
+        "glob": {
+          "version": "7.1.2"
+        },
+        "minimatch": {
+          "version": "3.0.4"
+        },
+        "rimraf": {
+          "version": "2.6.1"
         },
         "tmp": {
-          "version": "0.0.24"
+          "version": "0.0.30"
         },
         "xml2js": {
-          "version": "0.4.4"
+          "version": "0.4.19"
+        },
+        "xmlbuilder": {
+          "version": "9.0.4"
         }
       }
     },
@@ -7429,7 +7468,7 @@
       }
     },
     "tsickle": {
-      "version": "0.23.6"
+      "version": "0.24.1"
     },
     "tslib": {
       "version": "1.7.1"
@@ -7489,7 +7528,7 @@
       "version": "0.0.6"
     },
     "typescript": {
-      "version": "2.3.4"
+      "version": "2.4.2"
     },
     "ua-parser-js": {
       "version": "0.7.10"
@@ -7766,6 +7805,29 @@
         }
       }
     },
+    "webdriver-js-extender": {
+      "version": "1.0.0",
+      "dependencies": {
+        "@types/selenium-webdriver": {
+          "version": "2.53.42"
+        },
+        "adm-zip": {
+          "version": "0.4.4"
+        },
+        "sax": {
+          "version": "0.6.1"
+        },
+        "selenium-webdriver": {
+          "version": "2.53.3"
+        },
+        "tmp": {
+          "version": "0.0.24"
+        },
+        "xml2js": {
+          "version": "0.4.4"
+        }
+      }
+    },
     "webpack": {
       "version": "1.12.9",
       "dependencies": {
@@ -7873,7 +7935,7 @@
       }
     },
     "ws": {
-      "version": "1.1.1"
+      "version": "1.1.4"
     },
     "xdg-basedir": {
       "version": "2.0.0"

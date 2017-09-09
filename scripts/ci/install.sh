@@ -42,7 +42,9 @@ travisFoldEnd "npm-install"
 
 # Install Selenium WebDriver
 travisFoldStart "webdriver-manager-update"
-  $(npm bin)/webdriver-manager update
+  # --gecko false prevents webdriver-manager to ping Github for updates
+  # which can hit the Github api limit.
+  $(npm bin)/webdriver-manager update --gecko false
 travisFoldEnd "webdriver-manager-update"
 
 

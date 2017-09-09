@@ -67,7 +67,10 @@ function angularOnlyFilter(ls: ts.LanguageService): ts.LanguageService {
     getCodeFixesAtPosition: (fileName, start, end, errorCodes) => <ts.CodeAction[]>[],
     getEmitOutput: fileName => <ts.EmitOutput><any>undefined,
     getProgram: () => ls.getProgram(),
-    dispose: () => ls.dispose()
+    dispose: () => ls.dispose(),
+    getApplicableRefactors: (fileName, positionOrRaneg) => <ts.ApplicableRefactorInfo[]>[],
+    getEditsForRefactor: (fileName, formatOptions, positionOrRange, refactorName, actionName) =>
+                             undefined,
   };
 }
 
@@ -162,7 +165,10 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getCodeFixesAtPosition: tryFilenameFourCall(ls.getCodeFixesAtPosition),
       getEmitOutput: tryFilenameCall(ls.getEmitOutput),
       getProgram: () => ls.getProgram(),
-      dispose: () => ls.dispose()
+      dispose: () => ls.dispose(),
+      getApplicableRefactors: (fileName, positionOrRaneg) => <ts.ApplicableRefactorInfo[]>[],
+      getEditsForRefactor: (fileName, formatOptions, positionOrRange, refactorName, actionName) =>
+                               undefined,
     };
   }
 

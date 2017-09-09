@@ -70,8 +70,10 @@ describe('ng type checker', () => {
     it('should accept a safe property access of a nullable person',
        () => { a('{{maybePerson?.name}}'); });
     it('should accept a function call', () => { a('{{getName()}}'); });
-    it('should reject an invalid method',
-       () => { r('{{getFame()}}', `Property 'getFame' does not exist on type 'AppComponent'.`); });
+    it('should reject an invalid method', () => {
+      r('{{getFame()}}',
+        `Property 'getFame' does not exist on type 'AppComponent'. Did you mean 'getName'?`);
+    });
     it('should accept a field access of a method result', () => { a('{{getPerson().name}}'); });
     it('should reject an invalid field reference of a method result',
        () => { r('{{getPerson().fame}}', `Property 'fame' does not exist on type 'Person'.`); });

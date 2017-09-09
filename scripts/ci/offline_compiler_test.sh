@@ -8,11 +8,11 @@ LINKABLE_PKGS=(
   $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations,tsc-wrapped}
 )
 
-TYPESCRIPT_2_3=typescript@2.3.x
+TYPESCRIPT_2_4=typescript@2.4.x
 PKGS=(
   reflect-metadata@0.1.8
-  zone.js@0.6.25
-  rxjs@5.0.1
+  zone.js@0.8.7
+  rxjs@5.4.2
   @types/{node@6.0.38,jasmine@2.2.33}
   jasmine@2.4.1
   webpack@2.1.0-beta.21
@@ -33,7 +33,7 @@ cp -v package.json $TMP
 (
   cd $TMP
   set -ex -o pipefail
-  npm install ${PKGS[*]} $TYPESCRIPT_2_3
+  npm install ${PKGS[*]} $TYPESCRIPT_2_4
   # TODO(alexeagle): allow this to be npm link instead
   npm install ${LINKABLE_PKGS[*]}
 

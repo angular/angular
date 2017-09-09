@@ -140,7 +140,7 @@ ng1AppModule.factory(
 
 // #docregion downgrade-ng2-heroes-service
 // Register an AngularJS service, whose value is the "downgraded" Angular injectable.
-ng1AppModule.factory('heroesService', downgradeInjectable(HeroesService));
+ng1AppModule.factory('heroesService', downgradeInjectable(HeroesService) as any);
 // #enddocregion
 
 // #docregion ng2-heroes-wrapper
