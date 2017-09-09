@@ -22,7 +22,7 @@ import {LoadedRouterConfig, Route, Routes} from './config';
 import {RouterConfigLoader} from './router_config_loader';
 import {PRIMARY_OUTLET, Params, defaultUrlMatcher, navigationCancelingError} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
-import {andObservables, forEach, waitForMap, wrapIntoObservable} from './utils/collection';
+import {andObservable, forEach, runGuards, waitForMap} from './utils/collection';
 
 class NoMatch {
   public segmentGroup: UrlSegmentGroup|null;
@@ -415,14 +415,7 @@ class ApplyRedirects {
 
 function runCanLoadGuard(moduleInjector: Injector, route: Route): Observable<boolean> {
   const canLoad = route.canLoad;
-  if (!canLoad || canLoad.length === 0) return of (true);
-
-  const obs = map.call(from(canLoad), (injectionToken: any) => {
-    const guard = moduleInjector.get(injectionToken);
-    return wrapIntoObservable(guard.canLoad ? guard.canLoad(route) : guard(route));
-  });
-
-  return andObservables(obs);
+  return andObservable(runGuards('canLoad', canLoad, moduleInjector, [route], true));
 }
 
 function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): {

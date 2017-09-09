@@ -9,9 +9,9 @@
 import {Injector} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {from} from 'rxjs/observable/from';
+import {merge} from 'rxjs/observable/merge';
 import {of } from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
-import {every} from 'rxjs/operator/every';
 import {first} from 'rxjs/operator/first';
 import {last} from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
@@ -22,7 +22,7 @@ import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
 import {ActivationStart, ChildActivationStart, Event} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
-import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
+import {andObservable, forEach, runGuards, shallowEqual} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
 class CanActivate {
@@ -197,18 +197,17 @@ export class PreActivation {
     const checks$ = from(this.canDeactivateChecks);
     const runningChecks$ = mergeMap.call(
         checks$, (check: CanDeactivate) => this.runCanDeactivate(check.component, check.route));
-    return every.call(runningChecks$, (result: boolean) => result === true);
+    return andObservable(runningChecks$);
   }
 
   private runCanActivateChecks(): Observable<boolean> {
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ = concatMap.call(
-        checks$,
-        (check: CanActivate) => andObservables(from([
-          this.fireChildActivationStart(check.route.parent), this.fireActivationStart(check.route),
-          this.runCanActivateChild(check.path), this.runCanActivate(check.route)
-        ])));
-    return every.call(runningChecks$, (result: boolean) => result === true);
+        checks$, (check: CanActivate) => andObservable(merge(
+                     this.fireChildActivationStart(check.route.parent),
+                     this.fireActivationStart(check.route), this.runCanActivateChild(check.path),
+                     this.runCanActivate(check.route))));
+    return andObservable(runningChecks$);
     // this.fireChildActivationStart(check.path),
   }
 
@@ -244,18 +243,8 @@ export class PreActivation {
 
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
     const canActivate = future.routeConfig ? future.routeConfig.canActivate : null;
-    if (!canActivate || canActivate.length === 0) return of (true);
-    const obs = map.call(from(canActivate), (c: any) => {
-      const guard = this.getToken(c, future);
-      let observable: Observable<boolean>;
-      if (guard.canActivate) {
-        observable = wrapIntoObservable(guard.canActivate(future, this.future));
-      } else {
-        observable = wrapIntoObservable(guard(future, this.future));
-      }
-      return first.call(observable);
-    });
-    return andObservables(obs);
+    return andObservable(runGuards(
+        'canActivate', canActivate, this.getInjector(future), [future, this.future], true));
   }
 
   private runCanActivateChild(path: ActivatedRouteSnapshot[]): Observable<boolean> {
@@ -266,19 +255,10 @@ export class PreActivation {
                                        .map(p => this.extractCanActivateChild(p))
                                        .filter(_ => _ !== null);
 
-    return andObservables(map.call(from(canActivateChildGuards), (d: any) => {
-      const obs = map.call(from(d.guards), (c: any) => {
-        const guard = this.getToken(c, d.node);
-        let observable: Observable<boolean>;
-        if (guard.canActivateChild) {
-          observable = wrapIntoObservable(guard.canActivateChild(future, this.future));
-        } else {
-          observable = wrapIntoObservable(guard(future, this.future));
-        }
-        return first.call(observable);
-      });
-      return andObservables(obs);
-    }));
+    return andObservable(mergeMap.call(
+        from(canActivateChildGuards),
+        (d: any) => runGuards(
+            'canActivateChild', d.guards, this.getInjector(d.node), [future, this.future], true)));
   }
 
   private extractCanActivateChild(p: ActivatedRouteSnapshot):
@@ -291,19 +271,9 @@ export class PreActivation {
   private runCanDeactivate(component: Object|null, curr: ActivatedRouteSnapshot):
       Observable<boolean> {
     const canDeactivate = curr && curr.routeConfig ? curr.routeConfig.canDeactivate : null;
-    if (!canDeactivate || canDeactivate.length === 0) return of (true);
-    const canDeactivate$ = mergeMap.call(from(canDeactivate), (c: any) => {
-      const guard = this.getToken(c, curr);
-      let observable: Observable<boolean>;
-      if (guard.canDeactivate) {
-        observable =
-            wrapIntoObservable(guard.canDeactivate(component, curr, this.curr, this.future));
-      } else {
-        observable = wrapIntoObservable(guard(component, curr, this.curr, this.future));
-      }
-      return first.call(observable);
-    });
-    return every.call(canDeactivate$, (result: any) => result === true);
+    return andObservable(runGuards(
+        'canDeactivate', canDeactivate, this.getInjector(curr),
+        [component, curr, this.curr, this.future], true));
   }
 
   private runResolve(
@@ -318,36 +288,26 @@ export class PreActivation {
     });
   }
 
-  private resolveNode(resolve: ResolveData, future: ActivatedRouteSnapshot): Observable<any> {
+  private resolveNode(resolve: ResolveData, future: ActivatedRouteSnapshot):
+      Observable<{[k: string]: any}> {
     const keys = Object.keys(resolve);
     if (keys.length === 0) {
       return of ({});
     }
-    if (keys.length === 1) {
-      const key = keys[0];
-      return map.call(
-          this.getResolver(resolve[key], future), (value: any) => { return {[key]: value}; });
-    }
-    const data: {[k: string]: any} = {};
-    const runningResolvers$ = mergeMap.call(from(keys), (key: string) => {
-      return map.call(this.getResolver(resolve[key], future), (value: any) => {
-        data[key] = value;
-        return value;
-      });
-    });
-    return map.call(last.call(runningResolvers$), () => data);
+
+    const values = Object.keys(resolve).map(k => resolve[k]);
+    const guard$ = runGuards('resolve', values, this.getInjector(future), [future, this.future]);
+
+    return reduce.call(guard$, (obj: {[k: string]: any}, value: any, idx: number) => {
+      const key = keys[idx];
+      obj[key] = value;
+      return obj;
+    }, {});
   }
 
-  private getResolver(injectionToken: any, future: ActivatedRouteSnapshot): Observable<any> {
-    const resolver = this.getToken(injectionToken, future);
-    return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
-                              wrapIntoObservable(resolver(future, this.future));
-  }
-
-  private getToken(token: any, snapshot: ActivatedRouteSnapshot): any {
+  private getInjector(snapshot: ActivatedRouteSnapshot): Injector {
     const config = closestLoadedConfig(snapshot);
-    const injector = config ? config.module.injector : this.moduleInjector;
-    return injector.get(token);
+    return config ? config.module.injector : this.moduleInjector;
   }
 }
 
