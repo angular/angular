@@ -51,7 +51,9 @@ export class SitePage {
   }
 
   enterSearch(query: string) {
-    element(by.css('.search-container input[type=search]')).sendKeys(query);
+    const input = element(by.css('.search-container input[type=search]'));
+    input.clear();
+    input.sendKeys(query);
   }
 
   getSearchResults() {
