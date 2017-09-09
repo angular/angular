@@ -26,8 +26,8 @@ const trackByIdentity = (index: number, item: any) => item;
  * @deprecated v4.0.0 - Should not be part of public API.
  */
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
-  private _length: number = 0;
-  private _collection: NgIterable<V>|null = null;
+  public readonly length: number = 0;
+  public readonly collection: V[]|Iterable<V>|null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
   private _linkedRecords: _DuplicateMap<V>|null = null;
   // Keeps track of the removed records at any point in time during `_check()` calls.
@@ -47,10 +47,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   private _trackByFn: TrackByFunction<V>;
 
   constructor(trackByFn?: TrackByFunction<V>) { this._trackByFn = trackByFn || trackByIdentity; }
-
-  get collection() { return this._collection; }
-
-  get length(): number { return this._length; }
 
   forEachItem(fn: (record: IterableChangeRecord_<V>) => void) {
     let record: IterableChangeRecord_<V>|null;
@@ -171,9 +167,9 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     let item: V;
     let itemTrackBy: any;
     if (Array.isArray(collection)) {
-      this._length = collection.length;
+      (this as{length: number}).length = collection.length;
 
-      for (let index = 0; index < this._length; index++) {
+      for (let index = 0; index < this.length; index++) {
         item = collection[index];
         itemTrackBy = this._trackByFn(index, item);
         if (record === null || !looseIdentical(record.trackById, itemTrackBy)) {
@@ -206,11 +202,11 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
         record = record._next;
         index++;
       });
-      this._length = index;
+      (this as{length: number}).length = index;
     }
 
     this._truncate(record);
-    this._collection = collection;
+    (this as{collection: V[] | Iterable<V>}).collection = collection;
     return this.isDirty;
   }
 

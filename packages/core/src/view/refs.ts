@@ -101,18 +101,21 @@ class ComponentFactory_ extends ComponentFactory<any> {
 }
 
 class ComponentRef_ extends ComponentRef<any> {
+  public readonly hostView: ViewRef;
+  public readonly instance: any;
+  public readonly changeDetectorRef: ChangeDetectorRef;
   private _elDef: NodeDef;
   constructor(private _view: ViewData, private _viewRef: ViewRef, private _component: any) {
     super();
     this._elDef = this._view.def.nodes[0];
+    this.hostView = _viewRef;
+    this.changeDetectorRef = _viewRef;
+    this.instance = _component;
   }
   get location(): ElementRef {
     return new ElementRef(asElementData(this._view, this._elDef.index).renderElement);
   }
   get injector(): Injector { return new Injector_(this._view, this._elDef); }
-  get instance(): any { return this._component; };
-  get hostView(): ViewRef { return this._viewRef; };
-  get changeDetectorRef(): ChangeDetectorRef { return this._viewRef; };
   get componentType(): Type<any> { return <any>this._component.constructor; }
 
   destroy(): void { this._viewRef.destroy(); }
