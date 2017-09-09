@@ -35,7 +35,7 @@ export class HeroDetailComponent {
   @Input() prefix = '';
 
   // #docregion deleteRequest
-  // This component make a request but it can't actually delete a hero.
+  // This component makes a request but it can't actually delete a hero.
   deleteRequest = new EventEmitter<Hero>();
 
   delete() {
