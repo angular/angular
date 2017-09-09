@@ -12,13 +12,15 @@
  * @stable
  */
 export class Version {
-  constructor(public full: string) {}
+  public readonly major: string;
+  public readonly minor: string;
+  public readonly patch: string;
 
-  get major(): string { return this.full.split('.')[0]; }
-
-  get minor(): string { return this.full.split('.')[1]; }
-
-  get patch(): string { return this.full.split('.').slice(2).join('.'); }
+  constructor(public full: string) {
+    this.major = full.split('.')[0];
+    this.minor = full.split('.')[1];
+    this.patch = full.split('.').slice(2).join('.');
+  }
 }
 
 /**

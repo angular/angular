@@ -335,13 +335,26 @@ export class ApplicationRef {
   /** @internal */
   static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
-  private _rootComponents: ComponentRef<any>[] = [];
-  private _rootComponentTypes: Type<any>[] = [];
   private _views: InternalViewRef[] = [];
   private _runningTick: boolean = false;
   private _enforceNoNewChanges: boolean = false;
-  private _isStable: Observable<boolean>;
   private _stable = true;
+
+  /**
+   * Get a list of component types registered to this application.
+   * This list is populated even before the component is created.
+   */
+  public readonly componentTypes: Type<any>[] = [];
+
+  /**
+   * Get a list of components registered to this application.
+   */
+  public readonly components: ComponentRef<any>[] = [];
+
+  /**
+   * Returns an Observable that indicates when the application is stable or unstable.
+   */
+  public readonly isStable: Observable<boolean>;
 
   /** @internal */
   constructor(
@@ -397,7 +410,8 @@ export class ApplicationRef {
       };
     });
 
-    this._isStable = merge(isCurrentlyStable, share.call(isStable));
+    (this as{isStable: Observable<boolean>}).isStable =
+        merge(isCurrentlyStable, share.call(isStable));
   }
 
   /**
@@ -428,7 +442,7 @@ export class ApplicationRef {
       componentFactory =
           this._componentFactoryResolver.resolveComponentFactory(componentOrFactory) !;
     }
-    this._rootComponentTypes.push(componentFactory.componentType);
+    this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
     const ngModule = componentFactory instanceof ComponentFactoryBoundToModule ?
@@ -484,17 +498,6 @@ export class ApplicationRef {
   }
 
   /**
-   * Get a list of component types registered to this application.
-   * This list is populated even before the component is created.
-   */
-  get componentTypes(): Type<any>[] { return this._rootComponentTypes; }
-
-  /**
-   * Get a list of components registered to this application.
-   */
-  get components(): ComponentRef<any>[] { return this._rootComponents; }
-
-  /**
    * Attaches a view so that it will be dirty checked.
    * The view will be automatically detached when it is destroyed.
    * This will throw if the view is already attached to a ViewContainer.
@@ -517,7 +520,7 @@ export class ApplicationRef {
   private _loadComponent(componentRef: ComponentRef<any>): void {
     this.attachView(componentRef.hostView);
     this.tick();
-    this._rootComponents.push(componentRef);
+    this.components.push(componentRef);
     // Get the listeners lazily to prevent DI cycles.
     const listeners =
         this._injector.get(APP_BOOTSTRAP_LISTENER, []).concat(this._bootstrapListeners);
@@ -526,7 +529,7 @@ export class ApplicationRef {
 
   private _unloadComponent(componentRef: ComponentRef<any>): void {
     this.detachView(componentRef.hostView);
-    remove(this._rootComponents, componentRef);
+    remove(this.components, componentRef);
   }
 
   /** @internal */
@@ -539,11 +542,6 @@ export class ApplicationRef {
    * Returns the number of attached views.
    */
   get viewCount() { return this._views.length; }
-
-  /**
-   * Returns an Observable that indicates when the application is stable or unstable.
-   */
-  get isStable(): Observable<boolean> { return this._isStable; }
 }
 
 function remove<T>(list: T[], el: T): void {
