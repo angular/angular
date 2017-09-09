@@ -30,7 +30,7 @@ function notSupported(feature: string): Error {
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-  {provide: PLATFORM_INITIALIZER, useFactory: initParse5Adapter, multi: true, deps: [Injector]}, {
+  {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true, deps: [Injector]}, {
     provide: PlatformLocation,
     useClass: ServerPlatformLocation,
     deps: [DOCUMENT, [Optional, INITIAL_CONFIG]]
@@ -40,7 +40,7 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true}
 ];
 
-function initParse5Adapter(injector: Injector) {
+function initDominoAdapter(injector: Injector) {
   return () => { DominoAdapter.makeCurrent(); };
 }
 
