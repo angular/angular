@@ -190,7 +190,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     // TODO {chuckj}: Determine what should be done for a method with a null name.
     const methods = stmt.methods.filter(method => method.name)
                         .map(
-                            method => ts.createMethodDeclaration(
+                            method => ts.createMethod(
                                 /* decorators */ undefined, /* modifiers */ undefined,
                                 /* astriskToken */ undefined, method.name !/* guarded by filter */,
                                 /* questionToken */ undefined, /* typeParameters */ undefined,

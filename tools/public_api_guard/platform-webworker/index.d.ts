@@ -73,9 +73,9 @@ export declare abstract class ServiceMessageBrokerFactory {
 
 /** @experimental */
 export declare class UiArguments {
-    args: FnArg[];
+    args: FnArg[] | undefined;
     method: string;
-    constructor(method: string, args?: FnArg[]);
+    constructor(method: string, args?: FnArg[] | undefined);
 }
 
 /** @stable */

@@ -75,7 +75,7 @@ describe('tsc-wrapped', () => {
           // No helpers since decorators were lowered
           expect(out).not.toContain('__decorate');
           // Expand `export *` and fix index import
-          expect(out).toContain(`export { A, B } from './dep'`);
+          expect(out).toContain(`export { A, B } from "./dep"`);
           // Annotated for Closure compiler
           expect(out).toContain('* @param {?} x');
           // Comments should stay multi-line
@@ -112,7 +112,7 @@ describe('tsc-wrapped', () => {
         .then(() => {
           const out = readOut('js');
           // Expand `export *` and fix index import
-          expect(out).toContain(`export { A, B } from './dep'`);
+          expect(out).toContain(`export { A, B } from "./dep"`);
           // Annotated for Closure compiler
           expect(out).toContain('* @param {?} x');
           done();
@@ -327,7 +327,7 @@ describe('tsc-wrapped', () => {
     main(basePath, {basePath})
         .then(() => {
           const out = readOut('js.map');
-          expect(out).toContain('"sources":["other_test.ts","../test.ts"]');
+          expect(out).toContain('"sources":["other_test.ts"]');
           done();
         })
         .catch(e => done.fail(e));
@@ -361,7 +361,7 @@ describe('tsc-wrapped', () => {
     main(basePath, {basePath})
         .then(() => {
           const out = readOut('js.map');
-          expect(out).toContain('"sources":["other_test.ts","../test.ts"]');
+          expect(out).toContain('"sources":["other_test.ts"]');
           done();
         })
         .catch(e => done.fail(e));
@@ -387,7 +387,7 @@ describe('tsc-wrapped', () => {
     main(basePath, {basePath})
         .then(() => {
           const fileOutput = readOut('js');
-          expect(fileOutput).toContain(`export { A, B } from './dep'`);
+          expect(fileOutput).toContain(`export { A, B } from "./dep"`);
           done();
         })
         .catch(e => done.fail(e));

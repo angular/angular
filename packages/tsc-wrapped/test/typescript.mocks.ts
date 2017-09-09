@@ -34,6 +34,8 @@ export class Host implements ts.LanguageServiceHost {
     if (content) return ts.ScriptSnapshot.fromString(content);
   }
 
+  fileExists(fileName: string): boolean { return this.getFileContent(fileName) != null; }
+
   getCurrentDirectory(): string { return '/'; }
 
   getDefaultLibFileName(options: ts.CompilerOptions): string { return 'lib.d.ts'; }
@@ -91,8 +93,10 @@ export class MockNode implements ts.Node {
   getText(sourceFile?: ts.SourceFile): string { return ''; }
   getFirstToken(sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
   getLastToken(sourceFile?: ts.SourceFile): ts.Node { return null as any as ts.Node; }
-  forEachChild<T>(cbNode: (node: ts.Node) => T, cbNodeArray?: (nodes: ts.Node[]) => T): T {
-    return null as any as T;
+  forEachChild<T>(
+      cbNode: (node: ts.Node) => T | undefined,
+      cbNodeArray?: (nodes: ts.NodeArray<ts.Node>) => T | undefined): T|undefined {
+    return undefined;
   }
 }
 
@@ -105,6 +109,7 @@ export class MockIdentifier extends MockNode implements ts.Identifier {
   public _incrementExpressionBrand: any;
   public _unaryExpressionBrand: any;
   public _expressionBrand: any;
+  public _updateExpressionBrand: any;
   // tslint:enable
 
   constructor(
@@ -149,9 +154,11 @@ export class MockSymbol implements ts.Symbol {
 export function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
   for (const diagnostic of diagnostics) {
     const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-    const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-    // tslint:disable-next-line:no-console
-    console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+    if (diagnostic.file && diagnostic.start) {
+      const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+      // tslint:disable-next-line:no-console
+      console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+    }
   }
   expect(diagnostics.length).toBe(0);
 }
@@ -164,14 +171,8 @@ export function expectValidSources(service: ts.LanguageService, program: ts.Prog
   }
 }
 
-export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T): T {
-  return ts.forEachChild(node, child => {
-    const result = cb(node);
-    if (result) {
-      return result;
-    }
-    return allChildren(child, cb);
-  });
+export function allChildren<T>(node: ts.Node, cb: (node: ts.Node) => T | undefined): T|undefined {
+  return ts.forEachChild(node, child => cb(node) || allChildren(child, cb));
 }
 
 export function findClass(sourceFile: ts.SourceFile, name: string): ts.ClassDeclaration|undefined {

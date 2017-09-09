@@ -193,7 +193,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
         const type = this.checker.getTypeAtLocation(parameter.type !);
         if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
           const typeReference = type as ts.TypeReference;
-          if (typeReference.typeArguments.length === 1) {
+          if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
             return typeReference.typeArguments[0].symbol;
           }
         }
@@ -261,7 +261,10 @@ class TypeWrapper implements Symbol {
     return this.context.checker.getNonNullableType(this.tsType) != this.tsType;
   }
 
-  get definition(): Definition { return definitionFromTsSymbol(this.tsType.getSymbol()); }
+  get definition(): Definition|undefined {
+    const symbol = this.tsType.getSymbol();
+    return symbol ? definitionFromTsSymbol(symbol) : undefined;
+  }
 
   members(): SymbolTable {
     return new SymbolTableWrapper(this.tsType.getProperties(), this.context);
@@ -528,7 +531,10 @@ class PipeSymbol implements Symbol {
 
   get public(): boolean { return true; }
 
-  get definition(): Definition { return definitionFromTsSymbol(this.tsType.getSymbol()); }
+  get definition(): Definition|undefined {
+    const symbol = this.tsType.getSymbol();
+    return symbol ? definitionFromTsSymbol(symbol) : undefined;
+  }
 
   members(): SymbolTable { return EmptyTable.instance; }
 

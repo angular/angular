@@ -500,7 +500,7 @@ export interface IterableChanges<V> {
     forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
     forEachItem(fn: (record: IterableChangeRecord<V>) => void): void;
     forEachMovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
-    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number | null, currentIndex: number | null) => void): void;
     forEachPreviousItem(fn: (record: IterableChangeRecord<V>) => void): void;
     forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
 }

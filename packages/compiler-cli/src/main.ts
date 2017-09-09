@@ -55,19 +55,16 @@ export function mainSync(
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback {
-  const tsickleOptions: tsickle.TransformerOptions = {
+  const tsickleHost: tsickle.TsickleHost = {
+    shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
+    pathToModuleName: (context, importPath) => '',
+    shouldIgnoreWarningsForPath: (filePath) => false,
+    fileNameToModuleId: (fileName) => fileName,
     googmodule: false,
     untyped: true,
     convertIndexImportShorthand: true,
     transformDecorators: options.annotationsAs !== 'decorators',
     transformTypesToClosure: options.annotateForClosureCompiler,
-  };
-
-  const tsickleHost: tsickle.TransformerHost = {
-    shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
-    pathToModuleName: (context, importPath) => '',
-    shouldIgnoreWarningsForPath: (filePath) => false,
-    fileNameToModuleId: (fileName) => fileName,
   };
 
   return ({
@@ -81,7 +78,7 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback {
            options
          }) =>
              tsickle.emitWithTsickle(
-                 program, tsickleHost, tsickleOptions, host, options, targetSourceFile, writeFile,
+                 program, tsickleHost, host, options, targetSourceFile, writeFile,
                  cancellationToken, emitOnlyDtsFiles, {
                    beforeTs: customTransformers.before,
                    afterTs: customTransformers.after,
