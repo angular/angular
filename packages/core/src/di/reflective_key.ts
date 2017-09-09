@@ -27,6 +27,7 @@ import {resolveForwardRef} from './forward_ref';
  * @deprecated No replacement
  */
 export class ReflectiveKey {
+  public readonly displayName: string;
   /**
    * Private
    */
@@ -34,12 +35,8 @@ export class ReflectiveKey {
     if (!token) {
       throw new Error('Token must be defined!');
     }
+    this.displayName = stringify(this.token);
   }
-
-  /**
-   * Returns a stringified token.
-   */
-  get displayName(): string { return stringify(this.token); }
 
   /**
    * Retrieves a `Key` for a token.
