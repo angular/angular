@@ -88,7 +88,7 @@ function queryIndex(query) {
     if (query.length) {
       // Add a relaxed search in the title for the first word in the query
       // E.g. if the search is "ngCont guide" then we search for "ngCont guide titleWords:ngCont*"
-      var titleQuery = 'titleWords:' + query.split(' ', 1)[0] + '*';
+      var titleQuery = 'titleWords:*' + query.split(' ', 1)[0] + '*';
       var results = index.search(query + ' ' + titleQuery);
       // Map the hits into info about each page to be returned as results
       return results.map(function(hit) { return pages[hit.ref]; });
