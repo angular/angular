@@ -155,15 +155,6 @@ export function compile(
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
       ngHost.fileNameToModuleName(fileName, referringSrcFileName);
 
-  const tsickleOpts = {
-    googmodule: bazelOpts.googmodule,
-    es5Mode: bazelOpts.es5Mode,
-    prelude: bazelOpts.prelude,
-    untyped: bazelOpts.untyped,
-    typeBlackListPaths: new Set(bazelOpts.typeBlackListPaths),
-    transformDecorators: bazelOpts.tsickle,
-    transformTypesToClosure: bazelOpts.tsickle,
-  };
   const emitCallback: ng.TsEmitCallback = ({
     program,
     targetSourceFile,
@@ -173,7 +164,7 @@ export function compile(
     customTransformers = {},
   }) =>
       tsickle.emitWithTsickle(
-          program, bazelHost, tsickleOpts, bazelHost, compilerOpts, targetSourceFile, writeFile,
+          program, bazelHost, bazelHost, compilerOpts, targetSourceFile, writeFile,
           cancellationToken, emitOnlyDtsFiles, {
             beforeTs: customTransformers.before,
             afterTs: customTransformers.after,

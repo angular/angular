@@ -137,23 +137,25 @@ export class TypeChecker {
       if (this._currentCancellationToken.isCancellationRequested()) return result;
       const sourceFile = program.getSourceFile(factoryName);
       for (const diagnostic of this.diagnosticProgram.getSemanticDiagnostics(sourceFile)) {
-        const span = this.sourceSpanOf(diagnostic.file, diagnostic.start, diagnostic.length);
-        if (span) {
-          const fileName = span.start.file.url;
-          const diagnosticsList = diagnosticsFor(fileName);
-          diagnosticsList.push({
-            messageText: diagnosticMessageToString(diagnostic.messageText),
-            category: diagnostic.category, span,
-            source: SOURCE,
-            code: DEFAULT_ERROR_CODE
-          });
+        if (diagnostic.file && diagnostic.start) {
+          const span = this.sourceSpanOf(diagnostic.file, diagnostic.start);
+          if (span) {
+            const fileName = span.start.file.url;
+            const diagnosticsList = diagnosticsFor(fileName);
+            diagnosticsList.push({
+              messageText: diagnosticMessageToString(diagnostic.messageText),
+              category: diagnostic.category, span,
+              source: SOURCE,
+              code: DEFAULT_ERROR_CODE
+            });
+          }
         }
       }
     }
     return result;
   }
 
-  private sourceSpanOf(source: ts.SourceFile, start: number, length: number): ParseSourceSpan|null {
+  private sourceSpanOf(source: ts.SourceFile, start: number): ParseSourceSpan|null {
     // Find the corresponding TypeScript node
     const info = this.factories.get(source.fileName);
     if (info) {

@@ -19,8 +19,8 @@
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "@types/jasmine": "2.5.41",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "2.3.2",
-    "zone.js": "0.7.6"
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../node_modules/zone.js"
   },
   "scripts": {
     "test": "tsc"

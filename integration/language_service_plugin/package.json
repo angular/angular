@@ -17,8 +17,8 @@
     "@types/node": "^7.0.5",
     "minimist": "^1.2.0",
     "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "^2.1.5",
-    "zone.js": "0.7.6"
+    "typescript": "file:../../node_modules/typescript",
+    "zone.js": "file:../../node_modules/zone.js"
   },
   "scripts": {
     "postinstall": "scripts/install.sh",

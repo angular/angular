@@ -38,7 +38,12 @@ export class UpgradeNg1ComponentAdapterBuilder {
         name.replace(CAMEL_CASE, (all: string, next: string) => '-' + next.toLowerCase());
     const self = this;
 
-    @Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
+    // Note: There is a bug in TS 2.4 that prevents us from
+    // inlining this into @Directive
+    // TODO(tbosch): find or file a bug against TypeScript for this.
+    const directive = {selector: selector, inputs: this.inputsRename, outputs: this.outputsRename};
+
+    @Directive(directive)
     class MyClass {
       directive: angular.IDirective;
       constructor(

@@ -11,9 +11,9 @@
   "license": "MIT",
   "repository": {"type":"git","url":"https://github.com/angular/angular.git"},
   "dependencies": {
-    "tsickle": "^0.23.5"
+    "tsickle": "^0.24.0"
   },
   "peerDependencies": {
-    "typescript": "^2.1.5"
+    "typescript": "^2.4.2"
   }
 }
