@@ -87,19 +87,25 @@ export class DominoAdapter extends BrowserDomAdapter {
   isShadowRoot(node: any): boolean { return this.getShadowRoot(node) == node; }
 
   getProperty(el: Element, name: string): any {
-    // Domino tries tp resolve href-s which we do not want. Just return the
-    // atribute value.
     if (name === 'href') {
+      // Domino tries tp resolve href-s which we do not want. Just return the
+      // atribute value.
       return this.getAttribute(el, 'href');
+    } else if (name === 'innerText') {
+      // Domino does not support innerText. Just map it to textContent.
+      return el.textContent;
     }
     return (<any>el)[name];
   }
 
   setProperty(el: Element, name: string, value: any) {
-    // Eventhough the server renderer reflects any properties to attributes
-    // map 'href' to atribute just to handle when setProperty is directly called.
     if (name === 'href') {
+      // Eventhough the server renderer reflects any properties to attributes
+      // map 'href' to atribute just to handle when setProperty is directly called.
       this.setAttribute(el, 'href', value);
+    } else if (name === 'innerText') {
+      // Domino does not support innerText. Just map it to textContent.
+      el.textContent = value;
     }
     (<any>el)[name] = value;
   }
