@@ -51,8 +51,9 @@ export class ProviderElementContext {
   private _seenProviders = new Map<any, boolean>();
   private _allProviders: Map<any, ProviderAst>;
   private _attrs: {[key: string]: string};
-  private _hasViewContainer: boolean = false;
   private _queriedTokens = new Map<any, QueryMatch[]>();
+
+  public readonly transformedHasViewContainer: boolean = false;
 
   constructor(
       public viewContext: ProviderViewContext, private _parent: ProviderElementContext,
@@ -80,7 +81,7 @@ export class ProviderElementContext {
     });
     if (this._queriedTokens.get(
             this.viewContext.reflector.resolveExternalReference(Identifiers.ViewContainerRef))) {
-      this._hasViewContainer = true;
+      this.transformedHasViewContainer = true;
     }
 
     // create the providers that we know are eager first
@@ -121,8 +122,6 @@ export class ProviderElementContext {
             sortedProviderTypes.indexOf(dir2.directive.type));
     return sortedDirectives;
   }
-
-  get transformedHasViewContainer(): boolean { return this._hasViewContainer; }
 
   get queryMatches(): QueryMatch[] {
     const allMatches: QueryMatch[] = [];
@@ -249,7 +248,7 @@ export class ProviderElementContext {
         }
         if (tokenReference(dep.token) ===
             this.viewContext.reflector.resolveExternalReference(Identifiers.ViewContainerRef)) {
-          this._hasViewContainer = true;
+          (this as{transformedHasViewContainer: boolean}).transformedHasViewContainer = true;
         }
       }
       // access the injector
