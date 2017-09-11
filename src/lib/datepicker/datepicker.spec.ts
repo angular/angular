@@ -11,9 +11,11 @@ import {MdDatepicker} from './datepicker';
 import {MdDatepickerInput} from './datepicker-input';
 import {MdInputModule} from '../input/index';
 import {MdNativeDateModule} from '../core/datetime/index';
-import {DEC, JAN} from '../core/testing/month-constants';
+import {DEC, JAN, SEP} from '../core/testing/month-constants';
 import {createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
 import {MdFormFieldModule} from '../form-field/index';
+import {MAT_DATE_LOCALE} from '../core/datetime/date-adapter';
+import {NativeDateModule} from '../core/datetime/index';
 
 describe('MdDatepicker', () => {
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
@@ -943,6 +945,45 @@ describe('MdDatepicker', () => {
     });
 
   });
+
+  describe('internationalization', () => {
+    let fixture: ComponentFixture<DatepickerWithi18n>;
+    let testComponent: DatepickerWithi18n;
+    let input: HTMLInputElement;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          MdDatepickerModule,
+          MdFormFieldModule,
+          MdInputModule,
+          MdNativeDateModule,
+          NoopAnimationsModule,
+          NativeDateModule,
+          FormsModule
+        ],
+        providers: [{provide: MAT_DATE_LOCALE, useValue: 'de-DE'}],
+        declarations: [DatepickerWithi18n],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(DatepickerWithi18n);
+      fixture.detectChanges();
+      testComponent = fixture.componentInstance;
+      input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    }));
+
+    it('should have the correct input value even when inverted date format', () => {
+      let selected = new Date(2017, SEP, 1);
+      testComponent.date = selected;
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(input.value).toBe('01.09.2017');
+        expect(testComponent.datepickerInput.value).toBe(selected);
+      });
+    });
+  });
 });
 
 
@@ -1098,4 +1139,16 @@ class DatepickerWithChangeAndInputEvents {
   onDateChange() {}
 
   onDateInput() {}
+}
+
+@Component({
+  template: `
+    <input [mdDatepicker]="d" [(ngModel)]="date">
+    <md-datepicker #d></md-datepicker>
+  `
+})
+class DatepickerWithi18n {
+  date: Date | null = new Date(2010, JAN, 1);
+  @ViewChild('d') datepicker: MdDatepicker<Date>;
+  @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
 }
