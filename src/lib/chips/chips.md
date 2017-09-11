@@ -33,10 +33,21 @@ chips are neither selectable nor focusable. Currently, disabled chips receive no
 Users can move through the chips using the arrow keys and select/deselect them with the space. Chips
 also gain focus when clicked, ensuring keyboard navigation starts at the appropriate chip.
 
+### Orientation
+If you want the chips in the list to be stacked vertically, instead of horizontally, you can apply
+the `mat-chip-list-stacked` class, as well as the `aria-orientation="vertical"` attribute:
+
+```html
+<md-chip-list class="mat-chip-list-stacked" aria-orientation="vertical">
+  <md-chip>Papadum</md-chip>
+  <md-chip>Naan</md-chip>
+  <md-chip>Dal</md-chip>
+</md-chip-list>
+```
 
 ### Theming
 The selected color of an `<md-chip>` can be changed by using the `color` property. By default, chips
-use a neutral background color based on the current theme (light or dark). This can be changed to 
+use a neutral background color based on the current theme (light or dark). This can be changed to
 `'primary'`, `'accent'`, or `'warn'`.
 
 ### Accessibility
