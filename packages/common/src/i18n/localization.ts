@@ -13,7 +13,7 @@ import {Plural, getLocalePluralCase} from './locale_data_api';
 /**
  * @deprecated from v5
  */
-export const USE_V4_PLURALS = new InjectionToken<boolean>('UseV4Plurals');
+export const DEPRECATED_PLURAL_FN = new InjectionToken<boolean>('UseV4Plurals');
 
 /**
  * @experimental
@@ -60,13 +60,15 @@ export function getPluralCategory(
 export class NgLocaleLocalization extends NgLocalization {
   constructor(
       @Inject(LOCALE_ID) protected locale: string,
-      @Optional() @Inject(USE_V4_PLURALS) protected useV4Plurals?: boolean) {
+      /** @deprecated from v5 */
+      @Optional() @Inject(DEPRECATED_PLURAL_FN) protected deprecatedPluralFn?:
+          ((locale: string, value: number|string) => Plural)|null) {
     super();
   }
 
   getPluralCategory(value: any, locale?: string): string {
-    const plural = this.useV4Plurals ? getPluralCase(locale || this.locale, value) :
-                                       getLocalePluralCase(locale || this.locale)(value);
+    const plural = this.deprecatedPluralFn ? this.deprecatedPluralFn(locale || this.locale, value) :
+                                             getLocalePluralCase(locale || this.locale)(value);
 
     switch (plural) {
       case Plural.Zero:
@@ -91,7 +93,7 @@ export class NgLocaleLocalization extends NgLocalization {
  * @deprecated from v5 the plural case function is in locale data files common/locales/*.ts
  * @experimental
  */
-function getPluralCase(locale: string, nLike: number | string): Plural {
+export function getPluralCase(locale: string, nLike: number | string): Plural {
   // TODO(vicb): lazy compute
   if (typeof nLike === 'string') {
     nLike = parseInt(<string>nLike, 10);

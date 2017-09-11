@@ -9,13 +9,18 @@
 
 import {TestBed, inject} from '@angular/core/testing';
 import {DeprecatedI18NPipesModule} from '../src/common_module';
-import {USE_V4_PLURALS} from '../src/i18n/localization';
+import {Plural} from '../src/i18n/locale_data_api';
+import {DEPRECATED_PLURAL_FN, getPluralCase} from '../src/i18n/localization';
 
 export function main() {
   describe('DeprecatedI18NPipesModule', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [DeprecatedI18NPipesModule]}); });
 
-    it('should define the token USE_V4_PLURALS to true',
-       inject([USE_V4_PLURALS], (useV4Plurals: true) => { expect(useV4Plurals).toEqual(true); }));
+    it('should define the token DEPRECATED_PLURAL_FN',
+       inject(
+           [DEPRECATED_PLURAL_FN],
+           (injectedGetPluralCase?: (locale: string, value: number | string) => Plural) => {
+             expect(injectedGetPluralCase).toEqual(getPluralCase);
+           }));
   });
 }
