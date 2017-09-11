@@ -21,6 +21,14 @@ export interface Diagnostic {
   source: 'angular';
 }
 
+export function isTsDiagnostic(diagnostic: any): diagnostic is ts.Diagnostic {
+  return diagnostic != null && diagnostic.source !== 'angular';
+}
+
+export function isNgDiagnostic(diagnostic: any): diagnostic is Diagnostic {
+  return diagnostic != null && diagnostic.source === 'angular';
+}
+
 export interface CompilerOptions extends ts.CompilerOptions {
   // Absolute path to a directory where generated file structure is written.
   // If unspecified, generated files will be written alongside sources.
@@ -72,6 +80,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // If true, produce .ngfactory.ts and .ngstyle.ts files for .d.ts inputs.
   // Default is true.
   generateCodeForLibraries?: boolean;
+
+  // Whether to enable all type checks for templates.
+  // This will be true be default in Angular 6.
+  fullTemplateTypeCheck?: boolean;
 
   // Insert JSDoc type annotations needed by Closure Compiler
   annotateForClosureCompiler?: boolean;

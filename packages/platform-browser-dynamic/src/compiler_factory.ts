@@ -34,12 +34,13 @@ export class CompilerImpl implements Compiler {
   private _delegate: JitCompiler;
   constructor(
       private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
-      templateParser: TemplateParser, styleCompiler: StyleCompiler, viewCompiler: ViewCompiler,
-      ngModuleCompiler: NgModuleCompiler, summaryResolver: SummaryResolver<Type<any>>,
-      compileReflector: CompileReflector, compilerConfig: CompilerConfig, console: Console) {
+      htmlParser: HtmlParser, templateParser: TemplateParser, styleCompiler: StyleCompiler,
+      viewCompiler: ViewCompiler, ngModuleCompiler: NgModuleCompiler,
+      summaryResolver: SummaryResolver<Type<any>>, compileReflector: CompileReflector,
+      compilerConfig: CompilerConfig, console: Console) {
     this._delegate = new JitCompiler(
-        _metadataResolver, templateParser, styleCompiler, viewCompiler, ngModuleCompiler,
-        summaryResolver, compileReflector, compilerConfig, console,
+        _metadataResolver, htmlParser, templateParser, styleCompiler, viewCompiler,
+        ngModuleCompiler, summaryResolver, compileReflector, compilerConfig, console,
         this.getExtraNgModuleProviders.bind(this));
   }
 
@@ -141,7 +142,7 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
   { provide: NgModuleCompiler, deps: [CompileReflector] },
   { provide: CompilerConfig, useValue: new CompilerConfig()},
   { provide: Compiler, useClass: CompilerImpl, deps: [Injector, CompileMetadataResolver,
-                                TemplateParser, StyleCompiler,
+                                HtmlParser, TemplateParser, StyleCompiler,
                                 ViewCompiler, NgModuleCompiler,
                                 SummaryResolver, CompileReflector, CompilerConfig,
                                 Console]},
