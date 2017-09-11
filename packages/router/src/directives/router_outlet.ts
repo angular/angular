@@ -128,7 +128,7 @@ export class RouterOutlet implements OnDestroy, OnInit {
     }
     this._activatedRoute = activatedRoute;
     const snapshot = activatedRoute._futureSnapshot;
-    const component = <any>snapshot._routeConfig !.component;
+    const component = <any>snapshot.routeConfig !.component;
     resolver = resolver || this.resolver;
     const factory = resolver.resolveComponentFactory(component);
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
