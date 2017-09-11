@@ -228,9 +228,11 @@ compilePackage() {
     echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json"
     local package_name=$(basename "${2}")
     $NGC -p ${1}/tsconfig-build.json
-    echo "======           Create ${1}/../${package_name}.d.ts re-export file for tsickle"
-    echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/${package_name}'" > ${2}/../${package_name}.d.ts
-    echo "{\"__symbolic\":\"module\",\"version\":3,\"metadata\":{},\"exports\":[{\"from\":\"./${package_name}/${package_name}\"}],\"flatModuleIndexRedirect\":true}" > ${2}/../${package_name}.metadata.json
+    if [[ "${package_name}" != "locales" ]]; then
+      echo "======           Create ${1}/../${package_name}.d.ts re-export file for tsickle"
+      echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/${package_name}'" > ${2}/../${package_name}.d.ts
+      echo "{\"__symbolic\":\"module\",\"version\":3,\"metadata\":{},\"exports\":[{\"from\":\"./${package_name}/${package_name}\"}],\"flatModuleIndexRedirect\":true}" > ${2}/../${package_name}.metadata.json
+    fi
   fi
 
   for DIR in ${1}/* ; do
