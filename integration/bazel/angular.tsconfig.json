@@ -16,8 +16,6 @@
   "exclude": [
       "node_modules/@angular/bazel/**",
       "node_modules/@angular/compiler-cli/**",
-      // Workaround bug introduced by 079d884
-      "node_modules/@angular/common/locales.d.ts",
       "node_modules/@angular/common/locales/**",
       "node_modules/@angular/tsc-wrapped/**"
   ]
