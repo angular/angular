@@ -286,9 +286,10 @@ export declare class NgIfContext {
 
 /** @experimental */
 export declare class NgLocaleLocalization extends NgLocalization {
+    /** @deprecated */ protected deprecatedPluralFn: ((locale: string, value: string | number) => Plural) | null | undefined;
     protected locale: string;
-    protected useV4Plurals: boolean | undefined;
-    constructor(locale: string, useV4Plurals?: boolean | undefined);
+    constructor(locale: string,
+        deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined);
     getPluralCategory(value: any, locale?: string): string;
 }
 
