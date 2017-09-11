@@ -16,8 +16,8 @@ if [ -z ${MATERIAL2_BUILDS_TOKEN} ]; then
 fi
 
 # Material packages that need to published.
-PACKAGES=(cdk material)
-REPOSITORIES=(cdk-builds material2-builds)
+PACKAGES=(cdk material material-moment-adapter)
+REPOSITORIES=(cdk-builds material2-builds material2-moment-adapter-builds)
 
 # Command line arguments.
 COMMAND_ARGS=${*}
