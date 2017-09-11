@@ -108,9 +108,9 @@ export class PreActivation {
     const context = parentContexts ? parentContexts.getContext(futureNode.value.outlet) : null;
 
     // reusing the node
-    if (curr && future._routeConfig === curr._routeConfig) {
+    if (curr && future.routeConfig === curr.routeConfig) {
       const shouldRunGuardsAndResolvers = this.shouldRunGuardsAndResolvers(
-          curr, future, future._routeConfig !.runGuardsAndResolvers);
+          curr, future, future.routeConfig !.runGuardsAndResolvers);
       if (shouldRunGuardsAndResolvers) {
         this.canActivateChecks.push(new CanActivate(futurePath));
       } else {
@@ -241,7 +241,7 @@ export class PreActivation {
   }
 
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
-    const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;
+    const canActivate = future.routeConfig ? future.routeConfig.canActivate : null;
     if (!canActivate || canActivate.length === 0) return of (true);
     const obs = map.call(from(canActivate), (c: any) => {
       const guard = this.getToken(c, future);
@@ -281,14 +281,14 @@ export class PreActivation {
 
   private extractCanActivateChild(p: ActivatedRouteSnapshot):
       {node: ActivatedRouteSnapshot, guards: any[]}|null {
-    const canActivateChild = p._routeConfig ? p._routeConfig.canActivateChild : null;
+    const canActivateChild = p.routeConfig ? p.routeConfig.canActivateChild : null;
     if (!canActivateChild || canActivateChild.length === 0) return null;
     return {node: p, guards: canActivateChild};
   }
 
   private runCanDeactivate(component: Object|null, curr: ActivatedRouteSnapshot):
       Observable<boolean> {
-    const canDeactivate = curr && curr._routeConfig ? curr._routeConfig.canDeactivate : null;
+    const canDeactivate = curr && curr.routeConfig ? curr.routeConfig.canDeactivate : null;
     if (!canDeactivate || canDeactivate.length === 0) return of (true);
     const canDeactivate$ = mergeMap.call(from(canDeactivate), (c: any) => {
       const guard = this.getToken(c, curr);
@@ -351,7 +351,7 @@ function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConf
   if (!snapshot) return null;
 
   for (let s = snapshot.parent; s; s = s.parent) {
-    const route = s._routeConfig;
+    const route = s.routeConfig;
     if (route && route._loadedConfig) return route._loadedConfig;
   }
 

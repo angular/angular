@@ -1305,7 +1305,7 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
   private _containsRealPlayer = false;
 
   private _queuedCallbacks: {[name: string]: (() => any)[]} = {};
-  private _destroyed = false;
+  public readonly destroyed = false;
   public parentPlayer: AnimationPlayer;
 
   public markedForDestroy: boolean = false;
@@ -1313,8 +1313,6 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
   constructor(public namespaceId: string, public triggerName: string, public element: any) {}
 
   get queued() { return this._containsRealPlayer == false; }
-
-  get destroyed() { return this._destroyed; }
 
   setRealPlayer(player: AnimationPlayer) {
     if (this._containsRealPlayer) return;
@@ -1368,7 +1366,7 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
   finish(): void { this._player.finish(); }
 
   destroy(): void {
-    this._destroyed = true;
+    (this as{destroyed: boolean}).destroyed = true;
     this._player.destroy();
   }
 

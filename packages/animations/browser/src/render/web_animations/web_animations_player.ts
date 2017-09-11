@@ -15,7 +15,6 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
   private _onDestroyFns: Function[] = [];
-  private _player: DOMAnimation;
   private _duration: number;
   private _delay: number;
   private _initialized = false;
@@ -23,6 +22,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _started = false;
   private _destroyed = false;
   private _finalKeyframe: {[key: string]: string | number};
+
+  public readonly domPlayer: DOMAnimation;
   public time = 0;
 
   public parentPlayer: AnimationPlayer|null = null;
@@ -86,9 +87,10 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       }
     }
 
-    this._player = this._triggerWebAnimation(this.element, keyframes, this.options);
+    (this as{domPlayer: DOMAnimation}).domPlayer =
+        this._triggerWebAnimation(this.element, keyframes, this.options);
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : {};
-    this._player.addEventListener('finish', () => this._onFinish());
+    this.domPlayer.addEventListener('finish', () => this._onFinish());
   }
 
   private _preparePlayerBeforeStart() {
@@ -96,7 +98,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     if (this._delay) {
       this._resetDomPlayerState();
     } else {
-      this._player.pause();
+      this.domPlayer.pause();
     }
   }
 
@@ -106,8 +108,6 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     // supported yet across common browsers (we polyfill it for Edge/Safari) [CL #143630929]
     return element['animate'](keyframes, options) as DOMAnimation;
   }
-
-  get domPlayer() { return this._player; }
 
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
 
@@ -122,18 +122,18 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       this._onStartFns = [];
       this._started = true;
     }
-    this._player.play();
+    this.domPlayer.play();
   }
 
   pause(): void {
     this.init();
-    this._player.pause();
+    this.domPlayer.pause();
   }
 
   finish(): void {
     this.init();
     this._onFinish();
-    this._player.finish();
+    this.domPlayer.finish();
   }
 
   reset(): void {
@@ -144,8 +144,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   private _resetDomPlayerState() {
-    if (this._player) {
-      this._player.cancel();
+    if (this.domPlayer) {
+      this.domPlayer.cancel();
     }
   }
 
@@ -166,9 +166,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     }
   }
 
-  setPosition(p: number): void { this._player.currentTime = p * this.time; }
+  setPosition(p: number): void { this.domPlayer.currentTime = p * this.time; }
 
-  getPosition(): number { return this._player.currentTime / this.time; }
+  getPosition(): number { return this.domPlayer.currentTime / this.time; }
 
   get totalTime(): number { return this._delay + this._duration; }
 

@@ -32,8 +32,9 @@ const baseHtmlParser = new InjectionToken('HtmlParser');
 
 export class CompilerImpl implements Compiler {
   private _delegate: JitCompiler;
+  public readonly injector: Injector;
   constructor(
-      private _injector: Injector, private _metadataResolver: CompileMetadataResolver,
+      injector: Injector, private _metadataResolver: CompileMetadataResolver,
       templateParser: TemplateParser, styleCompiler: StyleCompiler, viewCompiler: ViewCompiler,
       ngModuleCompiler: NgModuleCompiler, summaryResolver: SummaryResolver<Type<any>>,
       compileReflector: CompileReflector, compilerConfig: CompilerConfig, console: Console) {
@@ -41,9 +42,8 @@ export class CompilerImpl implements Compiler {
         _metadataResolver, templateParser, styleCompiler, viewCompiler, ngModuleCompiler,
         summaryResolver, compileReflector, compilerConfig, console,
         this.getExtraNgModuleProviders.bind(this));
+    this.injector = injector;
   }
-
-  get injector(): Injector { return this._injector; }
 
   private getExtraNgModuleProviders() {
     return [this._metadataResolver.getProviderMetadata(

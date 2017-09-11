@@ -86,7 +86,7 @@ export class RouterLinkActive implements OnChanges,
 
   private classes: string[] = [];
   private subscription: Subscription;
-  private active: boolean = false;
+  public readonly isActive: boolean = false;
 
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
@@ -100,7 +100,6 @@ export class RouterLinkActive implements OnChanges,
     });
   }
 
-  get isActive(): boolean { return this.active; }
 
   ngAfterContentInit(): void {
     this.links.changes.subscribe(_ => this.update());
@@ -122,7 +121,7 @@ export class RouterLinkActive implements OnChanges,
     const hasActiveLinks = this.hasActiveLinks();
 
     // react only when status has changed to prevent unnecessary dom updates
-    if (this.active !== hasActiveLinks) {
+    if (this.isActive !== hasActiveLinks) {
       this.classes.forEach((c) => {
         if (hasActiveLinks) {
           this.renderer.addClass(this.element.nativeElement, c);
@@ -130,7 +129,9 @@ export class RouterLinkActive implements OnChanges,
           this.renderer.removeClass(this.element.nativeElement, c);
         }
       });
-      Promise.resolve(hasActiveLinks).then(active => this.active = active);
+      Promise.resolve(hasActiveLinks).then(active => (this as{
+                                                       isActive: boolean
+                                                     }).isActive = active);
     }
   }
 
