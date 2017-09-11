@@ -36,13 +36,15 @@ export enum BoundPropertyType {
  * Represents a parsed property.
  */
 export class BoundProperty {
+  public readonly isLiteral: boolean;
+  public readonly isAnimation: boolean;
+
   constructor(
       public name: string, public expression: ASTWithSource, public type: BoundPropertyType,
-      public sourceSpan: ParseSourceSpan) {}
-
-  get isLiteral() { return this.type === BoundPropertyType.LITERAL_ATTR; }
-
-  get isAnimation() { return this.type === BoundPropertyType.ANIMATION; }
+      public sourceSpan: ParseSourceSpan) {
+    this.isLiteral = this.type === BoundPropertyType.LITERAL_ATTR;
+    this.isAnimation = this.type === BoundPropertyType.ANIMATION;
+  }
 }
 
 /**

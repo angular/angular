@@ -114,6 +114,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private variables: VariableAst[] = [];
   private children: ViewBuilder[] = [];
 
+  public readonly viewName: string;
+
   constructor(
       private reflector: CompileReflector, private outputCtx: OutputContext,
       private parent: ViewBuilder|null, private component: CompileDirectiveMetadata,
@@ -126,10 +128,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.compType = this.embeddedViewIndex > 0 ?
         o.DYNAMIC_TYPE :
         o.expressionType(outputCtx.importExpr(this.component.type.reference)) !;
-  }
-
-  get viewName(): string {
-    return viewClassName(this.component.type.reference, this.embeddedViewIndex);
+    this.viewName = viewClassName(this.component.type.reference, this.embeddedViewIndex);
   }
 
   visitAll(variables: VariableAst[], astNodes: TemplateAst[]) {
