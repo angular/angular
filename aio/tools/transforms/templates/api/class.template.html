@@ -9,6 +9,6 @@
 {$ memberHelpers.renderMemberDetails(doc.statics, 'static-members', 'static-member', 'Static Members') $}
 {% if doc.constructorDoc %}{$ memberHelpers.renderMemberDetails([doc.constructorDoc], 'constructors', 'constructor', 'Constructor') $}{% endif %}
 {$ memberHelpers.renderMemberDetails(doc.members, 'instance-members', 'instance-member', 'Members') $}
-{% include "includes/annotations.html" %}
+{% block annotations %}{% include "includes/annotations.html" %}{% endblock %}
 
 {% endblock %}
