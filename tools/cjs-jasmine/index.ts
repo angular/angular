@@ -73,6 +73,7 @@ var specFiles: any =
         .concat(glob.sync('@angular/platform-browser/test/security/**/*_spec.js', {cwd: distAll}))
         .concat(['/@angular/platform-browser/test/browser/meta_spec.js'])
         .concat(['/@angular/platform-browser/test/browser/title_spec.js'])
+        .concat(['/@angular/platform-browser/test/browser/transfer_state_spec.js'])
         .reduce((specFiles: string[], paths: string[]) => specFiles.concat(paths), <string[]>[]);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;

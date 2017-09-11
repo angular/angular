@@ -7,6 +7,10 @@ export declare class BrowserModule {
 }
 
 /** @experimental */
+export declare class BrowserTransferStateModule {
+}
+
+/** @experimental */
 export declare class By {
     static all(): Predicate<DebugElement>;
     static css(selector: string): Predicate<DebugElement>;
@@ -54,6 +58,9 @@ export declare class HammerGestureConfig {
     };
     buildHammer(element: HTMLElement): HammerInstance;
 }
+
+/** @experimental */
+export declare function makeStateKey<T =
 
 /** @experimental */
 export declare class Meta {
@@ -110,10 +117,25 @@ export interface SafeValue {
 }
 
 /** @experimental */
+export declare type StateKey<T> = string & {
+    __not_a_string: never;
+};
+
+/** @experimental */
 export declare class Title {
     constructor(_doc: any);
     getTitle(): string;
     setTitle(newTitle: string): void;
+}
+
+/** @experimental */
+export declare class TransferState {
+    get<T>(key: StateKey<T>, defaultValue: T): T;
+    hasKey<T>(key: StateKey<T>): boolean;
+    onSerialize<T>(key: StateKey<T>, callback: () => T): void;
+    remove<T>(key: StateKey<T>): void;
+    set<T>(key: StateKey<T>, value: T): void;
+    toJson(): string;
 }
 
 /** @stable */
