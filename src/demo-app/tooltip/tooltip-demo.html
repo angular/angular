@@ -1,3 +1,7 @@
+<button *ngFor="let tooltip of tooltips" mdTooltip="Tooltip message">Tooltip Button</button>
+<button (click)="tooltips.push(null)">Add tooltip</button>
+<button (click)="tooltips.shift()" [disabled]="tooltips.length == 0">Remove tooltip</button>
+
 <div class="demo-tooltip">
   <h1>Tooltip Demo</h1>
 
@@ -29,7 +33,7 @@
   </p>
   <p>
     <strong>Message: </strong>
-    <md-form-field><input mdInput type="text" [(ngModel)]="message"></md-form-field>
+    <md-form-field><input mdInput [(ngModel)]="message"></md-form-field>
   </p>
 
   <p>

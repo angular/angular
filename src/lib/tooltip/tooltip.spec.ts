@@ -6,7 +6,13 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import {ChangeDetectionStrategy, Component, DebugElement, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DebugElement,
+  ElementRef,
+  ViewChild
+} from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -32,7 +38,12 @@ describe('MdTooltip', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MdTooltipModule, OverlayModule, NoopAnimationsModule],
-      declarations: [BasicTooltipDemo, ScrollableTooltipDemo, OnPushTooltipDemo],
+      declarations: [
+        BasicTooltipDemo,
+        ScrollableTooltipDemo,
+        OnPushTooltipDemo,
+        DynamicTooltipsDemo
+      ],
       providers: [
         {provide: Platform, useValue: {IOS: false, isBrowser: true}},
         {provide: OverlayContainer, useFactory: () => {
@@ -287,6 +298,21 @@ describe('MdTooltip', () => {
       expect(overlayContainerElement.textContent).toBe('');
     }));
 
+    it('should have an aria-described element with the tooltip message', () => {
+      const dynamicTooltipsDemoFixture = TestBed.createComponent(DynamicTooltipsDemo);
+      const dynamicTooltipsComponent = dynamicTooltipsDemoFixture.componentInstance;
+
+      dynamicTooltipsComponent.tooltips = ['Tooltip One', 'Tooltip Two'];
+      dynamicTooltipsDemoFixture.detectChanges();
+
+      const buttons = dynamicTooltipsComponent.getButtons();
+      const firstButtonAria = buttons[0].getAttribute('aria-describedby');
+      expect(document.querySelector(`#${firstButtonAria}`)!.textContent).toBe('Tooltip One');
+
+      const secondButtonAria = buttons[1].getAttribute('aria-describedby');
+      expect(document.querySelector(`#${secondButtonAria}`)!.textContent).toBe('Tooltip Two');
+    });
+
     it('should not try to dispose the tooltip when destroyed and done hiding', fakeAsync(() => {
       tooltipDirective.show();
       fixture.detectChanges();
@@ -403,6 +429,13 @@ describe('MdTooltip', () => {
       expect(tooltipWrapper).toBeTruthy('Expected tooltip to be shown.');
       expect(tooltipWrapper.getAttribute('dir')).toBe('rtl', 'Expected tooltip to be in RTL mode.');
     }));
+
+    it('should be able to set the tooltip message as a number', fakeAsync(() => {
+      fixture.componentInstance.message = 100;
+      fixture.detectChanges();
+
+      expect(tooltipDirective.message).toBe('100');
+    }));
   });
 
   describe('scrollable usage', () => {
@@ -516,7 +549,7 @@ describe('MdTooltip', () => {
 })
 class BasicTooltipDemo {
   position: string = 'below';
-  message: string = initialTooltipMessage;
+  message: any = initialTooltipMessage;
   showButton: boolean = true;
   showTooltipClass = false;
   @ViewChild(MdTooltip) tooltip: MdTooltip;
@@ -564,4 +597,23 @@ class ScrollableTooltipDemo {
 class OnPushTooltipDemo {
   position: string = 'below';
   message: string = initialTooltipMessage;
+}
+
+
+@Component({
+  selector: 'app',
+  template: `
+    <button *ngFor="let tooltip of tooltips"
+            [mdTooltip]="tooltip">
+      Button {{tooltip}}
+    </button>`,
+})
+class DynamicTooltipsDemo {
+  tooltips: Array<string> = [];
+
+  constructor(private _elementRef: ElementRef) {}
+
+  getButtons() {
+    return this._elementRef.nativeElement.querySelectorAll('button');
+  }
 }

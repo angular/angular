@@ -43,6 +43,8 @@ import {
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ESCAPE} from '@angular/cdk/keycodes';
+import {AriaDescriber} from '@angular/cdk/a11y';
 
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
@@ -77,8 +79,6 @@ export const MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
   deps: [Overlay],
   useFactory: MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY
 };
-
-
 /**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
  * hiding of a tooltip provided position (defaults to below the element).
@@ -89,6 +89,9 @@ export const MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
   selector: '[md-tooltip], [mdTooltip], [mat-tooltip], [matTooltip]',
   host: {
     '(longpress)': 'show()',
+    '(focus)': 'show()',
+    '(blur)': 'hide(0)',
+    '(keydown)': '_handleKeydown($event)',
     '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
   },
   exportAs: 'mdTooltip',
@@ -144,8 +147,14 @@ export class MdTooltip implements OnDestroy {
   /** The message to be displayed in the tooltip */
   @Input('mdTooltip') get message() { return this._message; }
   set message(value: string) {
-    this._message = value;
-    this._setTooltipMessage(this._message);
+    if (this._message) {
+      this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
+    }
+
+    // If the message is not a string (e.g. number), convert it to a string and trim it.
+    this._message = value ? `${value}`.trim() : '';
+    this._updateTooltipMessage();
+    this._ariaDescriber.describe(this._elementRef.nativeElement, this.message);
   }
 
   /** Classes to be passed to the tooltip. Supports the same syntax as `ngClass`. */
@@ -204,6 +213,7 @@ export class MdTooltip implements OnDestroy {
     private _viewContainerRef: ViewContainerRef,
     private _ngZone: NgZone,
     private _platform: Platform,
+    private _ariaDescriber: AriaDescriber,
     @Inject(MD_TOOLTIP_SCROLL_STRATEGY) private _scrollStrategy,
     @Optional() private _dir: Directionality) {
 
@@ -229,18 +239,20 @@ export class MdTooltip implements OnDestroy {
       this._enterListener();
       this._leaveListener();
     }
+
+    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this.message);
   }
 
   /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */
   show(delay: number = this.showDelay): void {
-    if (this.disabled || !this._message || !this._message.trim()) { return; }
+    if (this.disabled || !this.message) { return; }
 
     if (!this._tooltipInstance) {
       this._createTooltip();
     }
 
     this._setTooltipClass(this._tooltipClass);
-    this._setTooltipMessage(this._message);
+    this._updateTooltipMessage();
     this._tooltipInstance!.show(this._position, delay);
   }
 
@@ -259,6 +271,14 @@ export class MdTooltip implements OnDestroy {
   /** Returns true if the tooltip is currently visible to the user */
   _isTooltipVisible(): boolean {
     return !!this._tooltipInstance && this._tooltipInstance.isVisible();
+  }
+
+  /** Handles the keydown events on the host element. */
+  _handleKeydown(e: KeyboardEvent) {
+    if (this._tooltipInstance!.isVisible() && e.keyCode === ESCAPE) {
+      e.stopPropagation();
+      this.hide(0);
+    }
   }
 
   /** Create the tooltip to display */
@@ -365,11 +385,11 @@ export class MdTooltip implements OnDestroy {
   }
 
   /** Updates the tooltip message and repositions the overlay according to the new message length */
-  private _setTooltipMessage(message: string) {
+  private _updateTooltipMessage() {
     // Must wait for the message to be painted to the tooltip so that the overlay can properly
     // calculate the correct positioning based on the size of the text.
     if (this._tooltipInstance) {
-      this._tooltipInstance.message = message;
+      this._tooltipInstance.message = this.message;
       this._tooltipInstance._markForCheck();
 
       first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => {
@@ -416,7 +436,8 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
     // Forces the element to have a layout in IE and Edge. This fixes issues where the element
     // won't be rendered if the animations are disabled or there is no web animations polyfill.
     '[style.zoom]': '_visibility === "visible" ? 1 : null',
-    '(body:click)': 'this._handleBodyInteraction()'
+    '(body:click)': 'this._handleBodyInteraction()',
+    'aria-hidden': 'true',
   }
 })
 export class TooltipComponent {

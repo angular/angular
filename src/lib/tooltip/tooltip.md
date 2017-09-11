@@ -35,3 +35,9 @@ which both accept a number in milliseconds to delay before applying the display 
 
 To turn off the tooltip and prevent it from showing to the user, use the `mdTooltipDisabled` input flag.
 
+### Accessibility
+
+Elements with the `mdTooltip` will add an `aria-describedby` label that provides a reference
+to a visually hidden element containing the tooltip's message. This provides screenreaders the
+information needed to read out the tooltip's contents when the end-user focuses on the element
+triggering the tooltip.
