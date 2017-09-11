@@ -200,15 +200,15 @@ function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
 export class Router {
   private currentUrlTree: UrlTree;
   private rawUrlTree: UrlTree;
-
   private navigations = new BehaviorSubject<NavigationParams>(null !);
-  private routerEvents = new Subject<Event>();
 
-  private currentRouterState: RouterState;
   private locationSubscription: Subscription;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
+
+  public readonly events: Observable<Event> = new Subject<Event>();
+  public readonly routerState: RouterState;
 
   /**
    * Error handler that is invoked when a navigation errors.
@@ -259,7 +259,7 @@ export class Router {
     this.rawUrlTree = this.currentUrlTree;
 
     this.configLoader = new RouterConfigLoader(loader, compiler, onLoadStart, onLoadEnd);
-    this.currentRouterState = createEmptyState(this.currentUrlTree, this.rootComponentType);
+    this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
     this.processNavigations();
   }
 
@@ -271,7 +271,7 @@ export class Router {
     this.rootComponentType = rootComponentType;
     // TODO: vsavkin router 4.0 should make the root component set to null
     // this will simplify the lifecycle of the router.
-    this.currentRouterState.root.component = this.rootComponentType;
+    this.routerState.root.component = this.rootComponentType;
   }
 
   /**
@@ -299,17 +299,11 @@ export class Router {
     }
   }
 
-  /** The current route state */
-  get routerState(): RouterState { return this.currentRouterState; }
-
   /** The current url */
   get url(): string { return this.serializeUrl(this.currentUrlTree); }
 
-  /** An observable of router events */
-  get events(): Observable<Event> { return this.routerEvents; }
-
   /** @internal */
-  triggerEvent(e: Event): void { this.routerEvents.next(e); }
+  triggerEvent(e: Event): void { (this.events as Subject<Event>).next(e); }
 
   /**
    * Resets the configuration used for navigation and generating links.
@@ -552,7 +546,7 @@ export class Router {
     const urlTransition = !this.navigated || url.toString() !== this.currentUrlTree.toString();
 
     if (urlTransition && this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
-      this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
+      (this.events as Subject<Event>).next(new NavigationStart(id, this.serializeUrl(url)));
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
@@ -564,7 +558,7 @@ export class Router {
     } else if (
         urlTransition && this.rawUrlTree &&
         this.urlHandlingStrategy.shouldProcessUrl(this.rawUrlTree)) {
-      this.routerEvents.next(new NavigationStart(id, this.serializeUrl(url)));
+      (this.events as Subject<Event>).next(new NavigationStart(id, this.serializeUrl(url)));
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
@@ -583,9 +577,10 @@ export class Router {
       id: number, precreatedState: RouterStateSnapshot|null): Promise<boolean> {
     if (id !== this.navigationId) {
       this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
-      this.routerEvents.next(new NavigationCancel(
-          id, this.serializeUrl(url),
-          `Navigation ID ${id} is not equal to the current navigation id ${this.navigationId}`));
+      (this.events as Subject<Event>)
+          .next(new NavigationCancel(
+              id, this.serializeUrl(url),
+              `Navigation ID ${id} is not equal to the current navigation id ${this.navigationId}`));
       return Promise.resolve(false);
     }
 
@@ -604,8 +599,9 @@ export class Router {
                   this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl)),
               (snapshot: any) => {
 
-                this.routerEvents.next(new RoutesRecognized(
-                    id, this.serializeUrl(url), this.serializeUrl(appliedUrl), snapshot));
+                (this.events as Subject<Event>)
+                    .next(new RoutesRecognized(
+                        id, this.serializeUrl(url), this.serializeUrl(appliedUrl), snapshot));
 
                 return {appliedUrl, snapshot};
               });
@@ -627,7 +623,7 @@ export class Router {
           ({appliedUrl, snapshot}: {appliedUrl: string, snapshot: RouterStateSnapshot}) => {
             const moduleInjector = this.ngModule.injector;
             preActivation = new PreActivation(
-                snapshot, this.currentRouterState.snapshot, moduleInjector,
+                snapshot, this.routerState.snapshot, moduleInjector,
                 (evt: Event) => this.triggerEvent(evt));
             preActivation.initalize(this.rootContexts);
             return {appliedUrl, snapshot};
@@ -676,8 +672,7 @@ export class Router {
       const routerState$ =
           map.call(preactivationDone$, ({appliedUrl, snapshot, shouldActivate}: any) => {
             if (shouldActivate) {
-              const state =
-                  createRouterState(this.routeReuseStrategy, snapshot, this.currentRouterState);
+              const state = createRouterState(this.routeReuseStrategy, snapshot, this.routerState);
               return {appliedUrl, state, shouldActivate};
             } else {
               return {appliedUrl, state: null, shouldActivate};
@@ -688,7 +683,7 @@ export class Router {
       // applied the new router state
       // this operation has side effects
       let navigationIsSuccessful: boolean;
-      const storedState = this.currentRouterState;
+      const storedState = this.routerState;
       const storedUrl = this.currentUrlTree;
 
       routerState$
@@ -701,7 +696,7 @@ export class Router {
             this.currentUrlTree = appliedUrl;
             this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
 
-            this.currentRouterState = state;
+            (this as{routerState: RouterState}).routerState = state;
 
             if (!shouldPreventPushState) {
               const path = this.urlSerializer.serialize(this.rawUrlTree);
@@ -722,12 +717,14 @@ export class Router {
               () => {
                 if (navigationIsSuccessful) {
                   this.navigated = true;
-                  this.routerEvents.next(new NavigationEnd(
-                      id, this.serializeUrl(url), this.serializeUrl(this.currentUrlTree)));
+                  (this.events as Subject<Event>)
+                      .next(new NavigationEnd(
+                          id, this.serializeUrl(url), this.serializeUrl(this.currentUrlTree)));
                   resolvePromise(true);
                 } else {
                   this.resetUrlToCurrentUrlTree();
-                  this.routerEvents.next(new NavigationCancel(id, this.serializeUrl(url), ''));
+                  (this.events as Subject<Event>)
+                      .next(new NavigationCancel(id, this.serializeUrl(url), ''));
                   resolvePromise(false);
                 }
               },
@@ -735,11 +732,12 @@ export class Router {
                 if (isNavigationCancelingError(e)) {
                   this.resetUrlToCurrentUrlTree();
                   this.navigated = true;
-                  this.routerEvents.next(
-                      new NavigationCancel(id, this.serializeUrl(url), e.message));
+                  (this.events as Subject<Event>)
+                      .next(new NavigationCancel(id, this.serializeUrl(url), e.message));
                   resolvePromise(false);
                 } else {
-                  this.routerEvents.next(new NavigationError(id, this.serializeUrl(url), e));
+                  (this.events as Subject<Event>)
+                      .next(new NavigationError(id, this.serializeUrl(url), e));
                   try {
                     resolvePromise(this.errorHandler(e));
                   } catch (ee) {
@@ -747,7 +745,7 @@ export class Router {
                   }
                 }
 
-                this.currentRouterState = storedState;
+                (this as{routerState: RouterState}).routerState = storedState;
                 this.currentUrlTree = storedUrl;
                 this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
                 this.location.replaceState(this.serializeUrl(this.rawUrlTree));
@@ -936,7 +934,7 @@ function advanceActivatedRouteNodeAndItsChildren(node: TreeNode<ActivatedRoute>)
 
 function parentLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConfig|null {
   for (let s = snapshot.parent; s; s = s.parent) {
-    const route = s._routeConfig;
+    const route = s.routeConfig;
     if (route && route._loadedConfig) return route._loadedConfig;
     if (route && route.component) return null;
   }
