@@ -300,7 +300,7 @@ export class ActivationStart {
       public snapshot: ActivatedRouteSnapshot) {}
   toString(): string {
     const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
-    return `ChildActivationStart(path: '${path}')`;
+    return `ActivationStart(path: '${path}')`;
   }
 }
 
@@ -316,7 +316,7 @@ export class ActivationEnd {
       public snapshot: ActivatedRouteSnapshot) {}
   toString(): string {
     const path = this.snapshot.routeConfig && this.snapshot.routeConfig.path || '';
-    return `ChildActivationEnd(path: '${path}')`;
+    return `ActivationEnd(path: '${path}')`;
   }
 }
 
@@ -331,9 +331,11 @@ export class ActivationEnd {
  * - {@link RoutesRecognized},
  * - {@link GuardsCheckStart},
  * - {@link ChildActivationStart},
+ * - {@link ActivationStart},
  * - {@link GuardsCheckEnd},
  * - {@link ResolveStart},
  * - {@link ResolveEnd},
+ * - {@link ActivationEnd}
  * - {@link ChildActivationEnd}
  * - {@link NavigationEnd},
  * - {@link NavigationCancel},
@@ -343,4 +345,3 @@ export class ActivationEnd {
  */
 export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
     ChildActivationEnd | ActivationStart | ActivationEnd;
-;
