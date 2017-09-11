@@ -2002,9 +2002,9 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@^0.21.1:
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.21.1.tgz#9ac24733e9bc7ae1a17172a107ede67ea370ada7"
+dgeni-packages@^0.21.2:
+  version "0.21.2"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.21.2.tgz#b031194176507b7c7d1c9735ea14664970763866"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
@@ -2026,7 +2026,7 @@ dgeni-packages@^0.21.1:
     source-map-support "^0.4.15"
     spdx-license-list "^2.1.0"
     stringmap "^0.2.2"
-    typescript "^2.3.4"
+    typescript "2.4"
 
 dgeni@^0.4.7:
   version "0.4.7"
@@ -7619,7 +7619,7 @@ typescript@2.3.2, "typescript@>=2.0.0 <2.5.0":
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.3.2.tgz#f0f045e196f69a72f06b25fd3bd39d01c3ce9984"
 
-typescript@^2.3.3, typescript@^2.3.4:
+typescript@2.4, typescript@^2.3.3:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.1.tgz#c3ccb16ddaa0b2314de031e7e6fee89e5ba346bc"
 
