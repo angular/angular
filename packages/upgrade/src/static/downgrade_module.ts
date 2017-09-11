@@ -48,7 +48,7 @@ import {NgAdapterInjector} from './util';
  * {@example upgrade/static/ts/lite/module.ts region="basic-how-to"}
  *
  * For more details on how to use `downgradeModule()` see
- * [Upgrading for Performance](guide/upgrade-lite).
+ * [Upgrading for Performance](guide/upgrade-performance).
  *
  * @usageNotes
  *
@@ -86,7 +86,7 @@ import {NgAdapterInjector} from './util';
  * notify each framework as needed.
  *
  * For a more detailed discussion of the differences and their implications, see
- * [Upgrading for Performance](guide/upgrade-lite).
+ * [Upgrading for Performance](guide/upgrade-performance).
  *
  * <div class="alert is-helpful">
  *
