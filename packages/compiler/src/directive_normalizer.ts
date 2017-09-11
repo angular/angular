@@ -150,7 +150,8 @@ export class DirectiveNormalizer {
     return new CompileTemplateMetadata({
       encapsulation,
       template,
-      templateUrl: templateAbsUrl, styles, styleUrls,
+      templateUrl: templateAbsUrl,
+      htmlAst: rootNodesAndErrors, styles, styleUrls,
       ngContentSelectors: visitor.ngContentSelectors,
       animations: prenormData.animations,
       interpolation: prenormData.interpolation, isInline,
@@ -168,6 +169,7 @@ export class DirectiveNormalizer {
           encapsulation: templateMeta.encapsulation,
           template: templateMeta.template,
           templateUrl: templateMeta.templateUrl,
+          htmlAst: templateMeta.htmlAst,
           styles: templateMeta.styles,
           styleUrls: templateMeta.styleUrls,
           externalStylesheets: externalStylesheets,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
 import {MessageBundle} from '../i18n/message_bundle';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
@@ -19,8 +19,10 @@ import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
+import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
 import {OutputContext, syntaxError} from '../util';
+import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
 import {AotCompilerHost} from './compiler_host';
@@ -32,11 +34,15 @@ import {createForJitStub, serializeSummaries} from './summary_serializer';
 import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
 
 export class AotCompiler {
+  private _templateAstCache =
+      new Map<StaticSymbol, {template: TemplateAst[], pipes: CompilePipeSummary[]}>();
+
   constructor(
       private _config: CompilerConfig, private _host: AotCompilerHost,
       private _reflector: StaticReflector, private _metadataResolver: CompileMetadataResolver,
-      private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
-      private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
+      private _htmlParser: HtmlParser, private _templateParser: TemplateParser,
+      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
+      private _typeCheckCompiler: TypeCheckCompiler, private _ngModuleCompiler: NgModuleCompiler,
       private _outputEmitter: OutputEmitter,
       private _summaryResolver: SummaryResolver<StaticSymbol>, private _localeId: string|null,
       private _translationFormat: string|null, private _enableSummariesForJit: boolean|null,
@@ -66,9 +72,10 @@ export class AotCompiler {
   }
 
   emitAllStubs(analyzeResult: NgAnalyzedModules): GeneratedFile[] {
-    const {files} = analyzeResult;
+    const {files, ngModuleByPipeOrDirective} = analyzeResult;
     const sourceModules = files.map(
-        file => this._compileStubFile(file.srcUrl, file.directives, file.pipes, file.ngModules));
+        file => this._compileStubFile(
+            file.srcUrl, ngModuleByPipeOrDirective, file.directives, file.pipes, file.ngModules));
     return flatten(sourceModules);
   }
 
@@ -112,7 +119,8 @@ export class AotCompiler {
   }
 
   private _compileStubFile(
-      srcFileUrl: string, directives: StaticSymbol[], pipes: StaticSymbol[],
+      srcFileUrl: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
+      directives: StaticSymbol[], pipes: StaticSymbol[],
       ngModules: StaticSymbol[]): GeneratedFile[] {
     const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
     const generatedFiles: GeneratedFile[] = [];
@@ -130,10 +138,17 @@ export class AotCompiler {
     // the generated code)
     directives.forEach((dirType) => {
       const compMeta = this._metadataResolver.getDirectiveMetadata(<any>dirType);
-
       if (!compMeta.isComponent) {
         return;
       }
+      const ngModule = ngModuleByPipeOrDirective.get(dirType);
+      if (!ngModule) {
+        throw new Error(
+            `Internal Error: cannot determine the module for component ${identifierName(compMeta.type)}!`);
+      }
+      this._compileComponentTypeCheckBlock(
+          ngFactoryOutputCtx, compMeta, ngModule, ngModule.transitiveModule.directives);
+
       // Note: compMeta is a component and therefore template is non null.
       compMeta.template !.externalStylesheets.forEach((stylesheetMeta) => {
         const styleContext = this._createOutputContext(_stylesModuleUrl(
@@ -285,7 +300,8 @@ export class AotCompiler {
       ngModule: CompileNgModuleMetadata, fileSuffix: string): void {
     const hostType = this._metadataResolver.getHostComponentType(compMeta.type.reference);
     const hostMeta = createHostComponentMeta(
-        hostType, compMeta, this._metadataResolver.getHostComponentViewClass(hostType));
+        hostType, compMeta, this._metadataResolver.getHostComponentViewClass(hostType),
+        this._htmlParser);
     const hostViewFactoryVar =
         this._compileComponent(outputCtx, hostMeta, ngModule, [compMeta.type], null, fileSuffix)
             .viewClassVar;
@@ -320,19 +336,32 @@ export class AotCompiler {
                 [o.StmtModifier.Final, o.StmtModifier.Exported]));
   }
 
-  private _compileComponent(
-      outputCtx: OutputContext, compMeta: CompileDirectiveMetadata,
-      ngModule: CompileNgModuleMetadata, directiveIdentifiers: CompileIdentifierMetadata[],
-      componentStyles: CompiledStylesheet|null, fileSuffix: string): ViewCompileResult {
+  private _parseTemplate(
+      compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
+      directiveIdentifiers: CompileIdentifierMetadata[]):
+      {template: TemplateAst[], pipes: CompilePipeSummary[]} {
+    let result = this._templateAstCache.get(compMeta.type.reference);
+    if (result) {
+      return result;
+    }
+    const preserveWhitespaces = compMeta !.template !.preserveWhitespaces;
     const directives =
         directiveIdentifiers.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = ngModule.transitiveModule.pipes.map(
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
-
-    const preserveWhitespaces = compMeta !.template !.preserveWhitespaces;
-    const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
-        compMeta, compMeta.template !.template !, directives, pipes, ngModule.schemas,
+    result = this._templateParser.parse(
+        compMeta, compMeta.template !.htmlAst !, directives, pipes, ngModule.schemas,
         templateSourceUrl(ngModule.type, compMeta, compMeta.template !), preserveWhitespaces);
+    this._templateAstCache.set(compMeta.type.reference, result);
+    return result;
+  }
+
+  private _compileComponent(
+      outputCtx: OutputContext, compMeta: CompileDirectiveMetadata,
+      ngModule: CompileNgModuleMetadata, directiveIdentifiers: CompileIdentifierMetadata[],
+      componentStyles: CompiledStylesheet|null, fileSuffix: string): ViewCompileResult {
+    const {template: parsedTemplate, pipes: usedPipes} =
+        this._parseTemplate(compMeta, ngModule, directiveIdentifiers);
     const stylesExpr = componentStyles ? o.variable(componentStyles.stylesVar) : o.literalArr([]);
     const viewResult = this._viewCompiler.compileComponent(
         outputCtx, compMeta, parsedTemplate, stylesExpr, usedPipes);
@@ -342,6 +371,14 @@ export class AotCompiler {
           fileSuffix);
     }
     return viewResult;
+  }
+
+  private _compileComponentTypeCheckBlock(
+      outputCtx: OutputContext, compMeta: CompileDirectiveMetadata,
+      ngModule: CompileNgModuleMetadata, directiveIdentifiers: CompileIdentifierMetadata[]) {
+    const {template: parsedTemplate, pipes: usedPipes} =
+        this._parseTemplate(compMeta, ngModule, directiveIdentifiers);
+    this._typeCheckCompiler.compileComponent(outputCtx, compMeta, parsedTemplate, usedPipes);
   }
 
   private _createOutputContext(genFilePath: string): OutputContext {
