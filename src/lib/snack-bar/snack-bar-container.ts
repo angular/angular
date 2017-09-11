@@ -38,7 +38,7 @@ import {Subject} from 'rxjs/Subject';
 import {MdSnackBarConfig} from './snack-bar-config';
 
 
-export type SnackBarState = 'initial' | 'visible' | 'complete' | 'void';
+export type SnackBarState = 'visible' | 'hidden' | 'void';
 
 // TODO(jelbourn): we can't use constants from animation.ts here because you can't use
 // a text interpolation in anything that is analyzed statically with ngc (for AoT compile).
@@ -59,15 +59,22 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
   host: {
     'role': 'alert',
     'class': 'mat-snack-bar-container',
-    '[@state]': 'animationState',
+    '[@state]': 'getAnimationState()',
     '(@state.done)': 'onAnimationEnd($event)'
   },
   animations: [
     trigger('state', [
-      state('void, initial, complete', style({transform: 'translateY(100%)'})),
-      state('visible', style({transform: 'translateY(0%)'})),
-      transition('visible => complete', animate(HIDE_ANIMATION)),
-      transition('initial => visible, void => visible', animate(SHOW_ANIMATION)),
+      // Animation from top.
+      state('visible-top', style({transform: 'translateY(0%)'})),
+      state('hidden-top', style({transform: 'translateY(-100%)'})),
+      transition('visible-top => hidden-top', animate(HIDE_ANIMATION)),
+      transition('void => visible-top', animate(SHOW_ANIMATION)),
+      // Animation from bottom.
+      state('visible-bottom', style({transform: 'translateY(0%)'})),
+      state('hidden-bottom', style({transform: 'translateY(100%)'})),
+      transition('visible-bottom => hidden-bottom', animate(HIDE_ANIMATION)),
+      transition('void => visible-bottom',
+        animate(SHOW_ANIMATION)),
     ])
   ],
 })
@@ -85,7 +92,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
   _onEnter: Subject<any> = new Subject();
 
   /** The state of the snack bar animations. */
-  animationState: SnackBarState = 'initial';
+  private _animationState: SnackBarState;
 
   /** The snack bar configuration. */
   snackBarConfig: MdSnackBarConfig;
@@ -96,6 +103,14 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
     private _elementRef: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef) {
     super();
+  }
+
+  /**
+   * Gets the current animation state both combining one of the possibilities from
+   * SnackBarState and the vertical location.
+   */
+  getAnimationState(): string {
+    return `${this._animationState}-${this.snackBarConfig.verticalPosition}`;
   }
 
   /** Attach a component portal as content to this snack bar container. */
@@ -112,6 +127,14 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
       }
     }
 
+    if (this.snackBarConfig.horizontalPosition === 'center') {
+      this._renderer.addClass(this._elementRef.nativeElement, 'mat-snack-bar-center');
+    }
+
+    if (this.snackBarConfig.verticalPosition === 'top') {
+      this._renderer.addClass(this._elementRef.nativeElement, 'mat-snack-bar-top');
+    }
+
     return this._portalHost.attachComponentPortal(portal);
   }
 
@@ -122,11 +145,11 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
 
   /** Handle end of animations, updating the state of the snackbar. */
   onAnimationEnd(event: AnimationEvent) {
-    if (event.toState === 'void' || event.toState === 'complete') {
+    if (event.toState === 'void' || event.toState.startsWith('hidden')) {
       this._completeExit();
     }
 
-    if (event.toState === 'visible') {
+    if (event.toState.startsWith('visible')) {
       // Note: we shouldn't use `this` inside the zone callback,
       // because it can cause a memory leak.
       const onEnter = this._onEnter;
@@ -141,14 +164,14 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
   /** Begin animation of snack bar entrance into view. */
   enter(): void {
     if (!this._destroyed) {
-      this.animationState = 'visible';
+      this._animationState = 'visible';
       this._changeDetectorRef.detectChanges();
     }
   }
 
   /** Begin animation of the snack bar exiting from view. */
   exit(): Observable<void> {
-    this.animationState = 'complete';
+    this._animationState = 'hidden';
     return this._onExit;
   }
 

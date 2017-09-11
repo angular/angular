@@ -12,6 +12,12 @@ import {Direction} from '@angular/cdk/bidi';
 
 export const MD_SNACK_BAR_DATA = new InjectionToken<any>('MdSnackBarData');
 
+/** Possible values for horizontalPosition on MdSnackBarConfig. */
+export type MdSnackBarHorizontalPosition = 'start' | 'center' | 'end' | 'left' | 'right';
+
+/** Possible values for verticalPosition on MdSnackBarConfig. */
+export type MdSnackBarVerticalPosition = 'top' | 'bottom';
+
 /**
  * Configuration used when opening a snack-bar.
  */
@@ -36,4 +42,10 @@ export class MdSnackBarConfig {
 
   /** Data being injected into the child component. */
   data?: any = null;
+
+  /** The horizontal position to place the snack bar. */
+  horizontalPosition?: MdSnackBarHorizontalPosition = 'center';
+
+  /** The vertical position to place the snack bar. */
+  verticalPosition?: MdSnackBarVerticalPosition = 'bottom';
 }

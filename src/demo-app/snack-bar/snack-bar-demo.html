@@ -4,6 +4,20 @@
     Message: <md-form-field><input mdInput type="text" [(ngModel)]="message"></md-form-field>
   </div>
   <div>
+    <div>Position in page: </div>
+    <md-select [(ngModel)]="horizontalPosition">
+      <md-option value="start">Start</md-option>
+      <md-option value="end">End</md-option>
+      <md-option value="left">Left</md-option>
+      <md-option value="right">Right</md-option>
+      <md-option value="center">Center</md-option>
+    </md-select>
+    <md-select [(ngModel)]="verticalPosition">
+      <md-option value="top">Top</md-option>
+      <md-option value="bottom">Bottom</md-option>
+    </md-select>
+  </div>
+  <div>
     <md-checkbox [(ngModel)]="action">
       <p *ngIf="!action">Show button on snack bar</p>
       <md-form-field *ngIf="action">
@@ -27,7 +41,6 @@
       </md-form-field>
     </md-checkbox>
   </div>
-
   <p>
     <md-checkbox [(ngModel)]="addExtraClass">Add extra class to container</md-checkbox>
   </p>

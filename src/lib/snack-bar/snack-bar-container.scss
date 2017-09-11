@@ -3,17 +3,35 @@
 $mat-snack-bar-padding: 14px 24px !default;
 $mat-snack-bar-min-width: 288px !default;
 $mat-snack-bar-max-width: 568px !default;
+$mat-snack-bar-spacing-margin: 24px !default;
 
 
 .mat-snack-bar-container {
   border-radius: 2px;
   box-sizing: content-box;
   display: block;
+  margin: $mat-snack-bar-spacing-margin;
   max-width: $mat-snack-bar-max-width;
   min-width: $mat-snack-bar-min-width;
   padding: $mat-snack-bar-padding;
-  // Initial transformation is applied to start snack bar out of view.
+  // Initial transformation is applied to start snack bar out of view, below its target position.
   transform: translateY(100%);
+
+  /** 
+   * Removes margin of snack bars which are center positioned horizontally.  This
+   * is done to align snack bars to the edge of the view vertically to match spec.
+   */
+  &.mat-snack-bar-center {
+    margin: 0;
+  }
+
+  /**
+   * To allow for animations from a 'top' vertical position to animate in a downward
+   * direction, set the translation to start the snack bar above the target position.
+   */
+  &.mat-snack-bar-top {
+    transform: translateY(-100%);
+  }
 
   @include cdk-high-contrast {
     border: solid 1px;
