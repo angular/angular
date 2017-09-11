@@ -211,10 +211,10 @@ export class PreActivation {
   }
 
   /**
-   * This should fire off `ChildActivationStart` events for each route being activated at this
+   * This should fire off `ActivationStart` events for each route being activated at this
    * level.
    * In other words, if you're activating `a` and `b` below, `path` will contain the
-   * `ActivatedRouteSnapshot`s for both and we will fire `ChildActivationStart` for both. Always
+   * `ActivatedRouteSnapshot`s for both and we will fire `ActivationStart` for both. Always
    * return
    * `true` so checks continue to run.
    */
