@@ -18,10 +18,6 @@ const TS_EXT = /\.ts$/;
 
 export type Diagnostics = Array<ts.Diagnostic|api.Diagnostic>;
 
-function isTsDiagnostic(diagnostic: any): diagnostic is ts.Diagnostic {
-  return diagnostic && diagnostic.source != 'angular';
-}
-
 export function formatDiagnostics(options: api.CompilerOptions, diags: Diagnostics): string {
   if (diags && diags.length) {
     const tsFormatHost: ts.FormatDiagnosticsHost = {
@@ -31,7 +27,7 @@ export function formatDiagnostics(options: api.CompilerOptions, diags: Diagnosti
     };
     return diags
         .map(d => {
-          if (isTsDiagnostic(d)) {
+          if (api.isTsDiagnostic(d)) {
             return ts.formatDiagnostics([d], tsFormatHost);
           } else {
             let res = ts.DiagnosticCategory[d.category];

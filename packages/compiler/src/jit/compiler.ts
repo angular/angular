@@ -11,6 +11,7 @@ import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
 import {Type} from '../core';
 import {CompileMetadataResolver} from '../metadata_resolver';
+import {HtmlParser} from '../ml_parser/html_parser';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import * as ir from '../output/output_ast';
 import {interpretStatements} from '../output/output_interpreter';
@@ -43,11 +44,11 @@ export class JitCompiler {
   private _sharedStylesheetCount = 0;
 
   constructor(
-      private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
-      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
-      private _ngModuleCompiler: NgModuleCompiler, private _summaryResolver: SummaryResolver<Type>,
-      private _reflector: CompileReflector, private _compilerConfig: CompilerConfig,
-      private _console: Console,
+      private _metadataResolver: CompileMetadataResolver, private _htmlParser: HtmlParser,
+      private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
+      private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
+      private _summaryResolver: SummaryResolver<Type>, private _reflector: CompileReflector,
+      private _compilerConfig: CompilerConfig, private _console: Console,
       private getExtraNgModuleProviders: (ngModule: any) => CompileProviderMetadata[]) {}
 
   compileModuleSync(moduleType: Type): object {
@@ -228,7 +229,7 @@ export class JitCompiler {
 
       const hostClass = this._metadataResolver.getHostComponentType(compType);
       const hostMeta = createHostComponentMeta(
-          hostClass, compMeta, (compMeta.componentFactory as any).viewDefFactory);
+          hostClass, compMeta, (compMeta.componentFactory as any).viewDefFactory, this._htmlParser);
       compiledTemplate =
           new CompiledTemplate(true, compMeta.type, hostMeta, ngModule, [compMeta.type]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);

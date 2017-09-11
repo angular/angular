@@ -24,6 +24,7 @@ import {StyleCompiler} from '../style_compiler';
 import {TemplateParser} from '../template_parser/template_parser';
 import {UrlResolver} from '../url_resolver';
 import {syntaxError} from '../util';
+import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompiler} from '../view_compiler/view_compiler';
 
 import {AotCompiler} from './compiler';
@@ -81,9 +82,11 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
       console, symbolCache, staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
   const viewCompiler = new ViewCompiler(config, staticReflector, elementSchemaRegistry);
+  const typeCheckCompiler = new TypeCheckCompiler(options, staticReflector);
   const compiler = new AotCompiler(
-      config, compilerHost, staticReflector, resolver, tmplParser, new StyleCompiler(urlResolver),
-      viewCompiler, new NgModuleCompiler(staticReflector), new TypeScriptEmitter(), summaryResolver,
+      config, compilerHost, staticReflector, resolver, htmlParser, tmplParser,
+      new StyleCompiler(urlResolver), viewCompiler, typeCheckCompiler,
+      new NgModuleCompiler(staticReflector), new TypeScriptEmitter(), summaryResolver,
       options.locale || null, options.i18nFormat || null, options.enableSummariesForJit || null,
       symbolResolver);
   return {compiler, reflector: staticReflector};

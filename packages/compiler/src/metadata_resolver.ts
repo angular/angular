@@ -261,6 +261,7 @@ export class CompileMetadataResolver {
         encapsulation: noUndefined(compMeta.encapsulation),
         template: noUndefined(compMeta.template),
         templateUrl: noUndefined(compMeta.templateUrl),
+        htmlAst: null,
         styles: compMeta.styles || [],
         styleUrls: compMeta.styleUrls || [],
         animations: animations || [],

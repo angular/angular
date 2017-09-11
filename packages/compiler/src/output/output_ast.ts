@@ -1141,8 +1141,8 @@ export function importType(
 }
 
 export function expressionType(
-    expr: Expression, typeModifiers: TypeModifier[] | null = null): ExpressionType|null {
-  return expr != null ? new ExpressionType(expr, typeModifiers) ! : null;
+    expr: Expression, typeModifiers: TypeModifier[] | null = null): ExpressionType {
+  return new ExpressionType(expr, typeModifiers);
 }
 
 export function literalArr(

@@ -9,6 +9,9 @@
 import {StaticSymbol} from './aot/static_symbol';
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from './core';
 import {LifecycleHooks} from './lifecycle_reflector';
+import * as html from './ml_parser/ast';
+import {HtmlParser} from './ml_parser/html_parser';
+import {ParseTreeResult as HtmlParseTreeResult} from './ml_parser/parser';
 import {CssSelector} from './selector';
 import {splitAtColon, stringify} from './util';
 
@@ -244,6 +247,7 @@ export class CompileTemplateMetadata {
   encapsulation: ViewEncapsulation|null;
   template: string|null;
   templateUrl: string|null;
+  htmlAst: HtmlParseTreeResult|null;
   isInline: boolean;
   styles: string[];
   styleUrls: string[];
@@ -252,11 +256,13 @@ export class CompileTemplateMetadata {
   ngContentSelectors: string[];
   interpolation: [string, string]|null;
   preserveWhitespaces: boolean;
-  constructor({encapsulation, template, templateUrl, styles, styleUrls, externalStylesheets,
-               animations, ngContentSelectors, interpolation, isInline, preserveWhitespaces}: {
+  constructor({encapsulation, template, templateUrl, htmlAst, styles, styleUrls,
+               externalStylesheets, animations, ngContentSelectors, interpolation, isInline,
+               preserveWhitespaces}: {
     encapsulation: ViewEncapsulation | null,
     template: string|null,
     templateUrl: string|null,
+    htmlAst: HtmlParseTreeResult|null,
     styles: string[],
     styleUrls: string[],
     externalStylesheets: CompileStylesheetMetadata[],
@@ -269,6 +275,7 @@ export class CompileTemplateMetadata {
     this.encapsulation = encapsulation;
     this.template = template;
     this.templateUrl = templateUrl;
+    this.htmlAst = htmlAst;
     this.styles = _normalizeArray(styles);
     this.styleUrls = _normalizeArray(styleUrls);
     this.externalStylesheets = _normalizeArray(externalStylesheets);
@@ -503,15 +510,18 @@ export class CompileDirectiveMetadata {
  */
 export function createHostComponentMeta(
     hostTypeReference: any, compMeta: CompileDirectiveMetadata,
-    hostViewType: StaticSymbol | ProxyClass): CompileDirectiveMetadata {
+    hostViewType: StaticSymbol | ProxyClass, htmlParser: HtmlParser): CompileDirectiveMetadata {
   const template = CssSelector.parse(compMeta.selector !)[0].getMatchingElementTemplate();
+  const templateUrl = '';
+  const htmlAst = htmlParser.parse(template, templateUrl);
   return CompileDirectiveMetadata.create({
     isHost: true,
     type: {reference: hostTypeReference, diDeps: [], lifecycleHooks: []},
     template: new CompileTemplateMetadata({
       encapsulation: ViewEncapsulation.None,
-      template: template,
-      templateUrl: '',
+      template,
+      templateUrl,
+      htmlAst,
       styles: [],
       styleUrls: [],
       ngContentSelectors: [],
