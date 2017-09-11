@@ -41,5 +41,9 @@ export declare function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>
 export declare class ServerModule {
 }
 
+/** @experimental */
+export declare class ServerTransferStateModule {
+}
+
 /** @stable */
 export declare const VERSION: Version;

@@ -14,9 +14,9 @@ import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModul
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
-import {BrowserModule, DOCUMENT, Title} from '@angular/platform-browser';
+import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
 import {Subscription} from 'rxjs/Subscription';
 import {filter} from 'rxjs/operator/filter';
 import {first} from 'rxjs/operator/first';
@@ -255,6 +255,47 @@ class MyInputComponent {
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'name-attributes'})]
 })
 class NameModule {
+}
+
+const TEST_KEY = makeStateKey<number>('test');
+const STRING_KEY = makeStateKey<string>('testString');
+
+@Component({selector: 'app', template: 'Works!'})
+class TransferComponent {
+  constructor(private transferStore: TransferState) {}
+  ngOnInit() { this.transferStore.set(TEST_KEY, 10); }
+}
+
+@Component({selector: 'esc-app', template: 'Works!'})
+class EscapedComponent {
+  constructor(private transferStore: TransferState) {}
+  ngOnInit() {
+    this.transferStore.set(STRING_KEY, '</script><script>alert(\'Hello&\' + "World");');
+  }
+}
+
+@NgModule({
+  bootstrap: [TransferComponent],
+  declarations: [TransferComponent],
+  imports: [
+    BrowserModule.withServerTransition({appId: 'transfer'}),
+    ServerModule,
+    ServerTransferStateModule,
+  ]
+})
+class TransferStoreModule {
+}
+
+@NgModule({
+  bootstrap: [EscapedComponent],
+  declarations: [EscapedComponent],
+  imports: [
+    BrowserModule.withServerTransition({appId: 'transfer'}),
+    ServerModule,
+    ServerTransferStateModule,
+  ]
+})
+class EscapedTransferStoreModule {
 }
 
 export function main() {
@@ -670,6 +711,47 @@ export function main() {
                mock.expectOne('http://localhost/testing').flush('success!');
                expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
              });
+           });
+         }));
+    });
+
+    describe('ServerTransferStoreModule', () => {
+      let called = false;
+      const defaultExpectedOutput =
+          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body></html>';
+
+      beforeEach(() => { called = false; });
+      afterEach(() => { expect(called).toBe(true); });
+
+      it('adds transfer script tag when using renderModule', async(() => {
+           renderModule(TransferStoreModule, {document: '<app></app>'}).then(output => {
+             expect(output).toBe(defaultExpectedOutput);
+             called = true;
+           });
+         }));
+
+      it('adds transfer script tag when using renderModuleFactory',
+         async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
+           const compilerFactory: CompilerFactory =
+               defaultPlatform.injector.get(CompilerFactory, null);
+           const moduleFactory =
+               compilerFactory.createCompiler().compileModuleSync(TransferStoreModule);
+           renderModuleFactory(moduleFactory, {document: '<app></app>'}).then(output => {
+             expect(output).toBe(defaultExpectedOutput);
+             called = true;
+           });
+         })));
+
+      it('cannot break out of <script> tag in serialized output', async(() => {
+           renderModule(EscapedTransferStoreModule, {
+             document: '<esc-app></esc-app>'
+           }).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
+                 '<script id="transfer-state" type="application/json">' +
+                 '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
+                 'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
+             called = true;
            });
          }));
     });
