@@ -30,8 +30,19 @@ import {
 import {MdAccordion} from './accordion';
 import {AccordionItem} from './accordion-item';
 import {UniqueSelectionDispatcher} from '../core';
+import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
 import {Subject} from 'rxjs/Subject';
 
+// Boilerplate for applying mixins to MdExpansionPanel.
+/** @docs-private */
+export class MdExpansionPanelBase extends AccordionItem {
+  constructor(accordion: MdAccordion,
+              _changeDetectorRef: ChangeDetectorRef,
+              _uniqueSelectionDispatcher: UniqueSelectionDispatcher) {
+    super(accordion, _changeDetectorRef, _uniqueSelectionDispatcher);
+  }
+}
+export const _MdExpansionPanelMixinBase = mixinDisabled(MdExpansionPanelBase);
 
 /** MdExpansionPanel's states. */
 export type MdExpansionPanelState = 'expanded' | 'collapsed';
@@ -54,7 +65,7 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
   templateUrl: './expansion-panel.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  inputs: ['disabled'],
+  inputs: ['disabled', 'expanded'],
   host: {
     'class': 'mat-expansion-panel',
     '[class.mat-expanded]': 'expanded',
@@ -71,7 +82,8 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
     ]),
   ],
 })
-export class MdExpansionPanel extends AccordionItem implements OnChanges, OnDestroy {
+export class MdExpansionPanel extends _MdExpansionPanelMixinBase
+    implements CanDisable, OnChanges, OnDestroy {
   /** Whether the toggle indicator should be hidden. */
   @Input() hideToggle: boolean = false;
 
@@ -98,7 +110,6 @@ export class MdExpansionPanel extends AccordionItem implements OnChanges, OnDest
     if (this.accordion) {
       return (this.expanded ? this.accordion.displayMode : this._getExpandedState()) === 'default';
     }
-
     return false;
   }
 
