@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, NgAnalyzedModules, core, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, MessageBundle, NgAnalyzedModules, Serializer, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
 import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -56,7 +56,7 @@ class AngularCompilerProgram implements Program {
   constructor(
       private rootNames: string[], private options: CompilerOptions, private host: CompilerHost,
       oldProgram?: Program) {
-    if (options.flatModuleOutFile && !options.skipMetadataEmit) {
+    if (options.flatModuleOutFile) {
       const {host: bundleHost, indexName, errors} = createBundleIndexHost(options, rootNames, host);
       if (errors) {
         // TODO(tbosch): once we move MetadataBundler from tsc_wrapped into compiler_cli,
@@ -141,17 +141,27 @@ class AngularCompilerProgram implements Program {
     customTransformers?: CustomTransformers,
     emitCallback?: TsEmitCallback
   }): ts.EmitResult {
-    return emitCallback({
-      program: this.programWithStubs,
-      host: this.host,
-      options: this.options,
-      targetSourceFile: undefined,
-      writeFile:
-          createWriteFileCallback(emitFlags, this.host, this.metadataCache, this.generatedFiles),
-      cancellationToken,
-      emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
-      customTransformers: this.calculateTransforms(customTransformers)
-    });
+    if (emitFlags & EmitFlags.I18nBundle) {
+      const locale = this.options.i18nOutLocale || null;
+      const file = this.options.i18nOutFile || null;
+      const format = this.options.i18nOutFormat || null;
+      const bundle = this.compiler.emitMessageBundle(this.analyzedModules, locale);
+      i18nExtract(format, file, this.host, this.options, bundle);
+    }
+    if (emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Summary)) {
+      return emitCallback({
+        program: this.programWithStubs,
+        host: this.host,
+        options: this.options,
+        targetSourceFile: undefined,
+        writeFile:
+            createWriteFileCallback(emitFlags, this.host, this.metadataCache, this.generatedFiles),
+        cancellationToken,
+        emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
+        customTransformers: this.calculateTransforms(customTransformers)
+      });
+    }
+    return {emitSkipped: true, diagnostics: [], emittedFiles: []};
   }
 
   // Private members
@@ -505,4 +515,57 @@ function createProgramWithStubsHost(
     fileExists = (fileName: string) =>
         this.generatedFiles.has(fileName) || originalHost.fileExists(fileName);
   };
+}
+
+export function i18nExtract(
+    formatName: string | null, outFile: string | null, host: ts.CompilerHost,
+    options: CompilerOptions, bundle: MessageBundle): string[] {
+  formatName = formatName || 'null';
+  // Checks the format and returns the extension
+  const ext = i18nGetExtension(formatName);
+  const content = i18nSerialize(bundle, formatName, options);
+  const dstFile = outFile || `messages.${ext}`;
+  const dstPath = path.resolve(options.outDir || options.basePath, dstFile);
+  host.writeFile(dstPath, content, false);
+  return [dstPath];
+}
+
+export function i18nSerialize(
+    bundle: MessageBundle, formatName: string, options: CompilerOptions): string {
+  const format = formatName.toLowerCase();
+  let serializer: Serializer;
+
+  switch (format) {
+    case 'xmb':
+      serializer = new Xmb();
+      break;
+    case 'xliff2':
+    case 'xlf2':
+      serializer = new Xliff2();
+      break;
+    case 'xlf':
+    case 'xliff':
+    default:
+      serializer = new Xliff();
+  }
+  return bundle.write(
+      serializer, (sourcePath: string) =>
+                      options.basePath ? path.relative(options.basePath, sourcePath) : sourcePath);
+}
+
+export function i18nGetExtension(formatName: string): string {
+  const format = (formatName || 'xlf').toLowerCase();
+
+  switch (format) {
+    case 'xmb':
+      return 'xmb';
+    case 'xlf':
+    case 'xlif':
+    case 'xliff':
+    case 'xlf2':
+    case 'xliff2':
+      return 'xlf';
+  }
+
+  throw new Error(`Unsupported format "${formatName}"`);
 }

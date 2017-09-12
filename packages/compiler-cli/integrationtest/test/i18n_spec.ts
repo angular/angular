@@ -114,8 +114,7 @@ multi-lines</source>
 `;
 
 describe('template i18n extraction output', () => {
-  const outDir = '';
-  const genDir = 'out';
+  const outDir = 'out';
 
   it('should extract i18n messages as xmb', () => {
     const xmbOutput = path.join(outDir, 'custom_file.xmb');
@@ -139,7 +138,7 @@ describe('template i18n extraction output', () => {
   });
 
   it('should not emit js', () => {
-    const genOutput = path.join(genDir, '');
-    expect(fs.existsSync(genOutput)).toBeFalsy();
+    const files = fs.readdirSync(outDir);
+    files.forEach(f => expect(f).not.toMatch(/\.js$/));
   });
 });

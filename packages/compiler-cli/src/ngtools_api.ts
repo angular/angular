@@ -90,12 +90,11 @@ export class NgTools_InternalApi_NG_2 {
     const hostContext: CompilerHostContext =
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
 
-    const cliOptions: NgcCliOptions = {
+    const i18nOptions = {
       i18nFormat: options.i18nFormat !,
       i18nFile: options.i18nFile !,
       locale: options.locale !,
       missingTranslation: options.missingTranslation !,
-      basePath: options.basePath
     };
     const ngOptions = options.angularCompilerOptions;
     if (ngOptions.enableSummariesForJit === undefined) {
@@ -105,7 +104,7 @@ export class NgTools_InternalApi_NG_2 {
 
     // Create the Code Generator.
     const codeGenerator =
-        CodeGenerator.create(ngOptions, cliOptions, options.program, options.host, hostContext);
+        CodeGenerator.create(ngOptions, i18nOptions, options.program, options.host, hostContext);
 
     return codeGenerator.codegen();
   }

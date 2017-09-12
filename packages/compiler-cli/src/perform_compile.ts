@@ -7,7 +7,6 @@
  */
 
 import {isSyntaxError, syntaxError} from '@angular/compiler';
-import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -57,6 +56,7 @@ export interface ParsedConfiguration {
   project: string;
   options: api.CompilerOptions;
   rootNames: string[];
+  emitFlags: api.EmitFlags;
   errors: Diagnostics;
 }
 
@@ -82,7 +82,13 @@ export function readConfiguration(
     let {config, error} = ts.readConfigFile(projectFile, ts.sys.readFile);
 
     if (error) {
-      return {project, errors: [error], rootNames: [], options: {}};
+      return {
+        project,
+        errors: [error],
+        rootNames: [],
+        options: {},
+        emitFlags: api.EmitFlags.Default
+      };
     }
     const parseConfigHost = {
       useCaseSensitiveFileNames: true,
@@ -95,7 +101,11 @@ export function readConfiguration(
     const rootNames = parsed.fileNames.map(f => path.normalize(f));
 
     const options = createNgCompilerOptions(basePath, config, parsed.options);
-    return {project: projectFile, rootNames, options, errors: parsed.errors};
+    let emitFlags = api.EmitFlags.Default;
+    if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
+      emitFlags |= api.EmitFlags.Metadata;
+    }
+    return {project: projectFile, rootNames, options, errors: parsed.errors, emitFlags};
   } catch (e) {
     const errors: Diagnostics = [{
       category: ts.DiagnosticCategory.Error,
@@ -103,7 +113,7 @@ export function readConfiguration(
       source: api.SOURCE,
       code: api.UNKNOWN_ERROR_CODE
     }];
-    return {project: '', errors, rootNames: [], options: {}};
+    return {project: '', errors, rootNames: [], options: {}, emitFlags: api.EmitFlags.Default};
   }
 }
 
@@ -113,32 +123,27 @@ export interface PerformCompilationResult {
   emitResult?: ts.EmitResult;
 }
 
-export function exitCodeFromResult(result: PerformCompilationResult | undefined): number {
-  if (!result) {
-    // If we didn't get a result we should return failure.
-    return 1;
-  }
-  if (!result.diagnostics || result.diagnostics.length === 0) {
+export function exitCodeFromResult(diags: Diagnostics | undefined): number {
+  if (!diags || diags.length === 0) {
     // If we have a result and didn't get any errors, we succeeded.
     return 0;
   }
 
   // Return 2 if any of the errors were unknown.
-  return result.diagnostics.some(d => d.source === 'angular' && d.code === api.UNKNOWN_ERROR_CODE) ?
-      2 :
-      1;
+  return diags.some(d => d.source === 'angular' && d.code === api.UNKNOWN_ERROR_CODE) ? 2 : 1;
 }
 
 export function performCompilation({rootNames, options, host, oldProgram, emitCallback,
                                     gatherDiagnostics = defaultGatherDiagnostics,
-                                    customTransformers}: {
+                                    customTransformers, emitFlags = api.EmitFlags.Default}: {
   rootNames: string[],
   options: api.CompilerOptions,
   host?: api.CompilerHost,
   oldProgram?: api.Program,
   emitCallback?: api.TsEmitCallback,
   gatherDiagnostics?: (program: api.Program) => Diagnostics,
-  customTransformers?: api.CustomTransformers
+  customTransformers?: api.CustomTransformers,
+  emitFlags?: api.EmitFlags
 }): PerformCompilationResult {
   const [major, minor] = ts.version.split('.');
 
@@ -159,12 +164,7 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
     allDiagnostics.push(...gatherDiagnostics(program !));
 
     if (!hasErrors(allDiagnostics)) {
-      emitResult = program !.emit({
-        emitCallback,
-        customTransformers,
-        emitFlags: api.EmitFlags.Default |
-            ((options.skipMetadataEmit || options.flatModuleOutFile) ? 0 : api.EmitFlags.Metadata)
-      });
+      emitResult = program !.emit({emitCallback, customTransformers, emitFlags});
       allDiagnostics.push(...emitResult.diagnostics);
       return {diagnostics: allDiagnostics, program, emitResult};
     }

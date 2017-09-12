@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {mainSync} from '../src/main';
+import {mainSync, readCommandLineAndConfiguration, watchMode} from '../src/main';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -163,7 +163,7 @@ describe('ngc transformer command-line', () => {
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0]).toContain('no such file or directory');
       expect(errorSpy.calls.mostRecent().args[0]).toContain('at Error (native)');
-      expect(exitCode).toEqual(1);
+      expect(exitCode).toEqual(2);
     });
 
     it('should report errors for ngfactory files that are not referenced by root files', () => {
@@ -913,5 +913,158 @@ describe('ngc transformer command-line', () => {
       outDir = path.resolve(basePath, 'built');
       shouldExist('app/main.js');
     });
+  });
+
+  describe('watch mode', () => {
+    let timer: (() => void)|undefined = undefined;
+    let results: ((message: string) => void)|undefined = undefined;
+    let originalTimeout: number;
+
+    function trigger() {
+      const delay = 1000;
+      setTimeout(() => {
+        const t = timer;
+        timer = undefined;
+        if (!t) {
+          fail('Unexpected state. Timer was not set.');
+        } else {
+          t();
+        }
+      }, delay);
+    }
+
+    function whenResults(): Promise<string> {
+      return new Promise(resolve => {
+        results = message => {
+          resolve(message);
+          results = undefined;
+        };
+      });
+    }
+
+    function errorSpy(message: string): void {
+      if (results) results(message);
+    }
+
+    beforeEach(() => {
+      originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+      const timerToken = 100;
+      spyOn(ts.sys, 'setTimeout').and.callFake((callback: () => void) => {
+        timer = callback;
+        return timerToken;
+      });
+      spyOn(ts.sys, 'clearTimeout').and.callFake((token: number) => {
+        if (token == timerToken) {
+          timer = undefined;
+        }
+      });
+
+      write('greet.html', `<p class="greeting"> Hello {{name}}!</p>`);
+      write('greet.css', `p.greeting { color: #eee }`);
+      write('greet.ts', `
+        import {Component, Input} from '@angular/core';
+
+        @Component({
+          selector: 'greet',
+          templateUrl: 'greet.html',
+          styleUrls: ['greet.css']
+        })
+        export class Greet {
+          @Input()
+          name: string;
+        }
+      `);
+
+      write('app.ts', `
+        import {Component} from '@angular/core'
+
+        @Component({
+          selector: 'my-app',
+          template: \`
+            <div>
+              <greet [name]='name'></greet>
+            </div>
+          \`,
+        })
+        export class App {
+          name:string;
+          constructor() {
+            this.name = \`Angular!\`
+          }
+        }`);
+
+      write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {Greet} from './greet';
+        import {App} from './app';
+
+        @NgModule({
+          declarations: [Greet, App]
+        })
+        export class MyModule {}
+      `);
+    });
+
+    afterEach(() => { jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout; });
+
+    function writeAppConfig(location: string) {
+      writeConfig(`{
+            "extends": "./tsconfig-base.json",
+            "compilerOptions": {
+              "outDir": "${location}"
+            }
+          }`);
+    }
+
+    function expectRecompile(cb: () => void) {
+      return (done: DoneFn) => {
+        writeAppConfig('dist');
+        const config = readCommandLineAndConfiguration(['-p', basePath]);
+        const compile = watchMode(config.project, config.options, errorSpy);
+
+        return new Promise(resolve => {
+          compile.ready(() => {
+            cb();
+
+            // Allow the watch callbacks to occur and trigger the timer.
+            trigger();
+
+            // Expect the file to trigger a result.
+            whenResults().then(message => {
+              expect(message).toMatch(/File change detected/);
+              compile.close();
+              done();
+              resolve();
+            });
+          });
+        });
+      };
+    }
+
+    it('should recompile when config file changes', expectRecompile(() => writeAppConfig('dist2')));
+
+    it('should recompile when a ts file changes', expectRecompile(() => {
+         write('greet.ts', `
+          import {Component, Input} from '@angular/core';
+
+          @Component({
+            selector: 'greet',
+            templateUrl: 'greet.html',
+            styleUrls: ['greet.css'],
+          })
+          export class Greet {
+            @Input()
+            name: string;
+            age: number;
+          }
+        `);
+       }));
+
+    it('should recomiple when the html file changes',
+       expectRecompile(() => { write('greet.html', '<p> Hello {{name}} again!</p>'); }));
+
+    it('should recompile when the css file changes',
+       expectRecompile(() => { write('greet.css', `p.greeting { color: blue }`); }));
   });
 });
