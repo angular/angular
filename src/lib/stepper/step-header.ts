@@ -9,6 +9,7 @@
 import {Component, Input, ViewEncapsulation} from '@angular/core';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {MdStepLabel} from './step-label';
+import {MATERIAL_COMPATIBILITY_MODE} from '../core/compatibility/compatibility';
 
 @Component({
   moduleId: module.id,
@@ -19,7 +20,8 @@ import {MdStepLabel} from './step-label';
     'class': 'mat-step-header',
     'role': 'tab',
   },
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: false}],
 })
 export class MdStepHeader {
   /** Icon for the given step. */
