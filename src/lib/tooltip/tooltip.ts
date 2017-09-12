@@ -422,10 +422,8 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('state', [
-      state('void', style({transform: 'scale(0)'})),
-      state('initial', style({transform: 'scale(0)'})),
+      state('initial, void, hidden', style({transform: 'scale(0)'})),
       state('visible', style({transform: 'scale(1)'})),
-      state('hidden', style({transform: 'scale(0)'})),
       transition('* => visible', animate('150ms cubic-bezier(0.0, 0.0, 0.2, 1)')),
       transition('* => hidden', animate('150ms cubic-bezier(0.4, 0.0, 1, 1)')),
     ])
@@ -455,7 +453,7 @@ export class TooltipComponent {
   _visibility: TooltipVisibility = 'initial';
 
   /** Whether interactions on the page should close the tooltip */
-  _closeOnInteraction: boolean = false;
+  private _closeOnInteraction: boolean = false;
 
   /** The transform origin used in the animation for showing and hiding the tooltip */
   _transformOrigin: string = 'bottom';
@@ -477,21 +475,13 @@ export class TooltipComponent {
       clearTimeout(this._hideTimeoutId);
     }
 
-    // Body interactions should cancel the tooltip if there is a delay in showing.
-    this._closeOnInteraction = true;
-
     this._setTransformOrigin(position);
     this._showTimeoutId = setTimeout(() => {
       this._visibility = 'visible';
 
-      // If this was set to true immediately, then a body click that triggers show() would
-      // trigger interaction and close the tooltip right after it was displayed.
-      this._closeOnInteraction = false;
-
       // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
       this._markForCheck();
-      setTimeout(() => this._closeOnInteraction = true, 0);
     }, delay);
   }
 
@@ -507,7 +497,6 @@ export class TooltipComponent {
 
     this._hideTimeoutId = setTimeout(() => {
       this._visibility = 'hidden';
-      this._closeOnInteraction = false;
 
       // Mark for check so if any parent component has set the
       // ChangeDetectionStrategy to OnPush it will be checked anyways
@@ -543,9 +532,22 @@ export class TooltipComponent {
     }
   }
 
-  _afterVisibilityAnimation(e: AnimationEvent): void {
-    if (e.toState === 'hidden' && !this.isVisible()) {
+  _animationStart() {
+    this._closeOnInteraction = false;
+  }
+
+  _animationDone(event: AnimationEvent): void {
+    const toState = event.toState as TooltipVisibility;
+
+    if (toState === 'hidden' && !this.isVisible()) {
       this._onHide.next();
+    }
+
+    if (toState === 'visible' || toState === 'hidden') {
+      // Note: as of Angular 4.3, the animations module seems to fire the `start` callback before
+      // the end if animations are disabled. Make this call async to ensure that it still fires
+      // at the appropriate time.
+      Promise.resolve().then(() => this._closeOnInteraction = true);
     }
   }
 

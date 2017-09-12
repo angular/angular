@@ -328,14 +328,14 @@ describe('MdTooltip', () => {
       fixture.detectChanges();
 
       // At this point the animation should be able to complete itself and trigger the
-      // _afterVisibilityAnimation function, but for unknown reasons in the test infrastructure,
+      // _animationDone function, but for unknown reasons in the test infrastructure,
       // this does not occur. Manually call this and verify that doing so does not
       // throw an error.
-      tooltipInstance._afterVisibilityAnimation({
+      tooltipInstance._animationDone({
         fromState: 'visible',
         toState: 'hidden',
         totalTime: 150,
-        phaseName: '',
+        phaseName: 'done',
       } as AnimationEvent);
     }));
 
@@ -436,6 +436,39 @@ describe('MdTooltip', () => {
 
       expect(tooltipDirective.message).toBe('100');
     }));
+
+    it('should hide when clicking away', fakeAsync(() => {
+      tooltipDirective.show();
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+      expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
+
+      document.body.click();
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+      expect(overlayContainerElement.textContent).toBe('');
+    }));
+
+    it('should not hide immediately if a click fires while animating', fakeAsync(() => {
+      tooltipDirective.show();
+      tick(0);
+      fixture.detectChanges();
+
+      document.body.click();
+      fixture.detectChanges();
+
+      tick(500);
+
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+      expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
+    }));
+
   });
 
   describe('scrollable usage', () => {
