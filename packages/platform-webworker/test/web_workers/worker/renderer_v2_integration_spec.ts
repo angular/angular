@@ -15,10 +15,10 @@ import {BrowserTestingModule} from '@angular/platform-browser/testing';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from '../../../src/web_workers/shared/client_message_broker';
+import {ClientMessageBrokerFactory} from '../../../src/web_workers/shared/client_message_broker';
 import {RenderStore} from '../../../src/web_workers/shared/render_store';
 import {Serializer} from '../../../src/web_workers/shared/serializer';
-import {ServiceMessageBrokerFactory_} from '../../../src/web_workers/shared/service_message_broker';
+import {ServiceMessageBrokerFactory} from '../../../src/web_workers/shared/service_message_broker';
 import {MessageBasedRenderer2} from '../../../src/web_workers/ui/renderer';
 import {WebWorkerRendererFactory2} from '../../../src/web_workers/worker/renderer';
 import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
@@ -180,10 +180,10 @@ function createWebWorkerBrokerFactory(
   const wwMessageBus = messageBuses.worker;
 
   // set up the worker side
-  const wwBrokerFactory = new ClientMessageBrokerFactory_(wwMessageBus, wwSerializer);
+  const wwBrokerFactory = new ClientMessageBrokerFactory(wwMessageBus, wwSerializer);
 
   // set up the ui side
-  const uiBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
+  const uiBrokerFactory = new ServiceMessageBrokerFactory(uiMessageBus, uiSerializer);
   const renderer = new MessageBasedRenderer2(
       uiBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRendererFactory);
   renderer.start();

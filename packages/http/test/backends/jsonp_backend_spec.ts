@@ -10,7 +10,7 @@ import {Injector} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
-import {JSONPBackend, JSONPBackend_, JSONPConnection, JSONPConnection_} from '../../src/backends/jsonp_backend';
+import {JSONPBackend, JSONPConnection} from '../../src/backends/jsonp_backend';
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../../src/enums';
@@ -48,14 +48,14 @@ class MockBrowserJsonp extends BrowserJsonp {
 
 export function main() {
   describe('JSONPBackend', () => {
-    let backend: JSONPBackend_;
+    let backend: JSONPBackend;
     let sampleRequest: Request;
 
     beforeEach(() => {
       const injector = Injector.create([
         {provide: ResponseOptions, useClass: BaseResponseOptions, deps: []},
         {provide: BrowserJsonp, useClass: MockBrowserJsonp, deps: []},
-        {provide: JSONPBackend, useClass: JSONPBackend_, deps: [BrowserJsonp, ResponseOptions]}
+        {provide: JSONPBackend, useClass: JSONPBackend, deps: [BrowserJsonp, ResponseOptions]}
       ]);
       backend = injector.get(JSONPBackend);
       const base = new BaseRequestOptions();
@@ -75,7 +75,7 @@ export function main() {
     describe('JSONPConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const connection = new JSONPConnection_(
+           const connection = new JSONPConnection(
                sampleRequest, new MockBrowserJsonp(),
                new ResponseOptions({type: ResponseType.Error}));
            connection.response.subscribe(res => {
@@ -88,7 +88,7 @@ export function main() {
 
       it('should ignore load/callback when disposed',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
+           const connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
            const spy = new SpyObject();
            const loadSpy = spy.spy('load');
            const errorSpy = spy.spy('error');
@@ -111,7 +111,7 @@ export function main() {
 
       it('should report error if loaded without invoking callback',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
+           const connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
            connection.response.subscribe(
                res => {
                  expect('response listener called').toBe(false);
@@ -127,7 +127,7 @@ export function main() {
 
       it('should report error if script contains error',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
+           const connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(
                res => {
@@ -149,14 +149,14 @@ export function main() {
               const base = new BaseRequestOptions();
               const req = new Request(base.merge(
                   new RequestOptions({url: 'https://google.com', method: method})) as any);
-              expect(() => new JSONPConnection_(req, new MockBrowserJsonp()).response.subscribe())
+              expect(() => new JSONPConnection(req, new MockBrowserJsonp()).response.subscribe())
                   .toThrowError();
             });
       });
 
       it('should respond with data passed to callback',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
+           const connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(res => {
              expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));

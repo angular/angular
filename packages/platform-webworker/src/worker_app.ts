@@ -11,12 +11,12 @@ import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PLAT
 import {DOCUMENT, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
 
 import {ON_WEB_WORKER} from './web_workers/shared/api';
-import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
+import {ClientMessageBrokerFactory} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';
 import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from './web_workers/shared/post_message_bus';
 import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
-import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
+import {ServiceMessageBrokerFactory} from './web_workers/shared/service_message_broker';
 import {WebWorkerRendererFactory2} from './web_workers/worker/renderer';
 import {WorkerDomAdapter} from './web_workers/worker/worker_adapter';
 
@@ -62,8 +62,8 @@ export function setupWebWorker(): void {
     BROWSER_SANITIZATION_PROVIDERS,
     Serializer,
     {provide: DOCUMENT, useValue: null},
-    {provide: ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_},
-    {provide: ServiceMessageBrokerFactory, useClass: ServiceMessageBrokerFactory_},
+    ClientMessageBrokerFactory,
+    ServiceMessageBrokerFactory,
     WebWorkerRendererFactory2,
     {provide: RendererFactory2, useExisting: WebWorkerRendererFactory2},
     {provide: ON_WEB_WORKER, useValue: true},
