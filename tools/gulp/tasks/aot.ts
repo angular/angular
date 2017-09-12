@@ -18,7 +18,7 @@ const tsconfigFile = join(demoAppOut, 'tsconfig-aot.json');
 /** Builds the demo-app and material. To be able to run NGC, apply the metadata workaround. */
 task('aot:deps', sequenceTask(
   'build:devapp',
-  ['material:build-release', 'cdk:build-release'],
+  ['material:build-release', 'cdk:build-release', 'material-moment-adapter:build-release'],
   'aot:copy-release'
 ));
 
@@ -27,6 +27,8 @@ task('aot:deps', sequenceTask(
 task('aot:copy-release', () => {
   copySync(join(releasesDir, 'material'), join(demoAppOut, 'material'));
   copySync(join(releasesDir, 'cdk'), join(demoAppOut, 'cdk'));
+  copySync(
+      join(releasesDir, 'material-moment-adapter'), join(demoAppOut, 'material-moment-adapter'));
 });
 
 /** Build the demo-app and a release to confirm that the library is AOT-compatible. */

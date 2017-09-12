@@ -101,6 +101,7 @@
     "magic-string": "^0.21.3",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
+    "moment": "^2.18.1",
     "node-sass": "^4.5.3",
     "protractor": "^5.1.2",
     "request": "^2.81.0",

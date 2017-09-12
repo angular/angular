@@ -2,6 +2,8 @@
 // IDEs and TSLint. For IDEs it ensures that `experimentalDecorator` warnings are not showing up.
 {
   "compilerOptions": {
+    // Needed for Moment.js since it doesn't have a default export.
+    "allowSyntheticDefaultImports": true,
     "rootDir": ".",
     "experimentalDecorators": true,
     "module": "es2015",
@@ -17,6 +19,7 @@
     "paths": {
       "@angular/material": ["./src/lib/public_api.ts"],
       "@angular/cdk/*": ["./src/cdk/*"],
+      "@angular/material-moment-adapter": ["./src/material-moment-adapter"],
       "@angular/material-examples": ["./src/material-examples"],
       "material2-build-tools": ["./tools/package-tools"]
     }

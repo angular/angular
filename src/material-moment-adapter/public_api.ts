@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export const _momentAdapter = 0;
+export * from './adapter';

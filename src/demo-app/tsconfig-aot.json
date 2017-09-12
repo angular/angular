@@ -11,7 +11,8 @@
     "outDir": ".",
     "paths": {
       "@angular/material": ["./material"],
-      "@angular/cdk/*": ["./cdk/*"]
+      "@angular/cdk/*": ["./cdk/*"],
+      "@angular/material-moment-adapter": ["./material-moment-adapter"]
     }
   },
   "files": [

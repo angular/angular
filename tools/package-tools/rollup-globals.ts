@@ -17,6 +17,7 @@ const rollupCdkEntryPoints = cdkSecondaryEntryPoints.reduce((globals: any, entry
 /** Map of globals that are used inside of the different packages. */
 export const rollupGlobals = {
   'tslib': 'tslib',
+  'moment': 'moment',
 
   '@angular/animations': 'ng.animations',
   '@angular/core': 'ng.core',

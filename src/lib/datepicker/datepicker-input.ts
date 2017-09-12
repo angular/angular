@@ -182,6 +182,8 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   private _datepickerSubscription = Subscription.EMPTY;
 
+  private _localeSubscription = Subscription.EMPTY;
+
   /** The form control validator for whether the input parses. */
   private _parseValidator: ValidatorFn = (): ValidationErrors | null => {
     return this._lastValueValid ?
@@ -228,6 +230,11 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
     if (!this._dateFormats) {
       throw createMissingDateImplError('MD_DATE_FORMATS');
     }
+
+    // Update the displayed date when the locale changes.
+    this._localeSubscription = _dateAdapter.localeChanges.subscribe(() => {
+      this.value = this.value;
+    });
   }
 
   ngAfterContentInit() {
@@ -245,6 +252,7 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   ngOnDestroy() {
     this._datepickerSubscription.unsubscribe();
+    this._localeSubscription.unsubscribe();
     this._valueChange.complete();
     this._disabledChange.complete();
   }

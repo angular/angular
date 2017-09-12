@@ -130,7 +130,9 @@ export function buildAppTask(appName: string) {
     .filter(taskName => gulp.hasTask(taskName));
 
   return sequenceTask(
-    'material:clean-build',
+    // Build all required packages for serving the devapp by just building the moment-adapter
+    // package. All dependencies of that package (material, cdk) will be built automatically.
+    'material-moment-adapter:clean-build',
     [...buildTasks]
   );
 }

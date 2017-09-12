@@ -21,7 +21,7 @@ const materialOutPath = join(outputDir, 'packages', 'material');
 
 /** Array of vendors that are required to serve the demo-app. */
 const appVendors = [
-  '@angular', 'systemjs', 'zone.js', 'rxjs', 'hammerjs', 'core-js', 'web-animations-js'
+  '@angular', 'systemjs', 'zone.js', 'rxjs', 'hammerjs', 'core-js', 'web-animations-js', 'moment',
 ];
 
 /** Glob that matches all required vendors for the demo-app. */

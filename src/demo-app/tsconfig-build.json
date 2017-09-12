@@ -22,7 +22,8 @@
     "baseUrl": ".",
     "paths": {
       "@angular/material": ["../../dist/packages/material/public_api"],
-      "@angular/cdk/*": ["../../dist/packages/cdk/*"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"],
+      "@angular/material-moment-adapter": ["../../dist/packages/material-moment-adapter"]
     }
   },
   "files": [

@@ -8,9 +8,10 @@ set -e -o pipefail
 # Go to the project root directory
 cd $(dirname $0)/../..
 
-# Build a release of material and of the CDK package.
+# Build a release of material, material-moment-adapter, and cdk packages.
 $(npm bin)/gulp material:build-release:clean
 $(npm bin)/gulp cdk:build-release
+$(npm bin)/gulp material-moment-adapter:build-release
 
 # Build demo-app with ES2015 modules. Closure compiler is then able to parse imports.
 $(npm bin)/gulp :build:devapp:assets :build:devapp:scss
@@ -38,6 +39,7 @@ OPTS=(
   "--js_module_root=dist/packages"
   "--js_module_root=dist/releases/material"
   "--js_module_root=dist/releases/cdk"
+  "--js_module_root=dist/releases/material-moment-adapter"
   "--js_module_root=node_modules/@angular/core"
   "--js_module_root=node_modules/@angular/common"
   "--js_module_root=node_modules/@angular/compiler"
@@ -49,6 +51,7 @@ OPTS=(
   "--js_module_root=node_modules/@angular/platform-browser-dynamic"
   "--js_module_root=node_modules/@angular/animations"
   "--js_module_root=node_modules/@angular/animations/browser"
+  "--js_module_root=node_modules/moment"
 
   # Flags to simplify debugging.
   "--formatting=PRETTY_PRINT"
@@ -57,6 +60,7 @@ OPTS=(
   # Include the Material and CDK FESM bundles
   dist/releases/material/@angular/material.js
   dist/releases/cdk/@angular/cdk.js
+  dist/releases/material-moment-adapter/@angular/material-moment-adapter.js
 
   # Include all Angular FESM bundles.
   node_modules/@angular/core/@angular/core.js
@@ -71,8 +75,9 @@ OPTS=(
   node_modules/@angular/animations/@angular/animations.js
   node_modules/@angular/animations/@angular/animations/browser.js
 
-  # Include other dependencies like Zone.js and RxJS
+  # Include other dependencies like Zone.js, Moment.js, and RxJS
   node_modules/zone.js/dist/zone.js
+  node_modules/moment/moment.js
   $rxjsSourceFiles
 
   # Include all files from the demo-app package.
