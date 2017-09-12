@@ -101,4 +101,22 @@
       </md-list-item>
     </md-nav-list>
   </div>
+
+  <div>
+    <h2>Selection list</h2>
+
+    <md-selection-list #groceries>
+      <h3 md-subheader>Groceries</h3>
+
+      <md-list-option *ngFor="let item of items" [value]="item">
+        {{item}}
+      </md-list-option>
+    </md-selection-list>
+
+    <p>Selected: {{groceries.selectedOptions.selected.length}}</p>
+    <p>
+      <button md-raised-button (click)="groceries.selectAll()">Select all</button>
+      <button md-raised-button (click)="groceries.deselectAll()">Deselect all</button>
+    </p>
+  </div>
 </div>

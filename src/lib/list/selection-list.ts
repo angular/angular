@@ -244,6 +244,24 @@ export class MdSelectionList extends _MdSelectionListMixinBase
     this._element.nativeElement.focus();
   }
 
+  /** Selects all of the options. */
+  selectAll() {
+    this.options.forEach(option => {
+      if (!option.selected) {
+        option.toggle();
+      }
+    });
+  }
+
+  /** Deselects all of the options. */
+  deselectAll() {
+    this.options.forEach(option => {
+      if (option.selected) {
+        option.toggle();
+      }
+    });
+  }
+
   /** Map all the options' destroy event subscriptions and merge them into one stream. */
   private _onDestroySubscription(): Subscription {
     return RxChain.from(this.options.changes)

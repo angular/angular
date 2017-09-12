@@ -181,6 +181,29 @@ describe('MdSelectionList', () => {
 
       expect(manager.activeItemIndex).toEqual(3);
     });
+
+    it('should be able to select all options', () => {
+      const list: MdSelectionList = selectionList.componentInstance;
+
+      expect(list.options.toArray().every(option => option.selected)).toBe(false);
+
+      list.selectAll();
+      fixture.detectChanges();
+
+      expect(list.options.toArray().every(option => option.selected)).toBe(true);
+    });
+
+    it('should be able to deselect all options', () => {
+      const list: MdSelectionList = selectionList.componentInstance;
+
+      list.options.forEach(option => option.toggle());
+      expect(list.options.toArray().every(option => option.selected)).toBe(true);
+
+      list.deselectAll();
+      fixture.detectChanges();
+
+      expect(list.options.toArray().every(option => option.selected)).toBe(false);
+    });
   });
 
   describe('with single option', () => {

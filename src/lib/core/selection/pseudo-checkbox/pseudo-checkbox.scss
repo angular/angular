@@ -17,6 +17,7 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
   vertical-align: middle;
   box-sizing: border-box;
   position: relative;
+  flex-shrink: 0;
   transition:
       border-color $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function,
       background-color $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function;

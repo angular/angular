@@ -216,3 +216,9 @@ $mat-dense-list-icon-size: 20px;
     }
   }
 }
+
+.mat-list-option {
+  &:not([disabled]) {
+    cursor: pointer;
+  }
+}
