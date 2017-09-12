@@ -323,7 +323,9 @@ export class MdDatepicker<D> implements OnDestroy {
       componentRef.instance.datepicker = this;
 
       // Update the position once the calendar has rendered.
-      first.call(this._ngZone.onStable).subscribe(() => this._popupRef.updatePosition());
+      first.call(this._ngZone.onStable.asObservable()).subscribe(() => {
+        this._popupRef.updatePosition();
+      });
     }
 
     this._popupRef.backdropClick().subscribe(() => this.close());

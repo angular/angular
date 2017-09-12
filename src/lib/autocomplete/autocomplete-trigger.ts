@@ -372,7 +372,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * stream every time the option list changes.
    */
   private _subscribeToClosingActions(): Subscription {
-    const firstStable = first.call(this._zone.onStable);
+    const firstStable = first.call(this._zone.onStable.asObservable());
     const optionChanges = map.call(this.autocomplete.options.changes, () =>
       this._positionStrategy.recalculateLastPosition());
 

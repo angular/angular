@@ -218,9 +218,11 @@ export class MdCalendar<D> implements AfterContentInit, OnDestroy {
 
   /** Focuses the active cell after the microtask queue is empty. */
   _focusActiveCell() {
-    this._ngZone.runOutsideAngular(() => first.call(this._ngZone.onStable).subscribe(() => {
-      this._elementRef.nativeElement.querySelector('.mat-calendar-body-active').focus();
-    }));
+    this._ngZone.runOutsideAngular(() => {
+      first.call(this._ngZone.onStable.asObservable()).subscribe(() => {
+        this._elementRef.nativeElement.querySelector('.mat-calendar-body-active').focus();
+      });
+    });
   }
 
   /** Whether the two dates represent the same view in the current view mode (month or year). */

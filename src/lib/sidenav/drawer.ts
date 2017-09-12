@@ -409,8 +409,11 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
     }
     // NOTE: We need to wait for the microtask queue to be empty before validating,
     // since both drawers may be swapping positions at the same time.
-    takeUntil.call(drawer.onPositionChanged, this._drawers.changes).subscribe(() =>
-        first.call(this._ngZone.onMicrotaskEmpty).subscribe(() => this._validateDrawers()));
+    takeUntil.call(drawer.onPositionChanged, this._drawers.changes).subscribe(() => {
+      first.call(this._ngZone.onMicrotaskEmpty.asObservable()).subscribe(() => {
+        this._validateDrawers();
+      });
+    });
   }
 
   /** Toggles the 'mat-drawer-opened' class on the main 'md-drawer-container' element. */
