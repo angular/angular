@@ -25,6 +25,7 @@ export function dispatchKeyboardEvent(node: Node, type: string, keyCode: number)
 }
 
 /** Shorthand to dispatch a mouse event on the specified coordinates. */
-export function dispatchMouseEvent(node: Node, type: string, x = 0, y = 0): MouseEvent {
-  return dispatchEvent(node, createMouseEvent(type, x, y)) as MouseEvent;
+export function dispatchMouseEvent(node: Node, type: string, x = 0, y = 0,
+  event = createMouseEvent(type, x, y)): MouseEvent {
+  return dispatchEvent(node, event) as MouseEvent;
 }

@@ -57,7 +57,7 @@ export function createKeyboardEvent(type: string, keyCode: number, target?: Elem
 
 /** Creates a fake event object with any desired event type. */
 export function createFakeEvent(type: string) {
-  let event = document.createEvent('Event');
+  const event = document.createEvent('Event');
   event.initEvent(type, true, true);
   return event;
 }

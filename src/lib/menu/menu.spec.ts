@@ -29,6 +29,7 @@ import {
   dispatchMouseEvent,
   dispatchEvent,
   createKeyboardEvent,
+  createMouseEvent,
 } from '@angular/cdk/testing';
 
 
@@ -1013,6 +1014,20 @@ describe('MdMenu', () => {
           .toContain('mat-menu-item-highlighted', 'Expected the trigger to be highlighted');
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
     }));
+
+    it('should prevent the default mousedown action if the menu item opens a sub-menu', () => {
+      compileTestComponent();
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      const event = createMouseEvent('mousedown');
+
+      Object.defineProperty(event, 'buttons', {get: () => 1});
+      event.preventDefault = jasmine.createSpy('preventDefault spy');
+
+      dispatchMouseEvent(overlay.querySelector('[md-menu-item]')!, 'mousedown', 0, 0, event);
+      expect(event.preventDefault).toHaveBeenCalled();
+    });
 
   });
 
