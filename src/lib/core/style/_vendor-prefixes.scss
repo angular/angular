@@ -33,4 +33,9 @@
   cursor: -webkit-grabbing;
   cursor: grabbing;
 }
+
+@mixin backface-visibility($value) {
+  -webkit-backface-visibility: $value;
+  backface-visibility: $value;
+}
 /* stylelint-enable */
