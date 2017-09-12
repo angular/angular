@@ -9,10 +9,7 @@
 import {StaticSymbol} from './aot/static_symbol';
 import {ChangeDetectionStrategy, SchemaMetadata, Type, ViewEncapsulation} from './core';
 import {LifecycleHooks} from './lifecycle_reflector';
-import * as html from './ml_parser/ast';
-import {HtmlParser} from './ml_parser/html_parser';
 import {ParseTreeResult as HtmlParseTreeResult} from './ml_parser/parser';
-import {CssSelector} from './selector';
 import {splitAtColon, stringify} from './util';
 
 
@@ -503,51 +500,6 @@ export class CompileDirectiveMetadata {
       componentFactory: this.componentFactory
     };
   }
-}
-
-/**
- * Construct {@link CompileDirectiveMetadata} from {@link ComponentTypeMetadata} and a selector.
- */
-export function createHostComponentMeta(
-    hostTypeReference: any, compMeta: CompileDirectiveMetadata,
-    hostViewType: StaticSymbol | ProxyClass, htmlParser: HtmlParser): CompileDirectiveMetadata {
-  const template = CssSelector.parse(compMeta.selector !)[0].getMatchingElementTemplate();
-  const templateUrl = '';
-  const htmlAst = htmlParser.parse(template, templateUrl);
-  return CompileDirectiveMetadata.create({
-    isHost: true,
-    type: {reference: hostTypeReference, diDeps: [], lifecycleHooks: []},
-    template: new CompileTemplateMetadata({
-      encapsulation: ViewEncapsulation.None,
-      template,
-      templateUrl,
-      htmlAst,
-      styles: [],
-      styleUrls: [],
-      ngContentSelectors: [],
-      animations: [],
-      isInline: true,
-      externalStylesheets: [],
-      interpolation: null,
-      preserveWhitespaces: false,
-    }),
-    exportAs: null,
-    changeDetection: ChangeDetectionStrategy.Default,
-    inputs: [],
-    outputs: [],
-    host: {},
-    isComponent: true,
-    selector: '*',
-    providers: [],
-    viewProviders: [],
-    queries: [],
-    viewQueries: [],
-    componentViewType: hostViewType,
-    rendererType:
-        {id: '__Host__', encapsulation: ViewEncapsulation.None, styles: [], data: {}} as object,
-    entryComponents: [],
-    componentFactory: null
-  });
 }
 
 export interface CompilePipeSummary extends CompileTypeSummary {
