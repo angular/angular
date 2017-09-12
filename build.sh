@@ -23,7 +23,8 @@ PACKAGES=(core
   router
   compiler-cli
   language-service
-  benchpress)
+  benchpress
+  service-worker)
 
 TSC_PACKAGES=(compiler-cli
   language-service
@@ -235,6 +236,7 @@ compilePackage() {
     fi
   fi
 
+  # Build subpackages
   for DIR in ${1}/* ; do
     [ -d "${DIR}" ] || continue
     BASE_DIR=$(basename "${DIR}")
@@ -464,6 +466,11 @@ do
         runRollup ${SRC_DIR}
         addBanners ${BUNDLES_DIR}
         minify ${BUNDLES_DIR}
+
+        if [[ -e ${SRC_DIR}/build.sh ]]; then
+          echo "======         Custom build for ${PACKAGE}"
+          cd ${SRC_DIR} && ${SRC_DIR}/build.sh
+        fi
 
       ) 2>&1 | grep -v "as external dependency"
 
