@@ -17,8 +17,6 @@ import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
-import {OutputContext} from '../util';
-
 
 /**
  * Generates code that is used to type check templates.
@@ -26,23 +24,31 @@ import {OutputContext} from '../util';
 export class TypeCheckCompiler {
   constructor(private options: AotCompilerOptions, private reflector: StaticReflector) {}
 
+  /**
+   * Important notes:
+   * - This must not produce new `import` statements, but only refer to types outside
+   *   of the file via the variables provided via externalReferenceVars.
+   *   This allows Typescript to reuse the old program's structure as no imports have changed.
+   * - This must not produce any exports, as this would pollute the .d.ts file
+   *   and also violate the point above.
+   */
   compileComponent(
-      outputCtx: OutputContext, component: CompileDirectiveMetadata, template: TemplateAst[],
-      usedPipes: CompilePipeSummary[]): void {
+      component: CompileDirectiveMetadata, template: TemplateAst[], usedPipes: CompilePipeSummary[],
+      externalReferenceVars: Map<StaticSymbol, string>): o.Statement[] {
     const pipes = new Map<string, StaticSymbol>();
     usedPipes.forEach(p => pipes.set(p.name, p.type.reference));
     let embeddedViewCount = 0;
     const viewBuilderFactory = (parent: ViewBuilder | null): ViewBuilder => {
       const embeddedViewIndex = embeddedViewCount++;
       return new ViewBuilder(
-          this.options, this.reflector, outputCtx, parent, component.type.reference,
-          embeddedViewIndex, pipes, viewBuilderFactory);
+          this.options, this.reflector, externalReferenceVars, parent, component.type.reference,
+          component.isHost, embeddedViewIndex, pipes, viewBuilderFactory);
     };
 
     const visitor = viewBuilderFactory(null);
     visitor.visitAll([], template);
 
-    outputCtx.statements.push(...visitor.build());
+    return visitor.build();
   }
 }
 
@@ -60,9 +66,9 @@ interface Expression {
   value: AST;
 }
 
+const DYNAMIC_VAR_NAME = '_any';
+
 class ViewBuilder implements TemplateAstVisitor, LocalResolver {
-  private outputVarTypes = new Map<string, OutputVarType>();
-  private outputVarNames = new Map<OutputVarType, string>();
   private refOutputVars = new Map<string, OutputVarType>();
   private variables: VariableAst[] = [];
   private children: ViewBuilder[] = [];
@@ -71,16 +77,23 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
   constructor(
       private options: AotCompilerOptions, private reflector: StaticReflector,
-      private outputCtx: OutputContext, private parent: ViewBuilder|null,
-      private component: StaticSymbol, private embeddedViewIndex: number,
-      private pipes: Map<string, StaticSymbol>, private viewBuilderFactory: ViewBuilderFactory) {}
+      private externalReferenceVars: Map<StaticSymbol, string>, private parent: ViewBuilder|null,
+      private component: StaticSymbol, private isHostComponent: boolean,
+      private embeddedViewIndex: number, private pipes: Map<string, StaticSymbol>,
+      private viewBuilderFactory: ViewBuilderFactory) {}
 
-  private getOrAddOutputVar(type: o.BuiltinTypeName|StaticSymbol): string {
-    let varName = this.outputVarNames.get(type);
+  private getOutputVar(type: o.BuiltinTypeName|StaticSymbol): string {
+    let varName: string|undefined;
+    if (type === this.component && this.isHostComponent) {
+      varName = DYNAMIC_VAR_NAME;
+    } else if (type instanceof StaticSymbol) {
+      varName = this.externalReferenceVars.get(type);
+    } else {
+      varName = DYNAMIC_VAR_NAME;
+    }
     if (!varName) {
-      varName = `_v${this.outputVarNames.size}`;
-      this.outputVarNames.set(type, varName);
-      this.outputVarTypes.set(varName, type);
+      throw new Error(
+          `Illegal State: referring to a type without a variable ${JSON.stringify(type)}`);
     }
     return varName;
   }
@@ -92,15 +105,15 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
   build(targetStatements: o.Statement[] = []): o.Statement[] {
     this.children.forEach((child) => child.build(targetStatements));
-
-    const viewStmts: o.Statement[] = [];
+    const viewStmts: o.Statement[] =
+        [o.variable(DYNAMIC_VAR_NAME).set(o.NULL_EXPR).toDeclStmt(o.DYNAMIC_TYPE)];
     let bindingCount = 0;
     this.updates.forEach((expression) => {
       const {sourceSpan, context, value} = this.preprocessUpdateExpression(expression);
       const bindingId = `${bindingCount++}`;
       const nameResolver = context === this.component ? this : null;
       const {stmts, currValExpr} = convertPropertyBinding(
-          nameResolver, o.variable(this.getOrAddOutputVar(context)), value, bindingId);
+          nameResolver, o.variable(this.getOutputVar(context)), value, bindingId);
       stmts.push(new o.ExpressionStatement(currValExpr));
       viewStmts.push(...stmts.map(
           (stmt: o.Statement) => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
@@ -110,21 +123,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       const bindingId = `${bindingCount++}`;
       const nameResolver = context === this.component ? this : null;
       const {stmts} = convertActionBinding(
-          nameResolver, o.variable(this.getOrAddOutputVar(context)), value, bindingId);
+          nameResolver, o.variable(this.getOutputVar(context)), value, bindingId);
       viewStmts.push(...stmts.map(
           (stmt: o.Statement) => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
     });
 
     const viewName = `_View_${this.component.name}_${this.embeddedViewIndex}`;
-    const params: o.FnParam[] = [];
-    this.outputVarNames.forEach((varName, varType) => {
-      const outputType = varType instanceof StaticSymbol ?
-          o.expressionType(this.outputCtx.importExpr(varType)) :
-          new o.BuiltinType(varType);
-      params.push(new o.FnParam(varName, outputType));
-    });
-
-    const viewFactory = new o.DeclareFunctionStmt(viewName, params, viewStmts);
+    const viewFactory = new o.DeclareFunctionStmt(viewName, [], viewStmts);
     targetStatements.push(viewFactory);
     return targetStatements;
   }
@@ -211,7 +216,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
   getLocal(name: string): o.Expression|null {
     if (name == EventHandlerVars.event.name) {
-      return o.variable(this.getOrAddOutputVar(o.BuiltinTypeName.Dynamic));
+      return o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
     }
     for (let currBuilder: ViewBuilder|null = this; currBuilder; currBuilder = currBuilder.parent) {
       let outputVarType: OutputVarType|undefined;
@@ -225,7 +230,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         }
       }
       if (outputVarType != null) {
-        return o.variable(this.getOrAddOutputVar(outputVarType));
+        return o.variable(this.getOutputVar(outputVarType));
       }
     }
     return null;
@@ -237,7 +242,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       throw new Error(
           `Illegal State: Could not find pipe ${name} in template of ${this.component}`);
     }
-    return this.getOrAddOutputVar(pipe);
+    return this.getOutputVar(pipe);
   }
 
   private preprocessUpdateExpression(expression: Expression): Expression {
@@ -264,7 +269,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
               if (this.options.fullTemplateTypeCheck) {
                 return o.variable(this.pipeOutputVar(name)).callMethod('transform', args);
               } else {
-                return o.variable(this.getOrAddOutputVar(o.BuiltinTypeName.Dynamic));
+                return o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
               }
             },
           },

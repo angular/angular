@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver} from '@angular/compiler';
 import {CompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
@@ -104,9 +104,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
 
       result = this._resolver = new CompileMetadataResolver(
-          config, moduleResolver, directiveResolver, pipeResolver, new JitSummaryResolver(),
-          elementSchemaRegistry, directiveNormalizer, new Console(), this._staticSymbolCache,
-          this.reflector, (error, type) => this.collectError(error, type && type.filePath));
+          config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
+          new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
+          this._staticSymbolCache, this.reflector,
+          (error, type) => this.collectError(error, type && type.filePath));
     }
     return result;
   }
@@ -146,12 +147,10 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     let analyzedModules = this.analyzedModules;
     if (!analyzedModules) {
       const analyzeHost = {isSourceFile(filePath: string) { return true; }};
-      const programSymbols = extractProgramSymbols(
-          this.staticSymbolResolver, this.program.getSourceFiles().map(sf => sf.fileName),
-          analyzeHost);
+      const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
 
       analyzedModules = this.analyzedModules =
-          analyzeNgModules(programSymbols, analyzeHost, this.staticSymbolResolver, this.resolver);
+          analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
     }
     return analyzedModules;
   }

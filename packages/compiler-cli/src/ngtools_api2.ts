@@ -55,11 +55,11 @@ export interface CompilerOptions extends ts.CompilerOptions {
 }
 
 export interface CompilerHost extends ts.CompilerHost {
-  moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
-  resourceNameToFileName(resourceName: string, containingFilePath: string): string|null;
-  toSummaryFileName(fileName: string, referringSrcFileName: string): string;
-  fromSummaryFileName(fileName: string, referringLibFileName: string): string;
+  moduleNameToFileName?(moduleName: string, containingFile?: string): string|null;
+  fileNameToModuleName?(importedFilePath: string, containingFilePath: string): string;
+  resourceNameToFileName?(resourceName: string, containingFilePath: string): string|null;
+  toSummaryFileName?(fileName: string, referringSrcFileName: string): string;
+  fromSummaryFileName?(fileName: string, referringLibFileName: string): string;
   readResource?(fileName: string): Promise<string>|string;
 }
 
