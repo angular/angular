@@ -53,7 +53,7 @@ export class AriaDescriber {
    * message element.
    */
   describe(hostElement: Element, message: string) {
-    if (!this._platform.isBrowser || !`${message}`.trim()) { return; }
+    if (!this._platform.isBrowser || !message.trim()) { return; }
 
     if (!messageRegistry.has(message)) {
       createMessageElement(message);
@@ -66,7 +66,7 @@ export class AriaDescriber {
 
   /** Removes the host element's aria-describedby reference to the message element. */
   removeDescription(hostElement: Element, message: string) {
-    if (!this._platform.isBrowser || !`${message}`.trim()) {
+    if (!this._platform.isBrowser || !message.trim()) {
       return;
     }
 
@@ -74,11 +74,12 @@ export class AriaDescriber {
       removeMessageReference(hostElement, message);
     }
 
-    if (messageRegistry.get(message)!.referenceCount === 0) {
+    const registeredMessage = messageRegistry.get(message);
+    if (registeredMessage && registeredMessage.referenceCount === 0) {
       deleteMessageElement(message);
     }
 
-    if (messagesContainer!.childNodes.length === 0) {
+    if (messagesContainer && messagesContainer.childNodes.length === 0) {
       deleteMessagesContainer();
     }
   }
@@ -118,8 +119,11 @@ function createMessageElement(message: string) {
 
 /** Deletes the message element from the global messages container. */
 function deleteMessageElement(message: string) {
-  const messageElement = messageRegistry.get(message)!.messageElement;
-  messagesContainer!.removeChild(messageElement);
+  const registeredMessage = messageRegistry.get(message);
+  const messageElement = registeredMessage && registeredMessage.messageElement;
+  if (messagesContainer && messageElement) {
+    messagesContainer.removeChild(messageElement);
+  }
   messageRegistry.delete(message);
 }
 
@@ -174,11 +178,12 @@ function removeMessageReference(element: Element, message: string) {
 }
 
 /** Returns true if the element has been described by the provided message ID. */
-function isElementDescribedByMessage(element: Element, message: string) {
+function isElementDescribedByMessage(element: Element, message: string): boolean {
   const referenceIds = getAriaReferenceIds(element, 'aria-describedby');
-  const messageId = messageRegistry.get(message)!.messageElement.id;
+  const registeredMessage = messageRegistry.get(message);
+  const messageId = registeredMessage && registeredMessage.messageElement.id;
 
-  return referenceIds.indexOf(messageId) != -1;
+  return !!messageId && referenceIds.indexOf(messageId) != -1;
 }
 
 /** @docs-private */
