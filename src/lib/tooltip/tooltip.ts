@@ -142,17 +142,15 @@ export class MdTooltip implements OnDestroy {
   /** The default delay in ms before hiding the tooltip after hide is called */
   @Input('mdTooltipHideDelay') hideDelay = 0;
 
-  private _message: string;
+  private _message = '';
 
   /** The message to be displayed in the tooltip */
   @Input('mdTooltip') get message() { return this._message; }
   set message(value: string) {
-    if (this._message) {
-      this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
-    }
+    this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
 
     // If the message is not a string (e.g. number), convert it to a string and trim it.
-    this._message = value ? `${value}`.trim() : '';
+    this._message = value ? value.trim() : '';
     this._updateTooltipMessage();
     this._ariaDescriber.describe(this._elementRef.nativeElement, this.message);
   }
