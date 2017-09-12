@@ -26,14 +26,14 @@ import {
 } from '@angular/core';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {RIGHT_ARROW, LEFT_ARROW, ENTER, SPACE} from '@angular/cdk/keycodes';
-import {auditTime, startWith} from '@angular/cdk/rxjs';
+import {startWith} from '@angular/cdk/rxjs';
 import {Subscription} from 'rxjs/Subscription';
 import {of as observableOf} from 'rxjs/observable/of';
 import {merge} from 'rxjs/observable/merge';
-import {fromEvent} from 'rxjs/observable/fromEvent';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {MdInkBar} from './ink-bar';
 import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 
 /**
  * The directions that scrolling can go in when the header's tabs exceed the header width. 'After'
@@ -132,6 +132,7 @@ export class MdTabHeader extends _MdTabHeaderMixinBase
   constructor(private _elementRef: ElementRef,
               private _renderer: Renderer2,
               private _changeDetectorRef: ChangeDetectorRef,
+              private _viewportRuler: ViewportRuler,
               @Optional() private _dir: Directionality) {
     super();
   }
@@ -184,9 +185,7 @@ export class MdTabHeader extends _MdTabHeaderMixinBase
    */
   ngAfterContentInit() {
     const dirChange = this._dir ? this._dir.change : observableOf(null);
-    const resize = typeof window !== 'undefined' ?
-        auditTime.call(fromEvent(window, 'resize'), 150) :
-        observableOf(null);
+    const resize = this._viewportRuler.change(150);
 
     this._realignInkBar = startWith.call(merge(dirChange, resize), null).subscribe(() => {
       this._updatePagination();
