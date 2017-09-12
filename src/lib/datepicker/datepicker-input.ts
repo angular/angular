@@ -153,7 +153,12 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
   @Input()
   get disabled() { return this._disabled; }
   set disabled(value: any) {
-    this._disabled = coerceBooleanProperty(value);
+    const newValue = coerceBooleanProperty(value);
+
+    if (this._disabled !== newValue) {
+      this._disabled = newValue;
+      this._disabledChange.emit(newValue);
+    }
   }
   private _disabled: boolean;
 
@@ -165,6 +170,9 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   /** Emits when the value changes (either due to user input or programmatic change). */
   _valueChange = new EventEmitter<D|null>();
+
+  /** Emits when the disabled state has changed */
+  _disabledChange = new EventEmitter<boolean>();
 
   _onTouched = () => {};
 
@@ -237,6 +245,8 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
 
   ngOnDestroy() {
     this._datepickerSubscription.unsubscribe();
+    this._valueChange.complete();
+    this._disabledChange.complete();
   }
 
   registerOnValidatorChange(fn: () => void): void {

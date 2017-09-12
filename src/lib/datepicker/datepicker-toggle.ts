@@ -12,12 +12,16 @@ import {
   Input,
   ViewEncapsulation,
   OnDestroy,
+  OnChanges,
+  SimpleChanges,
   ChangeDetectorRef,
 } from '@angular/core';
 import {MdDatepicker} from './datepicker';
 import {MdDatepickerIntl} from './datepicker-intl';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Subscription} from 'rxjs/Subscription';
+import {merge} from 'rxjs/observable/merge';
+import {of as observableOf} from 'rxjs/observable/of';
 
 
 @Component({
@@ -30,8 +34,8 @@ import {Subscription} from 'rxjs/Subscription';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdDatepickerToggle<D> implements OnDestroy {
-  private _intlChanges: Subscription;
+export class MdDatepickerToggle<D> implements OnChanges, OnDestroy {
+  private _stateChanges = Subscription.EMPTY;
 
   /** Datepicker instance that the button will toggle. */
   @Input('for') datepicker: MdDatepicker<D>;
@@ -46,12 +50,26 @@ export class MdDatepickerToggle<D> implements OnDestroy {
   }
   private _disabled: boolean;
 
-  constructor(public _intl: MdDatepickerIntl, changeDetectorRef: ChangeDetectorRef) {
-    this._intlChanges = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());
+  constructor(
+    public _intl: MdDatepickerIntl,
+    private _changeDetectorRef: ChangeDetectorRef) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.datepicker) {
+      const datepicker: MdDatepicker<D> = changes.datepicker.currentValue;
+      const datepickerDisabled = datepicker ? datepicker._disabledChange : observableOf();
+      const inputDisabled = datepicker && datepicker._datepickerInput ?
+        datepicker._datepickerInput._disabledChange :
+        observableOf();
+
+      this._stateChanges.unsubscribe();
+      this._stateChanges = merge(this._intl.changes, datepickerDisabled, inputDisabled)
+        .subscribe(() => this._changeDetectorRef.markForCheck());
+    }
   }
 
   ngOnDestroy() {
-    this._intlChanges.unsubscribe();
+    this._stateChanges.unsubscribe();
   }
 
   _open(event: Event): void {

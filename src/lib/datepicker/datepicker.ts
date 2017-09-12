@@ -44,6 +44,7 @@ import {MdDialog} from '../dialog/dialog';
 import {MdDialogRef} from '../dialog/dialog-ref';
 import {MdDatepickerInput} from './datepicker-input';
 import {Subscription} from 'rxjs/Subscription';
+import {Subject} from 'rxjs/Subject';
 import {DateAdapter} from '../core/datetime/index';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MdCalendar} from './calendar';
@@ -150,7 +151,12 @@ export class MdDatepicker<D> implements OnDestroy {
     return this._disabled === undefined ? this._datepickerInput.disabled : this._disabled;
   }
   set disabled(value: any) {
-    this._disabled = coerceBooleanProperty(value);
+    const newValue = coerceBooleanProperty(value);
+
+    if (newValue !== this._disabled) {
+      this._disabled = newValue;
+      this._disabledChange.next(newValue);
+    }
   }
   private _disabled: boolean;
 
@@ -194,13 +200,16 @@ export class MdDatepicker<D> implements OnDestroy {
   /** A portal containing the calendar for this datepicker. */
   private _calendarPortal: ComponentPortal<MdDatepickerContent<D>>;
 
-  /** The input element this datepicker is associated with. */
-  private _datepickerInput: MdDatepickerInput<D>;
-
   /** The element that was focused before the datepicker was opened. */
   private _focusedElementBeforeOpen: HTMLElement | null = null;
 
   private _inputSubscription = Subscription.EMPTY;
+
+  /** The input element this datepicker is associated with. */
+  _datepickerInput: MdDatepickerInput<D>;
+
+  /** Emits when the datepicker is disabled. */
+  _disabledChange = new Subject<boolean>();
 
   constructor(private _dialog: MdDialog,
               private _overlay: Overlay,
@@ -218,6 +227,7 @@ export class MdDatepicker<D> implements OnDestroy {
   ngOnDestroy() {
     this.close();
     this._inputSubscription.unsubscribe();
+    this._disabledChange.complete();
 
     if (this._popupRef) {
       this._popupRef.dispose();

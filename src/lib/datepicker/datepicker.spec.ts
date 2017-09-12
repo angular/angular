@@ -552,11 +552,28 @@ describe('MdDatepicker', () => {
       it('should not open calendar when toggle clicked if datepicker is disabled', () => {
         testComponent.datepicker.disabled = true;
         fixture.detectChanges();
+        const toggle = fixture.debugElement.query(By.css('button')).nativeElement;
 
+        expect(toggle.hasAttribute('disabled')).toBe(true);
         expect(document.querySelector('md-dialog-container')).toBeNull();
 
-        let toggle = fixture.debugElement.query(By.css('button'));
-        dispatchMouseEvent(toggle.nativeElement, 'click');
+        dispatchMouseEvent(toggle, 'click');
+        fixture.detectChanges();
+
+        expect(document.querySelector('md-dialog-container')).toBeNull();
+      });
+
+      it('should not open calendar when toggle clicked if input is disabled', () => {
+        expect(testComponent.datepicker.disabled).toBeUndefined();
+
+        testComponent.input.disabled = true;
+        fixture.detectChanges();
+        const toggle = fixture.debugElement.query(By.css('button')).nativeElement;
+
+        expect(toggle.hasAttribute('disabled')).toBe(true);
+        expect(document.querySelector('md-dialog-container')).toBeNull();
+
+        dispatchMouseEvent(toggle, 'click');
         fixture.detectChanges();
 
         expect(document.querySelector('md-dialog-container')).toBeNull();
@@ -1075,6 +1092,7 @@ class DatepickerWithFormControl {
 })
 class DatepickerWithToggle {
   @ViewChild('d') datepicker: MdDatepicker<Date>;
+  @ViewChild(MdDatepickerInput) input: MdDatepickerInput<Date>;
   touchUI = true;
 }
 
