@@ -48,6 +48,14 @@ describe('MdSelectionList', () => {
       expect(listItemEl.nativeElement.className).not.toContain('mat-list-item-focus');
     });
 
+    it('should be able to set a value on a list option', () => {
+      const optionValues = ['inbox', 'starred', 'sent-mail', 'drafts'];
+
+      optionValues.forEach((optionValue, index) => {
+        expect(listOption[index].componentInstance.value).toBe(optionValue);
+      });
+    });
+
     it('should be able to dispatch one selected item', () => {
       let testListItem = listOption[2].injector.get<MdListOption>(MdListOption);
       let selectList = selectionList.injector.get<MdSelectionList>(MdSelectionList).selectedOptions;
@@ -379,17 +387,18 @@ describe('MdSelectionList', () => {
 
 
 @Component({template: `
-  <mat-selection-list id = "selection-list-1">
-    <md-list-option checkboxPosition = "before" disabled = "true">
+  <mat-selection-list id="selection-list-1">
+    <md-list-option checkboxPosition="before" disabled="true" value="inbox">
       Inbox (disabled selection-option)
     </md-list-option>
-    <md-list-option id = "testSelect" checkboxPosition = "before" class="test-native-focus">
+    <md-list-option id="testSelect" checkboxPosition="before" class="test-native-focus"
+                    value="starred">
       Starred
     </md-list-option>
-    <md-list-option checkboxPosition = "before">
+    <md-list-option checkboxPosition="before" value="sent-mail">
       Sent Mail
     </md-list-option>
-    <md-list-option checkboxPosition = "before">
+    <md-list-option checkboxPosition="before" value="drafts">
       Drafts
     </md-list-option>
   </mat-selection-list>`})

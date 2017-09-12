@@ -82,7 +82,6 @@ export class MdListOption extends _MdListOptionMixinBase
   private _lineSetter: MdLineSetter;
   private _selected: boolean = false;
   private _disabled: boolean = false;
-  private _value: any;
 
   /** Whether the option has focus. */
   _hasFocus: boolean = false;
@@ -92,20 +91,18 @@ export class MdListOption extends _MdListOptionMixinBase
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: 'before' | 'after' = 'after';
 
+  /** Value of the option */
+  @Input() value: any;
+
   /** Whether the option is disabled. */
   @Input()
   get disabled() { return (this.selectionList && this.selectionList.disabled) || this._disabled; }
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
 
-  /** Value of the option */
-  @Input()
-  get value() { return this._value; }
-  set value( val: any) { this._value = coerceBooleanProperty(val); }
-
   /** Whether the option is selected. */
   @Input()
   get selected() { return this._selected; }
-  set selected( val: boolean) { this._selected = coerceBooleanProperty(val); }
+  set selected(value: boolean) { this._selected = coerceBooleanProperty(value); }
 
   /** Emitted when the option is focused. */
   onFocus = new EventEmitter<MdSelectionListOptionEvent>();
@@ -123,7 +120,7 @@ export class MdListOption extends _MdListOptionMixinBase
               private _element: ElementRef,
               private _changeDetector: ChangeDetectorRef,
               @Optional() @Inject(forwardRef(() => MdSelectionList))
-                  public selectionList: MdSelectionList) {
+              public selectionList: MdSelectionList) {
     super();
   }
 
