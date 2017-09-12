@@ -10,7 +10,7 @@
 /**
  * Extract i18n messages from source code
  */
-import {analyzeAndValidateNgModules, extractProgramSymbols} from '../aot/compiler';
+import {analyzeAndValidateNgModules} from '../aot/compiler';
 import {createAotUrlResolver} from '../aot/compiler_factory';
 import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbolCache} from '../aot/static_symbol';
@@ -56,9 +56,8 @@ export class Extractor {
       private messageBundle: MessageBundle, private metadataResolver: CompileMetadataResolver) {}
 
   extract(rootFiles: string[]): Promise<MessageBundle> {
-    const programSymbols = extractProgramSymbols(this.staticSymbolResolver, rootFiles, this.host);
     const {files, ngModules} = analyzeAndValidateNgModules(
-        programSymbols, this.host, this.staticSymbolResolver, this.metadataResolver);
+        rootFiles, this.host, this.staticSymbolResolver, this.metadataResolver);
     return Promise
         .all(ngModules.map(
             ngModule => this.metadataResolver.loadNgModuleDirectiveAndPipeMetadata(
@@ -79,7 +78,7 @@ export class Extractor {
               const interpolationConfig =
                   InterpolationConfig.fromArray(compMeta.template !.interpolation);
               errors.push(...this.messageBundle.updateFromTemplate(
-                  html, file.srcUrl, interpolationConfig) !);
+                  html, file.fileName, interpolationConfig) !);
             });
           });
 
@@ -108,9 +107,9 @@ export class Extractor {
         {get: (url: string) => host.loadResource(url)}, urlResolver, htmlParser, config);
     const elementSchemaRegistry = new DomElementSchemaRegistry();
     const resolver = new CompileMetadataResolver(
-        config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
-        new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
-        console, symbolCache, staticReflector);
+        config, htmlParser, new NgModuleResolver(staticReflector),
+        new DirectiveResolver(staticReflector), new PipeResolver(staticReflector), summaryResolver,
+        elementSchemaRegistry, normalizer, console, symbolCache, staticReflector);
 
     // TODO(vicb): implicit tags & attributes
     const messageBundle = new MessageBundle(htmlParser, [], {}, locale);

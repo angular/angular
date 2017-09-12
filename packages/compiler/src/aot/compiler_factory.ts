@@ -77,17 +77,16 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const tmplParser = new TemplateParser(
       config, staticReflector, expressionParser, elementSchemaRegistry, htmlParser, console, []);
   const resolver = new CompileMetadataResolver(
-      config, new NgModuleResolver(staticReflector), new DirectiveResolver(staticReflector),
-      new PipeResolver(staticReflector), summaryResolver, elementSchemaRegistry, normalizer,
-      console, symbolCache, staticReflector);
+      config, htmlParser, new NgModuleResolver(staticReflector),
+      new DirectiveResolver(staticReflector), new PipeResolver(staticReflector), summaryResolver,
+      elementSchemaRegistry, normalizer, console, symbolCache, staticReflector);
   // TODO(vicb): do not pass options.i18nFormat here
   const viewCompiler = new ViewCompiler(config, staticReflector, elementSchemaRegistry);
   const typeCheckCompiler = new TypeCheckCompiler(options, staticReflector);
   const compiler = new AotCompiler(
-      config, compilerHost, staticReflector, resolver, htmlParser, tmplParser,
-      new StyleCompiler(urlResolver), viewCompiler, typeCheckCompiler,
-      new NgModuleCompiler(staticReflector), new TypeScriptEmitter(), summaryResolver,
-      options.locale || null, options.i18nFormat || null, options.enableSummariesForJit || null,
-      symbolResolver);
+      config, compilerHost, staticReflector, resolver, tmplParser, new StyleCompiler(urlResolver),
+      viewCompiler, typeCheckCompiler, new NgModuleCompiler(staticReflector),
+      new TypeScriptEmitter(), summaryResolver, options.locale || null, options.i18nFormat || null,
+      options.enableSummariesForJit || null, symbolResolver);
   return {compiler, reflector: staticReflector};
 }

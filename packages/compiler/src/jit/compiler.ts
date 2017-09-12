@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileProviderMetadata, CompileStylesheetMetadata, CompileTypeSummary, ProviderMeta, ProxyClass, createHostComponentMeta, identifierName, ngModuleJitUrl, sharedStylesheetJitUrl, templateJitUrl, templateSourceUrl} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeSummary, CompileProviderMetadata, CompileStylesheetMetadata, CompileTypeSummary, ProviderMeta, ProxyClass, identifierName, ngModuleJitUrl, sharedStylesheetJitUrl, templateJitUrl, templateSourceUrl} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
 import {Type} from '../core';
 import {CompileMetadataResolver} from '../metadata_resolver';
-import {HtmlParser} from '../ml_parser/html_parser';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import * as ir from '../output/output_ast';
 import {interpretStatements} from '../output/output_interpreter';
 import {jitStatements} from '../output/output_jit';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
+import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
 import {Console, OutputContext, SyncAsync, stringify} from '../util';
 import {ViewCompiler} from '../view_compiler/view_compiler';
@@ -44,11 +44,11 @@ export class JitCompiler {
   private _sharedStylesheetCount = 0;
 
   constructor(
-      private _metadataResolver: CompileMetadataResolver, private _htmlParser: HtmlParser,
-      private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
-      private _viewCompiler: ViewCompiler, private _ngModuleCompiler: NgModuleCompiler,
-      private _summaryResolver: SummaryResolver<Type>, private _reflector: CompileReflector,
-      private _compilerConfig: CompilerConfig, private _console: Console,
+      private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
+      private _styleCompiler: StyleCompiler, private _viewCompiler: ViewCompiler,
+      private _ngModuleCompiler: NgModuleCompiler, private _summaryResolver: SummaryResolver<Type>,
+      private _reflector: CompileReflector, private _compilerConfig: CompilerConfig,
+      private _console: Console,
       private getExtraNgModuleProviders: (ngModule: any) => CompileProviderMetadata[]) {}
 
   compileModuleSync(moduleType: Type): object {
@@ -227,9 +227,8 @@ export class JitCompiler {
       const compMeta = this._metadataResolver.getDirectiveMetadata(compType);
       assertComponent(compMeta);
 
-      const hostClass = this._metadataResolver.getHostComponentType(compType);
-      const hostMeta = createHostComponentMeta(
-          hostClass, compMeta, (compMeta.componentFactory as any).viewDefFactory, this._htmlParser);
+      const hostMeta = this._metadataResolver.getHostComponentMetadata(
+          compMeta, (compMeta.componentFactory as any).viewDefFactory);
       compiledTemplate =
           new CompiledTemplate(true, compMeta.type, hostMeta, ngModule, [compMeta.type]);
       this._compiledHostTemplateCache.set(compType, compiledTemplate);
@@ -257,21 +256,16 @@ export class JitCompiler {
     const externalStylesheetsByModuleUrl = new Map<string, CompiledStylesheet>();
     const outputContext = createOutputContext();
     const componentStylesheet = this._styleCompiler.compileComponent(outputContext, compMeta);
-    const preserveWhitespaces = compMeta !.template !.preserveWhitespaces;
     compMeta.template !.externalStylesheets.forEach((stylesheetMeta) => {
       const compiledStylesheet =
           this._styleCompiler.compileStyles(createOutputContext(), compMeta, stylesheetMeta);
       externalStylesheetsByModuleUrl.set(stylesheetMeta.moduleUrl !, compiledStylesheet);
     });
     this._resolveStylesCompileResult(componentStylesheet, externalStylesheetsByModuleUrl);
-    const directives =
-        template.directives.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
     const pipes = template.ngModule.transitiveModule.pipes.map(
         pipe => this._metadataResolver.getPipeSummary(pipe.reference));
-    const {template: parsedTemplate, pipes: usedPipes} = this._templateParser.parse(
-        compMeta, compMeta.template !.template !, directives, pipes, template.ngModule.schemas,
-        templateSourceUrl(template.ngModule.type, template.compMeta, template.compMeta.template !),
-        preserveWhitespaces);
+    const {template: parsedTemplate, pipes: usedPipes} =
+        this._parseTemplate(compMeta, template.ngModule, template.directives);
     const compileResult = this._viewCompiler.compileComponent(
         outputContext, compMeta, parsedTemplate, ir.variable(componentStylesheet.stylesVar),
         usedPipes);
@@ -280,6 +274,21 @@ export class JitCompiler {
     const viewClass = evalResult[compileResult.viewClassVar];
     const rendererType = evalResult[compileResult.rendererTypeVar];
     template.compiled(viewClass, rendererType);
+  }
+
+  private _parseTemplate(
+      compMeta: CompileDirectiveMetadata, ngModule: CompileNgModuleMetadata,
+      directiveIdentifiers: CompileIdentifierMetadata[]):
+      {template: TemplateAst[], pipes: CompilePipeSummary[]} {
+    // Note: ! is ok here as components always have a template.
+    const preserveWhitespaces = compMeta.template !.preserveWhitespaces;
+    const directives =
+        directiveIdentifiers.map(dir => this._metadataResolver.getDirectiveSummary(dir.reference));
+    const pipes = ngModule.transitiveModule.pipes.map(
+        pipe => this._metadataResolver.getPipeSummary(pipe.reference));
+    return this._templateParser.parse(
+        compMeta, compMeta.template !.htmlAst !, directives, pipes, ngModule.schemas,
+        templateSourceUrl(ngModule.type, compMeta, compMeta.template !), preserveWhitespaces);
   }
 
   private _resolveStylesCompileResult(

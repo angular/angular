@@ -131,9 +131,7 @@ export class PathMappedCompilerHost extends CompilerHost {
           return this.readMetadata(metadataPath, rootedPath);
         }
       } else {
-        const sf = this.getSourceFile(rootedPath);
-        sf.fileName = sf.fileName;
-        const metadata = this.metadataProvider.getMetadata(sf);
+        const metadata = this.getMetadataForSourceFile(rootedPath);
         return metadata ? [metadata] : [];
       }
     }
