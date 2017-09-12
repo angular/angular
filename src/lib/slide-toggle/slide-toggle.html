@@ -1,6 +1,7 @@
 <label class="mat-slide-toggle-label" #label>
 
-  <div class="mat-slide-toggle-bar">
+  <div class="mat-slide-toggle-bar"
+       [class.mat-slide-toggle-bar-no-side-margin]="!labelContent.textContent || !labelContent.textContent.trim()">
 
     <input #input class="mat-slide-toggle-input cdk-visually-hidden" type="checkbox"
            [id]="inputId"
@@ -32,7 +33,7 @@
 
   </div>
 
-  <span class="mat-slide-toggle-content">
+  <span class="mat-slide-toggle-content" #labelContent (cdkObserveContent)="_onLabelTextChange()">
     <ng-content></ng-content>
   </span>
 </label>

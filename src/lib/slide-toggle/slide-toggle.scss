@@ -74,6 +74,11 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   }
 }
 
+.mat-slide-toggle-bar-no-side-margin {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 // The thumb container is responsible for the dragging functionality.
 // The container includes the visual thumb and the ripple container element.
 .mat-slide-toggle-thumb-container {

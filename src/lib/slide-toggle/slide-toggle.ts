@@ -278,6 +278,13 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy,
     }
   }
 
+  /** Method being called whenever the label text changes. */
+  _onLabelTextChange() {
+    // This method is getting called whenever the label of the slide-toggle changes.
+    // Since the slide-toggle uses the OnPush strategy we need to notify it about the change
+    // that has been recognized by the cdkObserveContent directive.
+    this._changeDetectorRef.markForCheck();
+  }
 }
 
 /**

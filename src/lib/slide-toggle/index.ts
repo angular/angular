@@ -9,6 +9,7 @@
 import {NgModule} from '@angular/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {PlatformModule} from '@angular/cdk/platform';
+import {ObserversModule} from '@angular/cdk/observers';
 import {MdSlideToggle} from './slide-toggle';
 import {
   FOCUS_ORIGIN_MONITOR_PROVIDER,
@@ -19,7 +20,7 @@ import {
 
 
 @NgModule({
-  imports: [MdRippleModule, MdCommonModule, PlatformModule],
+  imports: [MdRippleModule, MdCommonModule, PlatformModule, ObserversModule],
   exports: [MdSlideToggle, MdCommonModule],
   declarations: [MdSlideToggle],
   providers: [
