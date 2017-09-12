@@ -150,7 +150,7 @@ export class MdTooltip implements OnDestroy {
     this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
 
     // If the message is not a string (e.g. number), convert it to a string and trim it.
-    this._message = value ? value.trim() : '';
+    this._message = value != null ? `${value}`.trim() : '';
     this._updateTooltipMessage();
     this._ariaDescriber.describe(this._elementRef.nativeElement, this.message);
   }
