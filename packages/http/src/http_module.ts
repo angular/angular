@@ -16,7 +16,7 @@ import {NgModule} from '@angular/core';
 
 import {BrowserJsonp} from './backends/browser_jsonp';
 import {BrowserXhr} from './backends/browser_xhr';
-import {JSONPBackend, JSONPBackend_} from './backends/jsonp_backend';
+import {JSONPBackend} from './backends/jsonp_backend';
 import {CookieXSRFStrategy, XHRBackend} from './backends/xhr_backend';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {BaseResponseOptions, ResponseOptions} from './base_response_options';
@@ -70,7 +70,7 @@ export class HttpModule {
     BrowserJsonp,
     {provide: RequestOptions, useClass: BaseRequestOptions},
     {provide: ResponseOptions, useClass: BaseResponseOptions},
-    {provide: JSONPBackend, useClass: JSONPBackend_},
+    JSONPBackend,
   ],
 })
 export class JsonpModule {

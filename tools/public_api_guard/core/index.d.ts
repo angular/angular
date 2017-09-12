@@ -125,15 +125,15 @@ export declare class ApplicationModule {
 }
 
 /** @stable */
-export declare abstract class ApplicationRef {
-    readonly abstract componentTypes: Type<any>[];
-    readonly abstract components: ComponentRef<any>[];
-    readonly abstract isStable: Observable<boolean>;
-    readonly abstract viewCount: number;
-    abstract attachView(view: ViewRef): void;
-    abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
-    abstract detachView(view: ViewRef): void;
-    abstract tick(): void;
+export declare class ApplicationRef {
+    readonly componentTypes: Type<any>[];
+    readonly components: ComponentRef<any>[];
+    readonly isStable: Observable<boolean>;
+    readonly viewCount: number;
+    attachView(viewRef: ViewRef): void;
+    bootstrap<C>(componentOrFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
+    detachView(viewRef: ViewRef): void;
+    tick(): void;
 }
 
 /** @experimental */
@@ -695,13 +695,13 @@ export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 export declare const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @stable */
-export declare abstract class PlatformRef {
-    readonly abstract destroyed: boolean;
-    readonly abstract injector: Injector;
-    /** @stable */ abstract bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
-    /** @experimental */ abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
-    abstract destroy(): void;
-    abstract onDestroy(callback: () => void): void;
+export declare class PlatformRef {
+    readonly destroyed: boolean;
+    readonly injector: Injector;
+    /** @stable */ bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
+    /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
+    destroy(): void;
+    onDestroy(callback: () => void): void;
 }
 
 /** @experimental */
