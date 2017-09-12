@@ -18,24 +18,25 @@ import * as tsickle from 'tsickle';
 import * as api from './transformers/api';
 import * as ngc from './transformers/entry_points';
 
-import {calcProjectFileAndBasePath, exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult} from './perform_compile';
+import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
 import {isSyntaxError} from '@angular/compiler';
 import {CodeGenerator} from './codegen';
 
+// TODO(tbosch): remove this old entrypoint once we drop `disableTransformerPipeline`.
 export function main(
     args: string[], consoleError: (s: string) => void = console.error): Promise<number> {
-  const parsedArgs = require('minimist')(args);
-  if (parsedArgs.w || parsedArgs.watch) {
-    const result = watchMode(parsedArgs, consoleError);
-    return Promise.resolve(exitCodeFromResult(result.firstCompileResult));
-  }
-  const {rootNames, options, errors: configErrors} = readCommandLineAndConfiguration(parsedArgs);
+  let {project, rootNames, options, errors: configErrors, watch} =
+      readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
     return Promise.resolve(reportErrorsAndExit(options, configErrors, consoleError));
   }
+  if (watch) {
+    const result = watchMode(project, options, consoleError);
+    return Promise.resolve(reportErrorsAndExit({}, result.firstCompileResult, consoleError));
+  }
   if (options.disableTransformerPipeline) {
-    return disabledTransformerPipelineNgcMain(parsedArgs, consoleError);
+    return disabledTransformerPipelineNgcMain(args, consoleError);
   }
   const {diagnostics: compileDiags} =
       performCompilation({rootNames, options, emitCallback: createEmitCallback(options)});
@@ -43,14 +44,19 @@ export function main(
 }
 
 export function mainSync(
-    args: string[], consoleError: (s: string) => void = console.error): number {
-  const parsedArgs = require('minimist')(args);
-  const {rootNames, options, errors: configErrors} = readCommandLineAndConfiguration(parsedArgs);
+    args: string[], consoleError: (s: string) => void = console.error,
+    config?: NgcParsedConfiguration): number {
+  let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
+      config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
     return reportErrorsAndExit(options, configErrors, consoleError);
   }
-  const {diagnostics: compileDiags} =
-      performCompilation({rootNames, options, emitCallback: createEmitCallback(options)});
+  if (watch) {
+    const result = watchMode(project, options, consoleError);
+    return reportErrorsAndExit({}, result.firstCompileResult, consoleError);
+  }
+  const {diagnostics: compileDiags} = performCompilation(
+      {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
   return reportErrorsAndExit(options, compileDiags, consoleError);
 }
 
@@ -85,58 +91,80 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback {
                  });
 }
 
-function projectOf(args: any): string {
-  return (args && (args.p || args.project)) || '.';
+export interface NgcParsedConfiguration extends ParsedConfiguration { watch?: boolean; }
+
+function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedConfiguration {
+  const options: api.CompilerOptions = {};
+  const parsedArgs = require('minimist')(args);
+  if (parsedArgs.i18nFile) options.i18nInFile = parsedArgs.i18nFile;
+  if (parsedArgs.i18nFormat) options.i18nInFormat = parsedArgs.i18nFormat;
+  if (parsedArgs.locale) options.i18nInLocale = parsedArgs.locale;
+  const mt = parsedArgs.missingTranslation;
+  if (mt === 'error' || mt === 'warning' || mt === 'ignore') {
+    options.i18nInMissingTranslations = mt;
+  }
+  const config = readCommandLineAndConfiguration(
+      args, options, ['i18nFile', 'i18nFormat', 'locale', 'missingTranslation', 'watch']);
+  const watch = parsedArgs.w || parsedArgs.watch;
+  return {...config, watch};
 }
 
-function readCommandLineAndConfiguration(args: any): ParsedConfiguration {
-  const project = projectOf(args);
+export function readCommandLineAndConfiguration(
+    args: string[], existingOptions: api.CompilerOptions = {},
+    ngCmdLineOptions: string[] = []): ParsedConfiguration {
+  let cmdConfig = ts.parseCommandLine(args);
+  const project = cmdConfig.options.project || '.';
+  const cmdErrors = cmdConfig.errors.filter(e => {
+    if (typeof e.messageText === 'string') {
+      const msg = e.messageText;
+      return !ngCmdLineOptions.some(o => msg.indexOf(o) >= 0);
+    }
+    return true;
+  });
+  if (cmdErrors.length) {
+    return {
+      project,
+      rootNames: [],
+      options: cmdConfig.options,
+      errors: cmdErrors,
+      emitFlags: api.EmitFlags.Default
+    };
+  }
   const allDiagnostics: Diagnostics = [];
-  const config = readConfiguration(project);
-  const options = mergeCommandLineParams(args, config.options);
+  const config = readConfiguration(project, cmdConfig.options);
+  const options = {...config.options, ...existingOptions};
   if (options.locale) {
     options.i18nInLocale = options.locale;
   }
-  return {project, rootNames: config.rootNames, options, errors: config.errors};
+  return {
+    project,
+    rootNames: config.rootNames, options,
+    errors: config.errors,
+    emitFlags: config.emitFlags
+  };
 }
 
 function reportErrorsAndExit(
     options: api.CompilerOptions, allDiagnostics: Diagnostics,
     consoleError: (s: string) => void = console.error): number {
-  const exitCode = allDiagnostics.some(d => d.category === ts.DiagnosticCategory.Error) ? 1 : 0;
   if (allDiagnostics.length) {
     consoleError(formatDiagnostics(options, allDiagnostics));
   }
-  return exitCode;
+  return exitCodeFromResult(allDiagnostics);
 }
 
-export function watchMode(args: any, consoleError: (s: string) => void) {
-  const project = projectOf(args);
-  const {projectFile, basePath} = calcProjectFileAndBasePath(project);
-  const config = readConfiguration(project);
-  return performWatchCompilation(createPerformWatchHost(projectFile, diagnostics => {
-    consoleError(formatDiagnostics(config.options, diagnostics));
-  }, options => createEmitCallback(options)));
-}
-
-function mergeCommandLineParams(
-    cliArgs: {[k: string]: string}, options: api.CompilerOptions): api.CompilerOptions {
-  // TODO: also merge in tsc command line parameters by calling
-  // ts.readCommandLine.
-  if (cliArgs.i18nFile) options.i18nInFile = cliArgs.i18nFile;
-  if (cliArgs.i18nFormat) options.i18nInFormat = cliArgs.i18nFormat;
-  if (cliArgs.locale) options.i18nInLocale = cliArgs.locale;
-  const mt = cliArgs.missingTranslation;
-  if (mt === 'error' || mt === 'warning' || mt === 'ignore') {
-    options.i18nInMissingTranslations = mt;
-  }
-  return options;
+export function watchMode(
+    project: string, options: api.CompilerOptions, consoleError: (s: string) => void) {
+  return performWatchCompilation(createPerformWatchHost(project, diagnostics => {
+    consoleError(formatDiagnostics(options, diagnostics));
+  }, options, options => createEmitCallback(options)));
 }
 
 function disabledTransformerPipelineNgcMain(
-    args: any, consoleError: (s: string) => void = console.error): Promise<number> {
-  const cliOptions = new tsc.NgcCliOptions(args);
-  const project = args.p || args.project || '.';
+    args: string[], consoleError: (s: string) => void = console.error): Promise<number> {
+  const parsedArgs = require('minimist')(args);
+  const cliOptions = new tsc.NgcCliOptions(parsedArgs);
+  const project = parsedArgs.p || parsedArgs.project || '.';
   return tsc.main(project, cliOptions, disabledTransformerPipelineCodegen)
       .then(() => 0)
       .catch(e => {
@@ -150,7 +178,7 @@ function disabledTransformerPipelineNgcMain(
 }
 
 function disabledTransformerPipelineCodegen(
-    ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.NgcCliOptions, program: ts.Program,
+    ngOptions: api.CompilerOptions, cliOptions: tsc.NgcCliOptions, program: ts.Program,
     host: ts.CompilerHost) {
   if (ngOptions.enableSummariesForJit === undefined) {
     // default to false
@@ -162,5 +190,5 @@ function disabledTransformerPipelineCodegen(
 // CLI entry point
 if (require.main === module) {
   const args = process.argv.slice(2);
-  main(args).then((exitCode: number) => process.exitCode = exitCode);
+  process.exitCode = mainSync(args);
 }

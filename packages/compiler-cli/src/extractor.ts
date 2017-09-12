@@ -20,6 +20,7 @@ import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {i18nExtract, i18nGetExtension, i18nSerialize} from './transformers/program';
 
 export class Extractor {
   constructor(
@@ -28,18 +29,8 @@ export class Extractor {
       private program: ts.Program) {}
 
   extract(formatName: string, outFile: string|null): Promise<string[]> {
-    // Checks the format and returns the extension
-    const ext = this.getExtension(formatName);
-
-    const promiseBundle = this.extractBundle();
-
-    return promiseBundle.then(bundle => {
-      const content = this.serialize(bundle, formatName);
-      const dstFile = outFile || `messages.${ext}`;
-      const dstPath = path.join(this.options.genDir !, dstFile);
-      this.host.writeFile(dstPath, content, false);
-      return [dstPath];
-    });
+    return this.extractBundle().then(
+        bundle => i18nExtract(formatName, outFile, this.host, this.options, bundle));
   }
 
   extractBundle(): Promise<compiler.MessageBundle> {
@@ -50,44 +41,10 @@ export class Extractor {
   }
 
   serialize(bundle: compiler.MessageBundle, formatName: string): string {
-    const format = formatName.toLowerCase();
-    let serializer: compiler.Serializer;
-
-    switch (format) {
-      case 'xmb':
-        serializer = new compiler.Xmb();
-        break;
-      case 'xliff2':
-      case 'xlf2':
-        serializer = new compiler.Xliff2();
-        break;
-      case 'xlf':
-      case 'xliff':
-      default:
-        serializer = new compiler.Xliff();
-    }
-    return bundle.write(
-        serializer, (sourcePath: string) => this.options.basePath ?
-            path.relative(this.options.basePath, sourcePath) :
-            sourcePath);
+    return i18nSerialize(bundle, formatName, this.options);
   }
 
-  getExtension(formatName: string): string {
-    const format = (formatName || 'xlf').toLowerCase();
-
-    switch (format) {
-      case 'xmb':
-        return 'xmb';
-      case 'xlf':
-      case 'xlif':
-      case 'xliff':
-      case 'xlf2':
-      case 'xliff2':
-        return 'xlf';
-    }
-
-    throw new Error(`Unsupported format "${formatName}"`);
-  }
+  getExtension(formatName: string): string { return i18nGetExtension(formatName); }
 
   static create(
       options: tsc.AngularCompilerOptions, program: ts.Program, tsCompilerHost: ts.CompilerHost,
