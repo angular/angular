@@ -1,6 +1,7 @@
 `<md-menu>` is a floating panel containing list of options.
 
 <!-- example(menu-overview) -->
+<!-- example(nested-menu) -->
 
 By itself, the `<md-menu>` element does not render anything. The menu is attached to and opened
 via application of the `mdMenuTriggerFor` directive:
