@@ -1301,6 +1301,12 @@ export class FormArray extends AbstractControl {
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
 
+
+  /**
+   * Get the {@link AbstractControl} at the given `index` in the array.
+   */
+  get(index: number): AbstractControl { return this.controls[index]; }
+
   /**
    * Get the {@link AbstractControl} at the given `index` in the array.
    */
