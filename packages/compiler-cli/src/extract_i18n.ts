@@ -18,11 +18,13 @@ import * as tsc from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {Extractor} from './extractor';
+import {IgnoreExternalStylesContext} from './ignore_external_styles_context';
 
 function extract(
     ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
     program: ts.Program, host: ts.CompilerHost) {
-  return Extractor.create(ngOptions, program, host, cliOptions.locale)
+  return Extractor
+      .create(ngOptions, program, host, cliOptions.locale, new IgnoreExternalStylesContext(host))
       .extract(cliOptions.i18nFormat !, cliOptions.outFile);
 }
 
