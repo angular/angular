@@ -67,6 +67,11 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
 
   &[mode='query'] {
     transform: rotateZ(180deg);
+
+    &[dir='rtl'],
+    [dir='rtl'] & {
+      transform: rotateZ(180deg) rotateY(180deg);
+    }
   }
 
   &[mode='indeterminate'],
