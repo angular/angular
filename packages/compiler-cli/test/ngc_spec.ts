@@ -363,7 +363,6 @@ describe('ngc transformer command-line', () => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
-              "enableSummariesForJit": true
             },
             "include": ["src/**/*.ts"]
           }`);
@@ -379,7 +378,6 @@ describe('ngc transformer command-line', () => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
-              "enableSummariesForJit": true,
               "skipTemplateCodegen": true
             },
             "compilerOptions": {
@@ -410,7 +408,6 @@ describe('ngc transformer command-line', () => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
-              "enableSummariesForJit": true,
               "skipTemplateCodegen": false
             },
             "compilerOptions": {
@@ -826,8 +823,7 @@ describe('ngc transformer command-line', () => {
       write('lib1/tsconfig-lib1.json', `{
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
-            "generateCodeForLibraries": false,
-            "enableSummariesForJit": true
+            "generateCodeForLibraries": false
           },
           "compilerOptions": {
             "rootDir": ".",
@@ -849,8 +845,7 @@ describe('ngc transformer command-line', () => {
       write('lib2/tsconfig-lib2.json', `{
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
-            "generateCodeForLibraries": false,
-            "enableSummariesForJit": true
+            "generateCodeForLibraries": false
           },
           "compilerOptions": {
             "rootDir": ".",

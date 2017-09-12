@@ -53,8 +53,8 @@ export interface PerformWatchHost {
 
 export function createPerformWatchHost(
     configFileName: string, reportDiagnostics: (diagnostics: Diagnostics) => void,
-    existingOptions?: ts.CompilerOptions,
-    createEmitCallback?: (options: api.CompilerOptions) => api.TsEmitCallback): PerformWatchHost {
+    existingOptions?: ts.CompilerOptions, createEmitCallback?: (options: api.CompilerOptions) =>
+                                              api.TsEmitCallback | undefined): PerformWatchHost {
   return {
     reportDiagnostics: reportDiagnostics,
     createCompilerHost: options => createCompilerHost({options}),
