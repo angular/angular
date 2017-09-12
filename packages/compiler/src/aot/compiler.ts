@@ -8,11 +8,15 @@
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompileProviderMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, createHostComponentMeta, flatten, identifierName, sourceUrl, templateSourceUrl} from '../compile_metadata';
 import {CompilerConfig} from '../config';
+import {MessageBundle} from '../i18n/message_bundle';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {CompileMetadataResolver} from '../metadata_resolver';
+import {HtmlParser} from '../ml_parser/html_parser';
+import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
+import {ParseError} from '../parse_util';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateParser} from '../template_parser/template_parser';
@@ -75,6 +79,36 @@ export class AotCompiler {
             file.srcUrl, ngModuleByPipeOrDirective, file.directives, file.pipes, file.ngModules,
             file.injectables));
     return flatten(sourceModules);
+  }
+
+  emitMessageBundle(analyzeResult: NgAnalyzedModules, locale: string|null): MessageBundle {
+    const errors: ParseError[] = [];
+    const htmlParser = new HtmlParser();
+
+    // TODO(vicb): implicit tags & attributes
+    const messageBundle = new MessageBundle(htmlParser, [], {}, locale);
+
+    analyzeResult.files.forEach(file => {
+      const compMetas: CompileDirectiveMetadata[] = [];
+      file.directives.forEach(directiveType => {
+        const dirMeta = this._metadataResolver.getDirectiveMetadata(directiveType);
+        if (dirMeta && dirMeta.isComponent) {
+          compMetas.push(dirMeta);
+        }
+      });
+      compMetas.forEach(compMeta => {
+        const html = compMeta.template !.template !;
+        const interpolationConfig =
+            InterpolationConfig.fromArray(compMeta.template !.interpolation);
+        errors.push(...messageBundle.updateFromTemplate(html, file.srcUrl, interpolationConfig) !);
+      });
+    });
+
+    if (errors.length) {
+      throw new Error(errors.map(e => e.toString()).join('\n'));
+    }
+
+    return messageBundle;
   }
 
   private _compileStubFile(

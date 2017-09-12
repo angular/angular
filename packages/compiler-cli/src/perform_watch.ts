@@ -53,14 +53,15 @@ export interface PerformWatchHost {
 
 export function createPerformWatchHost(
     configFileName: string, reportDiagnostics: (diagnostics: Diagnostics) => void,
+    existingOptions?: ts.CompilerOptions,
     createEmitCallback?: (options: api.CompilerOptions) => api.TsEmitCallback): PerformWatchHost {
   return {
     reportDiagnostics: reportDiagnostics,
     createCompilerHost: options => createCompilerHost({options}),
-    readConfiguration: () => readConfiguration(configFileName),
+    readConfiguration: () => readConfiguration(configFileName, existingOptions),
     createEmitCallback: options => createEmitCallback ? createEmitCallback(options) : undefined,
     onFileChange: (listeners) => {
-      const parsed = readConfiguration(configFileName);
+      const parsed = readConfiguration(configFileName, existingOptions);
       function stubReady(cb: () => void) { process.nextTick(cb); }
       if (parsed.errors && parsed.errors.length) {
         reportDiagnostics(parsed.errors);
@@ -104,11 +105,8 @@ export function createPerformWatchHost(
 /**
  * The logic in this function is adapted from `tsc.ts` from TypeScript.
  */
-export function performWatchCompilation(host: PerformWatchHost): {
-  close: () => void,
-  ready: (cb: () => void) => void,
-  firstCompileResult: PerformCompilationResult | undefined
-} {
+export function performWatchCompilation(host: PerformWatchHost):
+    {close: () => void, ready: (cb: () => void) => void, firstCompileResult: Diagnostics} {
   let cachedProgram: api.Program|undefined;            // Program cached from last compilation
   let cachedCompilerHost: api.CompilerHost|undefined;  // CompilerHost cached from last compilation
   let cachedOptions: ParsedConfiguration|undefined;  // CompilerOptions cached from last compilation
@@ -133,13 +131,13 @@ export function performWatchCompilation(host: PerformWatchHost): {
   }
 
   // Invoked to perform initial compilation or re-compilation in watch mode
-  function doCompilation() {
+  function doCompilation(): Diagnostics {
     if (!cachedOptions) {
       cachedOptions = host.readConfiguration();
     }
     if (cachedOptions.errors && cachedOptions.errors.length) {
       host.reportDiagnostics(cachedOptions.errors);
-      return;
+      return cachedOptions.errors;
     }
     if (!cachedCompilerHost) {
       // TODO(chuckj): consider avoiding re-generating factories for libraries.
@@ -168,7 +166,7 @@ export function performWatchCompilation(host: PerformWatchHost): {
       host.reportDiagnostics(compileResult.diagnostics);
     }
 
-    const exitCode = exitCodeFromResult(compileResult);
+    const exitCode = exitCodeFromResult(compileResult.diagnostics);
     if (exitCode == 0) {
       cachedProgram = compileResult.program;
       host.reportDiagnostics([ChangeDiagnostics.Compilation_complete_Watching_for_file_changes]);
@@ -176,7 +174,7 @@ export function performWatchCompilation(host: PerformWatchHost): {
       host.reportDiagnostics([ChangeDiagnostics.Compilation_failed_Watching_for_file_changes]);
     }
 
-    return compileResult;
+    return compileResult.diagnostics;
   }
 
   function resetOptions() {
