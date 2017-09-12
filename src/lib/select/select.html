@@ -10,7 +10,7 @@
     [class.mat-floating-placeholder]="_hasValue()"
     [@transformPlaceholder]="_getPlaceholderAnimationState()"
     [style.opacity]="_getPlaceholderOpacity()"
-    [style.width.px]="_selectedValueWidth"> {{ placeholder }} </span>
+    [style.width.px]="_selectedValueWidth">{{ placeholder }}</span>
 
   <span class="mat-select-value" *ngIf="_hasValue()">
     <span class="mat-select-value-text" [ngSwitch]="!!customTrigger">

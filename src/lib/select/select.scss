@@ -76,7 +76,7 @@ $mat-select-trigger-underline-height: 1px !default;
 
   // TODO: Double-check accessibility of this style
   .mat-select-required &::after {
-    content: '*';
+    content: ' *';
   }
 }
 
