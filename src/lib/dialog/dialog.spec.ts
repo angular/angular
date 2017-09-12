@@ -102,6 +102,21 @@ describe('MdDialog', () => {
     dialogRef.close();
   });
 
+  it('should emit when dialog opening animation is complete', fakeAsync(() => {
+    const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+    const spy = jasmine.createSpy('afterOpen spy');
+
+    dialogRef.afterOpen().subscribe(spy);
+
+    viewContainerFixture.detectChanges();
+
+    // callback should not be called before animation is complete
+    expect(spy).not.toHaveBeenCalled();
+
+    flushMicrotasks();
+    expect(spy).toHaveBeenCalled();
+  }));
+
   it('should use injector from viewContainerRef for DialogInjector', () => {
     let dialogRef = dialog.open(PizzaMsg, {
       viewContainerRef: testViewContainerRef
