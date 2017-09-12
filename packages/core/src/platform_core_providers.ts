@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlatformRef, PlatformRef_, createPlatformFactory} from './application_ref';
+import {PlatformRef, createPlatformFactory} from './application_ref';
 import {PLATFORM_ID} from './application_tokens';
 import {Console} from './console';
 import {Injector, StaticProvider} from './di';
@@ -15,8 +15,7 @@ import {TestabilityRegistry} from './testability/testability';
 const _CORE_PLATFORM_PROVIDERS: StaticProvider[] = [
   // Set a default platform name for platforms that don't set it explicitly.
   {provide: PLATFORM_ID, useValue: 'unknown'},
-  {provide: PlatformRef_, deps: [Injector]},
-  {provide: PlatformRef, useExisting: PlatformRef_},
+  {provide: PlatformRef, deps: [Injector]},
   {provide: TestabilityRegistry, deps: []},
   {provide: Console, deps: []},
 ];

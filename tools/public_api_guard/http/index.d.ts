@@ -79,15 +79,16 @@ export declare class Jsonp extends Http {
 }
 
 /** @deprecated */
-export declare abstract class JSONPBackend extends ConnectionBackend {
+export declare class JSONPBackend extends ConnectionBackend {
+    createConnection(request: Request): JSONPConnection;
 }
 
 /** @deprecated */
-export declare abstract class JSONPConnection implements Connection {
+export declare class JSONPConnection implements Connection {
     readyState: ReadyState;
     request: Request;
     response: Observable<Response>;
-    abstract finished(data?: any): void;
+    finished(data?: any): void;
 }
 
 /** @deprecated */

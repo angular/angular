@@ -2,13 +2,13 @@
 export declare function bootstrapWorkerUi(workerScriptUri: string, customProviders?: StaticProvider[]): Promise<PlatformRef>;
 
 /** @experimental */
-export declare abstract class ClientMessageBroker {
-    abstract runOnService(args: UiArguments, returnType: Type<any> | SerializerTypes | null): Promise<any> | null;
+export declare class ClientMessageBroker {
+    runOnService(args: UiArguments, returnType: Type<any> | SerializerTypes | null): Promise<any> | null;
 }
 
 /** @experimental */
-export declare abstract class ClientMessageBrokerFactory {
-    abstract createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
+export declare class ClientMessageBrokerFactory {
+    createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
 }
 
 /** @experimental */
@@ -62,13 +62,13 @@ export declare const enum SerializerTypes {
 }
 
 /** @experimental */
-export declare abstract class ServiceMessageBroker {
-    abstract registerMethod(methodName: string, signature: Array<Type<any> | SerializerTypes> | null, method: Function, returnType?: Type<any> | SerializerTypes): void;
+export declare class ServiceMessageBroker {
+    registerMethod(methodName: string, signature: Array<Type<any> | SerializerTypes> | null, method: (..._: any[]) => Promise<any> | void, returnType?: Type<any> | SerializerTypes): void;
 }
 
 /** @experimental */
-export declare abstract class ServiceMessageBrokerFactory {
-    abstract createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
+export declare class ServiceMessageBrokerFactory {
+    createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
 }
 
 /** @experimental */

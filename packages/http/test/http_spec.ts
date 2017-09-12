@@ -42,7 +42,7 @@ export function main() {
 
          http = injector.get(Http);
          jsonp = injector.get(Jsonp);
-         jsonpBackend = injector.get(JSONPBackend) as MockBackend;
+         jsonpBackend = injector.get(JSONPBackend) as any as MockBackend;
          xhrBackend = injector.get(XHRBackend) as any as MockBackend;
 
          let xhrCreatedConnections = 0;
