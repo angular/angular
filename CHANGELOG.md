@@ -1,3 +1,42 @@
+<a name="5.0.0-beta.7"></a>
+# [5.0.0-beta.7](https://github.com/angular/angular/compare/5.0.0-beta.6...5.0.0-beta.7) (2017-09-13)
+
+
+### Bug Fixes
+
+* **compiler:** emit preamble in generated files. ([b1055a5](https://github.com/angular/angular/commit/b1055a5))
+* **compiler:** fix bazel integration and make `perform-compile` more flexible ([a69172f](https://github.com/angular/angular/commit/a69172f))
+* **compiler:** lower variables with a closure by exporting the variable. ([5ef6e63](https://github.com/angular/angular/commit/5ef6e63))
+* **platform-browser:** run BLACK_LISTED_EVENTS outside of ngZone ([#18993](https://github.com/angular/angular/issues/18993)) ([d52f426](https://github.com/angular/angular/commit/d52f426))
+* **platform-browser:** simple version of zone aware addEventListener ([#18993](https://github.com/angular/angular/issues/18993)) ([ed1175f](https://github.com/angular/angular/commit/ed1175f))
+* **platform-server:** support setting innerText property ([831613a](https://github.com/angular/angular/commit/831613a))
+* **router:** adjust ChildActivation events to only fire when the child is actually changing ([#19043](https://github.com/angular/angular/issues/19043)) ([66f0ab0](https://github.com/angular/angular/commit/66f0ab0)), closes [#18942](https://github.com/angular/angular/issues/18942)
+* **tsc-wrapped:** deduplicate metadata for re-exported modules ([c056b8c](https://github.com/angular/angular/commit/c056b8c))
+* **tsc-wrapped:** fix metadata symbol reference ([626555c](https://github.com/angular/angular/commit/626555c))
+* **upgrade:** add testability hook to downgraded component ([97cc6ca](https://github.com/angular/angular/commit/97cc6ca))
+* **upgrade:** remove code setting id attribute. ([b6833d1](https://github.com/angular/angular/commit/b6833d1)), closes [#18446](https://github.com/angular/angular/issues/18446)
+
+
+### Code Refactoring
+
+* **router:** remove deprecated `RouterOutlet` properties ([a9ef858](https://github.com/angular/angular/commit/a9ef858))
+* update angular to support TypeScript 2.4 ([ca5aeba](https://github.com/angular/angular/commit/ca5aeba))
+
+
+### Features
+
+* **compiler:** deprecate i18n comments in favor of `ng-container` ([#18998](https://github.com/angular/angular/issues/18998)) ([66a5dab](https://github.com/angular/angular/commit/66a5dab))
+* **platform-server:** provide a way to hook into renderModule* ([#19023](https://github.com/angular/angular/issues/19023)) ([8dfc3c3](https://github.com/angular/angular/commit/8dfc3c3))
+* **router:** add ActivationStart/End events ([8f79150](https://github.com/angular/angular/commit/8f79150))
+
+
+### BREAKING CHANGES
+
+* - the Angular compiler now requires TypeScript 2.4.x.
+* router: `RouterOutlet` properties `locationInjector` and `locationFactoryResolver` have been removed as they were deprecated since v4.
+
+
+
 <a name="5.0.0-beta.6"></a>
 # [5.0.0-beta.6](https://github.com/angular/angular/compare/5.0.0-beta.5...5.0.0-beta.6) (2017-09-03)
 
