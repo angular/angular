@@ -65,7 +65,8 @@ const resolvedPromise = Promise.resolve(null);
 })
 export class NgForm extends ControlContainer implements Form,
     AfterViewInit {
-  private _submitted: boolean = false;
+  public readonly submitted: boolean = false;
+
   private _directives: NgModel[] = [];
 
   form: FormGroup;
@@ -97,8 +98,6 @@ export class NgForm extends ControlContainer implements Form,
 
   ngAfterViewInit() { this._setUpdateStrategy(); }
 
-  get submitted(): boolean { return this._submitted; }
-
   get formDirective(): Form { return this; }
 
   get control(): FormGroup { return this.form; }
@@ -110,7 +109,8 @@ export class NgForm extends ControlContainer implements Form,
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      dir._control = <FormControl>container.registerControl(dir.name, dir.control);
+      (dir as{control: FormControl}).control =
+          <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
       this._directives.push(dir);
@@ -160,7 +160,7 @@ export class NgForm extends ControlContainer implements Form,
   setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
 
   onSubmit($event: Event): boolean {
-    this._submitted = true;
+    (this as{submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
     return false;
@@ -170,7 +170,7 @@ export class NgForm extends ControlContainer implements Form,
 
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    this._submitted = false;
+    (this as{submitted: boolean}).submitted = false;
   }
 
   private _setUpdateStrategy() {

@@ -82,8 +82,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
   /** @internal */
   viewModel: any;
-  /** @internal */
-  _control: FormControl;
+  readonly control: FormControl;
 
   @Input('formControlName') name: string;
 
@@ -135,8 +134,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     return composeAsyncValidators(this._rawAsyncValidators) !;
   }
 
-  get control(): FormControl { return this._control; }
-
   private _checkParentType(): void {
     if (!(this._parent instanceof FormGroupName) &&
         this._parent instanceof AbstractFormGroupDirective) {
@@ -150,7 +147,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpControl() {
     this._checkParentType();
-    this._control = this.formDirective.addControl(this);
+    (this as{control: FormControl}).control = this.formDirective.addControl(this);
     if (this.control.disabled && this.valueAccessor !.setDisabledState) {
       this.valueAccessor !.setDisabledState !(true);
     }
