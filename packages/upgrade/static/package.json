@@ -1,7 +1,7 @@
 {
   "name": "@angular/upgrade/static",
-  "typings": "./index.d.ts",
+  "typings": "./static.d.ts",
   "main": "../bundles/upgrade-static.umd.js",
-  "module": "../esm5/static/index.js",
-  "es2015": "../esm15/static/index.js"
+  "module": "../esm5/static.js",
+  "es2015": "../esm2015/static.js"
 }

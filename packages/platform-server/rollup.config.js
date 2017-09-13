@@ -22,7 +22,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/platform-server/esm5/index.js',
+  entry: '../../dist/packages-dist/platform-server/esm5/platform-server.js',
   dest: '../../dist/packages-dist/platform-server/bundles/platform-server.umd.js',
   format: 'umd',
   exports: 'named',

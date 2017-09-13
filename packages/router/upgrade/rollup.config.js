@@ -17,7 +17,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../../dist/packages-dist/router/esm5/upgrade/index.js',
+  entry: '../../../dist/packages-dist/router/esm5/upgrade.js',
   dest: '../../../dist/packages-dist/router/bundles/router-upgrade.umd.js',
   format: 'umd',
   exports: 'named',

@@ -18,7 +18,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "flatModuleOutFile": "http.js",
     "flatModuleId": "@angular/common/http"
   }
 }
