@@ -90,14 +90,22 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
   /** The datepicker that this input is associated with. */
   @Input()
   set mdDatepicker(value: MdDatepicker<D>) {
+    this.registerDatepicker(value);
+  }
+  _datepicker: MdDatepicker<D>;
+
+  private registerDatepicker(value: MdDatepicker<D>) {
     if (value) {
       this._datepicker = value;
       this._datepicker._registerInput(this);
     }
   }
-  _datepicker: MdDatepicker<D>;
 
-  @Input() set matDatepicker(value: MdDatepicker<D>) { this.mdDatepicker = value; }
+  @Input() set matDatepicker(value: MdDatepicker<D>) {
+    // Note that we don't set `this.mdDatepicker = value` here,
+    // because that line gets stripped by the JS compiler.
+    this.registerDatepicker(value);
+  }
 
   @Input() set mdDatepickerFilter(filter: (date: D | null) => boolean) {
     this._dateFilter = filter;
