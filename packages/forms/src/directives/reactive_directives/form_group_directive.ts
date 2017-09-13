@@ -66,7 +66,8 @@ export const formDirectiveProvider: any = {
 })
 export class FormGroupDirective extends ControlContainer implements Form,
     OnChanges {
-  private _submitted: boolean = false;
+  public readonly submitted: boolean = false;
+
   private _oldForm: FormGroup;
   directives: FormControlName[] = [];
 
@@ -87,8 +88,6 @@ export class FormGroupDirective extends ControlContainer implements Form,
       this._updateRegistrations();
     }
   }
-
-  get submitted(): boolean { return this._submitted; }
 
   get formDirective(): Form { return this; }
 
@@ -134,7 +133,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
   }
 
   onSubmit($event: Event): boolean {
-    this._submitted = true;
+    (this as{submitted: boolean}).submitted = true;
     syncPendingControls(this.form, this.directives);
     this.ngSubmit.emit($event);
     return false;
@@ -144,7 +143,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    this._submitted = false;
+    (this as{submitted: boolean}).submitted = false;
   }
 
 
@@ -152,10 +151,10 @@ export class FormGroupDirective extends ControlContainer implements Form,
   _updateDomValue() {
     this.directives.forEach(dir => {
       const newCtrl: any = this.form.get(dir.path);
-      if (dir._control !== newCtrl) {
-        cleanUpControl(dir._control, dir);
+      if (dir.control !== newCtrl) {
+        cleanUpControl(dir.control, dir);
         if (newCtrl) setUpControl(newCtrl, dir);
-        dir._control = newCtrl;
+        (dir as{control: FormControl}).control = newCtrl;
       }
     });
 

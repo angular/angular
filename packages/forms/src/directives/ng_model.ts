@@ -110,8 +110,7 @@ const resolvedPromise = Promise.resolve(null);
 })
 export class NgModel extends NgControl implements OnChanges,
     OnDestroy {
-  /** @internal */
-  _control = new FormControl();
+  public readonly control: FormControl = new FormControl();
   /** @internal */
   _registered = false;
   viewModel: any;
@@ -188,8 +187,6 @@ export class NgModel extends NgControl implements OnChanges,
 
               ngOnDestroy(): void { this.formDirective && this.formDirective.removeControl(this); }
 
-              get control(): FormControl { return this._control; }
-
               get path(): string[] {
                 return this._parent ? controlPath(this.name, this._parent) : [this.name];
               }
@@ -216,7 +213,7 @@ export class NgModel extends NgControl implements OnChanges,
 
               private _setUpdateStrategy(): void {
                 if (this.options && this.options.updateOn != null) {
-                  this._control._updateOn = this.options.updateOn;
+                  this.control._updateOn = this.options.updateOn;
                 }
               }
 
@@ -225,8 +222,8 @@ export class NgModel extends NgControl implements OnChanges,
               }
 
               private _setUpStandalone(): void {
-                setUpControl(this._control, this);
-                this._control.updateValueAndValidity({emitEvent: false});
+                setUpControl(this.control, this);
+                this.control.updateValueAndValidity({emitEvent: false});
               }
 
               private _checkForErrors(): void {
