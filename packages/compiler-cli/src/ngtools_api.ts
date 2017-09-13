@@ -14,7 +14,6 @@
  */
 
 import {AotCompilerHost, AotSummaryResolver, StaticReflector, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
-import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {CodeGenerator} from './codegen';
@@ -22,6 +21,7 @@ import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './
 import {Extractor} from './extractor';
 import {listLazyRoutesOfModule} from './ngtools_impl';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {CompilerOptions} from './transformers/api';
 
 export interface NgTools_InternalApi_NG2_CodeGen_Options {
   basePath: string;
@@ -29,7 +29,7 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
   program: ts.Program;
   host: ts.CompilerHost;
 
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
 
   // i18n options.
   i18nFormat?: string;
@@ -45,7 +45,7 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
 export interface NgTools_InternalApi_NG2_ListLazyRoutes_Options {
   program: ts.Program;
   host: ts.CompilerHost;
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
   entryModule: string;
 
   // Every new property under this line should be optional.
@@ -58,7 +58,7 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
   compilerOptions: ts.CompilerOptions;
   program: ts.Program;
   host: ts.CompilerHost;
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
   i18nFormat?: string;
   readResource: (fileName: string) => Promise<string>;
   // Every new property under this line should be optional.

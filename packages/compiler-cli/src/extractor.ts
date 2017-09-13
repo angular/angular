@@ -14,17 +14,17 @@
 import 'reflect-metadata';
 
 import * as compiler from '@angular/compiler';
-import * as tsc from '@angular/tsc-wrapped';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {CompilerOptions} from './transformers/api';
 import {i18nExtract, i18nGetExtension, i18nSerialize} from './transformers/program';
 
 export class Extractor {
   constructor(
-      private options: tsc.AngularCompilerOptions, private ngExtractor: compiler.Extractor,
+      private options: CompilerOptions, private ngExtractor: compiler.Extractor,
       public host: ts.CompilerHost, private ngCompilerHost: CompilerHost,
       private program: ts.Program) {}
 
@@ -47,7 +47,7 @@ export class Extractor {
   getExtension(formatName: string): string { return i18nGetExtension(formatName); }
 
   static create(
-      options: tsc.AngularCompilerOptions, program: ts.Program, tsCompilerHost: ts.CompilerHost,
+      options: CompilerOptions, program: ts.Program, tsCompilerHost: ts.CompilerHost,
       locale?: string|null, compilerHostContext?: CompilerHostContext,
       ngCompilerHost?: CompilerHost): Extractor {
     if (!ngCompilerHost) {

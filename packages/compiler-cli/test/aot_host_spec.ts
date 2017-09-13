@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ModuleMetadata} from '@angular/tsc-wrapped';
+import {ModuleMetadata} from '@angular/compiler-cli/src/metadata/index';
 import * as ts from 'typescript';
 
 import {CompilerHost} from '../src/compiler_host';

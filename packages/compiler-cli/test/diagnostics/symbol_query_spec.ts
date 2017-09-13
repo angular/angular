@@ -7,12 +7,13 @@
  */
 
 import {StaticSymbol} from '@angular/compiler';
-import {AngularCompilerOptions, CompilerHost} from '@angular/compiler-cli';
+import {CompilerHost} from '@angular/compiler-cli';
 import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, isSource, settings, setup, toMockFileArray} from '@angular/compiler/test/aot/test_util';
 import * as ts from 'typescript';
 
 import {Symbol, SymbolQuery, SymbolTable} from '../../src/diagnostics/symbols';
 import {getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
+import {CompilerOptions} from '../../src/transformers/api';
 import {Directory} from '../mocks';
 
 import {DiagnosticContext, MockLanguageServiceHost} from './mocks';
@@ -40,7 +41,7 @@ describe('symbol query', () => {
     program = service.getProgram();
     checker = program.getTypeChecker();
     sourceFile = program.getSourceFile('/quickstart/app/app.component.ts');
-    const options: AngularCompilerOptions = Object.create(host.getCompilationSettings());
+    const options: CompilerOptions = Object.create(host.getCompilationSettings());
     options.genDir = '/dist';
     options.basePath = '/quickstart';
     const aotHost = new CompilerHost(program, options, host, {verboseInvalidExpression: true});

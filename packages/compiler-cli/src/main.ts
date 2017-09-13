@@ -11,7 +11,6 @@
 import 'reflect-metadata';
 
 import * as ts from 'typescript';
-import * as tsc from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -21,29 +20,8 @@ import * as ngc from './transformers/entry_points';
 import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
 import {isSyntaxError} from '@angular/compiler';
-import {CodeGenerator} from './codegen';
 
-// TODO(tbosch): remove this old entrypoint once we drop `disableTransformerPipeline`.
 export function main(
-    args: string[], consoleError: (s: string) => void = console.error): Promise<number> {
-  let {project, rootNames, options, errors: configErrors, watch} =
-      readNgcCommandLineAndConfiguration(args);
-  if (configErrors.length) {
-    return Promise.resolve(reportErrorsAndExit(options, configErrors, consoleError));
-  }
-  if (watch) {
-    const result = watchMode(project, options, consoleError);
-    return Promise.resolve(reportErrorsAndExit({}, result.firstCompileResult, consoleError));
-  }
-  if (options.disableTransformerPipeline) {
-    return disabledTransformerPipelineNgcMain(args, consoleError);
-  }
-  const {diagnostics: compileDiags} =
-      performCompilation({rootNames, options, emitCallback: createEmitCallback(options)});
-  return Promise.resolve(reportErrorsAndExit(options, compileDiags, consoleError));
-}
-
-export function mainSync(
     args: string[], consoleError: (s: string) => void = console.error,
     config?: NgcParsedConfiguration): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
@@ -160,35 +138,8 @@ export function watchMode(
   }, options, options => createEmitCallback(options)));
 }
 
-function disabledTransformerPipelineNgcMain(
-    args: string[], consoleError: (s: string) => void = console.error): Promise<number> {
-  const parsedArgs = require('minimist')(args);
-  const cliOptions = new tsc.NgcCliOptions(parsedArgs);
-  const project = parsedArgs.p || parsedArgs.project || '.';
-  return tsc.main(project, cliOptions, disabledTransformerPipelineCodegen)
-      .then(() => 0)
-      .catch(e => {
-        if (e instanceof tsc.UserError || isSyntaxError(e)) {
-          consoleError(e.message);
-        } else {
-          consoleError(e.stack);
-        }
-        return Promise.resolve(1);
-      });
-}
-
-function disabledTransformerPipelineCodegen(
-    ngOptions: api.CompilerOptions, cliOptions: tsc.NgcCliOptions, program: ts.Program,
-    host: ts.CompilerHost) {
-  if (ngOptions.enableSummariesForJit === undefined) {
-    // default to false
-    ngOptions.enableSummariesForJit = false;
-  }
-  return CodeGenerator.create(ngOptions, cliOptions, program, host).codegen();
-}
-
 // CLI entry point
 if (require.main === module) {
   const args = process.argv.slice(2);
-  process.exitCode = mainSync(args);
+  process.exitCode = main(args);
 }

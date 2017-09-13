@@ -7,12 +7,13 @@
  */
 
 import {StaticSymbol} from '@angular/compiler';
-import {AngularCompilerOptions, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext} from './compiler_host';
+import {ModuleMetadata} from './metadata/index';
+import {CompilerOptions} from './transformers/api';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
@@ -25,7 +26,7 @@ const DTS = /\.d\.ts$/;
  * loader what to do.
  */
 export class PathMappedCompilerHost extends CompilerHost {
-  constructor(program: ts.Program, options: AngularCompilerOptions, context: CompilerHostContext) {
+  constructor(program: ts.Program, options: CompilerOptions, context: CompilerHostContext) {
     super(program, options, context);
   }
 
