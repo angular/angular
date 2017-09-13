@@ -3,9 +3,9 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in Node.js",
   "main": "./bundles/platform-server.umd.js",
-  "module": "./esm5/index.js",
-  "es2015": "./esm15/index.js",
-  "typings": "./index.d.ts",
+  "module": "./esm5/platform-server.js",
+  "es2015": "./esm2015/platform-server.js",
+  "typings": "./platform-server.d.ts",
   "author": "angular",
   "license": "MIT",
   "peerDependencies": {

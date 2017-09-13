@@ -32,7 +32,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "flatModuleOutFile": "testing.js",
     "flatModuleId": "@angular/platform-server/testing"
   }
 }

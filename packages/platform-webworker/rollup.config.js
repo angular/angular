@@ -18,7 +18,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/platform-webworker/esm5/index.js',
+  entry: '../../dist/packages-dist/platform-webworker/esm5/platform-webworker.js',
   dest: '../../dist/packages-dist/platform-webworker/bundles/platform-webworker.umd.js',
   format: 'umd',
   exports: 'named',

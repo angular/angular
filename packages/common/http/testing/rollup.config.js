@@ -20,7 +20,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../../../dist/packages-dist/common/esm5/http/testing/index.js',
+  entry: '../../../../dist/packages-dist/common/esm5/http/testing.js',
   dest: '../../../../dist/packages-dist/common/bundles/common-http-testing.umd.js',
   format: 'umd',
   exports: 'named',

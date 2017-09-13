@@ -37,7 +37,7 @@ describe('template codegen output', () => {
   });
 
   it('should write .ngfactory.js for .d.ts inputs', () => {
-    const factoryOutput = path.join('node_modules', '@angular', 'common', 'index.ngfactory.js');
+    const factoryOutput = path.join('node_modules', '@angular', 'common', 'common.ngfactory.js');
     expect(fs.existsSync(factoryOutput)).toBeTruthy();
   });
 

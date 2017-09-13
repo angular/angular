@@ -21,7 +21,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../../dist/packages-dist/platform-browser-dynamic/esm5/testing/index.js',
+  entry: '../../../dist/packages-dist/platform-browser-dynamic/esm5/testing.js',
   dest:
       '../../../dist/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.js',
   format: 'umd',

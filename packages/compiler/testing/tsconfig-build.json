@@ -17,7 +17,7 @@
 
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "flatModuleOutFile": "index.js",
+    "flatModuleOutFile": "testing.js",
     "flatModuleId": "@angular/compiler/testing"
   }
 }

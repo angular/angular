@@ -17,7 +17,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../../dist/packages-dist/common/esm5/testing/index.js',
+  entry: '../../../dist/packages-dist/common/esm5/testing.js',
   dest: '../../../dist/packages-dist/common/bundles/common-testing.umd.js',
   format: 'umd',
   exports: 'named',
