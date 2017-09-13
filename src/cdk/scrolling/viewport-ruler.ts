@@ -6,49 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Optional, SkipSelf, NgZone, OnDestroy} from '@angular/core';
-import {Platform} from '@angular/cdk/platform';
+import {Injectable, Optional, SkipSelf} from '@angular/core';
 import {ScrollDispatcher} from './scroll-dispatcher';
-import {Observable} from 'rxjs/Observable';
-import {fromEvent} from 'rxjs/observable/fromEvent';
-import {merge} from 'rxjs/observable/merge';
-import {auditTime} from 'rxjs/operator/auditTime';
-import {Subscription} from 'rxjs/Subscription';
-import {of as observableOf} from 'rxjs/observable/of';
 
-/** Time in ms to throttle the resize events by default. */
-export const DEFAULT_RESIZE_TIME = 20;
 
 /**
  * Simple utility for getting the bounds of the browser viewport.
  * @docs-private
  */
 @Injectable()
-export class ViewportRuler implements OnDestroy {
+export class ViewportRuler {
 
   /** Cached document client rectangle. */
   private _documentRect?: ClientRect;
 
-  /** Stream of viewport change events. */
-  private _change: Observable<Event>;
-
-  /** Subscriptions to streams that invalidate the cached viewport dimensions. */
-  private _invalidateCacheSubscriptions: Subscription[];
-
-  constructor(platform: Platform, ngZone: NgZone, scrollDispatcher: ScrollDispatcher) {
-    this._change = platform.isBrowser ? ngZone.runOutsideAngular(() => {
-      return merge<Event>(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange'));
-    }) : observableOf();
-
+  constructor(scrollDispatcher: ScrollDispatcher) {
     // Subscribe to scroll and resize events and update the document rectangle on changes.
-    this._invalidateCacheSubscriptions = [
-      scrollDispatcher.scrolled(0, () => this._cacheViewportGeometry()),
-      this.change().subscribe(() => this._cacheViewportGeometry())
-    ];
-  }
-
-  ngOnDestroy() {
-    this._invalidateCacheSubscriptions.forEach(subscription => subscription.unsubscribe());
+    scrollDispatcher.scrolled(0, () => this._cacheViewportGeometry());
   }
 
   /** Gets a ClientRect for the viewport's bounds. */
@@ -82,6 +56,7 @@ export class ViewportRuler implements OnDestroy {
     };
   }
 
+
   /**
    * Gets the (top, left) scroll position of the viewport.
    * @param documentRect
@@ -100,7 +75,7 @@ export class ViewportRuler implements OnDestroy {
     // `document.documentElement` works consistently, where the `top` and `left` values will
     // equal negative the scroll position.
     const top = -documentRect!.top || document.body.scrollTop || window.scrollY ||
-                 document.documentElement.scrollTop || 0;
+                  document.documentElement.scrollTop || 0;
 
     const left = -documentRect!.left || document.body.scrollLeft || window.scrollX ||
                   document.documentElement.scrollLeft || 0;
@@ -108,32 +83,23 @@ export class ViewportRuler implements OnDestroy {
     return {top, left};
   }
 
-  /**
-   * Returns a stream that emits whenever the size of the viewport changes.
-   * @param throttle Time in milliseconds to throttle the stream.
-   */
-  change(throttleTime: number = DEFAULT_RESIZE_TIME): Observable<string> {
-    return throttleTime > 0 ? auditTime.call(this._change, throttleTime) : this._change;
-  }
-
   /** Caches the latest client rectangle of the document element. */
   _cacheViewportGeometry() {
     this._documentRect = document.documentElement.getBoundingClientRect();
   }
+
 }
 
 /** @docs-private */
 export function VIEWPORT_RULER_PROVIDER_FACTORY(parentRuler: ViewportRuler,
-                                                platform: Platform,
-                                                ngZone: NgZone,
                                                 scrollDispatcher: ScrollDispatcher) {
-  return parentRuler || new ViewportRuler(platform, ngZone, scrollDispatcher);
+  return parentRuler || new ViewportRuler(scrollDispatcher);
 }
 
 /** @docs-private */
 export const VIEWPORT_RULER_PROVIDER = {
   // If there is already a ViewportRuler available, use that. Otherwise, provide a new one.
   provide: ViewportRuler,
-  deps: [[new Optional(), new SkipSelf(), ViewportRuler], Platform, NgZone, ScrollDispatcher],
+  deps: [[new Optional(), new SkipSelf(), ViewportRuler], ScrollDispatcher],
   useFactory: VIEWPORT_RULER_PROVIDER_FACTORY
 };

@@ -6,8 +6,9 @@ import {CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
 import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {PortalModule} from '@angular/cdk/portal';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent, dispatchKeyboardEvent, FakeViewportRuler} from '@angular/cdk/testing';
 import {MdTabHeader} from './tab-header';
 import {MdRippleModule} from '../core/ripple/index';
 import {MdInkBar} from './ink-bar';
@@ -34,6 +35,7 @@ describe('MdTabHeader', () => {
       ],
       providers: [
         {provide: Directionality, useFactory: () => ({value: dir, change: change.asObservable()})},
+        {provide: ViewportRuler, useClass: FakeViewportRuler},
       ]
     });
 

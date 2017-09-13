@@ -1,7 +1,8 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing';
+import {ViewportRuler} from '@angular/cdk/scrolling';
+import {dispatchFakeEvent, dispatchMouseEvent, FakeViewportRuler} from '@angular/cdk/testing';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs/Subject';
 import {MdTabNav, MdTabsModule, MdTabLink} from '../index';
@@ -22,7 +23,8 @@ describe('MdTabNavBar', () => {
         {provide: Directionality, useFactory: () => ({
           value: dir,
           change: dirChange.asObservable()
-        })}
+        })},
+        {provide: ViewportRuler, useClass: FakeViewportRuler},
       ]
     });
 
@@ -171,7 +173,7 @@ describe('MdTabNavBar', () => {
       spyOn(inkBar, 'alignToElement');
 
       dispatchFakeEvent(window, 'resize');
-      tick(150);
+      tick(10);
       fixture.detectChanges();
 
       expect(inkBar.alignToElement).toHaveBeenCalled();

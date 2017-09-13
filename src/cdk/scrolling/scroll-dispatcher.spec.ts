@@ -72,6 +72,7 @@ describe('Scroll Dispatcher', () => {
 
       scroll.scrolled(0, () => {});
       dispatchFakeEvent(document, 'scroll');
+      dispatchFakeEvent(window, 'resize');
 
       expect(spy).not.toHaveBeenCalled();
       subscription.unsubscribe();

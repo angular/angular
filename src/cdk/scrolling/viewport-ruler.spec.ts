@@ -1,7 +1,6 @@
-import {TestBed, inject, fakeAsync, tick} from '@angular/core/testing';
+import {TestBed, inject} from '@angular/core/testing';
 import {ScrollDispatchModule} from './public_api';
 import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from './viewport-ruler';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
 
 
 // For all tests, we assume the browser window is 1024x786 (outerWidth x outerHeight).
@@ -32,10 +31,6 @@ describe('ViewportRuler', () => {
     ruler = viewportRuler;
     scrollTo(0, 0);
   }));
-
-  afterEach(() => {
-    ruler.ngOnDestroy();
-  });
 
   it('should get the viewport bounds when the page is not scrolled', () => {
     let bounds = ruler.getViewportRect();
@@ -105,38 +100,5 @@ describe('ViewportRuler', () => {
     expect(scrollPos.left).toBe(1500);
 
     document.body.removeChild(veryLargeElement);
-  });
-
-  describe('changed event', () => {
-    it('should dispatch an event when the window is resized', () => {
-      const spy = jasmine.createSpy('viewport changed spy');
-      const subscription = ruler.change(0).subscribe(spy);
-
-      dispatchFakeEvent(window, 'resize');
-      expect(spy).toHaveBeenCalled();
-      subscription.unsubscribe();
-    });
-
-    it('should dispatch an event when the orientation is changed', () => {
-      const spy = jasmine.createSpy('viewport changed spy');
-      const subscription = ruler.change(0).subscribe(spy);
-
-      dispatchFakeEvent(window, 'orientationchange');
-      expect(spy).toHaveBeenCalled();
-      subscription.unsubscribe();
-    });
-
-    it('should be able to throttle the callback', fakeAsync(() => {
-      const spy = jasmine.createSpy('viewport changed spy');
-      const subscription = ruler.change(1337).subscribe(spy);
-
-      dispatchFakeEvent(window, 'resize');
-      expect(spy).not.toHaveBeenCalled();
-
-      tick(1337);
-
-      expect(spy).toHaveBeenCalledTimes(1);
-      subscription.unsubscribe();
-    }));
   });
 });
