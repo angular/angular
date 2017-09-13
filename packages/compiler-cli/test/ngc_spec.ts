@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {mainSync, readCommandLineAndConfiguration, watchMode} from '../src/main';
+import {main, readCommandLineAndConfiguration, watchMode} from '../src/main';
+import {makeTempDir} from './test_support';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -84,7 +84,7 @@ describe('ngc transformer command-line', () => {
     writeConfig();
     write('test.ts', 'export const A = 1;');
 
-    const exitCode = mainSync(['-p', basePath], errorSpy);
+    const exitCode = main(['-p', basePath], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
   });
@@ -99,7 +99,7 @@ describe('ngc transformer command-line', () => {
         "files": ["test.ts"]
       }`);
 
-      const exitCode = mainSync(['-p', basePath], errorSpy);
+      const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
           `error TS6053: File '` + path.join(basePath, 'test.ts') + `' not found.` +
           '\n');
@@ -110,7 +110,7 @@ describe('ngc transformer command-line', () => {
       writeConfig();
       write('test.ts', 'foo;');
 
-      const exitCode = mainSync(['-p', basePath], errorSpy);
+      const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
           `test.ts(1,1): error TS2304: Cannot find name 'foo'.` +
           '\n');
@@ -121,7 +121,7 @@ describe('ngc transformer command-line', () => {
       writeConfig();
       write('test.ts', `import {MyClass} from './not-exist-deps';`);
 
-      const exitCode = mainSync(['-p', basePath], errorSpy);
+      const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
           `test.ts(1,23): error TS2307: Cannot find module './not-exist-deps'.` +
           '\n');
@@ -133,7 +133,7 @@ describe('ngc transformer command-line', () => {
       write('empty-deps.ts', 'export const A = 1;');
       write('test.ts', `import {MyClass} from './empty-deps';`);
 
-      const exitCode = mainSync(['-p', basePath], errorSpy);
+      const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
           `test.ts(1,9): error TS2305: Module '"` + path.join(basePath, 'empty-deps') +
           `"' has no exported member 'MyClass'.` +
@@ -149,7 +149,7 @@ describe('ngc transformer command-line', () => {
         A();
       `);
 
-      const exitCode = mainSync(['-p', basePath], errorSpy);
+      const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
           'test.ts(3,9): error TS2349: Cannot invoke an expression whose type lacks a call signature. ' +
           'Type \'String\' has no compatible call signatures.\n');
@@ -159,7 +159,7 @@ describe('ngc transformer command-line', () => {
     it('should print the stack trace on compiler internal errors', () => {
       write('test.ts', 'export const A = 1;');
 
-      const exitCode = mainSync(['-p', 'not-exist'], errorSpy);
+      const exitCode = main(['-p', 'not-exist'], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0]).toContain('no such file or directory');
       expect(errorSpy.calls.mostRecent().args[0]).toContain('at Error (native)');
@@ -181,7 +181,7 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-      const exitCode = mainSync(['-p', basePath], errorSpy);
+      const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain('Error at ng://' + path.join(basePath, 'mymodule.ts.MyComp.html'));
@@ -212,7 +212,7 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-      const exitCode = mainSync(['-p', basePath], errorSpy);
+      const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain('Error at ng://' + path.join(basePath, 'my.component.html(1,5):'));
@@ -240,7 +240,7 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-      const exitCode = mainSync(['-p', basePath], errorSpy);
+      const exitCode = main(['-p', basePath], errorSpy);
       expect(exitCode).toEqual(0);
 
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
@@ -265,7 +265,7 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-      const exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
       expect(exitCode).toEqual(0);
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
       expect(fs.existsSync(path.resolve(
@@ -367,7 +367,7 @@ describe('ngc transformer command-line', () => {
             },
             "include": ["src/**/*.ts"]
           }`);
-        const exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+        const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
         expect(exitCode).toEqual(0);
         outDir = path.resolve(basePath, 'built', 'src');
         expectJsDtsMetadataJsonToExist();
@@ -387,7 +387,7 @@ describe('ngc transformer command-line', () => {
             },
             "include": ["src/**/*.ts"]
           }`);
-        let exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+        let exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
         expect(exitCode).toEqual(0);
         outDir = path.resolve(basePath, 'lib', 'src');
         modules.forEach(moduleName => {
@@ -420,7 +420,7 @@ describe('ngc transformer command-line', () => {
           }`);
         write('lib/src/plain.css', 'div {}');
         write('lib/src/emulated.css', 'div {}');
-        exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+        exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
         expect(exitCode).toEqual(0);
         outDir = path.resolve(basePath, 'built', 'lib', 'src');
         expectAllGeneratedFilesToExist();
@@ -443,7 +443,7 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-        const exitCode = mainSync(['-p', basePath], errorSpy);
+        const exitCode = main(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -472,7 +472,7 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-        const exitCode = mainSync(['-p', basePath], errorSpy);
+        const exitCode = main(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -501,7 +501,7 @@ describe('ngc transformer command-line', () => {
         export class MyModule {}
       `);
 
-        const exitCode = mainSync(['-p', basePath], errorSpy);
+        const exitCode = main(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
@@ -519,7 +519,8 @@ describe('ngc transformer command-line', () => {
       });
 
       function compile(): number {
-        const result = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+        errorSpy.calls.reset();
+        const result = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
         expect(errorSpy).not.toHaveBeenCalled();
         return result;
       }
@@ -710,7 +711,7 @@ describe('ngc transformer command-line', () => {
           }
         `);
 
-        expect(mainSync(['-p', basePath], errorSpy)).toBe(0);
+        expect(main(['-p', basePath], errorSpy)).toBe(0);
         shouldExist('module.js');
       });
     });
@@ -756,7 +757,7 @@ describe('ngc transformer command-line', () => {
         export class FlatModule {
         }`);
 
-      const exitCode = mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
       expect(exitCode).toEqual(0);
       shouldExist('index.js');
       shouldExist('index.metadata.json');
@@ -794,7 +795,7 @@ describe('ngc transformer command-line', () => {
       });
 
       it('should compile without error', () => {
-        expect(mainSync(['-p', path.join(basePath, 'tsconfig.json')], errorSpy)).toBe(0);
+        expect(main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy)).toBe(0);
       });
     });
 
@@ -883,10 +884,10 @@ describe('ngc transformer command-line', () => {
           }
         `);
 
-      expect(mainSync(['-p', path.join(basePath, 'tsconfig-ng.json')], errorSpy)).toBe(0);
-      expect(mainSync(['-p', path.join(basePath, 'lib1', 'tsconfig-lib1.json')], errorSpy)).toBe(0);
-      expect(mainSync(['-p', path.join(basePath, 'lib2', 'tsconfig-lib2.json')], errorSpy)).toBe(0);
-      expect(mainSync(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
+      expect(main(['-p', path.join(basePath, 'tsconfig-ng.json')], errorSpy)).toBe(0);
+      expect(main(['-p', path.join(basePath, 'lib1', 'tsconfig-lib1.json')], errorSpy)).toBe(0);
+      expect(main(['-p', path.join(basePath, 'lib2', 'tsconfig-lib2.json')], errorSpy)).toBe(0);
+      expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
 
       // library 1
       // make `shouldExist` / `shouldNotExist` relative to `node_modules`
@@ -912,6 +913,80 @@ describe('ngc transformer command-line', () => {
       // make `shouldExist` / `shouldNotExist` relative to `built`
       outDir = path.resolve(basePath, 'built');
       shouldExist('app/main.js');
+    });
+  });
+
+  describe('expression lowering', () => {
+    const shouldExist = (fileName: string) => {
+      if (!fs.existsSync(path.resolve(basePath, fileName))) {
+        throw new Error(`Expected ${fileName} to be emitted (basePath: ${basePath})`);
+      }
+    };
+
+    it('should be able to lower supported expressions', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "files": ["module.ts"]
+      }`);
+      write('module.ts', `
+        import {NgModule, InjectionToken} from '@angular/core';
+        import {AppComponent} from './app';
+
+        export interface Info {
+          route: string;
+          data: string;
+        }
+
+        export const T1 = new InjectionToken<string>('t1');
+        export const T2 = new InjectionToken<string>('t2');
+        export const T3 = new InjectionToken<number>('t3');
+        export const T4 = new InjectionToken<Info[]>('t4');
+
+        enum SomeEnum {
+          OK,
+          Cancel
+        }
+
+        function calculateString() {
+          return 'someValue';
+        }
+
+        const routeLikeData = [{
+           route: '/home',
+           data: calculateString()
+        }];
+
+        @NgModule({
+          declarations: [AppComponent],
+          providers: [
+            { provide: T1, useValue: calculateString() },
+            { provide: T2, useFactory: () => 'someValue' },
+            { provide: T3, useValue: SomeEnum.OK },
+            { provide: T4, useValue: routeLikeData }
+          ]
+        })
+        export class MyModule {}
+      `);
+      write('app.ts', `
+        import {Component, Inject} from '@angular/core';
+        import * as m from './module';
+
+        @Component({
+          selector: 'my-app',
+          template: ''
+        })
+        export class AppComponent {
+          constructor(
+            @Inject(m.T1) private t1: string,
+            @Inject(m.T2) private t2: string,
+            @Inject(m.T3) private t3: number,
+            @Inject(m.T4) private t4: m.Info[],
+          ) {}
+        }
+      `);
+
+      expect(main(['-p', basePath], s => {})).toBe(0);
+      shouldExist('built/module.js');
     });
   });
 

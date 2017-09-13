@@ -7,8 +7,9 @@
  */
 
 import {AotSummaryResolver, GeneratedFile, StaticSymbolCache, StaticSymbolResolver, toTypeScript} from '@angular/compiler';
+import {MetadataBundler} from '@angular/compiler-cli/src/metadata/bundler';
+import {privateEntriesToIndex} from '@angular/compiler-cli/src/metadata/index_writer';
 import {NodeFlags} from '@angular/core/src/view/index';
-import {MetadataBundler, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
 import {extractSourceMap, originalPositionFor} from '../output/source_map_util';

@@ -7,7 +7,8 @@
  */
 
 import {StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, Summary, SummaryResolver} from '@angular/compiler';
-import {CollectorOptions, MetadataCollector} from '@angular/tsc-wrapped';
+import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
+import {CollectorOptions} from '@angular/compiler-cli/src/metadata/index';
 import * as ts from 'typescript';
 
 

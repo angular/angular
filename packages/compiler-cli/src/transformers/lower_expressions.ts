@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CollectorOptions, MetadataCollector, MetadataError, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
+import {CollectorOptions, MetadataCollector, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '../metadata/index';
 
 export interface LoweringRequest {
   kind: ts.SyntaxKind;

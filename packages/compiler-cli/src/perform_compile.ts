@@ -187,7 +187,6 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
     return {diagnostics: allDiagnostics, program};
   }
 }
-
 function defaultGatherDiagnostics(program: api.Program): Diagnostics {
   const allDiagnostics: Diagnostics = [];
 
