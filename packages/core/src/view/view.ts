@@ -440,16 +440,6 @@ function checkAndUpdateNodeDynamic(view: ViewData, nodeDef: NodeDef, values: any
       changed = checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
       break;
   }
-  if (changed) {
-    // Update oldValues after all bindings have been updated,
-    // as a setter for a property might update other properties.
-    const bindLen = nodeDef.bindings.length;
-    const bindingStart = nodeDef.bindingIndex;
-    const oldValues = view.oldValues;
-    for (let i = 0; i < bindLen; i++) {
-      oldValues[bindingStart + i] = values[i];
-    }
-  }
   return changed;
 }
 
