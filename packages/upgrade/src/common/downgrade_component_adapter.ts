@@ -26,11 +26,11 @@ export class DowngradeComponentAdapter {
   private changeDetector: ChangeDetectorRef|null = null;
 
   constructor(
-      private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
-      private scope: angular.IScope, private ngModel: angular.INgModelController,
-      private parentInjector: Injector, private $injector: angular.IInjectorService,
-      private $compile: angular.ICompileService, private $parse: angular.IParseService,
-      private componentFactory: ComponentFactory<any>) {
+      private id: string, private element: angular.IAugmentedJQuery,
+      private attrs: angular.IAttributes, private scope: angular.IScope,
+      private ngModel: angular.INgModelController, private parentInjector: Injector,
+      private $injector: angular.IInjectorService, private $compile: angular.ICompileService,
+      private $parse: angular.IParseService, private componentFactory: ComponentFactory<any>) {
     (this.element[0] as any).id = id;
     this.componentScope = scope.$new();
   }
