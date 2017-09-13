@@ -3,9 +3,9 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in a web browser with JIT compilation",
   "main": "./bundles/platform-browser-dynamic.umd.js",
-  "module": "./esm5/index.js",
-  "es2015": "./esm15/index.js",
-  "typings": "./index.d.ts",
+  "module": "./esm5/platform-browser-dynamic.js",
+  "es2015": "./esm2015/platform-browser-dynamic.js",
+  "typings": "./platform-browser-dynamic.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {

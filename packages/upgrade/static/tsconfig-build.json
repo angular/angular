@@ -19,7 +19,7 @@
   ],
 
   "angularCompilerOptions": {
-    "flatModuleOutFile": "index.js",
+    "flatModuleOutFile": "static.js",
     "flatModuleId": "@angular/upgrade/static"
   }
 }

@@ -63,13 +63,3 @@ travisFoldStart "tsc all"
   node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p packages
   node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p modules
 travisFoldEnd "tsc all"
-
-
-# TODO(i): what are these compilations here for?
-travisFoldStart "tsc a bunch of useless stuff"
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/core/tsconfig-build.json
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/common/tsconfig-build.json
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/platform-browser/tsconfig-build.json
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/router/tsconfig-build.json
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/forms/tsconfig-build.json
-travisFoldEnd "tsc a bunch of useless stuff"

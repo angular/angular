@@ -62,5 +62,5 @@ function logResults(failures) {
 }
 
 function getBundlePath(package) {
-  return path.resolve(process.cwd(), 'dist/packages-dist/', package, 'esm5/index.js');
+  return path.resolve(process.cwd(), 'dist/packages-dist/', package, 'esm5/', package + '.js');
 }

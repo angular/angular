@@ -17,7 +17,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/animations/esm5/index.js',
+  entry: '../../dist/packages-dist/animations/esm5/animations.js',
   dest: '../../dist/packages-dist/animations/bundles/animations.umd.js',
   format: 'umd',
   exports: 'named',
