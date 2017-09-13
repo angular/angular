@@ -98,7 +98,7 @@ describe('MdMenu', () => {
     expect(overlayContainerElement.textContent).toBe('');
   }));
 
-  it('should close the menu when pressing ESCAPE', fakeAsync(() => {
+  it('should close the menu when pressing escape', fakeAsync(() => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
@@ -494,40 +494,26 @@ describe('MdMenu', () => {
       menuItem.click();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.closeCallback).toHaveBeenCalledWith('click');
-      expect(fixture.componentInstance.closeCallback).toHaveBeenCalledTimes(1);
+      expect(fixture.componentInstance.closeCallback).toHaveBeenCalled();
     });
 
     it('should emit a close event when the backdrop is clicked', () => {
-      const backdrop = overlayContainerElement
-          .querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      const backdrop = <HTMLElement>overlayContainerElement.querySelector('.cdk-overlay-backdrop');
 
       backdrop.click();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.closeCallback).toHaveBeenCalledWith(undefined);
-      expect(fixture.componentInstance.closeCallback).toHaveBeenCalledTimes(1);
-    });
-
-    it('should emit an event when pressing ESCAPE', () => {
-      const menu = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
-
-      dispatchKeyboardEvent(menu, 'keydown', ESCAPE);
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.closeCallback).toHaveBeenCalledWith('keydown');
-      expect(fixture.componentInstance.closeCallback).toHaveBeenCalledTimes(1);
+      expect(fixture.componentInstance.closeCallback).toHaveBeenCalled();
     });
 
     it('should complete the callback when the menu is destroyed', () => {
-      const emitCallback = jasmine.createSpy('emit callback');
-      const completeCallback = jasmine.createSpy('complete callback');
+      let emitCallback = jasmine.createSpy('emit callback');
+      let completeCallback = jasmine.createSpy('complete callback');
 
       fixture.componentInstance.menu.close.subscribe(emitCallback, null, completeCallback);
       fixture.destroy();
 
-      expect(emitCallback).toHaveBeenCalledWith(undefined);
-      expect(emitCallback).toHaveBeenCalledTimes(1);
+      expect(emitCallback).toHaveBeenCalled();
       expect(completeCallback).toHaveBeenCalled();
     });
   });
@@ -1009,9 +995,6 @@ describe('MdMenu', () => {
       tick(500);
 
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(0, 'Expected no open menus');
-      expect(instance.rootCloseCallback).toHaveBeenCalledTimes(1);
-      expect(instance.levelOneCloseCallback).toHaveBeenCalledTimes(1);
-      expect(instance.levelTwoCloseCallback).toHaveBeenCalledTimes(1);
     }));
 
     it('should toggle a nested menu when its trigger is added after init', fakeAsync(() => {
@@ -1076,7 +1059,7 @@ describe('MdMenu default overrides', () => {
 @Component({
   template: `
     <button [mdMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <md-menu class="custom-one custom-two" #menu="mdMenu" (close)="closeCallback($event)">
+    <md-menu class="custom-one custom-two" #menu="mdMenu" (close)="closeCallback()">
       <button md-menu-item> Item </button>
       <button md-menu-item disabled> Disabled </button>
     </md-menu>
@@ -1169,7 +1152,7 @@ class CustomMenu {
       [mdMenuTriggerFor]="levelTwo"
       #alternateTrigger="mdMenuTrigger">Toggle alternate menu</button>
 
-    <md-menu #root="mdMenu" (close)="rootCloseCallback($event)">
+    <md-menu #root="mdMenu">
       <button md-menu-item
         id="level-one-trigger"
         [mdMenuTriggerFor]="levelOne"
@@ -1182,7 +1165,7 @@ class CustomMenu {
         #lazyTrigger="mdMenuTrigger">Three</button>
     </md-menu>
 
-    <md-menu #levelOne="mdMenu" (close)="levelOneCloseCallback($event)">
+    <md-menu #levelOne="mdMenu">
       <button md-menu-item>Four</button>
       <button md-menu-item
         id="level-two-trigger"
@@ -1191,7 +1174,7 @@ class CustomMenu {
       <button md-menu-item>Six</button>
     </md-menu>
 
-    <md-menu #levelTwo="mdMenu" (close)="levelTwoCloseCallback($event)">
+    <md-menu #levelTwo="mdMenu">
       <button md-menu-item>Seven</button>
       <button md-menu-item>Eight</button>
       <button md-menu-item>Nine</button>
@@ -1209,15 +1192,12 @@ class NestedMenu {
   @ViewChild('rootTrigger') rootTrigger: MdMenuTrigger;
   @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef;
   @ViewChild('alternateTrigger') alternateTrigger: MdMenuTrigger;
-  readonly rootCloseCallback = jasmine.createSpy('root menu closed callback');
 
   @ViewChild('levelOne') levelOneMenu: MdMenu;
   @ViewChild('levelOneTrigger') levelOneTrigger: MdMenuTrigger;
-  readonly levelOneCloseCallback = jasmine.createSpy('level one menu closed callback');
 
   @ViewChild('levelTwo') levelTwoMenu: MdMenu;
   @ViewChild('levelTwoTrigger') levelTwoTrigger: MdMenuTrigger;
-  readonly levelTwoCloseCallback = jasmine.createSpy('level one menu closed callback');
 
   @ViewChild('lazy') lazyMenu: MdMenu;
   @ViewChild('lazyTrigger') lazyTrigger: MdMenuTrigger;
