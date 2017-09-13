@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {main} from '../src/extract_i18n';
+import {mainXi18n} from '../src/extract_i18n';
+
+import {makeTempDir} from './test_support';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -172,7 +173,7 @@ describe('extract_i18n command line', () => {
     writeSources();
 
     const exitCode =
-        main(['-p', basePath, '--i18nFormat=xmb', '--outFile=custom_file.xmb'], errorSpy);
+        mainXi18n(['-p', basePath, '--i18nFormat=xmb', '--outFile=custom_file.xmb'], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
 
@@ -186,7 +187,7 @@ describe('extract_i18n command line', () => {
     writeConfig();
     writeSources();
 
-    const exitCode = main(['-p', basePath, '--i18nFormat=xlf', '--locale=fr'], errorSpy);
+    const exitCode = mainXi18n(['-p', basePath, '--i18nFormat=xlf', '--locale=fr'], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
 
@@ -201,7 +202,7 @@ describe('extract_i18n command line', () => {
     writeSources();
 
     const exitCode =
-        main(['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'], errorSpy);
+        mainXi18n(['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
 
@@ -216,7 +217,7 @@ describe('extract_i18n command line', () => {
     writeSources();
 
     const exitCode =
-        main(['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'], errorSpy);
+        mainXi18n(['-p', basePath, '--i18nFormat=xlf2', '--outFile=messages.xliff2.xlf'], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
 

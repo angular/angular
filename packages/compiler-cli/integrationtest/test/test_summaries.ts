@@ -15,7 +15,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 import * as assert from 'assert';
 import {tsc} from '@angular/tsc-wrapped/src/tsc';
-import {AngularCompilerOptions, CodeGenerator, CompilerHostContext, NodeCompilerHostContext} from '@angular/compiler-cli';
+import {CompilerOptions, CodeGenerator, CompilerHostContext, NodeCompilerHostContext} from '@angular/compiler-cli';
 
 /**
  * Main method.
@@ -89,7 +89,7 @@ function main() {
  * Simple adaption of tsc-wrapped main to just run codegen with a CompilerHostContext
  */
 function codegen(
-    config: {parsed: ts.ParsedCommandLine, ngOptions: AngularCompilerOptions},
+    config: {parsed: ts.ParsedCommandLine, ngOptions: CompilerOptions},
     hostContextFactory: (host: ts.CompilerHost) => CompilerHostContext) {
   const host = ts.createCompilerHost(config.parsed.options, true);
 

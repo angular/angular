@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ModuleMetadata} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
+import {ModuleMetadata} from '../../src/metadata/index';
 import {LowerMetadataCache, LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 

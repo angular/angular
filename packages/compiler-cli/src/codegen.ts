@@ -11,12 +11,12 @@
  * Intended to be used in a build step.
  */
 import * as compiler from '@angular/compiler';
-import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
 import {readFileSync} from 'fs';
 import * as ts from 'typescript';
 
 import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
 import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {CompilerOptions} from './transformers/api';
 
 const GENERATED_META_FILES = /\.json$/;
 
@@ -36,11 +36,11 @@ export interface CodeGeneratorI18nOptions {
   missingTranslation: string|null;
 }
 
+// TODO(tbosch): remove this once G3 uses the transformer compiler!
 export class CodeGenerator {
   constructor(
-      private options: AngularCompilerOptions, private program: ts.Program,
-      public host: ts.CompilerHost, private compiler: compiler.AotCompiler,
-      private ngCompilerHost: CompilerHost) {}
+      private options: CompilerOptions, private program: ts.Program, public host: ts.CompilerHost,
+      private compiler: compiler.AotCompiler, private ngCompilerHost: CompilerHost) {}
 
   codegen(): Promise<string[]> {
     return this.compiler
@@ -67,7 +67,7 @@ export class CodeGenerator {
   }
 
   static create(
-      options: AngularCompilerOptions, i18nOptions: CodeGeneratorI18nOptions, program: ts.Program,
+      options: CompilerOptions, i18nOptions: CodeGeneratorI18nOptions, program: ts.Program,
       tsCompilerHost: ts.CompilerHost, compilerHostContext?: CompilerHostContext,
       ngCompilerHost?: CompilerHost): CodeGenerator {
     if (!ngCompilerHost) {

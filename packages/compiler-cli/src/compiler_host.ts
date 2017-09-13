@@ -7,10 +7,12 @@
  */
 
 import {AotCompilerHost, StaticSymbol, UrlResolver, createOfflineCompileUrlResolver, syntaxError} from '@angular/compiler';
-import {AngularCompilerOptions, CollectorOptions, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
+
+import {CollectorOptions, MetadataCollector, ModuleMetadata} from './metadata/index';
+import {CompilerOptions} from './transformers/api';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const DTS = /\.d\.ts$/;
@@ -34,8 +36,7 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
   private flatModuleIndexRedirectNames = new Set<string>();
 
   constructor(
-      protected program: ts.Program, protected options: AngularCompilerOptions,
-      protected context: C,
+      protected program: ts.Program, protected options: CompilerOptions, protected context: C,
       protected metadataProvider: MetadataProvider = new MetadataCollector()) {}
 
   abstract moduleNameToFileName(m: string, containingFile: string): string|null;
@@ -230,6 +231,7 @@ export interface CompilerHostContext extends ts.ModuleResolutionHost {
   assumeFileExists(fileName: string): void;
 }
 
+// TODO(tbosch): remove this once G3 uses the transformer compiler!
 export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
   protected basePath: string;
   private moduleFileNames = new Map<string, string|null>();
@@ -239,7 +241,7 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
   private urlResolver: UrlResolver;
 
   constructor(
-      program: ts.Program, options: AngularCompilerOptions, context: CompilerHostContext,
+      program: ts.Program, options: CompilerOptions, context: CompilerHostContext,
       collectorOptions?: CollectorOptions,
       metadataProvider: MetadataProvider = new MetadataCollector(collectorOptions)) {
     super(program, options, context, metadataProvider);
