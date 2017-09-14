@@ -109,13 +109,25 @@ export class NgZone {
    * Notifies when the last `onMicrotaskEmpty` has run and there are no more microtasks, which
    * implies we are about to relinquish VM turn.
    * This event gets called just once.
+   *
+   * with new zone-patch-rxjs, subscriber will run
+   * in the zone when they created, so even emitter emit
+   * outside of ngZone, but if the subscriber was created
+   * in the ngZone, it will still run in ngZone, so
+   * we need to make sure they run outside of it.
    */
-  readonly onStable: EventEmitter<any> = new EventEmitter(false);
+  readonly onStable: EventEmitter<any> = new ZoneAwareEventEmitter(false, Zone.root);
 
   /**
    * Notifies that an error has been delivered.
+   *
+   * with new zone-patch-rxjs, subscriber will run
+   * in the zone when they created, so even emitter emit
+   * outside of ngZone, but if the subscriber was created
+   * in the ngZone, it will still run in ngZone, so
+   * we need to make sure they run outside of it.
    */
-  readonly onError: EventEmitter<any> = new EventEmitter(false);
+  readonly onError: EventEmitter<any> = new ZoneAwareEventEmitter(false, Zone.root);
 
   constructor({enableLongStackTrace = false}) {
     if (typeof Zone == 'undefined') {
@@ -220,6 +232,17 @@ export class NgZone {
 function noop() {}
 const EMPTY_PAYLOAD = {};
 
+class ZoneAwareEventEmitter<T> extends EventEmitter<T> {
+  constructor(isAsync?: boolean, private zone?: Zone) { super(isAsync); }
+
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): any {
+    const subscriber = super.subscribe(generatorOrNext, error, complete);
+    if (subscriber && subscriber._zone && this.zone) {
+      subscriber._zone = this.zone;
+    }
+    return subscriber;
+  }
+}
 
 interface NgZonePrivate extends NgZone {
   _outer: Zone;
