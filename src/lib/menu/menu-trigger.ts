@@ -417,7 +417,7 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
       // Since clicking on the trigger won't close the menu if it opens a sub-menu,
       // we should prevent focus from moving onto it via click to avoid the
       // highlight from lingering on the menu item.
-      if (this.triggersSubmenu) {
+      if (this.triggersSubmenu()) {
         event.preventDefault();
       }
     }
