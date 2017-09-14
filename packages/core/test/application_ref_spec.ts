@@ -7,10 +7,9 @@
  */
 
 import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
-import {ApplicationRef, ApplicationRef_} from '@angular/core/src/application_ref';
+import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
-import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
@@ -173,7 +172,7 @@ export function main() {
         });
 
         it('should be called when a component is bootstrapped',
-           inject([ApplicationRef], (ref: ApplicationRef_) => {
+           inject([ApplicationRef], (ref: ApplicationRef) => {
              createRootEl();
              const compRef = ref.bootstrap(SomeComponent);
              expect(capturedCompRefs).toEqual([compRef]);
@@ -188,7 +187,7 @@ export function main() {
                    {provide: APP_INITIALIZER, useValue: () => new Promise(() => {}), multi: true}
                  ]
                },
-               inject([ApplicationRef], (ref: ApplicationRef_) => {
+               inject([ApplicationRef], (ref: ApplicationRef) => {
                  createRootEl();
                  expect(() => ref.bootstrap(SomeComponent))
                      .toThrowError(

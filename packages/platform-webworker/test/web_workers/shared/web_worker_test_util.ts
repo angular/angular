@@ -8,7 +8,7 @@
 
 import {Type} from '@angular/core';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
-import {ClientMessageBroker, ClientMessageBrokerFactory_, UiArguments} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
+import {ClientMessageBroker, ClientMessageBrokerFactory, UiArguments} from '@angular/platform-webworker/src/web_workers/shared/client_message_broker';
 import {MessageBus, MessageBusSink, MessageBusSource} from '@angular/platform-webworker/src/web_workers/shared/message_bus';
 import {SpyMessageBroker} from '../worker/spies';
 
@@ -130,7 +130,7 @@ export class MockMessageBus extends MessageBus {
   attachToZone(zone: NgZone) {}
 }
 
-export class MockMessageBrokerFactory extends ClientMessageBrokerFactory_ {
+export class MockMessageBrokerFactory extends ClientMessageBrokerFactory {
   constructor(private _messageBroker: ClientMessageBroker) { super(null !, null !); }
   createMessageBroker(channel: string, runInZone = true) { return this._messageBroker; }
 }

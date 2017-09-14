@@ -11,12 +11,12 @@ import {ErrorHandler, Injectable, InjectionToken, Injector, NgZone, PLATFORM_ID,
 import {DOCUMENT, EVENT_MANAGER_PLUGINS, EventManager, HAMMER_GESTURE_CONFIG, HammerGestureConfig, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS, ɵBrowserDomAdapter as BrowserDomAdapter, ɵBrowserGetTestability as BrowserGetTestability, ɵDomEventsPlugin as DomEventsPlugin, ɵDomRendererFactory2 as DomRendererFactory2, ɵDomSharedStylesHost as DomSharedStylesHost, ɵHammerGesturesPlugin as HammerGesturesPlugin, ɵKeyEventsPlugin as KeyEventsPlugin, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 import {ON_WEB_WORKER} from './web_workers/shared/api';
-import {ClientMessageBrokerFactory, ClientMessageBrokerFactory_} from './web_workers/shared/client_message_broker';
+import {ClientMessageBrokerFactory} from './web_workers/shared/client_message_broker';
 import {MessageBus} from './web_workers/shared/message_bus';
 import {PostMessageBus, PostMessageBusSink, PostMessageBusSource} from './web_workers/shared/post_message_bus';
 import {RenderStore} from './web_workers/shared/render_store';
 import {Serializer} from './web_workers/shared/serializer';
-import {ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_} from './web_workers/shared/service_message_broker';
+import {ServiceMessageBrokerFactory} from './web_workers/shared/service_message_broker';
 import {MessageBasedRenderer2} from './web_workers/ui/renderer';
 
 
@@ -85,12 +85,12 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: SharedStylesHost, useExisting: DomSharedStylesHost},
   {
     provide: ServiceMessageBrokerFactory,
-    useClass: ServiceMessageBrokerFactory_,
+    useClass: ServiceMessageBrokerFactory,
     deps: [MessageBus, Serializer]
   },
   {
     provide: ClientMessageBrokerFactory,
-    useClass: ClientMessageBrokerFactory_,
+    useClass: ClientMessageBrokerFactory,
     deps: [MessageBus, Serializer]
   },
   {provide: Serializer, deps: [RenderStore]},
