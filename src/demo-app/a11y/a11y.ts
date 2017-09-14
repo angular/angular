@@ -40,6 +40,7 @@ export class AccessibilityDemo {
     {name: 'Select', route: 'select'},
     {name: 'Tabs', route: 'tabs'},
     {name: 'Toolbar', route: 'toolbar'},
+    {name: 'Tooltip', route: 'tooltip'},
   ];
 
   skipNavigation() {
