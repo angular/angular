@@ -1,6 +1,6 @@
 import {async, inject, TestBed} from '@angular/core/testing';
 import {Component, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
-import {PortalModule, TemplatePortalDirective} from '../portal/portal-directives';
+import {PortalModule, TemplatePortalDirective} from '@angular/cdk/portal';
 import {Overlay, OverlayContainer, OverlayModule} from './index';
 
 describe('OverlayContainer', () => {
