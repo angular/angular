@@ -49,7 +49,17 @@ export abstract class JSONPConnection implements Connection {
   abstract finished(data?: any): void;
 }
 
-export class JSONPConnection_ extends JSONPConnection {
+/**
+ * An interface representing the external contract of JSONPConnection, which is that
+ * the `finished` method will exist (a requirement because the URL to the <script> tag
+ * which is written assumes this method will be used as the callback.
+ *
+ * A practical effect of this declaration is that optimizers (like Closure) will not
+ * minify or otherwise rename the `finished` method.
+ */
+export declare interface IJSONPConnection { finished(obj?: any): void; }
+
+export class JSONPConnection_ extends JSONPConnection implements IJSONPConnection {
   private _id: string;
   private _script: Element;
   private _responseData: any;
@@ -58,6 +68,7 @@ export class JSONPConnection_ extends JSONPConnection {
   constructor(
       req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
     super();
+
     if (req.method !== RequestMethod.Get) {
       throw new TypeError(JSONP_ERR_WRONG_METHOD);
     }
