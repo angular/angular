@@ -7,7 +7,7 @@
  */
 
 import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, core as compilerCore} from '@angular/compiler';
-import {CollectorOptions} from '@angular/tsc-wrapped';
+import {CollectorOptions} from '@angular/compiler-cli/src/metadata/index';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
 

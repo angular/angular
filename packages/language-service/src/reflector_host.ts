@@ -7,7 +7,7 @@
  */
 
 import {AotCompilerHost} from '@angular/compiler';
-import {AngularCompilerOptions, CompilerHost, ModuleResolutionHostAdapter} from '@angular/compiler-cli/src/language_services';
+import {CompilerHost, CompilerOptions, ModuleResolutionHostAdapter} from '@angular/compiler-cli/src/language_services';
 import * as ts from 'typescript';
 
 class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
@@ -37,7 +37,7 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
 export class ReflectorHost extends CompilerHost {
   constructor(
       private getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
-      options: AngularCompilerOptions) {
+      options: CompilerOptions) {
     super(
         // The ancestor value for program is overridden below so passing null here is safe.
         /* program */ null !, options,

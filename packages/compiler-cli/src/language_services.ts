@@ -14,11 +14,10 @@ Angular modules and Typescript as this will indirectly add a dependency
 to the language service.
 
 */
-
-export {AngularCompilerOptions} from '@angular/tsc-wrapped';
 export {CompilerHost, CompilerHostContext, MetadataProvider, ModuleResolutionHostAdapter, NodeCompilerHostContext} from './compiler_host';
 export {TypeChecker} from './diagnostics/check_types';
 export {DiagnosticTemplateInfo, ExpressionDiagnostic, getExpressionDiagnostics, getExpressionScope, getTemplateExpressionDiagnostics} from './diagnostics/expression_diagnostics';
 export {AstType, DiagnosticKind, ExpressionDiagnosticsContext, TypeDiagnostic} from './diagnostics/expression_type';
 export {BuiltinType, DeclarationKind, Definition, Location, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './diagnostics/symbols';
 export {getClassFromStaticSymbol, getClassMembers, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from './diagnostics/typescript_symbols';
+export {CompilerOptions} from './transformers/api';

@@ -7,7 +7,9 @@
  */
 
 import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler, toTypeScript} from '@angular/compiler';
-import {MetadataBundlerHost, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
+import {MetadataBundlerHost} from '@angular/compiler-cli/src/metadata/bundler';
+import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
+import {ModuleMetadata} from '@angular/compiler-cli/src/metadata/index';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';

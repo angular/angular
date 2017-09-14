@@ -15,11 +15,12 @@
 import 'reflect-metadata';
 import * as api from './transformers/api';
 import {ParsedConfiguration} from './perform_compile';
-import {mainSync, readCommandLineAndConfiguration} from './main';
+import {main, readCommandLineAndConfiguration} from './main';
 
-export function main(args: string[], consoleError: (msg: string) => void = console.error): number {
+export function mainXi18n(
+    args: string[], consoleError: (msg: string) => void = console.error): number {
   const config = readXi18nCommandLineAndConfiguration(args);
-  return mainSync(args, consoleError, config);
+  return main(args, consoleError, config);
 }
 
 function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfiguration {
@@ -41,5 +42,5 @@ function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfigurati
 // Entry point
 if (require.main === module) {
   const args = process.argv.slice(2);
-  process.exitCode = main(args);
+  process.exitCode = mainXi18n(args);
 }

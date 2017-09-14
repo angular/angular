@@ -7,13 +7,13 @@
  */
 
 import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, MessageBundle, NgAnalyzedModules, Serializer, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
-import {createBundleIndexHost} from '@angular/tsc-wrapped';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {BaseAotCompilerHost} from '../compiler_host';
 import {TypeChecker} from '../diagnostics/check_types';
+import {createBundleIndexHost} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, EmitFlags, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
