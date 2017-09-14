@@ -6,20 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, GeneratedFile, MessageBundle, NgAnalyzedModules, Serializer, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, GeneratedFile, MessageBundle, NgAnalyzedModules, ParseSourceSpan, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isSyntaxError, toTypeScript} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {BaseAotCompilerHost} from '../compiler_host';
-import {TypeChecker} from '../diagnostics/check_types';
+import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {createBundleIndexHost} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, EmitFlags, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
-
-const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary)\.(js|d\.ts|ts)$/;
+import {GENERATED_FILES} from './util';
 
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
@@ -45,12 +44,11 @@ class AngularCompilerProgram implements Program {
   private _structuralDiagnostics: Diagnostic[] = [];
   private _stubs: GeneratedFile[]|undefined;
   private _stubFiles: string[]|undefined;
-  private _programWithStubsHost: ts.CompilerHost|undefined;
+  private _programWithStubsHost: ts.CompilerHost&TypeCheckHost|undefined;
   private _programWithStubs: ts.Program|undefined;
   private _generatedFiles: GeneratedFile[]|undefined;
   private _generatedFileDiagnostics: Diagnostic[]|undefined;
-  private _typeChecker: TypeChecker|undefined;
-  private _semanticDiagnostics: Diagnostic[]|undefined;
+  private _semanticDiagnostics: {ts: ts.Diagnostic[], ng: Diagnostic[]}|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
 
   constructor(
@@ -109,7 +107,7 @@ class AngularCompilerProgram implements Program {
 
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
       ts.Diagnostic[] {
-    return this.programWithStubs.getSemanticDiagnostics(sourceFile, cancellationToken);
+    return this.semanticDiagnostics.ts;
   }
 
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
@@ -119,8 +117,7 @@ class AngularCompilerProgram implements Program {
     // If we have diagnostics during the parser phase the type check phase is not meaningful so skip
     // it.
     if (compilerDiagnostics && compilerDiagnostics.length) return compilerDiagnostics;
-
-    return this.typeChecker.getDiagnostics(fileName, cancellationToken);
+    return this.semanticDiagnostics.ng;
   }
 
   loadNgStructureAsync(): Promise<void> {
@@ -187,7 +184,7 @@ class AngularCompilerProgram implements Program {
            }, []));
   }
 
-  private get programWithStubsHost(): ts.CompilerHost {
+  private get programWithStubsHost(): ts.CompilerHost&TypeCheckHost {
     return this._programWithStubsHost || (this._programWithStubsHost = createProgramWithStubsHost(
                                               this.stubs, this.tsProgram, this.host));
   }
@@ -200,14 +197,13 @@ class AngularCompilerProgram implements Program {
     return this._generatedFiles || (this._generatedFiles = this.generateFiles());
   }
 
-  private get typeChecker(): TypeChecker {
-    return (this._typeChecker && !this._typeChecker.partialResults) ?
-        this._typeChecker :
-        (this._typeChecker = this.createTypeChecker());
-  }
-
   private get generatedFileDiagnostics(): Diagnostic[]|undefined {
     return this.generatedFiles && this._generatedFileDiagnostics !;
+  }
+
+  private get semanticDiagnostics(): {ts: ts.Diagnostic[], ng: Diagnostic[]} {
+    return this._semanticDiagnostics ||
+        (this._semanticDiagnostics = this.generateSemanticDiagnostics());
   }
 
   private calculateTransforms(customTransformers?: CustomTransformers): ts.CustomTransformers {
@@ -283,12 +279,6 @@ class AngularCompilerProgram implements Program {
     }
   }
 
-  private createTypeChecker(): TypeChecker {
-    return new TypeChecker(
-        this.tsProgram, this.options, this.host, this.aotCompilerHost, this.options,
-        this.analyzedModules, this.generatedFiles);
-  }
-
   private createProgramWithStubs(): ts.Program {
     // If we are skipping code generation just use the original program.
     // Otherwise, create a new program that includes the stub files.
@@ -296,6 +286,11 @@ class AngularCompilerProgram implements Program {
         this.tsProgram :
         ts.createProgram(
             [...this.rootNames, ...this.stubFiles], this.options, this.programWithStubsHost);
+  }
+
+  private generateSemanticDiagnostics(): {ts: ts.Diagnostic[], ng: Diagnostic[]} {
+    return translateDiagnostics(
+        this.programWithStubsHost, this.programWithStubs.getSemanticDiagnostics());
   }
 }
 
@@ -360,6 +355,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
     enableLegacyTemplate: options.enableLegacyTemplate,
     enableSummariesForJit: true,
     preserveWhitespaces: options.preserveWhitespaces,
+    fullTemplateTypeCheck: options.fullTemplateTypeCheck,
   };
 }
 
@@ -453,13 +449,15 @@ function getNgOptionDiagnostics(options: CompilerOptions): Diagnostic[] {
 
 function createProgramWithStubsHost(
     generatedFiles: GeneratedFile[], originalProgram: ts.Program,
-    originalHost: ts.CompilerHost): ts.CompilerHost {
+    originalHost: ts.CompilerHost): ts.CompilerHost&TypeCheckHost {
   interface FileData {
     g: GeneratedFile;
     s?: ts.SourceFile;
+    emitCtx?: EmitterVisitorContext;
   }
-  return new class implements ts.CompilerHost {
+  return new class implements ts.CompilerHost, TypeCheckHost {
     private generatedFiles: Map<string, FileData>;
+    private emitter = new TypeScriptEmitter();
     writeFile: ts.WriteFileCallback;
     getCancellationToken: () => ts.CancellationToken;
     getDefaultLibLocation: () => string;
@@ -487,13 +485,27 @@ function createProgramWithStubsHost(
         this.trace = s => originalHost.trace !(s);
       }
     }
+    ngSpanOf(fileName: string, line: number, character: number): ParseSourceSpan|null {
+      const data = this.generatedFiles.get(fileName);
+      if (data && data.emitCtx) {
+        return data.emitCtx.spanOf(line, character);
+      }
+      return null;
+    }
     getSourceFile(
         fileName: string, languageVersion: ts.ScriptTarget,
         onError?: ((message: string) => void)|undefined): ts.SourceFile {
       const data = this.generatedFiles.get(fileName);
       if (data) {
-        return data.s || (data.s = ts.createSourceFile(
-                              fileName, data.g.source || toTypeScript(data.g), languageVersion));
+        if (!data.s) {
+          const {sourceText, context} = this.emitter.emitStatementsAndContext(
+              data.g.srcFileUrl, data.g.genFileUrl, data.g.stmts !,
+              /* preamble */ undefined, /* emitSourceMaps */ undefined,
+              /* referenceFilter */ undefined);
+          data.emitCtx = context;
+          data.s = ts.createSourceFile(fileName, sourceText, languageVersion);
+        }
+        return data.s;
       }
       return originalProgram.getSourceFile(fileName) ||
           originalHost.getSourceFile(fileName, languageVersion, onError);

@@ -30,7 +30,8 @@ export class CompilerConfig {
         jitDevMode?: boolean,
         missingTranslation?: MissingTranslationStrategy,
         enableLegacyTemplate?: boolean,
-        preserveWhitespaces?: boolean
+        preserveWhitespaces?: boolean,
+        fullTemplateTypeCheck?: boolean
       } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.useJit = !!useJit;

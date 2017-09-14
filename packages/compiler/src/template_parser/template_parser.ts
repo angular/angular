@@ -101,8 +101,9 @@ export class TemplateParser {
       public transforms: TemplateAstVisitor[]) {}
 
   parse(
-      component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveSummary[],
-      pipes: CompilePipeSummary[], schemas: SchemaMetadata[], templateUrl: string,
+      component: CompileDirectiveMetadata, template: string|ParseTreeResult,
+      directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
+      templateUrl: string,
       preserveWhitespaces: boolean): {template: TemplateAst[], pipes: CompilePipeSummary[]} {
     const result = this.tryParse(
         component, template, directives, pipes, schemas, templateUrl, preserveWhitespaces);
@@ -126,11 +127,13 @@ export class TemplateParser {
   }
 
   tryParse(
-      component: CompileDirectiveMetadata, template: string, directives: CompileDirectiveSummary[],
-      pipes: CompilePipeSummary[], schemas: SchemaMetadata[], templateUrl: string,
-      preserveWhitespaces: boolean): TemplateParseResult {
-    let htmlParseResult = this._htmlParser !.parse(
-        template, templateUrl, true, this.getInterpolationConfig(component));
+      component: CompileDirectiveMetadata, template: string|ParseTreeResult,
+      directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
+      templateUrl: string, preserveWhitespaces: boolean): TemplateParseResult {
+    let htmlParseResult = typeof template === 'string' ?
+        this._htmlParser !.parse(
+            template, templateUrl, true, this.getInterpolationConfig(component)) :
+        template;
 
     if (!preserveWhitespaces) {
       htmlParseResult = removeWhitespaces(htmlParseResult);
