@@ -17,7 +17,7 @@ const appDir = join(packagesDir, 'demo-app');
 const outDir = join(outputDir, 'packages', 'demo-app');
 
 /** Path to the output of the Material package. */
-const materialOutPath = join(outputDir, 'packages', 'material');
+const materialOutPath = join(outDir, 'packages', 'material');
 
 /** Array of vendors that are required to serve the demo-app. */
 const appVendors = [

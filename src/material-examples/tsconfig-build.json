@@ -20,6 +20,7 @@
     "types": [],
     "baseUrl": ".",
     "paths": {
+      "@angular/material/*": ["../../dist/packages/material/*/public_api"],
       "@angular/material": ["../../dist/packages/material/public_api"],
       "@angular/cdk/*": ["../../dist/packages/cdk/*/public_api"]
     }

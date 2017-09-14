@@ -4,7 +4,7 @@ import {
   ElementRef,
   Renderer2,
 } from '@angular/core';
-import {OverlayContainer} from '@angular/material';
+import {OverlayContainer} from '@angular/cdk/overlay';
 
 /**
  * The entry app for demo site. Routes under `accessibility` will use AccessibilityDemo component,

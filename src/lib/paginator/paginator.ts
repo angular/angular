@@ -12,14 +12,14 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
   ViewEncapsulation,
-  OnDestroy,
 } from '@angular/core';
-import {MdPaginatorIntl} from './paginator-intl';
-import {MATERIAL_COMPATIBILITY_MODE} from '../core';
+import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material/core';
 import {Subscription} from 'rxjs/Subscription';
+import {MdPaginatorIntl} from './paginator-intl';
 
 /** The default page size if there is no page size and there are no provided page size options. */
 const DEFAULT_PAGE_SIZE = 50;

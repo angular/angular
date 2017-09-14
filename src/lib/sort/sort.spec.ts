@@ -12,7 +12,7 @@ import {
   getMdSortHeaderNotContainedWithinMdSortError
 } from './sort-errors';
 import {wrappedErrorMessage, dispatchMouseEvent} from '@angular/cdk/testing';
-import {map} from '../core/rxjs/index';
+import {map} from '@angular/material/core';
 import {MdTableModule} from '../table/index';
 
 describe('MdSort', () => {

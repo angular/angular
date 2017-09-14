@@ -6,17 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {MdCommonModule} from '../core';
-import {MdToolbar, MdToolbarRow} from './toolbar';
-
-
-@NgModule({
-  imports: [MdCommonModule],
-  exports: [MdToolbar, MdToolbarRow, MdCommonModule],
-  declarations: [MdToolbar, MdToolbarRow],
-})
-export class MdToolbarModule {}
-
-
-export * from './toolbar';
+export * from './public_api';

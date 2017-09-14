@@ -34,12 +34,12 @@ import {
   getMdSelectNonArrayValueError,
   getMdSelectNonFunctionValueError
 } from './select-errors';
-import {MdOption} from '../core/option/option';
+import {MdOption} from '@angular/material/core';
 import {
   FloatPlaceholderType,
   MD_PLACEHOLDER_GLOBAL_OPTIONS
-} from '../core/placeholder/placeholder-options';
-import {extendObject} from '../core/util/object-extend';
+} from '@angular/material/core';
+import {extendObject} from '@angular/material/core';
 
 
 describe('MdSelect', () => {

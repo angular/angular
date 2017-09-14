@@ -3,8 +3,8 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular Material Examples",
   "main": "./bundles/material-examples.umd.js",
-  "module": "./@angular/material-examples.es5.js",
-  "es2015": "./@angular/material-examples.js",
+  "module": "./esm5/material-examples.es5.js",
+  "es2015": "./esm2015/material-examples.js",
   "typings": "./material-examples.d.ts",
   "private": true,
   "repository": {

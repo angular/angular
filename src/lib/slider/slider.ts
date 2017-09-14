@@ -6,24 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  EventEmitter,
-  forwardRef,
-  Input,
-  OnDestroy,
-  Optional,
-  Output,
-  Renderer2,
-  ViewEncapsulation,
-  ViewChild, OnInit,
-} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {
   DOWN_ARROW,
   END,
@@ -34,10 +18,32 @@ import {
   RIGHT_ARROW,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {HammerInput} from '../core';
-import {FocusOrigin, FocusOriginMonitor} from '../core/style/focus-origin-monitor';
-import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Output,
+  Renderer2,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {
+  CanColor,
+  CanDisable,
+  FocusOrigin,
+  FocusOriginMonitor,
+  HammerInput,
+  mixinColor,
+  mixinDisabled,
+} from '@angular/material/core';
 import {Subscription} from 'rxjs/Subscription';
 
 /**

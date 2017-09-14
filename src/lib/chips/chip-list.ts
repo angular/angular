@@ -22,7 +22,7 @@ import {
 
 import {MdChip} from './chip';
 import {FocusKeyManager} from '@angular/cdk/a11y';
-import {BACKSPACE, DELETE, LEFT_ARROW, RIGHT_ARROW, UP_ARROW} from '../core/keyboard/keycodes';
+import {BACKSPACE, DELETE, LEFT_ARROW, RIGHT_ARROW, UP_ARROW} from '@angular/material/core';
 import {Directionality} from '@angular/cdk/bidi';
 import {Subscription} from 'rxjs/Subscription';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';

@@ -25,9 +25,9 @@ import {
 } from './index';
 import {MdInputModule} from '../input/index';
 import {Subscription} from 'rxjs/Subscription';
-import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW} from '../core/keyboard/keycodes';
-import {MdOption} from '../core/option/option';
-import {MdFormField, MdFormFieldModule} from '../form-field/index';
+import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW} from '@angular/material/core';
+import {MdOption} from '@angular/material/core';
+import {MdFormField, MdFormFieldModule} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 

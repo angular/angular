@@ -4,7 +4,7 @@ import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {FakeViewportRuler} from '@angular/cdk/testing';
 import {MdButtonModule} from './index';
-import {MdRipple} from '../core/ripple/index';
+import {MdRipple} from '@angular/material/core';
 
 
 describe('MdButton', () => {

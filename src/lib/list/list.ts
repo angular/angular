@@ -19,8 +19,8 @@ import {
   ViewEncapsulation,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import {MdLine, MdLineSetter} from '../core';
-import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
+import {MdLine, MdLineSetter} from '@angular/material/core';
+import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
 
 // Boilerplate for applying mixins to MdList.
 /** @docs-private */

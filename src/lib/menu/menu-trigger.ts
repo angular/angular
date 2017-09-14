@@ -6,6 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
+import {
+  ConnectedPositionStrategy,
+  HorizontalConnectionPos,
+  Overlay,
+  OverlayRef,
+  OverlayState,
+  RepositionScrollStrategy,
+  ScrollStrategy,
+  VerticalConnectionPos,
+} from '@angular/cdk/overlay';
+import {TemplatePortal} from '@angular/cdk/portal';
+import {filter, RxChain} from '@angular/cdk/rxjs';
 import {
   AfterViewInit,
   Directive,
@@ -20,32 +35,15 @@ import {
   Self,
   ViewContainerRef,
 } from '@angular/core';
-import {Direction, Directionality} from '@angular/cdk/bidi';
-import {isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
-import {TemplatePortal} from '@angular/cdk/portal';
-import {LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {
-  ConnectedPositionStrategy,
-  HorizontalConnectionPos,
-  Overlay,
-  OverlayRef,
-  OverlayState,
-  RepositionScrollStrategy,
-  VerticalConnectionPos,
-  // This import is only used to define a generic type. The current TypeScript version incorrectly
-  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-  // tslint:disable-next-line:no-unused-variable
-  ScrollStrategy,
-} from '@angular/cdk/overlay';
-import {filter, RxChain} from '@angular/cdk/rxjs';
+import {merge} from 'rxjs/observable/merge';
+import {of as observableOf} from 'rxjs/observable/of';
+import {Subscription} from 'rxjs/Subscription';
 import {MdMenu} from './menu-directive';
+import {throwMdMenuMissingError} from './menu-errors';
 import {MdMenuItem} from './menu-item';
 import {MdMenuPanel} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
-import {throwMdMenuMissingError} from './menu-errors';
-import {of as observableOf} from 'rxjs/observable/of';
-import {merge} from 'rxjs/observable/merge';
-import {Subscription} from 'rxjs/Subscription';
+
 
 /** Injection token that determines the scroll handling while the menu is open. */
 export const MD_MENU_SCROLL_STRATEGY =

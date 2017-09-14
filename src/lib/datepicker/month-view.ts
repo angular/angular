@@ -15,12 +15,11 @@ import {
   Input,
   Optional,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
+import {DateAdapter, MD_DATE_FORMATS, MdDateFormats} from '@angular/material/core';
 import {MdCalendarCell} from './calendar-body';
-import {DateAdapter} from '../core/datetime/index';
 import {createMissingDateImplError} from './datepicker-errors';
-import {MD_DATE_FORMATS, MdDateFormats} from '../core/datetime/date-formats';
 
 
 const DAYS_PER_WEEK = 7;

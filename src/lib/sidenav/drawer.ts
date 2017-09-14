@@ -6,29 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
+import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
+import {Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   ElementRef,
+  EventEmitter,
+  Inject,
   Input,
+  NgZone,
+  OnDestroy,
   Optional,
   Output,
   QueryList,
-  ChangeDetectionStrategy,
-  EventEmitter,
   Renderer2,
   ViewEncapsulation,
-  NgZone,
-  OnDestroy,
-  Inject,
-  ChangeDetectorRef,
 } from '@angular/core';
-import {animate, state, style, transition, trigger, AnimationEvent} from '@angular/animations';
-import {Directionality, coerceBooleanProperty} from '../core';
-import {FocusTrapFactory, FocusTrap} from '../core/a11y/focus-trap';
-import {ESCAPE} from '../core/keyboard/keycodes';
-import {first, takeUntil, startWith} from '../core/rxjs/index';
+import {ESCAPE, first, startWith, takeUntil} from '@angular/material/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';

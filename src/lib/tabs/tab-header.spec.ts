@@ -10,7 +10,7 @@ import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {dispatchFakeEvent, dispatchKeyboardEvent, FakeViewportRuler} from '@angular/cdk/testing';
 import {MdTabHeader} from './tab-header';
-import {MdRippleModule} from '../core/ripple/index';
+import {MdRippleModule} from '@angular/material/core';
 import {MdInkBar} from './ink-bar';
 import {MdTabLabelWrapper} from './tab-label-wrapper';
 import {Subject} from 'rxjs/Subject';

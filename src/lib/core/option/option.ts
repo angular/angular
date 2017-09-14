@@ -21,7 +21,7 @@ import {
 } from '@angular/core';
 import {ENTER, SPACE} from '../keyboard/keycodes';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {MATERIAL_COMPATIBILITY_MODE} from '../../core/compatibility/compatibility';
+import {MATERIAL_COMPATIBILITY_MODE} from '../compatibility/compatibility';
 import {MdOptgroup} from './optgroup';
 
 /**

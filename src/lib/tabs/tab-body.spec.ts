@@ -3,10 +3,10 @@ import {CommonModule} from '@angular/common';
 import {PortalModule} from '@angular/cdk/portal';
 import {async, ComponentFixture, TestBed, flushMicrotasks, fakeAsync} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Direction, Directionality} from '../core/bidi/index';
-import {TemplatePortal} from '../core/portal/portal';
+import {Direction, Directionality} from '@angular/material/core';
+import {TemplatePortal} from '@angular/material/core';
 import {MdTabBody} from './tab-body';
-import {MdRippleModule} from '../core/ripple/index';
+import {MdRippleModule} from '@angular/material/core';
 
 
 describe('MdTabBody', () => {

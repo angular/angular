@@ -45,7 +45,7 @@ import {DemoMaterialModule} from '../demo-material-module';
 import {
   FullscreenOverlayContainer,
   OverlayContainer,
-} from '@angular/material';
+} from '@angular/cdk/overlay';
 import {TableHeaderDemo} from '../table/table-header-demo';
 
 @NgModule({

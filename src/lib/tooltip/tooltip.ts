@@ -6,6 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
+import {AriaDescriber} from '@angular/cdk/a11y';
+import {Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ESCAPE} from '@angular/cdk/keycodes';
+import {
+  OriginConnectionPosition,
+  Overlay,
+  OverlayConnectionPosition,
+  OverlayRef,
+  OverlayState,
+  RepositionScrollStrategy,
+  ScrollStrategy,
+} from '@angular/cdk/overlay';
+import {Platform} from '@angular/cdk/platform';
+import {ComponentPortal} from '@angular/cdk/portal';
+import {first} from '@angular/cdk/rxjs';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -22,29 +40,8 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
-import {ComponentPortal} from '@angular/cdk/portal';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {Directionality} from '@angular/cdk/bidi';
-import {Platform} from '@angular/cdk/platform';
-import {first} from '@angular/cdk/rxjs';
-import {
-  OriginConnectionPosition,
-  Overlay,
-  OverlayConnectionPosition,
-  OverlayRef,
-  OverlayState,
-  RepositionScrollStrategy,
-  // This import is only used to define a generic type. The current TypeScript version incorrectly
-  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-  // tslint:disable-next-line:no-unused-variable
-  ScrollStrategy,
-} from '@angular/cdk/overlay';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ESCAPE} from '@angular/cdk/keycodes';
-import {AriaDescriber} from '@angular/cdk/a11y';
 
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';

@@ -1,21 +1,30 @@
-import {Component, ViewChild} from '@angular/core';
-import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {By} from '@angular/platform-browser';
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {ESCAPE} from '@angular/cdk/keycodes';
-import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing';
-import {MdDatepickerModule, MdDatepickerIntl} from './index';
+import {OverlayContainer} from '@angular/cdk/overlay';
+import {
+  createKeyboardEvent,
+  dispatchEvent,
+  dispatchFakeEvent,
+  dispatchMouseEvent,
+} from '@angular/cdk/testing';
+import {Component, ViewChild} from '@angular/core';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {
+  DEC,
+  JAN,
+  MAT_DATE_LOCALE,
+  MdNativeDateModule,
+  NativeDateModule,
+  SEP,
+} from '@angular/material/core';
+import {MdFormFieldModule} from '@angular/material/form-field';
+import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MdInputModule} from '../input/index';
 import {MdDatepicker} from './datepicker';
 import {MdDatepickerInput} from './datepicker-input';
-import {MdInputModule} from '../input/index';
-import {MdNativeDateModule} from '../core/datetime/index';
-import {DEC, JAN, SEP} from '../core/testing/month-constants';
-import {createKeyboardEvent, dispatchEvent} from '@angular/cdk/testing';
-import {MdFormFieldModule} from '../form-field/index';
-import {MAT_DATE_LOCALE} from '../core/datetime/date-adapter';
-import {NativeDateModule} from '../core/datetime/index';
+import {MdDatepickerIntl, MdDatepickerModule} from './index';
+
 
 describe('MdDatepicker', () => {
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {

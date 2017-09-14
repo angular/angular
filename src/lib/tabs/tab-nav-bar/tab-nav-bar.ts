@@ -6,38 +6,46 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {Platform} from '@angular/cdk/platform';
+import {auditTime, takeUntil} from '@angular/cdk/rxjs';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ContentChildren,
   Directive,
   ElementRef,
+  forwardRef,
   Inject,
   Input,
   NgZone,
   OnDestroy,
   Optional,
+  QueryList,
   Renderer2,
   ViewChild,
   ViewEncapsulation,
-  ContentChildren,
-  QueryList,
-  forwardRef,
 } from '@angular/core';
-import {ViewportRuler} from '@angular/cdk/scrolling';
-import {Directionality} from '@angular/cdk/bidi';
-import {Platform} from '@angular/cdk/platform';
-import {auditTime, takeUntil} from '@angular/cdk/rxjs';
-import {Subject} from 'rxjs/Subject';
-import {of as observableOf} from 'rxjs/observable/of';
-import {merge} from 'rxjs/observable/merge';
+import {
+  CanColor,
+  CanDisable,
+  CanDisableRipple,
+  MD_RIPPLE_GLOBAL_OPTIONS,
+  MdRipple,
+  mixinColor,
+  mixinDisabled,
+  mixinDisableRipple,
+  RippleGlobalOptions,
+  ThemePalette,
+} from '@angular/material/core';
 import {fromEvent} from 'rxjs/observable/fromEvent';
-import {CanDisableRipple, mixinDisableRipple} from '../../core/common-behaviors/disable-ripple';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {CanDisable, mixinDisabled} from '../../core/common-behaviors/disabled';
-import {MD_RIPPLE_GLOBAL_OPTIONS, MdRipple, RippleGlobalOptions} from '../../core';
-import {CanColor, mixinColor, ThemePalette} from '../../core/common-behaviors/color';
+import {merge} from 'rxjs/observable/merge';
+import {of as observableOf} from 'rxjs/observable/of';
+import {Subject} from 'rxjs/Subject';
 import {MdInkBar} from '../ink-bar';
 
 

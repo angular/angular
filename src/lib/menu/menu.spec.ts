@@ -23,7 +23,7 @@ import {
   MenuPositionY,
 } from './index';
 import {MENU_PANEL_TOP_PADDING} from './menu-trigger';
-import {extendObject} from '../core/util/object-extend';
+import {extendObject} from '@angular/material/core';
 import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,

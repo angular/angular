@@ -6,6 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ESCAPE} from '@angular/cdk/keycodes';
+import {
+  BlockScrollStrategy,
+  Overlay,
+  OverlayRef,
+  OverlayState,
+  ScrollStrategy,
+} from '@angular/cdk/overlay';
+import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
+import {startWith} from '@angular/cdk/rxjs';
+import {Location} from '@angular/common';
 import {
   ComponentRef,
   Inject,
@@ -16,28 +27,13 @@ import {
   SkipSelf,
   TemplateRef,
 } from '@angular/core';
-import {Location} from '@angular/common';
-import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
-import {
-  BlockScrollStrategy,
-  Overlay,
-  OverlayRef,
-  OverlayState,
-  // This import is only used to define a generic type. The current TypeScript version incorrectly
-  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-  // tslint:disable-next-line:no-unused-variable
-  ScrollStrategy,
-} from '@angular/cdk/overlay';
-import {ESCAPE} from '@angular/cdk/keycodes';
-import {startWith} from '@angular/cdk/rxjs';
+import {extendObject, PortalInjector} from '@angular/material/core';
 import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
 import {defer} from 'rxjs/observable/defer';
-import {PortalInjector} from '../core/portal/portal-injector';
-import {extendObject} from '../core/util/object-extend';
+import {Subject} from 'rxjs/Subject';
 import {MdDialogConfig} from './dialog-config';
-import {MdDialogRef} from './dialog-ref';
 import {MdDialogContainer} from './dialog-container';
+import {MdDialogRef} from './dialog-ref';
 
 export const MD_DIALOG_DATA = new InjectionToken<any>('MdDialogData');
 

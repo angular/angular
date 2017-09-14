@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {DOWN_ARROW} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   Directive,
@@ -17,9 +19,8 @@ import {
   OnDestroy,
   Optional,
   Output,
-  Renderer2
+  Renderer2,
 } from '@angular/core';
-import {MdDatepicker} from './datepicker';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -28,15 +29,13 @@ import {
   ValidationErrors,
   Validator,
   ValidatorFn,
-  Validators
+  Validators,
 } from '@angular/forms';
+import {DateAdapter, MD_DATE_FORMATS, MdDateFormats} from '@angular/material/core';
+import {MdFormField} from '@angular/material/form-field';
 import {Subscription} from 'rxjs/Subscription';
-import {MdFormField} from '../form-field/index';
-import {DOWN_ARROW} from '../core/keyboard/keycodes';
-import {DateAdapter} from '../core/datetime/index';
+import {MdDatepicker} from './datepicker';
 import {createMissingDateImplError} from './datepicker-errors';
-import {MD_DATE_FORMATS, MdDateFormats} from '../core/datetime/date-formats';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 
 export const MD_DATEPICKER_VALUE_ACCESSOR: any = {

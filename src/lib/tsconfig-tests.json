@@ -7,7 +7,11 @@
     "importHelpers": false,
     "module": "commonjs",
     "target": "es5",
-    "types": ["jasmine"]
+    "types": ["jasmine"],
+    "paths": {
+      "@angular/material/*": ["./*"],
+      "@angular/cdk/*": ["../../dist/packages/cdk/*/public_api"]
+    }
   },
   "include": [
     "**/*.spec.ts",

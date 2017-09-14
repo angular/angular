@@ -4,7 +4,7 @@ import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {dispatchFakeEvent, FakeViewportRuler} from '@angular/cdk/testing';
-import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '../core/ripple/ripple-renderer';
+import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '@angular/material/core';
 import {MdRadioButton, MdRadioChange, MdRadioGroup, MdRadioModule} from './index';
 
 describe('MdRadio', () => {

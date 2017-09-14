@@ -14,7 +14,7 @@ import {
   ElementRef,
   Renderer2,
 } from '@angular/core';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {CanColor, mixinColor} from '@angular/material/core';
 
 
 @Directive({

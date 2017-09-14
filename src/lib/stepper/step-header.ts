@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input, ViewEncapsulation} from '@angular/core';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {Component, Input, ViewEncapsulation} from '@angular/core';
+import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material/core';
 import {MdStepLabel} from './step-label';
-import {MATERIAL_COMPATIBILITY_MODE} from '../core/compatibility/compatibility';
+
 
 @Component({
   moduleId: module.id,

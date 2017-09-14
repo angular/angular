@@ -6,14 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, SecurityContext, Optional, SkipSelf} from '@angular/core';
-import {SafeResourceUrl, DomSanitizer} from '@angular/platform-browser';
+import {Injectable, Optional, SecurityContext, SkipSelf} from '@angular/core';
 import {Http} from '@angular/http';
+import {
+  catchOperator,
+  doOperator,
+  finallyOperator,
+  map,
+  RxChain,
+  share,
+} from '@angular/material/core';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
-import {_throw as observableThrow} from 'rxjs/observable/throw';
-import {of as observableOf} from 'rxjs/observable/of';
 import {forkJoin} from 'rxjs/observable/forkJoin';
-import {RxChain, map, doOperator, catchOperator, finallyOperator, share} from '../core/rxjs/index';
+import {of as observableOf} from 'rxjs/observable/of';
+import {_throw as observableThrow} from 'rxjs/observable/throw';
 
 /**
  * Returns an exception to be thrown in the case when attempting to
@@ -272,7 +279,7 @@ export class MdIconRegistry {
 
     // Not found in any cached icon sets. If there are icon sets with URLs that we haven't
     // fetched, fetch them now and look for iconName in the results.
-    const iconSetFetchRequests: Observable<SVGElement>[] = iconSetConfigs
+    const iconSetFetchRequests: Observable<SVGElement | null>[] = iconSetConfigs
       .filter(iconSetConfig => !iconSetConfig.svgElement)
       .map(iconSetConfig => {
         return RxChain.from(this._loadSvgIconSetFromConfig(iconSetConfig))

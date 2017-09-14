@@ -3,8 +3,8 @@ import {Component, DebugElement}  from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {createKeyboardEvent} from '@angular/cdk/testing';
 import {MdChipList, MdChip, MdChipEvent, MdChipsModule} from './index';
-import {SPACE, DELETE, BACKSPACE} from '../core/keyboard/keycodes';
-import {Directionality} from '../core';
+import {SPACE, DELETE, BACKSPACE} from '@angular/material/core';
+import {Directionality} from '@angular/material/core';
 
 describe('Chips', () => {
   let fixture: ComponentFixture<any>;

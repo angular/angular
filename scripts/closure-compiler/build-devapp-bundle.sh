@@ -58,9 +58,9 @@ OPTS=(
   "--debug"
 
   # Include the Material and CDK FESM bundles
-  dist/releases/material/@angular/material.js
-  dist/releases/cdk/@angular/cdk.js
-  dist/releases/material-moment-adapter/@angular/material-moment-adapter.js
+  dist/releases/material/esm2015/material.js
+  dist/releases/cdk/esm2015/cdk.js
+  dist/releases/material-moment-adapter/esm2015/material-moment-adapter.js
 
   # Include all Angular FESM bundles.
   node_modules/@angular/core/@angular/core.js
@@ -90,7 +90,7 @@ OPTS=(
 # Walk through every entry-point of the CDK and add it to closure options.
 for i in "${cdkEntryPoints[@]}"; do
   OPTS+=("--js_module_root=dist/releases/cdk/${i}")
-  OPTS+=("dist/releases/cdk/@angular/cdk/${i}.js")
+  OPTS+=("dist/releases/cdk/esm2015/${i}.js")
 done
 
 # Write closure flags to a closure flagfile.

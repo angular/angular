@@ -15,8 +15,8 @@ import {platform} from 'os';
  * @returns An array of secondary entry-points names, e.g., ['a11y', 'bidi', ...]
  */
 export function getSecondaryEntryPointsForPackage(pkg: BuildPackage) {
-  const packageName = pkg.packageName;
-  const packageDir = pkg.packageRoot;
+  const packageName = pkg.name;
+  const packageDir = pkg.sourceDir;
 
   // Get the list of all entry-points as the list of directories in the package that have a
   // tsconfig-build.json

@@ -8,7 +8,7 @@ import {MdStepperNext, MdStepperPrevious} from './stepper-button';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {MdStepper, MdHorizontalStepper, MdVerticalStepper} from './stepper';
-import {Directionality} from '../core';
+import {Directionality} from '@angular/material/core';
 
 const VALID_REGEX = /valid/;
 

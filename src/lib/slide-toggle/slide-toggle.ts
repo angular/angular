@@ -31,12 +31,12 @@ import {
   HammerInput,
   MdRipple,
   RippleRef,
-} from '../core';
+} from '@angular/material/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
-import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
-import {HasTabIndex, mixinTabIndex} from '../core/common-behaviors/tabindex';
+import {mixinDisabled, CanDisable} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
+import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
+import {HasTabIndex, mixinTabIndex} from '@angular/material/core';
 
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;

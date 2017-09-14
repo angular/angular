@@ -15,7 +15,7 @@ import {
   Optional,
   ChangeDetectorRef,
 } from '@angular/core';
-import {UniqueSelectionDispatcher} from '../core';
+import {UniqueSelectionDispatcher} from '@angular/material/core';
 import {CdkAccordion} from './accordion';
 
 /** Used to generate unique ID for each expansion panel. */

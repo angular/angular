@@ -21,7 +21,7 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import {MdOption, MdOptgroup} from '../core';
+import {MdOption, MdOptgroup} from '@angular/material/core';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 
 

@@ -1,0 +1,12 @@
+// Configuration for IDEs only.
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "baseUrl": ".",
+    "paths": {
+      "@angular/cdk/*": ["./*"]
+    }
+  },
+  "include": ["./**/*.ts"]
+}

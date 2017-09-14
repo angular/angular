@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig-build",
+  "files": [
+    "public_api.ts",
+    "../typings.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/material/button",
+    "skipTemplateCodegen": true
+  }
+}

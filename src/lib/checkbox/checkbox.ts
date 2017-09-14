@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -22,11 +23,19 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {FocusOrigin, FocusOriginMonitor, MdRipple, RippleRef} from '../core';
-import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
-import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
+import {
+  CanColor,
+  CanDisable,
+  CanDisableRipple,
+  FocusOrigin,
+  FocusOriginMonitor,
+  MdRipple,
+  mixinColor,
+  mixinDisabled,
+  mixinDisableRipple,
+  RippleRef,
+} from '@angular/material/core';
+
 
 // Increasing integer for generating unique ids for checkbox components.
 let nextUniqueId = 0;

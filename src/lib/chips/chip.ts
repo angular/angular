@@ -6,23 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusableOption} from '@angular/cdk/a11y';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
-  Directive,
   ContentChild,
+  Directive,
   ElementRef,
   EventEmitter,
+  forwardRef,
   Input,
   OnDestroy,
   Output,
   Renderer2,
-  forwardRef,
 } from '@angular/core';
+import {
+  BACKSPACE,
+  CanColor,
+  CanDisable,
+  DELETE,
+  mixinColor,
+  mixinDisabled,
+  SPACE,
+} from '@angular/material/core';
 import {Subject} from 'rxjs/Subject';
-import {FocusableOption} from '../core/a11y/focus-key-manager';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
-import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
-import {SPACE, BACKSPACE, DELETE} from '../core/keyboard/keycodes';
 
 export interface MdChipEvent {
   chip: MdChip;

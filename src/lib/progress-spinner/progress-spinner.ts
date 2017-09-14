@@ -18,7 +18,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
+import {CanColor, mixinColor} from '@angular/material/core';
 
 
 // TODO(josephperrott): Benchpress tests.

@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {CdkStep, CdkStepper} from '@angular/cdk/stepper';
 import {
   Component,
   ContentChild,
-  ContentChildren, Directive,
-  // This import is only used to define a generic type. The current TypeScript version incorrectly
-  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-  // tslint:disable-next-line:no-unused-variable
+  ContentChildren,
+  Directive,
   ElementRef,
   forwardRef,
   Inject,
@@ -21,18 +20,17 @@ import {
   QueryList,
   SkipSelf,
   ViewChildren,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
-import {MdStepLabel} from './step-label';
+import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {
   defaultErrorStateMatcher,
   ErrorOptions,
+  ErrorStateMatcher,
   MD_ERROR_GLOBAL_OPTIONS,
-  ErrorStateMatcher
-} from '../core/error/error-options';
-import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
+} from '@angular/material/core';
 import {MdStepHeader} from './step-header';
-import {state, style, transition, trigger, animate} from '@angular/animations';
+import {MdStepLabel} from './step-label';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MdStep = CdkStep;

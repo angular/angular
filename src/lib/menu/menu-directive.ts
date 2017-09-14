@@ -31,7 +31,7 @@ import {FocusKeyManager} from '@angular/cdk/a11y';
 import {MdMenuPanel} from './menu-panel';
 import {Subscription} from 'rxjs/Subscription';
 import {transformMenu, fadeInItems} from './menu-animations';
-import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '../core/keyboard/keycodes';
+import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/material/core';
 import {merge} from 'rxjs/observable/merge';
 import {Observable} from 'rxjs/Observable';
 import {Direction} from '@angular/cdk/bidi';

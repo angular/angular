@@ -22,7 +22,9 @@ jobs:
     - env: "MODE=aot"
     - env: "MODE=payload"
     - env: "MODE=prerender"
-    - env: "MODE=closure-compiler"
+    # Closure Compiler CI check is temporarily disabled until a new version of
+    # the tool is released with https://github.com/google/closure-compiler/pull/2600
+    # - env: "MODE=closure-compiler"
     - env: "MODE=e2e"
     - env: "MODE=saucelabs_required"
     - env: "MODE=browserstack_required"

@@ -1,22 +1,20 @@
+import {Overlay, OverlayOrigin, OverlayState} from '@angular/cdk/overlay';
 import {
-    Component,
-    ViewChildren,
-    QueryList,
-    ViewEncapsulation,
-    ViewChild,
-    ViewContainerRef,
+  ComponentPortal,
+  // This import is only used to define a generic type. The current TypeScript version incorrectly
+  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
+  // tslint:disable-next-line:no-unused-variable
+  Portal,
+  TemplatePortalDirective
+} from '@angular/cdk/portal';
+import {
+  Component,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+  ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
-import {
-    Overlay,
-    OverlayState,
-    OverlayOrigin,
-    ComponentPortal,
-    // This import is only used to define a generic type. The current TypeScript version incorrectly
-    // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-    // tslint:disable-next-line:no-unused-variable
-    Portal,
-    TemplatePortalDirective,
-} from '@angular/material';
 
 
 @Component({

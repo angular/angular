@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, state, style, transition, trigger} from '@angular/animations';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {first, startWith} from '@angular/cdk/rxjs';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -23,26 +26,23 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {coerceBooleanProperty} from '../core';
+import {
+  FloatPlaceholderType,
+  MD_PLACEHOLDER_GLOBAL_OPTIONS,
+  PlaceholderOptions,
+} from '@angular/material/core';
+import {fromEvent} from 'rxjs/observable/fromEvent';
+import {MdError} from './error';
+import {MdFormFieldControl} from './form-field-control';
 import {
   getMdFormFieldDuplicatedHintError,
   getMdFormFieldMissingControlError,
   getMdFormFieldPlaceholderConflictError,
 } from './form-field-errors';
-import {
-  FloatPlaceholderType,
-  MD_PLACEHOLDER_GLOBAL_OPTIONS,
-  PlaceholderOptions
-} from '../core/placeholder/placeholder-options';
-import {startWith, first} from '@angular/cdk/rxjs';
-import {MdError} from './error';
-import {MdFormFieldControl} from './form-field-control';
 import {MdHint} from './hint';
 import {MdPlaceholder} from './placeholder';
 import {MdPrefix} from './prefix';
 import {MdSuffix} from './suffix';
-import {fromEvent} from 'rxjs/observable/fromEvent';
 
 
 let nextUniqueId = 0;

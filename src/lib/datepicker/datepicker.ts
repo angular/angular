@@ -6,6 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ESCAPE} from '@angular/cdk/keycodes';
+import {
+  Overlay,
+  OverlayRef,
+  OverlayState,
+  PositionStrategy,
+  RepositionScrollStrategy,
+  ScrollStrategy,
+} from '@angular/cdk/overlay';
+import {ComponentPortal} from '@angular/cdk/portal';
+import {first} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -23,31 +36,14 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
+import {DateAdapter} from '@angular/material/core';
+import {MdDialog, MdDialogRef} from '@angular/material/dialog';
 import {DOCUMENT} from '@angular/platform-browser';
-import {first} from '@angular/cdk/rxjs';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {
-  Overlay,
-  OverlayRef,
-  OverlayState,
-  PositionStrategy,
-  RepositionScrollStrategy,
-  // This import is only used to define a generic type. The current TypeScript version incorrectly
-  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-  // tslint:disable-next-line:no-unused-variable
-  ScrollStrategy,
-} from '@angular/cdk/overlay';
-import {ComponentPortal} from '@angular/cdk/portal';
-import {Directionality} from '@angular/cdk/bidi';
-import {ESCAPE} from '@angular/cdk/keycodes';
-import {MdDialog} from '../dialog/dialog';
-import {MdDialogRef} from '../dialog/dialog-ref';
-import {MdDatepickerInput} from './datepicker-input';
-import {Subscription} from 'rxjs/Subscription';
 import {Subject} from 'rxjs/Subject';
-import {DateAdapter} from '../core/datetime/index';
-import {createMissingDateImplError} from './datepicker-errors';
+import {Subscription} from 'rxjs/Subscription';
 import {MdCalendar} from './calendar';
+import {createMissingDateImplError} from './datepicker-errors';
+import {MdDatepickerInput} from './datepicker-input';
 
 
 /** Used to generate a unique ID for each datepicker instance. */

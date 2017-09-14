@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Platform, getSupportedInputTypes} from '@angular/material';
+import {Platform, getSupportedInputTypes} from '@angular/cdk/platform';
 
 
 @Component({

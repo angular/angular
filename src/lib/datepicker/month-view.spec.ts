@@ -3,8 +3,8 @@ import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MdMonthView} from './month-view';
 import {MdCalendarBody} from './calendar-body';
-import {MdNativeDateModule} from '../core/datetime/index';
-import {JAN, MAR} from '../core/testing/month-constants';
+import {MdNativeDateModule} from '@angular/material/core';
+import {JAN, MAR} from '@angular/material/core';
 
 describe('MdMonthView', () => {
   beforeEach(async(() => {

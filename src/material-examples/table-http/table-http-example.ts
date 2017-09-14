@@ -109,7 +109,7 @@ export class ExampleDataSource extends DataSource<GithubIssue> {
         this.isLoadingResults = false;
         // Catch if the GitHub API has reached its rate limit. Return empty data.
         this.isRateLimitReached = true;
-        return Observable.of(null);
+        return Observable.of([]);
       });
   }
 

@@ -7,21 +7,6 @@
  */
 
 import {
-  AfterContentInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Inject,
-  Input,
-  NgZone,
-  Optional,
-  Output,
-  ViewEncapsulation,
-  ChangeDetectorRef,
-  OnDestroy,
-} from '@angular/core';
-import {
   DOWN_ARROW,
   END,
   ENTER,
@@ -30,15 +15,33 @@ import {
   PAGE_DOWN,
   PAGE_UP,
   RIGHT_ARROW,
-  UP_ARROW
-} from '../core/keyboard/keycodes';
-import {DateAdapter} from '../core/datetime/index';
-import {MdDatepickerIntl} from './datepicker-intl';
-import {createMissingDateImplError} from './datepicker-errors';
-import {MD_DATE_FORMATS, MdDateFormats} from '../core/datetime/date-formats';
-import {MATERIAL_COMPATIBILITY_MODE} from '../core';
-import {first} from '../core/rxjs/index';
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
+import {
+  AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  Input,
+  NgZone,
+  OnDestroy,
+  Optional,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
+import {
+  DateAdapter,
+  MATERIAL_COMPATIBILITY_MODE,
+  MD_DATE_FORMATS,
+  MdDateFormats,
+} from '@angular/material/core';
+import {first} from 'rxjs/operator/first';
 import {Subscription} from 'rxjs/Subscription';
+import {createMissingDateImplError} from './datepicker-errors';
+import {MdDatepickerIntl} from './datepicker-intl';
 
 
 /**

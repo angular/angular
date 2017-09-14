@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusableOption} from '@angular/cdk/a11y';
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   OnDestroy,
-  ChangeDetectionStrategy,
   ViewEncapsulation,
 } from '@angular/core';
-import {FocusableOption} from '../core/a11y/focus-key-manager';
-import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
+import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs/Subject';
 
 // Boilerplate for applying mixins to MdMenuItem.

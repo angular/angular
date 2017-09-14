@@ -3,10 +3,10 @@ import {MdChipsModule} from './index';
 import {Component, DebugElement} from '@angular/core';
 import {MdChipInput, MdChipInputEvent} from './chip-input';
 import {By} from '@angular/platform-browser';
-import {Directionality} from '../core';
+import {Directionality} from '@angular/material/core';
 import {createKeyboardEvent} from '@angular/cdk/testing';
 
-import {ENTER} from '../core/keyboard/keycodes';
+import {ENTER} from '@angular/material/core';
 
 const COMMA = 188;
 

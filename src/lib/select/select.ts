@@ -6,6 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusKeyManager} from '@angular/cdk/a11y';
+import {Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {SelectionModel} from '@angular/cdk/collections';
+import {DOWN_ARROW, END, ENTER, HOME, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
+import {
+  ConnectedOverlayDirective,
+  Overlay,
+  RepositionScrollStrategy,
+  ScrollStrategy,
+  ViewportRuler,
+} from '@angular/cdk/overlay';
+import {Platform} from '@angular/cdk/platform';
+import {filter, startWith} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
   Attribute,
@@ -14,11 +28,13 @@ import {
   Component,
   ContentChild,
   ContentChildren,
+  Directive,
   ElementRef,
   EventEmitter,
   Inject,
   InjectionToken,
   Input,
+  isDevMode,
   OnDestroy,
   OnInit,
   Optional,
@@ -28,45 +44,31 @@ import {
   Self,
   ViewChild,
   ViewEncapsulation,
-  Directive,
-  isDevMode,
 } from '@angular/core';
 import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
-import {DOWN_ARROW, END, ENTER, HOME, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
-import {FocusKeyManager} from '@angular/cdk/a11y';
-import {Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {filter, startWith} from '@angular/cdk/rxjs';
 import {
-  ConnectedOverlayDirective,
-  Overlay,
-  RepositionScrollStrategy,
-  // This import is only used to define a generic type. The current TypeScript version incorrectly
-  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-  // tslint:disable-next-line:no-unused-variable
-  ScrollStrategy,
-  ViewportRuler
-} from '@angular/cdk/overlay';
-import {merge} from 'rxjs/observable/merge';
+  CanColor,
+  CanDisable,
+  FloatPlaceholderType,
+  HasTabIndex,
+  MD_PLACEHOLDER_GLOBAL_OPTIONS,
+  MdOptgroup,
+  MdOption,
+  MdOptionSelectionChange,
+  mixinColor,
+  mixinDisabled,
+  mixinTabIndex,
+  PlaceholderOptions,
+} from '@angular/material/core';
 import {Observable} from 'rxjs/Observable';
+import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
 import {fadeInContent, transformPanel, transformPlaceholder} from './select-animations';
-import {SelectionModel} from '@angular/cdk/collections';
 import {
   getMdSelectDynamicMultipleError,
   getMdSelectNonArrayValueError,
-  getMdSelectNonFunctionValueError
+  getMdSelectNonFunctionValueError,
 } from './select-errors';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
-import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
-import {MdOptgroup, MdOption, MdOptionSelectionChange} from '../core/option/index';
-import {
-  FloatPlaceholderType,
-  MD_PLACEHOLDER_GLOBAL_OPTIONS,
-  PlaceholderOptions
-} from '../core/placeholder/placeholder-options';
-import {Platform} from '@angular/cdk/platform';
-import {HasTabIndex, mixinTabIndex} from '../core/common-behaviors/tabindex';
 
 /**
  * The following style constants are necessary to save here in order

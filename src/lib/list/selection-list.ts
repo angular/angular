@@ -6,34 +6,42 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {SelectionModel} from '@angular/cdk/collections';
 import {
   AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   ElementRef,
-  Input,
-  QueryList,
-  ViewEncapsulation,
-  Optional,
-  Renderer2,
   EventEmitter,
-  Output,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  OnDestroy,
   forwardRef,
   Inject,
+  Input,
+  OnDestroy,
+  Optional,
+  Output,
+  QueryList,
+  Renderer2,
+  ViewEncapsulation,
 } from '@angular/core';
-import {coerceBooleanProperty, SelectionModel, MdLine, MdLineSetter} from '../core';
-import {FocusKeyManager} from '../core/a11y/focus-key-manager';
-import {Subscription} from 'rxjs/Subscription';
-import {SPACE} from '../core/keyboard/keycodes';
-import {FocusableOption} from '../core/a11y/focus-key-manager';
-import {CanDisable, mixinDisabled} from '../core/common-behaviors/disabled';
-import {RxChain, switchMap, startWith} from '../core/rxjs/index';
+import {
+  CanDisable,
+  CanDisableRipple,
+  MATERIAL_COMPATIBILITY_MODE,
+  MdLine,
+  MdLineSetter,
+  mixinDisabled,
+  mixinDisableRipple,
+  RxChain,
+  SPACE,
+  startWith,
+  switchMap,
+} from '@angular/material/core';
 import {merge} from 'rxjs/observable/merge';
-import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
-import {MATERIAL_COMPATIBILITY_MODE} from '../core/compatibility/compatibility';
+import {Subscription} from 'rxjs/Subscription';
 
 
 /** @docs-private */

@@ -1,14 +1,14 @@
-import {join} from 'path';
+import {appendFileSync} from 'fs';
 import {mkdirpSync} from 'fs-extra';
-import {copyFiles} from './copy-files';
-import {replaceVersionPlaceholders} from './version-placeholders';
-import {inlinePackageMetadataFiles} from './metadata-inlining';
-import {createTypingsReexportFile} from './typings-reexport';
-import {createMetadataReexportFile} from './metadata-reexport';
-import {getSecondaryEntryPointsForPackage} from './secondary-entry-points';
-import {createEntryPointPackageJson} from './entry-point-package-json';
+import {join} from 'path';
 import {buildConfig} from './build-config';
 import {BuildPackage} from './build-package';
+import {copyFiles} from './copy-files';
+import {createEntryPointPackageJson} from './entry-point-package-json';
+import {inlinePackageMetadataFiles} from './metadata-inlining';
+import {createMetadataReexportFile} from './metadata-reexport';
+import {createTypingsReexportFile} from './typings-reexport';
+import {replaceVersionPlaceholders} from './version-placeholders';
 
 const {packagesDir, outputDir, projectDir} = buildConfig;
 
@@ -21,33 +21,61 @@ const bundlesDir = join(outputDir, 'bundles');
  * file. Additionally the package will be Closure Compiler and AOT compatible.
  */
 export function composeRelease(buildPackage: BuildPackage) {
-  const {packageName, packageOut, packageRoot} = buildPackage;
-  const releasePath = join(outputDir, 'releases', packageName);
+  const {name, sourceDir} = buildPackage;
+  const packageOut = buildPackage.outputDir;
+  const releasePath = join(outputDir, 'releases', name);
 
   inlinePackageMetadataFiles(packageOut);
 
+  // Copy all d.ts and metadata files to the `typings/` directory
   copyFiles(packageOut, '**/*.+(d.ts|metadata.json)', join(releasePath, 'typings'));
-  copyFiles(bundlesDir, `${packageName}?(-*).umd?(.min).js?(.map)`, join(releasePath, 'bundles'));
-  copyFiles(bundlesDir, `${packageName}?(.es5).js?(.map)`, join(releasePath, '@angular'));
-  copyFiles(join(bundlesDir, packageName), '**', join(releasePath, '@angular', packageName));
+
+  // Copy UMD bundles.
+  copyFiles(bundlesDir, `${name}?(-*).umd?(.min).js?(.map)`, join(releasePath, 'bundles'));
+
+  // Copy ES5 bundles.
+  copyFiles(bundlesDir, `${name}.es5.js?(.map)`, join(releasePath, 'esm5'));
+  copyFiles(join(bundlesDir, name), `*.es5.js?(.map)`, join(releasePath, 'esm5'));
+
+  // Copy ES2015 bundles
+  copyFiles(bundlesDir, `${name}.js?(.map)`, join(releasePath, 'esm2015'));
+  copyFiles(join(bundlesDir, name), `!(*.es5|*.umd).js?(.map)`, join(releasePath, 'esm2015'));
+
+  // Copy any additional files that belong in the package.
   copyFiles(projectDir, 'LICENSE', releasePath);
   copyFiles(packagesDir, 'README.md', releasePath);
-  copyFiles(packageRoot, 'package.json', releasePath);
+  copyFiles(sourceDir, 'package.json', releasePath);
 
   replaceVersionPlaceholders(releasePath);
-  createTypingsReexportFile(releasePath, './typings/index', packageName);
-  createMetadataReexportFile(releasePath, './typings/index', packageName);
+  createTypingsReexportFile(releasePath, './typings/index', name);
+  createMetadataReexportFile(releasePath, './typings/index', name);
 
   if (buildPackage.secondaryEntryPoints.length) {
     createFilesForSecondaryEntryPoint(buildPackage, releasePath);
+  }
+
+  if (buildPackage.exportsSecondaryEntryPointsAtRoot) {
+    // Add re-exports to the root d.ts file to prevent errors of the form
+    // "@angular/material/material has no exported member 'MATERIAL_SANITY_CHECKS."
+    const es2015Exports = buildPackage.secondaryEntryPoints
+        .map(p => `export * from './${p}';`).join('\n');
+    appendFileSync(join(releasePath, `${name}.d.ts`), es2015Exports, 'utf-8');
+
+    // When re-exporting secondary entry-points, we need to manually create a metadata file that
+    // re-exports everything.
+    createMetadataReexportFile(
+        releasePath,
+        buildPackage.secondaryEntryPoints.map(p => `./${p}`),
+        name);
   }
 }
 
 /** Creates files necessary for a secondary entry-point. */
 function createFilesForSecondaryEntryPoint(buildPackage: BuildPackage, releasePath: string) {
-  const {packageName, packageOut} = buildPackage;
+  const {name} = buildPackage;
+  const packageOut = buildPackage.outputDir;
 
-  getSecondaryEntryPointsForPackage(buildPackage).forEach(entryPointName => {
+  buildPackage.secondaryEntryPoints.forEach(entryPointName => {
     // Create a directory in the root of the package for this entry point that contains
     // * A package.json that lists the different bundle locations
     // * An index.d.ts file that re-exports the index.d.ts from the typings/ directory
@@ -55,7 +83,7 @@ function createFilesForSecondaryEntryPoint(buildPackage: BuildPackage, releasePa
     const entryPointDir = join(releasePath, entryPointName);
 
     mkdirpSync(entryPointDir);
-    createEntryPointPackageJson(entryPointDir, packageName, entryPointName);
+    createEntryPointPackageJson(entryPointDir, name, entryPointName);
 
     // Copy typings and metadata from tsc output location into the entry-point.
     copyFiles(

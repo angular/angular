@@ -25,10 +25,10 @@ import {
   transition,
   animate,
 } from '@angular/animations';
-import {SPACE, ENTER} from '../core/keyboard/keycodes';
+import {SPACE, ENTER} from '@angular/material/core';
 import {MdExpansionPanel, EXPANSION_PANEL_ANIMATION_TIMING} from './expansion-panel';
-import {filter} from '../core/rxjs/index';
-import {FocusOriginMonitor} from '../core/style/index';
+import {filter} from '@angular/material/core';
+import {FocusOriginMonitor} from '@angular/material/core';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
 

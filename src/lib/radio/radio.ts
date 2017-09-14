@@ -34,11 +34,11 @@ import {
   MdRipple,
   FocusOriginMonitor,
   FocusOrigin,
-} from '../core';
+} from '@angular/material/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
-import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
+import {mixinDisabled, CanDisable} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
+import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
 
 // Increasing integer for generating unique ids for radio components.
 let nextUniqueId = 0;

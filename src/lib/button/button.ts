@@ -12,18 +12,23 @@ import {
   Directive,
   ElementRef,
   forwardRef,
+  Inject,
   OnDestroy,
   Optional,
   Renderer2,
   Self,
   ViewEncapsulation,
-  Inject,
 } from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
-import {FocusOriginMonitor} from '../core';
-import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
-import {CanColor, mixinColor} from '../core/common-behaviors/color';
-import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
+import {
+  CanColor,
+  CanDisable,
+  CanDisableRipple,
+  FocusOriginMonitor,
+  mixinColor,
+  mixinDisabled,
+  mixinDisableRipple
+} from '@angular/material/core';
 
 
 // TODO(kara): Convert attribute selectors to classes when attr maps become available

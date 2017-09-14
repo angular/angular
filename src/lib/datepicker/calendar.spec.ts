@@ -16,12 +16,12 @@ import {
   PAGE_UP,
   RIGHT_ARROW,
   UP_ARROW
-} from '../core/keyboard/keycodes';
+} from '@angular/material/core';
 import {MdDatepickerIntl} from './datepicker-intl';
-import {MdNativeDateModule} from '../core/datetime/index';
-import {NoConflictStyleCompatibilityMode} from '../core';
+import {MdNativeDateModule} from '@angular/material/core';
+import {NoConflictStyleCompatibilityMode} from '@angular/material/core';
 import {MdButtonModule} from '../button/index';
-import {AUG, DEC, FEB, JAN, JUL, NOV, MAR, MAY, JUN, SEP} from '../core/testing/month-constants';
+import {AUG, DEC, FEB, JAN, JUL, NOV, MAR, MAY, JUN, SEP} from '@angular/material/core';
 
 describe('MdCalendar', () => {
   beforeEach(async(() => {

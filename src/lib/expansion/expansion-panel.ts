@@ -6,32 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {
-  Component,
-  Directive,
-  Host,
-  Input,
-  ViewEncapsulation,
-  Optional,
-  forwardRef,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  SimpleChanges,
+  Component,
+  Directive,
+  forwardRef,
+  Host,
+  Input,
   OnChanges,
   OnDestroy,
+  Optional,
+  SimpleChanges,
+  ViewEncapsulation,
 } from '@angular/core';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from '@angular/animations';
+import {CanDisable, mixinDisabled, UniqueSelectionDispatcher} from '@angular/material/core';
+import {Subject} from 'rxjs/Subject';
 import {MdAccordion} from './accordion';
 import {AccordionItem} from './accordion-item';
-import {UniqueSelectionDispatcher} from '../core';
-import {mixinDisabled, CanDisable} from '../core/common-behaviors/disabled';
-import {Subject} from 'rxjs/Subject';
+
 
 // Boilerplate for applying mixins to MdExpansionPanel.
 /** @docs-private */

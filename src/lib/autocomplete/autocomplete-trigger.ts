@@ -6,6 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
+import {DOWN_ARROW, ENTER, ESCAPE, UP_ARROW} from '@angular/cdk/keycodes';
+import {
+  ConnectedPositionStrategy,
+  Overlay,
+  OverlayRef,
+  OverlayState,
+  PositionStrategy,
+  RepositionScrollStrategy,
+  ScrollStrategy,
+} from '@angular/cdk/overlay';
+import {TemplatePortal} from '@angular/cdk/portal';
+import {filter, first, map, RxChain, switchMap} from '@angular/cdk/rxjs';
 import {
   ChangeDetectorRef,
   Directive,
@@ -21,30 +34,14 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {MdOption, MdOptionSelectionChange} from '@angular/material/core';
+import {MdFormField} from '@angular/material/form-field';
 import {DOCUMENT} from '@angular/platform-browser';
-import {Directionality} from '@angular/cdk/bidi';
-import {filter, first, map, RxChain, switchMap} from '@angular/cdk/rxjs';
-import {
-  ConnectedPositionStrategy,
-  Overlay,
-  OverlayRef,
-  OverlayState,
-  PositionStrategy,
-  RepositionScrollStrategy,
-  // This import is only used to define a generic type. The current TypeScript version incorrectly
-  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-  // tslint:disable-next-line:no-unused-variable
-  ScrollStrategy,
-} from '@angular/cdk/overlay';
-import {TemplatePortal} from '@angular/cdk/portal';
-import {DOWN_ARROW, ENTER, ESCAPE, UP_ARROW} from '@angular/cdk/keycodes';
 import {Observable} from 'rxjs/Observable';
-import {MdFormField} from '../form-field/index';
-import {Subscription} from 'rxjs/Subscription';
-import {merge} from 'rxjs/observable/merge';
 import {fromEvent} from 'rxjs/observable/fromEvent';
+import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
-import {MdOption, MdOptionSelectionChange} from '../core/option/option';
+import {Subscription} from 'rxjs/Subscription';
 import {MdAutocomplete} from './autocomplete';
 
 

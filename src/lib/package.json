@@ -3,8 +3,8 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular Material",
   "main": "./bundles/material.umd.js",
-  "module": "./@angular/material.es5.js",
-  "es2015": "./@angular/material.js",
+  "module": "./esm5/material.es5.js",
+  "es2015": "./esm2015/material.js",
   "typings": "./material.d.ts",
   "repository": {
     "type": "git",

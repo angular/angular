@@ -7,6 +7,7 @@ import {sequenceTask} from './sequence-task';
 import {watchFiles} from './watch-files';
 import {BuildPackage} from '../build-package';
 
+
 // There are no type definitions available for these imports.
 const htmlmin = require('gulp-htmlmin');
 
@@ -20,19 +21,19 @@ const htmlMinifierOptions = {
 /** Creates a set of gulp tasks that can build the specified package. */
 export function createPackageBuildTasks(buildPackage: BuildPackage) {
   // Name of the package build tasks for Gulp.
-  const taskName = buildPackage.packageName;
+  const taskName = buildPackage.name;
 
   // Name of all dependencies of the current package.
-  const dependencyNames = buildPackage.dependencies.map(p => p.packageName);
+  const dependencyNames = buildPackage.dependencies.map(p => p.name);
 
   // Glob that matches all style files that need to be copied to the package output.
-  const stylesGlob = join(buildPackage.packageRoot, '**/*.+(scss|css)');
+  const stylesGlob = join(buildPackage.sourceDir, '**/*.+(scss|css)');
 
   // Glob that matches every HTML file in the current package.
-  const htmlGlob = join(buildPackage.packageRoot, '**/*.html');
+  const htmlGlob = join(buildPackage.sourceDir, '**/*.html');
 
   // List of watch tasks that need run together with the watch task of the current package.
-  const dependentWatchTasks = buildPackage.dependencies.map(p => `${p.packageName}:watch`);
+  const dependentWatchTasks = buildPackage.dependencies.map(p => `${p.name}:watch`);
 
   /**
    * Main tasks for the package building. Tasks execute the different sub-tasks in the correct
@@ -86,22 +87,22 @@ export function createPackageBuildTasks(buildPackage: BuildPackage) {
   ]);
 
   task(`${taskName}:assets:scss`, buildScssTask(
-    buildPackage.packageOut, buildPackage.packageRoot, true)
+    buildPackage.outputDir, buildPackage.sourceDir, true)
   );
 
   task(`${taskName}:assets:copy-styles`, () => {
-    return src(stylesGlob).pipe(dest(buildPackage.packageOut));
+    return src(stylesGlob).pipe(dest(buildPackage.outputDir));
   });
   task(`${taskName}:assets:html`, () => {
-    return src(htmlGlob).pipe(htmlmin(htmlMinifierOptions)).pipe(dest(buildPackage.packageOut));
+    return src(htmlGlob).pipe(htmlmin(htmlMinifierOptions)).pipe(dest(buildPackage.outputDir));
   });
 
-  task(`${taskName}:assets:inline`, () => inlineResourcesForDirectory(buildPackage.packageOut));
+  task(`${taskName}:assets:inline`, () => inlineResourcesForDirectory(buildPackage.outputDir));
 
   /**
    * Watch tasks, that will rebuild the package whenever TS, SCSS, or HTML files change.
    */
   task(`${taskName}:watch`, dependentWatchTasks, () => {
-    watchFiles(join(buildPackage.packageRoot, '**/*.+(ts|scss|html)'), [`${taskName}:build`]);
+    watchFiles(join(buildPackage.sourceDir, '**/*.+(ts|scss|html)'), [`${taskName}:build`]);
   });
 }

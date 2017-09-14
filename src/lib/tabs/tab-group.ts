@@ -28,8 +28,8 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Subscription} from 'rxjs/Subscription';
 import {MdTab} from './tab';
 import {merge} from 'rxjs/observable/merge';
-import {CanDisableRipple, mixinDisableRipple} from '../core/common-behaviors/disable-ripple';
-import {CanColor, mixinColor, ThemePalette} from '../core/common-behaviors/color';
+import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
+import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 
 
 /** Used to generate unique ID's for each tab component */
