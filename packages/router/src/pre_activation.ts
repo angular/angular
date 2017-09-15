@@ -26,8 +26,10 @@ import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
 class CanActivate {
-  constructor(public path: ActivatedRouteSnapshot[]) {}
-  get route(): ActivatedRouteSnapshot { return this.path[this.path.length - 1]; }
+  readonly route: ActivatedRouteSnapshot;
+  constructor(public path: ActivatedRouteSnapshot[]) {
+    this.route = this.path[this.path.length - 1];
+  }
 }
 
 class CanDeactivate {
