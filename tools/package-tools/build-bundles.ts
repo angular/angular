@@ -147,7 +147,7 @@ export class PackageBundler {
       // secondary entry-points from the rollup globals because we want the UMD for this package
       // to include *all* of the sources for those entry-points.
       if (this.buildPackage.exportsSecondaryEntryPointsAtRoot) {
-        const importRegex = new RegExp(`@angular/${this.buildPackage.name}/.+`, 'g');
+        const importRegex = new RegExp(`@angular/${this.buildPackage.name}/.+`);
         external = external.filter(e => !importRegex.test(e));
 
         // Use the rollup-alias plugin to map imports of the form `@angular/material/button`
