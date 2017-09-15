@@ -26,13 +26,19 @@ const LOCAL_GOLDENS = path.join(SCREENSHOT_DIR, `golds`);
 const LOCAL_DIFFS = path.join(SCREENSHOT_DIR, `diff`);
 
 // Directory to which untrusted screenshot results are temporarily written
-//   (without authentication required) before they are verified and copied to
-//   the final storage location.
+// (without authentication required) before they are verified and copied to
+// the final storage location.
 const TEMP_FOLDER = 'untrustedInbox';
 const FIREBASE_REPORT = `${TEMP_FOLDER}/screenshot/reports`;
 const FIREBASE_IMAGE = `${TEMP_FOLDER}/screenshot/images`;
 const FIREBASE_DATA_GOLDENS = `screenshot/goldens`;
 const FIREBASE_STORAGE_GOLDENS = 'goldens';
+
+/** Time in ms until the process will be exited if the last action took too long (6 minutes). */
+const lastActionTimeout = 1000 * 60 * 6;
+
+/** Time in ms that specifies how often the last action should be checked (45 seconds). */
+const lastActionRefreshInterval = 1000 * 45;
 
 /** Task which upload screenshots generated from e2e test. */
 task('screenshots', () => {
@@ -44,14 +50,20 @@ task('screenshots', () => {
   } else if (prNumber) {
     const firebaseApp = connectFirebaseScreenshots();
     const database = firebaseApp.database();
-
-    // If this task hasn't completed in 8 minutes, close the firebase connection.
-    const timeoutId = setTimeout(() => {
-      console.error('Screenshot tests did not finish in 8 minutes, closing Firebase connection.');
-      return firebaseApp.delete();
-    }, 60 * 1000 * 8);
-
     let lastActionTime = Date.now();
+
+    // If the last action of the task takes longer than 6 minutes, close the firebase connection.
+    const timeoutId = setInterval(() => {
+      if (lastActionTime + lastActionTimeout <= Date.now()) {
+        clearTimeout(timeoutId);
+        console.error('Last action for screenshot tests did not finish in ' +
+            (lastActionTimeout / 1000 / 60) + ' minutes. Closing Firebase connection...');
+        return firebaseApp.delete().then(() => process.exit(1));
+      }
+    }, lastActionRefreshInterval);
+
+    console.log(`  Starting screenshots task with results from e2e task...`);
+
     return uploadTravisJobInfo(database, prNumber)
       .then(() => {
         console.log(`  Downloading screenshot golds from Firebase...`);
