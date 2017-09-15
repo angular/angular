@@ -148,7 +148,10 @@ groups:
   common:
     conditions:
       files:
-        - "packages/common/*"
+        include:
+          - "packages/common/*"
+        exclude:
+          - "packages/common/http/*"
     users:
       - pkozlowski-opensource #primary
       - vicb
@@ -168,6 +171,7 @@ groups:
   http:
     conditions:
       files:
+        - "packages/common/http/*"
         - "packages/http/*"
     users:
       - vikerman #primary
