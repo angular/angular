@@ -8,6 +8,7 @@
 
 const STRIP_SRC_FILE_SUFFIXES = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const GENERATED_FILE = /\.ngfactory\.|\.ngsummary\./;
+const GENERATED_MODULE = /\.ngfactory$|\.ngsummary$/;
 const JIT_SUMMARY_FILE = /\.ngsummary\./;
 const JIT_SUMMARY_NAME = /NgSummary$/;
 
