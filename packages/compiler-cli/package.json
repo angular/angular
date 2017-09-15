@@ -1,6 +1,6 @@
 {
   "name": "@angular/compiler-cli",
-  "version": "4.4.0",
+  "version": "4.4.1",
   "description": "Angular - the compiler CLI for Node.js",
   "main": "index.js",
   "typings": "index.d.ts",
