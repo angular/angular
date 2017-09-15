@@ -1,17 +1,5 @@
-<a name="4.4.0"></a>
-# [4.4.0](https://github.com/angular/angular/compare/4.4.0-RC.0...4.4.0) (2017-09-15)
-
-
-### Bug Fixes
-
-* **tsc-wrapped:** deduplicate metadata for re-exported modules ([48ae1a6](https://github.com/angular/angular/commit/48ae1a6))
-* **tsc-wrapped:** fix metadata symbol reference ([f6a7183](https://github.com/angular/angular/commit/f6a7183))
-* **upgrade:** remove code setting id attribute. ([#19182](https://github.com/angular/angular/issues/19182)) ([b20c5d2](https://github.com/angular/angular/commit/b20c5d2)), closes [#18446](https://github.com/angular/angular/issues/18446)
-
-
-
-<a name="4.4.0-RC.0"></a>
-# [4.4.0-RC.0](https://github.com/angular/angular/compare/4.3.6...4.4.0-RC.0) (2017-09-02)
+<a name="4.4.1"></a>
+# [4.4.1](https://github.com/angular/angular/compare/4.4.0-RC.0...4.4.1) (2017-09-15)
 
 
 ### Bug Fixes
@@ -21,12 +9,18 @@
 * **common:** fix XSSI prefix stripping by using JSON.parse always ([#18466](https://github.com/angular/angular/issues/18466)) ([8821723](https://github.com/angular/angular/commit/8821723)), closes [#18396](https://github.com/angular/angular/issues/18396) [#18453](https://github.com/angular/angular/issues/18453)
 * **compiler:** normalize the locale name ([#18963](https://github.com/angular/angular/issues/18963)) ([497e017](https://github.com/angular/angular/commit/497e017))
 * **core:** complete EventEmitter in QueryList on component destroy ([#18902](https://github.com/angular/angular/issues/18902)) ([7d137d7](https://github.com/angular/angular/commit/7d137d7)), closes [#18741](https://github.com/angular/angular/issues/18741)
+* **tsc-wrapped:** deduplicate metadata for re-exported modules ([48ae1a6](https://github.com/angular/angular/commit/48ae1a6))
+* **tsc-wrapped:** fix metadata symbol reference ([f6a7183](https://github.com/angular/angular/commit/f6a7183))
+* **upgrade:** remove code setting id attribute. ([#19182](https://github.com/angular/angular/issues/19182)) ([b20c5d2](https://github.com/angular/angular/commit/b20c5d2)), closes [#18446](https://github.com/angular/angular/issues/18446)
 
 
 ### Features
 
 * **compiler:** allow multiple exportAs names ([#18723](https://github.com/angular/angular/issues/18723)) ([7ec28fe](https://github.com/angular/angular/commit/7ec28fe))
 * **core:** add option to remove blank text nodes from compiled templates ([#18823](https://github.com/angular/angular/issues/18823)) ([b8b551c](https://github.com/angular/angular/commit/b8b551c))
+
+
+Note: the 4.4.0 release on npm accidentally glitched-out midway, so we cut 4.4.1 instead. oops :-)
 
 
 
@@ -49,31 +43,6 @@
 
 * **animations:** allow @.disabled property to work without an expression ([#18713](https://github.com/angular/angular/issues/18713)) ([ac58914](https://github.com/angular/angular/commit/ac58914))
 * **common:** add an empty DeprecatedI18NPipesModule module ([793f31b](https://github.com/angular/angular/commit/793f31b))
-
-
-
-<a name="5.0.0-beta.4"></a>
-# [5.0.0-beta.4](https://github.com/angular/angular/compare/5.0.0-beta.3...5.0.0-beta.4) (2017-08-16)
-
-
-### Bug Fixes
-
-* **compiler:** Don't strip CSS source maps ([64b4be9](https://github.com/angular/angular/commit/64b4be9))
-* **forms:** re-assigning options should not clear select ([32ff21c](https://github.com/angular/angular/commit/32ff21c)), closes [#18330](https://github.com/angular/angular/issues/18330)
-* **language-service:** remove tsickle dependency ([bc22ff1](https://github.com/angular/angular/commit/bc22ff1))
-
-
-### Features
-
-* **common:** mark NgTemplateOutlet API as stable ([0a73e8d](https://github.com/angular/angular/commit/0a73e8d))
-* **forms:** add status to `AbstractControlDirective` ([233ef93](https://github.com/angular/angular/commit/233ef93))
-* **forms:** add updateOn support to ngModelOptions ([1cfa79c](https://github.com/angular/angular/commit/1cfa79c))
-
-
-### Performance Improvements
-
-* **core:** add option to remove blank text nodes from compiled templates ([d2c0d98](https://github.com/angular/angular/commit/d2c0d98))
-* **core:** Remove decorator DSL which depends on Reflect ([cac130e](https://github.com/angular/angular/commit/cac130e))
 
 
 
