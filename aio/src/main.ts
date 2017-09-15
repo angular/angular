@@ -16,3 +16,7 @@ platformBrowserDynamic().bootstrapModule(AppModule).then(ref => {
     });
   }
 });
+
+console.log(1);
+console.log(1);
+console.log(1);

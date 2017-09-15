@@ -112,35 +112,6 @@ export class NgTools_InternalApi_NG_2 {
   /**
    * @internal
    */
-  static listLazyRoutes(options: NgTools_InternalApi_NG2_ListLazyRoutes_Options):
-      NgTools_InternalApi_NG_2_LazyRouteMap {
-    const angularCompilerOptions = options.angularCompilerOptions;
-    const program = options.program;
-
-    const moduleResolutionHost = new ModuleResolutionHostAdapter(options.host);
-    const usePathMapping =
-        !!angularCompilerOptions.rootDirs && angularCompilerOptions.rootDirs.length > 0;
-    const ngCompilerHost: AotCompilerHost = usePathMapping ?
-        new PathMappedCompilerHost(program, angularCompilerOptions, moduleResolutionHost) :
-        new CompilerHost(program, angularCompilerOptions, moduleResolutionHost);
-
-    const symbolCache = new StaticSymbolCache();
-    const summaryResolver = new AotSummaryResolver(ngCompilerHost, symbolCache);
-    const symbolResolver = new StaticSymbolResolver(ngCompilerHost, symbolCache, summaryResolver);
-    const staticReflector = new StaticReflector(summaryResolver, symbolResolver);
-    const routeMap = listLazyRoutesOfModule(options.entryModule, ngCompilerHost, staticReflector);
-
-    return Object.keys(routeMap).reduce(
-        (acc: NgTools_InternalApi_NG_2_LazyRouteMap, route: string) => {
-          acc[route] = routeMap[route].absoluteFilePath;
-          return acc;
-        },
-        {});
-  }
-
-  /**
-   * @internal
-   */
   static extractI18n(options: NgTools_InternalApi_NG2_ExtractI18n_Options): Promise<any> {
     const hostContext: CompilerHostContext =
         new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
