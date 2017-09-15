@@ -172,7 +172,7 @@ export class PackageBundler {
   private getResolvedSecondaryEntryPointImportPaths(bundleOutputDir: string) {
     return this.buildPackage.secondaryEntryPoints.reduce((map, p) => {
       map[`@angular/${this.buildPackage.name}/${p}`] =
-          join(dirname(bundleOutputDir), 'material', `${p}.es5`);
+          join(dirname(bundleOutputDir), this.buildPackage.name, `${p}.es5.js`);
       return map;
     }, {} as {[key: string]: string});
   }
