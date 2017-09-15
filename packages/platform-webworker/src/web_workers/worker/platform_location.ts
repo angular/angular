@@ -23,6 +23,9 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   public initialized: Promise<any>;
   private initializedResolve: () => void;
 
+  readonly search: string;
+  readonly hash: string;
+
   constructor(
       brokerFactory: ClientMessageBrokerFactory, bus: MessageBus, private _serializer: Serializer) {
     super();
@@ -42,7 +45,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
           if (listeners) {
             // There was a popState or hashChange event, so the location object thas been updated
-            this._location = this._serializer.deserialize(msg['location'], LocationType);
+            this._setLocation(this._serializer.deserialize(msg['location'], LocationType));
             listeners.forEach((fn: Function) => fn(msg['event']));
           }
         }
@@ -57,7 +60,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
     return this._broker.runOnService(args, LocationType) !.then(
         (val: LocationType) => {
-          this._location = val;
+          this._setLocation(val);
           this.initializedResolve();
           return true;
         },
@@ -75,10 +78,6 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   get pathname(): string { return this._location ? this._location.pathname ! : '<unknown>'; }
 
-  get search(): string { return this._location ? this._location.search : '<unknown>'; }
-
-  get hash(): string { return this._location ? this._location.hash : '<unknown>'; }
-
   set pathname(newPath: string) {
     if (this._location === null) {
       throw new Error('Attempt to set pathname before value is obtained from UI');
@@ -89,6 +88,12 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
     const fnArgs = [new FnArg(newPath, SerializerTypes.PRIMITIVE)];
     const args = new UiArguments('setPathname', fnArgs);
     this._broker.runOnService(args, null);
+  }
+
+  private _setLocation(location: LocationType) {
+    this._location = location;
+    (this as{search: string}).search = this._location ? this._location.search : '<unknown>';
+    (this as{hash: string}).hash = this._location ? this._location.hash : '<unknown>';
   }
 
   pushState(state: any, title: string, url: string): void {
