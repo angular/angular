@@ -1,8 +1,8 @@
 {
   "files":[
+    "!dist/",
     "!**/*.d.ts",
-    "!**/src/**/*.js",
-    "!**/universal/**/*.js"
+    "!**/src/**/*.js"
   ],
   "removeSystemJsConfig": false,
   "type": "universal"

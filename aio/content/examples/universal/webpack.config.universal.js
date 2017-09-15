@@ -1,40 +1,44 @@
+// #docregion
 const ngtools = require('@ngtools/webpack');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
-// #docregion entry
   entry: {
     main: [
       './src/universal/app-server.module.ts',
       './src/universal/server.ts'
     ]
   },
-// #enddocregion entry
   resolve: {
     extensions: ['.ts', '.js']
   },
   target: 'node',
-// #docregion output
   output: {
-    path: 'src/dist',
+    path: 'dist',
     filename: 'server.js'
   },
-// #enddocregion output
-// #docregion plugins
   plugins: [
+    // compile with AOT
     new ngtools.AotPlugin({
-      tsConfigPath: './tsconfig-universal.json'
-    })
+      tsConfigPath: './tsconfig.universal.json'
+    }),
+
+    // copy assets to the output (/dist) folder
+    new CopyWebpackPlugin([
+      {from: 'src/index-universal.html'},
+      {from: 'src/favicon.ico'},
+      {from: 'src/styles.css'},
+      {from: 'node_modules/core-js/client/shim.min.js'},
+      {from: 'node_modules/zone.js/dist/zone.min.js'},
+  ])
   ],
-// #enddocregion plugins
-// #docregion rules
   module: {
     rules: [
-      { test: /\.css$/, loader: 'raw-loader' },
+      { test: /\.css$/,  loader: 'raw-loader' },
       { test: /\.html$/, loader: 'raw-loader' },
-      { test: /\.ts$/, loader: '@ngtools/webpack' }
+      { test: /\.ts$/,   loader: '@ngtools/webpack' }
     ]
   }
-// #enddocregion rules
 }

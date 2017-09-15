@@ -1,4 +1,4 @@
-# Angular Universal
+# Angular Universal: server-side rendering
 
 This guide describes **Angular Universal**, a technology that runs your Angular application on the server.
 
@@ -9,12 +9,6 @@ through a process called **server-side rendering (SSR)**.
 
 It can generate and serve those pages in response to requests from browsers.
 It can also pre-generate pages as HTML files that you serve later.
-
-Universal's server-side rendering has several potential benefits:
-
-* [Facilitate web crawlers (SEO)](#web-crawlers).
-* [Show content sooner](#startup-performance).
-* [Perform well on mobile and low power devices](#no-javascript).
 
 This guide describes a Universal sample application that launches quickly as a server-rendered page.
 Meanwhile, the browser downloads the full client version and switches to it automatically after the code loads. 
@@ -37,7 +31,7 @@ The build setup described in this guide is experimental and subject to change.
 
 ## Overview
 
-This overview explains the benefits of a Universal application, how it works, and the limitations of server-side rendering. Then it describes the sample application that goes with this guide.
+This overview explains the benefits of a Universal application and how it works. Then it describes the sample application that goes with this guide.
 
 Subsequent sections describe a sample Universal application derived from the Tour of Heroes tutorial
 and explain how to build and run that app.
@@ -84,9 +78,9 @@ Displaying the first page quickly can be critical for user engagement.
 Captive users of a line-of-business app may have to wait. 
 But a casual visitor will switch to a faster site if your app takes "too long" to show the first page.
 
-While [AOT](guide/aot-compiler) compilation speeds up application start times, it may not be fast enough, especially on mobile devices with slow connections.
+While [AOT](guide/aot-compiler) compilation speeds up application start times, it might not be fast enough for some of your audience, especially users on mobile devices with slow connections.
 [53% of mobile site visits are abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if pages take longer than 3 seconds to load.
-Your app needs to load quickly, to engage users before they decide to do something else.
+Your app may have to launch faster to engage these users before they decide to do something else.
 
 With Angular Universal, you can generate landing pages for the app that look like the complete app.
 The pages are pure HTML, and can display even if JavaScript is disabled.
@@ -127,8 +121,6 @@ Each request results in the appropriate view for the requested route.
 The `renderModuleFactory` renders that view within the `<app>` tag of the template, creating a finished HTML page for the client.
 
 Finally, the server returns the rendered page to the client.
-
-{@a limitations}
 
 ### Working around the browser APIs
 
@@ -171,7 +163,7 @@ You will create:
  * a server-side app module, `app.server.module.ts`
  * a Universal app renderer, `universal-engine.ts`
  * an express web server to handle requests, `server.ts`
- * a TypeScript config file, `tsconfig-universal.json`
+ * a TypeScript config file, `tsconfig.universal.json`
  * a Webpack config file, `webpack.config.universal.js`
 
 When you're done, the folder structure will look like this:
@@ -179,22 +171,28 @@ When you're done, the folder structure will look like this:
 <code-example format="." language="none" linenums="false">
 src/  
   index.html                 <i>app web page</i>
+  index-universal.html       <i>* universal app web page template</i>
   main.ts                    <i>bootstrapper for client app</i>
   style.css                  <i>styles for the app</i>
   systemjs.config.js         <i>SystemJS client configuration</i>
   systemjs-angular-loader.js <i>SystemJS add-in</i>
   tsconfig.json              <i>TypeScript client configuration</i>
   app/ ...                   <i>application code</i>
-  dist/
-    server.js                <i>* AOT-compiled server bundle</i>
+  dist/                      <i>* Post-build files</i>
+    client.js                <i>* AOT-compiled client bundle</i>
+    server.js                <i>* express server & universal app bundle</i>
+    index-universal.html     <i>* copy of the app web page template</i>
+    ...                      <i>* copies of other asset files</i>
   universal/                 <i>* folder for universal code</i>
     app-server.module.ts     <i>* server-side application module</i>
     server.ts                <i>* express web server</i>
     universal-engine.ts      <i>* express template engine</i>
 bs-config.json               <i>config file for lite server</i>
 package.json                 <i>npm configuration</i>
-tsconfig-universal.json      <i>* TypeScript Universal configuration</i>
-webpack.config.universal.js        <i>* Webpack Universal configuration</i>
+tsconfig.client.json         <i>* TypeScript client AOT configuration</i>
+tsconfig.universal.json      <i>* TypeScript Universal configuration</i>
+webpack.config.aot.js        <i>* Webpack client AOT configuration</i>
+webpack.config.universal.js  <i>* Webpack Universal configuration</i>
 </code-example>
 
 The files marked with `*` are new and not in the original tutorial sample.
@@ -210,19 +208,20 @@ This guide covers them in the sections below.
 
 To get started, install these Universal and Webpack packages.
 
- * `@angular/compiler-cli` - contains the AOT compiler 
- * `@angular/platform-server` - Universal server-side components
- * `webpack` - Webpack JavaScript bundler
- * `@ngtools/webpack` - Webpack loader and plugin for bundling compiled applications
- * `raw-loader` - Webpack loader for text files
- * `express` - node web server
- * `@types/express` - TypeScript type definitions for express
+ * `@angular/compiler-cli` - contains the AOT compiler.
+ * `@angular/platform-server` - Universal server-side components.
+ * `webpack` - Webpack JavaScript bundler.
+ * `@ngtools/webpack` - Webpack loader and plugin for bundling compiled applications.
+ * `copy-webpack-plugin` - Webpack plugin to copy asset files to the output folder.
+ * `raw-loader` - Webpack loader for text files.
+ * `express` - node web server.
+ * `@types/express` - TypeScript type definitions for express.
 
 Install them with the following commands:
 
 <code-example format="." language="bash">
 npm install @angular/compiler-cli @angular/platform-server express --save
-npm install webpack @ngtools/webpack raw-loader @types/express --save-dev
+npm install webpack @ngtools/webpack copy-webpack-plugin raw-loader @types/express --save-dev
 </code-example>
 
 ### Modify the client app
@@ -240,11 +239,12 @@ This gives the appearance of a near-instant application.
 Meanwhile, the browser downloads the client app scripts in background.
 Once loaded, Angular transitions from the static server-rendered page to the dynamically rendered views of the live client app.
 
-To make this work, the template for server-side rendering contains the `<script>` tags necessary to load the JavaScript libraries and other assets for the full client app.
+To make this work, the template for server-side rendering contains the `<script>` tags necessary to load the JavaScript and other asset files for the interactive client app.
 
-As is often the case, the unmodified client `index.html` acts as the template for server-side rendering.
+As is often the case, a production version of the client `index.html` acts as the template for server-side rendering.
+You'll get to that [soon](#index-universal).
 
-But you do have to adjust the root `AppModule`.
+Essential changes to the root `AppModule` are the immediate concern.
 
 Open file `src/app/app.module.ts` and find the `BrowserModule` import in the `NgModule` metadata.
 Replace that import with this one:
@@ -320,16 +320,30 @@ npm start
 
 When you are done, shut down the server with `ctrl-C`.
 
-#### Revert the build
+<div class="alert is-important">
 
-The rest of this page concentrates on the server-side universal app.
-An important [teaching point below](#universal-in-action) assumes that you _did not compile the client-side app_.
-
-To maintain that useful fiction, delete the client-side compiled files.
+If you've been through this guide completely once before,
+the compiler may fail with the following error:
 
 <code-example format="." language="bash">
-rm src/main.js* && rm src/app/*.js*
+ error TS2307: Cannot find module '../../aot/src/universal/app-server.module.ngfactory'.
 </code-example>
+
+You must exclude the _server-side_ `/universal` folder files from _client app_ compilation.
+
+Open `tsconfig.json`, find the `"exclude"` node and add `"universal/*"` to the array. 
+The result might look something like this:
+
+```
+  "exclude": [
+    "node_modules/*",
+    "universal/*"
+  ]
+```
+
+Compile and run again with `npm start`.
+
+</div>
 
 <br><hr>
  
@@ -337,8 +351,7 @@ rm src/main.js* && rm src/app/*.js*
 
 ## Server code
 
-To run an Angular Universal application, you need a server that accepts client requests and returns rendered pages.
-That's not part of the client-side Angular app, so you need to add the necessary pieces.
+To run an Angular Universal application, you'll need a server that accepts client requests and returns rendered pages.
 
 Create a `universal/` folder as a sibling to the `app/` folder.
 
@@ -492,7 +505,7 @@ That file _will exist_, briefly, during compilation.
 The build process creates it in the `../aot` directory, bundles it with other `universal/` code, and erases it during post-build cleanup. It's never around when you're editing `server.ts`.
 
 All will be well as long as you arrange for the AOT compiler to generate this module factory file _before_ it compiles _this_ web server file.
-[Learn how below](#typescript-configuration).
+[Learn how below](#universal-typescript-configuration).
 
 #### Add the Universal template engine
 
@@ -561,55 +574,91 @@ The following code filters for request URLs with no extensions and treats them a
 
 #### Serve static files safely
 
-A single `server.use()` treats all other URLs as requests for static assets.
+A single `server.use()` treats all other URLs as requests for static assets
+such as JavaScript, image, and style files.
+
+To ensure that clients can only download the files that they are _permitted_ to see, you will [put all client-facing asset files in the `/dist` folder](#universal-webpack-configuration)
+and will only honor requests for files from the `/dist` folder.
+
+The following express code routes all remaining requests to `/dist`; it returns a `404 - NOT FOUND` if the file is not found.
 
 <code-example path="universal/src/universal/server.ts" title="src/universal/server.ts (static files)" region="static" linenums="false">
 </code-example>
-
-In this app, valid static assets are either in the `node_modules` folder or the `src` folder,
-a fact enforced by the `root` prefixed to the request URL.
-An attempt to download a file located anywhere else results in `404 - not found`.
-
-For security reasons, locate sensitive files outside of these two folders.
 
 {@a universal-configuration}
 
 ## Configure for Universal
 
-The server application requires its own build configuration, independently from the configuration of the client-side version.
+The server application requires its own web page and its own build configuration.
 
-You'll create two configuration files, one for TypeScript and one for Webpack.
+{@a index-universal}
 
-{@a typescript-configuration}
+### Universal web page
 
-### TypeScript configuration
+The universal app renders pages based on a host web page template.
+Simple universal apps make do with a slightly modified copy of the original `index.html`.
 
-Create a `tsconfig.universal.json` file in the project root directory to configure TypeScript compilation of the universal app.
+<div class="alert is-helpful">
 
-You start with a copy of the client app's `tsconfig.json` and make the following changes.
+If you build a production version of the client app with the CLI's `ng build --prod` command, you do not need a separate universal `index.html`.
+The CLI constructs a suitable `index.html` for you. You can skip this subsection and continue to [universal TypeScript configuration](#universal-typescript-configuration).
 
- * Set the `module` property to `es2015`.
- The transpiled JavaScript will use `import` statements instead of `require()` calls.
+Read on if you're building the app without the CLI.
+
+</div>
+
+Create an `index-universal.html` as follows, shown next to the development `index.html` for comparison.
+
+<code-tabs>
+
+  <code-pane title="src/index-universal.html" path="universal/src/index-universal.html">
+  </code-pane>
+
+  <code-pane title="src/index.html" path="universal/src/index.html">
+  </code-pane>
+
+</code-tabs>
+
+The differences are few.
+
+* Load the minified versions of the `shim` and `zone` polyfills from the root (which will be `/dist`)
+
+* You won't use SystemJS for universal nor to load the client app.
+
+* Instead you'll load the [production version of the client app](#build-client), `client.js`, which is the result of AOT compilation, minification, and bundling.
+
+That's it for `index-universal.html`.
+Next you'll create two universal configuration files, one for TypeScript and one for Webpack.
+
+{@a universal-typescript-configuration}
+
+### Universal TypeScript configuration
+
+Create a `tsconfig.universal.json` file in the project root directory to configure TypeScript and AOT compilation of the universal app.
+
+<code-example path="universal/tsconfig.universal.json" title="tsconfig.universal.json">
+</code-example>
+
+Certain settings are noteworthy for their difference from the `tsconfig.json` in the `src/` folder.
+
+* The `module` property must be **es2015** because
+ the transpiled JavaScript will use `import` statements instead of `require()` calls.
 
 
- * Set the `files` property to compile the `app-server.module` before the `universal-engine`,
+* Point `"typeRoots"` to `"./node_modules/@types/"`
+
+
+* Set the `files` property (instead of `exclude`) to compile the `app-server.module` before the `universal-engine`,
  for the reason [explained above](#import-app-server-module-factory).
 
 
- * Add a new `angularCompilerOptions` section with the following settings:
+* The `angularCompilerOptions` section guides the AOT compiler:
 
-    * `genDir` - the temporary output directory for AOT compiled code.
-    * `entryModule` - the root module of the client application, expressed as `path/to/file#ClassName`.
-    * `skipMetadataEmit` - set `true` because you don't need metadata in the bundled application.
+  * `genDir` - the temporary output directory for AOT compiled code.
+  * `entryModule` - the root module of the client application, expressed as `path/to/file#ClassName`.
+  * `skipMetadataEmit` - set `true` because you don't need metadata in the bundled application.
 
-The resulting `tsconfig.universal.json` should look like this.
-
-<code-example path="universal/tsconfig-universal.json" title="tsconfig-universal.json">
-</code-example>
-
-{@a webpack-configuration}
-
-### Webpack configuration
+### Universal Webpack configuration
 
 Create a `webpack.config.universal.js` file in the project root directory with the following code.
 
@@ -625,18 +674,28 @@ A few observations may clarify some of the choices.
 * The `@ngtools/webpack` loader loads and prepares the TypeScript files for compilation.
 
 
-* The `AotPlugin` runs the AOT compiler (`ngc`) over the prepared TypeScript, guided by the `tsconfig-universal.json` you created [above](#typescript-configuration).
+* The `AotPlugin` runs the AOT compiler (`ngc`) over the prepared TypeScript, guided by the `tsconfig.universal.json` you created [above](#universal-typescript-configuration).
 
 
-* The `raw-loader` loads CSS and HTML files as strings.
+* The `raw-loader` loads imported CSS and HTML files as strings.
 You may need additional loaders or configuration for other file types.
 
 
-* The compiled output and other asset files are bundled into `src/dist/server.js`.
+* The compiled output is bundled into `dist/server.js`.
 
-{@a build-and-serve-universal}
 
-## Build and run
+* The `CopyWebpackPlugin` copies specific static files from their source locations into the `/dist` folder.
+These files include the universal app's web page template, `index-universal.html`, 
+and the JavaScript and CSS files mentioned in it
+... with the notable exception of `client.js` [to be discussed below](#build-client).
+
+<div class="alert is-helpful">
+
+The `CopyWebpackPlugin` step is unnecessary if you [build the client](#build-client) with the CLI.
+
+</div>
+
+## Build and run with universal
 
 Now that you've created the TypeScript and Webpack config files, you can build and run the Universal application.
 
@@ -644,9 +703,10 @@ First add the _build_ and _serve_ commands to the `scripts` section of the `pack
 
 <code-example format="." language="ts">
 "scripts": {
+    ...
     "build:uni": "webpack --config webpack.config.universal.js",
-    "serve:uni": "node src/dist/server.js",
-   ...
+    "serve:uni": "node dist/server.js",
+    ...
 }
 </code-example>
 
@@ -660,8 +720,8 @@ From the command prompt, type
 npm run build:uni
 </code-example>
 
-Webpack compiles and bundles the universal app into a single output file, `src/dist/server.js`, per the [configuration above](#universal-configuration).
-It also generates a [source map](https://webpack.js.org/configuration/devtool/), `src/dist/server.js.map` that correlates the bundle code to the source code.
+Webpack compiles and bundles the universal app into a single output file, `dist/server.js`, per the [configuration above](#universal-configuration).
+It also generates a [source map](https://webpack.js.org/configuration/devtool/), `dist/server.js.map` that correlates the bundle code to the source code.
 
 Source maps are primarily for the browser's [dev tools](https://developers.google.com/web/tools/chrome-devtools/javascript/source-maps), but on the server they help locate compilation errors in your components.
 
@@ -679,8 +739,6 @@ The console window should say
 <code-example format="." language="bash">
 listening on port 3200...
 </code-example>
-
-{@a universal-in-action}
 
 ## Universal in action
 
@@ -701,28 +759,9 @@ But clicks, mouse-moves, and keyboard entries are inert.
 User events other than `routerLink` clicks aren't supported.
 The user must wait for the full client app to arrive.
 
-It will never arrive until you compile the client app,
+It will never arrive until you compile the client app 
+and move the output into the `dist/` folder,
 a step you'll take in just a moment.
-
-<div class="alert is-important">
-
-If these features work, then you actually _did_ build the client version of the app and it is executing in the browser.
-
-You most likely built it earlier when you confirmed that the app still worked after changing the hero services.
-
-While you will compile the client version soon,
-at the moment you want to see how the universal app behaves _without the client version_.
-
-Pretend that you did not build the client version.
-Open a terminal window and _delete the compiled files_.
-
-<code-example format="." language="bash">
-rm src/main.js* && rm src/app/*.js*
-</code-example>
-
-Now the app should still navigate but do nothing with button clicks.
-
-</div>
 
 #### Review the console log
 
@@ -731,98 +770,131 @@ In the console window you should see output like the following:
 
 <code-example format="." language="bash" linenums="false">
 building: /
+Running in the browser with appId=uni
+/favicon.ico
 /styles.css
-/node_modules/core-js/client/shim.min.js
-/node_modules/zone.js/dist/zone.js
-/node_modules/systemjs/dist/system.src.js
-/systemjs.config.js
-/main.js
-Error: ENOENT: no such file or directory, stat '... ./src/main.js' ...
+/shim.min.js
+/zone.min.js
+/client.js
+Error: ENOENT: no such file or directory, stat '... dist/client.js' ...
 </code-example>
 
 The first line shows that the server received a request for '/' and passed it to the Universal engine, which then built the HTML page from your Angular application.
-The application re-routes `/` to `/dashboard`.
 
-Refresh the browser and the first console line becomes `building: /dashboard`.
+Refresh the browser and the first line is `from cache: /` because your _universal template engine_ 
+found the previously rendered page for `/` in its cache.
 
-Refresh again. This time, the first line is `from cache: /dashboard` because your _universal template engine_ 
-found the previously rendered page for `/dashboard` in its cache.
-
-The remaining console log lines report requests for static files coming from `<link>` and `<script>` tags in the `index.html`.
+The remaining console log lines report requests for static files coming from the `<link>` and `<script>` tags in the `index-universal.html`.
 The `.js` files in particular are needed to run the client version of the app in the browser.
 Once they're loaded, Angular  _should_ replace the Universal-rendered page with the full client app.
 
 Except that it didn't!
 
-#### Missing _main.js_ error
+#### Missing _client.js_ error
 
-Note the error at the bottom of the console log that complains about a missing `main.js` file.
-
-<code-example format="." language="bash">
-Error: ENOENT: no such file or directory, stat '... ./src/main.js' ...
-</code-example>
-
-The full client app doesn't launch because `main.js` doesn't exist.
-And `main.js` doesn't exist because you have not yet built the client version of the app. 
-
-{@a client-transition}
-
-#### Build the client app
-
-Now build the client-side version of the app.
+Note the error at the bottom of the console log that complains about a missing `client.js` file.
 
 <code-example format="." language="bash">
-npm run build
+Error: ENOENT: no such file or directory, stat '... dist/client.js' ...
 </code-example>
 
-<div class="alert is-helpful">
+The full client app doesn't launch because `client.js` doesn't exist.
+And `client.js` doesn't exist because you have not yet built the client version of the app. 
 
-This command builds the client app in a verbose, development mode. 
+{@a build-client}
+## Build the client app
 
-Of course you’d build the production version with minimal size in mind, even if you didn’t use universal.
-Building for production is covered elsewhere in the documentation.
+The express server is sending the universal server-side rendered pages to the client.
+But it isn't serving the interactive client app because you haven't built it yet.
 
-</div>
+A key motivation for universal is to quickly render the first page on the client so of course
+you want to transition to the client app as quickly as possible too.
+You should build a small, _production_ version of the client app with that AOT compiler that loads and runs fast.
 
-<div class="alert is-important">
+#### Build the client with the CLI
 
-The compiler may fail with the following error:
+If you're using the CLI to build the client app, you simply run the following command and you're done.
 
 <code-example format="." language="bash">
- error TS2307: Cannot find module '../../aot/src/universal/app-server.module.ngfactory'.
+ng build --prod
 </code-example>
 
-You need to exclude the _server-side_ `/universal` folder files from _client app_ compilation.
+The CLI takes care of the rest, including copying all necessary files to the `/dist` folder.
+By default the CLI produces two separate client app bundles, one with the vendor packages (`vendor.bundle.js`) and one with your application code (`inline.bundle.js`).
 
-Open `tsconfig.json`, find the `"exclude"` node and add `"universal/*"` to the array. 
-The result might look something like this:
+Alternatively, you can build the client using CLI _tools_ but **_without the CLI itself_**.
+Read the following sub-sections if that interests you.
+If not, skip ahead to the section on [throttling](#throttling).
 
-```
-  "exclude": [
-    "node_modules/*",
-    "universal/*"
-  ]
-```
+#### Build the client by hand
 
-Compile again with `npm run build`.
+You can build the application without the considerable help of the CLI.
+You'll still compile with AOT.
+You'll still bundle and minify with Webpack.
 
-</div>
+You'll need two configuration files, just as you did for the universal server: one for TypeScript and one for Webpack.  
+
+The client app versions are only slightly different from the corresponding server files.
+Here they are, followed by notes that call out the differences:
+
+<code-tabs>
+
+  <code-pane title="tsconfig.client.json" path="universal/tsconfig.client.json">
+  </code-pane>
+
+  <code-pane title="webpack.config.client.js" path="universal/webpack.config.client.js">
+  </code-pane>
+  
+</code-tabs>
+
+The **_tsconfig.client.json_** inherits (via `extends`) most settings from the universal `tsconfig`. The _only_ substantive difference is in the `files` section which identifies the client app bootstrapping file, `main.ts`, from which the compiler discovers all other required files.
+
+The **_webpack.config.client.js_** has a few differences, 
+all of them obvious.
+
+* There is only one `entry.main` file, `main.ts`.
+
+* The output filename is `client.js`.
+
+* The `AotPlugin` references the `./tsconfig.client.json`.
+
+* There's no need to copy asset files because the [universal Webpack config](#universal-webpack-configuration) 
+took care of them.
+
+* Add the `UglifyJSPlugin` to minify the client app code.
+
+Why minify the client code and not the server code?
+You minify client code to reduce the payload transmitted to the browser. The universal server code stays on the server where minification is pointless.
+
+#### Run Webpack for the client
+
+Add an `npm` script to make it easy to build the client from the terminal window.
+<code-example format="." language="ts">
+"scripts": {
+    ...
+    "build:uni-client": "webpack --config webpack.config.client.js",
+    ...
+}
+</code-example>
+Now run that command
+
+<code-example format="." language="bash">
+npm run build:uni-client
+</code-example>
 
 Refresh the browser. 
+The console log shows that the server can find `client.js`
 The Universal app is quickly replaced by the full client app.
-The console log fills with requests for more files.
 
 Most importantly, the event-based features now work as expected.
 
 <div class="alert is-critical">
 
-When you make application changes, remember to rebuild _both_ the universal _and_ the client-side versions of the app.
+When you make application changes, remember to rebuild _both_ the universal server _and_ the client versions of the app.
 
 </div>
 
-{@a throttling}
-
-#### Throttling
+## Throttling
 
 The transition from the server-rendered app to the client app happens quickly on a development machine.
 You can simulate a slower network to see the transition more clearly and 
@@ -832,7 +904,7 @@ Open the Chrome Dev Tools and go to the Network tab.
 Find the [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling) dropdown on the far right of the menu bar.
 
 Try one of the "3G" speeds.
-The server-rendered app still launches quickly but the full client app takes many seconds to load.
+The server-rendered app still launches quickly but the full client app may take seconds to load.
 
 {@a conclusion}
 
