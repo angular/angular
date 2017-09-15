@@ -1,3 +1,15 @@
+<a name="4.4.0"></a>
+# [4.4.0](https://github.com/angular/angular/compare/4.4.0-RC.0...4.4.0) (2017-09-15)
+
+
+### Bug Fixes
+
+* **tsc-wrapped:** deduplicate metadata for re-exported modules ([48ae1a6](https://github.com/angular/angular/commit/48ae1a6))
+* **tsc-wrapped:** fix metadata symbol reference ([f6a7183](https://github.com/angular/angular/commit/f6a7183))
+* **upgrade:** remove code setting id attribute. ([#19182](https://github.com/angular/angular/issues/19182)) ([b20c5d2](https://github.com/angular/angular/commit/b20c5d2)), closes [#18446](https://github.com/angular/angular/issues/18446)
+
+
+
 <a name="4.4.0-RC.0"></a>
 # [4.4.0-RC.0](https://github.com/angular/angular/compare/4.3.6...4.4.0-RC.0) (2017-09-02)
 
@@ -40,8 +52,6 @@
 
 
 
-<<<<<<< HEAD
-=======
 <a name="5.0.0-beta.4"></a>
 # [5.0.0-beta.4](https://github.com/angular/angular/compare/5.0.0-beta.3...5.0.0-beta.4) (2017-08-16)
 
@@ -67,7 +77,6 @@
 
 
 
->>>>>>> db45df60a... build: fix changelog to remove AIO line items
 <a name="4.3.5"></a>
 ## [4.3.5](https://github.com/angular/angular/compare/4.3.4...4.3.5) (2017-08-16)
 
