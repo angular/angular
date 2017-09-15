@@ -81,7 +81,7 @@ export const MENU_PANEL_TOP_PADDING = 8;
     '(keydown)': '_handleKeydown($event)',
     '(click)': '_handleClick($event)',
   },
-  exportAs: 'mdMenuTrigger'
+  exportAs: 'mdMenuTrigger, matMenuTrigger'
 })
 export class MdMenuTrigger implements AfterViewInit, OnDestroy {
   private _portal: TemplatePortal<any>;

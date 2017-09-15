@@ -66,7 +66,7 @@ const MD_MENU_BASE_ELEVATION = 2;
     transformMenu,
     fadeInItems
   ],
-  exportAs: 'mdMenu'
+  exportAs: 'mdMenu, matMenu'
 })
 export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   private _keyManager: FocusKeyManager<MdMenuItem>;

@@ -1113,7 +1113,7 @@ class OverlapMenu implements TestableMenu {
       <ng-content></ng-content>
     </ng-template>
   `,
-  exportAs: 'mdCustomMenu'
+  exportAs: 'mdCustomMenu, matCustomMenu'
 })
 class CustomMenuPanel implements MdMenuPanel {
   direction: Direction;
