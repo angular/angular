@@ -1,5 +1,6 @@
 <a name="4.4.1"></a>
-# [4.4.1](https://github.com/angular/angular/compare/4.4.0-RC.0...4.4.1) (2017-09-15)
+# [4.4.1](https://github.com/angular/angular/compare/4.3.6...4.4.1) (2017-09-15)
+
 
 
 ### Bug Fixes
