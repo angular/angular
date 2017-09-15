@@ -23,12 +23,12 @@ export class RenderComponentType {
  * @deprecated Debug info is handeled internally in the view engine now.
  */
 export abstract class RenderDebugInfo {
-  abstract get injector(): Injector;
-  abstract get component(): any;
-  abstract get providerTokens(): any[];
-  abstract get references(): {[key: string]: any};
-  abstract get context(): any;
-  abstract get source(): string;
+  readonly injector: Injector;
+  readonly component: any;
+  readonly providerTokens: any[];
+  readonly references: {[key: string]: any};
+  readonly context: any;
+  readonly source: string;
 }
 
 /**
@@ -149,7 +149,7 @@ export abstract class Renderer2 {
    * This field can be used to store arbitrary data on this renderer instance.
    * This is useful for renderers that delegate to other renderers.
    */
-  abstract get data(): {[key: string]: any};
+  readonly data: {[key: string]: any};
 
   abstract destroy(): void;
   abstract createElement(name: string, namespace?: string|null): any;
