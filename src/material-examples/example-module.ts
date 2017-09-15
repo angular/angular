@@ -54,8 +54,8 @@ import {ListOverviewExample} from './list-overview/list-overview-example';
 import {ListSectionsExample} from './list-sections/list-sections-example';
 import {ListSelectionExample} from './list-selection/list-selection-example';
 import {MenuIconsExample} from './menu-icons/menu-icons-example';
-import {NestedMenuExample} from './nested-menu/nested-menu-example';
 import {MenuOverviewExample} from './menu-overview/menu-overview-example';
+import {NestedMenuExample} from './nested-menu/nested-menu-example';
 import {PaginatorConfigurableExample} from './paginator-configurable/paginator-configurable-example';
 import {PaginatorOverviewExample} from './paginator-overview/paginator-overview-example';
 import {ProgressBarConfigurableExample} from './progress-bar-configurable/progress-bar-configurable-example';
@@ -337,15 +337,15 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
-  'nested-menu': {
-    title: 'Nested menu',
-    component: NestedMenuExample,
-    additionalFiles: null,
-    selectorName: null
-  },
   'menu-overview': {
     title: 'Basic menu',
     component: MenuOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'nested-menu': {
+    title: 'Nested menu',
+    component: NestedMenuExample,
     additionalFiles: null,
     selectorName: null
   },
@@ -591,8 +591,8 @@ export const EXAMPLE_LIST = [
   ListSectionsExample,
   ListSelectionExample,
   MenuIconsExample,
-  NestedMenuExample,
   MenuOverviewExample,
+  NestedMenuExample,
   PaginatorConfigurableExample,
   PaginatorOverviewExample,
   ProgressBarConfigurableExample,

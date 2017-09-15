@@ -37,7 +37,7 @@ export const _MdTabMixinBase = mixinDisabled(MdTabBase);
   inputs: ['disabled'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  exportAs: 'mdTab',
+  exportAs: 'mdTab, matTab',
 })
 export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
   /** Content for the tab label given by <ng-template md-tab-label>. */

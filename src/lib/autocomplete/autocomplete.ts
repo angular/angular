@@ -44,7 +44,7 @@ export class MdAutocompleteSelectedEvent {
   styleUrls: ['autocomplete.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  exportAs: 'mdAutocomplete',
+  exportAs: 'mdAutocomplete, matAutocomplete',
   host: {
     'class': 'mat-autocomplete'
   }

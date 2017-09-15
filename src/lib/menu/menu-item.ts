@@ -44,7 +44,7 @@ export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   templateUrl: 'menu-item.html',
-  exportAs: 'mdMenuItem',
+  exportAs: 'mdMenuItem, matMenuItem',
 })
 export class MdMenuItem extends _MdMenuItemMixinBase implements FocusableOption, CanDisable,
   OnDestroy {

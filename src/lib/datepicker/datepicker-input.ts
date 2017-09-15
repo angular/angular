@@ -82,7 +82,7 @@ export class MdDatepickerInputEvent<D> {
     '(blur)': '_onTouched()',
     '(keydown)': '_onKeydown($event)',
   },
-  exportAs: 'mdDatepickerInput',
+  exportAs: 'mdDatepickerInput, matDatepickerInput',
 })
 export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAccessor, OnDestroy,
     Validator {

@@ -69,7 +69,7 @@ export class MdButtonToggleChange {
     'class': 'mat-button-toggle-group',
     '[class.mat-button-toggle-vertical]': 'vertical'
   },
-  exportAs: 'mdButtonToggleGroup',
+  exportAs: 'mdButtonToggleGroup, matButtonToggleGroup',
 })
 export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase
     implements ControlValueAccessor, CanDisable {
@@ -229,7 +229,7 @@ export class MdButtonToggleGroup extends _MdButtonToggleGroupMixinBase
 /** Multiple selection button-toggle group. `ngModel` is not supported in this mode. */
 @Directive({
   selector: 'md-button-toggle-group[multiple], mat-button-toggle-group[multiple]',
-  exportAs: 'mdButtonToggleGroup',
+  exportAs: 'mdButtonToggleGroup, matButtonToggleGroup',
   inputs: ['disabled'],
   host: {
     'class': 'mat-button-toggle-group',

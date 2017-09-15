@@ -91,7 +91,7 @@ export const MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
     '(keydown)': '_handleKeydown($event)',
     '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
   },
-  exportAs: 'mdTooltip',
+  exportAs: 'mdTooltip, matTooltip',
 })
 export class MdTooltip implements OnDestroy {
   _overlayRef: OverlayRef | null;

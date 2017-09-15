@@ -19,7 +19,7 @@ const rollupCdkEntryPoints = cdkSecondaryEntryPoints.reduce((globals: any, entry
 
 /** Object with all material entry points in the format of Rollup globals. */
 const rollupMatEntryPoints = matSecondaryEntryPoints.reduce((globals: any, entryPoint: string) => {
-  globals[`@angular/material/${entryPoint}`] = `ng.mat.${dashCaseToCamelCase(entryPoint)}`;
+  globals[`@angular/material/${entryPoint}`] = `ng.material.${dashCaseToCamelCase(entryPoint)}`;
   return globals;
 }, {});
 

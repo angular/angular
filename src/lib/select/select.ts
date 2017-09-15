@@ -201,7 +201,7 @@ export class MdSelectTrigger {}
     transformPanel,
     fadeInContent
   ],
-  exportAs: 'mdSelect',
+  exportAs: 'mdSelect, matSelect',
 })
 export class MdSelect extends _MdSelectMixinBase implements AfterContentInit, OnDestroy, OnInit,
     ControlValueAccessor, CanColor, CanDisable, HasTabIndex {

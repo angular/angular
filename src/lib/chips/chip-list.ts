@@ -34,7 +34,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
   moduleId: module.id,
   selector: 'md-chip-list, mat-chip-list',
   template: `<div class="mat-chip-list-wrapper"><ng-content></ng-content></div>`,
-  exportAs: 'mdChipList',
+  exportAs: 'mdChipList, matChipList',
   host: {
     '[attr.tabindex]': '_tabIndex',
     'role': 'listbox',
