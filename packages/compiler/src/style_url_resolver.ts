@@ -26,7 +26,7 @@ export function isStyleUrlResolvable(url: string): boolean {
  * are either relative or don't have a `package:` scheme
  */
 export function extractStyleUrls(
-    resolver: UrlResolver, baseUrl: string, cssText: string): StyleWithImports {
+    resolver: UrlResolver, baseUrl: string, cssText: string = ''): StyleWithImports {
   const foundUrls: string[] = [];
 
   const modifiedCssText = cssText.replace(CSS_STRIPPABLE_COMMENT_REGEXP, '')
