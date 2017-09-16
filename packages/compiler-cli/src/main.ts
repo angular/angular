@@ -16,6 +16,7 @@ import * as path from 'path';
 import * as tsickle from 'tsickle';
 import * as api from './transformers/api';
 import * as ngc from './transformers/entry_points';
+import {GENERATED_FILES} from './transformers/util';
 
 import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
@@ -38,17 +39,21 @@ export function main(
   return reportErrorsAndExit(options, compileDiags, consoleError);
 }
 
-function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback {
+function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
+  const transformDecorators = options.annotationsAs !== 'decorators';
+  const transformTypesToClosure = options.annotateForClosureCompiler;
+  if (!transformDecorators && !transformTypesToClosure) {
+    return undefined;
+  }
   const tsickleHost: tsickle.TsickleHost = {
-    shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
+    shouldSkipTsickleProcessing: (fileName) =>
+                                     /\.d\.ts$/.test(fileName) || GENERATED_FILES.test(fileName),
     pathToModuleName: (context, importPath) => '',
     shouldIgnoreWarningsForPath: (filePath) => false,
     fileNameToModuleId: (fileName) => fileName,
     googmodule: false,
     untyped: true,
-    convertIndexImportShorthand: true,
-    transformDecorators: options.annotationsAs !== 'decorators',
-    transformTypesToClosure: options.annotateForClosureCompiler,
+    convertIndexImportShorthand: true, transformDecorators, transformTypesToClosure,
   };
 
   return ({
