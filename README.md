@@ -6,7 +6,7 @@
 This is the home for the Angular team's Material Design components built for and with Angular.
 
 #### Quick links
-[Documentation, demos, and guides][aio] | 
+[Documentation, demos, and guides][aio] |
 [Google group](https://groups.google.com/forum/#!forum/angular-material2) |
 [Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md) |
 [Plunker Template](http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview)
@@ -55,7 +55,7 @@ High level stuff planned for Q3 2017 (July - September):
 | data-table       | Sticky headers & incremental row rendering in-progress |   [Docs][28] |
 | datepicker       |                                                        |   [Docs][25] |
 | dialog           |                                                        |   [Docs][22] |
-| expansion-panel  |                                    Needs documentation |           -  |
+| expansion-panel  |                                                        |   [Docs][32] |
 | grid-list        |                                                        |   [Docs][9]  |
 | icon             |                                                        |   [Docs][10] |
 | input            |                                                        |   [Docs][5]  |
@@ -76,7 +76,7 @@ High level stuff planned for Q3 2017 (July - September):
 | textarea         |                                                        |   [Docs][5]  |
 | toolbar          |                                                        |   [Docs][7]  |
 | tooltip          |                                                        |   [Docs][18] |
-| ---------------- | ------------------------------------------------------ | ------------ | 
+| ---------------- | ------------------------------------------------------ | ------------ |
 | theming          |                                                        |  [Guide][20] |
 | typography       |                                                        |  [Guide][27] |
 | layout           |                      See [angular/flex-layout][lay_rp] |  [Wiki][0]   |
@@ -128,6 +128,7 @@ High level stuff planned for Q3 2017 (July - September):
 [29]: https://material.angular.io/components/component/paginator
 [30]: https://material.angular.io/components/component/sort
 [31]: https://tina-material-tree.firebaseapp.com/simple-tree
+[32]: https://material.angular.io/components/expansion/overview
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
