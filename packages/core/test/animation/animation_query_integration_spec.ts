@@ -1762,6 +1762,56 @@ export function main() {
           expect(players[0].element.innerText.trim()).toEqual('a');
           expect(players[1].element.innerText.trim()).toEqual('b');
         });
+
+        it('should support negative limit values by pulling in elements from the end of the query',
+           () => {
+             @Component({
+               selector: 'cmp',
+               template: `
+             <div [@myAnimation]="exp">
+              <div *ngFor="let item of items" class="item">
+                {{ item }}
+              </div>
+             </div>
+          `,
+               animations: [
+                 trigger(
+                     'myAnimation',
+                     [
+                       transition(
+                           '* => go',
+                           [
+                             query(
+                                 '.item',
+                                 [
+                                   style({opacity: 0}),
+                                   animate('1s', style({opacity: 1})),
+                                 ],
+                                 {limit: -3}),
+                           ]),
+                     ]),
+               ]
+             })
+             class Cmp {
+               public exp: any;
+               public items: any[] = [];
+             }
+
+             TestBed.configureTestingModule({declarations: [Cmp]});
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             cmp.items = ['a', 'b', 'c', 'd', 'e'];
+             fixture.detectChanges();
+
+             cmp.exp = 'go';
+             fixture.detectChanges();
+
+             const players = getLog() as any[];
+             expect(players.length).toEqual(3);
+             expect(players[0].element.innerText.trim()).toEqual('c');
+             expect(players[1].element.innerText.trim()).toEqual('d');
+             expect(players[2].element.innerText.trim()).toEqual('e');
+           });
       });
     });
 

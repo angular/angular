@@ -558,7 +558,8 @@ export class AnimationTimelineContext {
       const multi = limit != 1;
       let elements = this._driver.query(this.element, selector, multi);
       if (limit !== 0) {
-        elements = elements.slice(0, limit);
+        elements = limit < 0 ? elements.slice(elements.length + limit, elements.length) :
+                               elements.slice(0, limit);
       }
       results.push(...elements);
     }
