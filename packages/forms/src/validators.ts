@@ -163,7 +163,14 @@ export class Validators {
     let regex: RegExp;
     let regexStr: string;
     if (typeof pattern === 'string') {
-      regexStr = `^${pattern}$`;
+      regexStr = '';
+
+      if (pattern.charAt(0) !== '^') regexStr += '^';
+
+      regexStr += pattern;
+
+      if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
+
       regex = new RegExp(regexStr);
     } else {
       regexStr = pattern.toString();
