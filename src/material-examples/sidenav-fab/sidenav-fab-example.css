@@ -16,6 +16,7 @@
 
 .example-scrolling-content {
   overflow: auto;
+  height: 100%;
 }
 
 .example-fab.mat-mini-fab {
