@@ -13,7 +13,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../../dist/packages-dist/platform/@angular/platform/dom.es5.js',
+  entry: '../../../dist/packages-dist/platform/esm5/dom/index.js',
   dest: '../../../dist/packages-dist/platform/bundles/platform-dom.umd.js',
   format: 'umd',
   exports: 'named',
