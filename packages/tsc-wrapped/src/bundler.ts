@@ -265,24 +265,25 @@ export class MetadataBundler {
     Array.from(this.symbolMap.values()).forEach(symbol => {
       if (symbol.referenced && !symbol.reexport) {
         let name = symbol.name;
-        const declaredName = symbol.declaration !.name;
+        const identifier = `${symbol.declaration!.module}:${symbol.declaration !.name}`;
         if (symbol.isPrivate && !symbol.privateName) {
           name = newPrivateName();
           symbol.privateName = name;
         }
-        if (symbolsMap.has(declaredName)) {
-          const names = symbolsMap.get(declaredName);
+        if (symbolsMap.has(identifier)) {
+          const names = symbolsMap.get(identifier);
           names !.push(name);
         } else {
-          symbolsMap.set(declaredName, [name]);
+          symbolsMap.set(identifier, [name]);
         }
         result[name] = symbol.value !;
       }
     });
 
     // check for duplicated entries
-    symbolsMap.forEach((names: string[], declaredName: string) => {
+    symbolsMap.forEach((names: string[], identifier: string) => {
       if (names.length > 1) {
+        const [module, declaredName] = identifier.split(':');
         // prefer the export that uses the declared name (if any)
         let reference = names.indexOf(declaredName);
         if (reference === -1) {
