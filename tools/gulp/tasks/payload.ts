@@ -23,8 +23,8 @@ task('payload', ['material:clean-build'], async () => {
     // Material bundles
     material_umd: getBundleSize('material.umd.js'),
     material_umd_minified_uglify: getBundleSize('material.umd.min.js'),
-    material_fesm_2015: getBundleSize('material.js'),
-    material_fesm_2014: getBundleSize('material.es5.js'),
+    material_fesm_2015: getBundleSize('material.js') + getBundleSize('material/!(*.es5).js'),
+    material_fesm_2014: getBundleSize('material.es5.js') + getBundleSize('material/*.es5.js'),
     // CDK bundles
     cdk_umd: getBundleSize('cdk*.umd.js'),
     cdk_umd_minified_uglify: getBundleSize('cdk*.umd.min.js'),
