@@ -28,7 +28,10 @@ import {merge} from 'rxjs/observable/merge';
 import {MdSort, MdSortable} from './sort';
 import {MdSortHeaderIntl} from './sort-header-intl';
 import {getMdSortHeaderNotContainedWithinMdSortError} from './sort-errors';
+import {AnimationCurves, AnimationDurations} from '../core/animation/animation';
 
+const SORT_ANIMATION_TRANSITION =
+    AnimationDurations.ENTERING + ' ' + AnimationCurves.STANDARD_CURVE;
 
 /**
  * Applies sorting behavior (click to change sort) and styles to an element, including an
@@ -51,10 +54,21 @@ import {getMdSortHeaderNotContainedWithinMdSortError} from './sort-errors';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
-    trigger('indicatorRotate', [
+    trigger('indicator', [
+      state('asc', style({transform: 'translateY(0px)'})),
+      // 10px is the height of the sort indicator, minus the width of the pointers
+      state('desc', style({transform: 'translateY(10px)'})),
+      transition('asc <=> desc', animate(SORT_ANIMATION_TRANSITION))
+    ]),
+    trigger('leftPointer', [
+      state('asc', style({transform: 'rotate(-45deg)'})),
+      state('desc', style({transform: 'rotate(45deg)'})),
+      transition('asc <=> desc', animate(SORT_ANIMATION_TRANSITION))
+    ]),
+    trigger('rightPointer', [
       state('asc', style({transform: 'rotate(45deg)'})),
-      state('desc', style({transform: 'rotate(225deg)'})),
-      transition('asc <=> desc', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
+      state('desc', style({transform: 'rotate(-45deg)'})),
+      transition('asc <=> desc', animate(SORT_ANIMATION_TRANSITION))
     ])
   ]
 })
