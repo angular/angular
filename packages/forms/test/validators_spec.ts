@@ -270,6 +270,12 @@ import {map} from 'rxjs/operator/map';
 
       it('should not error on "undefined" pattern',
          () => expect(Validators.pattern(undefined !)(new FormControl('aaAA'))).toBeNull());
+
+      it('should work with string containing line boundary',
+         () => expect(Validators.pattern('^[aA]*$')(new FormControl('aaAA'))).toBeNull());
+
+      it('should work with string not containing line boundary',
+         () => expect(Validators.pattern('[aA]*')(new FormControl('aaAA'))).toBeNull());
     });
 
     describe('compose', () => {
