@@ -18,7 +18,7 @@
   overflow: auto;
 }
 
-.example-fab {
+.example-fab.mat-mini-fab {
   position: absolute;
   right: 20px;
   bottom: 10px;
