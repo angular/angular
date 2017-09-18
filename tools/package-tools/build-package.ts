@@ -2,7 +2,7 @@ import {red} from 'chalk';
 import {spawn} from 'child_process';
 import {readFileSync, writeFileSync} from 'fs';
 import {sync as glob} from 'glob';
-import {join} from 'path';
+import {join, resolve as resolvePath} from 'path';
 import {main as ngc} from '@angular/tsc-wrapped';
 import {PackageBundler} from './build-bundles';
 import {buildConfig} from './build-config';
@@ -97,7 +97,8 @@ export class BuildPackage {
     const entryPointTsconfigPath = join(entryPointPath, tsconfigName);
 
     return new Promise((resolve, reject) => {
-      const childProcess = spawn('./node_modules/.bin/ngc', ['-p', entryPointTsconfigPath]);
+      const ngcPath = resolvePath('./node_modules/.bin/ngc');
+      const childProcess = spawn(ngcPath, ['-p', entryPointTsconfigPath], {shell: true});
 
       // Pipe stdout and stderr from the child process.
       childProcess.stdout.on('data', (data: any) => console.log(`${data}`));
