@@ -31,7 +31,7 @@ import {
   MdTooltipModule,
   MdStepperModule,
 } from '@angular/material';
-import {StyleModule, MdNativeDateModule, MdRippleModule} from '@angular/material';
+import {MdNativeDateModule, MdRippleModule} from '@angular/material';
 import {CdkTableModule} from '@angular/cdk/table';
 import {A11yModule} from '@angular/cdk/a11y';
 import {BidiModule} from '@angular/cdk/bidi';
@@ -78,7 +78,6 @@ import {PortalModule} from '@angular/cdk/portal';
     MdTooltipModule,
     MdNativeDateModule,
     CdkTableModule,
-    StyleModule,
     A11yModule,
     BidiModule,
     ObserversModule,

@@ -7,18 +7,19 @@
  */
 
 import {NgModule} from '@angular/core';
-import {CdkMonitorFocus, FOCUS_ORIGIN_MONITOR_PROVIDER} from './focus-origin-monitor';
-import {PlatformModule} from '../platform/index';
+import {A11yModule} from '@angular/cdk/a11y';
 
-
+/** @deprecated */
 @NgModule({
-  imports: [PlatformModule],
-  declarations: [CdkMonitorFocus],
-  exports: [CdkMonitorFocus],
-  providers: [FOCUS_ORIGIN_MONITOR_PROVIDER],
+  imports: [A11yModule],
+  exports: [A11yModule],
 })
 export class StyleModule {}
 
-
-export * from './focus-origin-monitor';
+export {
+  CdkMonitorFocus,
+  FocusMonitor,
+  FOCUS_MONITOR_PROVIDER,
+  FocusOrigin,
+} from '@angular/cdk/a11y';
 export * from './apply-transform';

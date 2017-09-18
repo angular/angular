@@ -13,15 +13,14 @@ import {
   MdRippleModule,
   MdCommonModule,
   UNIQUE_SELECTION_DISPATCHER_PROVIDER,
-  FocusOriginMonitor,
 } from '@angular/material/core';
 import {MdRadioGroup, MdRadioButton} from './radio';
-
+import {A11yModule} from '@angular/cdk/a11y';
 
 @NgModule({
-  imports: [CommonModule, MdRippleModule, MdCommonModule],
+  imports: [CommonModule, MdRippleModule, MdCommonModule, A11yModule],
   exports: [MdRadioGroup, MdRadioButton, MdCommonModule],
-  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, VIEWPORT_RULER_PROVIDER, FocusOriginMonitor],
+  providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, VIEWPORT_RULER_PROVIDER],
   declarations: [MdRadioGroup, MdRadioButton],
 })
 export class MdRadioModule {}

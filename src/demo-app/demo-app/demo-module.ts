@@ -34,7 +34,7 @@ import {FoggyTabContent, RainyTabContent, SunnyTabContent, TabsDemo} from '../ta
 import {PlatformDemo} from '../platform/platform-demo';
 import {AutocompleteDemo} from '../autocomplete/autocomplete-demo';
 import {InputDemo} from '../input/input-demo';
-import {StyleDemo} from '../style/style-demo';
+import {FocusOriginDemo} from '../focus-origin/focus-origin-demo';
 import {TableDemo} from '../table/table-demo';
 import {PeopleDatabase} from '../table/people-database';
 import {DatepickerDemo} from '../datepicker/datepicker-demo';
@@ -94,7 +94,7 @@ import {TableHeaderDemo} from '../table/table-header-demo';
     SlideToggleDemo,
     SpagettiPanel,
     StepperDemo,
-    StyleDemo,
+    FocusOriginDemo,
     TableHeaderDemo,
     ToolbarDemo,
     TooltipDemo,

@@ -1,38 +1,38 @@
 import {ComponentFixture, inject, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {Component, Renderer2} from '@angular/core';
-import {StyleModule} from './index';
+import {A11yModule} from './index';
 import {By} from '@angular/platform-browser';
-import {TAB} from '../keyboard/keycodes';
-import {FocusOrigin, FocusOriginMonitor, TOUCH_BUFFER_MS} from './focus-origin-monitor';
+import {TAB} from '@angular/cdk/keycodes';
+import {FocusOrigin, FocusMonitor, TOUCH_BUFFER_MS} from './focus-monitor';
 import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 
 
-describe('FocusOriginMonitor', () => {
+describe('FocusMonitor', () => {
   let fixture: ComponentFixture<PlainButton>;
   let buttonElement: HTMLElement;
   let buttonRenderer: Renderer2;
-  let focusOriginMonitor: FocusOriginMonitor;
+  let focusMonitor: FocusMonitor;
   let changeHandler: (origin: FocusOrigin) => void;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [StyleModule],
+      imports: [A11yModule],
       declarations: [
         PlainButton,
       ],
     }).compileComponents();
   });
 
-  beforeEach(inject([FocusOriginMonitor], (fom: FocusOriginMonitor) => {
+  beforeEach(inject([FocusMonitor], (fm: FocusMonitor) => {
     fixture = TestBed.createComponent(PlainButton);
     fixture.detectChanges();
 
     buttonElement = fixture.debugElement.query(By.css('button')).nativeElement;
     buttonRenderer = fixture.componentInstance.renderer;
-    focusOriginMonitor = fom;
+    focusMonitor = fm;
 
     changeHandler = jasmine.createSpy('focus origin change handler');
-    focusOriginMonitor.monitor(buttonElement, buttonRenderer, false).subscribe(changeHandler);
+    focusMonitor.monitor(buttonElement, buttonRenderer, false).subscribe(changeHandler);
     patchElementFocus(buttonElement);
   }));
 
@@ -110,7 +110,7 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia keyboard should simulate keyboard focus', fakeAsync(() => {
-    focusOriginMonitor.focusVia(buttonElement, 'keyboard');
+    focusMonitor.focusVia(buttonElement, 'keyboard');
     tick();
 
     expect(buttonElement.classList.length)
@@ -123,7 +123,7 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia mouse should simulate mouse focus', fakeAsync(() => {
-    focusOriginMonitor.focusVia(buttonElement, 'mouse');
+    focusMonitor.focusVia(buttonElement, 'mouse');
     fixture.detectChanges();
     tick();
 
@@ -137,7 +137,7 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia mouse should simulate mouse focus', fakeAsync(() => {
-    focusOriginMonitor.focusVia(buttonElement, 'touch');
+    focusMonitor.focusVia(buttonElement, 'touch');
     fixture.detectChanges();
     tick();
 
@@ -151,7 +151,7 @@ describe('FocusOriginMonitor', () => {
   }));
 
   it('focusVia program should simulate programmatic focus', fakeAsync(() => {
-    focusOriginMonitor.focusVia(buttonElement, 'program');
+    focusMonitor.focusVia(buttonElement, 'program');
     fixture.detectChanges();
     tick();
 
@@ -175,7 +175,7 @@ describe('FocusOriginMonitor', () => {
 
     // Call `blur` directly because invoking `buttonElement.blur()` does not always trigger the
     // handler on IE11 on SauceLabs.
-    focusOriginMonitor._onBlur({} as any, buttonElement);
+    focusMonitor._onBlur({} as any, buttonElement);
     fixture.detectChanges();
 
     expect(buttonElement.classList.length)
@@ -191,7 +191,7 @@ describe('FocusOriginMonitor', () => {
     expect(buttonElement.classList.length)
         .toBe(2, 'button should have exactly 2 focus classes');
 
-    focusOriginMonitor.stopMonitoring(buttonElement);
+    focusMonitor.stopMonitoring(buttonElement);
     fixture.detectChanges();
 
     expect(buttonElement.classList.length).toBe(0, 'button should not have any focus classes');
@@ -202,7 +202,7 @@ describe('FocusOriginMonitor', () => {
 describe('cdkMonitorFocus', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [StyleModule],
+      imports: [A11yModule],
       declarations: [
         ButtonWithFocusClasses,
         ComplexComponentWithMonitorElementFocus,

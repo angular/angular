@@ -8,7 +8,8 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdCommonModule, MdRippleModule, StyleModule} from '@angular/material/core';
+import {MdCommonModule, MdRippleModule} from '@angular/material/core';
+import {A11yModule} from '@angular/cdk/a11y';
 import {
   MdAnchor,
   MdButton,
@@ -28,7 +29,7 @@ export * from './button';
     CommonModule,
     MdRippleModule,
     MdCommonModule,
-    StyleModule,
+    A11yModule,
   ],
   exports: [
     MdButton,

@@ -8,15 +8,12 @@
 
 import {NgModule} from '@angular/core';
 import {MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle} from './button-toggle';
-import {
-  UNIQUE_SELECTION_DISPATCHER_PROVIDER,
-  MdCommonModule,
-  StyleModule,
-} from '@angular/material/core';
+import {UNIQUE_SELECTION_DISPATCHER_PROVIDER, MdCommonModule} from '@angular/material/core';
+import {A11yModule} from '@angular/cdk/a11y';
 
 
 @NgModule({
-  imports: [MdCommonModule, StyleModule],
+  imports: [MdCommonModule, A11yModule],
   exports: [
     MdButtonToggleGroup,
     MdButtonToggleGroupMultiple,

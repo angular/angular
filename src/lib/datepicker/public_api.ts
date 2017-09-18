@@ -11,7 +11,6 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MdButtonModule} from '@angular/material/button';
-import {StyleModule} from '@angular/material/core';
 import {MdDialogModule} from '@angular/material/dialog';
 import {MdIconModule} from '@angular/material/icon';
 import {MdCalendar} from './calendar';
@@ -45,7 +44,6 @@ export * from './year-view';
     MdDialogModule,
     MdIconModule,
     OverlayModule,
-    StyleModule,
     A11yModule,
   ],
   exports: [

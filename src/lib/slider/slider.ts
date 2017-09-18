@@ -38,12 +38,11 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanColor,
   CanDisable,
-  FocusOrigin,
-  FocusOriginMonitor,
   HammerInput,
   mixinColor,
   mixinDisabled,
 } from '@angular/material/core';
+import {FocusOrigin, FocusMonitor} from '@angular/cdk/a11y';
 import {Subscription} from 'rxjs/Subscription';
 
 /**
@@ -415,14 +414,14 @@ export class MdSlider extends _MdSliderMixinBase
 
   constructor(renderer: Renderer2,
               elementRef: ElementRef,
-              private _focusOriginMonitor: FocusOriginMonitor,
+              private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality) {
     super(renderer, elementRef);
   }
 
   ngOnInit() {
-    this._focusOriginMonitor
+    this._focusMonitor
         .monitor(this._elementRef.nativeElement, this._renderer, true)
         .subscribe((origin: FocusOrigin) => {
           this._isActive = !!origin && origin !== 'keyboard';
@@ -436,7 +435,7 @@ export class MdSlider extends _MdSliderMixinBase
   }
 
   ngOnDestroy() {
-    this._focusOriginMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
     this._dirChangeSubscription.unsubscribe();
   }
 

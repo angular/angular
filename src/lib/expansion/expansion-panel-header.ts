@@ -28,7 +28,7 @@ import {
 import {SPACE, ENTER} from '@angular/material/core';
 import {MdExpansionPanel, EXPANSION_PANEL_ANIMATION_TIMING} from './expansion-panel';
 import {filter} from '@angular/material/core';
-import {FocusOriginMonitor} from '@angular/material/core';
+import {FocusMonitor} from '@angular/cdk/a11y';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
 
@@ -93,7 +93,7 @@ export class MdExpansionPanelHeader implements OnDestroy {
     renderer: Renderer2,
     @Host() public panel: MdExpansionPanel,
     private _element: ElementRef,
-    private _focusOriginMonitor: FocusOriginMonitor,
+    private _focusMonitor: FocusMonitor,
     private _changeDetectorRef: ChangeDetectorRef) {
 
     // Since the toggle state depends on an @Input on the panel, we
@@ -105,7 +105,7 @@ export class MdExpansionPanelHeader implements OnDestroy {
     )
     .subscribe(() => this._changeDetectorRef.markForCheck());
 
-    _focusOriginMonitor.monitor(_element.nativeElement, renderer, false);
+    _focusMonitor.monitor(_element.nativeElement, renderer, false);
   }
 
   /** Height of the header while the panel is expanded. */
@@ -157,7 +157,7 @@ export class MdExpansionPanelHeader implements OnDestroy {
 
   ngOnDestroy() {
     this._parentChangeSubscription.unsubscribe();
-    this._focusOriginMonitor.stopMonitoring(this._element.nativeElement);
+    this._focusMonitor.stopMonitoring(this._element.nativeElement);
   }
 }
 

@@ -78,7 +78,7 @@ export class DemoApp {
     {name: 'Toolbar', route: '/toolbar'},
     {name: 'Tooltip', route: '/tooltip'},
     {name: 'Platform', route: '/platform'},
-    {name: 'Style', route: '/style'},
+    {name: 'Focus Origin', route: '/focus-origin'},
     {name: 'Typography', route: '/typography'}
   ];
 

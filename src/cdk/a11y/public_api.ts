@@ -13,17 +13,19 @@ import {InteractivityChecker} from './interactivity-checker';
 import {CommonModule} from '@angular/common';
 import {PlatformModule} from '@angular/cdk/platform';
 import {AriaDescriber, ARIA_DESCRIBER_PROVIDER} from './aria-describer';
+import {CdkMonitorFocus, FOCUS_MONITOR_PROVIDER} from './focus-monitor';
 
 @NgModule({
   imports: [CommonModule, PlatformModule],
-  declarations: [FocusTrapDirective, FocusTrapDeprecatedDirective],
-  exports: [FocusTrapDirective, FocusTrapDeprecatedDirective],
+  declarations: [FocusTrapDirective, FocusTrapDeprecatedDirective, CdkMonitorFocus],
+  exports: [FocusTrapDirective, FocusTrapDeprecatedDirective, CdkMonitorFocus],
   providers: [
     InteractivityChecker,
     FocusTrapFactory,
     AriaDescriber,
     LIVE_ANNOUNCER_PROVIDER,
-    ARIA_DESCRIBER_PROVIDER
+    ARIA_DESCRIBER_PROVIDER,
+    FOCUS_MONITOR_PROVIDER,
   ]
 })
 export class A11yModule {}
@@ -36,3 +38,4 @@ export * from './focus-trap';
 export * from './interactivity-checker';
 export * from './list-key-manager';
 export * from './live-announcer';
+export * from './focus-monitor';

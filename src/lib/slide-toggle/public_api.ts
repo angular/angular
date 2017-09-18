@@ -10,21 +10,20 @@ import {ObserversModule} from '@angular/cdk/observers';
 import {PlatformModule} from '@angular/cdk/platform';
 import {NgModule} from '@angular/core';
 import {
-  FOCUS_ORIGIN_MONITOR_PROVIDER,
   GestureConfig,
   MdCommonModule,
   MdRippleModule,
 } from '@angular/material/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {A11yModule} from '@angular/cdk/a11y';
 import {MdSlideToggle} from './slide-toggle';
 
 
 @NgModule({
-  imports: [MdRippleModule, MdCommonModule, PlatformModule, ObserversModule],
+  imports: [MdRippleModule, MdCommonModule, PlatformModule, ObserversModule, A11yModule],
   exports: [MdSlideToggle, MdCommonModule],
   declarations: [MdSlideToggle],
   providers: [
-    FOCUS_ORIGIN_MONITOR_PROVIDER,
     {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}
   ],
 })

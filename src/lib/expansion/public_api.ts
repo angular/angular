@@ -8,11 +8,8 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {
-  CompatibilityModule,
-  StyleModule,
-  UNIQUE_SELECTION_DISPATCHER_PROVIDER,
-} from '@angular/material/core';
+import {CompatibilityModule, UNIQUE_SELECTION_DISPATCHER_PROVIDER} from '@angular/material/core';
+import {A11yModule} from '@angular/cdk/a11y';
 import {CdkAccordion, MdAccordion} from './accordion';
 import {MdExpansionPanel, MdExpansionPanelActionRow} from './expansion-panel';
 import {
@@ -23,7 +20,7 @@ import {
 
 
 @NgModule({
-  imports: [CompatibilityModule, CommonModule, StyleModule],
+  imports: [CompatibilityModule, CommonModule, A11yModule],
   exports: [
     CdkAccordion,
     MdAccordion,

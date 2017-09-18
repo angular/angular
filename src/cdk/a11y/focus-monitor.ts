@@ -18,10 +18,10 @@ import {
   Renderer2,
   SkipSelf,
 } from '@angular/core';
+import {Platform} from '@angular/cdk/platform';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {Platform} from '../platform/platform';
 import {of as observableOf} from 'rxjs/observable/of';
 
 
@@ -43,11 +43,11 @@ type MonitoredElementInfo = {
 
 /** Monitors mouse and keyboard events to determine the cause of focus events. */
 @Injectable()
-export class FocusOriginMonitor {
+export class FocusMonitor {
   /** The focus origin that the next focus event is a result of. */
   private _origin: FocusOrigin = null;
 
-  /** The FocusOrigin of the last focus event tracked by the FocusOriginMonitor. */
+  /** The FocusOrigin of the last focus event tracked by the FocusMonitor. */
   private _lastFocusOrigin: FocusOrigin;
 
   /** Whether the window has just been focused. */
@@ -320,30 +320,30 @@ export class CdkMonitorFocus implements OnDestroy {
   private _monitorSubscription: Subscription;
   @Output() cdkFocusChange = new EventEmitter<FocusOrigin>();
 
-  constructor(private _elementRef: ElementRef, private _focusOriginMonitor: FocusOriginMonitor,
+  constructor(private _elementRef: ElementRef, private _focusMonitor: FocusMonitor,
               renderer: Renderer2) {
-    this._monitorSubscription = this._focusOriginMonitor.monitor(
+    this._monitorSubscription = this._focusMonitor.monitor(
         this._elementRef.nativeElement, renderer,
         this._elementRef.nativeElement.hasAttribute('cdkMonitorSubtreeFocus'))
         .subscribe(origin => this.cdkFocusChange.emit(origin));
   }
 
   ngOnDestroy() {
-    this._focusOriginMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
     this._monitorSubscription.unsubscribe();
   }
 }
 
 /** @docs-private */
-export function FOCUS_ORIGIN_MONITOR_PROVIDER_FACTORY(
-    parentDispatcher: FocusOriginMonitor, ngZone: NgZone, platform: Platform) {
-  return parentDispatcher || new FocusOriginMonitor(ngZone, platform);
+export function FOCUS_MONITOR_PROVIDER_FACTORY(
+    parentDispatcher: FocusMonitor, ngZone: NgZone, platform: Platform) {
+  return parentDispatcher || new FocusMonitor(ngZone, platform);
 }
 
 /** @docs-private */
-export const FOCUS_ORIGIN_MONITOR_PROVIDER = {
-  // If there is already a FocusOriginMonitor available, use that. Otherwise, provide a new one.
-  provide: FocusOriginMonitor,
-  deps: [[new Optional(), new SkipSelf(), FocusOriginMonitor], NgZone, Platform],
-  useFactory: FOCUS_ORIGIN_MONITOR_PROVIDER_FACTORY
+export const FOCUS_MONITOR_PROVIDER = {
+  // If there is already a FocusMonitor available, use that. Otherwise, provide a new one.
+  provide: FocusMonitor,
+  deps: [[new Optional(), new SkipSelf(), FocusMonitor], NgZone, Platform],
+  useFactory: FOCUS_MONITOR_PROVIDER_FACTORY
 };
