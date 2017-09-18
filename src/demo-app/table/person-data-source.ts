@@ -15,7 +15,7 @@ export class PersonDataSource extends DataSource<any> {
   connect(): Observable<UserData[]> {
     const displayDataChanges = [
       this._paginator.page,
-      this._sort.mdSortChange,
+      this._sort.sortChange,
       this._peopleDatabase.dataChange
     ];
     return Observable.merge(...displayDataChanges).map(() => {

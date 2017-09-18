@@ -91,7 +91,7 @@ export class MdSortHeader implements MdSortable {
       throw getMdSortHeaderNotContainedWithinMdSortError();
     }
 
-    this._rerenderSubscription = merge(_sort.mdSortChange, _intl.changes).subscribe(() => {
+    this._rerenderSubscription = merge(_sort.sortChange, _intl.changes).subscribe(() => {
       changeDetectorRef.markForCheck();
     });
   }

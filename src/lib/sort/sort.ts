@@ -72,7 +72,10 @@ export class MdSort {
   set _matSortDisableClear(v) { this.disableClear = v; }
 
   /** Event emitted when the user changes either the active sort or sort direction. */
-  @Output() mdSortChange = new EventEmitter<Sort>();
+  @Output('mdSortChange') readonly sortChange = new EventEmitter<Sort>();
+
+  @Output('matSortChange')
+  get _matSortChange(): EventEmitter<Sort> { return this.sortChange; }
 
   /**
    * Register function to be used by the contained MdSortables. Adds the MdSortable to the
@@ -106,7 +109,7 @@ export class MdSort {
       this.direction = this.getNextSortDirection(sortable);
     }
 
-    this.mdSortChange.next({active: this.active, direction: this.direction});
+    this.sortChange.next({active: this.active, direction: this.direction});
   }
 
   /** Returns the next sort direction of the active sortable, checking for potential overrides. */

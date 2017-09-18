@@ -83,12 +83,12 @@ export class ExampleDataSource extends DataSource<GithubIssue> {
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<GithubIssue[]> {
     const displayDataChanges = [
-      this.sort.mdSortChange,
+      this.sort.sortChange,
       this.paginator.page
     ];
 
     // If the user changes the sort order, reset back to the first page.
-    this.sort.mdSortChange.subscribe(() => this.paginator.pageIndex = 0);
+    this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
 
     return Observable.merge(...displayDataChanges)
       .startWith(null)
