@@ -28,7 +28,7 @@ import {merge} from 'rxjs/observable/merge';
 import {MdSort, MdSortable} from './sort';
 import {MdSortHeaderIntl} from './sort-header-intl';
 import {getMdSortHeaderNotContainedWithinMdSortError} from './sort-errors';
-import {AnimationCurves, AnimationDurations} from '../core/animation/animation';
+import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 
 const SORT_ANIMATION_TRANSITION =
     AnimationDurations.ENTERING + ' ' + AnimationCurves.STANDARD_CURVE;
