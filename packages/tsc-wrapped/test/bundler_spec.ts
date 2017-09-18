@@ -197,26 +197,32 @@ describe('metadata bundler', () => {
     const host = new MockStringBundlerHost('/', {
       'public-api.ts': `
         export {A as A2, A, B as B1, B as B2} from './src/core';
+        export {A as A3} from './src/alternate';
       `,
       'src': {
         'core.ts': `
           export class A {}
           export class B {}
         `,
+        'alternate.ts': `
+          export class A {}
+        `,
       }
     });
 
     const bundler = new MetadataBundler('/public-api', undefined, host);
     const result = bundler.getMetadataBundle();
-    const {A, A2, B1, B2} = result.metadata.metadata as{
+    const {A, A2, A3, B1, B2} = result.metadata.metadata as{
       A: ClassMetadata,
       A2: MetadataGlobalReferenceExpression,
+      A3: ClassMetadata,
       B1: ClassMetadata,
       B2: MetadataGlobalReferenceExpression
     };
     expect(A.__symbolic).toEqual('class');
     expect(A2.__symbolic).toEqual('reference');
     expect(A2.name).toEqual('A');
+    expect(A3.__symbolic).toEqual('class');
     expect(B1.__symbolic).toEqual('class');
     expect(B2.__symbolic).toEqual('reference');
     expect(B2.name).toEqual('B1');
