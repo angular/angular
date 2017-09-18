@@ -7,12 +7,16 @@ $mat-chip-remove-margin-before: 6px;
 $mat-chip-remove-margin-after: -4px;
 
 $mat-chips-chip-margin: 8px;
+$mat-chips-chip-bottom-margin: 3px;
+
+$mat-chip-input-width: 150px;
+$mat-chip-input-margin: 3px;
 
 .mat-chip-list-wrapper {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: baseline;
 }
 
 .mat-chip:not(.mat-basic-chip) {
@@ -25,10 +29,10 @@ $mat-chips-chip-margin: 8px;
 
   // Apply a margin to adjacent sibling chips.
   & + & {
-    margin: 0 0 0 $mat-chips-chip-margin;
+    margin: 0 0 $mat-chips-chip-bottom-margin $mat-chips-chip-margin;
 
     [dir='rtl'] & {
-      margin: 0 $mat-chips-chip-margin 0 0;
+      margin: 0 $mat-chips-chip-margin $mat-chips-chip-bottom-margin 0;
     }
   }
 
@@ -89,4 +93,9 @@ $mat-chips-chip-margin: 8px;
     margin-right: $mat-chip-remove-margin-before;
     margin-left: $mat-chip-remove-margin-after;
   }
+}
+
+input.mat-chip-input {
+  width: $mat-chip-input-width;
+  margin: $mat-chip-input-margin;
 }

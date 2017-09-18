@@ -1,6 +1,7 @@
 import {async, TestBed, ComponentFixture} from '@angular/core/testing';
 import {MdChipsModule} from './index';
 import {Component, DebugElement} from '@angular/core';
+import {PlatformModule} from '../core/platform/index';
 import {MdChipInput, MdChipInputEvent} from './chip-input';
 import {By} from '@angular/platform-browser';
 import {Directionality} from '@angular/material/core';
@@ -21,7 +22,7 @@ describe('MdChipInput', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdChipsModule],
+      imports: [MdChipsModule, PlatformModule],
       declarations: [TestChipInput],
       providers: [{
         provide: Directionality, useFactory: () => {

@@ -45,20 +45,22 @@
         <code>&lt;md-form-field&gt;</code>.
       </p>
 
-
-      <md-form-field>
-        <md-chip-list mdPrefix #chipList1>
-          <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+      <button md-button (click)="tabIndex = (tabIndex === 0 ? -1 : 0)">
+        Set tabIndex to {{tabIndex === 0 ? -1 : 0}}
+      </button>
+      <md-form-field class="has-chip-list">
+        <md-chip-list [tabIndex]="tabIndex" #chipList1 [(ngModel)]="selectedPeople" required>
+          <md-chip  *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (remove)="remove(person)">
             {{person.name}}
             <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
           </md-chip>
+          <input placeholder="New Contributor..."
+                 [mdChipInputFor]="chipList1"
+                 [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 [mdChipInputAddOnBlur]="false"
+                 (mdChipInputTokenEnd)="add($event)" />
         </md-chip-list>
-        <input mdInput placeholder="New Contributor..."
-               [mdChipInputFor]="chipList1"
-               [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               [mdChipInputAddOnBlur]="addOnBlur"
-               (mdChipInputTokenEnd)="add($event)" />
       </md-form-field>
 
 
@@ -68,20 +70,36 @@
         With <code>mdChipInput</code> the input work with chip-list
       </p>
 
-      <md-chip-list #chipList2>
-        <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
-                 [removable]="removable" (remove)="remove(person)">
-          {{person.name}}
-          <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
-        </md-chip>
-      </md-chip-list>
       <md-form-field>
-        <input mdInput placeholder="New Contributor..."
+        <md-chip-list [tabIndex]="tabIndex"  #chipList2 [(ngModel)]="selectedPeople" required>
+          <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+                   [removable]="removable" (remove)="remove(person)">
+            {{person.name}}
+            <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
+          </md-chip>
+        </md-chip-list>
+        <input placeholder="New Contributor..."
                [mdChipInputFor]="chipList2"
                [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
                [mdChipInputAddOnBlur]="addOnBlur"
                (mdChipInputTokenEnd)="add($event)" />
       </md-form-field>
+
+      <p>
+        Chips list without input
+      </p>
+
+
+      <md-form-field class="has-chip-list">
+        <md-chip-list #chipList3>
+          <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+                   [removable]="removable" (remove)="remove(person)">
+            {{person.name}}
+            <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
+          </md-chip>
+        </md-chip-list>
+      </md-form-field>
+
 
       <p>
         The example above has overridden the <code>[separatorKeys]</code> input to allow for
@@ -108,6 +126,28 @@
           {{aColor.name}}
         </md-chip>
       </md-chip-list>
+
+      <h4>NgModel with chip list</h4>
+      <md-chip-list [multiple]="true" [(ngModel)]="selectedColors">
+        <md-chip *ngFor="let aColor of availableColors" color="{{aColor.color}}"
+                 [value]="aColor.name" (remove)="removeColor(aColor)">
+          {{aColor.name}}
+          <md-icon mdChipRemove>cancel</md-icon>
+        </md-chip>
+      </md-chip-list>
+
+      The selected colors are <span *ngFor="let color of selectedColors"> {{color}}</span>.
+
+      <h4>NgModel with single selection chip list</h4>
+      <md-chip-list [(ngModel)]="selectedColor">
+        <md-chip *ngFor="let aColor of availableColors" color="{{aColor.color}}"
+                 [value]="aColor.name" (remove)="removeColor(aColor)">
+          {{aColor.name}}
+          <md-icon mdChipRemove>cancel</md-icon>
+        </md-chip>
+      </md-chip-list>
+
+      The selected color is {{selectedColor}}.
     </md-card-content>
   </md-card>
 </div>

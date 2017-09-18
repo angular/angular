@@ -69,13 +69,13 @@ let nextUniqueId = 0;
 })
 export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, DoCheck {
   /** Variables used as cache for getters and setters. */
-  private _type = 'text';
-  private _disabled = false;
-  private _required = false;
-  private _id: string;
-  private _uid = `md-input-${nextUniqueId++}`;
-  private _errorOptions: ErrorOptions;
-  private _previousNativeValue = this.value;
+  protected _type = 'text';
+  protected _disabled = false;
+  protected _required = false;
+  protected _id: string;
+  protected _uid = `md-input-${nextUniqueId++}`;
+  protected _errorOptions: ErrorOptions;
+  protected _previousNativeValue = this.value;
 
   /** Whether the input is focused. */
   focused = false;
@@ -137,7 +137,7 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
     }
   }
 
-  private _neverEmptyInputTypes = [
+  protected _neverEmptyInputTypes = [
     'date',
     'datetime',
     'datetime-local',
@@ -146,12 +146,12 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
     'week'
   ].filter(t => getSupportedInputTypes().has(t));
 
-  constructor(private _elementRef: ElementRef,
-              private _renderer: Renderer2,
-              private _platform: Platform,
+  constructor(protected _elementRef: ElementRef,
+              protected _renderer: Renderer2,
+              protected _platform: Platform,
               @Optional() @Self() public ngControl: NgControl,
-              @Optional() private _parentForm: NgForm,
-              @Optional() private _parentFormGroup: FormGroupDirective,
+              @Optional() protected _parentForm: NgForm,
+              @Optional() protected _parentFormGroup: FormGroupDirective,
               @Optional() @Inject(MD_ERROR_GLOBAL_OPTIONS) errorOptions: ErrorOptions) {
 
     // Force setter to be called in case id was not specified.
@@ -216,7 +216,7 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
   }
 
   /** Re-evaluates the error state. This is only relevant with @angular/forms. */
-  private _updateErrorState() {
+  protected _updateErrorState() {
     const oldState = this.errorState;
     const ngControl = this.ngControl;
     const parent = this._parentFormGroup || this._parentForm;
@@ -229,7 +229,7 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
   }
 
   /** Does some manual dirty checking on the native input `value` property. */
-  private _dirtyCheckNativeValue() {
+  protected _dirtyCheckNativeValue() {
     const newValue = this.value;
 
     if (this._previousNativeValue !== newValue) {
@@ -239,26 +239,26 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
   }
 
   /** Make sure the input is a supported type. */
-  private _validateType() {
+  protected _validateType() {
     if (MD_INPUT_INVALID_TYPES.indexOf(this._type) > -1) {
       throw getMdInputUnsupportedTypeError(this._type);
     }
   }
 
   /** Checks whether the input type is one of the types that are never empty. */
-  private _isNeverEmpty() {
+  protected _isNeverEmpty() {
     return this._neverEmptyInputTypes.indexOf(this._type) > -1;
   }
 
   /** Checks whether the input is invalid based on the native validation. */
-  private _isBadInput() {
+  protected _isBadInput() {
     // The `validity` property won't be present on platform-server.
     let validity = (this._elementRef.nativeElement as HTMLInputElement).validity;
     return validity && validity.badInput;
   }
 
   /** Determines if the component host is a textarea. If not recognizable it returns false. */
-  private _isTextarea() {
+  protected _isTextarea() {
     let nativeElement = this._elementRef.nativeElement;
 
     // In Universal, we don't have access to `nodeName`, but the same can be achieved with `name`.

@@ -20,6 +20,7 @@ export interface DemoColor {
   styleUrls: ['chips-demo.css']
 })
 export class ChipsDemo {
+  tabIndex: number = 0;
   visible: boolean = true;
   color: string = '';
   selectable: boolean = true;
@@ -29,6 +30,8 @@ export class ChipsDemo {
 
   // Enter, comma, semi-colon
   separatorKeysCodes = [ENTER, COMMA, 186];
+
+  selectedPeople = null;
 
   people: Person[] = [
     { name: 'Kara' },
@@ -73,7 +76,23 @@ export class ChipsDemo {
     }
   }
 
+  removeColor(color: DemoColor) {
+    let index = this.availableColors.indexOf(color);
+
+    if (index >= 0) {
+      this.availableColors.splice(index, 1);
+    }
+
+    index = this.selectedColors.indexOf(color.name);
+
+    if (index >= 0) {
+      this.selectedColors.splice(index, 1);
+    }
+  }
+
   toggleVisible(): void {
     this.visible = false;
   }
+  selectedColors: any[] = ['Primary', 'Warn'];
+  selectedColor = 'Accent';
 }

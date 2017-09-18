@@ -9,11 +9,9 @@
 import {FocusableOption} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
-  ContentChild,
   Directive,
   ElementRef,
   EventEmitter,
-  forwardRef,
   Input,
   OnDestroy,
   Output,
@@ -33,6 +31,12 @@ import {Subject} from 'rxjs/Subject';
 export interface MdChipEvent {
   chip: MdChip;
 }
+
+/** Event object emitted by MdChip when selected or deselected. */
+export class MdChipSelectionChange {
+  constructor(public source: MdChip, public isUserInput = false) { }
+}
+
 
 // Boilerplate for applying mixins to MdChip.
 /** @docs-private */
@@ -71,80 +75,106 @@ export class MdBasicChip { }
     '(click)': '_handleClick($event)',
     '(keydown)': '_handleKeydown($event)',
     '(focus)': '_hasFocus = true',
-    '(blur)': '_hasFocus = false',
-  }
+    '(blur)': '_blur()',
+  },
+
 })
 export class MdChip extends _MdChipMixinBase implements FocusableOption, OnDestroy, CanColor,
   CanDisable {
 
-  @ContentChild(forwardRef(() => MdChipRemove)) _chipRemove: MdChipRemove;
+  protected _value: any;
 
-  /** Whether the chip is selected. */
-  @Input() get selected(): boolean { return this._selected; }
-  set selected(value: boolean) {
-    this._selected = coerceBooleanProperty(value);
-    (this.selected ? this.select : this.deselect).emit({chip: this});
-  }
   protected _selected: boolean = false;
 
-  /**
-   * Whether or not the chips are selectable. When a chip is not selectable,
-   * changes to it's selected state are always ignored.
-   */
-  @Input() get selectable(): boolean {
-    return this._selectable;
-  }
-
-  set selectable(value: boolean) {
-    this._selectable = coerceBooleanProperty(value);
-  }
   protected _selectable: boolean = true;
 
-  /**
-   * Determines whether or not the chip displays the remove styling and emits (remove) events.
-   */
-  @Input() get removable(): boolean {
-    return this._removable;
-  }
-
-  set removable(value: boolean) {
-    this._removable = coerceBooleanProperty(value);
-  }
   protected _removable: boolean = true;
 
   /** Whether the chip has focus. */
   _hasFocus: boolean = false;
 
+  /** Whether the chip is selected. */
+  @Input()
+  get selected(): boolean { return this._selected; }
+  set selected(value: boolean) {
+    this._selected = coerceBooleanProperty(value);
+    this.onSelectionChange.emit({source: this, isUserInput: false});
+  }
+
+  /** The value of the chip. Defaults to the content inside <md-chip> tags. */
+  @Input()
+  get value(): any {
+    return this._value != undefined
+      ? this._value
+      : this._elementRef.nativeElement.textContent;
+  }
+  set value(newValue: any) { this._value = newValue; }
+
+  /**
+   * Whether or not the chips are selectable. When a chip is not selectable,
+   * changes to it's selected state are always ignored.
+   */
+  @Input()
+  get selectable(): boolean { return this._selectable; }
+  set selectable(value: boolean) { this._selectable = coerceBooleanProperty(value); }
+
+  /**
+   * Determines whether or not the chip displays the remove styling and emits (remove) events.
+   */
+  @Input()
+  get removable(): boolean { return this._removable; }
+  set removable(value: boolean) { this._removable = coerceBooleanProperty(value); }
+
   /** Emits when the chip is focused. */
   _onFocus = new Subject<MdChipEvent>();
 
-  /** Emitted when the chip is selected. */
-  @Output() select = new EventEmitter<MdChipEvent>();
+  /** Emits when the chip is blured. */
+  _onBlur = new Subject<MdChipEvent>();
 
-  /** Emitted when the chip is deselected. */
-  @Output() deselect = new EventEmitter<MdChipEvent>();
+  /** Emitted when the chip is selected or deselected. */
+  @Output() onSelectionChange = new EventEmitter<MdChipSelectionChange>();
 
   /** Emitted when the chip is destroyed. */
   @Output() destroy = new EventEmitter<MdChipEvent>();
+
+  /** Emitted when a chip is to be removed. */
+  @Output('remove') onRemove = new EventEmitter<MdChipEvent>();
 
   get ariaSelected(): string | null {
     return this.selectable ? this.selected.toString() : null;
   }
 
-  constructor(renderer: Renderer2, elementRef: ElementRef) {
-    super(renderer, elementRef);
+  constructor(renderer: Renderer2, public _elementRef: ElementRef) {
+    super(renderer, _elementRef);
   }
-
-  /** Emitted when a chip is to be removed. */
-  @Output('remove') onRemove = new EventEmitter<MdChipEvent>();
 
   ngOnDestroy(): void {
     this.destroy.emit({chip: this});
   }
 
+  /** Selects the chip. */
+  select(): void {
+    this._selected = true;
+    this.onSelectionChange.emit({source: this, isUserInput: false});
+  }
+
+  /** Deselects the chip. */
+  deselect(): void {
+    this._selected = false;
+    this.onSelectionChange.emit({source: this, isUserInput: false});
+  }
+
+  /** Select this chip and emit selected event */
+  selectViaInteraction() {
+    this._selected = true;
+    // Emit select event when selected changes.
+    this.onSelectionChange.emit({source: this, isUserInput: true});
+  }
+
   /** Toggles the current selected state of this chip. */
-  toggleSelected(): boolean {
-    this.selected = !this.selected;
+  toggleSelected(isUserInput: boolean = false): boolean {
+    this._selected = !this.selected;
+    this.onSelectionChange.emit({source: this, isUserInput});
     return this.selected;
   }
 
@@ -196,13 +226,18 @@ export class MdChip extends _MdChipMixinBase implements FocusableOption, OnDestr
       case SPACE:
         // If we are selectable, toggle the focused chip
         if (this.selectable) {
-          this.toggleSelected();
+          this.toggleSelected(true);
         }
 
         // Always prevent space from scrolling the page since the list has focus
         event.preventDefault();
         break;
     }
+  }
+
+  _blur() {
+    this._hasFocus = false;
+    this._onBlur.next({chip: this});
   }
 }
 
