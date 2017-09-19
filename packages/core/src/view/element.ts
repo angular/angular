@@ -55,7 +55,7 @@ export function anchorDef(
 
 export function elementDef(
     flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
-    ngContentIndex: number, childCount: number, namespaceAndName: string,
+    ngContentIndex: number, childCount: number, namespaceAndName: string | null,
     fixedAttrs: [string, string][] = [],
     bindings?: [BindingFlags, string, string | SecurityContext][], outputs?: ([string, string])[],
     handleEvent?: ElementHandleEventFn, componentView?: ViewDefinitionFactory,

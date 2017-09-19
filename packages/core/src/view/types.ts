@@ -233,6 +233,7 @@ export const enum QueryValueType {
 }
 
 export interface ElementDef {
+  // set to null for `<ng-container>`
   name: string|null;
   ns: string|null;
   /** ns, name, value */
