@@ -43,7 +43,7 @@ addMessage() {
   # because $TRAVIS_COMMIT_RANGE will contain the previous SHA which will not be in the
   # force push or commit, hence we default to last commit.
   message=$(git log --oneline $TRAVIS_COMMIT_RANGE -- || git log --oneline -n1)
-  message=$(echo $message | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
+  message=$(echo $message | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
   payloadData="$payloadData\"message\": \"$message\""
 }
 
