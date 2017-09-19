@@ -39,7 +39,7 @@ describe('NgCompilerHost', () => {
     ngHost = createNgHost({files}),
   }: {files?: Directory, options?: CompilerOptions, ngHost?: CompilerHost} = {}) {
     return new TsCompilerAotCompilerTypeCheckHostAdapter(
-        ['/tmp/index.ts'], options, ngHost, new MetadataCollector(), codeGenerator);
+        ['/tmp/index.ts'], options, ngHost, new MetadataCollector(), codeGenerator, new Map());
   }
 
   describe('fileNameToModuleName', () => {

@@ -35,6 +35,9 @@ const defaultEmitCallback: TsEmitCallback =
 
 class AngularCompilerProgram implements Program {
   private metadataCache: LowerMetadataCache;
+  private summariesFromPreviousCompilations = new Map<string, string>();
+  // Note: This will be cleared out as soon as we create the _tsProgram
+  private oldTsProgram: ts.Program|undefined;
   private _emittedGenFiles: GeneratedFile[]|undefined;
 
   // Lazily initialized fields
@@ -53,6 +56,11 @@ class AngularCompilerProgram implements Program {
     const [major, minor] = ts.version.split('.');
     if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 4)) {
       throw new Error('The Angular Compiler requires TypeScript >= 2.4.');
+    }
+    this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
+    if (oldProgram) {
+      oldProgram.getLibrarySummaries().forEach(
+          ({content, fileName}) => this.summariesFromPreviousCompilations.set(fileName, content));
     }
 
     this.rootNames = rootNames = rootNames.filter(r => !GENERATED_FILES.test(r));
@@ -73,6 +81,23 @@ class AngularCompilerProgram implements Program {
       }
     }
     this.metadataCache = new LowerMetadataCache({quotedNames: true}, !!options.strictMetadataEmit);
+  }
+
+  getLibrarySummaries(): {fileName: string, content: string}[] {
+    const emittedLibSummaries: {fileName: string, content: string}[] = [];
+    this.summariesFromPreviousCompilations.forEach(
+        (content, fileName) => emittedLibSummaries.push({fileName, content}));
+    if (this._emittedGenFiles) {
+      this._emittedGenFiles.forEach(genFile => {
+        if (genFile.srcFileUrl.endsWith('.d.ts') &&
+            genFile.genFileUrl.endsWith('.ngsummary.json')) {
+          // Note: ! is ok here as ngsummary.json files are always plain text, so genFile.source
+          // is filled.
+          emittedLibSummaries.push({fileName: genFile.genFileUrl, content: genFile.source !});
+        }
+      });
+    }
+    return emittedLibSummaries;
   }
 
   getTsProgram(): ts.Program { return this.tsProgram; }
@@ -284,6 +309,9 @@ class AngularCompilerProgram implements Program {
     if (this._analyzedModules) {
       throw new Error(`Internal Error: already initalized!`);
     }
+    // Note: This is important to not produce a memory leak!
+    const oldTsProgram = this.oldTsProgram;
+    this.oldTsProgram = undefined;
     const analyzedFiles: NgAnalyzedFile[] = [];
     const codegen = (fileName: string) => {
       if (this._analyzedModules) {
@@ -295,15 +323,13 @@ class AngularCompilerProgram implements Program {
       return this._compiler.emitBasicStubs(analyzedFile);
     };
     const hostAdapter = new TsCompilerAotCompilerTypeCheckHostAdapter(
-        this.rootNames, this.options, this.host, this.metadataCache, codegen);
+        this.rootNames, this.options, this.host, this.metadataCache, codegen,
+        this.summariesFromPreviousCompilations);
     const aotOptions = getAotCompilerOptions(this.options);
     this._compiler = createAotCompiler(hostAdapter, aotOptions).compiler;
     this._typeCheckHost = hostAdapter;
     this._structuralDiagnostics = [];
 
-    const oldTsProgram = this.oldProgram ? this.oldProgram.getTsProgram() : undefined;
-    // Note: This is important to not produce a memory leak!
-    this.oldProgram = undefined;
     const tmpProgram = ts.createProgram(this.rootNames, this.options, hostAdapter, oldTsProgram);
     return {tmpProgram, analyzedFiles, hostAdapter};
   }

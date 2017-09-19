@@ -260,7 +260,7 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
     this.urlResolver = createOfflineCompileUrlResolver();
   }
 
-  getMetadataForSourceFile(filePath: string): ModuleMetadata|undefined {
+  protected getSourceFile(filePath: string): ts.SourceFile {
     let sf = this.program.getSourceFile(filePath);
     if (!sf) {
       if (this.context.fileExists(filePath)) {
@@ -270,7 +270,11 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
         throw new Error(`Source file ${filePath} not present in program.`);
       }
     }
-    return this.metadataProvider.getMetadata(sf);
+    return sf;
+  }
+
+  getMetadataForSourceFile(filePath: string): ModuleMetadata|undefined {
+    return this.metadataProvider.getMetadata(this.getSourceFile(filePath));
   }
 
   toSummaryFileName(fileName: string, referringSrcFileName: string): string {

@@ -66,8 +66,9 @@ export interface CompilerHost extends ts.CompilerHost {
 export enum EmitFlags {
   DTS = 1 << 0,
   JS = 1 << 1,
+  Codegen = 1 << 4,
 
-  Default = DTS | JS
+  Default = DTS | JS | Codegen
 }
 
 export interface CustomTransformers {
@@ -106,6 +107,7 @@ export interface Program {
     customTransformers?: CustomTransformers,
     emitCallback?: TsEmitCallback
   }): ts.EmitResult;
+  getLibrarySummaries(): {fileName: string, content: string}[];
 }
 
 // Wrapper for createProgram.
