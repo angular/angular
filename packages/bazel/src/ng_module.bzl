@@ -189,4 +189,7 @@ ng_module = rule(
             default = Label("@//:node_modules")
         ),
     },
+    outputs = {
+      "tsconfig": "%{name}_tsconfig.json",
+    },
 )
