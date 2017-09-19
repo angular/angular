@@ -633,7 +633,6 @@ export function compile(
       useSummaries?: boolean,
       preCompile?: (program: ts.Program) => void,
       postCompile?: (program: ts.Program) => void,
-      stubsOnly?: boolean,
     }& AotCompilerOptions = {},
     tsOptions: ts.CompilerOptions = {}): {genFiles: GeneratedFile[], outDir: MockDirectory} {
   // when using summaries, always emit so the next step can use the results.
@@ -656,8 +655,7 @@ export function compile(
   const {compiler, reflector} = createAotCompiler(aotHost, options);
   const analyzedModules =
       compiler.analyzeModulesSync(program.getSourceFiles().map(sf => sf.fileName));
-  const genFiles = options.stubsOnly ? compiler.emitAllStubs(analyzedModules) :
-                                       compiler.emitAllImpls(analyzedModules);
+  const genFiles = compiler.emitAllImpls(analyzedModules);
   genFiles.forEach((file) => {
     const source = file.source || toTypeScript(file);
     if (isSource(file.genFileUrl)) {

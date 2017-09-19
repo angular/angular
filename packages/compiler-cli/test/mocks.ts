@@ -111,7 +111,7 @@ export class MockCompilerHost implements ts.CompilerHost {
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: (message: string) => void): ts.SourceFile {
     const sourceText = this.context.readFile(fileName);
-    if (sourceText) {
+    if (sourceText != null) {
       return ts.createSourceFile(fileName, sourceText, languageVersion);
     } else {
       return undefined !;

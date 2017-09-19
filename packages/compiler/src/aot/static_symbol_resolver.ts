@@ -252,7 +252,7 @@ export class StaticSymbolResolver {
 
   /**
    * hasDecorators checks a file's metadata for the presense of decorators without evalutating the
-   * metada.
+   * metadata.
    *
    * @param filePath the absolute path to examine for decorators.
    * @returns true if any class in the file has a decorator.
@@ -435,7 +435,8 @@ export class StaticSymbolResolver {
       ResolvedStaticSymbol {
     sourceSymbol.assertNoMembers();
     targetSymbol.assertNoMembers();
-    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath)) {
+    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) &&
+        this.summaryResolver.isLibraryFile(targetSymbol.filePath)) {
       // This case is for an ng library importing symbols from a plain ts library
       // transitively.
       // Note: We rely on the fact that we discover symbols in the direction
