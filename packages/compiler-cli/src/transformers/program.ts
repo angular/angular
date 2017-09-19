@@ -35,6 +35,8 @@ const defaultEmitCallback: TsEmitCallback =
 
 class AngularCompilerProgram implements Program {
   private metadataCache: LowerMetadataCache;
+  private _emittedGenFiles: GeneratedFile[]|undefined;
+
   // Lazily initialized fields
   private _typeCheckHost: TypeCheckHost;
   private _compiler: AotCompiler;
@@ -42,8 +44,6 @@ class AngularCompilerProgram implements Program {
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
   private _programWithStubs: ts.Program|undefined;
-  private _generatedFiles: GeneratedFile[]|undefined;
-  private _generatedFileDiagnostics: Diagnostic[]|undefined;
   private _semanticDiagnostics: {ts: ts.Diagnostic[], ng: Diagnostic[]}|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
 
@@ -101,11 +101,6 @@ class AngularCompilerProgram implements Program {
 
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
       Diagnostic[] {
-    const compilerDiagnostics = this.generatedFileDiagnostics;
-
-    // If we have diagnostics during the parser phase the type check phase is not meaningful so skip
-    // it.
-    if (compilerDiagnostics && compilerDiagnostics.length) return compilerDiagnostics;
     return this.semanticDiagnostics.ng;
   }
 
@@ -140,19 +135,28 @@ class AngularCompilerProgram implements Program {
       i18nExtract(format, file, this.host, this.options, bundle);
     }
     const outSrcMapping: Array<{sourceFile: ts.SourceFile, outFileName: string}> = [];
-    if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Summary)) ===
+    if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
         0) {
       return {emitSkipped: true, diagnostics: [], emittedFiles: []};
     }
+    const {genFiles, genDiags} = this.generateFilesForEmit(emitFlags);
+    if (genDiags.length) {
+      return {
+        diagnostics: genDiags,
+        emitSkipped: true,
+        emittedFiles: [],
+      };
+    }
+
     const emitResult = emitCallback({
       program: this.tsProgram,
       host: this.host,
       options: this.options,
-      targetSourceFile: undefined,
-      writeFile: createWriteFileCallback(this.options, this.host, outSrcMapping), cancellationToken,
+      writeFile: createWriteFileCallback(emitFlags, this.host, outSrcMapping),
       emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
-      customTransformers: this.calculateTransforms(customTransformers)
+      customTransformers: this.calculateTransforms(genFiles, customTransformers)
     });
+
 
     if (!outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
@@ -160,8 +164,8 @@ class AngularCompilerProgram implements Program {
     }
 
     const srcToOutPath = this.createSrcToOutPathMapper(outSrcMapping);
-    if (!this.options.skipTemplateCodegen) {
-      this.generatedFiles.forEach(gf => {
+    if (emitFlags & EmitFlags.Codegen) {
+      genFiles.forEach(gf => {
         if (gf.source) {
           this.host.writeFile(srcToOutPath(gf.genFileUrl), gf.source, false);
         }
@@ -216,31 +220,18 @@ class AngularCompilerProgram implements Program {
     return this._typeCheckHost !;
   }
 
-  private get generatedFiles(): GeneratedFile[] {
-    if (!this._generatedFiles) {
-      this.generateFiles();
-    }
-    return this._generatedFiles !;
-  }
-
-  private get generatedFileDiagnostics(): Diagnostic[]|undefined {
-    if (!this._generatedFileDiagnostics) {
-      this.generateFiles();
-    }
-    return this._generatedFileDiagnostics !;
-  }
-
   private get semanticDiagnostics(): {ts: ts.Diagnostic[], ng: Diagnostic[]} {
     return this._semanticDiagnostics ||
         (this._semanticDiagnostics = this.generateSemanticDiagnostics());
   }
 
-  private calculateTransforms(customTransformers?: CustomTransformers): ts.CustomTransformers {
+  private calculateTransforms(genFiles: GeneratedFile[], customTransformers?: CustomTransformers):
+      ts.CustomTransformers {
     const beforeTs: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (!this.options.disableExpressionLowering) {
       beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache));
     }
-    beforeTs.push(getAngularEmitterTransformFactory(this.generatedFiles));
+    beforeTs.push(getAngularEmitterTransformFactory(genFiles));
     if (customTransformers && customTransformers.beforeTs) {
       beforeTs.push(...customTransformers.beforeTs);
     }
@@ -358,20 +349,30 @@ class AngularCompilerProgram implements Program {
     throw e;
   }
 
-  private generateFiles() {
-    const diags: Diagnostic[] = this._generatedFileDiagnostics = [];
+  // Note: this returns a ts.Diagnostic so that we
+  // can return errors in a ts.EmitResult
+  private generateFilesForEmit(emitFlags: EmitFlags):
+      {genFiles: GeneratedFile[], genDiags: ts.Diagnostic[]} {
     try {
-      this._generatedFiles = this.compiler.emitAllImpls(this.analyzedModules);
+      if (!(emitFlags & EmitFlags.Codegen)) {
+        return {genFiles: [], genDiags: []};
+      }
+      const genFiles = this._emittedGenFiles = this.compiler.emitAllImpls(this.analyzedModules);
+      return {genFiles, genDiags: []};
     } catch (e) {
-      this._generatedFiles = [];
+      // TODO(tbosch): check whether we can actually have syntax errors here,
+      // as we already parsed the metadata and templates before to create the type check block.
       if (isSyntaxError(e)) {
-        diags.push({
+        const genDiags: ts.Diagnostic[] = [{
+          file: undefined,
+          start: undefined,
+          length: undefined,
           messageText: e.message,
           category: ts.DiagnosticCategory.Error,
           source: SOURCE,
           code: DEFAULT_ERROR_CODE
-        });
-        return [];
+        }];
+        return {genFiles: [], genDiags};
       }
       throw e;
     }
@@ -426,7 +427,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
 }
 
 function createWriteFileCallback(
-    options: {skipTemplateCodegen?: boolean}, host: ts.CompilerHost,
+    emitFlags: EmitFlags, host: ts.CompilerHost,
     outSrcMapping: Array<{sourceFile: ts.SourceFile, outFileName: string}>) {
   return (fileName: string, data: string, writeByteOrderMark: boolean,
           onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
@@ -435,9 +436,7 @@ function createWriteFileCallback(
     if (sourceFile) {
       outSrcMapping.push({outFileName: fileName, sourceFile});
     }
-    if (isGenerated && options.skipTemplateCodegen) {
-      // Always generate the files if requested to ensure we capture any diagnostic errors but only
-      // don't emit them.
+    if (isGenerated && !(emitFlags & EmitFlags.Codegen)) {
       return;
     }
     host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
