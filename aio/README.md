@@ -52,7 +52,7 @@ For more details see #16745.
 
 ## Guide to authoring
 
-There are two types of content in the documentatation:
+There are two types of content in the documentation:
 
 * **API docs**: descriptions of the modules, classes, interfaces, decorators, etc that make up the Angular platform.
 API docs are generated directly from the source code.
@@ -107,8 +107,16 @@ yarn start
 yarn docs-watch
 ```
 
+>Alternatively, try the consolidated `serve-and-sync` command that builds, watches and serves in the same terminal window
+```bash
+yarn serve-and-sync
+```
+
 * Open a browser at https://localhost:4200/ and navigate to the document on which you want to work.
 You can automatically open the browser by using `yarn start -- -o` in the first terminal.
 
 * Make changes to the page's associated doc or example files. Every time a file is saved, the doc will
 be regenerated, the app will rebuild and the page will reload.
+
+* If you get a build error complaining about examples or any other odd behavior, be sure to consult
+the [Authors Style Guide](https://angular.io/guide/docs-style-guide).
