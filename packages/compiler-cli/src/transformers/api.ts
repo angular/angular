@@ -174,10 +174,10 @@ export enum EmitFlags {
   JS = 1 << 1,
   Metadata = 1 << 2,
   I18nBundle = 1 << 3,
-  Summary = 1 << 4,
+  Codegen = 1 << 4,
 
-  Default = DTS | JS,
-  All = DTS | JS | Metadata | I18nBundle | Summary
+  Default = DTS | JS | Codegen,
+  All = DTS | JS | Metadata | I18nBundle | Codegen,
 }
 
 export interface CustomTransformers {

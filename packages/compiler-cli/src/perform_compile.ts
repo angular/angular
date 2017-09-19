@@ -101,6 +101,9 @@ export function readConfiguration(
     if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
       emitFlags |= api.EmitFlags.Metadata;
     }
+    if (options.skipTemplateCodegen) {
+      emitFlags = emitFlags & ~api.EmitFlags.Codegen;
+    }
     return {project: projectFile, rootNames, options, errors: parsed.errors, emitFlags};
   } catch (e) {
     const errors: Diagnostics = [{
