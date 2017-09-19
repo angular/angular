@@ -46,7 +46,7 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback {
     fileNameToModuleId: (fileName) => fileName,
     googmodule: false,
     untyped: true,
-    convertIndexImportShorthand: true,
+    convertIndexImportShorthand: false,
     transformDecorators: options.annotationsAs !== 'decorators',
     transformTypesToClosure: options.annotateForClosureCompiler,
   };
