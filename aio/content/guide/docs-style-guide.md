@@ -348,7 +348,7 @@ Here's the brief markup that produced that lengthy snippet:
 ```
 
 You identified the snippet's source file by setting the `path` attribute to sample folder's location _within_ `content/examples`.
-In this example, that path is  `docs-style-guide/src/app/app.module.ts`.  
+In this example, that path is  `docs-style-guide/src/app/app.module.ts`.
 
 You added a header to tell the reader where to find the file by setting the `title` attribute.
 Following convention, you set the `title` attribute to the file's location within the sample's root folder.
@@ -357,6 +357,23 @@ Following convention, you set the `title` attribute to the file's location withi
 
 Unless otherwise noted, all code snippets in this page are derived from sample source code 
 located in the `content/examples/docs-style-guide` directory.
+
+</div>
+
+<div class="alert is-important">
+
+The doc tooling reports an error if the file identified in the path does not exist **or is _git_-ignored**.
+
+Most `.js` files are _git_-ignored.
+If you want to include an ignored code file in your project and display it in a guide you must _un-ignore_ it.
+
+The preferred way to un-ignore a file is to update the `content/examples/.gitignore` like this:
+
+<code-example title="content/examples/.gitignore">
+  # my-guide
+  !my-guide/src/something.js
+  !my-guide/more-javascript*.js
+</code-example>
 
 </div>
 
