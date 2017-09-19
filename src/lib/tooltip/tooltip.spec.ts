@@ -19,7 +19,8 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer, OverlayModule, Scrollable} from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {ESCAPE} from '@angular/cdk/keycodes';
 import {
   MdTooltip,
   MdTooltipModule,
@@ -467,6 +468,13 @@ describe('MdTooltip', () => {
 
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
       expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
+    }));
+
+    it('should not throw when pressing ESCAPE', fakeAsync(() => {
+      expect(() => {
+        dispatchKeyboardEvent(buttonElement, 'keydown', ESCAPE);
+        fixture.detectChanges();
+      }).not.toThrow();
     }));
 
   });
