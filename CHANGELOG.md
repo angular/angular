@@ -1,3 +1,21 @@
+<a name="4.4.3"></a>
+## [4.4.3](https://github.com/angular/angular/compare/4.4.2...4.4.3) (2017-09-19)
+
+
+### Bug Fixes
+
+* **tsc-wrapped:** deduplicate metadata only when the module is the same ([#19261](https://github.com/angular/angular/issues/19261)) ([0371538](https://github.com/angular/angular/commit/0371538)), closes [#19219](https://github.com/angular/angular/issues/19219)
+
+
+<a name="4.4.2"></a>
+## [4.4.2](https://github.com/angular/angular/compare/4.4.1...4.4.2) (2017-09-18)
+
+
+### Bug Fixes
+
+* **platform-server**: fix for packaging issues [#19250](https://github.com/angular/angular/issues/19250)
+
+
 <a name="4.4.1"></a>
 # [4.4.1](https://github.com/angular/angular/compare/4.3.6...4.4.1) (2017-09-15)
 
