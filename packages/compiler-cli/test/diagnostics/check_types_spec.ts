@@ -7,84 +7,41 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
+import {TestSupport, expectNoDiagnostics, setup} from '../test_support';
 
 describe('ng type checker', () => {
-  let basePath: string;
-  let write: (fileName: string, content: string) => void;
   let errorSpy: jasmine.Spy&((s: string) => void);
+  let testSupport: TestSupport;
 
   function compileAndCheck(
       mockDirs: {[fileName: string]: string}[],
       overrideOptions: ng.CompilerOptions = {}): ng.Diagnostics {
+    testSupport.writeFiles(...mockDirs);
     const fileNames: string[] = [];
     mockDirs.forEach((dir) => {
       Object.keys(dir).forEach((fileName) => {
         if (fileName.endsWith('.ts')) {
-          fileNames.push(path.resolve(basePath, fileName));
+          fileNames.push(path.resolve(testSupport.basePath, fileName));
         }
-        write(fileName, dir[fileName]);
       });
     });
-    const options: ng.CompilerOptions = {
-      basePath,
-      'experimentalDecorators': true,
-      'skipLibCheck': true,
-      'strict': true,
-      'types': [],
-      'outDir': path.resolve(basePath, 'built'),
-      'rootDir': basePath,
-      'baseUrl': basePath,
-      'declaration': true,
-      'target': ts.ScriptTarget.ES5,
-      'module': ts.ModuleKind.ES2015,
-      'moduleResolution': ts.ModuleResolutionKind.NodeJs,
-      'lib': [
-        path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
-        path.resolve(basePath, 'node_modules/typescript/lib/lib.dom.d.ts')
-      ],
-      'typeRoots': [path.resolve(basePath, 'node_modules/@types')], ...overrideOptions
-    };
+    const options = testSupport.createCompilerOptions(overrideOptions);
     const {diagnostics} = ng.performCompilation({rootNames: fileNames, options});
     return diagnostics;
   }
 
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    basePath = makeTempDir();
-    write = (fileName: string, content: string) => {
-      const dir = path.dirname(fileName);
-      if (dir != '.') {
-        const newDir = path.join(basePath, dir);
-        if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
-      }
-      fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
-    };
-    const ngRootDir = getNgRootDir();
-    const nodeModulesPath = path.resolve(basePath, 'node_modules');
-    fs.mkdirSync(nodeModulesPath);
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-        path.resolve(nodeModulesPath, '@angular'));
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'node_modules', 'typescript'),
-        path.resolve(nodeModulesPath, 'typescript'));
+    testSupport = setup();
   });
 
   function accept(
       files: {[fileName: string]: string} = {}, overrideOptions: ng.CompilerOptions = {}) {
-    expectNoDiagnostics(compileAndCheck([QUICKSTART, files], overrideOptions));
+    expectNoDiagnostics({}, compileAndCheck([QUICKSTART, files], overrideOptions));
   }
 
   function reject(
@@ -193,7 +150,7 @@ describe('ng type checker', () => {
 
   describe('with lowered expressions', () => {
     it('should not report lowered expressions as errors',
-       () => { expectNoDiagnostics(compileAndCheck([LOWERING_QUICKSTART])); });
+       () => { expectNoDiagnostics({}, compileAndCheck([LOWERING_QUICKSTART])); });
   });
 });
 
@@ -284,9 +241,3 @@ const LOWERING_QUICKSTART = {
     export class AppModule { }
   `
 };
-
-function expectNoDiagnostics(diagnostics: ng.Diagnostics) {
-  if (diagnostics && diagnostics.length) {
-    throw new Error(ng.formatDiagnostics({}, diagnostics));
-  }
-}

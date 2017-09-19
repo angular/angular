@@ -30,6 +30,11 @@ export function isNgDiagnostic(diagnostic: any): diagnostic is Diagnostic {
 }
 
 export interface CompilerOptions extends ts.CompilerOptions {
+  // Write statistics about compilation (e.g. total time, ...)
+  // Note: this is the --diagnostics command line option from TS (which is @internal
+  // on ts.CompilerOptions interface).
+  diagnostics?: boolean;
+
   // Absolute path to a directory where generated file structure is written.
   // If unspecified, generated files will be written alongside sources.
   // @deprecated - no effect
@@ -273,4 +278,10 @@ export interface Program {
     customTransformers?: CustomTransformers,
     emitCallback?: TsEmitCallback
   }): ts.EmitResult;
+
+  /**
+   * Returns the .ngsummary.json files of libraries that have been compiled
+   * in this program or previous programs.
+   */
+  getLibrarySummaries(): {fileName: string, content: string}[];
 }
