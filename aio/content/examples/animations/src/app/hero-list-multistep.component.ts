@@ -12,7 +12,7 @@ import {
   AnimationEvent
 } from '@angular/animations';
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
   selector: 'hero-list-multistep',
@@ -59,7 +59,7 @@ import { Heroes } from './hero.service';
   // #enddocregion animationdef
 })
 export class HeroListMultistepComponent {
-  @Input() heroes: Heroes;
+   @Input() heroes: Hero[];
 
   animationStarted(event: AnimationEvent) {
     console.warn('Animation started: ', event);
