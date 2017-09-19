@@ -22,7 +22,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "flatModuleOutFile": "upgrade.js",
     "flatModuleId": "@angular/upgrade"
   }
 }

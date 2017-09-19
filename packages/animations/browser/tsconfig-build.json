@@ -19,7 +19,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "flatModuleOutFile": "browser.js",
     "flatModuleId": "@angular/animations/browser"
   }
 }

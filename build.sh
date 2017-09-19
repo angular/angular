@@ -113,28 +113,34 @@ containsElement () {
 # Arguments:
 #   param1 - Base source folder
 #   param2 - Destination directory
+#   param3 - Package name
+#   param4 - Is sub directory
 # Returns:
 #   None
 #######################################
 rollupIndex() {
   # Iterate over the files in this directory, rolling up each into ${2} directory
-  local regex=".+/(.+)/index.js"
-  in_file="${1}/index.js"
-  out_file="${2}/index.js"
+  in_file="${1}/${3}.js"
+  if [ ${4:-} ]; then
+    out_file="$(dropLast ${2})/${3}.js"
+  else
+    out_file="${2}/${3}.js"
+  fi
 
   BANNER_TEXT=`cat ${LICENSE_BANNER}`
-
   if [[ -f ${in_file} ]]; then
-    echo "===========           $ROLLUP -i ${in_file} -o ${out_file} -c ${ROOT_DIR}/rollup.config.js --sourcemap"
+    echo "===========           $ROLLUP -i ${in_file} -o ${out_file} --sourcemap -f es --banner BANNER_TEXT >/dev/null 2>&1"
     $ROLLUP -i ${in_file} -o ${out_file} --sourcemap -f es --banner "$BANNER_TEXT" >/dev/null 2>&1
   fi
 
   # Recurse for sub directories
   for DIR in ${1}/* ; do
+    local sub_package=$(basename "${DIR}")
     isIgnoredDirectory ${DIR} && continue
-    # NOTE: We need to re-run this regex and use the new match as Bash doesn't have closures
-    if [[ "${DIR}/index.js" =~ $regex ]]; then
-      rollupIndex ${DIR} ${2}/${BASH_REMATCH[1]}
+    local regex=".+/(.+)/${sub_package}.js"
+    if [[ "${DIR}/${sub_package}.js" =~ $regex ]]; then
+
+      rollupIndex ${DIR} ${2}/${BASH_REMATCH[1]} ${sub_package} true
     fi
   done
 }
@@ -218,8 +224,8 @@ compilePackage() {
     local package_name=$(basename "${2}")
     $NGC -p ${1}/tsconfig-build.json
     echo "======           Create ${1}/../${package_name}.d.ts re-export file for tsickle"
-    echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/index'" > ${2}/../${package_name}.d.ts
-    echo "{\"__symbolic\":\"module\",\"version\":3,\"metadata\":{},\"exports\":[{\"from\":\"./${package_name}/index\"}],\"flatModuleIndexRedirect\":true}" > ${2}/../${package_name}.metadata.json
+    echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/${package_name}'" > ${2}/../${package_name}.d.ts
+    echo "{\"__symbolic\":\"module\",\"version\":3,\"metadata\":{},\"exports\":[{\"from\":\"./${package_name}/${package_name}\"}],\"flatModuleIndexRedirect\":true}" > ${2}/../${package_name}.metadata.json
   fi
 
   for DIR in ${1}/* ; do
@@ -265,10 +271,10 @@ compilePackageES5() {
 addNgcPackageJson() {
   for DIR in ${1}/* ; do
     [ -d "${DIR}" ] || continue
-    # Confirm there is an index.d.ts and index.metadata.json file. If so, create
+    # Confirm there is an ${PACKAGE}.d.ts and ${PACKAGE}.metadata.json file. If so, create
     # the package.json and recurse.
-    if [[ -f ${DIR}/index.d.ts && -f ${DIR}/index.metadata.json ]]; then
-      echo '{"typings": "index.d.ts"}' > ${DIR}/package.json
+    if [[ -f ${DIR}/${PACKAGE}.d.ts && -f ${DIR}/${PACKAGE}.metadata.json ]]; then
+      echo '{"typings": "${PACKAGE}.d.ts"}' > ${DIR}/package.json
       addNgcPackageJson ${DIR}
     fi
   done
@@ -282,6 +288,25 @@ updateVersionReferences() {
     echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER .)"
     perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER .) < /dev/null 2> /dev/null
   )
+}
+
+#######################################
+# Drops the last entry of a path. Similar to normalizing a path such as
+# /parent/child/.. to /parent.
+# Arguments:
+#   param1 - Directory on which to drop the last item
+# Returns:
+#   None
+#######################################
+
+dropLast() {
+  local last_item=$(basename ${1})
+  local regex=local regex="(.+)/${last_item}"
+  if [[ "${1}" =~ $regex ]]; then
+    echo "${BASH_REMATCH[1]}"
+  else
+    echo "${1}"
+  fi
 }
 
 VERSION="${VERSION_PREFIX}${VERSION_SUFFIX}"
@@ -394,7 +419,7 @@ do
   OUT_DIR=${ROOT_OUT_DIR}/${PACKAGE}
   OUT_DIR_ESM5=${ROOT_OUT_DIR}/${PACKAGE}/esm5
   NPM_DIR=${PWD}/dist/packages-dist/${PACKAGE}
-  ESM15_DIR=${NPM_DIR}/esm15
+  ESM2015_DIR=${NPM_DIR}/esm2015
   ESM5_DIR=${NPM_DIR}/esm5
   BUNDLES_DIR=${NPM_DIR}/bundles
 
@@ -418,11 +443,11 @@ do
       (
         cd  ${SRC_DIR}
         echo "======         Rollup ${PACKAGE}"
-        rollupIndex ${OUT_DIR} ${ESM15_DIR} ${ROOT_DIR}
+        rollupIndex ${OUT_DIR} ${ESM2015_DIR} ${PACKAGE}
 
         echo "======         Produce ESM5 version"
         compilePackageES5 ${SRC_DIR} ${OUT_DIR_ESM5} ${PACKAGE}
-        rollupIndex ${OUT_DIR_ESM5} ${ESM5_DIR} ${ROOT_DIR}
+        rollupIndex ${OUT_DIR_ESM5} ${ESM5_DIR} ${PACKAGE}
 
         echo "======         Run rollup conversions on ${PACKAGE}"
         runRollup ${SRC_DIR}

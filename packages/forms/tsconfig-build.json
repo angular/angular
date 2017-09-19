@@ -24,7 +24,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "flatModuleOutFile": "forms.js",
     "flatModuleId": "@angular/forms"
   }
 }

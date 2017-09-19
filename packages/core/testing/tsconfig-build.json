@@ -19,7 +19,7 @@
 
   "angularCompilerOptions": {
     "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "flatModuleOutFile": "testing.js",
     "flatModuleId": "@angular/core/testing"
   }
 }

@@ -16,7 +16,7 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/compiler/esm5/index.js',
+  entry: '../../dist/packages-dist/compiler/esm5/compiler.js',
   dest: '../../dist/packages-dist/compiler/bundles/compiler.umd.js',
   format: 'umd',
   exports: 'named',
