@@ -32,7 +32,7 @@
     "fsevents": "1.1.2"
   },
   "devDependencies": {
-    "@bazel/typescript": "0.1.x",
+    "@bazel/typescript": "0.2.x",
     "@types/angularjs": "1.5.14-alpha",
     "@types/base64-js": "1.2.5",
     "@types/chokidar": "1.7.3",

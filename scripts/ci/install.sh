@@ -63,9 +63,9 @@ if [[ ${TRAVIS} && (${CI_MODE} == "bazel" || ${CI_MODE} == "e2e_2") ]]; then
   (
     mkdir tmp
     cd tmp
-    curl --location --compressed https://github.com/bazelbuild/bazel/releases/download/0.5.2/bazel-0.5.2-installer-linux-x86_64.sh > bazel-0.5.2-installer-linux-x86_64.sh
-    chmod +x bazel-0.5.2-installer-linux-x86_64.sh
-    ./bazel-0.5.2-installer-linux-x86_64.sh --user
+    curl --location --compressed https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh > bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
+    chmod +x bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
+    ./bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh --user
     cd ..
     rm -rf tmp
   )

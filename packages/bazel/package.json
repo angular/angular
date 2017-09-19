@@ -9,7 +9,7 @@
     "typescript": "^2.4.2"
   },
   "dependencies": {
-    "@bazel/typescript": "0.1.x",
+    "@bazel/typescript": "0.2.x",
     "@types/node": "6.0.84"
   },
   "repository": {
