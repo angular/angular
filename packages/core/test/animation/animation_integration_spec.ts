@@ -475,6 +475,103 @@ export function main() {
         ]);
       });
 
+      it('should understand boolean values as `true` and `false` for transition animations', () => {
+        @Component({
+          selector: 'if-cmp',
+          template: `
+          <div [@myAnimation]="exp"></div>
+        `,
+          animations: [
+            trigger(
+                'myAnimation',
+                [
+                  transition(
+                      'true => false',
+                      [
+                        style({opacity: 0}),
+                        animate(1234, style({opacity: 1})),
+                      ]),
+                  transition(
+                      'false => true',
+                      [
+                        style({opacity: 1}),
+                        animate(4567, style({opacity: 0})),
+                      ])
+                ]),
+          ]
+        })
+        class Cmp {
+          exp: any = false;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp = true;
+        fixture.detectChanges();
+
+        cmp.exp = false;
+        fixture.detectChanges();
+
+        let players = getLog();
+        expect(players.length).toEqual(1);
+        let [player] = players;
+
+        expect(player.duration).toEqual(1234);
+      });
+
+      it('should understand boolean values as `true` and `false` for transition animations and apply the corresponding state() value',
+         () => {
+           @Component({
+             selector: 'if-cmp',
+             template: `
+          <div [@myAnimation]="exp"></div>
+        `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     state('true', style({color: 'red'})),
+                     state('false', style({color: 'blue'})),
+                     transition(
+                         'true <=> false',
+                         [
+                           animate(1000, style({color: 'gold'})),
+                           animate(1000),
+                         ]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             exp: any = false;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = false;
+           fixture.detectChanges();
+
+           cmp.exp = true;
+           fixture.detectChanges();
+
+           let players = getLog();
+           expect(players.length).toEqual(1);
+           let [player] = players;
+
+           expect(player.keyframes).toEqual([
+             {color: 'blue', offset: 0},
+             {color: 'gold', offset: 0.5},
+             {color: 'red', offset: 1},
+           ]);
+         });
+
       it('should not throw an error if a trigger with the same name exists in separate components',
          () => {
            @Component({selector: 'cmp1', template: '...', animations: [trigger('trig', [])]})
