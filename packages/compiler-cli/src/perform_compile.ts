@@ -101,6 +101,9 @@ export function readConfiguration(
     if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
       emitFlags |= api.EmitFlags.Metadata;
     }
+    if (options.skipTemplateCodegen) {
+      emitFlags = emitFlags & ~api.EmitFlags.Codegen;
+    }
     return {project: projectFile, rootNames, options, errors: parsed.errors, emitFlags};
   } catch (e) {
     const errors: Diagnostics = [{
@@ -141,12 +144,6 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
   customTransformers?: api.CustomTransformers,
   emitFlags?: api.EmitFlags
 }): PerformCompilationResult {
-  const [major, minor] = ts.version.split('.');
-
-  if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 4)) {
-    throw new Error('The Angular Compiler requires TypeScript >= 2.4.');
-  }
-
   let program: api.Program|undefined;
   let emitResult: ts.EmitResult|undefined;
   let allDiagnostics: Diagnostics = [];

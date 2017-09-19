@@ -35,9 +35,25 @@ const ChangeDiagnostics = {
   },
 };
 
+function totalCompilationTimeDiagnostic(timeInMillis: number): api.Diagnostic {
+  let duration: string;
+  if (timeInMillis > 1000) {
+    duration = `${(timeInMillis / 1000).toPrecision(2)}s`;
+  } else {
+    duration = `${timeInMillis}ms`;
+  }
+  return {
+    category: ts.DiagnosticCategory.Message,
+    messageText: `Total time: ${duration}`,
+    code: api.DEFAULT_ERROR_CODE,
+    source: api.SOURCE,
+  };
+}
+
 export enum FileChangeEvent {
   Change,
-  CreateDelete
+  CreateDelete,
+  CreateDeleteDir,
 }
 
 export interface PerformWatchHost {
@@ -45,38 +61,33 @@ export interface PerformWatchHost {
   readConfiguration(): ParsedConfiguration;
   createCompilerHost(options: api.CompilerOptions): api.CompilerHost;
   createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined;
-  onFileChange(listener: (event: FileChangeEvent, fileName: string) => void):
-      {close: () => void, ready: (cb: () => void) => void};
+  onFileChange(
+      options: api.CompilerOptions, listener: (event: FileChangeEvent, fileName: string) => void,
+      ready: () => void): {close: () => void};
   setTimeout(callback: () => void, ms: number): any;
   clearTimeout(timeoutId: any): void;
 }
 
 export function createPerformWatchHost(
     configFileName: string, reportDiagnostics: (diagnostics: Diagnostics) => void,
-    existingOptions?: ts.CompilerOptions,
-    createEmitCallback?: (options: api.CompilerOptions) => api.TsEmitCallback): PerformWatchHost {
+    existingOptions?: ts.CompilerOptions, createEmitCallback?: (options: api.CompilerOptions) =>
+                                              api.TsEmitCallback | undefined): PerformWatchHost {
   return {
     reportDiagnostics: reportDiagnostics,
     createCompilerHost: options => createCompilerHost({options}),
     readConfiguration: () => readConfiguration(configFileName, existingOptions),
     createEmitCallback: options => createEmitCallback ? createEmitCallback(options) : undefined,
-    onFileChange: (listeners) => {
-      const parsed = readConfiguration(configFileName, existingOptions);
-      function stubReady(cb: () => void) { process.nextTick(cb); }
-      if (parsed.errors && parsed.errors.length) {
-        reportDiagnostics(parsed.errors);
-        return {close: () => {}, ready: stubReady};
-      }
-      if (!parsed.options.basePath) {
+    onFileChange: (options, listener, ready: () => void) => {
+      if (!options.basePath) {
         reportDiagnostics([{
           category: ts.DiagnosticCategory.Error,
           messageText: 'Invalid configuration option. baseDir not specified',
           source: api.SOURCE,
           code: api.DEFAULT_ERROR_CODE
         }]);
-        return {close: () => {}, ready: stubReady};
+        return {close: () => {}};
       }
-      const watcher = chokidar.watch(parsed.options.basePath, {
+      const watcher = chokidar.watch(options.basePath, {
         // ignore .dotfiles, .js and .map files.
         // can't ignore other files as we e.g. want to recompile if an `.html` file changes as well.
         ignored: /((^[\/\\])\..)|(\.js$)|(\.map$)|(\.metadata\.json)/,
@@ -86,20 +97,30 @@ export function createPerformWatchHost(
       watcher.on('all', (event: string, path: string) => {
         switch (event) {
           case 'change':
-            listeners(FileChangeEvent.Change, path);
+            listener(FileChangeEvent.Change, path);
             break;
           case 'unlink':
           case 'add':
-            listeners(FileChangeEvent.CreateDelete, path);
+            listener(FileChangeEvent.CreateDelete, path);
+            break;
+          case 'unlinkDir':
+          case 'addDir':
+            listener(FileChangeEvent.CreateDeleteDir, path);
             break;
         }
       });
-      function ready(cb: () => void) { watcher.on('ready', cb); }
+      watcher.on('ready', ready);
       return {close: () => watcher.close(), ready};
     },
     setTimeout: (ts.sys.clearTimeout && ts.sys.setTimeout) || setTimeout,
     clearTimeout: (ts.sys.setTimeout && ts.sys.clearTimeout) || clearTimeout,
   };
+}
+
+interface CacheEntry {
+  exists?: boolean;
+  sf?: ts.SourceFile;
+  content?: string;
 }
 
 /**
@@ -112,15 +133,29 @@ export function performWatchCompilation(host: PerformWatchHost):
   let cachedOptions: ParsedConfiguration|undefined;  // CompilerOptions cached from last compilation
   let timerHandleForRecompilation: any;  // Handle for 0.25s wait timer to trigger recompilation
 
-  // Watch basePath, ignoring .dotfiles
-  const fileWatcher = host.onFileChange(watchedFileChanged);
   const ingoreFilesForWatch = new Set<string>();
+  const fileCache = new Map<string, CacheEntry>();
 
   const firstCompileResult = doCompilation();
 
-  const readyPromise = new Promise(resolve => fileWatcher.ready(resolve));
+  // Watch basePath, ignoring .dotfiles
+  let resolveReadyPromise: () => void;
+  const readyPromise = new Promise(resolve => resolveReadyPromise = resolve);
+  // Note: ! is ok as options are filled after the first compilation
+  // Note: ! is ok as resolvedReadyPromise is filled by the previous call
+  const fileWatcher =
+      host.onFileChange(cachedOptions !.options, watchedFileChanged, resolveReadyPromise !);
 
   return {close, ready: cb => readyPromise.then(cb), firstCompileResult};
+
+  function cacheEntry(fileName: string): CacheEntry {
+    let entry = fileCache.get(fileName);
+    if (!entry) {
+      entry = {};
+      fileCache.set(fileName, entry);
+    }
+    return entry;
+  }
 
   function close() {
     fileWatcher.close();
@@ -139,11 +174,8 @@ export function performWatchCompilation(host: PerformWatchHost):
       host.reportDiagnostics(cachedOptions.errors);
       return cachedOptions.errors;
     }
+    const startTime = Date.now();
     if (!cachedCompilerHost) {
-      // TODO(chuckj): consider avoiding re-generating factories for libraries.
-      // Consider modifying the AotCompilerHost to be able to remember the summary files
-      // generated from previous compiliations and return false from isSourceFile for
-      // .d.ts files for which a summary file was already generated.å
       cachedCompilerHost = host.createCompilerHost(cachedOptions.options);
       const originalWriteFileCallback = cachedCompilerHost.writeFile;
       cachedCompilerHost.writeFile = function(
@@ -151,6 +183,31 @@ export function performWatchCompilation(host: PerformWatchHost):
           onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) {
         ingoreFilesForWatch.add(path.normalize(fileName));
         return originalWriteFileCallback(fileName, data, writeByteOrderMark, onError, sourceFiles);
+      };
+      const originalFileExists = cachedCompilerHost.fileExists;
+      cachedCompilerHost.fileExists = function(fileName: string) {
+        const ce = cacheEntry(fileName);
+        if (ce.exists == null) {
+          ce.exists = originalFileExists.call(this, fileName);
+        }
+        return ce.exists !;
+      };
+      const originalGetSourceFile = cachedCompilerHost.getSourceFile;
+      cachedCompilerHost.getSourceFile = function(
+          fileName: string, languageVersion: ts.ScriptTarget) {
+        const ce = cacheEntry(fileName);
+        if (!ce.sf) {
+          ce.sf = originalGetSourceFile.call(this, fileName, languageVersion);
+        }
+        return ce.sf !;
+      };
+      const originalReadFile = cachedCompilerHost.readFile;
+      cachedCompilerHost.readFile = function(fileName: string) {
+        const ce = cacheEntry(fileName);
+        if (ce.content == null) {
+          ce.content = originalReadFile.call(this, fileName);
+        }
+        return ce.content !;
       };
     }
     ingoreFilesForWatch.clear();
@@ -166,6 +223,11 @@ export function performWatchCompilation(host: PerformWatchHost):
       host.reportDiagnostics(compileResult.diagnostics);
     }
 
+    const endTime = Date.now();
+    if (cachedOptions.options.diagnostics) {
+      const totalTime = (endTime - startTime) / 1000;
+      host.reportDiagnostics([totalCompilationTimeDiagnostic(endTime - startTime)]);
+    }
     const exitCode = exitCodeFromResult(compileResult.diagnostics);
     if (exitCode == 0) {
       cachedProgram = compileResult.program;
@@ -191,11 +253,19 @@ export function performWatchCompilation(host: PerformWatchHost):
         path.normalize(fileName) === path.normalize(cachedOptions.project)) {
       // If the configuration file changes, forget everything and start the recompilation timer
       resetOptions();
-    } else if (event === FileChangeEvent.CreateDelete) {
+    } else if (
+        event === FileChangeEvent.CreateDelete || event === FileChangeEvent.CreateDeleteDir) {
       // If a file was added or removed, reread the configuration
       // to determine the new list of root files.
       cachedOptions = undefined;
     }
+
+    if (event === FileChangeEvent.CreateDeleteDir) {
+      fileCache.clear();
+    } else {
+      fileCache.delete(fileName);
+    }
+
     if (!ingoreFilesForWatch.has(path.normalize(fileName))) {
       // Ignore the file if the file is one that was written by the compiler.
       startTimerForRecompilation();

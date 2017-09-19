@@ -30,6 +30,11 @@ export function isNgDiagnostic(diagnostic: any): diagnostic is Diagnostic {
 }
 
 export interface CompilerOptions extends ts.CompilerOptions {
+  // Write statistics about compilation (e.g. total time, ...)
+  // Note: this is the --diagnostics command line option from TS (which is @internal
+  // on ts.CompilerOptions interface).
+  diagnostics?: boolean;
+
   // Absolute path to a directory where generated file structure is written.
   // If unspecified, generated files will be written alongside sources.
   // @deprecated - no effect
@@ -135,17 +140,17 @@ export interface CompilerHost extends ts.CompilerHost {
    * Converts a module name that is used in an `import` to a file path.
    * I.e. `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
-  moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
+  moduleNameToFileName?(moduleName: string, containingFile: string): string|null;
   /**
    * Converts a file path to a module name that can be used as an `import ...`
    * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
    */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
+  fileNameToModuleName?(importedFilePath: string, containingFilePath: string): string;
   /**
    * Converts a file path for a resource that is used in a source file or another resource
    * into a filepath.
    */
-  resourceNameToFileName(resourceName: string, containingFilePath: string): string|null;
+  resourceNameToFileName?(resourceName: string, containingFilePath: string): string|null;
   /**
    * Converts a file name into a representation that should be stored in a summary file.
    * This has to include changing the suffix as well.
@@ -154,12 +159,12 @@ export interface CompilerHost extends ts.CompilerHost {
    *
    * @param referringSrcFileName the soure file that refers to fileName
    */
-  toSummaryFileName(fileName: string, referringSrcFileName: string): string;
+  toSummaryFileName?(fileName: string, referringSrcFileName: string): string;
   /**
    * Converts a fileName that was processed by `toSummaryFileName` back into a real fileName
    * given the fileName of the library that is referrig to it.
    */
-  fromSummaryFileName(fileName: string, referringLibFileName: string): string;
+  fromSummaryFileName?(fileName: string, referringLibFileName: string): string;
   /**
    * Load a referenced resource either statically or asynchronously. If the host returns a
    * `Promise<string>` it is assumed the user of the corresponding `Program` will call
@@ -174,10 +179,10 @@ export enum EmitFlags {
   JS = 1 << 1,
   Metadata = 1 << 2,
   I18nBundle = 1 << 3,
-  Summary = 1 << 4,
+  Codegen = 1 << 4,
 
-  Default = DTS | JS,
-  All = DTS | JS | Metadata | I18nBundle | Summary
+  Default = DTS | JS | Codegen,
+  All = DTS | JS | Metadata | I18nBundle | Codegen,
 }
 
 export interface CustomTransformers {
@@ -267,10 +272,16 @@ export interface Program {
    *
    * Angular structural information is required to emit files.
    */
-  emit({emitFlags, cancellationToken, customTransformers, emitCallback}: {
+  emit({emitFlags, cancellationToken, customTransformers, emitCallback}?: {
     emitFlags?: EmitFlags,
     cancellationToken?: ts.CancellationToken,
     customTransformers?: CustomTransformers,
     emitCallback?: TsEmitCallback
   }): ts.EmitResult;
+
+  /**
+   * Returns the .ngsummary.json files of libraries that have been compiled
+   * in this program or previous programs.
+   */
+  getLibrarySummaries(): {fileName: string, content: string}[];
 }

@@ -22,8 +22,6 @@ const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$|\.ngsummary\.ts$/;
 const GENERATED_OR_DTS_FILES = /\.d\.ts$|\.ngfactory\.ts$|\.ngstyle\.ts$|\.ngsummary\.ts$/;
 const SHALLOW_IMPORT = /^((\w|-)+|(@(\w|-)+(\/(\w|-)+)+))$/;
 
-export interface MetadataProvider { getMetadata(source: ts.SourceFile): ModuleMetadata|undefined; }
-
 export interface BaseAotCompilerHostContext extends ts.ModuleResolutionHost {
   readResource?(fileName: string): Promise<string>|string;
 }
@@ -35,9 +33,7 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
   private flatModuleIndexNames = new Set<string>();
   private flatModuleIndexRedirectNames = new Set<string>();
 
-  constructor(
-      protected program: ts.Program, protected options: CompilerOptions, protected context: C,
-      protected metadataProvider: MetadataProvider = new MetadataCollector()) {}
+  constructor(protected options: CompilerOptions, protected context: C) {}
 
   abstract moduleNameToFileName(m: string, containingFile: string): string|null;
 
@@ -49,17 +45,7 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
 
   abstract fromSummaryFileName(fileName: string, referringLibFileName: string): string;
 
-  protected getSourceFile(filePath: string): ts.SourceFile {
-    const sf = this.program.getSourceFile(filePath);
-    if (!sf) {
-      if (this.context.fileExists(filePath)) {
-        const sourceText = this.context.readFile(filePath);
-        return ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true);
-      }
-      throw new Error(`Source file ${filePath} not present in program.`);
-    }
-    return sf;
-  }
+  abstract getMetadataForSourceFile(filePath: string): ModuleMetadata|undefined;
 
   getMetadataFor(filePath: string): ModuleMetadata[]|undefined {
     if (!this.context.fileExists(filePath)) {
@@ -82,8 +68,7 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
       }
     }
 
-    const sf = this.getSourceFile(filePath);
-    const metadata = this.metadataProvider.getMetadata(sf);
+    const metadata = this.getMetadataForSourceFile(filePath);
     return metadata ? [metadata] : [];
   }
 
@@ -122,7 +107,7 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
       v3Metadata.metadata[prop] = v1Metadata.metadata[prop];
     }
 
-    const exports = this.metadataProvider.getMetadata(this.getSourceFile(dtsFilePath));
+    const exports = this.getMetadataForSourceFile(dtsFilePath);
     if (exports) {
       for (let prop in exports.metadata) {
         if (!v3Metadata.metadata[prop]) {
@@ -233,6 +218,7 @@ export interface CompilerHostContext extends ts.ModuleResolutionHost {
 
 // TODO(tbosch): remove this once G3 uses the transformer compiler!
 export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
+  protected metadataProvider: MetadataCollector;
   protected basePath: string;
   private moduleFileNames = new Map<string, string|null>();
   private isGenDirChildOfRootDir: boolean;
@@ -241,10 +227,10 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
   private urlResolver: UrlResolver;
 
   constructor(
-      program: ts.Program, options: CompilerOptions, context: CompilerHostContext,
-      collectorOptions?: CollectorOptions,
-      metadataProvider: MetadataProvider = new MetadataCollector(collectorOptions)) {
-    super(program, options, context, metadataProvider);
+      protected program: ts.Program, options: CompilerOptions, context: CompilerHostContext,
+      collectorOptions?: CollectorOptions) {
+    super(options, context);
+    this.metadataProvider = new MetadataCollector(collectorOptions);
     // normalize the path so that it never ends with '/'.
     this.basePath = path.normalize(path.join(this.options.basePath !, '.')).replace(/\\/g, '/');
     this.genDir = path.normalize(path.join(this.options.genDir !, '.')).replace(/\\/g, '/');
@@ -272,6 +258,23 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
       return false;
     };
     this.urlResolver = createOfflineCompileUrlResolver();
+  }
+
+  protected getSourceFile(filePath: string): ts.SourceFile {
+    let sf = this.program.getSourceFile(filePath);
+    if (!sf) {
+      if (this.context.fileExists(filePath)) {
+        const sourceText = this.context.readFile(filePath);
+        sf = ts.createSourceFile(filePath, sourceText, ts.ScriptTarget.Latest, true);
+      } else {
+        throw new Error(`Source file ${filePath} not present in program.`);
+      }
+    }
+    return sf;
+  }
+
+  getMetadataForSourceFile(filePath: string): ModuleMetadata|undefined {
+    return this.metadataProvider.getMetadata(this.getSourceFile(filePath));
   }
 
   toSummaryFileName(fileName: string, referringSrcFileName: string): string {

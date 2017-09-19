@@ -13,7 +13,7 @@ import {DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from '../transformers/api';
 import {GENERATED_FILES} from '../transformers/util';
 
 export interface TypeCheckHost {
-  ngSpanOf(fileName: string, line: number, character: number): ParseSourceSpan|null;
+  parseSourceSpanOf(fileName: string, line: number, character: number): ParseSourceSpan|null;
 }
 
 export function translateDiagnostics(host: TypeCheckHost, untranslatedDiagnostics: ts.Diagnostic[]):
@@ -49,7 +49,7 @@ export function translateDiagnostics(host: TypeCheckHost, untranslatedDiagnostic
 function sourceSpanOf(host: TypeCheckHost, source: ts.SourceFile, start: number): ParseSourceSpan|
     null {
   const {line, character} = ts.getLineAndCharacterOfPosition(source, start);
-  return host.ngSpanOf(source.fileName, line, character);
+  return host.parseSourceSpanOf(source.fileName, line, character);
 }
 
 function diagnosticMessageToString(message: ts.DiagnosticMessageChain | string): string {
