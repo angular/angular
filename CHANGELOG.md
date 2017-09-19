@@ -1,5 +1,23 @@
+<a name="4.4.3"></a>
+## [4.4.3](https://github.com/angular/angular/compare/4.4.2...4.4.3) (2017-09-19)
+
+
+### Bug Fixes
+
+* **tsc-wrapped:** deduplicate metadata only when the module is the same ([#19261](https://github.com/angular/angular/issues/19261)) ([0371538](https://github.com/angular/angular/commit/0371538)), closes [#19219](https://github.com/angular/angular/issues/19219)
+
+
+<a name="4.4.2"></a>
+## [4.4.2](https://github.com/angular/angular/compare/4.4.1...4.4.2) (2017-09-18)
+
+
+### Bug Fixes
+
+* **platform-server**: fix for packaging issues [#19250](https://github.com/angular/angular/issues/19250)
+
+
 <a name="4.4.1"></a>
-# [4.4.1](https://github.com/angular/angular/compare/4.3.6...4.4.1) (2017-09-15)
+## [4.4.1](https://github.com/angular/angular/compare/4.3.6...4.4.1) (2017-09-15)
 
 
 ### Bug Fixes
@@ -25,7 +43,7 @@ Note: the 4.4.0 release on npm accidentally glitched-out midway, so we cut 4.4.1
 
 
 <a name="5.0.0-beta.7"></a>
-# [5.0.0-beta.7](https://github.com/angular/angular/compare/5.0.0-beta.6...5.0.0-beta.7) (2017-09-13)
+## [5.0.0-beta.7](https://github.com/angular/angular/compare/5.0.0-beta.6...5.0.0-beta.7) (2017-09-13)
 
 
 ### Bug Fixes
@@ -64,7 +82,7 @@ Note: the 4.4.0 release on npm accidentally glitched-out midway, so we cut 4.4.1
 
 
 <a name="5.0.0-beta.6"></a>
-# [5.0.0-beta.6](https://github.com/angular/angular/compare/5.0.0-beta.5...5.0.0-beta.6) (2017-09-03)
+## [5.0.0-beta.6](https://github.com/angular/angular/compare/5.0.0-beta.5...5.0.0-beta.6) (2017-09-03)
 
 
 ### Bug Fixes
@@ -124,7 +142,7 @@ Note: the 4.4.0 release on npm accidentally glitched-out midway, so we cut 4.4.1
 
 
 <a name="5.0.0-beta.5"></a>
-# [5.0.0-beta.5](https://github.com/angular/angular/compare/5.0.0-beta.4...5.0.0-beta.5) (2017-08-29)
+## [5.0.0-beta.5](https://github.com/angular/angular/compare/5.0.0-beta.4...5.0.0-beta.5) (2017-08-29)
 
 
 ### Bug Fixes
@@ -288,7 +306,7 @@ Unfortunately we had to change the i18n pipes (date, number, currency, percent) 
 
 
 <a name="5.0.0-beta.4"></a>
-# [5.0.0-beta.4](https://github.com/angular/angular/compare/5.0.0-beta.3...5.0.0-beta.4) (2017-08-16)
+## [5.0.0-beta.4](https://github.com/angular/angular/compare/5.0.0-beta.3...5.0.0-beta.4) (2017-08-16)
 
 
 ### Bug Fixes
@@ -335,7 +353,7 @@ Unfortunately we had to change the i18n pipes (date, number, currency, percent) 
 
 
 <a name="5.0.0-beta.3"></a>
-# [5.0.0-beta.3](https://github.com/angular/angular/compare/5.0.0-beta.2...5.0.0-beta.3) (2017-08-09)
+## [5.0.0-beta.3](https://github.com/angular/angular/compare/5.0.0-beta.2...5.0.0-beta.3) (2017-08-09)
 
 
 ### Bug Fixes
@@ -402,7 +420,7 @@ DEPRECATION:
   `Injector.create` as a replacement.
 
 <a name="5.0.0-beta.2"></a>
-# [5.0.0-beta.2](https://github.com/angular/angular/compare/5.0.0-beta.1...5.0.0-beta.2) (2017-08-02)
+## [5.0.0-beta.2](https://github.com/angular/angular/compare/5.0.0-beta.1...5.0.0-beta.2) (2017-08-02)
 
 
 ### Bug Fixes
@@ -426,7 +444,7 @@ DEPRECATION:
 
 
 <a name="5.0.0-beta.1"></a>
-# [5.0.0-beta.1](https://github.com/angular/angular/compare/5.0.0-beta.0...5.0.0-beta.1) (2017-07-27)
+## [5.0.0-beta.1](https://github.com/angular/angular/compare/5.0.0-beta.0...5.0.0-beta.1) (2017-07-27)
 
 
 ### Bug Fixes
@@ -472,7 +490,7 @@ DEPRECATION:
 
 
 <a name="5.0.0-beta.0"></a>
-# [5.0.0-beta.0](https://github.com/angular/angular/compare/4.3.0...5.0.0-beta.0) (2017-07-19)
+## [5.0.0-beta.0](https://github.com/angular/angular/compare/4.3.0...5.0.0-beta.0) (2017-07-19)
 
 
 ### Bug Fixes
