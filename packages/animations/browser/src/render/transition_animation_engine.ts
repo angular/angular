@@ -119,18 +119,18 @@ export class AnimationTransitionNamespace {
 
   listen(element: any, name: string, phase: string, callback: (event: any) => boolean): () => any {
     if (!this._triggers.hasOwnProperty(name)) {
-      throw new Error(
-          `Unable to listen on the animation trigger event "${phase}" because the animation trigger "${name}" doesn\'t exist!`);
+      throw new Error(`Unable to listen on the animation trigger event "${
+          phase}" because the animation trigger "${name}" doesn\'t exist!`);
     }
 
     if (phase == null || phase.length == 0) {
-      throw new Error(
-          `Unable to listen on the animation trigger "${name}" because the provided event is undefined!`);
+      throw new Error(`Unable to listen on the animation trigger "${
+          name}" because the provided event is undefined!`);
     }
 
     if (!isTriggerEventValid(phase)) {
-      throw new Error(
-          `The provided animation trigger event "${phase}" for the animation trigger "${name}" is not supported!`);
+      throw new Error(`The provided animation trigger event "${phase}" for the animation trigger "${
+          name}" is not supported!`);
     }
 
     const listeners = getOrSetAsInMap(this._elementListeners, element, []);
@@ -802,7 +802,8 @@ export class TransitionAnimationEngine {
 
   reportError(errors: string[]) {
     throw new Error(
-        `Unable to process animations due to the following failed trigger transitions\n ${errors.join("\n")}`);
+        `Unable to process animations due to the following failed trigger transitions\n ${
+            errors.join('\n')}`);
   }
 
   private _flushAnimations(cleanupFns: Function[], microtaskId: number):
@@ -1411,13 +1412,11 @@ function deleteOrUnsetInMap(map: Map<any, any[]>| {[key: string]: any}, key: any
   return currentValues;
 }
 
-function normalizeTriggerValue(value: any): string {
-  switch (typeof value) {
-    case 'boolean':
-      return value ? '1' : '0';
-    default:
-      return value != null ? value.toString() : null;
-  }
+function normalizeTriggerValue(value: any): any {
+  // we use `!= null` here because it's the most simple
+  // way to test against a "falsy" value without mixing
+  // in empty strings or a zero value. DO NOT OPTIMIZE.
+  return value != null ? value : null;
 }
 
 function isElementNode(node: any) {
