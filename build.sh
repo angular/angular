@@ -347,6 +347,10 @@ if [[ ${BUILD_TOOLS} == true ]]; then
     $(npm bin)/tsc -p ${TSCONFIG}
 
     cp ./tools/@angular/tsc-wrapped/package.json ./dist/tools/@angular/tsc-wrapped
+
+    echo "======      VERSION: Updating version references"
+    echo "======       EXECUTE: perl -p -i -e \"s/0\.0\.0\-PLACEHOLDER/${VERSION}/g\" $""(grep -ril 0\.0\.0\-PLACEHOLDER ./dist/tools/@angular/tsc-wrapped/package.json)"
+    perl -p -i -e "s/0\.0\.0\-PLACEHOLDER/${VERSION}/g" $(grep -ril 0\.0\.0\-PLACEHOLDER ./dist/tools/@angular/tsc-wrapped/package.json) < /dev/null 2> /dev/null
   travisFoldEnd "build tools"
 fi
 
