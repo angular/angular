@@ -7,288 +7,205 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {makeTempDir} from '@angular/tsc-wrapped/test/test_support';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
-
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
+import {CompilerHost} from '../../src/transformers/api';
+import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
+import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support';
 
 describe('ng program', () => {
-  let basePath: string;
-  let write: (fileName: string, content: string) => void;
+  let testSupport: TestSupport;
   let errorSpy: jasmine.Spy&((s: string) => void);
-
-  function writeFiles(...mockDirs: {[fileName: string]: string}[]) {
-    mockDirs.forEach(
-        (dir) => { Object.keys(dir).forEach((fileName) => { write(fileName, dir[fileName]); }); });
-  }
-
-  function createCompilerOptions(overrideOptions: ng.CompilerOptions = {}): ng.CompilerOptions {
-    return {
-      basePath,
-      'experimentalDecorators': true,
-      'skipLibCheck': true,
-      'strict': true,
-      'types': [],
-      'outDir': path.resolve(basePath, 'built'),
-      'rootDir': basePath,
-      'baseUrl': basePath,
-      'declaration': true,
-      'target': ts.ScriptTarget.ES5,
-      'module': ts.ModuleKind.ES2015,
-      'moduleResolution': ts.ModuleResolutionKind.NodeJs,
-      'lib': [
-        path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
-        path.resolve(basePath, 'node_modules/typescript/lib/lib.dom.d.ts')
-      ],
-      'typeRoots': [path.resolve(basePath, 'node_modules/@types')], ...overrideOptions,
-    };
-  }
-
-  function expectNoDiagnostics(options: ng.CompilerOptions, p: ng.Program) {
-    const diags: ng.Diagnostics =
-        [...p.getTsSemanticDiagnostics(), ...p.getNgSemanticDiagnostics()];
-    if (diags.length > 0) {
-      console.error('Diagnostics: ' + ng.formatDiagnostics(options, diags));
-      throw new Error('Expected no diagnostics.');
-    }
-  }
 
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    basePath = makeTempDir();
-    write = (fileName: string, content: string) => {
-      const dir = path.dirname(fileName);
-      if (dir != '.') {
-        const newDir = path.join(basePath, dir);
-        if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
-      }
-      fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
-    };
-    const ngRootDir = getNgRootDir();
-    const nodeModulesPath = path.resolve(basePath, 'node_modules');
-    fs.mkdirSync(nodeModulesPath);
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-        path.resolve(nodeModulesPath, '@angular'));
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'node_modules', 'typescript'),
-        path.resolve(nodeModulesPath, 'typescript'));
+    testSupport = setup();
   });
 
-  describe('reuse of old ts program', () => {
-    const files = {
-      'src/util.ts': `export const x = 1;`,
-      'src/main.ts': `
-        import {NgModule, Component} from '@angular/core';
-        import {x} from './util';
+  function createModuleAndCompSource(prefix: string, template: string = prefix + 'template') {
+    const templateEntry =
+        template.endsWith('.html') ? `templateUrl: '${template}'` : `template: \`${template}\``;
+    return `
+      import {Component, NgModule} from '@angular/core';
 
-        @Component({selector: 'comp', templateUrl: './main.html'})
-        export class MyComp {}
+      @Component({selector: '${prefix}', ${templateEntry}})
+      export class ${prefix}Comp {}
 
-        @NgModule()
-        export class MyModule {}
-      `,
-      'src/main.html': `Hello world`,
-    };
+      @NgModule({declarations: [${prefix}Comp]})
+      export class ${prefix}Module {}
+    `;
+  }
 
-    function expectResuse(newFiles: {[fileName: string]: string}, reuseLevel: StructureIsReused) {
-      writeFiles(files);
+  describe('reuse of old program', () => {
 
-      const options1 = createCompilerOptions();
-      const host1 = ng.createCompilerHost({options: options1});
-      const rootNames1 = [path.resolve(basePath, 'src/main.ts')];
-
-      const p1 = ng.createProgram({rootNames: rootNames1, options: options1, host: host1});
-      expectNoDiagnostics(options1, p1);
-
-      // Note: we recreate the options, rootNames and the host
-      // to check that TS checks against values, and not references!
-      writeFiles(newFiles);
-      const options2 = {...options1};
-      const host2 = ng.createCompilerHost({options: options2});
-      const rootNames2 = [...rootNames1];
-
-      const p2 =
-          ng.createProgram({rootNames: rootNames2, options: options2, host: host2, oldProgram: p1});
-      expectNoDiagnostics(options1, p2);
-
-      expect(tsStructureIsReused(p1.getTsProgram())).toBe(reuseLevel);
+    function compileLib(libName: string) {
+      testSupport.writeFiles({
+        [`${libName}_src/index.ts`]: createModuleAndCompSource(libName),
+      });
+      const options = testSupport.createCompilerOptions({
+        skipTemplateCodegen: true,
+      });
+      const program = ng.createProgram({
+        rootNames: [path.resolve(testSupport.basePath, `${libName}_src/index.ts`)],
+        options,
+        host: ng.createCompilerHost({options}),
+      });
+      expectNoDiagnosticsInProgram(options, program);
+      fs.symlinkSync(
+          path.resolve(testSupport.basePath, 'built', `${libName}_src`),
+          path.resolve(testSupport.basePath, 'node_modules', libName));
+      program.emit({emitFlags: ng.EmitFlags.DTS | ng.EmitFlags.JS | ng.EmitFlags.Metadata});
     }
 
-    it('should reuse completely if nothing changed',
-       () => { expectResuse({}, StructureIsReused.Completely); });
+    function compile(oldProgram?: ng.Program): ng.Program {
+      const options = testSupport.createCompilerOptions();
+      const rootNames = [path.resolve(testSupport.basePath, 'src/index.ts')];
 
-    it('should resuse if a template or a ts file changed', () => {
-      expectResuse(
-          {
-            'src/main.html': `Some other text`,
-            'src/util.ts': `export const x = 2;`,
-          },
-          StructureIsReused.Completely);
+      const program = ng.createProgram({
+        rootNames: rootNames,
+        options: testSupport.createCompilerOptions(),
+        host: ng.createCompilerHost({options}), oldProgram,
+      });
+      expectNoDiagnosticsInProgram(options, program);
+      program.emit();
+      return program;
+    }
+
+    it('should reuse generated code for libraries from old programs', () => {
+      compileLib('lib');
+      testSupport.writeFiles({
+        'src/main.ts': createModuleAndCompSource('main'),
+        'src/index.ts': `
+            export * from './main';
+            export * from 'lib/index';
+          `
+      });
+      const p1 = compile();
+      expect(p1.getTsProgram().getSourceFiles().some(
+                 sf => /node_modules\/lib\/.*\.ngfactory\.ts$/.test(sf.fileName)))
+          .toBe(true);
+      expect(p1.getTsProgram().getSourceFiles().some(
+                 sf => /node_modules\/lib2\/.*\.ngfactory.*$/.test(sf.fileName)))
+          .toBe(false);
+      const p2 = compile(p1);
+      expect(p2.getTsProgram().getSourceFiles().some(
+                 sf => /node_modules\/lib\/.*\.ngfactory.*$/.test(sf.fileName)))
+          .toBe(false);
+      expect(p2.getTsProgram().getSourceFiles().some(
+                 sf => /node_modules\/lib2\/.*\.ngfactory.*$/.test(sf.fileName)))
+          .toBe(false);
+
+      // import a library for which we didn't generate code before
+      compileLib('lib2');
+      testSupport.writeFiles({
+        'src/index.ts': `
+          export * from './main';
+          export * from 'lib/index';
+          export * from 'lib2/index';
+        `,
+      });
+      const p3 = compile(p2);
+      expect(p3.getTsProgram().getSourceFiles().some(
+                 sf => /node_modules\/lib\/.*\.ngfactory.*$/.test(sf.fileName)))
+          .toBe(false);
+      expect(p3.getTsProgram().getSourceFiles().some(
+                 sf => /node_modules\/lib2\/.*\.ngfactory\.ts$/.test(sf.fileName)))
+          .toBe(true);
+
+      const p4 = compile(p3);
+      expect(p4.getTsProgram().getSourceFiles().some(
+                 sf => /node_modules\/lib\/.*\.ngfactory.*$/.test(sf.fileName)))
+          .toBe(false);
+      expect(p4.getTsProgram().getSourceFiles().some(
+                 sf => /node_modules\/lib2\/.*\.ngfactory.*$/.test(sf.fileName)))
+          .toBe(false);
     });
 
-    it('should not reuse if an import changed', () => {
-      expectResuse(
-          {
-            'src/util.ts': `
-          import {Injectable} from '@angular/core';
-          export const x = 2;
-        `,
-          },
-          StructureIsReused.SafeModules);
+    it('should reuse the old ts program completely if nothing changed', () => {
+      testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
+      // Note: the second compile drops factories for library files,
+      // and therefore changes the structure again
+      const p1 = compile();
+      const p2 = compile(p1);
+      const p3 = compile(p2);
+      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+    });
+
+    it('should reuse the old ts program completely if a template or a ts file changed', () => {
+      testSupport.writeFiles({
+        'src/main.ts': createModuleAndCompSource('main', 'main.html'),
+        'src/main.html': `Some template`,
+        'src/util.ts': `export const x = 1`,
+        'src/index.ts': `
+          export * from './main';
+          export * from './util';
+        `
+      });
+      // Note: the second compile drops factories for library files,
+      // and therefore changes the structure again
+      const p1 = compile();
+      const p2 = compile(p1);
+      testSupport.writeFiles({
+        'src/main.html': `Another template`,
+        'src/util.ts': `export const x = 2`,
+      });
+      const p3 = compile(p2);
+      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+    });
+
+    it('should not reuse the old ts program if an import changed', () => {
+      testSupport.writeFiles({
+        'src/main.ts': createModuleAndCompSource('main'),
+        'src/util.ts': `export const x = 1`,
+        'src/index.ts': `
+          export * from './main';
+          export * from './util';
+        `
+      });
+      // Note: the second compile drops factories for library files,
+      // and therefore changes the structure again
+      const p1 = compile();
+      const p2 = compile(p1);
+      testSupport.writeFiles(
+          {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
+      const p3 = compile(p2);
+      expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
     });
   });
 
   it('should typecheck templates even if skipTemplateCodegen is set', () => {
-    writeFiles({
-      'src/main.ts': `
-        import {NgModule, Component} from '@angular/core';
-
-        @Component({selector: 'mycomp', template: '{{nonExistent}}'})
-        export class MyComp {}
-
-        @NgModule({declarations: [MyComp]})
-        export class MyModule {}
-      `
+    testSupport.writeFiles({
+      'src/main.ts': createModuleAndCompSource('main', `{{nonExistent}}`),
     });
-    const options = createCompilerOptions({skipTemplateCodegen: true});
+    const options = testSupport.createCompilerOptions({skipTemplateCodegen: true});
     const host = ng.createCompilerHost({options});
-    const program =
-        ng.createProgram({rootNames: [path.resolve(basePath, 'src/main.ts')], options, host});
+    const program = ng.createProgram(
+        {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
     const diags = program.getNgSemanticDiagnostics();
     expect(diags.length).toBe(1);
-    expect(diags[0].messageText).toBe(`Property 'nonExistent' does not exist on type 'MyComp'.`);
+    expect(diags[0].messageText).toBe(`Property 'nonExistent' does not exist on type 'mainComp'.`);
   });
 
   it('should be able to use asynchronously loaded resources', (done) => {
-    writeFiles({
-      'src/main.ts': `
-        import {NgModule, Component} from '@angular/core';
-
-        @Component({selector: 'mycomp', templateUrl: './main.html'})
-        export class MyComp {}
-
-        @NgModule({declarations: [MyComp]})
-        export class MyModule {}
-      `,
+    testSupport.writeFiles({
+      'src/main.ts': createModuleAndCompSource('main', 'main.html'),
       // Note: we need to be able to resolve the template synchronously,
       // only the content is delivered asynchronously.
       'src/main.html': '',
     });
-    const options = createCompilerOptions();
+    const options = testSupport.createCompilerOptions();
     const host = ng.createCompilerHost({options});
     host.readResource = () => Promise.resolve('Hello world!');
-    const program =
-        ng.createProgram({rootNames: [path.resolve(basePath, 'src/main.ts')], options, host});
+    const program = ng.createProgram(
+        {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
     program.loadNgStructureAsync().then(() => {
       program.emit();
-      const factory = fs.readFileSync(path.resolve(basePath, 'built/src/main.ngfactory.js'));
+      const factory =
+          fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/main.ngfactory.js'));
       expect(factory).toContain('Hello world!');
       done();
     });
   });
 });
-
-function appComponentSource(): string {
-  return `
-    import {Component, Pipe, Directive} from '@angular/core';
-
-    export interface Person {
-      name: string;
-      address: Address;
-    }
-
-    export interface Address {
-      street: string;
-      city: string;
-      state: string;
-      zip: string;
-    }
-
-    @Component({
-      templateUrl: './app.component.html'
-    })
-    export class AppComponent {
-      name = 'Angular';
-      person: Person;
-      people: Person[];
-      maybePerson?: Person;
-
-      getName(): string { return this.name; }
-      getPerson(): Person { return this.person; }
-      getMaybePerson(): Person | undefined { return this.maybePerson; }
-    }
-
-    @Pipe({
-      name: 'aPipe',
-    })
-    export class APipe {
-      transform(n: number): number { return n + 1; }
-    }
-
-    @Directive({
-      selector: '[aDir]',
-      exportAs: 'aDir'
-    })
-    export class ADirective {
-      name = 'ADirective';
-    }
-  `;
-}
-
-const QUICKSTART = {
-  'src/app.component.ts': appComponentSource(),
-  'src/app.component.html': '<h1>Hello {{name}}</h1>',
-  'src/app.module.ts': `
-    import { NgModule }      from '@angular/core';
-    import { AppComponent, APipe, ADirective }  from './app.component';
-
-    @NgModule({
-      declarations: [ AppComponent, APipe, ADirective ],
-      bootstrap:    [ AppComponent ]
-    })
-    export class AppModule { }
-  `
-};
-
-const LOWERING_QUICKSTART = {
-  'src/app.component.ts': appComponentSource(),
-  'src/app.component.html': '<h1>Hello {{name}}</h1>',
-  'src/app.module.ts': `
-    import { NgModule, Component }      from '@angular/core';
-
-    import { AppComponent, APipe, ADirective }  from './app.component';
-
-    class Foo {}
-
-    @Component({
-      template: '',
-      providers: [
-        {provide: 'someToken', useFactory: () => new Foo()}
-      ]
-    })
-    export class Bar {}
-
-    @NgModule({
-      declarations: [ AppComponent, APipe, ADirective, Bar ],
-      bootstrap:    [ AppComponent ]
-    })
-    export class AppModule { }
-  `
-};
-
-function expectNoDiagnostics(diagnostics: ng.Diagnostics) {
-  if (diagnostics && diagnostics.length) {
-    throw new Error(ng.formatDiagnostics({}, diagnostics));
-  }
-}

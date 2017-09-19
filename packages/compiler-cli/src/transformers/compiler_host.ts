@@ -61,7 +61,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   constructor(
       private rootFiles: string[], options: CompilerOptions, context: CompilerHost,
       private metadataProvider: MetadataProvider,
-      private codeGenerator: (fileName: string) => GeneratedFile[]) {
+      private codeGenerator: (fileName: string) => GeneratedFile[],
+      private summariesFromPreviousCompilations: Map<string, string>) {
     super(options, context);
     this.moduleResolutionCache = ts.createModuleResolutionCache(
         this.context.getCurrentDirectory !(), this.context.getCanonicalFileName.bind(this.context));
@@ -292,7 +293,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     }
     this.generatedCodeFor.add(fileName);
 
-    const baseNameFromGeneratedFile = this._getBaseNameForGeneratedFile(fileName);
+    const baseNameFromGeneratedFile = this._getBaseNamesForGeneratedFile(fileName).find(
+        fileName => this.isSourceFile(fileName) && this.fileExists(fileName));
     if (baseNameFromGeneratedFile) {
       return this.ensureCodeGeneratedFor(baseNameFromGeneratedFile);
     }
@@ -336,29 +338,58 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     fileName = stripNgResourceSuffix(fileName);
     // Note: Don't rely on this.generatedSourceFiles here,
     // as it might not have been filled yet.
-    if (this._getBaseNameForGeneratedFile(fileName)) {
+    if (this._getBaseNamesForGeneratedFile(fileName).find(baseFileName => {
+          if (this.isSourceFile(baseFileName)) {
+            return this.fileExists(baseFileName);
+          } else {
+            // Note: the factories of a previous program
+            // are not reachable via the regular fileExists
+            // as they might be in the outDir. So we derive their
+            // fileExist information based on the .ngsummary.json file.
+            return this.fileExists(summaryFileName(baseFileName));
+          }
+        })) {
       return true;
     }
-    return this.originalSourceFiles.has(fileName) || this.context.fileExists(fileName);
+    return this.summariesFromPreviousCompilations.has(fileName) ||
+        this.originalSourceFiles.has(fileName) || this.context.fileExists(fileName);
   }
 
-  private _getBaseNameForGeneratedFile(genFileName: string): string|null {
+  private _getBaseNamesForGeneratedFile(genFileName: string): string[] {
     const genMatch = GENERATED_FILES.exec(genFileName);
     if (genMatch) {
       const [, base, genSuffix, suffix] = genMatch;
-      // Note: on-the-fly generated files always have a `.ts` suffix,
-      // but the file from which we generated it can be a `.ts`/ `.d.ts`
-      // (see options.generateCodeForLibraries).
-      // It can also be a `.css` file in case of a `.css.ngstyle.ts` file
-      if (suffix === 'ts') {
-        const baseNames =
-            genSuffix.indexOf('ngstyle') >= 0 ? [base] : [`${base}.ts`, `${base}.d.ts`];
-        return baseNames.find(
-                   baseName => this.isSourceFile(baseName) && this.fileExists(baseName)) ||
-            null;
+      let baseNames: string[] = [];
+      if (genSuffix.indexOf('ngstyle') >= 0) {
+        // Note: ngstlye files have names like `afile.css.ngstyle.ts`
+        baseNames = [base];
+      } else if (suffix === 'd.ts') {
+        baseNames = [base + '.d.ts'];
+      } else if (suffix === 'ts') {
+        // Note: on-the-fly generated files always have a `.ts` suffix,
+        // but the file from which we generated it can be a `.ts`/ `.d.ts`
+        // (see options.generateCodeForLibraries).
+        baseNames = [`${base}.ts`, `${base}.d.ts`];
       }
+      return baseNames;
     }
-    return null;
+    return [];
+  }
+
+  loadSummary(filePath: string): string|null {
+    if (this.summariesFromPreviousCompilations.has(filePath)) {
+      return this.summariesFromPreviousCompilations.get(filePath) !;
+    }
+    return super.loadSummary(filePath);
+  }
+
+  isSourceFile(filePath: string): boolean {
+    // If we have a summary from a previous compilation,
+    // treat the file never as a source file.
+    if (this.summariesFromPreviousCompilations.has(summaryFileName(filePath))) {
+      return false;
+    }
+    return super.isSourceFile(filePath);
   }
 
   readFile = (fileName: string) => this.context.readFile(fileName);
@@ -430,4 +461,8 @@ function stripNgResourceSuffix(fileName: string): string {
 
 function addNgResourceSuffix(fileName: string): string {
   return `${fileName}.$ngresource$`;
+}
+
+function summaryFileName(fileName: string): string {
+  return fileName.replace(EXT, '') + '.ngsummary.json';
 }
