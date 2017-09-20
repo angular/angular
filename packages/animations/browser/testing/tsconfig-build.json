@@ -5,7 +5,8 @@
     "baseUrl": ".",
     "rootDir": "../../",
     "paths": {
-      "@angular/animations": ["../../../../dist/packages/animations"]
+      "@angular/animations": ["../../../../dist/packages/animations"],
+      "@angular/core": ["../../../../dist/packages/core"]
     },
     "outDir": "../../../../dist/packages/animations"
   },
@@ -19,7 +20,8 @@
 
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
     "flatModuleOutFile": "testing.js",
     "flatModuleId": "@angular/animations/browser/testing"
   }

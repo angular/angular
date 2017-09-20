@@ -23,7 +23,6 @@
     "@angular/platform-browser-dynamic": "~4.3.1",
     "@angular/platform-server": "~4.3.1",
     "@angular/router": "~4.3.1",
-    "@angular/tsc-wrapped": "~4.3.1",
     "@angular/upgrade": "~4.3.1",
     "angular-in-memory-web-api": "~0.4.0",
     "core-js": "^2.4.1",

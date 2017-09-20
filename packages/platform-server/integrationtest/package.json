@@ -12,7 +12,6 @@
     "@angular/common": "file:../../../dist/packages-dist/common",
     "@angular/compiler": "file:../../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../../dist/packages-dist/compiler-cli",
-    "@angular/tsc-wrapped": "file:../../../dist/packages-dist/tsc-wrapped",
     "@angular/core": "file:../../../dist/packages-dist/core",
     "@angular/http": "file:../../../dist/packages-dist/http",
     "@angular/platform-browser": "file:../../../dist/packages-dist/platform-browser",
