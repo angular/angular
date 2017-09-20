@@ -278,7 +278,7 @@ export class MdChipList implements MdFormFieldControl<any>, ControlValueAccessor
 
   /** Combined stream of all of the child chips' selection change events. */
   get chipSelectionChanges(): Observable<MdChipSelectionChange> {
-    return merge(...this.chips.map(chip => chip.onSelectionChange));
+    return merge(...this.chips.map(chip => chip.selectionChange));
   }
 
   /** Combined stream of all of the child chips' focus change events. */

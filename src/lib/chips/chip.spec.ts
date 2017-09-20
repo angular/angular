@@ -121,7 +121,7 @@ describe('Chips', () => {
 
         expect(chipNativeElement.classList).toContain('mat-chip-selected');
         expect(testComponent.chipSelectionChange)
-          .toHaveBeenCalledWith({source: chipInstance, isUserInput: false});
+          .toHaveBeenCalledWith({source: chipInstance, isUserInput: false, selected: true});
       });
 
       it('allows removal', () => {
@@ -144,7 +144,17 @@ describe('Chips', () => {
 
         it('should selects/deselects the currently focused chip on SPACE', () => {
           const SPACE_EVENT: KeyboardEvent = createKeyboardEvent('keydown', SPACE) as KeyboardEvent;
-          const CHIP_EVENT: MdChipSelectionChange = {source: chipInstance, isUserInput: true};
+          const CHIP_SELECTED_EVENT: MdChipSelectionChange = {
+            source: chipInstance,
+            isUserInput: true,
+            selected: true
+          };
+
+          const CHIP_DESELECTED_EVENT: MdChipSelectionChange = {
+            source: chipInstance,
+            isUserInput: true,
+            selected: false
+          };
 
           spyOn(testComponent, 'chipSelectionChange');
 
@@ -154,7 +164,7 @@ describe('Chips', () => {
 
           expect(chipInstance.selected).toBeTruthy();
           expect(testComponent.chipSelectionChange).toHaveBeenCalledTimes(1);
-          expect(testComponent.chipSelectionChange).toHaveBeenCalledWith(CHIP_EVENT);
+          expect(testComponent.chipSelectionChange).toHaveBeenCalledWith(CHIP_SELECTED_EVENT);
 
           // Use the spacebar to deselect the chip
           chipInstance._handleKeydown(SPACE_EVENT);
@@ -162,7 +172,7 @@ describe('Chips', () => {
 
           expect(chipInstance.selected).toBeFalsy();
           expect(testComponent.chipSelectionChange).toHaveBeenCalledTimes(2);
-          expect(testComponent.chipSelectionChange).toHaveBeenCalledWith(CHIP_EVENT);
+          expect(testComponent.chipSelectionChange).toHaveBeenCalledWith(CHIP_DESELECTED_EVENT);
         });
 
         it('should have correct aria-selected', () => {
@@ -280,9 +290,9 @@ describe('Chips', () => {
       <div *ngIf="shouldShow">
         <md-chip [selectable]="selectable" [removable]="removable"
                  [color]="color" [selected]="selected" [disabled]="disabled"
-                 (focus)="chipFocus($event)" (destroy)="chipDestroy($event)"
-                 (onSelectionChange)="chipSelectionChange($event)"
-                 (remove)="chipRemove($event)">
+                 (focus)="chipFocus($event)" (destroyed)="chipDestroy($event)"
+                 (selectionChange)="chipSelectionChange($event)"
+                 (removed)="chipRemove($event)">
           {{name}}
         </md-chip>
       </div>

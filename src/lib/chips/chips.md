@@ -23,7 +23,7 @@ Chips can be selected via the `selected` property. Selection can be disabled by 
 `selectable` to `false` on the `<md-chip-list>`.
 
 Whenever the selection state changes, a `ChipSelectionChange` event will be emitted via 
-`(onSelectionChange)`.
+`(selectionChange)`.
 
 ### Disabled chips
 Individual chips may be disabled by applying the `disabled` attribute to the chip. When disabled,
