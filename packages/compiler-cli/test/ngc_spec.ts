@@ -840,6 +840,7 @@ describe('ngc transformer command-line', () => {
           })
           export class Module {}
         `);
+      write('lib1/class1.ts', `export class Class1 {}`);
 
       // Lib 2
       write('lib2/tsconfig-lib2.json', `{
@@ -855,6 +856,13 @@ describe('ngc transformer command-line', () => {
       write('lib2/module.ts', `
           export {Module} from 'lib1_built/module';
         `);
+      write('lib2/class2.ts', `
+        import {Class1} from 'lib1_built/class1';
+
+        export class Class2 {
+          constructor(class1: Class1) {}
+        }
+      `);
 
       // Application
       write('app/tsconfig-app.json', `{
@@ -903,6 +911,12 @@ describe('ngc transformer command-line', () => {
       shouldExist('lib2_built/module.ngsummary.d.ts');
       shouldExist('lib2_built/module.ngfactory.js');
       shouldExist('lib2_built/module.ngfactory.d.ts');
+
+      shouldExist('lib2_built/class2.ngsummary.json');
+      shouldNotExist('lib2_built/class2.ngsummary.js');
+      shouldNotExist('lib2_built/class2.ngsummary.d.ts');
+      shouldExist('lib2_built/class2.ngfactory.js');
+      shouldExist('lib2_built/class2.ngfactory.d.ts');
 
       // app
       // make `shouldExist` / `shouldNotExist` relative to `built`
