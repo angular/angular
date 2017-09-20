@@ -30,6 +30,7 @@ describe('CdkTable', () => {
         DuplicateColumnDefNameCdkTableApp,
         MissingColumnDefCdkTableApp,
         CrazyColumnNameCdkTableApp,
+        UndefinedColumnsCdkTableApp,
       ],
     }).compileComponents();
   }));
@@ -131,6 +132,21 @@ describe('CdkTable', () => {
   it('should throw an error if a column definition is requested but not defined', () => {
     expect(() => TestBed.createComponent(MissingColumnDefCdkTableApp).detectChanges())
         .toThrowError(getTableUnknownColumnError('column_a').message);
+  });
+
+  it('should not throw an error if columns are undefined on initialization', () => {
+    const undefinedColumnsFixture = TestBed.createComponent(UndefinedColumnsCdkTableApp);
+    undefinedColumnsFixture.detectChanges();
+
+    tableElement = undefinedColumnsFixture.nativeElement.querySelector('cdk-table');
+
+    expect(getHeaderRow(tableElement)).toBeNull('Should be no header without cells');
+
+    // Rows should be empty since there are no columns to display.
+    const rows = getRows(tableElement);
+    expect(rows[0].textContent).toBe('');
+    expect(rows[1].textContent).toBe('');
+    expect(rows[2].textContent).toBe('');
   });
 
   it('should be able to dynamically add/remove column definitions', () => {
@@ -750,6 +766,24 @@ class DuplicateColumnDefNameCdkTableApp {
   `
 })
 class MissingColumnDefCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="undefinedColumns"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: undefinedColumns"></cdk-row>
+    </cdk-table>
+  `
+})
+class UndefinedColumnsCdkTableApp {
+  undefinedColumns;
   dataSource: FakeDataSource = new FakeDataSource();
 }
 
