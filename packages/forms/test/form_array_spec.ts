@@ -604,23 +604,40 @@ export function main() {
         a = new FormArray([c]);
       });
 
-      it('should be false after creating a control', () => {
-        expect(c.pending).toEqual(false);
-        expect(a.pending).toEqual(false);
-      });
+      it('should be false after creating a control', () => { expect(a.pending).toEqual(false); });
 
       it('should be true after changing the value of the control', () => {
         c.markAsPending();
-
-        expect(c.pending).toEqual(true);
         expect(a.pending).toEqual(true);
       });
 
       it('should not update the parent when onlySelf = true', () => {
         c.markAsPending({onlySelf: true});
-
-        expect(c.pending).toEqual(true);
         expect(a.pending).toEqual(false);
+      });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          a.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after changing the value of the control', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event when onlySelf = true', () => {
+          c.markAsPending({onlySelf: true});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
       });
     });
 
