@@ -164,12 +164,18 @@ export abstract class DateAdapter<D> {
   abstract addCalendarDays(date: D, days: number): D;
 
   /**
-   * Gets the RFC 3339 compatible date string (https://tools.ietf.org/html/rfc3339)  for the given
-   * date.
+   * Gets the RFC 3339 compatible string (https://tools.ietf.org/html/rfc3339) for the given date.
    * @param date The date to get the ISO date string for.
    * @returns The ISO date string date string.
    */
-  abstract getISODateString(date: D): string;
+  abstract toIso8601(date: D): string;
+
+  /**
+   * Creates a date from an RFC 3339 compatible string (https://tools.ietf.org/html/rfc3339).
+   * @param iso8601String The ISO date string to create a date from
+   * @returns The date created from the ISO date string.
+   */
+  abstract fromIso8601(iso8601String: string): D | null;
 
   /**
    * Checks whether the given object is considered a date instance by this DateAdapter.

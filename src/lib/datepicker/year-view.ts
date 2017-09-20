@@ -19,6 +19,7 @@ import {
 } from '@angular/core';
 import {DateAdapter, MD_DATE_FORMATS, MdDateFormats} from '@angular/material/core';
 import {MdCalendarCell} from './calendar-body';
+import {coerceDateProperty} from './coerce-date-property';
 import {createMissingDateImplError} from './datepicker-errors';
 
 
@@ -40,7 +41,7 @@ export class MdYearView<D> implements AfterContentInit {
   get activeDate(): D { return this._activeDate; }
   set activeDate(value: D) {
     let oldActiveDate = this._activeDate;
-    this._activeDate = value || this._dateAdapter.today();
+    this._activeDate = coerceDateProperty(this._dateAdapter, value) || this._dateAdapter.today();
     if (this._dateAdapter.getYear(oldActiveDate) != this._dateAdapter.getYear(this._activeDate)) {
       this._init();
     }
@@ -49,12 +50,12 @@ export class MdYearView<D> implements AfterContentInit {
 
   /** The currently selected date. */
   @Input()
-  get selected(): D { return this._selected; }
-  set selected(value: D) {
-    this._selected = value;
-    this._selectedMonth = this._getMonthInCurrentYear(this.selected);
+  get selected(): D | null { return this._selected; }
+  set selected(value: D | null) {
+    this._selected = coerceDateProperty(this._dateAdapter, value);
+    this._selectedMonth = this._getMonthInCurrentYear(this._selected);
   }
-  private _selected: D;
+  private _selected: D | null;
 
   /** A function used to filter which dates are selectable. */
   @Input() dateFilter: (date: D) => boolean;
@@ -118,7 +119,7 @@ export class MdYearView<D> implements AfterContentInit {
    * Gets the month in this year that the given Date falls on.
    * Returns null if the given Date is in another year.
    */
-  private _getMonthInCurrentYear(date: D) {
+  private _getMonthInCurrentYear(date: D | null) {
     return date && this._dateAdapter.getYear(date) == this._dateAdapter.getYear(this.activeDate) ?
         this._dateAdapter.getMonth(date) : null;
   }

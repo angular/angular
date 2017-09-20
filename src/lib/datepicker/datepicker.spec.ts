@@ -12,6 +12,8 @@ import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   DEC,
   JAN,
+  JUL,
+  JUN,
   MAT_DATE_LOCALE,
   MdNativeDateModule,
   NativeDateModule,
@@ -47,6 +49,7 @@ describe('MdDatepicker', () => {
           DatepickerWithChangeAndInputEvents,
           DatepickerWithFilterAndValidation,
           DatepickerWithFormControl,
+          DatepickerWithISOStrings,
           DatepickerWithMinAndMaxValidation,
           DatepickerWithNgModel,
           DatepickerWithStartAt,
@@ -270,8 +273,9 @@ describe('MdDatepicker', () => {
       it('should throw when given wrong data type', () => {
         testComponent.date = '1/1/2017' as any;
 
-        expect(() => fixture.detectChanges())
-            .toThrowError(/Datepicker: value not recognized as a date object by DateAdapter\./);
+        expect(() => fixture.detectChanges()).toThrowError(
+            'Datepicker: Value must be either a date object recognized by the DateAdapter or an ' +
+            'ISO 8601 string. Instead got: 1/1/2017');
 
         testComponent.date = null;
       });
@@ -865,6 +869,32 @@ describe('MdDatepicker', () => {
         expect(testComponent.onDateInput).toHaveBeenCalled();
       });
     });
+
+    describe('with ISO 8601 strings as input', () => {
+      let fixture: ComponentFixture<DatepickerWithISOStrings>;
+      let testComponent: DatepickerWithISOStrings;
+
+      beforeEach(async(() => {
+        fixture = TestBed.createComponent(DatepickerWithISOStrings);
+        testComponent = fixture.componentInstance;
+      }));
+
+      afterEach(async(() => {
+        testComponent.datepicker.close();
+        fixture.detectChanges();
+      }));
+
+      it('should coerce ISO strings', async(() => {
+        expect(() => fixture.detectChanges()).not.toThrow();
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
+          expect(testComponent.datepicker.startAt).toEqual(new Date(2017, JUL, 1));
+          expect(testComponent.datepickerInput.value).toEqual(new Date(2017, JUN, 1));
+          expect(testComponent.datepickerInput.min).toEqual(new Date(2017, JAN, 1));
+          expect(testComponent.datepickerInput.max).toEqual(new Date(2017, DEC, 31));
+        });
+      }));
+    });
   });
 
   describe('with missing DateAdapter and MD_DATE_FORMATS', () => {
@@ -1176,6 +1206,21 @@ class DatepickerWithChangeAndInputEvents {
 })
 class DatepickerWithi18n {
   date: Date | null = new Date(2010, JAN, 1);
+  @ViewChild('d') datepicker: MdDatepicker<Date>;
+  @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
+}
+
+@Component({
+  template: `
+    <input [mdDatepicker]="d" [(ngModel)]="value" [min]="min" [max]="max">
+    <md-datepicker #d [startAt]="startAt"></md-datepicker>
+  `
+})
+class DatepickerWithISOStrings {
+  value = new Date(2017, JUN, 1).toISOString();
+  min = new Date(2017, JAN, 1).toISOString();
+  max = new Date (2017, DEC, 31).toISOString();
+  startAt = new Date(2017, JUL, 1).toISOString();
   @ViewChild('d') datepicker: MdDatepicker<Date>;
   @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
 }

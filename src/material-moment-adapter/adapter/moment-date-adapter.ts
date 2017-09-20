@@ -170,8 +170,13 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
     return this.clone(date).add({days});
   }
 
-  getISODateString(date: Moment): string {
+  toIso8601(date: Moment): string {
     return this.clone(date).format();
+  }
+
+  fromIso8601(iso8601String: string): Moment | null {
+    let d = moment(iso8601String, moment.ISO_8601).locale(this.locale);
+    return this.isValid(d) ? d : null;
   }
 
   isDateInstance(obj: any): boolean {
