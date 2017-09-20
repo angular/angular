@@ -7,7 +7,7 @@
  */
 
 import {CompileReflector, ExternalReference, Identifiers, getUrlScheme, syntaxError} from '@angular/compiler';
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Inject, InjectionToken, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, Optional, PACKAGE_ROOT_URL, PlatformRef, QueryList, Renderer, SecurityContext, StaticProvider, TRANSLATIONS, TRANSLATIONS_FORMAT, TemplateRef, Type, ViewContainerRef, ViewEncapsulation, createPlatformFactory, isDevMode, platformCore, ɵCodegenComponentFactoryResolver, ɵConsole as Console, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵReflectionCapabilities as ReflectionCapabilities, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactory, ComponentFactoryResolver, ComponentRef, ElementRef, Injector, LOCALE_ID, NgModuleFactory, NgModuleRef, QueryList, Renderer, SecurityContext, TRANSLATIONS_FORMAT, TemplateRef, ViewContainerRef, ViewEncapsulation, ɵCodegenComponentFactoryResolver, ɵEMPTY_ARRAY, ɵEMPTY_MAP, ɵReflectionCapabilities as ReflectionCapabilities, ɵand, ɵccf, ɵcmf, ɵcrt, ɵdid, ɵeld, ɵinlineInterpolate, ɵinterpolate, ɵmod, ɵmpd, ɵncd, ɵnov, ɵpad, ɵpid, ɵpod, ɵppd, ɵprd, ɵqud, ɵregisterModuleFactory, ɵstringify as stringify, ɵted, ɵunv, ɵvid} from '@angular/core';
 
 export const MODULE_SUFFIX = '';
 const builtinExternalReferences = createBuiltinExternalReferencesMap();
@@ -50,81 +50,29 @@ export class JitReflector implements CompileReflector {
 
 function createBuiltinExternalReferencesMap() {
   const map = new Map<ExternalReference, any>();
-  map.set(
-      Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS,
-
-
-      ANALYZE_FOR_ENTRY_COMPONENTS);
+  map.set(Identifiers.ANALYZE_FOR_ENTRY_COMPONENTS, ANALYZE_FOR_ENTRY_COMPONENTS);
   map.set(Identifiers.ElementRef, ElementRef);
   map.set(Identifiers.NgModuleRef, NgModuleRef);
   map.set(Identifiers.ViewContainerRef, ViewContainerRef);
-  map.set(
-      Identifiers.ChangeDetectorRef,
-
-
-      ChangeDetectorRef);
+  map.set(Identifiers.ChangeDetectorRef, ChangeDetectorRef);
   map.set(Identifiers.QueryList, QueryList);
   map.set(Identifiers.TemplateRef, TemplateRef);
-  map.set(
-      Identifiers.CodegenComponentFactoryResolver,
-
-
-      ɵCodegenComponentFactoryResolver);
-  map.set(
-      Identifiers.ComponentFactoryResolver,
-
-
-      ComponentFactoryResolver);
+  map.set(Identifiers.CodegenComponentFactoryResolver, ɵCodegenComponentFactoryResolver);
+  map.set(Identifiers.ComponentFactoryResolver, ComponentFactoryResolver);
   map.set(Identifiers.ComponentFactory, ComponentFactory);
   map.set(Identifiers.ComponentRef, ComponentRef);
   map.set(Identifiers.NgModuleFactory, NgModuleFactory);
-  map.set(
-      Identifiers.createModuleFactory,
-
-
-      ɵcmf, );
-  map.set(
-      Identifiers.moduleDef,
-
-
-      ɵmod, );
-  map.set(
-      Identifiers.moduleProviderDef,
-
-
-      ɵmpd, );
-  map.set(
-      Identifiers.RegisterModuleFactoryFn,
-
-
-      ɵregisterModuleFactory, );
+  map.set(Identifiers.createModuleFactory, ɵcmf);
+  map.set(Identifiers.moduleDef, ɵmod);
+  map.set(Identifiers.moduleProviderDef, ɵmpd);
+  map.set(Identifiers.RegisterModuleFactoryFn, ɵregisterModuleFactory);
   map.set(Identifiers.Injector, Injector);
-  map.set(
-      Identifiers.ViewEncapsulation,
-
-
-      ViewEncapsulation);
-  map.set(
-      Identifiers.ChangeDetectionStrategy,
-
-
-      ChangeDetectionStrategy);
-  map.set(
-      Identifiers.SecurityContext,
-
-
-      SecurityContext, );
+  map.set(Identifiers.ViewEncapsulation, ViewEncapsulation);
+  map.set(Identifiers.ChangeDetectionStrategy, ChangeDetectionStrategy);
+  map.set(Identifiers.SecurityContext, SecurityContext);
   map.set(Identifiers.LOCALE_ID, LOCALE_ID);
-  map.set(
-      Identifiers.TRANSLATIONS_FORMAT,
-
-
-      TRANSLATIONS_FORMAT);
-  map.set(
-      Identifiers.inlineInterpolate,
-
-
-      ɵinlineInterpolate);
+  map.set(Identifiers.TRANSLATIONS_FORMAT, TRANSLATIONS_FORMAT);
+  map.set(Identifiers.inlineInterpolate, ɵinlineInterpolate);
   map.set(Identifiers.interpolate, ɵinterpolate);
   map.set(Identifiers.EMPTY_ARRAY, ɵEMPTY_ARRAY);
   map.set(Identifiers.EMPTY_MAP, ɵEMPTY_MAP);
