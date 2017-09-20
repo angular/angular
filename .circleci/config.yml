@@ -11,7 +11,7 @@
 anchor_1: &job_defaults
   working_directory: ~/ng
   docker:
-    - image: angular/ngcontainer
+    - image: angular/ngcontainer:0.0.2
 
 # After checkout, rebase on top of master.
 # Similar to travis behavior, but not quite the same.
