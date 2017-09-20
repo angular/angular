@@ -15,7 +15,6 @@
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "@angular/router": "file:../../dist/packages-dist/router",
-    "@angular/tsc-wrapped": "file:../../dist/packages-dist/tsc-wrapped",
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "@types/jasmine": "2.5.41",
     "rxjs": "file:../../node_modules/rxjs",

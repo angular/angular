@@ -29,7 +29,6 @@
     "platform-webworker-dynamic",
     "router",
     "upgrade",
-    "tsc-wrapped",
 
     "packaging",
     "changelog"

@@ -12,7 +12,6 @@
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
-    "@angular/tsc-wrapped": "file:../../dist/packages-dist/tsc-wrapped",
     "@types/minimist": "^1.2.0",
     "@types/node": "^7.0.5",
     "minimist": "^1.2.0",

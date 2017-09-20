@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const sourceMapTest = require('../source-map-test');
 
-const excludedPackages = ['bazel', 'tsc-wrapped', 'benchpress', 'compiler-cli', 'language-service'];
+const excludedPackages = ['bazel', 'benchpress', 'compiler-cli', 'language-service'];
 
 module.exports = (gulp) => () => {
   const packageDir = path.resolve(process.cwd(), 'dist/packages-dist/');

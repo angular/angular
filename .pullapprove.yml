@@ -135,7 +135,6 @@ groups:
   compiler-cli:
     conditions:
       files:
-        - "packages/tsc-wrapped/*"
         - "packages/compiler-cli/*"
         - "packages/bazel/*"
     users:

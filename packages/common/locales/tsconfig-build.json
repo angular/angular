@@ -19,5 +19,8 @@
   },
   "exclude": [
     "./closure-locale.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true
+  }
 }

@@ -11,6 +11,9 @@
     "module": "es2015",
     "moduleResolution": "node",
     "outDir": "../../dist/packages/compiler",
+    "paths": {
+      "@angular/core": ["../../dist/packages/core"]
+    },
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
@@ -23,5 +26,11 @@
   "files": [
     "index.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"
-  ]
+  ],
+
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "skipMetadataEmit": true,
+    "skipTemplateCodegen": true
+  }
 }

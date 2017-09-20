@@ -26,13 +26,11 @@ describe('example-boilerplate tool', () => {
 
     it('should override the Angular node_modules with the locally built Angular packages if `useLocal` is true', () => {
       const numberOfAngularPackages = 12;
-      const numberOfAngularToolsPackages = 1;
       exampleBoilerPlate.add(true);
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledTimes(numberOfAngularPackages + numberOfAngularToolsPackages);
+      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledTimes(numberOfAngularPackages);
       // for example
       expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'common');
       expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'core');
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'tsc-wrapped');
     });
 
     it('should process all the example folders', () => {

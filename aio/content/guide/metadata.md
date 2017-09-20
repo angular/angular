@@ -66,7 +66,7 @@ You can think of `.metadata.json` as a diagram of the overall structure of a dec
 
 <div class="l-sub-section">
 
-Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/tsc-wrapped/src/schema.ts)
+Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/schema.ts)
 describes the JSON format as a collection of TypeScript interfaces. 
 
 </div>

@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json",
+
+  "compilerOptions": {
+    "paths": {
+      "@angular/*": ["./*"]
+    }
+  },
+
+  "exclude": [
+    "bazel",
+    "compiler/test",
+    "compiler-cli/integrationtest",
+    "platform-server/integrationtest",
+    "common/locales",
+    "examples",
+    "**/*_spec.ts",
+    "**/*.spec.ts"
+  ],
+
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true
+  }
+}

@@ -11,11 +11,12 @@ const PROPERTY_REGEX = /Object.defineProperty\((\S+)\.prototype, "(\S+)", {/g;
 const METHOD_REGEX = /(\S+)\.prototype\.(\S+) = function \((\S*)\) {/g;
 const GETTER_REGEX = /get_REGEX = function \((\S*)\) {/g;
 const TYPE_COMMENT_REGEX = /\/\*\* @type {\?} \*\/ /g;
-const AFTER_EQUALS_REGEX = /(.+)=(.*)/g;
+const AFTER_EQUALS_REGEX = /([^=]+)=(.*)/g;
 const EXPORT_REGEX = /export /g;
 const TSLIB_REGEX = /tslib_\d\.__/g;
 const STRIP_PREFIX_REGEX = /ɵ/g;
 const STRIP_SUFFIX_REGEX = /([^$]+)(\$)+\d/g;
+const SYNTHETIC_REGEX = /ɵ[0-9]/;
 
 module.exports = function sourceMapTest(package) {
   const mappings =
@@ -23,8 +24,13 @@ module.exports = function sourceMapTest(package) {
 
   console.log(`Analyzing ${mappings.length} mappings for ${package}...`);
 
-  const failures = mappings.filter(
-      mapping => { return cleanSource(mapping.sourceText) !== cleanGen(mapping.genText); });
+  const failures = mappings.filter(mapping => {
+    if (SYNTHETIC_REGEX.test(mapping.sourceText)) return false;
+    if (cleanSource(mapping.sourceText) !== cleanGen(mapping.genText)) {
+      console.log('source:', cleanSource(mapping.sourceText), 'gen:', cleanGen(mapping.genText))
+    }
+    return cleanSource(mapping.sourceText) !== cleanGen(mapping.genText);
+  });
 
   logResults(failures);
   return failures;

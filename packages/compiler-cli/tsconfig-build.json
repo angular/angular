@@ -8,8 +8,7 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@angular/compiler": ["../../dist/packages/compiler"],
-      "@angular/tsc-wrapped": ["../../dist/packages-dist/tsc-wrapped"]
+      "@angular/compiler": ["../../dist/packages/compiler"]
     },
     "outDir": "../../dist/packages/compiler-cli"
   },
