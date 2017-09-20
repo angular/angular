@@ -30,6 +30,7 @@ describe('Collector', () => {
       '/unsupported-2.ts',
       '/unsupported-3.ts',
       'class-arity.ts',
+      'declarations.d.ts',
       'import-star.ts',
       'exported-classes.ts',
       'exported-functions.ts',
@@ -65,6 +66,19 @@ describe('Collector', () => {
     const sourceFile = program.getSourceFile('app/empty.ts');
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toBeUndefined();
+  });
+
+  it('should treat all symbols of .d.ts files as exported', () => {
+    const sourceFile = program.getSourceFile('declarations.d.ts');
+    const metadata = collector.getMetadata(sourceFile);
+    expect(metadata).toEqual({
+      __symbolic: 'module',
+      version: 3,
+      metadata: {
+        DeclaredClass: {__symbolic: 'class'},
+        declaredFn: {__symbolic: 'function'},
+      }
+    });
   });
 
   it('should return an interface reference for types', () => {
@@ -1236,6 +1250,10 @@ const FILES: Directory = {
     export class SomeClass {
       constructor(private f: common.NgFor) {}
     }
+  `,
+  'declarations.d.ts': `
+    declare class DeclaredClass {}
+    declare function declaredFn();
   `,
   'exported-classes.ts': `
     export class SimpleClass {}
