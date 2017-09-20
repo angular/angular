@@ -19,12 +19,13 @@ else
   fi
   echo "Compiling tools..."
   $(npm bin)/tsc -p tools
-  $(npm bin)/tsc -p packages/tsc-wrapped
   if [[ $1 == 'node' ]]; then
     # Note: .metadata.json files are needed for the language service tests!
-    echo "Creating .metadata.json files..."
-    node --max-old-space-size=3000 dist/all/@angular/tsc-wrapped/src/main -p packages
-    node --max-old-space-size=3000 dist/all/@angular/tsc-wrapped/src/main -p modules
+    echo "Building compiler..."
+    $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
+    $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json
+    echo "Creating packages .metadata.json files..."
+    node --max-old-space-size=3000 dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
   fi
   node dist/tools/tsc-watch/ $1 watch $2
 fi

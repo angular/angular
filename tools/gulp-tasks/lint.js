@@ -16,9 +16,6 @@ module.exports = (gulp) => () => {
         // Ignore node_modules directories
         '!**/node_modules/**',
 
-        // Ignore TypeScript mocks because it's not managed by us
-        '!./tools/@angular/tsc-wrapped/test/typescript.mocks.ts',
-
         // Ignore generated files due to lack of copyright header
         // todo(alfaproject): make generated files lintable
         '!**/*.d.ts',

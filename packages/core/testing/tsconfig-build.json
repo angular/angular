@@ -18,7 +18,8 @@
   ],
 
   "angularCompilerOptions": {
-    "strictMetadataEmit": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
     "flatModuleOutFile": "testing.js",
     "flatModuleId": "@angular/core/testing"
   }

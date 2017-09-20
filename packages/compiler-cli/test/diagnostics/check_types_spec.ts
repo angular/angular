@@ -8,6 +8,7 @@
 
 import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -247,3 +248,12 @@ const LOWERING_QUICKSTART = {
     export class AppModule { }
   `
 };
+
+const tmpdir = process.env.TEST_TMPDIR || os.tmpdir();
+
+function makeTempDir(): string {
+  const id = (Math.random() * 1000000).toFixed(0);
+  const dir = path.join(tmpdir, `tmp.${id}`);
+  fs.mkdirSync(dir);
+  return dir;
+}

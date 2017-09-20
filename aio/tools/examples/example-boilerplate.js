@@ -41,7 +41,6 @@ const ANGULAR_PACKAGES = [
   'platform-browser-dynamic',
   'platform-server',
   'router',
-  'tsc-wrapped',
   'upgrade',
 ];
 

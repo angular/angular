@@ -52,14 +52,13 @@ fi
 
 travisFoldStart "tsc tools"
   $(npm bin)/tsc -p tools
-  $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json
-  cp packages/tsc-wrapped/package.json dist/packages-dist/tsc-wrapped
-  $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig.json
-  cp packages/tsc-wrapped/package.json dist/all/@angular/tsc-wrapped
+  $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
+  $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json
 travisFoldEnd "tsc tools"
 
 
 travisFoldStart "tsc all"
-  node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p packages
-  node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p modules
+  $(npm bin)/tsc -p packages
+  node dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
+  $(npm bin)/tsc -p modules
 travisFoldEnd "tsc all"

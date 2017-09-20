@@ -28,7 +28,7 @@
     "bazel",
     "compiler-cli/integrationtest",
     "platform-server/integrationtest",
-    "tsc-wrapped",
     "common/locales"
   ]
+
 }

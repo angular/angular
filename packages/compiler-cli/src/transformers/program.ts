@@ -15,7 +15,7 @@ import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diag
 import {ModuleMetadata, createBundleIndexHost} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, EmitFlags, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
-import {TsCompilerAotCompilerTypeCheckHostAdapter} from './compiler_host';
+import {TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from './util';
@@ -173,15 +173,34 @@ class AngularCompilerProgram implements Program {
       };
     }
 
-    const emitResult = emitCallback({
-      program: this.tsProgram,
-      host: this.host,
-      options: this.options,
-      writeFile: createWriteFileCallback(genFiles, this.host, outSrcMapping),
-      emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
-      customTransformers: this.calculateTransforms(genFiles, customTransformers)
-    });
+    // Restore the original references before we emit so TypeScript doesn't emit
+    // a reference to the .d.ts file.
+    const augmentedReferences = new Map<ts.SourceFile, ts.FileReference[]>();
+    for (const sourceFile of this.tsProgram.getSourceFiles()) {
+      const originalReferences = getOriginalReferences(sourceFile);
+      if (originalReferences) {
+        augmentedReferences.set(sourceFile, sourceFile.referencedFiles);
+        sourceFile.referencedFiles = originalReferences;
+      }
+    }
 
+    let emitResult: ts.EmitResult;
+    try {
+      emitResult = emitCallback({
+        program: this.tsProgram,
+        host: this.host,
+        options: this.options,
+        writeFile: createWriteFileCallback(genFiles, this.host, outSrcMapping),
+        emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
+        customTransformers: this.calculateTransforms(genFiles, customTransformers)
+      });
+    } finally {
+      // Restore the references back to the augmented value to ensure that the
+      // checks that TypeScript makes for project structure reuse will succeed.
+      for (const [sourceFile, references] of Array.from(augmentedReferences)) {
+        sourceFile.referencedFiles = references;
+      }
+    }
 
     if (!outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
@@ -464,6 +483,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
     enableSummariesForJit: true,
     preserveWhitespaces: options.preserveWhitespaces,
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,
+    rootDir: options.rootDir,
   };
 }
 

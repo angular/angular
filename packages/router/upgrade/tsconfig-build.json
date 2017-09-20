@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "rootDir": "../",
     "paths": {
+      "@angular/common": ["../../../dist/packages/common"],
       "@angular/core": ["../../../dist/packages/core"],
       "@angular/platform-browser": ["../../../dist/packages/platform-browser"],
       "@angular/router": ["../../../dist/packages/router"],
@@ -18,7 +19,8 @@
 
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
     "flatModuleOutFile": "upgrade.js",
     "flatModuleId": "@angular/router/upgrade"
   }

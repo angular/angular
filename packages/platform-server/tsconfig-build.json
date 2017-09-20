@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
+      "@angular/animations": ["../../dist/packages/animations"],
       "@angular/animations/browser": ["../../dist/packages/animations/browser"],
       "@angular/core": ["../../dist/packages/core"],
       "@angular/common": ["../../dist/packages/common"],
@@ -26,7 +27,8 @@
 
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
     "flatModuleOutFile": "platform-server.js",
     "flatModuleId": "@angular/platform-server"
   }

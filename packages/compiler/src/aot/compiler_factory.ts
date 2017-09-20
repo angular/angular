@@ -84,9 +84,9 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
   const viewCompiler = new ViewCompiler(staticReflector);
   const typeCheckCompiler = new TypeCheckCompiler(options, staticReflector);
   const compiler = new AotCompiler(
-      config, compilerHost, staticReflector, resolver, tmplParser, new StyleCompiler(urlResolver),
-      viewCompiler, typeCheckCompiler, new NgModuleCompiler(staticReflector),
-      new TypeScriptEmitter(), summaryResolver, options.locale || null, options.i18nFormat || null,
-      options.enableSummariesForJit || null, symbolResolver);
+      config, options, compilerHost, staticReflector, resolver, tmplParser,
+      new StyleCompiler(urlResolver), viewCompiler, typeCheckCompiler,
+      new NgModuleCompiler(staticReflector), new TypeScriptEmitter(), summaryResolver,
+      symbolResolver);
   return {compiler, reflector: staticReflector};
 }
