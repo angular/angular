@@ -34,7 +34,7 @@ import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolv
 import {createForJitStub, serializeSummaries} from './summary_serializer';
 import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
 
-export enum StubEmitFlags {
+enum StubEmitFlags {
   Basic = 1 << 0,
   TypeCheck = 1 << 1,
   All = TypeCheck | Basic
@@ -170,22 +170,14 @@ export class AotCompiler {
       }
     });
 
-    // make sure we create a .ngfactory if we have a least one component
-    // in the file.
+    // Make sure we create a .ngfactory if we have a injectable/directive/pipe/NgModule
+    // or a reference to a non source file.
+    // Note: This is overestimating the required .ngfactory files as the real calculation is harder.
     // Only do this for StubEmitFlags.Basic, as adding a type check block
     // does not change this file (as we generate type check blocks based on NgModules).
     if (outputCtx.statements.length === 0 && (emitFlags & StubEmitFlags.Basic) &&
-        file.directives.some(
-            dir => this._metadataResolver.getNonNormalizedDirectiveMetadata(
-                                             dir) !.metadata.isComponent)) {
-      _createEmptyStub(outputCtx);
-    }
-
-    // make sure we create a .ngfactory if we reexport a non source file.
-    // Only do this for StubEmitFlags.Basic, as adding a type check block
-    // does not change this file (as we generate type check blocks based on NgModules).
-    if (outputCtx.statements.length === 0 && (emitFlags & StubEmitFlags.Basic) &&
-        file.exportsNonSourceFiles) {
+        (file.directives.length || file.pipes.length || file.injectables.length ||
+         file.ngModules.length || file.exportsNonSourceFiles)) {
       _createEmptyStub(outputCtx);
     }
 
@@ -648,21 +640,28 @@ export function analyzeFile(
       if (!symbolMeta || symbolMeta.__symbolic === 'error') {
         return;
       }
-      exportsNonSourceFiles =
-          exportsNonSourceFiles || isValueExportingNonSourceFile(host, symbolMeta);
+      let isNgSymbol = false;
       if (symbolMeta.__symbolic === 'class') {
         if (metadataResolver.isDirective(symbol)) {
+          isNgSymbol = true;
           directives.push(symbol);
         } else if (metadataResolver.isPipe(symbol)) {
+          isNgSymbol = true;
           pipes.push(symbol);
         } else if (metadataResolver.isInjectable(symbol)) {
+          isNgSymbol = true;
           injectables.push(symbol);
         } else {
           const ngModule = metadataResolver.getNgModuleMetadata(symbol, false);
           if (ngModule) {
+            isNgSymbol = true;
             ngModules.push(ngModule);
           }
         }
+      }
+      if (!isNgSymbol) {
+        exportsNonSourceFiles =
+            exportsNonSourceFiles || isValueExportingNonSourceFile(host, symbolMeta);
       }
     });
   }
