@@ -6,62 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
-import {NgModule} from '@angular/core';
-import {
-  MdCommonModule,
-  MdLineModule,
-  MdPseudoCheckboxModule,
-  MdRippleModule,
-} from '@angular/material/core';
-import {
-  MdDividerCssMatStyler,
-  MdList,
-  MdListAvatarCssMatStyler,
-  MdListCssMatStyler,
-  MdListDivider,
-  MdListIconCssMatStyler,
-  MdListItem,
-  MdListSubheaderCssMatStyler,
-  MdNavListCssMatStyler,
-} from './list';
-import {MdListOption, MdSelectionList} from './selection-list';
-
-
-@NgModule({
-  imports: [MdLineModule, MdRippleModule, MdCommonModule, MdPseudoCheckboxModule, CommonModule],
-  exports: [
-    MdList,
-    MdListItem,
-    MdListDivider,
-    MdListAvatarCssMatStyler,
-    MdLineModule,
-    MdCommonModule,
-    MdListIconCssMatStyler,
-    MdListCssMatStyler,
-    MdNavListCssMatStyler,
-    MdDividerCssMatStyler,
-    MdListSubheaderCssMatStyler,
-    MdPseudoCheckboxModule,
-    MdSelectionList,
-    MdListOption
-  ],
-  declarations: [
-    MdList,
-    MdListItem,
-    MdListDivider,
-    MdListAvatarCssMatStyler,
-    MdListIconCssMatStyler,
-    MdListCssMatStyler,
-    MdNavListCssMatStyler,
-    MdDividerCssMatStyler,
-    MdListSubheaderCssMatStyler,
-    MdSelectionList,
-    MdListOption
-  ],
-})
-export class MdListModule {}
-
-
+export * from './list-module';
 export * from './list';
 export * from './selection-list';
+export * from './mat-exports';

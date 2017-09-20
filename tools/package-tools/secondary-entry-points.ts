@@ -48,7 +48,7 @@ export function getSecondaryEntryPointsForPackage(pkg: BuildPackage) {
     .split('\n')
     .filter(n => n)
     .map(importStatement => importStatement.match(importRegex)![1])
-    .filter(n => nodeLookup.has(n))
+    .filter(n => nodeLookup.has(n) && n !== node.name)
     .map(depName => nodeLookup.get(depName)!) || [];
   });
 

@@ -31,6 +31,7 @@ export * from './rxjs/index';
 export * from './selection/index';
 export * from './style/index';
 export * from './util/object-extend';
+export * from './mat-exports';
 
 // TODO: don't have this
 export * from './testing/month-constants';
