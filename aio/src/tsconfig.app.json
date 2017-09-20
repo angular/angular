@@ -1,5 +1,10 @@
 {
   "extends": "../tsconfig.json",
+  "angularCompilerOptions": {
+    "entryModule": "./app/app.module#AppModule",
+    "genDir": "aot",
+    "skipMetadataEmit" : true
+  },
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "module": "es2015",

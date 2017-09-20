@@ -1,5 +1,6 @@
 import { enableProdMode, ApplicationRef } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import {platform} from '@angular/core';
+import {AppModuleNgFactory} from './app.ngfactory';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
@@ -8,7 +9,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(AppModule).then(ref => {
+platform.bootstrapModuleFactory(AppModuleNgFactory).then(ref => {
   if (environment.production && 'serviceWorker' in (navigator as any)) {
     const appRef: ApplicationRef = ref.injector.get(ApplicationRef);
     appRef.isStable.first().subscribe(() => {

@@ -10,9 +10,8 @@
     source-map "^0.5.6"
     typescript "^2.3.3"
 
-"@angular/animations@^5.0.0-beta.3":
-  version "5.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-5.0.0-beta.3.tgz#74709377b94d38a7af04a406a3b68c9ed261da9c"
+"@angular/animations@file:../dist/packages-dist/animations":
+  version "5.0.0-beta.6-0414f71"
   dependencies:
     tslib "^1.7.1"
 
@@ -91,29 +90,27 @@
   optionalDependencies:
     node-sass "^4.3.0"
 
-"@angular/common@^5.0.0-beta.3":
-  version "5.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@angular/common/-/common-5.0.0-beta.3.tgz#750b6792b6f8fa7c0343754cada9b1c43eb38678"
+"@angular/common@file:../dist/packages-dist/common":
+  version "5.0.0-beta.6-0414f71"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/compiler-cli@^5.0.0-beta.3":
-  version "5.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@angular/compiler-cli/-/compiler-cli-5.0.0-beta.3.tgz#ea754ad801a19b1f001daab02316672dfd1ee641"
+"@angular/compiler-cli@file:../dist/packages-dist/compiler-cli":
+  version "5.0.0-beta.6-0414f71"
   dependencies:
-    "@angular/tsc-wrapped" "5.0.0-beta.3"
+    "@angular/tsc-wrapped" "5.0.0-beta.6"
+    chokidar "^1.4.2"
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
+    tsickle "^0.24.0"
 
-"@angular/compiler@^5.0.0-beta.3":
-  version "5.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-5.0.0-beta.3.tgz#70c59a8b250eb9906334b81c462feab454255616"
+"@angular/compiler@file:../dist/packages-dist/compiler":
+  version "5.0.0-beta.6-0414f71"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/core@^5.0.0-beta.3":
-  version "5.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-5.0.0-beta.3.tgz#476cdb178a8e69366f48f60ab19550ff4e923f7b"
+"@angular/core@file:../dist/packages-dist/core":
+  version "5.0.0-beta.6-0414f71"
   dependencies:
     tslib "^1.7.1"
 
@@ -155,6 +152,11 @@
     tslib "^1.7.1"
     xhr2 "^0.1.4"
 
+"@angular/platform@file:../dist/packages-dist/platform":
+  version "5.0.0-beta.6-0414f71"
+  dependencies:
+    tslib "^1.7.1"
+
 "@angular/router@^5.0.0-beta.3":
   version "5.0.0-beta.3"
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-5.0.0-beta.3.tgz#e8d251f99761759b4eb97f66f53e022b230760d9"
@@ -168,11 +170,16 @@
     base64-js "^1.1.2"
     jshashes "^1.0.5"
 
-"@angular/tsc-wrapped@5.0.0-beta.3":
-  version "5.0.0-beta.3"
-  resolved "https://registry.yarnpkg.com/@angular/tsc-wrapped/-/tsc-wrapped-5.0.0-beta.3.tgz#d71c607b02eb6fe7091b908ef2ec97180ec52618"
+"@angular/tsc-wrapped@5.0.0-beta.6":
+  version "5.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/@angular/tsc-wrapped/-/tsc-wrapped-5.0.0-beta.6.tgz#f90825246d593db5b11258aa0ee63fc12951d4ae"
   dependencies:
-    tsickle "^0.21.0"
+    tsickle "^0.23.5"
+
+"@angular/tsc-wrapped@file:../dist/packages-dist/tsc-wrapped":
+  version "5.0.0-beta.6-0414f71"
+  dependencies:
+    tsickle "^0.24.0"
 
 "@ngtools/json-schema@1.1.0":
   version "1.1.0"
@@ -1140,7 +1147,7 @@ character-reference-invalid@^1.0.0:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
 
-chokidar@^1.4.1, chokidar@^1.6.0, chokidar@^1.7.0:
+chokidar@^1.4.1, chokidar@^1.4.2, chokidar@^1.6.0, chokidar@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-1.7.0.tgz#798e689778151c8076b4b360e5edd28cda2bb468"
   dependencies:
@@ -7547,9 +7554,18 @@ tsconfig@^6.0.0:
     strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
-tsickle@^0.21.0:
-  version "0.21.6"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.21.6.tgz#53b01b979c5c13fdb13afb3fb958177e5991588d"
+tsickle@^0.23.5:
+  version "0.23.6"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.23.6.tgz#fcee57a5cb7f92a8c3a9e578ee0a286427dcfacd"
+  dependencies:
+    minimist "^1.2.0"
+    mkdirp "^0.5.1"
+    source-map "^0.5.6"
+    source-map-support "^0.4.2"
+
+tsickle@^0.24.0:
+  version "0.24.1"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.24.1.tgz#039343b205bf517a333b0703978892f80a7d848e"
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
