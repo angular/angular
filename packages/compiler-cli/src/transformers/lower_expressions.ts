@@ -292,6 +292,15 @@ export class LowerMetadataCache implements RequestsMap {
       };
     })();
 
+    const isExportedPropertyAccess = (node: ts.Node) => {
+      if (node.kind === ts.SyntaxKind.PropertyAccessExpression) {
+        const pae = node as ts.PropertyAccessExpression;
+        if (isExportedSymbol(pae.expression)) {
+          return true;
+        }
+      }
+      return false;
+    };
     const replaceNode = (node: ts.Node) => {
       const name = freshIdent();
       requests.set(node.pos, {name, kind: node.kind, location: node.pos, end: node.end});
@@ -306,14 +315,15 @@ export class LowerMetadataCache implements RequestsMap {
           return replaceNode(node);
         }
         if (isLiteralFieldNamed(node, LOWERABLE_FIELD_NAMES) && shouldLower(node) &&
-            !isExportedSymbol(node)) {
+            !isExportedSymbol(node) && !isExportedPropertyAccess(node)) {
           return replaceNode(node);
         }
       }
       return value;
     };
 
-    const metadata = this.collector.getMetadata(sourceFile, this.strict, substituteExpression);
+    const metadata = this.collector.getMetadata(
+        sourceFile, this.strict, sourceFile.isDeclarationFile ? undefined : substituteExpression);
 
     return {metadata, requests};
   }

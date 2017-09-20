@@ -54,6 +54,20 @@ describe('Expression lowering', () => {
           .toBeTruthy('did not find the useValue');
     });
 
+    it('should not request a lowering for useValue with a reference to a static property', () => {
+      const collected = collect(`
+        import {Component} from '@angular/core';
+
+        @Component({
+          provider: [{provide: 'someToken', useValue:◊value: MyClass.someMethod◊}]
+        })
+        export class MyClass {
+          static someMethod() {}
+        }
+      `);
+      expect(collected.requests.size).toBe(0);
+    });
+
     it('should request a lowering for useFactory', () => {
       const collected = collect(`
         import {Component} from '@angular/core';
