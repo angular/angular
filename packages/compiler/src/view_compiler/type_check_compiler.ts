@@ -251,26 +251,31 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       context: expression.context,
       value: convertPropertyBindingBuiltins(
           {
-            createLiteralArrayConverter: (argCount: number) => (args: o.Expression[]) =>
-                                             o.literalArr(args),
-            createLiteralMapConverter: (keys: {key: string, quoted: boolean}[]) =>
-                                           (values: o.Expression[]) => {
-                                             const entries = keys.map((k, i) => ({
-                                                                        key: k.key,
-                                                                        value: values[i],
-                                                                        quoted: k.quoted,
-                                                                      }));
-                                             return o.literalMap(entries);
-                                           },
+            createLiteralArrayConverter: (argCount: number) => (args: o.Expression[]) => {
+              const arr = o.literalArr(args);
+              // Note: The old view compiler used to use an `any` type
+              // for arrays.
+              return this.options.fullTemplateTypeCheck ? arr : arr.cast(o.DYNAMIC_TYPE);
+            },
+            createLiteralMapConverter:
+                (keys: {key: string, quoted: boolean}[]) => (values: o.Expression[]) => {
+                  const entries = keys.map((k, i) => ({
+                                             key: k.key,
+                                             value: values[i],
+                                             quoted: k.quoted,
+                                           }));
+                  const map = o.literalMap(entries);
+                  // Note: The old view compiler used to use an `any` type
+                  // for maps.
+                  return this.options.fullTemplateTypeCheck ? map : map.cast(o.DYNAMIC_TYPE);
+                },
             createPipeConverter: (name: string, argCount: number) => (args: o.Expression[]) => {
               // Note: The old view compiler used to use an `any` type
-              // for pipe calls.
-              // We keep this behaivor behind a flag for now.
-              if (this.options.fullTemplateTypeCheck) {
-                return o.variable(this.pipeOutputVar(name)).callMethod('transform', args);
-              } else {
-                return o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
-              }
+              // for pipes.
+              const pipeExpr = this.options.fullTemplateTypeCheck ?
+                  o.variable(this.pipeOutputVar(name)) :
+                  o.variable(this.getOutputVar(o.BuiltinTypeName.Dynamic));
+              return pipeExpr.callMethod('transform', args);
             },
           },
           expression.value)
