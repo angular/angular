@@ -8,6 +8,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
   templateUrl: 'slider-configurable-example.html',
   styleUrls: ['slider-configurable-example.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class SliderConfigurableExample {
   autoTicks = false;

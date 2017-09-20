@@ -85,6 +85,7 @@ export const MD_DATEPICKER_SCROLL_STRATEGY_PROVIDER = {
     '(keydown)': '_handleKeydown($event)',
   },
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdDatepickerContent<D> implements AfterContentInit {
@@ -120,6 +121,7 @@ export class MdDatepickerContent<D> implements AfterContentInit {
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdDatepicker<D> implements OnDestroy {
   /** The date to open the calendar to initially. */

@@ -42,7 +42,8 @@ export const _MdToolbarMixinBase = mixinColor(MdToolbarBase);
     'role': 'toolbar'
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdToolbar extends _MdToolbarMixinBase implements CanColor {
 

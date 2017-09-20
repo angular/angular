@@ -33,6 +33,7 @@ import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@ang
   styleUrls: ['progress-bar.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdProgressBar {
   /** Color of the progress bar. */

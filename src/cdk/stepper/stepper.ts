@@ -60,7 +60,8 @@ export class StepperSelectionEvent {
   moduleId: module.id,
   selector: 'cdk-step',
   templateUrl: 'step.html',
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class CdkStep {
   /** Template for step label if it exists. */

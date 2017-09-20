@@ -50,6 +50,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdSidenav extends MdDrawer {}
 
@@ -67,6 +68,7 @@ export class MdSidenav extends MdDrawer {}
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdSidenavContainer extends MdDrawerContainer {
   @ContentChildren(MdSidenav) _drawers;

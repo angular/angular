@@ -70,6 +70,7 @@ export class MatRowDef extends _MdCdkRowDef { }
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdHeaderRow extends _MdHeaderRow { }
 
@@ -84,5 +85,6 @@ export class MdHeaderRow extends _MdHeaderRow { }
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdRow extends _MdRow { }

@@ -8,5 +8,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
   templateUrl: 'sidenav-fab-example.html',
   styleUrls: ['sidenav-fab-example.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class SidenavFabExample {}

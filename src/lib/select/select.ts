@@ -178,6 +178,7 @@ export class MdSelectTrigger {}
   styleUrls: ['select.css'],
   inputs: ['color', 'disabled', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'listbox',

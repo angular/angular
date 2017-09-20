@@ -57,6 +57,7 @@ import {MdDatepickerIntl} from './datepicker-intl';
     'class': 'mat-calendar',
   },
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdCalendar<D> implements AfterContentInit, OnDestroy {

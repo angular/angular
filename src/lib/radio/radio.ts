@@ -326,6 +326,7 @@ export const _MdRadioButtonMixinBase = mixinColor(mixinDisableRipple(MdRadioButt
   styleUrls: ['radio.css'],
   inputs: ['color', 'disableRipple'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   host: {
     'class': 'mat-radio-button',
     '[class.mat-radio-checked]': 'checked',

@@ -45,6 +45,7 @@ const MD_FIT_MODE = 'fit';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdGridList implements OnInit, AfterContentChecked {
   /** Number of columns being rendered. */

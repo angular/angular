@@ -24,6 +24,7 @@ export const _MdTable = CdkTable;
     'class': 'mat-table',
   },
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdTable<T> extends _MdTable<T> { }

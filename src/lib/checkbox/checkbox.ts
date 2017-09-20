@@ -106,6 +106,7 @@ export const _MdCheckboxMixinBase =
   providers: [MD_CHECKBOX_CONTROL_VALUE_ACCESSOR],
   inputs: ['disabled', 'disableRipple', 'color'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MdCheckbox extends _MdCheckboxMixinBase implements ControlValueAccessor, AfterViewInit,

@@ -81,6 +81,7 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
   },
   templateUrl: 'list-option.html',
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: false}],
 })
@@ -201,6 +202,7 @@ export class MdListOption extends _MdListOptionMixinBase
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MdSelectionList extends _MdSelectionListMixinBase

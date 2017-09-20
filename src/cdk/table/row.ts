@@ -150,6 +150,7 @@ export class CdkCellOutlet {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class CdkHeaderRow { }
 
@@ -164,5 +165,6 @@ export class CdkHeaderRow { }
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class CdkRow { }

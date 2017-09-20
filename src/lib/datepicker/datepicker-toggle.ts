@@ -32,6 +32,7 @@ import {of as observableOf} from 'rxjs/observable/of';
     'class': 'mat-datepicker-toggle',
   },
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdDatepickerToggle<D> implements OnChanges, OnDestroy {

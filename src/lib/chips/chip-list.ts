@@ -83,6 +83,7 @@ export class MdChipListChange {
   providers: [{provide: MdFormFieldControl, useExisting: MdChipList}],
   styleUrls: ['chips.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MdChipList implements MdFormFieldControl<any>, ControlValueAccessor,

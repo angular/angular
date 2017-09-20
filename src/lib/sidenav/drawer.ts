@@ -89,6 +89,7 @@ export class MdDrawerToggleResult {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdDrawer implements AfterContentInit, OnDestroy {
   private _focusTrap: FocusTrap;
@@ -313,6 +314,7 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdDrawerContainer implements AfterContentInit, OnDestroy {
   @ContentChildren(MdDrawer) _drawers: QueryList<MdDrawer>;

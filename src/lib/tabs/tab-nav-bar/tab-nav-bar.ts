@@ -68,6 +68,7 @@ export const _MdTabNavMixinBase = mixinDisableRipple(mixinColor(MdTabNavBase, 'p
   styleUrls: ['tab-nav-bar.css'],
   host: {'class': 'mat-tab-nav-bar'},
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdTabNav extends _MdTabNavMixinBase implements AfterContentInit, CanColor,

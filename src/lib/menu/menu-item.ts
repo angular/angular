@@ -43,6 +43,7 @@ export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   templateUrl: 'menu-item.html',
   exportAs: 'mdMenuItem, matMenuItem',
 })

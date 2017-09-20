@@ -34,6 +34,7 @@ const DAYS_PER_WEEK = 7;
   selector: 'md-month-view',
   templateUrl: 'month-view.html',
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdMonthView<D> implements AfterContentInit {

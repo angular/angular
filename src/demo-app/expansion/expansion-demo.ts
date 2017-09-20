@@ -6,6 +6,7 @@ import {Component, ViewEncapsulation} from '@angular/core';
   styleUrls: ['expansion-demo.css'],
   templateUrl: 'expansion-demo.html',
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class ExpansionDemo {
   displayMode: string = 'default';

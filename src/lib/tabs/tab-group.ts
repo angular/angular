@@ -62,6 +62,7 @@ export const _MdTabGroupMixinBase = mixinColor(mixinDisableRipple(MdTabGroupBase
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['color', 'disableRipple'],
   host: {

@@ -50,6 +50,7 @@ export function throwMdDialogContentAlreadyAttachedError() {
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   animations: [
     trigger('slideDialog', [
       // Note: The `enter` animation doesn't transition to something like `translate3d(0, 0, 0)

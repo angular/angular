@@ -90,7 +90,8 @@
     "validate-decorators": [true, {
       "Component": {
         "encapsulation": "\\.None$",
-        "moduleId": "^module\\.id$"
+        "moduleId": "^module\\.id$",
+        "preserveWhitespaces": "false$"
       }
     }, "src/+(lib|cdk)/**/!(*.spec).ts"],
     "require-license-banner": [

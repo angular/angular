@@ -13,6 +13,7 @@ import {
   styleUrls: ['snack-bar-demo.css'],
   templateUrl: 'snack-bar-demo.html',
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class SnackBarDemo {
   message: string = 'Snack Bar opened.';

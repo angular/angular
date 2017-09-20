@@ -57,6 +57,7 @@ export class MdOptionSelectionChange {
   },
   templateUrl: 'option.html',
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdOption {

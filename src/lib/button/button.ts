@@ -128,6 +128,7 @@ export const _MdButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(Md
   styleUrls: ['button.css'],
   inputs: ['disabled', 'disableRipple', 'color'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdButton extends _MdButtonMixinBase
@@ -201,6 +202,7 @@ export class MdButton extends _MdButtonMixinBase
   templateUrl: 'button.html',
   styleUrls: ['button.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdAnchor extends MdButton {

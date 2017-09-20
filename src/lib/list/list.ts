@@ -52,6 +52,7 @@ export class MdListDivider {}
   styleUrls: ['list.css'],
   inputs: ['disableRipple'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdList extends _MdListMixinBase implements CanDisableRipple {}
@@ -129,6 +130,7 @@ export class MdListSubheaderCssMatStyler {}
   inputs: ['disableRipple'],
   templateUrl: 'list-item.html',
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdListItem extends _MdListItemMixinBase implements AfterContentInit, CanDisableRipple {

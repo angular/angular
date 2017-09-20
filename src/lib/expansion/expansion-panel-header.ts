@@ -46,6 +46,7 @@ import {Subscription} from 'rxjs/Subscription';
   styleUrls: ['./expansion-panel-header.css'],
   templateUrl: './expansion-panel-header.html',
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'mat-expansion-panel-header',

@@ -25,6 +25,7 @@ let _uniqueOptgroupIdCounter = 0;
   selector: 'md-optgroup, mat-optgroup',
   templateUrl: 'optgroup.html',
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['disabled'],
   host: {

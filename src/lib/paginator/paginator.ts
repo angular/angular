@@ -57,6 +57,7 @@ export class PageEvent {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdPaginator implements OnInit, OnDestroy {
   private _initialized: boolean;

@@ -41,7 +41,8 @@ export const _MdStepper = CdkStepper;
   selector: 'md-step, mat-step',
   templateUrl: 'step.html',
   providers: [{provide: MD_ERROR_GLOBAL_OPTIONS, useExisting: MdStep}],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdStep extends _MdStep implements ErrorOptions {
   /** Content for step label given by <ng-template matStepLabel> or <ng-template mdStepLabel>. */
@@ -104,7 +105,8 @@ export class MdStepper extends _MdStepper {
     ])
   ],
   providers: [{provide: MdStepper, useExisting: MdHorizontalStepper}],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdHorizontalStepper extends MdStepper { }
 
@@ -127,6 +129,7 @@ export class MdHorizontalStepper extends MdStepper { }
     ])
   ],
   providers: [{provide: MdStepper, useExisting: MdVerticalStepper}],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class MdVerticalStepper extends MdStepper { }

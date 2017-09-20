@@ -76,6 +76,7 @@ export const CDK_TABLE_TEMPLATE = `
     'class': 'cdk-table',
   },
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CdkTable<T> implements CollectionViewer {

@@ -13,6 +13,7 @@ export class AccessibilityHome {}
   templateUrl: 'a11y.html',
   styleUrls: ['a11y.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class AccessibilityDemo {
   @ViewChild('maincontent') mainContent: ElementRef;

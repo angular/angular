@@ -127,6 +127,7 @@ export const _MdSliderMixinBase = mixinColor(mixinDisabled(MdSliderBase), 'accen
   styleUrls: ['slider.css'],
   inputs: ['disabled', 'color'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSlider extends _MdSliderMixinBase

@@ -8,6 +8,7 @@ import {MdIconRegistry} from '@angular/material';
   templateUrl: 'icon-demo.html',
   styleUrls: ['icon-demo.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
 })
 export class IconDemo {
   constructor(mdIconRegistry: MdIconRegistry, sanitizer: DomSanitizer) {

@@ -41,6 +41,7 @@ export class MdCalendarCell {
     'class': 'mat-calendar-body',
   },
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdCalendarBody {

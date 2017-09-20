@@ -22,6 +22,7 @@ import {MdStepLabel} from './step-label';
     'role': 'tab',
   },
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   providers: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: false}],
 })
 export class MdStepHeader {

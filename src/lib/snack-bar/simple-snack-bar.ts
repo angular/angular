@@ -21,6 +21,7 @@ import {MD_SNACK_BAR_DATA} from './snack-bar-config';
   templateUrl: 'simple-snack-bar.html',
   styleUrls: ['simple-snack-bar.css'],
   encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'mat-simple-snackbar',
