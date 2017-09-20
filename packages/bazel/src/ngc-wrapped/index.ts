@@ -103,7 +103,7 @@ export function compile(
         }
       };
 
-  // Patch fileExists when resolving modules, so that ngc can ask TypeScript to
+  // Patch fileExists when resolving modules, so that CompilerHost can ask TypeScript to
   // resolve non-existing generated files that don't exist on disk, but are
   // synthetic and added to the `programWithStubs` based on real inputs.
   const generatedFileModuleResolverHost = Object.create(tsHost);
@@ -143,12 +143,6 @@ export function compile(
     }
     return origBazelHostFileExist.call(bazelHost, fileName);
   };
-  // TODO(tbosch): fix tsickle to still run regular transformers even
-  // if tsickle is not processing a file, and then remove this override,
-  // as this is only required to keep the ng transformer running,
-  // but produces e.g. too many externs.
-  bazelHost.shouldSkipTsickleProcessing = (fileName: string): boolean =>
-      bazelOpts.compilationTargetSrc.indexOf(fileName) === -1 && !NGC_GEN_FILES.test(fileName);
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
 
