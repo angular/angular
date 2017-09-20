@@ -14,7 +14,7 @@ import {
   NgZone,
 } from '@angular/core';
 import {DomPortalHost} from '@angular/cdk/portal';
-import {OverlayState} from './overlay-state';
+import {OverlayConfig} from './overlay-config';
 import {OverlayRef} from './overlay-ref';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {OverlayContainer} from './overlay-container';
@@ -25,7 +25,7 @@ import {ScrollStrategyOptions} from './scroll/index';
 let nextUniqueId = 0;
 
 /** The default state for newly created overlays. */
-let defaultState = new OverlayState();
+let defaultState = new OverlayConfig();
 
 
 /**
@@ -51,7 +51,7 @@ export class Overlay {
    * @param state State to apply to the overlay.
    * @returns Reference to the created overlay.
    */
-  create(state: OverlayState = defaultState): OverlayRef {
+  create(state: OverlayConfig = defaultState): OverlayRef {
     const pane = this._createPaneElement();
     const portalHost = this._createPortalHost(pane);
     return new OverlayRef(portalHost, pane, state, this._ngZone);

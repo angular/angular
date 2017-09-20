@@ -12,7 +12,7 @@ import {
   ConnectedPositionStrategy,
   Overlay,
   OverlayRef,
-  OverlayState,
+  OverlayConfig,
   PositionStrategy,
   RepositionScrollStrategy,
   ScrollStrategy,
@@ -464,8 +464,8 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     this._panelOpen = true;
   }
 
-  private _getOverlayConfig(): OverlayState {
-    return new OverlayState({
+  private _getOverlayConfig(): OverlayConfig {
+    return new OverlayConfig({
       positionStrategy: this._getOverlayPosition(),
       scrollStrategy: this._scrollStrategy(),
       width: this._getHostWidth(),

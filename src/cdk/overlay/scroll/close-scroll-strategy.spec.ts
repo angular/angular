@@ -5,7 +5,7 @@ import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   Overlay,
-  OverlayState,
+  OverlayConfig,
   OverlayRef,
   OverlayModule,
   OverlayContainer,
@@ -33,8 +33,8 @@ describe('CloseScrollStrategy', () => {
   }));
 
   beforeEach(inject([Overlay], (overlay: Overlay) => {
-    let overlayState = new OverlayState({scrollStrategy: overlay.scrollStrategies.close()});
-    overlayRef = overlay.create(overlayState);
+    let overlayConfig = new OverlayConfig({scrollStrategy: overlay.scrollStrategies.close()});
+    overlayRef = overlay.create(overlayConfig);
     componentPortal = new ComponentPortal(MozarellaMsg);
   }));
 

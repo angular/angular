@@ -12,7 +12,7 @@ import {ESCAPE} from '@angular/cdk/keycodes';
 import {
   Overlay,
   OverlayRef,
-  OverlayState,
+  OverlayConfig,
   PositionStrategy,
   RepositionScrollStrategy,
   ScrollStrategy,
@@ -331,7 +331,7 @@ export class MdDatepicker<D> implements OnDestroy {
 
   /** Create the popup. */
   private _createPopup(): void {
-    const overlayState = new OverlayState({
+    const overlayState = new OverlayConfig({
       positionStrategy: this._createPopupPositionStrategy(),
       hasBackdrop: true,
       backdropClass: 'md-overlay-transparent-backdrop',

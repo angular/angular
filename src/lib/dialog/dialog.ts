@@ -11,7 +11,7 @@ import {
   BlockScrollStrategy,
   Overlay,
   OverlayRef,
-  OverlayState,
+  OverlayConfig,
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
@@ -181,8 +181,8 @@ export class MdDialog {
    * @param dialogConfig The dialog configuration.
    * @returns The overlay configuration.
    */
-  private _getOverlayState(dialogConfig: MdDialogConfig): OverlayState {
-    const state = new OverlayState({
+  private _getOverlayState(dialogConfig: MdDialogConfig): OverlayConfig {
+    const state = new OverlayConfig({
       positionStrategy: this._overlay.position().global(),
       scrollStrategy: this._scrollStrategy(),
       panelClass: dialogConfig.panelClass,

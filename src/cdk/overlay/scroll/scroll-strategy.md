@@ -7,15 +7,15 @@ recalculate the position, close the overlay, block scrolling, etc.
 
 ## Usage
 To associate an overlay with a scroll strategy, you have to pass in a function, that returns a
-scroll strategy, to the `OverlayState`. By default, all overlays will use the `noop` strategy which
+scroll strategy, to the `OverlayConfig`. By default, all overlays will use the `noop` strategy which
 doesn't do anything. The other available strategies are `reposition`, `block` and `close`:
 
 ```ts
-let overlayState = new OverlayState({
+let overlayConfig = new OverlayConfig({
   scrollStrategy: overlay.scrollStrategies.block()
 });
 
-this._overlay.create(overlayState).attach(yourPortal);
+this._overlay.create(overlayConfig).attach(yourPortal);
 ```
 
 ## Creating a custom scroll strategy
@@ -35,6 +35,6 @@ export class CustomScrollStrategy implements ScrollStrategy {
   // your implementation
 }
 
-overlayState.scrollStrategy = new CustomScrollStrategy();
-this._overlay.create(overlayState).attach(yourPortal);
+overlayConfig.scrollStrategy = new CustomScrollStrategy();
+this._overlay.create(overlayConfig).attach(yourPortal);
 ```

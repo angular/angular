@@ -14,7 +14,7 @@ import {
   HorizontalConnectionPos,
   Overlay,
   OverlayRef,
-  OverlayState,
+  OverlayConfig,
   RepositionScrollStrategy,
   ScrollStrategy,
   VerticalConnectionPos,
@@ -317,10 +317,10 @@ export class MdMenuTrigger implements AfterViewInit, OnDestroy {
 
   /**
    * This method builds the configuration object needed to create the overlay, the OverlayState.
-   * @returns OverlayState
+   * @returns OverlayConfig
    */
-  private _getOverlayConfig(): OverlayState {
-    return new OverlayState({
+  private _getOverlayConfig(): OverlayConfig {
+    return new OverlayConfig({
       positionStrategy: this._getPosition(),
       hasBackdrop: !this.triggersSubmenu(),
       backdropClass: 'cdk-overlay-transparent-backdrop',

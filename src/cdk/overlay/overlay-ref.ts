@@ -8,7 +8,7 @@
 
 import {NgZone} from '@angular/core';
 import {PortalHost, Portal} from '@angular/cdk/portal';
-import {OverlayState} from './overlay-state';
+import {OverlayConfig} from './overlay-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -26,7 +26,7 @@ export class OverlayRef implements PortalHost {
   constructor(
       private _portalHost: PortalHost,
       private _pane: HTMLElement,
-      private _state: OverlayState,
+      private _state: OverlayConfig,
       private _ngZone: NgZone) {
 
     if (_state.scrollStrategy) {
@@ -154,7 +154,7 @@ export class OverlayRef implements PortalHost {
   /**
    * Gets the current state config of the overlay.
    */
-  getState(): OverlayState {
+  getState(): OverlayConfig {
     return this._state;
   }
 

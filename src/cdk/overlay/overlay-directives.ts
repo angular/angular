@@ -28,7 +28,7 @@ import {ESCAPE} from '@angular/cdk/keycodes';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {Overlay} from './overlay';
 import {OverlayRef} from './overlay-ref';
-import {OverlayState} from './overlay-state';
+import {OverlayConfig} from './overlay-config';
 import {
   // This import is only used to define a generic type. The current TypeScript version incorrectly
   // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
@@ -271,9 +271,9 @@ export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
   }
 
   /** Builds the overlay config based on the directive's inputs */
-  private _buildConfig(): OverlayState {
+  private _buildConfig(): OverlayConfig {
     const positionStrategy = this._position = this._createPositionStrategy();
-    const overlayConfig = new OverlayState({
+    const overlayConfig = new OverlayConfig({
       positionStrategy,
       scrollStrategy: this.scrollStrategy,
       hasBackdrop: this.hasBackdrop

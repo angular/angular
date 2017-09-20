@@ -3,7 +3,7 @@ import {async, inject, TestBed} from '@angular/core/testing';
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {Platform} from '@angular/cdk/platform';
 import {ViewportRuler} from '@angular/cdk/scrolling';
-import {Overlay, OverlayContainer, OverlayModule, OverlayRef, OverlayState} from '../index';
+import {Overlay, OverlayContainer, OverlayModule, OverlayRef, OverlayConfig} from '../index';
 
 
 describe('BlockScrollStrategy', () => {
@@ -23,9 +23,9 @@ describe('BlockScrollStrategy', () => {
   }));
 
   beforeEach(inject([Overlay, ViewportRuler], (overlay: Overlay, viewportRuler: ViewportRuler) => {
-    let overlayState = new OverlayState({scrollStrategy: overlay.scrollStrategies.block()});
+    let overlayConfig = new OverlayConfig({scrollStrategy: overlay.scrollStrategies.block()});
 
-    overlayRef = overlay.create(overlayState);
+    overlayRef = overlay.create(overlayConfig);
     componentPortal = new ComponentPortal(FocacciaMsg);
 
     viewport = viewportRuler;

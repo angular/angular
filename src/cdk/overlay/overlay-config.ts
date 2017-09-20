@@ -12,11 +12,8 @@ import {ScrollStrategy} from './scroll/scroll-strategy';
 import {NoopScrollStrategy} from './scroll/noop-scroll-strategy';
 
 
-/**
- * OverlayState is a bag of values for either the initial configuration or current state of an
- * overlay.
- */
-export class OverlayState {
+/** OverlayConfig captures the initial configuration used when opening an overlay. */
+export class OverlayConfig {
   /** Strategy with which to position the overlay. */
   positionStrategy?: PositionStrategy;
 
@@ -53,14 +50,9 @@ export class OverlayState {
   /** The direction of the text in the overlay panel. */
   direction?: Direction = 'ltr';
 
-  constructor(state?: OverlayState) {
+  constructor(state?: OverlayConfig) {
     if (state) {
       Object.keys(state).forEach(key => this[key] = state[key]);
     }
   }
-
-  // TODO(jelbourn): configuration still to add
-  // - focus trap
-  // - disable pointer events
-  // - z-index
 }

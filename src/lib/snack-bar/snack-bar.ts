@@ -7,7 +7,7 @@
  */
 
 import {ComponentRef, Injectable, Injector, Optional, SkipSelf } from '@angular/core';
-import {Overlay, OverlayRef, OverlayState} from '@angular/cdk/overlay';
+import {Overlay, OverlayRef, OverlayConfig} from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {PortalInjector} from '@angular/material/core';
@@ -153,7 +153,7 @@ export class MdSnackBar {
    * @param config The user-specified snack bar config.
    */
   private _createOverlay(config: MdSnackBarConfig): OverlayRef {
-    const state = new OverlayState();
+    const state = new OverlayConfig();
     state.direction = config.direction;
 
     let positionStrategy = this._overlay.position().global();

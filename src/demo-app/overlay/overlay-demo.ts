@@ -1,4 +1,4 @@
-import {Overlay, OverlayOrigin, OverlayState} from '@angular/cdk/overlay';
+import {Overlay, OverlayOrigin, OverlayConfig} from '@angular/cdk/overlay';
 import {
   ComponentPortal,
   // This import is only used to define a generic type. The current TypeScript version incorrectly
@@ -38,7 +38,7 @@ export class OverlayDemo {
   constructor(public overlay: Overlay, public viewContainerRef: ViewContainerRef) { }
 
   openRotiniPanel() {
-    let config = new OverlayState();
+    let config = new OverlayConfig();
 
     config.positionStrategy = this.overlay.position()
         .global()
@@ -52,7 +52,7 @@ export class OverlayDemo {
   }
 
   openFusilliPanel() {
-    let config = new OverlayState();
+    let config = new OverlayConfig();
 
     config.positionStrategy = this.overlay.position()
         .global()
@@ -73,7 +73,7 @@ export class OverlayDemo {
             {originX: 'start', originY: 'bottom'},
             {overlayX: 'start', overlayY: 'top'} );
 
-    let config = new OverlayState({positionStrategy: strategy});
+    let config = new OverlayConfig({positionStrategy: strategy});
     let overlayRef = this.overlay.create(config);
 
     overlayRef.attach(new ComponentPortal(SpagettiPanel, this.viewContainerRef));
@@ -86,14 +86,14 @@ export class OverlayDemo {
             {originX: 'start', originY: 'bottom'},
             {overlayX: 'end', overlayY: 'top'} );
 
-    let config = new OverlayState({positionStrategy: strategy});
+    let config = new OverlayConfig({positionStrategy: strategy});
     let overlayRef = this.overlay.create(config);
 
     overlayRef.attach(this.tortelliniTemplate);
   }
 
   openPanelWithBackdrop() {
-    let config = new OverlayState({
+    let config = new OverlayConfig({
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
       positionStrategy: this.overlay.position().global().centerHorizontally()

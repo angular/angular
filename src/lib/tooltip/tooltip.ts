@@ -16,7 +16,7 @@ import {
   Overlay,
   OverlayConnectionPosition,
   OverlayRef,
-  OverlayState,
+  OverlayConfig,
   RepositionScrollStrategy,
   ScrollStrategy,
 } from '@angular/cdk/overlay';
@@ -309,7 +309,7 @@ export class MdTooltip implements OnDestroy {
       }
     });
 
-    const config = new OverlayState({
+    const config = new OverlayConfig({
       direction: this._dir ? this._dir.value : 'ltr',
       positionStrategy: strategy,
       panelClass: TOOLTIP_PANEL_CLASS,

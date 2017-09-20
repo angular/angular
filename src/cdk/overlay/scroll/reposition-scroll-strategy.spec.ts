@@ -7,7 +7,7 @@ import {
   OverlayContainer,
   OverlayModule,
   OverlayRef,
-  OverlayState,
+  OverlayConfig,
   ScrollDispatcher,
 } from '../index';
 
@@ -33,8 +33,8 @@ describe('RepositionScrollStrategy', () => {
   }));
 
   beforeEach(inject([Overlay], (overlay: Overlay) => {
-    let overlayState = new OverlayState({scrollStrategy: overlay.scrollStrategies.reposition()});
-    overlayRef = overlay.create(overlayState);
+    let overlayConfig = new OverlayConfig({scrollStrategy: overlay.scrollStrategies.reposition()});
+    overlayRef = overlay.create(overlayConfig);
     componentPortal = new ComponentPortal(PastaMsg);
   }));
 
