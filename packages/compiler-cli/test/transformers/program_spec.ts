@@ -208,4 +208,28 @@ describe('ng program', () => {
       done();
     });
   });
+
+  it('should work with noResolve', () => {
+    // create a temporary ts program to get the list of all files from angular...
+    testSupport.writeFiles({
+      'src/main.ts': createModuleAndCompSource('main'),
+    });
+    const preOptions = testSupport.createCompilerOptions();
+    const preHost = ts.createCompilerHost(preOptions);
+    // don't resolve symlinks
+    preHost.realpath = (f) => f;
+    const preProgram =
+        ts.createProgram([path.resolve(testSupport.basePath, 'src/main.ts')], preOptions, preHost);
+    const allRootNames = preProgram.getSourceFiles().map(sf => sf.fileName);
+
+    // now do the actual test with noResolve
+    const options = testSupport.createCompilerOptions({noResolve: true});
+    const host = ng.createCompilerHost({options});
+    const program = ng.createProgram({rootNames: allRootNames, options, host});
+    expectNoDiagnosticsInProgram(options, program);
+    program.emit();
+
+    testSupport.shouldExist('built/src/main.ngfactory.js');
+    testSupport.shouldExist('built/src/main.ngfactory.d.ts');
+  });
 });
