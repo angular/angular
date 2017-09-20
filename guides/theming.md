@@ -169,7 +169,7 @@ Since certain components (e.g. menu, select, dialog, etc.) are inside of a globa
 an additional step is required for those components to be affected by the theme's css class selector
 (`.unicorn-dark-theme` in the example above).
 
-To do this, you can specify a `themeClass` on the global overlay container. For the example above,
+To do this, you can add the appropriate class to the global overlay container. For the example above,
 this would look like:
 ```ts
 import {OverlayContainer} from '@angular/material';
@@ -179,13 +179,10 @@ import {OverlayContainer} from '@angular/material';
 })
 export class UnicornCandyAppModule {
   constructor(overlayContainer: OverlayContainer) {
-    overlayContainer.themeClass = 'unicorn-dark-theme';
+    overlayContainer.getContainerElement().classList.add('unicorn-dark-theme');
   }
 }
 ```
-
-The `themeClass` of the `OverlayContainer` can be changed at any time to change the active theme
-class.
 
 #### Theming only certain components
 The `angular-material-theme` mixin will output styles for [all components in the library](https://github.com/angular/material2/blob/master/src/lib/core/theming/_all-theme.scss).

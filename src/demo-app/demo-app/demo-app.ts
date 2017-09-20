@@ -109,10 +109,10 @@ export class DemoApp {
 
     if (this.dark) {
       this._renderer.addClass(this._element.nativeElement, darkThemeClass);
-      this._overlayContainer.themeClass = darkThemeClass;
+      this._overlayContainer.getContainerElement().classList.add(darkThemeClass);
     } else {
       this._renderer.removeClass(this._element.nativeElement, darkThemeClass);
-      this._overlayContainer.themeClass = '';
+      this._overlayContainer.getContainerElement().classList.remove(darkThemeClass);
     }
   }
 }

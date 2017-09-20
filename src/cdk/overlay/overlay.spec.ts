@@ -469,44 +469,6 @@ describe('Overlay', () => {
   });
 });
 
-describe('OverlayContainer theming', () => {
-  let overlayContainer: OverlayContainer;
-  let overlayContainerElement: HTMLElement;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({ imports: [OverlayContainerThemingTestModule] });
-    TestBed.compileComponents();
-  }));
-
-  beforeEach(inject([OverlayContainer], (o: OverlayContainer) => {
-    overlayContainer = o;
-    overlayContainerElement = overlayContainer.getContainerElement();
-  }));
-
-  afterEach(() => {
-    overlayContainerElement.parentNode!.removeChild(overlayContainerElement);
-  });
-
-  it('should be able to set a theme on the overlay container', () => {
-    overlayContainer.themeClass = 'my-theme';
-    expect(overlayContainerElement.classList).toContain('my-theme');
-  });
-
-  it('should clear any previously-set themes when a new theme is set', () => {
-    overlayContainer.themeClass = 'initial-theme';
-    expect(overlayContainerElement.classList).toContain('initial-theme');
-
-    overlayContainer.themeClass = 'new-theme';
-    expect(overlayContainerElement.classList).not.toContain('initial-theme');
-    expect(overlayContainerElement.classList).toContain('new-theme');
-  });
-
-  it('should not throw when switching from a blank theme', () => {
-    overlayContainer.themeClass = '';
-    expect(() => overlayContainer.themeClass = 'new-theme').not.toThrow();
-  });
-});
-
 /** Simple component for testing ComponentPortal. */
 @Component({
   selector: 'pizza',
@@ -533,12 +495,6 @@ const TEST_COMPONENTS = [PizzaMsg, TestComponentWithTemplatePortals];
   entryComponents: TEST_COMPONENTS,
 })
 class OverlayTestModule { }
-
-/** Component for testing the overlay container theming. */
-@NgModule({
-  imports: [OverlayModule, PortalModule],
-})
-class OverlayContainerThemingTestModule { }
 
 class FakePositionStrategy implements PositionStrategy {
   element: HTMLElement;

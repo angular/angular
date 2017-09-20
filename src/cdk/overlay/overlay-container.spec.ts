@@ -26,6 +26,10 @@ describe('OverlayContainer', () => {
     overlayContainer = oc;
   }));
 
+  afterEach(() => {
+    overlayContainer.ngOnDestroy();
+  });
+
   it('should remove the overlay container element from the DOM on destruction', () => {
     const fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
 
@@ -42,6 +46,19 @@ describe('OverlayContainer', () => {
 
     expect(document.querySelector('.cdk-overlay-container'))
         .toBeNull('Expected the overlay container *not* to be in the DOM after destruction');
+  });
+
+  it('should add and remove css classes from the container element', () => {
+    overlayContainer.getContainerElement().classList.add('commander-shepard');
+
+    const containerElement = document.querySelector('.cdk-overlay-container')!;
+    expect(containerElement.classList.contains('commander-shepard'))
+        .toBe(true, 'Expected the overlay container to have class "commander-shepard"');
+
+    overlayContainer.getContainerElement().classList.remove('commander-shepard');
+
+    expect(containerElement.classList.contains('commander-shepard'))
+        .toBe(false, 'Expected the overlay container not to have class "commander-shepard"');
   });
 });
 
