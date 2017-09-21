@@ -121,6 +121,7 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
     'lib/slider/index.ts',
     'lib/snack-bar/index.ts',
     'lib/sort/index.ts',
+    'lib/stepper/index.ts',
     'lib/table/index.ts',
     'lib/tabs/index.ts',
     'lib/toolbar/index.ts',
