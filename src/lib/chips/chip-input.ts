@@ -8,7 +8,7 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ENTER} from '@angular/cdk/keycodes';
-import {Directive, ElementRef, EventEmitter, Input, Output,} from '@angular/core';
+import {Directive, ElementRef, EventEmitter, Input, Output} from '@angular/core';
 import {MdChipList} from './chip-list';
 
 

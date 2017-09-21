@@ -110,14 +110,17 @@ export class MdChip extends _MdChipMixinBase implements FocusableOption, OnDestr
       ? this._value
       : this._elementRef.nativeElement.textContent;
   }
-  set value(newValue: any) { this._value = newValue;}
+  set value(newValue: any) {
+    this._value = newValue;
+  }
 
   /**
    * Whether or not the chips are selectable. When a chip is not selectable,
    * changes to it's selected state are always ignored.
    */
   @Input() get selectable(): boolean {
-    return this._selectable;}
+    return this._selectable;
+  }
 
 
   set selectable(value: boolean) {
@@ -128,7 +131,8 @@ export class MdChip extends _MdChipMixinBase implements FocusableOption, OnDestr
    * Determines whether or not the chip displays the remove styling and emits (remove) events.
    */
   @Input() get removable(): boolean {
-    return this._removable;}
+    return this._removable;
+  }
 
 
   set removable(value: boolean) {
