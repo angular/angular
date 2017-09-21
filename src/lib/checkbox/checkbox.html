@@ -15,10 +15,10 @@
            [attr.aria-labelledby]="ariaLabelledby"
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
-    <div md-ripple class="mat-checkbox-ripple"
-         [mdRippleTrigger]="label"
-         [mdRippleDisabled]="_isRippleDisabled()"
-         [mdRippleCentered]="true"></div>
+    <div mat-ripple class="mat-checkbox-ripple"
+         [matRippleTrigger]="label"
+         [matRippleDisabled]="_isRippleDisabled()"
+         [matRippleCentered]="true"></div>
     <div class="mat-checkbox-frame"></div>
     <div class="mat-checkbox-background">
       <svg version="1.1"

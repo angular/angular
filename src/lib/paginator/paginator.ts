@@ -52,9 +52,7 @@ export class PageEvent {
   host: {
     'class': 'mat-paginator',
   },
-  providers: [
-    {provide: MATERIAL_COMPATIBILITY_MODE, useValue: false}
-  ],
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,

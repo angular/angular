@@ -23,7 +23,7 @@ import {MdStepLabel} from './step-label';
   },
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
-  providers: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: false}],
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
 export class MdStepHeader {
   /** Icon for the given step. */

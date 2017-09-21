@@ -27,7 +27,10 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
+import {
+  CanDisableRipple, MATERIAL_COMPATIBILITY_MODE,
+  mixinDisableRipple
+} from '@angular/material/core';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
@@ -74,7 +77,8 @@ export const _MdTabHeaderMixinBase = mixinDisableRipple(MdTabHeaderBase);
     'class': 'mat-tab-header',
     '[class.mat-tab-header-pagination-controls-enabled]': '_showPaginationControls',
     '[class.mat-tab-header-rtl]': "_getLayoutDirection() == 'rtl'",
-  }
+  },
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
 export class MdTabHeader extends _MdTabHeaderMixinBase
     implements AfterContentChecked, AfterContentInit, OnDestroy, CanDisableRipple {

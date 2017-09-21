@@ -13,7 +13,6 @@ import {
   Input,
   Output,
   ViewEncapsulation,
-  Inject,
   Optional,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -59,6 +58,7 @@ export class MdOptionSelectionChange {
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
 export class MdOption {
   private _selected: boolean = false;
@@ -107,8 +107,7 @@ export class MdOption {
   constructor(
     private _element: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() public readonly group: MdOptgroup,
-    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) public _isCompatibilityMode: boolean) {}
+    @Optional() public readonly group: MdOptgroup) {}
 
   /**
    * Whether or not the option is currently active and ready to be selected.

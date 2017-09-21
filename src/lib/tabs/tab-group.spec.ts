@@ -372,7 +372,7 @@ describe('MdTabGroup', () => {
     expect(tabLabelElement.classList.contains('mat-tab-label-active')).toBe(true);
 
     let tabContentElement = fixture.debugElement
-        .query(By.css(`md-tab-body:nth-of-type(${expectedIndex + 1})`)).nativeElement;
+        .query(By.css(`mat-tab-body:nth-of-type(${expectedIndex + 1})`)).nativeElement;
     expect(tabContentElement.classList.contains('mat-tab-body-active')).toBe(true);
   }
 

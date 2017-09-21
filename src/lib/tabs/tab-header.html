@@ -1,6 +1,6 @@
 <div class="mat-tab-header-pagination mat-tab-header-pagination-before mat-elevation-z4"
      aria-hidden="true"
-     md-ripple [mdRippleDisabled]="_disableScrollBefore || disableRipple"
+     mat-ripple [matRippleDisabled]="_disableScrollBefore || disableRipple"
      [class.mat-tab-header-pagination-disabled]="_disableScrollBefore"
      (click)="_scrollHeader('before')">
   <div class="mat-tab-header-pagination-chevron"></div>
@@ -12,13 +12,13 @@
     <div class="mat-tab-labels">
       <ng-content></ng-content>
     </div>
-    <md-ink-bar></md-ink-bar>
+    <mat-ink-bar></mat-ink-bar>
   </div>
 </div>
 
 <div class="mat-tab-header-pagination mat-tab-header-pagination-after mat-elevation-z4"
      aria-hidden="true"
-     md-ripple [mdRippleDisabled]="_disableScrollAfter || disableRipple"
+     mat-ripple [matRippleDisabled]="_disableScrollAfter || disableRipple"
      [class.mat-tab-header-pagination-disabled]="_disableScrollAfter"
      (click)="_scrollHeader('after')">
   <div class="mat-tab-header-pagination-chevron"></div>

@@ -26,7 +26,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanColor,
   CanDisable,
-  CanDisableRipple,
+  CanDisableRipple, MATERIAL_COMPATIBILITY_MODE,
   MdRipple,
   mixinColor,
   mixinDisabled,
@@ -104,6 +104,7 @@ export const _MdCheckboxMixinBase =
     '[class.mat-checkbox-label-before]': 'labelPosition == "before"',
   },
   providers: [MD_CHECKBOX_CONTROL_VALUE_ACCESSOR],
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
   inputs: ['disabled', 'disableRipple', 'color'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,

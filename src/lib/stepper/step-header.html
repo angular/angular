@@ -2,8 +2,8 @@
      [class.mat-step-icon-not-touched]="icon == 'number' && !selected"
      [ngSwitch]="icon">
   <span *ngSwitchCase="'number'">{{index + 1}}</span>
-  <md-icon *ngSwitchCase="'edit'">create</md-icon>
-  <md-icon *ngSwitchCase="'done'">done</md-icon>
+  <mat-icon *ngSwitchCase="'edit'">create</mat-icon>
+  <mat-icon *ngSwitchCase="'done'">done</mat-icon>
 </div>
 <div class="mat-step-label"
      [class.mat-step-label-active]="active">

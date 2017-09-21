@@ -31,7 +31,7 @@ import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 import {
   RippleRef,
   UniqueSelectionDispatcher,
-  MdRipple,
+  MdRipple, MATERIAL_COMPATIBILITY_MODE,
 } from '@angular/material/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {mixinDisabled, CanDisable} from '@angular/material/core';
@@ -338,6 +338,7 @@ export const _MdRadioButtonMixinBase = mixinColor(mixinDisableRipple(MdRadioButt
     '(focus)': '_inputElement.nativeElement.focus()',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
 export class MdRadioButton extends _MdRadioButtonMixinBase
     implements OnInit, AfterViewInit, OnDestroy, CanColor, CanDisableRipple {

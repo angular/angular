@@ -26,15 +26,20 @@ import {Platform} from '@angular/cdk/platform';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   applyCssTransform,
+  CanColor,
+  CanDisable,
+  CanDisableRipple,
   HammerInput,
+  HasTabIndex,
+  MATERIAL_COMPATIBILITY_MODE,
   MdRipple,
+  mixinColor,
+  mixinDisabled,
+  mixinDisableRipple,
+  mixinTabIndex,
   RippleRef,
 } from '@angular/material/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {mixinDisabled, CanDisable} from '@angular/material/core';
-import {CanColor, mixinColor} from '@angular/material/core';
-import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
-import {HasTabIndex, mixinTabIndex} from '@angular/material/core';
 import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 
 // Increasing integer for generating unique ids for slide-toggle components.
@@ -74,10 +79,11 @@ export const _MdSlideToggleMixinBase =
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
   providers: [MD_SLIDE_TOGGLE_VALUE_ACCESSOR],
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
   inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy, AfterContentInit,
     ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {

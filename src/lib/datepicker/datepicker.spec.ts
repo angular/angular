@@ -249,7 +249,7 @@ describe('MdDatepicker', () => {
 
         let ownedElement = document.getElementById(ownedElementId);
         expect(ownedElement).not.toBeNull();
-        expect((ownedElement as Element).tagName.toLowerCase()).toBe('md-calendar');
+        expect((ownedElement as Element).tagName.toLowerCase()).toBe('mat-calendar');
       });
 
       it('input should aria-owns calendar after opened in touch mode', () => {
@@ -267,7 +267,7 @@ describe('MdDatepicker', () => {
 
         let ownedElement = document.getElementById(ownedElementId);
         expect(ownedElement).not.toBeNull();
-        expect((ownedElement as Element).tagName.toLowerCase()).toBe('md-calendar');
+        expect((ownedElement as Element).tagName.toLowerCase()).toBe('mat-calendar');
       });
 
       it('should throw when given wrong data type', () => {

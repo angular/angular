@@ -22,6 +22,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
+import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material/core';
 
 
 @Component({
@@ -34,6 +35,7 @@ import {of as observableOf} from 'rxjs/observable/of';
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
 export class MdDatepickerToggle<D> implements OnChanges, OnDestroy {
   private _stateChanges = Subscription.EMPTY;

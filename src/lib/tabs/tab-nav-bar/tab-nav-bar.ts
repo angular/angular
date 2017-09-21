@@ -33,7 +33,7 @@ import {
 import {
   CanColor,
   CanDisable,
-  CanDisableRipple,
+  CanDisableRipple, MATERIAL_COMPATIBILITY_MODE,
   MD_RIPPLE_GLOBAL_OPTIONS,
   MdRipple,
   mixinColor,
@@ -70,6 +70,7 @@ export const _MdTabNavMixinBase = mixinDisableRipple(mixinColor(MdTabNavBase, 'p
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
 export class MdTabNav extends _MdTabNavMixinBase implements AfterContentInit, CanColor,
     CanDisableRipple, OnDestroy {

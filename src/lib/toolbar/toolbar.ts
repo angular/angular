@@ -14,7 +14,7 @@ import {
   ElementRef,
   Renderer2,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {CanColor, MATERIAL_COMPATIBILITY_MODE, mixinColor} from '@angular/material/core';
 
 
 @Directive({
@@ -44,6 +44,7 @@ export const _MdToolbarMixinBase = mixinColor(MdToolbarBase);
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
+  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
 export class MdToolbar extends _MdToolbarMixinBase implements CanColor {
 

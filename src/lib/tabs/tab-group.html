@@ -1,9 +1,9 @@
-<md-tab-header #tabHeader
+<mat-tab-header #tabHeader
                [selectedIndex]="selectedIndex"
                [disableRipple]="disableRipple"
                (indexFocused)="_focusChanged($event)"
                (selectFocusedIndex)="selectedIndex = $event">
-  <div class="mat-tab-label" role="tab" mdTabLabelWrapper md-ripple
+  <div class="mat-tab-label" role="tab" matTabLabelWrapper mat-ripple
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
        [tabIndex]="selectedIndex == i ? 0 : -1"
@@ -11,7 +11,7 @@
        [attr.aria-selected]="selectedIndex == i"
        [class.mat-tab-label-active]="selectedIndex == i"
        [disabled]="tab.disabled"
-       [mdRippleDisabled]="disableRipple"
+       [matRippleDisabled]="disableRipple"
        (click)="tabHeader.focusIndex = selectedIndex = i">
 
     <!-- If there is a label template, use it. -->
@@ -22,10 +22,10 @@
     <!-- If there is not a label template, fall back to the text label. -->
     <ng-template [ngIf]="!tab.templateLabel">{{tab.textLabel}}</ng-template>
   </div>
-</md-tab-header>
+</mat-tab-header>
 
 <div class="mat-tab-body-wrapper" #tabBodyWrapper>
-  <md-tab-body role="tabpanel"
+  <mat-tab-body role="tabpanel"
                *ngFor="let tab of _tabs; let i = index"
                [id]="_getTabContentId(i)"
                [attr.aria-labelledby]="_getTabLabelId(i)"
@@ -35,5 +35,5 @@
                [origin]="tab.origin"
                (onCentered)="_removeTabBodyWrapperHeight()"
                (onCentering)="_setTabBodyWrapperHeight($event)">
-  </md-tab-body>
+  </mat-tab-body>
 </div>

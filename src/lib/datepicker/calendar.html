@@ -1,17 +1,6 @@
 <div class="mat-calendar-header">
   <div class="mat-calendar-controls">
-    <!--
-      TODO(mmalerba): Clean up duplicated compatibility mode code when we have a better way to do
-      this.
-    -->
-
-    <!-- Check for compatibility mode and use correct prefix for md-button. -->
-    <button *ngIf="!_isCompatibilityMode" md-button class="mat-calendar-period-button"
-            (click)="_currentPeriodClicked()"  [attr.aria-label]="_periodButtonLabel">
-      {{_periodButtonText}}
-      <div class="mat-calendar-arrow" [class.mat-calendar-invert]="!_monthView"></div>
-    </button>
-    <button *ngIf="_isCompatibilityMode" mat-button class="mat-calendar-period-button"
+    <button mat-button class="mat-calendar-period-button"
             (click)="_currentPeriodClicked()"  [attr.aria-label]="_periodButtonLabel">
       {{_periodButtonText}}
       <div class="mat-calendar-arrow" [class.mat-calendar-invert]="!_monthView"></div>
@@ -19,22 +8,12 @@
 
     <div class="mat-calendar-spacer"></div>
 
-    <!-- Check for compatibility mode and use correct prefix for md-icon-button. -->
-    <button *ngIf="!_isCompatibilityMode" md-icon-button class="mat-calendar-previous-button"
-            [disabled]="!_previousEnabled()" (click)="_previousClicked()"
-            [attr.aria-label]="_prevButtonLabel">
-    </button>
-    <button *ngIf="_isCompatibilityMode" mat-icon-button class="mat-calendar-previous-button"
+    <button mat-icon-button class="mat-calendar-previous-button"
             [disabled]="!_previousEnabled()" (click)="_previousClicked()"
             [attr.aria-label]="_prevButtonLabel">
     </button>
 
-    <!-- Check for compatibility mode and use correct prefix for md-icon-button. -->
-    <button *ngIf="!_isCompatibilityMode" md-icon-button class="mat-calendar-next-button"
-            [disabled]="!_nextEnabled()" (click)="_nextClicked()"
-            [attr.aria-label]="_nextButtonLabel">
-    </button>
-    <button *ngIf="_isCompatibilityMode" mat-icon-button class="mat-calendar-next-button"
+    <button mat-icon-button class="mat-calendar-next-button"
             [disabled]="!_nextEnabled()" (click)="_nextClicked()"
             [attr.aria-label]="_nextButtonLabel">
     </button>
@@ -52,11 +31,11 @@
       (userSelection)="_userSelected()">
   </md-month-view>
 
-  <md-year-view
+  <mat-year-view
       *ngSwitchDefault
       [activeDate]="_activeDate"
       [selected]="selected"
       [dateFilter]="_dateFilterForViews"
       (selectedChange)="_monthSelected($event)">
-  </md-year-view>
+  </mat-year-view>
 </div>
