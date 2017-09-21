@@ -330,7 +330,7 @@ function _callAndReportToErrorHandler(
  *
  * @experimental
  */
-export const platform: PlatformRef = new PlatformRef_(Injector.NULL);
+export const platform: PlatformRef = new PlatformRef(Injector.NULL);
 
 /**
  * A reference to an Angular application running on a page.
