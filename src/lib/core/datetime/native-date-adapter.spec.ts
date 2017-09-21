@@ -336,8 +336,11 @@ describe('NativeDateAdapter', () => {
     expect(adapter.fromIso8601('1985-04-12T23:20:50.52Z')).not.toBeNull();
     expect(adapter.fromIso8601('1996-12-19T16:39:57-08:00')).not.toBeNull();
     expect(adapter.fromIso8601('1937-01-01T12:00:27.87+00:20')).not.toBeNull();
+    expect(adapter.fromIso8601('2017-01-01')).not.toBeNull();
+    expect(adapter.fromIso8601('2017-01-01T00:00:00')).not.toBeNull();
     expect(adapter.fromIso8601('1990-13-31T23:59:00Z')).toBeNull();
     expect(adapter.fromIso8601('1/1/2017')).toBeNull();
+    expect(adapter.fromIso8601('2017-01-01T')).toBeNull();
   });
 });
 
