@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentRef, Injectable, Injector, Optional, SkipSelf } from '@angular/core';
-import {Overlay, OverlayRef, OverlayConfig} from '@angular/cdk/overlay';
-import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
-import {PortalInjector} from '@angular/material/core';
+import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
+import {ComponentPortal, ComponentType, PortalInjector} from '@angular/cdk/portal';
+import {ComponentRef, Injectable, Injector, Optional, SkipSelf} from '@angular/core';
 import {extendObject} from '@angular/material/core';
-import {MD_SNACK_BAR_DATA, MdSnackBarConfig} from './snack-bar-config';
-import {MdSnackBarRef} from './snack-bar-ref';
-import {MdSnackBarContainer} from './snack-bar-container';
 import {SimpleSnackBar} from './simple-snack-bar';
+import {MD_SNACK_BAR_DATA, MdSnackBarConfig} from './snack-bar-config';
+import {MdSnackBarContainer} from './snack-bar-container';
+import {MdSnackBarRef} from './snack-bar-ref';
 
 
 /**

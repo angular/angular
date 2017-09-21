@@ -1,5 +1,6 @@
+import {Platform} from '@angular/cdk/platform';
 import {InteractivityChecker} from './interactivity-checker';
-import {Platform} from '../platform/platform';
+
 
 describe('InteractivityChecker', () => {
   let testContainerElement: HTMLElement;

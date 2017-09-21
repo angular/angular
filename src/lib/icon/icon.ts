@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {first} from '@angular/cdk/rxjs';
 import {
+  Attribute,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -16,11 +18,9 @@ import {
   Renderer2,
   SimpleChanges,
   ViewEncapsulation,
-  Attribute,
 } from '@angular/core';
-import {MdIconRegistry} from './icon-registry';
 import {CanColor, mixinColor} from '@angular/material/core';
-import {first} from '@angular/material/core';
+import {MdIconRegistry} from './icon-registry';
 
 
 // Boilerplate for applying mixins to MdIcon.

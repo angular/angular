@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TemplatePortal} from '@angular/material/core';
+import {TemplatePortal} from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -22,8 +22,9 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
-import {MdTabLabel} from './tab-label';
 import {Subject} from 'rxjs/Subject';
+import {MdTabLabel} from './tab-label';
+
 
 // Boilerplate for applying mixins to MdTab.
 /** @docs-private */

@@ -1,12 +1,11 @@
-import {Component, ViewChild, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {PortalModule, TemplatePortal} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
-import {PortalModule} from '@angular/cdk/portal';
-import {async, ComponentFixture, TestBed, flushMicrotasks, fakeAsync} from '@angular/core/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Direction, Directionality} from '@angular/material/core';
-import {TemplatePortal} from '@angular/material/core';
-import {MdTabBody} from './tab-body';
+import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {async, ComponentFixture, fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {MdRippleModule} from '@angular/material/core';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MdTabBody} from './tab-body';
 
 
 describe('MdTabBody', () => {

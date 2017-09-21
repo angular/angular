@@ -1,5 +1,7 @@
+import {Platform, PlatformModule} from '@angular/cdk/platform';
+import {createFakeEvent, dispatchFakeEvent, wrappedErrorMessage} from '@angular/cdk/testing';
+import {ChangeDetectionStrategy, Component, ViewChild} from '@angular/core';
 import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {Component, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -7,24 +9,24 @@ import {
   FormsModule,
   NgForm,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms';
+import {
+  MD_ERROR_GLOBAL_OPTIONS,
+  MD_PLACEHOLDER_GLOBAL_OPTIONS,
+  showOnDirtyErrorStateMatcher,
+} from '@angular/material/core';
+import {
+  getMdFormFieldDuplicatedHintError,
+  getMdFormFieldMissingControlError,
+  getMdFormFieldPlaceholderConflictError,
+  MdFormField,
+  MdFormFieldModule,
+} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MdInputModule} from './index';
 import {MdInput} from './input';
-import {Platform} from '@angular/material/core';
-import {PlatformModule} from '@angular/material/core';
-import {wrappedErrorMessage, dispatchFakeEvent, createFakeEvent} from '@angular/cdk/testing';
-import {
-  MdFormField,
-  MdFormFieldModule,
-  getMdFormFieldDuplicatedHintError,
-  getMdFormFieldMissingControlError,
-  getMdFormFieldPlaceholderConflictError,
-} from '@angular/material/form-field';
-import {MD_PLACEHOLDER_GLOBAL_OPTIONS} from '@angular/material/core';
-import {MD_ERROR_GLOBAL_OPTIONS, showOnDirtyErrorStateMatcher} from '@angular/material/core';
 
 describe('MdInput without forms', function () {
   beforeEach(async(() => {

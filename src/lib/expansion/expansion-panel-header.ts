@@ -6,31 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {animate, state, style, transition, trigger} from '@angular/animations';
+import {FocusMonitor} from '@angular/cdk/a11y';
+import {ENTER, SPACE} from '@angular/cdk/keycodes';
+import {filter} from '@angular/cdk/rxjs';
 import {
-  Component,
-  Directive,
-  Host,
-  ViewEncapsulation,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Component,
+  Directive,
+  ElementRef,
+  Host,
+  Input,
   OnDestroy,
   Renderer2,
-  ElementRef,
-  Input,
+  ViewEncapsulation,
 } from '@angular/core';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from '@angular/animations';
-import {SPACE, ENTER} from '@angular/material/core';
-import {MdExpansionPanel, EXPANSION_PANEL_ANIMATION_TIMING} from './expansion-panel';
-import {filter} from '@angular/material/core';
-import {FocusMonitor} from '@angular/cdk/a11y';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
+import {EXPANSION_PANEL_ANIMATION_TIMING, MdExpansionPanel} from './expansion-panel';
 
 
 /**

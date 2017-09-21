@@ -1,22 +1,13 @@
 import {FocusKeyManager} from '@angular/cdk/a11y';
+import {Directionality} from '@angular/cdk/bidi';
+import {BACKSPACE, DELETE, ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, TAB} from '@angular/cdk/keycodes';
 import {createKeyboardEvent, dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {
-  BACKSPACE,
-  DELETE,
-  Directionality,
-  ENTER,
-  LEFT_ARROW,
-  RIGHT_ARROW,
-  SPACE,
-  TAB,
-} from '@angular/material/core';
 import {MdFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-
 import {MdInputModule} from '../input/index';
 import {MdChip} from './chip';
 import {MdChipInputEvent} from './chip-input';

@@ -1,8 +1,8 @@
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {Platform} from '@angular/cdk/platform';
 import {Component, ViewChild} from '@angular/core';
-import {FocusTrapFactory, FocusTrapDirective, FocusTrap} from './focus-trap';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {FocusTrap, FocusTrapDirective, FocusTrapFactory} from './focus-trap';
 import {InteractivityChecker} from './interactivity-checker';
-import {Platform} from '../platform/platform';
 
 
 describe('FocusTrap', () => {

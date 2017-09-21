@@ -6,21 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {catchOperator, doOperator, finallyOperator, map, RxChain, share} from '@angular/cdk/rxjs';
 import {Injectable, Optional, SecurityContext, SkipSelf} from '@angular/core';
 import {Http} from '@angular/http';
-import {
-  catchOperator,
-  doOperator,
-  finallyOperator,
-  map,
-  RxChain,
-  share,
-} from '@angular/material/core';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 import {forkJoin} from 'rxjs/observable/forkJoin';
 import {of as observableOf} from 'rxjs/observable/of';
 import {_throw as observableThrow} from 'rxjs/observable/throw';
+
 
 /**
  * Returns an exception to be thrown in the case when attempting to

@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ENTER, SPACE} from '@angular/cdk/keycodes';
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
   Input,
-  Output,
-  ViewEncapsulation,
   Optional,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
+  Output,
   QueryList,
+  ViewEncapsulation,
 } from '@angular/core';
-import {ENTER, SPACE} from '../keyboard/keycodes';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MATERIAL_COMPATIBILITY_MODE} from '../compatibility/compatibility';
 import {MdOptgroup} from './optgroup';
 

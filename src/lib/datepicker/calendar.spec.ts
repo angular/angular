@@ -1,11 +1,3 @@
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {Component} from '@angular/core';
-import {MdCalendar} from './calendar';
-import {By} from '@angular/platform-browser';
-import {MdMonthView} from './month-view';
-import {MdYearView} from './year-view';
-import {MdCalendarBody} from './calendar-body';
-import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 import {
   DOWN_ARROW,
   END,
@@ -15,13 +7,33 @@ import {
   PAGE_DOWN,
   PAGE_UP,
   RIGHT_ARROW,
-  UP_ARROW
+  UP_ARROW,
+} from '@angular/cdk/keycodes';
+import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
+import {Component} from '@angular/core';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {
+  AUG,
+  DEC,
+  FEB,
+  JAN,
+  JUL,
+  JUN,
+  MAR,
+  MAY,
+  MdNativeDateModule,
+  NoConflictStyleCompatibilityMode,
+  NOV,
+  SEP,
 } from '@angular/material/core';
-import {MdDatepickerIntl} from './datepicker-intl';
-import {MdNativeDateModule} from '@angular/material/core';
-import {NoConflictStyleCompatibilityMode} from '@angular/material/core';
+import {By} from '@angular/platform-browser';
 import {MdButtonModule} from '../button/index';
-import {AUG, DEC, FEB, JAN, JUL, NOV, MAR, MAY, JUN, SEP} from '@angular/material/core';
+import {MdCalendar} from './calendar';
+import {MdCalendarBody} from './calendar-body';
+import {MdDatepickerIntl} from './datepicker-intl';
+import {MdMonthView} from './month-view';
+import {MdYearView} from './year-view';
+
 
 describe('MdCalendar', () => {
   beforeEach(async(() => {

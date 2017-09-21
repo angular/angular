@@ -1,10 +1,10 @@
-import {ComponentFixture, inject, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {Component, Renderer2} from '@angular/core';
-import {A11yModule} from './index';
-import {By} from '@angular/platform-browser';
 import {TAB} from '@angular/cdk/keycodes';
-import {FocusOrigin, FocusMonitor, TOUCH_BUFFER_MS} from './focus-monitor';
 import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
+import {Component, Renderer2} from '@angular/core';
+import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {FocusMonitor, FocusOrigin, TOUCH_BUFFER_MS} from './focus-monitor';
+import {A11yModule} from './index';
 
 
 describe('FocusMonitor', () => {

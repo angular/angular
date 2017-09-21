@@ -90,10 +90,10 @@ describe('Style compatibility', () => {
 
 
 @Component({ template: `<md-checkbox>Hungry</md-checkbox>` })
-class ComponentWithMdCheckbox { }
+export class ComponentWithMdCheckbox { }
 
 @Component({ template: `<mat-checkbox>Hungry</mat-checkbox>` })
-class ComponentWithMatCheckbox { }
+export class ComponentWithMatCheckbox { }
 
 
 @NgModule({

@@ -1,4 +1,9 @@
-import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
+import {OverlayContainer} from '@angular/cdk/overlay';
+import {map, RxChain, startWith} from '@angular/cdk/rxjs';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
+import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,28 +13,23 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MdOption} from '@angular/material/core';
+import {MdFormField, MdFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {Direction, Directionality} from '@angular/cdk/bidi';
-import {map, RxChain, startWith} from '@angular/cdk/rxjs';
-import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
+import {MdInputModule} from '../input/index';
 import {
   getMdAutocompleteMissingPanelError,
   MdAutocomplete,
   MdAutocompleteModule,
-  MdAutocompleteTrigger,
   MdAutocompleteSelectedEvent,
+  MdAutocompleteTrigger,
 } from './index';
-import {MdInputModule} from '../input/index';
-import {Subscription} from 'rxjs/Subscription';
-import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW} from '@angular/material/core';
-import {MdOption} from '@angular/material/core';
-import {MdFormField, MdFormFieldModule} from '@angular/material/form-field';
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
 
 
 describe('MdAutocomplete', () => {

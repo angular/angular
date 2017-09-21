@@ -9,6 +9,8 @@
 import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
+import {SPACE} from '@angular/cdk/keycodes';
+import {RxChain, startWith, switchMap} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -35,10 +37,6 @@ import {
   MdLineSetter,
   mixinDisabled,
   mixinDisableRipple,
-  RxChain,
-  SPACE,
-  startWith,
-  switchMap,
 } from '@angular/material/core';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';

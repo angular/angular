@@ -1,10 +1,11 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component, DebugElement}  from '@angular/core';
-import {By} from '@angular/platform-browser';
+import {Directionality} from '@angular/cdk/bidi';
+import {BACKSPACE, DELETE, SPACE} from '@angular/cdk/keycodes';
 import {createKeyboardEvent} from '@angular/cdk/testing';
-import {MdChipList, MdChip, MdChipEvent, MdChipsModule, MdChipSelectionChange} from './index';
-import {SPACE, DELETE, BACKSPACE} from '@angular/material/core';
-import {Directionality} from '@angular/material/core';
+import {Component, DebugElement} from '@angular/core';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {MdChip, MdChipEvent, MdChipList, MdChipSelectionChange, MdChipsModule} from './index';
+
 
 describe('Chips', () => {
   let fixture: ComponentFixture<any>;

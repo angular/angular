@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
+import {PlatformModule} from '@angular/cdk/platform';
 import {MdError} from './error';
 import {MdFormField} from './form-field';
 import {MdHint} from './hint';
 import {MdPlaceholder} from './placeholder';
 import {MdPrefix} from './prefix';
 import {MdSuffix} from './suffix';
-import {CommonModule} from '@angular/common';
-import {PlatformModule} from '@angular/material/core';
 
 
 @NgModule({

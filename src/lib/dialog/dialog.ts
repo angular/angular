@@ -14,7 +14,7 @@ import {
   OverlayConfig,
   ScrollStrategy,
 } from '@angular/cdk/overlay';
-import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
+import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
 import {startWith} from '@angular/cdk/rxjs';
 import {Location} from '@angular/common';
 import {
@@ -27,13 +27,14 @@ import {
   SkipSelf,
   TemplateRef,
 } from '@angular/core';
-import {extendObject, PortalInjector} from '@angular/material/core';
+import {extendObject} from '@angular/material/core';
 import {Observable} from 'rxjs/Observable';
 import {defer} from 'rxjs/observable/defer';
 import {Subject} from 'rxjs/Subject';
 import {MdDialogConfig} from './dialog-config';
 import {MdDialogContainer} from './dialog-container';
 import {MdDialogRef} from './dialog-ref';
+
 
 export const MD_DIALOG_DATA = new InjectionToken<any>('MdDialogData');
 

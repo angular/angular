@@ -1,7 +1,7 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
 @import '../core/style/layout-common';
-@import '../core/a11y/a11y';
+@import '../../cdk/a11y/a11y';
 
 // stylelint-disable max-line-length
 // Mixin that creates a new stacking context.

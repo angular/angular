@@ -1,19 +1,20 @@
-import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
+import {CollectionViewer, DataSource} from '@angular/cdk/collections';
+import {CdkTableModule} from '@angular/cdk/table';
+import {dispatchMouseEvent, wrappedErrorMessage} from '@angular/cdk/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdSort, MdSortHeader, Sort, SortDirection, MdSortModule, MdSortHeaderIntl} from './index';
-import {DataSource, CollectionViewer} from '@angular/cdk/collections';
-import {CdkTableModule} from '@angular/cdk/table';
 import {Observable} from 'rxjs/Observable';
+import {map} from 'rxjs/operator/map';
+import {MdTableModule} from '../table/index';
+import {MdSort, MdSortHeader, MdSortHeaderIntl, MdSortModule, Sort, SortDirection} from './index';
 import {
   getMdSortDuplicateMdSortableIdError,
   getMdSortHeaderMissingIdError,
-  getMdSortHeaderNotContainedWithinMdSortError
+  getMdSortHeaderNotContainedWithinMdSortError,
 } from './sort-errors';
-import {wrappedErrorMessage, dispatchMouseEvent} from '@angular/cdk/testing';
-import {map} from '@angular/material/core';
-import {MdTableModule} from '../table/index';
+
 
 describe('MdSort', () => {
   let fixture: ComponentFixture<SimpleMdSortApp>;

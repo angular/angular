@@ -1,7 +1,7 @@
 // TODO(jelbourn): Measure perf benefits for translate3d and will-change.
 // TODO(jelbourn): Figure out if anchor hover underline actually happens in any browser.
 @import 'button-base';
-@import '../core/a11y/a11y';
+@import '../../cdk/a11y/a11y';
 @import '../core/style/layout-common';
 
 .mat-button, .mat-icon-button {

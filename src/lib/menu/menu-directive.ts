@@ -6,11 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AnimationEvent} from '@angular/animations';
+import {FocusKeyManager} from '@angular/cdk/a11y';
+import {Direction} from '@angular/cdk/bidi';
+import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
+import {RxChain, startWith, switchMap} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
+  ChangeDetectionStrategy,
   Component,
   ContentChildren,
+  ElementRef,
   EventEmitter,
+  Inject,
+  InjectionToken,
   Input,
   OnDestroy,
   Output,
@@ -18,24 +27,16 @@ import {
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
-  ElementRef,
-  ChangeDetectionStrategy,
-  InjectionToken,
-  Inject,
 } from '@angular/core';
-import {AnimationEvent} from '@angular/animations';
-import {MenuPositionX, MenuPositionY} from './menu-positions';
+import {Observable} from 'rxjs/Observable';
+import {merge} from 'rxjs/observable/merge';
+import {Subscription} from 'rxjs/Subscription';
+import {fadeInItems, transformMenu} from './menu-animations';
 import {throwMdMenuInvalidPositionX, throwMdMenuInvalidPositionY} from './menu-errors';
 import {MdMenuItem} from './menu-item';
-import {FocusKeyManager} from '@angular/cdk/a11y';
 import {MdMenuPanel} from './menu-panel';
-import {Subscription} from 'rxjs/Subscription';
-import {transformMenu, fadeInItems} from './menu-animations';
-import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/material/core';
-import {merge} from 'rxjs/observable/merge';
-import {Observable} from 'rxjs/Observable';
-import {Direction} from '@angular/cdk/bidi';
-import {RxChain, startWith, switchMap} from '@angular/cdk/rxjs';
+import {MenuPositionX, MenuPositionY} from './menu-positions';
+
 
 /** Default `md-menu` options that can be overridden. */
 export interface MdMenuDefaultOptions {

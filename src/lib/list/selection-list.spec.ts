@@ -1,10 +1,10 @@
-import {async, TestBed, ComponentFixture, inject} from '@angular/core/testing';
-import {Component, DebugElement} from '@angular/core';
-import {By} from '@angular/platform-browser';
-import {MdSelectionList, MdListOption, MdListModule} from './index';
+import {DOWN_ARROW, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
+import {Platform} from '@angular/cdk/platform';
 import {createKeyboardEvent} from '@angular/cdk/testing';
-import {UP_ARROW, DOWN_ARROW, SPACE} from '@angular/material/core';
-import {Platform} from '@angular/material/core';
+import {Component, DebugElement} from '@angular/core';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {MdListModule, MdListOption, MdSelectionList} from './index';
 
 
 describe('MdSelectionList', () => {

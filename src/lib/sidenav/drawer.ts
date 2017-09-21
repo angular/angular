@@ -10,6 +10,7 @@ import {animate, AnimationEvent, state, style, transition, trigger} from '@angul
 import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ESCAPE} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -28,9 +29,11 @@ import {
   Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
-import {ESCAPE, first, startWith, takeUntil} from '@angular/material/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {merge} from 'rxjs/observable/merge';
+import {first} from 'rxjs/operator/first';
+import {startWith} from 'rxjs/operator/startWith';
+import {takeUntil} from 'rxjs/operator/takeUntil';
 import {Subscription} from 'rxjs/Subscription';
 
 

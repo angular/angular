@@ -1,11 +1,6 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {Component, DebugElement, ViewChild} from '@angular/core';
-import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import {MdSlider, MdSliderModule} from './index';
-import {TestGestureConfig} from './test-gesture-config';
-import {BidiModule} from '@angular/material/core';
+import {BidiModule} from '@angular/cdk/bidi';
 import {
+  BACKSPACE,
   DOWN_ARROW,
   END,
   HOME,
@@ -14,9 +9,15 @@ import {
   PAGE_UP,
   RIGHT_ARROW,
   UP_ARROW,
-  BACKSPACE
-} from '@angular/material/core';
+} from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
+import {Component, DebugElement, ViewChild} from '@angular/core';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {MdSlider, MdSliderModule} from './index';
+import {TestGestureConfig} from './test-gesture-config';
+
 
 describe('MdSlider without forms', () => {
   let gestureConfig: TestGestureConfig;

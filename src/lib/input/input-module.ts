@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {MdInput} from './input';
-import {MdTextareaAutosize} from './autosize';
+import {PlatformModule} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
-import {PlatformModule} from '@angular/material/core';
+import {NgModule} from '@angular/core';
 import {MdFormFieldModule} from '@angular/material/form-field';
+import {MdTextareaAutosize} from './autosize';
+import {MdInput} from './input';
 
 
 @NgModule({

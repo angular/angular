@@ -1,6 +1,6 @@
 @import '../core/style/elevation';
 @import '../core/style/vendor-prefixes';
-@import '../core/a11y/a11y';
+@import '../../cdk/a11y/a11y';
 
 
 $mat-dialog-padding: 24px !default;
