@@ -1,9 +1,11 @@
 <form>
-  <md-select placeholder="Favorite food" [(ngModel)]="selectedValue" name="food">
-    <md-option *ngFor="let food of foods" [value]="food.value">
-      {{food.viewValue}}
-    </md-option>
-  </md-select>
+  <md-form-field>
+    <md-select placeholder="Favorite food" [(ngModel)]="selectedValue" name="food">
+      <md-option *ngFor="let food of foods" [value]="food.value">
+        {{food.viewValue}}
+      </md-option>
+    </md-select>
+  </md-form-field>
 
   <p> Selected value: {{selectedValue}} </p>
 </form>

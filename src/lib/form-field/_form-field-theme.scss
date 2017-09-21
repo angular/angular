@@ -14,7 +14,7 @@
 
   // Placeholder colors. Required is used for the `*` star shown in the placeholder.
   $placeholder-color: mat-color($foreground, secondary-text);
-  $floating-placeholder-color: mat-color($primary);
+  $focused-placeholder-color: mat-color($primary);
   $required-placeholder-color: mat-color($accent);
 
   // Underline colors.
@@ -38,7 +38,7 @@
   }
 
   .mat-focused .mat-form-field-placeholder {
-    color: $floating-placeholder-color;
+    color: $focused-placeholder-color;
 
     &.mat-accent {
       color: $underline-color-accent;
@@ -49,11 +49,8 @@
     }
   }
 
-  .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-placeholder,
-  .mat-focused .mat-form-field-placeholder.mat-form-field-float {
-    .mat-form-field-required-marker {
-      color: $required-placeholder-color;
-    }
+  .mat-focused .mat-form-field-required-marker {
+    color: $required-placeholder-color;
   }
 
   .mat-form-field-underline {
@@ -84,7 +81,7 @@
       color: $underline-color-warn;
 
       &.mat-accent,
-      &.mat-form-field-float .mat-form-field-required-marker {
+      .mat-form-field-required-marker {
         color: $underline-color-warn;
       }
     }
@@ -109,8 +106,7 @@
              translateZ(0.001px);
   // The tricks above used to smooth out the animation on chrome and firefox actually make things
   // worse on IE, so we don't include them in the IE version.
-  -ms-transform: translateY(-$infix-margin-top - $infix-padding)
-  scale($font-scale);
+  -ms-transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale);
 
   width: 100% / $font-scale;
 }
@@ -184,10 +180,16 @@
     border-top: $infix-margin-top solid transparent;
   }
 
-  .mat-form-field-autofill-control {
-    &:-webkit-autofill + .mat-form-field-placeholder-wrapper .mat-form-field-float {
+  .mat-form-field-can-float {
+    &.mat-form-field-should-float .mat-form-field-placeholder {
       @include _mat-form-field-placeholder-floating(
           $subscript-font-scale, $infix-padding, $infix-margin-top);
+    }
+
+    .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-placeholder-wrapper
+        .mat-form-field-placeholder {
+      @include _mat-form-field-placeholder-floating(
+              $subscript-font-scale, $infix-padding, $infix-margin-top);
     }
   }
 
@@ -198,13 +200,6 @@
 
   .mat-form-field-placeholder {
     top: $infix-margin-top + $infix-padding;
-
-    // Show the placeholder above the control when it's not empty, or focused.
-    &.mat-form-field-float:not(.mat-form-field-empty),
-    .mat-focused &.mat-form-field-float {
-      @include _mat-form-field-placeholder-floating($subscript-font-scale,
-          $infix-padding, $infix-margin-top);
-    }
   }
 
   .mat-form-field-underline {

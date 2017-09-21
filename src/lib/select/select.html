@@ -1,26 +1,22 @@
-<div
-  cdk-overlay-origin
-  class="mat-select-trigger"
-  aria-hidden="true"
-  (click)="toggle()"
-  #origin="cdkOverlayOrigin"
-  #trigger>
-  <span
-    class="mat-select-placeholder"
-    [class.mat-floating-placeholder]="_hasValue()"
-    [@transformPlaceholder]="_getPlaceholderAnimationState()"
-    [style.opacity]="_getPlaceholderOpacity()"
-    [style.width.px]="_selectedValueWidth">{{ placeholder }}</span>
-
-  <span class="mat-select-value" *ngIf="_hasValue()">
-    <span class="mat-select-value-text" [ngSwitch]="!!customTrigger">
+<div cdk-overlay-origin
+     class="mat-select-trigger"
+     aria-hidden="true"
+     (click)="toggle()"
+     #origin="cdkOverlayOrigin"
+     #trigger>
+  <div class="mat-select-value">
+    <!--
+      TODO(mmalerba): &nbsp; is currently broken in components with preserveWhitespace: false, so we
+      evaluate it as a JS string binding instead. Change back to &nbsp; once it works again.
+    -->
+    <ng-container *ngIf="empty">{{'\xa0'}}</ng-container>
+    <span class="mat-select-value-text" *ngIf="!empty" [ngSwitch]="!!customTrigger">
       <span *ngSwitchDefault>{{ triggerValue }}</span>
       <ng-content select="md-select-trigger, mat-select-trigger" *ngSwitchCase="true"></ng-content>
     </span>
-  </span>
+  </div>
 
-  <span class="mat-select-arrow"></span>
-  <span class="mat-select-underline"></span>
+  <div class="mat-select-arrow-wrapper"><div class="mat-select-arrow"></div></div>
 </div>
 
 <ng-template
@@ -31,7 +27,7 @@
   [origin]="origin"
   [open]="panelOpen"
   [positions]="_positions"
-  [minWidth]="_triggerWidth"
+  [minWidth]="_triggerRect?.width"
   [offsetY]="_offsetY"
   (backdropClick)="close()"
   (attach)="_onAttached()"
@@ -44,7 +40,8 @@
     (@transformPanel.done)="_onPanelDone()"
     (keydown)="_handlePanelKeydown($event)"
     [style.transformOrigin]="_transformOrigin"
-    [class.mat-select-panel-done-animating]="_panelDoneAnimating">
+    [class.mat-select-panel-done-animating]="_panelDoneAnimating"
+    [style.font-size.px]="_triggerFontSize">
 
     <div class="mat-select-content" [@fadeInContent]="'showing'" (@fadeInContent.done)="_onFadeInDone()">
       <ng-content></ng-content>

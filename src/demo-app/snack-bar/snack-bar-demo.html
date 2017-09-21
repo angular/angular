@@ -5,17 +5,21 @@
   </div>
   <div>
     <div>Position in page: </div>
-    <md-select [(ngModel)]="horizontalPosition">
-      <md-option value="start">Start</md-option>
-      <md-option value="end">End</md-option>
-      <md-option value="left">Left</md-option>
-      <md-option value="right">Right</md-option>
-      <md-option value="center">Center</md-option>
-    </md-select>
-    <md-select [(ngModel)]="verticalPosition">
-      <md-option value="top">Top</md-option>
-      <md-option value="bottom">Bottom</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select [(ngModel)]="horizontalPosition">
+        <md-option value="start">Start</md-option>
+        <md-option value="end">End</md-option>
+        <md-option value="left">Left</md-option>
+        <md-option value="right">Right</md-option>
+        <md-option value="center">Center</md-option>
+      </md-select>
+    </md-form-field>
+    <md-form-field>
+      <md-select [(ngModel)]="verticalPosition">
+        <md-option value="top">Top</md-option>
+        <md-option value="bottom">Bottom</md-option>
+      </md-select>
+    </md-form-field>
   </div>
   <div>
     <md-checkbox [(ngModel)]="action">

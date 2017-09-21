@@ -4,23 +4,21 @@
 @import '../core/style/vendor-prefixes';
 @import '../../cdk/a11y/a11y';
 
-$mat-select-trigger-height: 30px !default;
-$mat-select-trigger-min-width: 112px !default;
 $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;
 $mat-select-panel-max-height: 256px !default;
-$mat-select-trigger-underline-height: 1px !default;
+$mat-select-item-height: 3em !default;
+
+$mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-arrow-margin);
 
 .mat-select {
   display: inline-block;
+  width: 100%;
   outline: none;
 }
 
 .mat-select-trigger {
-  display: flex;
-  align-items: center;
-  height: $mat-select-trigger-height;
-  min-width: $mat-select-trigger-min-width;
+  display: inline-table;
   cursor: pointer;
   position: relative;
   box-sizing: border-box;
@@ -31,84 +29,21 @@ $mat-select-trigger-underline-height: 1px !default;
   }
 }
 
-.mat-select-underline {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: $mat-select-trigger-underline-height;
-
-  .mat-select:focus & {
-    height: $mat-select-trigger-underline-height * 2;
-  }
-
-  .mat-select-disabled & {
-    background-color: transparent;
-    background-position: 0 bottom;
-  }
-}
-
-.mat-select-placeholder {
-  position: relative;
-  padding: 0 2px;
-  transform-origin: left top;
-  flex-grow: 1;
-
-  // These values are duplicated from animation code in order to
-  // allow placeholders to sometimes float without animating,
-  // for example when the value is set programmatically.
-  // TODO(kara): Change when animations API supports skipping animation.
-  &.mat-floating-placeholder {
-    top: -22px;
-    left: -2px;
-    text-align: left;
-    transform: scale(0.75);
-  }
-
-  [dir='rtl'] & {
-    transform-origin: right top;
-
-    &.mat-floating-placeholder {
-      left: 2px;
-      text-align: right;
-    }
-  }
-
-  // TODO: Double-check accessibility of this style
-  .mat-select-required &::after {
-    content: ' *';
-  }
-}
-
 .mat-select-value {
-  position: absolute;
-  max-width: calc(100% - #{($mat-select-arrow-size + $mat-select-arrow-margin) * 2});
-  flex-grow: 1;
-
-  // Firefox and some versions of IE incorrectly keep absolutely
-  // positioned children of flex containers in the flex flow when calculating
-  // position. This has been fixed for Firefox 52, slated for early 2017.
-  // Bug report: https://bugzilla.mozilla.org/show_bug.cgi?id=874718
-  //
-  // In the meantime, we must adjust the position to fit the top, left, and bottom edge of the
-  // containing trigger element. In doing so, we can use align-items: center to allow the text to
-  // correctly position itself in the middle of the container.
-  top: 0;
-  left: 0;
-  bottom: 0;
-
-  display: flex;
-  align-items: center;
-
-  [dir='rtl'] & {
-    left: auto;
-    right: 0;
-  }
+  display: table-cell;
+  max-width: 0;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mat-select-value-text {
   @include mat-truncate-line();
-  line-height: $mat-select-trigger-height;
+}
+
+.mat-select-arrow-wrapper {
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .mat-select-arrow {
@@ -129,5 +64,25 @@ $mat-select-trigger-underline-height: 1px !default;
 
   @include cdk-high-contrast {
     outline: solid 1px;
+  }
+}
+
+// Override optgroup and option to scale based on font-size of the trigger.
+.mat-select-panel {
+  .mat-optgroup-label,
+  .mat-option {
+    font-size: inherit;
+    line-height: $mat-select-item-height;
+    height: $mat-select-item-height;
+  }
+}
+
+.mat-form-field-type-mat-select {
+  .mat-form-field-flex {
+    cursor: pointer;
+  }
+
+  .mat-form-field-placeholder {
+    width: calc(100% - #{$mat-select-placeholder-arrow-space});
   }
 }

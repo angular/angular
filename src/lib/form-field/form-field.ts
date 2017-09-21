@@ -22,7 +22,7 @@ import {
   Inject,
   Input,
   Optional,
-  QueryList,
+  QueryList, Renderer2,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -72,7 +72,12 @@ let nextUniqueId = 0;
     'class': 'mat-input-container mat-form-field',
     '[class.mat-input-invalid]': '_control.errorState',
     '[class.mat-form-field-invalid]': '_control.errorState',
+    '[class.mat-form-field-can-float]': '_canPlaceholderFloat',
+    '[class.mat-form-field-should-float]': '_control.shouldPlaceholderFloat || _shouldAlwaysFloat',
     '[class.mat-focused]': '_control.focused',
+    '[class.mat-primary]': 'color == "primary"',
+    '[class.mat-accent]': 'color == "accent"',
+    '[class.mat-warn]': 'color == "warn"',
     '[class.ng-untouched]': '_shouldForward("untouched")',
     '[class.ng-touched]': '_shouldForward("touched")',
     '[class.ng-pristine]': '_shouldForward("pristine")',
@@ -80,7 +85,6 @@ let nextUniqueId = 0;
     '[class.ng-valid]': '_shouldForward("valid")',
     '[class.ng-invalid]': '_shouldForward("invalid")',
     '[class.ng-pending]': '_shouldForward("pending")',
-    '(click)': '_control.focus()',
   },
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
@@ -155,7 +159,9 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   @ContentChildren(MdSuffix) _suffixChildren: QueryList<MdSuffix>;
 
   constructor(
-      public _elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,
+      public _elementRef: ElementRef,
+      private _renderer: Renderer2,
+      private _changeDetectorRef: ChangeDetectorRef,
       @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
     this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
     this.floatPlaceholder = this._placeholderOptions.float || 'auto';
@@ -163,6 +169,10 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
 
   ngAfterContentInit() {
     this._validateControlChild();
+    if (this._control.controlType) {
+      this._renderer.addClass(
+          this._elementRef.nativeElement, `mat-form-field-type-${this._control.controlType}`);
+    }
 
     // Subscribe to changes in the child control state in order to update the form field UI.
     startWith.call(this._control.stateChanges, null).subscribe(() => {

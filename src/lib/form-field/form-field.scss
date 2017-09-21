@@ -59,23 +59,7 @@ $mat-form-field-underline-height: 1px !default;
   display: block;
   position: relative;
   flex: auto;
-}
-
-// Pseudo-class for Chrome and Safari auto-fill to move the placeholder to the floating position.
-// This is necessary because these browsers do not actually fire any events when a form auto-fill is
-// occurring. Once the autofill is committed, a change event happen and the regular md-form-field
-// classes take over to fulfill this behaviour. Assumes the autofill is non-empty.
-.mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-placeholder-wrapper {
-  // The control is still technically empty at this point, so we need to hide non-floating
-  // placeholders to prevent overlapping with the autofilled value.
-  .mat-form-field-placeholder {
-    display: none;
-  }
-
-  .mat-form-field-float {
-    display: block;
-    transition: none;
-  }
+  min-width: 0;
 }
 
 // Used to hide the placeholder overflow on IE, since IE doesn't take transform into account when
@@ -120,16 +104,32 @@ $mat-form-field-underline-height: 1px !default;
   // Hide the placeholder initially, and only show it when it's floating or the control is empty.
   display: none;
 
-  &.mat-form-field-empty,
-  &.mat-form-field-float:not(.mat-form-field-empty),
-  .mat-focused &.mat-form-field-float {
-    display: block;
-  }
-
   [dir='rtl'] & {
     transform-origin: 100% 0;
     left: auto;
     right: 0;
+  }
+}
+
+.mat-form-field-empty.mat-form-field-placeholder,
+.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-placeholder {
+  display: block;
+}
+
+// Pseudo-class for Chrome and Safari auto-fill to move the placeholder to the floating position.
+// This is necessary because these browsers do not actually fire any events when a form auto-fill is
+// occurring. Once the autofill is committed, a change event happen and the regular md-form-field
+// classes take over to fulfill this behaviour.
+.mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-placeholder-wrapper
+    .mat-form-field-placeholder {
+  // The form field will be considered empty if it is autofilled, and therefore the placeholder will
+  // be shown. Therefore we need to override it to hidden...
+  display: none;
+
+  // ...and re-show it only if it's able to float.
+  .mat-form-field-can-float & {
+    display: block;
+    transition: none;
   }
 }
 

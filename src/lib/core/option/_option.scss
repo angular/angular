@@ -29,6 +29,14 @@
     }
   }
 
+  // Collapses unwanted whitespace created by newlines in code like the following:
+  // <md-option>
+  //   {{value}}
+  // </md-option>
+  .mat-option-text {
+    display: inline-block;
+  }
+
   .mat-option-ripple {
     @include mat-fill;
 

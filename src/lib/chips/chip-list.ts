@@ -81,6 +81,7 @@ export class MdChipListChange {
 })
 export class MdChipList implements MdFormFieldControl<any>, ControlValueAccessor,
     AfterContentInit, OnInit, OnDestroy {
+  readonly controlType = 'mat-chip-list';
 
   /**
    * Stream that emits whenever the state of the input changes such that the wrapping `MdFormField`
@@ -238,6 +239,10 @@ export class MdChipList implements MdFormFieldControl<any>, ControlValueAccessor
     return (!this._chipInput || this._chipInput.empty) && this.chips.length === 0;
   }
 
+  get shouldPlaceholderFloat(): boolean {
+    return this.empty;
+  }
+
   /** Whether this chip-list is disabled. */
   @Input()
   get disabled() { return this.ngControl ? this.ngControl.disabled : this._disabled; }
@@ -385,6 +390,10 @@ export class MdChipList implements MdFormFieldControl<any>, ControlValueAccessor
     this.disabled = disabled;
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', disabled);
     this.stateChanges.next();
+  }
+
+  onContainerClick() {
+    this.focus();
   }
 
   /**

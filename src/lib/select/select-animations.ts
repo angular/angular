@@ -23,25 +23,6 @@ import {
  */
 
 /**
- * This animation shrinks the placeholder text to 75% of its normal size and translates
- * it to either the top left corner (ltr) or top right corner (rtl) of the trigger,
- * depending on the text direction of the application.
- */
-export const transformPlaceholder: AnimationTriggerMetadata = trigger('transformPlaceholder', [
-  state('floating-ltr', style({
-    top: '-22px',
-    left: '-2px',
-    transform: 'scale(0.75)'
-  })),
-  state('floating-rtl', style({
-    top: '-22px',
-    left: '2px',
-    transform: 'scale(0.75)'
-  })),
-  transition('* => *', animate('400ms cubic-bezier(0.25, 0.8, 0.25, 1)'))
-]);
-
-/**
  * This animation transforms the select's overlay panel on and off the page.
  *
  * When the panel is attached to the DOM, it expands its width by the amount of padding, scales it

@@ -3,7 +3,8 @@
       [state]="selected ? 'checked' : ''" [disabled]="disabled"></mat-pseudo-checkbox>
 </span>
 
-<ng-content></ng-content>
+<span class="mat-option-text"><ng-content></ng-content></span>
+
 <div class="mat-option-ripple" mat-ripple
      [matRippleTrigger]="_getHostElement()"
      [matRippleDisabled]="disabled || disableRipple">

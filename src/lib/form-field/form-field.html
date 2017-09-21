@@ -1,5 +1,6 @@
 <div class="mat-input-wrapper mat-form-field-wrapper">
-  <div class="mat-input-flex mat-form-field-flex" #connectionContainer>
+  <div class="mat-input-flex mat-form-field-flex" #connectionContainer
+       (click)="_control.onContainerClick && _control.onContainerClick($event)">
     <div class="mat-input-prefix mat-form-field-prefix" *ngIf="_prefixChildren.length">
       <ng-content select="[mdPrefix], [matPrefix]"></ng-content>
     </div>
@@ -15,8 +16,6 @@
                [attr.aria-owns]="_control.id"
                [class.mat-empty]="_control.empty && !_shouldAlwaysFloat"
                [class.mat-form-field-empty]="_control.empty && !_shouldAlwaysFloat"
-               [class.mat-float]="_canPlaceholderFloat"
-               [class.mat-form-field-float]="_canPlaceholderFloat"
                [class.mat-accent]="color == 'accent'"
                [class.mat-warn]="color == 'warn'"
                #placeholder

@@ -6,13 +6,18 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <md-card>
     <md-card-subtitle>ngModel</md-card-subtitle>
 
-    <md-select placeholder="Drink" [color]="drinksTheme" [(ngModel)]="currentDrink" [required]="drinksRequired"
-      [disabled]="drinksDisabled" [floatPlaceholder]="floatPlaceholder" #drinkControl="ngModel">
-      <md-option>None</md-option>
-      <md-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
-        {{ drink.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field [floatPlaceholder]="floatPlaceholder" [color]="drinksTheme">
+      <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="drinksRequired"
+        [disabled]="drinksDisabled" #drinkControl="ngModel">
+        <md-option>None</md-option>
+        <md-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
+          {{ drink.viewValue }}
+        </md-option>
+      </md-select>
+      <md-icon mdPrefix class="demo-drink-icon">local_drink</md-icon>
+      <md-hint>Pick a drink!</md-hint>
+      <md-error>You must make a selection</md-error>
+    </md-form-field>
     <p> Value: {{ currentDrink }} </p>
     <p> Touched: {{ drinkControl.touched }} </p>
     <p> Dirty: {{ drinkControl.dirty }} </p>
@@ -28,7 +33,9 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <p>
       <label for="drinks-theme">Theme:</label>
       <select [(ngModel)]="drinksTheme" id="drinks-theme">
-        <option *ngFor="let theme of availableThemes" [value]="theme.value">{{ theme.name }}</option>
+        <option *ngFor="let theme of availableThemes" [value]="theme.value">
+          {{theme.name}}
+        </option>
       </select>
     </p>
 
@@ -42,12 +49,14 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <md-card-subtitle>Multiple selection</md-card-subtitle>
 
     <md-card-content>
-      <md-select multiple [color]="pokemonTheme" placeholder="Pokemon" [(ngModel)]="currentPokemon"
-        [required]="pokemonRequired" [disabled]="pokemonDisabled" #pokemonControl="ngModel">
-        <md-option *ngFor="let creature of pokemon" [value]="creature.value">
-          {{ creature.viewValue }}
-        </md-option>
-      </md-select>
+      <md-form-field [color]="pokemonTheme">
+        <md-select multiple placeholder="Pokemon" [(ngModel)]="currentPokemon"
+          [required]="pokemonRequired" [disabled]="pokemonDisabled" #pokemonControl="ngModel">
+          <md-option *ngFor="let creature of pokemon" [value]="creature.value">
+            {{ creature.viewValue }}
+          </md-option>
+        </md-select>
+      </md-form-field>
       <p> Value: {{ currentPokemon }} </p>
       <p> Touched: {{ pokemonControl.touched }} </p>
       <p> Dirty: {{ pokemonControl.dirty }} </p>
@@ -68,12 +77,14 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <md-card>
     <md-card-subtitle>Without Angular forms</md-card-subtitle>
 
-    <md-select placeholder="Digimon" [(value)]="currentDigimon">
-      <md-option>None</md-option>
-      <md-option *ngFor="let creature of digimon" [value]="creature.value">
-        {{ creature.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Digimon" [(value)]="currentDigimon">
+        <md-option>None</md-option>
+        <md-option *ngFor="let creature of digimon" [value]="creature.value">
+          {{ creature.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
 
     <p>Value: {{ currentDigimon }}</p>
 
@@ -85,14 +96,16 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <md-card-subtitle>Option groups</md-card-subtitle>
 
     <md-card-content>
-      <md-select placeholder="Pokemon" [(ngModel)]="currentPokemonFromGroup">
-        <md-optgroup *ngFor="let group of pokemonGroups" [label]="group.name"
-          [disabled]="group.disabled">
-          <md-option *ngFor="let creature of group.pokemon" [value]="creature.value">
-            {{ creature.viewValue }}
-          </md-option>
-        </md-optgroup>
-      </md-select>
+      <md-form-field>
+        <md-select placeholder="Pokemon" [(ngModel)]="currentPokemonFromGroup">
+          <md-optgroup *ngFor="let group of pokemonGroups" [label]="group.name"
+            [disabled]="group.disabled">
+            <md-option *ngFor="let creature of group.pokemon" [value]="creature.value">
+              {{ creature.viewValue }}
+            </md-option>
+          </md-optgroup>
+        </md-select>
+      </md-form-field>
     </md-card-content>
   </md-card>
 
@@ -100,15 +113,17 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <md-card>
     <md-card-subtitle>compareWith</md-card-subtitle>
     <md-card-content>
-      <md-select placeholder="Drink" [color]="drinksTheme"
-                 [(ngModel)]="currentDrinkObject"
-                 [required]="drinkObjectRequired"
-                 [compareWith]="compareByValue ? compareDrinkObjectsByValue : compareByReference"
-                 #drinkObjectControl="ngModel">
-        <md-option *ngFor="let drink of drinks" [value]="drink" [disabled]="drink.disabled">
-          {{ drink.viewValue }}
-        </md-option>
-      </md-select>
+      <md-form-field [color]="drinksTheme">
+        <md-select placeholder="Drink"
+                   [(ngModel)]="currentDrinkObject"
+                   [required]="drinkObjectRequired"
+                   [compareWith]="compareByValue ? compareDrinkObjectsByValue : compareByReference"
+                   #drinkObjectControl="ngModel">
+          <md-option *ngFor="let drink of drinks" [value]="drink" [disabled]="drink.disabled">
+            {{ drink.viewValue }}
+          </md-option>
+        </md-select>
+      </md-form-field>
       <p> Value: {{ currentDrinkObject | json }} </p>
       <p> Touched: {{ drinkObjectControl.touched }} </p>
       <p> Dirty: {{ drinkObjectControl.dirty }} </p>
@@ -130,9 +145,11 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
       <md-card-subtitle>formControl</md-card-subtitle>
 
       <md-card-content>
-        <md-select placeholder="Food i would like to eat" [formControl]="foodControl">
-          <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }}</md-option>
-        </md-select>
+        <md-form-field>
+          <md-select placeholder="Food i would like to eat" [formControl]="foodControl">
+            <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }}</md-option>
+          </md-select>
+        </md-form-field>
         <p> Value: {{ foodControl.value }} </p>
         <p> Touched: {{ foodControl.touched }} </p>
         <p> Dirty: {{ foodControl.dirty }} </p>
@@ -149,9 +166,11 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
       <md-card-subtitle>Change event</md-card-subtitle>
 
       <md-card-content>
-        <md-select placeholder="Starter Pokemon" (change)="latestChangeEvent = $event">
-          <md-option *ngFor="let creature of pokemon" [value]="creature.value">{{ creature.viewValue }}</md-option>
-        </md-select>
+        <md-form-field>
+          <md-select placeholder="Starter Pokemon" (change)="latestChangeEvent = $event">
+            <md-option *ngFor="let creature of pokemon" [value]="creature.value">{{ creature.viewValue }}</md-option>
+          </md-select>
+        </md-form-field>
 
         <p> Change event value: {{ latestChangeEvent?.value }} </p>
       </md-card-content>

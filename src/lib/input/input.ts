@@ -55,7 +55,7 @@ let nextUniqueId = 0;
     'class': 'mat-input-element mat-form-field-autofill-control',
     // Native input properties that are overwritten by Angular inputs need to be synced with
     // the native input element. Otherwise property bindings for those don't work.
-    '[id]': 'id',
+    '[attr.id]': 'id',
     '[placeholder]': 'placeholder',
     '[disabled]': 'disabled',
     '[required]': 'required',
@@ -91,6 +91,9 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
    * needs to run change detection.
    */
   stateChanges = new Subject<void>();
+
+  /** A name for this control that can be used by `md-form-field`. */
+  controlType = 'mat-input';
 
   /** Whether the element is disabled. */
   @Input()
@@ -129,6 +132,7 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
   @Input() errorStateMatcher: ErrorStateMatcher;
 
   /** The input element's value. */
+  @Input()
   get value() { return this._elementRef.nativeElement.value; }
   set value(value: string) {
     if (value !== this.value) {
@@ -196,6 +200,8 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
       this._dirtyCheckNativeValue();
     }
   }
+
+  focus() { this._elementRef.nativeElement.focus(); }
 
   /** Callback for the cases where the focused state of the input changes. */
   _focusChanged(isFocused: boolean) {
@@ -279,8 +285,11 @@ export class MdInput implements MdFormFieldControl<any>, OnChanges, OnDestroy, D
   }
 
   // Implemented as part of MdFormFieldControl.
+  get shouldPlaceholderFloat(): boolean { return this.focused || !this.empty; }
+
+  // Implemented as part of MdFormFieldControl.
   setDescribedByIds(ids: string[]) { this._ariaDescribedby = ids.join(' '); }
 
   // Implemented as part of MdFormFieldControl.
-  focus() { this._elementRef.nativeElement.focus(); }
+  onContainerClick() { this.focus(); }
 }

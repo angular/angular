@@ -3,17 +3,6 @@
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
 
-@mixin _mat-select-inner-content-theme($palette) {
-  $color: mat-color($palette);
-
-  .mat-select-trigger, .mat-select-arrow {
-    color: $color;
-  }
-
-  .mat-select-underline {
-    background-color: $color;
-  }
-}
 
 @mixin mat-select-theme($theme) {
   $foreground: map-get($theme, foreground);
@@ -22,25 +11,9 @@
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
   $is-dark-theme: map-get($theme, is-dark);
-  $underline-color: mat-color($foreground, divider, if($is-dark-theme, 0.7, 0.42));
-
-  .mat-select-trigger,
-  .mat-select-arrow {
-    color: mat-color($foreground, secondary-text);
-  }
-
-  .mat-select-underline {
-    background-color: $underline-color;
-  }
-
-  [aria-disabled='true'] .mat-select-underline {
-    // Since this is a dotted line, we need to make it slightly darker to get it to stand out.
-    @include mat-control-disabled-underline($underline-color);
-  }
 
   .mat-select-disabled .mat-select-value,
-  .mat-select-arrow,
-  .mat-select-trigger {
+  .mat-select-arrow {
     color: mat-color($foreground, secondary-text);
   }
 
@@ -58,35 +31,44 @@
     }
   }
 
-  .mat-select:focus:not(.mat-select-disabled) {
-    &.mat-primary {
-      @include _mat-select-inner-content-theme($primary);
+  .mat-form-field {
+    &.mat-focused {
+      &.mat-primary .mat-select-arrow {
+        color: mat-color($primary);
+      }
+
+      &.mat-accent .mat-select-arrow {
+        color: mat-color($accent);
+      }
+
+      &.mat-warn .mat-select-arrow {
+        color: mat-color($warn);
+      }
     }
 
-    &.mat-accent {
-      @include _mat-select-inner-content-theme($accent);
-    }
-
-    &.mat-select-required .mat-select-placeholder::after {
+    .mat-select.mat-select-invalid .mat-select-arrow {
       color: mat-color($warn);
+    }
+
+    .mat-select.mat-select-disabled .mat-select-arrow {
+      color: mat-color($foreground, secondary-text);
     }
   }
 
-  .mat-select:focus:not(.mat-select-disabled).mat-warn, .mat-select-invalid {
-    @include _mat-select-inner-content-theme($warn);
+  .mat-select.mat-select-disabled .mat-select-arrow {
+    color: mat-color($warn);
   }
 }
 
 @mixin mat-select-typography($config) {
-  $trigger-font-size: mat-font-size($config, subheading-2);
+  // The unit-less line-height from the font config.
+  $line-height: mat-line-height($config, input);
 
   .mat-select {
-    // Reserve enough space for the floating placeholder.
-    padding-top: $trigger-font-size;
     font-family: mat-font-family($config);
   }
 
   .mat-select-trigger {
-    font-size: $trigger-font-size;
+    height: $line-height * 1em;
   }
 }

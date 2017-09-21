@@ -1,3 +1,9 @@
+import {Directionality} from '@angular/cdk/bidi';
+import {DOWN_ARROW, END, ENTER, HOME, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
+import {OverlayContainer} from '@angular/cdk/overlay';
+import {Platform} from '@angular/cdk/platform';
+import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
+import {dispatchFakeEvent, dispatchKeyboardEvent, wrappedErrorMessage} from '@angular/cdk/testing';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,6 +13,7 @@ import {
   ViewChild,
   ViewChildren,
 } from '@angular/core';
+import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {
   ControlValueAccessor,
   FormControl,
@@ -17,16 +24,17 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import {
+  extendObject,
+  FloatPlaceholderType,
+  MD_PLACEHOLDER_GLOBAL_OPTIONS,
+  MdOption
+} from '@angular/material/core';
+import {MdFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
-import {Directionality} from '@angular/cdk/bidi';
-import {DOWN_ARROW, END, ENTER, HOME, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
-import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
-import {OverlayContainer} from '@angular/cdk/overlay';
-import {dispatchFakeEvent, dispatchKeyboardEvent, wrappedErrorMessage} from '@angular/cdk/testing';
-import {Subject} from 'rxjs/Subject';
 import {map} from 'rxjs/operator/map';
+import {Subject} from 'rxjs/Subject';
 import {MdSelectModule} from './index';
 import {MdSelect} from './select';
 import {
@@ -34,12 +42,6 @@ import {
   getMdSelectNonArrayValueError,
   getMdSelectNonFunctionValueError
 } from './select-errors';
-import {MdOption} from '@angular/material/core';
-import {
-  FloatPlaceholderType,
-  MD_PLACEHOLDER_GLOBAL_OPTIONS
-} from '@angular/material/core';
-import {extendObject} from '@angular/material/core';
 
 
 describe('MdSelect', () => {
@@ -50,7 +52,13 @@ describe('MdSelect', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSelectModule, ReactiveFormsModule, FormsModule, NoopAnimationsModule],
+      imports: [
+        MdFormFieldModule,
+        MdSelectModule,
+        ReactiveFormsModule,
+        FormsModule,
+        NoopAnimationsModule
+      ],
       declarations: [
         BasicSelect,
         NgModelSelect,
@@ -333,16 +341,19 @@ describe('MdSelect', () => {
   describe('selection logic', () => {
     let fixture: ComponentFixture<BasicSelect>;
     let trigger: HTMLElement;
+    let formField: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicSelect);
       fixture.detectChanges();
 
       trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+      formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
     });
 
-    it('should display placeholder if no option is selected', () => {
-      expect(trigger.textContent!.trim()).toEqual('Food');
+    it('should not float placeholder if no option is selected', () => {
+      expect(formField.classList.contains('mat-form-field-should-float'))
+          .toBe(false, 'placeholder should not be floating');
     });
 
     it('should focus the first option if no option is selected', async(() => {
@@ -462,13 +473,10 @@ describe('MdSelect', () => {
       fixture.detectChanges();
 
       const value = fixture.debugElement.query(By.css('.mat-select-value')).nativeElement;
-      const placeholder =
-        fixture.debugElement.query(By.css('.mat-select-placeholder')).nativeElement;
 
-      expect(placeholder.textContent).toContain('Food');
+      expect(formField.classList.contains('mat-form-field-should-float'))
+          .toBe(true, 'placeholder should be floating');
       expect(value.textContent).toContain('Steak');
-      expect(trigger.textContent).toContain('Food');
-      expect(trigger.textContent).toContain('Steak');
     });
 
     it('should focus the selected option if an option is selected', async(() => {
@@ -544,6 +552,8 @@ describe('MdSelect', () => {
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicSelect);
+      fixture.detectChanges();
+      trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
     });
 
     it('should take an initial view value with reactive forms', () => {
@@ -565,34 +575,29 @@ describe('MdSelect', () => {
               `Expected option with the control's initial value to be selected.`);
     });
 
-    beforeEach(() => {
-      fixture.detectChanges();
-      trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
-    });
-
     it('should set the view value from the form', () => {
       let value = fixture.debugElement.query(By.css('.mat-select-value'));
-      expect(value).toBeNull('Expected trigger to start with empty value.');
+      expect(value.nativeElement.textContent.trim()).toBe('');
 
       fixture.componentInstance.control.setValue('pizza-1');
       fixture.detectChanges();
 
       value = fixture.debugElement.query(By.css('.mat-select-value'));
       expect(value.nativeElement.textContent)
-        .toContain('Pizza', `Expected trigger to be populated by the control's new value.`);
+          .toContain('Pizza', `Expected trigger to be populated by the control's new value.`);
 
       trigger.click();
       fixture.detectChanges();
 
       const options =
-        overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
-      expect(options[1].classList)
-        .toContain('mat-selected', `Expected option with the control's new value to be selected.`);
+          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+      expect(options[1].classList).toContain('mat-selected',
+          `Expected option with the control's new value to be selected.`);
     });
 
     it('should update the form value when the view changes', () => {
       expect(fixture.componentInstance.control.value)
-        .toEqual(null, `Expected the control's value to be null initially.`);
+        .toEqual(null, `Expected the control's value to be empty initially.`);
 
       trigger.click();
       fixture.detectChanges();
@@ -613,7 +618,8 @@ describe('MdSelect', () => {
       fixture.detectChanges();
 
       const value = fixture.debugElement.query(By.css('.mat-select-value'));
-      expect(value).toBe(null, `Expected trigger to be cleared when option value is not found.`);
+      expect(value.nativeElement.textContent.trim())
+          .toBe('', `Expected trigger to be cleared when option value is not found.`);
       expect(trigger.textContent)
           .not.toContain('Pizza', `Expected trigger to be cleared when option value is not found.`);
 
@@ -635,7 +641,8 @@ describe('MdSelect', () => {
       fixture.detectChanges();
 
       const value = fixture.debugElement.query(By.css('.mat-select-value'));
-      expect(value).toBe(null, `Expected trigger to be cleared when option value is not found.`);
+      expect(value.nativeElement.textContent.trim())
+          .toBe('', `Expected trigger to be cleared when option value is not found.`);
       expect(trigger.textContent)
           .not.toContain('Pizza', `Expected trigger to be cleared when option value is not found.`);
 
@@ -705,18 +712,16 @@ describe('MdSelect', () => {
 
 
     it('should set an asterisk after the placeholder if the control is required', () => {
-      const placeholder =
-        fixture.debugElement.query(By.css('.mat-select-placeholder')).nativeElement;
-      const initialContent =  getComputedStyle(placeholder, '::after').getPropertyValue('content');
-
-      // must support both default cases to work in all browsers in Saucelabs
-      expect(initialContent === 'none' || initialContent === '')
-        .toBe(true, `Expected placeholder not to have an asterisk, as control was not required.`);
+      let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+      expect(requiredMarker)
+        .toBeNull(`Expected placeholder not to have an asterisk, as control was not required.`);
 
       fixture.componentInstance.isRequired = true;
       fixture.detectChanges();
-      expect(getComputedStyle(placeholder, '::after').getPropertyValue('content'))
-        .toContain('*', `Expected placeholder to have an asterisk, as control was required.`);
+
+      requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
+      expect(requiredMarker)
+          .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
     });
 
     it('should be able to programmatically select a falsy option', () => {
@@ -870,7 +875,6 @@ describe('MdSelect', () => {
   });
 
   describe('disabled behavior', () => {
-
     it('should disable itself when control is disabled programmatically', () => {
       const fixture = TestBed.createComponent(BasicSelect);
       fixture.detectChanges();
@@ -952,7 +956,7 @@ describe('MdSelect', () => {
       spyOn(fixture.componentInstance.customAccessor, 'writeValue');
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.customAccessor.select._control)
+      expect(fixture.componentInstance.customAccessor.select.ngControl)
           .toBe(null, 'Expected md-select NOT to inherit control from parent value accessor.');
       expect(fixture.componentInstance.customAccessor.writeValue).toHaveBeenCalled();
     });
@@ -962,52 +966,32 @@ describe('MdSelect', () => {
   describe('animations', () => {
     let fixture: ComponentFixture<BasicSelect>;
     let trigger: HTMLElement;
+    let formField: HTMLElement;
 
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(BasicSelect);
       fixture.detectChanges();
 
       trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+      formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
     }));
 
     it('should float the placeholder when the panel is open and unselected', () => {
-      expect(fixture.componentInstance.select._getPlaceholderAnimationState())
-          .toEqual('', 'Expected placeholder to initially have a normal position.');
+      expect(formField.classList.contains('mat-form-field-should-float'))
+          .toBe(false, 'Expected placeholder to initially have a normal position.');
 
       trigger.click();
       fixture.detectChanges();
-      expect(fixture.componentInstance.select._getPlaceholderAnimationState())
-          .toEqual('floating-ltr', 'Expected placeholder to animate up to floating position.');
+      expect(formField.classList.contains('mat-form-field-should-float'))
+          .toBe(true, 'Expected placeholder to animate up to floating position.');
 
       const backdrop =
         overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
       backdrop.click();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.select._getPlaceholderAnimationState())
-          .toEqual('', 'Expected placeholder to animate back down to normal position.');
-    });
-
-    it('should float the placeholder without animation when value is set', () => {
-      fixture.componentInstance.control.setValue('pizza-1');
-      fixture.detectChanges();
-
-      const placeholderEl =
-          fixture.debugElement.query(By.css('.mat-select-placeholder')).nativeElement;
-
-      expect(placeholderEl.classList)
-          .toContain('mat-floating-placeholder', 'Expected placeholder to display as floating.');
-      expect(fixture.componentInstance.select._getPlaceholderAnimationState())
-          .toEqual('', 'Expected animation state to be empty to avoid animation.');
-    });
-
-    it('should use the floating-rtl state when the dir is rtl', () => {
-      dir.value = 'rtl';
-
-      trigger.click();
-      fixture.detectChanges();
-      expect(fixture.componentInstance.select._getPlaceholderAnimationState())
-          .toEqual('floating-rtl');
+      expect(formField.classList.contains('mat-form-field-should-float'))
+          .toBe(false, 'Expected placeholder to animate back down to normal position.');
     });
 
     it('should add a class to the panel when the menu is done animating', fakeAsync(() => {
@@ -1023,19 +1007,20 @@ describe('MdSelect', () => {
 
       expect(panel.classList).toContain('mat-select-panel-done-animating');
     }));
-
   });
 
   describe('positioning', () => {
     let fixture: ComponentFixture<BasicSelect>;
     let trigger: HTMLElement;
     let select: HTMLElement;
+    let formField: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicSelect);
       fixture.detectChanges();
       trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
       select = fixture.debugElement.query(By.css('md-select')).nativeElement;
+      formField = fixture.debugElement.query(By.css('md-form-field')).nativeElement;
     });
 
     /**
@@ -1051,11 +1036,16 @@ describe('MdSelect', () => {
       const overlayTop = overlayPane.getBoundingClientRect().top;
       const options = overlayPane.querySelectorAll('md-option');
       const optionTop = options[index].getBoundingClientRect().top;
+      const triggerFontSize = parseInt(window.getComputedStyle(trigger)['font-size']);
+      const triggerLineHeightEm = 1.125;
 
-      // The option text should align with the trigger text. Because each option is 18px
-      // larger in height than the trigger, the option needs to be adjusted up 9 pixels.
+      // Extra trigger height beyond the font size caused by the fact that the line-height is
+      // greater than 1em.
+      const triggerExtraLineSpaceAbove = (1 - triggerLineHeightEm) * triggerFontSize / 2;
+
       expect(Math.floor(optionTop))
-          .toEqual(Math.floor(triggerTop - 9), `Expected trigger to align with option ${index}.`);
+          .toBe(Math.floor(triggerTop - triggerFontSize - triggerExtraLineSpaceAbove),
+              `Expected trigger to align with option ${index}.`);
 
       // For the animation to start at the option's center, its origin must be the distance
       // from the top of the overlay to the option top + half the option height (48/2 = 24).
@@ -1068,15 +1058,13 @@ describe('MdSelect', () => {
     }
 
     describe('ample space to open', () => {
-
       beforeEach(() => {
         // these styles are necessary because we are first testing the overlay's position
         // if there is room for it to open to its full extent in either direction.
-        select.style.position = 'fixed';
-        select.style.top = '285px';
-        select.style.left = '20px';
+        formField.style.position = 'fixed';
+        formField.style.top = '285px';
+        formField.style.left = '20px';
       });
-
 
       it('should align the first option with the trigger text if no option is selected', () => {
         trigger.click();
@@ -1145,7 +1133,7 @@ describe('MdSelect', () => {
         checkTriggerAlignedWithOption(7);
       });
 
-      it('should account for preceding label groups when aligning the option', () => {
+      it('should account for preceding label groups when aligning the option', async(() => {
         fixture.destroy();
 
         let groupFixture = TestBed.createComponent(SelectWithGroups);
@@ -1153,9 +1141,9 @@ describe('MdSelect', () => {
         trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
         select = groupFixture.debugElement.query(By.css('md-select')).nativeElement;
 
-        select.style.position = 'fixed';
-        select.style.top = '200px';
-        select.style.left = '100px';
+        formField.style.position = 'fixed';
+        formField.style.top = '200px';
+        formField.style.left = '100px';
 
         // Select an option in the third group, which has a couple of group labels before it.
         groupFixture.componentInstance.control.setValue('vulpix-7');
@@ -1166,29 +1154,59 @@ describe('MdSelect', () => {
 
         const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
-        // The selected option should be scrolled to the center of the panel.
-        // This will be its original offset from the scrollTop - half the panel height + half the
-        // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480px.
-        // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
-        expect(Math.floor(scrollContainer.scrollTop))
-            .toBe(376, `Expected overlay panel to be scrolled to center the selected option.`);
+        fixture.whenStable().then(() => {
+          // The selected option should be scrolled to the center of the panel.
+          // This will be its original offset from the scrollTop - half the panel height + half the
+          // option height. 10 (option index + 3 group labels before it) * 48 (option height) =
+          // 480px. 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+          expect(Math.floor(scrollContainer.scrollTop))
+              .toBe(376, `Expected overlay panel to be scrolled to center the selected option.`);
 
-        checkTriggerAlignedWithOption(7, groupFixture.componentInstance.select);
-      });
-
+          checkTriggerAlignedWithOption(7, groupFixture.componentInstance.select);
+        });
+      }));
     });
 
     describe('limited space to open vertically', () => {
-
       beforeEach(() => {
-        select.style.position = 'fixed';
-        select.style.left = '20px';
+        formField.style.position = 'fixed';
+        formField.style.left = '20px';
       });
 
-      it('should adjust position of centered option if there is little space above', () => {
-        // Push the select to a position with not quite enough space on the top to open
-        // with the option completely centered (needs 113px at least: 256/2 - 48/2 + 9)
-        select.style.top = '85px';
+      it('should adjust position of centered option if there is little space above', async(() => {
+        const selectMenuHeight = 256;
+        const selectMenuViewportPadding = 8;
+        const selectItemHeight = 48;
+        const selectedIndex = 4;
+        const fontSize = 16;
+        const lineHeightEm = 1.125;
+        const expectedExtraScroll = 5;
+
+        // Trigger element height.
+        const triggerHeight = fontSize * lineHeightEm;
+
+        // Ideal space above selected item in order to center it.
+        const idealSpaceAboveSelectedItem = (selectMenuHeight - selectItemHeight) / 2;
+
+        // Actual space above selected item.
+        const actualSpaceAboveSelectedItem = selectItemHeight * selectedIndex;
+
+        // Ideal scroll position to center.
+        const idealScrollTop = actualSpaceAboveSelectedItem - idealSpaceAboveSelectedItem;
+
+        // Top-most select-position that allows for perfect centering.
+        const topMostPositionForPerfectCentering =
+            idealSpaceAboveSelectedItem + selectMenuViewportPadding +
+            (selectItemHeight - triggerHeight) / 2;
+
+        // Position of select relative to top edge of md-form-field.
+        const formFieldTopSpace =
+            trigger.getBoundingClientRect().top - formField.getBoundingClientRect().top;
+
+        const formFieldTop =
+            topMostPositionForPerfectCentering - formFieldTopSpace - expectedExtraScroll;
+
+        formField.style.top = `${formFieldTop}px`;
 
         // Select an option in the middle of the list
         fixture.componentInstance.control.setValue('chips-4');
@@ -1199,42 +1217,81 @@ describe('MdSelect', () => {
 
         const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
-        // Scroll should adjust by the difference between the top space available (85px + 8px
-        // viewport padding = 77px) and the height of the panel above the option (113px).
-        // 113px - 93px = 20px difference + original scrollTop 88px = 108px
-        expect(scrollContainer.scrollTop)
-            .toEqual(108, `Expected panel to adjust scroll position to fit in viewport.`);
+        fixture.whenStable().then(() => {
+          expect(scrollContainer.scrollTop)
+              .toEqual(idealScrollTop + 5,
+                  `Expected panel to adjust scroll position to fit in viewport.`);
 
-        checkTriggerAlignedWithOption(4);
-      });
+          checkTriggerAlignedWithOption(4);
+        });
+      }));
 
-      it('should adjust position of centered option if there is little space below', () => {
+      it('should adjust position of centered option if there is little space below', async(() => {
+        const selectMenuHeight = 256;
+        const selectMenuViewportPadding = 8;
+        const selectItemHeight = 48;
+        const selectedIndex = 4;
+        const fontSize = 16;
+        const lineHeightEm = 1.125;
+        const expectedExtraScroll = 5;
+
+        // Trigger element height.
+        const triggerHeight = fontSize * lineHeightEm;
+
+        // Ideal space above selected item in order to center it.
+        const idealSpaceAboveSelectedItem = (selectMenuHeight - selectItemHeight) / 2;
+
+        // Actual space above selected item.
+        const actualSpaceAboveSelectedItem = selectItemHeight * selectedIndex;
+
+        // Ideal scroll position to center.
+        const idealScrollTop = actualSpaceAboveSelectedItem - idealSpaceAboveSelectedItem;
+
+        // Bottom-most select-position that allows for perfect centering.
+        const bottomMostPositionForPerfectCentering =
+            idealSpaceAboveSelectedItem + selectMenuViewportPadding +
+            (selectItemHeight - triggerHeight) / 2;
+
+        // Position of select relative to bottom edge of md-form-field:
+        const formFieldBottomSpace =
+            formField.getBoundingClientRect().bottom - trigger.getBoundingClientRect().bottom;
+
+        const formFieldBottom =
+            bottomMostPositionForPerfectCentering - formFieldBottomSpace - expectedExtraScroll;
+
         // Push the select to a position with not quite enough space on the bottom to open
         // with the option completely centered (needs 113px at least: 256/2 - 48/2 + 9)
-        select.style.bottom = '56px';
+        formField.style.bottom = `${formFieldBottom}px`;
 
         // Select an option in the middle of the list
         fixture.componentInstance.control.setValue('chips-4');
         fixture.detectChanges();
 
-        trigger.click();
-        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          fixture.detectChanges();
 
-        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+          trigger.click();
+          fixture.detectChanges();
 
-        // Scroll should adjust by the difference between the bottom space available
-        // (56px from the bottom of the screen - 8px padding = 48px)
-        // and the height of the panel below the option (113px).
-        // 113px - 48px = 75px difference. Original scrollTop 88px - 75px = 23px
-        expect(Math.ceil(scrollContainer.scrollTop))
-            .toEqual(23, `Expected panel to adjust scroll position to fit in viewport.`);
+          const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
-        checkTriggerAlignedWithOption(4);
-      });
+          fixture.whenStable().then(() => {
+            // Scroll should adjust by the difference between the bottom space available
+            // (56px from the bottom of the screen - 8px padding = 48px)
+            // and the height of the panel below the option (113px).
+            // 113px - 48px = 75px difference. Original scrollTop 88px - 75px = 23px
+            expect(scrollContainer.scrollTop)
+                .toEqual(idealScrollTop - expectedExtraScroll,
+                    `Expected panel to adjust scroll position to fit in viewport.`);
+
+            checkTriggerAlignedWithOption(4);
+          });
+        });
+      }));
 
       it('should fall back to "above" positioning if scroll adjustment will not help', () => {
         // Push the select to a position with not enough space on the bottom to open
-        select.style.bottom = '56px';
+        formField.style.bottom = '56px';
         fixture.detectChanges();
 
         // Select an option that cannot be scrolled any farther upward
@@ -1262,7 +1319,7 @@ describe('MdSelect', () => {
 
       it('should fall back to "below" positioning if scroll adjustment will not help', () => {
         // Push the select to a position with not enough space on the top to open
-        select.style.top = '85px';
+        formField.style.top = '85px';
 
         // Select an option that cannot be scrolled any farther downward
         fixture.componentInstance.control.setValue('sushi-7');
@@ -1290,12 +1347,12 @@ describe('MdSelect', () => {
 
     describe('limited space to open horizontally', () => {
       beforeEach(() => {
-        select.style.position = 'absolute';
-        select.style.top = '200px';
+        formField.style.position = 'absolute';
+        formField.style.top = '200px';
       });
 
       it('should stay within the viewport when overflowing on the left in ltr', fakeAsync(() => {
-        select.style.left = '-100px';
+        formField.style.left = '-100px';
         trigger.click();
         tick(400);
         fixture.detectChanges();
@@ -1308,7 +1365,7 @@ describe('MdSelect', () => {
 
       it('should stay within the viewport when overflowing on the left in rtl', fakeAsync(() => {
         dir.value = 'rtl';
-        select.style.left = '-100px';
+        formField.style.left = '-100px';
         trigger.click();
         tick(400);
         fixture.detectChanges();
@@ -1320,7 +1377,7 @@ describe('MdSelect', () => {
       }));
 
       it('should stay within the viewport when overflowing on the right in ltr', fakeAsync(() => {
-        select.style.right = '-100px';
+        formField.style.right = '-100px';
         trigger.click();
         tick(400);
         fixture.detectChanges();
@@ -1335,7 +1392,7 @@ describe('MdSelect', () => {
 
       it('should stay within the viewport when overflowing on the right in rtl', fakeAsync(() => {
         dir.value = 'rtl';
-        select.style.right = '-100px';
+        formField.style.right = '-100px';
         trigger.click();
         tick(400);
         fixture.detectChanges();
@@ -1349,7 +1406,7 @@ describe('MdSelect', () => {
       }));
 
       it('should keep the position within the viewport on repeat openings', async(() => {
-        select.style.left = '-100px';
+        formField.style.left = '-100px';
         trigger.click();
         fixture.detectChanges();
 
@@ -1369,7 +1426,6 @@ describe('MdSelect', () => {
               `Expected select panel continue being inside the viewport.`);
         });
       }));
-
     });
 
     describe('when scrolled', () => {
@@ -1389,8 +1445,8 @@ describe('MdSelect', () => {
         setScrollTop(0);
 
         // Give the select enough horizontal space to open
-        select.style.marginLeft = '20px';
-        select.style.marginRight = '20px';
+        formField.style.marginLeft = '20px';
+        formField.style.marginRight = '20px';
       });
 
       it('should align the first option properly when scrolled', () => {
@@ -1493,14 +1549,12 @@ describe('MdSelect', () => {
         expect(Math.floor(overlayTop))
             .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
       });
-
     });
 
     describe('x-axis positioning', () => {
-
       beforeEach(() => {
-        select.style.position = 'fixed';
-        select.style.left = '30px';
+        formField.style.position = 'fixed';
+        formField.style.left = '30px';
       });
 
       it('should align the trigger and the selected option on the x-axis in ltr', fakeAsync(() => {
@@ -1544,11 +1598,12 @@ describe('MdSelect', () => {
       beforeEach(() => {
         multiFixture = TestBed.createComponent(MultiSelect);
         multiFixture.detectChanges();
+        formField = multiFixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
         trigger = multiFixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
         select = multiFixture.debugElement.query(By.css('md-select')).nativeElement;
 
-        select.style.position = 'fixed';
-        select.style.left = '60px';
+        formField.style.position = 'fixed';
+        formField.style.left = '60px';
       });
 
       it('should adjust for the checkbox in ltr', async(() => {
@@ -1560,9 +1615,9 @@ describe('MdSelect', () => {
           const firstOptionLeft =
               document.querySelector('.cdk-overlay-pane md-option')!.getBoundingClientRect().left;
 
-          // 48px accounts for the checkbox size, margin and the panel's padding.
+          // 44px accounts for the checkbox size, margin and the panel's padding.
           expect(Math.floor(firstOptionLeft))
-              .toEqual(Math.floor(triggerLeft - 48),
+              .toEqual(Math.floor(triggerLeft - 44),
                   `Expected trigger label to align along x-axis, accounting for the checkbox.`);
         });
       }));
@@ -1577,9 +1632,9 @@ describe('MdSelect', () => {
         const firstOptionRight =
             document.querySelector('.cdk-overlay-pane md-option')!.getBoundingClientRect().right;
 
-        // 48px accounts for the checkbox size, margin and the panel's padding.
+        // 44px accounts for the checkbox size, margin and the panel's padding.
         expect(Math.floor(firstOptionRight))
-            .toEqual(Math.floor(triggerRight + 48),
+            .toEqual(Math.floor(triggerRight + 44),
                 `Expected trigger label to align along x-axis, accounting for the checkbox.`);
       }));
     });
@@ -1590,11 +1645,12 @@ describe('MdSelect', () => {
       beforeEach(() => {
         groupFixture = TestBed.createComponent(SelectWithGroups);
         groupFixture.detectChanges();
+        formField = groupFixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
         trigger = groupFixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
         select = groupFixture.debugElement.query(By.css('md-select')).nativeElement;
 
-        select.style.position = 'fixed';
-        select.style.left = '60px';
+        formField.style.position = 'fixed';
+        formField.style.left = '60px';
       });
 
       it('should adjust for the group padding in ltr', fakeAsync(() => {
@@ -1648,26 +1704,42 @@ describe('MdSelect', () => {
           expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 16));
         }));
 
-      it('should align the first option to the trigger, if nothing is selected', fakeAsync(() => {
+      it('should align the first option to the trigger, if nothing is selected', async(() => {
+        // Push down the form field so there is space for the item to completely align.
+        formField.style.top = '100px';
+
+        const menuItemHeight = 48;
+        const triggerFontSize = 16;
+        const triggerLineHeightEm = 1.125;
+        const triggerHeight = triggerFontSize * triggerLineHeightEm;
+
         trigger.click();
         groupFixture.detectChanges();
 
-        const triggerTop = trigger.getBoundingClientRect().top;
+        fixture.whenStable().then(() => {
+          const triggerTop = trigger.getBoundingClientRect().top;
 
-        const option = overlayContainerElement.querySelector('.cdk-overlay-pane md-option');
-        const optionTop = option ? option.getBoundingClientRect().top : 0;
+          const option = overlayContainerElement.querySelector('.cdk-overlay-pane md-option');
+          const optionTop = option ? option.getBoundingClientRect().top : 0;
 
-        // Since the option is 18px higher than the trigger, it needs to be adjusted by 9px.
-        expect(Math.floor(optionTop))
-            .toBe(Math.floor(triggerTop - 9), 'Expected trigger to align with the first option.');
+          // There appears to be a small rounding error on IE, so we verify that the value is close,
+          // not exact.
+          let platform = new Platform();
+          if (platform.TRIDENT) {
+            let difference =
+                Math.abs(optionTop + (menuItemHeight - triggerHeight) / 2 - triggerTop);
+            expect(difference)
+                .toBeLessThan(0.1, 'Expected trigger to align with the first option.');
+          } else {
+            expect(optionTop + (menuItemHeight - triggerHeight) / 2)
+                .toBe(triggerTop, 'Expected trigger to align with the first option.');
+          }
+        });
       }));
-
     });
-
   });
 
   describe('accessibility', () => {
-
     describe('for select', () => {
       let fixture: ComponentFixture<BasicSelect>;
       let select: HTMLElement;
@@ -2124,13 +2196,10 @@ describe('MdSelect', () => {
         });
 
       }));
-
     });
-
   });
 
   describe('special cases', () => {
-
     it('should handle nesting in an ngIf', async(() => {
       const fixture = TestBed.createComponent(NgIfSelect);
       fixture.detectChanges();
@@ -2185,7 +2254,6 @@ describe('MdSelect', () => {
         expect(() => fixture.detectChanges()).not.toThrow();
       }));
 
-
     it('should not throw when the triggerValue is accessed when there is no selected value', () => {
       const fixture = TestBed.createComponent(BasicSelect);
       fixture.detectChanges();
@@ -2229,25 +2297,26 @@ describe('MdSelect', () => {
 
   describe('floatPlaceholder option', () => {
     let fixture: ComponentFixture<FloatPlaceholderSelect>;
+    let formField: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(FloatPlaceholderSelect);
+      fixture.detectChanges();
+      formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
     });
 
     it('should be able to disable the floating placeholder', () => {
-      let placeholder = fixture.debugElement.query(By.css('.mat-select-placeholder')).nativeElement;
-
       fixture.componentInstance.floatPlaceholder = 'never';
       fixture.detectChanges();
 
-      expect(placeholder.style.opacity).toBe('1');
-      expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBeFalsy();
+      expect(formField.classList.contains('mat-form-field-can-float'))
+          .toBe(false, 'Floating placeholder should be disabled');
 
       fixture.componentInstance.control.setValue('pizza-1');
       fixture.detectChanges();
 
-      expect(placeholder.style.opacity).toBe('0');
-      expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBeFalsy();
+      expect(formField.classList.contains('mat-form-field-can-float'))
+          .toBe(false, 'Floating placeholder should be disabled');
     });
 
     it('should be able to always float the placeholder', () => {
@@ -2256,7 +2325,10 @@ describe('MdSelect', () => {
       fixture.componentInstance.floatPlaceholder = 'always';
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.select._getPlaceholderAnimationState()).toBe('floating-ltr');
+      expect(formField.classList.contains('mat-form-field-can-float'))
+          .toBe(true, 'Placeholder should be able to float');
+      expect(formField.classList.contains('mat-form-field-should-float'))
+          .toBe(true, 'Placeholder should be floating');
     });
 
     it ('should default to global floating placeholder type', () => {
@@ -2265,6 +2337,7 @@ describe('MdSelect', () => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [
+          MdFormFieldModule,
           MdSelectModule,
           ReactiveFormsModule,
           FormsModule,
@@ -2279,8 +2352,12 @@ describe('MdSelect', () => {
       fixture = TestBed.createComponent(FloatPlaceholderSelect);
       fixture.componentInstance.floatPlaceholder = null;
       fixture.detectChanges();
+      formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
 
-      expect(fixture.componentInstance.select.floatPlaceholder).toBe('always');
+      expect(formField.classList.contains('mat-form-field-can-float'))
+          .toBe(true, 'Placeholder should be able to float');
+      expect(formField.classList.contains('mat-form-field-should-float'))
+          .toBe(true, 'Placeholder should be floating');
     });
   });
 
@@ -2362,25 +2439,29 @@ describe('MdSelect', () => {
       expect(testInstance.control.value).toEqual([]);
     });
 
-    it('should update the label', () => {
+    it('should update the label', async(() => {
       trigger.click();
       fixture.detectChanges();
 
-      const options = overlayContainerElement.querySelectorAll('md-option') as
-          NodeListOf<HTMLElement>;
+      fixture.whenStable().then(() => {
+        const options = overlayContainerElement.querySelectorAll('md-option') as
+            NodeListOf<HTMLElement>;
 
-      options[0].click();
-      options[2].click();
-      options[5].click();
-      fixture.detectChanges();
+        options[0].click();
+        options[2].click();
+        options[5].click();
+        fixture.detectChanges();
 
-      expect(trigger.textContent).toContain('Steak, Tacos, Eggs');
+        expect(trigger.textContent).toContain('Steak, Tacos, Eggs');
 
-      options[2].click();
-      fixture.detectChanges();
+        options[2].click();
+        fixture.detectChanges();
 
-      expect(trigger.textContent).toContain('Steak, Eggs');
-    });
+        fixture.whenStable().then(() => {
+          expect(trigger.textContent).toContain('Steak, Eggs');
+        });
+      });
+    }));
 
     it('should be able to set the selected value by taking an array', () => {
       trigger.click();
@@ -2434,38 +2515,42 @@ describe('MdSelect', () => {
       expect(testInstance.select.panelOpen).toBe(true);
     });
 
-    it('should sort the selected options based on their order in the panel', () => {
+    it('should sort the selected options based on their order in the panel', async(() => {
       trigger.click();
       fixture.detectChanges();
 
-      const options = overlayContainerElement.querySelectorAll('md-option') as
-          NodeListOf<HTMLElement>;
+      fixture.whenStable().then(() => {
+        const options = overlayContainerElement.querySelectorAll('md-option') as
+            NodeListOf<HTMLElement>;
 
-      options[2].click();
-      options[0].click();
-      options[1].click();
-      fixture.detectChanges();
+        options[2].click();
+        options[0].click();
+        options[1].click();
+        fixture.detectChanges();
 
-      expect(trigger.textContent).toContain('Steak, Pizza, Tacos');
-      expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
-    });
+        expect(trigger.textContent).toContain('Steak, Pizza, Tacos');
+        expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
+      });
+    }));
 
-    it('should sort the selected options in reverse in rtl', () => {
+    it('should sort the selected options in reverse in rtl', async(() => {
       dir.value = 'rtl';
       trigger.click();
       fixture.detectChanges();
 
-      const options = overlayContainerElement.querySelectorAll('md-option') as
-          NodeListOf<HTMLElement>;
+      fixture.whenStable().then(() => {
+        const options = overlayContainerElement.querySelectorAll('md-option') as
+            NodeListOf<HTMLElement>;
 
-      options[2].click();
-      options[0].click();
-      options[1].click();
-      fixture.detectChanges();
+        options[2].click();
+        options[0].click();
+        options[1].click();
+        fixture.detectChanges();
 
-      expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
-      expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
-    });
+        expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
+        expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
+      });
+    }));
 
     it('should sort the values, that get set via the model, based on the panel order', () => {
       trigger.click();
@@ -2533,40 +2618,6 @@ describe('MdSelect', () => {
       selectElement = fixture.debugElement.query(By.css('.mat-select')).nativeElement;
     }));
 
-    it('should default to the primary theme', () => {
-      expect(fixture.componentInstance.select.color).toBe('primary');
-      expect(selectElement.classList).toContain('mat-primary');
-    });
-
-    it('should be able to override the theme', () => {
-      fixture.componentInstance.theme = 'accent';
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.select.color).toBe('accent');
-      expect(selectElement.classList).toContain('mat-accent');
-      expect(selectElement.classList).not.toContain('mat-primary');
-    });
-
-    it('should not be able to set a blank theme', () => {
-      fixture.componentInstance.theme = '';
-      fixture.detectChanges();
-
-      expect(fixture.componentInstance.select.color).toBe('primary');
-      expect(selectElement.classList).toContain('mat-primary');
-    });
-
-    it('should pass the theme to the panel', () => {
-      fixture.componentInstance.theme = 'warn';
-      fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
-      fixture.detectChanges();
-
-      const panel = overlayContainerElement.querySelector('.mat-select-panel')!;
-
-      expect(fixture.componentInstance.select.color).toBe('warn');
-      expect(selectElement.classList).toContain('mat-warn');
-      expect(panel.classList).toContain('mat-warn');
-    });
-
     it('should allow the user to customize the label', () => {
       fixture.destroy();
 
@@ -2581,28 +2632,30 @@ describe('MdSelect', () => {
       expect(label.textContent).toContain('azziP',
           'Expected the displayed text to be "Pizza" in reverse.');
     });
-
   });
 
   describe('reset values', () => {
     let fixture: ComponentFixture<ResetValuesSelect>;
     let trigger: HTMLElement;
-    let placeholder: HTMLElement;
+    let formField: HTMLElement;
     let options: NodeListOf<HTMLElement>;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
       fixture = TestBed.createComponent(ResetValuesSelect);
       fixture.detectChanges();
       trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
-      placeholder = fixture.debugElement.query(By.css('.mat-select-placeholder')).nativeElement;
+      formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
 
       trigger.click();
       fixture.detectChanges();
-      options = overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
 
-      options[0].click();
-      fixture.detectChanges();
-    });
+      fixture.whenStable().then(() => {
+        options = overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+
+        options[0].click();
+        fixture.detectChanges();
+      });
+    }));
 
     it('should reset when an option with an undefined value is selected', () => {
       options[4].click();
@@ -2610,7 +2663,7 @@ describe('MdSelect', () => {
 
       expect(fixture.componentInstance.control.value).toBeUndefined();
       expect(fixture.componentInstance.select.selected).toBeFalsy();
-      expect(placeholder.classList).not.toContain('mat-floating-placeholder');
+      expect(formField.classList).not.toContain('mat-form-field-should-float');
       expect(trigger.textContent).not.toContain('Undefined');
     });
 
@@ -2620,7 +2673,7 @@ describe('MdSelect', () => {
 
       expect(fixture.componentInstance.control.value).toBeNull();
       expect(fixture.componentInstance.select.selected).toBeFalsy();
-      expect(placeholder.classList).not.toContain('mat-floating-placeholder');
+      expect(formField.classList).not.toContain('mat-form-field-should-float');
       expect(trigger.textContent).not.toContain('Null');
     });
 
@@ -2630,7 +2683,7 @@ describe('MdSelect', () => {
 
       expect(fixture.componentInstance.control.value).toBeUndefined();
       expect(fixture.componentInstance.select.selected).toBeFalsy();
-      expect(placeholder.classList).not.toContain('mat-floating-placeholder');
+      expect(formField.classList).not.toContain('mat-form-field-should-float');
       expect(trigger.textContent).not.toContain('None');
     });
 
@@ -2640,19 +2693,19 @@ describe('MdSelect', () => {
 
       expect(fixture.componentInstance.control.value).toBe(false);
       expect(fixture.componentInstance.select.selected).toBeTruthy();
-      expect(placeholder.classList).toContain('mat-floating-placeholder');
+      expect(formField.classList).toContain('mat-form-field-should-float');
       expect(trigger.textContent).toContain('Falsy');
     });
 
     it('should not consider the reset values as selected when resetting the form control', () => {
-      expect(placeholder.classList).toContain('mat-floating-placeholder');
+      expect(formField.classList).toContain('mat-form-field-should-float');
 
       fixture.componentInstance.control.reset();
       fixture.detectChanges();
 
       expect(fixture.componentInstance.control.value).toBeNull();
       expect(fixture.componentInstance.select.selected).toBeFalsy();
-      expect(placeholder.classList).not.toContain('mat-floating-placeholder');
+      expect(formField.classList).not.toContain('mat-formf-field-should-float');
       expect(trigger.textContent).not.toContain('Null');
       expect(trigger.textContent).not.toContain('Undefined');
     });
@@ -2727,7 +2780,6 @@ describe('MdSelect', () => {
       expect(select.getAttribute('aria-invalid'))
           .toBe('true', 'Expected aria-invalid to be set to true.');
     });
-
   });
 
   describe('compareWith behavior', () => {
@@ -2796,24 +2848,23 @@ describe('MdSelect', () => {
           fixture.detectChanges();
         }).toThrowError(wrappedErrorMessage(getMdSelectNonFunctionValueError()));
       });
-
     });
-
   });
-
 });
 
 @Component({
   selector: 'basic-select',
   template: `
     <div [style.height.px]="heightAbove"></div>
-    <md-select placeholder="Food" [formControl]="control" [required]="isRequired"
-      [tabIndex]="tabIndexOverride" [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
-      [panelClass]="panelClass" [disableRipple]="disableRipple">
-      <md-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
-        {{ food.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" [formControl]="control" [required]="isRequired"
+        [tabIndex]="tabIndexOverride" [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"
+        [panelClass]="panelClass" [disableRipple]="disableRipple">
+        <md-option *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
     <div [style.height.px]="heightBelow"></div>
   `
 })
@@ -2845,9 +2896,11 @@ class BasicSelect {
 @Component({
   selector: 'ng-model-select',
   template: `
-    <md-select placeholder="Food" ngModel [disabled]="isDisabled">
-      <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" ngModel [disabled]="isDisabled">
+        <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class NgModelSelect {
@@ -2865,14 +2918,18 @@ class NgModelSelect {
 @Component({
   selector: 'many-selects',
   template: `
-    <md-select placeholder="First">
-      <md-option value="one">one</md-option>
-      <md-option value="two">two</md-option>
-    </md-select>
-    <md-select placeholder="Second">
-      <md-option value="three">three</md-option>
-      <md-option value="four">four</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="First">
+        <md-option value="one">one</md-option>
+        <md-option value="two">two</md-option>
+      </md-select>
+    </md-form-field>
+    <md-form-field>
+      <md-select placeholder="Second">
+        <md-option value="three">three</md-option>
+        <md-option value="four">four</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class ManySelects {}
@@ -2881,11 +2938,13 @@ class ManySelects {}
   selector: 'ng-if-select',
   template: `
     <div *ngIf="isShowing">
-      <md-select placeholder="Food I want to eat right now" [formControl]="control">
-        <md-option *ngFor="let food of foods" [value]="food.value">
-          {{ food.viewValue }}
-        </md-option>
-      </md-select>
+      <md-form-field>
+        <md-select placeholder="Food I want to eat right now" [formControl]="control">
+          <md-option *ngFor="let food of foods" [value]="food.value">
+            {{ food.viewValue }}
+          </md-option>
+        </md-select>
+      </md-form-field>
     </div>
   `,
 })
@@ -2904,9 +2963,11 @@ class NgIfSelect {
 @Component({
   selector: 'select-with-change-event',
   template: `
-    <md-select (change)="changeListener($event)">
-      <md-option *ngFor="let food of foods" [value]="food">{{ food }}</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select (change)="changeListener($event)">
+        <md-option *ngFor="let food of foods" [value]="food">{{ food }}</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class SelectWithChangeEvent {
@@ -2927,11 +2988,13 @@ class SelectWithChangeEvent {
 @Component({
   selector: 'select-init-without-options',
   template: `
-    <md-select placeholder="Food I want to eat right now" [formControl]="control">
-      <md-option *ngFor="let food of foods" [value]="food.value">
-        {{ food.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food I want to eat right now" [formControl]="control">
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class SelectInitWithoutOptions {
@@ -2952,9 +3015,7 @@ class SelectInitWithoutOptions {
 
 @Component({
   selector: 'custom-select-accessor',
-  template: `
-    <md-select></md-select>
-  `,
+  template: `<md-form-field><md-select></md-select></md-form-field>`,
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: CustomSelectAccessor,
@@ -2971,10 +3032,7 @@ class CustomSelectAccessor implements ControlValueAccessor {
 
 @Component({
   selector: 'comp-with-custom-select',
-  template: `
-    <custom-select-accessor [formControl]="ctrl">
-    </custom-select-accessor>
-  `,
+  template: `<custom-select-accessor [formControl]="ctrl"></custom-select-accessor>`,
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: CustomSelectAccessor,
@@ -2989,7 +3047,9 @@ class CompWithCustomSelect {
 @Component({
   selector: 'select-infinite-loop',
   template: `
-    <md-select [(ngModel)]="value"></md-select>
+    <md-form-field>
+      <md-select [(ngModel)]="value"></md-select>
+    </md-form-field>
     <throws-error-on-init></throws-error-on-init>
   `
 })
@@ -3011,11 +3071,13 @@ export class ThrowsErrorOnInit implements OnInit {
   selector: 'basic-select-on-push',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <md-select placeholder="Food" [formControl]="control">
-      <md-option *ngFor="let food of foods" [value]="food.value">
-        {{ food.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" [formControl]="control">
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class BasicSelectOnPush {
@@ -3031,11 +3093,13 @@ class BasicSelectOnPush {
   selector: 'basic-select-on-push-preselected',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <md-select placeholder="Food" [formControl]="control">
-      <md-option *ngFor="let food of foods" [value]="food.value">
-        {{ food.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" [formControl]="control">
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class BasicSelectOnPushPreselected {
@@ -3050,12 +3114,13 @@ class BasicSelectOnPushPreselected {
 @Component({
   selector: 'floating-placeholder-select',
   template: `
-    <md-select placeholder="Food I want to eat right now" [formControl]="control"
-      [floatPlaceholder]="floatPlaceholder">
+    <md-form-field [floatPlaceholder]="floatPlaceholder">
+      <md-select placeholder="Food I want to eat right now" [formControl]="control">
         <md-option *ngFor="let food of foods" [value]="food.value">
           {{ food.viewValue }}
         </md-option>
       </md-select>
+    </md-form-field>
     `,
 })
 class FloatPlaceholderSelect {
@@ -3073,9 +3138,11 @@ class FloatPlaceholderSelect {
 @Component({
   selector: 'multi-select',
   template: `
-    <md-select multiple placeholder="Food" [formControl]="control">
-      <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select multiple placeholder="Food" [formControl]="control">
+        <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class MultiSelect {
@@ -3097,16 +3164,16 @@ class MultiSelect {
 
 @Component({
   selector: 'select-with-plain-tabindex',
-  template: `
-    <md-select tabindex="5"></md-select>
-  `
+  template: `<md-form-field><md-select tabindex="5"></md-select></md-form-field>`
 })
 class SelectWithPlainTabindex { }
 
 @Component({
   selector: 'select-early-sibling-access',
   template: `
-    <md-select #select="mdSelect"></md-select>
+    <md-form-field>
+      <md-select #select="mdSelect"></md-select>
+    </md-form-field>
     <div *ngIf="select.selected"></div>
   `
 })
@@ -3115,9 +3182,11 @@ class SelectEarlyAccessSibling { }
 @Component({
   selector: 'basic-select-initially-hidden',
   template: `
-    <md-select [style.display]="isVisible ? 'block' : 'none'">
-      <md-option value="value">There are no other options</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select [style.display]="isVisible ? 'block' : 'none'">
+        <md-option value="value">There are no other options</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class BasicSelectInitiallyHidden {
@@ -3127,9 +3196,11 @@ class BasicSelectInitiallyHidden {
 @Component({
   selector: 'basic-select-no-placeholder',
   template: `
-    <md-select>
-      <md-option value="value">There are no other options</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select>
+        <md-option value="value">There are no other options</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class BasicSelectNoPlaceholder { }
@@ -3137,10 +3208,12 @@ class BasicSelectNoPlaceholder { }
 @Component({
   selector: 'basic-select-with-theming',
   template: `
-    <md-select placeholder="Food" [color]="theme">
-      <md-option value="steak-0">Steak</md-option>
-      <md-option value="pizza-1">Pizza</md-option>
-    </md-select>
+    <md-form-field [color]="theme">
+      <md-select placeholder="Food">
+        <md-option value="steak-0">Steak</md-option>
+        <md-option value="pizza-1">Pizza</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class BasicSelectWithTheming {
@@ -3152,13 +3225,14 @@ class BasicSelectWithTheming {
 @Component({
   selector: 'reset-values-select',
   template: `
-    <md-select placeholder="Food" [formControl]="control">
-      <md-option *ngFor="let food of foods" [value]="food.value">
-        {{ food.viewValue }}
-      </md-option>
-
-      <md-option>None</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" [formControl]="control">
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+        <md-option>None</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class ResetValuesSelect {
@@ -3177,9 +3251,11 @@ class ResetValuesSelect {
 
 @Component({
   template: `
-    <md-select [formControl]="control">
-      <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select [formControl]="control">
+        <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class FalsyValueSelect {
@@ -3195,17 +3271,17 @@ class FalsyValueSelect {
 @Component({
   selector: 'select-with-groups',
   template: `
-    <md-select placeholder="Pokemon" [formControl]="control">
-      <md-optgroup *ngFor="let group of pokemonTypes" [label]="group.name"
-        [disabled]="group.disabled">
-
-        <md-option *ngFor="let pokemon of group.pokemon" [value]="pokemon.value">
-          {{ pokemon.viewValue }}
-        </md-option>
-      </md-optgroup>
-
-      <md-option value="mime-11">Mr. Mime</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Pokemon" [formControl]="control">
+        <md-optgroup *ngFor="let group of pokemonTypes" [label]="group.name"
+          [disabled]="group.disabled">
+          <md-option *ngFor="let pokemon of group.pokemon" [value]="pokemon.value">
+            {{ pokemon.viewValue }}
+          </md-option>
+        </md-optgroup>
+        <md-option value="mime-11">Mr. Mime</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class SelectWithGroups {
@@ -3251,7 +3327,13 @@ class SelectWithGroups {
 
 
 @Component({
-  template: `<form><md-select [(ngModel)]="value"></md-select></form>`
+  template: `
+    <form>
+      <md-form-field>
+        <md-select [(ngModel)]="value"></md-select>
+      </md-form-field>
+    </form>
+  `
 })
 class InvalidSelectInForm {
   value: any;
@@ -3261,10 +3343,12 @@ class InvalidSelectInForm {
 @Component({
   template: `
     <form [formGroup]="formGroup">
-      <md-select placeholder="Food" formControlName="food">
-        <md-option value="steak-0">Steak</md-option>
-        <md-option value="pizza-1">Pizza</md-option>
-      </md-select>
+      <md-form-field>
+        <md-select placeholder="Food" formControlName="food">
+          <md-option value="steak-0">Steak</md-option>
+          <md-option value="pizza-1">Pizza</md-option>
+        </md-select>
+      </md-form-field>
     </form>
   `
 })
@@ -3279,11 +3363,13 @@ class SelectInsideFormGroup {
 
 @Component({
   template: `
-    <md-select placeholder="Food" [(value)]="selectedFood">
-      <md-option *ngFor="let food of foods" [value]="food.value">
-        {{ food.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" [(value)]="selectedFood">
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class BasicSelectWithoutForms {
@@ -3299,11 +3385,13 @@ class BasicSelectWithoutForms {
 
 @Component({
   template: `
-    <md-select placeholder="Food" [(value)]="selectedFood">
-      <md-option *ngFor="let food of foods" [value]="food.value">
-        {{ food.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" [(value)]="selectedFood">
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class BasicSelectWithoutFormsPreselected {
@@ -3318,11 +3406,13 @@ class BasicSelectWithoutFormsPreselected {
 
 @Component({
   template: `
-    <md-select placeholder="Food" [(value)]="selectedFoods" multiple>
-      <md-option *ngFor="let food of foods" [value]="food.value">
-        {{ food.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" [(value)]="selectedFoods" multiple>
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class BasicSelectWithoutFormsMultiple {
@@ -3340,14 +3430,16 @@ class BasicSelectWithoutFormsMultiple {
 @Component({
   selector: 'select-with-custom-trigger',
   template: `
-    <md-select placeholder="Food" [formControl]="control" #select="mdSelect">
-      <md-select-trigger>
-        {{ select.selected?.viewValue.split('').reverse().join('') }}
-      </md-select-trigger>
-      <md-option *ngFor="let food of foods" [value]="food.value">
-        {{ food.viewValue }}
-      </md-option>
-    </md-select>
+    <md-form-field>
+      <md-select placeholder="Food" [formControl]="control" #select="mdSelect">
+        <md-select-trigger>
+          {{ select.selected?.viewValue.split('').reverse().join('') }}
+        </md-select-trigger>
+        <md-option *ngFor="let food of foods" [value]="food.value">
+          {{ food.viewValue }}
+        </md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class SelectWithCustomTrigger {
@@ -3362,10 +3454,12 @@ class SelectWithCustomTrigger {
 @Component({
   selector: 'ng-model-compare-with',
   template: `
-    <md-select [ngModel]="selectedFood" (ngModelChange)="setFoodByCopy($event)"
-               [compareWith]="comparator">
-      <md-option *ngFor="let food of foods" [value]="food">{{ food.viewValue }}</md-option>
-    </md-select>
+    <md-form-field>
+      <md-select [ngModel]="selectedFood" (ngModelChange)="setFoodByCopy($event)"
+                 [compareWith]="comparator">
+        <md-option *ngFor="let food of foods" [value]="food">{{ food.viewValue }}</md-option>
+      </md-select>
+    </md-form-field>
   `
 })
 class NgModelCompareWithSelect {
