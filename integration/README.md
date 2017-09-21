@@ -24,11 +24,8 @@ Note that the `package.json` file uses a special `file://../../dist` scheme
 to reference the Angular packages, so that the locally-built Angular
 is installed into the test app.
 
-Also, beware of floating (non-shrinkwrapped) dependencies. If in doubt
-you can install the package directly from `file:../../node_modules`. For example,
-this is useful for protractor, which has a slow post-install step
-(`webdriver-manager update`) that can be skipped when the package from
-Angular's `node_modules` is installed.
+Also, beware of floating (non-locked) dependencies. If in doubt
+you can install the package directly from `file:../../node_modules`.
 
 ## Running integration tests
 
