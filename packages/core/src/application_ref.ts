@@ -222,7 +222,7 @@ export class PlatformRef {
     // as instantiating the module creates some providers eagerly.
     // So we create a mini parent injector that just contains the new NgZone and
     // pass that as parent to the NgModuleFactory.
-    const ngZoneOption = options && options.ngZone;
+    const ngZoneOption = options ? options.ngZone : undefined;
     const ngZone = getNgZone(ngZoneOption);
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
