@@ -10,7 +10,8 @@ child. The template extension hierarchy looks like this (with declared blocks in
 
 - layout/base.template.html (base)
   - module.template.html
-  - layout/api-base.template.html (jumpNav, jumpNavLinks, whatItDoes, infoBar, securityConsiderations, deprecationNotes, howToUse, details)
+  - layout/api-base.template.html (jumpNav, jumpNavLinks, whatItDoes, infoBar, securityConsiderations,
+    deprecationNotes, howToUse, details)
     - class.template.html
       - directive.template.html
       - enum.template.html
