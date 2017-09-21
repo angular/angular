@@ -431,6 +431,10 @@ function addReferencesToSourceFile(sf: ts.SourceFile, genFileNames: string[]) {
   sf.referencedFiles = newReferencedFiles;
 }
 
+export function getOriginalReferences(sourceFile: ts.SourceFile): ts.FileReference[]|undefined {
+  return sourceFile && (sourceFile as any).originalReferencedFiles;
+}
+
 function dotRelative(from: string, to: string): string {
   const rPath: string = path.relative(from, to).replace(/\\/g, '/');
   return rPath.startsWith('.') ? rPath : './' + rPath;

@@ -9,8 +9,6 @@ source ${thisDir}/_travis-fold.sh
 
 # Run unit tests for our tools/ directory
 travisFoldStart "test.unit.tools"
-  node ./dist/tools/tsc-watch/ tools runCmdsOnly
-
   # TODO(i) could this be rolled into the tools tests above? why is it separate?
   travisFoldStart "test.unit.validate-commit-message"
     (
@@ -30,8 +28,7 @@ travisFoldEnd "test.unit.node"
 # rebuild to revert files in @angular/compiler/test
 # TODO(tbosch): remove this and teach karma to serve the right files
 travisFoldStart "test.unit.rebuildHack"
-  node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p packages/tsconfig.json
-  node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p modules/tsconfig.json
+  node dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
 travisFoldStart "test.unit.rebuildHack"
 
 

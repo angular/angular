@@ -6,6 +6,7 @@
     "rootDir": "../",
     "paths": {
       "rxjs/*": ["../../../node_modules/rxjs/*"],
+      "@angular/common": ["../../../dist/packages/common"],
       "@angular/core": ["../../../dist/packages/core"],
       "@angular/core/testing": ["../../../dist/packages/core/testing"],
       "@angular/animations": ["../../../dist/packages/animations"],
@@ -23,7 +24,8 @@
 
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
     "flatModuleOutFile": "animations.js",
     "flatModuleId": "@angular/platform-browser/animations"
   }

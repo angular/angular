@@ -95,14 +95,6 @@ if (platform == 'node') {
         ]
       },
       BaseConfig));
-} else if (platform == 'tools') {
-  const specFiles = ['dist/all/@angular/tsc-wrapped/**/*{_,.}spec.js'];
-  tscWatch = new TscWatch(Object.assign(
-      {
-        tsconfig: ['tools/tsconfig.json', 'packages/tsc-wrapped/tsconfig.json'],
-        onChangeCmds: [createNodeTestCommand(specFiles, debugMode)]
-      },
-      BaseConfig));
 } else {
   throw new Error(`unknown platform: ${platform}`);
 }

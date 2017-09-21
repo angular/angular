@@ -5,7 +5,7 @@ set -u -e -o pipefail
 
 # These ones can be `npm link`ed for fast development
 LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations,tsc-wrapped}
+  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations}
 )
 
 TYPESCRIPT_2_4=typescript@2.4.x
@@ -46,10 +46,10 @@ cp -v package.json $TMP
   #./node_modules/.bin/ngc -p tsconfig-build.json --i18nFile=src/messages.fi.xtb --locale=fi --i18nFormat=xtb
 
   # Generate the metadata for the third-party modules
-  node ./node_modules/@angular/tsc-wrapped/src/main -p third_party_src/tsconfig-build.json
+  ./node_modules/.bin/ngc -p third_party_src/tsconfig-build.json
 
   # Generate the the bundle modules
-  node ./node_modules/@angular/tsc-wrapped/src/main -p flat_module/tsconfig-build.json
+  ./node_modules/.bin/ngc -p flat_module/tsconfig-build.json
 
   # Copy the html files from source to the emitted output
   cp flat_module/src/*.html node_modules/flat_module/src

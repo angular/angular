@@ -25,9 +25,12 @@ PACKAGES=(core
   language-service
   benchpress)
 
+TSC_PACKAGES=(compiler-cli
+  language-service
+  benchpress)
+
 NODE_PACKAGES=(compiler-cli
-  benchpress
-  tsc-wrapped)
+  benchpress)
 
 BUILD_ALL=true
 BUNDLE=true
@@ -38,6 +41,7 @@ BUILD_EXAMPLES=true
 COMPILE_SOURCE=true
 TYPECHECK_ALL=true
 BUILD_TOOLS=true
+export NODE_PATH=${NODE_PATH:-}:${currentDir}/dist/tools
 
 for ARG in "$@"; do
   case "$ARG" in
@@ -156,7 +160,7 @@ runRollup() {
   if [[ -f "${1}/rollup.config.js" ]]; then
     cd ${1}
 
-    echo "======           $ROLLUP -c ${1}/rollup.config.js"
+    echo "======           $ROLLUP -c ${1}/rollup.config.js --sourcemap"
     $ROLLUP -c rollup.config.js --sourcemap >/dev/null 2>&1
 
     # Recurse for sub directories
@@ -216,11 +220,12 @@ minify() {
 #   None
 #######################################
 compilePackage() {
-  echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json"
-  # For NODE_PACKAGES items (not getting rolled up)
-  if containsElement "${3}" "${NODE_PACKAGES[@]}"; then
+  # For TSC_PACKAGES items
+  if containsElement "${3}" "${TSC_PACKAGES[@]}"; then
+    echo "======      [${3}]: COMPILING: ${TSC} -p ${1}/tsconfig-build.json"
     $TSC -p ${1}/tsconfig-build.json
   else
+    echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json"
     local package_name=$(basename "${2}")
     $NGC -p ${1}/tsconfig-build.json
     echo "======           Create ${1}/../${package_name}.d.ts re-export file for tsickle"
@@ -247,9 +252,15 @@ compilePackage() {
 #   None
 #######################################
 compilePackageES5() {
-  echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap"
-  local package_name=$(basename "${2}")
-  $NGC -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap
+  if containsElement "${3}" "${TSC_PACKAGES[@]}"; then
+    echo "======      [${3}]: COMPILING: ${TSC} -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap"
+    local package_name=$(basename "${2}")
+    $TSC -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap
+  else
+    echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap"
+    local package_name=$(basename "${2}")
+    $NGC -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap
+  fi
 
   for DIR in ${1}/* ; do
     [ -d "${DIR}" ] || continue
@@ -315,7 +326,7 @@ echo "====== BUILDING: Version ${VERSION}"
 N="
 "
 TSC=`pwd`/node_modules/.bin/tsc
-NGC="node --max-old-space-size=3000 `pwd`/dist/packages-dist/tsc-wrapped/src/main"
+NGC="node --max-old-space-size=3000 `pwd`/dist/tools/@angular/compiler-cli/src/main"
 UGLIFYJS=`pwd`/node_modules/.bin/uglifyjs
 TSCONFIG=./tools/tsconfig.json
 ROLLUP=`pwd`/node_modules/.bin/rollup
@@ -394,14 +405,12 @@ if [[ ${BUILD_ALL} == true ]]; then
 fi
 
 if [[ ${BUILD_TOOLS} == true || ${BUILD_ALL} == true ]]; then
-  echo "====== (tsc-wrapped)COMPILING: \$(npm bin)/tsc -p packages/tsc-wrapped/tsconfig.json ====="
-  $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig.json
-  echo "====== (tsc-wrapped)COMPILING: \$(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json ====="
-  $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json
-  cp ./packages/tsc-wrapped/package.json ./dist/packages-dist/tsc-wrapped
-  cp ./packages/tsc-wrapped/README.md ./dist/packages-dist/tsc-wrapped
-  updateVersionReferences dist/packages-dist/tsc-wrapped
+  echo "====== (compiler)COMPILING: \$(npm bin)/tsc -p packages/compiler/tsconfig-tools.json"
+  $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
+  echo "====== (compiler)COMPILING: \$(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json"
+  $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json
 
+  mkdir -p ./dist/packages-dist
   rsync -a packages/bazel/ ./dist/packages-dist/bazel
   # Remove BEGIN-INTERNAL...END-INTERAL blocks
   # https://stackoverflow.com/questions/24175271/how-can-i-match-multi-line-patterns-in-the-command-line-with-perl-style-regex

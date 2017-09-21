@@ -5,19 +5,20 @@
     "baseUrl": ".",
     "rootDir": "../",
     "paths": {
-      "@angular/compiler": ["../../../dist/packages/compiler"]
+      "@angular/compiler": ["../../../dist/packages/compiler"],
+      "@angular/core": ["../../../dist/packages/core"]
     },
     "outDir": "../../../dist/packages/compiler"
   },
 
   "files": [
-    "public_api.ts",
+    "testing.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
 
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "flatModuleOutFile": "testing.js",
-    "flatModuleId": "@angular/compiler/testing"
+    "skipMetadataEmit": true,
+    "skipTemplateCodegen": true
   }
 }
