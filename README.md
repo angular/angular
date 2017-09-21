@@ -8,7 +8,7 @@
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/angular2-ci.svg)](https://saucelabs.com/u/angular2-ci)
 
-*Safari (7+), iOS (7+), Edge (14) and IE mobile (11) are tested on [BrowserStack][browserstack].*
+*Safari (7+), iOS (7+) and IE mobile (11) are tested on [BrowserStack][browserstack].*
 
 # Angular
 
