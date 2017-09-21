@@ -14,6 +14,12 @@ export const PRESERVE_WS_ATTR_NAME = 'ngPreserveWhitespaces';
 
 const SKIP_WS_TRIM_TAGS = new Set(['pre', 'template', 'textarea', 'script', 'style']);
 
+// Equivalent to \s with \u00a0 (non-breaking space) excluded.
+// Based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+const WS_CHARS = ' \f\n\r\t\v\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff';
+const NO_WS_REGEXP = new RegExp(`[^${WS_CHARS}]`);
+const WS_REPLACE_REGEXP = new RegExp(`[${WS_CHARS}]{2,}`, 'g');
+
 function hasPreserveWhitespacesAttr(attrs: html.Attribute[]): boolean {
   return attrs.some((attr: html.Attribute) => attr.name === PRESERVE_WS_ATTR_NAME);
 }
@@ -63,10 +69,11 @@ class WhitespaceVisitor implements html.Visitor {
   }
 
   visitText(text: html.Text, context: any): any {
-    const isBlank = text.value.trim().length === 0;
+    const isNotBlank = text.value.match(NO_WS_REGEXP);
 
-    if (!isBlank) {
-      return new html.Text(replaceNgsp(text.value).replace(/\s\s+/g, ' '), text.sourceSpan);
+    if (isNotBlank) {
+      return new html.Text(
+          replaceNgsp(text.value).replace(WS_REPLACE_REGEXP, ' '), text.sourceSpan);
     }
 
     return null;
