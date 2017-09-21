@@ -6,7 +6,7 @@
     transition: {
       duration: $swift-ease-out-duration;
       timing-function: $swift-ease-out-timing-function;
-      property: transform, margin-left, margin-right;
+      property: margin-left, margin-right;
     }
   }
 

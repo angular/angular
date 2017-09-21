@@ -1,87 +1,60 @@
-<h2>Basic Use Case</h2>
+<button md-raised-button (click)="isLaunched = true" *ngIf="!isLaunched" color="primary">
+  Launch Fullscreen Sidenav Demo
+</button>
 
-<md-sidenav-container class="demo-sidenav-container">
-  <md-sidenav #start (open)="myinput.focus()" mode="side">
-    Start Side Drawer
-    <br>
-    <button md-button (click)="start.close()">Close</button>
-    <br>
-    <button md-button (click)="end.open()">Open End Side</button>
-    <br>
-    <button md-button
-            (click)="start.mode = (start.mode == 'push' ? 'over' : (start.mode == 'over' ? 'side' : 'push'))">Toggle Mode</button>
-    <div>Mode: {{start.mode}}</div>
-    <br>
-    <input #myinput>
-  </md-sidenav>
+<div class="demo-sidenav-area" *ngIf="isLaunched">
+  <md-toolbar *ngIf="showHeader && !coverHeader">Header</md-toolbar>
+  <md-sidenav-container>
+    <md-sidenav #start (open)="myinput.focus()" [mode]="mode"
+                [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
+      Start Side Sidenav
+      <br>
+      <button md-button (click)="start.close()">Close</button>
+      <br>
+      <button md-button (click)="end.open()">Open End Side</button>
+      <br>
+      <button md-button (click)="modeIndex = (modeIndex + 1) % 3">Toggle Mode</button>
+      <div>Mode: {{start.mode}}</div>
+      <br>
+      <input #myinput>
+      <div class="demo-filler-content" *ngFor="let c of fillerContent">Filler Content</div>
+    </md-sidenav>
 
-  <md-sidenav #end position="end">
-    End Side Drawer
-    <br>
-    <button md-button (click)="end.close()">Close</button>
-  </md-sidenav>
+    <md-sidenav #end position="end"
+                [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
+      End Side Sidenav
+      <br>
+      <button md-button (click)="end.close()">Close</button>
+      <div class="demo-filler-content" *ngFor="let c of fillerContent">Filler Content</div>
+    </md-sidenav>
 
-  <div class="demo-sidenav-content">
-    <h1>My Content</h1>
+    <md-sidenav-content>
+      <md-toolbar *ngIf="showHeader && coverHeader">Header</md-toolbar>
+      <div class="demo-sidenav-content">
+        <div>
+          <button md-raised-button (click)="isLaunched = false">
+            Exit Fullscreen Sidenav Demo
+          </button>
+        </div>
 
-    <div>
-      <header>Sidenav</header>
-      <button md-button (click)="start.toggle()">Toggle Start Side Drawer</button>
-      <button md-button (click)="end.toggle()">Toggle End Side Drawer</button>
-    </div>
+        <div>
+          <h3>Sidenav</h3>
+          <button md-button (click)="start.toggle()">Toggle Start Side Sidenav</button>
+          <button md-button (click)="end.toggle()">Toggle End Side Sidenav</button>
+          <md-checkbox [(ngModel)]="fixed">Fixed mode</md-checkbox>
+          <md-checkbox [(ngModel)]="coverHeader">Sidenav covers header/footer</md-checkbox>
+        </div>
 
-    <button md-button>HELLO</button>
-    <button md-raised-button class="mat-primary">HELLO</button>
-    <button md-fab class="mat-accent">HI</button>
-  </div>
-</md-sidenav-container>
+        <div>
+          <h3>Header / Footer</h3>
+          <md-checkbox [(ngModel)]="showHeader">Show header</md-checkbox>
+          <md-checkbox [(ngModel)]="showFooter">Show footer</md-checkbox>
+        </div>
 
-<h2>Sidenav Already Opened</h2>
-
-<md-sidenav-container class="demo-sidenav-container">
-  <md-sidenav #start2 opened mode="side">
-    Drawer
-  </md-sidenav>
-
-  <div class="demo-sidenav-content">
-    <button md-button (click)="start2.toggle()">Toggle Start Side Drawer</button>
-  </div>
-</md-sidenav-container>
-
-<h2>Dynamic Position Sidenav</h2>
-
-<md-sidenav-container class="demo-sidenav-container">
-  <md-sidenav #dynamicPosSidenav1 mode="side" [position]="invert ? 'end' : 'start'">Start</md-sidenav>
-  <md-sidenav #dynamicPosSidenav2 mode="side" [position]="invert ? 'start' : 'end'">End</md-sidenav>
-
-  <div class="demo-sidenav-content">
-    <button (click)="dynamicPosSidenav1.toggle(); dynamicPosSidenav2.toggle()">
-      Toggle sidenavs
-    </button>
-    <button (click)="invert = !invert">Change sides</button>
-  </div>
-</md-sidenav-container>
-
-<h2>Sidenav with focus attributes</h2>
-
-<md-sidenav-container class="demo-sidenav-container">
-  <md-sidenav #focusSidenav>
-    <md-nav-list>
-      <a md-list-item routerLink>Link</a>
-      <a md-list-item routerLink cdk-focus-region-start>Focus region start</a>
-      <a md-list-item routerLink>Link</a>
-      <a md-list-item routerLink cdk-focus-initial>Initially focused</a>
-      <a md-list-item routerLink cdk-focus-region-end>Focus region end</a>
-      <a md-list-item routerLink>Link</a>
-    </md-nav-list>
-  </md-sidenav>
-
-  <div class="demo-sidenav-content">
-    <h1>My Content</h1>
-
-    <div>
-      <header>Sidenav</header>
-      <button md-button (click)="focusSidenav.toggle()">Toggle Drawer</button>
-    </div>
-  </div>
-</md-sidenav-container>
+        <div class="demo-filler-content" *ngFor="let c of fillerContent">Filler Content</div>
+      </div>
+      <md-toolbar *ngIf="showFooter && coverHeader">Footer</md-toolbar>
+    </md-sidenav-content>
+  </md-sidenav-container>
+  <md-toolbar *ngIf="showFooter && !coverHeader">Footer</md-toolbar>
+</div>

@@ -3,15 +3,21 @@
 @import '../core/style/layout-common';
 @import '../../cdk/a11y/a11y';
 
+$mat-drawer-content-z-index: 1;
+$mat-drawer-side-drawer-z-index: 2;
+$mat-drawer-backdrop-z-index: 3;
+$mat-drawer-over-drawer-z-index: 4;
+
 // stylelint-disable max-line-length
 // Mixin that creates a new stacking context.
 // see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
 // stylelint-enable
-@mixin mat-drawer-stacking-context() {
+@mixin mat-drawer-stacking-context($z-index:1) {
   position: relative;
 
-  // Use a transform to create a new stacking context.
-  transform: translate3d(0, 0, 0);
+  // Use a z-index to create a new stacking context. (We can't use transform because it breaks fixed
+  // positioning inside of the transformed element).
+  z-index: $z-index;
 }
 
 .mat-drawer-container {
@@ -47,7 +53,7 @@
 
   // Because of the new stacking context, the z-index stack is new and we can use our own
   // numbers.
-  z-index: 2;
+  z-index: $mat-drawer-backdrop-z-index;
 
   // We use 'visibility: hidden | visible' because 'display: none' will not animate any
   // transitions, while visibility will interpolate transitions properly.
@@ -65,7 +71,7 @@
 }
 
 .mat-drawer-content {
-  @include mat-drawer-stacking-context();
+  @include mat-drawer-stacking-context($mat-drawer-content-z-index);
 
   display: block;
   height: 100%;
@@ -73,7 +79,7 @@
 }
 
 .mat-drawer {
-  @include mat-drawer-stacking-context();
+  @include mat-drawer-stacking-context($mat-drawer-over-drawer-z-index);
 
   display: block;
   position: absolute;
@@ -83,12 +89,11 @@
   min-width: 5vw;
   outline: 0;
   box-sizing: border-box;
-  height: 100%;
   overflow-y: auto; // TODO(kara): revisit scrolling behavior for drawers
   transform: translate3d(-100%, 0, 0);
 
   &.mat-drawer-side {
-    z-index: 1;
+    z-index: $mat-drawer-side-drawer-z-index;
   }
 
   &.mat-drawer-end {
@@ -113,4 +118,8 @@
       @include mat-elevation(16);
     }
   }
+}
+
+.mat-sidenav-fixed {
+  position: fixed;
 }

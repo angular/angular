@@ -6,18 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {A11yModule} from '@angular/cdk/a11y';
 import {OverlayModule} from '@angular/cdk/overlay';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
 import {MdCommonModule} from '@angular/material/core';
-import {MdDrawer, MdDrawerContainer} from './drawer';
-import {MdSidenav, MdSidenavContainer} from './sidenav';
+import {MdDrawer, MdDrawerContainer, MdDrawerContent} from './drawer';
+import {MdSidenav, MdSidenavContainer, MdSidenavContent} from './sidenav';
 
 
 @NgModule({
   imports: [CommonModule, MdCommonModule, A11yModule, OverlayModule],
-  exports: [MdDrawerContainer, MdDrawer, MdSidenavContainer, MdSidenav, MdCommonModule],
-  declarations: [MdDrawerContainer, MdDrawer, MdSidenavContainer, MdSidenav],
+  exports: [
+    MdCommonModule,
+    MdDrawer,
+    MdDrawerContainer,
+    MdDrawerContent,
+    MdSidenav,
+    MdSidenavContainer,
+    MdSidenavContent,
+  ],
+  declarations: [
+    MdDrawer,
+    MdDrawerContainer,
+    MdDrawerContent,
+    MdSidenav,
+    MdSidenavContainer,
+    MdSidenavContent,
+  ],
 })
 export class MdSidenavModule {}

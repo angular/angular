@@ -1,0 +1,10 @@
+<div class="mat-drawer-backdrop" (click)="_onBackdropClicked()"
+     [class.mat-drawer-shown]="_isShowingBackdrop()"></div>
+
+<ng-content select="md-sidenav, mat-sidenav"></ng-content>
+
+<ng-content select="md-sidenav-content, mat-sidenav-content">
+</ng-content>
+<md-sidenav-content *ngIf="!_content">
+  <ng-content></ng-content>
+</md-sidenav-content>

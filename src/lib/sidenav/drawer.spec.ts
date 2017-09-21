@@ -76,6 +76,8 @@ describe('MdDrawer', () => {
 
     it('should emit the backdropClick event when the backdrop is clicked', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
+      fixture.detectChanges();
+
       let testComponent: BasicTestApp = fixture.debugElement.componentInstance;
       let openButtonElement = fixture.debugElement.query(By.css('.open')).nativeElement;
 
