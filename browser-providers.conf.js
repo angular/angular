@@ -23,7 +23,7 @@ var CIconfiguration = {
   'IE9': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'IE10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'IE11': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Edge': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'Edge': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.4': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android5': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Safari7': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
@@ -70,7 +70,7 @@ var customLaunchers = {
     base: 'SauceLabs',
     browserName: 'MicrosoftEdge',
     platform: 'Windows 10',
-    version: '13.10586'
+    version: '14.14393'
   },
   'SL_ANDROID4.1': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.1'},
   'SL_ANDROID4.2': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.2'},
