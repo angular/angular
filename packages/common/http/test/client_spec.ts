@@ -115,6 +115,60 @@ export function main() {
         expect(testReq.request.body).toBe(body);
         testReq.flush('hello world');
       });
+      it('with falsy string data', (done: DoneFn) => {
+        client.post('/test', '', {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          expect(res.body).toBe('');
+          done();
+        });
+        backend.expectOne('/test').flush(null, {echoRequest: true});
+      });
+      it('with falsy numeric string data', (done: DoneFn) => {
+        client.post('/test', '0', {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          expect(res.body).toBe('0');
+          done();
+        });
+        backend.expectOne('/test').flush(null, {echoRequest: true});
+      });
+      it('with falsy number data', (done: DoneFn) => {
+        client.post('/test', 0, {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          expect(res.body).toBe(0);
+          done();
+        });
+        backend.expectOne('/test').flush(null, {echoRequest: true});
+      });
+      it('with non-falsy number data', (done: DoneFn) => {
+        client.post('/test', 1, {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          expect(res.body).toBe(1);
+          done();
+        });
+        backend.expectOne('/test').flush(null, {echoRequest: true});
+      });
+      it('with falsy boolean data', (done: DoneFn) => {
+        client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(204);
+          expect(res.body).toBe(null);
+          done();
+        });
+        backend.expectOne('/test').flush(null, {echoRequest: true});
+      });
+      it('with falsy NaN data', (done: DoneFn) => {
+        client.post('/test', NaN, {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(204);
+          expect(res.body).toBe(null);
+          done();
+        });
+        backend.expectOne('/test').flush(null, {echoRequest: true});
+      });
       it('with an arraybuffer', (done: DoneFn) => {
         const body = new ArrayBuffer(4);
         client.post('/test', body, {observe: 'response', responseType: 'text'}).subscribe(res => {

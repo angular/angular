@@ -40,6 +40,7 @@ export class TestRequest {
     headers?: HttpHeaders | {[name: string]: string | string[]},
     status?: number,
     statusText?: string,
+    echoRequest?: boolean,
   } = {}): void {
     if (this.cancelled) {
       throw new Error(`Cannot flush a cancelled request.`);
@@ -47,7 +48,8 @@ export class TestRequest {
     const url = this.request.urlWithParams;
     const headers =
         (opts.headers instanceof HttpHeaders) ? opts.headers : new HttpHeaders(opts.headers);
-    body = _maybeConvertBody(this.request.responseType, body);
+    body = _maybeConvertBody(
+        this.request.responseType, opts.echoRequest === true ? this.request.body : body);
     let statusText: string|undefined = opts.statusText;
     let status: number = opts.status !== undefined ? opts.status : 200;
     if (opts.status === undefined) {
@@ -164,8 +166,11 @@ function _toJsonBody(
  */
 function _toTextBody(
     body: ArrayBuffer | Blob | string | number | Object |
-    (string | number | Object | null)[]): string {
+    (string | number | Object | null)[]): string|number {
   if (typeof body === 'string') {
+    return body;
+  }
+  if (typeof body === 'number') {
     return body;
   }
   if (typeof ArrayBuffer !== 'undefined' && body instanceof ArrayBuffer) {

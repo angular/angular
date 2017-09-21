@@ -262,7 +262,11 @@ export class HttpResponse<T> extends HttpResponseBase {
     body?: T | null, headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
   } = {}) {
     super(init);
-    this.body = init.body || null;
+    const responseBody =
+        (init.body as T || typeof init.body === 'string' || typeof init.body === 'number') ?
+        init.body as T :
+        null;
+    this.body = responseBody;
   }
 
   readonly type: HttpEventType.Response = HttpEventType.Response;

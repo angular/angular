@@ -371,7 +371,9 @@ export class HttpClient {
       }
 
       // Construct the request.
-      req = new HttpRequest(first, url !, options.body || null, {
+      const requestBody =
+          (options.body || options.body === '' || options.body === 0) ? options.body : null;
+      req = new HttpRequest(first, url !, requestBody, {
         headers,
         params,
         reportProgress: options.reportProgress,
