@@ -3,11 +3,11 @@
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 @Directive({
-  selector: '[myHighlight]'
+  selector: '[appHighlight]'
 })
 export class HighlightDirective {
 
-  @Input('myHighlight') highlightColor: string;
+  @Input('appHighlight') highlightColor: string;
 
   private el: HTMLElement;
 

@@ -8,7 +8,7 @@ import { HeroService }         from './heroes/hero.service';
 import { HeroListComponent }   from './heroes/hero-list.component';
 
 @Component({
-  selector: 'my-tests',
+  selector: 'app-tests',
   template: `
     <h2>Tests</h2>
     <p id="tests">Tests {{results.pass}}: {{results.message}}</p>

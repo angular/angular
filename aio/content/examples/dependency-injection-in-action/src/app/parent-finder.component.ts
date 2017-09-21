@@ -206,7 +206,7 @@ export class CathyComponent {
 
 ///////// ParentFinder //////
 @Component({
-  selector: 'parent-finder',
+  selector: 'app-parent-finder',
   template: `
     <h2>Parent Finder</h2>
     <alex></alex>

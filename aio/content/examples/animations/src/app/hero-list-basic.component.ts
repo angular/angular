@@ -17,7 +17,7 @@ import {
 import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-basic',
+  selector: 'app-hero-list-basic',
   // #enddocregion
   /* The click event calls hero.toggleState(), which
    * causes the state of that hero to switch from

@@ -2,12 +2,12 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'version-parent',
+  selector: 'app-version-parent',
   template: `
     <h2>Source code version</h2>
     <button (click)="newMinor()">New minor version</button>
     <button (click)="newMajor()">New major version</button>
-    <version-child [major]="major" [minor]="minor"></version-child>
+    <app-version-child [major]="major" [minor]="minor"></app-version-child>
   `
 })
 export class VersionParentComponent {

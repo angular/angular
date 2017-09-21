@@ -200,7 +200,7 @@ Like in AngularJS, Angular automatically mirrors many control properties onto th
 The hero form uses the `.ng-valid` and `.ng-invalid` classes to 
 set the color of each form control's border.
 
-<code-example path="form-validation/src/forms.css" title="forms.css (status classes)">
+<code-example path="form-validation/src/assets/forms.css" title="forms.css (status classes)">
 
 </code-example>
 

@@ -13,7 +13,7 @@ import {
 import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-timings',
+  selector: 'app-hero-list-timings',
   template: `
     <ul>
       <li *ngFor="let hero of heroes"

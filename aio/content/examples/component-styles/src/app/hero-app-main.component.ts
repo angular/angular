@@ -3,12 +3,12 @@ import { Component, Input } from '@angular/core';
 import { Hero } from './hero';
 
 @Component({
-  selector: 'hero-app-main',
+  selector: 'app-hero-main',
   template: `
-    <quest-summary></quest-summary>
-    <hero-details [hero]=hero [class.active]=hero.active>
-      <hero-controls [hero]=hero></hero-controls>
-    </hero-details>
+    <app-quest-summary></app-quest-summary>
+    <app-hero-details [hero]="hero" [class.active]="hero.active">
+      <app-hero-controls [hero]="hero"></app-hero-controls>
+    </app-hero-details>
   `
 })
 export class HeroAppMainComponent {

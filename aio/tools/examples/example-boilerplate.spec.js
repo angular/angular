@@ -6,8 +6,11 @@ const path = require('canonical-path');
 
 describe('example-boilerplate tool', () => {
   describe('add', () => {
-    const numberOfBoilerPlateFiles = 8;
-    const numberOfBoilerPlateTestFiles = 3;
+    const BPFiles = {
+      cli: 18,
+      systemjs: 7,
+      common: 1
+    };
     const exampleFolders = ['a/b', 'c/d'];
 
     beforeEach(() => {
@@ -45,11 +48,28 @@ describe('example-boilerplate tool', () => {
       expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/node_modules'), path.resolve('c/d/node_modules'));
     });
 
-    it('should copy all the source boilerplate files', () => {
+    it('should copy all the source boilerplate files for systemjs', () => {
+      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'systemjs' } : {})
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(numberOfBoilerPlateFiles * exampleFolders.length);
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
+        (BPFiles.cli) +
+        (BPFiles.systemjs) +
+        (BPFiles.common * exampleFolders.length)
+      );
       // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/boilerplate'), 'a/b', 'package.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/boilerplate/systemjs'), 'a/b', 'package.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/boilerplate/common'), 'a/b', 'src/styles.css');
+    });
+
+    it('should copy all the source boilerplate files for cli', () => {
+      exampleBoilerPlate.add();
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
+        (BPFiles.cli * exampleFolders.length) +
+        (BPFiles.common * exampleFolders.length)
+      );
+      // for example
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/boilerplate/cli'), 'a/b', 'package.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/boilerplate/common'), 'c/d', 'src/styles.css');
     });
 
     it('should try to load the example config file', () => {
@@ -57,16 +77,6 @@ describe('example-boilerplate tool', () => {
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledTimes(exampleFolders.length);
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve('a/b/example-config.json'));
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve('c/d/example-config.json'));
-    });
-
-    it('should copy all the test boilerplate files if unit testing is configured', () => {
-      // configure unit testing for example a/b and not c/d
-      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { unittesting: true } : {});
-      exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes((numberOfBoilerPlateFiles * 2) + numberOfBoilerPlateTestFiles);
-      // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(path.resolve(__dirname, '../../content/examples/testing'), 'a/b', 'karma.conf.js');
-      expect(exampleBoilerPlate.copyFile).not.toHaveBeenCalledWith(path.resolve(__dirname, '../../content/examples/testing'), 'c/d', 'karma.conf.js');
     });
   });
 

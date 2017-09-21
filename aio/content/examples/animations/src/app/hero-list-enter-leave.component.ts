@@ -13,7 +13,7 @@ import {
 import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-enter-leave',
+  selector: 'app-hero-list-enter-leave',
   // #docregion template
   template: `
     <ul>

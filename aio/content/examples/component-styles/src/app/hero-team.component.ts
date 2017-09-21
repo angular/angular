@@ -3,9 +3,9 @@ import { Hero } from './hero';
 
 // #docregion stylelink
 @Component({
-  selector: 'hero-team',
+  selector: 'app-hero-team',
   template: `
-    <link rel="stylesheet" href="app/hero-team.component.css">
+    <link rel="stylesheet" href="assets/hero-team.component.css">
     <h3>Team</h3>
     <ul>
       <li *ngFor="let member of hero.team">

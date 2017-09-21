@@ -35,9 +35,27 @@ var rules = {
     from: /src=".?node_modules\/zone.js\/dist\/(.*)"/g,
     to:   'src="https://unpkg.com/zone.js/dist/$1?main=browser"'
   },
+  system_js_header: {
+    from: '</head>',
+    to: `
+    <link rel="stylesheet" href="styles.css">
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+    <script src="systemjs.config.js"></script>
+    <script>
+      System.import('main.js').catch(function(err){ console.error(err); });
+    </script>
+    </head>
+    `
+  }
 };
 
 var rulesToApply = [
+  {
+    pattern: 'system_js_header',
+    exceptIf: 'system.src.js'
+  },
   {
     pattern: 'basehref',
   },

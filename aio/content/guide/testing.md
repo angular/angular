@@ -3770,18 +3770,6 @@ is a topic beyond the scope of this guide .
 
   </tr>
 
-  <tr>
-
-    <td colspan="2">
-
-      <code-example path="testing/src/systemjs.config.extras.js" title="systemjs.config.extras.js" linenums="false">
-
-      </code-example>
-
-    </td>
-
-  </tr>
-
 </table>
 
 

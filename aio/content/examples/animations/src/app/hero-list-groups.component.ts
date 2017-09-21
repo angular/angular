@@ -14,7 +14,7 @@ import {
 import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-groups',
+  selector: 'app-hero-list-groups',
   template: `
     <ul>
       <li *ngFor="let hero of heroes"
