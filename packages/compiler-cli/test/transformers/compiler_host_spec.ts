@@ -37,9 +37,16 @@ describe('NgCompilerHost', () => {
       moduleResolution: ts.ModuleResolutionKind.NodeJs,
     },
     ngHost = createNgHost({files}),
-  }: {files?: Directory, options?: CompilerOptions, ngHost?: CompilerHost} = {}) {
+    summariesFromPreviousCompilations = new Map<string, string>(),
+  }: {
+    files?: Directory,
+    options?: CompilerOptions,
+    ngHost?: CompilerHost,
+    summariesFromPreviousCompilations?: Map<string, string>
+  } = {}) {
     return new TsCompilerAotCompilerTypeCheckHostAdapter(
-        ['/tmp/index.ts'], options, ngHost, new MetadataCollector(), codeGenerator, new Map());
+        ['/tmp/index.ts'], options, ngHost, new MetadataCollector(), codeGenerator,
+        summariesFromPreviousCompilations);
   }
 
   describe('fileNameToModuleName', () => {
@@ -284,5 +291,33 @@ describe('NgCompilerHost', () => {
             `Old: aModule.`, `New: otherModule`
           ].join('\n'));
     });
+  });
+
+  describe('fileExists', () => {
+    it('should cache calls', () => {
+      const ngHost = createNgHost({files: {'tmp': {'src': {'index.ts': ``}}}});
+      spyOn(ngHost, 'fileExists').and.callThrough();
+      const host = createHost({ngHost});
+
+      expect(host.fileExists('/tmp/src/index.ts')).toBe(true);
+      expect(host.fileExists('/tmp/src/index.ts')).toBe(true);
+
+      expect(ngHost.fileExists).toHaveBeenCalledTimes(1);
+    });
+
+    it(`should not derive the existence of generated files baesd on summaries on disc`, () => {
+      const host = createHost({files: {'tmp': {'lib': {'module.ngsummary.json': ``}}}});
+      expect(host.fileExists('/tmp/lib/module.ngfactory.ts')).toBe(false);
+      expect(host.fileExists('/tmp/lib/module.ngfactory.d.ts')).toBe(false);
+    });
+
+    it(`should derive the existence of generated .d.ts files based on the summaries from an old program`,
+       () => {
+         const summariesFromPreviousCompilations = new Map<string, string>();
+         summariesFromPreviousCompilations.set('/tmp/lib/module.ngsummary.json', `{}`);
+         const host = createHost({summariesFromPreviousCompilations});
+         expect(host.fileExists('/tmp/lib/module.ngfactory.ts')).toBe(false);
+         expect(host.fileExists('/tmp/lib/module.ngfactory.d.ts')).toBe(true);
+       });
   });
 });

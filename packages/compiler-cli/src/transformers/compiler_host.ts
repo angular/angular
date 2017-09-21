@@ -49,6 +49,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   private rootDirs: string[];
   private moduleResolutionCache: ts.ModuleResolutionCache;
   private originalSourceFiles = new Map<string, ts.SourceFile>();
+  private originalFileExistsCache = new Map<string, boolean>();
   private generatedSourceFiles = new Map<string, GenSourceFile>();
   private generatedCodeFor = new Set<string>();
   private emitter = new TypeScriptEmitter();
@@ -293,12 +294,10 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     }
     this.generatedCodeFor.add(fileName);
 
-    const baseNameFromGeneratedFile = this._getBaseNamesForGeneratedFile(fileName).find(
-        fileName => this.isSourceFile(fileName) && this.fileExists(fileName));
+    const baseNameFromGeneratedFile = this._getBaseNameForGeneratedSourceFile(fileName);
     if (baseNameFromGeneratedFile) {
       return this.ensureCodeGeneratedFor(baseNameFromGeneratedFile);
     }
-
     const sf = this.getOriginalSourceFile(fileName, this.options.target || ts.ScriptTarget.Latest);
     if (!sf) {
       return;
@@ -334,46 +333,54 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     return this.getOriginalSourceFile(fileName, languageVersion, onError) !;
   }
 
+  private originalFileExists(fileName: string): boolean {
+    let fileExists = this.originalFileExistsCache.get(fileName);
+    if (fileExists == null) {
+      fileExists = this.context.fileExists(fileName);
+      this.originalFileExistsCache.set(fileName, fileExists);
+    }
+    return fileExists;
+  }
+
   fileExists(fileName: string): boolean {
     fileName = stripNgResourceSuffix(fileName);
+    if (fileName.endsWith('.ngfactory.d.ts')) {
+      // Note: the factories of a previous program
+      // are not reachable via the regular fileExists
+      // as they might be in the outDir. So we derive their
+      // fileExist information based on the .ngsummary.json file.
+      if (this.summariesFromPreviousCompilations.has(summaryFileName(fileName))) {
+        return true;
+      }
+    }
     // Note: Don't rely on this.generatedSourceFiles here,
     // as it might not have been filled yet.
-    if (this._getBaseNamesForGeneratedFile(fileName).find(baseFileName => {
-          if (this.isSourceFile(baseFileName)) {
-            return this.fileExists(baseFileName);
-          } else {
-            // Note: the factories of a previous program
-            // are not reachable via the regular fileExists
-            // as they might be in the outDir. So we derive their
-            // fileExist information based on the .ngsummary.json file.
-            return this.fileExists(summaryFileName(baseFileName));
-          }
-        })) {
+    if (this._getBaseNameForGeneratedSourceFile(fileName)) {
       return true;
     }
     return this.summariesFromPreviousCompilations.has(fileName) ||
-        this.originalSourceFiles.has(fileName) || this.context.fileExists(fileName);
+        this.originalFileExists(fileName);
   }
 
-  private _getBaseNamesForGeneratedFile(genFileName: string): string[] {
+  private _getBaseNameForGeneratedSourceFile(genFileName: string): string|undefined {
     const genMatch = GENERATED_FILES.exec(genFileName);
-    if (genMatch) {
-      const [, base, genSuffix, suffix] = genMatch;
-      let baseNames: string[] = [];
-      if (genSuffix.indexOf('ngstyle') >= 0) {
-        // Note: ngstlye files have names like `afile.css.ngstyle.ts`
-        baseNames = [base];
-      } else if (suffix === 'd.ts') {
-        baseNames = [base + '.d.ts'];
-      } else if (suffix === 'ts') {
-        // Note: on-the-fly generated files always have a `.ts` suffix,
-        // but the file from which we generated it can be a `.ts`/ `.d.ts`
-        // (see options.generateCodeForLibraries).
-        baseNames = [`${base}.ts`, `${base}.d.ts`];
-      }
-      return baseNames;
+    if (!genMatch) {
+      return undefined;
     }
-    return [];
+    const [, base, genSuffix, suffix] = genMatch;
+    if (suffix !== 'ts') {
+      return undefined;
+    }
+    if (genSuffix.indexOf('ngstyle') >= 0) {
+      // Note: ngstyle files have names like `afile.css.ngstyle.ts`
+      return base;
+    } else {
+      // Note: on-the-fly generated files always have a `.ts` suffix,
+      // but the file from which we generated it can be a `.ts`/ `.d.ts`
+      // (see options.generateCodeForLibraries).
+      return [`${base}.ts`, `${base}.d.ts`].find(
+          baseFileName => this.isSourceFile(baseFileName) && this.originalFileExists(baseFileName));
+    }
   }
 
   loadSummary(filePath: string): string|null {
@@ -464,5 +471,10 @@ function addNgResourceSuffix(fileName: string): string {
 }
 
 function summaryFileName(fileName: string): string {
+  const genFileMatch = GENERATED_FILES.exec(fileName);
+  if (genFileMatch) {
+    const base = genFileMatch[1];
+    return base + '.ngsummary.json';
+  }
   return fileName.replace(EXT, '') + '.ngsummary.json';
 }

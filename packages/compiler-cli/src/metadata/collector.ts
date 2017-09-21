@@ -12,16 +12,7 @@ import {Evaluator, errorSymbol} from './evaluator';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
-// In TypeScript 2.1 these flags moved
-// These helpers work for both 2.0 and 2.1.
-const isExport = (ts as any).ModifierFlags ?
-    ((node: ts.Node) =>
-         !!((ts as any).getCombinedModifierFlags(node) & (ts as any).ModifierFlags.Export)) :
-    ((node: ts.Node) => !!((node.flags & (ts as any).NodeFlags.Export)));
-const isStatic = (ts as any).ModifierFlags ?
-    ((node: ts.Node) =>
-         !!((ts as any).getCombinedModifierFlags(node) & (ts as any).ModifierFlags.Static)) :
-    ((node: ts.Node) => !!((node.flags & (ts as any).NodeFlags.Static)));
+const isStatic = (node: ts.Node) => ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Static;
 
 /**
  * A set of collector options to use when collecting metadata.
@@ -284,6 +275,8 @@ export class MetadataCollector {
       }
     });
 
+    const isExport = (node: ts.Node) =>
+        sourceFile.isDeclarationFile || ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export;
     const isExportedIdentifier = (identifier?: ts.Identifier) =>
         identifier && exportMap.has(identifier.text);
     const isExported =
