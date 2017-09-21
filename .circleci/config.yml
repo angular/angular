@@ -27,10 +27,9 @@ jobs:
       - checkout:
           <<: *post_checkout
       - restore_cache:
-          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-      - run: npm install
-      - run: npm run postinstall
+      - run: yarn install
       - run: ./node_modules/.bin/gulp lint
 
   build:
@@ -39,12 +38,12 @@ jobs:
       - checkout:
           <<: *post_checkout
       - restore_cache:
-          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-      - run: bazel run @nodejs//:npm install
+      - run: bazel run @yarn//:yarn
       - run: bazel build packages/...
       - save_cache:
-          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - "node_modules"
 
