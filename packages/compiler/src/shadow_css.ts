@@ -482,7 +482,7 @@ class SafeSelector {
       this.index++;
       return pseudo + replaceBy;
     });
-  };
+  }
 
   restore(content: string): string {
     return content.replace(/__ph-(\d+)__/g, (ph, index) => this.placeholders[+index]);

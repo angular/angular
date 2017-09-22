@@ -29,6 +29,7 @@ module.exports = {
 
   closure: gulp => done => {
     const {RELATIVE_I18N_DATA_FOLDER} = require('./cldr/extract');
+    // tslint:disable-next-line:no-console
     console.log(RELATIVE_I18N_DATA_FOLDER, fs.existsSync(RELATIVE_I18N_DATA_FOLDER));
     if (!fs.existsSync(RELATIVE_I18N_DATA_FOLDER)) {
       throw new Error(

@@ -2197,7 +2197,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
 
   constructor(
       private includeSourceSpan: boolean,
-      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG){};
+      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {}
 
   visitNgContent(ast: NgContentAst, context: any): any {
     const res = [NgContentAst];

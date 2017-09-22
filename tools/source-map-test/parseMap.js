@@ -1,11 +1,18 @@
 #!/usr/bin/env node
 
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 const vlq = require('vlq');
 const fs = require('fs');
 const path = require('path');
 
-module.exports =
-    function getMappings(bundlePath) {
+module.exports = function getMappings(bundlePath) {
   const sourceMap = JSON.parse(getFile(`${bundlePath}.map`));
   const sourcesContent = sourceMap.sourcesContent.map(file => file.split('\n'));
   const bundleLines = getFile(bundlePath).split('\n');
@@ -45,7 +52,7 @@ module.exports =
 
     return matchData;
   }, []);
-}
+};
 
 function getFile(filePath) {
   return fs.readFileSync(path.resolve(process.cwd(), filePath), 'UTF-8');

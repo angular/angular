@@ -27,13 +27,13 @@ export abstract class SummaryResolver<T> {
 export class JitSummaryResolver implements SummaryResolver<Type> {
   private _summaries = new Map<Type, Summary<Type>>();
 
-  isLibraryFile(): boolean { return false; };
+  isLibraryFile(): boolean { return false; }
   toSummaryFileName(fileName: string): string { return fileName; }
   fromSummaryFileName(fileName: string): string { return fileName; }
   resolveSummary(reference: Type): Summary<Type>|null {
     return this._summaries.get(reference) || null;
-  };
+  }
   getSymbolsOf(): Type[] { return []; }
   getImportAs(reference: Type): Type { return reference; }
-  addSummary(summary: Summary<Type>) { this._summaries.set(summary.symbol, summary); };
+  addSummary(summary: Summary<Type>) { this._summaries.set(summary.symbol, summary); }
 }

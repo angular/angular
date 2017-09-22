@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 const path = require('path');
 const getMappings = require('./parseMap');
 
@@ -18,6 +26,7 @@ const STRIP_PREFIX_REGEX = /ɵ/g;
 const STRIP_SUFFIX_REGEX = /([^$]+)(\$)+\d/g;
 const SYNTHETIC_REGEX = /ɵ[0-9]/;
 
+// tslint:disable:no-console
 module.exports = function sourceMapTest(package) {
   const mappings =
       getMappings(getBundlePath(package)).filter(mapping => shouldCheckMapping(mapping.sourceText));
@@ -27,7 +36,7 @@ module.exports = function sourceMapTest(package) {
   const failures = mappings.filter(mapping => {
     if (SYNTHETIC_REGEX.test(mapping.sourceText)) return false;
     if (cleanSource(mapping.sourceText) !== cleanGen(mapping.genText)) {
-      console.log('source:', cleanSource(mapping.sourceText), 'gen:', cleanGen(mapping.genText))
+      console.log('source:', cleanSource(mapping.sourceText), 'gen:', cleanGen(mapping.genText));
     }
     return cleanSource(mapping.sourceText) !== cleanGen(mapping.genText);
   });
@@ -58,6 +67,7 @@ function cleanGen(gen) {
       .replace(AFTER_EQUALS_REGEX, '$1=');
 }
 
+// tslint:disable:no-console
 function logResults(failures) {
   if (failures.length) {
     console.error(`... and source maps appear to be broken: ${failures.length} failures.`);

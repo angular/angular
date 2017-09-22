@@ -6,7 +6,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/* tslint:disable:no-console  */
 
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
@@ -16,6 +15,7 @@ import * as ts from 'typescript';
 import * as assert from 'assert';
 import {CompilerOptions, CodeGenerator, CompilerHostContext, NodeCompilerHostContext, readConfiguration} from '@angular/compiler-cli';
 
+/* tslint:disable:no-console  */
 /**
  * Main method.
  * Standalone program that executes the real codegen and tests that

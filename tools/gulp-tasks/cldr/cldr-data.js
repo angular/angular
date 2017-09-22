@@ -1,3 +1,5 @@
+// tslint:disable:file-header
+
 /**
  * Npm module for Unicode CLDR JSON data
  *

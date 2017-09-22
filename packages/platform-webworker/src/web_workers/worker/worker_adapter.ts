@@ -25,8 +25,10 @@ export class WorkerDomAdapter extends DomAdapter {
     }
   }
 
-  // tslint:disable-next-line:no-console
-  log(error: any) { console.log(error); }
+  log(error: any) {
+    // tslint:disable-next-line:no-console
+    console.log(error);
+  }
 
   logGroup(error: any) {
     if (console.group) {

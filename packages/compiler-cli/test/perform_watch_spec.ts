@@ -131,7 +131,7 @@ class MockWatchHost {
 
   reportDiagnostics(diags: ng.Diagnostics) { this.diagnostics.push(...diags); }
   readConfiguration() { return this.config; }
-  createCompilerHost(options: ng.CompilerOptions) { return ng.createCompilerHost({options}); };
+  createCompilerHost(options: ng.CompilerOptions) { return ng.createCompilerHost({options}); }
   createEmitCallback() { return undefined; }
   onFileChange(
       options: ng.CompilerOptions, listener: (event: FileChangeEvent, fileName: string) => void,

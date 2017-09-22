@@ -136,8 +136,8 @@ export class KeyValueDiffers {
    * {@link KeyValueDiffers} instance.
    *
    * The following example shows how to extend an existing list of factories,
-         * which will only be applied to the injector for this component and its children.
-         * This step is all that's required to make a new {@link KeyValueDiffer} available.
+   * which will only be applied to the injector for this component and its children.
+   * This step is all that's required to make a new {@link KeyValueDiffer} available.
    *
    * ### Example
    *

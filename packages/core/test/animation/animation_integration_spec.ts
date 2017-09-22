@@ -2052,7 +2052,9 @@ export function main() {
              exp2: any = false;
              event1: AnimationEvent;
              event2: AnimationEvent;
+             // tslint:disable:semicolon
              callback1 = (event: any) => { this.event1 = event; };
+             // tslint:disable:semicolon
              callback2 = (event: any) => { this.event2 = event; };
            }
 
@@ -2161,7 +2163,7 @@ export function main() {
              exp: any = false;
 
              @HostListener('@myAnimation2.start', ['$event'])
-             callback = (event: any) => { this.event = event; };
+             callback = (event: any) => { this.event = event; }
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});

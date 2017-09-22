@@ -105,7 +105,7 @@ export function main() {
                default:
                  throw new Error('Called too many times! ' + JSON.stringify(changes));
              }
-           };
+           }
          }
 
          ng1Module.directive('ng2', downgradeComponent({
@@ -576,7 +576,7 @@ export function main() {
 
          @Component({template: ''})
          class LazyLoadedComponent {
-           constructor(public module: NgModuleRef<any>){};
+           constructor(public module: NgModuleRef<any>) {}
          }
 
          @NgModule({

@@ -61,7 +61,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
       }
       ngOnDestroy() { /* needs to be here for ng2 to properly detect it */
       }
-    };
+    }
     this.type = MyClass;
   }
 

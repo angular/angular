@@ -11,6 +11,7 @@ const yargs = require('yargs').argv;
 const {I18N_DATA_FOLDER, RELATIVE_I18N_DATA_FOLDER, HEADER} = require('./extract');
 const OUTPUT_NAME = `closure-locale.ts`;
 
+// tslint:disable:no-console
 module.exports = (gulp, done) => {
   // the locales used by closure that will be used to generate the closure-locale file
   // extracted from:

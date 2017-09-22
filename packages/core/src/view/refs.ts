@@ -167,7 +167,7 @@ class ViewContainerRef_ implements ViewContainerData {
     return null;
   }
 
-  get length(): number { return this._embeddedViews.length; };
+  get length(): number { return this._embeddedViews.length; }
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {

@@ -165,7 +165,7 @@ function convert(annotatedSource: string) {
         }
       }, undefined, undefined, transformers);
   return normalizeResult(result);
-};
+}
 
 function findNode(node: ts.Node, start: number, length: number): ts.Node|undefined {
   function find(node: ts.Node): ts.Node|undefined {

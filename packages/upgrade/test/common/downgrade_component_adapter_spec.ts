@@ -85,25 +85,25 @@ export function main() {
       let element: angular.IAugmentedJQuery;
 
       class mockScope implements angular.IScope {
-        $new() { return this; };
+        $new() { return this; }
         $watch(exp: angular.Ng1Expression, fn?: (a1?: any, a2?: any) => void) {
           return () => {};
-        };
+        }
         $on(event: string, fn?: (event?: any, ...args: any[]) => void) {
           return () => {};
-        };
+        }
         $destroy() {
           return () => {};
-        };
+        }
         $apply(exp?: angular.Ng1Expression) {
           return () => {};
-        };
+        }
         $digest() {
           return () => {};
-        };
+        }
         $evalAsync(exp: angular.Ng1Expression, locals?: any) {
           return () => {};
-        };
+        }
         $$childTail: angular.IScope;
         $$childHead: angular.IScope;
         $$nextSibling: angular.IScope;
@@ -155,7 +155,7 @@ export function main() {
         return new DowngradeComponentAdapter(
             element, attrs, scope, ngModel, parentInjector, $injector, $compile, $parse,
             componentFactory, wrapCallback);
-      };
+      }
 
       beforeEach((inject([Compiler], (inject_compiler: Compiler) => {
         compiler = inject_compiler;
@@ -190,4 +190,4 @@ export function main() {
     });
 
   });
-};
+}
