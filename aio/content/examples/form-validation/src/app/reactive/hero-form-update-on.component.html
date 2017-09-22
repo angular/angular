@@ -1,0 +1,29 @@
+<!-- #docregion -->
+<div class="container">
+
+  <h1>UpdateOn Demo</h1>
+
+  <div class="form-group">
+    <label for="updateOn">Currently updating name on: </label>
+    <select id="updateOn" class="form-control" [formControl]="updateOnControl">
+      <option value="change">change</option>
+      <option value="blur">blur</option>
+    </select>
+  </div>
+
+  <form [formGroup]="form">
+    <div class="form-group">
+      <label for="updateOnName">Name</label>
+
+      <input id="updateOnName" class="form-control"
+             formControlName="name" required>
+
+      <div style="margin: 16px 0">
+        <p id="nameText"> Your hero's name is: {{ name.value }} </p>
+        <p id="statusText"> This name is considered: {{ name.status }} </p>
+      </div>
+
+    </div>
+  </form>
+</div>
+<!-- #enddocregion -->

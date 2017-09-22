@@ -116,6 +116,20 @@ Key takeaways:
  * The `required` attribute is still present. While it's not necessary for validation purposes, 
  you may want to keep it in your template for CSS styling or accessibility reasons.
 
+### Validation timing
+
+By default, the value and validation status of a `FormControl` updates whenever its value changes. If your application 
+has heavy validation requirements, you may not want to run validation this often. Using reactive forms, 
+it's possible to delay the process until the user has blurred the input.
+
+To set this up, set the `updateOn` option when instantiating your `FormControl`. In the below example, it's 
+set to `'blur'`, so no changes to value or validation status will occur until the blur event occurs.
+ 
+<code-example path="form-validation/src/app/reactive/hero-form-update-on.component.ts" region="updateon" title="reactive/hero-form-update-on.component.ts (update-on)">
+</code-example>
+ 
+Like in AngularJS, setting `updateOn` to `'blur'` will delay the update of the value as well as the validation status. Updating 
+value and validity together keeps the system easy to reason about, as the two will always be in sync. 
 
 ## Custom validators
 
