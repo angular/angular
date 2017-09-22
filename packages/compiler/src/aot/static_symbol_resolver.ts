@@ -45,7 +45,7 @@ export interface StaticSymbolResolverHost {
    *
    * See ImportResolver.
    */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
+  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string;
 }
 
 const SUPPORTED_SCHEMA_VERSION = 3;
@@ -163,7 +163,7 @@ export class StaticSymbolResolver {
   /**
    * Converts a file path to a module name that can be used as an `import`.
    */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null {
+  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string {
     return this.knownFileNameToModuleNames.get(importedFilePath) ||
         this.host.fileNameToModuleName(importedFilePath, containingFilePath);
   }
@@ -292,11 +292,6 @@ export class StaticSymbolResolver {
     this.resolvedFilePaths.add(filePath);
     const resolvedSymbols: ResolvedStaticSymbol[] = [];
     const metadata = this.getModuleMetadata(filePath);
-    if (metadata['importAs']) {
-      // Index bundle indices should use the importAs module name defined
-      // in the bundle.
-      this.knownFileNameToModuleNames.set(filePath, metadata['importAs']);
-    }
     if (metadata['metadata']) {
       // handle direct declarations of the symbol
       const topLevelSymbolNames =

@@ -10,7 +10,7 @@ import * as compiler from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {MetadataCollector} from '../../src/metadata/collector';
-import {CompilerHost, CompilerOptions} from '../../src/transformers/api';
+import {CompilerHost, CompilerOptions, LibrarySummary} from '../../src/transformers/api';
 import {TsCompilerAotCompilerTypeCheckHostAdapter, createCompilerHost} from '../../src/transformers/compiler_host';
 import {Directory, Entry, MockAotContext, MockCompilerHost} from '../mocks';
 
@@ -21,9 +21,14 @@ const aGeneratedFile = new compiler.GeneratedFile(
 const aGeneratedFileText = `var x:any = 1;\n`;
 
 describe('NgCompilerHost', () => {
-  let codeGenerator: jasmine.Spy;
+  let codeGenerator: {generateFile: jasmine.Spy; findGeneratedFileNames: jasmine.Spy;};
 
-  beforeEach(() => { codeGenerator = jasmine.createSpy('codeGenerator').and.returnValue([]); });
+  beforeEach(() => {
+    codeGenerator = {
+      generateFile: jasmine.createSpy('generateFile').and.returnValue(null),
+      findGeneratedFileNames: jasmine.createSpy('findGeneratedFileNames').and.returnValue([]),
+    };
+  });
 
   function createNgHost({files = {}}: {files?: Directory} = {}): CompilerHost {
     const context = new MockAotContext('/tmp/', files);
@@ -37,16 +42,16 @@ describe('NgCompilerHost', () => {
       moduleResolution: ts.ModuleResolutionKind.NodeJs,
     },
     ngHost = createNgHost({files}),
-    summariesFromPreviousCompilations = new Map<string, string>(),
+    librarySummaries = [],
   }: {
     files?: Directory,
     options?: CompilerOptions,
     ngHost?: CompilerHost,
-    summariesFromPreviousCompilations?: Map<string, string>
+    librarySummaries?: LibrarySummary[]
   } = {}) {
     return new TsCompilerAotCompilerTypeCheckHostAdapter(
         ['/tmp/index.ts'], options, ngHost, new MetadataCollector(), codeGenerator,
-        summariesFromPreviousCompilations);
+        librarySummaries);
   }
 
   describe('fileNameToModuleName', () => {
@@ -180,7 +185,8 @@ describe('NgCompilerHost', () => {
     });
 
     it('should generate code when asking for the base name and add it as referencedFiles', () => {
-      codeGenerator.and.returnValue([aGeneratedFile]);
+      codeGenerator.findGeneratedFileNames.and.returnValue(['/tmp/src/index.ngfactory.ts']);
+      codeGenerator.generateFile.and.returnValue(aGeneratedFile);
       const host = createHost({
         files: {
           'tmp': {
@@ -201,11 +207,13 @@ describe('NgCompilerHost', () => {
       expect(genSf.text).toBe(aGeneratedFileText);
 
       // the codegen should have been cached
-      expect(codeGenerator).toHaveBeenCalledTimes(1);
+      expect(codeGenerator.generateFile).toHaveBeenCalledTimes(1);
+      expect(codeGenerator.findGeneratedFileNames).toHaveBeenCalledTimes(1);
     });
 
     it('should generate code when asking for the generated name first', () => {
-      codeGenerator.and.returnValue([aGeneratedFile]);
+      codeGenerator.findGeneratedFileNames.and.returnValue(['/tmp/src/index.ngfactory.ts']);
+      codeGenerator.generateFile.and.returnValue(aGeneratedFile);
       const host = createHost({
         files: {
           'tmp': {
@@ -226,10 +234,13 @@ describe('NgCompilerHost', () => {
       expect(sf.referencedFiles[1].fileName).toBe('/tmp/src/index.ngfactory.ts');
 
       // the codegen should have been cached
-      expect(codeGenerator).toHaveBeenCalledTimes(1);
+      expect(codeGenerator.generateFile).toHaveBeenCalledTimes(1);
+      expect(codeGenerator.findGeneratedFileNames).toHaveBeenCalledTimes(1);
     });
 
     it('should clear old generated references if the original host cached them', () => {
+      codeGenerator.findGeneratedFileNames.and.returnValue(['/tmp/src/index.ngfactory.ts']);
+
       const ngHost = createNgHost();
       const sfText = `
           /// <reference path="main.ts"/>
@@ -237,8 +248,9 @@ describe('NgCompilerHost', () => {
       const sf = ts.createSourceFile('/tmp/src/index.ts', sfText, ts.ScriptTarget.Latest);
       ngHost.getSourceFile = () => sf;
 
-      codeGenerator.and.returnValue(
-          [new compiler.GeneratedFile('/tmp/src/index.ts', '/tmp/src/index.ngfactory.ts', [])]);
+      codeGenerator.findGeneratedFileNames.and.returnValue(['/tmp/src/index.ngfactory.ts']);
+      codeGenerator.generateFile.and.returnValue(
+          new compiler.GeneratedFile('/tmp/src/index.ts', '/tmp/src/index.ngfactory.ts', []));
       const host1 = createHost({ngHost});
 
       host1.getSourceFile('/tmp/src/index.ts', ts.ScriptTarget.Latest);
@@ -246,7 +258,8 @@ describe('NgCompilerHost', () => {
       expect(sf.referencedFiles[0].fileName).toBe('main.ts');
       expect(sf.referencedFiles[1].fileName).toBe('/tmp/src/index.ngfactory.ts');
 
-      codeGenerator.and.returnValue([]);
+      codeGenerator.findGeneratedFileNames.and.returnValue([]);
+      codeGenerator.generateFile.and.returnValue(null);
       const host2 = createHost({ngHost});
 
       host2.getSourceFile('/tmp/src/index.ts', ts.ScriptTarget.Latest);
@@ -257,7 +270,8 @@ describe('NgCompilerHost', () => {
 
   describe('updateSourceFile', () => {
     it('should update source files', () => {
-      codeGenerator.and.returnValue([aGeneratedFile]);
+      codeGenerator.findGeneratedFileNames.and.returnValue(['/tmp/src/index.ngfactory.ts']);
+      codeGenerator.generateFile.and.returnValue(aGeneratedFile);
       const host = createHost({files: {'tmp': {'src': {'index.ts': ''}}}});
 
       let genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest);
@@ -271,11 +285,12 @@ describe('NgCompilerHost', () => {
     });
 
     it('should error if the imports changed', () => {
-      codeGenerator.and.returnValue(
-          [new compiler.GeneratedFile('/tmp/src/index.ts', '/tmp/src/index.ngfactory.ts', [
-            new compiler.DeclareVarStmt(
-                'x', new compiler.ExternalExpr(new compiler.ExternalReference('aModule', 'aName')))
-          ])]);
+      codeGenerator.findGeneratedFileNames.and.returnValue(['/tmp/src/index.ngfactory.ts']);
+      codeGenerator.generateFile.and.returnValue(new compiler.GeneratedFile(
+          '/tmp/src/index.ts', '/tmp/src/index.ngfactory.ts',
+          [new compiler.DeclareVarStmt(
+              'x',
+              new compiler.ExternalExpr(new compiler.ExternalReference('aModule', 'aName')))]));
       const host = createHost({files: {'tmp': {'src': {'index.ts': ''}}}});
 
       host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest);
@@ -291,33 +306,5 @@ describe('NgCompilerHost', () => {
             `Old: aModule.`, `New: otherModule`
           ].join('\n'));
     });
-  });
-
-  describe('fileExists', () => {
-    it('should cache calls', () => {
-      const ngHost = createNgHost({files: {'tmp': {'src': {'index.ts': ``}}}});
-      spyOn(ngHost, 'fileExists').and.callThrough();
-      const host = createHost({ngHost});
-
-      expect(host.fileExists('/tmp/src/index.ts')).toBe(true);
-      expect(host.fileExists('/tmp/src/index.ts')).toBe(true);
-
-      expect(ngHost.fileExists).toHaveBeenCalledTimes(1);
-    });
-
-    it(`should not derive the existence of generated files baesd on summaries on disc`, () => {
-      const host = createHost({files: {'tmp': {'lib': {'module.ngsummary.json': ``}}}});
-      expect(host.fileExists('/tmp/lib/module.ngfactory.ts')).toBe(false);
-      expect(host.fileExists('/tmp/lib/module.ngfactory.d.ts')).toBe(false);
-    });
-
-    it(`should derive the existence of generated .d.ts files based on the summaries from an old program`,
-       () => {
-         const summariesFromPreviousCompilations = new Map<string, string>();
-         summariesFromPreviousCompilations.set('/tmp/lib/module.ngsummary.json', `{}`);
-         const host = createHost({summariesFromPreviousCompilations});
-         expect(host.fileExists('/tmp/lib/module.ngfactory.ts')).toBe(false);
-         expect(host.fileExists('/tmp/lib/module.ngfactory.d.ts')).toBe(true);
-       });
   });
 });

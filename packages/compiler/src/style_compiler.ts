@@ -42,13 +42,14 @@ export class StyleCompiler {
           styleUrls: template.styleUrls,
           moduleUrl: identifierModuleUrl(comp.type)
         }),
-        true);
+        this.needsStyleShim(comp), true);
   }
 
   compileStyles(
       outputCtx: OutputContext, comp: CompileDirectiveMetadata,
-      stylesheet: CompileStylesheetMetadata): CompiledStylesheet {
-    return this._compileStyles(outputCtx, comp, stylesheet, false);
+      stylesheet: CompileStylesheetMetadata,
+      shim: boolean = this.needsStyleShim(comp)): CompiledStylesheet {
+    return this._compileStyles(outputCtx, comp, stylesheet, shim, false);
   }
 
   needsStyleShim(comp: CompileDirectiveMetadata): boolean {
@@ -57,8 +58,8 @@ export class StyleCompiler {
 
   private _compileStyles(
       outputCtx: OutputContext, comp: CompileDirectiveMetadata,
-      stylesheet: CompileStylesheetMetadata, isComponentStylesheet: boolean): CompiledStylesheet {
-    const shim = this.needsStyleShim(comp);
+      stylesheet: CompileStylesheetMetadata, shim: boolean,
+      isComponentStylesheet: boolean): CompiledStylesheet {
     const styleExpressions: o.Expression[] =
         stylesheet.styles.map(plainStyle => o.literal(this._shimIfNeeded(plainStyle, shim)));
     const dependencies: StylesCompileDependency[] = [];
