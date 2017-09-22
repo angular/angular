@@ -713,17 +713,17 @@ describe('ngc transformer command-line', () => {
       });
     });
 
-    it('should be able to generate a flat module library', () => {
+    function writeFlatModule(outFile: string) {
       writeConfig(`
-        {
-          "extends": "./tsconfig-base.json",
-          "angularCompilerOptions": {
-            "flatModuleId": "flat_module",
-            "flatModuleOutFile": "index.js",
-            "skipTemplateCodegen": true
-          },
-          "files": ["public-api.ts"]
-        }
+      {
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "flatModuleId": "flat_module",
+          "flatModuleOutFile": "${outFile}",
+          "skipTemplateCodegen": true
+        },
+        "files": ["public-api.ts"]
+      }
       `);
       write('public-api.ts', `
         export * from './src/flat.component';
@@ -753,11 +753,69 @@ describe('ngc transformer command-line', () => {
         })
         export class FlatModule {
         }`);
+    }
+
+    it('should be able to generate a flat module library', () => {
+      writeFlatModule('index.js');
 
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
       expect(exitCode).toEqual(0);
       shouldExist('index.js');
       shouldExist('index.metadata.json');
+    });
+
+    it('should use the importAs for flat libraries instead of deep imports', () => {
+      // compile the flat module
+      writeFlatModule('index.js');
+      expect(main(['-p', basePath], errorSpy)).toBe(0);
+
+      // move the flat module output into node_modules
+      const flatModuleNodeModulesPath = path.resolve(basePath, 'node_modules', 'flat_module');
+      fs.renameSync(outDir, flatModuleNodeModulesPath);
+      fs.renameSync(
+          path.resolve(basePath, 'src/flat.component.html'),
+          path.resolve(flatModuleNodeModulesPath, 'src/flat.component.html'));
+      // add a package.json
+      fs.writeFileSync(
+          path.resolve(flatModuleNodeModulesPath, 'package.json'), `{"typings": "./index.d.ts"}`);
+
+      // and remove the sources.
+      fs.renameSync(path.resolve(basePath, 'src'), path.resolve(basePath, 'flat_module_src'));
+      fs.unlinkSync(path.resolve(basePath, 'public-api.ts'));
+
+      writeConfig(`
+      {
+        "extends": "./tsconfig-base.json",
+        "files": ["index.ts"]
+      }
+      `);
+      write('index.ts', `
+        import {NgModule} from '@angular/core';
+        import {FlatModule} from 'flat_module';
+
+        @NgModule({
+          imports: [FlatModule]
+        })
+        export class MyModule {}
+      `);
+
+      expect(main(['-p', basePath], errorSpy)).toBe(0);
+
+      shouldExist('index.js');
+
+      const summary =
+          fs.readFileSync(path.resolve(basePath, 'built', 'index.ngsummary.json')).toString();
+      // reference to the module itself
+      expect(summary).toMatch(/"filePath":"flat_module"/);
+      // no reference to a deep file
+      expect(summary).not.toMatch(/"filePath":"flat_module\//);
+
+      const factory =
+          fs.readFileSync(path.resolve(basePath, 'built', 'index.ngfactory.js')).toString();
+      // reference to the module itself
+      expect(factory).toMatch(/from "flat_module"/);
+      // no reference to a deep file
+      expect(factory).not.toMatch(/from "flat_module\//);
     });
 
     describe('with tree example', () => {

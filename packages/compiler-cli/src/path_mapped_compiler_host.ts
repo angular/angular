@@ -126,11 +126,13 @@ export class PathMappedCompilerHost extends CompilerHost {
         continue;
       }
       if (DTS.test(rootedPath)) {
-        const metadataPath = rootedPath.replace(DTS, '.metadata.json');
-        if (this.context.fileExists(metadataPath)) {
-          return this.readMetadata(metadataPath, rootedPath);
+        const metadatas = this.readMetadata(rootedPath);
+        if (metadatas) {
+          return metadatas;
         }
       } else {
+        // Attention: don't cache this, so that e.g. the LanguageService
+        // can read in changes from source files in the metadata!
         const metadata = this.getMetadataForSourceFile(rootedPath);
         return metadata ? [metadata] : [];
       }

@@ -410,7 +410,7 @@ export class MockAotCompilerHost implements AotCompilerHost {
   fromSummaryFileName(filePath: string): string { return filePath; }
 
   // AotCompilerHost
-  fileNameToModuleName(importedFile: string, containingFile: string): string|null {
+  fileNameToModuleName(importedFile: string, containingFile: string): string {
     return importedFile.replace(EXT, '');
   }
 
