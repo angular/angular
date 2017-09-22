@@ -597,7 +597,7 @@ export function main() {
 
            @Component({selector: 'ng2', template: 'test'})
            class Ng2 {
-           };
+           }
 
            @NgModule({
              declarations: [Ng2],
@@ -2746,7 +2746,7 @@ export function main() {
       it('should export ng1 instance to ng2', async(() => {
            @NgModule({imports: [BrowserModule]})
            class MyNg2Module {
-           };
+           }
 
            const adapter: UpgradeAdapter = new UpgradeAdapter(MyNg2Module);
            const module = angular.module('myExample', []);

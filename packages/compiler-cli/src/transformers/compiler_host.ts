@@ -401,7 +401,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
 
   readFile = (fileName: string) => this.context.readFile(fileName);
   getDefaultLibFileName = (options: ts.CompilerOptions) =>
-      this.context.getDefaultLibFileName(options);
+      this.context.getDefaultLibFileName(options)
   getCurrentDirectory = () => this.context.getCurrentDirectory();
   getCanonicalFileName = (fileName: string) => this.context.getCanonicalFileName(fileName);
   useCaseSensitiveFileNames = () => this.context.useCaseSensitiveFileNames();

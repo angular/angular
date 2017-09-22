@@ -275,7 +275,7 @@ export function main() {
         class AComp {}
 
         class ChildProvider {
-          ngOnDestroy() { log.push('ngOnDestroy'); };
+          ngOnDestroy() { log.push('ngOnDestroy'); }
         }
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([

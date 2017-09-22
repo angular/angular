@@ -43,7 +43,6 @@ export interface NgModuleDefinition extends Definition<NgModuleDefinitionFactory
 }
 
 export interface NgModuleDefinitionFactory extends DefinitionFactory<NgModuleDefinition> {}
-;
 
 export interface ViewDefinition extends Definition<ViewDefinitionFactory> {
   flags: ViewFlags;

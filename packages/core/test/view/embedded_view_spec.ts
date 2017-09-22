@@ -171,7 +171,7 @@ export function main() {
       const log: string[] = [];
 
       class ChildProvider {
-        ngOnDestroy() { log.push('ngOnDestroy'); };
+        ngOnDestroy() { log.push('ngOnDestroy'); }
       }
 
       const {view: parentView} = createAndGetRootNodes(compViewDef([

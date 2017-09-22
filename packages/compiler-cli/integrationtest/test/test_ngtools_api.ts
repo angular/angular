@@ -6,7 +6,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/* tslint:disable:no-console  */
 
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
@@ -18,6 +17,7 @@ import {__NGTOOLS_PRIVATE_API_2, readConfiguration} from '@angular/compiler-cli'
 
 const glob = require('glob');
 
+/* tslint:disable:no-console  */
 /**
  * Main method.
  * Standalone program that executes codegen using the ngtools API and tests that files were

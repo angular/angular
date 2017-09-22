@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 const fs = require('fs');
 const path = require('path');
 const sourceMapTest = require('../source-map-test');
@@ -16,6 +24,7 @@ module.exports = (gulp) => () => {
   });
 
   if (!packages.length) {
+    // tslint:disable-next-line:no-console
     console.log('No packages found in packages-dist. Unable to run source map test.');
     process.exit(1);
   }
