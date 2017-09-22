@@ -1137,7 +1137,7 @@ class FormControlSelectNgValue {
 })
 class FormControlSelectWithCompareFn {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
 }
@@ -1181,7 +1181,7 @@ class FormControlSelectMultipleNgValue {
 })
 class FormControlSelectMultipleWithCompareFn {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl([{id: 1, name: 'SF'}])});
 }
@@ -1224,7 +1224,7 @@ class NgModelSelectWithNullForm {
 })
 class NgModelSelectWithCustomCompareFnForm {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   selectedCity: any = {};
   cities: any[] = [];
 }
@@ -1240,7 +1240,7 @@ class NgModelSelectWithCustomCompareFnForm {
 })
 class NgModelSelectMultipleWithCustomCompareFnForm {
   compareFn:
-      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2;
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   selectedCities: any[] = [];
   cities: any[] = [];
 }

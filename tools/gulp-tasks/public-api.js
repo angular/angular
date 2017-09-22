@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 const entrypoints = [
   'dist/packages-dist/core/core.d.ts', 'dist/packages-dist/core/testing.d.ts',
   'dist/packages-dist/common/common.d.ts', 'dist/packages-dist/common/testing.d.ts',

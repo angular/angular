@@ -84,7 +84,7 @@ export class RouterPreloader implements OnDestroy {
     const onEndLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadEnd(r));
 
     this.loader = new RouterConfigLoader(moduleLoader, compiler, onStartLoad, onEndLoad);
-  };
+  }
 
   setUpPreloading(): void {
     const navigations$ = filter.call(this.router.events, (e: Event) => e instanceof NavigationEnd);

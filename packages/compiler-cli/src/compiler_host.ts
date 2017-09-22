@@ -329,7 +329,7 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
       this.moduleFileNames.set(key, result);
     }
     return result;
-  };
+  }
 
   /**
    * We want a moduleId that will appear in import statements in the generated code.
@@ -401,7 +401,7 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
   private rewriteGenDirPath(filepath: string) {
     const nodeModulesIndex = filepath.indexOf(NODE_MODULES);
     if (nodeModulesIndex !== -1) {
-      // If we are in node_modulse, transplant them into `genDir`.
+      // If we are in node_modules, transplant them into `genDir`.
       return path.join(this.genDir, filepath.substring(nodeModulesIndex));
     } else {
       // pretend that containing file is on top of the `genDir` to normalize the paths.

@@ -84,8 +84,7 @@ function checkEnvironment(reqs) {
     } else if (!semver.satisfies(foundYarnVersion, reqs.requiredYarnVersion)) {
       issues.push(
           'You are running an unsupported yarn version. Found: ' + foundYarnVersion +
-          ' Expected: ' + reqs.requiredYarnVersion +
-          '. This is required because we use yarn to ' +
+          ' Expected: ' + reqs.requiredYarnVersion + '. This is required because we use yarn to ' +
           'ensure that we all use the exact same npm dependencies. Installation instructions: ' +
           'https://yarnpkg.com/lang/en/docs/install/');
     }

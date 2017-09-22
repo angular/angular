@@ -68,7 +68,7 @@ describe('router', function () {
       expect(homeElement.text()).toBe('Home');
       expect(homeElement.isolateScope().$ctrl.$router).toBeDefined();
       expect(router).toBeDefined();
-    })
+    });
   });
 
   it('should work when an async route is provided route data', function() {
@@ -126,7 +126,7 @@ describe('router', function () {
       var homeElement = elt.find('home-cmp');
       expect(homeElement.text()).toBe('Home');
       expect($routerOnActivate).toHaveBeenCalled();
-    })
+    });
   });
 
   it('should provide the current instruction', function() {

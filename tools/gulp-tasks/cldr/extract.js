@@ -36,6 +36,7 @@ const HEADER = `/**
 // See angular/tools/gulp-tasks/cldr/extract.js
 `;
 
+// tslint:disable:no-console
 module.exports = (gulp, done) => {
   const cldrData = require('./cldr-data');
   const LOCALES = cldrData.availableLocales;
@@ -292,7 +293,7 @@ function getDateTimeFormats(localeData) {
       data.medium._value || data.medium,
       data.long._value || data.long,
       data.full._value || data.full
-    ])
+    ]);
   }
 
   const dateFormats = localeData.main('dates/calendars/gregorian/dateFormats');
@@ -318,9 +319,9 @@ function getDayPeriodRules(localeData) {
       if (dayPeriodRules[key]._at) {
         rules[key] = dayPeriodRules[key]._at;
       } else {
-        rules[key] = [dayPeriodRules[key]._from, dayPeriodRules[key]._before]
+        rules[key] = [dayPeriodRules[key]._from, dayPeriodRules[key]._before];
       }
-    })
+    });
   }
 
   return rules;
@@ -417,7 +418,7 @@ function getCurrencySettings(locale, localeData) {
         if (currency[key]._from && !currency[key]._to) {
           return currentCurrency = key;
         }
-      })
+      });
     });
 
     if (!currentCurrency) {
@@ -483,7 +484,7 @@ function objectValues(obj) {
  * Like JSON.stringify, but without double quotes around keys, and already formatted for readability
  */
 function stringify(obj) {
-  return util.inspect(obj, {depth: null, maxArrayLength: null})
+  return util.inspect(obj, {depth: null, maxArrayLength: null});
 }
 
 /**

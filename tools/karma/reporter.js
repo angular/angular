@@ -11,7 +11,7 @@ var DotsReporter = require('karma/lib/reporters/dots_color');
 
 var createErrorFormatter = function(basePath, emitter, SourceMapConsumer) {
   var lastServedFiles = [];
-  emitter.on('file_list_modified', function(files) { lastServedFiles = files.served });
+  emitter.on('file_list_modified', function(files) { lastServedFiles = files.served; });
   function findFile(path) { return lastServedFiles.filter(_ => _.path === path)[0]; }
 
   var URL_REGEXP = new RegExp(
@@ -48,16 +48,16 @@ var createErrorFormatter = function(basePath, emitter, SourceMapConsumer) {
 
     // indent every line
     if (indentation) {
-      msg = indentation + msg.replace(/\n/g, '\n' + indentation)
+      msg = indentation + msg.replace(/\n/g, '\n' + indentation);
     }
     return msg + '\n';
-  }
+  };
 };
 
 
 var InternalAngularReporter = function(config, emitter) {
   var formatter = createErrorFormatter(config.basePath, emitter, SourceMapConsumer);
-  DotsReporter.call(this, formatter, false, config.colors)
+  DotsReporter.call(this, formatter, false, config.colors);
 };
 
 InternalAngularReporter.$inject = ['config', 'emitter'];

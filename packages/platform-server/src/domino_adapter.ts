@@ -39,8 +39,10 @@ export class DominoAdapter extends BrowserDomAdapter {
 
   logError(error: string) { console.error(error); }
 
-  // tslint:disable-next-line:no-console
-  log(error: string) { console.log(error); }
+  log(error: string) {
+    // tslint:disable-next-line:no-console
+    console.log(error);
+  }
 
   logGroup(error: string) { console.error(error); }
 
