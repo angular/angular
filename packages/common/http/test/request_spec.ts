@@ -40,6 +40,30 @@ export function main() {
         const req = new HttpRequest('TEST', TEST_URL, null);
         expect(req.method).toBe('TEST');
       });
+      it('accepts an empty string body', () => {
+        const req = new HttpRequest('POST', TEST_URL, '');
+        expect(req.body).toBe('');
+      });
+      it('accepts a falsy numeric string body', () => {
+        const req = new HttpRequest('POST', TEST_URL, '0');
+        expect(req.body).toBe('0');
+      });
+      it('accepts a falsy numeric body', () => {
+        const req = new HttpRequest('POST', TEST_URL, 0);
+        expect(req.body).toBe(0);
+      });
+      it('accepts a non-falsy numeric body', () => {
+        const req = new HttpRequest('POST', TEST_URL, 1);
+        expect(req.body).toBe(1);
+      });
+      it('transforms a falsy boolean body', () => {
+        const req = new HttpRequest('POST', TEST_URL, false);
+        expect(req.body).toBe(null);
+      });
+      it('transforms a falsy NaN body', () => {
+        const req = new HttpRequest('POST', TEST_URL, NaN);
+        expect(req.body).toBe(null);
+      });
       it('accepts a string body', () => {
         const req = new HttpRequest('POST', TEST_URL, TEST_STRING);
         expect(req.body).toBe(TEST_STRING);

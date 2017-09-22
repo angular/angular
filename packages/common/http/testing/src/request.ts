@@ -40,7 +40,6 @@ export class TestRequest {
     headers?: HttpHeaders | {[name: string]: string | string[]},
     status?: number,
     statusText?: string,
-    echoRequest?: boolean,
   } = {}): void {
     if (this.cancelled) {
       throw new Error(`Cannot flush a cancelled request.`);
@@ -48,8 +47,7 @@ export class TestRequest {
     const url = this.request.urlWithParams;
     const headers =
         (opts.headers instanceof HttpHeaders) ? opts.headers : new HttpHeaders(opts.headers);
-    body = _maybeConvertBody(
-        this.request.responseType, opts.echoRequest === true ? this.request.body : body);
+    body = _maybeConvertBody(this.request.responseType, body);
     let statusText: string|undefined = opts.statusText;
     let status: number = opts.status !== undefined ? opts.status : 200;
     if (opts.status === undefined) {

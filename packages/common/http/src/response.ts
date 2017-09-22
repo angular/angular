@@ -262,8 +262,8 @@ export class HttpResponse<T> extends HttpResponseBase {
     body?: T | null, headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
   } = {}) {
     super(init);
-    const responseBody =
-        (init.body as T || typeof init.body === 'string' || typeof init.body === 'number') ?
+    const responseBody = init.body as T || typeof init.body === 'string' ||
+            (typeof init.body === 'number' && !isNaN(init.body)) ?
         init.body as T :
         null;
     this.body = responseBody;

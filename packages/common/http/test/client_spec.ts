@@ -117,57 +117,51 @@ export function main() {
       });
       it('with falsy string data', (done: DoneFn) => {
         client.post('/test', '', {observe: 'response', responseType: 'text'}).subscribe(res => {
-          expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
-          expect(res.body).toBe('');
           done();
         });
-        backend.expectOne('/test').flush(null, {echoRequest: true});
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe('');
+        testReq.flush('hello world');
       });
       it('with falsy numeric string data', (done: DoneFn) => {
         client.post('/test', '0', {observe: 'response', responseType: 'text'}).subscribe(res => {
-          expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
-          expect(res.body).toBe('0');
           done();
         });
-        backend.expectOne('/test').flush(null, {echoRequest: true});
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe('0');
+        testReq.flush('hello world');
       });
       it('with falsy number data', (done: DoneFn) => {
         client.post('/test', 0, {observe: 'response', responseType: 'text'}).subscribe(res => {
-          expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
-          expect(res.body).toBe(0);
           done();
         });
-        backend.expectOne('/test').flush(null, {echoRequest: true});
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(0);
+        testReq.flush('hello world');
       });
       it('with non-falsy number data', (done: DoneFn) => {
         client.post('/test', 1, {observe: 'response', responseType: 'text'}).subscribe(res => {
-          expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
-          expect(res.body).toBe(1);
           done();
         });
-        backend.expectOne('/test').flush(null, {echoRequest: true});
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(1);
+        testReq.flush('hello world');
       });
       it('with falsy boolean data', (done: DoneFn) => {
         client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe(res => {
-          expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(204);
-          expect(res.body).toBe(null);
           done();
         });
-        backend.expectOne('/test').flush(null, {echoRequest: true});
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(null);
+        testReq.flush('hello world');
       });
       it('with falsy NaN data', (done: DoneFn) => {
         client.post('/test', NaN, {observe: 'response', responseType: 'text'}).subscribe(res => {
-          expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(204);
-          expect(res.body).toBe(null);
           done();
         });
-        backend.expectOne('/test').flush(null, {echoRequest: true});
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(null);
+        testReq.flush('hello world');
       });
       it('with an arraybuffer', (done: DoneFn) => {
         const body = new ArrayBuffer(4);

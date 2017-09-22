@@ -40,6 +40,42 @@ export function main() {
         expect(resp.ok).toBeTruthy();
         expect(resp.url).toBeNull();
       });
+      it('accepts an empty string body', () => {
+        const resp = new HttpResponse({
+          body: '',
+        });
+        expect(resp.body).toBe('');
+      });
+      it('accepts a falsy numeric string body', () => {
+        const resp = new HttpResponse({
+          body: '0',
+        });
+        expect(resp.body).toBe('0');
+      });
+      it('accepts a falsy numeric body', () => {
+        const resp = new HttpResponse({
+          body: 0,
+        });
+        expect(resp.body).toBe(0);
+      });
+      it('accepts a non-falsy numeric body', () => {
+        const resp = new HttpResponse({
+          body: 1,
+        });
+        expect(resp.body).toBe(1);
+      });
+      it('transforms a falsy boolean body', () => {
+        const resp = new HttpResponse({
+          body: false,
+        });
+        expect(resp.body).toBe(null);
+      });
+      it('transforms a falsy NaN body', () => {
+        const resp = new HttpResponse({
+          body: NaN,
+        });
+        expect(resp.body).toBe(null);
+      });
     });
     it('.ok is determined by status', () => {
       const good = new HttpResponse({status: 200});
