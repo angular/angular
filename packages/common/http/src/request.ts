@@ -172,6 +172,7 @@ export class HttpRequest<T> {
     if (mightHaveBody(this.method) || !!fourth) {
       // Body is the third argument, options are the fourth.
       const requestBody = (third as T || third === '' || third === 0) ? third as T : null;
+
       this.body = requestBody;
       options = fourth;
     } else {
