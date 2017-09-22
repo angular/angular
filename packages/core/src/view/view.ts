@@ -21,8 +21,8 @@ import {NOOP, checkBindingNoChanges, isComponentView, markParentViewsForCheckPro
 import {detachProjectedView} from './view_attach';
 
 export function viewDef(
-    flags: ViewFlags, nodes: NodeDef[], updateDirectives?: ViewUpdateFn,
-    updateRenderer?: ViewUpdateFn): ViewDefinition {
+    flags: ViewFlags, nodes: NodeDef[], updateDirectives?: null | ViewUpdateFn,
+    updateRenderer?: null | ViewUpdateFn): ViewDefinition {
   // clone nodes and set auto calculated values
   let viewBindingCount = 0;
   let viewDisposableCount = 0;
@@ -36,7 +36,7 @@ export function viewDef(
   let lastRenderRootNode: NodeDef|null = null;
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    node.index = i;
+    node.nodeIndex = i;
     node.parent = currentParent;
     node.bindingIndex = viewBindingCount;
     node.outputIndex = viewDisposableCount;
@@ -117,7 +117,7 @@ export function viewDef(
       // The loop is required because an element could be the last transitive children of several
       // elements. We loop to either the root or the highest opened element (= with remaining
       // children)
-      while (currentParent && i === currentParent.index + currentParent.childCount) {
+      while (currentParent && i === currentParent.nodeIndex + currentParent.childCount) {
         const newParent: NodeDef|null = currentParent.parent;
         if (newParent) {
           newParent.childFlags |= currentParent.childFlags;
@@ -164,32 +164,32 @@ function validateNode(parent: NodeDef | null, node: NodeDef, nodeCount: number) 
     if (template.lastRenderRootNode &&
         template.lastRenderRootNode.flags & NodeFlags.EmbeddedViews) {
       throw new Error(
-          `Illegal State: Last root node of a template can't have embedded views, at index ${node.index}!`);
+          `Illegal State: Last root node of a template can't have embedded views, at index ${node.nodeIndex}!`);
     }
   }
   if (node.flags & NodeFlags.CatProvider) {
     const parentFlags = parent ? parent.flags : 0;
     if ((parentFlags & NodeFlags.TypeElement) === 0) {
       throw new Error(
-          `Illegal State: StaticProvider/Directive nodes need to be children of elements or anchors, at index ${node.index}!`);
+          `Illegal State: StaticProvider/Directive nodes need to be children of elements or anchors, at index ${node.nodeIndex}!`);
     }
   }
   if (node.query) {
     if (node.flags & NodeFlags.TypeContentQuery &&
         (!parent || (parent.flags & NodeFlags.TypeDirective) === 0)) {
       throw new Error(
-          `Illegal State: Content Query nodes need to be children of directives, at index ${node.index}!`);
+          `Illegal State: Content Query nodes need to be children of directives, at index ${node.nodeIndex}!`);
     }
     if (node.flags & NodeFlags.TypeViewQuery && parent) {
       throw new Error(
-          `Illegal State: View Query nodes have to be top level nodes, at index ${node.index}!`);
+          `Illegal State: View Query nodes have to be top level nodes, at index ${node.nodeIndex}!`);
     }
   }
   if (node.childCount) {
-    const parentEnd = parent ? parent.index + parent.childCount : nodeCount - 1;
-    if (node.index <= parentEnd && node.index + node.childCount > parentEnd) {
+    const parentEnd = parent ? parent.nodeIndex + parent.childCount : nodeCount - 1;
+    if (node.nodeIndex <= parentEnd && node.nodeIndex + node.childCount > parentEnd) {
       throw new Error(
-          `Illegal State: childCount of node leads outside of parent, at index ${node.index}!`);
+          `Illegal State: childCount of node leads outside of parent, at index ${node.nodeIndex}!`);
     }
   }
 }
@@ -250,7 +250,7 @@ function createViewNodes(view: ViewData) {
   let renderHost: any;
   if (isComponentView(view)) {
     const hostDef = view.parentNodeDef;
-    renderHost = asElementData(view.parent !, hostDef !.parent !.index).renderElement;
+    renderHost = asElementData(view.parent !, hostDef !.parent !.nodeIndex).renderElement;
   }
   const def = view.def;
   const nodes = view.nodes;
@@ -297,7 +297,7 @@ function createViewNodes(view: ViewData) {
         const instance = createDirectiveInstance(view, nodeDef);
         nodeData = <ProviderData>{instance};
         if (nodeDef.flags & NodeFlags.Component) {
-          const compView = asElementData(view, nodeDef.parent !.index).componentView;
+          const compView = asElementData(view, nodeDef.parent !.nodeIndex).componentView;
           initView(compView, instance, instance);
         }
         break;
@@ -410,47 +410,38 @@ function markProjectedViewsForCheck(view: ViewData) {
 function checkAndUpdateNodeInline(
     view: ViewData, nodeDef: NodeDef, v0?: any, v1?: any, v2?: any, v3?: any, v4?: any, v5?: any,
     v6?: any, v7?: any, v8?: any, v9?: any): boolean {
-  let changed = false;
   switch (nodeDef.flags & NodeFlags.Types) {
     case NodeFlags.TypeElement:
-      changed = checkAndUpdateElementInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-      break;
+      return checkAndUpdateElementInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
     case NodeFlags.TypeText:
-      changed = checkAndUpdateTextInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-      break;
+      return checkAndUpdateTextInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
     case NodeFlags.TypeDirective:
-      changed =
-          checkAndUpdateDirectiveInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-      break;
+      return checkAndUpdateDirectiveInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
     case NodeFlags.TypePureArray:
     case NodeFlags.TypePureObject:
     case NodeFlags.TypePurePipe:
-      changed =
-          checkAndUpdatePureExpressionInline(view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
-      break;
+      return checkAndUpdatePureExpressionInline(
+          view, nodeDef, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9);
+    default:
+      throw 'unreachable';
   }
-  return changed;
 }
 
 function checkAndUpdateNodeDynamic(view: ViewData, nodeDef: NodeDef, values: any[]): boolean {
-  let changed = false;
   switch (nodeDef.flags & NodeFlags.Types) {
     case NodeFlags.TypeElement:
-      changed = checkAndUpdateElementDynamic(view, nodeDef, values);
-      break;
+      return checkAndUpdateElementDynamic(view, nodeDef, values);
     case NodeFlags.TypeText:
-      changed = checkAndUpdateTextDynamic(view, nodeDef, values);
-      break;
+      return checkAndUpdateTextDynamic(view, nodeDef, values);
     case NodeFlags.TypeDirective:
-      changed = checkAndUpdateDirectiveDynamic(view, nodeDef, values);
-      break;
+      return checkAndUpdateDirectiveDynamic(view, nodeDef, values);
     case NodeFlags.TypePureArray:
     case NodeFlags.TypePureObject:
     case NodeFlags.TypePurePipe:
-      changed = checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
-      break;
+      return checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
+    default:
+      throw 'unreachable';
   }
-  return changed;
 }
 
 export function checkNoChangesNode(
@@ -492,11 +483,12 @@ function checkNoChangesNodeDynamic(view: ViewData, nodeDef: NodeDef, values: any
  * @suppress {misplacedTypeAnnotation}
  */
 function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
-  const queryList = asQueryList(view, nodeDef.index);
+  const queryList = asQueryList(view, nodeDef.nodeIndex);
   if (queryList.dirty) {
     throw expressionChangedAfterItHasBeenCheckedError(
-        Services.createDebugContext(view, nodeDef.index), `Query ${nodeDef.query!.id} not dirty`,
-        `Query ${nodeDef.query!.id} dirty`, (view.state & ViewState.BeforeFirstCheck) !== 0);
+        Services.createDebugContext(view, nodeDef.nodeIndex),
+        `Query ${nodeDef.query!.id} not dirty`, `Query ${nodeDef.query!.id} dirty`,
+        (view.state & ViewState.BeforeFirstCheck) !== 0);
   }
 }
 
@@ -651,7 +643,7 @@ function execQueriesAction(
   for (let i = 0; i < nodeCount; i++) {
     const nodeDef = view.def.nodes[i];
     if ((nodeDef.flags & queryFlags) && (nodeDef.flags & staticDynamicQueryFlag)) {
-      Services.setCurrentNode(view, nodeDef.index);
+      Services.setCurrentNode(view, nodeDef.nodeIndex);
       switch (checkType) {
         case CheckType.CheckAndUpdate:
           checkAndUpdateQuery(view, nodeDef);

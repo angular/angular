@@ -6,27 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext, ViewEncapsulation, getDebugNode} from '@angular/core';
-import {DebugContext, NodeDef, NodeFlags, QueryValueType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewUpdateFn, anchorDef, asElementData, asProviderData, asTextData, directiveDef, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
-import {inject} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {DebugContext, NodeFlags, QueryValueType, Services, asElementData, asTextData, directiveDef, elementDef, textDef} from '@angular/core/src/view/index';
 
-import {createRootView, isBrowser} from './helper';
+import {compViewDef, createAndGetRootNodes} from './helper';
 
 export function main() {
   describe('View Services', () => {
-    function compViewDef(
-        nodes: NodeDef[], updateDirectives?: ViewUpdateFn, updateRenderer?: ViewUpdateFn,
-        viewFlags: ViewFlags = ViewFlags.None): ViewDefinition {
-      return viewDef(viewFlags, nodes, updateDirectives, updateRenderer);
-    }
-
-    function createAndGetRootNodes(
-        viewDef: ViewDefinition, context: any = null): {rootNodes: any[], view: ViewData} {
-      const view = createRootView(viewDef, context);
-      const rootNodes = rootRenderNodes(view);
-      return {rootNodes, view};
-    }
 
     describe('DebugContext', () => {
       class AComp {}
@@ -36,12 +21,13 @@ export function main() {
       function createViewWithData() {
         const {view} = createAndGetRootNodes(compViewDef([
           elementDef(
-              NodeFlags.None, null !, null !, 1, 'div', null !, null !, null !, null !,
+              0, NodeFlags.None, null, null, 1, 'div', null, null, null, null,
               () => compViewDef([
-                elementDef(NodeFlags.None, [['ref', QueryValueType.ElementRef]], null !, 2, 'span'),
-                directiveDef(NodeFlags.None, null !, 0, AService, []), textDef(null !, ['a'])
+                elementDef(
+                    0, NodeFlags.None, [['ref', QueryValueType.ElementRef]], null, 2, 'span'),
+                directiveDef(1, NodeFlags.None, null, 0, AService, []), textDef(2, null, ['a'])
               ])),
-          directiveDef(NodeFlags.Component, null !, 0, AComp, []),
+          directiveDef(1, NodeFlags.Component, null, 0, AComp, []),
         ]));
         return view;
       }
