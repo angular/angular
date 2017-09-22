@@ -88,7 +88,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
       throw new Error('ngModule should be provided');
     }
     const viewDef = resolveDefinition(this.viewDefFactory);
-    const componentNodeIndex = viewDef.nodes[0].element !.componentProvider !.index;
+    const componentNodeIndex = viewDef.nodes[0].element !.componentProvider !.nodeIndex;
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, ngModule, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
@@ -113,7 +113,7 @@ class ComponentRef_ extends ComponentRef<any> {
     this.instance = _component;
   }
   get location(): ElementRef {
-    return new ElementRef(asElementData(this._view, this._elDef.index).renderElement);
+    return new ElementRef(asElementData(this._view, this._elDef.nodeIndex).renderElement);
   }
   get injector(): Injector { return new Injector_(this._view, this._elDef); }
   get componentType(): Type<any> { return <any>this._component.constructor; }
@@ -318,7 +318,7 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
   }
 
   get elementRef(): ElementRef {
-    return new ElementRef(asElementData(this._parentView, this._def.index).renderElement);
+    return new ElementRef(asElementData(this._parentView, this._def.nodeIndex).renderElement);
   }
 }
 
@@ -340,12 +340,12 @@ class Injector_ implements Injector {
 export function nodeValue(view: ViewData, index: number): any {
   const def = view.def.nodes[index];
   if (def.flags & NodeFlags.TypeElement) {
-    const elData = asElementData(view, def.index);
+    const elData = asElementData(view, def.nodeIndex);
     return def.element !.template ? elData.template : elData.renderElement;
   } else if (def.flags & NodeFlags.TypeText) {
-    return asTextData(view, def.index).renderText;
+    return asTextData(view, def.nodeIndex).renderText;
   } else if (def.flags & (NodeFlags.CatProvider | NodeFlags.TypePipe)) {
-    return asProviderData(view, def.index).instance;
+    return asProviderData(view, def.nodeIndex).instance;
   }
   throw new Error(`Illegal state: read nodeValue for node index ${index}`);
 }
