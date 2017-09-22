@@ -60,6 +60,19 @@ groups:
       - IgorMinar
       - mhevery
 
+  bazel:
+    conditions:
+      files:
+        include:
+          - "WORKSPACE"
+          - "*.bazel"
+          - "*.bzl"
+          - "packages/bazel/*"
+    users:
+      - alexeagle #primary
+      - chuckjaz
+      - vikerman #fallback
+
   build-and-ci:
     conditions:
       files:
