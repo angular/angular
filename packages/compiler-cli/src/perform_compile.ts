@@ -43,7 +43,7 @@ export function formatDiagnostics(options: api.CompilerOptions, diags: Diagnosti
             return res;
           }
         })
-        .join();
+        .join('');
   } else
     return '';
 }
