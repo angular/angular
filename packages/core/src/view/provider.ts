@@ -28,9 +28,10 @@ const InjectorRefTokenKey = tokenKey(Injector);
 const NOT_CREATED = new Object();
 
 export function directiveDef(
-    flags: NodeFlags, matchedQueries: [string | number, QueryValueType][], childCount: number,
-    ctor: any, deps: ([DepFlags, any] | any)[], props?: {[name: string]: [number, string]},
-    outputs?: {[name: string]: string}): NodeDef {
+    checkIndex: number, flags: NodeFlags,
+    matchedQueries: null | [string | number, QueryValueType][], childCount: number, ctor: any,
+    deps: ([DepFlags, any] | any)[], props?: null | {[name: string]: [number, string]},
+    outputs?: null | {[name: string]: string}): NodeDef {
   const bindings: BindingDef[] = [];
   if (props) {
     for (let prop in props) {
@@ -52,24 +53,26 @@ export function directiveDef(
     }
   }
   flags |= NodeFlags.TypeDirective;
-  return _def(flags, matchedQueries, childCount, ctor, ctor, deps, bindings, outputDefs);
+  return _def(
+      checkIndex, flags, matchedQueries, childCount, ctor, ctor, deps, bindings, outputDefs);
 }
 
 export function pipeDef(flags: NodeFlags, ctor: any, deps: ([DepFlags, any] | any)[]): NodeDef {
   flags |= NodeFlags.TypePipe;
-  return _def(flags, null, 0, ctor, ctor, deps);
+  return _def(-1, flags, null, 0, ctor, ctor, deps);
 }
 
 export function providerDef(
-    flags: NodeFlags, matchedQueries: [string | number, QueryValueType][], token: any, value: any,
-    deps: ([DepFlags, any] | any)[]): NodeDef {
-  return _def(flags, matchedQueries, 0, token, value, deps);
+    flags: NodeFlags, matchedQueries: null | [string | number, QueryValueType][], token: any,
+    value: any, deps: ([DepFlags, any] | any)[]): NodeDef {
+  return _def(-1, flags, matchedQueries, 0, token, value, deps);
 }
 
 export function _def(
-    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][] | null,
-    childCount: number, token: any, value: any, deps: ([DepFlags, any] | any)[],
-    bindings?: BindingDef[], outputs?: OutputDef[]): NodeDef {
+    checkIndex: number, flags: NodeFlags,
+    matchedQueriesDsl: [string | number, QueryValueType][] | null, childCount: number, token: any,
+    value: any, deps: ([DepFlags, any] | any)[], bindings?: BindingDef[],
+    outputs?: OutputDef[]): NodeDef {
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
   if (!outputs) {
     outputs = [];
@@ -86,12 +89,13 @@ export function _def(
 
   return {
     // will bet set by the view definition
-    index: -1,
+    nodeIndex: -1,
     parent: null,
     renderParent: null,
     bindingIndex: -1,
     outputIndex: -1,
     // regular values
+    checkIndex,
     flags,
     childFlags: 0,
     directChildFlags: 0,
@@ -134,7 +138,7 @@ export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
     for (let i = 0; i < def.outputs.length; i++) {
       const output = def.outputs[i];
       const subscription = instance[output.propName !].subscribe(
-          eventHandlerClosure(view, def.parent !.index, output.eventName));
+          eventHandlerClosure(view, def.parent !.nodeIndex, output.eventName));
       view.disposables ![def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
     }
   }
@@ -148,7 +152,7 @@ function eventHandlerClosure(view: ViewData, index: number, eventName: string) {
 export function checkAndUpdateDirectiveInline(
     view: ViewData, def: NodeDef, v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any,
     v7: any, v8: any, v9: any): boolean {
-  const providerData = asProviderData(view, def.index);
+  const providerData = asProviderData(view, def.nodeIndex);
   const directive = providerData.instance;
   let changed = false;
   let changes: SimpleChanges = undefined !;
@@ -207,7 +211,7 @@ export function checkAndUpdateDirectiveInline(
 
 export function checkAndUpdateDirectiveDynamic(
     view: ViewData, def: NodeDef, values: any[]): boolean {
-  const providerData = asProviderData(view, def.index);
+  const providerData = asProviderData(view, def.nodeIndex);
   const directive = providerData.instance;
   let changed = false;
   let changes: SimpleChanges = undefined !;
@@ -233,89 +237,71 @@ function _createProviderInstance(view: ViewData, def: NodeDef): any {
   // private services can see other private services
   const allowPrivateServices = (def.flags & NodeFlags.PrivateProvider) > 0;
   const providerDef = def.provider;
-  let injectable: any;
   switch (def.flags & NodeFlags.Types) {
     case NodeFlags.TypeClassProvider:
-      injectable = createClass(
+      return createClass(
           view, def.parent !, allowPrivateServices, providerDef !.value, providerDef !.deps);
-      break;
     case NodeFlags.TypeFactoryProvider:
-      injectable = callFactory(
+      return callFactory(
           view, def.parent !, allowPrivateServices, providerDef !.value, providerDef !.deps);
-      break;
     case NodeFlags.TypeUseExistingProvider:
-      injectable = resolveDep(view, def.parent !, allowPrivateServices, providerDef !.deps[0]);
-      break;
+      return resolveDep(view, def.parent !, allowPrivateServices, providerDef !.deps[0]);
     case NodeFlags.TypeValueProvider:
-      injectable = providerDef !.value;
-      break;
+      return providerDef !.value;
   }
-  return injectable;
 }
 
 function createClass(
     view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, ctor: any, deps: DepDef[]): any {
   const len = deps.length;
-  let injectable: any;
   switch (len) {
     case 0:
-      injectable = new ctor();
-      break;
+      return new ctor();
     case 1:
-      injectable = new ctor(resolveDep(view, elDef, allowPrivateServices, deps[0]));
-      break;
+      return new ctor(resolveDep(view, elDef, allowPrivateServices, deps[0]));
     case 2:
-      injectable = new ctor(
+      return new ctor(
           resolveDep(view, elDef, allowPrivateServices, deps[0]),
           resolveDep(view, elDef, allowPrivateServices, deps[1]));
-      break;
     case 3:
-      injectable = new ctor(
+      return new ctor(
           resolveDep(view, elDef, allowPrivateServices, deps[0]),
           resolveDep(view, elDef, allowPrivateServices, deps[1]),
           resolveDep(view, elDef, allowPrivateServices, deps[2]));
-      break;
     default:
       const depValues = new Array(len);
       for (let i = 0; i < len; i++) {
         depValues[i] = resolveDep(view, elDef, allowPrivateServices, deps[i]);
       }
-      injectable = new ctor(...depValues);
+      return new ctor(...depValues);
   }
-  return injectable;
 }
 
 function callFactory(
     view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, factory: any,
     deps: DepDef[]): any {
   const len = deps.length;
-  let injectable: any;
   switch (len) {
     case 0:
-      injectable = factory();
-      break;
+      return factory();
     case 1:
-      injectable = factory(resolveDep(view, elDef, allowPrivateServices, deps[0]));
-      break;
+      return factory(resolveDep(view, elDef, allowPrivateServices, deps[0]));
     case 2:
-      injectable = factory(
+      return factory(
           resolveDep(view, elDef, allowPrivateServices, deps[0]),
           resolveDep(view, elDef, allowPrivateServices, deps[1]));
-      break;
     case 3:
-      injectable = factory(
+      return factory(
           resolveDep(view, elDef, allowPrivateServices, deps[0]),
           resolveDep(view, elDef, allowPrivateServices, deps[1]),
           resolveDep(view, elDef, allowPrivateServices, deps[2]));
-      break;
     default:
       const depValues = Array(len);
       for (let i = 0; i < len; i++) {
         depValues[i] = resolveDep(view, elDef, allowPrivateServices, deps[i]);
       }
-      injectable = factory(...depValues);
+      return factory(...depValues);
   }
-  return injectable;
 }
 
 // This default value is when checking the hierarchy for a token.
@@ -372,12 +358,12 @@ export function resolveDep(
           return compView.renderer;
         }
         case ElementRefTokenKey:
-          return new ElementRef(asElementData(view, elDef.index).renderElement);
+          return new ElementRef(asElementData(view, elDef.nodeIndex).renderElement);
         case ViewContainerRefTokenKey:
-          return asElementData(view, elDef.index).viewContainer;
+          return asElementData(view, elDef.nodeIndex).viewContainer;
         case TemplateRefTokenKey: {
           if (elDef.element !.template) {
-            return asElementData(view, elDef.index).template;
+            return asElementData(view, elDef.nodeIndex).template;
           }
           break;
         }
@@ -392,7 +378,7 @@ export function resolveDep(
               (allowPrivateServices ? elDef.element !.allProviders :
                                       elDef.element !.publicProviders) ![tokenKey];
           if (providerDef) {
-            const providerData = asProviderData(view, providerDef.index);
+            const providerData = asProviderData(view, providerDef.nodeIndex);
             if (providerData.instance === NOT_CREATED) {
               providerData.instance = _createProviderInstance(view, providerDef);
             }
@@ -423,7 +409,7 @@ export function resolveDep(
 function findCompView(view: ViewData, elDef: NodeDef, allowPrivateServices: boolean) {
   let compView: ViewData;
   if (allowPrivateServices) {
-    compView = asElementData(view, elDef.index).componentView;
+    compView = asElementData(view, elDef.nodeIndex).componentView;
   } else {
     compView = view;
     while (compView.parent && !isComponentView(compView)) {
@@ -437,7 +423,7 @@ function updateProp(
     view: ViewData, providerData: ProviderData, def: NodeDef, bindingIdx: number, value: any,
     changes: SimpleChanges): SimpleChanges {
   if (def.flags & NodeFlags.Component) {
-    const compView = asElementData(view, def.parent !.index).componentView;
+    const compView = asElementData(view, def.parent !.nodeIndex).componentView;
     if (compView.def.flags & ViewFlags.OnPush) {
       compView.state |= ViewState.ChecksEnabled;
     }
@@ -479,7 +465,7 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
       i += nodeDef.childCount;
     }
     while (parent && (parent.flags & NodeFlags.TypeElement) &&
-           i === parent.index + parent.childCount) {
+           i === parent.nodeIndex + parent.childCount) {
       // last child of an element
       if (parent.directChildFlags & lifecycles) {
         callElementProvidersLifecycles(view, parent, lifecycles);
@@ -490,7 +476,7 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
 }
 
 function callElementProvidersLifecycles(view: ViewData, elDef: NodeDef, lifecycles: NodeFlags) {
-  for (let i = elDef.index + 1; i <= elDef.index + elDef.childCount; i++) {
+  for (let i = elDef.nodeIndex + 1; i <= elDef.nodeIndex + elDef.childCount; i++) {
     const nodeDef = view.def.nodes[i];
     if (nodeDef.flags & lifecycles) {
       callProviderLifecycles(view, i, nodeDef.flags & lifecycles);
