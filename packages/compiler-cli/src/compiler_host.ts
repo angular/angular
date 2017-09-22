@@ -39,13 +39,30 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
 
   abstract resourceNameToFileName(m: string, containingFile: string): string|null;
 
-  abstract fileNameToModuleName(importedFile: string, containingFile: string): string|null;
+  abstract fileNameToModuleName(importedFile: string, containingFile: string): string;
 
   abstract toSummaryFileName(fileName: string, referringSrcFileName: string): string;
 
   abstract fromSummaryFileName(fileName: string, referringLibFileName: string): string;
 
   abstract getMetadataForSourceFile(filePath: string): ModuleMetadata|undefined;
+
+  protected getImportAs(fileName: string): string|undefined {
+    // Note: `importAs` can only be in .metadata.json files
+    // So it is enough to call this.readMetadata, and we get the
+    // benefit that this is cached.
+    if (DTS.test(fileName)) {
+      const metadatas = this.readMetadata(fileName);
+      if (metadatas) {
+        for (const metadata of metadatas) {
+          if (metadata.importAs) {
+            return metadata.importAs;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
 
   getMetadataFor(filePath: string): ModuleMetadata[]|undefined {
     if (!this.context.fileExists(filePath)) {
@@ -56,29 +73,34 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
     }
 
     if (DTS.test(filePath)) {
-      const metadataPath = filePath.replace(DTS, '.metadata.json');
-      if (this.context.fileExists(metadataPath)) {
-        return this.readMetadata(metadataPath, filePath);
-      } else {
+      let metadatas = this.readMetadata(filePath);
+      if (!metadatas) {
         // If there is a .d.ts file but no metadata file we need to produce a
         // v3 metadata from the .d.ts file as v3 includes the exports we need
         // to resolve symbols.
-        return [this.upgradeVersion1Metadata(
+        metadatas = [this.upgradeVersion1Metadata(
             {'__symbolic': 'module', 'version': 1, 'metadata': {}}, filePath)];
       }
+      return metadatas;
     }
 
+    // Attention: don't cache this, so that e.g. the LanguageService
+    // can read in changes from source files in the metadata!
     const metadata = this.getMetadataForSourceFile(filePath);
     return metadata ? [metadata] : [];
   }
 
-  readMetadata(filePath: string, dtsFilePath: string): ModuleMetadata[] {
-    let metadatas = this.resolverCache.get(filePath);
+  protected readMetadata(dtsFilePath: string): ModuleMetadata[]|undefined {
+    let metadatas = this.resolverCache.get(dtsFilePath);
     if (metadatas) {
       return metadatas;
     }
+    const metadataPath = dtsFilePath.replace(DTS, '.metadata.json');
+    if (!this.context.fileExists(metadataPath)) {
+      return undefined;
+    }
     try {
-      const metadataOrMetadatas = JSON.parse(this.context.readFile(filePath));
+      const metadataOrMetadatas = JSON.parse(this.context.readFile(metadataPath));
       const metadatas: ModuleMetadata[] = metadataOrMetadatas ?
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
@@ -87,10 +109,10 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
       if (!v3Metadata && v1Metadata) {
         metadatas.push(this.upgradeVersion1Metadata(v1Metadata, dtsFilePath));
       }
-      this.resolverCache.set(filePath, metadatas);
+      this.resolverCache.set(dtsFilePath, metadatas);
       return metadatas;
     } catch (e) {
-      console.error(`Failed to read JSON file ${filePath}`);
+      console.error(`Failed to read JSON file ${metadataPath}`);
       throw e;
     }
   }
@@ -347,6 +369,11 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
    * NOTE: (*) the relative path is computed depending on `isGenDirChildOfRootDir`.
    */
   fileNameToModuleName(importedFile: string, containingFile: string): string {
+    const importAs = this.getImportAs(importedFile);
+    if (importAs) {
+      return importAs;
+    }
+
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
     if (importedFile !== containingFile && !this.context.fileExists(importedFile)) {

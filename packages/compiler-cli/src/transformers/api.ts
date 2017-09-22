@@ -133,6 +133,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // Whether to remove blank text nodes from compiled templates. It is `true` by default
   // in Angular 5 and will be re-visited in Angular 6.
   preserveWhitespaces?: boolean;
+
+  /** generate all possible generated files  */
+  allowEmptyCodegenFiles?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {
@@ -202,6 +205,12 @@ export interface TsEmitArguments {
 }
 
 export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
+
+export interface LibrarySummary {
+  fileName: string;
+  text: string;
+  sourceFile?: ts.SourceFile;
+}
 
 export interface Program {
   /**
@@ -280,8 +289,9 @@ export interface Program {
   }): ts.EmitResult;
 
   /**
-   * Returns the .ngsummary.json files of libraries that have been compiled
-   * in this program or previous programs.
+   * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted
+   * in this program or previous programs with paths that emulate the fact that these libraries
+   * have been compiled before with no outDir.
    */
-  getLibrarySummaries(): {fileName: string, content: string}[];
+  getLibrarySummaries(): LibrarySummary[];
 }
