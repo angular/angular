@@ -57,10 +57,6 @@ export class TestingCompilerImpl implements TestingCompiler {
     return this._compiler.compileModuleAndAllComponentsAsync(moduleType);
   }
 
-  getNgContentSelectors(component: Type<any>): string[] {
-    return this._compiler.getNgContentSelectors(component);
-  }
-
   getComponentFactory<T>(component: Type<T>): ComponentFactory<T> {
     return this._compiler.getComponentFactory(component);
   }

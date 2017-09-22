@@ -67,16 +67,6 @@ export class JitCompiler {
     return Promise.resolve(this._compileModuleAndAllComponents(moduleType, false));
   }
 
-  getNgContentSelectors(component: Type): string[] {
-    this._console.warn(
-        'Compiler.getNgContentSelectors is deprecated. Use ComponentFactory.ngContentSelectors instead!');
-    const template = this._compiledTemplateCache.get(component);
-    if (!template) {
-      throw new Error(`The component ${stringify(component)} is not yet compiled!`);
-    }
-    return template.compMeta.template !.ngContentSelectors;
-  }
-
   getComponentFactory(component: Type): object {
     const summary = this._metadataResolver.getDirectiveSummary(component);
     return summary.componentFactory as object;
