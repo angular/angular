@@ -22,6 +22,7 @@ const RELATIVE_I18N_FOLDER = path.resolve(__dirname, `../../../${I18N_FOLDER}`);
 const RELATIVE_I18N_DATA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_FOLDER}`);
 const RELATIVE_I18N_DATA_EXTRA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_EXTRA_FOLDER}`);
 const DEFAULT_RULE = `function anonymous(n\n/**/) {\nreturn"other"\n}`;
+const DEFAULT_LANGUAE = 'en';
 const EMPTY_RULE = `function anonymous(n\n/**/) {\n\n}`;
 const WEEK_DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const HEADER = `/**
@@ -66,8 +67,8 @@ module.exports = (gulp, done) => {
   console.log(`${LOCALES.length} locale files generated.`);
 
   // additional "en" file that will be included in common
-  console.log(`Writing file ${I18N_FOLDER}/locale_en.ts`);
-  fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/locale_en.ts`, generateLocale('en', new cldrJs('en')));
+  console.log(`Writing file ${I18N_FOLDER}/locale_${DEFAULT_LANGUAGE}.ts`);
+  fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/locale_${DEFAULT_LANGUAGE}.ts`, generateLocale(DEFAULT_LANGUAGE, new cldrJs(DEFAULT_LANGUAGE)));
 
   console.log(`Writing file ${I18N_FOLDER}/currencies.ts`);
   fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/currencies.ts`, generateCurrencies());
@@ -79,7 +80,7 @@ module.exports = (gulp, done) => {
     .src([
         `${I18N_DATA_FOLDER}/**/*.ts`,
         `${I18N_FOLDER}/currencies.ts`,
-        `${I18N_FOLDER}/locale_en.ts`
+        `${I18N_FOLDER}/locale_${DEFAULT_LANGUAGE}.ts`
       ], {base: '.'})
     .pipe(format.format('file', clangFormat))
     .pipe(gulp.dest('.'));
@@ -114,12 +115,11 @@ export default ${data};
 function generateLocaleExtra(locale, localeData) {
   const dayPeriods = getDayPeriodsNoAmPm(localeData);
   const dayPeriodRules = getDayPeriodRules(localeData);
+  const keys = Object.keys(dayPeriods.format.narrow);
 
   let dayPeriodsSupplemental = [];
-
-  if (Object.keys(dayPeriods.format.narrow).length) {
-    const keys = Object.keys(dayPeriods.format.narrow);
-
+  
+  if (keys.length) {
     if (keys.length !== Object.keys(dayPeriodRules).length) {
       throw new Error(`Error: locale ${locale} has not the correct number of day period rules`);
     }
@@ -150,7 +150,7 @@ export default ${stringify(dayPeriodsSupplemental).replace(/undefined/g, '')};
  * Generate a file that contains the list of currencies and their symbols
  */
 function generateCurrencies() {
-  const currenciesData = new cldrJs('en').main('numbers/currencies');
+  const currenciesData = new cldrJs(DEFAULT_LANGUAGE).main('numbers/currencies');
   const currencies = [];
   Object.keys(currenciesData).forEach(key => {
     let symbolsArray = [];
