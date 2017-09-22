@@ -41,10 +41,10 @@ var customLaunchers = {
   'DartiumWithWebPlatform':
       {base: 'Dartium', flags: ['--enable-experimental-web-platform-features']},
   'ChromeNoSandbox': {base: 'Chrome', flags: ['--no-sandbox']},
-  'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '54'},
+  'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '60'},
   'SL_CHROMEBETA': {base: 'SauceLabs', browserName: 'chrome', version: 'beta'},
   'SL_CHROMEDEV': {base: 'SauceLabs', browserName: 'chrome', version: 'dev'},
-  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '50'},
+  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '54'},
   'SL_FIREFOXBETA': {base: 'SauceLabs', browserName: 'firefox', version: 'beta'},
   'SL_FIREFOXDEV': {base: 'SauceLabs', browserName: 'firefox', version: 'dev'},
   'SL_SAFARI7': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.9', version: '7.0'},
