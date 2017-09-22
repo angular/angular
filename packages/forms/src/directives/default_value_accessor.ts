@@ -56,7 +56,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
   },
   providers: [DEFAULT_VALUE_ACCESSOR]
 })
-export class DefaultValueAccessor implements ControlValueAccessor {
+export class DefaultValueAccessor implements ControlValueAccessor<any> {
   onChange = (_: any) => {};
   onTouched = () => {};
 

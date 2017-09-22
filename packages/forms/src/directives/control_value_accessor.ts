@@ -8,6 +8,9 @@
 
 import {InjectionToken} from '@angular/core';
 
+export type OnChangeCallback<T> = (_: T) => void;
+export type OnTouchedCallback = () => void;
+
 /**
  * A `ControlValueAccessor` acts as a bridge between the Angular forms API and a
  * native element in the DOM.
@@ -17,7 +20,7 @@ import {InjectionToken} from '@angular/core';
  *
  * @stable
  */
-export interface ControlValueAccessor {
+export interface ControlValueAccessor<T> {
   /**
    * Writes a new value to the element.
    *
@@ -32,7 +35,7 @@ export interface ControlValueAccessor {
    * }
    * ```
    */
-  writeValue(obj: any): void;
+  writeValue(obj: T): void;
 
   /**
    * Registers a callback function that should be called when the control's value
@@ -61,7 +64,7 @@ export interface ControlValueAccessor {
    * ```
    *
    */
-  registerOnChange(fn: any): void;
+  registerOnChange(fn: OnChangeCallback<T>): void;
 
   /**
    * Registers a callback function that should be called when the control receives
@@ -89,7 +92,7 @@ export interface ControlValueAccessor {
    * }
    * ```
    */
-  registerOnTouched(fn: any): void;
+  registerOnTouched(fn: OnTouchedCallback): void;
 
   /**
    * This function is called by the forms API when the control status changes to
@@ -115,4 +118,4 @@ export interface ControlValueAccessor {
  * See {@link DefaultValueAccessor} for how to implement one.
  * @stable
  */
-export const NG_VALUE_ACCESSOR = new InjectionToken<ControlValueAccessor>('NgValueAccessor');
+export const NG_VALUE_ACCESSOR = new InjectionToken<ControlValueAccessor<any>>('NgValueAccessor');
