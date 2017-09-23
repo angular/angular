@@ -51,6 +51,6 @@ readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE |
   # Run PWA-score tests (unless the deployment is not public yet;
   # i.e. it could not be automatically verified).
   if [[ $httpCode -ne 202 ]] && [[ "$isHidden" != "true" ]]; then
-    yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE"
+    yarn test-pwa-score "$DEPLOYED_URL" "$MIN_PWA_SCORE"
   fi
 )
