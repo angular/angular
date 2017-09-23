@@ -15,13 +15,12 @@ export AIO_GITHUB_TOKEN=$(head -c -1 /aio-secrets/TEST_GITHUB_TOKEN 2>/dev/null 
 export AIO_PREVIEW_DEPLOYMENT_TOKEN=$(head -c -1 /aio-secrets/TEST_PREVIEW_DEPLOYMENT_TOKEN 2>/dev/null || echo "TEST_PREVIEW_DEPLOYMENT_TOKEN")
 
 # Start the upload-server instance
-# TODO(gkalpak): Ideally, the upload server should be run as a non-privileged user.
-#                (Currently, there doesn't seem to be a straight forward way.)
 appName=aio-upload-server-test
 if [[ "$1" == "stop" ]]; then
   pm2 delete $appName
 else
   pm2 start $AIO_SCRIPTS_JS_DIR/dist/lib/verify-setup/start-test-upload-server.js \
+    --uid $AIO_WWW_USER \
     --log /var/log/aio/upload-server-test.log \
     --name $appName \
     --no-autorestart \
