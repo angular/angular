@@ -310,13 +310,13 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(expr, this._visitIdentifier(expr.value));
   }
 
-  visitConditionalExpr(expr: ConditionalExpr): RecordedNode<ts.ConditionalExpression> {
-    // TODO {chuckj}: Review use of ! on flaseCase. Should it be non-nullable?
+  visitConditionalExpr(expr: ConditionalExpr): RecordedNode<ts.ParenthesizedExpression> {
+    // TODO {chuckj}: Review use of ! on falseCase. Should it be non-nullable?
     return this.record(
         expr,
-        ts.createConditional(
+        ts.createParen(ts.createConditional(
             expr.condition.visitExpression(this, null), expr.trueCase.visitExpression(this, null),
-            expr.falseCase !.visitExpression(this, null)));
+            expr.falseCase !.visitExpression(this, null))));
   }
 
   visitNotExpr(expr: NotExpr): RecordedNode<ts.PrefixUnaryExpression> {
@@ -345,7 +345,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                   /* type */ undefined, this._visitStatements(expr.statements)));
   }
 
-  visitBinaryOperatorExpr(expr: BinaryOperatorExpr): RecordedNode<ts.BinaryExpression> {
+  visitBinaryOperatorExpr(expr: BinaryOperatorExpr): RecordedNode<ts.ParenthesizedExpression> {
     let binaryOperator: ts.BinaryOperator;
     switch (expr.operator) {
       case BinaryOperator.And:
@@ -397,9 +397,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
         throw new Error(`Unknown operator: ${expr.operator}`);
     }
     return this.record(
-        expr, ts.createBinary(
+        expr, ts.createParen(ts.createBinary(
                   expr.lhs.visitExpression(this, null), binaryOperator,
-                  expr.rhs.visitExpression(this, null)));
+                  expr.rhs.visitExpression(this, null))));
   }
 
   visitReadPropExpr(expr: ReadPropExpr): RecordedNode<ts.PropertyAccessExpression> {
