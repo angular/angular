@@ -87,7 +87,7 @@ fi
   cd "`dirname $0`/.."
 
   # Build the app
-  yarn build -- --env=$deployEnv
+  yarn build --env=$deployEnv
 
   # Include any mode-specific files
   cp -rf src/extra-files/$deployEnv/. dist/
@@ -100,5 +100,5 @@ fi
   firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
 
   # Run PWA-score tests
-  yarn test-pwa-score -- "$deployedUrl" "$MIN_PWA_SCORE"
+  yarn test-pwa-score "$deployedUrl" "$MIN_PWA_SCORE"
 )
