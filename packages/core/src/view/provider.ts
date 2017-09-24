@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, SimpleChange, SimpleChanges, WrappedValue} from '../change_detection/change_detection';
-import {Injector} from '../di';
+import {Injector, resolveForwardRef} from '../di';
 import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
@@ -77,6 +77,10 @@ export function _def(
   if (!bindings) {
     bindings = [];
   }
+  // Need to resolve forwardRefs as e.g. for `useValue` we
+  // lowered the expression and then stopped evaluating it,
+  // i.e. also didn't unwrap it.
+  value = resolveForwardRef(value);
 
   const depDefs = splitDepsDsl(deps);
 
