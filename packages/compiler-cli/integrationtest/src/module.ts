@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, NgModule} from '@angular/core';
+import {ApplicationRef, NgModule, forwardRef} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MATERIAL_SANITY_CHECKS, MdButtonModule} from '@angular/material';
 import {ServerModule} from '@angular/platform-server';
@@ -68,7 +68,7 @@ export {SomeModule as JitSummariesSomeModule} from './jit_summaries';
   ],
   providers: [
     SomeService,
-    {provide: CUSTOM, useValue: {name: 'some name'}},
+    {provide: CUSTOM, useValue: forwardRef(() => ({name: 'some name'}))},
     // disable sanity check for material because it throws an error when used server-side
     // see https://github.com/angular/material2/issues/6292
     {provide: MATERIAL_SANITY_CHECKS, useValue: false},
