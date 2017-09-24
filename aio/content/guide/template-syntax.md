@@ -142,7 +142,7 @@ The `hero` in `{{hero.name}}`
 refers to the template input variable, not the component's property.
 
 Template expressions cannot refer to anything in
-the global namespace. They can't refer to `window` or `document`. They
+the global namespace (except `undefined`). They can't refer to `window` or `document`. They
 can't call `console.log` or `Math.max`. They are restricted to referencing
 members of the expression context.
 
