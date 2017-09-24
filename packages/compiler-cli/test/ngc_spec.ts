@@ -711,6 +711,38 @@ describe('ngc transformer command-line', () => {
         expect(main(['-p', basePath], errorSpy)).toBe(0);
         shouldExist('module.js');
       });
+
+      it('should allow to use lowering with export *', () => {
+        write('mymodule.ts', `
+          import {NgModule} from '@angular/core';
+
+          export * from './util';
+
+          // Note: the lamda will be lowered into an exported expression
+          @NgModule({providers: [{provide: 'aToken', useValue: () => 2}]})
+          export class MyModule {}
+        `);
+        write('util.ts', `
+          // Note: The lamda will be lowered into an exported expression
+          const x = () => 2;
+
+          export const y = x;
+        `);
+
+        expect(compile()).toEqual(0);
+
+        const mymoduleSource = fs.readFileSync(path.resolve(outDir, 'mymodule.js'), 'utf8');
+        expect(mymoduleSource).toContain('ɵ0');
+
+        const utilSource = fs.readFileSync(path.resolve(outDir, 'util.js'), 'utf8');
+        expect(utilSource).toContain('ɵ0');
+
+        const mymoduleNgFactoryJs =
+            fs.readFileSync(path.resolve(outDir, 'mymodule.ngfactory.js'), 'utf8');
+        // check that the generated code refers to ɵ0 from mymodule, and not from util!
+        expect(mymoduleNgFactoryJs).toContain(`import * as i1 from "./mymodule"`);
+        expect(mymoduleNgFactoryJs).toContain(`"aToken", i1.ɵ0`);
+      });
     });
 
     function writeFlatModule(outFile: string) {
