@@ -124,6 +124,7 @@ describe('StaticSymbolResolver', () => {
       symbolResolver.getStaticSymbol('/tmp/src/reexport/src/origin1.d.ts', 'One'),
       symbolResolver.getStaticSymbol('/tmp/src/reexport/src/origin1.d.ts', 'Two'),
       symbolResolver.getStaticSymbol('/tmp/src/reexport/src/origin1.d.ts', 'Three'),
+      symbolResolver.getStaticSymbol('/tmp/src/reexport/src/origin1.d.ts', 'Six'),
     ]);
   });
 
@@ -132,8 +133,9 @@ describe('StaticSymbolResolver', () => {
       symbolResolver.getStaticSymbol('/tmp/src/reexport/reexport.d.ts', 'One'),
       symbolResolver.getStaticSymbol('/tmp/src/reexport/reexport.d.ts', 'Two'),
       symbolResolver.getStaticSymbol('/tmp/src/reexport/reexport.d.ts', 'Four'),
+      symbolResolver.getStaticSymbol('/tmp/src/reexport/reexport.d.ts', 'Six'),
       symbolResolver.getStaticSymbol('/tmp/src/reexport/reexport.d.ts', 'Five'),
-      symbolResolver.getStaticSymbol('/tmp/src/reexport/reexport.d.ts', 'Thirty')
+      symbolResolver.getStaticSymbol('/tmp/src/reexport/reexport.d.ts', 'Thirty'),
     ]);
   });
 
@@ -287,8 +289,9 @@ describe('StaticSymbolResolver', () => {
         .toBe(symbolCache.get('/test2.d.ts', '__a__'));
 
     expect(symbolResolver.getSymbolsOf('/test.ts')).toEqual([
-      symbolCache.get('/test.ts', '__x__'), symbolCache.get('/test.ts', '__y__'),
-      symbolCache.get('/test.ts', '__b__')
+      symbolCache.get('/test.ts', '__b__'),
+      symbolCache.get('/test.ts', '__x__'),
+      symbolCache.get('/test.ts', '__y__'),
     ]);
   });
 
@@ -354,6 +357,14 @@ describe('StaticSymbolResolver', () => {
     const symbol2 = symbolResolver.resolveSymbol(symbol1).metadata;
     expect(symbol2.name).toEqual('Thirty');
     expect(symbol2.filePath).toEqual('/tmp/src/reexport/src/origin30.d.ts');
+  });
+
+  it('should prefer names in the file over reexports', () => {
+    const metadata = symbolResolver
+                         .resolveSymbol(symbolResolver.getSymbolByModule(
+                             './reexport/reexport', 'Six', '/tmp/src/main.ts'))
+                         .metadata;
+    expect(metadata.__symbolic).toBe('class');
   });
 
   it('should cache tracing a named export', () => {
@@ -494,9 +505,11 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   '/tmp/src/reexport/reexport.d.ts': {
     __symbolic: 'module',
     version: 3,
-    metadata: {},
+    metadata: {
+      Six: {__symbolic: 'class'},
+    },
     exports: [
-      {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}]},
+      {from: './src/origin1', export: ['One', 'Two', {name: 'Three', as: 'Four'}, 'Six']},
       {from: './src/origin5'}, {from: './src/reexport2'}
     ]
   },
@@ -507,6 +520,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
       One: {__symbolic: 'class'},
       Two: {__symbolic: 'class'},
       Three: {__symbolic: 'class'},
+      Six: {__symbolic: 'class'},
     },
   },
   '/tmp/src/reexport/src/origin5.d.ts': {
