@@ -265,13 +265,14 @@ export class MetadataCollector {
 
     const isExportedIdentifier = (identifier: ts.Identifier) => exportMap.has(identifier.text);
     const isExported =
-        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration | ts.TypeAliasDeclaration |
-         ts.EnumDeclaration) => isExport(node) || isExportedIdentifier(node.name);
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
+         ts.TypeAliasDeclaration | ts.EnumDeclaration) =>
+            isExport(node) || isExportedIdentifier(node.name);
     const exportedIdentifierName = (identifier: ts.Identifier) =>
         exportMap.get(identifier.text) || identifier.text;
     const exportedName =
-        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration | ts.TypeAliasDeclaration |
-         ts.EnumDeclaration) => exportedIdentifierName(node.name);
+        (node: ts.FunctionDeclaration | ts.ClassDeclaration | ts.InterfaceDeclaration |
+         ts.TypeAliasDeclaration | ts.EnumDeclaration) => exportedIdentifierName(node.name);
 
 
     // Predeclare classes and functions

@@ -28,26 +28,15 @@ mkdir -p ${LOGS_DIR}
 # Install node
 #nvm install ${NODE_VERSION}
 
-if [[ ${CI_MODE} != "aio" && ${CI_MODE} != 'docs_test' ]]; then
-  # Install version of npm that we are locked against
-  travisFoldStart "install-npm"
-    npm install -g npm@${NPM_VERSION}
-  travisFoldEnd "install-npm"
+# Install version of yarn that we are locked against
+travisFoldStart "install-yarn"
+  curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
+travisFoldEnd "install-yarn"
 
-
-  # Install all npm dependencies according to shrinkwrap.json
-  travisFoldStart "npm-install"
-    node tools/npm/check-node-modules --purge || npm install
-  travisFoldEnd "npm-install"
-fi
-
-
-if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "aio_tools_test") ]]; then
-  # Install version of yarn that we are locked against
-  travisFoldStart "install-yarn"
-    curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
-  travisFoldEnd "install-yarn"
-fi
+# Install all npm dependencies according to yarn.lock
+travisFoldStart "yarn-install"
+  node tools/npm/check-node-modules --purge || yarn install
+travisFoldEnd "yarn-install"
 
 
 if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "aio_tools_test") ]]; then

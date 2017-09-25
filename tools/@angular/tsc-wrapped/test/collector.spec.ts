@@ -71,7 +71,7 @@ describe('Collector', () => {
     const sourceFile = program.getSourceFile('/exported-type.ts');
     const metadata = collector.getMetadata(sourceFile);
     expect(metadata).toEqual(
-         {__symbolic: 'module', version: 3, metadata: {SomeType: {__symbolic: 'interface'}}});
+        {__symbolic: 'module', version: 3, metadata: {SomeType: {__symbolic: 'interface'}}});
   });
 
   it('should return an interface reference for interfaces', () => {
