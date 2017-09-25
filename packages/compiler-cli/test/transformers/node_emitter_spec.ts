@@ -179,7 +179,7 @@ describe('TypeScriptNodeEmitter', () => {
   it('should support blank literals', () => {
     expect(emitStmt(o.literal(null).toStmt())).toEqual('null;');
     expect(emitStmt(o.literal(undefined).toStmt())).toEqual('undefined;');
-    expect(emitStmt(o.variable('a', null).isBlank().toStmt())).toEqual('a == null;');
+    expect(emitStmt(o.variable('a', null).isBlank().toStmt())).toEqual('(a == null);');
   });
 
   it('should support external identifiers', () => {
@@ -195,23 +195,28 @@ describe('TypeScriptNodeEmitter', () => {
     expect(emitStmt(o.not(someVar).toStmt())).toEqual('!someVar;');
     expect(emitStmt(o.assertNotNull(someVar).toStmt())).toEqual('someVar;');
     expect(emitStmt(someVar.conditional(o.variable('trueCase'), o.variable('falseCase')).toStmt()))
-        .toEqual('someVar ? trueCase : falseCase;');
+        .toEqual('(someVar ? trueCase : falseCase);');
+    expect(emitStmt(someVar.conditional(o.variable('trueCase'), o.variable('falseCase'))
+                        .conditional(o.variable('trueCase'), o.variable('falseCase'))
+                        .toStmt()))
+        .toEqual('((someVar ? trueCase : falseCase) ? trueCase : falseCase);');
 
-    expect(emitStmt(lhs.equals(rhs).toStmt())).toEqual('lhs == rhs;');
-    expect(emitStmt(lhs.notEquals(rhs).toStmt())).toEqual('lhs != rhs;');
-    expect(emitStmt(lhs.identical(rhs).toStmt())).toEqual('lhs === rhs;');
-    expect(emitStmt(lhs.notIdentical(rhs).toStmt())).toEqual('lhs !== rhs;');
-    expect(emitStmt(lhs.minus(rhs).toStmt())).toEqual('lhs - rhs;');
-    expect(emitStmt(lhs.plus(rhs).toStmt())).toEqual('lhs + rhs;');
-    expect(emitStmt(lhs.divide(rhs).toStmt())).toEqual('lhs / rhs;');
-    expect(emitStmt(lhs.multiply(rhs).toStmt())).toEqual('lhs * rhs;');
-    expect(emitStmt(lhs.modulo(rhs).toStmt())).toEqual('lhs % rhs;');
-    expect(emitStmt(lhs.and(rhs).toStmt())).toEqual('lhs && rhs;');
-    expect(emitStmt(lhs.or(rhs).toStmt())).toEqual('lhs || rhs;');
-    expect(emitStmt(lhs.lower(rhs).toStmt())).toEqual('lhs < rhs;');
-    expect(emitStmt(lhs.lowerEquals(rhs).toStmt())).toEqual('lhs <= rhs;');
-    expect(emitStmt(lhs.bigger(rhs).toStmt())).toEqual('lhs > rhs;');
-    expect(emitStmt(lhs.biggerEquals(rhs).toStmt())).toEqual('lhs >= rhs;');
+    expect(emitStmt(lhs.equals(rhs).toStmt())).toEqual('(lhs == rhs);');
+    expect(emitStmt(lhs.notEquals(rhs).toStmt())).toEqual('(lhs != rhs);');
+    expect(emitStmt(lhs.identical(rhs).toStmt())).toEqual('(lhs === rhs);');
+    expect(emitStmt(lhs.notIdentical(rhs).toStmt())).toEqual('(lhs !== rhs);');
+    expect(emitStmt(lhs.minus(rhs).toStmt())).toEqual('(lhs - rhs);');
+    expect(emitStmt(lhs.plus(rhs).toStmt())).toEqual('(lhs + rhs);');
+    expect(emitStmt(lhs.divide(rhs).toStmt())).toEqual('(lhs / rhs);');
+    expect(emitStmt(lhs.multiply(rhs).toStmt())).toEqual('(lhs * rhs);');
+    expect(emitStmt(lhs.plus(rhs).multiply(rhs).toStmt())).toEqual('((lhs + rhs) * rhs);');
+    expect(emitStmt(lhs.modulo(rhs).toStmt())).toEqual('(lhs % rhs);');
+    expect(emitStmt(lhs.and(rhs).toStmt())).toEqual('(lhs && rhs);');
+    expect(emitStmt(lhs.or(rhs).toStmt())).toEqual('(lhs || rhs);');
+    expect(emitStmt(lhs.lower(rhs).toStmt())).toEqual('(lhs < rhs);');
+    expect(emitStmt(lhs.lowerEquals(rhs).toStmt())).toEqual('(lhs <= rhs);');
+    expect(emitStmt(lhs.bigger(rhs).toStmt())).toEqual('(lhs > rhs);');
+    expect(emitStmt(lhs.biggerEquals(rhs).toStmt())).toEqual('(lhs >= rhs);');
   });
 
   it('should support function expressions', () => {

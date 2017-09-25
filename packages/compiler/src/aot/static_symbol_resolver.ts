@@ -45,7 +45,7 @@ export interface StaticSymbolResolverHost {
    *
    * See ImportResolver.
    */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
+  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string;
 }
 
 const SUPPORTED_SCHEMA_VERSION = 3;
@@ -163,7 +163,7 @@ export class StaticSymbolResolver {
   /**
    * Converts a file path to a module name that can be used as an `import`.
    */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null {
+  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string {
     return this.knownFileNameToModuleNames.get(importedFilePath) ||
         this.host.fileNameToModuleName(importedFilePath, containingFilePath);
   }
@@ -292,39 +292,6 @@ export class StaticSymbolResolver {
     this.resolvedFilePaths.add(filePath);
     const resolvedSymbols: ResolvedStaticSymbol[] = [];
     const metadata = this.getModuleMetadata(filePath);
-    if (metadata['importAs']) {
-      // Index bundle indices should use the importAs module name defined
-      // in the bundle.
-      this.knownFileNameToModuleNames.set(filePath, metadata['importAs']);
-    }
-    if (metadata['metadata']) {
-      // handle direct declarations of the symbol
-      const topLevelSymbolNames =
-          new Set<string>(Object.keys(metadata['metadata']).map(unescapeIdentifier));
-      const origins: {[index: string]: string} = metadata['origins'] || {};
-      Object.keys(metadata['metadata']).forEach((metadataKey) => {
-        const symbolMeta = metadata['metadata'][metadataKey];
-        const name = unescapeIdentifier(metadataKey);
-
-        const symbol = this.getStaticSymbol(filePath, name);
-
-        const origin = origins.hasOwnProperty(metadataKey) && origins[metadataKey];
-        if (origin) {
-          // If the symbol is from a bundled index, use the declaration location of the
-          // symbol so relative references (such as './my.html') will be calculated
-          // correctly.
-          const originFilePath = this.resolveModule(origin, filePath);
-          if (!originFilePath) {
-            this.reportError(
-                new Error(`Couldn't resolve original symbol for ${origin} from ${filePath}`));
-          } else {
-            this.symbolResourcePaths.set(symbol, originFilePath);
-          }
-        }
-        resolvedSymbols.push(
-            this.createResolvedSymbol(symbol, filePath, topLevelSymbolNames, symbolMeta));
-      });
-    }
 
     // handle the symbols in one of the re-export location
     if (metadata['exports']) {
@@ -362,6 +329,38 @@ export class StaticSymbolResolver {
           }
         }
       }
+    }
+
+    // handle the actual metadata. Has to be after the exports
+    // as there migth be collisions in the names, and we want the symbols
+    // of the current module to win ofter reexports.
+    if (metadata['metadata']) {
+      // handle direct declarations of the symbol
+      const topLevelSymbolNames =
+          new Set<string>(Object.keys(metadata['metadata']).map(unescapeIdentifier));
+      const origins: {[index: string]: string} = metadata['origins'] || {};
+      Object.keys(metadata['metadata']).forEach((metadataKey) => {
+        const symbolMeta = metadata['metadata'][metadataKey];
+        const name = unescapeIdentifier(metadataKey);
+
+        const symbol = this.getStaticSymbol(filePath, name);
+
+        const origin = origins.hasOwnProperty(metadataKey) && origins[metadataKey];
+        if (origin) {
+          // If the symbol is from a bundled index, use the declaration location of the
+          // symbol so relative references (such as './my.html') will be calculated
+          // correctly.
+          const originFilePath = this.resolveModule(origin, filePath);
+          if (!originFilePath) {
+            this.reportError(
+                new Error(`Couldn't resolve original symbol for ${origin} from ${filePath}`));
+          } else {
+            this.symbolResourcePaths.set(symbol, originFilePath);
+          }
+        }
+        resolvedSymbols.push(
+            this.createResolvedSymbol(symbol, filePath, topLevelSymbolNames, symbolMeta));
+      });
     }
     resolvedSymbols.forEach(
         (resolvedSymbol) => this.resolvedSymbols.set(resolvedSymbol.symbol, resolvedSymbol));

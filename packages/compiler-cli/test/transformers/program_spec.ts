@@ -38,41 +38,42 @@ describe('ng program', () => {
     `;
   }
 
+  function compileLib(libName: string) {
+    testSupport.writeFiles({
+      [`${libName}_src/index.ts`]: createModuleAndCompSource(libName),
+    });
+    const options = testSupport.createCompilerOptions();
+    const program = ng.createProgram({
+      rootNames: [path.resolve(testSupport.basePath, `${libName}_src/index.ts`)],
+      options,
+      host: ng.createCompilerHost({options}),
+    });
+    expectNoDiagnosticsInProgram(options, program);
+    fs.symlinkSync(
+        path.resolve(testSupport.basePath, 'built', `${libName}_src`),
+        path.resolve(testSupport.basePath, 'node_modules', libName));
+    program.emit({emitFlags: ng.EmitFlags.DTS | ng.EmitFlags.JS | ng.EmitFlags.Metadata});
+  }
+
+  function compile(
+      oldProgram?: ng.Program, overrideOptions?: ng.CompilerOptions,
+      rootNames?: string[]): ng.Program {
+    const options = testSupport.createCompilerOptions(overrideOptions);
+    if (!rootNames) {
+      rootNames = [path.resolve(testSupport.basePath, 'src/index.ts')];
+    }
+
+    const program = ng.createProgram({
+      rootNames: rootNames,
+      options,
+      host: ng.createCompilerHost({options}), oldProgram,
+    });
+    expectNoDiagnosticsInProgram(options, program);
+    program.emit();
+    return program;
+  }
+
   describe('reuse of old program', () => {
-
-    function compileLib(libName: string) {
-      testSupport.writeFiles({
-        [`${libName}_src/index.ts`]: createModuleAndCompSource(libName),
-      });
-      const options = testSupport.createCompilerOptions({
-        skipTemplateCodegen: true,
-      });
-      const program = ng.createProgram({
-        rootNames: [path.resolve(testSupport.basePath, `${libName}_src/index.ts`)],
-        options,
-        host: ng.createCompilerHost({options}),
-      });
-      expectNoDiagnosticsInProgram(options, program);
-      fs.symlinkSync(
-          path.resolve(testSupport.basePath, 'built', `${libName}_src`),
-          path.resolve(testSupport.basePath, 'node_modules', libName));
-      program.emit({emitFlags: ng.EmitFlags.DTS | ng.EmitFlags.JS | ng.EmitFlags.Metadata});
-    }
-
-    function compile(oldProgram?: ng.Program): ng.Program {
-      const options = testSupport.createCompilerOptions();
-      const rootNames = [path.resolve(testSupport.basePath, 'src/index.ts')];
-
-      const program = ng.createProgram({
-        rootNames: rootNames,
-        options: testSupport.createCompilerOptions(),
-        host: ng.createCompilerHost({options}), oldProgram,
-      });
-      expectNoDiagnosticsInProgram(options, program);
-      program.emit();
-      return program;
-    }
-
     it('should reuse generated code for libraries from old programs', () => {
       compileLib('lib');
       testSupport.writeFiles({
@@ -121,6 +122,29 @@ describe('ng program', () => {
       expect(p4.getTsProgram().getSourceFiles().some(
                  sf => /node_modules\/lib2\/.*\.ngfactory.*$/.test(sf.fileName)))
           .toBe(false);
+    });
+
+    it('should store library summaries on emit', () => {
+      compileLib('lib');
+      testSupport.writeFiles({
+        'src/main.ts': createModuleAndCompSource('main'),
+        'src/index.ts': `
+            export * from './main';
+            export * from 'lib/index';
+          `
+      });
+      const p1 = compile();
+      expect(p1.getLibrarySummaries().some(
+                 sf => /node_modules\/lib\/index\.ngfactory\.d\.ts$/.test(sf.fileName)))
+          .toBe(true);
+      expect(p1.getLibrarySummaries().some(
+                 sf => /node_modules\/lib\/index\.ngsummary\.json$/.test(sf.fileName)))
+          .toBe(true);
+      expect(
+          p1.getLibrarySummaries().some(sf => /node_modules\/lib\/index\.d\.ts$/.test(sf.fileName)))
+          .toBe(true);
+
+      expect(p1.getLibrarySummaries().some(sf => /src\/main.*$/.test(sf.fileName))).toBe(false);
     });
 
     it('should reuse the old ts program completely if nothing changed', () => {
@@ -223,13 +247,118 @@ describe('ng program', () => {
     const allRootNames = preProgram.getSourceFiles().map(sf => sf.fileName);
 
     // now do the actual test with noResolve
-    const options = testSupport.createCompilerOptions({noResolve: true});
-    const host = ng.createCompilerHost({options});
-    const program = ng.createProgram({rootNames: allRootNames, options, host});
-    expectNoDiagnosticsInProgram(options, program);
-    program.emit();
+    const program = compile(undefined, {noResolve: true}, allRootNames);
 
     testSupport.shouldExist('built/src/main.ngfactory.js');
     testSupport.shouldExist('built/src/main.ngfactory.d.ts');
+  });
+
+  it('should emit also empty generated files depending on the options', () => {
+    testSupport.writeFiles({
+      'src/main.ts': `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({selector: 'main', template: '', styleUrls: ['main.css']})
+        export class MainComp {}
+
+        @NgModule({declarations: [MainComp]})
+        export class MainModule {}
+      `,
+      'src/main.css': ``,
+      'src/util.ts': 'export const x = 1;',
+      'src/index.ts': `
+        export * from './util';
+        export * from './main';
+      `,
+    });
+    const options = testSupport.createCompilerOptions({allowEmptyCodegenFiles: true});
+    const host = ng.createCompilerHost({options});
+    const written = new Map < string, {
+      original: ts.SourceFile[]|undefined;
+      data: string;
+    }
+    > ();
+
+    host.writeFile =
+        (fileName: string, data: string, writeByteOrderMark: boolean,
+         onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
+          written.set(fileName, {original: sourceFiles, data});
+        };
+    const program = ng.createProgram(
+        {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+    program.emit();
+
+    function assertGenFile(
+        fileName: string, checks: {originalFileName: string, shouldBeEmpty: boolean}) {
+      const writeData = written.get(path.join(testSupport.basePath, fileName));
+      expect(writeData).toBeTruthy();
+      expect(writeData !.original !.some(
+                 sf => sf.fileName === path.join(testSupport.basePath, checks.originalFileName)))
+          .toBe(true);
+      if (checks.shouldBeEmpty) {
+        expect(writeData !.data).toBe('');
+      } else {
+        expect(writeData !.data).not.toBe('');
+      }
+    }
+
+    assertGenFile(
+        'built/src/util.ngfactory.js', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+    assertGenFile(
+        'built/src/util.ngfactory.d.ts', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+    assertGenFile(
+        'built/src/util.ngsummary.js', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+    assertGenFile(
+        'built/src/util.ngsummary.d.ts', {originalFileName: 'src/util.ts', shouldBeEmpty: true});
+    assertGenFile(
+        'built/src/util.ngsummary.json', {originalFileName: 'src/util.ts', shouldBeEmpty: false});
+
+    // Note: we always fill non shim and shim style files as they might
+    // be shared by component with and without ViewEncapsulation.
+    assertGenFile(
+        'built/src/main.css.ngstyle.js', {originalFileName: 'src/main.ts', shouldBeEmpty: false});
+    assertGenFile(
+        'built/src/main.css.ngstyle.d.ts', {originalFileName: 'src/main.ts', shouldBeEmpty: true});
+    // Note: this file is not empty as we actually generated code for it
+    assertGenFile(
+        'built/src/main.css.shim.ngstyle.js',
+        {originalFileName: 'src/main.ts', shouldBeEmpty: false});
+    assertGenFile(
+        'built/src/main.css.shim.ngstyle.d.ts',
+        {originalFileName: 'src/main.ts', shouldBeEmpty: true});
+  });
+
+  it('should not emit /// references in .d.ts files', () => {
+    testSupport.writeFiles({
+      'src/main.ts': createModuleAndCompSource('main'),
+    });
+    compile(undefined, {declaration: true}, [path.resolve(testSupport.basePath, 'src/main.ts')]);
+
+    const dts =
+        fs.readFileSync(path.resolve(testSupport.basePath, 'built', 'src', 'main.d.ts')).toString();
+    expect(dts).toMatch('export declare class');
+    expect(dts).not.toMatch('///');
+  });
+
+  it('should not emit generated files whose sources are outside of the rootDir', () => {
+    compileLib('lib');
+    testSupport.writeFiles({
+      'src/main.ts': createModuleAndCompSource('main'),
+      'src/index.ts': `
+          export * from './main';
+          export * from 'lib/index';
+        `
+    });
+    compile(undefined, {rootDir: path.resolve(testSupport.basePath, 'src')});
+    testSupport.shouldExist('built/main.js');
+    testSupport.shouldExist('built/main.d.ts');
+    testSupport.shouldExist('built/main.ngfactory.js');
+    testSupport.shouldExist('built/main.ngfactory.d.ts');
+    testSupport.shouldExist('built/main.ngsummary.json');
+    testSupport.shouldNotExist('build/node_modules/lib/index.js');
+    testSupport.shouldNotExist('build/node_modules/lib/index.d.ts');
+    testSupport.shouldNotExist('build/node_modules/lib/index.ngfactory.js');
+    testSupport.shouldNotExist('build/node_modules/lib/index.ngfactory.d.ts');
+    testSupport.shouldNotExist('build/node_modules/lib/index.ngsummary.json');
   });
 });

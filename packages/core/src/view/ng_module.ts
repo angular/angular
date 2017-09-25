@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {resolveForwardRef} from '../di/forward_ref';
 import {Injector, THROW_IF_NOT_FOUND} from '../di/injector';
 import {NgModuleRef} from '../linker/ng_module_factory';
 
@@ -20,6 +21,10 @@ const NgModuleRefTokenKey = tokenKey(NgModuleRef);
 export function moduleProvideDef(
     flags: NodeFlags, token: any, value: any,
     deps: ([DepFlags, any] | any)[]): NgModuleProviderDef {
+  // Need to resolve forwardRefs as e.g. for `useValue` we
+  // lowered the expression and then stopped evaluating it,
+  // i.e. also didn't unwrap it.
+  value = resolveForwardRef(value);
   const depDefs = splitDepsDsl(deps);
   return {
     // will bet set by the module definition
