@@ -372,10 +372,10 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
     symbol: StaticSymbol,
     importAs: StaticSymbol
   }[] = []) {}
-  addSummary(summary: Summary<StaticSymbol>) { this.summaries.push(summary); };
+  addSummary(summary: Summary<StaticSymbol>) { this.summaries.push(summary); }
   resolveSummary(reference: StaticSymbol): Summary<StaticSymbol> {
     return this.summaries.find(summary => summary.symbol === reference);
-  };
+  }
   getSymbolsOf(filePath: string): StaticSymbol[] {
     return this.summaries.filter(summary => summary.symbol.filePath === filePath)
         .map(summary => summary.symbol);

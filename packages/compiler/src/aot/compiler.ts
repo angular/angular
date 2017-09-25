@@ -247,7 +247,7 @@ export class AotCompiler {
     const summaryJson = new GeneratedFile(srcFileUrl, summaryFileName(srcFileUrl), json);
     if (this._enableSummariesForJit) {
       return [summaryJson, this._codegenSourceModule(srcFileUrl, forJitOutputCtx)];
-    };
+    }
 
     return [summaryJson];
   }

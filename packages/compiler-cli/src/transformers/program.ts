@@ -378,14 +378,15 @@ function createProgramWithStubsHost(
       }
       return originalHost.readFile(fileName);
     }
+
     getDefaultLibFileName = (options: ts.CompilerOptions) =>
-        originalHost.getDefaultLibFileName(options);
+        originalHost.getDefaultLibFileName(options)
     getCurrentDirectory = () => originalHost.getCurrentDirectory();
     getCanonicalFileName = (fileName: string) => originalHost.getCanonicalFileName(fileName);
     useCaseSensitiveFileNames = () => originalHost.useCaseSensitiveFileNames();
     getNewLine = () => originalHost.getNewLine();
     realPath = (p: string) => p;
     fileExists = (fileName: string) =>
-        this.generatedFiles.has(fileName) || originalHost.fileExists(fileName);
+        this.generatedFiles.has(fileName) || originalHost.fileExists(fileName)
   };
 }

@@ -1531,13 +1531,13 @@ class DirectiveLog {
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  transform(value: any) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state++}`; }
 }
 
 @Pipe({name: 'countingImpurePipe', pure: false})
 class CountingImpurePipe implements PipeTransform {
   state: number = 0;
-  transform(value: any) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state++}`; }
 }
 
 @Pipe({name: 'pipeWithOnDestroy'})

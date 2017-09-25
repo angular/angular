@@ -90,7 +90,7 @@ export class CompilerHost implements AotCompilerHost {
       this.moduleFileNames.set(key, result);
     }
     return result;
-  };
+  }
 
   /**
    * We want a moduleId that will appear in import statements in the generated code.

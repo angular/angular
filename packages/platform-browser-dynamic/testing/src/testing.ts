@@ -14,7 +14,7 @@ import {BrowserTestingModule} from '@angular/platform-browser/testing';
 
 import {DOMTestComponentRenderer} from './dom_test_component_renderer';
 
-export * from './private_export_testing'
+export * from './private_export_testing';
 
 /**
  * @stable

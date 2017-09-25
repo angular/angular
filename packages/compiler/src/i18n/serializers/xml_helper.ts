@@ -62,7 +62,7 @@ export class Declaration implements Node {
 }
 
 export class Doctype implements Node {
-  constructor(public rootTag: string, public dtd: string){};
+  constructor(public rootTag: string, public dtd: string) {}
 
   visit(visitor: IVisitor): any { return visitor.visitDoctype(this); }
 }
@@ -83,7 +83,7 @@ export class Tag implements Node {
 
 export class Text implements Node {
   value: string;
-  constructor(unescapedValue: string) { this.value = _escapeXml(unescapedValue); };
+  constructor(unescapedValue: string) { this.value = _escapeXml(unescapedValue); }
 
   visit(visitor: IVisitor): any { return visitor.visitText(this); }
 }

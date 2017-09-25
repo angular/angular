@@ -110,9 +110,9 @@ class ComponentRef_ extends ComponentRef<any> {
     return new ElementRef(asElementData(this._view, this._elDef.index).renderElement);
   }
   get injector(): Injector { return new Injector_(this._view, this._elDef); }
-  get instance(): any { return this._component; };
-  get hostView(): ViewRef { return this._viewRef; };
-  get changeDetectorRef(): ChangeDetectorRef { return this._viewRef; };
+  get instance(): any { return this._component; }
+  get hostView(): ViewRef { return this._viewRef; }
+  get changeDetectorRef(): ChangeDetectorRef { return this._viewRef; }
   get componentType(): Type<any> { return <any>this._component.constructor; }
 
   destroy(): void { this._viewRef.destroy(); }
@@ -164,7 +164,7 @@ class ViewContainerRef_ implements ViewContainerData {
     return null;
   }
 
-  get length(): number { return this._embeddedViews.length; };
+  get length(): number { return this._embeddedViews.length; }
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {
