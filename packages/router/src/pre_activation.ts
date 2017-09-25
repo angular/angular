@@ -9,7 +9,7 @@
 import {Injector} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {from} from 'rxjs/observable/from';
-import {of } from 'rxjs/observable/of';
+import {of} from 'rxjs/observable/of';
 import {concatMap} from 'rxjs/operator/concatMap';
 import {every} from 'rxjs/operator/every';
 import {first} from 'rxjs/operator/first';
