@@ -64,6 +64,16 @@ export function main() {
       expect(parseAndRemoveWS('   \n foo  \t ')).toEqual([[html.Text, ' foo ', 0]]);
     });
 
+    it('should not replace &nbsp;', () => {
+      expect(parseAndRemoveWS('&nbsp;')).toEqual([[html.Text, '\u00a0', 0]]);
+    });
+
+    it('should not replace sequences of &nbsp;', () => {
+      expect(parseAndRemoveWS('&nbsp;&nbsp;foo&nbsp;&nbsp;')).toEqual([
+        [html.Text, '\u00a0\u00a0foo\u00a0\u00a0', 0]
+      ]);
+    });
+
     it('should not replace single tab and newline with spaces', () => {
       expect(parseAndRemoveWS('\nfoo')).toEqual([[html.Text, '\nfoo', 0]]);
       expect(parseAndRemoveWS('\tfoo')).toEqual([[html.Text, '\tfoo', 0]]);
