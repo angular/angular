@@ -115,7 +115,7 @@ export function downgradeComponent(info: {
           facade.createComponent(projectableNodes);
           facade.setupInputs(needsNgZone, info.propagateDigest);
           facade.setupOutputs();
-          facade.registerCleanup(needsNgZone);
+          facade.registerCleanup();
 
           injectorPromise.resolve(facade.getInjector());
 
