@@ -203,11 +203,13 @@ export class DowngradeComponentAdapter {
   }
 
   registerCleanup(needsNgZone: boolean) {
+    const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
+
     this.element.on !('$destroy', () => {
       this.componentScope.$destroy();
       this.componentRef.injector.get(TestabilityRegistry)
           .unregisterApplication(this.componentRef.location.nativeElement);
-      this.componentRef.destroy();
+      destroyComponentRef();
       if (needsNgZone) {
         this.appRef.detachView(this.componentRef.hostView);
       }
