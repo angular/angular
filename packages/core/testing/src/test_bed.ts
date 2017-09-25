@@ -45,6 +45,7 @@ export type TestModuleMetadata = {
   declarations?: any[],
   imports?: any[],
   schemas?: Array<SchemaMetadata|any[]>,
+  entryComponents?: any[],
 };
 
 /**
@@ -184,6 +185,7 @@ export class TestBed implements Injector {
   private _declarations: Array<Type<any>|any[]|any> = [];
   private _imports: Array<Type<any>|any[]|any> = [];
   private _schemas: Array<SchemaMetadata|any[]> = [];
+  private _entryComponents: Array<Type<any>|any[]|any> = [];
   private _activeFixtures: ComponentFixture<any>[] = [];
 
   private _aotSummaries: () => any[] = () => [];
@@ -244,6 +246,7 @@ export class TestBed implements Injector {
     this._declarations = [];
     this._imports = [];
     this._schemas = [];
+    this._entryComponents = [];
     this._instantiated = false;
     this._activeFixtures.forEach((fixture) => {
       try {
@@ -273,6 +276,9 @@ export class TestBed implements Injector {
     }
     if (moduleDef.schemas) {
       this._schemas.push(...moduleDef.schemas);
+    }
+    if (moduleDef.entryComponents) {
+      this._entryComponents.push(...moduleDef.entryComponents);
     }
   }
 
@@ -323,8 +329,9 @@ export class TestBed implements Injector {
     const declarations = this._declarations;
     const imports = [this.ngModule, this._imports];
     const schemas = this._schemas;
+    const entryComponents = this._entryComponents;
 
-    @NgModule({providers, declarations, imports, schemas})
+    @NgModule({providers, declarations, imports, schemas, entryComponents})
     class DynamicTestModule {
     }
 

@@ -79,11 +79,11 @@ export declare class TestBed implements Injector {
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
     overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void;
     overrideProvider(token: any, provider: {
-        useFactory: Function;
-        deps: any[];
+        useValue: any;
     }): void;
     overrideProvider(token: any, provider: {
-        useValue: any;
+        useFactory: Function;
+        deps: any[];
     }): void;
     /** @experimental */ resetTestEnvironment(): void;
     resetTestingModule(): void;
@@ -123,6 +123,7 @@ export declare type TestModuleMetadata = {
     declarations?: any[];
     imports?: any[];
     schemas?: Array<SchemaMetadata | any[]>;
+    entryComponents?: any[];
 };
 
 /** @experimental */
