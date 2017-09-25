@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, ComponentFactoryResolver, Injector, NgModule, NgZone, OnInit, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -348,6 +348,8 @@ export function main() {
     });
 
     describe('attachView / detachView', () => {
+      let dynamicComponent: ComponentRef<MyComp>;
+
       @Component({template: '{{name}}'})
       class MyComp {
         name = 'Initial';
@@ -365,10 +367,51 @@ export function main() {
         tplRef: TemplateRef<Object>;
       }
 
+      @Component({template: '{{name}}'})
+      class MyCompWithOnInit implements OnInit {
+        name = 'Initial';
+
+        constructor(
+            private _applicationRef: ApplicationRef,
+            private _componentFactoryResolver: ComponentFactoryResolver,
+            private _injector: Injector) {}
+
+        ngOnInit() {
+          const cf = this._componentFactoryResolver.resolveComponentFactory(MyComp);
+          dynamicComponent = cf.create(this._injector);
+          dynamicComponent.instance.name = 'Dynamic';
+          this._applicationRef.attachView(dynamicComponent.hostView);
+        }
+      }
+
+      @Component({template: '{{name}}'})
+      class MyCompWithInfiniteLoop implements OnInit {
+        name = 'Initial';
+
+        constructor(
+            private _applicationRef: ApplicationRef,
+            private _componentFactoryResolver: ComponentFactoryResolver,
+            private _injector: Injector) {}
+
+        ngOnInit() {
+          const cf = this._componentFactoryResolver.resolveComponentFactory(MyCompWithInfiniteLoop);
+          dynamicComponent = cf.create(this._injector);
+          dynamicComponent.instance.name = 'Dynamic';
+          this._applicationRef.attachView(dynamicComponent.hostView);
+        }
+      }
+
       beforeEach(() => {
+        const errorHandler = new ErrorHandler();
+        errorHandler._console = mockConsole as any;
         TestBed.configureTestingModule({
-          declarations: [MyComp, ContainerComp, EmbeddedViewComp],
-          providers: [{provide: ComponentFixtureNoNgZone, useValue: true}]
+          declarations:
+              [MyComp, ContainerComp, EmbeddedViewComp, MyCompWithOnInit, MyCompWithInfiniteLoop],
+          providers: [
+            {provide: ComponentFixtureNoNgZone, useValue: true},
+            {provide: ErrorHandler, useValue: errorHandler}
+          ],
+          entryComponents: [MyComp, MyCompWithInfiniteLoop]
         });
       });
 
@@ -440,6 +483,30 @@ export function main() {
            expect(() => vc.insert(hostView))
                .toThrowError('This view is already attached directly to the ApplicationRef!');
          });
+
+      it('should dirty check views attached during change detection', () => {
+        const comp = TestBed.createComponent(MyCompWithOnInit);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        expect(appRef.viewCount).toBe(0);
+
+        appRef.attachView(comp.componentRef.hostView);
+        appRef.tick();
+        expect(appRef.viewCount).toBe(2);
+        expect(comp.nativeElement).toHaveText('Initial');
+        expect(dynamicComponent.location.nativeElement).toHaveText('Dynamic');
+      });
+
+      it('should error if the maximum ApplicationRef.tick stack size is exceeded', () => {
+        const comp = TestBed.createComponent(MyCompWithInfiniteLoop);
+        const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+        expect(appRef.viewCount).toBe(0);
+
+        appRef.attachView(comp.componentRef.hostView);
+        appRef.tick();
+        expect(mockConsole.res[0].join('#'))
+            .toEqual(
+                'ERROR#Error: Too many cycles of attaching views during change detection. Aborting to prevent infinite loop lockup.');
+      });
     });
   });
 

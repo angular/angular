@@ -367,6 +367,7 @@ export class ApplicationRef {
   private _bootstrapListeners: ((compRef: ComponentRef<any>) => void)[] = [];
   private _views: InternalViewRef[] = [];
   private _runningTick: boolean = false;
+  private _viewsAddedWhileRunningTick: InternalViewRef[] = [];
   private _enforceNoNewChanges: boolean = false;
   private _stable = true;
 
@@ -515,6 +516,18 @@ export class ApplicationRef {
     try {
       this._runningTick = true;
       this._views.forEach((view) => view.detectChanges());
+      let counter = 0;
+      while (counter < 1000 && this._viewsAddedWhileRunningTick.length > 0) {
+        const extraViews = this._viewsAddedWhileRunningTick;
+        this._viewsAddedWhileRunningTick = [];
+        extraViews.forEach((view) => view.detectChanges());
+        counter++;
+      }
+      if (this._viewsAddedWhileRunningTick.length > 0) {
+        this._viewsAddedWhileRunningTick = [];
+        throw new Error(
+            'Too many cycles of attaching views during change detection. Aborting to prevent infinite loop lockup.');
+      }
       if (this._enforceNoNewChanges) {
         this._views.forEach((view) => view.checkNoChanges());
       }
@@ -536,6 +549,9 @@ export class ApplicationRef {
     const view = (viewRef as InternalViewRef);
     this._views.push(view);
     view.attachToAppRef(this);
+    if (this._runningTick) {
+      this._viewsAddedWhileRunningTick.push(view);
+    }
   }
 
   /**
@@ -545,6 +561,9 @@ export class ApplicationRef {
     const view = (viewRef as InternalViewRef);
     remove(this._views, view);
     view.detachFromAppRef();
+    if (this._runningTick) {
+      remove(this._viewsAddedWhileRunningTick, view);
+    }
   }
 
   private _loadComponent(componentRef: ComponentRef<any>): void {
