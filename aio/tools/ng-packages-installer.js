@@ -15,12 +15,15 @@ shelljs.set('-e');
 const ROOT_DIR = path.resolve(__dirname, '../..');
 const PACKAGES_DIR = path.join(ROOT_DIR, 'packages');
 const PACKAGES_DIST_DIR = path.join(ROOT_DIR, 'dist/packages-dist');
+const ROOT_NODE_MODULES_DIR = path.join(ROOT_DIR, 'node_modules');
 const NG_LOCAL_FILENAME = '.ng-local';
 
 // Classes
 class NgPackagesInstaller {
   constructor() {
     // Properties - Protected
+
+    this.peerDependencies = {};
 
     /**
      * A sorted list of Angular package names.
@@ -30,6 +33,7 @@ class NgPackagesInstaller {
       find(PACKAGES_DIR).
       map(path => path.slice(PACKAGES_DIR.length + 1)).
       filter(path => /^[^/]+\/package.json$/.test(path)).
+      map(path => this._capturePeerDependencies(path)).
       map(path => path.slice(0, -13)).
       sort();
   }
@@ -59,7 +63,7 @@ class NgPackagesInstaller {
         '!!!',
         `!!!  The following packages have been overwritten in '${rootDir}/node_modules/' with the locally built ones:`,
         '!!!',
-        ...localPackages.map(pkg => `!!!    - @angular/${pkg}`),
+        ...localPackages.map(pkg => `!!!    - ${pkg}`),
         '!!!',
         '!!!  To restore the packages run:',
         '!!!',
@@ -79,7 +83,11 @@ class NgPackagesInstaller {
     rootDir = path.resolve(rootDir);
     const nodeModulesDir = path.join(rootDir, 'node_modules');
 
-    this.ngPackages.forEach(packageName => this._overwritePackage(packageName, nodeModulesDir));
+    this.ngPackages.forEach(packageName => this._overwritePackage(PACKAGES_DIST_DIR, packageName, path.join(nodeModulesDir, '@angular/')));
+    Object.keys(this.peerDependencies).forEach(packageName => this._overwritePackage(ROOT_NODE_MODULES_DIR, packageName, nodeModulesDir));
+
+    // Reset the executable flag in .bin
+    shelljs.ls(path.join(nodeModulesDir, '.bin', '*')).forEach(file => shelljs.chmod('+x', file));
   }
 
   /**
@@ -106,11 +114,22 @@ class NgPackagesInstaller {
    */
   _findLocalPackages(rootDir) {
     const nodeModulesDir = path.join(rootDir, 'node_modules');
-    const localPackages = this.ngPackages.filter(packageName => this._isLocalPackage(packageName, nodeModulesDir));
+    const packagesDir = path.join(nodeModulesDir, '@angular');
+    let localPackages = [];
+    let localDependencies = [];
+    try {
+      localPackages = shelljs.ls(path.join(packagesDir, '*', NG_LOCAL_FILENAME)).
+        map(path => path.slice(nodeModulesDir.length + 1, - NG_LOCAL_FILENAME.length - 1));
+      localDependencies = shelljs.ls(path.join(nodeModulesDir, '*', NG_LOCAL_FILENAME)).
+          map(path => path.slice(nodeModulesDir.length + 1, - NG_LOCAL_FILENAME.length - 1));
+    } catch(e) {
+      if (e.message.indexOf('ls: no such file or directory') === -1) throw e;
+    }
 
     this._log(`Local packages found: ${localPackages.join(', ') || '-'}`);
+    this._log(`Local dependencies found: ${localDependencies.join(', ') || '-'}`);
 
-    return localPackages;
+    return localPackages.concat(localDependencies);
   }
 
   /**
@@ -121,7 +140,7 @@ class NgPackagesInstaller {
    * @return {boolean} - True if the package has been overwritten or false otherwise.
    */
   _isLocalPackage(packageName, nodeModulesDir) {
-    const targetPackageDir = path.join(nodeModulesDir, '@angular', packageName);
+    const targetPackageDir = path.join(nodeModulesDir, packageName);
     const localFlagFile = path.join(targetPackageDir, NG_LOCAL_FILENAME);
     const isLocal = fs.existsSync(localFlagFile);
 
@@ -191,14 +210,15 @@ class NgPackagesInstaller {
   }
 
   /**
-   * Remove an installed Angular package from `nodeModulesDir` and replace it with the locally built
+   * Remove an installed Angular package from `targetFolder` and replace it with the locally built
    * one. Mark the package by adding an `.ng-local` file in the target directory.
+   * @param {string} sourceFolder   - The folder where we should find the source package
    * @param {string} packageName    - The name of the package to overwrite.
-   * @param {string} nodeModulesDir - The target `node_modules/` directory.
+   * @param {string} targetFolder - The target `node_modules/` directory.
    */
-  _overwritePackage(packageName, nodeModulesDir) {
-    const sourcePackageDir = path.join(PACKAGES_DIST_DIR, packageName);
-    const targetPackageDir = path.join(nodeModulesDir, '@angular', packageName);
+  _overwritePackage(sourceFolder, packageName, targetFolder) {
+    const sourcePackageDir = path.join(sourceFolder, packageName);
+    const targetPackageDir = path.join(targetFolder, packageName);
     const localFlagFile = path.join(targetPackageDir, NG_LOCAL_FILENAME);
 
     this._log(`Overwriting package '${packageName}' (${sourcePackageDir} --> ${targetPackageDir})...`);
@@ -222,6 +242,21 @@ class NgPackagesInstaller {
 
     this._log(`Running '${installCmd}' in '${rootDir}'...`);
     shelljs.exec(installCmd, {cwd: rootDir});
+  }
+
+  /**
+   * Parse a package's package.json for its peer dependencies, storing them in the `peerDependencies` property.
+   * @param {string} path to a package's package.json
+   * @returns the path that was passed, to enable chaining
+   */
+  _capturePeerDependencies(path) {
+    const peerDependencies = require(PACKAGES_DIR + '/' + path).peerDependencies || {};
+    Object.keys(peerDependencies).forEach(dep => {
+      if (peerDependencies[dep] !== '0.0.0-PLACEHOLDER') {
+        this.peerDependencies[dep] = peerDependencies[dep];
+      }
+    });
+    return path;
   }
 }
 
