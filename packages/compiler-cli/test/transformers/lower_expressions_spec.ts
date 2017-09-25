@@ -98,6 +98,38 @@ describe('Expression lowering', () => {
       expect(collected.requests.has(collected.annotations[0].start))
           .toBeTruthy('did not find the data field');
     });
+
+    it('should throw a validation execption for invalid files', () => {
+      const cache = new LowerMetadataCache({}, /* strict */ true);
+      const sourceFile = ts.createSourceFile(
+          'foo.ts', `
+        import {Injectable} from '@angular/core';
+
+        class SomeLocalClass {}
+        @Injectable()
+        export class SomeClass {
+          constructor(a: SomeLocalClass) {}
+        }
+      `,
+          ts.ScriptTarget.Latest, true);
+      expect(() => cache.getMetadata(sourceFile)).toThrow();
+    });
+
+    it('should not report validation errors on a .d.ts file', () => {
+      const cache = new LowerMetadataCache({}, /* strict */ true);
+      const dtsFile = ts.createSourceFile(
+          'foo.d.ts', `
+        import {Injectable} from '@angular/core';
+
+        class SomeLocalClass {}
+        @Injectable()
+        export class SomeClass {
+          constructor(a: SomeLocalClass) {}
+        }
+      `,
+          ts.ScriptTarget.Latest, true);
+      expect(() => cache.getMetadata(dtsFile)).not.toThrow();
+    });
   });
 });
 
