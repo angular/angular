@@ -151,7 +151,7 @@ export class DowngradeComponentAdapter {
     }
 
     // Attach the view so that it will be dirty-checked.
-    if (needsNgZone) {
+    if (needsNgZone || !propagateDigest) {
       const appRef = this.parentInjector.get<ApplicationRef>(ApplicationRef);
       appRef.attachView(this.componentRef.hostView);
     }
