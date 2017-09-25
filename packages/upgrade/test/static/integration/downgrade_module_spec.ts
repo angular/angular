@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, StaticProvider, destroyPlatform} from '@angular/core';
+import {Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, StaticProvider, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -167,6 +167,42 @@ export function main() {
            setTimeout(() => {
              // Wait for `$evalAsync()` to propagate inputs.
              setTimeout(() => expect(element.textContent).toBe('In the zone: true'));
+           });
+         }));
+
+      it('should destroy components inside the Angular zone', async(() => {
+           let destroyedInTheZone = false;
+
+           @Component({selector: 'ng2', template: ''})
+           class Ng2Component implements OnDestroy {
+             ngOnDestroy() { destroyedInTheZone = NgZone.isInAngularZone(); }
+           }
+
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive(
+                       'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
+
+           const element = html('<ng2 ng-if="!hideNg2"></ng2>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+
+           // Wait for the module to be bootstrapped.
+           setTimeout(() => {
+             $rootScope.$apply('hideNg2 = true');
+             expect(destroyedInTheZone).toBe(true);
            });
          }));
 
