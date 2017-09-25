@@ -1,0 +1,14 @@
+{% macro renderDescendants(doc, docType, title='', recursed=false) %}
+  {% set descendants = doc.descendants | filterByPropertyValue('docType', docType) %}
+  {% if descendants.length %}
+  {% if title %}<h2>{$ title $}</h2>{% endif %}
+  <ul {% if not recursed %}class="descendants {$ docType $}"{% endif %}>
+  {% for descendant in descendants %}
+    <li>
+      <pre class="prettyprint lang-ts"><code>{$ descendant.name $}</code></pre>
+      {$ renderDescendants(descendant, docType, '', true) $}
+    </li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+{% endmacro %}
