@@ -9,6 +9,7 @@
 var fs = require('fs');
 var path = require('path');
 
+// tslint:disable:no-console
 module.exports = function(gulp, plugins, config) {
   function symlink(relativeFolder, linkDir) {
     var sourceDir = path.join('..', relativeFolder);
@@ -17,7 +18,7 @@ module.exports = function(gulp, plugins, config) {
       try {
         fs.symlinkSync(sourceDir, linkDir, 'dir');
       } catch (e) {
-        var sourceDir = path.join(config.dir, relativeFolder);
+        sourceDir = path.join(config.dir, relativeFolder);
         console.log('linking failed: trying to hard copy', linkDir, sourceDir);
         copyRecursiveSync(sourceDir, linkDir);
       }

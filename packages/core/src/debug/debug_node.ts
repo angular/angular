@@ -9,7 +9,9 @@
 import {Injector} from '../di';
 import {DebugContext} from '../view/index';
 
-export class EventListener { constructor(public name: string, public callback: Function){}; }
+export class EventListener {
+  constructor(public name: string, public callback: Function) {}
+}
 
 /**
  * @experimental All debugging apis are currently experimental.

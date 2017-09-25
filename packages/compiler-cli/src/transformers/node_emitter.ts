@@ -302,7 +302,6 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
         ts.createConditional(
             expr.condition.visitExpression(this, null), expr.trueCase.visitExpression(this, null),
             expr.falseCase !.visitExpression(this, null)));
-    ;
   }
 
   visitNotExpr(expr: NotExpr): RecordedNode<ts.PrefixUnaryExpression> {

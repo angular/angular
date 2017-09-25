@@ -53,7 +53,7 @@ class Profiler {
 function forceGC() {
   Cu.forceGC();
   os.notifyObservers(null, 'child-gc-request', null);
-};
+}
 
 const mod = require('sdk/page-mod');
 const data = require('sdk/self').data;

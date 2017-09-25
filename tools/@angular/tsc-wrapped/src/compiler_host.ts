@@ -27,6 +27,7 @@ export function formatDiagnostics(d: ts.Diagnostic[]): string {
  * Implementation of CompilerHost that forwards all methods to another instance.
  * Useful for partial implementations to override only methods they care about.
  */
+// tslint:disable:semicolon
 export abstract class DelegatingHost implements ts.CompilerHost {
   constructor(protected delegate: ts.CompilerHost) {}
   getSourceFile =

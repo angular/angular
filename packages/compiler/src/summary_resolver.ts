@@ -28,12 +28,12 @@ export abstract class SummaryResolver<T> {
 export class JitSummaryResolver implements SummaryResolver<Type<any>> {
   private _summaries = new Map<Type<any>, Summary<Type<any>>>();
 
-  isLibraryFile(fileName: string): boolean { return false; };
+  isLibraryFile(fileName: string): boolean { return false; }
   getLibraryFileName(fileName: string): string|null { return null; }
   resolveSummary(reference: Type<any>): Summary<Type<any>>|null {
     return this._summaries.get(reference) || null;
-  };
+  }
   getSymbolsOf(filePath: string): Type<any>[] { return []; }
   getImportAs(reference: Type<any>): Type<any> { return reference; }
-  addSummary(summary: Summary<Type<any>>) { this._summaries.set(summary.symbol, summary); };
+  addSummary(summary: Summary<Type<any>>) { this._summaries.set(summary.symbol, summary); }
 }

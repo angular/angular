@@ -86,4 +86,4 @@ export default {
   },
   banner: banner,
   plugins: [{resolveId: resolve}, commonjs()]
-}
+};

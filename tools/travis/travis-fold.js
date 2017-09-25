@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// tslint:disable:no-console
 module.exports = function travisFoldStart(name) {
   if (process.env.TRAVIS) console.log('travis_fold:start:' + encode(name));
 
   return function travisFoldEnd() {
     if (process.env.TRAVIS) console.log('travis_fold:end:' + encode(name));
-  }
+  };
 };
 
 
