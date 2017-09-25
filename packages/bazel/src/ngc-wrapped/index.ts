@@ -8,7 +8,7 @@
 // TODO(tbosch): figure out why we need this as it breaks node code within ngc-wrapped
 /// <reference types="node" />
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -163,7 +163,10 @@ export function compile(
           program, bazelHost, bazelHost, compilerOpts, targetSourceFile, writeFile,
           cancellationToken, emitOnlyDtsFiles, {
             beforeTs: customTransformers.before,
-            afterTs: customTransformers.after,
+            afterTs: [
+              ...(customTransformers.after || []),
+              fixUmdModuleDeclarations((sf: ts.SourceFile) => bazelHost.amdModuleName(sf)),
+            ],
           });
 
   const {diagnostics, emitResult, program} = ng.performCompilation(
