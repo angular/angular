@@ -49,7 +49,7 @@ export class DecimalPipe implements PipeTransform {
     const {str, error} = formatNumber(value, locale, NumberFormatStyle.Decimal, digits);
 
     if (error) {
-      throw invalidPipeArgumentError(CurrencyPipe, error);
+      throw invalidPipeArgumentError(DecimalPipe, error);
     }
 
     return str;
@@ -87,7 +87,7 @@ export class PercentPipe implements PipeTransform {
     const {str, error} = formatNumber(value, locale, NumberFormatStyle.Percent, digits);
 
     if (error) {
-      throw invalidPipeArgumentError(CurrencyPipe, error);
+      throw invalidPipeArgumentError(PercentPipe, error);
     }
 
     return str;
