@@ -25,7 +25,6 @@ export class DowngradeComponentAdapter {
   private componentRef: ComponentRef<any>;
   private component: any;
   private changeDetector: ChangeDetectorRef;
-  private appRef: ApplicationRef;
 
   constructor(
       private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
@@ -35,7 +34,6 @@ export class DowngradeComponentAdapter {
       private componentFactory: ComponentFactory<any>,
       private wrapCallback: <T>(cb: () => T) => () => T) {
     this.componentScope = scope.$new();
-    this.appRef = parentInjector.get(ApplicationRef);
   }
 
   compileContents(): Node[][] {
@@ -154,7 +152,8 @@ export class DowngradeComponentAdapter {
 
     // Attach the view so that it will be dirty-checked.
     if (needsNgZone) {
-      this.appRef.attachView(this.componentRef.hostView);
+      const appRef = this.parentInjector.get<ApplicationRef>(ApplicationRef);
+      appRef.attachView(this.componentRef.hostView);
     }
   }
 
@@ -202,7 +201,7 @@ export class DowngradeComponentAdapter {
     }
   }
 
-  registerCleanup(needsNgZone: boolean) {
+  registerCleanup() {
     const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
 
     this.element.on !('$destroy', () => {
@@ -210,9 +209,6 @@ export class DowngradeComponentAdapter {
       this.componentRef.injector.get(TestabilityRegistry)
           .unregisterApplication(this.componentRef.location.nativeElement);
       destroyComponentRef();
-      if (needsNgZone) {
-        this.appRef.detachView(this.componentRef.hostView);
-      }
     });
   }
 

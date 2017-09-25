@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, StaticProvider, destroyPlatform} from '@angular/core';
+import {ApplicationRef, Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, StaticProvider, ViewRef, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -303,6 +303,53 @@ export function main() {
                button.click();
                expect(element.textContent).toBe('2');
              });
+           });
+         }));
+
+      it('should detach hostViews from the ApplicationRef once destroyed', async(() => {
+           let ng2Component: Ng2Component;
+
+           @Component({selector: 'ng2', template: ''})
+           class Ng2Component {
+             constructor(public appRef: ApplicationRef) {
+               ng2Component = this;
+               spyOn(appRef, 'attachView').and.callThrough();
+               spyOn(appRef, 'detachView').and.callThrough();
+             }
+           }
+
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive(
+                       'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
+
+           const element = html('<ng2 ng-if="!hideNg2"></ng2>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+
+           // Wait for the module to be bootstrapped.
+           setTimeout(() => {
+             const hostView: ViewRef =
+                 (ng2Component.appRef.attachView as jasmine.Spy).calls.mostRecent().args[0];
+
+             expect(hostView.destroyed).toBe(false);
+
+             $rootScope.$apply('hideNg2 = true');
+
+             expect(hostView.destroyed).toBe(true);
+             expect(ng2Component.appRef.detachView).toHaveBeenCalledWith(hostView);
            });
          }));
 
