@@ -11,16 +11,17 @@
     "@angular/animations": "file:../../../dist/packages-dist/animations",
     "@angular/common": "file:../../../dist/packages-dist/common",
     "@angular/compiler": "file:../../../dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../../dist/packages-dist/core",
     "@angular/http": "file:../../../dist/packages-dist/http",
     "@angular/platform-browser": "file:../../../dist/packages-dist/platform-browser",
     "@angular/platform-server": "file:../../../dist/packages-dist/platform-server",
     "@angular/tsc-wrapped": "file:../../../dist/tools/@angular/tsc-wrapped",
     "express": "^4.14.1",
+    "reflect-metadata": "^0.1.2",
     "rxjs": "file:../../../node_modules/rxjs",
-    "typescript": "2.1.6",
-    "zone.js": "^0.8.10"
+    "tslib": "file:../../../node_modules/tslib",
+    "typescript": "2.3.2",
+    "zone.js": "^0.8.12"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
@@ -33,11 +34,10 @@
     "webpack": "^2.2.1"
   },
   "scripts": {
-    "postinstall": "webdriver-manager update",
     "build": "./build.sh",
     "test": "npm run build && concurrently \"npm run serve\" \"npm run protractor\" --kill-others --success first",
     "serve": "node built/server-bundle.js",
-    "preprotractor": "tsc -p e2e",
+    "preprotractor": "webdriver-manager update --gecko false && tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"
   }
 }
