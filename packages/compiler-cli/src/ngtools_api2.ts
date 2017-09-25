@@ -66,9 +66,12 @@ export interface CompilerHost extends ts.CompilerHost {
 export enum EmitFlags {
   DTS = 1 << 0,
   JS = 1 << 1,
+  Metadata = 1 << 2,
+  I18nBundle = 1 << 3,
   Codegen = 1 << 4,
 
-  Default = DTS | JS | Codegen
+  Default = DTS | JS | Codegen,
+  All = DTS | JS | Metadata | I18nBundle | Codegen,
 }
 
 export interface CustomTransformers {
