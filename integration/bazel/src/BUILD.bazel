@@ -1,0 +1,11 @@
+load("@angular//:index.bzl", "ng_module")
+
+# Allow targets under sub-packages to reference the tsconfig.json file
+exports_files(["tsconfig.json"])
+
+ng_module(
+    name = "src",
+    srcs = glob(["*.ts"]),
+    deps = ["//src/hello-world"],
+    tsconfig = ":tsconfig.json",
+)

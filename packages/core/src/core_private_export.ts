@@ -12,10 +12,8 @@ export {ValueUnwrapper as ɵValueUnwrapper, devModeEqual as ɵdevModeEqual} from
 export {isListLikeIterable as ɵisListLikeIterable} from './change_detection/change_detection_util';
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
-export {ERROR_COMPONENT_TYPE as ɵERROR_COMPONENT_TYPE} from './errors';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {CodegenComponentFactoryResolver as ɵCodegenComponentFactoryResolver} from './linker/component_factory_resolver';
-export {ViewMetadata as ɵViewMetadata} from './metadata/view';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {GetterFn as ɵGetterFn, MethodFn as ɵMethodFn, SetterFn as ɵSetterFn} from './reflection/types';
 export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo} from './render/api';

@@ -1,3 +1,13 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+const {I18N_FOLDER, I18N_DATA_FOLDER} = require('./cldr/extract');
+
 // clang-format entry points
 const srcsToFmt = [
   'packages/**/*.{js,ts}',
@@ -7,7 +17,15 @@ const srcsToFmt = [
   'tools/**/*.{js,ts}',
   '!tools/public_api_guard/**/*.d.ts',
   './*.{js,ts}',
+  '!**/node_modules/**',
+  '!**/dist/**',
+  '!**/built/**',
   '!shims_for_IE.js',
+  `!${I18N_DATA_FOLDER}/**/*.{js,ts}`,
+  `!${I18N_FOLDER}/available_locales.ts`,
+  `!${I18N_FOLDER}/currencies.ts`,
+  `!${I18N_FOLDER}/locale_en.ts`,
+  '!tools/gulp-tasks/cldr/extract.js',
 ];
 
 module.exports = {

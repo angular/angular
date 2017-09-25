@@ -1,7 +1,7 @@
 {
   "name": "@angular/router/testing",
-  "typings": "../testing.d.ts",
+  "typings": "./testing.d.ts",
   "main": "../bundles/router-testing.umd.js",
-  "module": "../@angular/router/testing.es5.js",
-  "es2015": "../@angular/router/testing.js"
+  "module": "../esm5/testing.js",
+  "es2015": "../esm2015/testing.js"
 }

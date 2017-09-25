@@ -2,17 +2,19 @@ import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
 
-import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
 import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchService } from 'app/search/search.service';
-import { SwUpdateNotificationsService } from 'app/sw-updates/sw-update-notifications.service';
+import { TocService } from 'app/shared/toc.service';
 
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 
 const sideNavView = 'SideNav';
@@ -25,7 +27,7 @@ export class AppComponent implements OnInit {
 
   currentDocument: DocumentContents;
   currentDocVersion: NavigationNode;
-  currentNode: CurrentNode;
+  currentNodes: CurrentNodes;
   currentPath: string;
   docVersions: NavigationNode[];
   dtOn = false;
@@ -47,7 +49,7 @@ export class AppComponent implements OnInit {
    * the styling of individual pages.
    * You will get three classes:
    *
-   * * `page-...`: computed from the current document id (e.g. news, guide-security, tutorial-toh-pt2)
+   * * `page-...`: computed from the current document id (e.g. events, guide-security, tutorial-toh-pt2)
    * * `folder-...`: computed from the top level folder for an id (e.g. guide, tutorial, etc)
    * * `view-...`: computef from the navigation view (e.g. SideNav, TopBar, etc)
    */
@@ -59,15 +61,15 @@ export class AppComponent implements OnInit {
   isSideBySide = false;
   private isFetchingTimeout: any;
   private isSideNavDoc = false;
-  private previousNavView: string;
 
   private sideBySideWidth = 992;
   sideNavNodes: NavigationNode[];
   topMenuNodes: NavigationNode[];
   topMenuNarrowNodes: NavigationNode[];
 
-  showFloatingToc = false;
-  showFloatingTocWidth = 800;
+  hasFloatingToc = true;
+  private showFloatingToc = new BehaviorSubject(false);
+  private showFloatingTocWidth = 800;
   tocMaxHeight: string;
   private tocMaxHeightOffset = 0;
 
@@ -75,8 +77,8 @@ export class AppComponent implements OnInit {
 
   get homeImageUrl() {
     return this.isSideBySide ?
-      'assets/images/logos/standard/logo-nav@2x.png' :
-      'assets/images/logos/standard/shield-large.svg';
+      'assets/images/logos/angular/logo-nav@2x.png' :
+      'assets/images/logos/angular/shield-large.svg';
   }
   get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
@@ -98,18 +100,22 @@ export class AppComponent implements OnInit {
   sidenav: MdSidenav;
 
   constructor(
+    public deployment: Deployment,
     private documentService: DocumentService,
     private hostElement: ElementRef,
     private locationService: LocationService,
     private navigationService: NavigationService,
     private scrollService: ScrollService,
     private searchService: SearchService,
-    private swUpdateNotifications: SwUpdateNotificationsService
-  ) {  }
+    private tocService: TocService
+  ) { }
 
   ngOnInit() {
-    this.searchService.initWorker('app/search/search-worker.js');
-    this.searchService.loadIndex();
+    // Do not initialize the search on browsers that lack web worker support
+    if ('Worker' in window) {
+      // Delay initialization by up to 2 seconds
+      this.searchService.initWorker('app/search/search-worker.js', 2000);
+    }
 
     this.onResize(window.innerWidth);
 
@@ -123,6 +129,11 @@ export class AppComponent implements OnInit {
     });
 
     this.locationService.currentPath.subscribe(path => {
+      // Redirect to docs if we are in not in stable mode and are not hitting a docs page
+      // (i.e. we have arrived at a marketing page)
+      if (this.deployment.mode !== 'stable' && !/^(docs$|api|guide|tutorial)/.test(path)) {
+        this.locationService.replace('docs');
+      }
       if (path === this.currentPath) {
         // scroll only if on same page (most likely a change to the hash)
         this.autoScroll();
@@ -136,17 +147,17 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.navigationService.currentNode.subscribe(currentNode => {
-      this.currentNode = currentNode;
+    this.navigationService.currentNodes.subscribe(currentNodes => {
+      this.currentNodes = currentNodes;
 
       // Preserve current sidenav open state by default
       let openSideNav = this.sidenav.opened;
+      const isSideNavDoc = !!currentNodes[sideNavView];
 
-      if (this.previousNavView !== currentNode.view) {
-        this.previousNavView = currentNode.view;
+      if (this.isSideNavDoc !== isSideNavDoc) {
         // View type changed. Is it now a sidenav view (e.g, guide or tutorial)?
         // Open if changed to a sidenav doc; close if changed to a marketing doc.
-        openSideNav = this.isSideNavDoc = currentNode.view === sideNavView;
+        openSideNav = this.isSideNavDoc = isSideNavDoc;
       }
       // May be open or closed when wide; always closed when narrow
       this.sideNavToggle(this.isSideBySide ? openSideNav : false);
@@ -154,12 +165,24 @@ export class AppComponent implements OnInit {
 
     // Compute the version picker list from the current version and the versions in the navigation map
     combineLatest(
-      this.navigationService.versionInfo.map(versionInfo => ({ title: versionInfo.raw, url: null })),
-      this.navigationService.navigationViews.map(views => views['docVersions']),
-      (currentVersion, otherVersions) => [currentVersion, ...otherVersions])
-      .subscribe(versions => {
-        this.docVersions = versions;
-        this.currentDocVersion = this.docVersions[0];
+      this.navigationService.versionInfo,
+      this.navigationService.navigationViews.map(views => views['docVersions']))
+      .subscribe(([versionInfo, versions]) => {
+        // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
+        const computedVersions = [
+          { title: 'next', url: 'https://next.angular.io' },
+          { title: 'stable', url: 'https://angular.io' },
+        ];
+        if (this.deployment.mode === 'archive') {
+          computedVersions.push({ title: `v${versionInfo.major}`, url: null });
+        }
+        this.docVersions = [...computedVersions, ...versions];
+
+        // Find the current version - eithers title matches the current deployment mode
+        // or its title matches the major version of the current version info
+        this.currentDocVersion = this.docVersions.find(version =>
+          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`);
+        this.currentDocVersion.title += ` (v${versionInfo.raw})`;
       });
 
     this.navigationService.navigationViews.subscribe(views => {
@@ -171,7 +194,9 @@ export class AppComponent implements OnInit {
 
     this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
 
-    this.swUpdateNotifications.enable();
+    const hasNonEmptyToc = this.tocService.tocList.map(tocList => tocList.length > 0);
+    combineLatest(hasNonEmptyToc, this.showFloatingToc)
+        .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
   }
 
   // Scroll to the anchor in the hash fragment or top of doc.
@@ -182,6 +207,9 @@ export class AppComponent implements OnInit {
   onDocRendered() {
     // Stop fetching timeout (which, when render is fast, means progress bar never shown)
     clearTimeout(this.isFetchingTimeout);
+
+    // Put page in a clean visual state
+    this.scrollService.scrollToTop();
 
     // Scroll 500ms after the doc-viewer has finished rendering the new doc
     // The delay is to allow time for async layout to complete
@@ -202,7 +230,7 @@ export class AppComponent implements OnInit {
   @HostListener('window:resize', ['$event.target.innerWidth'])
   onResize(width) {
     this.isSideBySide = width > this.sideBySideWidth;
-    this.showFloatingToc = width > this.showFloatingTocWidth;
+    this.showFloatingToc.next(width > this.showFloatingTocWidth);
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
@@ -247,12 +275,13 @@ export class AppComponent implements OnInit {
   }
 
   updateHostClasses() {
+    const mode = `mode-${this.deployment.mode}`;
     const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
-    const viewClass = `view-${this.currentNode && this.currentNode.view}`;
+    const viewClasses = Object.keys(this.currentNodes || {}).map(view => `view-${view}`).join(' ');
 
-    this.hostClasses = `${sideNavOpen} ${pageClass} ${folderClass} ${viewClass}`;
+    this.hostClasses = `${mode} ${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
   }
 
   // Dynamically change height of table of contents container
@@ -264,10 +293,29 @@ export class AppComponent implements OnInit {
       this.tocMaxHeightOffset =
           el.querySelector('footer').clientHeight +
           el.querySelector('md-toolbar.app-toolbar').clientHeight +
-          44; //  margin
+          24; //  fudge margin
     }
 
     this.tocMaxHeight = (document.body.scrollHeight - window.pageYOffset - this.tocMaxHeightOffset).toFixed(2);
+  }
+
+  // Restrain scrolling inside an element, when the cursor is over it
+  restrainScrolling(evt: WheelEvent) {
+    const elem = evt.currentTarget as Element;
+    const scrollTop = elem.scrollTop;
+
+    if (evt.deltaY < 0) {
+      // Trying to scroll up: Prevent scrolling if already at the top.
+      if (scrollTop < 1) {
+        evt.preventDefault();
+      }
+    } else {
+      // Trying to scroll down: Prevent scrolling if already at the bottom.
+      const maxScrollTop = elem.scrollHeight - elem.clientHeight;
+      if (maxScrollTop - scrollTop < 1) {
+        evt.preventDefault();
+      }
+    }
   }
 
 

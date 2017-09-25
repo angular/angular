@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '@angular/core';
+import {StaticProvider} from '@angular/core';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-import {ConsoleReporter, MeasureValues, ReflectiveInjector, SampleDescription} from '../../index';
+import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../../index';
 
 export function main() {
   describe('console reporter', () => {
@@ -30,7 +30,7 @@ export function main() {
       if (sampleId == null) {
         sampleId = 'null';
       }
-      const providers: Provider[] = [
+      const providers: StaticProvider[] = [
         ConsoleReporter.PROVIDERS, {
           provide: SampleDescription,
           useValue: new SampleDescription(sampleId, descriptions, metrics !)
@@ -40,7 +40,7 @@ export function main() {
       if (columnWidth != null) {
         providers.push({provide: ConsoleReporter.COLUMN_WIDTH, useValue: columnWidth});
       }
-      reporter = ReflectiveInjector.resolveAndCreate(providers).get(ConsoleReporter);
+      reporter = Injector.create(providers).get(ConsoleReporter);
     }
 
     it('should print the sample id, description and table header', () => {

@@ -1,9 +1,9 @@
 #!/bin/bash
-set -e -o pipefail
+set -eu -o pipefail
 
 # Set up env variables for production
-export AIO_GITHUB_TOKEN=$(head -c -1 /aio-secrets/GITHUB_TOKEN 2>/dev/null)
-export AIO_PREVIEW_DEPLOYMENT_TOKEN=$(head -c -1 /aio-secrets/PREVIEW_DEPLOYMENT_TOKEN 2>/dev/null)
+export AIO_GITHUB_TOKEN=$(head -c -1 /aio-secrets/GITHUB_TOKEN 2>/dev/null || echo "MISSING_GITHUB_TOKEN")
+export AIO_PREVIEW_DEPLOYMENT_TOKEN=$(head -c -1 /aio-secrets/PREVIEW_DEPLOYMENT_TOKEN 2>/dev/null || echo "MISSING_PREVIEW_DEPLOYMENT_TOKEN")
 
 # Start the upload-server instance
 # TODO(gkalpak): Ideally, the upload server should be run as a non-privileged user.

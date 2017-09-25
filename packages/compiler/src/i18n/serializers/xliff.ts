@@ -53,7 +53,7 @@ export class Xliff extends Serializer {
       const transUnit = new xml.Tag(_UNIT_TAG, {id: message.id, datatype: 'html'});
       transUnit.children.push(
           new xml.CR(8), new xml.Tag(_SOURCE_TAG, {}, visitor.serialize(message.nodes)),
-          new xml.CR(8), new xml.Tag(_TARGET_TAG), ...contextTags);
+          ...contextTags);
 
       if (message.description) {
         transUnit.children.push(
@@ -139,23 +139,28 @@ class _WriteVisitor implements i18n.Visitor {
   visitTagPlaceholder(ph: i18n.TagPlaceholder, context?: any): xml.Node[] {
     const ctype = getCtypeForTag(ph.tag);
 
-    const startTagPh = new xml.Tag(_PLACEHOLDER_TAG, {id: ph.startName, ctype});
     if (ph.isVoid) {
       // void tags have no children nor closing tags
-      return [startTagPh];
+      return [new xml.Tag(
+          _PLACEHOLDER_TAG, {id: ph.startName, ctype, 'equiv-text': `<${ph.tag}/>`})];
     }
 
-    const closeTagPh = new xml.Tag(_PLACEHOLDER_TAG, {id: ph.closeName, ctype});
+    const startTagPh =
+        new xml.Tag(_PLACEHOLDER_TAG, {id: ph.startName, ctype, 'equiv-text': `<${ph.tag}>`});
+    const closeTagPh =
+        new xml.Tag(_PLACEHOLDER_TAG, {id: ph.closeName, ctype, 'equiv-text': `</${ph.tag}>`});
 
     return [startTagPh, ...this.serialize(ph.children), closeTagPh];
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {id: ph.name})];
+    return [new xml.Tag(_PLACEHOLDER_TAG, {id: ph.name, 'equiv-text': `{{${ph.value}}}`})];
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {id: ph.name})];
+    const equivText =
+        `{${ph.value.expression}, ${ph.value.type}, ${Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ')}}`;
+    return [new xml.Tag(_PLACEHOLDER_TAG, {id: ph.name, 'equiv-text': equivText})];
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {

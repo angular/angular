@@ -31,10 +31,6 @@ describe('TocService', () => {
     tocService.tocList.subscribe(tocList => lastTocList = tocList);
   });
 
-  it('should be creatable', () => {
-    expect(tocService).toBeTruthy();
-  });
-
   describe('tocList', () => {
     it('should emit the latest value to new subscribers', () => {
       const expectedValue1 = tocItem('Heading A');
@@ -243,6 +239,11 @@ describe('TocService', () => {
       expect(tocItem.href).toEqual(`${docId}#heading-one-special-id`);
     });
 
+    it('should have level "h1" for an <h1>', () => {
+      const tocItem = lastTocList.find(item => item.title === 'Fun with TOC');
+      expect(tocItem.level).toEqual('h1');
+    });
+
     it('should have level "h2" for an <h2>', () => {
       const tocItem = lastTocList.find(item => item.title === 'Heading one');
       expect(tocItem.level).toEqual('h2');
@@ -253,10 +254,10 @@ describe('TocService', () => {
       expect(tocItem.level).toEqual('h3');
     });
 
-    it('should have title which is heading\'s innerText ', () => {
+    it('should have title which is heading\'s textContent ', () => {
       const heading = headings[3];
       const tocItem = lastTocList[3];
-      expect(heading.innerText).toEqual(tocItem.title);
+      expect(heading.textContent).toEqual(tocItem.title);
     });
 
     it('should have "SafeHtml" content which is heading\'s innerHTML ', () => {

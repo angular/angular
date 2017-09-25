@@ -47,6 +47,14 @@ export function main() {
 
     class SomeService extends Base {}
 
+    // Move back into the it which needs it after https://github.com/angular/tsickle/issues/547 is
+    // fixed.
+    @Component({template: '<div someDir>{{1 | somePipe}}</div>'})
+    class TestComp3 {
+      constructor(service: SomeService) {}
+    }
+
+
     function resetTestEnvironmentWithSummaries(summaries?: () => any[]) {
       const {platform, ngModule} = getTestBed();
       TestBed.resetTestEnvironment();
@@ -150,15 +158,10 @@ export function main() {
     });
 
     it('should use NgModule metadata from summaries', () => {
-      @Component({template: '<div someDir>{{1 | somePipe}}</div>'})
-      class TestComp {
-        constructor(service: SomeService) {}
-      }
-
       TestBed
           .configureTestingModule(
-              {providers: [SomeDep], declarations: [TestComp], imports: [SomeModule]})
-          .createComponent(TestComp);
+              {providers: [SomeDep], declarations: [TestComp3], imports: [SomeModule]})
+          .createComponent(TestComp3);
 
       expectInstanceCreated(SomeModule);
       expectInstanceCreated(SomeDirective);

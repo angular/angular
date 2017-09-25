@@ -28,12 +28,16 @@ export function main() {
         expect(injector).toBe(mockInjector);
       });
 
+      it('should throw if the injector value has not been set yet', () => {
+        const mockInjector = {get: () => {}, has: () => false};
+        expect(injectorFactory).toThrowError();
+      });
+
       it('should unset the injector after the first call (to prevent memory leaks)', () => {
         const mockInjector = {get: () => {}, has: () => false};
         setTempInjectorRef(mockInjector);
         injectorFactory();
-        const injector = injectorFactory();
-        expect(injector).toBe(null);
+        expect(injectorFactory).toThrowError();  // ...because it has been unset
       });
     });
 

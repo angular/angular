@@ -45,6 +45,8 @@ export class CodeExampleComponent implements OnInit {
     this.path = element.getAttribute('path') || '';
     this.region = element.getAttribute('region') || '';
     this.title = element.getAttribute('title') || '';
+    // Now remove the title attribute to prevent unwanted tooltip popups when hovering over the code.
+    element.removeAttribute('title');
 
     this.isAvoid = this.path.indexOf('.avoid.') !== -1;
     this.hideCopy = this.isAvoid || getBoolFromAttribute(element, ['hidecopy', 'hide-copy']);

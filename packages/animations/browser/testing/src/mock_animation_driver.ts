@@ -8,7 +8,8 @@
 import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../../src/render/animation_driver';
-import {containsElement, invokeQuery, matchesElement} from '../../src/render/shared';
+import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from '../../src/render/shared';
+import {allowPreviousPlayerStylesMerge} from '../../src/util';
 
 
 /**
@@ -16,6 +17,8 @@ import {containsElement, invokeQuery, matchesElement} from '../../src/render/sha
  */
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
+
+  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
 
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
@@ -56,12 +59,15 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
       public duration: number, public delay: number, public easing: string,
       public previousPlayers: any[]) {
     super();
-    previousPlayers.forEach(player => {
-      if (player instanceof MockAnimationPlayer) {
-        const styles = player.currentSnapshot;
-        Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
-      }
-    });
+
+    if (allowPreviousPlayerStylesMerge(duration, delay)) {
+      previousPlayers.forEach(player => {
+        if (player instanceof MockAnimationPlayer) {
+          const styles = player.currentSnapshot;
+          Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
+        }
+      });
+    }
 
     this.totalTime = delay + duration;
   }

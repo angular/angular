@@ -6,16 +6,39 @@
  * found in the LICENSE file at https://angular.io/license
  */
 const Package = require('dgeni').Package;
-
+const glob = require('glob');
+const ignore = require('ignore');
+const fs = require('fs');
+const path = require('canonical-path');
 const basePackage = require('../angular-base-package');
 const contentPackage = require('../content-package');
 
-const { CONTENTS_PATH } = require('../config');
+const { CONTENTS_PATH, GUIDE_EXAMPLES_PATH } = require('../config');
 
 module.exports = new Package('angular-content', [basePackage, contentPackage])
 
   // Where do we get the source files?
   .config(function(readFilesProcessor, collectExamples) {
+
+    const gitignoreFilePath = path.resolve(GUIDE_EXAMPLES_PATH, '.gitignore');
+    const gitignoreFile = fs.readFileSync(gitignoreFilePath, 'utf8');
+    const gitignore = ignore().add(gitignoreFile);
+
+    const examplePaths = glob.sync('**/*', { cwd: GUIDE_EXAMPLES_PATH, dot: true, ignore: '**/node_modules/**', mark: true })
+                            .filter(filePath => filePath !== '.gitignore') // we are not interested in the .gitignore file itself
+                            .filter(filePath => !/\/$/.test(filePath)); // this filter removes the folders, leaving only files
+    const ignoredExamplePaths = [];
+    const resolvedExamplePaths = [];
+
+    examplePaths.forEach(filePath => {
+      // filter out files that match the .gitignore rules
+      if (gitignore.ignores(filePath)) {
+        ignoredExamplePaths.push(filePath);
+      } else {
+        // we need the full paths for the filereader
+        resolvedExamplePaths.push(path.resolve(GUIDE_EXAMPLES_PATH, filePath));
+      }
+    });
 
     readFilesProcessor.sourceFiles = readFilesProcessor.sourceFiles.concat([
       {
@@ -36,26 +59,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
       },
       {
         basePath: CONTENTS_PATH,
-        include: CONTENTS_PATH + '/examples/**/*',
-        exclude: [
-          '**/*plnkr.no-link.html',
-          '**/node_modules/**',
-          // boilerplate files
-          '**/*/src/systemjs-angular-loader.js',
-          '**/*/src/systemjs.config.js',
-          '**/*/src/tsconfig.json',
-          '**/*/bs-config.e2e.json',
-          '**/*/bs-config.json',
-          '**/*/package.json',
-          '**/*/tslint.json',
-          // example files
-          '**/_test-output',
-          '**/protractor-helpers.js',
-          '**/e2e-spec.js',
-          '**/ts/**/*.js',
-          '**/js-es6*/**/*.js',
-          '**/ts-snippets/**/*.js',
-        ],
+        include: resolvedExamplePaths,
         fileReader: 'exampleFileReader'
       },
       {
@@ -76,6 +80,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
     ]);
 
     collectExamples.exampleFolders.push('examples');
+    collectExamples.registerIgnoredExamples(ignoredExamplePaths, gitignoreFilePath);
   })
 
 

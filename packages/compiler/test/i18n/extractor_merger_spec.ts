@@ -7,6 +7,7 @@
  */
 
 import {DEFAULT_INTERPOLATION_CONFIG, HtmlParser} from '@angular/compiler';
+import {MissingTranslationStrategy} from '@angular/core';
 
 import {digest, serializeNodes as serializeI18nNodes} from '../../src/i18n/digest';
 import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merger';
@@ -252,7 +253,7 @@ export function main() {
       });
 
       it('should extract from attributes in translatable ICUs', () => {
-        expect(extract(`<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@@i" 
+        expect(extract(`<!-- i18n -->{count, plural, =0 {<p><b i18n-title="m|d@@i"
                  title="msg"></b></p>}}<!-- /i18n -->`))
             .toEqual([
               [['msg'], 'm', 'd', 'i'],
@@ -404,6 +405,11 @@ export function main() {
     });
 
     describe('blocks', () => {
+      it('should console.warn if we use i18n comments', () => {
+        // TODO(ocombe): expect a warning message when we have a proper log service
+        extract('<!-- i18n --><p><b i18n-title="m|d" title="msg"></b></p><!-- /i18n -->');
+      });
+
       it('should merge blocks', () => {
         const HTML = `before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after`;
         expect(fakeTranslate(HTML))
@@ -465,6 +471,31 @@ export function main() {
             .toEqual(`<div title="">some element</div>`);
       });
     });
+
+    describe('no translations', () => {
+      it('should remove i18n attributes', () => {
+        const HTML = `<p i18n="m|d">foo</p>`;
+        expect(fakeNoTranslate(HTML)).toEqual('<p>foo</p>');
+      });
+
+      it('should remove i18n- attributes', () => {
+        const HTML = `<p i18n-title="m|d" title="foo"></p>`;
+        expect(fakeNoTranslate(HTML)).toEqual('<p title="foo"></p>');
+      });
+
+      it('should remove i18n comment blocks', () => {
+        const HTML = `before<!-- i18n --><p>foo</p><span><i>bar</i></span><!-- /i18n -->after`;
+        expect(fakeNoTranslate(HTML)).toEqual('before<p>foo</p><span><i>bar</i></span>after');
+      });
+
+      it('should remove nested i18n markup', () => {
+        const HTML =
+            `<!-- i18n --><span someAttr="ok">foo</span><div>{count, plural, =0 {<p i18n-title title="foo"></p>}}</div><!-- /i18n -->`;
+        expect(fakeNoTranslate(HTML))
+            .toEqual(
+                '<span someAttr="ok">foo</span><div>{count, plural, =0 {<p title="foo"></p>}}</div>');
+      });
+    });
   });
 }
 
@@ -493,10 +524,22 @@ function fakeTranslate(
     i18nMsgMap[id] = [new i18n.Text(`**${text}**`, null !)];
   });
 
-  const translations = new TranslationBundle(i18nMsgMap, null, digest);
-
+  const translationBundle = new TranslationBundle(i18nMsgMap, null, digest);
   const output = mergeTranslations(
-      htmlNodes, translations, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
+      htmlNodes, translationBundle, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
+  expect(output.errors).toEqual([]);
+
+  return serializeHtmlNodes(output.rootNodes).join('');
+}
+
+function fakeNoTranslate(
+    content: string, implicitTags: string[] = [],
+    implicitAttrs: {[k: string]: string[]} = {}): string {
+  const htmlNodes: html.Node[] = parseHtml(content);
+  const translationBundle = new TranslationBundle(
+      {}, null, digest, undefined, MissingTranslationStrategy.Ignore, console);
+  const output = mergeTranslations(
+      htmlNodes, translationBundle, DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
   expect(output.errors).toEqual([]);
 
   return serializeHtmlNodes(output.rootNodes).join('');

@@ -23,17 +23,26 @@ export interface AotSummaryResolverHost {
    */
   isSourceFile(sourceFilePath: string): boolean;
   /**
-   * Returns the output file path of a source file.
+   * Converts a file name into a representation that should be stored in a summary file.
+   * This has to include changing the suffix as well.
    * E.g.
    * `some_file.ts` -> `some_file.d.ts`
+   *
+   * @param referringSrcFileName the soure file that refers to fileName
    */
-  getOutputFileName(sourceFilePath: string): string;
+  toSummaryFileName(fileName: string, referringSrcFileName: string): string;
+
+  /**
+   * Converts a fileName that was processed by `toSummaryFileName` back into a real fileName
+   * given the fileName of the library that is referrig to it.
+   */
+  fromSummaryFileName(fileName: string, referringLibFileName: string): string;
 }
 
 export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
   // Note: this will only contain StaticSymbols without members!
   private summaryCache = new Map<StaticSymbol, Summary<StaticSymbol>>();
-  private loadedFilePaths = new Set<string>();
+  private loadedFilePaths = new Map<string, boolean>();
   // Note: this will only contain StaticSymbols without members!
   private importAs = new Map<StaticSymbol, StaticSymbol>();
 
@@ -46,21 +55,29 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
     return !this.host.isSourceFile(stripGeneratedFileSuffix(filePath));
   }
 
-  getLibraryFileName(filePath: string) { return this.host.getOutputFileName(filePath); }
+  toSummaryFileName(filePath: string, referringSrcFileName: string) {
+    return this.host.toSummaryFileName(filePath, referringSrcFileName);
+  }
 
-  resolveSummary(staticSymbol: StaticSymbol): Summary<StaticSymbol> {
+  fromSummaryFileName(fileName: string, referringLibFileName: string) {
+    return this.host.fromSummaryFileName(fileName, referringLibFileName);
+  }
+
+  resolveSummary(staticSymbol: StaticSymbol): Summary<StaticSymbol>|null {
     staticSymbol.assertNoMembers();
     let summary = this.summaryCache.get(staticSymbol);
     if (!summary) {
       this._loadSummaryFile(staticSymbol.filePath);
       summary = this.summaryCache.get(staticSymbol) !;
     }
-    return summary;
+    return summary || null;
   }
 
-  getSymbolsOf(filePath: string): StaticSymbol[] {
-    this._loadSummaryFile(filePath);
-    return Array.from(this.summaryCache.keys()).filter((symbol) => symbol.filePath === filePath);
+  getSymbolsOf(filePath: string): StaticSymbol[]|null {
+    if (this._loadSummaryFile(filePath)) {
+      return Array.from(this.summaryCache.keys()).filter((symbol) => symbol.filePath === filePath);
+    }
+    return null;
   }
 
   getImportAs(staticSymbol: StaticSymbol): StaticSymbol {
@@ -70,29 +87,33 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
 
   addSummary(summary: Summary<StaticSymbol>) { this.summaryCache.set(summary.symbol, summary); }
 
-  private _loadSummaryFile(filePath: string) {
-    if (this.loadedFilePaths.has(filePath)) {
-      return;
+  private _loadSummaryFile(filePath: string): boolean {
+    let hasSummary = this.loadedFilePaths.get(filePath);
+    if (hasSummary != null) {
+      return hasSummary;
     }
-    this.loadedFilePaths.add(filePath);
+    let json: string|null = null;
     if (this.isLibraryFile(filePath)) {
       const summaryFilePath = summaryFileName(filePath);
-      let json: string|null;
       try {
         json = this.host.loadSummary(summaryFilePath);
       } catch (e) {
         console.error(`Error loading summary file ${summaryFilePath}`);
         throw e;
       }
-      if (json) {
-        const {summaries, importAs} = deserializeSummaries(this.staticSymbolCache, json);
-        summaries.forEach((summary) => this.summaryCache.set(summary.symbol, summary));
-        importAs.forEach((importAs) => {
-          this.importAs.set(
-              importAs.symbol,
-              this.staticSymbolCache.get(ngfactoryFilePath(filePath), importAs.importAs));
-        });
-      }
     }
+    hasSummary = json != null;
+    this.loadedFilePaths.set(filePath, hasSummary);
+    if (json) {
+      const {summaries, importAs} =
+          deserializeSummaries(this.staticSymbolCache, this, filePath, json);
+      summaries.forEach((summary) => this.summaryCache.set(summary.symbol, summary));
+      importAs.forEach((importAs) => {
+        this.importAs.set(
+            importAs.symbol,
+            this.staticSymbolCache.get(ngfactoryFilePath(filePath), importAs.importAs));
+      });
+    }
+    return hasSummary;
   }
 }

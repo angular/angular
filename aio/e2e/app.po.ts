@@ -1,4 +1,4 @@
-import { browser, element, by, promise, ElementFinder } from 'protractor';
+import { browser, element, by, promise, ElementFinder, ExpectedConditions } from 'protractor';
 
 const githubRegex = /https:\/\/github.com\/angular\/angular\//;
 
@@ -40,6 +40,26 @@ export class SitePage {
     // `getInnerHtml` was removed from webDriver and this is the workaround.
     // See https://github.com/angular/protractor/blob/master/CHANGELOG.md#breaking-changes
     return browser.executeScript('return arguments[0].innerHTML;', element);
+  }
+
+  getScrollTop() {
+    return browser.executeScript('return window.pageYOffset');
+  }
+
+  scrollToBottom() {
+    return browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
+  }
+
+  enterSearch(query: string) {
+    const input = element(by.css('.search-container input[type=search]'));
+    input.clear();
+    input.sendKeys(query);
+  }
+
+  getSearchResults() {
+    const results = element.all(by.css('.search-results li'));
+    browser.wait(ExpectedConditions.presenceOf(results.first()), 8000);
+    return results;
   }
 
   /**

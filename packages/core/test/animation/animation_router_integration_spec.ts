@@ -351,6 +351,92 @@ export function main() {
            {offset: 1, opacity: '0'},
          ]);
        }));
+
+    it('should properly collect :enter / :leave router nodes even when another non-router *template component is within the trigger boundaries',
+       fakeAsync(() => {
+         @Component({
+           selector: 'ani-cmp',
+           animations: [
+             trigger(
+                 'pageAnimation',
+                 [
+                   transition(
+                       'page1 => page2',
+                       [
+                         query('.router-container :leave', animate('1s', style({opacity: 0}))),
+                         query('.router-container :enter', animate('1s', style({opacity: 1}))),
+                       ]),
+                 ]),
+           ],
+           template: `
+          <div [@pageAnimation]="prepRoute(outlet)">
+            <header>
+              <div class="inner">
+                <div *ngIf="!loading" class="title">Page Ready</div>
+                <div *ngIf="loading" class="loading">loading...</div>
+              </div>
+            </header>
+            <section class="router-container">
+              <router-outlet #outlet="outlet"></router-outlet>
+            </section>
+          </div>
+        `
+         })
+         class ContainerCmp {
+           loading = false;
+
+           constructor(public router: Router) {}
+
+           prepRoute(outlet: any) { return outlet.activatedRouteData['animation']; }
+         }
+
+         @Component({selector: 'page1', template: `page1`})
+         class Page1Cmp {
+         }
+
+         @Component({selector: 'page2', template: `page2`})
+         class Page2Cmp {
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [Page1Cmp, Page2Cmp, ContainerCmp],
+           imports: [RouterTestingModule.withRoutes([
+             {path: 'page1', component: Page1Cmp, data: makeAnimationData('page1')},
+             {path: 'page2', component: Page2Cmp, data: makeAnimationData('page2')}
+           ])]
+         });
+
+         const engine = TestBed.get(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(ContainerCmp);
+         const cmp = fixture.componentInstance;
+         cmp.router.initialNavigation();
+         tick();
+         fixture.detectChanges();
+         engine.flush();
+
+         cmp.router.navigateByUrl('/page1');
+         tick();
+         cmp.loading = true;
+         fixture.detectChanges();
+         engine.flush();
+
+         cmp.router.navigateByUrl('/page2');
+         tick();
+         cmp.loading = false;
+         fixture.detectChanges();
+         engine.flush();
+
+         const players = engine.players;
+         expect(players.length).toEqual(1);
+         const [p1] = players;
+
+         const innerPlayers = p1.getRealPlayer().players;
+         expect(innerPlayers.length).toEqual(2);
+
+         const [ip1, ip2] = innerPlayers;
+         expect(ip1.element.innerText).toEqual('page1');
+         expect(ip2.element.innerText).toEqual('page2');
+       }));
   });
 }
 

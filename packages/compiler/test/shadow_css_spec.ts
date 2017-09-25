@@ -231,6 +231,19 @@ export function main() {
       expect(css).toEqual('x[a] y {}');
     });
 
+    it('should handle ::ng-deep', () => {
+      let css = '::ng-deep y {}';
+      expect(s(css, 'a')).toEqual('y {}');
+      css = 'x ::ng-deep y {}';
+      expect(s(css, 'a')).toEqual('x[a] y {}');
+      css = ':host > ::ng-deep .x {}';
+      expect(s(css, 'a', 'h')).toEqual('[h] > .x {}');
+      css = ':host ::ng-deep > .x {}';
+      expect(s(css, 'a', 'h')).toEqual('[h] > .x {}');
+      css = ':host > ::ng-deep > .x {}';
+      expect(s(css, 'a', 'h')).toEqual('[h] > > .x {}');
+    });
+
     it('should pass through @import directives', () => {
       const styleStr = '@import url("https://fonts.googleapis.com/css?family=Roboto");';
       const css = s(styleStr, 'a');

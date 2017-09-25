@@ -37,7 +37,7 @@ import {URLSearchParams} from './url_search_params';
  * console.log('options.url:', options.url); // https://google.com
  * ```
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export class RequestOptions {
   /**
@@ -79,9 +79,8 @@ export class RequestOptions {
   responseType: ResponseContentType|null;
 
   // TODO(Dzmitry): remove search when this.search is removed
-  constructor(
-      {method, headers, body, url, search, params, withCredentials,
-       responseType}: RequestOptionsArgs = {}) {
+  constructor(opts: RequestOptionsArgs = {}) {
+    const {method, headers, body, url, search, params, withCredentials, responseType} = opts;
     this.method = method != null ? normalizeMethodName(method) : null;
     this.headers = headers != null ? headers : null;
     this.body = body != null ? body : null;
@@ -201,7 +200,7 @@ export class RequestOptions {
  * console.log('req.url:', req.url); // https://google.com
  * ```
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {

@@ -59,6 +59,12 @@ export function main() {
            expect(normalize('borderWidth', 'inherit')).toEqual('inherit');
            expect(normalize('paddingTop', 'calc(500px + 200px)')).toEqual('calc(500px + 200px)');
          });
+
+      it('should allow `perspective` to be a numerical property', () => {
+        expect(normalize('perspective', 10)).toEqual('10px');
+        expect(normalize('perspective', '100pt')).toEqual('100pt');
+        expect(normalize('perspective', 'none')).toEqual('none');
+      });
     });
   });
 }

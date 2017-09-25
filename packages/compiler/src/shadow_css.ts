@@ -482,7 +482,7 @@ class SafeSelector {
       this.index++;
       return pseudo + replaceBy;
     });
-  };
+  }
 
   restore(content: string): string {
     return content.replace(/__ph-(\d+)__/g, (ph, index) => this.placeholders[+index]);
@@ -513,7 +513,11 @@ const _shadowDOMSelectorsRe = [
   /\/shadow-deep\//g,
   /\/shadow\//g,
 ];
-const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)/g;
+
+// The deep combinator is deprecated in the CSS spec
+// Support for `>>>`, `deep`, `::ng-deep` is then also deprecated and will be removed in the future.
+// see https://github.com/angular/angular/pull/17677
+const _shadowDeepSelectors = /(?:>>>)|(?:\/deep\/)|(?:::ng-deep)/g;
 const _selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$';
 const _polyfillHostRe = /-shadowcsshost/gim;
 const _colonHostRe = /:host/gim;

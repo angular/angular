@@ -1,8 +1,0 @@
-{%- if doc.constructorDoc and not doc.constructorDoc.internal %}
-<section class="constructor">
-  <a id="{$ doc.constructorDoc.name $}"></a>
-  <h2>Constructor</h2>
-  <code-example hideCopy="true">{$ doc.constructorDoc.name $}{$ params.paramList(doc.constructorDoc.parameters) $}</code-example>
-  {% if not doc.constructorDoc.notYetDocumented %}{$ doc.constructorDoc.description | marked $}{% endif %}
-</section>
-{% endif %}

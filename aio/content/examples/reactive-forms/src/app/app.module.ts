@@ -16,7 +16,7 @@ import { HeroService }         from './hero.service'; //  <-- #1 import service
 @NgModule({
   imports: [
     BrowserModule,
-    ReactiveFormsModule // <-- #2 add to Angular module imports
+    ReactiveFormsModule // <-- #2 add to @NgModule imports
   ],
   declarations: [
     AppComponent,

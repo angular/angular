@@ -28,7 +28,7 @@ const appRoutes: Routes = [
     data: { preload: true }
   },
   // #enddocregion preload-v2
-  { path: '',   redirectTo: '/heroes', pathMatch: 'full' },
+  { path: '',   redirectTo: '/superheroes', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 
@@ -36,7 +36,11 @@ const appRoutes: Routes = [
   imports: [
     RouterModule.forRoot(
       appRoutes,
-      { preloadingStrategy: SelectivePreloadingStrategy }
+      {
+        enableTracing: true, // <-- debugging purposes only
+        preloadingStrategy: SelectivePreloadingStrategy,
+
+      }
     )
   ],
   exports: [

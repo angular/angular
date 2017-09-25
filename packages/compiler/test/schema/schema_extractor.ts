@@ -28,12 +28,14 @@ const ALL_HTML_TAGS =
 // Elements missing from Chrome (HtmlUnknownElement), to be manually added
 const MISSING_FROM_CHROME: {[el: string]: string[]} = {
   'data^[HTMLElement]': ['value'],
+  'keygen^[HTMLElement]': ['!autofocus', 'challenge', '!disabled', 'form', 'keytype', 'name'],
   // TODO(vicb): Figure out why Chrome and WhatWG do not agree on the props
   // 'menu^[HTMLElement]': ['type', 'label'],
   'menuitem^[HTMLElement]':
       ['type', 'label', 'icon', '!disabled', '!checked', 'radiogroup', '!default'],
   'summary^[HTMLElement]': [],
   'time^[HTMLElement]': ['dateTime'],
+  ':svg:cursor^:svg:': [],
 };
 
 const _G: any = global;
@@ -44,19 +46,7 @@ export function extractSchema(): Map<string, string[]>|null {
   const SVGGraphicsElement = _G['SVGGraphicsElement'];
   if (!SVGGraphicsElement) return null;
 
-  const SVGAnimationElement = _G['SVGAnimationElement'];
-  const SVGGeometryElement = _G['SVGGeometryElement'];
-  const SVGComponentTransferFunctionElement = _G['SVGComponentTransferFunctionElement'];
-  const SVGGradientElement = _G['SVGGradientElement'];
-  const SVGTextContentElement = _G['SVGTextContentElement'];
-  const SVGTextPositioningElement = _G['SVGTextPositioningElement'];
   const element = document.createElement('video');
-  const svgAnimation = document.createElementNS('http://www.w3.org/2000/svg', 'set');
-  const svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  const svgFeFuncA = document.createElementNS('http://www.w3.org/2000/svg', 'feFuncA');
-  const svgGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-  const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-
   const descMap: Map<string, string[]> = new Map();
   const visited: {[name: string]: boolean} = {};
 
@@ -68,6 +58,19 @@ export function extractSchema(): Map<string, string[]>|null {
   extractProperties(HTMLMediaElement, element, visited, descMap, 'media', HTMLELEMENT_IF);
 
   // SVG top level
+  const svgAnimation = document.createElementNS('http://www.w3.org/2000/svg', 'set');
+  const svgPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  const svgFeFuncA = document.createElementNS('http://www.w3.org/2000/svg', 'feFuncA');
+  const svgGradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+  const SVGAnimationElement = _G['SVGAnimationElement'];
+  const SVGGeometryElement = _G['SVGGeometryElement'];
+  const SVGComponentTransferFunctionElement = _G['SVGComponentTransferFunctionElement'];
+  const SVGGradientElement = _G['SVGGradientElement'];
+  const SVGTextContentElement = _G['SVGTextContentElement'];
+  const SVGTextPositioningElement = _G['SVGTextPositioningElement'];
+
   extractProperties(SVGElement, svgText, visited, descMap, SVG_PREFIX, HTMLELEMENT_IF);
   extractProperties(
       SVGGraphicsElement, svgText, visited, descMap, SVG_PREFIX + 'graphics', SVG_PREFIX);

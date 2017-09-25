@@ -10,7 +10,14 @@ import {Injector, RenderComponentType, RootRenderer, Sanitizer, SecurityContext,
 import {ArgumentType, BindingFlags, NodeCheckFn, NodeDef, NodeFlags, OutputType, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, anchorDef, asElementData, asProviderData, directiveDef, elementDef, rootRenderNodes, textDef, viewDef} from '@angular/core/src/view/index';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {createRootView, isBrowser, recordNodeToRemove} from './helper';
+import {callMostRecentEventListenerHandler, createRootView, isBrowser, recordNodeToRemove} from './helper';
+
+
+/**
+ * We map addEventListener to the Zones internal name. This is because we want to be fast
+ * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
+ */
+const addEventListener = '__zone_symbol__addEventListener';
 
 export function main() {
   describe(`Component Views`, () => {
@@ -180,7 +187,7 @@ export function main() {
 
           const update = jasmine.createSpy('updater');
 
-          const addListenerSpy = spyOn(HTMLElement.prototype, 'addEventListener').and.callThrough();
+          const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
 
           const {view} = createAndGetRootNodes(compViewDef(
               [
@@ -218,7 +225,7 @@ export function main() {
           expect(update).not.toHaveBeenCalled();
 
           // auto attach on events
-          addListenerSpy.calls.mostRecent().args[1]('SomeEvent');
+          callMostRecentEventListenerHandler(addListenerSpy, 'SomeEvent');
           update.calls.reset();
           Services.checkAndUpdateView(view);
           expect(update).toHaveBeenCalled();
@@ -268,7 +275,7 @@ export function main() {
         class AComp {}
 
         class ChildProvider {
-          ngOnDestroy() { log.push('ngOnDestroy'); };
+          ngOnDestroy() { log.push('ngOnDestroy'); }
         }
 
         const {view, rootNodes} = createAndGetRootNodes(compViewDef([

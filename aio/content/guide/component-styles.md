@@ -119,12 +119,13 @@ if some ancestor element has the CSS class `theme-light`.
 
 
 
-### /deep/
+### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
 
 Component styles normally apply only to the HTML in the component's own template. 
 
-Use the `/deep/` selector to force a style down through the child component tree into all the child component views.
-The `/deep/` selector works to any depth of nested components, and it applies to both the view
+Use the `/deep/` shadow-piercing descendant combinator to force a style down through the child
+component tree into all the child component views.
+The `/deep/` combinator works to any depth of nested components, and it applies to both the view
 children and content children of the component. 
 
 The following example targets all `<h3>` elements, from the host element down 
@@ -134,14 +135,21 @@ through this component to all of its child elements in the DOM.
 
 </code-example>
 
-The `/deep/` selector also has the alias `>>>`. You can use either interchangeably.
-
+The `/deep/` combinator also has the aliases `>>>`, and `::ng-deep`.
 
 <div class="alert is-important">
 
-Use the `/deep/` and `>>>` selectors only with *emulated* view encapsulation.
+Use `/deep/`, `>>>` and `::ng-deep` only with *emulated* view encapsulation.
 Emulated is the default and most commonly used view encapsulation. For more information, see the
 [Controlling view encapsulation](guide/component-styles#view-encapsulation) section.
+
+</div>
+
+<div class="alert is-important">
+
+The shadow-piercing descendant combinator is deprecated and [support is being removed from major browsers](https://www.chromestatus.com/features/6750456638341120) and tools.
+As such we plan to drop support in Angular (for all 3 of `/deep/`, `>>>` and `::ng-deep`).
+Until then `::ng-deep` should be preferred for a broader compatibility with the tools.
 
 </div>
 

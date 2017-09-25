@@ -10,10 +10,10 @@ import {
   transition
 } from '@angular/animations';
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-timings',
+  selector: 'app-hero-list-timings',
   template: `
     <ul>
       <li *ngFor="let hero of heroes"
@@ -44,7 +44,7 @@ import { Heroes } from './hero.service';
         animate('0.2s ease-in')
       ]),
       transition('* => void', [
-        animate('0.2s 10 ease-out', style({
+        animate('0.2s 0.1s ease-out', style({
           opacity: 0,
           transform: 'translateX(100%)'
         }))
@@ -54,5 +54,5 @@ import { Heroes } from './hero.service';
   // #enddocregion animationdef
 })
 export class HeroListTimingsComponent {
-  @Input() heroes: Heroes;
+   @Input() heroes: Hero[];
 }

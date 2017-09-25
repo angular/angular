@@ -8,7 +8,7 @@ body {
 }
 
 h1 {
-  display:inline-block;
+  display: inline-block;
   font-size: 24px;
   font-weight: 500;
   margin: 8px 0px;
@@ -86,8 +86,14 @@ p, ol, ul, ol, li, input, a  {
   }
 }
 
-ol li {
-  margin: 14px 0px;
+ol {
+  li, p {
+    margin: 4px 0;
+  }
+}
+
+li p {
+  margin: 0;
 }
 
 a {

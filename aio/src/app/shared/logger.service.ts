@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
+
 
 @Injectable()
 export class Logger {
 
   log(value: any, ...rest) {
-    console.log(value, ...rest);
+    if (!environment.production) {
+      console.log(value, ...rest);
+    }
   }
 
   error(value: any, ...rest) {

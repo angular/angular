@@ -66,11 +66,35 @@ describe('GithubPullRequests', () => {
 
     it('should resolve with the returned response', done => {
       prs.addComment(42, 'body').then(data => {
-        expect(data).toEqual('Test');
+        expect(data as any).toBe('Test');
         done();
       });
 
       deferred.resolve('Test');
+    });
+
+  });
+
+
+  describe('fetch()', () => {
+    let prs: GithubPullRequests;
+    let prsGetSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      prs = new GithubPullRequests('12345', 'foo/bar');
+      prsGetSpy = spyOn(prs as any, 'get');
+    });
+
+
+    it('should call \'get()\' with the correct pathname', () => {
+      prs.fetch(42);
+      expect(prsGetSpy).toHaveBeenCalledWith('/repos/foo/bar/issues/42');
+    });
+
+
+    it('should forward the value returned by \'get()\'', () => {
+      prsGetSpy.and.returnValue('Test');
+      expect(prs.fetch(42) as any).toBe('Test');
     });
 
   });
@@ -109,7 +133,7 @@ describe('GithubPullRequests', () => {
 
     it('should forward the value returned by \'getPaginated()\'', () => {
       prsGetPaginatedSpy.and.returnValue('Test');
-      expect(prs.fetchAll()).toBe('Test');
+      expect(prs.fetchAll() as any).toBe('Test');
     });
 
   });

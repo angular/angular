@@ -126,12 +126,18 @@ export function markParentViewsForCheckProjectedViews(view: ViewData, endView: V
 }
 
 export function dispatchEvent(
-    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean {
-  const nodeDef = view.def.nodes[nodeIndex];
-  const startView =
-      nodeDef.flags & NodeFlags.ComponentView ? asElementData(view, nodeIndex).componentView : view;
-  markParentViewsForCheck(startView);
-  return Services.handleEvent(view, nodeIndex, eventName, event);
+    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean|undefined {
+  try {
+    const nodeDef = view.def.nodes[nodeIndex];
+    const startView = nodeDef.flags & NodeFlags.ComponentView ?
+        asElementData(view, nodeIndex).componentView :
+        view;
+    markParentViewsForCheck(startView);
+    return Services.handleEvent(view, nodeIndex, eventName, event);
+  } catch (e) {
+    // Attention: Don't rethrow, as it would cancel Observable subscriptions!
+    view.root.errorHandler.handleError(e);
+  }
 }
 
 export function declaredViewContainer(view: ViewData): ElementData|null {

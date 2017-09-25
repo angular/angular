@@ -62,7 +62,7 @@ There are a few rules in particular that will make it much easier to do
 * The [Folders-by-Feature Structure](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure)
   and [Modularity](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity)
   rules define similar principles on a higher level of abstraction: Different parts of the
-  application should reside in different directories and Angular modules.
+  application should reside in different directories and NgModules.
 
 When an application is laid out feature per feature in this way, it can also be
 migrated one feature at a time. For applications that don't already look like
@@ -382,12 +382,12 @@ that describes Angular assets in metadata. The differences blossom from there.
 
 In a hybrid application you run both versions of Angular at the same time.
 That means that you need at least one module each from both AngularJS and Angular.
-You will import `UpgradeModule` inside the Angular module, and then use it for
+You will import `UpgradeModule` inside the NgModule, and then use it for
 bootstrapping the AngularJS module.
 
 <div class="l-sub-section">
 
-Learn more about Angular modules at the [NgModule guide](guide/ngmodule).
+Read more about [NgModules](guide/ngmodule).
 
 </div>
 
@@ -485,7 +485,7 @@ Because `HeroDetailComponent` is an Angular component, you must also add it to t
 
 And because this component is being used from the AngularJS module, and is an entry point into
 the Angular application, you must add it to the `entryComponents` for the
-Angular module.
+NgModule.
 
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="ngmodule" title="app.module.ts">
 </code-example>
@@ -1023,7 +1023,7 @@ a successful upgrade.
 Since you're going to be writing Angular code in TypeScript, it makes sense to
 bring in the TypeScript compiler even before you begin upgrading.
 
-You'll  also start to gradually phase out the Bower package manager in favor
+You'll also start to gradually phase out the Bower package manager in favor
 of NPM, installing all new dependencies using NPM, and eventually removing Bower from the project.
 
 Begin by installing TypeScript to the project.
@@ -1041,11 +1041,21 @@ Jasmine unit test framework.
 </code-example>
 
 You should also configure the TypeScript compiler with a `tsconfig.json` in the project directory
-as described in the [Setup](guide/setup) guide.
+as described in the [TypeScript Configuration](guide/typescript-configuration) guide.
 The `tsconfig.json` file tells the TypeScript compiler how to turn your TypeScript files
 into ES5 code bundled into CommonJS modules.
 
-Now launch the TypeScript compiler from the command line in watch mode.
+Finally, you should add some npm scripts in `package.json` to compile the TypeScript files to
+JavaScript (based on the `tsconfig.json` configuration file):
+
+<code-example format="">
+  "script": {
+    "tsc": "tsc",
+    "tsc:w": "tsc -w",
+    ...
+</code-example>
+
+Now launch the TypeScript compiler from the command line in watch mode:
 
 <code-example format="">
   npm run tsc:w
@@ -1191,6 +1201,10 @@ from the `/app` directory as you've been doing to this point.
 Move the `app/index.html` file to the project root directory. Then change the
 development server root path in `package.json` to also point to the project root
 instead of `app`:
+
+<code-example format="">
+  "start": "http-server ./ -a localhost -p 8000 -c-1",
+</code-example>
 
 Now you're able to serve everything from the project root to the web browser. But you do *not*
 want to have to change all the image and data paths used in the application code to match

@@ -614,7 +614,7 @@ If you do not bind the value, the select shows the first option from the data mo
 The component _class_ defines control properties without regard for their representation in the template.
 You define the `state`, `power`, and `sidekick` controls the same way you defined the `name` control.
 You tie these controls to the template HTML elements in the same way,
-specifiying the `FormControl` name with the `formControlName` directive.
+specifying the `FormControl` name with the `formControlName` directive.
 
 See the API reference for more information about
 [radio buttons](api/forms/RadioControlValueAccessor "API: RadioControlValueAccessor"),
@@ -1080,8 +1080,11 @@ To get access to the `FormArray` class, import it into `hero-detail.component.ts
 
 
 To _work_ with a `FormArray` you do the following:
+
 1. Define the items (`FormControls` or `FormGroups`) in the array.
+
 1. Initialize the array with items created from data in the _data model_.
+
 1. Add and remove items as the user requires.
 
 In this guide, you define a `FormArray` for `Hero.addresses` and
@@ -1131,7 +1134,7 @@ The reactive forms approach both emphasizes and facilitates this distinction.
 The default form displays a nameless hero with no addresses.
 
 You need a method to populate (or repopulate) the _secretLairs_ with actual hero addresses whenever
-the parent `HeroListComponent` sets the `HeroListComponent.hero` input property to a new `Hero`.
+the parent `HeroListComponent` sets the `HeroDetailComponent.hero` input property to a new `Hero`.
 
 The following `setAddresses` method replaces the _secretLairs_ `FormArray` with a new `FormArray`,
 initialized by an array of hero address `FormGroups`.
@@ -1220,7 +1223,7 @@ Place a button on the form so the user can add a new _secret lair_ and wire it t
 
 Be sure to **add the `type="button"` attribute**.
 In fact, you should always specify a button's `type`.
-Without an explict type, the button type defaults to "submit".
+Without an explicit type, the button type defaults to "submit".
 When you later add a _form submit_ action, every "submit" button triggers the submit action which
 might do something like save the current changes.
 You do not want to save changes when the user clicks the _Add a Secret Lair_ button.

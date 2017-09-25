@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, MissingTranslationStrategy, ViewEncapsulation, isDevMode} from '@angular/core';
-
 import {CompileIdentifierMetadata} from './compile_metadata';
+import {MissingTranslationStrategy, ViewEncapsulation} from './core';
 import {Identifiers} from './identifiers';
-
+import * as o from './output/output_ast';
+import {noUndefined} from './util';
 
 export class CompilerConfig {
   public defaultEncapsulation: ViewEncapsulation|null;
@@ -18,19 +18,31 @@ export class CompilerConfig {
   // templates. They have been deprecated in 4.x, `<ng-template>` should be used instead.
   public enableLegacyTemplate: boolean;
   public useJit: boolean;
+  public jitDevMode: boolean;
   public missingTranslation: MissingTranslationStrategy|null;
+  public preserveWhitespaces: boolean;
 
   constructor(
-      {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, missingTranslation,
-       enableLegacyTemplate}: {
+      {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, jitDevMode = false,
+       missingTranslation, enableLegacyTemplate, preserveWhitespaces}: {
         defaultEncapsulation?: ViewEncapsulation,
         useJit?: boolean,
+        jitDevMode?: boolean,
         missingTranslation?: MissingTranslationStrategy,
         enableLegacyTemplate?: boolean,
+        preserveWhitespaces?: boolean,
+        fullTemplateTypeCheck?: boolean
       } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.useJit = !!useJit;
+    this.jitDevMode = !!jitDevMode;
     this.missingTranslation = missingTranslation || null;
-    this.enableLegacyTemplate = enableLegacyTemplate !== false;
+    this.enableLegacyTemplate = enableLegacyTemplate === true;
+    this.preserveWhitespaces = preserveWhitespacesDefault(noUndefined(preserveWhitespaces));
   }
+}
+
+export function preserveWhitespacesDefault(
+    preserveWhitespacesOption: boolean | null, defaultSetting = true): boolean {
+  return preserveWhitespacesOption === null ? defaultSetting : preserveWhitespacesOption;
 }

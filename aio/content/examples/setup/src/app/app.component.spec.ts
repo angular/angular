@@ -27,7 +27,7 @@ describe('AppComponent', function () {
   it('should have expected <h1> text', () => {
     fixture.detectChanges();
     const h1 = de.nativeElement;
-    expect(h1.innerText).toMatch(/angular/i,
+    expect(h1.textContent).toMatch(/angular/i,
       '<h1> should say something about "Angular"');
   });
 });

@@ -26,8 +26,8 @@ export function main() {
     beforeEach(async(() => {
       TestBed.configureCompiler({
         providers: [
-          {provide: ResourceLoader, useClass: SpyResourceLoader},
-          {provide: NgLocalization, useClass: FrLocalization},
+          SpyResourceLoader.PROVIDE,
+          FrLocalization.PROVIDE,
           {provide: TRANSLATIONS, useValue: XLIFF_TOMERGE},
           {provide: TRANSLATIONS_FORMAT, useValue: 'xliff'},
         ]
@@ -70,8 +70,16 @@ const XLIFF_TOMERGE = `
         <note priority="1" from="meaning">different meaning</note>
       </trans-unit>
       <trans-unit id="34fec9cc62e28e8aa6ffb306fa8569ef0a8087fe" datatype="html">
-        <source><x id="START_ITALIC_TEXT" ctype="x-i"/>with placeholders<x id="CLOSE_ITALIC_TEXT" ctype="x-i"/></source>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/>with placeholders<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/></source>
         <target><x id="START_ITALIC_TEXT" ctype="x-i"/>avec des espaces réservés<x id="CLOSE_ITALIC_TEXT" ctype="x-i"/></target>
+      </trans-unit>
+      <trans-unit id="651d7249d3a225037eb66f3433d98ad4a86f0a22" datatype="html">
+        <source><x id="START_TAG_DIV" ctype="x-div"/>with <x id="START_TAG_DIV" ctype="x-div"/>nested<x id="CLOSE_TAG_DIV" ctype="x-div"/> placeholders<x id="CLOSE_TAG_DIV" ctype="x-div"/></source>
+        <target><x id="START_TAG_DIV" ctype="x-div"/>with <x id="START_TAG_DIV" ctype="x-div"/>nested<x id="CLOSE_TAG_DIV" ctype="x-div"/> placeholders<x id="CLOSE_TAG_DIV" ctype="x-div"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="1fe4616cce80a57c7707bac1c97054aa8e244a67" datatype="html">
         <source>on not translatable node</source>
@@ -82,22 +90,22 @@ const XLIFF_TOMERGE = `
         <target>sur des balises traductibles</target>
       </trans-unit>
       <trans-unit id="dc5536bb9e0e07291c185a0d306601a2ecd4813f" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</source>
+        <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>} }</source>
         <target>{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<x id="START_BOLD_TEXT" ctype="x-b"/>beaucoup<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</target>
       </trans-unit>
-      <trans-unit id="85ef51de59fe5a8d13fba977b6689f164420c8ca" datatype="html">
+      <trans-unit id="ba9106fca6e4e33a9b703a8c1927e2d1794dd9ff" datatype="html">
         <source>
-        <x id="ICU"/>
+        <x id="ICU" equiv-text="{sex, select, m {...} f {...}}"/>
     </source>
         <target><x id="ICU"/></target>
       </trans-unit>
-      <trans-unit id="c0ca5e58fe954d528bbfa516007a5a11690a7e99" datatype="html">
-        <source>{VAR_SELECT, select, m {male} f {female} }</source>
-        <target>{VAR_SELECT, select, m {homme} f {femme} }</target>
+      <trans-unit id="7b7916d063ebaafcd2e9dcdf697b5e184fcb8099" datatype="html">
+        <source>{VAR_SELECT, select, 0 {other} m {male} f {female} }</source>
+        <target>{VAR_SELECT, select, 0 {autre} m {homme} f {femme}}</target>
       </trans-unit>
       <trans-unit id="078b7089573c5f66a2f78dce0adaa55e6715beb1" datatype="html">
         <source>
-        <x id="ICU"/>
+        <x id="ICU" equiv-text="{sexB, select, m {...} f {...}}"/>
     </source>
         <target><x id="ICU"/></target>
       </trans-unit>
@@ -106,15 +114,15 @@ const XLIFF_TOMERGE = `
         <target>{VAR_SELECT, select, m {homme} f {femme} }</target>
       </trans-unit>
       <trans-unit id="d9879678f727b244bc7c7e20f22b63d98cb14890" datatype="html">
-        <source><x id="INTERPOLATION"/></source>
+        <source><x id="INTERPOLATION" equiv-text="{{ &quot;count = &quot; + count }}"/></source>
         <target><x id="INTERPOLATION"/></target>
       </trans-unit>
       <trans-unit id="50dac33dc6fc0578884baac79d875785ed77c928" datatype="html">
-        <source>sex = <x id="INTERPOLATION"/></source>
+        <source>sex = <x id="INTERPOLATION" equiv-text="{{ sex }}"/></source>
         <target>sexe = <x id="INTERPOLATION"/></target>
       </trans-unit>
       <trans-unit id="a46f833b1fe6ca49e8b97c18f4b7ea0b930c9383" datatype="html">
-        <source><x id="CUSTOM_NAME"/></source>
+        <source><x id="CUSTOM_NAME" equiv-text="{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}"/></source>
         <target><x id="CUSTOM_NAME"/></target>
       </trans-unit>
       <trans-unit id="2ec983b4893bcd5b24af33bebe3ecba63868453c" datatype="html">
@@ -123,18 +131,18 @@ const XLIFF_TOMERGE = `
       </trans-unit>
       <trans-unit id="eee74a5be8a75881a4785905bd8302a71f7d9f75" datatype="html">
         <source>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>   
-    <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
-    <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
+    <x id="START_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;h1&gt;"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;/h1&gt;"/>   
+    <x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
+    <x id="START_TAG_DIV_1" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="ICU" equiv-text="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
 </source>
         <target>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Balises dans les commentaires html<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>   
+    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Balises dans les commentaires html<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>
     <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
     <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
 </target>
       </trans-unit>
       <trans-unit id="93a30c67d4e6c9b37aecfe2ac0f2b5d366d7b520" datatype="html">
-        <source>it <x id="START_BOLD_TEXT" ctype="x-b"/>should<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> work</source>
+        <source>it <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>should<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> work</source>
         <target>ca <x id="START_BOLD_TEXT" ctype="x-b"/>devrait<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> marcher</target>
       </trans-unit>
       <trans-unit id="i18n16" datatype="html">
@@ -142,27 +150,26 @@ const XLIFF_TOMERGE = `
         <target>avec un ID explicite</target>
       </trans-unit>
       <trans-unit id="i18n17" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</source>
+        <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>} }</source>
         <target>{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<x id="START_BOLD_TEXT" ctype="x-b"/>beaucoup<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</target>
       </trans-unit>
       <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION"/> results} }</source>
+        <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION" equiv-text="{{response.getItemsList().length}}"/> results} }</source>
         <target>{VAR_PLURAL, plural, =0 {Pas de réponse} =1 {une réponse} other {Found <x id="INTERPOLATION"/> réponse} }</target>
         <note priority="1" from="description">desc</note>
       </trans-unit>
       <trans-unit id="296ab5eab8d370822488c152586db3a5875ee1a2" datatype="html">
-        <source>foo<x id="START_LINK" ctype="x-a"/>bar<x id="CLOSE_LINK" ctype="x-a"/></source>
+        <source>foo<x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>bar<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
         <target>FOO<x id="START_LINK" ctype="x-a"/>BAR<x id="CLOSE_LINK" ctype="x-a"/></target>
       </trans-unit>
       <trans-unit id="2e013b311caa0916478941a985887e091d8288b6" datatype="html">
-        <source><x id="MAP NAME"/></source>
+        <source><x id="MAP NAME" equiv-text="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
         <target><x id="MAP NAME"/></target>
       </trans-unit>`;
 
 const XLIFF_EXTRACTED = `
       <trans-unit id="3cb04208df1c2f62553ed48e75939cf7107f9dad" datatype="html">
         <source>i18n attribute on tags</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">3</context>
@@ -170,7 +177,6 @@ const XLIFF_EXTRACTED = `
       </trans-unit>
       <trans-unit id="52895b1221effb3f3585b689f049d2784d714952" datatype="html">
         <source>nested</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">5</context>
@@ -178,7 +184,6 @@ const XLIFF_EXTRACTED = `
       </trans-unit>
       <trans-unit id="88d5f22050a9df477ee5646153558b3a4862d47e" datatype="html">
         <source>nested</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">7</context>
@@ -186,8 +191,7 @@ const XLIFF_EXTRACTED = `
         <note priority="1" from="meaning">different meaning</note>
       </trans-unit>
       <trans-unit id="34fec9cc62e28e8aa6ffb306fa8569ef0a8087fe" datatype="html">
-        <source><x id="START_ITALIC_TEXT" ctype="x-i"/>with placeholders<x id="CLOSE_ITALIC_TEXT" ctype="x-i"/></source>
-        <target/>
+        <source><x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/>with placeholders<x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">9</context>
@@ -197,164 +201,153 @@ const XLIFF_EXTRACTED = `
           <context context-type="linenumber">10</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="1fe4616cce80a57c7707bac1c97054aa8e244a67" datatype="html">
-        <source>on not translatable node</source>
-        <target/>
+      <trans-unit id="651d7249d3a225037eb66f3433d98ad4a86f0a22" datatype="html">
+        <source><x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/>with <x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/>nested<x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/> placeholders<x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">13</context>
+          <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="67162b5af5f15fd0eb6480c88688dafdf952b93a" datatype="html">
-        <source>on translatable node</source>
-        <target/>
+      <trans-unit id="1fe4616cce80a57c7707bac1c97054aa8e244a67" datatype="html">
+        <source>on not translatable node</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">14</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="67162b5af5f15fd0eb6480c88688dafdf952b93a" datatype="html">
+        <source>on translatable node</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="dc5536bb9e0e07291c185a0d306601a2ecd4813f" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</source>
-        <target/>
+        <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">19</context>
+          <context context-type="linenumber">20</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">37</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="85ef51de59fe5a8d13fba977b6689f164420c8ca" datatype="html">
+      <trans-unit id="ba9106fca6e4e33a9b703a8c1927e2d1794dd9ff" datatype="html">
         <source>
-        <x id="ICU"/>
+        <x id="ICU" equiv-text="{sex, select, 0 {...} m {...} f {...}}"/>
     </source>
-        <target/>
-        <context-group purpose="location">
-          <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">21</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="c0ca5e58fe954d528bbfa516007a5a11690a7e99" datatype="html">
-        <source>{VAR_SELECT, select, m {male} f {female} }</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="078b7089573c5f66a2f78dce0adaa55e6715beb1" datatype="html">
-        <source>
-        <x id="ICU"/>
-    </source>
-        <target/>
+      <trans-unit id="7b7916d063ebaafcd2e9dcdf697b5e184fcb8099" datatype="html">
+        <source>{VAR_SELECT, select, 0 {other} m {male} f {female} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">24</context>
+          <context context-type="linenumber">23</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="a25cf2e21a299f30be1392e731163825233edc61" datatype="html">
-        <source>{VAR_SELECT, select, m {male} f {female} }</source>
-        <target/>
+      <trans-unit id="078b7089573c5f66a2f78dce0adaa55e6715beb1" datatype="html">
+        <source>
+        <x id="ICU" equiv-text="{sexB, select, m {...} f {...}}"/>
+    </source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">25</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="d9879678f727b244bc7c7e20f22b63d98cb14890" datatype="html">
-        <source><x id="INTERPOLATION"/></source>
-        <target/>
+      <trans-unit id="a25cf2e21a299f30be1392e731163825233edc61" datatype="html">
+        <source>{VAR_SELECT, select, m {male} f {female} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">28</context>
+          <context context-type="linenumber">26</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="50dac33dc6fc0578884baac79d875785ed77c928" datatype="html">
-        <source>sex = <x id="INTERPOLATION"/></source>
-        <target/>
+      <trans-unit id="d9879678f727b244bc7c7e20f22b63d98cb14890" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ &quot;count = &quot; + count }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">29</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="a46f833b1fe6ca49e8b97c18f4b7ea0b930c9383" datatype="html">
-        <source><x id="CUSTOM_NAME"/></source>
-        <target/>
+      <trans-unit id="50dac33dc6fc0578884baac79d875785ed77c928" datatype="html">
+        <source>sex = <x id="INTERPOLATION" equiv-text="{{ sex }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2ec983b4893bcd5b24af33bebe3ecba63868453c" datatype="html">
-        <source>in a translatable section</source>
-        <target/>
+      <trans-unit id="a46f833b1fe6ca49e8b97c18f4b7ea0b930c9383" datatype="html">
+        <source><x id="CUSTOM_NAME" equiv-text="{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">35</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2ec983b4893bcd5b24af33bebe3ecba63868453c" datatype="html">
+        <source>in a translatable section</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">36</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="eee74a5be8a75881a4785905bd8302a71f7d9f75" datatype="html">
         <source>
-    <x id="START_HEADING_LEVEL1" ctype="x-h1"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1"/>   
-    <x id="START_TAG_DIV" ctype="x-div"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
-    <x id="START_TAG_DIV_1" ctype="x-div"/><x id="ICU"/><x id="CLOSE_TAG_DIV" ctype="x-div"/>
+    <x id="START_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;h1&gt;"/>Markers in html comments<x id="CLOSE_HEADING_LEVEL1" ctype="x-h1" equiv-text="&lt;/h1&gt;"/>   
+    <x id="START_TAG_DIV" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
+    <x id="START_TAG_DIV_1" ctype="x-div" equiv-text="&lt;div&gt;"/><x id="ICU" equiv-text="{count, plural, =0 {...} =1 {...} =2 {...} other {...}}"/><x id="CLOSE_TAG_DIV" ctype="x-div" equiv-text="&lt;/div&gt;"/>
 </source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">34</context>
         </context-group>
       </trans-unit>
       <trans-unit id="93a30c67d4e6c9b37aecfe2ac0f2b5d366d7b520" datatype="html">
-        <source>it <x id="START_BOLD_TEXT" ctype="x-b"/>should<x id="CLOSE_BOLD_TEXT" ctype="x-b"/> work</source>
-        <target/>
+        <source>it <x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>should<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/> work</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="i18n16" datatype="html">
         <source>with an explicit ID</source>
-        <target/>
-        <context-group purpose="location">
-          <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="i18n17" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b"/>} }</source>
-        <target/>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
           <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION"/> results} }</source>
-        <target/>
+      <trans-unit id="i18n17" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&lt;b&gt;"/>many<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&lt;/b&gt;"/>} }</source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">45</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2370d995bdcc1e7496baa32df20654aff65c2d10" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <x id="INTERPOLATION" equiv-text="{{response.getItemsList().length}}"/> results} }</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">file.ts</context>
+          <context context-type="linenumber">46</context>
         </context-group>
         <note priority="1" from="description">desc</note>
       </trans-unit>
       <trans-unit id="296ab5eab8d370822488c152586db3a5875ee1a2" datatype="html">
-        <source>foo<x id="START_LINK" ctype="x-a"/>bar<x id="CLOSE_LINK" ctype="x-a"/></source>
-        <target/>
+        <source>foo<x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>bar<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">54</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2e013b311caa0916478941a985887e091d8288b6" datatype="html">
-        <source><x id="MAP NAME"/></source>
-        <target/>
+        <source><x id="MAP NAME" equiv-text="{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">file.ts</context>
-          <context context-type="linenumber">55</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>`;

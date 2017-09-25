@@ -14,8 +14,6 @@
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
       "@angular/*": ["./*"],
-      "@angular/tsc-wrapped": ["../dist/tools/@angular/tsc-wrapped"],
-      "@angular/tsc-wrapped/*": ["../dist/tools/@angular/tsc-wrapped/*"],
       "e2e_util/*": ["../modules/e2e_util/*"]
     },
     "rootDir": ".",
@@ -27,7 +25,10 @@
     "types": ["angularjs"]
   },
   "exclude": [
+    "bazel",
     "compiler-cli/integrationtest",
-    "platform-server/integrationtest"
+    "platform-server/integrationtest",
+    "common/locales"
   ]
+
 }

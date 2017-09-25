@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Inject, Optional, Self, forwardRef} from '@angular/core';
+import {AfterViewInit, Directive, EventEmitter, Inject, Input, Optional, Self, forwardRef} from '@angular/core';
 
-import {AbstractControl, FormControl, FormGroup} from '../model';
+import {AbstractControl, FormControl, FormGroup, FormHooks} from '../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS} from '../validators';
 
 import {ControlContainer} from './control_container';
@@ -16,7 +16,7 @@ import {Form} from './form_interface';
 import {NgControl} from './ng_control';
 import {NgModel} from './ng_model';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, setUpControl, setUpFormContainer} from './shared';
+import {composeAsyncValidators, composeValidators, removeDir, setUpControl, setUpFormContainer, syncPendingControls} from './shared';
 
 export const formDirectiveProvider: any = {
   provide: ControlContainer,
@@ -63,11 +63,30 @@ const resolvedPromise = Promise.resolve(null);
   outputs: ['ngSubmit'],
   exportAs: 'ngForm'
 })
-export class NgForm extends ControlContainer implements Form {
-  private _submitted: boolean = false;
+export class NgForm extends ControlContainer implements Form,
+    AfterViewInit {
+  public readonly submitted: boolean = false;
+
+  private _directives: NgModel[] = [];
 
   form: FormGroup;
   ngSubmit = new EventEmitter();
+
+  /**
+   * Options for the `NgForm` instance. Accepts the following properties:
+   *
+   * **updateOn**: Serves as the default `updateOn` value for all child `NgModels` below it
+   * (unless a child has explicitly set its own value for this in `ngModelOptions`).
+   * Potential values: `'change'` | `'blur'` | `'submit'`
+   *
+   * ```html
+   * <form [ngFormOptions]="{updateOn: 'blur'}">
+   *    <input name="one" ngModel>  <!-- this ngModel will update on blur -->
+   * </form>
+   * ```
+   *
+   */
+  @Input('ngFormOptions') options: {updateOn?: FormHooks};
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],
@@ -77,7 +96,7 @@ export class NgForm extends ControlContainer implements Form {
         new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
   }
 
-  get submitted(): boolean { return this._submitted; }
+  ngAfterViewInit() { this._setUpdateStrategy(); }
 
   get formDirective(): Form { return this; }
 
@@ -90,9 +109,11 @@ export class NgForm extends ControlContainer implements Form {
   addControl(dir: NgModel): void {
     resolvedPromise.then(() => {
       const container = this._findContainer(dir.path);
-      dir._control = <FormControl>container.registerControl(dir.name, dir.control);
+      (dir as{control: FormControl}).control =
+          <FormControl>container.registerControl(dir.name, dir.control);
       setUpControl(dir.control, dir);
       dir.control.updateValueAndValidity({emitEvent: false});
+      this._directives.push(dir);
     });
   }
 
@@ -104,6 +125,7 @@ export class NgForm extends ControlContainer implements Form {
       if (container) {
         container.removeControl(dir.name);
       }
+      removeDir<NgModel>(this._directives, dir);
     });
   }
 
@@ -138,7 +160,8 @@ export class NgForm extends ControlContainer implements Form {
   setValue(value: {[key: string]: any}): void { this.control.setValue(value); }
 
   onSubmit($event: Event): boolean {
-    this._submitted = true;
+    (this as{submitted: boolean}).submitted = true;
+    syncPendingControls(this.form, this._directives);
     this.ngSubmit.emit($event);
     return false;
   }
@@ -147,7 +170,13 @@ export class NgForm extends ControlContainer implements Form {
 
   resetForm(value: any = undefined): void {
     this.form.reset(value);
-    this._submitted = false;
+    (this as{submitted: boolean}).submitted = false;
+  }
+
+  private _setUpdateStrategy() {
+    if (this.options && this.options.updateOn != null) {
+      this.form._updateOn = this.options.updateOn;
+    }
   }
 
   /** @internal */

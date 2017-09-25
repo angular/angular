@@ -7,10 +7,9 @@
  */
 
 import {DefaultIterableDiffer, DefaultIterableDifferFactory} from '@angular/core/src/change_detection/differs/default_iterable_differ';
-import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {TestIterable} from '../../change_detection/iterable';
-import {iterableChangesAsString} from '../../change_detection/util';
+import {iterableChangesAsString, iterableDifferToString} from '../../change_detection/util';
 
 class ItemWithId {
   constructor(private id: string) {}
@@ -28,7 +27,7 @@ class ComplexItem {
 export function main() {
   describe('iterable differ', function() {
     describe('DefaultIterableDiffer', function() {
-      let differ: any /** TODO #9100 */;
+      let differ: DefaultIterableDiffer<any>;
 
       beforeEach(() => { differ = new DefaultIterableDiffer(); });
 
@@ -41,21 +40,21 @@ export function main() {
       });
 
       it('should support iterables', () => {
-        const l = new TestIterable();
+        const l: any = new TestIterable();
 
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({collection: []}));
 
         l.list = [1];
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['1[null->0]'],
           additions: ['1[null->0]']
         }));
 
         l.list = [2, 1];
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['2[null->0]', '1[0->1]'],
           previous: ['1[0->1]'],
           additions: ['2[null->0]'],
@@ -64,20 +63,20 @@ export function main() {
       });
 
       it('should detect additions', () => {
-        const l: any[] /** TODO #9100 */ = [];
+        const l: any[] = [];
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({collection: []}));
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({collection: []}));
 
         l.push('a');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['a[null->0]'],
           additions: ['a[null->0]']
         }));
 
         l.push('b');
         differ.check(l);
-        expect(differ.toString())
+        expect(iterableDifferToString(differ))
             .toEqual(iterableChangesAsString(
                 {collection: ['a', 'b[null->1]'], previous: ['a'], additions: ['b[null->1]']}));
       });
@@ -88,7 +87,7 @@ export function main() {
 
         l = [1, 0];
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['1[null->0]', '0[0->1]'],
           previous: ['0[0->1]'],
           additions: ['1[null->0]'],
@@ -97,7 +96,7 @@ export function main() {
 
         l = [2, 1, 0];
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['2[null->0]', '1[0->1]', '0[1->2]'],
           previous: ['1[0->1]', '0[1->2]'],
           additions: ['2[null->0]'],
@@ -113,7 +112,7 @@ export function main() {
         l.push(2);
         l.push(1);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['2[1->0]', '1[0->1]'],
           previous: ['1[0->1]', '2[1->0]'],
           moves: ['2[1->0]', '1[0->1]']
@@ -127,7 +126,7 @@ export function main() {
         l.splice(1, 1);
         l.splice(0, 0, 'b');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['b[1->0]', 'a[0->1]', 'c'],
           previous: ['a[0->1]', 'b[1->0]', 'c'],
           moves: ['b[1->0]', 'a[0->1]']
@@ -136,7 +135,7 @@ export function main() {
         l.splice(1, 1);
         l.push('a');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['b', 'c[2->1]', 'a[1->2]'],
           previous: ['b', 'a[1->2]', 'c[2->1]'],
           moves: ['c[2->1]', 'a[1->2]']
@@ -144,26 +143,26 @@ export function main() {
       });
 
       it('should detect changes in list', () => {
-        const l: any[] /** TODO #9100 */ = [];
+        const l: any[] = [];
         differ.check(l);
 
         l.push('a');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['a[null->0]'],
           additions: ['a[null->0]']
         }));
 
         l.push('b');
         differ.check(l);
-        expect(differ.toString())
+        expect(iterableDifferToString(differ))
             .toEqual(iterableChangesAsString(
                 {collection: ['a', 'b[null->1]'], previous: ['a'], additions: ['b[null->1]']}));
 
         l.push('c');
         l.push('d');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['a', 'b', 'c[null->2]', 'd[null->3]'],
           previous: ['a', 'b'],
           additions: ['c[null->2]', 'd[null->3]']
@@ -171,7 +170,7 @@ export function main() {
 
         l.splice(2, 1);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['a', 'b', 'd[3->2]'],
           previous: ['a', 'b', 'c[2->null]', 'd[3->2]'],
           moves: ['d[3->2]'],
@@ -184,7 +183,7 @@ export function main() {
         l.push('b');
         l.push('a');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['d[2->0]', 'c[null->1]', 'b[1->2]', 'a[0->3]'],
           previous: ['a[0->3]', 'b[1->2]', 'd[2->0]'],
           additions: ['c[null->1]'],
@@ -192,23 +191,11 @@ export function main() {
         }));
       });
 
-      it('should test string by value rather than by reference (Dart)', () => {
-        const l = ['a', 'boo'];
-        differ.check(l);
-
-        const b = 'b';
-        const oo = 'oo';
-        l[1] = b + oo;
-        differ.check(l);
-        expect(differ.toString())
-            .toEqual(iterableChangesAsString({collection: ['a', 'boo'], previous: ['a', 'boo']}));
-      });
-
-      it('should ignore [NaN] != [NaN] (JS)', () => {
+      it('should ignore [NaN] != [NaN]', () => {
         const l = [NaN];
         differ.check(l);
         differ.check(l);
-        expect(differ.toString())
+        expect(iterableDifferToString(differ))
             .toEqual(iterableChangesAsString({collection: [NaN], previous: [NaN]}));
       });
 
@@ -218,7 +205,7 @@ export function main() {
 
         l.unshift('foo');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['foo[null->0]', 'NaN[0->1]', 'NaN[1->2]'],
           previous: ['NaN[0->1]', 'NaN[1->2]'],
           additions: ['foo[null->0]'],
@@ -232,7 +219,7 @@ export function main() {
 
         l.splice(1, 1);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['a', 'c[2->1]'],
           previous: ['a', 'b[1->null]', 'c[2->1]'],
           moves: ['c[2->1]'],
@@ -241,7 +228,7 @@ export function main() {
 
         l.splice(1, 0, 'b');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['a', 'b[null->1]', 'c[1->2]'],
           previous: ['a', 'c[1->2]'],
           additions: ['b[null->1]'],
@@ -256,7 +243,7 @@ export function main() {
 
         l.splice(0, 1);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['a', 'a', 'b[3->2]', 'b[4->3]'],
           previous: ['a', 'a', 'a[2->null]', 'b[3->2]', 'b[4->3]'],
           moves: ['b[3->2]', 'b[4->3]'],
@@ -270,7 +257,7 @@ export function main() {
 
         l.splice(0, 0, 'b');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['b[2->0]', 'a[0->1]', 'a[1->2]', 'b', 'b[null->4]'],
           previous: ['a[0->1]', 'a[1->2]', 'b[2->0]', 'b'],
           additions: ['b[null->4]'],
@@ -287,10 +274,26 @@ export function main() {
         l.push('a');
         l.push('c');
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['b[1->0]', 'a[0->1]', 'c'],
           previous: ['a[0->1]', 'b[1->0]', 'c'],
           moves: ['b[1->0]', 'a[0->1]']
+        }));
+      });
+
+      // https://github.com/angular/angular/issues/17852
+      it('support re-insertion', () => {
+        const l = ['a', '*', '*', 'd', '-', '-', '-', 'e'];
+        differ.check(l);
+        l[1] = 'b';
+        l[5] = 'c';
+        differ.check(l);
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+          collection: ['a', 'b[null->1]', '*[1->2]', 'd', '-', 'c[null->5]', '-[5->6]', 'e'],
+          previous: ['a', '*[1->2]', '*[2->null]', 'd', '-', '-[5->6]', '-[6->null]', 'e'],
+          additions: ['b[null->1]', 'c[null->5]'],
+          moves: ['*[1->2]', '-[5->6]'],
+          removals: ['*[2->null]', '-[6->null]'],
         }));
       });
 
@@ -329,8 +332,8 @@ export function main() {
              const startData = [0, 1, 2, 3, 4, 5];
              const endData = [6, 2, 7, 0, 4, 8];
 
-             differ = differ.diff(startData);
-             differ = differ.diff(endData);
+             differ = differ.diff(startData) !;
+             differ = differ.diff(endData) !;
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -352,12 +355,12 @@ export function main() {
              const startData = [0, 1, 2, 3];
              const endData = [2, 1];
 
-             differ = differ.diff(startData);
-             differ = differ.diff(endData);
+             differ = differ.diff(startData) !;
+             differ = differ.diff(endData) !;
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
-               const value = modifyArrayUsingOperation(startData, endData, prev, next);
+               modifyArrayUsingOperation(startData, endData, prev, next);
                operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
              });
 
@@ -372,12 +375,12 @@ export function main() {
           const startData = [1, 2, 3, 4, 5, 6];
           const endData = [3, 6, 4, 9, 1, 2];
 
-          differ = differ.diff(startData);
-          differ = differ.diff(endData);
+          differ = differ.diff(startData) !;
+          differ = differ.diff(endData) !;
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            const value = modifyArrayUsingOperation(startData, endData, prev, next);
+            modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -393,12 +396,12 @@ export function main() {
           const startData = [0, 1, 2, 3, 4];
           const endData = [4, 1, 2, 3, 0, 5];
 
-          differ = differ.diff(startData);
-          differ = differ.diff(endData);
+          differ = differ.diff(startData) !;
+          differ = differ.diff(endData) !;
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            const value = modifyArrayUsingOperation(startData, endData, prev, next);
+            modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -414,12 +417,12 @@ export function main() {
           const startData = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
           const endData = [10, 11, 1, 5, 7, 8, 0, 5, 3, 6];
 
-          differ = differ.diff(startData);
-          differ = differ.diff(endData);
+          differ = differ.diff(startData) !;
+          differ = differ.diff(endData) !;
 
           const operations: string[] = [];
           differ.forEachOperation((item: any, prev: number, next: number) => {
-            const value = modifyArrayUsingOperation(startData, endData, prev, next);
+            modifyArrayUsingOperation(startData, endData, prev, next);
             operations.push(stringifyItemChange(item, prev, next, item.previousIndex));
           });
 
@@ -440,8 +443,8 @@ export function main() {
              const startData = [1, 2, 3, 4];
              const endData = [5, 6, 7, 8];
 
-             differ = differ.diff(startData);
-             differ = differ.diff(endData);
+             differ = differ.diff(startData) !;
+             differ = differ.diff(endData) !;
 
              const operations: string[] = [];
              differ.forEachOperation((item: any, prev: number, next: number) => {
@@ -465,7 +468,7 @@ export function main() {
 
         it('should treat null as an empty list', () => {
           differ.diff(['a', 'b']);
-          expect(differ.diff(null).toString()).toEqual(iterableChangesAsString({
+          expect(iterableDifferToString(differ.diff(null !) !)).toEqual(iterableChangesAsString({
             previous: ['a[0->null]', 'b[1->null]'],
             removals: ['a[0->null]', 'b[1->null]']
           }));
@@ -478,7 +481,7 @@ export function main() {
     });
 
     describe('trackBy function by id', function() {
-      let differ: any /** TODO #9100 */;
+      let differ: any;
 
       const trackByItemId = (index: number, item: any): any => item.id;
 
@@ -494,14 +497,14 @@ export function main() {
       it('should treat seen records as identity changes, not additions', () => {
         let l = buildItemList(['a', 'b', 'c']);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: [`{id: a}[null->0]`, `{id: b}[null->1]`, `{id: c}[null->2]`],
           additions: [`{id: a}[null->0]`, `{id: b}[null->1]`, `{id: c}[null->2]`]
         }));
 
         l = buildItemList(['a', 'b', 'c']);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: [`{id: a}`, `{id: b}`, `{id: c}`],
           identityChanges: [`{id: a}`, `{id: b}`, `{id: c}`],
           previous: [`{id: a}`, `{id: b}`, `{id: c}`]
@@ -514,7 +517,7 @@ export function main() {
 
         l = [new ComplexItem('a', 'orange'), new ComplexItem('b', 'red')];
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: [`{id: a, color: orange}`, `{id: b, color: red}`],
           identityChanges: [`{id: a, color: orange}`, `{id: b, color: red}`],
           previous: [`{id: a, color: orange}`, `{id: b, color: red}`]
@@ -527,7 +530,7 @@ export function main() {
 
         l = buildItemList(['b', 'a', 'c']);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['{id: b}[1->0]', '{id: a}[0->1]', '{id: c}'],
           identityChanges: ['{id: b}[1->0]', '{id: a}[0->1]', '{id: c}'],
           previous: ['{id: a}[0->1]', '{id: b}[1->0]', '{id: c}'],
@@ -542,7 +545,7 @@ export function main() {
 
         l = buildItemList(['b', 'a', 'a']);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['{id: b}[null->0]', '{id: a}[0->1]', '{id: a}[1->2]'],
           identityChanges: ['{id: a}[0->1]', '{id: a}[1->2]'],
           previous: ['{id: a}[0->1]', '{id: a}[1->2]'],
@@ -558,15 +561,16 @@ export function main() {
 
         l.splice(2, 1);
         differ.check(l);
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['{id: a}', '{id: b}'],
           previous: ['{id: a}', '{id: b}', '{id: c}[2->null]'],
           removals: ['{id: c}[2->null]']
         }));
       });
     });
+
     describe('trackBy function by index', function() {
-      let differ: any /** TODO #9100 */;
+      let differ: DefaultIterableDiffer<string>;
 
       const trackByIndex = (index: number, item: any): number => index;
 
@@ -577,16 +581,13 @@ export function main() {
         differ.check(['e', 'f', 'g', 'h']);
         differ.check(['e', 'f', 'h']);
 
-        expect(differ.toString()).toEqual(iterableChangesAsString({
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
           collection: ['e', 'f', 'h'],
           previous: ['e', 'f', 'h', 'h[3->null]'],
           removals: ['h[3->null]'],
           identityChanges: ['h']
         }));
       });
-
     });
-
-
   });
 }

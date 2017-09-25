@@ -142,7 +142,7 @@ describe('plugin', () => {
     it('should reference the component',
        () => { contains('app/parsing-cases.ts', 'test-comp-after-test', 'name'); });
     // TODO: Enable when we have a flag that indicates the project targets the DOM
-    // it('should refernce the element if no component', () => {
+    // it('should reference the element if no component', () => {
     //   contains('app/parsing-cases.ts', 'test-comp-after-div', 'innerText');
     // });
   });
@@ -163,7 +163,7 @@ describe('plugin', () => {
           'app/expression-cases.ts', 'myField',
           'Identifier \'myField\' refers to a private member of the component');
     });
-    it('should report numeric operator erros',
+    it('should report numeric operator errors',
        () => { expectSemanticError('app/expression-cases.ts', 'mod', 'Expected a numeric type'); });
     describe('in ngFor', () => {
       function expectError(locationMarker: string, message: string) {
@@ -259,7 +259,7 @@ function expectEntries(locationMarker: string, info: ts.CompletionInfo, ...names
 function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
   for (const diagnostic of diagnostics) {
     let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-    if (diagnostic.start) {
+    if (diagnostic.file && diagnostic.start) {
       let {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
       console.error(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
     } else {

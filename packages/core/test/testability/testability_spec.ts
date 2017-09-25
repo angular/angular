@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 import {Injectable} from '@angular/core/src/di';
-import {Testability} from '@angular/core/src/testability/testability';
+import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
 import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {AsyncTestCompleter, SpyObject, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
@@ -28,22 +28,20 @@ function microTask(fn: Function): void {
 @Injectable()
 class MockNgZone extends NgZone {
   /** @internal */
-  _onUnstableStream: EventEmitter<any>;
-  get onUnstable() { return this._onUnstableStream; }
+  onUnstable: EventEmitter<any>;
 
   /** @internal */
-  _onStableStream: EventEmitter<any>;
-  get onStable() { return this._onStableStream; }
+  onStable: EventEmitter<any>;
 
   constructor() {
     super({enableLongStackTrace: false});
-    this._onUnstableStream = new EventEmitter(false);
-    this._onStableStream = new EventEmitter(false);
+    this.onUnstable = new EventEmitter(false);
+    this.onStable = new EventEmitter(false);
   }
 
-  unstable(): void { this._onUnstableStream.emit(null); }
+  unstable(): void { this.onUnstable.emit(null); }
 
-  stable(): void { this._onStableStream.emit(null); }
+  stable(): void { this.onStable.emit(null); }
 }
 
 export function main() {
@@ -280,6 +278,46 @@ export function main() {
              });
            });
          }));
+    });
+  });
+
+  describe('TestabilityRegistry', () => {
+    let testability1: Testability;
+    let testability2: Testability;
+    let resgitry: TestabilityRegistry;
+    let ngZone: MockNgZone;
+
+    beforeEach(() => {
+      ngZone = new MockNgZone();
+      testability1 = new Testability(ngZone);
+      testability2 = new Testability(ngZone);
+      resgitry = new TestabilityRegistry();
+    });
+    describe('unregister testability', () => {
+      it('should remove the testability when unregistering an existing testability', () => {
+        resgitry.registerApplication('testability1', testability1);
+        resgitry.registerApplication('testability2', testability2);
+        resgitry.unregisterApplication('testability2');
+        expect(resgitry.getAllTestabilities().length).toEqual(1);
+        expect(resgitry.getTestability('testability1')).toEqual(testability1);
+      });
+
+      it('should remain the same when unregistering a non-existing testability', () => {
+        expect(resgitry.getAllTestabilities().length).toEqual(0);
+        resgitry.registerApplication('testability1', testability1);
+        resgitry.registerApplication('testability2', testability2);
+        resgitry.unregisterApplication('testability3');
+        expect(resgitry.getAllTestabilities().length).toEqual(2);
+        expect(resgitry.getTestability('testability1')).toEqual(testability1);
+        expect(resgitry.getTestability('testability2')).toEqual(testability2);
+      });
+
+      it('should remove all the testability when unregistering all testabilities', () => {
+        resgitry.registerApplication('testability1', testability1);
+        resgitry.registerApplication('testability2', testability2);
+        resgitry.unregisterAllApplications();
+        expect(resgitry.getAllTestabilities().length).toEqual(0);
+      });
     });
   });
 }

@@ -35,7 +35,7 @@ export function main() {
           return () => {
             const initStatus = injector.get(ApplicationInitStatus);
             initStatus.donePromise.then(() => { expect(completerResolver).toBe(true); });
-          }
+          };
         };
         promise = new Promise((res) => { resolve = res; });
         TestBed.configureTestingModule({

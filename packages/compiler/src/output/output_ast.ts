@@ -228,7 +228,7 @@ export class ReadVarExpr extends Expression {
 
   set(value: Expression): WriteVarExpr {
     if (!this.name) {
-      throw new Error(`Built in variable ${this.builtin} can not be assigned to.`)
+      throw new Error(`Built in variable ${this.builtin} can not be assigned to.`);
     }
     return new WriteVarExpr(this.name, value, null, this.sourceSpan);
   }
@@ -353,7 +353,8 @@ export class ExternalExpr extends Expression {
 }
 
 export class ExternalReference {
-  constructor(public moduleName: string|null, public name: string|null, public runtime: any|null) {}
+  constructor(public moduleName: string|null, public name: string|null, public runtime?: any|null) {
+  }
 }
 
 export class ConditionalExpr extends Expression {
@@ -476,7 +477,7 @@ export class LiteralArrayExpr extends Expression {
 }
 
 export class LiteralMapEntry {
-  constructor(public key: string, public value: Expression, public quoted: boolean = false) {}
+  constructor(public key: string, public value: Expression, public quoted: boolean) {}
 }
 
 export class LiteralMapExpr extends Expression {
@@ -831,7 +832,7 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any {
     const entries = ast.entries.map(
         (entry): LiteralMapEntry => new LiteralMapEntry(
-            entry.key, entry.value.visitExpression(this, context), entry.quoted, ));
+            entry.key, entry.value.visitExpression(this, context), entry.quoted));
     const mapType = new MapType(ast.valueType, null);
     return this.transformExpr(new LiteralMapExpr(entries, mapType, ast.sourceSpan), context);
   }
@@ -923,85 +924,109 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
 
 
 export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor {
-  visitReadVarExpr(ast: ReadVarExpr, context: any): any { return ast; }
-  visitWriteVarExpr(expr: WriteVarExpr, context: any): any {
-    expr.value.visitExpression(this, context);
-    return expr;
+  visitType(ast: Type, context: any): any { return ast; }
+  visitExpression(ast: Expression, context: any): any {
+    if (ast.type) {
+      ast.type.visitType(this, context);
+    }
+    return ast;
   }
-  visitWriteKeyExpr(expr: WriteKeyExpr, context: any): any {
-    expr.receiver.visitExpression(this, context);
-    expr.index.visitExpression(this, context);
-    expr.value.visitExpression(this, context);
-    return expr;
+  visitBuiltintType(type: BuiltinType, context: any): any { return this.visitType(type, context); }
+  visitExpressionType(type: ExpressionType, context: any): any {
+    type.value.visitExpression(this, context);
+    return this.visitType(type, context);
   }
-  visitWritePropExpr(expr: WritePropExpr, context: any): any {
-    expr.receiver.visitExpression(this, context);
-    expr.value.visitExpression(this, context);
-    return expr;
+  visitArrayType(type: ArrayType, context: any): any { return this.visitType(type, context); }
+  visitMapType(type: MapType, context: any): any { return this.visitType(type, context); }
+  visitReadVarExpr(ast: ReadVarExpr, context: any): any {
+    return this.visitExpression(ast, context);
+  }
+  visitWriteVarExpr(ast: WriteVarExpr, context: any): any {
+    ast.value.visitExpression(this, context);
+    return this.visitExpression(ast, context);
+  }
+  visitWriteKeyExpr(ast: WriteKeyExpr, context: any): any {
+    ast.receiver.visitExpression(this, context);
+    ast.index.visitExpression(this, context);
+    ast.value.visitExpression(this, context);
+    return this.visitExpression(ast, context);
+  }
+  visitWritePropExpr(ast: WritePropExpr, context: any): any {
+    ast.receiver.visitExpression(this, context);
+    ast.value.visitExpression(this, context);
+    return this.visitExpression(ast, context);
   }
   visitInvokeMethodExpr(ast: InvokeMethodExpr, context: any): any {
     ast.receiver.visitExpression(this, context);
     this.visitAllExpressions(ast.args, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): any {
     ast.fn.visitExpression(this, context);
     this.visitAllExpressions(ast.args, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitInstantiateExpr(ast: InstantiateExpr, context: any): any {
     ast.classExpr.visitExpression(this, context);
     this.visitAllExpressions(ast.args, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
-  visitLiteralExpr(ast: LiteralExpr, context: any): any { return ast; }
-  visitExternalExpr(ast: ExternalExpr, context: any): any { return ast; }
+  visitLiteralExpr(ast: LiteralExpr, context: any): any {
+    return this.visitExpression(ast, context);
+  }
+  visitExternalExpr(ast: ExternalExpr, context: any): any {
+    if (ast.typeParams) {
+      ast.typeParams.forEach(type => type.visitType(this, context));
+    }
+    return this.visitExpression(ast, context);
+  }
   visitConditionalExpr(ast: ConditionalExpr, context: any): any {
     ast.condition.visitExpression(this, context);
     ast.trueCase.visitExpression(this, context);
     ast.falseCase !.visitExpression(this, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitNotExpr(ast: NotExpr, context: any): any {
     ast.condition.visitExpression(this, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitAssertNotNullExpr(ast: AssertNotNull, context: any): any {
     ast.condition.visitExpression(this, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitCastExpr(ast: CastExpr, context: any): any {
     ast.value.visitExpression(this, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitFunctionExpr(ast: FunctionExpr, context: any): any {
     this.visitAllStatements(ast.statements, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): any {
     ast.lhs.visitExpression(this, context);
     ast.rhs.visitExpression(this, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitReadPropExpr(ast: ReadPropExpr, context: any): any {
     ast.receiver.visitExpression(this, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitReadKeyExpr(ast: ReadKeyExpr, context: any): any {
     ast.receiver.visitExpression(this, context);
     ast.index.visitExpression(this, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitLiteralArrayExpr(ast: LiteralArrayExpr, context: any): any {
     this.visitAllExpressions(ast.entries, context);
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any {
     ast.entries.forEach((entry) => entry.value.visitExpression(this, context));
-    return ast;
+    return this.visitExpression(ast, context);
   }
   visitCommaExpr(ast: CommaExpr, context: any): any {
     this.visitAllExpressions(ast.parts, context);
+    return this.visitExpression(ast, context);
   }
   visitAllExpressions(exprs: Expression[], context: any): void {
     exprs.forEach(expr => expr.visitExpression(this, context));
@@ -1009,10 +1034,16 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: any): any {
     stmt.value.visitExpression(this, context);
+    if (stmt.type) {
+      stmt.type.visitType(this, context);
+    }
     return stmt;
   }
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any): any {
     this.visitAllStatements(stmt.statements, context);
+    if (stmt.type) {
+      stmt.type.visitType(this, context);
+    }
     return stmt;
   }
   visitExpressionStmt(stmt: ExpressionStatement, context: any): any {
@@ -1074,6 +1105,20 @@ class _ReadVarVisitor extends RecursiveAstVisitor {
       this.varNames.add(ast.name);
     }
     return null;
+  }
+}
+
+export function collectExternalReferences(stmts: Statement[]): ExternalReference[] {
+  const visitor = new _FindExternalReferencesVisitor();
+  visitor.visitAllStatements(stmts, null);
+  return visitor.externalReferences;
+}
+
+class _FindExternalReferencesVisitor extends RecursiveAstVisitor {
+  externalReferences: ExternalReference[] = [];
+  visitExternalExpr(e: ExternalExpr, context: any) {
+    this.externalReferences.push(e.value);
+    return super.visitExternalExpr(e, context);
   }
 }
 
@@ -1140,8 +1185,8 @@ export function importType(
 }
 
 export function expressionType(
-    expr: Expression, typeModifiers: TypeModifier[] | null = null): ExpressionType|null {
-  return expr != null ? new ExpressionType(expr, typeModifiers) ! : null;
+    expr: Expression, typeModifiers: TypeModifier[] | null = null): ExpressionType {
+  return new ExpressionType(expr, typeModifiers);
 }
 
 export function literalArr(
@@ -1151,10 +1196,10 @@ export function literalArr(
 }
 
 export function literalMap(
-    values: [string, Expression][], type: MapType | null = null,
-    quoted: boolean = false): LiteralMapExpr {
+    values: {key: string, quoted: boolean, value: Expression}[],
+    type: MapType | null = null): LiteralMapExpr {
   return new LiteralMapExpr(
-      values.map(entry => new LiteralMapEntry(entry[0], entry[1], quoted)), type, null);
+      values.map(e => new LiteralMapEntry(e.key, e.value, e.quoted)), type, null);
 }
 
 export function not(expr: Expression, sourceSpan?: ParseSourceSpan | null): NotExpr {

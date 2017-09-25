@@ -1,17 +1,26 @@
 {
-  "extends": "../tsconfig-build",
+  "extends": "../tsconfig-build.json",
 
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/common": ["../../dist/packages/common"]
-    }
+      "@angular/core": ["../../../dist/packages/core"],
+      "@angular/common": ["../../../dist/packages/common"]
+    },
+    "outDir": "../../../dist/packages/common"
   },
+
   "files": [
-    "index.ts",
+    "public_api.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
+
   "angularCompilerOptions": {
-    "strictMetadataEmit": true
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "testing.js",
+    "flatModuleId": "@angular/common/testing"
   }
 }

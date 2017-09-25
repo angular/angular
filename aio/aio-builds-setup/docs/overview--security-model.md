@@ -41,12 +41,13 @@ part of the CI setup and serving them publicly.
 The implemented approach can be broken up to the following sub-tasks:
 
 1. Verify which PR the uploaded artifacts correspond to.
-2. Determine the author of the PR.
-3. Check whether the PR author is a member of some whitelisted GitHub team.
-4. Deploy the artifacts to the corresponding PR's directory.
-5. Prevent overwriting previously deployed artifacts (which ensures that the guarantees established
+2. Fetch the PR's metadata, including author and labels.
+3. Check whether the PR can be automatically verified as "trusted" (based on its author or labels).
+4. If necessary, update the corresponding PR's verification status.
+5. Deploy the artifacts to the corresponding PR's directory.
+6. Prevent overwriting previously deployed artifacts (which ensures that the guarantees established
    during deployment will remain valid until the artifacts are removed).
-6. Prevent uploaded files from accessing anything outside their directory.
+7. Prevent uploaded files from accessing anything outside their directory.
 
 
 ### Implementation details
@@ -65,35 +66,51 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
    _There are currently certain limitation in the implementation of the JWT addon._
    _See the next section for more details._
 
-2. **Determine the author of the PR.**
+2. **Fetch the PR's metadata, including author and labels**.
 
-   Once we have securely associated the uploaded artifaacts to a PR, we retrieve the PR's metadata -
-   including the author's username - using the [GitHub API](https://developer.github.com/v3/).
+   Once we have securely associated the uploaded artifacts to a PR, we retrieve the PR's metadata -
+   including the author's username and the labels - using the
+   [GitHub API](https://developer.github.com/v3/).
    To avoid rate-limit restrictions, we use a Personal Access Token (issued by
    [@mary-poppins](https://github.com/mary-poppins)).
 
-3. **Check whether the PR author is a member of some whitelisted GitHub team.**
+3. **Check whether the PR can be automatically verified as "trusted"**.
 
-   Again using the GitHub API, we can verify the author's membership in one of the
-   whitelisted/trusted GitHub teams. For this operation, we need a PErsonal Access Token with the
-   `read:org` scope issued by a user that can "see" the specified GitHub organization.
-   Here too, we use token by @mary-poppins.
+   "Trusted" means that we are confident that the build artifacts are suitable for being deployed
+   and publicly accessible on the preview server. There are two ways to check that:
+   1. We can verify that the PR has a pre-determined label, which marks it as "safe for preview".
+      Such a label can only have been added by a maintainer (with the necessary rights) and
+      designates that they have manually verified the PR contents.
+   2. We can verify (again using the GitHub API) the author's membership in one of the
+      whitelisted/trusted GitHub teams. For this operation, we need a Personal Access Token with the
+      `read:org` scope issued by a user that can "see" the specified GitHub organization.
+      Here too, we use the token by @mary-poppins.
 
-4. **Deploy the artifacts to the corresponding PR's directory.**
+4. **If necessary update the corresponding PR's verification status**.
 
-   With the preceeding steps, we have verified that the uploaded artifacts have been uploaded by
-   Travis and correspond to a PR whose author is a member of a trusted team. Essentially, as long as
-   sub-tasks 1, 2 and 3 can be securely accomplished, it is possible to "project" the trust we have
-   in a team's members through the PR and Travis to the build artifacts.
+   Once we have determined whether the PR is considered "trusted", we update its "visibility" (i.e.
+   whether it is publicly accessible or not), based on the new verification status. For example, if
+   a PR was initially considered "not trusted" but the check triggered by a new build determined
+   otherwise, the PR (and all the previously uploaded previews) are made public. It works the same
+   way if a PR has gone from "trusted" to "not trusted".
 
-5. **Prevent overwriting previously deployed artifacts**.
+5. **Deploy the artifacts to the corresponding PR's directory.**
 
-   In order to enforce this restriction (and ensure that the deployed artifacts validity is
+   With the preceding steps, we have verified that the uploaded artifacts have been uploaded by
+   Travis. Additionally, we have determined whether the PR can be trusted to have its previews
+   publicly accessible or whether further verification is necessary. The artifacts will be stored to
+   the PR's directory, but will not be publicly accessible unless the PR has been verified.
+   Essentially, as long as sub-tasks 1, 2 and 3 can be securely accomplished, it is possible to
+   "project" the trust we have in a team's members through the PR and Travis to the build artifacts.
+
+6. **Prevent overwriting previously deployed artifacts**.
+
+   In order to enforce this restriction (and ensure that the deployed artifacts' validity is
    preserved throughout their "lifetime"), the server that handles the upload (currently a Node.js
    Express server) rejects uploads that target an existing directory.
    _Note: A PR can contain multiple uploads; one for each SHA that was built on Travis._
 
-6. **Prevent uploaded files from accessing anything outside their directory.**
+7. **Prevent uploaded files from accessing anything outside their directory.**
 
    Nginx (which is used to serve the uploaded artifacts) has been configured to not follow symlinks
    outside of the directory where the build artifacts are stored.
@@ -103,6 +120,11 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
 
 - Each trusted PR author has full control over the content that is uploaded for their PRs. Part of
   the security model relies on the trustworthiness of these authors.
+
+- Adding the specified label on a PR and marking it as trusted, gives the author full control over
+  the content that is uploaded for the specific PR (e.g. by pushing more commits to it). The user
+  adding the label is responsible for ensuring that this control is not abused and that the PR is
+  either closed (one way of another) or the access is revoked.
 
 - If anyone gets access to the `PREVIEW_DEPLOYMENT_TOKEN` (a.k.a. `NGBUILDS_IO_KEY` on
   angular/angular) variable generated for each Travis job, they will be able to impersonate the

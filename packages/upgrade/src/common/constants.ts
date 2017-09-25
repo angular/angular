@@ -11,6 +11,7 @@ export const $CONTROLLER = '$controller';
 export const $DELEGATE = '$delegate';
 export const $HTTP_BACKEND = '$httpBackend';
 export const $INJECTOR = '$injector';
+export const $INTERVAL = '$interval';
 export const $PARSE = '$parse';
 export const $PROVIDE = '$provide';
 export const $ROOT_SCOPE = '$rootScope';
@@ -23,6 +24,7 @@ export const $$TESTABILITY = '$$testability';
 export const COMPILER_KEY = '$$angularCompiler';
 export const GROUP_PROJECTABLE_NODES_KEY = '$$angularGroupProjectableNodes';
 export const INJECTOR_KEY = '$$angularInjector';
+export const LAZY_MODULE_REF = '$$angularLazyModuleRef';
 export const NG_ZONE_KEY = '$$angularNgZone';
 
 export const REQUIRE_INJECTOR = '?^^' + INJECTOR_KEY;

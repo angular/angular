@@ -7,5 +7,6 @@ export declare abstract class AnimationDriver {
     abstract containsElement(elm1: any, elm2: any): boolean;
     abstract matchesElement(element: any, selector: string): boolean;
     abstract query(element: any, selector: string, multi: boolean): any[];
+    abstract validateStyleProperty(prop: string): boolean;
     static NOOP: AnimationDriver;
 }

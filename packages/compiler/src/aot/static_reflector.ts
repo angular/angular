@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Component, ContentChild, ContentChildren, Directive, Host, HostBinding, HostListener, Inject, Injectable, Input, NgModule, Optional, Output, Pipe, Self, SkipSelf, ViewChild, ViewChildren, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-
 import {CompileSummaryKind} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
+import {MetadataFactory, createAttribute, createComponent, createContentChild, createContentChildren, createDirective, createHost, createHostBinding, createHostListener, createInject, createInjectable, createInput, createNgModule, createOptional, createOutput, createPipe, createSelf, createSkipSelf, createViewChild, createViewChildren} from '../core';
 import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
@@ -18,12 +17,17 @@ import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 
 const ANGULAR_CORE = '@angular/core';
+const ANGULAR_ROUTER = '@angular/router';
 
 const HIDDEN_KEY = /^\$.*\$$/;
 
 const IGNORE = {
   __symbolic: 'ignore'
 };
+
+const USE_VALUE = 'useValue';
+const PROVIDE = 'provide';
+const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data']);
 
 function shouldIgnore(value: any): boolean {
   return value && value.__symbolic == 'ignore';
@@ -40,9 +44,10 @@ export class StaticReflector implements CompileReflector {
   private methodCache = new Map<StaticSymbol, {[key: string]: boolean}>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private injectionToken: StaticSymbol;
-  private opaqueToken: StaticSymbol;
-  private annotationForParentClassWithSummaryKind = new Map<CompileSummaryKind, any[]>();
-  private annotationNames = new Map<any, string>();
+  private ROUTES: StaticSymbol;
+  private ANALYZE_FOR_ENTRY_COMPONENTS: StaticSymbol;
+  private annotationForParentClassWithSummaryKind =
+      new Map<CompileSummaryKind, MetadataFactory<any>[]>();
 
   constructor(
       private summaryResolver: SummaryResolver<StaticSymbol>,
@@ -57,16 +62,12 @@ export class StaticReflector implements CompileReflector {
     knownMetadataFunctions.forEach(
         (kf) => this._registerFunction(this.getStaticSymbol(kf.filePath, kf.name), kf.fn));
     this.annotationForParentClassWithSummaryKind.set(
-        CompileSummaryKind.Directive, [Directive, Component]);
-    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.Pipe, [Pipe]);
-    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.NgModule, [NgModule]);
+        CompileSummaryKind.Directive, [createDirective, createComponent]);
+    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.Pipe, [createPipe]);
+    this.annotationForParentClassWithSummaryKind.set(CompileSummaryKind.NgModule, [createNgModule]);
     this.annotationForParentClassWithSummaryKind.set(
-        CompileSummaryKind.Injectable, [Injectable, Pipe, Directive, Component, NgModule]);
-    this.annotationNames.set(Directive, 'Directive');
-    this.annotationNames.set(Component, 'Component');
-    this.annotationNames.set(Pipe, 'Pipe');
-    this.annotationNames.set(NgModule, 'NgModule');
-    this.annotationNames.set(Injectable, 'Injectable');
+        CompileSummaryKind.Injectable,
+        [createInjectable, createPipe, createDirective, createComponent, createNgModule]);
   }
 
   componentModuleUrl(typeOrFunc: StaticSymbol): string {
@@ -75,17 +76,20 @@ export class StaticReflector implements CompileReflector {
   }
 
   resolveExternalReference(ref: o.ExternalReference): StaticSymbol {
-    const importSymbol = this.getStaticSymbol(ref.moduleName !, ref.name !);
-    const rootSymbol = this.findDeclaration(ref.moduleName !, ref.name !);
-    if (importSymbol != rootSymbol) {
-      this.symbolResolver.recordImportAs(rootSymbol, importSymbol);
-    }
-    return rootSymbol;
+    const refSymbol = this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !);
+    const declarationSymbol = this.findSymbolDeclaration(refSymbol);
+    this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
+    this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);
+    return declarationSymbol;
   }
 
   findDeclaration(moduleUrl: string, name: string, containingFile?: string): StaticSymbol {
     return this.findSymbolDeclaration(
         this.symbolResolver.getSymbolByModule(moduleUrl, name, containingFile));
+  }
+
+  tryFindDeclaration(moduleUrl: string, name: string): StaticSymbol {
+    return this.symbolResolver.ignoreErrorsFor(() => this.findDeclaration(moduleUrl, name));
   }
 
   findSymbolDeclaration(symbol: StaticSymbol): StaticSymbol {
@@ -119,12 +123,12 @@ export class StaticReflector implements CompileReflector {
           const requiredAnnotationTypes =
               this.annotationForParentClassWithSummaryKind.get(summary.type.summaryKind !) !;
           const typeHasRequiredAnnotation = requiredAnnotationTypes.some(
-              (requiredType: any) => ownAnnotations.some(ann => ann instanceof requiredType));
+              (requiredType) => ownAnnotations.some(ann => requiredType.isTypeOf(ann)));
           if (!typeHasRequiredAnnotation) {
             this.reportError(
                 syntaxError(
                     `Class ${type.name} in ${type.filePath} extends from a ${CompileSummaryKind[summary.type.summaryKind!]} in another compilation unit without duplicating the decorator. ` +
-                    `Please add a ${requiredAnnotationTypes.map((type: any) => this.annotationNames.get(type)).join(' or ')} decorator to the class.`),
+                    `Please add a ${requiredAnnotationTypes.map((type) => type.ngMetadataName).join(' or ')} decorator to the class.`),
                 type);
           }
         }
@@ -266,52 +270,52 @@ export class StaticReflector implements CompileReflector {
 
   private initializeConversionMap(): void {
     this.injectionToken = this.findDeclaration(ANGULAR_CORE, 'InjectionToken');
-    this.opaqueToken = this.findDeclaration(ANGULAR_CORE, 'OpaqueToken');
+    this.ROUTES = this.tryFindDeclaration(ANGULAR_ROUTER, 'ROUTES');
+    this.ANALYZE_FOR_ENTRY_COMPONENTS =
+        this.findDeclaration(ANGULAR_CORE, 'ANALYZE_FOR_ENTRY_COMPONENTS');
 
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), Host);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), createHost);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Injectable'), Injectable);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), Self);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), SkipSelf);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Inject'), Inject);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Optional'), Optional);
+        this.findDeclaration(ANGULAR_CORE, 'Injectable'), createInjectable);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), createSelf);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Attribute'), Attribute);
+        this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), createSkipSelf);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ContentChild'), ContentChild);
+        this.findDeclaration(ANGULAR_CORE, 'Inject'), createInject);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ContentChildren'), ContentChildren);
+        this.findDeclaration(ANGULAR_CORE, 'Optional'), createOptional);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ViewChild'), ViewChild);
+        this.findDeclaration(ANGULAR_CORE, 'Attribute'), createAttribute);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'ViewChildren'), ViewChildren);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Input'), Input);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Output'), Output);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Pipe'), Pipe);
+        this.findDeclaration(ANGULAR_CORE, 'ContentChild'), createContentChild);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'HostBinding'), HostBinding);
+        this.findDeclaration(ANGULAR_CORE, 'ContentChildren'), createContentChildren);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'HostListener'), HostListener);
+        this.findDeclaration(ANGULAR_CORE, 'ViewChild'), createViewChild);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Directive'), Directive);
+        this.findDeclaration(ANGULAR_CORE, 'ViewChildren'), createViewChildren);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Input'), createInput);
     this._registerDecoratorOrConstructor(
-        this.findDeclaration(ANGULAR_CORE, 'Component'), Component);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'NgModule'), NgModule);
+        this.findDeclaration(ANGULAR_CORE, 'Output'), createOutput);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Pipe'), createPipe);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'HostBinding'), createHostBinding);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'HostListener'), createHostListener);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'Directive'), createDirective);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'Component'), createComponent);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'NgModule'), createNgModule);
 
     // Note: Some metadata classes can be used directly with Provider.deps.
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), Host);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), Self);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), SkipSelf);
-    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Optional'), Optional);
-
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'trigger'), trigger);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'state'), state);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'transition'), transition);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'style'), style);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'animate'), animate);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'keyframes'), keyframes);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'sequence'), sequence);
-    this._registerFunction(this.findDeclaration(ANGULAR_CORE, 'group'), group);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Host'), createHost);
+    this._registerDecoratorOrConstructor(this.findDeclaration(ANGULAR_CORE, 'Self'), createSelf);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'SkipSelf'), createSkipSelf);
+    this._registerDecoratorOrConstructor(
+        this.findDeclaration(ANGULAR_CORE, 'Optional'), createOptional);
   }
 
   /**
@@ -350,7 +354,8 @@ export class StaticReflector implements CompileReflector {
     let scope = BindingScope.empty;
     const calling = new Map<StaticSymbol, boolean>();
 
-    function simplifyInContext(context: StaticSymbol, value: any, depth: number): any {
+    function simplifyInContext(
+        context: StaticSymbol, value: any, depth: number, references: number): any {
       function resolveReferenceValue(staticSymbol: StaticSymbol): any {
         const resolvedSymbol = self.symbolResolver.resolveSymbol(staticSymbol);
         return resolvedSymbol ? resolvedSymbol.metadata : null;
@@ -361,17 +366,17 @@ export class StaticReflector implements CompileReflector {
           if (calling.get(functionSymbol)) {
             throw new Error('Recursion not supported');
           }
-          calling.set(functionSymbol, true);
           try {
             const value = targetFunction['value'];
             if (value && (depth != 0 || value.__symbolic != 'error')) {
               const parameters: string[] = targetFunction['parameters'];
               const defaults: any[] = targetFunction.defaults;
-              args = args.map(arg => simplifyInContext(context, arg, depth + 1))
+              args = args.map(arg => simplifyInContext(context, arg, depth + 1, references))
                          .map(arg => shouldIgnore(arg) ? undefined : arg);
               if (defaults && defaults.length > args.length) {
                 args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
               }
+              calling.set(functionSymbol, true);
               const functionScope = BindingScope.build();
               for (let i = 0; i < parameters.length; i++) {
                 functionScope.define(parameters[i], args[i]);
@@ -380,7 +385,7 @@ export class StaticReflector implements CompileReflector {
               let result: any;
               try {
                 scope = functionScope.done();
-                result = simplifyInContext(functionSymbol, value, depth + 1);
+                result = simplifyInContext(functionSymbol, value, depth + 1, references);
               } finally {
                 scope = oldScope;
               }
@@ -427,15 +432,15 @@ export class StaticReflector implements CompileReflector {
           return result;
         }
         if (expression instanceof StaticSymbol) {
-          // Stop simplification at builtin symbols
-          if (expression === self.injectionToken || expression === self.opaqueToken ||
-              self.conversionMap.has(expression)) {
+          // Stop simplification at builtin symbols or if we are in a reference context
+          if (expression === self.injectionToken || self.conversionMap.has(expression) ||
+              references > 0) {
             return expression;
           } else {
             const staticSymbol = expression;
             const declarationValue = resolveReferenceValue(staticSymbol);
             if (declarationValue) {
-              return simplifyInContext(staticSymbol, declarationValue, depth + 1);
+              return simplifyInContext(staticSymbol, declarationValue, depth + 1, references);
             } else {
               return staticSymbol;
             }
@@ -526,13 +531,15 @@ export class StaticReflector implements CompileReflector {
                       self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
                   const declarationValue = resolveReferenceValue(selectContext);
                   if (declarationValue) {
-                    return simplifyInContext(selectContext, declarationValue, depth + 1);
+                    return simplifyInContext(
+                        selectContext, declarationValue, depth + 1, references);
                   } else {
                     return selectContext;
                   }
                 }
                 if (selectTarget && isPrimitive(member))
-                  return simplifyInContext(selectContext, selectTarget[member], depth + 1);
+                  return simplifyInContext(
+                      selectContext, selectTarget[member], depth + 1, references);
                 return null;
               case 'reference':
                 // Note: This only has to deal with variable references,
@@ -551,9 +558,10 @@ export class StaticReflector implements CompileReflector {
               case 'new':
               case 'call':
                 // Determine if the function is a built-in conversion
-                staticSymbol = simplifyInContext(context, expression['expression'], depth + 1);
+                staticSymbol = simplifyInContext(
+                    context, expression['expression'], depth + 1, /* references */ 0);
                 if (staticSymbol instanceof StaticSymbol) {
-                  if (staticSymbol === self.injectionToken || staticSymbol === self.opaqueToken) {
+                  if (staticSymbol === self.injectionToken) {
                     // if somebody calls new InjectionToken, don't create an InjectionToken,
                     // but rather return the symbol to which the InjectionToken is assigned to.
                     return context;
@@ -562,7 +570,8 @@ export class StaticReflector implements CompileReflector {
                   let converter = self.conversionMap.get(staticSymbol);
                   if (converter) {
                     const args =
-                        argExpressions.map(arg => simplifyInContext(context, arg, depth + 1))
+                        argExpressions
+                            .map(arg => simplifyInContext(context, arg, depth + 1, references))
                             .map(arg => shouldIgnore(arg) ? undefined : arg);
                     return converter(context, args);
                   } else {
@@ -590,7 +599,20 @@ export class StaticReflector implements CompileReflector {
             }
             return null;
           }
-          return mapStringMap(expression, (value, name) => simplify(value));
+          return mapStringMap(expression, (value, name) => {
+            if (REFERENCE_SET.has(name)) {
+              if (name === USE_VALUE && PROVIDE in expression) {
+                // If this is a provider expression, check for special tokens that need the value
+                // during analysis.
+                const provide = simplify(expression.provide);
+                if (provide === self.ROUTES || provide == self.ANALYZE_FOR_ENTRY_COMPONENTS) {
+                  return simplify(value);
+                }
+              }
+              return simplifyInContext(context, value, depth, references + 1);
+            }
+            return simplify(value);
+          });
         }
         return IGNORE;
       }
@@ -608,16 +630,16 @@ export class StaticReflector implements CompileReflector {
       }
     }
 
-    const recordedSimplifyInContext = (context: StaticSymbol, value: any, depth: number) => {
+    const recordedSimplifyInContext = (context: StaticSymbol, value: any) => {
       try {
-        return simplifyInContext(context, value, depth);
+        return simplifyInContext(context, value, 0, 0);
       } catch (e) {
         this.reportError(e, context);
       }
     };
 
-    const result = this.errorRecorder ? recordedSimplifyInContext(context, value, 0) :
-                                        simplifyInContext(context, value, 0);
+    const result = this.errorRecorder ? recordedSimplifyInContext(context, value) :
+                                        simplifyInContext(context, value, 0, 0);
     if (shouldIgnore(result)) {
       return undefined;
     }

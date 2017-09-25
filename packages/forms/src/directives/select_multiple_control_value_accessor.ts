@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const SELECT_MULTIPLE_VALUE_ACCESSOR: Provider = {
+export const SELECT_MULTIPLE_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectMultipleControlValueAccessor),
   multi: true
@@ -94,7 +95,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   private _compareWith: (o1: any, o2: any) => boolean = looseIdentical;
 
-  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
 
   writeValue(value: any): void {
     this.value = value;
@@ -138,7 +139,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
   setDisabledState(isDisabled: boolean): void {
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
   /** @internal */
@@ -181,7 +182,7 @@ export class NgSelectMultipleOption implements OnDestroy {
   _value: any;
 
   constructor(
-      private _element: ElementRef, private _renderer: Renderer,
+      private _element: ElementRef, private _renderer: Renderer2,
       @Optional() @Host() private _select: SelectMultipleControlValueAccessor) {
     if (this._select) {
       this.id = this._select._registerOption(this);
@@ -209,12 +210,12 @@ export class NgSelectMultipleOption implements OnDestroy {
 
   /** @internal */
   _setElementValue(value: string): void {
-    this._renderer.setElementProperty(this._element.nativeElement, 'value', value);
+    this._renderer.setProperty(this._element.nativeElement, 'value', value);
   }
 
   /** @internal */
   _setSelected(selected: boolean) {
-    this._renderer.setElementProperty(this._element.nativeElement, 'selected', selected);
+    this._renderer.setProperty(this._element.nativeElement, 'selected', selected);
   }
 
   ngOnDestroy(): void {

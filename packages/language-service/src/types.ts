@@ -7,7 +7,7 @@
  */
 
 import {CompileDirectiveMetadata, CompileMetadataResolver, CompilePipeSummary, NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
-import {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from '@angular/compiler-cli';
+import {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from '@angular/compiler-cli/src/language_services';
 
 export {
   BuiltinType,
@@ -25,7 +25,7 @@ export {
 
 /**
  * The information `LanguageService` needs from the `LanguageServiceHost` to describe the content of
- * a template and the langauge context the template is in.
+ * a template and the language context the template is in.
  *
  * A host interface; see `LanguageSeriviceHost`.
  *

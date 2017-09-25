@@ -1,6 +1,7 @@
 // #docregion
 import { Component, OnInit } from '@angular/core';
-import { UserService }       from './model';
+
+import { UserService }       from './model/user.service';
 
 @Component({
   selector: 'app-welcome',

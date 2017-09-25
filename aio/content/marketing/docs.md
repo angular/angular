@@ -5,21 +5,16 @@ Angular is a platform that makes it easy to build applications with the web. Ang
 <div class="card-container">
   <a href="generated/live-examples/quickstart/eplnkr.html" target="_blank" class="docs-card"
     title="Experience Angular in a live coding environment">
-      <section>Experience Angular</section>
-      <p>A quick look at an Angular application.</p>
+      <section>Get a Glimpse of Angular</section>
+      <p>A quick look at an Angular "hello world" application.</p>
       <p class="card-footer">Angular in Action</p>
   </a>
 
-  <div class="docs-card">
+  <a href="guide/quickstart" class="docs-card" title="Angular Quickstart">
       <section>Get Going with Angular</section>
-      <p>Get going on your own environment with the Quickstart and Tutorial</p>
-      <p class="card-footer center" >
-        <a href="guide/quickstart" title="Angular Quickstart">Quickstart</a> &nbsp;
-        <a href="tutorial" title="Angular Tutorial">Tutorial</a>
-      </p>
-      <!--<p class="card-footer"><a href="guide/quickstart">Quickstart</a></p>
-      <p class="card-footer"><a href="guide/tutorial">Tutorial</a></p>-->
-  </div>
+      <p>Get going on your own environment with the Quickstart.</p>
+      <p class="card-footer">Quickstart</p>
+  </a>
 
   <a href="guide/architecture" class="docs-card" title="Angular Architecture">
       <section>Fundamentals</section>

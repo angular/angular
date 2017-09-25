@@ -14,7 +14,6 @@
     "@angular/platform-browser-dynamic",
     "@angular/platform-server",
     "@angular/router",
-    "@angular/tsc-wrapped",
     "@angular/upgrade",
     "angular-in-memory-web-api",
     "core-js",

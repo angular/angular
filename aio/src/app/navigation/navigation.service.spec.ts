@@ -1,46 +1,37 @@
-import { ReflectiveInjector } from '@angular/core';
-import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
-import { CurrentNode, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Injector } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+
+import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
-import { Logger } from 'app/shared/logger.service';
 
 describe('NavigationService', () => {
 
-  let injector: ReflectiveInjector;
-  let backend: MockBackend;
+  let injector: Injector;
   let navService: NavigationService;
-
-  function createResponse(body: any) {
-    return new Response(new ResponseOptions({ body: JSON.stringify(body) }));
-  }
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
+    injector = TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
         NavigationService,
-        { provide: LocationService, useFactory: () => new MockLocationService('a') },
-        { provide: ConnectionBackend, useClass: MockBackend },
-        { provide: RequestOptions, useClass: BaseRequestOptions },
-        Http,
-        Logger
-    ]);
-  });
+        { provide: LocationService, useFactory: () => new MockLocationService('a') }
+      ]
+    });
 
-  beforeEach(() => {
-    backend = injector.get(ConnectionBackend);
     navService = injector.get(NavigationService);
+    httpMock = injector.get(HttpTestingController);
   });
 
-  it('should be creatable', () => {
-    expect(navService).toBeTruthy();
-  });
+  afterEach(() => httpMock.verify());
 
   describe('navigationViews', () => {
 
     it('should make a single connection to the server', () => {
-      expect(backend.connectionsArray.length).toEqual(1);
-      expect(backend.connectionsArray[0].request.url).toEqual('generated/navigation.json');
+      const req = httpMock.expectOne({});
+      expect(req.request.url).toBe('generated/navigation.json');
     });
 
     it('should expose the server response', () => {
@@ -48,7 +39,7 @@ describe('NavigationService', () => {
       navService.navigationViews.subscribe(views => viewsEvents.push(views));
 
       expect(viewsEvents).toEqual([]);
-      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [ { url: 'a' }] }));
+      httpMock.expectOne({}).flush({ TopBar: [ { url: 'a' }] });
       expect(viewsEvents).toEqual([{ TopBar: [ { url: 'a' }] }]);
     });
 
@@ -56,6 +47,9 @@ describe('NavigationService', () => {
       let completed = false;
       navService.navigationViews.subscribe(null, null, () => completed = true);
       expect(true).toBe(true, 'observable completed');
+
+      // Stop `$httpMock.verify()` from complaining.
+      httpMock.expectOne({});
     });
 
     it('should return the same object to all subscribers', () => {
@@ -65,16 +59,16 @@ describe('NavigationService', () => {
       let views2: NavigationViews;
       navService.navigationViews.subscribe(views => views2 = views);
 
-      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [{ url: 'a' }] }));
-
-      // modify the response so we can check that future subscriptions do not trigger another request
-      backend.connectionsArray[0].response.next(createResponse({ TopBar: [{ url: 'error 1' }] }));
+      httpMock.expectOne({}).flush({ TopBar: [{ url: 'a' }] });
 
       let views3: NavigationViews;
       navService.navigationViews.subscribe(views => views3 = views);
 
       expect(views2).toBe(views1);
       expect(views3).toBe(views1);
+
+      // Verfy that subsequent subscriptions did not trigger another request.
+      httpMock.expectNone({});
     });
 
     it('should do WHAT(?) if the request fails');
@@ -92,7 +86,7 @@ describe('NavigationService', () => {
 
     beforeEach(() => {
       navService.navigationViews.subscribe(views => view = views['sideNav']);
-      backend.connectionsArray[0].mockRespond(createResponse({sideNav}));
+      httpMock.expectOne({}).flush({sideNav});
     });
 
     it('should have the supplied tooltip', () => {
@@ -113,7 +107,7 @@ describe('NavigationService', () => {
   });
 
   describe('currentNode', () => {
-    let currentNode: CurrentNode;
+    let currentNodes: CurrentNodes;
     let locationService: MockLocationService;
 
     const topBarNodes: NavigationNode[] = [
@@ -137,81 +131,93 @@ describe('NavigationService', () => {
     };
 
     beforeEach(() => {
-      locationService = injector.get(LocationService);
-      navService.currentNode.subscribe(selected => currentNode = selected);
-      backend.connectionsArray[0].mockRespond(createResponse(navJson));
+      locationService = injector.get(LocationService) as any as MockLocationService;
+      navService.currentNodes.subscribe(selected => currentNodes = selected);
+      httpMock.expectOne({}).flush(navJson);
     });
 
     it('should list the side navigation node that matches the current location, and all its ancestors', () => {
       locationService.go('b');
-      expect(currentNode).toEqual({
-        url: 'b',
-        view: 'SideNav',
-        nodes: [
-          sideNavNodes[0].children[0],
-          sideNavNodes[0]
-        ]
+      expect(currentNodes).toEqual({
+        SideNav: {
+          url: 'b',
+          view: 'SideNav',
+          nodes: [
+            sideNavNodes[0].children[0],
+            sideNavNodes[0]
+          ]
+        }
       });
 
       locationService.go('d');
-      expect(currentNode).toEqual({
-        url: 'd',
-        view: 'SideNav',
-        nodes: [
-          sideNavNodes[0].children[0].children[1],
-          sideNavNodes[0].children[0],
-          sideNavNodes[0]
-        ]
+      expect(currentNodes).toEqual({
+        SideNav: {
+          url: 'd',
+          view: 'SideNav',
+          nodes: [
+            sideNavNodes[0].children[0].children[1],
+            sideNavNodes[0].children[0],
+            sideNavNodes[0]
+          ]
+        }
       });
 
       locationService.go('f');
-      expect(currentNode).toEqual({
-        url: 'f',
-        view: 'SideNav',
-        nodes: [ sideNavNodes[1] ]
+      expect(currentNodes).toEqual({
+        SideNav: {
+          url: 'f',
+          view: 'SideNav',
+          nodes: [ sideNavNodes[1] ]
+        }
       });
     });
 
     it('should be a TopBar selected node if the current location is a top menu node', () => {
       locationService.go('features');
-      expect(currentNode).toEqual({
-        url: 'features',
-        view: 'TopBar',
-        nodes: [ topBarNodes[0] ]
+      expect(currentNodes).toEqual({
+        TopBar: {
+          url: 'features',
+          view: 'TopBar',
+          nodes: [ topBarNodes[0] ]
+        }
       });
     });
 
-    it('should be a plain object if no side navigation node matches the current location', () => {
+    it('should be a plain object if no navigation node matches the current location', () => {
       locationService.go('g?search=moo#anchor-1');
-      expect(currentNode).toEqual({
-        url: 'g',
-        view: '',
-        nodes: []
+      expect(currentNodes).toEqual({
+        '': {
+          url: 'g',
+          view: '',
+          nodes: []
+        }
       });
     });
 
     it('should ignore trailing slashes, hashes, and search params on URLs in the navmap', () => {
-      const cnode: CurrentNode = {
-        url: 'c',
-        view: 'SideNav',
-        nodes: [
-          sideNavNodes[0].children[0].children[0],
-          sideNavNodes[0].children[0],
-          sideNavNodes[0]
-        ]
+      const cnode: CurrentNodes = {
+        SideNav: {
+          url: 'c',
+          view: 'SideNav',
+          nodes: [
+            sideNavNodes[0].children[0].children[0],
+            sideNavNodes[0].children[0],
+            sideNavNodes[0]
+          ]
+        }
       };
 
       locationService.go('c');
-      expect(currentNode).toEqual(cnode, 'location: c');
+      expect(currentNodes).toEqual(cnode, 'location: c');
 
       locationService.go('c#foo');
-      expect(currentNode).toEqual(cnode, 'location: c#foo');
+      expect(currentNodes).toEqual(cnode, 'location: c#foo');
 
       locationService.go('c?foo=1');
-      expect(currentNode).toEqual(cnode, 'location: c?foo=1');
+      expect(currentNodes).toEqual(cnode, 'location: c?foo=1');
 
       locationService.go('c#foo?bar=1&baz=2');
-      expect(currentNode).toEqual(cnode, 'location: c#foo?bar=1&baz=2');
+      expect(currentNodes).toEqual(cnode, 'location: c#foo?bar=1&baz=2');
     });
   });
 
@@ -221,9 +227,9 @@ describe('NavigationService', () => {
 
     beforeEach(() => {
       navService.versionInfo.subscribe(info => versionInfo = info);
-      backend.connectionsArray[0].mockRespond(createResponse({
+      httpMock.expectOne({}).flush({
         __versionInfo: expectedVersionInfo
-      }));
+      });
     });
 
     it('should extract the version info', () => {
@@ -251,7 +257,7 @@ describe('NavigationService', () => {
     });
 
     it('should extract the docVersions', () => {
-      backend.connectionsArray[0].mockRespond(createResponse({ docVersions }));
+      httpMock.expectOne({}).flush({ docVersions });
       expect(actualDocVersions).toEqual(expectedDocVersions);
     });
   });

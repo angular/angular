@@ -12,8 +12,8 @@
  * This API should be stable for NG 2. It can be removed in NG 4..., but should be replaced by
  * something else.
  */
-import {AotCompilerHost, StaticReflector, StaticSymbol} from '@angular/compiler';
-import {NgModule} from '@angular/core';
+import {AotCompilerHost, StaticReflector, StaticSymbol, core} from '@angular/compiler';
+
 
 // We cannot depend directly to @angular/router.
 type Route = any;
@@ -49,11 +49,6 @@ export class RouteDef {
 }
 
 
-/**
- *
- * @returns {LazyRouteMap}
- * @private
- */
 export function listLazyRoutesOfModule(
     entryModule: string, host: AotCompilerHost, reflector: StaticReflector): LazyRouteMap {
   const entryRouteDef = RouteDef.fromString(entryModule);
@@ -111,7 +106,6 @@ function _resolveModule(modulePath: string, containingFile: string, host: AotCom
 
 /**
  * Throw an exception if a route is in a route map, but does not point to the same module.
- * @private
  */
 function _assertRoute(map: LazyRouteMap, route: LazyRoute) {
   const r = route.routeDef.toString();
@@ -124,6 +118,12 @@ function _assertRoute(map: LazyRouteMap, route: LazyRoute) {
   }
 }
 
+export function flatten<T>(list: Array<T|T[]>): T[] {
+  return list.reduce((flat: any[], item: T | T[]): T[] => {
+    const flatItem = Array.isArray(item) ? flatten(item) : item;
+    return (<T[]>flat).concat(flatItem);
+  }, []);
+}
 
 /**
  * Extract all the LazyRoutes from a module. This extracts all `loadChildren` keys from this
@@ -134,12 +134,10 @@ function _extractLazyRoutesFromStaticModule(
     staticSymbol: StaticSymbol, reflector: StaticReflector, host: AotCompilerHost,
     ROUTES: StaticSymbol): LazyRoute[] {
   const moduleMetadata = _getNgModuleMetadata(staticSymbol, reflector);
-  const allRoutes: any =
-      (moduleMetadata.imports || [])
-          .filter(i => 'providers' in i)
-          .reduce((mem: Route[], m: any) => {
-            return mem.concat(_collectRoutes(m.providers || [], reflector, ROUTES));
-          }, _collectRoutes(moduleMetadata.providers || [], reflector, ROUTES));
+  const imports = flatten(moduleMetadata.imports || []);
+  const allRoutes: any = imports.filter(i => 'providers' in i).reduce((mem: Route[], m: any) => {
+    return mem.concat(_collectRoutes(m.providers || [], reflector, ROUTES));
+  }, _collectRoutes(moduleMetadata.providers || [], reflector, ROUTES));
 
   const lazyRoutes: LazyRoute[] =
       _collectLoadChildren(allRoutes).reduce((acc: LazyRoute[], route: string) => {
@@ -150,7 +148,7 @@ function _extractLazyRoutesFromStaticModule(
       }, []);
 
   const importedSymbols =
-      ((moduleMetadata.imports || []) as any[])
+      (imports as any[])
           .filter(i => i instanceof StaticSymbol || i.ngModule instanceof StaticSymbol)
           .map(i => {
             if (i instanceof StaticSymbol) return i;
@@ -169,10 +167,11 @@ function _extractLazyRoutesFromStaticModule(
 
 /**
  * Get the NgModule Metadata of a symbol.
- * @private
  */
-function _getNgModuleMetadata(staticSymbol: StaticSymbol, reflector: StaticReflector): NgModule {
-  const ngModules = reflector.annotations(staticSymbol).filter((s: any) => s instanceof NgModule);
+function _getNgModuleMetadata(
+    staticSymbol: StaticSymbol, reflector: StaticReflector): core.NgModule {
+  const ngModules =
+      reflector.annotations(staticSymbol).filter((s: any) => core.createNgModule.isTypeOf(s));
   if (ngModules.length === 0) {
     throw new Error(`${staticSymbol.name} is not an NgModule`);
   }
@@ -200,7 +199,6 @@ function _collectRoutes(
 
 /**
  * Return the loadChildren values of a list of Route.
- * @private
  */
 function _collectLoadChildren(routes: Route[]): string[] {
   return routes.reduce((m, r) => {

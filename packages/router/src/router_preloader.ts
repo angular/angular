@@ -84,7 +84,7 @@ export class RouterPreloader implements OnDestroy {
     const onEndLoad = (r: Route) => router.triggerEvent(new RouteConfigLoadEnd(r));
 
     this.loader = new RouterConfigLoader(moduleLoader, compiler, onStartLoad, onEndLoad);
-  };
+  }
 
   setUpPreloading(): void {
     const navigations$ = filter.call(this.router.events, (e: Event) => e instanceof NavigationEnd);
@@ -96,6 +96,9 @@ export class RouterPreloader implements OnDestroy {
     return this.processRoutes(ngModule, this.router.config);
   }
 
+  // TODO(jasonaden): This class relies on code external to the class to call setUpPreloading. If
+  // this hasn't been done, ngOnDestroy will fail as this.subscription will be undefined. This
+  // should be refactored.
   ngOnDestroy(): void { this.subscription.unsubscribe(); }
 
   private processRoutes(ngModule: NgModuleRef<any>, routes: Routes): Observable<void> {

@@ -1,10 +1,13 @@
 built/
 dist/
 vendor/
+yarn.lock
+.ng-cli/
+cli-*/**
 */src/*.d.ts
 */src/*.js
 **/*.ngfactory.ts
 **/*.ngsummary.json
 **/*.ngsummary.ts
 */yarn*
-*/.yarn_local_cache*
+**/.yarn_local_cache*

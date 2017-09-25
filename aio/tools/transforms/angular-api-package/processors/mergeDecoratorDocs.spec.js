@@ -15,10 +15,7 @@ describe('mergeDecoratorDocs processor', () => {
       name: 'Component',
       docType: 'const',
       description: 'A description of the metadata for the Component decorator',
-      exportSymbol: {
-        valueDeclaration:
-            {initializer: {expression: {text: 'makeDecorator'}, arguments: [{text: 'X'}]}}
-      },
+      declaration: {initializer: {expression: {text: 'makeDecorator'}, arguments: [{text: 'X'}]}},
       members: [
         { name: 'templateUrl', description: 'A description of the templateUrl property' }
       ],
@@ -29,34 +26,30 @@ describe('mergeDecoratorDocs processor', () => {
       name: 'ComponentDecorator',
       docType: 'interface',
       description: 'A description of the interface for the call signature for the Component decorator',
-      callMember: {
-        description: 'The actual description of the call signature',
-        whatItDoes: 'Does something cool...',
-        howToUse: 'Use it like this...'
-      },
+      members: [
+        {
+          isCallMember: true,
+          description: 'The actual description of the call signature',
+          whatItDoes: 'Does something cool...',
+          howToUse: 'Use it like this...'
+        },
+        {
+          description: 'Some other member'
+        }
+      ],
       moduleDoc
     };
 
     decoratorDocWithTypeAssertion = {
       name: 'Y',
-      docType: 'var',
-      exportSymbol: {
-        valueDeclaration: {
-          initializer: {
-            expression:
-                {type: {}, expression: {text: 'makeDecorator'}, arguments: [{text: 'Y'}]}
-          }
-        }
-      },
+      docType: 'const',
+      declaration: { initializer: { expression: {type: {}, expression: {text: 'makeDecorator'}, arguments: [{text: 'Y'}]} } },
       moduleDoc
     };
     otherDoc = {
       name: 'Y',
-      docType: 'var',
-      exportSymbol: {
-        valueDeclaration:
-            {initializer: {expression: {text: 'otherCall'}, arguments: [{text: 'param1'}]}}
-      },
+      docType: 'const',
+      declaration: {initializer: {expression: {text: 'otherCall'}, arguments: [{text: 'param1'}]}},
       moduleDoc
     };
 
@@ -68,7 +61,7 @@ describe('mergeDecoratorDocs processor', () => {
     processor.$process([decoratorDoc, metadataDoc, decoratorDocWithTypeAssertion, otherDoc]);
     expect(decoratorDoc.docType).toEqual('decorator');
     expect(decoratorDocWithTypeAssertion.docType).toEqual('decorator');
-    expect(otherDoc.docType).toEqual('var');
+    expect(otherDoc.docType).toEqual('const');
   });
 
   it('should extract the "type" of the decorator meta data', () => {

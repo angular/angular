@@ -219,6 +219,22 @@ describe('url serializer', () => {
       expect(url.serialize(tree)).toEqual(u);
     });
 
+    it('should encode query params leaving sub-delimiters intact', () => {
+      const percentChars = '/?#[]&+= ';
+      const percentCharsEncoded = '%2F%3F%23%5B%5D%26%2B%3D%20';
+      const intactChars = '!$\'()*,;:';
+      const params = percentChars + intactChars;
+      const paramsEncoded = percentCharsEncoded + intactChars;
+      const mixedCaseString = 'sTrInG';
+
+      expect(percentCharsEncoded).toEqual(encode(percentChars));
+      expect(intactChars).toEqual(encode(intactChars));
+      // Verify it replaces repeated characters correctly
+      expect(paramsEncoded + paramsEncoded).toEqual(encode(params + params));
+      // Verify it doesn't change the case of alpha characters
+      expect(mixedCaseString + paramsEncoded).toEqual(encode(mixedCaseString + params));
+    });
+
     it('should encode/decode fragment', () => {
       const u = `/one#${encodeURI("one two=three four")}`;
       const tree = url.parse(u);

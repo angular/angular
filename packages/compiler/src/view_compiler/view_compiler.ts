@@ -6,22 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵQueryBindingType as QueryBindingType, ɵQueryValueType as QueryValueType, ɵViewFlags as ViewFlags, ɵelementEventFullName as elementEventFullName} from '@angular/core';
-
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTokenMetadata, CompileTypeMetadata, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
+import {CompileDirectiveMetadata, CompilePipeSummary, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
-import {CompilerConfig} from '../config';
+import {ArgumentType, BindingFlags, ChangeDetectionStrategy, NodeFlags, QueryBindingType, QueryValueType, ViewFlags} from '../core';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
-import {CompilerInjectable} from '../injectable';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import {isNgContainer} from '../ml_parser/tags';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
-import {ElementSchemaRegistry} from '../schema/element_schema_registry';
-import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
 import {OutputContext} from '../util';
 
 import {componentFactoryResolverProviderDef, depDef, lifecycleHookToNodeFlag, providerDef} from './provider_compiler';
@@ -29,17 +25,13 @@ import {componentFactoryResolverProviderDef, depDef, lifecycleHookToNodeFlag, pr
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
-const NG_CONTAINER_TAG = 'ng-container';
 
 export class ViewCompileResult {
   constructor(public viewClassVar: string, public rendererTypeVar: string) {}
 }
 
-@CompilerInjectable()
 export class ViewCompiler {
-  constructor(
-      private _config: CompilerConfig, private _reflector: CompileReflector,
-      private _schemaRegistry: ElementSchemaRegistry) {}
+  constructor(private _reflector: CompileReflector) {}
 
   compileComponent(
       outputCtx: OutputContext, component: CompileDirectiveMetadata, template: TemplateAst[],
@@ -61,9 +53,9 @@ export class ViewCompiler {
       outputCtx.statements.push(
           renderComponentVar
               .set(o.importExpr(Identifiers.createRendererType2).callFn([new o.LiteralMapExpr([
-                new o.LiteralMapEntry('encapsulation', o.literal(template.encapsulation)),
-                new o.LiteralMapEntry('styles', styles),
-                new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData))
+                new o.LiteralMapEntry('encapsulation', o.literal(template.encapsulation), false),
+                new o.LiteralMapEntry('styles', styles, false),
+                new o.LiteralMapEntry('data', new o.LiteralMapExpr(customRenderData), false)
               ])]))
               .toDeclStmt(
                   o.importType(Identifiers.RendererType2),
@@ -118,6 +110,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private variables: VariableAst[] = [];
   private children: ViewBuilder[] = [];
 
+  public readonly viewName: string;
+
   constructor(
       private reflector: CompileReflector, private outputCtx: OutputContext,
       private parent: ViewBuilder|null, private component: CompileDirectiveMetadata,
@@ -130,10 +124,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.compType = this.embeddedViewIndex > 0 ?
         o.DYNAMIC_TYPE :
         o.expressionType(outputCtx.importExpr(this.component.type.reference)) !;
-  }
-
-  get viewName(): string {
-    return viewClassName(this.component.type.reference, this.embeddedViewIndex);
+    this.viewName = viewClassName(this.component.type.reference, this.embeddedViewIndex);
   }
 
   visitAll(variables: VariableAst[], astNodes: TemplateAst[]) {
@@ -160,8 +151,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
                           nodeFlags: flags,
                           nodeDef: o.importExpr(Identifiers.queryDef).callFn([
                             o.literal(flags), o.literal(queryId),
-                            new o.LiteralMapExpr(
-                                [new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
+                            new o.LiteralMapExpr([new o.LiteralMapEntry(
+                                query.propertyName, o.literal(bindingType), false)])
                           ])
                         }));
       });
@@ -504,8 +495,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
                         nodeFlags: flags,
                         nodeDef: o.importExpr(Identifiers.queryDef).callFn([
                           o.literal(flags), o.literal(queryId),
-                          new o.LiteralMapExpr(
-                              [new o.LiteralMapEntry(query.propertyName, o.literal(bindingType))])
+                          new o.LiteralMapExpr([new o.LiteralMapEntry(
+                              query.propertyName, o.literal(bindingType), false)])
                         ]),
                       }));
     });
@@ -689,7 +680,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return null;
   }
 
-  createLiteralArrayConverter(sourceSpan: ParseSourceSpan, argCount: number): BuiltinConverter {
+  private _createLiteralArrayConverter(sourceSpan: ParseSourceSpan, argCount: number):
+      BuiltinConverter {
     if (argCount === 0) {
       const valueExpr = o.importExpr(Identifiers.EMPTY_ARRAY);
       return () => valueExpr;
@@ -705,24 +697,27 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
   }
-  createLiteralMapConverter(sourceSpan: ParseSourceSpan, keys: string[]): BuiltinConverter {
+
+  private _createLiteralMapConverter(
+      sourceSpan: ParseSourceSpan, keys: {key: string, quoted: boolean}[]): BuiltinConverter {
     if (keys.length === 0) {
       const valueExpr = o.importExpr(Identifiers.EMPTY_MAP);
       return () => valueExpr;
     }
 
+    // function pureObjectDef(propToIndex: {[p: string]: number}): NodeDef
+    const map = o.literalMap(keys.map((e, i) => ({...e, value: o.literal(i)})));
     const nodeIndex = this.nodes.length;
-    // function pureObjectDef(propertyNames: string[]): NodeDef
     this.nodes.push(() => ({
                       sourceSpan,
                       nodeFlags: NodeFlags.TypePureObject,
-                      nodeDef: o.importExpr(Identifiers.pureObjectDef).callFn([o.literalArr(
-                          keys.map(key => o.literal(key)))])
+                      nodeDef: o.importExpr(Identifiers.pureObjectDef).callFn([map])
                     }));
 
     return (args: o.Expression[]) => callCheckStmt(nodeIndex, args);
   }
-  createPipeConverter(expression: UpdateExpression, name: string, argCount: number):
+
+  private _createPipeConverter(expression: UpdateExpression, name: string, argCount: number):
       BuiltinConverter {
     const pipe = this.usedPipes.find((pipeSummary) => pipeSummary.name === name) !;
     if (pipe.pure) {
@@ -783,7 +778,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return nodeIndex;
   }
 
-  // Attention: This might create new nodeDefs (for pipes and literal arrays and literal maps)!
+  /**
+   * For the AST in `UpdateExpression.value`:
+   * - create nodes for pipes, literal arrays and, literal maps,
+   * - update the AST to replace pipes, literal arrays and, literal maps with calls to check fn.
+   *
+   * WARNING: This might create new nodeDefs (for pipes and literal arrays and literal maps)!
+   */
   private _preprocessUpdateExpression(expression: UpdateExpression): UpdateExpression {
     return {
       nodeIndex: expression.nodeIndex,
@@ -792,12 +793,13 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       context: expression.context,
       value: convertPropertyBindingBuiltins(
           {
-            createLiteralArrayConverter: (argCount: number) => this.createLiteralArrayConverter(
+            createLiteralArrayConverter: (argCount: number) => this._createLiteralArrayConverter(
                                              expression.sourceSpan, argCount),
             createLiteralMapConverter:
-                (keys: string[]) => this.createLiteralMapConverter(expression.sourceSpan, keys),
+                (keys: {key: string, quoted: boolean}[]) =>
+                    this._createLiteralMapConverter(expression.sourceSpan, keys),
             createPipeConverter: (name: string, argCount: number) =>
-                                     this.createPipeConverter(expression, name, argCount)
+                                     this._createPipeConverter(expression, name, argCount)
           },
           expression.value)
     };
@@ -1067,4 +1069,8 @@ function calcStaticDynamicQueryFlags(
     flags |= NodeFlags.DynamicQuery;
   }
   return flags;
+}
+
+export function elementEventFullName(target: string | null, name: string): string {
+  return target ? `${target}:${name}` : name;
 }

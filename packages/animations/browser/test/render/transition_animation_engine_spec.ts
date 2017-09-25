@@ -132,7 +132,7 @@ export function main() {
            engine.destroy(DEFAULT_NAMESPACE_ID, null);
 
            registerTrigger(element, engine, trig);
-           setProperty(element, engine, 'myTrigger', 'value');
+           setProperty(element, engine, 'myTrigger', 'value2');
            engine.flush();
            expect((engine.players[0].getRealPlayer() as MockAnimationPlayer).duration)
                .toEqual(1234);
@@ -203,7 +203,7 @@ export function main() {
                 /Unable to listen on the animation trigger "myTrigger" because the provided event is undefined!/);
       });
 
-      it('should retain event listeners and call them for sucessive animation state changes',
+      it('should retain event listeners and call them for successive animation state changes',
          () => {
            const engine = makeEngine();
            const trig = trigger(
@@ -282,7 +282,7 @@ export function main() {
                   '* => *', [style({height: '0px'}), animate(1234, style({height: '100px'}))])
             ]));
 
-        // we do this so that the next transition has a starting value that isnt null
+        // we do this so that the next transition has a starting value that isn't null
         setProperty(element, engine, 'myTrigger', '123');
         engine.flush();
 
@@ -411,8 +411,10 @@ export function main() {
          () => {
            const engine = makeEngine();
            const trig = trigger('something', [
-             state('x', style({opacity: 0})), state('y', style({opacity: .5})),
-             state('z', style({opacity: 1})), transition('* => *', animate(1000))
+             state('x', style({opacity: 0})),
+             state('y', style({opacity: .5})),
+             state('z', style({opacity: 1})),
+             transition('* => *', animate(1000)),
            ]);
 
            registerTrigger(element, engine, trig);
@@ -428,7 +430,7 @@ export function main() {
 
            const player2 = engine.players[0];
 
-           expect(parseFloat(element.style.opacity)).toEqual(.5);
+           expect(parseFloat(element.style.opacity)).not.toEqual(.5);
 
            player2.finish();
            expect(parseFloat(element.style.opacity)).toEqual(1);
@@ -655,8 +657,9 @@ function registerTrigger(
     element: any, engine: TransitionAnimationEngine, metadata: AnimationTriggerMetadata,
     id: string = DEFAULT_NAMESPACE_ID) {
   const errors: any[] = [];
+  const driver = new MockAnimationDriver();
   const name = metadata.name;
-  const ast = buildAnimationAst(metadata as AnimationMetadata, errors) as TriggerAst;
+  const ast = buildAnimationAst(driver, metadata as AnimationMetadata, errors) as TriggerAst;
   if (errors.length) {
   }
   const trigger = buildTrigger(name, ast);

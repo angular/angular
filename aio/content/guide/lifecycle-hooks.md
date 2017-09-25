@@ -397,8 +397,7 @@ created under test or before you decide to display it.
 Constructors should do no more than set the initial local variables to simple values.
 
 An `ngOnInit()` is a good place for a component to fetch its initial data. The
-[Tour of Heroes Tutorial](tutorial/toh-pt4#oninit) and [HTTP Client](guide/http#oninit)
-guides show how.
+[Tour of Heroes Tutorial](tutorial/toh-pt4#oninit) guide shows how.
 
 
 Remember also that a directive's data-bound input properties are not set until _after construction_.

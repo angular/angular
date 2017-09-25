@@ -137,7 +137,7 @@ Create a file in the `app` folder called `hero.service.ts`.
 
 
 The naming convention for service files is the service name in lowercase followed by `.service`.
-For a multi-word service name, use lower [dash-case](guide/glossary).
+For a multi-word service name, use lower [dash-case](guide/glossary#dash-case).
 For example, the filename for `SpecialSuperHeroService` is `special-super-hero.service.ts`.
 
 </div>
@@ -420,7 +420,7 @@ The service does that work and eventually calls the function with the results or
 
 This is a simplified explanation. Read more about ES2015 Promises in the
 [Promises for asynchronous programming](http://exploringjs.com/es6/ch_promises.html) page of
-[Exploring ES6](http://http://exploringjs.com/es6.html).
+[Exploring ES6](http://exploringjs.com/es6.html).
 
 
 </div>

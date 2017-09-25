@@ -2,7 +2,7 @@
 
              Media queries
 
- To use these, put this snippet in the approriate selector:
+ To use these, put this snippet in the appropriate selector:
 
      @include bp(tiny) {
          background-color: purple;
@@ -58,6 +58,7 @@
     border: 0.5px solid $lightgray;
 }
 
+// INFO CARD SKELETON
 @mixin card($height, $width) {
   height: $height;
   width: $width;

@@ -1,4 +1,4 @@
-module.exports = function getExampleRegion(exampleMap, createDocMessage, log, collectExamples) {
+module.exports = function getExampleRegion(exampleMap, createDocMessage, collectExamples) {
   return function getExampleRegionImpl(doc, relativePath, regionName) {
     const EXAMPLES_FOLDERS = collectExamples.exampleFolders;
 
@@ -14,16 +14,23 @@ module.exports = function getExampleRegion(exampleMap, createDocMessage, log, co
 
     // If still no file then we error
     if (!exampleFile) {
-      log.error(createDocMessage('Missing example file... relativePath: "' + relativePath + '".', doc));
-      log.error('Example files can be found in: ' + EXAMPLES_FOLDERS.join(', '));
-      return '';
+      const gitIgnoreFile = collectExamples.isExampleIgnored(relativePath);
+      if( gitIgnoreFile) {
+        const message = createDocMessage('Ignored example file... relativePath: "' + relativePath + '"', doc) + '\n' +
+        'This example file exists but has been ignored by a rule, in "' + gitIgnoreFile + '".';
+        throw new Error(message);
+      } else {
+        const message = createDocMessage('Missing example file... relativePath: "' + relativePath + '".', doc) + '\n' +
+            'Example files can be found in the following relative paths: ' + EXAMPLES_FOLDERS.map(function(folder) { return '"' + folder + '"'; }).join(', ');
+        throw new Error(message);
+      }
     }
 
     var sourceCodeDoc = exampleFile.regions[regionName || ''];
     if (!sourceCodeDoc) {
-      log.error(createDocMessage('Missing example region... relativePath: "' + relativePath + '", region: "' + regionName + '".', doc));
-      log.error('Regions available are:', Object.keys[exampleFile.regions]);
-      return '';
+      const message = createDocMessage('Missing example region... relativePath: "' + relativePath + '", region: "' + regionName + '".', doc) + '\n' +
+                      'Regions available are: ' + Object.keys(exampleFile.regions).map(function(region) { return '"' + region + '"'; }).join(', ');
+      throw new Error(message);
     }
 
     return sourceCodeDoc.renderedContent;

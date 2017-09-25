@@ -8,7 +8,6 @@
 
 import {looseIdentical, stringify} from '../../util';
 import {isJsObject} from '../change_detection_util';
-import {ChangeDetectorRef} from '../change_detector_ref';
 import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 
 
@@ -16,14 +15,7 @@ export class DefaultKeyValueDifferFactory<K, V> implements KeyValueDifferFactory
   constructor() {}
   supports(obj: any): boolean { return obj instanceof Map || isJsObject(obj); }
 
-  create<K, V>(): DefaultKeyValueDiffer<K, V>;
-
-  /**
-   * @deprecated v4.0.0 - ChangeDetectorRef is not used and is no longer a parameter
-   */
-  create<K, V>(cd?: ChangeDetectorRef): KeyValueDiffer<K, V> {
-    return new DefaultKeyValueDiffer<K, V>();
-  }
+  create<K, V>(): KeyValueDiffer<K, V> { return new DefaultKeyValueDiffer<K, V>(); }
 }
 
 export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyValueChanges<K, V> {
@@ -257,26 +249,6 @@ export class DefaultKeyValueDiffer<K, V> implements KeyValueDiffer<K, V>, KeyVal
     }
   }
 
-  toString(): string {
-    const items: string[] = [];
-    const previous: string[] = [];
-    const changes: string[] = [];
-    const additions: string[] = [];
-    const removals: string[] = [];
-
-    this.forEachItem(r => items.push(stringify(r)));
-    this.forEachPreviousItem(r => previous.push(stringify(r)));
-    this.forEachChangedItem(r => changes.push(stringify(r)));
-    this.forEachAddedItem(r => additions.push(stringify(r)));
-    this.forEachRemovedItem(r => removals.push(stringify(r)));
-
-    return 'map: ' + items.join(', ') + '\n' +
-        'previous: ' + previous.join(', ') + '\n' +
-        'additions: ' + additions.join(', ') + '\n' +
-        'changes: ' + changes.join(', ') + '\n' +
-        'removals: ' + removals.join(', ') + '\n';
-  }
-
   /** @internal */
   private _forEach<K, V>(obj: Map<K, V>|{[k: string]: V}, fn: (v: V, k: any) => void) {
     if (obj instanceof Map) {
@@ -309,11 +281,4 @@ class KeyValueChangeRecord_<K, V> implements KeyValueChangeRecord<K, V> {
   _nextChanged: KeyValueChangeRecord_<K, V>|null = null;
 
   constructor(public key: K) {}
-
-  toString(): string {
-    return looseIdentical(this.previousValue, this.currentValue) ?
-        stringify(this.key) :
-        (stringify(this.key) + '[' + stringify(this.previousValue) + '->' +
-         stringify(this.currentValue) + ']');
-  }
 }

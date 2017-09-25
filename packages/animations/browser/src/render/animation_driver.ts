@@ -7,13 +7,14 @@
  */
 import {AnimationPlayer, NoopAnimationPlayer} from '@angular/animations';
 
-import {containsElement, invokeQuery, matchesElement} from './shared';
-
+import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from './shared';
 
 /**
  * @experimental
  */
 export class NoopAnimationDriver implements AnimationDriver {
+  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
+
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
   }
@@ -40,6 +41,8 @@ export class NoopAnimationDriver implements AnimationDriver {
  */
 export abstract class AnimationDriver {
   static NOOP: AnimationDriver = new NoopAnimationDriver();
+
+  abstract validateStyleProperty(prop: string): boolean;
 
   abstract matchesElement(element: any, selector: string): boolean;
 

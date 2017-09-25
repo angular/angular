@@ -7,7 +7,7 @@ import { LoggerService }  from './logger.service';
 //////////////////
 // #docregion child-view
 @Component({
-  selector: 'my-child-view',
+  selector: 'app-child-view',
   template: '<input [(ngModel)]="hero">'
 })
 export class ChildViewComponent {
@@ -21,7 +21,7 @@ export class ChildViewComponent {
 // #docregion template
   template: `
     <div>-- child view begins --</div>
-      <my-child-view></my-child-view>
+      <app-child-view></app-child-view>
     <div>-- child view ends --</div>`
 // #enddocregion template
    + `

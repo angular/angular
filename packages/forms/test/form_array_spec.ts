@@ -8,8 +8,8 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms';
-
+import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors} from '@angular/forms';
+import {of } from 'rxjs/observable/of';
 import {Validators} from '../src/validators';
 
 export function main() {
@@ -725,16 +725,111 @@ export function main() {
       });
     });
 
+    describe('validator', () => {
+      function simpleValidator(c: AbstractControl): ValidationErrors|null {
+        return c.get([0]) !.value === 'correct' ? null : {'broken': true};
+      }
+
+      function arrayRequiredValidator(c: AbstractControl): ValidationErrors|null {
+        return Validators.required(c.get([0]) as AbstractControl);
+      }
+
+      it('should set a single validator', () => {
+        const a = new FormArray([new FormControl()], simpleValidator);
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.setValue(['correct']);
+        expect(a.valid).toBe(true);
+      });
+
+      it('should set a single validator from options obj', () => {
+        const a = new FormArray([new FormControl()], {validators: simpleValidator});
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.setValue(['correct']);
+        expect(a.valid).toBe(true);
+      });
+
+      it('should set multiple validators from an array', () => {
+        const a = new FormArray([new FormControl()], [simpleValidator, arrayRequiredValidator]);
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'required': true, 'broken': true});
+
+        a.setValue(['c']);
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.setValue(['correct']);
+        expect(a.valid).toBe(true);
+      });
+
+      it('should set multiple validators from options obj', () => {
+        const a = new FormArray(
+            [new FormControl()], {validators: [simpleValidator, arrayRequiredValidator]});
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'required': true, 'broken': true});
+
+        a.setValue(['c']);
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.setValue(['correct']);
+        expect(a.valid).toBe(true);
+      });
+    });
+
     describe('asyncValidator', () => {
+      function otherObservableValidator() { return of ({'other': true}); }
+
       it('should run the async validator', fakeAsync(() => {
            const c = new FormControl('value');
            const g = new FormArray([c], null !, asyncValidator('expected'));
 
            expect(g.pending).toEqual(true);
 
-           tick(1);
+           tick();
 
            expect(g.errors).toEqual({'async': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set a single async validator from options obj', fakeAsync(() => {
+           const g = new FormArray(
+               [new FormControl('value')], {asyncValidators: asyncValidator('expected')});
+
+           expect(g.pending).toEqual(true);
+
+           tick();
+
+           expect(g.errors).toEqual({'async': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set multiple async validators from an array', fakeAsync(() => {
+           const g = new FormArray(
+               [new FormControl('value')], null !,
+               [asyncValidator('expected'), otherObservableValidator]);
+
+           expect(g.pending).toEqual(true);
+
+           tick();
+
+           expect(g.errors).toEqual({'async': true, 'other': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set multiple async validators from options obj', fakeAsync(() => {
+           const g = new FormArray(
+               [new FormControl('value')],
+               {asyncValidators: [asyncValidator('expected'), otherObservableValidator]});
+
+           expect(g.pending).toEqual(true);
+
+           tick();
+
+           expect(g.errors).toEqual({'async': true, 'other': true});
            expect(g.pending).toEqual(false);
          }));
     });

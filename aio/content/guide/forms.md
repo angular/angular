@@ -214,10 +214,10 @@ There are three changes:
 
 1. You import `FormsModule` and the new `HeroFormComponent`.
 
-1. You add the `FormsModule` to the list of `imports` defined in the `ngModule` decorator. This gives the application
+1. You add the `FormsModule` to the list of `imports` defined in the `@NgModule` decorator. This gives the application
 access to all of the template-driven forms features, including `ngModel`.
 
-1. You add the `HeroFormComponent` to the list of `declarations` defined in the `ngModule` decorator. This makes
+1. You add the `HeroFormComponent` to the list of `declarations` defined in the `@NgModule` decorator. This makes
 the `HeroFormComponent` component visible throughout this module.
 
 
@@ -673,7 +673,7 @@ You achieve this effect by adding these class definitions to a new `forms.css` f
 that you add to the project as a sibling to `index.html`:
 
 
-<code-example path="forms/src/forms.css" title="src/forms.css">
+<code-example path="forms/src/assets/forms.css" title="src/assets/forms.css">
 
 </code-example>
 
@@ -1047,7 +1047,7 @@ Here’s the code for the final version of the application:
 
   </code-pane>
 
-  <code-pane title="forms.css" path="forms/src/forms.css">
+  <code-pane title="forms.css" path="forms/src/assets/forms.css">
 
   </code-pane>
 

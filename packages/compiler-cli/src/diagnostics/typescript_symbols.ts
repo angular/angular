@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilePipeSummary, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
-import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
+import {AotSummaryResolver, CompileMetadataResolver, CompilePipeSummary, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -159,10 +158,10 @@ class TypeScriptSymbolQuery implements SymbolQuery {
     }
   }
 
-  getTypeSymbol(type: StaticSymbol): Symbol {
+  getTypeSymbol(type: StaticSymbol): Symbol|undefined {
     const context: TypeContext = {node: this.source, program: this.program, checker: this.checker};
-    const typeSymbol = findClassSymbolInContext(type, context) !;
-    return new SymbolWrapper(typeSymbol, context);
+    const typeSymbol = findClassSymbolInContext(type, context);
+    return typeSymbol && new SymbolWrapper(typeSymbol, context);
   }
 
   createSymbolTable(symbols: SymbolDeclaration[]): SymbolTable {
@@ -194,7 +193,7 @@ class TypeScriptSymbolQuery implements SymbolQuery {
         const type = this.checker.getTypeAtLocation(parameter.type !);
         if (type.symbol !.name == 'TemplateRef' && isReferenceType(type)) {
           const typeReference = type as ts.TypeReference;
-          if (typeReference.typeArguments.length === 1) {
+          if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
             return typeReference.typeArguments[0].symbol;
           }
         }
@@ -246,15 +245,15 @@ class TypeWrapper implements Symbol {
     return (symbol && symbol.name) || '<anonymous>';
   }
 
-  get kind(): DeclarationKind { return 'type'; }
+  public readonly kind: DeclarationKind = 'type';
 
-  get language(): string { return 'typescript'; }
+  public readonly language: string = 'typescript';
 
-  get type(): Symbol|undefined { return undefined; }
+  public readonly type: Symbol|undefined = undefined;
 
-  get container(): Symbol|undefined { return undefined; }
+  public readonly container: Symbol|undefined = undefined;
 
-  get public(): boolean { return true; }
+  public readonly public: boolean = true;
 
   get callable(): boolean { return typeCallable(this.tsType); }
 
@@ -262,7 +261,10 @@ class TypeWrapper implements Symbol {
     return this.context.checker.getNonNullableType(this.tsType) != this.tsType;
   }
 
-  get definition(): Definition { return definitionFromTsSymbol(this.tsType.getSymbol()); }
+  get definition(): Definition|undefined {
+    const symbol = this.tsType.getSymbol();
+    return symbol ? definitionFromTsSymbol(symbol) : undefined;
+  }
 
   members(): SymbolTable {
     return new SymbolTableWrapper(this.tsType.getProperties(), this.context);
@@ -282,6 +284,9 @@ class SymbolWrapper implements Symbol {
   private _tsType: ts.Type;
   private _members: SymbolTable;
 
+  public readonly nullable: boolean = false;
+  public readonly language: string = 'typescript';
+
   constructor(symbol: ts.Symbol, private context: TypeContext) {
     this.symbol = symbol && context && (symbol.flags & ts.SymbolFlags.Alias) ?
         context.checker.getAliasedSymbol(symbol) :
@@ -291,8 +296,6 @@ class SymbolWrapper implements Symbol {
   get name(): string { return this.symbol.name; }
 
   get kind(): DeclarationKind { return this.callable ? 'method' : 'property'; }
-
-  get language(): string { return 'typescript'; }
 
   get type(): Symbol|undefined { return new TypeWrapper(this.tsType, this.context); }
 
@@ -304,8 +307,6 @@ class SymbolWrapper implements Symbol {
   }
 
   get callable(): boolean { return typeCallable(this.tsType); }
-
-  get nullable(): boolean { return false; }
 
   get definition(): Definition { return definitionFromTsSymbol(this.symbol); }
 
@@ -341,13 +342,17 @@ class SymbolWrapper implements Symbol {
 }
 
 class DeclaredSymbol implements Symbol {
+  public readonly language: string = 'ng-template';
+
+  public readonly nullable: boolean = false;
+
+  public readonly public: boolean = true;
+
   constructor(private declaration: SymbolDeclaration) {}
 
   get name() { return this.declaration.name; }
 
   get kind() { return this.declaration.kind; }
-
-  get language(): string { return 'ng-template'; }
 
   get container(): Symbol|undefined { return undefined; }
 
@@ -355,9 +360,6 @@ class DeclaredSymbol implements Symbol {
 
   get callable(): boolean { return this.declaration.type.callable; }
 
-  get nullable(): boolean { return false; }
-
-  get public(): boolean { return true; }
 
   get definition(): Definition { return this.declaration.definition; }
 
@@ -510,26 +512,23 @@ class PipesTable implements SymbolTable {
 
 class PipeSymbol implements Symbol {
   private _tsType: ts.Type;
+  public readonly kind: DeclarationKind = 'pipe';
+  public readonly language: string = 'typescript';
+  public readonly container: Symbol|undefined = undefined;
+  public readonly callable: boolean = true;
+  public readonly nullable: boolean = false;
+  public readonly public: boolean = true;
 
   constructor(private pipe: CompilePipeSummary, private context: TypeContext) {}
 
   get name(): string { return this.pipe.name; }
 
-  get kind(): DeclarationKind { return 'pipe'; }
-
-  get language(): string { return 'typescript'; }
-
   get type(): Symbol|undefined { return new TypeWrapper(this.tsType, this.context); }
 
-  get container(): Symbol|undefined { return undefined; }
-
-  get callable(): boolean { return true; }
-
-  get nullable(): boolean { return false; }
-
-  get public(): boolean { return true; }
-
-  get definition(): Definition { return definitionFromTsSymbol(this.tsType.getSymbol()); }
+  get definition(): Definition|undefined {
+    const symbol = this.tsType.getSymbol();
+    return symbol ? definitionFromTsSymbol(symbol) : undefined;
+  }
 
   members(): SymbolTable { return EmptyTable.instance; }
 
@@ -608,7 +607,7 @@ function findClassSymbolInContext(type: StaticSymbol, context: TypeContext): ts.
 }
 
 class EmptyTable implements SymbolTable {
-  get size(): number { return 0; }
+  public readonly size: number = 0;
   get(key: string): Symbol|undefined { return undefined; }
   has(key: string): boolean { return false; }
   values(): Symbol[] { return []; }

@@ -28,6 +28,7 @@ fi
 
 
 case ${CI_MODE} in
+
   e2e)
     # Don't deploy if this is a PR build
     if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then
@@ -39,24 +40,12 @@ case ${CI_MODE} in
       ${thisDir}/publish-build-artifacts.sh
     travisFoldEnd "deploy.packages"
     ;;
-  aio)
-    # Don't deploy if this build is not for master
-    if [[ ${TRAVIS_BRANCH} != "master" ]]; then
-      echo "Skipping deploy because this build is not for master."
-      exit 0
-    fi
 
+  aio)
     travisFoldStart "deploy.aio"
     (
       cd ${TRAVIS_BUILD_DIR}/aio
-
-      # Only deploy if this not a PR. PRs are deployed early in `build.sh`.
-      if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
-        # This is upstream master: Deploy to staging
-        travisFoldStart "deploy.aio.staging"
-          yarn deploy-staging
-        travisFoldEnd "deploy.aio.staging"
-      fi
+      yarn deploy-production
     )
     travisFoldEnd "deploy.aio"
     ;;

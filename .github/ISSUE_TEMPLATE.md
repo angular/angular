@@ -1,39 +1,57 @@
 <!--
-IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOUT INVESTIGATING
+PLEASE HELP US PROCESS GITHUB ISSUES FASTER BY PROVIDING THE FOLLOWING INFORMATION.
+
+ISSUES MISSING IMPORTANT INFORMATION MAY BE CLOSED WITHOUT INVESTIGATION.
 -->
 
-**I'm submitting a ...**  (check one with "x")
-```
-[ ] bug report => search github for a similar issue or PR before submitting
-[ ] feature request
-[ ] support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
-```
+## I'm submitting a...
+<!-- Check one of the following options with "x" -->
+<pre><code>
+[ ] Regression (a behavior that used to work and stopped working in a new release)
+[ ] Bug report  <!-- Please search GitHub for a similar issue or PR before submitting -->
+[ ] Feature request
+[ ] Documentation issue or request
+[ ] Support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
+</code></pre>
 
-**Current behavior**
-<!-- Describe how the bug manifests. -->
+## Current behavior
+<!-- Describe how the issue manifests. -->
 
-**Expected behavior**
-<!-- Describe what the behavior would be without the bug. -->
 
-**Minimal reproduction of the problem with instructions**
+## Expected behavior
+<!-- Describe what the desired behavior would be. -->
+
+
+## Minimal reproduction of the problem with instructions
 <!--
-If the current behavior is a bug or you can illustrate your feature request better with an example, 
-please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the problem via
+For bug reports please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the problem via
 https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5).
 -->
 
-**What is the motivation / use case for changing the behavior?**
-<!-- Describe the motivation or the concrete use case -->
+## What is the motivation / use case for changing the behavior?
+<!-- Describe the motivation or the concrete use case. -->
 
-**Please tell us about your environment:**
-<!-- Operating system, IDE, package manager, HTTP server, ... -->
 
-* **Angular version:** 2.0.X
+## Environment
+
+<pre><code>
+Angular version: X.Y.Z
 <!-- Check whether this is still an issue in the most recent Angular version -->
 
-* **Browser:** [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ]
-<!-- All browsers where this could be reproduced -->
+Browser:
+- [ ] Chrome (desktop) version XX
+- [ ] Chrome (Android) version XX
+- [ ] Chrome (iOS) version XX
+- [ ] Firefox version XX
+- [ ] Safari (desktop) version XX
+- [ ] Safari (iOS) version XX
+- [ ] IE version XX
+- [ ] Edge version XX
  
-* **Language:** [all | TypeScript X.X | ES6/7 | ES5]
+For Tooling issues:
+- Node version: XX  <!-- run `node --version` -->
+- Platform:  <!-- Mac, Linux, Windows -->
 
-* **Node (for AoT issues):** `node --version` =   
+Others:
+<!-- Anything else relevant?  Operating system version, IDE, package manager, HTTP server, ... -->
+</code></pre>

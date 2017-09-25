@@ -39,7 +39,7 @@ if (!/e2e/.test(location.search)) {
   directives.push(CountdownLocalVarParentComponent);
   directives.push(CountdownViewChildParentComponent);
 } else {
-  // In e2e test use CUSTOM_ELEMENTS_SCHEMA to supress unknown element errors
+  // In e2e test use CUSTOM_ELEMENTS_SCHEMA to suppress unknown element errors
   schemas.push(CUSTOM_ELEMENTS_SCHEMA);
 }
 

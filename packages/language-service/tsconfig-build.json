@@ -1,14 +1,10 @@
 {
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
-    "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "strictNullChecks": true,
-    "module": "es2015",
-    "moduleResolution": "node",
-    "outDir": "../../dist/packages/language-service",
+    "baseUrl": ".",
+    "rootDir": ".",
     "paths": {
       "@angular/core": ["../../dist/packages/core"],
       "@angular/animation": ["../../dist/packages/animation"],
@@ -17,19 +13,14 @@
       "@angular/common": ["../../dist/packages/common"],
       "@angular/compiler": ["../../dist/packages/compiler"],
       "@angular/compiler-cli": ["../../dist/packages/compiler-cli"],
+      "@angular/compiler-cli/*": ["../../dist/packages/compiler-cli/*"],
       "@angular/http": ["../../dist/packages/http"],
       "@angular/platform-server": ["../../dist/packages/platform-server"],
-      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
-      "@angular/tsc-wrapped": ["../../dist/tools/@angular/tsc-wrapped"],
-      "@angular/tsc-wrapped/*": ["../../dist/tools/@angular/tsc-wrapped/*"]
+      "@angular/platform-browser": ["../../dist/packages/platform-browser"]
     },
-    "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es5",
-    "skipLibCheck": true,
-    "lib": ["es2015", "dom"]
+    "outDir": "../../dist/packages/language-service"
   },
+
   "files": [
     "index.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts",

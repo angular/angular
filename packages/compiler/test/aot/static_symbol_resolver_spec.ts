@@ -7,7 +7,8 @@
  */
 
 import {StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, Summary, SummaryResolver} from '@angular/compiler';
-import {CollectorOptions, MetadataCollector} from '@angular/tsc-wrapped';
+import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
+import {CollectorOptions} from '@angular/compiler-cli/src/metadata/index';
 import * as ts from 'typescript';
 
 
@@ -104,9 +105,18 @@ describe('StaticSymbolResolver', () => {
   });
 
   it('should use summaries in resolveSymbol and prefer them over regular metadata', () => {
-    const someSymbol = symbolCache.get('/test.ts', 'a');
-    init({'/test.ts': 'export var a = 2'}, [{symbol: someSymbol, metadata: 1}]);
-    expect(symbolResolver.resolveSymbol(someSymbol).metadata).toBe(1);
+    const symbolA = symbolCache.get('/test.ts', 'a');
+    const symbolB = symbolCache.get('/test.ts', 'b');
+    const symbolC = symbolCache.get('/test.ts', 'c');
+    init({'/test.ts': 'export var a = 2; export var b = 2; export var c = 2;'}, [
+      {symbol: symbolA, metadata: 1},
+      {symbol: symbolB, metadata: 1},
+    ]);
+    // reading the metadata of a symbol without a summary first,
+    // to test whether summaries are still preferred after this.
+    expect(symbolResolver.resolveSymbol(symbolC).metadata).toBe(2);
+    expect(symbolResolver.resolveSymbol(symbolA).metadata).toBe(1);
+    expect(symbolResolver.resolveSymbol(symbolB).metadata).toBe(1);
   });
 
   it('should be able to get all exported symbols of a file', () => {
@@ -127,15 +137,14 @@ describe('StaticSymbolResolver', () => {
     ]);
   });
 
-  it('should merge the exported symbols of a file with the exported symbols of its summary', () => {
-    const someSymbol = symbolCache.get('/test.ts', 'a');
-    init(
-        {'/test.ts': 'export var b = 2'},
-        [{symbol: symbolCache.get('/test.ts', 'a'), metadata: 1}]);
-    expect(symbolResolver.getSymbolsOf('/test.ts')).toEqual([
-      symbolCache.get('/test.ts', 'a'), symbolCache.get('/test.ts', 'b')
-    ]);
-  });
+  it('should read the exported symbols of a file from the summary and ignore exports in the source',
+     () => {
+       const someSymbol = symbolCache.get('/test.ts', 'a');
+       init(
+           {'/test.ts': 'export var b = 2'},
+           [{symbol: symbolCache.get('/test.ts', 'a'), metadata: 1}]);
+       expect(symbolResolver.getSymbolsOf('/test.ts')).toEqual([symbolCache.get('/test.ts', 'a')]);
+     });
 
   describe('importAs', () => {
 
@@ -372,13 +381,14 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
     symbol: StaticSymbol,
     importAs: StaticSymbol
   }[] = []) {}
-  addSummary(summary: Summary<StaticSymbol>) { this.summaries.push(summary); };
+  addSummary(summary: Summary<StaticSymbol>) { this.summaries.push(summary); }
   resolveSummary(reference: StaticSymbol): Summary<StaticSymbol> {
     return this.summaries.find(summary => summary.symbol === reference);
-  };
-  getSymbolsOf(filePath: string): StaticSymbol[] {
-    return this.summaries.filter(summary => summary.symbol.filePath === filePath)
-        .map(summary => summary.symbol);
+  }
+  getSymbolsOf(filePath: string): StaticSymbol[]|null {
+    const symbols = this.summaries.filter(summary => summary.symbol.filePath === filePath)
+                        .map(summary => summary.symbol);
+    return symbols.length ? symbols : null;
   }
   getImportAs(symbol: StaticSymbol): StaticSymbol {
     const entry = this.importAs.find(entry => entry.symbol === symbol);
@@ -386,7 +396,8 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
   }
 
   isLibraryFile(filePath: string): boolean { return filePath.endsWith('.d.ts'); }
-  getLibraryFileName(filePath: string): string { return filePath.replace(/(\.d)?\.ts$/, '.d.ts'); }
+  toSummaryFileName(filePath: string): string { return filePath.replace(/(\.d)?\.ts$/, '.d.ts'); }
+  fromSummaryFileName(filePath: string): string { return filePath; }
 }
 
 export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
@@ -456,8 +467,13 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
             filePath, this.data[filePath], ts.ScriptTarget.ES5, /* setParentNodes */ true);
         const diagnostics: ts.Diagnostic[] = (<any>sf).parseDiagnostics;
         if (diagnostics && diagnostics.length) {
-          const errors = diagnostics.map(d => `(${d.start}-${d.start+d.length}): ${d.messageText}`)
-                             .join('\n   ');
+          const errors =
+              diagnostics
+                  .map(d => {
+                    const {line, character} = ts.getLineAndCharacterOfPosition(d.file !, d.start !);
+                    return `(${line}:${character}): ${d.messageText}`;
+                  })
+                  .join('\n');
           throw Error(`Error encountered during parse of file ${filePath}\n${errors}`);
         }
         return [this.collector.getMetadata(sf)];

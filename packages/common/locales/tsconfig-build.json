@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "stripInternal": true,
+    "experimentalDecorators": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../../dist/packages/common/locales",
+    "paths": {
+      "@angular/common": ["../../../dist/packages/common"],
+      "@angular/core": ["../../../dist/packages/core"]
+    },
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es5",
+    "skipLibCheck": true,
+    "lib": ["es2015", "dom"]
+  },
+  "exclude": [
+    "./closure-locale.ts"
+  ],
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true
+  }
+}

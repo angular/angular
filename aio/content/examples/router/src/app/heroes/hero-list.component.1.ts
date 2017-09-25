@@ -3,6 +3,7 @@
 // TODO SOMEDAY: Feature Componetized like HeroCenter
 import { Component, OnInit }   from '@angular/core';
 import { Router }              from '@angular/router';
+import { Observable }          from 'rxjs/Observable';
 
 import { Hero, HeroService }   from './hero.service';
 
@@ -11,9 +12,12 @@ import { Hero, HeroService }   from './hero.service';
   template: `
     <h2>HEROES</h2>
     <ul class="items">
-      <li *ngFor="let hero of heroes | async"
-        (click)="onSelect(hero)">
-        <span class="badge">{{ hero.id }}</span> {{ hero.name }}
+      <li *ngFor="let hero of heroes$ | async">
+        // #docregion nav-to-detail
+        <a [routerLink]="['/hero', hero.id]">
+          <span class="badge">{{ hero.id }}</span>{{ hero.name }}
+        </a>
+        // #enddocregion nav-to-detail
       </li>
     </ul>
 
@@ -22,7 +26,7 @@ import { Hero, HeroService }   from './hero.service';
   // #enddocregion template
 })
 export class HeroListComponent implements OnInit {
-  heroes: Promise<Hero[]>;
+  heroes$: Observable<Hero[]>;
 
   // #docregion ctor
   constructor(
@@ -32,16 +36,8 @@ export class HeroListComponent implements OnInit {
   // #enddocregion ctor
 
   ngOnInit() {
-    this.heroes = this.service.getHeroes();
+    this.heroes$ = this.service.getHeroes();
   }
-
-  // #docregion select
-  onSelect(hero: Hero) {
-    // #docregion nav-to-detail
-    this.router.navigate(['/hero', hero.id]);
-    // #enddocregion nav-to-detail
-  }
-  // #enddocregion select
 }
 // #enddocregion
 

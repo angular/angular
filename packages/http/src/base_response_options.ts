@@ -39,7 +39,7 @@ import {ResponseOptionsArgs} from './interfaces';
  * console.log('res.json():', res.json()); // Object {name: "Jeff"}
  * ```
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 export class ResponseOptions {
   // TODO: FormData | Blob
@@ -65,7 +65,8 @@ export class ResponseOptions {
    */
   type: ResponseType|null;
   url: string|null;
-  constructor({body, status, headers, statusText, type, url}: ResponseOptionsArgs = {}) {
+  constructor(opts: ResponseOptionsArgs = {}) {
+    const {body, status, headers, statusText, type, url} = opts;
     this.body = body != null ? body : null;
     this.status = status != null ? status : null;
     this.headers = headers != null ? headers : null;
@@ -155,7 +156,7 @@ export class ResponseOptions {
  * console.log('res.text():', res.text()); // Angular;
  * ```
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {

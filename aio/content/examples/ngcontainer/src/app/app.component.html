@@ -92,22 +92,22 @@
   </div>
 
   <div>
-    The <code>hero.id</code> in the &lt;template *ngIf&gt; disappears:
+    The <code>hero.id</code> in the &lt;ng-template *ngIf&gt; disappears:
     <p>
-      <template *ngIf="showId">
+      <ng-template *ngIf="showId">
         Id: ({{hero.id}})
-      </template>
+      </ng-template>
       Name: {{hero.name}}
     </p>
   </div>
 
   <div>
-    The <code>hero.id</code> in the &lt;template [ngIf]&gt;
+    The <code>hero.id</code> in the &lt;ng-template [ngIf]&gt;
     is unaffected by the <span>p-span</span> CSS:
     <p>
-      <template [ngIf]="showId">
+      <ng-template [ngIf]="showId">
         Id: ({{hero.id}})
-      </template>
+      </ng-template>
       Name: {{hero.name}}
     </p>
   </div>

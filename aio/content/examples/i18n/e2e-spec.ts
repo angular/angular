@@ -14,7 +14,6 @@ describe('i18n E2E Tests', () => {
 
   it('should display the node texts without elements', function () {
     expect(element(by.css('my-app')).getText()).toContain('No genero ningún elemento');
-    expect(element(by.css('my-app')).getText()).toContain('Yo tampoco genero ningún elemento');
   });
 
   it('should display the translated title attribute', function () {
@@ -28,6 +27,10 @@ describe('i18n E2E Tests', () => {
 
   it('should display the select of gender', function () {
     expect(element.all(by.css('span')).get(1).getText()).toBe('El heroe es mujer');
+  });
+
+  it('should display the nested expression', function() {
+    expect(element.all(by.css('span')).get(2).getText()).toBe('Aquí tenemos: 3 mujeres');
   });
 
 });

@@ -7,10 +7,14 @@
  */
 
 import {AotCompilerHost, AotCompilerOptions, GeneratedFile, createAotCompiler, toTypeScript} from '@angular/compiler';
-import {MetadataBundlerHost, MetadataCollector, ModuleMetadata} from '@angular/tsc-wrapped';
+import {MetadataBundlerHost} from '@angular/compiler-cli/src/metadata/bundler';
+import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
+import {ModuleMetadata} from '@angular/compiler-cli/src/metadata/index';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
+
+export interface MetadataProvider { getMetadata(source: ts.SourceFile): ModuleMetadata|undefined; }
 
 let nodeModulesPath: string;
 let angularSourcePath: string;
@@ -327,11 +331,19 @@ const DTS = /\.d\.ts$/;
 const GENERATED_FILES = /\.ngfactory\.ts$|\.ngstyle\.ts$/;
 
 export class MockAotCompilerHost implements AotCompilerHost {
-  private metadataCollector = new MetadataCollector();
   private metadataVisible: boolean = true;
   private dtsAreSource: boolean = true;
+  private resolveModuleNameHost: ts.ModuleResolutionHost;
 
-  constructor(private tsHost: MockCompilerHost) {}
+  constructor(
+      private tsHost: MockCompilerHost,
+      private metadataProvider: MetadataProvider = new MetadataCollector()) {
+    this.resolveModuleNameHost = Object.create(tsHost);
+    this.resolveModuleNameHost.fileExists = (fileName) => {
+      fileName = stripNgResourceSuffix(fileName);
+      return tsHost.fileExists(fileName);
+    };
+  }
 
   hideMetadata() { this.metadataVisible = false; }
 
@@ -352,7 +364,7 @@ export class MockAotCompilerHost implements AotCompilerHost {
       }
     } else {
       const sf = this.tsHost.getSourceFile(modulePath, ts.ScriptTarget.Latest);
-      const metadata = this.metadataCollector.getMetadata(sf);
+      const metadata = this.metadataProvider.getMetadata(sf);
       return metadata ? [metadata] : [];
     }
     return undefined;
@@ -369,9 +381,20 @@ export class MockAotCompilerHost implements AotCompilerHost {
     moduleName = moduleName.replace(EXT, '');
     const resolved = ts.resolveModuleName(
                            moduleName, containingFile.replace(/\\/g, '/'),
-                           {baseDir: '/', genDir: '/'}, this.tsHost)
+                           {baseDir: '/', genDir: '/'}, this.resolveModuleNameHost)
                          .resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
+  }
+
+  resourceNameToFileName(resourceName: string, containingFile: string) {
+    // Note: we convert package paths into relative paths to be compatible with the the
+    // previous implementation of UrlResolver.
+    if (resourceName && resourceName.charAt(0) !== '.' && !path.isAbsolute(resourceName)) {
+      resourceName = `./${resourceName}`;
+    }
+    const filePathWithNgResource =
+        this.moduleNameToFileName(addNgResourceSuffix(resourceName), containingFile);
+    return filePathWithNgResource ? stripNgResourceSuffix(filePathWithNgResource) : null;
   }
 
   // AotSummaryResolverHost
@@ -382,9 +405,9 @@ export class MockAotCompilerHost implements AotCompilerHost {
         (this.dtsAreSource || !DTS.test(sourceFilePath));
   }
 
-  getOutputFileName(sourceFilePath: string): string {
-    return sourceFilePath.replace(EXT, '') + '.d.ts';
-  }
+  toSummaryFileName(filePath: string): string { return filePath.replace(EXT, '') + '.d.ts'; }
+
+  fromSummaryFileName(filePath: string): string { return filePath; }
 
   // AotCompilerHost
   fileNameToModuleName(importedFile: string, containingFile: string): string|null {
@@ -405,7 +428,7 @@ export class MockMetadataBundlerHost implements MetadataBundlerHost {
 
   constructor(private host: ts.CompilerHost) {}
 
-  getMetadataFor(moduleName: string): ModuleMetadata {
+  getMetadataFor(moduleName: string): ModuleMetadata|undefined {
     const source = this.host.getSourceFile(moduleName + '.ts', ts.ScriptTarget.Latest);
     return this.collector.getMetadata(source);
   }
@@ -513,8 +536,9 @@ const minCoreIndex = `
   export * from './src/codegen_private_exports';
 `;
 
-export function setup(options: {compileAngular: boolean} = {
-  compileAngular: true
+export function setup(options: {compileAngular: boolean, compileAnimations: boolean} = {
+  compileAngular: true,
+  compileAnimations: true,
 }) {
   let angularFiles = new Map<string, string>();
 
@@ -522,6 +546,13 @@ export function setup(options: {compileAngular: boolean} = {
     if (options.compileAngular) {
       const emittingHost = new EmittingCompilerHost([], {emitMetadata: true});
       emittingHost.addScript('@angular/core/index.ts', minCoreIndex);
+      const emittingProgram = ts.createProgram(emittingHost.scripts, settings, emittingHost);
+      emittingProgram.emit();
+      emittingHost.writtenAngularFiles(angularFiles);
+    }
+    if (options.compileAnimations) {
+      const emittingHost =
+          new EmittingCompilerHost(['@angular/animations/index.ts'], {emitMetadata: true});
       const emittingProgram = ts.createProgram(emittingHost.scripts, settings, emittingHost);
       emittingProgram.emit();
       emittingHost.writtenAngularFiles(angularFiles);
@@ -551,8 +582,8 @@ export function expectNoDiagnostics(program: ts.Program) {
 
   function lineInfo(diagnostic: ts.Diagnostic): string {
     if (diagnostic.file) {
-      const start = diagnostic.start;
-      let end = diagnostic.start + diagnostic.length;
+      const start = diagnostic.start !;
+      let end = diagnostic.start ! + diagnostic.length !;
       const source = diagnostic.file.text;
       let lineStart = start;
       let lineEnd = end;
@@ -584,8 +615,16 @@ export function expectNoDiagnostics(program: ts.Program) {
   expectNoDiagnostics(program.getSemanticDiagnostics());
 }
 
-function isSource(fileName: string): boolean {
-  return !/\.d\.ts$/.test(fileName) && /\.ts$/.test(fileName);
+export function isSource(fileName: string): boolean {
+  return !isDts(fileName) && /\.ts$/.test(fileName);
+}
+
+function isDts(fileName: string): boolean {
+  return /\.d.ts$/.test(fileName);
+}
+
+function isSourceOrDts(fileName: string): boolean {
+  return /\.ts$/.test(fileName);
 }
 
 export function compile(
@@ -594,7 +633,6 @@ export function compile(
       useSummaries?: boolean,
       preCompile?: (program: ts.Program) => void,
       postCompile?: (program: ts.Program) => void,
-      stubsOnly?: boolean,
     }& AotCompilerOptions = {},
     tsOptions: ts.CompilerOptions = {}): {genFiles: GeneratedFile[], outDir: MockDirectory} {
   // when using summaries, always emit so the next step can use the results.
@@ -602,7 +640,8 @@ export function compile(
   const preCompile = options.preCompile || (() => {});
   const postCompile = options.postCompile || expectNoDiagnostics;
   const rootDirArr = toMockFileArray(rootDirs);
-  const scriptNames = rootDirArr.map(entry => entry.fileName).filter(isSource);
+  const scriptNames = rootDirArr.map(entry => entry.fileName)
+                          .filter(options.useSummaries ? isSource : isSourceOrDts);
 
   const host = new MockCompilerHost(scriptNames, arrayToMockDir(rootDirArr));
   const aotHost = new MockAotCompilerHost(host);
@@ -616,8 +655,7 @@ export function compile(
   const {compiler, reflector} = createAotCompiler(aotHost, options);
   const analyzedModules =
       compiler.analyzeModulesSync(program.getSourceFiles().map(sf => sf.fileName));
-  const genFiles = options.stubsOnly ? compiler.emitAllStubs(analyzedModules) :
-                                       compiler.emitAllImpls(analyzedModules);
+  const genFiles = compiler.emitAllImpls(analyzedModules);
   genFiles.forEach((file) => {
     const source = file.source || toTypeScript(file);
     if (isSource(file.genFileUrl)) {
@@ -633,9 +671,19 @@ export function compile(
   }
   let outDir: MockDirectory = {};
   if (emit) {
-    outDir = arrayToMockDir(toMockFileArray([
-                              host.writtenFiles, host.overrides
-                            ]).filter((entry) => !isSource(entry.fileName)));
+    const dtsFilesWithGenFiles = new Set<string>(genFiles.map(gf => gf.srcFileUrl).filter(isDts));
+    outDir =
+        arrayToMockDir(toMockFileArray([host.writtenFiles, host.overrides])
+                           .filter((entry) => !isSource(entry.fileName))
+                           .concat(rootDirArr.filter(e => dtsFilesWithGenFiles.has(e.fileName))));
   }
   return {genFiles, outDir};
+}
+
+function stripNgResourceSuffix(fileName: string): string {
+  return fileName.replace(/\.\$ngresource\$.*/, '');
+}
+
+function addNgResourceSuffix(fileName: string): string {
+  return `${fileName}.$ngresource$`;
 }

@@ -7,7 +7,7 @@
  */
 
 import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
-import {getExpressionScope} from '@angular/compiler-cli';
+import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {TemplateInfo} from './common';
 import {getExpressionSymbol} from './expressions';
@@ -68,7 +68,7 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
             }
           },
           visitReference(ast) {
-            symbol = info.template.query.getTypeSymbol(tokenReference(ast.value));
+            symbol = ast.value && info.template.query.getTypeSymbol(tokenReference(ast.value));
             span = spanOf(ast);
           },
           visitVariable(ast) {},
@@ -169,11 +169,10 @@ function invertMap(obj: {[name: string]: string}): {[name: string]: string} {
  * Wrap a symbol and change its kind to component.
  */
 class OverrideKindSymbol implements Symbol {
-  constructor(private sym: Symbol, private kindOverride: string) {}
+  public readonly kind: string;
+  constructor(private sym: Symbol, kindOverride: string) { this.kind = kindOverride; }
 
   get name(): string { return this.sym.name; }
-
-  get kind(): string { return this.kindOverride; }
 
   get language(): string { return this.sym.language; }
 

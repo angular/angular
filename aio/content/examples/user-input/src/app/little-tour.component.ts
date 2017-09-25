@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 
 // #docregion little-tour
 @Component({
-  selector: 'little-tour',
+  selector: 'app-little-tour',
   template: `
     <input #newHero
       (keyup.enter)="addHero(newHero.value)"

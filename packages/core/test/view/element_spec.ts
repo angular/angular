@@ -12,7 +12,15 @@ import {ArgumentType, BindingFlags, DebugContext, NodeDef, NodeFlags, OutputType
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, isBrowser, recordNodeToRemove} from './helper';
+import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, createRootView, isBrowser, recordNodeToRemove} from './helper';
+
+
+/**
+ * We map addEventListener to the Zones internal name. This is because we want to be fast
+ * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
+ */
+const addEventListener = '__zone_symbol__addEventListener';
+const removeEventListener = '__zone_symbol__removeEventListener';
 
 export function main() {
   describe(`View Elements`, () => {
@@ -190,7 +198,7 @@ export function main() {
         it('should listen to DOM events', () => {
           const handleEventSpy = jasmine.createSpy('handleEvent');
           const removeListenerSpy =
-              spyOn(HTMLElement.prototype, 'removeEventListener').and.callThrough();
+              spyOn(HTMLElement.prototype, removeEventListener).and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
               NodeFlags.None, null !, null !, 0, 'button', null !, null !, [[null !, 'click']],
               handleEventSpy)]));
@@ -210,15 +218,15 @@ export function main() {
 
         it('should listen to window events', () => {
           const handleEventSpy = jasmine.createSpy('handleEvent');
-          const addListenerSpy = spyOn(window, 'addEventListener');
-          const removeListenerSpy = spyOn(window, 'removeEventListener');
+          const addListenerSpy = spyOn(window, addEventListener);
+          const removeListenerSpy = spyOn(window, removeEventListener);
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
               NodeFlags.None, null !, null !, 0, 'button', null !, null !,
               [['window', 'windowClick']], handleEventSpy)]));
 
           expect(addListenerSpy).toHaveBeenCalled();
           expect(addListenerSpy.calls.mostRecent().args[0]).toBe('windowClick');
-          addListenerSpy.calls.mostRecent().args[1]({name: 'windowClick'});
+          callMostRecentEventListenerHandler(addListenerSpy, {name: 'windowClick'});
 
           expect(handleEventSpy).toHaveBeenCalled();
           const handleEventArgs = handleEventSpy.calls.mostRecent().args;
@@ -233,15 +241,15 @@ export function main() {
 
         it('should listen to document events', () => {
           const handleEventSpy = jasmine.createSpy('handleEvent');
-          const addListenerSpy = spyOn(document, 'addEventListener');
-          const removeListenerSpy = spyOn(document, 'removeEventListener');
+          const addListenerSpy = spyOn(document, addEventListener);
+          const removeListenerSpy = spyOn(document, removeEventListener);
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
               NodeFlags.None, null !, null !, 0, 'button', null !, null !,
               [['document', 'documentClick']], handleEventSpy)]));
 
           expect(addListenerSpy).toHaveBeenCalled();
           expect(addListenerSpy.calls.mostRecent().args[0]).toBe('documentClick');
-          addListenerSpy.calls.mostRecent().args[1]({name: 'documentClick'});
+          callMostRecentEventListenerHandler(addListenerSpy, {name: 'windowClick'});
 
           expect(handleEventSpy).toHaveBeenCalled();
           const handleEventArgs = handleEventSpy.calls.mostRecent().args;
@@ -284,12 +292,12 @@ export function main() {
 
         it('should report debug info on event errors', () => {
           const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
-          const addListenerSpy = spyOn(HTMLElement.prototype, 'addEventListener').and.callThrough();
+          const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
               NodeFlags.None, null !, null !, 0, 'button', null !, null !, [[null !, 'click']],
               () => { throw new Error('Test'); })]));
 
-          addListenerSpy.calls.mostRecent().args[1]('SomeEvent');
+          callMostRecentEventListenerHandler(addListenerSpy, 'SomeEvent');
           const err = handleErrorSpy.calls.mostRecent().args[0];
           expect(err).toBeTruthy();
           expect(err.message).toBe('Test');

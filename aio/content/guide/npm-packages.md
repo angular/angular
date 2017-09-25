@@ -163,7 +163,6 @@ without waiting for Angular updates.
 ***angular-in-memory-web-api***: An Angular-supported library that simulates a remote server's web api
 without requiring an actual server or real HTTP calls.
 Good for demos, samples, and early stage development (before you even have a server).
-Read about it in the [HTTP Client](guide/http#in-mem-web-api) page.
 
 ***bootstrap***: [Bootstrap](http://getbootstrap.com/) is a popular HTML and CSS framework for designing responsive web apps.
 Some of the samples improve their appearance with *bootstrap*.

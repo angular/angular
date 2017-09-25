@@ -78,20 +78,22 @@ export class StaticSymbolResolver {
     if (staticSymbol.members.length > 0) {
       return this._resolveSymbolMembers(staticSymbol) !;
     }
-    let result = this.resolvedSymbols.get(staticSymbol);
-    if (result) {
-      return result;
+    // Note: always ask for a summary first,
+    // as we might have read shallow metadata via a .d.ts file
+    // for the symbol.
+    const resultFromSummary = this._resolveSymbolFromSummary(staticSymbol) !;
+    if (resultFromSummary) {
+      return resultFromSummary;
     }
-    result = this._resolveSymbolFromSummary(staticSymbol) !;
-    if (result) {
-      return result;
+    const resultFromCache = this.resolvedSymbols.get(staticSymbol);
+    if (resultFromCache) {
+      return resultFromCache;
     }
     // Note: Some users use libraries that were not compiled with ngc, i.e. they don't
     // have summaries, only .d.ts files. So we always need to check both, the summary
     // and metadata.
     this._createSymbolsOf(staticSymbol.filePath);
-    result = this.resolvedSymbols.get(staticSymbol) !;
-    return result;
+    return this.resolvedSymbols.get(staticSymbol) !;
   }
 
   /**
@@ -162,9 +164,6 @@ export class StaticSymbolResolver {
    * Converts a file path to a module name that can be used as an `import`.
    */
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null {
-    if (importedFilePath === containingFilePath) {
-      return null;
-    }
     return this.knownFileNameToModuleNames.get(importedFilePath) ||
         this.host.fileNameToModuleName(importedFilePath, containingFilePath);
   }
@@ -173,6 +172,10 @@ export class StaticSymbolResolver {
     sourceSymbol.assertNoMembers();
     targetSymbol.assertNoMembers();
     this.importAs.set(sourceSymbol, targetSymbol);
+  }
+
+  recordModuleNameForFileName(fileName: string, moduleName: string) {
+    this.knownFileNameToModuleNames.set(fileName, moduleName);
   }
 
   /**
@@ -191,6 +194,17 @@ export class StaticSymbolResolver {
         this.importAs.delete(symbol);
         this.symbolResourcePaths.delete(symbol);
       }
+    }
+  }
+
+  /* @internal */
+  ignoreErrorsFor<T>(cb: () => T) {
+    const recorder = this.errorRecorder;
+    this.errorRecorder = () => {};
+    try {
+      return cb();
+    } finally {
+      this.errorRecorder = recorder;
     }
   }
 
@@ -236,18 +250,39 @@ export class StaticSymbolResolver {
     return this.staticSymbolCache.get(declarationFile, name, members);
   }
 
+  /**
+   * hasDecorators checks a file's metadata for the presense of decorators without evalutating the
+   * metadata.
+   *
+   * @param filePath the absolute path to examine for decorators.
+   * @returns true if any class in the file has a decorator.
+   */
+  hasDecorators(filePath: string): boolean {
+    const metadata = this.getModuleMetadata(filePath);
+    if (metadata['metadata']) {
+      return Object.keys(metadata['metadata']).some((metadataKey) => {
+        const entry = metadata['metadata'][metadataKey];
+        return entry && entry.__symbolic === 'class' && entry.decorators;
+      });
+    }
+    return false;
+  }
+
   getSymbolsOf(filePath: string): StaticSymbol[] {
+    const summarySymbols = this.summaryResolver.getSymbolsOf(filePath);
+    if (summarySymbols) {
+      return summarySymbols;
+    }
     // Note: Some users use libraries that were not compiled with ngc, i.e. they don't
-    // have summaries, only .d.ts files. So we always need to check both, the summary
-    // and metadata.
-    let symbols = new Set<StaticSymbol>(this.summaryResolver.getSymbolsOf(filePath));
+    // have summaries, only .d.ts files, but `summaryResolver.isLibraryFile` returns true.
     this._createSymbolsOf(filePath);
+    const metadataSymbols: StaticSymbol[] = [];
     this.resolvedSymbols.forEach((resolvedSymbol) => {
       if (resolvedSymbol.symbol.filePath === filePath) {
-        symbols.add(resolvedSymbol.symbol);
+        metadataSymbols.push(resolvedSymbol.symbol);
       }
     });
-    return Array.from(symbols);
+    return metadataSymbols;
   }
 
   private _createSymbolsOf(filePath: string) {
@@ -400,7 +435,8 @@ export class StaticSymbolResolver {
       ResolvedStaticSymbol {
     sourceSymbol.assertNoMembers();
     targetSymbol.assertNoMembers();
-    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath)) {
+    if (this.summaryResolver.isLibraryFile(sourceSymbol.filePath) &&
+        this.summaryResolver.isLibraryFile(targetSymbol.filePath)) {
       // This case is for an ng library importing symbols from a plain ts library
       // transitively.
       // Note: We rely on the fact that we discover symbols in the direction
@@ -448,6 +484,7 @@ export class StaticSymbolResolver {
     }
     return moduleMetadata;
   }
+
 
   getSymbolByModule(module: string, symbolName: string, containingFile?: string): StaticSymbol {
     const filePath = this.resolveModule(module, containingFile);

@@ -17,8 +17,8 @@ const _INDENT_WITH = '  ';
 export const CATCH_ERROR_VAR = o.variable('error', null, null);
 export const CATCH_STACK_VAR = o.variable('stack', null, null);
 
-export abstract class OutputEmitter {
-  abstract emitStatements(
+export interface OutputEmitter {
+  emitStatements(
       srcFilePath: string, genFilePath: string, stmts: o.Statement[],
       preamble?: string|null): string;
 }
@@ -35,6 +35,7 @@ export class EmitterVisitorContext {
 
   private _lines: _EmittedLine[];
   private _classes: o.ClassStmt[] = [];
+  private _preambleLineCount = 0;
 
   constructor(private _indent: number) { this._lines = [new _EmittedLine(_indent)]; }
 
@@ -153,6 +154,23 @@ export class EmitterVisitorContext {
     });
 
     return map;
+  }
+
+  setPreambleLineCount(count: number) { return this._preambleLineCount = count; }
+
+  spanOf(line: number, column: number): ParseSourceSpan|null {
+    const emittedLine = this._lines[line - this._preambleLineCount];
+    if (emittedLine) {
+      let columnsLeft = column - emittedLine.indent;
+      for (let partIndex = 0; partIndex < emittedLine.parts.length; partIndex++) {
+        const part = emittedLine.parts[partIndex];
+        if (part.length > columnsLeft) {
+          return emittedLine.srcSpans[partIndex];
+        }
+        columnsLeft -= part.length;
+      }
+    }
+    return null;
   }
 
   private get sourceLines(): _EmittedLine[] {

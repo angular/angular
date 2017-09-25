@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig-build.json",
+
+  "compilerOptions": {
+    "outDir": "../../dist/tools/@angular/compiler-cli",
+    "paths": {
+      "@angular/compiler": ["../../dist/tools/@angular/compiler"]
+    }
+  }
+}

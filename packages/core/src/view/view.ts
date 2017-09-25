@@ -30,33 +30,20 @@ export function viewDef(
   let viewRootNodeFlags = 0;
   let viewMatchedQueries = 0;
   let currentParent: NodeDef|null = null;
+  let currentRenderParent: NodeDef|null = null;
   let currentElementHasPublicProviders = false;
   let currentElementHasPrivateProviders = false;
   let lastRenderRootNode: NodeDef|null = null;
   for (let i = 0; i < nodes.length; i++) {
-    while (currentParent && i > currentParent.index + currentParent.childCount) {
-      const newParent: NodeDef|null = currentParent.parent;
-      if (newParent) {
-        newParent.childFlags |= currentParent.childFlags !;
-        newParent.childMatchedQueries |= currentParent.childMatchedQueries;
-      }
-      currentParent = newParent;
-    }
     const node = nodes[i];
     node.index = i;
     node.parent = currentParent;
     node.bindingIndex = viewBindingCount;
     node.outputIndex = viewDisposableCount;
-
-    // renderParent needs to account for ng-container!
-    let currentRenderParent: NodeDef|null;
-    if (currentParent && currentParent.flags & NodeFlags.TypeElement &&
-        !currentParent.element !.name) {
-      currentRenderParent = currentParent.renderParent;
-    } else {
-      currentRenderParent = currentParent;
-    }
     node.renderParent = currentRenderParent;
+
+    viewNodeFlags |= node.flags;
+    viewMatchedQueries |= node.matchedQueryIds;
 
     if (node.element) {
       const elDef = node.element;
@@ -66,24 +53,13 @@ export function viewDef(
       // Note: We assume that all providers of an element are before any child element!
       currentElementHasPublicProviders = false;
       currentElementHasPrivateProviders = false;
+
+      if (node.element.template) {
+        viewMatchedQueries |= node.element.template.nodeMatchedQueries;
+      }
     }
     validateNode(currentParent, node, nodes.length);
 
-    viewNodeFlags |= node.flags;
-    viewMatchedQueries |= node.matchedQueryIds;
-    if (node.element && node.element.template) {
-      viewMatchedQueries |= node.element.template.nodeMatchedQueries;
-    }
-    if (currentParent) {
-      currentParent.childFlags |= node.flags;
-      currentParent.directChildFlags |= node.flags;
-      currentParent.childMatchedQueries |= node.matchedQueryIds;
-      if (node.element && node.element.template) {
-        currentParent.childMatchedQueries |= node.element.template.nodeMatchedQueries;
-      }
-    } else {
-      viewRootNodeFlags |= node.flags;
-    }
 
     viewBindingCount += node.bindings.length;
     viewDisposableCount += node.outputs.length;
@@ -91,6 +67,7 @@ export function viewDef(
     if (!currentRenderParent && (node.flags & NodeFlags.CatRenderNode)) {
       lastRenderRootNode = node;
     }
+
     if (node.flags & NodeFlags.CatProvider) {
       if (!currentElementHasPublicProviders) {
         currentElementHasPublicProviders = true;
@@ -106,7 +83,7 @@ export function viewDef(
       } else {
         if (!currentElementHasPrivateProviders) {
           currentElementHasPrivateProviders = true;
-          // Use protoyypical inheritance to not get O(n^2) complexity...
+          // Use prototypical inheritance to not get O(n^2) complexity...
           currentParent !.element !.allProviders =
               Object.create(currentParent !.element !.publicProviders);
         }
@@ -116,20 +93,50 @@ export function viewDef(
         currentParent !.element !.componentProvider = node;
       }
     }
-    if (node.childCount) {
+
+    if (currentParent) {
+      currentParent.childFlags |= node.flags;
+      currentParent.directChildFlags |= node.flags;
+      currentParent.childMatchedQueries |= node.matchedQueryIds;
+      if (node.element && node.element.template) {
+        currentParent.childMatchedQueries |= node.element.template.nodeMatchedQueries;
+      }
+    } else {
+      viewRootNodeFlags |= node.flags;
+    }
+
+    if (node.childCount > 0) {
       currentParent = node;
+
+      if (!isNgContainer(node)) {
+        currentRenderParent = node;
+      }
+    } else {
+      // When the current node has no children, check if it is the last children of its parent.
+      // When it is, propagate the flags up.
+      // The loop is required because an element could be the last transitive children of several
+      // elements. We loop to either the root or the highest opened element (= with remaining
+      // children)
+      while (currentParent && i === currentParent.index + currentParent.childCount) {
+        const newParent: NodeDef|null = currentParent.parent;
+        if (newParent) {
+          newParent.childFlags |= currentParent.childFlags;
+          newParent.childMatchedQueries |= currentParent.childMatchedQueries;
+        }
+        currentParent = newParent;
+        // We also need to update the render parent & account for ng-container
+        if (currentParent && isNgContainer(currentParent)) {
+          currentRenderParent = currentParent.renderParent;
+        } else {
+          currentRenderParent = currentParent;
+        }
+      }
     }
   }
-  while (currentParent) {
-    const newParent = currentParent.parent;
-    if (newParent) {
-      newParent.childFlags |= currentParent.childFlags;
-      newParent.childMatchedQueries |= currentParent.childMatchedQueries;
-    }
-    currentParent = newParent;
-  }
+
   const handleEvent: ViewHandleEventFn = (view, nodeIndex, eventName, event) =>
       nodes[nodeIndex].element !.handleEvent !(view, eventName, event);
+
   return {
     // Will be filled later...
     factory: null,
@@ -138,11 +145,14 @@ export function viewDef(
     nodeMatchedQueries: viewMatchedQueries, flags,
     nodes: nodes,
     updateDirectives: updateDirectives || NOOP,
-    updateRenderer: updateRenderer || NOOP,
-    handleEvent: handleEvent || NOOP,
+    updateRenderer: updateRenderer || NOOP, handleEvent,
     bindingCount: viewBindingCount,
     outputCount: viewDisposableCount, lastRenderRootNode
   };
+}
+
+function isNgContainer(node: NodeDef): boolean {
+  return (node.flags & NodeFlags.TypeElement) !== 0 && node.element !.name === null;
 }
 
 function validateNode(parent: NodeDef | null, node: NodeDef, nodeCount: number) {
@@ -161,7 +171,7 @@ function validateNode(parent: NodeDef | null, node: NodeDef, nodeCount: number) 
     const parentFlags = parent ? parent.flags : 0;
     if ((parentFlags & NodeFlags.TypeElement) === 0) {
       throw new Error(
-          `Illegal State: Provider/Directive nodes need to be children of elements or anchors, at index ${node.index}!`);
+          `Illegal State: StaticProvider/Directive nodes need to be children of elements or anchors, at index ${node.index}!`);
     }
   }
   if (node.query) {
@@ -440,16 +450,6 @@ function checkAndUpdateNodeDynamic(view: ViewData, nodeDef: NodeDef, values: any
       changed = checkAndUpdatePureExpressionDynamic(view, nodeDef, values);
       break;
   }
-  if (changed) {
-    // Update oldValues after all bindings have been updated,
-    // as a setter for a property might update other properties.
-    const bindLen = nodeDef.bindings.length;
-    const bindingStart = nodeDef.bindingIndex;
-    const oldValues = view.oldValues;
-    for (let i = 0; i < bindLen; i++) {
-      oldValues[bindingStart + i] = values[i];
-    }
-  }
   return changed;
 }
 
@@ -487,6 +487,10 @@ function checkNoChangesNodeDynamic(view: ViewData, nodeDef: NodeDef, values: any
   }
 }
 
+/**
+ * Workaround https://github.com/angular/tsickle/issues/497
+ * @suppress {misplacedTypeAnnotation}
+ */
 function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
   const queryList = asQueryList(view, nodeDef.index);
   if (queryList.dirty) {
@@ -526,6 +530,8 @@ function destroyViewNodes(view: ViewData) {
       view.renderer.destroyNode !(asElementData(view, i).renderElement);
     } else if (def.flags & NodeFlags.TypeText) {
       view.renderer.destroyNode !(asTextData(view, i).renderText);
+    } else if (def.flags & NodeFlags.TypeContentQuery || def.flags & NodeFlags.TypeViewQuery) {
+      asQueryList(view, i).destroy();
     }
   }
 }

@@ -6,7 +6,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/* tslint:disable:no-console  */
 
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
@@ -14,11 +13,11 @@ import 'reflect-metadata';
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as assert from 'assert';
-import {tsc} from '@angular/tsc-wrapped/src/tsc';
-import {NodeCompilerHostContext, __NGTOOLS_PRIVATE_API_2} from '@angular/compiler-cli';
+import {__NGTOOLS_PRIVATE_API_2, readConfiguration} from '@angular/compiler-cli';
 
 const glob = require('glob');
 
+/* tslint:disable:no-console  */
 /**
  * Main method.
  * Standalone program that executes codegen using the ngtools API and tests that files were
@@ -50,15 +49,14 @@ function codeGenTest(forceError = false) {
   const readResources: string[] = [];
   const wroteFiles: string[] = [];
 
-  const config = tsc.readConfiguration(project, basePath);
-  const hostContext = new NodeCompilerHostContext();
-  const delegateHost = ts.createCompilerHost(config.parsed.options, true);
+  const config = readConfiguration(project);
+  const delegateHost = ts.createCompilerHost(config.options, true);
   const host: ts.CompilerHost = Object.assign(
       {}, delegateHost,
       {writeFile: (fileName: string, ...rest: any[]) => { wroteFiles.push(fileName); }});
-  const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
+  const program = ts.createProgram(config.rootNames, config.options, host);
 
-  config.ngOptions.basePath = basePath;
+  config.options.basePath = basePath;
 
   console.log(`>>> running codegen for ${project}`);
   if (forceError) {
@@ -67,9 +65,9 @@ function codeGenTest(forceError = false) {
   return __NGTOOLS_PRIVATE_API_2
       .codeGen({
         basePath,
-        compilerOptions: config.parsed.options, program, host,
+        compilerOptions: config.options, program, host,
 
-        angularCompilerOptions: config.ngOptions,
+        angularCompilerOptions: config.options,
 
         // i18n options.
         i18nFormat: 'xlf',
@@ -79,7 +77,10 @@ function codeGenTest(forceError = false) {
 
         readResource: (fileName: string) => {
           readResources.push(fileName);
-          return hostContext.readResource(fileName);
+          if (!host.fileExists(fileName)) {
+            throw new Error(`Compilation failed. Resource file not found: ${fileName}`);
+          }
+          return Promise.resolve(host.readFile(fileName));
         }
       })
       .then(() => {
@@ -127,28 +128,30 @@ function i18nTest() {
   const readResources: string[] = [];
   const wroteFiles: string[] = [];
 
-  const config = tsc.readConfiguration(project, basePath);
-  const hostContext = new NodeCompilerHostContext();
-  const delegateHost = ts.createCompilerHost(config.parsed.options, true);
+  const config = readConfiguration(project);
+  const delegateHost = ts.createCompilerHost(config.options, true);
   const host: ts.CompilerHost = Object.assign(
       {}, delegateHost,
       {writeFile: (fileName: string, ...rest: any[]) => { wroteFiles.push(fileName); }});
-  const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
+  const program = ts.createProgram(config.rootNames, config.options, host);
 
-  config.ngOptions.basePath = basePath;
+  config.options.basePath = basePath;
 
   console.log(`>>> running i18n extraction for ${project}`);
   return __NGTOOLS_PRIVATE_API_2
       .extractI18n({
         basePath,
-        compilerOptions: config.parsed.options, program, host,
-        angularCompilerOptions: config.ngOptions,
+        compilerOptions: config.options, program, host,
+        angularCompilerOptions: config.options,
         i18nFormat: 'xlf',
         locale: undefined,
         outFile: undefined,
         readResource: (fileName: string) => {
           readResources.push(fileName);
-          return hostContext.readResource(fileName);
+          if (!host.fileExists(fileName)) {
+            throw new Error(`Compilation failed. Resource file not found: ${fileName}`);
+          }
+          return Promise.resolve(host.readFile(fileName));
         },
       })
       .then(() => {
@@ -189,18 +192,14 @@ function lazyRoutesTest() {
   const basePath = path.join(__dirname, '../ngtools_src');
   const project = path.join(basePath, 'tsconfig-build.json');
 
-  const config = tsc.readConfiguration(project, basePath);
-  const host = ts.createCompilerHost(config.parsed.options, true);
-  const program = ts.createProgram(config.parsed.fileNames, config.parsed.options, host);
+  const config = readConfiguration(project);
+  const host = ts.createCompilerHost(config.options, true);
+  const program = ts.createProgram(config.rootNames, config.options, host);
 
-  config.ngOptions.basePath = basePath;
+  config.options.basePath = basePath;
 
-  const lazyRoutes = __NGTOOLS_PRIVATE_API_2.listLazyRoutes({
-    program,
-    host,
-    angularCompilerOptions: config.ngOptions,
-    entryModule: 'app.module#AppModule'
-  });
+  const lazyRoutes = __NGTOOLS_PRIVATE_API_2.listLazyRoutes(
+      {program, host, angularCompilerOptions: config.options, entryModule: 'app.module#AppModule'});
 
   const expectations: {[route: string]: string} = {
     './lazy.module#LazyModule': 'lazy.module.ts',

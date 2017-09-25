@@ -8,8 +8,11 @@
 
 import {Type, isType} from '../type';
 import {global, stringify} from '../util';
+import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
+
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
+
 
 /**
  * Attention: This regex has to hold even if the code is minified!
@@ -85,12 +88,11 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (this._reflect != null && this._reflect.getOwnMetadata != null) {
-      const paramAnnotations = this._reflect.getOwnMetadata('parameters', type);
-      const paramTypes = this._reflect.getOwnMetadata('design:paramtypes', type);
-      if (paramTypes || paramAnnotations) {
-        return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
-      }
+    const paramAnnotations = type.hasOwnProperty(PARAMETERS) && (type as any)[PARAMETERS];
+    const paramTypes = this._reflect && this._reflect.getOwnMetadata &&
+        this._reflect.getOwnMetadata('design:paramtypes', type);
+    if (paramTypes || paramAnnotations) {
+      return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
     }
 
     // If a class has no decorators, at least create metadata
@@ -130,8 +132,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (this._reflect && this._reflect.getOwnMetadata) {
-      return this._reflect.getOwnMetadata('annotations', typeOrFunc);
+    if (typeOrFunc.hasOwnProperty(ANNOTATIONS)) {
+      return (typeOrFunc as any)[ANNOTATIONS];
     }
     return null;
   }
@@ -169,8 +171,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (this._reflect && this._reflect.getOwnMetadata) {
-      return this._reflect.getOwnMetadata('propMetadata', typeOrFunc);
+    if (typeOrFunc.hasOwnProperty(PROP_METADATA)) {
+      return (typeOrFunc as any)[PROP_METADATA];
     }
     return null;
   }

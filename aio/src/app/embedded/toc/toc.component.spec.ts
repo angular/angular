@@ -83,11 +83,14 @@ describe('TocComponent', () => {
     it('should only display H2 and H3 TocItems', () => {
       tocService.tocList.next([tocItem('Heading A', 'h1'), tocItem('Heading B'), tocItem('Heading C', 'h3')]);
       fixture.detectChanges();
-      const items = tocComponentDe.queryAllNodes(By.css('li'));
-      expect(items.length).toBe(2);
-      expect(items.find(item => item.nativeNode.innerText === 'Heading A')).toBeFalsy();
-      expect(items.find(item => item.nativeNode.innerText === 'Heading B')).toBeTruthy();
-      expect(items.find(item => item.nativeNode.innerText === 'Heading C')).toBeTruthy();
+
+      const tocItems = tocComponentDe.queryAllNodes(By.css('li'));
+      const textContents = tocItems.map(item => item.nativeNode.textContent.trim());
+
+      expect(tocItems.length).toBe(2);
+      expect(textContents.find(text => text === 'Heading A')).toBeFalsy();
+      expect(textContents.find(text => text === 'Heading B')).toBeTruthy();
+      expect(textContents.find(text => text === 'Heading C')).toBeTruthy();
       expect(setPage().tocH1Heading).toBeFalsy();
     });
 

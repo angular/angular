@@ -45,7 +45,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  * A common pattern is that we need to show a set of properties from the same object. If the
  * object is undefined, then we have to use the safe-traversal-operator `?.` to guard against
  * dereferencing a `null` value. This is especially the case when waiting on async data such as
- * when using the `async` pipe as shown in folowing example:
+ * when using the `async` pipe as shown in following example:
  *
  * ```
  * Hello {{ (userStream|async)?.last }}, {{ (userStream|async)?.first }}!
@@ -75,7 +75,6 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '
  *
  * Simple form:
  * - `<div *ngIf="condition">...</div>`
- * - `<div template="ngIf condition">...</div>`
  * - `<ng-template [ngIf]="condition"><div>...</div></ng-template>`
  *
  * Form with an else block:

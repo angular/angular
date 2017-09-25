@@ -27,9 +27,7 @@ describe('site App', function() {
     // Show the menu
     page.docsMenuLink.click();
 
-    // Open the tutorial header
-    page.getNavItem(/tutorial/i).click();
-
+    // Tutorial folder should still be expanded because this test runs in wide mode
     // Navigate to the tutorial introduction via a link in the sidenav
     page.getNavItem(/introduction/i).click();
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
@@ -41,11 +39,23 @@ describe('site App', function() {
     expect(page.getInnerHtml(codeExample)).toContain('&lt;h1&gt;Tour of Heroes&lt;/h1&gt;');
   });
 
-  describe('api-docs', () => {
-    it('should show a link to github', () => {
-      page.navigateTo('api/common/NgClass');
-      expect(page.ghLink.getAttribute('href'))
-          .toMatch(/https:\/\/github.com\/angular\/angular\/tree\/.+\/packages\/common\/src\/directives\/ng_class\.ts/);
+  describe('scrolling to the top', () => {
+    it('should scroll to the top when navigating to another page', () => {
+      page.navigateTo('guide/docs');
+      page.scrollToBottom();
+      page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
+
+      page.navigateTo('guide/api');
+      page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
+    });
+
+    it('should scroll to the top when navigating to the same page', () => {
+      page.navigateTo('guide/docs');
+      page.scrollToBottom();
+      page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
+
+      page.navigateTo('guide/docs');
+      page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
     });
   });
 
@@ -82,4 +92,12 @@ describe('site App', function() {
     // Todo: add test to confirm tracking URL when navigate.
   });
 
+  describe('search', () => {
+    it('should find pages when searching by a partial word in the title', () => {
+      page.enterSearch('ngCont');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('NgControl');
+      page.enterSearch('accessor');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('ControlValueAccessor');
+    });
+  });
 });

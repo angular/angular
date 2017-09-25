@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, OnChanges, Provider, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, Input, OnChanges, SimpleChanges, StaticProvider, forwardRef} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
+
 
 /** @experimental */
 export type ValidationErrors = {
@@ -45,13 +47,13 @@ export interface AsyncValidator extends Validator {
   validate(c: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
-export const REQUIRED_VALIDATOR: Provider = {
+export const REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => RequiredValidator),
   multi: true
 };
 
-export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
+export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => CheckboxRequiredValidator),
   multi: true
@@ -93,83 +95,6 @@ export class RequiredValidator implements Validator {
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
-}
-
-export const MIN_VALIDATOR: Provider = {
-  provide: NG_VALIDATORS,
-  useExisting: forwardRef(() => MinValidator),
-  multi: true
-};
-
-/**
- * A directive which installs the {@link MinValidator} for any `formControlName`,
- * `formControl`, or control with `ngModel` that also has a `min` attribute.
- *
- * @experimental
- */
-@Directive({
-  selector: '[min][formControlName],[min][formControl],[min][ngModel]',
-  providers: [MIN_VALIDATOR],
-  host: {'[attr.min]': 'min ? min : null'}
-})
-export class MinValidator implements Validator,
-    OnChanges {
-  private _validator: ValidatorFn;
-  private _onChange: () => void;
-
-  @Input() min: string;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('min' in changes) {
-      this._createValidator();
-      if (this._onChange) this._onChange();
-    }
-  }
-
-  validate(c: AbstractControl): ValidationErrors|null { return this._validator(c); }
-
-  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
-
-  private _createValidator(): void { this._validator = Validators.min(parseInt(this.min, 10)); }
-}
-
-
-export const MAX_VALIDATOR: Provider = {
-  provide: NG_VALIDATORS,
-  useExisting: forwardRef(() => MaxValidator),
-  multi: true
-};
-
-/**
- * A directive which installs the {@link MaxValidator} for any `formControlName`,
- * `formControl`, or control with `ngModel` that also has a `min` attribute.
- *
- * @experimental
- */
-@Directive({
-  selector: '[max][formControlName],[max][formControl],[max][ngModel]',
-  providers: [MAX_VALIDATOR],
-  host: {'[attr.max]': 'max ? max : null'}
-})
-export class MaxValidator implements Validator,
-    OnChanges {
-  private _validator: ValidatorFn;
-  private _onChange: () => void;
-
-  @Input() max: string;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('max' in changes) {
-      this._createValidator();
-      if (this._onChange) this._onChange();
-    }
-  }
-
-  validate(c: AbstractControl): ValidationErrors|null { return this._validator(c); }
-
-  registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
-
-  private _createValidator(): void { this._validator = Validators.max(parseInt(this.max, 10)); }
 }
 
 
