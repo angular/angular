@@ -2,11 +2,12 @@
 # yarn lockfile v1
 
 
-"@bazel/typescript@0.1.x":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.1.0.tgz#14a0a74d06e0acf7cf60295963adbcc5d3f41217"
+"@bazel/typescript@0.2.x":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.2.2.tgz#0a0d09924508c946de32e6acdb2b5cc1ee32c506"
   dependencies:
     "@types/node" "7.0.18"
+    "@types/source-map" "^0.5.1"
     protobufjs "5.0.0"
     tsickle "0.24.x"
     typescript "2.4.x"
@@ -133,6 +134,10 @@
 "@types/selenium-webdriver@^2.53.35", "@types/selenium-webdriver@~2.53.39":
   version "2.53.42"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-2.53.42.tgz#74cb77fb6052edaff2a8984ddafd88d419f25cac"
+
+"@types/source-map@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@types/source-map/-/source-map-0.5.1.tgz#7e74db5d06ab373a712356eebfaea2fad0ea2367"
 
 "@types/systemjs@0.19.32":
   version "0.19.32"
