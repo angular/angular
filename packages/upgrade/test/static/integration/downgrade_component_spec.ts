@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, EventEmitter, Injector, Input, NgModule, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, destroyPlatform} from '@angular/core';
-import {async} from '@angular/core/testing';
+import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
@@ -271,6 +271,42 @@ export function main() {
            $rootScope.value1 = 6;
            $rootScope.$digest();
            expect(element.textContent).toBe('6 | 5');
+         });
+       }));
+
+    it('should still run normal Angular change-detection regardless of `propagateDigest`',
+       fakeAsync(() => {
+         let ng2Component: Ng2Component;
+
+         @Component({selector: 'ng2', template: '{{ value }}'})
+         class Ng2Component {
+           value = 'foo';
+           constructor() { setTimeout(() => this.value = 'bar', 1000); }
+         }
+
+         @NgModule({
+           imports: [BrowserModule, UpgradeModule],
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
+
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive(
+                     'ng2A', downgradeComponent({component: Ng2Component, propagateDigest: true}))
+                 .directive(
+                     'ng2B', downgradeComponent({component: Ng2Component, propagateDigest: false}));
+
+         const element = html('<ng2-a></ng2-a> | <ng2-b></ng2-b>');
+
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           expect(element.textContent).toBe('foo | foo');
+
+           tick(1000);
+           expect(element.textContent).toBe('bar | bar');
          });
        }));
 
