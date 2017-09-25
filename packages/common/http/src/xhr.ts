@@ -180,7 +180,7 @@ export class HttpXhrBackend implements HttpBackend {
 
         // Check whether the body needs to be parsed as JSON (in many cases the browser
         // will have done that already).
-        if (ok && req.responseType === 'json' && typeof body === 'string') {
+        if (req.responseType === 'json' && typeof body === 'string') {
           // Attempt the parse. If it fails, a parse error should be delivered to the user.
           body = body.replace(XSSI_PREFIX, '');
           try {
