@@ -306,7 +306,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   shouldGenerateFile(fileName: string): {generate: boolean, baseFileName?: string} {
     // TODO(tbosch): allow generating files that are not in the rootDir
     // See https://github.com/angular/angular/issues/19337
-    if (this.options.rootDir && !fileName.startsWith(this.options.rootDir)) {
+    if (this.options.rootDir && !pathStartsWithPrefix(this.options.rootDir, fileName)) {
       return {generate: false};
     }
     const genMatch = GENERATED_FILES.exec(fileName);
