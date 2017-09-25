@@ -50,7 +50,8 @@
     "postinstall": "uglifyjs node_modules/lunr/lunr.js -c -m -o src/assets/js/lunr.min.js --source-map",
     "build-ie-polyfills": "node node_modules/webpack/bin/webpack.js -p src/ie-polyfills.js src/generated/ie-polyfills.min.js",
     "~~check-env": "node scripts/check-environment",
-    "~~build": "ng build --target=production --environment=stable -sm --build-optimizer && yarn sw-manifest && yarn sw-copy",
+    "~~build": "ng build --target=production --environment=stable -sm --build-optimizer",
+    "post~~build": "yarn sw-manifest && yarn sw-copy",
     "~~update-webdriver": "webdriver-manager update --standalone false --gecko false"
   },
   "engines": {
