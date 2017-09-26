@@ -7,7 +7,7 @@
  */
 
 import {Type, isType} from '../type';
-import {global, stringify} from '../util';
+import {stringify} from '../util';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
@@ -19,10 +19,19 @@ import {GetterFn, MethodFn, SetterFn} from './types';
  */
 export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arguments\)/;
 
+// Declare global variable in a closure friendly way.
+declare const Reflect: any;
+
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
 
-  constructor(reflect?: any) { this._reflect = reflect || global['Reflect']; }
+  constructor(reflect?: any) {
+    if (typeof Reflect !== 'undefined') {
+      this._reflect = Reflect;
+    } else {
+      this._reflect = reflect;
+    }
+  }
 
   isReflectionEnabled(): boolean { return true; }
 

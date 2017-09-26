@@ -7,7 +7,6 @@
  */
 
 import {ɵisPromise as isPromise} from '@angular/core';
-import {global} from '@angular/core/src/util';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {getTestBed, inject} from './test_bed';
@@ -20,18 +19,11 @@ export * from './ng_zone_mock';
 
 export const proxy: ClassDecorator = (t: any) => t;
 
-const _global = <any>(typeof window === 'undefined' ? global : window);
+const _afterEach: Function = afterEach;
+export {_afterEach as afterEach};
 
-export const afterEach: Function = _global.afterEach;
-export const expect: (actual: any) => jasmine.Matchers = _global.expect;
-
-const jsmBeforeEach = _global.beforeEach;
-const jsmDescribe = _global.describe;
-const jsmDDescribe = _global.fdescribe;
-const jsmXDescribe = _global.xdescribe;
-const jsmIt = _global.it;
-const jsmIIt = _global.fit;
-const jsmXIt = _global.xit;
+const _expect: (actual: any) => jasmine.Matchers = expect;
+export {_expect as expect};
 
 const runnerStack: BeforeEachRunner[] = [];
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
@@ -58,9 +50,9 @@ class BeforeEachRunner {
 }
 
 // Reset the test providers before each test
-jsmBeforeEach(() => { testBed.resetTestingModule(); });
+beforeEach(() => { testBed.resetTestingModule(); });
 
-function _describe(jsmFn: Function, ...args: any[]) {
+function _describeImpl(jsmFn: Function, ...args: any[]) {
   const parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
   const runner = new BeforeEachRunner(parentRunner !);
   runnerStack.push(runner);
@@ -69,27 +61,32 @@ function _describe(jsmFn: Function, ...args: any[]) {
   return suite;
 }
 
-export function describe(...args: any[]): void {
-  return _describe(jsmDescribe, ...args);
+function _describe(...args: any[]): void {
+  return _describeImpl(describe, ...args);
 }
+export {_describe as describe};
 
-export function ddescribe(...args: any[]): void {
-  return _describe(jsmDDescribe, ...args);
+function _ddescribe(...args: any[]): void {
+  return _describeImpl(fdescribe, ...args);
 }
+export {_ddescribe as ddescribe};
 
-export function xdescribe(...args: any[]): void {
-  return _describe(jsmXDescribe, ...args);
+function _xdescribe(...args: any[]): void {
+  return _describeImpl(xdescribe, ...args);
 }
+export {_xdescribe as xdescribe};
 
-export function beforeEach(fn: Function): void {
+function _beforeEach(fn: Function): void {
   if (runnerStack.length > 0) {
     // Inside a describe block, beforeEach() uses a BeforeEachRunner
     runnerStack[runnerStack.length - 1].beforeEach(fn);
   } else {
     // Top level beforeEach() are delegated to jasmine
-    jsmBeforeEach(fn);
+    beforeEach(fn as any);
   }
 }
+
+export {_beforeEach as beforeEach};
 
 /**
  * Allows overriding default providers defined in test_injector.js.
@@ -104,7 +101,7 @@ export function beforeEach(fn: Function): void {
  *   ]);
  */
 export function beforeEachProviders(fn: Function): void {
-  jsmBeforeEach(() => {
+  beforeEach(() => {
     const providers = fn();
     if (!providers) return;
     testBed.configureTestingModule({providers: providers});
@@ -112,7 +109,7 @@ export function beforeEachProviders(fn: Function): void {
 }
 
 
-function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: number): void {
+function _itImpl(jsmFn: Function, name: string, testFn: Function, testTimeOut: number): void {
   if (runnerStack.length == 0) {
     // This left here intentionally, as we should never get here, and it aids debugging.
     debugger;
@@ -148,17 +145,20 @@ function _it(jsmFn: Function, name: string, testFn: Function, testTimeOut: numbe
   }, timeOut);
 }
 
-export function it(name: any, fn: any, timeOut: any = null): void {
-  return _it(jsmIt, name, fn, timeOut);
+function _it(name: any, fn: any, timeOut: any = null): void {
+  return _itImpl(it, name, fn, timeOut);
 }
+export {_it as it};
 
-export function xit(name: any, fn: any, timeOut: any = null): void {
-  return _it(jsmXIt, name, fn, timeOut);
+function _xit(name: any, fn: any, timeOut: any = null): void {
+  return _itImpl(xit, name, fn, timeOut);
 }
+export {_xit as xit};
 
-export function iit(name: any, fn: any, timeOut: any = null): void {
-  return _it(jsmIIt, name, fn, timeOut);
+function _iit(name: any, fn: any, timeOut: any = null): void {
+  return _itImpl(fit, name, fn, timeOut);
 }
+export {_iit as iit};
 
 export class SpyObject {
   constructor(type?: any) {

@@ -7,7 +7,6 @@
  */
 
 import {ɵparseCookieValue as parseCookieValue} from '@angular/common';
-import {ɵglobal as global} from '@angular/core';
 
 import {setRootDomAdapter} from '../dom/dom_adapter';
 
@@ -65,8 +64,11 @@ const _chromeNumKeyPadMap = {
 
 let nodeContains: (a: any, b: any) => boolean;
 
-if (global['Node']) {
-  nodeContains = global['Node'].prototype.contains || function(node) {
+// Note: we rely on the global node typings here,
+// including closure knowing to not rename `Node`
+// and not collide with this name.
+if (typeof Node !== 'undefined') {
+  nodeContains = Node.prototype.contains || function(node) {
     return !!(this.compareDocumentPosition(node) & 16);
   };
 }

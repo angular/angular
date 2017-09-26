@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ɵglobal as global} from '@angular/core';
+import {Injector} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {SpyObject} from '@angular/core/testing/src/testing_internal';
+import {getNgGlobal} from '@angular/platform-browser/src/dom/util';
 
 export class SpyApplicationRef extends SpyObject {
   constructor() { super(ApplicationRef); }
@@ -24,5 +25,5 @@ export class SpyComponentRef extends SpyObject {
 }
 
 export function callNgProfilerTimeChangeDetection(config?: any /** TODO #9100 */): void {
-  (<any>global).ng.profiler.timeChangeDetection(config);
+  getNgGlobal().profiler !.timeChangeDetection(config);
 }

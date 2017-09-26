@@ -6,15 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter, ɵglobal as global} from '@angular/core';
+import {GetTestability, Testability, TestabilityRegistry, setTestabilityGetter, ɵglobalForWrite as globalForWrite} from '@angular/core';
 
 import {getDOM} from '../dom/dom_adapter';
+
+// Declare global variable in a closure friendly way.
+declare const getAngularTestability: (elem: any, findInAncestors: boolean) => Testability;
+// Declare global variable in a closure friendly way.
+declare const getAllAngularTestabilities: () => Testability[];
+// Declare global variable in a closure friendly way.
+declare const getAllAngularRootElements: any[];
+// Declare global variable in a closure friendly way.
+declare const frameworkStabilizers: Array<(callback: any) => void>;
+
 
 export class BrowserGetTestability implements GetTestability {
   static init() { setTestabilityGetter(new BrowserGetTestability()); }
 
   addToWindow(registry: TestabilityRegistry): void {
-    global['getAngularTestability'] = (elem: any, findInAncestors: boolean = true) => {
+    globalForWrite.getAngularTestability = (elem: any, findInAncestors: boolean = true) => {
       const testability = registry.findTestabilityInTree(elem, findInAncestors);
       if (testability == null) {
         throw new Error('Could not find testability for element.');
@@ -22,12 +32,12 @@ export class BrowserGetTestability implements GetTestability {
       return testability;
     };
 
-    global['getAllAngularTestabilities'] = () => registry.getAllTestabilities();
+    globalForWrite.getAllAngularTestabilities = () => registry.getAllTestabilities();
 
-    global['getAllAngularRootElements'] = () => registry.getAllRootElements();
+    globalForWrite.getAllAngularRootElements = () => registry.getAllRootElements();
 
     const whenAllStable = (callback: any /** TODO #9100 */) => {
-      const testabilities = global['getAllAngularTestabilities']();
+      const testabilities = getAllAngularTestabilities();
       let count = testabilities.length;
       let didWork = false;
       const decrement = function(didWork_: any /** TODO #9100 */) {
@@ -42,10 +52,10 @@ export class BrowserGetTestability implements GetTestability {
       });
     };
 
-    if (!global['frameworkStabilizers']) {
-      global['frameworkStabilizers'] = [];
+    if (typeof frameworkStabilizers === 'undefined') {
+      globalForWrite.frameworkStabilizers = [];
     }
-    global['frameworkStabilizers'].push(whenAllStable);
+    frameworkStabilizers.push(whenAllStable);
   }
 
   findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean):

@@ -7,10 +7,7 @@
  */
 
 
-import {ɵglobal as global} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-
-
 
 /**
  * Jasmine matchers that check Angular specific conditions.
@@ -85,7 +82,7 @@ export interface NgMatchers extends jasmine.Matchers {
   not: NgMatchers;
 }
 
-const _global = <any>(typeof window === 'undefined' ? global : window);
+const _expect = expect as(actual: any) => NgMatchers;
 
 /**
  * Jasmine matching function with Angular matchers mixed in.
@@ -94,7 +91,7 @@ const _global = <any>(typeof window === 'undefined' ? global : window);
  *
  * {@example testing/ts/matchers.ts region='toHaveText'}
  */
-export const expect: (actual: any) => NgMatchers = <any>_global.expect;
+export {_expect as expect};
 
 
 // Some Map polyfills don't polyfill Map.toString correctly, which
@@ -111,7 +108,7 @@ export const expect: (actual: any) => NgMatchers = <any>_global.expect;
   return `{ ${res.join(',')} }`;
 };
 
-_global.beforeEach(function() {
+beforeEach(function() {
   jasmine.addMatchers({
     // Custom handler for Map as Jasmine does not support it yet
     toEqual: function(util) {
