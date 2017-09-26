@@ -461,8 +461,8 @@ export function main() {
           selector: 'ani-cmp',
           template: `
             <div [@myAnimation]="exp">
-              <header></header> 
-              <footer></footer> 
+              <header></header>
+              <footer></footer>
             </div>
           `,
           animations: [
@@ -587,8 +587,8 @@ export function main() {
           selector: 'ani-cmp',
           template: `
             <div [@myAnimation]="exp">
-              <header></header> 
-              <footer></footer> 
+              <header></header>
+              <footer></footer>
             </div>
           `,
           animations: [
@@ -640,9 +640,9 @@ export function main() {
           template: `
           <div [@myAnimation]="exp">
             <div *ngFor="let item of items" class="item">
-              {{ item }} 
-            </div> 
-          </div> 
+              {{ item }}
+            </div>
+          </div>
         `,
           animations: [
             trigger(
@@ -706,9 +706,9 @@ export function main() {
           template: `
           <div [@myAnimation]="exp">
             <div *ngFor="let item of items" class="item">
-              {{ item }} 
-            </div> 
-          </div> 
+              {{ item }}
+            </div>
+          </div>
         `,
           animations: [trigger(
               'myAnimation',
@@ -809,8 +809,8 @@ export function main() {
           template: `
             <div @myAnimation>
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -923,8 +923,8 @@ export function main() {
           template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -1111,8 +1111,8 @@ export function main() {
           template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -1333,8 +1333,8 @@ export function main() {
           template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -1385,8 +1385,8 @@ export function main() {
           template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [trigger(
@@ -1436,8 +1436,8 @@ export function main() {
           template: `
             <div [@one]="exp1" [@two]="exp2" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
           animations: [
@@ -1519,8 +1519,8 @@ export function main() {
              template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
              animations: [trigger(
@@ -1569,8 +1569,8 @@ export function main() {
             template: `
             <div [@myAnimation]="exp" class="parent">
               <div *ngFor="let item of items" class="child">
-                {{ item }} 
-              </div> 
+                {{ item }}
+              </div>
             </div>
           `,
             animations: [
@@ -1713,6 +1713,56 @@ export function main() {
            expect(players[1].element.innerText.trim()).toEqual('5');
            expect(players[2].element.innerText.trim()).toEqual('6');
          });
+
+      describe('options.limit', () => {
+        it('should limit results when a limit value is passed into the query options', () => {
+          @Component({
+            selector: 'cmp',
+            template: `
+             <div [@myAnimation]="exp">
+              <div *ngFor="let item of items" class="item">
+                {{ item }}
+              </div>
+             </div>
+          `,
+            animations: [
+              trigger(
+                  'myAnimation',
+                  [
+                    transition(
+                        '* => go',
+                        [
+                          query(
+                              '.item',
+                              [
+                                style({opacity: 0}),
+                                animate('1s', style({opacity: 1})),
+                              ],
+                              {limit: 2}),
+                        ]),
+                  ]),
+            ]
+          })
+          class Cmp {
+            public exp: any;
+            public items: any[] = [];
+          }
+
+          TestBed.configureTestingModule({declarations: [Cmp]});
+          const fixture = TestBed.createComponent(Cmp);
+          const cmp = fixture.componentInstance;
+          cmp.items = ['a', 'b', 'c', 'd', 'e'];
+          fixture.detectChanges();
+
+          cmp.exp = 'go';
+          fixture.detectChanges();
+
+          const players = getLog() as any[];
+          expect(players.length).toEqual(2);
+          expect(players[0].element.innerText.trim()).toEqual('a');
+          expect(players[1].element.innerText.trim()).toEqual('b');
+        });
+      });
     });
 
     describe('sub triggers', () => {
@@ -2314,7 +2364,7 @@ export function main() {
                   </div>
                 </div>
               </section>
-            </div>  
+            </div>
           `
         })
         class Cmp {
