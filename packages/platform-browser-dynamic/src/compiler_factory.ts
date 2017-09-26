@@ -71,9 +71,6 @@ export class CompilerImpl implements Compiler {
                 componentFactories: result.componentFactories as ComponentFactory<any>[],
               }));
   }
-  getNgContentSelectors(component: Type<any>): string[] {
-    return this._delegate.getNgContentSelectors(component);
-  }
   loadAotSummaries(summaries: () => any[]) { this._delegate.loadAotSummaries(summaries); }
   hasAotSummary(ref: Type<any>): boolean { return this._delegate.hasAotSummary(ref); }
   getComponentFactory<T>(component: Type<T>): ComponentFactory<T> {
