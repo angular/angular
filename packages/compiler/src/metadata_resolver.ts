@@ -886,10 +886,10 @@ export class CompileMetadataResolver {
           dependenciesMetadata.map((dep) => dep ? stringifyType(dep.token) : '?').join(', ');
       const message =
           `Can't resolve all parameters for ${stringifyType(typeOrFunc)}: (${depsTokens}).`;
-      if (throwOnUnknownDeps) {
+      if (throwOnUnknownDeps || this._config.strictInjectionParameters) {
         this._reportError(syntaxError(message), typeOrFunc);
       } else {
-        this._console.warn(`Warning: ${message} This will become an error in Angular v5.x`);
+        this._console.warn(`Warning: ${message} This will become an error in Angular v6.x`);
       }
     }
 

@@ -205,9 +205,29 @@ describe('compiler (unbundled Angular)', () => {
       const warnSpy = spyOn(console, 'warn');
       compile([FILES, angularFiles]);
       expect(warnSpy).toHaveBeenCalledWith(
-          `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
+          `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v6.x`);
 
     });
+
+    it('should error if not all arguments of an @Injectable class can be resolved if strictInjectionParamters is true',
+       () => {
+         const FILES: MockDirectory = {
+           app: {
+             'app.ts': `
+                import {Injectable} from '@angular/core';
+
+                @Injectable()
+                export class MyService {
+                  constructor(a: boolean) {}
+                }
+              `
+           }
+         };
+         const warnSpy = spyOn(console, 'warn');
+         expect(() => compile([FILES, angularFiles], {strictInjectionParameters: true}))
+             .toThrowError(`Can't resolve all parameters for MyService in /app/app.ts: (?).`);
+         expect(warnSpy).not.toHaveBeenCalled();
+       });
 
     it('should be able to suppress a null access', () => {
       const FILES: MockDirectory = {
