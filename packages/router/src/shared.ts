@@ -104,7 +104,7 @@ export function navigationCancelingError(message: string) {
 }
 
 export function isNavigationCancelingError(error: Error) {
-  return (error as any)[NAVIGATION_CANCELING_ERROR];
+  return error && (error as any)[NAVIGATION_CANCELING_ERROR];
 }
 
 // Matches the route configuration (`route`) against the actual URL (`segments`).
