@@ -67,6 +67,7 @@ var specFiles: any =
                        '@angular/router/test/integration/bootstrap_spec.*',
                        '@angular/integration_test/symbol_inspector/**',
                        '@angular/upgrade/**',
+                       '@angular/elements/**',
                        '@angular/**/e2e_test/**',
                        'angular1_router/**',
                        'payload_tests/**',

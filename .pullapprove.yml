@@ -300,6 +300,14 @@ groups:
       - IgorMinar #fallback
       - mhevery #fallback
 
+  elements:
+    conditions:
+      files:
+        - "packages/elements/*"
+    users:
+      - mhevery #primary
+      - IgorMinar #fallback
+
   benchpress:
     conditions:
       files:
