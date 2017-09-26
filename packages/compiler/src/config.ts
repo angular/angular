@@ -21,17 +21,18 @@ export class CompilerConfig {
   public jitDevMode: boolean;
   public missingTranslation: MissingTranslationStrategy|null;
   public preserveWhitespaces: boolean;
+  public strictInjectionParameters: boolean;
 
   constructor(
       {defaultEncapsulation = ViewEncapsulation.Emulated, useJit = true, jitDevMode = false,
-       missingTranslation, enableLegacyTemplate, preserveWhitespaces}: {
+       missingTranslation, enableLegacyTemplate, preserveWhitespaces, strictInjectionParameters}: {
         defaultEncapsulation?: ViewEncapsulation,
         useJit?: boolean,
         jitDevMode?: boolean,
         missingTranslation?: MissingTranslationStrategy,
         enableLegacyTemplate?: boolean,
         preserveWhitespaces?: boolean,
-        fullTemplateTypeCheck?: boolean
+        strictInjectionParameters?: boolean,
       } = {}) {
     this.defaultEncapsulation = defaultEncapsulation;
     this.useJit = !!useJit;
@@ -39,6 +40,7 @@ export class CompilerConfig {
     this.missingTranslation = missingTranslation || null;
     this.enableLegacyTemplate = enableLegacyTemplate === true;
     this.preserveWhitespaces = preserveWhitespacesDefault(noUndefined(preserveWhitespaces));
+    this.strictInjectionParameters = strictInjectionParameters === true;
   }
 }
 

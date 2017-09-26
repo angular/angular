@@ -19,4 +19,5 @@ export interface AotCompilerOptions {
   preserveWhitespaces?: boolean;
   fullTemplateTypeCheck?: boolean;
   allowEmptyCodegenFiles?: boolean;
+  strictInjectionParameters?: boolean;
 }
