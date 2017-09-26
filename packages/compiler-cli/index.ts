@@ -15,6 +15,7 @@ export {getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from './s
 export {Extractor} from './src/extractor';
 export {VERSION} from './src/version';
 
+export * from './src/metadata';
 export * from './src/transformers/api';
 export * from './src/transformers/entry_points';
 

@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {MetadataCollector} from '../metadata/collector';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, VERSION, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from '../metadata/schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from '../metadata/schema';
 
 
 
@@ -114,7 +114,7 @@ export class MetadataBundler {
     return {
       metadata: {
         __symbolic: 'module',
-        version: VERSION,
+        version: METADATA_VERSION,
         exports: exports.length ? exports : undefined, metadata, origins,
         importAs: this.importAs !
       },

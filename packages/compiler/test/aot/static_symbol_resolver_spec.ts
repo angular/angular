@@ -7,9 +7,10 @@
  */
 
 import {StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, Summary, SummaryResolver} from '@angular/compiler';
+import {CollectorOptions, METADATA_VERSION} from '@angular/compiler-cli';
 import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
-import {CollectorOptions} from '@angular/compiler-cli/src/metadata/index';
 import * as ts from 'typescript';
+
 
 
 // This matches .ts files but not .d.ts files.
@@ -38,7 +39,7 @@ describe('StaticSymbolResolver', () => {
         () => symbolResolver.resolveSymbol(
             symbolResolver.getSymbolByModule('src/version-error', 'e')))
         .toThrow(new Error(
-            'Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected 3'));
+            `Metadata version mismatch for module /tmp/src/version-error.d.ts, found version 100, expected ${METADATA_VERSION}`));
   });
 
   it('should throw an exception for version 2 metadata', () => {
@@ -155,14 +156,14 @@ describe('StaticSymbolResolver', () => {
           {
             '/test.d.ts': [{
               '__symbolic': 'module',
-              'version': 3,
+              'version': METADATA_VERSION,
               'metadata': {
                 'a': {'__symbolic': 'reference', 'name': 'b', 'module': './test2'},
               }
             }],
             '/test2.d.ts': [{
               '__symbolic': 'module',
-              'version': 3,
+              'version': METADATA_VERSION,
               'metadata': {
                 'b': {'__symbolic': 'reference', 'name': 'c', 'module': './test3'},
               }
@@ -299,7 +300,7 @@ describe('StaticSymbolResolver', () => {
     init({
       '/test.d.ts': [{
         '__symbolic': 'module',
-        'version': 3,
+        'version': METADATA_VERSION,
         'metadata': {
           'AParam': {__symbolic: 'class'},
           'AClass': {
@@ -504,7 +505,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   '/tmp/src/version-2-error.d.ts': {'__symbolic': 'module', 'version': 2, metadata: {e: 's'}},
   '/tmp/src/reexport/reexport.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       Six: {__symbolic: 'class'},
     },
@@ -515,7 +516,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   },
   '/tmp/src/reexport/src/origin1.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       One: {__symbolic: 'class'},
       Two: {__symbolic: 'class'},
@@ -525,26 +526,26 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
   },
   '/tmp/src/reexport/src/origin5.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       Five: {__symbolic: 'class'},
     },
   },
   '/tmp/src/reexport/src/origin30.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {
       Thirty: {__symbolic: 'class'},
     },
   },
   '/tmp/src/reexport/src/originNone.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {},
   },
   '/tmp/src/reexport/src/reexport2.d.ts': {
     __symbolic: 'module',
-    version: 3,
+    version: METADATA_VERSION,
     metadata: {},
     exports: [{from: './originNone'}, {from: './origin30'}]
   }
