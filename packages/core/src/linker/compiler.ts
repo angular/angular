@@ -10,7 +10,7 @@ import {Injectable, InjectionToken, StaticProvider} from '../di';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {ViewEncapsulation} from '../metadata';
 import {Type} from '../type';
-
+import {stringify} from '../util';
 import {ComponentFactory} from './component_factory';
 import {NgModuleFactory} from './ng_module_factory';
 
@@ -27,8 +27,8 @@ export class ModuleWithComponentFactories<T> {
 }
 
 
-function _throwError() {
-  throw new Error(`Runtime compiler is not loaded`);
+function _throwError(type: Type<any>): never {
+  throw new Error(`Cannot compile ${stringify(type)}. Runtime compiler is not loaded`);
 }
 
 /**
@@ -47,18 +47,20 @@ export class Compiler {
    * Compiles the given NgModule and all of its components. All templates of the components listed
    * in `entryComponents` have to be inlined.
    */
-  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> { throw _throwError(); }
+  compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T> { throw _throwError(moduleType); }
 
   /**
    * Compiles the given NgModule and all of its components
    */
-  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> { throw _throwError(); }
+  compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>> {
+    throw _throwError(moduleType);
+  }
 
   /**
    * Same as {@link #compileModuleSync} but also creates ComponentFactories for all components.
    */
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
-    throw _throwError();
+    throw _throwError(moduleType);
   }
 
   /**
@@ -66,7 +68,7 @@ export class Compiler {
    */
   compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):
       Promise<ModuleWithComponentFactories<T>> {
-    throw _throwError();
+    throw _throwError(moduleType);
   }
 
   /**
@@ -77,7 +79,7 @@ export class Compiler {
    *
    * @deprecated since v4. Use ComponentFactory.ngContentSelectors instead.
    */
-  getNgContentSelectors(component: Type<any>): string[] { throw _throwError(); }
+  getNgContentSelectors(component: Type<any>): string[] { throw _throwError(component); }
 
   /**
    * Clears all caches.
