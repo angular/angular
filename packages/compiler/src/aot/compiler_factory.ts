@@ -69,6 +69,7 @@ export function createAotCompiler(compilerHost: AotCompilerHost, options: AotCom
     enableLegacyTemplate: options.enableLegacyTemplate === true,
     missingTranslation: options.missingTranslation,
     preserveWhitespaces: options.preserveWhitespaces,
+    strictInjectionParameters: options.strictInjectionParameters,
   });
   const normalizer = new DirectiveNormalizer(
       {get: (url: string) => compilerHost.loadResource(url)}, urlResolver, htmlParser, config);
