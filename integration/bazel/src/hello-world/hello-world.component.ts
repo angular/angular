@@ -8,8 +8,7 @@ import {Component, NgModule} from '@angular/core';
     <input type="text" [value]="name" (input)="name = $event.target.value"/>
   `,
   // TODO: might be better to point to .scss so this looks valid at design-time
-  // TODO(alexeagle): re-enable SASS
-  // styleUrls: ['./styles.css']
+  styleUrls: ['./hello-world-styles.css'],
 })
 export class HelloWorldComponent {
   name: string = 'world';
