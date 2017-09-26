@@ -99,7 +99,7 @@ export class DowngradeComponentAdapter {
         })(input.prop);
         attrs.$observe(input.attr, observeFn);
 
-        // Use `$watch()` (in addition to `$observe()`) in order to initialize the input  in time
+        // Use `$watch()` (in addition to `$observe()`) in order to initialize the input in time
         // for `ngOnChanges()`. This is necessary if we are already in a `$digest`, which means that
         // `ngOnChanges()` (which is called by a watcher) will run before the `$observe()` callback.
         let unwatch: Function|null = this.componentScope.$watch(() => {
@@ -138,8 +138,7 @@ export class DowngradeComponentAdapter {
         (<OnChanges>this.component).ngOnChanges(inputChanges !);
       }
 
-      // If opted out of propagating digests, invoke change detection
-      // when inputs change
+      // If opted out of propagating digests, invoke change detection when inputs change.
       if (!propagateDigest) {
         detectChanges();
       }
@@ -150,10 +149,16 @@ export class DowngradeComponentAdapter {
       this.componentScope.$watch(this.wrapCallback(detectChanges));
     }
 
-    // Attach the view so that it will be dirty-checked.
+    // If necessary, attach the view so that it will be dirty-checked.
+    // (Allow time for the initial input values to be set and `ngOnChanges()` to be called.)
     if (needsNgZone || !propagateDigest) {
-      const appRef = this.parentInjector.get<ApplicationRef>(ApplicationRef);
-      appRef.attachView(this.componentRef.hostView);
+      let unwatch: Function|null = this.componentScope.$watch(() => {
+        unwatch !();
+        unwatch = null;
+
+        const appRef = this.parentInjector.get<ApplicationRef>(ApplicationRef);
+        appRef.attachView(this.componentRef.hostView);
+      });
     }
   }
 
