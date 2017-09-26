@@ -176,6 +176,8 @@ function createPositionApplyingDoubleDots(
 function getPath(command: any): any {
   if (typeof command === 'object' && command != null && command.outlets) {
     return command.outlets[PRIMARY_OUTLET];
+  } else if (typeof command === 'object' && command != null && !command.outlets) {
+    return command;
   }
   return `${command}`;
 }
@@ -253,6 +255,9 @@ function prefixedWith(segmentGroup: UrlSegmentGroup, startIndex: number, command
     if (curr && next && (typeof next === 'object') && next.outlets === undefined) {
       if (!compare(curr, next, path)) return noMatch;
       currentCommandIndex += 2;
+    } else if (curr && (typeof curr === 'object') && curr.outlets === undefined) {
+      Object.keys(curr).forEach(key => path.parameters[key] = curr[key]);
+      currentCommandIndex++;
     } else {
       if (!compare(curr, {}, path)) return noMatch;
       currentCommandIndex++;

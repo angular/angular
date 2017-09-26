@@ -233,6 +233,26 @@ describe('createUrlTree', () => {
       const t = create(p.root.children[PRIMARY_OUTLET], 1, p, [{outlets: {right: ['c']}}]);
       expect(serializer.serialize(t)).toEqual('/a/b/(right:c)');
     });
+
+    it('should support updating primary segments without leaving auxiliary routes', () => {
+      const p = serializer.parse('/a/b/(c//left:cp)');
+      const t = create(p.root.children[PRIMARY_OUTLET], 1, p, ['d']);
+      expect(serializer.serialize(t)).toEqual('/a/b/(d//left:cp)');
+    });
+
+    it('should support updating primary segments with existing matrix parameters without leaving auxiliary routes',
+       () => {
+         const p = serializer.parse('/a/b;x=1/(c//left:cp)');
+         const t = create(p.root.children[PRIMARY_OUTLET], 1, p, [{x: 2}, 'c']);
+         expect(serializer.serialize(t)).toEqual('/a/b;x=2/(c//left:cp)');
+       });
+
+    it('should support updating primary segments with new matrix parameters without leaving auxiliary routes',
+       () => {
+         const p = serializer.parse('/a/b/(c//left:cp)');
+         const t = create(p.root.children[PRIMARY_OUTLET], 1, p, [{x: 2}, 'c']);
+         expect(serializer.serialize(t)).toEqual('/a/b;x=2/(c//left:cp)');
+       });
   });
 
   it('should set fragment', () => {
