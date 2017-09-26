@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, NgZone, ɵglobal as global} from '@angular/core';
+import {Inject, Injectable, NgZone} from '@angular/core';
+// Import zero symbols from zone.js. This causes the zone ambient type to be
+// added to the type-checker, without emitting any runtime module load statement
+import {} from 'zone.js';
 
 import {DOCUMENT} from '../dom_tokens';
 
@@ -18,8 +21,8 @@ import {EventManagerPlugin} from './event_manager';
  * efficient bookkeeping than Zone can, because we have additional information. This speeds up
  * addEventListener by 3x.
  */
-const Zone = global['Zone'];
-const __symbol__ = Zone && Zone['__symbol__'] || function<T>(v: T): T {
+const __symbol__ =
+    (typeof Zone !== 'undefined') && (Zone as any)['__symbol__'] || function<T>(v: T): T {
   return v;
 };
 const ADD_EVENT_LISTENER: 'addEventListener' = __symbol__('addEventListener');
@@ -32,7 +35,8 @@ const ANGULAR = 'ANGULAR';
 const NATIVE_ADD_LISTENER = 'addEventListener';
 const NATIVE_REMOVE_LISTENER = 'removeEventListener';
 
-const blackListedEvents: string[] = Zone && Zone[__symbol__('BLACK_LISTED_EVENTS')];
+const blackListedEvents: string[] =
+    (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('BLACK_LISTED_EVENTS')];
 let blackListedMap: {[eventName: string]: string};
 if (blackListedEvents) {
   blackListedMap = {};
