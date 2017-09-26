@@ -1580,13 +1580,7 @@ export interface HttpParameterCodec {
 
 /** @stable */
 export declare class HttpParams {
-    constructor(options?: {
-        fromString?: string;
-        fromObject?: {
-            [param: string]: string | string[];
-        };
-        encoder?: HttpParameterCodec;
-    });
+    constructor(options?: HttpParamsOptions);
     append(param: string, value: string): HttpParams;
     delete(param: string, value?: string): HttpParams;
     get(param: string): string | null;
