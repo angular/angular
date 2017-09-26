@@ -17,25 +17,38 @@ const PACKAGES_DIR = path.join(ROOT_DIR, 'packages');
 const PACKAGES_DIST_DIR = path.join(ROOT_DIR, 'dist/packages-dist');
 const ROOT_NODE_MODULES_DIR = path.join(ROOT_DIR, 'node_modules');
 const NG_LOCAL_FILENAME = '.ng-local';
+const PACKAGE_JSON_FILENAME = 'package.json';
+const PACKAGE_JSON_REGEX = new RegExp(`^[^/]+/${PACKAGE_JSON_FILENAME}$`);
 
 // Classes
 class NgPackagesInstaller {
   constructor() {
-    // Properties - Protected
+    const packagePaths = shelljs.
+      find(PACKAGES_DIR).
+      map(path => path.slice(PACKAGES_DIR.length + 1)).
+      filter(path => PACKAGE_JSON_REGEX.test(path));
+    const packageConfigs = packagePaths.
+      map(packagePath => require(PACKAGES_DIR + '/' + packagePath));
 
-    this.peerDependencies = {};
+    // Properties - Protected
 
     /**
      * A sorted list of Angular package names.
      * (Detected as directories in '/packages/' that contain a top-level 'package.json' file.)
      */
-    this.ngPackages = shelljs.
-      find(PACKAGES_DIR).
-      map(path => path.slice(PACKAGES_DIR.length + 1)).
-      filter(path => /^[^/]+\/package.json$/.test(path)).
-      map(path => this._capturePeerDependencies(path)).
-      map(path => path.slice(0, -13)).
+    this.ngPackages = packagePaths.
+      map(path => path.slice(0, -PACKAGE_JSON_FILENAME.length - 1)).
       sort();
+
+    /**
+     * A sorted list of node modules that are depedencies of the Angular pacakges
+     */
+    this.dependencies = this._extractDependencies(packageConfigs, 'dependencies');
+
+    /**
+     * A sorted list of node modules that are peer depedencies of the Angular pacakges
+     */
+    this.peerDependencies = this._extractDependencies(packageConfigs, 'peerDependencies');
   }
 
   // Methods - Public
@@ -47,7 +60,7 @@ class NgPackagesInstaller {
    */
   checkPackages(rootDir) {
     rootDir = path.resolve(rootDir);
-    const localPackages = this._findLocalPackages(rootDir);
+    const localPackages = this._findAllLocalPackages(rootDir);
 
     if (localPackages.length) {
       const relativeScriptPath = path.relative('.', __filename.replace(/\.js$/, ''));
@@ -84,10 +97,18 @@ class NgPackagesInstaller {
     const nodeModulesDir = path.join(rootDir, 'node_modules');
 
     this.ngPackages.forEach(packageName => this._overwritePackage(PACKAGES_DIST_DIR, packageName, path.join(nodeModulesDir, '@angular/')));
-    Object.keys(this.peerDependencies).forEach(packageName => this._overwritePackage(ROOT_NODE_MODULES_DIR, packageName, nodeModulesDir));
+    // this.dependencies.forEach(packageName => this._overwritePackage(ROOT_NODE_MODULES_DIR, packageName, nodeModulesDir));
+    // this.peerDependencies.forEach(packageName => this._overwritePackage(ROOT_NODE_MODULES_DIR, packageName, nodeModulesDir));
 
-    // Reset the executable flag in .bin
-    shelljs.ls(path.join(nodeModulesDir, '.bin', '*')).forEach(file => shelljs.chmod('+x', file));
+    // Reset the executable flags in .bin
+    this._log('Updating executable flags in node_modules .bin folder');
+    shelljs.ls(path.join(nodeModulesDir, '.bin', '*')).forEach(file => {
+      if (fs.existsSync(file)) {
+        shelljs.chmod('+x', file);
+      } else {
+        this._log(' - unable to update ' + file);
+      }
+    });
   }
 
   /**
@@ -97,7 +118,7 @@ class NgPackagesInstaller {
    */
   restorePackages(rootDir) {
     rootDir = path.resolve(rootDir);
-    const localPackages = this._findLocalPackages(rootDir);
+    const localPackages = this._findAllLocalPackages(rootDir);
 
     if (localPackages.length) {
       this._reinstallOverwrittenNodeModules(rootDir);
@@ -107,46 +128,57 @@ class NgPackagesInstaller {
   // Methods - Protected
 
   /**
+   * Parse the `package.json` files for their dependencies.
+   * @param {Object[]} packageConfigs - a collection of package.json objects.
+   * @param {string} dependenciesProperty - the key of the property that holds the dependency info.
+   * @return a sorted collection of dependency names.
+   */
+  _extractDependencies(packageConfigs, dependenciesProperty) {
+    const dependencyMap = Object.create(null);
+
+    packageConfigs.forEach(packageConfig => {
+      const dependencies = packageConfig[dependenciesProperty] || Object.create(null);
+      Object.keys(dependencies).forEach(key => {
+        if (key.indexOf('@angular/') !== 0 && dependencies[key] !== '0.0.0-PLACEHOLDER') {
+          dependencyMap[key] = dependencies[key];
+        }
+      });
+    });
+
+    return Object.keys(dependencyMap).sort();
+  }
+
+  /**
+   *
+   * @param {string} nodeModulesDir - The base node_modules directory containing packages
+   * @param {string} scope - The npm scope of the packages to search
+   */
+  _findLocalPackages(nodeModulesDir, scope) {
+    try {
+      return shelljs.ls(path.join(nodeModulesDir, scope, '*', NG_LOCAL_FILENAME)).
+        map(path => path.slice(nodeModulesDir.length + 1, - NG_LOCAL_FILENAME.length - 1));
+    } catch(e) {
+      if (e.message.indexOf('ls: no such file or directory') === -1) throw e;
+      return [];
+    }
+  }
+
+  /**
    * Find and return all Angular packages installed in the specified `rootDir`'s 'node_modules/' that have been
    * overwritten with the locally built ones.
    * @param {string} rootDir - The root directory whose npm dependencies will be checked.
    * @return {string[]} - A list of overwritten package names.
    */
-  _findLocalPackages(rootDir) {
+  _findAllLocalPackages(rootDir) {
     const nodeModulesDir = path.join(rootDir, 'node_modules');
-    const packagesDir = path.join(nodeModulesDir, '@angular');
-    let localPackages = [];
-    let localDependencies = [];
-    try {
-      localPackages = shelljs.ls(path.join(packagesDir, '*', NG_LOCAL_FILENAME)).
-        map(path => path.slice(nodeModulesDir.length + 1, - NG_LOCAL_FILENAME.length - 1));
-      localDependencies = shelljs.ls(path.join(nodeModulesDir, '*', NG_LOCAL_FILENAME)).
-          map(path => path.slice(nodeModulesDir.length + 1, - NG_LOCAL_FILENAME.length - 1));
-    } catch(e) {
-      if (e.message.indexOf('ls: no such file or directory') === -1) throw e;
-    }
 
+    let localPackages = this._findLocalPackages(nodeModulesDir, '@angular');
     this._log(`Local packages found: ${localPackages.join(', ') || '-'}`);
+
+    let localDependencies = this._findLocalPackages(nodeModulesDir, '');
     this._log(`Local dependencies found: ${localDependencies.join(', ') || '-'}`);
 
     return localPackages.concat(localDependencies);
-  }
-
-  /**
-   * Check whether an installed Angular package from `nodeModulesDir` has been overwritten with a
-   * locally built package.
-   * @param {string} packageName    - The name of the package to check.
-   * @param {string} nodeModulesDir - The target `node_modules/` directory.
-   * @return {boolean} - True if the package has been overwritten or false otherwise.
-   */
-  _isLocalPackage(packageName, nodeModulesDir) {
-    const targetPackageDir = path.join(nodeModulesDir, packageName);
-    const localFlagFile = path.join(targetPackageDir, NG_LOCAL_FILENAME);
-    const isLocal = fs.existsSync(localFlagFile);
-
-    this._log(`Checking package '${packageName}' (${targetPackageDir})... local: ${isLocal}`);
-
-    return isLocal;
   }
 
   /**
@@ -169,6 +201,12 @@ class NgPackagesInstaller {
 
       const availablePackages = this.ngPackages.map(pkg => `\n  - @angular/${pkg}`).join('') || '-';
       this._log(`Available Angular packages: ${availablePackages}`);
+
+      const dependencies = this.dependencies.map(pkg => `\n  - ${pkg}`).join('') || '-';
+      this._log(`Angular dependencies: ${dependencies}`);
+
+      const peerDependencies = this.peerDependencies.map(pkg => `\n  - ${pkg}`).join('') || '-';
+      this._log(`Angular peerDependencies: ${peerDependencies}`);
     };
 
     yargs.
@@ -242,21 +280,6 @@ class NgPackagesInstaller {
 
     this._log(`Running '${installCmd}' in '${rootDir}'...`);
     shelljs.exec(installCmd, {cwd: rootDir});
-  }
-
-  /**
-   * Parse a package's package.json for its peer dependencies, storing them in the `peerDependencies` property.
-   * @param {string} path to a package's package.json
-   * @returns the path that was passed, to enable chaining
-   */
-  _capturePeerDependencies(path) {
-    const peerDependencies = require(PACKAGES_DIR + '/' + path).peerDependencies || {};
-    Object.keys(peerDependencies).forEach(dep => {
-      if (peerDependencies[dep] !== '0.0.0-PLACEHOLDER') {
-        this.peerDependencies[dep] = peerDependencies[dep];
-      }
-    });
-    return path;
   }
 }
 
