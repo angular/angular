@@ -20,6 +20,7 @@ export default {
   dest: '../../../dist/packages-dist/core/bundles/core-testing.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/core/testing'},
   moduleName: 'ng.core.testing',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

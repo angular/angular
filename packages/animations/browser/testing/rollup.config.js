@@ -21,6 +21,7 @@ export default {
   dest: '../../../../dist/packages-dist/animations/bundles/animations-browser-testing.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/animations/browser/testing'},
   moduleName: 'ng.animations.browser.testing',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

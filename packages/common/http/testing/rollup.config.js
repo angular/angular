@@ -24,6 +24,7 @@ export default {
   dest: '../../../../dist/packages-dist/common/bundles/common-http-testing.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/common/http/testing'},
   moduleName: 'ng.common.http.testing',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

@@ -20,6 +20,7 @@ export default {
   dest: '../../../dist/packages-dist/animations/bundles/animations-browser.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/animations/browser'},
   moduleName: 'ng.animations.browser',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
