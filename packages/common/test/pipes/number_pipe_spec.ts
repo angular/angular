@@ -48,8 +48,11 @@ export function main() {
         });
 
         it('should not support other objects', () => {
-          expect(() => pipe.transform({})).toThrowError();
-          expect(() => pipe.transform('123abc')).toThrowError();
+          expect(() => pipe.transform({}))
+              .toThrowError(
+                  `InvalidPipeArgument: '[object Object] is not a number' for pipe 'DecimalPipe'`);
+          expect(() => pipe.transform('123abc'))
+              .toThrowError(`InvalidPipeArgument: '123abc is not a number' for pipe 'DecimalPipe'`);
         });
 
         it('should throw if minFractionDigits is explicitly higher than maxFractionDigits', () => {
@@ -78,8 +81,11 @@ export function main() {
           expect(pipe.transform(1.2, '4.2', 'fr')).toEqual('0 120,00 %');
         });
 
-        it('should not support other objects',
-           () => { expect(() => pipe.transform({})).toThrowError(); });
+        it('should not support other objects', () => {
+          expect(() => pipe.transform({}))
+              .toThrowError(
+                  `InvalidPipeArgument: '[object Object] is not a number' for pipe 'PercentPipe'`);
+        });
       });
     });
 
@@ -102,8 +108,11 @@ export function main() {
               .toEqual('00 005,12 $');
         });
 
-        it('should not support other objects',
-           () => { expect(() => pipe.transform({})).toThrowError(); });
+        it('should not support other objects', () => {
+          expect(() => pipe.transform({}))
+              .toThrowError(
+                  `InvalidPipeArgument: '[object Object] is not a number' for pipe 'CurrencyPipe'`);
+        });
 
         it('should warn if you are using the v4 signature', () => {
           const warnSpy = spyOn(console, 'warn');
