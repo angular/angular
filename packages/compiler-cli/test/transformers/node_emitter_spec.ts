@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
+import {MappingItem, RawSourceMap, SourceMapConsumer} from 'source-map';
 import * as ts from 'typescript';
 
 import {TypeScriptNodeEmitter} from '../../src/transformers/node_emitter';
@@ -383,6 +385,80 @@ describe('TypeScriptNodeEmitter', () => {
 
   it('should support a preamble', () => {
     expect(emitStmt(o.variable('a').toStmt(), '/* SomePreamble */')).toBe('/* SomePreamble */ a;');
+  });
+
+  describe('source maps', () => {
+    function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
+      const stmts = Array.isArray(stmt) ? stmt : [stmt];
+
+      const program = ts.createProgram(
+          [someGenFileName], {
+            module: ts.ModuleKind.CommonJS,
+            target: ts.ScriptTarget.ES2017,
+            sourceMap: true,
+            inlineSourceMap: true,
+            inlineSources: true,
+          },
+          host);
+      const moduleSourceFile = program.getSourceFile(someGenFileName);
+      const transformers: ts.CustomTransformers = {
+        before: [context => {
+          return sourceFile => {
+            const [newSourceFile] = emitter.updateSourceFile(sourceFile, stmts, preamble);
+            return newSourceFile;
+          };
+        }]
+      };
+      let result: string = '';
+      const emitResult = program.emit(
+          moduleSourceFile, (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
+            if (fileName.startsWith(someGenFilePath)) {
+              result = data;
+            }
+          }, undefined, undefined, transformers);
+      return result;
+    }
+
+    it('should produce a source map that maps back to the source', () => {
+      const statement = someVar.set(o.literal(1)).toDeclStmt();
+      const text = '<my-comp> a = 1 </my-comp>';
+      const sourceName = 'ng://some.file.html';
+      const sourceUrl = 'file:///ng:/some.file.html';
+      const file = new ParseSourceFile(text, sourceName);
+      const start = new ParseLocation(file, 0, 0, 0);
+      const end = new ParseLocation(file, text.length, 0, text.length);
+      statement.sourceSpan = new ParseSourceSpan(start, end);
+
+      const result = emitStmt(statement);
+
+      // find the source map:
+      const sourceMapMatch = /sourceMappingURL\=data\:application\/json;base64,(.*)$/.exec(result);
+      const sourceMapBase64 = sourceMapMatch ![1];
+      const sourceMapBuffer = Buffer.from(sourceMapBase64, 'base64');
+      const sourceMapText = sourceMapBuffer.toString('utf8');
+      const sourceMap: RawSourceMap = JSON.parse(sourceMapText);
+      const consumer = new SourceMapConsumer(sourceMap);
+      const mappings: MappingItem[] = [];
+      consumer.eachMapping(mapping => { mappings.push(mapping); });
+      expect(mappings).toEqual([
+        {
+          source: sourceUrl,
+          generatedLine: 3,
+          generatedColumn: 0,
+          originalLine: 1,
+          originalColumn: 0,
+          name: null
+        },
+        {
+          source: sourceUrl,
+          generatedLine: 3,
+          generatedColumn: 16,
+          originalLine: 1,
+          originalColumn: 26,
+          name: null
+        }
+      ]);
+    });
   });
 });
 

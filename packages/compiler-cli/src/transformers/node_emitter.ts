@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, CompileIdentifierMetadata, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceSpan, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StaticSymbol, StmtModifier, ThrowStmt, TryCatchStmt, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, CompileIdentifierMetadata, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StaticSymbol, StmtModifier, ThrowStmt, TryCatchStmt, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 export interface Node { sourceSpan: ParseSourceSpan|null; }
@@ -63,8 +63,10 @@ function createLiteral(value: any) {
  */
 class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private _nodeMap = new Map<ts.Node, Node>();
+  private _mapped = new Set<Node>();
   private _importsWithPrefixes = new Map<string, string>();
   private _reexports = new Map<string, {name: string, as: string}[]>();
+  private _templateSources = new Map<ParseSourceFile, ts.SourceMapSource>();
 
   getReexports(): ts.Statement[] {
     return Array.from(this._reexports.entries())
@@ -93,9 +95,32 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private record<T extends ts.Node>(ngNode: Node, tsNode: T|null): RecordedNode<T> {
     if (tsNode && !this._nodeMap.has(tsNode)) {
       this._nodeMap.set(tsNode, ngNode);
+      if (!this._mapped.has(ngNode)) {
+        this._mapped.add(ngNode);
+        const range = this.sourceRangeOf(ngNode);
+        if (range) {
+          ts.setSourceMapRange(tsNode, range);
+        }
+      }
       ts.forEachChild(tsNode, child => this.record(ngNode, tsNode));
     }
     return tsNode as RecordedNode<T>;
+  }
+
+  private sourceRangeOf(node: Node): ts.SourceMapRange|null {
+    if (node.sourceSpan) {
+      const span = node.sourceSpan;
+      if (span.start.file == span.end.file) {
+        const file = span.start.file;
+        let source = this._templateSources.get(file);
+        if (!source) {
+          source = ts.createSourceMapSource(file.url, file.content, pos => pos);
+          this._templateSources.set(file, source);
+        }
+        return {pos: span.start.offset, end: span.end.offset, source};
+      }
+    }
+    return null;
   }
 
   private getModifiers(stmt: Statement) {
