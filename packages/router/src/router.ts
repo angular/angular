@@ -625,7 +625,7 @@ export class Router {
             preActivation = new PreActivation(
                 snapshot, this.routerState.snapshot, moduleInjector,
                 (evt: Event) => this.triggerEvent(evt));
-            preActivation.initalize(this.rootContexts);
+            preActivation.initialize(this.rootContexts);
             return {appliedUrl, snapshot};
           });
 

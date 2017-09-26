@@ -45,7 +45,7 @@ export class PreActivation {
       private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
       private moduleInjector: Injector, private forwardEvent?: (evt: Event) => void) {}
 
-  initalize(parentContexts: ChildrenOutletContexts): void {
+  initialize(parentContexts: ChildrenOutletContexts): void {
     const futureRoot = this.future._root;
     const currRoot = this.curr ? this.curr._root : null;
     this.setupChildRouteGuards(futureRoot, currRoot, parentContexts, [futureRoot.value]);
