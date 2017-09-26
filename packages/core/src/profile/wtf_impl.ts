@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from '../util';
-
 /**
  * A scope function for the Web Tracing Framework (WTF).
  *
@@ -37,9 +35,11 @@ export interface Scope { (...args: any[] /** TODO #9100 */): any; }
 let trace: Trace;
 let events: Events;
 
+// Declare global variable in a closure friendly way.
+declare const wtf: WTF|undefined;
+
 export function detectWTF(): boolean {
-  const wtf: WTF = (global as any /** TODO #9100 */)['wtf'];
-  if (wtf) {
+  if (typeof wtf !== 'undefined') {
     trace = wtf['trace'];
     if (trace) {
       events = trace['events'];

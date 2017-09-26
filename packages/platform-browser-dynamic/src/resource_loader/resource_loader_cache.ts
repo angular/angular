@@ -7,7 +7,9 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ɵglobal as global} from '@angular/core';
+
+// Declare global variable in a closure friendly way.
+declare const $templateCache: {[url: string]: string}|undefined;
 
 /**
  * An implementation of ResourceLoader that uses a template cache to avoid doing an actual
@@ -21,10 +23,11 @@ export class CachedResourceLoader extends ResourceLoader {
 
   constructor() {
     super();
-    this._cache = (<any>global).$templateCache;
-    if (this._cache == null) {
+    const cache = typeof $templateCache !== 'undefined' ? $templateCache : null;
+    if (!cache) {
       throw new Error('CachedResourceLoader: Template cache was not found in $templateCache.');
     }
+    this._cache = cache;
   }
 
   get(url: string): Promise<string> {

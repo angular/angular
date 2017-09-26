@@ -6,10 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgZone, ɵglobal as global} from '@angular/core';
+import {NgZone} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 export let browserDetection: BrowserDetection;
+
+// Declare global variable in a closure friendly way.
+declare const Intl: any;
+// Declare global variable in a closure friendly way.
+declare const IntlPolyfill: any;
 
 export class BrowserDetection {
   private _overrideUa: string|null;
@@ -54,7 +59,9 @@ export class BrowserDetection {
   // 1) IE11/Edge: they have a native Intl API, but with some discrepancies
   // 2) IE9/IE10: they use the polyfill, and so no discrepancies
   get supportsNativeIntlApi(): boolean {
-    return !!(<any>global).Intl && (<any>global).Intl !== (<any>global).IntlPolyfill;
+    const _Intl = typeof Intl !== 'undefined' ? Intl : null;
+    const _IntlPolyfill = typeof IntlPolyfill !== 'undefined' ? IntlPolyfill : null;
+    return !!_Intl && _Intl !== _IntlPolyfill;
   }
 
   get isChromeDesktop(): boolean {

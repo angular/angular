@@ -21,15 +21,41 @@ const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'unde
     self instanceof WorkerGlobalScope && self;
 const __global = typeof global !== 'undefined' && global;
 const _global: {[name: string]: any} = __window || __global || __self;
-export {_global as global};
 
-// When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
+/**
+ * Attention: Always use `declare const ...` when reading globals,
+ * so that tsickle produces externs for closure.
+ *
+ * Only use this export for setting globals,
+ * but still add a `declare const ...` so that tsickle
+ * keeps producing the right externs, even if
+ * that variable is not used.
+ *
+ * Pattern for reading optional values:
+ * ```
+ * declare var xzy: string;
+ * if (typeof xzy !== 'undefined') { ... }
+ * ```
+ *
+ * Pattern for creating globals lazily
+ * ```
+ * // still needed for closure, even if not read!
+ * declar var xzy: string;
+ *
+ * if (typeof xzy === 'undefined') {
+ *   globalForWrite.xzy = 'test';
+ * }
+ * console.log(xzy); // don't use globalForWrite.xzy for reading!
+ * ```
+ */
+export {_global as globalForWrite};
+
 declare const Symbol: any;
+// When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
 let _symbolIterator: any = null;
 export function getSymbolIterator(): string|symbol {
   if (!_symbolIterator) {
-    const Symbol = _global['Symbol'];
-    if (Symbol && Symbol.iterator) {
+    if (typeof Symbol !== 'undefined' && Symbol.iterator) {
       _symbolIterator = Symbol.iterator;
     } else {
       // es6-shim specific logic

@@ -7,10 +7,8 @@
  */
 
 import {ComponentRef} from '@angular/core';
-import {exportNgVar} from '../../dom/util';
+import {getNgGlobal} from '../../dom/util';
 import {AngularProfiler} from './common_tools';
-
-const PROFILER_GLOBAL_NAME = 'profiler';
 
 /**
  * Enabled Angular debug tools that are accessible via your browser's
@@ -26,7 +24,7 @@ const PROFILER_GLOBAL_NAME = 'profiler';
  * @experimental All debugging apis are currently experimental.
  */
 export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
-  exportNgVar(PROFILER_GLOBAL_NAME, new AngularProfiler(ref));
+  getNgGlobal().profiler = new AngularProfiler(ref);
   return ref;
 }
 
@@ -36,5 +34,5 @@ export function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T> {
  * @experimental All debugging apis are currently experimental.
  */
 export function disableDebugTools(): void {
-  exportNgVar(PROFILER_GLOBAL_NAME, null);
+  getNgGlobal().profiler = undefined;
 }
