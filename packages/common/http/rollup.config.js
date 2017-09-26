@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
+
 const globals = {
   '@angular/core': 'ng.core',
   '@angular/platform-browser': 'ng.platformBrowser',
@@ -28,6 +31,7 @@ module.exports = {
   exports: 'named',
   amd: {id: '@angular/common/http'},
   moduleName: 'ng.common.http',
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };
