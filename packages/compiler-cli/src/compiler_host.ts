@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {CollectorOptions, MetadataCollector, ModuleMetadata} from './metadata/index';
+import {CollectorOptions, METADATA_VERSION, MetadataCollector, ModuleMetadata} from './metadata/index';
 import {CompilerOptions} from './transformers/api';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
@@ -76,9 +76,9 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
       let metadatas = this.readMetadata(filePath);
       if (!metadatas) {
         // If there is a .d.ts file but no metadata file we need to produce a
-        // v3 metadata from the .d.ts file as v3 includes the exports we need
-        // to resolve symbols.
-        metadatas = [this.upgradeVersion1Metadata(
+        // metadata from the .d.ts file as metadata files capture reexports
+        // (starting with v3).
+        metadatas = [this.upgradeMetadataWithDtsData(
             {'__symbolic': 'module', 'version': 1, 'metadata': {}}, filePath)];
       }
       return metadatas;
@@ -104,10 +104,11 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
       const metadatas: ModuleMetadata[] = metadataOrMetadatas ?
           (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
           [];
-      const v1Metadata = metadatas.find(m => m.version === 1);
-      let v3Metadata = metadatas.find(m => m.version === 3);
-      if (!v3Metadata && v1Metadata) {
-        metadatas.push(this.upgradeVersion1Metadata(v1Metadata, dtsFilePath));
+      if (metadatas.length) {
+        let maxMetadata = metadatas.reduce((p, c) => p.version > c.version ? p : c);
+        if (maxMetadata.version < METADATA_VERSION) {
+          metadatas.push(this.upgradeMetadataWithDtsData(maxMetadata, dtsFilePath));
+        }
       }
       this.resolverCache.set(dtsFilePath, metadatas);
       return metadatas;
@@ -117,30 +118,44 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
     }
   }
 
-  private upgradeVersion1Metadata(v1Metadata: ModuleMetadata, dtsFilePath: string): ModuleMetadata {
-    // patch up v1 to v3 by merging the metadata with metadata collected from the d.ts file
-    // as the only difference between the versions is whether all exports are contained in
-    // the metadata and the `extends` clause.
-    let v3Metadata: ModuleMetadata = {'__symbolic': 'module', 'version': 3, 'metadata': {}};
-    if (v1Metadata.exports) {
-      v3Metadata.exports = v1Metadata.exports;
+  private upgradeMetadataWithDtsData(oldMetadata: ModuleMetadata, dtsFilePath: string):
+      ModuleMetadata {
+    // patch v1 to v3 by adding exports and the `extends` clause.
+    // patch v3 to v4 by adding `interface` symbols for TypeAlias
+    let newMetadata: ModuleMetadata = {
+      '__symbolic': 'module',
+      'version': METADATA_VERSION,
+      'metadata': {...oldMetadata.metadata},
+    };
+    if (oldMetadata.exports) {
+      newMetadata.exports = oldMetadata.exports;
     }
-    for (let prop in v1Metadata.metadata) {
-      v3Metadata.metadata[prop] = v1Metadata.metadata[prop];
+    if (oldMetadata.importAs) {
+      newMetadata.importAs = oldMetadata.importAs;
     }
-
-    const exports = this.getMetadataForSourceFile(dtsFilePath);
-    if (exports) {
-      for (let prop in exports.metadata) {
-        if (!v3Metadata.metadata[prop]) {
-          v3Metadata.metadata[prop] = exports.metadata[prop];
+    if (oldMetadata.origins) {
+      newMetadata.origins = oldMetadata.origins;
+    }
+    const dtsMetadata = this.getMetadataForSourceFile(dtsFilePath);
+    if (dtsMetadata) {
+      for (let prop in dtsMetadata.metadata) {
+        if (!newMetadata.metadata[prop]) {
+          newMetadata.metadata[prop] = dtsMetadata.metadata[prop];
         }
       }
-      if (exports.exports) {
-        v3Metadata.exports = exports.exports;
+
+      // Only copy exports from exports from metadata prior to version 3.
+      // Starting with version 3 the collector began collecting exports and
+      // this should be redundant. Also, with bundler will rewrite the exports
+      // which will hoist the exports from modules referenced indirectly causing
+      // the imports to be different than the .d.ts files and using the .d.ts file
+      // exports would cause the StaticSymbolResolver to redirect symbols to the
+      // incorrect location.
+      if ((!oldMetadata.version || oldMetadata.version < 3) && dtsMetadata.exports) {
+        newMetadata.exports = dtsMetadata.exports;
       }
     }
-    return v3Metadata;
+    return newMetadata;
   }
 
   loadResource(filePath: string): Promise<string>|string {

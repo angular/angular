@@ -19,6 +19,8 @@
   ],
 
   "angularCompilerOptions": {
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    "annotateForClosureCompiler": false,
+    "annotationsAs": "decorators"
   }
 }
