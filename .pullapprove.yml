@@ -115,7 +115,7 @@ groups:
   animations:
     conditions:
       files:
-        - "packages/animation/*"
+        - "packages/animations/*"
         - "packages/platform-browser/animations/*"
     users:
       - matsko #primary
