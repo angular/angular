@@ -15,7 +15,8 @@
   "files": [
     "public_api.ts",
     "../../node_modules/@types/hammerjs/index.d.ts",
-    "../../node_modules/zone.js/dist/zone.js.d.ts"
+    "../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../goog.d.ts"
   ],
 
   "angularCompilerOptions": {
