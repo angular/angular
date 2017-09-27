@@ -1350,7 +1350,7 @@ Verify that you have the following structure:
 
 
 
-## The road you’ve travelled
+## Summary
 Here's what you achieved in this page:
 
 * You added the Angular router to navigate among different components.
@@ -1362,7 +1362,7 @@ Here's what you achieved in this page:
 
 Your app should look like this <live-example></live-example>.
 
-### The road ahead
+### Next step
 
 You have much of the foundation you need to build an app.
 You're still missing a key piece: remote data access.
