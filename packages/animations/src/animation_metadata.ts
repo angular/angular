@@ -980,7 +980,7 @@ export function useAnimation(
  *
  * ### Usage
  *
- * query() is designed to collect mutiple elements and works internally by using
+ * query() is designed to collect multiple elements and works internally by using
  * `element.querySelectorAll`. An additional options object can be provided which
  * can be used to limit the total amount of items to be collected.
  *
