@@ -5,7 +5,10 @@ licenses(["notice"])  # Apache 2.0
 
 ts_library(
     name = "ngc_lib",
-    srcs = ["index.ts"],
+    srcs = [
+        "index.ts",
+        "extract_i18n.ts",
+    ],
     deps = [
         # BEGIN-INTERNAL
         # Only needed when compiling within the Angular repo.
@@ -25,6 +28,17 @@ nodejs_binary(
     data = [
         ":ngc_lib",
         "@build_bazel_rules_typescript//internal:worker_protocol.proto"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+nodejs_binary(
+    name = "xi18n",
+    # Entry point assumes the user is outside this WORKSPACE,
+    # and references our rules with @angular//src/ngc-wrapped
+    entry_point = "angular/src/ngc-wrapped/index.js/extract_i18n.js",
+    data = [
+        ":ngc_lib",
     ],
     visibility = ["//visibility:public"],
 )
