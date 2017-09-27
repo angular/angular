@@ -7,8 +7,9 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, NgModule, Type} from '@angular/core';
+import {Component, ContentChild, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
@@ -56,6 +57,56 @@ describe('Integration', () => {
          instance.show = true;
          expect(() => advance(fixture)).not.toThrow();
        }));
+
+    it('should set isActive right after looking at its children -- #18983', fakeAsync(() => {
+         @Component({
+           template: `
+          <div #rla="routerLinkActive" routerLinkActive>
+            isActive: {{rla.isActive}}
+            
+            <ng-template let-data>
+              <a [routerLink]="data">link</a>
+            </ng-template>
+
+            <ng-container #container></ng-container>
+          </div>
+        `
+         })
+         class ComponentWithRouterLink {
+           @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
+           @ViewChild('container', {read: ViewContainerRef}) container: ViewContainerRef;
+
+           addLink() {
+             this.container.createEmbeddedView(this.templateRef, {$implicit: '/simple'});
+           }
+
+           removeLink() { this.container.clear(); }
+         }
+
+         @Component({template: 'simple'})
+         class SimpleCmp {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}])],
+           declarations: [ComponentWithRouterLink, SimpleCmp]
+         });
+
+         const router: Router = TestBed.get(Router);
+         const fixture = createRoot(router, ComponentWithRouterLink);
+         router.navigateByUrl('/simple');
+         advance(fixture);
+
+         fixture.componentInstance.addLink();
+         fixture.detectChanges();
+
+         fixture.componentInstance.removeLink();
+         advance(fixture);
+         advance(fixture);
+
+         expect(fixture.nativeElement.innerHTML).toContain('isActive: false');
+       }));
+
   });
 
 });
