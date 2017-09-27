@@ -50,11 +50,14 @@ def _expected_outs(ctx, label):
     declaration_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in declarations]
     summary_files += [ctx.new_file(ctx.bin_dir, basename + ext) for ext in summaries]
 
+  i18n_messages_files = [ctx.new_file(ctx.bin_dir, ctx.label.name + "_ngc_messages.xmb")]
+
   return struct(
     closure_js = closure_js_files,
     devmode_js = devmode_js_files,
     declarations = declaration_files,
     summaries = summary_files,
+    i18n_messages = i18n_messages_files,
   )
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
@@ -92,7 +95,69 @@ _collect_summaries_aspect = aspect(
     attr_aspects = ["deps"],
 )
 
-def _compile_action(ctx, inputs, outputs, config_file_path):
+# Extra options passed to Node when running ngc.
+_EXTRA_NODE_OPTIONS_FLAGS = [
+    # Expose the v8 garbage collection API to JS.
+    "--node_options=--expose-gc"
+]
+
+def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_path,
+                       locale=None, i18n_args=[]):
+  mnemonic = "AngularTemplateCompile"
+  progress_message = "Compiling Angular templates (ngc) %s" % label
+  supports_workers = "0"
+  if locale:
+    mnemonic = "AngularI18NMerging"
+    supports_workers = "0"
+    progress_message = ("Recompiling Angular templates (ngc) %s for locale %s" %
+                        (label, locale))
+  else:
+    supports_workers = str(int(ctx.attr._supports_workers))
+
+  arguments = _EXTRA_NODE_OPTIONS_FLAGS
+  # One at-sign makes this a params-file, enabling the worker strategy.
+  # Two at-signs escapes the argument so it's passed through to ngc
+  # rather than the contents getting expanded.
+  if supports_workers == "1":
+    arguments += ["@@" + config_file_path]
+  else:
+    arguments += ["-p", config_file_path]
+
+  arguments += i18n_args
+
+  ctx.action(
+      progress_message = progress_message,
+      mnemonic = mnemonic,
+      inputs = inputs,
+      outputs = outputs,
+      arguments = arguments,
+      executable = ctx.executable.compiler,
+      execution_requirements = {
+          "supports-workers": supports_workers,
+      },
+  )
+
+  if messages_out != None:
+    ctx.action(inputs = list(inputs),
+               outputs = messages_out,
+               executable = ctx.executable._ng_xi18n,
+               arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
+                            [config_file_path] +
+                            [messages_out[0].short_path]),
+               progress_message = "Extracting Angular 2 messages (ng_xi18n)",
+               mnemonic = "Angular2MessageExtractor")
+
+  # Return the parameters of the compilation which will be used to replay the
+  # ngc action for i18N.
+  if not locale and not ctx.attr.no_i18n:
+    return struct(
+        label = label,
+        tsconfig = config_file_path,
+        inputs = inputs,
+        outputs = outputs,
+    )
+
+def _compile_action(ctx, inputs, outputs, messages_out, config_file_path):
   summaries = depset()
   for dep in ctx.attr.deps:
     if hasattr(dep, "collect_summaries_aspect_result"):
@@ -108,34 +173,16 @@ def _compile_action(ctx, inputs, outputs, config_file_path):
   if hasattr(ctx.attr, "tsconfig") and ctx.file.tsconfig:
     action_inputs += [ctx.file.tsconfig]
 
-  arguments = ["--node_options=--expose-gc"]
-  # One at-sign makes this a params-file, enabling the worker strategy.
-  # Two at-signs escapes the argument so it's passed through to ngc
-  # rather than the contents getting expanded.
-  if ctx.attr._supports_workers:
-    arguments += ["@@" + config_file_path]
-  else:
-    arguments += ["-p", config_file_path]
+  return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, config_file_path)
 
-  ctx.action(
-      progress_message = "Compiling Angular templates (ngc) %s" % ctx.label,
-      mnemonic = "AngularTemplateCompile",
-      inputs = action_inputs,
-      outputs = outputs,
-      arguments = arguments,
-      executable = ctx.executable.compiler,
-      execution_requirements = {
-          "supports-workers": str(int(ctx.attr._supports_workers)),
-      },
-  )
 
 def _prodmode_compile_action(ctx, inputs, outputs, config_file_path):
   outs = _expected_outs(ctx, ctx.label)
-  _compile_action(ctx, inputs, outputs + outs.closure_js, config_file_path)
+  return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, config_file_path)
 
 def _devmode_compile_action(ctx, inputs, outputs, config_file_path):
   outs = _expected_outs(ctx, ctx.label)
-  _compile_action(ctx, inputs, outputs + outs.devmode_js + outs.declarations + outs.summaries, config_file_path)
+  _compile_action(ctx, inputs, outputs + outs.devmode_js + outs.declarations + outs.summaries, None, config_file_path)
 
 def ng_module_impl(ctx, ts_compile_actions):
   providers = ts_compile_actions(
@@ -147,9 +194,11 @@ def ng_module_impl(ctx, ts_compile_actions):
   #addl_declarations = [_expected_outs(ctx)]
   #providers["typescript"]["declarations"] += addl_declarations
   #providers["typescript"]["transitive_declarations"] += addl_declarations
+  outs = _expected_outs(ctx, ctx.label)
   providers["angular"] = {
     "summaries": _expected_outs(ctx, ctx.label).summaries
   }
+  providers["ngc_messages"] = outs.i18n_messages
 
   return providers
 
@@ -167,11 +216,16 @@ NG_MODULE_ATTRIBUTES = {
       ".html",
     ]),
 
-    # TODO(alexeagle): wire up when we have i18n in bazel
     "no_i18n": attr.bool(default = False),
 
     "compiler": attr.label(
         default = Label("//src/ngc-wrapped"),
+        executable = True,
+        cfg = "host",
+    ),
+
+    "_ng_xi18n": attr.label(
+        default = Label("//src/ngc-wrapped:xi18n"),
         executable = True,
         cfg = "host",
     ),
