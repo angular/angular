@@ -83,4 +83,3 @@ you'll have to provide a different `Title` service that understands
 the concept of a "document title" for that specific platform.
 Ideally, the application itself neither knows nor cares about the runtime environment.
 
-[Back to top](guide/set-document-title#top)
