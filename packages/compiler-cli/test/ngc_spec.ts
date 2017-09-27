@@ -507,6 +507,43 @@ describe('ngc transformer command-line', () => {
       });
     });
 
+    it('should not rewrite imports when annotating with closure', () => {
+      writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "compilerOptions": {
+          "paths": {
+            "submodule": ["./src/submodule/public_api.ts"]
+          }
+        },
+        "angularCompilerOptions": {
+          "annotateForClosureCompiler": true
+        },
+        "files": ["mymodule.ts"]
+      }`);
+      write('src/test.txt', ' ');
+      write('src/submodule/public_api.ts', `
+        export const A = 1;
+      `);
+      write('mymodule.ts', `
+        import {NgModule, Component} from '@angular/core';
+        import {A} from 'submodule';
+
+        @Component({template: ''})
+        export class MyComp {
+          fn(p: any) { return A; }
+        }
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+    `);
+
+      const exitCode = main(['-p', basePath], errorSpy);
+      expect(exitCode).toEqual(0);
+      const mymodulejs = path.resolve(outDir, 'mymodule.js');
+      const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+      expect(mymoduleSource).toContain(`import { A } from "submodule"`);
+    });
+
     describe('expression lowering', () => {
       beforeEach(() => {
         writeConfig(`{
