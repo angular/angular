@@ -467,7 +467,7 @@ export function main() {
       let doc: string;
       let called: boolean;
       let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innertext="fine">fine</h1></app></body></html>';
+          '<html><head></head><body><app data-ng-version="0.0.0-PLACEHOLDER">Works!<h1 innertext="fine">fine</h1></app></body></html>';
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -515,7 +515,7 @@ export function main() {
       it('works with SVG elements', async(() => {
            renderModule(SVGServerModule, {document: doc}).then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<html><head></head><body><app data-ng-version="0.0.0-PLACEHOLDER">' +
                  '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
              called = true;
            });
@@ -540,7 +540,7 @@ export function main() {
       it('should handle false values on attributes', async(() => {
            renderModule(FalseAttributesModule, {document: doc}).then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<html><head></head><body><app data-ng-version="0.0.0-PLACEHOLDER">' +
                  '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
              called = true;
            });
@@ -549,7 +549,7 @@ export function main() {
       it('should handle element property "name"', async(() => {
            renderModule(NameModule, {document: doc}).then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<html><head></head><body><app data-ng-version="0.0.0-PLACEHOLDER">' +
                  '<input name=""></app></body></html>');
              called = true;
            });
@@ -560,7 +560,7 @@ export function main() {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>RenderHook</title></head><body>' +
-                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<app data-ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
              called = true;
            });
          }));
@@ -571,7 +571,7 @@ export function main() {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>RenderHook</title><meta name="description"></head>' +
-                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+                 '<body><app data-ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
              expect(consoleSpy).toHaveBeenCalled();
              called = true;
            });
@@ -718,7 +718,7 @@ export function main() {
     describe('ServerTransferStoreModule', () => {
       let called = false;
       const defaultExpectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body></html>';
+          '<html><head></head><body><app data-ng-version="0.0.0-PLACEHOLDER">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body></html>';
 
       beforeEach(() => { called = false; });
       afterEach(() => { expect(called).toBe(true); });
@@ -747,7 +747,7 @@ export function main() {
              document: '<esc-app></esc-app>'
            }).then(output => {
              expect(output).toBe(
-                 '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
+                 '<html><head></head><body><esc-app data-ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
                  '<script id="transfer-state" type="application/json">' +
                  '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
                  'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');

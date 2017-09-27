@@ -93,7 +93,8 @@ class ComponentFactory_ extends ComponentFactory<any> {
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, ngModule, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
     if (rootSelectorOrNode) {
-      view.renderer.setAttribute(asElementData(view, 0).renderElement, 'ng-version', VERSION.full);
+      view.renderer.setAttribute(
+          asElementData(view, 0).renderElement, 'data-ng-version', VERSION.full);
     }
 
     return new ComponentRef_(view, new ViewRef_(view), component);

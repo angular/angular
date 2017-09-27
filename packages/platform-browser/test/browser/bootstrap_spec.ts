@@ -234,7 +234,7 @@ export function main() {
          const refPromise = bootstrap(HelloRootCmp, testProviders);
          refPromise.then((ref) => {
            expect(el).toHaveText('hello world!');
-           expect(el.getAttribute('ng-version')).toEqual(VERSION.full);
+           expect(el.getAttribute('data-ng-version')).toEqual(VERSION.full);
            async.done();
          });
        }));
