@@ -450,7 +450,7 @@ Here's the complete `app.component.ts` as of now:
 
 
 
-## The road you've travelled
+## Summary
 
 Here's what you achieved in this page:
 
@@ -460,7 +460,7 @@ Here's what you achieved in this page:
 
 Your app should look like this <live-example></live-example>.
 
-## The road ahead
+## Next step
 You've expanded the Tour of Heroes app, but it's far from complete.
 An app shouldn't be one monolithic component.
 In the [next page](tutorial/toh-pt3 "Multiple Components"), you'll split the app into subcomponents and make them work together.

@@ -263,7 +263,7 @@ You can edit the hero's name and see the changes reflected immediately in the `<
 
 
 
-## The road you've travelled
+## Summary
 
 Take stock of what you've built.
 
@@ -286,7 +286,7 @@ Here's the complete `app.component.ts` as it stands now:
 
 
 
-## The road ahead
+## Next step
 In the [next tutorial page](tutorial/toh-pt2  "Master/Detail"), you'll build on the Tour of Heroes app to display a list of heroes.
 You'll also allow the user to select heroes and display their details.
 You'll learn more about how to retrieve lists and bind them to the template.

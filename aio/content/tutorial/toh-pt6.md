@@ -518,7 +518,7 @@ Verify that you have the following structure:
   </div>
 </div>
 
-## Home Stretch
+## Summary
 
 You're at the end of your journey, and you've accomplished a lot.
 * You added the necessary dependencies to use HTTP in the app.

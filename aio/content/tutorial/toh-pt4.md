@@ -593,7 +593,7 @@ Here are the code files discussed in this page.
 
 
 
-## The road you've travelled
+## Summary
 Here's what you achieved in this page:
 
 * You created a service class that can be shared by many components.
@@ -604,7 +604,7 @@ Here's what you achieved in this page:
 
 Your app should look like this <live-example></live-example>.
 
-## The road ahead
+## Next step
 The Tour of Heroes has become more reusable using shared components and services.
 The next goal is to create a dashboard, add menu links that route between the views, and format data in a template.
 As the app evolves, you'll discover how to design it to make it easier to grow and maintain.
