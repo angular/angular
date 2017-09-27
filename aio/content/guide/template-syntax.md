@@ -37,7 +37,6 @@ You can extend the HTML vocabulary of your templates with components and directi
 In the following sections, you'll learn how to get and set DOM (Document Object Model) values dynamically through data binding.
 
 Begin with the first form of data binding&mdash;interpolation&mdash;to see how much richer template HTML can be.
-  <a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -81,7 +80,7 @@ Though this is not exactly true. Interpolation is a special syntax that Angular 
 
 But first, let's take a closer look at template expressions and statements.
 
-<a href="#top-of-page">back to top</a>
+
 
 <hr/>
 
@@ -147,7 +146,6 @@ the global namespace. They can't refer to `window` or `document`. They
 can't call `console.log` or `Math.max`. They are restricted to referencing
 members of the expression context.
 
-<a href="#top-of-page">back to top</a>
 
 {@a no-side-effects}
 
@@ -204,7 +202,7 @@ Dependent values should not change during a single turn of the event loop.
 If an idempotent expression returns a string or a number, it returns the same string or number
 when called twice in a row. If the expression returns an object (including an `array`),
 it returns the same object *reference* when called twice in a row.
-<a href="#top-of-page">back to top</a>
+
 
 <hr/>
 
@@ -276,7 +274,6 @@ A method call or simple property assignment should be the norm.
 Now that you have a feel for template expressions and statements,
 you're ready to learn about the varieties of data binding syntax beyond interpolation.
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -585,7 +582,6 @@ The following table summarizes:
 </table>
 
 With this broad view in mind, you're ready to look at binding types in detail.
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -773,7 +769,6 @@ content harmlessly.
   <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe">
 </figure>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -847,7 +842,6 @@ is to set ARIA attributes, as in this example:
 <code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-aria" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -885,7 +879,6 @@ the [NgClass directive](guide/template-syntax#ngClass) is usually preferred when
 
 </div>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -920,8 +913,6 @@ Note that a _style property_ name can be written in either
 [camelCase](guide/glossary#camelcase), such as `fontSize`.
 
 </div>
-
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1053,7 +1044,6 @@ Deleting the hero updates the model, perhaps triggering other changes
 including queries and saves to a remote server.
 These changes percolate through the system and are ultimately displayed in this and other views.
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1118,7 +1108,6 @@ However, no native HTML element follows the `x` value and `xChange` event patter
 
 Fortunately, the Angular [_NgModel_](guide/template-syntax#ngModel) directive is a bridge that enables two-way binding to form elements.
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1162,7 +1151,7 @@ This section is an introduction to the most commonly used attribute directives:
 * [`NgClass`](guide/template-syntax#ngClass) - add and remove a set of CSS classes
 * [`NgStyle`](guide/template-syntax#ngStyle) - add and remove a set of HTML styles
 * [`NgModel`](guide/template-syntax#ngModel) - two-way data binding to an HTML form element
-<a href="#top-of-page">back to top</a>
+
 
 <hr/>
 
@@ -1203,8 +1192,6 @@ It's up to you to call `setCurrentClassess()`, both initially and when the depen
 
 </div>
 
-<a href="#top-of-page">back to top</a>
-
 <hr/>
 
 {@a ngStyle}
@@ -1241,7 +1228,6 @@ It's up to you to call `setCurrentStyles()`, both initially and when the depende
 
 </div>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1334,8 +1320,6 @@ Here are all variations in action, including the uppercase version:
 <figure>
   <img src='generated/images/guide/template-syntax/ng-model-anim.gif' alt="NgModel variations">
 </figure>
-
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1431,7 +1415,6 @@ described below.
 
 </div>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1553,7 +1536,6 @@ Here is an illustration of the _trackBy_ effect.
   <img src="generated/images/guide/template-syntax/ng-for-track-by-anim.gif" alt="trackBy">
 </figure>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1600,8 +1582,6 @@ For example, you could replace the `<confused-hero>` switch case with the follow
 
 <code-example path="template-syntax/src/app/app.component.html" region="NgSwitch-div" title="src/app/app.component.html" linenums="false">
 </code-example>
-
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1673,7 +1653,6 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 <code-example path="template-syntax/src/app/app.component.html" region="ref-fax" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1810,7 +1789,6 @@ the directive property name on the *left* and the public alias on the *right*:
 
 </div>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1861,7 +1839,6 @@ The generated output would look something like this
     "rate": 325 }
 </code-example>
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
@@ -1935,7 +1912,6 @@ The display is blank, but the app keeps rolling without errors.
 
 It works perfectly with long property paths such as `a?.b?.c?.d`.
 
-<a href="#top-of-page">back to top</a>
 
 <hr/>
 
