@@ -304,10 +304,13 @@ which `NgFor` has initialized with the hero for the current iteration.
 * The [API guide](api/common/NgForOf "API: NgFor")
 describes additional `NgFor` directive properties and context properties.
 
+* `NgFor` is implemented by the `NgForOf` directive. Read more about additional `NgForOf` directive properties and context properties [NgForOf API reference](api/common/NgForOf).
+
+
 These microsyntax mechanisms are available to you when you write your own structural directives.
 Studying the
 [source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
-and [`NgFor`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgFor")
+and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
 is a great way to learn more.
 
 

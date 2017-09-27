@@ -1494,7 +1494,7 @@ The next example captures the `index` in a variable named `i` and displays it wi
 
 <div class="l-sub-section">
 
-Learn about the other `NgForOf` context values such as `last`, `even`,
+`NgFor` is implemented by the `NgForOf` directive. Read more about the other `NgForOf` context values such as `last`, `even`,
 and `odd` in the [NgForOf API reference](api/common/NgForOf).
 
 </div>
