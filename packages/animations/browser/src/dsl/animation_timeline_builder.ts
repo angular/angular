@@ -15,6 +15,8 @@ import {AnimationTimelineInstruction, createTimelineInstruction} from './animati
 import {ElementInstructionMap} from './element_instruction_map';
 
 const ONE_FRAME_IN_MILLISECONDS = 1;
+const ENTER_TOKEN = ':enter';
+const ENTER_TOKEN_REGEX = new RegExp(ENTER_TOKEN, 'g');
 
 /*
  * The code within this file aims to generate web-animations-compatible keyframes from Angular's
@@ -101,20 +103,22 @@ const ONE_FRAME_IN_MILLISECONDS = 1;
  * the `AnimationValidatorVisitor` code.
  */
 export function buildAnimationTimelines(
-    driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
+    driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>, enterClassName: string,
     startingStyles: ɵStyleData = {}, finalStyles: ɵStyleData = {}, options: AnimationOptions,
     subInstructions?: ElementInstructionMap, errors: any[] = []): AnimationTimelineInstruction[] {
   return new AnimationTimelineBuilderVisitor().buildKeyframes(
-      driver, rootElement, ast, startingStyles, finalStyles, options, subInstructions, errors);
+      driver, rootElement, ast, enterClassName, startingStyles, finalStyles, options,
+      subInstructions, errors);
 }
 
 export class AnimationTimelineBuilderVisitor implements AstVisitor {
   buildKeyframes(
-      driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
+      driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>, enterClassName: string,
       startingStyles: ɵStyleData, finalStyles: ɵStyleData, options: AnimationOptions,
       subInstructions?: ElementInstructionMap, errors: any[] = []): AnimationTimelineInstruction[] {
     subInstructions = subInstructions || new ElementInstructionMap();
-    const context = new AnimationTimelineContext(driver, rootElement, subInstructions, errors, []);
+    const context = new AnimationTimelineContext(
+        driver, rootElement, subInstructions, enterClassName, errors, []);
     context.options = options;
     context.currentTimeline.setStyles([startingStyles], null, context.errors, options);
 
@@ -445,8 +449,9 @@ export class AnimationTimelineContext {
 
   constructor(
       private _driver: AnimationDriver, public element: any,
-      public subInstructions: ElementInstructionMap, public errors: any[],
-      public timelines: TimelineBuilder[], initialTimeline?: TimelineBuilder) {
+      public subInstructions: ElementInstructionMap, private _enterClassName: string,
+      public errors: any[], public timelines: TimelineBuilder[],
+      initialTimeline?: TimelineBuilder) {
     this.currentTimeline = initialTimeline || new TimelineBuilder(this._driver, element, 0);
     timelines.push(this.currentTimeline);
   }
@@ -499,8 +504,8 @@ export class AnimationTimelineContext {
       AnimationTimelineContext {
     const target = element || this.element;
     const context = new AnimationTimelineContext(
-        this._driver, target, this.subInstructions, this.errors, this.timelines,
-        this.currentTimeline.fork(target, newTime || 0));
+        this._driver, target, this.subInstructions, this._enterClassName, this.errors,
+        this.timelines, this.currentTimeline.fork(target, newTime || 0));
     context.previousNode = this.previousNode;
     context.currentAnimateTimings = this.currentAnimateTimings;
 
@@ -555,6 +560,7 @@ export class AnimationTimelineContext {
       results.push(this.element);
     }
     if (selector.length > 0) {  // if :self is only used then the selector is empty
+      selector = selector.replace(ENTER_TOKEN_REGEX, '.' + this._enterClassName);
       const multi = limit != 1;
       let elements = this._driver.query(this.element, selector, multi);
       if (limit !== 0) {
