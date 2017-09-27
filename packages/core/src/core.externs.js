@@ -8,10 +8,10 @@
  * @externs
  */
 
-/**
- * @suppress {duplicate}
- */
-var ng;
+// Note: we can't declare an extern for the global variable `ng` as
+// the namespace `ng` is already used within Google
+// for typings for angularJS (via `goog.provide('ng....')`).
+
 /**
  * @suppress {duplicate}
  */
