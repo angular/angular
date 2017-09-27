@@ -241,6 +241,18 @@
       "UI Components": {
         "order": 4,
         "resources": {
+          "JSBlocks": {
+            "desc": "Material-based UI components and supporting directives for Angular by Infragistics.",
+            "rev": true,
+            "title": "Ignite UI JS Blocks",
+            "url": "https://github.com/IgniteUI/igniteui-js-blocks"
+          },
+          "IgniteUIAngular": {
+            "desc": "Ignite UI component extensions for Angular by Infragistics.",
+            "rev": true,
+            "title": "Ignite UI for Angular",
+            "url": "https://github.com/IgniteUI/igniteui-angular2"
+          },
           "DevExtreme": {
             "desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
             "rev": true,
