@@ -8,7 +8,7 @@ You write metadata in a _subset_ of TypeScript. This guide explains why a subset
 ## Angular metadata
 Angular metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
 
-You specify the metadata with **decorators** such as `@Component()` and `@Input()`. 
+You specify the metadata with **decorators** such as `@Component()` and `@Input()`.
 You also specify metadata implicitly in the constructor declarations of these decorated classes.
 
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
@@ -24,20 +24,20 @@ export class TypicalComponent {
 }
 ```
 
-The Angular compiler extracts the metadata _once_ and generates a _factory_ for `TypicalComponent`. 
+The Angular compiler extracts the metadata _once_ and generates a _factory_ for `TypicalComponent`.
 When it needs to create a `TypicalComponent` instance, Angular calls the factory, which produces a new visual element, bound to a new instance of the component class with its injected dependency.
 
 ## Compile ahead-of-time (AOT)
 
 You should use AOT to compile an application that must launch quickly.
 With AOT, there is no runtime compile step.
-The client doesn't need the compiler library at all and excluding it significantly reduces the total payload. 
+The client doesn't need the compiler library at all and excluding it significantly reduces the total payload.
 The browser downloads a smaller set of safely-compiled, application module(s) and libraries that it can parse quickly and run almost immediately.
 
 The AOT compiler produces a number of files, including the application JavaScript that ultimately runs in the browser. It then statically analyzes your source code and interprets the Angular metadata without actually running the application.
 
 To compile the app, run the `ngc` stand-alone tool as part of your build process.
-When using the CLI, run the `ng build` command. 
+When using the CLI, run the `ng build` command.
 
 For more information on AOT, see [Ahead-of-Time Compilation](guide/aot-compiler).
 
@@ -45,7 +45,7 @@ For more information on AOT, see [Ahead-of-Time Compilation](guide/aot-compiler)
 
 Angular metadata expressions must conform to the following general constraints:
 
-1. Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript. 
+1. Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript.
 2. Only reference exported symbols after [code folding](#folding).
 3. Only call [functions supported](#supported-functions) by the compiler.
 4. Decorated and data-bound class members must be public.
@@ -62,39 +62,39 @@ The TypeScript compiler does some of the analytic work of the first phase. It em
 
 At the same time, the AOT **_collector_** analyzes the metadata recorded in the Angular decorators and outputs metadata information in **`.metadata.json`** files, one per `.d.ts` file.
 
-You can think of `.metadata.json` as a diagram of the overall structure of a decorator's metadata, represented as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree). 
+You can think of `.metadata.json` as a diagram of the overall structure of a decorator's metadata, represented as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
 <div class="l-sub-section">
 
-Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/schema.ts)
-describes the JSON format as a collection of TypeScript interfaces. 
+Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/tsc-wrapped/src/schema.ts)
+describes the JSON format as a collection of TypeScript interfaces.
 
 </div>
 
 {@a expression-syntax}
 ### Expression syntax
 
-The _collector_ only understands a subset of JavaScript. 
+The _collector_ only understands a subset of JavaScript.
 Define metadata objects with the following limited syntax:
 
-Syntax                             | Example                           
+Syntax                             | Example
 -----------------------------------|-----------------------------------
 Literal object                     | `{cherry: true, apple: true, mincemeat: false}`
 Literal array                      | `['cherries', 'flour', 'sugar']`
-Spread in literal array            | `['apples', 'flour', ...the_rest]`     
-Calls                              | `bake(ingredients)`           
-New                                | `new Oven()`                   
-Property access                    | `pie.slice`                      
-Array index                        | `ingredients[0]`                           
-Identifier reference               | `Component`                       
+Spread in literal array            | `['apples', 'flour', ...the_rest]`
+Calls                              | `bake(ingredients)`
+New                                | `new Oven()`
+Property access                    | `pie.slice`
+Array index                        | `ingredients[0]`
+Identifier reference               | `Component`
 A template string                  | <code>&#96;pie is ${multiplier} times better than cake&#96;</code>
-Literal string                     | `'pi'`                            
-Literal number                     | `3.14153265`                      
-Literal boolean                    | `true`                            
-Literal null                       | `null`                            
-Supported prefix operator          | `!cake`                           
-Supported Binary operator          | `a + b`                           
-Conditional operator               | `a ? b : c`                       
+Literal string                     | `'pi'`
+Literal number                     | `3.14153265`
+Literal boolean                    | `true`
+Literal null                       | `null`
+Supported prefix operator          | `!cake`
+Supported Binary operator          | `a + b`
+Conditional operator               | `a ? b : c`
 Parentheses                        | `(a + b)`
 
 If an expression uses unsupported syntax, the _collector_ writes an error node to the `.metadata.json` file. The compiler later reports the error if it needs that
@@ -131,7 +131,7 @@ Consider the following component decorator:
 })
 ```
 
-The AOT _collector_ does not support the arrow function, `() => new Server()`, in a metadata expression. 
+The AOT _collector_ does not support the arrow function, `() => new Server()`, in a metadata expression.
 It generates an error node in place of the function.
 
 When the compiler later interprets this node, it reports an error that invites you to turn the arrow function into an _exported function_.
@@ -149,12 +149,14 @@ export function serverFactory() {
 })
 ```
 
+Beginning in version 5, the compiler automatically performs this rewritting while emitting the `.js` file.
+
 ### Limited function calls
 
 The _collector_ can represent a function call or object creation with `new` as long as the syntax is valid. The _collector_ only cares about proper syntax.
 
 But beware. The compiler may later refuse to generate a call to a _particular_ function or creation of a _particular_ object.
-The compiler only supports calls to a small set of functions and will use `new` for only a few designated classes. These functions and classes are in a table of [below](#supported-functions). 
+The compiler only supports calls to a small set of functions and will use `new` for only a few designated classes. These functions and classes are in a table of [below](#supported-functions).
 
 
 ### Folding
@@ -162,14 +164,14 @@ The compiler only supports calls to a small set of functions and will use `new` 
 The compiler can only resolve references to **_exported_** symbols.
 Fortunately, the _collector_ enables limited use of non-exported symbols through _folding_.
 
-The _collector_ may be able to evaluate an expression during collection and record the result in the `.metadata.json` instead of the original expression. 
+The _collector_ may be able to evaluate an expression during collection and record the result in the `.metadata.json` instead of the original expression.
 
 For example, the _collector_ can evaluate the expression `1 + 2 + 3 + 4` and replace it with the result, `10`.
 
 This process is called _folding_. An expression that can be reduced in this manner is _foldable_.
 
 {@a var-declaration}
-The collector can evaluate references to 
+The collector can evaluate references to
 module-local `const` declarations and initialized `var` and `let` declarations, effectively removing them from the `.metadata.json` file.
 
 Consider the following component definition:
@@ -181,14 +183,14 @@ const template = '<div>{{hero.name}}</div>';
   selector: 'app-hero',
   template: template
 })
-class HeroComponent {
+export class HeroComponent {
   @Input() hero: Hero;
 }
 ```
 
 The compiler could not refer to the `template` constant because it isn't exported.
 
-But the _collector_ can _fold_ the `template` constant into the metadata definition by inlining its contents. 
+But the _collector_ can _fold_ the `template` constant into the metadata definition by inlining its contents.
 The effect is the same as if you had written:
 
 ```TypeScript
@@ -196,7 +198,7 @@ The effect is the same as if you had written:
   selector: 'app-hero',
   template: '<div>{{hero.name}}</div>'
 })
-class HeroComponent {
+export class HeroComponent {
   @Input() hero: Hero;
 }
 ```
@@ -212,7 +214,7 @@ const template = '<div>{{hero.name}}</div>';
   selector: 'app-hero',
   template: template + '<div>{{hero.title}}</div>'
 })
-class HeroComponent {
+export class HeroComponent {
   @Input() hero: Hero;
 }
 ```
@@ -225,24 +227,24 @@ The _collector_ reduces this expression to its equivalent _folded_ string:
 
 The following table describes which expressions the _collector_ can and cannot fold:
 
-Syntax                             | Foldable                           
+Syntax                             | Foldable
 -----------------------------------|-----------------------------------
 Literal object                     | yes
 Literal array                      | yes
-Spread in literal array            | no    
-Calls                              | no           
-New                                | no                   
-Property access                    | yes, if target is foldable                      
-Array index                        | yes, if target and index are foldable    
+Spread in literal array            | no
+Calls                              | no
+New                                | no
+Property access                    | yes, if target is foldable
+Array index                        | yes, if target and index are foldable
 Identifier reference               | yes, if it is a reference to a local
 A template with no substitutions   | yes
 A template with substitutions      | yes, if the substitutions are foldable
-Literal string                     | yes                            
-Literal number                     | yes                      
-Literal boolean                    | yes                            
-Literal null                       | yes                            
-Supported prefix operator          | yes, if operand is foldable                           
-Supported binary operator          | yes, if both left and right are foldable                  
+Literal string                     | yes
+Literal number                     | yes
+Literal boolean                    | yes
+Literal null                       | yes
+Supported prefix operator          | yes, if operand is foldable
+Supported binary operator          | yes, if both left and right are foldable
 Conditional operator               | yes, if condition is foldable
 Parentheses                        | yes, if the expression is foldable
 
@@ -251,13 +253,13 @@ If an expression is not foldable, the collector writes it to `.metadata.json` as
 
 ## Phase 2: code generation
 
-The _collector_ makes no attempt to understand the metadata that it collects and outputs to `.metadata.json`. It represents the metadata as best it can and records errors when it detects a metadata syntax violation. 
+The _collector_ makes no attempt to understand the metadata that it collects and outputs to `.metadata.json`. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
 
 It's the compiler's job to interpret the `.metadata.json` in the code generation phase.
 
 The compiler understands all syntax forms that the _collector_ supports, but it may reject _syntactically_ correct metadata if the _semantics_ violate compiler rules.
 
-The compiler can only reference _exported symbols_. 
+The compiler can only reference _exported symbols_.
 
 Decorated component class members must be public. You cannot make an `@Input()` property private or internal.
 
@@ -269,7 +271,7 @@ Data bound properties must also be public.
   selector: 'app-root',
   template: '<h1>{{title}}</h1>'
 })
-class AppComponent {
+export class AppComponent {
   private title = 'My App'; // Bad
 }
 ```
@@ -310,7 +312,7 @@ Decorator         | Module
 
 ### Macro-functions and macro-static methods
 
-The compiler also supports _macros_ in the form of functions or static 
+The compiler also supports _macros_ in the form of functions or static
 methods that return an expression.
 
 For example, consider the following function:
@@ -321,7 +323,7 @@ export function wrapInArray<T>(value: T): T[] {
 }
 ```
 
-You can call the `wrapInArray` in a metadata definition because it returns the value of an expression that conforms to the compiler's restrictive JavaScript subset. 
+You can call the `wrapInArray` in a metadata definition because it returns the value of an expression that conforms to the compiler's restrictive JavaScript subset.
 
 You might use  `wrapInArray()` like this:
 
@@ -329,7 +331,7 @@ You might use  `wrapInArray()` like this:
 @NgModule({
   declarations: wrapInArray(TypicalComponent)
 })
-class TypicalModule {}
+export class TypicalModule {}
 ```
 
 The compiler treats this usage as if you had written:
@@ -338,15 +340,58 @@ The compiler treats this usage as if you had written:
 @NgModule({
   declarations: [TypicalComponent]
 })
-class TypicalModule {}
+export class TypicalModule {}
 ```
 
 The collector is simplistic in its determination of what qualifies as a macro
 function; it can only contain a single `return` statement.
 
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
-Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code") 
+Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
 for these methods to see how macros can simplify configuration of complex Angular modules.
+
+### Metadata rewriting
+
+The compiler treats object literals containing the fields `useClass`, `useValue`, `useFactory`, and `data` specially. The compiler converts the expression initializing one of these fields into an exported variable, which replaces the expression. This process of rewriting these expressions removes all the restrictions on what can be in them because
+the compiler doesn't need to know the expression's value&mdash;it just needs to be able to generate a reference to the value.
+
+
+
+You might write something like:
+
+```ts
+class TypicalServer {
+
+}
+
+@NgModule({
+  providers: [{provide: SERVER, useFactory: () => TypicalServer}]
+})
+export class TypicalModule {}
+```
+
+Without rewriting, this would be invalid because lambdas are not supported and `TypicalServer` is not exported.
+
+To allow this, the compiler automatically rewrites this to something like:
+
+```ts
+class TypicalServer {
+
+}
+
+export const ɵ0 = () => new TypicalServer();
+
+@NgModule({
+  providers: [{provide: SERVER, useFactory: ɵ0}]
+})
+export class TypicalModule {}
+```
+
+This allows the compiler to generate a reference to `ɵ0` in the
+factory without having to know what the value of `ɵ0` contains.
+
+The compiler does the rewriting during the emit of the `.js` file. This doesn't rewrite the `.d.ts` file, however, so TypeScript doesn't recognize it as being an export. Thus, it does not pollute the ES module's exported API.
+
 
 ## Metadata Errors
 
@@ -371,7 +416,7 @@ The following are metadata errors you may encounter, with explanations and sugge
 
 The compiler encountered an expression it didn't understand while evalutating Angular metadata.
 
-Language features outside of the compiler's [restricted expression syntax](#expression-syntax) 
+Language features outside of the compiler's [restricted expression syntax](#expression-syntax)
 can produce this error, as seen in the following example:
 
 ```
@@ -381,7 +426,7 @@ export class Fooish { ... }
 const prop = typeof Fooish; // typeof is not valid in metadata
   ...
   // bracket notation is not valid in metadata
-  { provide: 'token', useValue: { [prop]: 'value' } }; 
+  { provide: 'token', useValue: { [prop]: 'value' } };
   ...
 ```
 
@@ -422,7 +467,7 @@ export class MyComponent {}
 ```
 The compiler generates the component factory, which includes the `useValue` provider code, in a separate module. _That_ factory module can't reach back to _this_ source module to access the local (non-exported) `foo` variable.
 
-You could fix the problem by initializing `foo`. 
+You could fix the problem by initializing `foo`.
 
 ```
 let foo = 42; // initialized
@@ -454,8 +499,8 @@ export class MyComponent {}
 
 Adding `export` often works for variables referenced in metadata such as `providers` and `animations` because the compiler can generate _references_ to the exported variables in these expressions. It doesn't need the _values_ of those variables.
 
-Adding `export` doesn't work when the compiler needs the _actual value_ 
-in order to generate code. 
+Adding `export` doesn't work when the compiler needs the _actual value_
+in order to generate code.
 For example, it doesn't work for the `template` property.
 
 ```
@@ -545,7 +590,7 @@ _Reference to a non-exported class <class name>. Consider exporting the class._
 Metadata referenced a class that wasn't exported.
 
 For example, you may have defined a class and used it as an injection token in a providers array
-but neglected to export that class. 
+but neglected to export that class.
 
 ```
 // ERROR
@@ -558,7 +603,7 @@ abstract class MyStrategy { }
   ...
 ```
 
-Angular generates a class factory in a separate module and that 
+Angular generates a class factory in a separate module and that
 factory [can only access exported classes](#exported-symbols).
 To correct this error, export the referenced class.
 
@@ -648,7 +693,7 @@ import { calculateValue } from './utilities';
 
 export function myStrategy() { ... }
 export function otherStrategy() { ... }
-export function someValueFactory() { 
+export function someValueFactory() {
   return calculateValue();
 }
   ...
@@ -721,7 +766,7 @@ export class MyComponent {
   constructor (private win: Window) { ... }
 }
 ```
-TypeScript understands ambiant types so you don't import them. 
+TypeScript understands ambiant types so you don't import them.
 The Angular compiler does not understand a type that you neglect to export or import.
 
 In this case, the compiler doesn't understand how to inject something with the `Window` token.
@@ -775,7 +820,7 @@ export class MyComponent {
 <h3 class="no-toc">Name expected</h3>
 
 The compiler expected a name in an expression it was evaluating.
-This can happen if you use a number as a property name as in the following example. 
+This can happen if you use a number as a property name as in the following example.
 
 ```
 // ERROR
@@ -793,7 +838,7 @@ provider: [{ provide: Foo, useValue: { '0': 'test' } }]
 
 <h3 class="no-toc">Unsupported enum member name</h3>
 
-Angular couldn't determine the value of the [enum member](https://www.typescriptlang.org/docs/handbook/enums.html) 
+Angular couldn't determine the value of the [enum member](https://www.typescriptlang.org/docs/handbook/enums.html)
 that you referenced in metadata.
 
 The compiler can understand simple enum values but not complex values such as those derived from computed properties.
@@ -836,7 +881,7 @@ const raw = String.raw`A tagged template ${expression} string`;
  ...
  template: '<div>' + raw + '</div>'
  ...
-``` 
+```
 [`String.raw()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/raw)
 is a _tag function_ native to JavaScript ES2015.
 
