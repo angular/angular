@@ -565,7 +565,7 @@ export function main() {
            });
          }));
 
-      it('should call mutliple render hooks', async(() => {
+      it('should call multiple render hooks', async(() => {
            const consoleSpy = spyOn(console, 'warn');
            renderModule(MultiRenderHookModule, {document: doc}).then(output => {
              // title should be added by the render hook.

@@ -1224,7 +1224,7 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
 
         });
 
-        it('should report duplicate reference names when using mutliple exportAs names', () => {
+        it('should report duplicate reference names when using multiple exportAs names', () => {
           const pizzaDirective =
               compileDirectiveMetadataCreate({
                 selector: '[dessert-pizza]',
