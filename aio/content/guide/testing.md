@@ -18,7 +18,7 @@ The sample application and all tests in this guide are available as live example
 * <live-example name="setup" plnkr="quickstart-specs" embedded-style>The QuickStart seed's AppComponent spec</live-example>.
 * <live-example embedded-style>The sample application to be tested</live-example>.
 * <live-example plnkr="app-specs" embedded-style>All specs that test the sample application</live-example>.
-* <live-example plnkr="bag-specs" embedded-style>A grab bag of additional specs</live-example>.<a href="#top" class='to-top'>Back to top</a>
+* <live-example plnkr="bag-specs" embedded-style>A grab bag of additional specs</live-example>.
 
 <hr/>
 
@@ -199,7 +199,6 @@ A comprehensive review of the Angular testing utilities appears [later in this g
 
 But first you should write a dummy test to verify that your test environment is set up properly
 and to lock in a few basic testing skills.
-<a href="#top" class='to-top'>Back to top</a>
 
 <hr/>
 
@@ -365,7 +364,6 @@ Debug specs in the browser in the same way that you debug an application.
 
 You can also try this test as a <live-example plnkr="1st-specs" title="First spec" embedded-style></live-example> in plunker.
 All of the tests in this guide are available as [live examples](guide/testing#live-examples "Live examples of these tests").
-<a href="#top" class='to-top'>Back to top</a>
 
 <hr/>
 
@@ -631,7 +629,7 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 
 </div>
 
-<a href="#top" class='to-top'>Back to top</a>
+
 
 <hr/>
 
@@ -800,7 +798,7 @@ The tests in this guide only call `compileComponents` when necessary.
 
 </div>
 
-<a href="#top" class='to-top'>Back to top</a>
+
 
 <hr/>
 
@@ -966,7 +964,6 @@ In a spec with multiple expectations, it can help clarify what went wrong and wh
 The remaining tests confirm the logic of the component when the service returns different values.
 The second test validates the effect of changing the user name.
 The third test checks that the component displays the proper message when there is no logged-in user.
-<a href="#top" class='to-top'>Back to top</a>
 
 <hr/>
 
@@ -1202,7 +1199,7 @@ and `fakeAsync`, is a viable and occasionally necessary technique.
 For example, you can't call `async` or `fakeAsync` when testing
 code that involves the `intervalTimer`, as is common when
 testing async `Observable` methods.
-<a href="#top" class='to-top'>Back to top</a>
+
 
 <hr/>
 
@@ -1482,7 +1479,7 @@ The tests themselves are almost identical to the stand-alone version:
 
 Only the selected event test differs. It confirms that the selected `DashboardHeroComponent` hero
 really does find its way up through the event binding to the host component.
-<a href="#top" class='to-top'>Back to top</a>
+
 
 <hr/>
 
@@ -1782,7 +1779,6 @@ Inspect and download _all_ of the guide's application test code with this <live-
 
 </div>
 
-<a href="#top" class='to-top'>Back to top</a>
 
 <hr/>
 
@@ -1848,7 +1844,7 @@ Here are a few more `HeroDetailComponent` tests to drive the point home.
 
 </code-example>
 
-<a href="#top" class='to-top'>Back to top</a>
+
 
 <hr/>
 
@@ -1944,8 +1940,6 @@ especially when the feature module is small and mostly self-contained, as featur
 </div>
 
 
-
-<a href="#top" class='to-top'>Back to top</a>
 
 <hr/>
 
@@ -2104,7 +2098,6 @@ The `TestBed` offers similar `overrideDirective`, `overrideModule`, and `overrid
 for digging into and replacing parts of these other classes.
 
 Explore the options and combinations on your own.
-<a href="#top" class='to-top'>Back to top</a>
 
 <hr/>
 
@@ -2272,8 +2265,6 @@ tests with the `RouterTestingModule`.
 
 </div>
 
-<a href="#top" class='to-top'>Back to top</a>
-
 <hr/>
 
 
@@ -2327,7 +2318,6 @@ such as misspelled or misused components and directives.
 
 </div>
 
-<a href="#top" class='to-top'>Back to top</a>
 
 <hr/>
 
@@ -2427,7 +2417,7 @@ The test for the default color uses the injector of the second `<h2>` to get its
 and its `defaultColor`.
 
 * `DebugElement.properties` affords access to the artificial custom property that is set by the directive.
-<a href="#top" class='to-top'>Back to top</a>
+
 
 <hr/>
 
@@ -2655,7 +2645,6 @@ may require meticulous preparation with the Angular testing utilities.
 On the other hand, isolated unit tests can't confirm that the `ButtonComp` is
 properly bound to its template or even data bound at all.
 Use Angular tests for that.
-<a href="#top" class='to-top'>Back to top</a>
 
 <hr/>
 
@@ -3642,8 +3631,6 @@ The Angular `By` class has three static methods for common predicates:
 
 </code-example>
 
-<a href="#top" class='to-top'>Back to top</a>
-
 <div class='l' class='hr'>
 
 </div>
@@ -3780,7 +3767,6 @@ The sample tests are written to run in Jasmine and karma.
 The two "fast path" setups added the appropriate Jasmine and karma npm packages to the
 `devDependencies` section of the `package.json`.
 They're installed when you run `npm install`.
-<a href="#top" class='to-top'>Back to top</a>
 
 <div class='l' class='hr'>
 
