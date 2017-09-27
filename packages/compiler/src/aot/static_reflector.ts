@@ -415,7 +415,9 @@ export class StaticReflector implements CompileReflector {
           for (const item of (<any>expression)) {
             // Check for a spread expression
             if (item && item.__symbolic === 'spread') {
-              const spreadArray = simplify(item.expression);
+              // We call with references as 0 because we require the actual value and cannot
+              // tolerate a reference here.
+              const spreadArray = simplifyInContext(context, item.expression, depth, 0);
               if (Array.isArray(spreadArray)) {
                 for (const spreadItem of spreadArray) {
                   result.push(spreadItem);
@@ -432,9 +434,10 @@ export class StaticReflector implements CompileReflector {
           return result;
         }
         if (expression instanceof StaticSymbol) {
-          // Stop simplification at builtin symbols or if we are in a reference context
+          // Stop simplification at builtin symbols or if we are in a reference context and
+          // the symbol doesn't have members.
           if (expression === self.injectionToken || self.conversionMap.has(expression) ||
-              references > 0) {
+              (references > 0 && !expression.members.length)) {
             return expression;
           } else {
             const staticSymbol = expression;
