@@ -2572,6 +2572,7 @@ describe('Integration', () => {
 
          router.navigateByUrl('/team/22/link;exact=true');
          advance(fixture);
+         advance(fixture);
          expect(location.path()).toEqual('/team/22/link;exact=true');
 
          const nativeLink = fixture.nativeElement.querySelector('a');
@@ -2628,6 +2629,7 @@ describe('Integration', () => {
 
          router.navigateByUrl('/team/22/link;exact=true');
          advance(fixture);
+         advance(fixture);
          expect(location.path()).toEqual('/team/22/link;exact=true');
 
          const native = fixture.nativeElement.querySelector('#link-parent');
@@ -2655,6 +2657,7 @@ describe('Integration', () => {
          }]);
 
          router.navigateByUrl('/team/22/link');
+         advance(fixture);
          advance(fixture);
          expect(location.path()).toEqual('/team/22/link');
 
