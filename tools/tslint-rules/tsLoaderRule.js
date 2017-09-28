@@ -10,4 +10,4 @@ require('ts-node').register({
 // Add a noop rule so tslint doesn't complain.
 exports.Rule = class Rule extends Lint.Rules.AbstractRule {
   apply() {}
-}
+};

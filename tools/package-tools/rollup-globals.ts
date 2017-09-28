@@ -42,18 +42,14 @@ export const rollupGlobals = {
   '@angular/common/testing': 'ng.common.testing',
   '@angular/http/testing': 'ng.http.testing',
 
-
+  // Some packages are not really needed for the UMD bundles, but for the missingRollupGlobals rule.
+  '@angular/material-examples': 'ng.materialExamples',
   '@angular/material': 'ng.material',
   '@angular/cdk': 'ng.cdk',
 
   // Include secondary entry-points of the cdk and material packages
   ...rollupCdkEntryPoints,
   ...rollupMatEntryPoints,
-
-  // Some packages are not really needed for the UMD bundles, but for the missingRollupGlobals rule.
-  // TODO(devversion): remove by adding minimatch and better globbing to rules
-  '@angular/cdk/testing': 'ng.cdk.testing',
-  '@angular/material-examples': 'ng.materialExamples',
 
   'rxjs/BehaviorSubject': 'Rx',
   'rxjs/Observable': 'Rx',
