@@ -833,60 +833,6 @@ describe('ngc transformer command-line', () => {
       shouldExist('index.metadata.json');
     });
 
-    it('should use the importAs for flat libraries instead of deep imports', () => {
-      // compile the flat module
-      writeFlatModule('index.js');
-      expect(main(['-p', basePath], errorSpy)).toBe(0);
-
-      // move the flat module output into node_modules
-      const flatModuleNodeModulesPath = path.resolve(basePath, 'node_modules', 'flat_module');
-      fs.renameSync(outDir, flatModuleNodeModulesPath);
-      fs.renameSync(
-          path.resolve(basePath, 'src/flat.component.html'),
-          path.resolve(flatModuleNodeModulesPath, 'src/flat.component.html'));
-      // add a package.json
-      fs.writeFileSync(
-          path.resolve(flatModuleNodeModulesPath, 'package.json'), `{"typings": "./index.d.ts"}`);
-
-      // and remove the sources.
-      fs.renameSync(path.resolve(basePath, 'src'), path.resolve(basePath, 'flat_module_src'));
-      fs.unlinkSync(path.resolve(basePath, 'public-api.ts'));
-
-      writeConfig(`
-      {
-        "extends": "./tsconfig-base.json",
-        "files": ["index.ts"]
-      }
-      `);
-      write('index.ts', `
-        import {NgModule} from '@angular/core';
-        import {FlatModule} from 'flat_module';
-
-        @NgModule({
-          imports: [FlatModule]
-        })
-        export class MyModule {}
-      `);
-
-      expect(main(['-p', basePath], errorSpy)).toBe(0);
-
-      shouldExist('index.js');
-
-      const summary =
-          fs.readFileSync(path.resolve(basePath, 'built', 'index.ngsummary.json')).toString();
-      // reference to the module itself
-      expect(summary).toMatch(/"filePath":"flat_module"/);
-      // no reference to a deep file
-      expect(summary).not.toMatch(/"filePath":"flat_module\//);
-
-      const factory =
-          fs.readFileSync(path.resolve(basePath, 'built', 'index.ngfactory.js')).toString();
-      // reference to the module itself
-      expect(factory).toMatch(/from "flat_module"/);
-      // no reference to a deep file
-      expect(factory).not.toMatch(/from "flat_module\//);
-    });
-
     describe('with tree example', () => {
       beforeEach(() => {
         writeConfig();
@@ -1049,6 +995,107 @@ describe('ngc transformer command-line', () => {
       // make `shouldExist` / `shouldNotExist` relative to `built`
       outDir = path.resolve(basePath, 'built');
       shouldExist('app/main.js');
+    });
+
+    it('shoud be able to compile libraries with summaries and flat modules', () => {
+      writeFiles();
+      compile();
+
+      // libraries
+      // make `shouldExist` / `shouldNotExist` relative to `node_modules`
+      outDir = path.resolve(basePath, 'node_modules');
+      shouldExist('flat_module/index.ngfactory.js');
+      shouldExist('flat_module/index.ngsummary.json');
+
+      // app
+      // make `shouldExist` / `shouldNotExist` relative to `built`
+      outDir = path.resolve(basePath, 'built');
+      shouldExist('app/main.ngfactory.js');
+
+      const factory = fs.readFileSync(path.resolve(outDir, 'app/main.ngfactory.js')).toString();
+      // reference to the module itself
+      expect(factory).toMatch(/from "flat_module"/);
+      // no reference to a deep file
+      expect(factory).not.toMatch(/from "flat_module\//);
+
+      function writeFiles() {
+        createFlatModuleInNodeModules();
+
+        // Angular + flat module
+        write('tsconfig-lib.json', `{
+          "extends": "./tsconfig-base.json",
+          "angularCompilerOptions": {
+            "generateCodeForLibraries": true
+          },
+          "compilerOptions": {
+            "outDir": "."
+          },
+          "include": ["node_modules/@angular/core/**/*", "node_modules/flat_module/**/*"],
+          "exclude": [
+            "node_modules/@angular/core/test/**",
+            "node_modules/@angular/core/testing/**"
+          ]
+        }`);
+
+        // Application
+        write('app/tsconfig-app.json', `{
+          "extends": "../tsconfig-base.json",
+          "angularCompilerOptions": {
+            "generateCodeForLibraries": false
+          },
+          "compilerOptions": {
+            "rootDir": ".",
+            "outDir": "../built/app"
+          }
+        }`);
+        write('app/main.ts', `
+          import {NgModule} from '@angular/core';
+          import {FlatModule} from 'flat_module';
+
+          @NgModule({
+            imports: [FlatModule]
+          })
+          export class AppModule {}
+        `);
+      }
+
+      function createFlatModuleInNodeModules() {
+        // compile the flat module
+        writeFlatModule('index.js');
+        expect(main(['-p', basePath], errorSpy)).toBe(0);
+
+        // move the flat module output into node_modules
+        const flatModuleNodeModulesPath = path.resolve(basePath, 'node_modules', 'flat_module');
+        fs.renameSync(outDir, flatModuleNodeModulesPath);
+        fs.renameSync(
+            path.resolve(basePath, 'src/flat.component.html'),
+            path.resolve(flatModuleNodeModulesPath, 'src/flat.component.html'));
+        // and remove the sources.
+        fs.renameSync(path.resolve(basePath, 'src'), path.resolve(basePath, 'flat_module_src'));
+        fs.unlinkSync(path.resolve(basePath, 'public-api.ts'));
+
+        // add a flatModuleIndexRedirect
+        write('node_modules/flat_module/redirect.metadata.json', `{
+          "__symbolic": "module",
+          "version": 3,
+          "metadata": {},
+          "exports": [
+            {
+              "from": "./index"
+            }
+          ],
+          "flatModuleIndexRedirect": true,
+          "importAs": "flat_module"
+        }`);
+        write('node_modules/flat_module/redirect.d.ts', `export * from './index';`);
+        // add a package.json to use the redirect
+        write('node_modules/flat_module/package.json', `{"typings": "./redirect.d.ts"}`);
+      }
+
+      function compile() {
+        expect(main(['-p', path.join(basePath, 'tsconfig-lib.json')], errorSpy)).toBe(0);
+        expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
+      }
     });
   });
 

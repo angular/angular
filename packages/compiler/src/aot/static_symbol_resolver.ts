@@ -164,8 +164,13 @@ export class StaticSymbolResolver {
    * Converts a file path to a module name that can be used as an `import`.
    */
   fileNameToModuleName(importedFilePath: string, containingFilePath: string): string {
-    return this.knownFileNameToModuleNames.get(importedFilePath) ||
+    return this.summaryResolver.getKnownModuleName(importedFilePath) ||
+        this.knownFileNameToModuleNames.get(importedFilePath) ||
         this.host.fileNameToModuleName(importedFilePath, containingFilePath);
+  }
+
+  getKnownModuleName(filePath: string): string|null {
+    return this.knownFileNameToModuleNames.get(filePath) || null;
   }
 
   recordImportAs(sourceSymbol: StaticSymbol, targetSymbol: StaticSymbol) {
@@ -292,7 +297,11 @@ export class StaticSymbolResolver {
     this.resolvedFilePaths.add(filePath);
     const resolvedSymbols: ResolvedStaticSymbol[] = [];
     const metadata = this.getModuleMetadata(filePath);
-
+    if (metadata['importAs']) {
+      // Index bundle indices should use the importAs module name defined
+      // in the bundle.
+      this.knownFileNameToModuleNames.set(filePath, metadata['importAs']);
+    }
     // handle the symbols in one of the re-export location
     if (metadata['exports']) {
       for (const moduleExport of metadata['exports']) {
