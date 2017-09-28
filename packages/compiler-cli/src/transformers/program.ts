@@ -461,6 +461,13 @@ class AngularCompilerProgram implements Program {
             sourceFile: baseFile,
           });
           this.emittedLibrarySummaries.push({fileName: genFile.genFileUrl, text: outData});
+          if (!this.options.declaration) {
+            // If we don't emit declarations, still record an empty .ngfactory.d.ts file,
+            // as we might need it lateron for resolving module names from summaries.
+            const ngFactoryDts =
+                genFile.genFileUrl.substring(0, genFile.genFileUrl.length - 15) + '.ngfactory.d.ts';
+            this.emittedLibrarySummaries.push({fileName: ngFactoryDts, text: ''});
+          }
         } else if (outFileName.endsWith('.d.ts') && baseFile.fileName.endsWith('.d.ts')) {
           const dtsSourceFilePath = genFile.genFileUrl.replace(/\.ts$/, '.d.ts');
           // Note: Don't use sourceFiles here as the created .d.ts has a path in the outDir,

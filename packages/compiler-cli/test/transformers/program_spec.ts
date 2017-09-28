@@ -125,6 +125,34 @@ describe('ng program', () => {
           .toBe(false);
     });
 
+    // Note: this is the case for watch mode with declaration:false
+    it('should reuse generated code from libraries from old programs with declaration:false',
+       () => {
+         compileLib('lib');
+
+         testSupport.writeFiles({
+           'src/main.ts': createModuleAndCompSource('main'),
+           'src/index.ts': `
+            export * from './main';
+            export * from 'lib/index';
+          `
+         });
+         const p1 = compile(undefined, {declaration: false});
+         expect(p1.getTsProgram().getSourceFiles().some(
+                    sf => /node_modules\/lib\/.*\.ngfactory\.ts$/.test(sf.fileName)))
+             .toBe(true);
+         expect(p1.getTsProgram().getSourceFiles().some(
+                    sf => /node_modules\/lib2\/.*\.ngfactory.*$/.test(sf.fileName)))
+             .toBe(false);
+         const p2 = compile(p1, {declaration: false});
+         expect(p2.getTsProgram().getSourceFiles().some(
+                    sf => /node_modules\/lib\/.*\.ngfactory.*$/.test(sf.fileName)))
+             .toBe(false);
+         expect(p2.getTsProgram().getSourceFiles().some(
+                    sf => /node_modules\/lib2\/.*\.ngfactory.*$/.test(sf.fileName)))
+             .toBe(false);
+       });
+
     it('should store library summaries on emit', () => {
       compileLib('lib');
       testSupport.writeFiles({
