@@ -479,15 +479,15 @@ export interface RootData {
 }
 
 export abstract class DebugContext {
-  readonly view: ViewData;
-  readonly nodeIndex: number|null;
-  readonly injector: Injector;
-  readonly component: any;
-  readonly providerTokens: any[];
-  readonly references: {[key: string]: any};
-  readonly context: any;
-  readonly componentRenderElement: any;
-  readonly renderNode: any;
+  abstract get view(): ViewData;
+  abstract get nodeIndex(): number|null;
+  abstract get injector(): Injector;
+  abstract get component(): any;
+  abstract get providerTokens(): any[];
+  abstract get references(): {[key: string]: any};
+  abstract get context(): any;
+  abstract get componentRenderElement(): any;
+  abstract get renderNode(): any;
   abstract logError(console: Console, ...values: any[]): void;
 }
 

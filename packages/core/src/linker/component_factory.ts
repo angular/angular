@@ -26,32 +26,32 @@ export abstract class ComponentRef<C> {
   /**
    * Location of the Host Element of this Component Instance.
    */
-  readonly location: ElementRef;
+  abstract get location(): ElementRef;
 
   /**
    * The injector on which the component instance exists.
    */
-  readonly injector: Injector;
+  abstract get injector(): Injector;
 
   /**
    * The instance of the Component.
    */
-  readonly instance: C;
+  abstract get instance(): C;
 
   /**
    * The {@link ViewRef} of the Host View of this Component instance.
    */
-  readonly hostView: ViewRef;
+  abstract get hostView(): ViewRef;
 
   /**
    * The {@link ChangeDetectorRef} of the Component instance.
    */
-  readonly changeDetectorRef: ChangeDetectorRef;
+  abstract get changeDetectorRef(): ChangeDetectorRef;
 
   /**
    * The component type.
    */
-  readonly componentType: Type<any>;
+  abstract get componentType(): Type<any>;
 
   /**
    * Destroys the component instance and all of the data structures associated with it.
@@ -68,20 +68,20 @@ export abstract class ComponentRef<C> {
  * @stable
  */
 export abstract class ComponentFactory<C> {
-  readonly selector: string;
-  readonly componentType: Type<any>;
+  abstract get selector(): string;
+  abstract get componentType(): Type<any>;
   /**
    * selector for all <ng-content> elements in the component.
    */
-  readonly ngContentSelectors: string[];
+  abstract get ngContentSelectors(): string[];
   /**
    * the inputs of the component.
    */
-  readonly inputs: {propName: string, templateName: string}[];
+  abstract get inputs(): {propName: string, templateName: string}[];
   /**
    * the outputs of the component.
    */
-  readonly outputs: {propName: string, templateName: string}[];
+  abstract get outputs(): {propName: string, templateName: string}[];
   /**
    * Creates a new component.
    */

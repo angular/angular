@@ -163,7 +163,7 @@ export abstract class ReflectiveInjector implements Injector {
    * expect(child.parent).toBe(parent);
    * ```
    */
-  readonly parent: Injector|null;
+  abstract get parent(): Injector|null;
 
   /**
    * Resolves an array of providers and creates a child injector from those providers.

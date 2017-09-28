@@ -24,18 +24,18 @@ export abstract class NgModuleRef<T> {
   /**
    * The injector that contains all of the providers of the NgModule.
    */
-  readonly injector: Injector;
+  abstract get injector(): Injector;
 
   /**
    * The ComponentFactoryResolver to get hold of the ComponentFactories
    * declared in the `entryComponents` property of the module.
    */
-  readonly componentFactoryResolver: ComponentFactoryResolver;
+  abstract get componentFactoryResolver(): ComponentFactoryResolver;
 
   /**
    * The NgModule instance.
    */
-  readonly instance: T;
+  abstract get instance(): T;
 
   /**
    * Destroys the module instance and all of the data structures associated with it.
@@ -58,6 +58,6 @@ export interface InternalNgModuleRef<T> extends NgModuleRef<T> {
  * @experimental
  */
 export abstract class NgModuleFactory<T> {
-  readonly moduleType: Type<T>;
+  abstract get moduleType(): Type<T>;
   abstract create(parentInjector: Injector|null): NgModuleRef<T>;
 }
