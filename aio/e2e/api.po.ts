@@ -27,4 +27,8 @@ export class ApiPage extends SitePage {
     const selector = `.descendants.${docType} ${onlyDirect ? '>' : ''} li > :not(ul) code`;
     return element.all(by.css(selector)).map<string>(item => item.getText());
   }
+
+  getOverview(docType) {
+    return element(by.css(`.${docType}-overview`));
+  }
 }

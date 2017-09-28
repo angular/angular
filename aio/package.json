@@ -94,7 +94,7 @@
     "concurrently": "^3.4.0",
     "cross-spawn": "^5.1.0",
     "dgeni": "^0.4.7",
-    "dgeni-packages": "^0.21.3",
+    "dgeni-packages": "^0.21.4",
     "entities": "^1.1.1",
     "eslint": "^3.19.0",
     "eslint-plugin-jasmine": "^2.2.0",

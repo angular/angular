@@ -2003,8 +2003,8 @@ devtools-timeline-model@1.1.6:
     resolve "1.1.7"
 
 dgeni-packages@^0.21.3:
-  version "0.21.3"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.21.3.tgz#49d5264400cdd8c8a2f66040267e38c099d540f4"
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.21.4.tgz#c77a0730b52ac5dbab00f10fae47dd148374aeb4"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"
