@@ -23,7 +23,10 @@ import {supportsState} from './history';
  */
 @Injectable()
 export class BrowserPlatformLocation extends PlatformLocation {
-  public readonly location: Location;
+  readonly location: Location;
+  readonly search: string;
+  readonly hash: string;
+
   private _history: History;
 
   constructor(@Inject(DOCUMENT) private _doc: any) {
@@ -36,6 +39,8 @@ export class BrowserPlatformLocation extends PlatformLocation {
   _init() {
     (this as{location: Location}).location = getDOM().getLocation();
     this._history = getDOM().getHistory();
+    (this as{hash: string}).hash = this.location.hash;
+    (this as{search: string}).search = this.location.search;
   }
 
   getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc) !; }
@@ -49,8 +54,6 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   get pathname(): string { return this.location.pathname; }
-  get search(): string { return this.location.search; }
-  get hash(): string { return this.location.hash; }
   set pathname(newPath: string) { this.location.pathname = newPath; }
 
   pushState(state: any, title: string, url: string): void {

@@ -41,9 +41,9 @@ export class QueryList<T>/* implements Iterable<T> */ {
   private _results: Array<T> = [];
   public readonly changes: Observable<any> = new EventEmitter();
 
-  get length(): number { return this._results.length; }
-  get first(): T { return this._results[0]; }
-  get last(): T { return this._results[this.length - 1]; }
+  readonly length: number;
+  readonly first: T;
+  readonly last: T;
 
   /**
    * See
@@ -98,6 +98,9 @@ export class QueryList<T>/* implements Iterable<T> */ {
   reset(res: Array<T|any[]>): void {
     this._results = flatten(res);
     (this as{dirty: boolean}).dirty = false;
+    (this as{length: number}).length = this._results.length;
+    (this as{last: T}).last = this._results[this.length - 1];
+    (this as{first: T}).first = this._results[0];
   }
 
   notifyOnChanges(): void { (this.changes as EventEmitter<any>).emit(this); }
