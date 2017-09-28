@@ -23,8 +23,8 @@
   "homepage": "https://github.com/angular/material2#readme",
   "peerDependencies": {
     "@angular/cdk": "0.0.0-PLACEHOLDER",
-    "@angular/core": "^4.4.3",
-    "@angular/common": "^4.4.3"
+    "@angular/core": "0.0.0-NG",
+    "@angular/common": "0.0.0-NG"
   },
   "dependencies": {
     "tslib": "^1.7.1"
