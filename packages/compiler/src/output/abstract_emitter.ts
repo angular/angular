@@ -161,7 +161,7 @@ export class EmitterVisitorContext {
   spanOf(line: number, column: number): ParseSourceSpan|null {
     const emittedLine = this._lines[line - this._preambleLineCount];
     if (emittedLine) {
-      let columnsLeft = column - emittedLine.indent;
+      let columnsLeft = column - _createIndent(emittedLine.indent).length;
       for (let partIndex = 0; partIndex < emittedLine.parts.length; partIndex++) {
         const part = emittedLine.parts[partIndex];
         if (part.length > columnsLeft) {

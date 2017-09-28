@@ -9,7 +9,7 @@
 import {StaticSymbol} from '@angular/compiler/src/aot/static_symbol';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {TypeScriptEmitter} from '@angular/compiler/src/output/ts_emitter';
-
+import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
 const someGenFilePath = 'somePackage/someGenFile';
@@ -420,5 +420,46 @@ export function main() {
         '/* SomePreamble */', 'a;'
       ].join('\n'));
     });
+
+    describe('emitter context', () => {
+      it('should be able to back to the generating span', () => {
+        const file = new ParseSourceFile('some content', 'a.ts');
+        const returnSpan = new ParseSourceSpan(
+            new ParseLocation(file, 100, 10, 10), new ParseLocation(file, 200, 20, 10));
+        const referenceSpan = new ParseSourceSpan(
+            new ParseLocation(file, 150, 15, 10), new ParseLocation(file, 175, 17, 10));
+        const statements = [new o.ClassStmt(
+            'SomeClass', null, [], [], new o.ClassMethod(null, [], []),
+            [new o.ClassMethod('someMethod', [new o.FnParam('a', o.INT_TYPE)], [
+              o.variable('someVar', o.INT_TYPE).set(o.literal(0)).toDeclStmt(),
+              new o.ReturnStatement(o.variable('someVar', null, referenceSpan), returnSpan)
+            ])])];
+        const {sourceText, context} =
+            emitter.emitStatementsAndContext('a.ts', 'a.ts', statements, '/* some preamble /*\n\n');
+        const spanOf = (text: string, after: number = 0) => {
+          const location = sourceText.indexOf(text, after);
+          const {line, col} = calculateLineCol(sourceText, location);
+          return context.spanOf(line, col);
+        };
+        const returnLoc = sourceText.indexOf('return');
+        expect(spanOf('return someVar')).toEqual(returnSpan, 'return span calculated incorrectly');
+        expect(spanOf(';', returnLoc)).toEqual(returnSpan, 'reference span calculated incorrectly');
+        expect(spanOf('someVar', returnLoc))
+            .toEqual(referenceSpan, 'return span calculated incorrectly');
+      });
+    });
   });
+}
+
+function calculateLineCol(text: string, offset: number): {line: number, col: number} {
+  const lines = text.split('\n');
+  let line = 0;
+  for (let cur = 0; cur < text.length; line++) {
+    const next = cur + lines[line].length + 1;
+    if (next > offset) {
+      return {line, col: offset - cur};
+    }
+    cur = next;
+  }
+  return {line, col: 0};
 }
