@@ -1,3 +1,16 @@
+<a name="4.4.4"></a>
+## [4.4.4](https://github.com/angular/angular/compare/4.4.3...4.4.4) (2017-09-28)
+
+
+### Bug Fixes
+
+* **animations:** support negative query limit value ([#19419](https://github.com/angular/angular/issues/19419)) ([bc81fbd](https://github.com/angular/angular/commit/bc81fbd)), closes [#19232](https://github.com/angular/angular/issues/19232)
+* **compiler:** correctly map error message locations ([#19424](https://github.com/angular/angular/issues/19424)) ([c3b39ba](https://github.com/angular/angular/commit/c3b39ba))
+* **compiler:** do not consider a reference with members as a reference ([#19466](https://github.com/angular/angular/issues/19466)) ([7fc2dce](https://github.com/angular/angular/commit/7fc2dce))
+* **compiler:** skip &nbsp; when trimming / removing whitespaces ([#19310](https://github.com/angular/angular/issues/19310)) ([c7aa8a1](https://github.com/angular/angular/commit/c7aa8a1)), closes [#19304](https://github.com/angular/angular/issues/19304)
+* **tsc-wrapped:** add metadata for `type` declarations ([#19040](https://github.com/angular/angular/issues/19040)) ([ae52851](https://github.com/angular/angular/commit/ae52851))
+
+
 <a name="4.4.3"></a>
 ## [4.4.3](https://github.com/angular/angular/compare/4.4.2...4.4.3) (2017-09-19)
 
