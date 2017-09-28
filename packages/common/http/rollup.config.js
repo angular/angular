@@ -25,6 +25,7 @@ export default {
   dest: '../../../dist/packages-dist/common/bundles/common-http.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/common/http'},
   moduleName: 'ng.common.http',
   external: Object.keys(globals),
   globals: globals

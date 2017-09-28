@@ -22,6 +22,7 @@ export default {
   dest: '../../../dist/packages-dist/platform-browser/bundles/platform-browser-animations.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-browser/animations'},
   moduleName: 'ng.platformBrowser.animations',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

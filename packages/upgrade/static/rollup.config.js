@@ -18,6 +18,7 @@ export default {
   dest: '../../../dist/packages-dist/upgrade/bundles/upgrade-static.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/upgrade/static'},
   moduleName: 'ng.upgrade.static',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

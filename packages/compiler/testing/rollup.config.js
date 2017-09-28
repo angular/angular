@@ -22,6 +22,7 @@ export default {
   dest: '../../../dist/packages-dist/compiler/bundles/compiler-testing.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/compiler/testing'},
   moduleName: 'ng.compiler.testing',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

@@ -44,6 +44,7 @@ export default {
   dest: '../../dist/packages-dist/router/bundles/router.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/router'},
   moduleName: 'ng.router',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

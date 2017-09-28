@@ -21,6 +21,7 @@ export default {
   dest: '../../dist/packages-dist/animations/bundles/animations.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/animations'},
   moduleName: 'ng.animations',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

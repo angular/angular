@@ -53,6 +53,7 @@ export default {
   entry: '../../dist/packages-dist/compiler-cli/src/ngc.js',
   dest: './browser-bundle.umd.js',
   format: 'umd',
+  amd: {id: '@angular/compiler-cli-browser'},
   moduleName: 'ng.compiler_cli_browser',
   exports: 'named',
   external: [

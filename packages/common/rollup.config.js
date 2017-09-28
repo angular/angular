@@ -21,6 +21,7 @@ export default {
   format: 'umd',
   exports: 'named',
   moduleName: 'ng.common',
+  amd: {id: '@angular/common'},
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals

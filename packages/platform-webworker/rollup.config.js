@@ -22,6 +22,7 @@ export default {
   dest: '../../dist/packages-dist/platform-webworker/bundles/platform-webworker.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-webworker'},
   moduleName: 'ng.platformWebworker',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
