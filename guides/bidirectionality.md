@@ -9,9 +9,9 @@ All Angular Material components automatically reflect the LTR/RTL direction
 of their container. 
 
 ### Reading the text-direction in your own components
-`@angular/cdk` provides a `Directionality` injectable that can be used by any component
+`@angular/cdk/bidi` provides a `Directionality` injectable that can be used by any component
 in your application. To consume this injectable, you must import `BidiModule`
-from `@angular/cdk`.
+from `@angular/cdk/bidi`.
 
 `Directionality` provides two useful properties:
 * `value`: the current text direction, either `'ltr'` or `'rtl'`.
