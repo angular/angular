@@ -1310,9 +1310,9 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
 
   public markedForDestroy: boolean = false;
 
-  readonly queued: boolean = true;
-
   constructor(public namespaceId: string, public triggerName: string, public element: any) {}
+
+  get queued() { return this._containsRealPlayer == false; }
 
   setRealPlayer(player: AnimationPlayer) {
     if (this._containsRealPlayer) return;
@@ -1324,7 +1324,6 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
     });
     this._queuedCallbacks = {};
     this._containsRealPlayer = true;
-    (this as{queued: boolean}).queued = false;
   }
 
   getRealPlayer() { return this._player; }

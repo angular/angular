@@ -71,13 +71,11 @@ export interface ResolvedReflectiveProvider {
 }
 
 export class ResolvedReflectiveProvider_ implements ResolvedReflectiveProvider {
-  readonly resolvedFactory: ResolvedReflectiveFactory;
-
   constructor(
       public key: ReflectiveKey, public resolvedFactories: ResolvedReflectiveFactory[],
-      public multiProvider: boolean) {
-    this.resolvedFactory = this.resolvedFactories[0];
-  }
+      public multiProvider: boolean) {}
+
+  get resolvedFactory(): ResolvedReflectiveFactory { return this.resolvedFactories[0]; }
 }
 
 /**

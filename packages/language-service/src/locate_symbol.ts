@@ -171,13 +171,21 @@ function invertMap(obj: {[name: string]: string}): {[name: string]: string} {
 class OverrideKindSymbol implements Symbol {
   public readonly kind: string;
   constructor(private sym: Symbol, kindOverride: string) { this.kind = kindOverride; }
+
   get name(): string { return this.sym.name; }
+
   get language(): string { return this.sym.language; }
+
   get type(): Symbol|undefined { return this.sym.type; }
+
   get container(): Symbol|undefined { return this.sym.container; }
+
   get public(): boolean { return this.sym.public; }
+
   get callable(): boolean { return this.sym.callable; }
+
   get nullable(): boolean { return this.sym.nullable; }
+
   get definition(): Definition { return this.sym.definition; }
 
   members() { return this.sym.members(); }

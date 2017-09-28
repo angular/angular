@@ -27,11 +27,7 @@ import {resolveForwardRef} from './forward_ref';
  * @deprecated No replacement
  */
 export class ReflectiveKey {
-  /**
-   * Returns a stringified token.
-   */
-  readonly displayName: string;
-
+  public readonly displayName: string;
   /**
    * Private
    */
