@@ -48,7 +48,7 @@ export class AccessibilityDemo {
     {name: 'Tooltip', route: 'tooltip'},
   ];
 
-  constructor(private router: Router) {
+  constructor(router: Router) {
     router.events.subscribe(event => {
       let nav = this.navItems.find(navItem => {
         let fragments = (event as NavigationEnd).url.split('/');
