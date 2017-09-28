@@ -107,7 +107,7 @@ describe('Router', () => {
             'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
 
         const p = new PreActivation(futureState, empty, TestBed, (evt) => { events.push(evt); });
-        p.initalize(new ChildrenOutletContexts());
+        p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
         expect(result).toBe(true);
         expect(events.length).toEqual(2);
@@ -140,7 +140,7 @@ describe('Router', () => {
                 ])]));
 
         const p = new PreActivation(futureState, empty, TestBed, (evt) => { events.push(evt); });
-        p.initalize(new ChildrenOutletContexts());
+        p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
         expect(result).toBe(true);
@@ -173,7 +173,7 @@ describe('Router', () => {
 
         const p =
             new PreActivation(futureState, currentState, TestBed, (evt) => { events.push(evt); });
-        p.initalize(new ChildrenOutletContexts());
+        p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
         expect(result).toBe(true);
@@ -219,7 +219,7 @@ describe('Router', () => {
 
         const p =
             new PreActivation(futureState, currentState, TestBed, (evt) => { events.push(evt); });
-        p.initalize(new ChildrenOutletContexts());
+        p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
         expect(result).toBe(true);
@@ -497,7 +497,7 @@ describe('Router', () => {
 function checkResolveData(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any, check: any): void {
   const p = new PreActivation(future, curr, injector);
-  p.initalize(new ChildrenOutletContexts());
+  p.initialize(new ChildrenOutletContexts());
   p.resolveData().subscribe(check, (e) => { throw e; });
 }
 
@@ -505,6 +505,6 @@ function checkGuards(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any,
     check: (result: boolean) => void): void {
   const p = new PreActivation(future, curr, injector);
-  p.initalize(new ChildrenOutletContexts());
+  p.initialize(new ChildrenOutletContexts());
   p.checkGuards().subscribe(check, (e) => { throw e; });
 }

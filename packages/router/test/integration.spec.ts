@@ -953,6 +953,7 @@ describe('Integration', () => {
           {provide: 'resolveFour', useValue: (a: any, b: any) => 4},
           {provide: 'resolveSix', useClass: ResolveSix},
           {provide: 'resolveError', useValue: (a: any, b: any) => Promise.reject('error')},
+          {provide: 'resolveNullError', useValue: (a: any, b: any) => Promise.reject(null)},
           {provide: 'numberOfUrlSegments', useValue: (a: any, b: any) => a.url.length},
         ]
       });
@@ -1018,6 +1019,22 @@ describe('Integration', () => {
          ]);
 
          expect(e).toEqual('error');
+       })));
+
+    it('should handle empty errors', fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig(
+             [{path: 'simple', component: SimpleCmp, resolve: {error: 'resolveNullError'}}]);
+
+         const recordedEvents: any[] = [];
+         router.events.subscribe(e => e instanceof RouterEvent && recordedEvents.push(e));
+
+         let e: any = 'some value';
+         router.navigateByUrl('/simple').catch(error => e = error);
+         advance(fixture);
+
+         expect(e).toEqual(null);
        })));
 
     it('should preserve resolved data', fakeAsync(inject([Router], (router: Router) => {
