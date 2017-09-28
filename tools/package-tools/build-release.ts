@@ -54,6 +54,10 @@ export function composeRelease(buildPackage: BuildPackage) {
     createFilesForSecondaryEntryPoint(buildPackage, releasePath);
   }
 
+  if (buildPackage.copySecondaryEntryPointStylesToRoot) {
+    copySecondaryEntryPointStylesheets(buildPackage, releasePath);
+  }
+
   if (buildPackage.exportsSecondaryEntryPointsAtRoot) {
     // Add re-exports to the root d.ts file to prevent errors of the form
     // "@angular/material/material has no exported member 'MATERIAL_SANITY_CHECKS."
@@ -100,5 +104,15 @@ function createFilesForSecondaryEntryPoint(buildPackage: BuildPackage, releasePa
     // the package that re-exports from the entry-point's directory.
     createTypingsReexportFile(releasePath, `./${entryPointName}/index`, entryPointName);
     createMetadataReexportFile(releasePath, `./${entryPointName}/index`, entryPointName);
+  });
+}
+
+/** Copies the stylesheets for secondary entry-points that generate one to the release output. */
+function copySecondaryEntryPointStylesheets(buildPackage: BuildPackage, releasePath: string) {
+  buildPackage.secondaryEntryPoints.forEach(entryPointName => {
+    const entryPointDir = join(buildPackage.outputDir, entryPointName);
+
+    copyFiles(entryPointDir, `_${entryPointName}.scss`, releasePath);
+    copyFiles(entryPointDir, `${entryPointName}-prebuilt.css`, releasePath);
   });
 }

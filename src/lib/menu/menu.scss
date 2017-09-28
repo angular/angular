@@ -1,10 +1,9 @@
 // TODO(kara): update vars for desktop when MD team responds
-
 @import '../core/style/button-common';
 @import '../core/style/layout-common';
 @import '../core/style/menu-common';
-@import '../../cdk/a11y/a11y';
 @import '../core/style/layout-common';
+@import '../../cdk/a11y/a11y';
 
 $mat-menu-vertical-padding: 8px !default;
 $mat-menu-border-radius: 2px !default;

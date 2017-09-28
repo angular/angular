@@ -22,8 +22,8 @@ const themingEntryPointPath = join(sourceDir, 'core', 'theming', '_all-theme.scs
 const themingBundlePath = join(releasePath, '_theming.scss');
 // Matches all pre-built theme css files
 const prebuiltThemeGlob = join(outputDir, '**/theming/prebuilt/*.css?(.map)');
-// Matches all SCSS files in the library.
-const allScssGlob = join(sourceDir, '**/*.scss');
+// Matches all SCSS files in the different packages.
+const allScssGlob = join(buildConfig.packagesDir, '**/*.scss');
 
 /**
  * Overwrite the release task for the material package. The material release will include special

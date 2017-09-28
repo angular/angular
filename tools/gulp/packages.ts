@@ -12,3 +12,8 @@ materialPackage.exportsSecondaryEntryPointsAtRoot = true;
 
 // To avoid refactoring of the project the material package will map to the source path `lib/`.
 materialPackage.sourceDir = join(buildConfig.packagesDir, 'lib');
+
+// Some CDK secondary entry-points include SCSS files that should be exposed individually at the
+// release output root. This is different in the Material package because here a full SCSS bundle
+// will be generated.
+cdkPackage.copySecondaryEntryPointStylesToRoot = true;
