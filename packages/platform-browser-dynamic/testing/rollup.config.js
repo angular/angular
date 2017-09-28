@@ -26,6 +26,7 @@ export default {
       '../../../dist/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic-testing.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-browser-dynamic/testing'},
   moduleName: 'ng.platformBrowserDynamic.testing',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

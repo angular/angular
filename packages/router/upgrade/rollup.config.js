@@ -21,6 +21,7 @@ export default {
   dest: '../../../dist/packages-dist/router/bundles/router-upgrade.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/router/upgrade'},
   moduleName: 'ng.router.upgrade',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

@@ -24,6 +24,7 @@ export default {
   dest: '../../../dist/packages-dist/platform-server/bundles/platform-server-testing.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-server/testing'},
   moduleName: 'ng.platformServer.testing',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

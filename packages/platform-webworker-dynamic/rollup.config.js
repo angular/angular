@@ -24,6 +24,7 @@ export default {
       '../../dist/packages-dist/platform-webworker-dynamic/bundles/platform-webworker-dynamic.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-webworker-dynamic'},
   moduleName: 'ng.platformWebworkerDynamic',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

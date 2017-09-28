@@ -26,6 +26,7 @@ export default {
   dest: '../../dist/packages-dist/platform-server/bundles/platform-server.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-server'},
   moduleName: 'ng.platformServer',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),

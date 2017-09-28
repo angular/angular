@@ -64,6 +64,12 @@ export default {
   entry: '../../dist/packages-dist/language-service/esm5/language-service.js',
   dest: '../../dist/packages-dist/language-service/bundles/language-service.umd.js',
   format: 'amd',
+  amd: {
+      // Don't name this module, causes
+      // Loading the language service caused the following exception: TypeError:
+      // $deferred.modules.map is not a function
+      // id: '@angular/language-service'
+  },
   moduleName: 'ng.language_service',
   exports: 'named',
   external: [

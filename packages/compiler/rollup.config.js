@@ -20,6 +20,7 @@ export default {
   dest: '../../dist/packages-dist/compiler/bundles/compiler.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/compiler'},
   moduleName: 'ng.compiler',
   plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
