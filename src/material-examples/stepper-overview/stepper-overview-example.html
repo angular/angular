@@ -1,3 +1,5 @@
+<button mat-raised-button (click)="isLinear = true" id="toggle-linear">Enable linear mode</button>
+
 <mat-horizontal-stepper [linear]="isLinear">
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
