@@ -34,9 +34,9 @@ export abstract class PlatformLocation {
   abstract onPopState(fn: LocationChangeListener): void;
   abstract onHashChange(fn: LocationChangeListener): void;
 
-  readonly pathname: string;
-  readonly search: string;
-  readonly hash: string;
+  abstract get pathname(): string;
+  abstract get search(): string;
+  abstract get hash(): string;
 
   abstract replaceState(state: any, title: string, url: string): void;
 
