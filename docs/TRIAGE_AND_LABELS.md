@@ -19,6 +19,7 @@ with it within the `/packages/` folder of this repo.
 
 * `comp: aio` - the angular.io application
 * `comp: animations`
+* `comp: bazel`
 * `comp: benchpress`
 * `comp: common` - this includes core components / pipes
 * `comp: core, compiler` - because core, compiler, compiler-cli and
