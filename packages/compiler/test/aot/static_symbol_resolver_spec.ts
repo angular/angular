@@ -406,7 +406,7 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
     const entry = this.importAs.find(entry => entry.symbol === symbol);
     return entry ? entry.importAs : undefined !;
   }
-
+  getKnownModuleName(fileName: string): string|null { return null; }
   isLibraryFile(filePath: string): boolean { return filePath.endsWith('.d.ts'); }
   toSummaryFileName(filePath: string): string { return filePath.replace(/(\.d)?\.ts$/, '.d.ts'); }
   fromSummaryFileName(filePath: string): string { return filePath; }

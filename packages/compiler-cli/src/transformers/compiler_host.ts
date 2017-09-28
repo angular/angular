@@ -174,10 +174,6 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
           'fileNameToModuleName from containingFile', containingFile, 'to importedFile',
           importedFile);
     }
-    const importAs = this.getImportAs(importedFile);
-    if (importAs) {
-      return importAs;
-    }
 
     // drop extension
     importedFile = importedFile.replace(EXT, '');
