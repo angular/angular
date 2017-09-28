@@ -29,8 +29,8 @@
     "platform-webworker",
     "platform-webworker-dynamic",
     "router",
+    "service-worker",
     "upgrade",
-
     "packaging",
     "changelog"
   ]
