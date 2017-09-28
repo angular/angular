@@ -23,7 +23,7 @@ export abstract class AbstractControlDirective {
    * that backs this directive. Most properties fall through to that
    * instance.
    */
-  abstract get control(): AbstractControl|null;
+  readonly control: AbstractControl|null;
 
   /** The value of the control. */
   get value(): any { return this.control ? this.control.value : null; }

@@ -19,7 +19,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
    */
   abstract destroy(): void;
 
-  abstract get destroyed(): boolean;
+  readonly destroyed: boolean;
 
   abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
@@ -79,9 +79,9 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * @experimental
  */
 export abstract class EmbeddedViewRef<C> extends ViewRef {
-  abstract get context(): C;
+  readonly context: C;
 
-  abstract get rootNodes(): any[];
+  readonly rootNodes: any[];
 }
 
 export interface InternalViewRef extends ViewRef {

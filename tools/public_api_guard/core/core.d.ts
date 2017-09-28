@@ -213,17 +213,17 @@ export interface ComponentDecorator {
 
 /** @stable */
 export declare abstract class ComponentFactory<C> {
-    readonly abstract componentType: Type<any>;
-    readonly abstract inputs: {
+    readonly componentType: Type<any>;
+    readonly inputs: {
         propName: string;
         templateName: string;
     }[];
-    readonly abstract ngContentSelectors: string[];
-    readonly abstract outputs: {
+    readonly ngContentSelectors: string[];
+    readonly outputs: {
         propName: string;
         templateName: string;
     }[];
-    readonly abstract selector: string;
+    readonly selector: string;
     abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, ngModule?: NgModuleRef<any>): ComponentRef<C>;
 }
 
@@ -235,12 +235,12 @@ export declare abstract class ComponentFactoryResolver {
 
 /** @stable */
 export declare abstract class ComponentRef<C> {
-    readonly abstract changeDetectorRef: ChangeDetectorRef;
-    readonly abstract componentType: Type<any>;
-    readonly abstract hostView: ViewRef;
-    readonly abstract injector: Injector;
-    readonly abstract instance: C;
-    readonly abstract location: ElementRef;
+    readonly changeDetectorRef: ChangeDetectorRef;
+    readonly componentType: Type<any>;
+    readonly hostView: ViewRef;
+    readonly injector: Injector;
+    readonly instance: C;
+    readonly location: ElementRef;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): void;
 }
@@ -369,8 +369,8 @@ export declare class ElementRef {
 
 /** @experimental */
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
-    readonly abstract context: C;
-    readonly abstract rootNodes: any[];
+    readonly context: C;
+    readonly rootNodes: any[];
 }
 
 /** @stable */
@@ -597,7 +597,7 @@ export declare const NgModule: NgModuleDecorator;
 
 /** @experimental */
 export declare abstract class NgModuleFactory<T> {
-    readonly abstract moduleType: Type<T>;
+    readonly moduleType: Type<T>;
     abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }
 
@@ -608,9 +608,9 @@ export declare abstract class NgModuleFactoryLoader {
 
 /** @stable */
 export declare abstract class NgModuleRef<T> {
-    readonly abstract componentFactoryResolver: ComponentFactoryResolver;
-    readonly abstract injector: Injector;
-    readonly abstract instance: T;
+    readonly componentFactoryResolver: ComponentFactoryResolver;
+    readonly injector: Injector;
+    readonly instance: T;
     abstract destroy(): void;
     abstract onDestroy(callback: () => void): void;
 }
@@ -738,7 +738,7 @@ export declare class QueryList<T> {
 
 /** @deprecated */
 export declare abstract class ReflectiveInjector implements Injector {
-    readonly abstract parent: Injector | null;
+    readonly parent: Injector | null;
     abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
     abstract get(token: any, notFoundValue?: any): any;
     abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
@@ -795,7 +795,7 @@ export declare abstract class Renderer {
 
 /** @experimental */
 export declare abstract class Renderer2 {
-    readonly abstract data: {
+    readonly data: {
         [key: string]: any;
     };
     destroyNode: ((node: any) => void) | null;
@@ -953,7 +953,7 @@ export declare abstract class SystemJsNgModuleLoaderConfig {
 
 /** @stable */
 export declare abstract class TemplateRef<C> {
-    readonly abstract elementRef: ElementRef;
+    readonly elementRef: ElementRef;
     abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
 
@@ -1057,10 +1057,10 @@ export interface ViewChildrenDecorator {
 
 /** @stable */
 export declare abstract class ViewContainerRef {
-    readonly abstract element: ElementRef;
-    readonly abstract injector: Injector;
-    readonly abstract length: number;
-    readonly abstract parentInjector: Injector;
+    readonly element: ElementRef;
+    readonly injector: Injector;
+    readonly length: number;
+    readonly parentInjector: Injector;
     abstract clear(): void;
     abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
@@ -1081,7 +1081,7 @@ export declare enum ViewEncapsulation {
 
 /** @stable */
 export declare abstract class ViewRef extends ChangeDetectorRef {
-    readonly abstract destroyed: boolean;
+    readonly destroyed: boolean;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): any;
 }
