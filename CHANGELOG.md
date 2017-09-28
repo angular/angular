@@ -65,6 +65,10 @@ library's styles such that they wouldn't affect the Angular Material components 
 the specificity. This would have been a significant breaking change, as it would have potentially
 broken countless custom styles that relied on a particular specificity working.
 
+### Other deprecations
+* `StyleModule` is deprecated. `FocusOriginMonitor` (the only thing it contained) has been renamed
+to `FocusMonitor` and moved to `@angular/cdk/a11y` (`A11yModule`).
+
 
 ### Bug Fixes
 
