@@ -25,7 +25,8 @@ const entrypoints = [
   'dist/packages-dist/platform-server/testing.d.ts', 'dist/packages-dist/http/http.d.ts',
   'dist/packages-dist/http/testing.d.ts', 'dist/packages-dist/forms/forms.d.ts',
   'dist/packages-dist/router/router.d.ts', 'dist/packages-dist/animations/animations.d.ts',
-  'dist/packages-dist/animations/browser.d.ts',
+  'dist/packages-dist/service-worker/service-worker.d.ts',
+  'dist/packages-dist/service-worker/config.d.ts', 'dist/packages-dist/animations/browser.d.ts',
   'dist/packages-dist/animations/browser/testing.d.ts',
   'dist/packages-dist/platform-browser/animations.d.ts'
 ];
