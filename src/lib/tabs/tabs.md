@@ -66,17 +66,17 @@ provides a tab-like UI for navigating between routes.
 <nav mat-tab-nav-bar>
   <a mat-tab-link
      *ngFor="let link of navLinks"
-     [routerLink]="link"
+     [routerLink]="link.path"
      routerLinkActive #rla="routerLinkActive"
      [active]="rla.isActive">
-    {{tabLink.label}}
+    {{link.label}}
   </a>
 </nav>
 
 <router-outlet></router-outlet>
 ```
 
-The tab-nav-bar is not tied to any particular router; it works with normal `<a>` elements and uses
+The `tab-nav-bar` is not tied to any particular router; it works with normal `<a>` elements and uses
 the `active` property to determine which tab is currently active. The corresponding
 `<router-outlet>` can be placed anywhere in the view.
 
@@ -91,4 +91,4 @@ Tabs without text or labels should be given a meaningful label via `aria-label` 
 |----------------------|----------------------------|
 | `LEFT_ARROW`         | Move focus to previous tab |
 | `RIGHT_ARROW`        | Move focus to next tab     |
-| `SPACE` or 'ENTER'   | Switch to focused tab      |
+| `SPACE` or `ENTER`   | Switch to focused tab      |
