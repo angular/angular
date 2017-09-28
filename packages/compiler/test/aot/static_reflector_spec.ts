@@ -878,6 +878,42 @@ describe('StaticReflector', () => {
     });
   });
 
+  // Regression #18170
+  it('should continue to aggresively evaluate enum member accessors', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {intermediate} from './index';
+
+      @Component({
+        template: '<div></div>',
+        providers: [{provide: 'foo', useValue: [...intermediate]}]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/intermediate.ts'] = `
+      import {MyEnum} from './indirect';
+      export const intermediate = [{
+        data: {
+          c: [MyEnum.Value]
+        }
+      }];`;
+    data['/tmp/src/index.ts'] = `export * from './intermediate';`;
+    data['/tmp/src/indirect.ts'] = `export * from './consts';`;
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 3
+      }
+    `;
+    init(data);
+
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0]
+               .useValue)
+        .toEqual([{data: {c: [3]}}]);
+  });
+
 });
 
 const DEFAULT_TEST_DATA: {[key: string]: any} = {
