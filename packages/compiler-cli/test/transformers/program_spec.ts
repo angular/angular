@@ -12,6 +12,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {CompilerHost} from '../../src/transformers/api';
+import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
 import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support';
 
@@ -360,5 +361,27 @@ describe('ng program', () => {
     testSupport.shouldNotExist('build/node_modules/lib/index.ngfactory.js');
     testSupport.shouldNotExist('build/node_modules/lib/index.ngfactory.d.ts');
     testSupport.shouldNotExist('build/node_modules/lib/index.ngsummary.json');
+  });
+
+  describe('createSrcToOutPathMapper', () => {
+    it('should return identity mapping if no outDir is present', () => {
+      const mapper = createSrcToOutPathMapper(undefined, undefined, undefined);
+      expect(mapper('/tmp/b/y.js')).toBe('/tmp/b/y.js');
+    });
+
+    it('should return identity mapping if first src and out fileName have same dir', () => {
+      const mapper = createSrcToOutPathMapper('/tmp', '/tmp/a/x.ts', '/tmp/a/x.js');
+      expect(mapper('/tmp/b/y.js')).toBe('/tmp/b/y.js');
+    });
+
+    it('should adjust the filename if the outDir is inside of the rootDir', () => {
+      const mapper = createSrcToOutPathMapper('/tmp/out', '/tmp/a/x.ts', '/tmp/out/a/x.js');
+      expect(mapper('/tmp/b/y.js')).toBe('/tmp/out/b/y.js');
+    });
+
+    it('should adjust the filename if the outDir is outside of the rootDir', () => {
+      const mapper = createSrcToOutPathMapper('/out', '/tmp/a/x.ts', '/a/x.js');
+      expect(mapper('/tmp/b/y.js')).toBe('/out/b/y.js');
+    });
   });
 });

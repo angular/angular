@@ -210,7 +210,15 @@ class AngularCompilerProgram implements Program {
       return emitResult;
     }
 
-    const srcToOutPath = this.createSrcToOutPathMapper(outSrcMapping);
+
+    let sampleSrcFileName: string|undefined;
+    let sampleOutFileName: string|undefined;
+    if (outSrcMapping.length) {
+      sampleSrcFileName = outSrcMapping[0].sourceFile.fileName;
+      sampleOutFileName = outSrcMapping[0].outFileName;
+    }
+    const srcToOutPath =
+        createSrcToOutPathMapper(this.options.outDir, sampleSrcFileName, sampleOutFileName);
     if (emitFlags & EmitFlags.Codegen) {
       genFiles.forEach(gf => {
         if (gf.source) {
@@ -285,29 +293,6 @@ class AngularCompilerProgram implements Program {
     }
     const afterTs = customTransformers ? customTransformers.afterTs : undefined;
     return {before: beforeTs, after: afterTs};
-  }
-
-  private createSrcToOutPathMapper(outSrcMappings:
-                                       Array<{sourceFile: ts.SourceFile, outFileName: string}>):
-      (srcFileName: string) => string {
-    let srcToOutPath: (srcFileName: string) => string;
-    if (this.options.outDir) {
-      // TODO(tbosch): talk to TypeScript team to expose their logic for calculating the `rootDir`
-      // if none was specified.
-      if (outSrcMappings.length === 0) {
-        throw new Error(`Can't calculate the rootDir without at least one outSrcMapping. `);
-      }
-      const firstEntry = outSrcMappings[0];
-      const entrySrcDir = path.dirname(firstEntry.sourceFile.fileName);
-      const entryOutDir = path.dirname(firstEntry.outFileName);
-      const commonSuffix = longestCommonSuffix(entrySrcDir, entryOutDir);
-      const rootDir = entrySrcDir.substring(0, entrySrcDir.length - commonSuffix.length);
-      srcToOutPath = (srcFileName) =>
-          path.resolve(this.options.outDir, path.relative(rootDir, srcFileName));
-    } else {
-      srcToOutPath = (srcFileName) => srcFileName;
-    }
-    return srcToOutPath;
   }
 
   private initSync() {
@@ -567,12 +552,42 @@ function getNgOptionDiagnostics(options: CompilerOptions): Diagnostic[] {
   return [];
 }
 
-function longestCommonSuffix(a: string, b: string): string {
-  let len = 0;
-  while (a.charCodeAt(a.length - 1 - len) === b.charCodeAt(b.length - 1 - len)) {
-    len++;
+/**
+ * Returns a function that can adjust a path from source path to out path,
+ * based on an existing mapping from source to out path.
+ *
+ * TODO(tbosch): talk to the TypeScript team to expose their logic for calculating the `rootDir`
+ * if none was specified.
+ *
+ * @param outDir
+ * @param outSrcMappings
+ */
+export function createSrcToOutPathMapper(
+    outDir: string | undefined, sampleSrcFileName: string | undefined,
+    sampleOutFileName: string | undefined): (srcFileName: string) => string {
+  let srcToOutPath: (srcFileName: string) => string;
+  if (outDir) {
+    if (sampleSrcFileName == null || sampleOutFileName == null) {
+      throw new Error(`Can't calculate the rootDir without a sample srcFileName / outFileName. `);
+    }
+    const srcFileDir = path.dirname(sampleSrcFileName);
+    const outFileDir = path.dirname(sampleOutFileName);
+    if (srcFileDir === outFileDir) {
+      return (srcFileName) => srcFileName;
+    }
+    const srcDirParts = srcFileDir.split(path.sep);
+    const outDirParts = outFileDir.split(path.sep);
+    // calculate the common suffix
+    let i = 0;
+    while (i < Math.min(srcDirParts.length, outDirParts.length) &&
+           srcDirParts[srcDirParts.length - 1 - i] === outDirParts[outDirParts.length - 1 - i])
+      i++;
+    const rootDir = srcDirParts.slice(0, srcDirParts.length - i).join(path.sep);
+    srcToOutPath = (srcFileName) => path.resolve(outDir, path.relative(rootDir, srcFileName));
+  } else {
+    srcToOutPath = (srcFileName) => srcFileName;
   }
-  return a.substring(a.length - len);
+  return srcToOutPath;
 }
 
 export function i18nExtract(
