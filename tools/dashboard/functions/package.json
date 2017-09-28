@@ -6,6 +6,8 @@
     "@types/jsonwebtoken": "^7.2.1",
     "firebase-admin": "~4.2.1",
     "firebase-functions": "^0.5.7",
+    "github": "^10.0.0",
+    "graphql-request": "^1.3.4",
     "jsonwebtoken": "^7.4.1",
     "request": "^2.81.0",
     "ts-node": "^3.0.6",
