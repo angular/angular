@@ -220,6 +220,13 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
  */
 export declare interface AnimationQueryOptions extends AnimationOptions {
   optional?: boolean;
+  /**
+   * Used to limit the total amount of results from the start of the query list.
+   *
+   * If a negative value is provided then the queried results will be limited from the
+   * end of the query list towards the beginning (e.g. if `limit: -3` is used then the
+   * final 3 (or less) queried results will be used for the animation).
+   */
   limit?: number;
 }
 
