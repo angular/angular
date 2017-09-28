@@ -2,11 +2,12 @@
 
 <nav>
   <a (click)="skipNavigation()" href="javascript:void(0)">Skip navigation</a>
-  <a *ngFor="let navItem of navItems" [routerLink]="[navItem.route]">
+  <a *ngFor="let navItem of navItems" [routerLink]="[navItem.route]" (click)="skipNavigation()">
     {{navItem.name}}
   </a>
 </nav>
 
-<div #maincontent tabindex="0">
+<div #maincontent tabindex="-1">
+  <h1 #header tabindex="-1" *ngIf="!!currentComponent">{{currentComponent}} Demo</h1>
   <router-outlet></router-outlet>
 </div>
