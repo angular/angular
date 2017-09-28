@@ -6,4 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './adapter';
+export * from './adapter/index';
