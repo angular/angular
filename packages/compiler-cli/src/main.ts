@@ -53,7 +53,7 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
     fileNameToModuleId: (fileName) => fileName,
     googmodule: false,
     untyped: true,
-    convertIndexImportShorthand: true, transformDecorators, transformTypesToClosure,
+    convertIndexImportShorthand: false, transformDecorators, transformTypesToClosure,
   };
 
   return ({
