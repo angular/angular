@@ -69,7 +69,7 @@ export function composeRelease(buildPackage: BuildPackage) {
     // re-exports everything.
     createMetadataReexportFile(
         releasePath,
-        buildPackage.secondaryEntryPoints.map(p => `./${p}`),
+        buildPackage.secondaryEntryPoints.concat(['typings/index']).map(p => `./${p}`),
         name);
   }
 }
