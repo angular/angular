@@ -8,9 +8,9 @@
 
 
 #### What are the steps to reproduce?
-
-Providing a Plunker (or similar) is the *best* way to get the team to see your issue.
-Plunker template: https://goo.gl/DlHd6U
+Providing a StackBlitz/Plunker (or similar) is the *best* way to get the team to see your issue. <br/>
+Plunker starter (using on `@master`): https://goo.gl/DlHd6U<br/>
+StackBlitz starter (using latest `npm` release): https://goo.gl/wwnhMV<br/>
 
 
 #### What is the use-case or motivation for changing an existing behavior?
