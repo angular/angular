@@ -1,3 +1,64 @@
+<a name="5.0.0-rc.0"></a>
+# [5.0.0-rc.0](https://github.com/angular/angular/compare/5.0.0-beta.7...5.0.0-rc.0) (2017-09-28)
+
+
+### Bug Fixes
+
+* **animations:** properly support the query limit option value ([b54368b](https://github.com/angular/angular/commit/b54368b)), closes [#19232](https://github.com/angular/angular/issues/19232)
+* **common:** use correct pipe name in error messages ([#19403](https://github.com/angular/angular/issues/19403)) ([f9b0863](https://github.com/angular/angular/commit/f9b0863)), closes [#19373](https://github.com/angular/angular/issues/19373)
+* **compiler:** add parens around binary / ternary expressions ([3799f43](https://github.com/angular/angular/commit/3799f43))
+* **compiler:** allow to use flat modules and summaries ([ec2be5d](https://github.com/angular/angular/commit/ec2be5d))
+* **compiler:** allow to use lowering with `export *`. ([e31a76c](https://github.com/angular/angular/commit/e31a76c))
+* **compiler:** also create `.ngfactory.js` files in non obvious cases ([#19301](https://github.com/angular/angular/issues/19301)) ([1a647c3](https://github.com/angular/angular/commit/1a647c3))
+* **compiler:** collect non exported symbols in d.ts files ([#19301](https://github.com/angular/angular/issues/19301)) ([62602b9](https://github.com/angular/angular/commit/62602b9))
+* **compiler:** correctly derive `fileExists` for generated files ([#19301](https://github.com/angular/angular/issues/19301)) ([f2bad19](https://github.com/angular/angular/commit/f2bad19))
+* **compiler:** correctly map error message locations ([#19424](https://github.com/angular/angular/issues/19424)) ([ff5b050](https://github.com/angular/angular/commit/ff5b050))
+* **compiler:** do not consider a reference with members as a reference ([#19454](https://github.com/angular/angular/issues/19454)) ([b3db3f8](https://github.com/angular/angular/commit/b3db3f8))
+* **compiler:** don’t lower property accesses of exported symbols ([#19301](https://github.com/angular/angular/issues/19301)) ([45747ed](https://github.com/angular/angular/commit/45747ed))
+* **compiler:** don’t type check property access of literal maps ([#19301](https://github.com/angular/angular/issues/19301)) ([04997c8](https://github.com/angular/angular/commit/04997c8))
+* **compiler:** implement i18n with new compiler ([627f048](https://github.com/angular/angular/commit/627f048)), closes [#19429](https://github.com/angular/angular/issues/19429)
+* **compiler:** make sure our out path calculation is correct ([2f6ae52](https://github.com/angular/angular/commit/2f6ae52))
+* **compiler:** make sure to detect paths that start with `rootDir` correctly ([bb1665c](https://github.com/angular/angular/commit/bb1665c)), closes [#19362](https://github.com/angular/angular/issues/19362)
+* **compiler:** make watch mode work with `declaration: false` ([7c1d3e0](https://github.com/angular/angular/commit/7c1d3e0)), closes [#19464](https://github.com/angular/angular/issues/19464)
+* **compiler:** remove deprecated `Compiler.ngGetContentSelectors()` ([#19347](https://github.com/angular/angular/issues/19347)) ([f57b7df](https://github.com/angular/angular/commit/f57b7df))
+* **compiler:** skip &nbsp; when trimming / removing whitespaces ([#19310](https://github.com/angular/angular/issues/19310)) ([13613d4](https://github.com/angular/angular/commit/13613d4)), closes [#19304](https://github.com/angular/angular/issues/19304)
+* **compiler:** support `noResolve` ([#19301](https://github.com/angular/angular/issues/19301)) ([c76da27](https://github.com/angular/angular/commit/c76da27))
+* **compiler:** various squashed fixes for the new ngc ([a8a9660](https://github.com/angular/angular/commit/a8a9660))
+* **compiler:** work well with `forwardRef` with `useValue` / `useFactory` ([1dacae2](https://github.com/angular/angular/commit/1dacae2))
+* **compiler-cli:** do not validate metadata from declaration files ([#19324](https://github.com/angular/angular/issues/19324)) ([4767902](https://github.com/angular/angular/commit/4767902)), closes [#18867](https://github.com/angular/angular/issues/18867)
+* **compiler-cli:** don't join errors with comma ([#19331](https://github.com/angular/angular/issues/19331)) ([e889c68](https://github.com/angular/angular/commit/e889c68))
+* **compiler-cli:** don't rewrite imports when annotating for closure ([#19444](https://github.com/angular/angular/issues/19444)) ([f24ea59](https://github.com/angular/angular/commit/f24ea59))
+* create proper externs so that closure does not clobber e.g. `ng` for internal variables ([#19423](https://github.com/angular/angular/issues/19423)) ([b21a1d1](https://github.com/angular/angular/commit/b21a1d1))
+* **compiler-cli:** set source file ranges in node emitter ([#19348](https://github.com/angular/angular/issues/19348)) ([27c6638](https://github.com/angular/angular/commit/27c6638))
+* **compiler-cli:** update ngtools2 EmitFlags ([#19375](https://github.com/angular/angular/issues/19375)) ([e224e3d](https://github.com/angular/angular/commit/e224e3d))
+* **core:** make dynamic & inline code checking behave the same ([#19189](https://github.com/angular/angular/issues/19189)) ([473a577](https://github.com/angular/angular/commit/473a577))
+* **http:** introduce named type for HttpParams options ([#19360](https://github.com/angular/angular/issues/19360)) ([8a0e458](https://github.com/angular/angular/commit/8a0e458))
+* **language-service:** do not report errors for `OpaqueToken` ([#19427](https://github.com/angular/angular/issues/19427)) ([c1b029a](https://github.com/angular/angular/commit/c1b029a))
+* **router:** fix activation events toString and docs ([#19147](https://github.com/angular/angular/issues/19147)) ([2c4107c](https://github.com/angular/angular/commit/2c4107c))
+* **router:** resolve and guards should be able to reject with null and undefined ([#19418](https://github.com/angular/angular/issues/19418)) ([a9d32a3](https://github.com/angular/angular/commit/a9d32a3)), closes [#17148](https://github.com/angular/angular/issues/17148)
+* **tsc-wrapped:** deduplicate metadata only when the module is the same ([#19249](https://github.com/angular/angular/issues/19249)) ([b6b18c1](https://github.com/angular/angular/commit/b6b18c1)), closes [#19219](https://github.com/angular/angular/issues/19219)
+* don’t use the global `ng` at all with closure enhanced optimizations ([a7798f2](https://github.com/angular/angular/commit/a7798f2))
+
+### Features
+
+* **animations:** support negative query limit values ([86ffacf](https://github.com/angular/angular/commit/86ffacf)), closes [#19259](https://github.com/angular/angular/issues/19259)
+* **compiler:** enabled strict checking of parameters to an `@Injectable` ([#19412](https://github.com/angular/angular/issues/19412)) ([dfb8d21](https://github.com/angular/angular/commit/dfb8d21))
+* **compiler:** reuse the TypeScript typecheck for template typechecking. ([#19152](https://github.com/angular/angular/issues/19152)) ([996c7c2](https://github.com/angular/angular/commit/996c7c2))
+* **core:** support for bootstrap with custom zone ([#17672](https://github.com/angular/angular/issues/17672)) ([344a5ca](https://github.com/angular/angular/commit/344a5ca))
+* **platform-server:** add an API to transfer state from server ([#19134](https://github.com/angular/angular/issues/19134)) ([cfd9ca0](https://github.com/angular/angular/commit/cfd9ca0))
+* **service-worker:** introduce the [@angular](https://github.com/angular)/service-worker package ([#19274](https://github.com/angular/angular/issues/19274)) ([d442b68](https://github.com/angular/angular/commit/d442b68))
+
+### Performance Improvements
+
+* **compiler:** make the creation of `ts.Program` faster. ([#19275](https://github.com/angular/angular/issues/19275)) ([edd5f5a](https://github.com/angular/angular/commit/edd5f5a))
+* **compiler:** only use tsickle if needed ([#19275](https://github.com/angular/angular/issues/19275)) ([8f95b75](https://github.com/angular/angular/commit/8f95b75))
+* **compiler:** speed up watch mode ([#19275](https://github.com/angular/angular/issues/19275)) ([6665d76](https://github.com/angular/angular/commit/6665d76))
+
+### BREAKING CHANGES
+
+* **compiler:** The method `ngGetConentSelectors()`, deprecated in Angular 4.0, has been removed.
+  Use `ComponentFactory.ngContentSelectors` instead.
+
 <a name="4.4.4"></a>
 ## [4.4.4](https://github.com/angular/angular/compare/4.4.3...4.4.4) (2017-09-28)
 
