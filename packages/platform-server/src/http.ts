@@ -117,6 +117,7 @@ export class ZoneMacroTaskConnection extends ZoneMacroTaskWrapper<Request, Respo
     Connection {
   response: Observable<Response>;
   lastConnection: Connection;
+  readonly readyState: ReadyState;
 
   constructor(public request: Request, private backend: XHRBackend) {
     super();
@@ -126,11 +127,9 @@ export class ZoneMacroTaskConnection extends ZoneMacroTaskWrapper<Request, Respo
 
   delegate(request: Request): Observable<Response> {
     this.lastConnection = this.backend.createConnection(request);
+    (this as{readyState: ReadyState}).readyState =
+        !!this.lastConnection ? this.lastConnection.readyState : ReadyState.Unsent;
     return this.lastConnection.response as Observable<Response>;
-  }
-
-  get readyState(): ReadyState {
-    return !!this.lastConnection ? this.lastConnection.readyState : ReadyState.Unsent;
   }
 }
 

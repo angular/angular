@@ -114,12 +114,13 @@ export class AnimationRendererFactory implements RendererFactory2 {
 }
 
 export class BaseAnimationRenderer implements Renderer2 {
+  readonly data: {[key: string]: any};
+
   constructor(
       protected namespaceId: string, public delegate: Renderer2, public engine: AnimationEngine) {
     this.destroyNode = this.delegate.destroyNode ? (n) => delegate.destroyNode !(n) : null;
+    this.data = delegate.data;
   }
-
-  get data() { return this.delegate.data; }
 
   destroyNode: ((n: any) => void)|null;
 
