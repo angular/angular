@@ -21,7 +21,7 @@ export function serializeSummaries(
       metadata: CompileNgModuleMetadata | CompileDirectiveMetadata | CompilePipeMetadata |
           CompileTypeMetadata
     }[]): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
-  const toJsonSerializer = new ToJsonSerializer(symbolResolver, summaryResolver);
+  const toJsonSerializer = new ToJsonSerializer(symbolResolver, summaryResolver, srcFileName);
   const forJitSerializer = new ForJitSerializer(forJitCtx, symbolResolver);
 
   // for symbols, we use everything except for the class metadata itself
@@ -43,15 +43,18 @@ export function serializeSummaries(
     }
   });
 
-  const {json, exportAs} = toJsonSerializer.serialize(srcFileName);
+  const {json, exportAs} = toJsonSerializer.serialize();
   forJitSerializer.serialize(exportAs);
   return {json, exportAs};
 }
 
 export function deserializeSummaries(
     symbolCache: StaticSymbolCache, summaryResolver: SummaryResolver<StaticSymbol>,
-    libraryFileName: string, json: string):
-    {summaries: Summary<StaticSymbol>[], importAs: {symbol: StaticSymbol, importAs: string}[]} {
+    libraryFileName: string, json: string): {
+  moduleName: string | null,
+  summaries: Summary<StaticSymbol>[],
+  importAs: {symbol: StaticSymbol, importAs: string}[]
+} {
   const deserializer = new FromJsonDeserializer(symbolCache, summaryResolver);
   return deserializer.deserialize(libraryFileName, json);
 }
@@ -82,13 +85,15 @@ class ToJsonSerializer extends ValueTransformer {
   // StaticSymbols, but otherwise has the same shape as the original objects.
   private processedSummaryBySymbol = new Map<StaticSymbol, any>();
   private processedSummaries: any[] = [];
+  private moduleName: string|null;
 
   unprocessedSymbolSummariesBySymbol = new Map<StaticSymbol, Summary<StaticSymbol>>();
 
   constructor(
       private symbolResolver: StaticSymbolResolver,
-      private summaryResolver: SummaryResolver<StaticSymbol>) {
+      private summaryResolver: SummaryResolver<StaticSymbol>, private srcFileName: string) {
     super();
+    this.moduleName = symbolResolver.getKnownModuleName(srcFileName);
   }
 
   addSummary(summary: Summary<StaticSymbol>) {
@@ -147,10 +152,10 @@ class ToJsonSerializer extends ValueTransformer {
     }
   }
 
-  serialize(srcFileName: string):
-      {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
+  serialize(): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
     const exportAs: {symbol: StaticSymbol, exportAs: string}[] = [];
     const json = JSON.stringify({
+      moduleName: this.moduleName,
       summaries: this.processedSummaries,
       symbols: this.symbols.map((symbol, index) => {
         symbol.assertNoMembers();
@@ -165,7 +170,7 @@ class ToJsonSerializer extends ValueTransformer {
         return {
           __symbol: index,
           name: symbol.name,
-          filePath: this.summaryResolver.toSummaryFileName(symbol.filePath, srcFileName),
+          filePath: this.summaryResolver.toSummaryFileName(symbol.filePath, this.srcFileName),
           importAs: importAs
         };
       })
@@ -368,9 +373,12 @@ class FromJsonDeserializer extends ValueTransformer {
     super();
   }
 
-  deserialize(libraryFileName: string, json: string):
-      {summaries: Summary<StaticSymbol>[], importAs: {symbol: StaticSymbol, importAs: string}[]} {
-    const data: {summaries: any[], symbols: any[]} = JSON.parse(json);
+  deserialize(libraryFileName: string, json: string): {
+    moduleName: string | null,
+    summaries: Summary<StaticSymbol>[],
+    importAs: {symbol: StaticSymbol, importAs: string}[]
+  } {
+    const data: {moduleName: string | null, summaries: any[], symbols: any[]} = JSON.parse(json);
     const importAs: {symbol: StaticSymbol, importAs: string}[] = [];
     this.symbols = [];
     data.symbols.forEach((serializedSymbol) => {
@@ -383,7 +391,7 @@ class FromJsonDeserializer extends ValueTransformer {
       }
     });
     const summaries = visitValue(data.summaries, this, null);
-    return {summaries, importAs};
+    return {moduleName: data.moduleName, summaries, importAs};
   }
 
   visitStringMap(map: {[key: string]: any}, context: any): any {

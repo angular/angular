@@ -47,23 +47,6 @@ export abstract class BaseAotCompilerHost<C extends BaseAotCompilerHostContext> 
 
   abstract getMetadataForSourceFile(filePath: string): ModuleMetadata|undefined;
 
-  protected getImportAs(fileName: string): string|undefined {
-    // Note: `importAs` can only be in .metadata.json files
-    // So it is enough to call this.readMetadata, and we get the
-    // benefit that this is cached.
-    if (DTS.test(fileName)) {
-      const metadatas = this.readMetadata(fileName);
-      if (metadatas) {
-        for (const metadata of metadatas) {
-          if (metadata.importAs) {
-            return metadata.importAs;
-          }
-        }
-      }
-    }
-    return undefined;
-  }
-
   getMetadataFor(filePath: string): ModuleMetadata[]|undefined {
     if (!this.context.fileExists(filePath)) {
       // If the file doesn't exists then we cannot return metadata for the file.
@@ -384,11 +367,6 @@ export class CompilerHost extends BaseAotCompilerHost<CompilerHostContext> {
    * NOTE: (*) the relative path is computed depending on `isGenDirChildOfRootDir`.
    */
   fileNameToModuleName(importedFile: string, containingFile: string): string {
-    const importAs = this.getImportAs(importedFile);
-    if (importAs) {
-      return importAs;
-    }
-
     // If a file does not yet exist (because we compile it later), we still need to
     // assume it exists it so that the `resolve` method works!
     if (importedFile !== containingFile && !this.context.fileExists(importedFile)) {
