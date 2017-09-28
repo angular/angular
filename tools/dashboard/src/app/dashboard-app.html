@@ -1,21 +1,21 @@
-<md-toolbar color="primary">
+<mat-toolbar color="primary">
   <span>Angular Material - Board</span>
-</md-toolbar>
+</mat-toolbar>
 
 <div class="dashboard-content">
 
-  <md-card class="dashboard-panel-card">
-    <md-card-title>Payload Size Chart</md-card-title>
-    <md-card-content>
+  <mat-card class="dashboard-panel-card">
+    <mat-card-title>Payload Size Chart</mat-card-title>
+    <mat-card-content>
       <payload-chart [data]="payloads | async"></payload-chart>
-    </md-card-content>
-  </md-card>
+    </mat-card-content>
+  </mat-card>
 
-  <md-card class="dashboard-panel-card">
-    <md-card-title>Coverage Reports</md-card-title>
-    <md-card-content>
+  <mat-card class="dashboard-panel-card">
+    <mat-card-title>Coverage Reports</mat-card-title>
+    <mat-card-content>
       <coverage-chart [data]="coverage | async"></coverage-chart>
-    </md-card-content>
-  </md-card>
+    </mat-card-content>
+  </mat-card>
 
 </div>

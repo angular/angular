@@ -8,4 +8,4 @@
 
 export * from './slider-module';
 export * from './slider';
-export * from './mat-exports';
+

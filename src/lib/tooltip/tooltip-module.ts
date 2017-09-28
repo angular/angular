@@ -11,21 +11,21 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {PlatformModule} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MdCommonModule} from '@angular/material/core';
-import {MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER, MdTooltip, TooltipComponent} from './tooltip';
+import {MatCommonModule} from '@angular/material/core';
+import {MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER, MatTooltip, TooltipComponent} from './tooltip';
 
 
 @NgModule({
   imports: [
     CommonModule,
     OverlayModule,
-    MdCommonModule,
+    MatCommonModule,
     PlatformModule,
     A11yModule,
   ],
-  exports: [MdTooltip, TooltipComponent, MdCommonModule],
-  declarations: [MdTooltip, TooltipComponent],
+  exports: [MatTooltip, TooltipComponent, MatCommonModule],
+  declarations: [MatTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
-  providers: [MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER, ARIA_DESCRIBER_PROVIDER],
+  providers: [MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER, ARIA_DESCRIBER_PROVIDER],
 })
-export class MdTooltipModule {}
+export class MatTooltipModule {}

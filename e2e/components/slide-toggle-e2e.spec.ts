@@ -10,7 +10,7 @@ describe('slide-toggle', () => {
   beforeEach(() => browser.get('slide-toggle'));
 
   it('should render a slide-toggle', () => {
-    expectToExist('md-slide-toggle');
+    expectToExist('mat-slide-toggle');
     screenshot();
   });
 

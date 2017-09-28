@@ -3,8 +3,8 @@ import {SafeResourceUrl, DomSanitizer} from '@angular/platform-browser';
 import {HttpModule, XHRBackend} from '@angular/http';
 import {MockBackend} from '@angular/http/testing';
 import {Component} from '@angular/core';
-import {MdIconModule} from './index';
-import {MdIconRegistry, getMdIconNoHttpProviderError} from './icon-registry';
+import {MatIconModule} from './index';
+import {MatIconRegistry, getMatIconNoHttpProviderError} from './icon-registry';
 import {getFakeSvgHttpResponse} from './fake-svgs';
 import {wrappedErrorMessage} from '@angular/cdk/testing';
 
@@ -36,11 +36,11 @@ function verifyPathChildElement(element: Element, attributeValue: string): void 
 }
 
 
-describe('MdIcon', () => {
+describe('MatIcon', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [HttpModule, MdIconModule],
+      imports: [HttpModule, MatIconModule],
       declarations: [
         IconWithColor,
         IconWithLigature,
@@ -58,13 +58,13 @@ describe('MdIcon', () => {
     TestBed.compileComponents();
   }));
 
-  let mdIconRegistry: MdIconRegistry;
+  let iconRegistry: MatIconRegistry;
   let sanitizer: DomSanitizer;
   let httpRequestUrls: string[];
 
-  let deps = [MdIconRegistry, MockBackend, DomSanitizer];
-  beforeEach(inject(deps, (mir: MdIconRegistry, mockBackend: MockBackend, ds: DomSanitizer) => {
-    mdIconRegistry = mir;
+  let deps = [MatIconRegistry, MockBackend, DomSanitizer];
+  beforeEach(inject(deps, (mir: MatIconRegistry, mockBackend: MockBackend, ds: DomSanitizer) => {
+    iconRegistry = mir;
     sanitizer = ds;
     // Keep track of requests so we can verify caching behavior.
     // Return responses for the SVGs defined in fake-svgs.ts.
@@ -80,25 +80,25 @@ describe('MdIcon', () => {
     let fixture = TestBed.createComponent(IconWithColor);
 
     const testComponent = fixture.componentInstance;
-    const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+    const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     testComponent.iconName = 'home';
     testComponent.iconColor = 'primary';
     fixture.detectChanges();
-    expect(sortedClassNames(mdIconElement)).toEqual(['mat-icon', 'mat-primary', 'material-icons']);
+    expect(sortedClassNames(matIconElement)).toEqual(['mat-icon', 'mat-primary', 'material-icons']);
   });
 
-  it('should mark md-icon as aria-hidden by default', () => {
+  it('should mark mat-icon as aria-hidden by default', () => {
     const fixture = TestBed.createComponent(IconWithLigature);
-    const iconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     expect(iconElement.getAttribute('aria-hidden'))
-        .toBe('true', 'Expected the md-icon element has aria-hidden="true" by default');
+        .toBe('true', 'Expected the mat-icon element has aria-hidden="true" by default');
   });
 
   it('should not override a user-provided aria-hidden attribute', () => {
     const fixture = TestBed.createComponent(IconWithAriaHiddenFalse);
-    const iconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+    const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
     expect(iconElement.getAttribute('aria-hidden'))
-        .toBe('false', 'Expected the md-icon element has the user-provided aria-hidden value');
+        .toBe('false', 'Expected the mat-icon element has the user-provided aria-hidden value');
   });
 
   describe('Ligature icons', () => {
@@ -106,57 +106,57 @@ describe('MdIcon', () => {
       let fixture = TestBed.createComponent(IconWithLigature);
 
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       testComponent.iconName = 'home';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['mat-icon', 'material-icons']);
+      expect(sortedClassNames(matIconElement)).toEqual(['mat-icon', 'material-icons']);
     });
 
     it('should use alternate icon font if set', () => {
-      mdIconRegistry.setDefaultFontSetClass('myfont');
+      iconRegistry.setDefaultFontSetClass('myfont');
 
       let fixture = TestBed.createComponent(IconWithLigature);
 
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       testComponent.iconName = 'home';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['mat-icon', 'myfont']);
+      expect(sortedClassNames(matIconElement)).toEqual(['mat-icon', 'myfont']);
     });
   });
 
   describe('Icons from URLs', () => {
     it('should register icon URLs by name', () => {
-      mdIconRegistry.addSvgIcon('fluffy', trust('cat.svg'));
-      mdIconRegistry.addSvgIcon('fido', trust('dog.svg'));
+      iconRegistry.addSvgIcon('fluffy', trust('cat.svg'));
+      iconRegistry.addSvgIcon('fido', trust('dog.svg'));
 
       let fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       let svgElement: SVGElement;
 
       testComponent.iconName = 'fido';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'woof');
 
       // Change the icon, and the SVG element should be replaced.
       testComponent.iconName = 'fluffy';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'meow');
 
       expect(httpRequestUrls).toEqual(['dog.svg', 'cat.svg']);
       // Using an icon from a previously loaded URL should not cause another HTTP request.
       testComponent.iconName = 'fido';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'woof');
       expect(httpRequestUrls).toEqual(['dog.svg', 'cat.svg']);
     });
 
     it('should throw an error when using an untrusted icon url', () => {
-      mdIconRegistry.addSvgIcon('fluffy', 'farm-set-1.svg');
+      iconRegistry.addSvgIcon('fluffy', 'farm-set-1.svg');
 
       expect(() => {
         let fixture = TestBed.createComponent(IconFromSvgName);
@@ -166,7 +166,7 @@ describe('MdIcon', () => {
     });
 
     it('should throw an error when using an untrusted icon set url', () => {
-      mdIconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-1.svg');
+      iconRegistry.addSvgIconSetInNamespace('farm', 'farm-set-1.svg');
 
       expect(() => {
         let fixture = TestBed.createComponent(IconFromSvgName);
@@ -176,20 +176,20 @@ describe('MdIcon', () => {
     });
 
     it('should extract icon from SVG icon set', () => {
-      mdIconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-1.svg'));
+      iconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-1.svg'));
 
       let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       let svgElement: any;
       let svgChild: any;
 
       testComponent.iconName = 'farm:pig';
       fixture.detectChanges();
 
-      expect(mdIconElement.childNodes.length).toBe(1);
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      expect(matIconElement.childNodes.length).toBe(1);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       expect(svgElement.childNodes.length).toBe(1);
       svgChild = svgElement.childNodes[0];
       // The first <svg> child should be the <g id="pig"> element.
@@ -200,7 +200,7 @@ describe('MdIcon', () => {
       // Change the icon, and the SVG element should be replaced.
       testComponent.iconName = 'farm:cow';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       svgChild = svgElement.childNodes[0];
       // The first <svg> child should be the <g id="cow"> element.
       expect(svgChild.tagName.toLowerCase()).toBe('g');
@@ -209,20 +209,20 @@ describe('MdIcon', () => {
     });
 
     it('should allow multiple icon sets in a namespace', () => {
-      mdIconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-1.svg'));
-      mdIconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-2.svg'));
-      mdIconRegistry.addSvgIconSetInNamespace('arrows', trust('arrow-set.svg'));
+      iconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-1.svg'));
+      iconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-2.svg'));
+      iconRegistry.addSvgIconSetInNamespace('arrows', trust('arrow-set.svg'));
 
       let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       let svgElement: any;
       let svgChild: any;
 
       testComponent.iconName = 'farm:pig';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       expect(svgElement.childNodes.length).toBe(1);
       svgChild = svgElement.childNodes[0];
       // The <svg> child should be the <g id="pig"> element.
@@ -239,7 +239,7 @@ describe('MdIcon', () => {
       // and no additional HTTP request should be made.
       testComponent.iconName = 'farm:cow';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       svgChild = svgElement.childNodes[0];
       // The first <svg> child should be the <g id="cow"> element.
       expect(svgChild.tagName.toLowerCase()).toBe('g');
@@ -250,16 +250,16 @@ describe('MdIcon', () => {
     });
 
     it('should unwrap <symbol> nodes', () => {
-      mdIconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-3.svg'));
+      iconRegistry.addSvgIconSetInNamespace('farm', trust('farm-set-3.svg'));
 
       const fixture = TestBed.createComponent(IconFromSvgName);
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
 
       testComponent.iconName = 'farm:duck';
       fixture.detectChanges();
 
-      const svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      const svgElement = verifyAndGetSingleSvgChild(matIconElement);
       const firstChild = svgElement.childNodes[0];
 
       expect(svgElement.querySelector('symbol')).toBeFalsy();
@@ -269,34 +269,34 @@ describe('MdIcon', () => {
     });
 
     it('should not wrap <svg> elements in icon sets in another svg tag', () => {
-      mdIconRegistry.addSvgIconSet(trust('arrow-set.svg'));
+      iconRegistry.addSvgIconSet(trust('arrow-set.svg'));
 
       let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       let svgElement: any;
 
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();
       // arrow-set.svg stores its icons as nested <svg> elements, so they should be used
       // directly and not wrapped in an outer <svg> tag like the <g> elements in other sets.
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'left');
     });
 
     it('should return unmodified copies of icons from icon sets', () => {
-      mdIconRegistry.addSvgIconSet(trust('arrow-set.svg'));
+      iconRegistry.addSvgIconSet(trust('arrow-set.svg'));
 
       let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       let svgElement: any;
 
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'left');
       // Modify the SVG element by setting a viewBox attribute.
       svgElement.setAttribute('viewBox', '0 0 100 100');
@@ -304,19 +304,19 @@ describe('MdIcon', () => {
       // Switch to a different icon.
       testComponent.iconName = 'right-arrow';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'right');
 
       // Switch back to the first icon. The viewBox attribute should not be present.
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'left');
       expect(svgElement.getAttribute('viewBox')).toBeFalsy();
     });
 
     it('should not throw when toggling an icon that has a binding in IE11', () => {
-      mdIconRegistry.addSvgIcon('fluffy', trust('cat.svg'));
+      iconRegistry.addSvgIcon('fluffy', trust('cat.svg'));
 
       const fixture = TestBed.createComponent(IconWithBindingAndNgIf);
 
@@ -332,12 +332,12 @@ describe('MdIcon', () => {
     });
 
     it('should remove the SVG element from the DOM when the binding is cleared', () => {
-      mdIconRegistry.addSvgIconSet(trust('arrow-set.svg'));
+      iconRegistry.addSvgIconSet(trust('arrow-set.svg'));
 
       let fixture = TestBed.createComponent(IconFromSvgName);
 
       const testComponent = fixture.componentInstance;
-      const icon = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const icon = fixture.debugElement.nativeElement.querySelector('mat-icon');
 
       testComponent.iconName = 'left-arrow';
       fixture.detectChanges();
@@ -354,27 +354,27 @@ describe('MdIcon', () => {
 
   describe('custom fonts', () => {
     it('should apply CSS classes for custom font and icon', () => {
-      mdIconRegistry.registerFontClassAlias('f1', 'font1');
-      mdIconRegistry.registerFontClassAlias('f2');
+      iconRegistry.registerFontClassAlias('f1', 'font1');
+      iconRegistry.registerFontClassAlias('f2');
 
       let fixture = TestBed.createComponent(IconWithCustomFontCss);
 
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('md-icon');
+      const matIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
       testComponent.fontSet = 'f1';
       testComponent.fontIcon = 'house';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['font1', 'house', 'mat-icon']);
+      expect(sortedClassNames(matIconElement)).toEqual(['font1', 'house', 'mat-icon']);
 
       testComponent.fontSet = 'f2';
       testComponent.fontIcon = 'igloo';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['f2', 'igloo', 'mat-icon']);
+      expect(sortedClassNames(matIconElement)).toEqual(['f2', 'igloo', 'mat-icon']);
 
       testComponent.fontSet = 'f3';
       testComponent.fontIcon = 'tent';
       fixture.detectChanges();
-      expect(sortedClassNames(mdIconElement)).toEqual(['f3', 'mat-icon', 'tent']);
+      expect(sortedClassNames(matIconElement)).toEqual(['f3', 'mat-icon', 'tent']);
     });
   });
 
@@ -385,29 +385,29 @@ describe('MdIcon', () => {
 });
 
 
-describe('MdIcon without HttpModule', () => {
-  let mdIconRegistry: MdIconRegistry;
+describe('MatIcon without HttpModule', () => {
+  let iconRegistry: MatIconRegistry;
   let sanitizer: DomSanitizer;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdIconModule],
+      imports: [MatIconModule],
       declarations: [IconFromSvgName],
     });
 
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdIconRegistry, DomSanitizer], (mir: MdIconRegistry, ds: DomSanitizer) => {
-    mdIconRegistry = mir;
+  beforeEach(inject([MatIconRegistry, DomSanitizer], (mir: MatIconRegistry, ds: DomSanitizer) => {
+    iconRegistry = mir;
     sanitizer = ds;
   }));
 
   it('should throw an error when trying to load a remote icon', async() => {
-    const expectedError = wrappedErrorMessage(getMdIconNoHttpProviderError());
+    const expectedError = wrappedErrorMessage(getMatIconNoHttpProviderError());
 
     expect(() => {
-      mdIconRegistry.addSvgIcon('fido', sanitizer.bypassSecurityTrustResourceUrl('dog.svg'));
+      iconRegistry.addSvgIcon('fido', sanitizer.bypassSecurityTrustResourceUrl('dog.svg'));
 
       let fixture = TestBed.createComponent(IconFromSvgName);
 
@@ -418,32 +418,32 @@ describe('MdIcon without HttpModule', () => {
 });
 
 
-@Component({template: `<md-icon>{{iconName}}</md-icon>`})
+@Component({template: `<mat-icon>{{iconName}}</mat-icon>`})
 class IconWithLigature {
   iconName = '';
 }
 
-@Component({template: `<md-icon [color]="iconColor">{{iconName}}</md-icon>`})
+@Component({template: `<mat-icon [color]="iconColor">{{iconName}}</mat-icon>`})
 class IconWithColor {
   iconName = '';
   iconColor = 'primary';
 }
 
-@Component({template: `<md-icon [fontSet]="fontSet" [fontIcon]="fontIcon"></md-icon>`})
+@Component({template: `<mat-icon [fontSet]="fontSet" [fontIcon]="fontIcon"></mat-icon>`})
 class IconWithCustomFontCss {
   fontSet = '';
   fontIcon = '';
 }
 
-@Component({template: `<md-icon [svgIcon]="iconName"></md-icon>`})
+@Component({template: `<mat-icon [svgIcon]="iconName"></mat-icon>`})
 class IconFromSvgName {
   iconName: string | undefined = '';
 }
 
-@Component({template: '<md-icon aria-hidden="false">face</md-icon>'})
+@Component({template: '<mat-icon aria-hidden="false">face</mat-icon>'})
 class IconWithAriaHiddenFalse { }
 
-@Component({template: `<md-icon [svgIcon]="iconName" *ngIf="showIcon">{{iconName}}</md-icon>`})
+@Component({template: `<mat-icon [svgIcon]="iconName" *ngIf="showIcon">{{iconName}}</mat-icon>`})
 class IconWithBindingAndNgIf {
   iconName = 'fluffy';
   showIcon = true;

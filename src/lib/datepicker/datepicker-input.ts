@@ -31,24 +31,24 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import {DateAdapter, MD_DATE_FORMATS, MdDateFormats} from '@angular/material/core';
-import {MdFormField} from '@angular/material/form-field';
+import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
+import {MatFormField} from '@angular/material/form-field';
 import {Subscription} from 'rxjs/Subscription';
 import {coerceDateProperty} from './coerce-date-property';
-import {MdDatepicker} from './datepicker';
+import {MatDatepicker} from './datepicker';
 import {createMissingDateImplError} from './datepicker-errors';
 
 
-export const MD_DATEPICKER_VALUE_ACCESSOR: any = {
+export const MAT_DATEPICKER_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => MdDatepickerInput),
+  useExisting: forwardRef(() => MatDatepickerInput),
   multi: true
 };
 
 
-export const MD_DATEPICKER_VALIDATORS: any = {
+export const MAT_DATEPICKER_VALIDATORS: any = {
   provide: NG_VALIDATORS,
-  useExisting: forwardRef(() => MdDatepickerInput),
+  useExisting: forwardRef(() => MatDatepickerInput),
   multi: true
 };
 
@@ -56,22 +56,22 @@ export const MD_DATEPICKER_VALIDATORS: any = {
 /**
  * An event used for datepicker input and change events. We don't always have access to a native
  * input or change event because the event may have been triggered by the user clicking on the
- * calendar popup. For consistency, we always use MdDatepickerInputEvent instead.
+ * calendar popup. For consistency, we always use MatDatepickerInputEvent instead.
  */
-export class MdDatepickerInputEvent<D> {
+export class MatDatepickerInputEvent<D> {
   /** The new value for the target datepicker input. */
   value: D | null;
 
-  constructor(public target: MdDatepickerInput<D>, public targetElement: HTMLElement) {
+  constructor(public target: MatDatepickerInput<D>, public targetElement: HTMLElement) {
     this.value = this.target.value;
   }
 }
 
 
-/** Directive used to connect an input to a MdDatepicker. */
+/** Directive used to connect an input to a MatDatepicker. */
 @Directive({
-  selector: 'input[mdDatepicker], input[matDatepicker]',
-  providers: [MD_DATEPICKER_VALUE_ACCESSOR, MD_DATEPICKER_VALIDATORS],
+  selector: 'input[matDatepicker]',
+  providers: [MAT_DATEPICKER_VALUE_ACCESSOR, MAT_DATEPICKER_VALIDATORS],
   host: {
     '[attr.aria-haspopup]': 'true',
     '[attr.aria-owns]': '(_datepicker?.opened && _datepicker.id) || null',
@@ -83,39 +83,29 @@ export class MdDatepickerInputEvent<D> {
     '(blur)': '_onTouched()',
     '(keydown)': '_onKeydown($event)',
   },
-  exportAs: 'mdDatepickerInput, matDatepickerInput',
+  exportAs: 'matDatepickerInput',
 })
-export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAccessor, OnDestroy,
+export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAccessor, OnDestroy,
     Validator {
   /** The datepicker that this input is associated with. */
   @Input()
-  set mdDatepicker(value: MdDatepicker<D>) {
+  set matDatepicker(value: MatDatepicker<D>) {
     this.registerDatepicker(value);
   }
-  _datepicker: MdDatepicker<D>;
+  _datepicker: MatDatepicker<D>;
 
-  private registerDatepicker(value: MdDatepicker<D>) {
+  private registerDatepicker(value: MatDatepicker<D>) {
     if (value) {
       this._datepicker = value;
       this._datepicker._registerInput(this);
     }
   }
 
-  @Input() set matDatepicker(value: MdDatepicker<D>) {
-    // Note that we don't set `this.mdDatepicker = value` here,
-    // because that line gets stripped by the JS compiler.
-    this.registerDatepicker(value);
-  }
-
-  @Input() set mdDatepickerFilter(filter: (date: D | null) => boolean) {
+  @Input() set matDatepickerFilter(filter: (date: D | null) => boolean) {
     this._dateFilter = filter;
     this._validatorOnChange();
   }
   _dateFilter: (date: D | null) => boolean;
-
-  @Input() set matDatepickerFilter(filter: (date: D | null) => boolean) {
-    this.mdDatepickerFilter = filter;
-  }
 
   /** The value of the input. */
   @Input()
@@ -169,10 +159,10 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
   private _disabled: boolean;
 
   /** Emits when a `change` event is fired on this `<input>`. */
-  @Output() dateChange = new EventEmitter<MdDatepickerInputEvent<D>>();
+  @Output() dateChange = new EventEmitter<MatDatepickerInputEvent<D>>();
 
   /** Emits when an `input` event is fired on this `<input>`. */
-  @Output() dateInput = new EventEmitter<MdDatepickerInputEvent<D>>();
+  @Output() dateInput = new EventEmitter<MatDatepickerInputEvent<D>>();
 
   /** Emits when the value changes (either due to user input or programmatic change). */
   _valueChange = new EventEmitter<D|null>();
@@ -193,7 +183,7 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
   /** The form control validator for whether the input parses. */
   private _parseValidator: ValidatorFn = (): ValidationErrors | null => {
     return this._lastValueValid ?
-        null : {'mdDatepickerParse': {'text': this._elementRef.nativeElement.value}};
+        null : {'matDatepickerParse': {'text': this._elementRef.nativeElement.value}};
   }
 
   /** The form control validator for the min date. */
@@ -201,7 +191,7 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
     const controlValue = coerceDateProperty(this._dateAdapter, control.value);
     return (!this.min || !controlValue ||
         this._dateAdapter.compareDate(this.min, controlValue) <= 0) ?
-        null : {'mdDatepickerMin': {'min': this.min, 'actual': controlValue}};
+        null : {'matDatepickerMin': {'min': this.min, 'actual': controlValue}};
   }
 
   /** The form control validator for the max date. */
@@ -209,14 +199,14 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
     const controlValue = coerceDateProperty(this._dateAdapter, control.value);
     return (!this.max || !controlValue ||
         this._dateAdapter.compareDate(this.max, controlValue) >= 0) ?
-        null : {'mdDatepickerMax': {'max': this.max, 'actual': controlValue}};
+        null : {'matDatepickerMax': {'max': this.max, 'actual': controlValue}};
   }
 
   /** The form control validator for the date filter. */
   private _filterValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const controlValue = coerceDateProperty(this._dateAdapter, control.value);
     return !this._dateFilter || !controlValue || this._dateFilter(controlValue) ?
-        null : {'mdDatepickerFilter': true};
+        null : {'matDatepickerFilter': true};
   }
 
   /** The combined form control validator for this input. */
@@ -231,13 +221,13 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
       private _elementRef: ElementRef,
       private _renderer: Renderer2,
       @Optional() private _dateAdapter: DateAdapter<D>,
-      @Optional() @Inject(MD_DATE_FORMATS) private _dateFormats: MdDateFormats,
-      @Optional() private _mdFormField: MdFormField) {
+      @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
+      @Optional() private _formField: MatFormField) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }
     if (!this._dateFormats) {
-      throw createMissingDateImplError('MD_DATE_FORMATS');
+      throw createMissingDateImplError('MAT_DATE_FORMATS');
     }
 
     // Update the displayed date when the locale changes.
@@ -253,8 +243,8 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
             this.value = selected;
             this._cvaOnChange(selected);
             this._onTouched();
-            this.dateInput.emit(new MdDatepickerInputEvent(this, this._elementRef.nativeElement));
-            this.dateChange.emit(new MdDatepickerInputEvent(this, this._elementRef.nativeElement));
+            this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
+            this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
           });
     }
   }
@@ -279,7 +269,7 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
    * @return The element to connect the popup to.
    */
   getPopupConnectionElementRef(): ElementRef {
-    return this._mdFormField ? this._mdFormField.underlineRef : this._elementRef;
+    return this._formField ? this._formField.underlineRef : this._elementRef;
   }
 
   // Implemented as part of ControlValueAccessor
@@ -316,11 +306,11 @@ export class MdDatepickerInput<D> implements AfterContentInit, ControlValueAcces
     this._value = date;
     this._cvaOnChange(date);
     this._valueChange.emit(date);
-    this.dateInput.emit(new MdDatepickerInputEvent(this, this._elementRef.nativeElement));
+    this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
   }
 
   _onChange() {
-    this.dateChange.emit(new MdDatepickerInputEvent(this, this._elementRef.nativeElement));
+    this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
   }
 
   /**

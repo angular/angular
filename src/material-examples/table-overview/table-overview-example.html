@@ -1,7 +1,7 @@
 <div class="example-header" [style.display]="selection.isEmpty() ? '' : 'none'">
-  <md-form-field floatPlaceholder="never">
-    <input mdInput #filter placeholder="Filter users">
-  </md-form-field>
+  <mat-form-field floatPlaceholder="never">
+    <input matInput #filter placeholder="Filter users">
+  </mat-form-field>
 </div>
 <div class="example-header example-selection-header"
      *ngIf="!selection.isEmpty()">
@@ -12,67 +12,67 @@
 
 <div class="example-container mat-elevation-z8">
 
-  <md-table #table [dataSource]="dataSource" mdSort>
+  <mat-table #table [dataSource]="dataSource" matSort>
 
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
 
     <!-- Checkbox Column -->
-    <ng-container mdColumnDef="select">
-      <md-header-cell *mdHeaderCellDef>
-        <md-checkbox (change)="$event ? masterToggle() : null"
+    <ng-container matColumnDef="select">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null"
                      [checked]="isAllSelected()"
                      [indeterminate]="selection.hasValue() && !isAllSelected()">
-        </md-checkbox>
-      </md-header-cell>
-      <md-cell *mdCellDef="let row">
-        <md-checkbox (click)="$event.stopPropagation()"
+        </mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()"
                      (change)="$event ? selection.toggle(row.id) : null"
                      [checked]="selection.isSelected(row.id)">
-        </md-checkbox>
-      </md-cell>
+        </mat-checkbox>
+      </mat-cell>
     </ng-container>
 
     <!-- ID Column -->
-    <ng-container mdColumnDef="userId">
-      <md-header-cell *mdHeaderCellDef md-sort-header> ID </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.id}} </md-cell>
+    <ng-container matColumnDef="userId">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.id}} </mat-cell>
     </ng-container>
 
     <!-- Progress Column -->
-    <ng-container mdColumnDef="progress">
-      <md-header-cell *mdHeaderCellDef md-sort-header> Progress </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.progress}}% </md-cell>
+    <ng-container matColumnDef="progress">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Progress </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.progress}}% </mat-cell>
     </ng-container>
 
     <!-- Name Column -->
-    <ng-container mdColumnDef="userName">
-      <md-header-cell *mdHeaderCellDef md-sort-header> Name </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.name}} </md-cell>
+    <ng-container matColumnDef="userName">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
     </ng-container>
 
     <!-- Color Column -->
-    <ng-container mdColumnDef="color">
-      <md-header-cell *mdHeaderCellDef md-sort-header> Color </md-header-cell>
-      <md-cell *mdCellDef="let row" [style.color]="row.color"> {{row.color}} </md-cell>
+    <ng-container matColumnDef="color">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Color </mat-header-cell>
+      <mat-cell *matCellDef="let row" [style.color]="row.color"> {{row.color}} </mat-cell>
     </ng-container>
 
-    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-    <md-row *mdRowDef="let row; columns: displayedColumns;"
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"
             [class.example-selected-row]="selection.isSelected(row.id)"
             (click)="selection.toggle(row.id)">
-    </md-row>
-  </md-table>
+    </mat-row>
+  </mat-table>
 
   <div class="example-no-results"
        [style.display]="dataSource.renderedData.length == 0 ? '' : 'none'">
     No users found matching filter.
   </div>
 
-  <md-paginator #paginator
+  <mat-paginator #paginator
                 [length]="dataSource.filteredData.length"
                 [pageIndex]="0"
                 [pageSize]="25"
                 [pageSizeOptions]="[5, 10, 25, 100]">
-  </md-paginator>
+  </mat-paginator>
 </div>

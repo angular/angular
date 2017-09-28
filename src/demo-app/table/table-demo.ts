@@ -1,7 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
-import {MdPaginator, MdSort} from '@angular/material';
+import {MatPaginator, MatSort} from '@angular/material';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 
@@ -25,9 +25,9 @@ export class TableDemo {
   dynamicColumnDefs: any[] = [];
   dynamicColumnIds: string[] = [];
 
-  @ViewChild(MdPaginator) _paginator: MdPaginator;
+  @ViewChild(MatPaginator) _paginator: MatPaginator;
 
-  @ViewChild(MdSort) sort: MdSort;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(public _peopleDatabase: PeopleDatabase) { }
 

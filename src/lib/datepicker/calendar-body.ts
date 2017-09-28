@@ -20,7 +20,7 @@ import {
  * An internal class that represents the data corresponding to a single calendar cell.
  * @docs-private
  */
-export class MdCalendarCell {
+export class MatCalendarCell {
   constructor(public value: number,
               public displayValue: string,
               public ariaLabel: string,
@@ -34,7 +34,7 @@ export class MdCalendarCell {
  */
 @Component({
   moduleId: module.id,
-  selector: '[md-calendar-body], [mat-calendar-body]',
+  selector: '[mat-calendar-body]',
   templateUrl: 'calendar-body.html',
   styleUrls: ['calendar-body.css'],
   host: {
@@ -44,12 +44,12 @@ export class MdCalendarCell {
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdCalendarBody {
+export class MatCalendarBody {
   /** The label for the table. (e.g. "Jan 2017"). */
   @Input() label: string;
 
   /** The cells to display in the table. */
-  @Input() rows: MdCalendarCell[][];
+  @Input() rows: MatCalendarCell[][];
 
   /** The value in the table that corresponds to today. */
   @Input() todayValue: number;
@@ -78,7 +78,7 @@ export class MdCalendarBody {
   /** Emits when a new value is selected. */
   @Output() selectedValueChange = new EventEmitter<number>();
 
-  _cellClicked(cell: MdCalendarCell): void {
+  _cellClicked(cell: MatCalendarCell): void {
     if (!this.allowDisabledSelection && !cell.enabled) {
       return;
     }

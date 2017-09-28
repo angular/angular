@@ -22,8 +22,8 @@ import {Platform} from '@angular/cdk/platform';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {
-  MdTooltip,
-  MdTooltipModule,
+  MatTooltip,
+  MatTooltipModule,
   SCROLL_THROTTLE_MS,
   TOOLTIP_PANEL_CLASS,
   TooltipPosition
@@ -32,13 +32,13 @@ import {
 
 const initialTooltipMessage = 'initial tooltip message';
 
-describe('MdTooltip', () => {
+describe('MatTooltip', () => {
   let overlayContainerElement: HTMLElement;
   let dir: {value: Direction};
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTooltipModule, OverlayModule, NoopAnimationsModule],
+      imports: [MatTooltipModule, OverlayModule, NoopAnimationsModule],
       declarations: [
         BasicTooltipDemo,
         ScrollableTooltipDemo,
@@ -69,14 +69,14 @@ describe('MdTooltip', () => {
     let fixture: ComponentFixture<BasicTooltipDemo>;
     let buttonDebugElement: DebugElement;
     let buttonElement: HTMLButtonElement;
-    let tooltipDirective: MdTooltip;
+    let tooltipDirective: MatTooltip;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(BasicTooltipDemo);
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'));
       buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
-      tooltipDirective = buttonDebugElement.injector.get<MdTooltip>(MdTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
     });
 
     it('should show and hide the tooltip', fakeAsync(() => {
@@ -273,9 +273,9 @@ describe('MdTooltip', () => {
       // Make sure classes aren't prematurely added
       let tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement.classList).not.toContain('custom-one',
-        'Expected to not have the class before enabling mdTooltipClass');
+        'Expected to not have the class before enabling matTooltipClass');
       expect(tooltipElement.classList).not.toContain('custom-two',
-        'Expected to not have the class before enabling mdTooltipClass');
+        'Expected to not have the class before enabling matTooltipClass');
 
       // Enable the classes via ngClass syntax
       fixture.componentInstance.showTooltipClass = true;
@@ -284,9 +284,9 @@ describe('MdTooltip', () => {
       // Make sure classes are correctly added
       tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement.classList).toContain('custom-one',
-        'Expected to have the class after enabling mdTooltipClass');
+        'Expected to have the class after enabling matTooltipClass');
       expect(tooltipElement.classList).toContain('custom-two',
-        'Expected to have the class after enabling mdTooltipClass');
+        'Expected to have the class after enabling matTooltipClass');
     }));
 
     it('should be removed after parent destroyed', fakeAsync(() => {
@@ -483,14 +483,14 @@ describe('MdTooltip', () => {
     let fixture: ComponentFixture<ScrollableTooltipDemo>;
     let buttonDebugElement: DebugElement;
     let buttonElement: HTMLButtonElement;
-    let tooltipDirective: MdTooltip;
+    let tooltipDirective: MatTooltip;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(ScrollableTooltipDemo);
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'));
       buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
-      tooltipDirective = buttonDebugElement.injector.get<MdTooltip>(MdTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
     });
 
     it('should hide tooltip if clipped after changing positions', fakeAsync(() => {
@@ -524,14 +524,14 @@ describe('MdTooltip', () => {
     let fixture: ComponentFixture<OnPushTooltipDemo>;
     let buttonDebugElement: DebugElement;
     let buttonElement: HTMLButtonElement;
-    let tooltipDirective: MdTooltip;
+    let tooltipDirective: MatTooltip;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(OnPushTooltipDemo);
       fixture.detectChanges();
       buttonDebugElement = fixture.debugElement.query(By.css('button'));
       buttonElement = <HTMLButtonElement> buttonDebugElement.nativeElement;
-      tooltipDirective = buttonDebugElement.injector.get<MdTooltip>(MdTooltip);
+      tooltipDirective = buttonDebugElement.injector.get<MatTooltip>(MatTooltip);
     });
 
     it('should show and hide the tooltip', fakeAsync(() => {
@@ -582,9 +582,9 @@ describe('MdTooltip', () => {
   selector: 'app',
   template: `
     <button *ngIf="showButton"
-            [mdTooltip]="message"
-            [mdTooltipPosition]="position"
-            [mdTooltipClass]="{'custom-one': showTooltipClass, 'custom-two': showTooltipClass }">
+            [matTooltip]="message"
+            [matTooltipPosition]="position"
+            [matTooltipClass]="{'custom-one': showTooltipClass, 'custom-two': showTooltipClass }">
       Button
     </button>`
 })
@@ -593,7 +593,7 @@ class BasicTooltipDemo {
   message: any = initialTooltipMessage;
   showButton: boolean = true;
   showTooltipClass = false;
-  @ViewChild(MdTooltip) tooltip: MdTooltip;
+  @ViewChild(MatTooltip) tooltip: MatTooltip;
 }
 
 @Component({
@@ -602,8 +602,8 @@ class BasicTooltipDemo {
     <div cdk-scrollable style="padding: 100px; margin: 300px;
                                height: 200px; width: 200px; overflow: auto;">
       <button *ngIf="showButton" style="margin-bottom: 600px"
-              [md-tooltip]="message"
-              [tooltip-position]="position">
+              [matTooltip]="message"
+              [matTooltipPosition]="position">
         Button
       </button>
     </div>`
@@ -629,8 +629,8 @@ class ScrollableTooltipDemo {
 @Component({
   selector: 'app',
   template: `
-    <button [mdTooltip]="message"
-            [mdTooltipPosition]="position">
+    <button [matTooltip]="message"
+            [matTooltipPosition]="position">
       Button
     </button>`,
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -645,7 +645,7 @@ class OnPushTooltipDemo {
   selector: 'app',
   template: `
     <button *ngFor="let tooltip of tooltips"
-            [mdTooltip]="tooltip">
+            [matTooltip]="tooltip">
       Button {{tooltip}}
     </button>`,
 })

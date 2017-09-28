@@ -11,11 +11,11 @@ import {Subject} from 'rxjs/Subject';
 import {SortDirection} from './sort-direction';
 
 /**
- * To modify the labels and text displayed, create a new instance of MdSortHeaderIntl and
+ * To modify the labels and text displayed, create a new instance of MatSortHeaderIntl and
  * include it in a custom provider.
  */
 @Injectable()
-export class MdSortHeaderIntl {
+export class MatSortHeaderIntl {
   /**
    * Stream that emits whenever the labels here are changed. Use this to notify
    * components if the labels have changed after initialization.

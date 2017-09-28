@@ -1,6 +1,6 @@
-<h1>md-checkbox: Basic Example</h1>
+<h1>mat-checkbox: Basic Example</h1>
 <form>
-<md-checkbox [(ngModel)]="isChecked"
+<mat-checkbox [(ngModel)]="isChecked"
              name="cb"
              value="basic_checkbox"
              [color]="checkboxColor()"
@@ -10,7 +10,7 @@
              [align]="alignment">
   Do you want to <em>foobar</em> the <em>bazquux</em>?
 
-</md-checkbox> - <strong>{{printResult()}}</strong>
+</mat-checkbox> - <strong>{{printResult()}}</strong>
 </form>
 <div class="demo-checkboxes">
 <input id="indeterminate-toggle"
@@ -45,14 +45,14 @@
 </div>
 
 <h1>Pseudo checkboxes</h1>
-<md-pseudo-checkbox></md-pseudo-checkbox>
-<md-pseudo-checkbox [disabled]="true"></md-pseudo-checkbox>
+<mat-pseudo-checkbox></mat-pseudo-checkbox>
+<mat-pseudo-checkbox [disabled]="true"></mat-pseudo-checkbox>
 
-<md-pseudo-checkbox state="checked"></md-pseudo-checkbox>
-<md-pseudo-checkbox state="checked" [disabled]="true"></md-pseudo-checkbox>
+<mat-pseudo-checkbox state="checked"></mat-pseudo-checkbox>
+<mat-pseudo-checkbox state="checked" [disabled]="true"></mat-pseudo-checkbox>
 
-<md-pseudo-checkbox state="indeterminate"></md-pseudo-checkbox>
-<md-pseudo-checkbox state="indeterminate" [disabled]="true"></md-pseudo-checkbox>
+<mat-pseudo-checkbox state="indeterminate"></mat-pseudo-checkbox>
+<mat-pseudo-checkbox state="indeterminate" [disabled]="true"></mat-pseudo-checkbox>
 
 <h1>Nested Checklist</h1>
-<md-checkbox-demo-nested-checklist></md-checkbox-demo-nested-checklist>
+<mat-checkbox-demo-nested-checklist></mat-checkbox-demo-nested-checklist>

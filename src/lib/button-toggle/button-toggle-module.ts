@@ -7,20 +7,20 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle} from './button-toggle';
-import {UNIQUE_SELECTION_DISPATCHER_PROVIDER, MdCommonModule} from '@angular/material/core';
+import {MatButtonToggleGroup, MatButtonToggleGroupMultiple, MatButtonToggle} from './button-toggle';
+import {UNIQUE_SELECTION_DISPATCHER_PROVIDER, MatCommonModule} from '@angular/material/core';
 import {A11yModule} from '@angular/cdk/a11y';
 
 
 @NgModule({
-  imports: [MdCommonModule, A11yModule],
+  imports: [MatCommonModule, A11yModule],
   exports: [
-    MdButtonToggleGroup,
-    MdButtonToggleGroupMultiple,
-    MdButtonToggle,
-    MdCommonModule,
+    MatButtonToggleGroup,
+    MatButtonToggleGroupMultiple,
+    MatButtonToggle,
+    MatCommonModule,
   ],
-  declarations: [MdButtonToggleGroup, MdButtonToggleGroupMultiple, MdButtonToggle],
+  declarations: [MatButtonToggleGroup, MatButtonToggleGroupMultiple, MatButtonToggle],
   providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER]
 })
-export class MdButtonToggleModule {}
+export class MatButtonToggleModule {}

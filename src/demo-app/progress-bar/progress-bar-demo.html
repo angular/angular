@@ -1,45 +1,45 @@
-<md-button-toggle-group class="demo-progress-bar-controls" [(ngModel)]="color">
-  <md-button-toggle value="primary">Primary Color</md-button-toggle>
-  <md-button-toggle value="accent">Accent Color</md-button-toggle>
-  <md-button-toggle value="warn">Warn Color</md-button-toggle>
-</md-button-toggle-group>
+<mat-button-toggle-group class="demo-progress-bar-controls" [(ngModel)]="color">
+  <mat-button-toggle value="primary">Primary Color</mat-button-toggle>
+  <mat-button-toggle value="accent">Accent Color</mat-button-toggle>
+  <mat-button-toggle value="warn">Warn Color</mat-button-toggle>
+</mat-button-toggle-group>
 
 <h1>Determinate</h1>
 
 <div class="demo-progress-bar-controls">
   <span>Value: {{determinateProgressValue}}</span>
-  <button md-raised-button (click)="stepDeterminateProgressVal(10)">Increase</button>
-  <button md-raised-button (click)="stepDeterminateProgressVal(-10)">Decrease</button>
+  <button mat-raised-button (click)="stepDeterminateProgressVal(10)">Increase</button>
+  <button mat-raised-button (click)="stepDeterminateProgressVal(-10)">Decrease</button>
 </div>
 
 <div class="demo-progress-bar-container">
-  <md-progress-bar mode="determinate" [value]="determinateProgressValue" [color]="color">
-  </md-progress-bar>
+  <mat-progress-bar mode="determinate" [value]="determinateProgressValue" [color]="color">
+  </mat-progress-bar>
 </div>
 
 <h1>Buffer</h1>
 
 <div class="demo-progress-bar-controls">
   <span>Value: {{bufferProgressValue}}</span>
-  <button md-raised-button (click)="stepBufferProgressVal(10)">Increase</button>
-  <button md-raised-button (click)="stepBufferProgressVal(-10)">Decrease</button>
+  <button mat-raised-button (click)="stepBufferProgressVal(10)">Increase</button>
+  <button mat-raised-button (click)="stepBufferProgressVal(-10)">Decrease</button>
   <span class="demo-progress-bar-spacer"></span>
   <span>Buffer Value: {{bufferBufferValue}}</span>
-  <button md-raised-button (click)="stepBufferBufferVal(10)">Increase</button>
-  <button md-raised-button (click)="stepBufferBufferVal(-10)">Decrease</button>
+  <button mat-raised-button (click)="stepBufferBufferVal(10)">Increase</button>
+  <button mat-raised-button (click)="stepBufferBufferVal(-10)">Decrease</button>
 </div>
 
 <div class="demo-progress-bar-container">
-  <md-progress-bar [value]="bufferProgressValue" [bufferValue]="bufferBufferValue" mode="buffer"
-                   [color]="color"></md-progress-bar>
+  <mat-progress-bar [value]="bufferProgressValue" [bufferValue]="bufferBufferValue" mode="buffer"
+                   [color]="color"></mat-progress-bar>
 </div>
 
 <h1>Indeterminate</h1>
 <div class="demo-progress-bar-container">
-  <md-progress-bar mode="indeterminate" [color]="color"></md-progress-bar>
+  <mat-progress-bar mode="indeterminate" [color]="color"></mat-progress-bar>
 </div>
 
 <h1>Query</h1>
 <div class="demo-progress-bar-container">
-  <md-progress-bar mode="query" [color]="color"></md-progress-bar>
+  <mat-progress-bar mode="query" [color]="color"></mat-progress-bar>
 </div>

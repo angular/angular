@@ -4,12 +4,10 @@
        [matRippleDisabled]="_isRippleDisabled()">
   </div>
 
-  <ng-content
-      select="[md-list-avatar], [md-list-icon], [mat-list-avatar], [mat-list-icon],
-              [mdListAvatar], [mdListIcon], [matListAvatar], [matListIcon]">
+  <ng-content select="[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]">
   </ng-content>
 
-  <div class="mat-list-text"><ng-content select="[md-line], [mat-line], [mdLine], [matLine]"></ng-content></div>
+  <div class="mat-list-text"><ng-content select="[mat-line], [matLine]"></ng-content></div>
 
   <ng-content></ng-content>
 </div>

@@ -25,9 +25,9 @@ import {
 import {CdkColumnDef} from '@angular/cdk/table';
 import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
-import {MdSort, MdSortable} from './sort';
-import {MdSortHeaderIntl} from './sort-header-intl';
-import {getMdSortHeaderNotContainedWithinMdSortError} from './sort-errors';
+import {MatSort, MatSortable} from './sort';
+import {MatSortHeaderIntl} from './sort-header-intl';
+import {getSortHeaderNotContainedWithinSortError} from './sort-errors';
 import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 
 const SORT_ANIMATION_TRANSITION =
@@ -37,14 +37,14 @@ const SORT_ANIMATION_TRANSITION =
  * Applies sorting behavior (click to change sort) and styles to an element, including an
  * arrow to display the current sort direction.
  *
- * Must be provided with an id and contained within a parent MdSort directive.
+ * Must be provided with an id and contained within a parent MatSort directive.
  *
  * If used on header cells in a CdkTable, it will automatically default its id from its containing
  * column definition.
  */
 @Component({
   moduleId: module.id,
-  selector: '[md-sort-header], [mat-sort-header]',
+  selector: '[mat-sort-header]',
   templateUrl: 'sort-header.html',
   styleUrls: ['sort-header.css'],
   host: {
@@ -73,22 +73,22 @@ const SORT_ANIMATION_TRANSITION =
     ])
   ]
 })
-export class MdSortHeader implements MdSortable {
+export class MatSortHeader implements MatSortable {
   private _rerenderSubscription: Subscription;
 
   /**
    * ID of this sort header. If used within the context of a CdkColumnDef, this will default to
    * the column's name.
    */
-  @Input('md-sort-header') id: string;
+  @Input('mat-sort-header') id: string;
 
   /** Sets the position of the arrow that displays when sorted. */
   @Input() arrowPosition: 'before' | 'after' = 'after';
 
-  /** Overrides the sort start value of the containing MdSort for this MdSortable. */
+  /** Overrides the sort start value of the containing MatSort for this MatSortable. */
   @Input('start') start: 'asc' | 'desc';
 
-  /** Overrides the disable clear value of the containing MdSort for this MdSortable. */
+  /** Overrides the disable clear value of the containing MatSort for this MatSortable. */
   @Input()
   get disableClear() { return this._disableClear; }
   set disableClear(v) { this._disableClear = coerceBooleanProperty(v); }
@@ -98,12 +98,12 @@ export class MdSortHeader implements MdSortable {
   get _id() { return this.id; }
   set _id(v: string) { this.id = v; }
 
-  constructor(public _intl: MdSortHeaderIntl,
+  constructor(public _intl: MatSortHeaderIntl,
               changeDetectorRef: ChangeDetectorRef,
-              @Optional() public _sort: MdSort,
+              @Optional() public _sort: MatSort,
               @Optional() public _cdkColumnDef: CdkColumnDef) {
     if (!_sort) {
-      throw getMdSortHeaderNotContainedWithinMdSortError();
+      throw getSortHeaderNotContainedWithinSortError();
     }
 
     this._rerenderSubscription = merge(_sort.sortChange, _intl.changes).subscribe(() => {
@@ -124,7 +124,7 @@ export class MdSortHeader implements MdSortable {
     this._rerenderSubscription.unsubscribe();
   }
 
-  /** Whether this MdSortHeader is currently sorted in either ascending or descending order. */
+  /** Whether this MatSortHeader is currently sorted in either ascending or descending order. */
   _isSorted() {
     return this._sort.active == this.id && this._sort.direction;
   }

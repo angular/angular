@@ -1,57 +1,57 @@
 <section>
   <h2>Basic input box (e.g. name field)</h2>
-  <md-form-field floatPlaceholder="never">
-    <input mdInput placeholder="First name" [(ngModel)]="firstName">
-  </md-form-field>
-  <md-form-field floatPlaceholder="never">
-    <input mdInput placeholder="Last name" [(ngModel)]="lastName">
-  </md-form-field>
+  <mat-form-field floatPlaceholder="never">
+    <input matInput placeholder="First name" [(ngModel)]="firstName">
+  </mat-form-field>
+  <mat-form-field floatPlaceholder="never">
+    <input matInput placeholder="Last name" [(ngModel)]="lastName">
+  </mat-form-field>
 </section>
 
 <section>
   <h2>Input with hint (e.g. password field)</h2>
-  <md-form-field hideRequiredMarker>
-    <input mdInput [type]="passwordType" placeholder="Password" [(ngModel)]="password" required
+  <mat-form-field hideRequiredMarker>
+    <input matInput [type]="passwordType" placeholder="Password" [(ngModel)]="password" required
            #passwordModel="ngModel">
-    <button md-icon-button mdSuffix [attr.aria-label]="passwordToggleLabel"
+    <button mat-icon-button matSuffix [attr.aria-label]="passwordToggleLabel"
             (click)="showPassword = !showPassword">
-      <md-icon>{{passwordToggleIcon}}</md-icon>
+      <mat-icon>{{passwordToggleIcon}}</mat-icon>
     </button>
-    <md-hint>Hint: favorite color</md-hint>
-    <md-error *ngIf="passwordModel.hasError('required')">You must enter your password.</md-error>
-  </md-form-field>
+    <mat-hint>Hint: favorite color</mat-hint>
+    <mat-error *ngIf="passwordModel.hasError('required')">You must enter your password.</mat-error>
+  </mat-form-field>
 </section>
 
 <section>
   <h2>Input with error message (e.g. email field)</h2>
-  <md-form-field>
-    <input mdInput type="email" placeholder="Email" [(ngModel)]="email" required email
+  <mat-form-field>
+    <input matInput type="email" placeholder="Email" [(ngModel)]="email" required email
            #emailModel="ngModel">
-    <md-error *ngIf="emailModel.hasError('required')">You must enter your email.</md-error>
-    <md-error *ngIf="emailModel.hasError('email')">Not a valid email address.</md-error>
-  </md-form-field>
+    <mat-error *ngIf="emailModel.hasError('required')">You must enter your email.</mat-error>
+    <mat-error *ngIf="emailModel.hasError('email')">Not a valid email address.</mat-error>
+  </mat-form-field>
 </section>
 
 <section>
   <h2>Input with prefix & suffix (e.g. currency converter)</h2>
-  <md-form-field floatPlaceholder="always">
-    <input mdInput type="number" placeholder="USD" [(ngModel)]="usd">
-    <span mdPrefix>$</span>
-  </md-form-field>
+  <mat-form-field floatPlaceholder="always">
+    <input matInput type="number" placeholder="USD" [(ngModel)]="usd">
+    <span matPrefix>$</span>
+  </mat-form-field>
   =
-  <md-form-field floatPlaceholder="always">
-    <input mdInput type="number" placeholder="JPY" [(ngModel)]="jpy">
-    <span mdPrefix>‎¥‎</span>
-  </md-form-field>
+  <mat-form-field floatPlaceholder="always">
+    <input matInput type="number" placeholder="JPY" [(ngModel)]="jpy">
+    <span matPrefix>‎¥‎</span>
+  </mat-form-field>
   (as of 7/31/2017)
 </section>
 
 <section>
   <h2>Textarea input (e.g.  comment box)</h2>
-  <md-form-field>
-    <textarea mdInput aria-label="Comment" [(ngModel)]="comment" mdTextareaAutosize
+  <mat-form-field>
+    <textarea matInput aria-label="Comment" [(ngModel)]="comment" matTextareaAutosize
               [maxlength]="commentMax" #commentModel="ngModel"></textarea>
-    <md-hint>Leave us a comment!</md-hint>
-    <md-hint align="end">{{commentCount}}/{{commentMax}}</md-hint>
-  </md-form-field>
+    <mat-hint>Leave us a comment!</mat-hint>
+    <mat-hint align="end">{{commentCount}}/{{commentMax}}</mat-hint>
+  </mat-form-field>
 </section>

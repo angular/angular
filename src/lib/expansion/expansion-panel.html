@@ -1,8 +1,8 @@
-<ng-content select="mat-expansion-panel-header, md-expansion-panel-header"></ng-content>
+<ng-content select="mat-expansion-panel-header"></ng-content>
 <div [class.mat-expanded]="expanded" class="mat-expansion-panel-content"
      [@bodyExpansion]="_getExpandedState()" [id]="id">
   <div class="mat-expansion-panel-body">
     <ng-content></ng-content>
   </div>
-  <ng-content select="mat-action-row, md-action-row"></ng-content>
+  <ng-content select="mat-action-row"></ng-content>
 </div>

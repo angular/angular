@@ -1,32 +1,32 @@
-<md-horizontal-stepper [linear]="isLinear">
-  <md-step [stepControl]="firstFormGroup">
+<mat-horizontal-stepper [linear]="isLinear">
+  <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
-      <ng-template mdStepLabel>Fill out your name</ng-template>
-      <md-form-field>
-        <input mdInput placeholder="Last name, First name" formControlName="firstCtrl" required>
-      </md-form-field>
+      <ng-template matStepLabel>Fill out your name</ng-template>
+      <mat-form-field>
+        <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+      </mat-form-field>
       <div>
-        <button md-button mdStepperNext>Next</button>
+        <button mat-button matStepperNext>Next</button>
       </div>
     </form>
-  </md-step>
-  <md-step [stepControl]="secondFormGroup">
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup">
     <form [formGroup]="secondFormGroup">
-      <ng-template mdStepLabel>Fill out your address</ng-template>
-      <md-form-field>
-        <input mdInput placeholder="Address" formControlName="secondCtrl" required>
-      </md-form-field>
+      <ng-template matStepLabel>Fill out your address</ng-template>
+      <mat-form-field>
+        <input matInput placeholder="Address" formControlName="secondCtrl" required>
+      </mat-form-field>
       <div>
-        <button md-button mdStepperPrevious>Back</button>
-        <button md-button mdStepperNext>Next</button>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext>Next</button>
       </div>
     </form>
-  </md-step>
-  <md-step>
-    <ng-template mdStepLabel>Done</ng-template>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
     You are now done.
     <div>
-      <button md-button mdStepperPrevious>Back</button>
+      <button mat-button matStepperPrevious>Back</button>
     </div>
-  </md-step>
-</md-horizontal-stepper>
+  </mat-step>
+</mat-horizontal-stepper>

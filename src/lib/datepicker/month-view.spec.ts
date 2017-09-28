@@ -1,20 +1,20 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MdMonthView} from './month-view';
-import {MdCalendarBody} from './calendar-body';
-import {MdNativeDateModule} from '@angular/material/core';
+import {MatMonthView} from './month-view';
+import {MatCalendarBody} from './calendar-body';
+import {MatNativeDateModule} from '@angular/material/core';
 import {JAN, MAR} from '@angular/material/core';
 
-describe('MdMonthView', () => {
+describe('MatMonthView', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        MdNativeDateModule,
+        MatNativeDateModule,
       ],
       declarations: [
-        MdCalendarBody,
-        MdMonthView,
+        MatCalendarBody,
+        MatMonthView,
 
         // Test components.
         StandardMonthView,
@@ -34,7 +34,7 @@ describe('MdMonthView', () => {
       fixture = TestBed.createComponent(StandardMonthView);
       fixture.detectChanges();
 
-      let monthViewDebugElement = fixture.debugElement.query(By.directive(MdMonthView));
+      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView));
       monthViewNativeElement = monthViewDebugElement.nativeElement;
       testComponent = fixture.componentInstance;
     });
@@ -87,7 +87,7 @@ describe('MdMonthView', () => {
       fixture = TestBed.createComponent(MonthViewWithDateFilter);
       fixture.detectChanges();
 
-      let monthViewDebugElement = fixture.debugElement.query(By.directive(MdMonthView));
+      let monthViewDebugElement = fixture.debugElement.query(By.directive(MatMonthView));
       monthViewNativeElement = monthViewDebugElement.nativeElement;
       testComponent = fixture.componentInstance;
     });
@@ -102,7 +102,7 @@ describe('MdMonthView', () => {
 
 
 @Component({
-  template: `<md-month-view [activeDate]="date" [(selected)]="selected"></md-month-view>`,
+  template: `<mat-month-view [activeDate]="date" [(selected)]="selected"></mat-month-view>`,
 })
 class StandardMonthView {
   date = new Date(2017, JAN, 5);
@@ -111,7 +111,7 @@ class StandardMonthView {
 
 
 @Component({
-  template: `<md-month-view [activeDate]="activeDate" [dateFilter]="dateFilter"></md-month-view>`
+  template: `<mat-month-view [activeDate]="activeDate" [dateFilter]="dateFilter"></mat-month-view>`
 })
 class MonthViewWithDateFilter {
   activeDate = new Date(2017, JAN, 1);

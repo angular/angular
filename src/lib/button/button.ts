@@ -24,7 +24,6 @@ import {
   CanColor,
   CanDisable,
   CanDisableRipple,
-  MATERIAL_COMPATIBILITY_MODE,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple
@@ -34,7 +33,7 @@ import {FocusMonitor} from '@angular/cdk/a11y';
 
 // TODO(kara): Convert attribute selectors to classes when attr maps become available
 
-/** Default color palette for round buttons (md-fab and md-mini-fab) */
+/** Default color palette for round buttons (mat-fab and mat-mini-fab) */
 const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
 
 
@@ -43,46 +42,43 @@ const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
  * @docs-private
  */
 @Directive({
-  selector: 'button[md-button], button[mat-button], a[md-button], a[mat-button]',
+  selector: 'button[mat-button], a[mat-button]',
   host: {'class': 'mat-button'}
 })
-export class MdButtonCssMatStyler {}
+export class MatButtonCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
  * @docs-private
  */
 @Directive({
-  selector:
-      'button[md-raised-button], button[mat-raised-button], ' +
-      'a[md-raised-button], a[mat-raised-button]',
+  selector: 'button[mat-raised-button], a[mat-raised-button]',
   host: {'class': 'mat-raised-button'}
 })
-export class MdRaisedButtonCssMatStyler {}
+export class MatRaisedButtonCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
  * @docs-private
  */
 @Directive({
-  selector:
-      'button[md-icon-button], button[mat-icon-button], a[md-icon-button], a[mat-icon-button]',
+  selector: 'button[mat-icon-button], a[mat-icon-button]',
   host: {'class': 'mat-icon-button'}
 })
-export class MdIconButtonCssMatStyler {}
+export class MatIconButtonCssMatStyler {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
  * @docs-private
  */
 @Directive({
-  selector: 'button[md-fab], button[mat-fab], a[md-fab], a[mat-fab]',
+  selector: 'button[mat-fab], a[mat-fab]',
   host: {'class': 'mat-fab'}
 })
-export class MdFab {
-  constructor(@Self() @Optional() @Inject(forwardRef(() => MdButton)) button: MdButton,
-              @Self() @Optional() @Inject(forwardRef(() => MdAnchor)) anchor: MdAnchor) {
-    // Set the default color palette for the md-fab components.
+export class MatFab {
+  constructor(@Self() @Optional() @Inject(forwardRef(() => MatButton)) button: MatButton,
+              @Self() @Optional() @Inject(forwardRef(() => MatAnchor)) anchor: MatAnchor) {
+    // Set the default color palette for the mat-fab components.
     (button || anchor).color = DEFAULT_ROUND_BUTTON_COLOR;
   }
 }
@@ -93,24 +89,24 @@ export class MdFab {
  * @docs-private
  */
 @Directive({
-  selector: 'button[md-mini-fab], button[mat-mini-fab], a[md-mini-fab], a[mat-mini-fab]',
+  selector: 'button[mat-mini-fab], a[mat-mini-fab]',
   host: {'class': 'mat-mini-fab'}
 })
-export class MdMiniFab {
-  constructor(@Self() @Optional() @Inject(forwardRef(() => MdButton)) button: MdButton,
-              @Self() @Optional() @Inject(forwardRef(() => MdAnchor)) anchor: MdAnchor) {
-    // Set the default color palette for the md-mini-fab components.
+export class MatMiniFab {
+  constructor(@Self() @Optional() @Inject(forwardRef(() => MatButton)) button: MatButton,
+              @Self() @Optional() @Inject(forwardRef(() => MatAnchor)) anchor: MatAnchor) {
+    // Set the default color palette for the mat-mini-fab components.
     (button || anchor).color = DEFAULT_ROUND_BUTTON_COLOR;
   }
 }
 
 
-// Boilerplate for applying mixins to MdButton.
+// Boilerplate for applying mixins to MatButton.
 /** @docs-private */
-export class MdButtonBase {
+export class MatButtonBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(MdButtonBase)));
+export const _MatButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(MatButtonBase)));
 
 
 /**
@@ -118,9 +114,7 @@ export const _MdButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(Md
  */
 @Component({
   moduleId: module.id,
-  selector: `button[md-button], button[md-raised-button], button[md-icon-button],
-             button[md-fab], button[md-mini-fab],
-             button[mat-button], button[mat-raised-button], button[mat-icon-button],
+  selector: `button[mat-button], button[mat-raised-button], button[mat-icon-button],
              button[mat-fab], button[mat-mini-fab]`,
   host: {
     '[disabled]': 'disabled || null',
@@ -131,9 +125,8 @@ export const _MdButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(Md
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdButton extends _MdButtonMixinBase
+export class MatButton extends _MatButtonMixinBase
     implements OnDestroy, CanDisable, CanColor, CanDisableRipple {
 
   /** Whether the button is round. */
@@ -167,10 +160,7 @@ export class MdButton extends _MdButtonMixinBase
     return this.disableRipple || this.disabled;
   }
 
-  /**
-   * Gets whether the button has one of the given attributes
-   * with either an 'md-' or 'mat-' prefix.
-   */
+  /** Gets whether the button has one of the given attributes with a 'mat-' prefix. */
   _hasAttributeWithPrefix(...unprefixedAttributeNames: string[]) {
     // If not on the browser, say that there are none of the attributes present.
     // Since these only affect how the ripple displays (and ripples only happen on the client),
@@ -180,9 +170,7 @@ export class MdButton extends _MdButtonMixinBase
     }
 
     return unprefixedAttributeNames.some(suffix => {
-      const el = this._getHostElement();
-
-      return el.hasAttribute('md-' + suffix) || el.hasAttribute('mat-' + suffix);
+      return this._getHostElement().hasAttribute('mat-' + suffix);
     });
   }
 }
@@ -192,8 +180,7 @@ export class MdButton extends _MdButtonMixinBase
  */
 @Component({
   moduleId: module.id,
-  selector: `a[md-button], a[md-raised-button], a[md-icon-button], a[md-fab], a[md-mini-fab],
-             a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab], a[mat-mini-fab]`,
+  selector: `a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab], a[mat-mini-fab]`,
   host: {
     '[attr.tabindex]': 'disabled ? -1 : 0',
     '[attr.disabled]': 'disabled || null',
@@ -207,7 +194,7 @@ export class MdButton extends _MdButtonMixinBase
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdAnchor extends MdButton {
+export class MatAnchor extends MatButton {
   constructor(
       platform: Platform,
       focusMonitor: FocusMonitor,

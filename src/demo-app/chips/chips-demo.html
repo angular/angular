@@ -1,104 +1,104 @@
 <div class="chips-demo">
-  <md-card>
-    <md-toolbar color="primary">Static Chips</md-toolbar>
+  <mat-card>
+    <mat-toolbar color="primary">Static Chips</mat-toolbar>
 
-    <md-card-content>
+    <mat-card-content>
       <h4>Simple</h4>
 
-      <md-chip-list>
-        <md-chip>Chip 1</md-chip>
-        <md-chip>Chip 2</md-chip>
-        <md-chip>Chip 3</md-chip>
-      </md-chip-list>
+      <mat-chip-list>
+        <mat-chip>Chip 1</mat-chip>
+        <mat-chip>Chip 2</mat-chip>
+        <mat-chip>Chip 3</mat-chip>
+      </mat-chip-list>
 
       <h4>Unstyled</h4>
 
-      <md-chip-list>
-        <md-basic-chip>Basic Chip 1</md-basic-chip>
-        <md-basic-chip>Basic Chip 2</md-basic-chip>
-        <md-basic-chip>Basic Chip 3</md-basic-chip>
-      </md-chip-list>
+      <mat-chip-list>
+        <mat-basic-chip>Basic Chip 1</mat-basic-chip>
+        <mat-basic-chip>Basic Chip 2</mat-basic-chip>
+        <mat-basic-chip>Basic Chip 3</mat-basic-chip>
+      </mat-chip-list>
 
       <h4>Advanced</h4>
 
-      <md-chip-list selectable="false">
-        <md-chip color="accent" selected="true">Selected/Colored</md-chip>
+      <mat-chip-list selectable="false">
+        <mat-chip color="accent" selected="true">Selected/Colored</mat-chip>
 
-        <md-chip color="warn" selected="true" *ngIf="visible"
+        <mat-chip color="warn" selected="true" *ngIf="visible"
                  (destroy)="displayMessage('chip destroyed')" (remove)="toggleVisible()">
           With Events
-          <md-icon mdChipRemove>cancel</md-icon>
-        </md-chip>
-      </md-chip-list>
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
       <div>{{message}}</div>
-    </md-card-content>
-  </md-card>
+    </mat-card-content>
+  </mat-card>
 
-  <md-card>
-    <md-toolbar color="primary">Dynamic Chips</md-toolbar>
+  <mat-card>
+    <mat-toolbar color="primary">Dynamic Chips</mat-toolbar>
 
-    <md-card-content>
+    <mat-card-content>
       <h4>Form Field</h4>
 
       <p>
-        You can easily put the the <code>&lt;md-chip-list&gt;</code> inside of an
-        <code>&lt;md-form-field&gt;</code>.
+        You can easily put the the <code>&lt;mat-chip-list&gt;</code> inside of an
+        <code>&lt;mat-form-field&gt;</code>.
       </p>
 
-      <button md-button (click)="tabIndex = (tabIndex === 0 ? -1 : 0)">
+      <button mat-button (click)="tabIndex = (tabIndex === 0 ? -1 : 0)">
         Set tabIndex to {{tabIndex === 0 ? -1 : 0}}
       </button>
-      <md-form-field class="has-chip-list">
-        <md-chip-list [tabIndex]="tabIndex" #chipList1 [(ngModel)]="selectedPeople" required>
-          <md-chip  *ngFor="let person of people" [color]="color" [selectable]="selectable"
+      <mat-form-field class="has-chip-list">
+        <mat-chip-list [tabIndex]="tabIndex" #chipList1 [(ngModel)]="selectedPeople" required>
+          <mat-chip  *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (remove)="remove(person)">
             {{person.name}}
-            <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
-          </md-chip>
+            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+          </mat-chip>
           <input placeholder="New Contributor..."
-                 [mdChipInputFor]="chipList1"
-                 [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                 [mdChipInputAddOnBlur]="false"
-                 (mdChipInputTokenEnd)="add($event)" />
-        </md-chip-list>
-      </md-form-field>
+                 [matChipInputFor]="chipList1"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 [matChipInputAddOnBlur]="false"
+                 (matChipInputTokenEnd)="add($event)" />
+        </mat-chip-list>
+      </mat-form-field>
 
 
 
       <p>
-        You can also put <code>&lt;md-form-field&gt;</code> outside of an <code>md-chip-list</code>.
-        With <code>mdChipInput</code> the input work with chip-list
+        You can also put <code>&lt;mat-form-field&gt;</code> outside of an <code>mat-chip-list</code>.
+        With <code>matChipInput</code> the input work with chip-list
       </p>
 
-      <md-form-field>
-        <md-chip-list [tabIndex]="tabIndex"  #chipList2 [(ngModel)]="selectedPeople" required>
-          <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+      <mat-form-field>
+        <mat-chip-list [tabIndex]="tabIndex"  #chipList2 [(ngModel)]="selectedPeople" required>
+          <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (remove)="remove(person)">
             {{person.name}}
-            <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
-          </md-chip>
-        </md-chip-list>
+            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+          </mat-chip>
+        </mat-chip-list>
         <input placeholder="New Contributor..."
-               [mdChipInputFor]="chipList2"
-               [mdChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               [mdChipInputAddOnBlur]="addOnBlur"
-               (mdChipInputTokenEnd)="add($event)" />
-      </md-form-field>
+               [matChipInputFor]="chipList2"
+               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+               [matChipInputAddOnBlur]="addOnBlur"
+               (matChipInputTokenEnd)="add($event)" />
+      </mat-form-field>
 
       <p>
         Chips list without input
       </p>
 
 
-      <md-form-field class="has-chip-list">
-        <md-chip-list #chipList3>
-          <md-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
+      <mat-form-field class="has-chip-list">
+        <mat-chip-list #chipList3>
+          <mat-chip *ngFor="let person of people" [color]="color" [selectable]="selectable"
                    [removable]="removable" (remove)="remove(person)">
             {{person.name}}
-            <md-icon mdChipRemove *ngIf="removable">cancel</md-icon>
-          </md-chip>
-        </md-chip-list>
-      </md-form-field>
+            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+          </mat-chip>
+        </mat-chip-list>
+      </mat-form-field>
 
 
       <p>
@@ -108,9 +108,9 @@
 
       <h4>Options</h4>
       <p>
-        <md-checkbox name="selectable" [(ngModel)]="selectable">Selectable</md-checkbox>
-        <md-checkbox name="removable" [(ngModel)]="removable">Removable</md-checkbox>
-        <md-checkbox name="addOnBlur" [(ngModel)]="addOnBlur">Add on Blur</md-checkbox>
+        <mat-checkbox name="selectable" [(ngModel)]="selectable">Selectable</mat-checkbox>
+        <mat-checkbox name="removable" [(ngModel)]="removable">Removable</mat-checkbox>
+        <mat-checkbox name="addOnBlur" [(ngModel)]="addOnBlur">Add on Blur</mat-checkbox>
       </p>
 
       <h4>Stacked Chips</h4>
@@ -120,34 +120,34 @@
         <code>(focus)</code> event to run custom code.
       </p>
 
-      <md-chip-list class="mat-chip-list-stacked" aria-orientation="vertical" [tabIndex]="-1">
-        <md-chip *ngFor="let aColor of availableColors"
+      <mat-chip-list class="mat-chip-list-stacked" aria-orientation="vertical" [tabIndex]="-1">
+        <mat-chip *ngFor="let aColor of availableColors"
                  (focus)="color = aColor.color" color="{{aColor.color}}" selected="true">
           {{aColor.name}}
-        </md-chip>
-      </md-chip-list>
+        </mat-chip>
+      </mat-chip-list>
 
       <h4>NgModel with chip list</h4>
-      <md-chip-list [multiple]="true" [(ngModel)]="selectedColors">
-        <md-chip *ngFor="let aColor of availableColors" color="{{aColor.color}}"
+      <mat-chip-list [multiple]="true" [(ngModel)]="selectedColors">
+        <mat-chip *ngFor="let aColor of availableColors" color="{{aColor.color}}"
                  [value]="aColor.name" (remove)="removeColor(aColor)">
           {{aColor.name}}
-          <md-icon mdChipRemove>cancel</md-icon>
-        </md-chip>
-      </md-chip-list>
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
 
       The selected colors are <span *ngFor="let color of selectedColors"> {{color}}</span>.
 
       <h4>NgModel with single selection chip list</h4>
-      <md-chip-list [(ngModel)]="selectedColor">
-        <md-chip *ngFor="let aColor of availableColors" color="{{aColor.color}}"
+      <mat-chip-list [(ngModel)]="selectedColor">
+        <mat-chip *ngFor="let aColor of availableColors" color="{{aColor.color}}"
                  [value]="aColor.name" (remove)="removeColor(aColor)">
           {{aColor.name}}
-          <md-icon mdChipRemove>cancel</md-icon>
-        </md-chip>
-      </md-chip-list>
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
 
       The selected color is {{selectedColor}}.
-    </md-card-content>
-  </md-card>
+    </mat-card-content>
+  </mat-card>
 </div>

@@ -34,15 +34,15 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {MdOption, MdOptionSelectionChange} from '@angular/material/core';
-import {MdFormField} from '@angular/material/form-field';
+import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
+import {MatFormField} from '@angular/material/form-field';
 import {DOCUMENT} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
 import {Subscription} from 'rxjs/Subscription';
-import {MdAutocomplete} from './autocomplete';
+import {MatAutocomplete} from './autocomplete';
 
 
 /**
@@ -58,44 +58,43 @@ export const AUTOCOMPLETE_OPTION_HEIGHT = 48;
 export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 
 /** Injection token that determines the scroll handling while the autocomplete panel is open. */
-export const MD_AUTOCOMPLETE_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('md-autocomplete-scroll-strategy');
+export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY =
+    new InjectionToken<() => ScrollStrategy>('mat-autocomplete-scroll-strategy');
 
 /** @docs-private */
-export function MD_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
+export function MAT_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
     () => RepositionScrollStrategy {
   return () => overlay.scrollStrategies.reposition();
 }
 
 /** @docs-private */
-export const MD_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER = {
-  provide: MD_AUTOCOMPLETE_SCROLL_STRATEGY,
+export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER = {
+  provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
   deps: [Overlay],
-  useFactory: MD_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER_FACTORY,
+  useFactory: MAT_AUTOCOMPLETE_SCROLL_STRATEGY_PROVIDER_FACTORY,
 };
 
 /**
  * Provider that allows the autocomplete to register as a ControlValueAccessor.
  * @docs-private
  */
-export const MD_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
+export const MAT_AUTOCOMPLETE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => MdAutocompleteTrigger),
+  useExisting: forwardRef(() => MatAutocompleteTrigger),
   multi: true
 };
 
 /**
  * Creates an error to be thrown when attempting to use an autocomplete trigger without a panel.
  */
-export function getMdAutocompleteMissingPanelError(): Error {
-  return Error('Attempting to open an undefined instance of `md-autocomplete`. ' +
-               'Make sure that the id passed to the `mdAutocomplete` is correct and that ' +
+export function getMatAutocompleteMissingPanelError(): Error {
+  return Error('Attempting to open an undefined instance of `mat-autocomplete`. ' +
+               'Make sure that the id passed to the `matAutocomplete` is correct and that ' +
                'you\'re attempting to open it after the ngAfterContentInit hook.');
 }
 
 @Directive({
-  selector: `input[mdAutocomplete], input[matAutocomplete],
-             textarea[mdAutocomplete], textarea[matAutocomplete]`,
+  selector: `input[matAutocomplete], textarea[matAutocomplete]`,
   host: {
     'role': 'combobox',
     'autocomplete': 'off',
@@ -111,9 +110,9 @@ export function getMdAutocompleteMissingPanelError(): Error {
     '(input)': '_handleInput($event)',
     '(keydown)': '_handleKeydown($event)',
   },
-  providers: [MD_AUTOCOMPLETE_VALUE_ACCESSOR]
+  providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR]
 })
-export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
+export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _overlayRef: OverlayRef | null;
   private _portal: TemplatePortal<any>;
   private _panelOpen: boolean = false;
@@ -134,25 +133,15 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   _onTouched = () => {};
 
   /* The autocomplete panel to be attached to this trigger. */
-  @Input('mdAutocomplete') autocomplete: MdAutocomplete;
-
-  /** Property with mat- prefix for no-conflict mode. */
-  @Input('matAutocomplete')
-  get _matAutocomplete(): MdAutocomplete {
-    return this.autocomplete;
-  }
-
-  set _matAutocomplete(autocomplete: MdAutocomplete) {
-    this.autocomplete = autocomplete;
-  }
+  @Input('matAutocomplete') autocomplete: MatAutocomplete;
 
   constructor(private _element: ElementRef, private _overlay: Overlay,
               private _viewContainerRef: ViewContainerRef,
               private _zone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
-              @Inject(MD_AUTOCOMPLETE_SCROLL_STRATEGY) private _scrollStrategy,
+              @Inject(MAT_AUTOCOMPLETE_SCROLL_STRATEGY) private _scrollStrategy,
               @Optional() private _dir: Directionality,
-              @Optional() @Host() private _formField: MdFormField,
+              @Optional() @Host() private _formField: MatFormField,
               @Optional() @Inject(DOCUMENT) private _document: any) {}
 
   ngOnDestroy() {
@@ -194,7 +183,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * A stream of actions that should close the autocomplete panel, including
    * when an option is selected, on blur, and when TAB is pressed.
    */
-  get panelClosingActions(): Observable<MdOptionSelectionChange> {
+  get panelClosingActions(): Observable<MatOptionSelectionChange> {
     return merge(
       this.optionSelections,
       this.autocomplete._keyManager.tabOut,
@@ -203,12 +192,12 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   /** Stream of autocomplete option selections. */
-  get optionSelections(): Observable<MdOptionSelectionChange> {
+  get optionSelections(): Observable<MatOptionSelectionChange> {
     return merge(...this.autocomplete.options.map(option => option.onSelectionChange));
   }
 
-  /** The currently active option, coerced to MdOption type. */
-  get activeOption(): MdOption | null {
+  /** The currently active option, coerced to MatOption type. */
+  get activeOption(): MatOption | null {
     if (this.autocomplete && this.autocomplete._keyManager) {
       return this.autocomplete._keyManager.activeItem;
     }
@@ -348,7 +337,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    */
   private _scrollToOption(): void {
     const activeOptionIndex = this.autocomplete._keyManager.activeItemIndex || 0;
-    const labelCount = MdOption.countGroupLabelsBeforeOption(activeOptionIndex,
+    const labelCount = MatOption.countGroupLabelsBeforeOption(activeOptionIndex,
         this.autocomplete.options, this.autocomplete.optionGroups);
     const optionOffset = (activeOptionIndex + labelCount) * AUTOCOMPLETE_OPTION_HEIGHT;
     const panelTop = this.autocomplete._getScrollTop();
@@ -404,7 +393,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     // The display value can also be the number zero and shouldn't fall back to an empty string.
     const inputValue = toDisplay != null ? toDisplay : '';
 
-    // If it's used within a `MdFormField`, we should set it through the property so it can go
+    // If it's used within a `MatFormField`, we should set it through the property so it can go
     // through change detection.
     if (this._formField) {
       this._formField._control.value = inputValue;
@@ -418,7 +407,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * control to that value. It will also mark the control as dirty if this interaction
    * stemmed from the user.
    */
-  private _setValueAndClose(event: MdOptionSelectionChange | null): void {
+  private _setValueAndClose(event: MatOptionSelectionChange | null): void {
     if (event && event.source) {
       this._clearPreviousSelectedOption(event.source);
       this._setTriggerValue(event.source.value);
@@ -433,7 +422,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /**
    * Clear any previous selected option and emit a selection change event for this option
    */
-  private _clearPreviousSelectedOption(skip: MdOption) {
+  private _clearPreviousSelectedOption(skip: MatOption) {
     this.autocomplete.options.forEach(option => {
       if (option != skip && option.selected) {
         option.deselect();
@@ -443,7 +432,7 @@ export class MdAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   private _attachOverlay(): void {
     if (!this.autocomplete) {
-      throw getMdAutocompleteMissingPanelError();
+      throw getMatAutocompleteMissingPanelError();
     }
 
     if (!this._overlayRef) {

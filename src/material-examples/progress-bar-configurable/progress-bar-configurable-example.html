@@ -1,63 +1,63 @@
-<md-card>
-  <md-card-content>
+<mat-card>
+  <mat-card-content>
     <h2 class="example-h2">Progress bar configuration</h2>
 
     <section class="example-section">
       <label class="example-margin">Color:</label>
-      <md-radio-group [(ngModel)]="color">
-        <md-radio-button class="example-margin" value="primary">
+      <mat-radio-group [(ngModel)]="color">
+        <mat-radio-button class="example-margin" value="primary">
           Primary
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="accent">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="accent">
           Accent
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="warn">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="warn">
           Warn
-        </md-radio-button>
-      </md-radio-group>
+        </mat-radio-button>
+      </mat-radio-group>
     </section>
 
     <section class="example-section">
       <label class="example-margin">Mode:</label>
-      <md-radio-group [(ngModel)]="mode">
-        <md-radio-button class="example-margin" value="determinate">
+      <mat-radio-group [(ngModel)]="mode">
+        <mat-radio-button class="example-margin" value="determinate">
           Determinate
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="indeterminate">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="indeterminate">
           Indeterminate
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="buffer">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="buffer">
           Buffer
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="query">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="query">
           Query
-        </md-radio-button>
-      </md-radio-group>
+        </mat-radio-button>
+      </mat-radio-group>
     </section>
 
     <section class="example-section" *ngIf="mode == 'determinate' || mode == 'buffer'">
       <label class="example-margin">Progress:</label>
-      <md-slider class="example-margin" [(ngModel)]="value"></md-slider>
+      <mat-slider class="example-margin" [(ngModel)]="value"></mat-slider>
     </section>
     <section class="example-section" *ngIf="mode == 'buffer'">
       <label class="example-margin">Buffer:</label>
-      <md-slider class="example-margin" [(ngModel)]="bufferValue"></md-slider>
+      <mat-slider class="example-margin" [(ngModel)]="bufferValue"></mat-slider>
     </section>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>
 
-<md-card>
-  <md-card-content>
+<mat-card>
+  <mat-card-content>
     <h2 class="example-h2">Result</h2>
 
     <section class="example-section">
-      <md-progress-bar
+      <mat-progress-bar
           class="example-margin"
           [color]="color"
           [mode]="mode"
           [value]="value"
           [bufferValue]="bufferValue">
-      </md-progress-bar>
+      </mat-progress-bar>
     </section>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>

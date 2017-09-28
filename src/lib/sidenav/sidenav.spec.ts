@@ -1,17 +1,17 @@
 import {Component} from '@angular/core';
 import {async, TestBed, ComponentFixture} from '@angular/core/testing';
-import {MdSidenav, MdSidenavModule} from './index';
+import {MatSidenav, MatSidenavModule} from './index';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
 
 
-describe('MdSidenav', () => {
+describe('MatSidenav', () => {
   let fixture: ComponentFixture<SidenavWithFixedPosition>;
   let sidenavEl: HTMLElement;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSidenavModule, NoopAnimationsModule],
+      imports: [MatSidenavModule, NoopAnimationsModule],
       declarations: [SidenavWithFixedPosition],
     });
 
@@ -20,7 +20,7 @@ describe('MdSidenav', () => {
     fixture = TestBed.createComponent(SidenavWithFixedPosition);
     fixture.detectChanges();
 
-    sidenavEl = fixture.debugElement.query(By.directive(MdSidenav)).nativeElement;
+    sidenavEl = fixture.debugElement.query(By.directive(MatSidenav)).nativeElement;
   }));
 
   it('should be fixed position when in fixed mode', () => {
@@ -47,18 +47,18 @@ describe('MdSidenav', () => {
 
 @Component({
   template: `
-    <md-sidenav-container>
-      <md-sidenav
+    <mat-sidenav-container>
+      <mat-sidenav
           #drawer
           [fixedInViewport]="fixed"
           [fixedTopGap]="fixedTop"
           [fixedBottomGap]="fixedBottom">
         Drawer.
-      </md-sidenav>
-      <md-sidenav-content>
+      </mat-sidenav>
+      <mat-sidenav-content>
         Some content.
-      </md-sidenav-content>
-    </md-sidenav-container>`,
+      </mat-sidenav-content>
+    </mat-sidenav-container>`,
 })
 class SidenavWithFixedPosition {
   fixed = true;

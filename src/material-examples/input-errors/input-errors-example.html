@@ -1,11 +1,11 @@
 <form class="example-form">
-  <md-form-field class="example-full-width">
-    <input mdInput placeholder="Email" [formControl]="emailFormControl">
-    <md-error *ngIf="emailFormControl.hasError('pattern')">
+  <mat-form-field class="example-full-width">
+    <input matInput placeholder="Email" [formControl]="emailFormControl">
+    <mat-error *ngIf="emailFormControl.hasError('pattern')">
       Please enter a valid email address
-    </md-error>
-    <md-error *ngIf="emailFormControl.hasError('required')">
+    </mat-error>
+    <mat-error *ngIf="emailFormControl.hasError('required')">
       Email is <strong>required</strong>
-    </md-error>
-  </md-form-field>
+    </mat-error>
+  </mat-form-field>
 </form>

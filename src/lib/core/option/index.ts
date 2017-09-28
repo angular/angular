@@ -8,18 +8,18 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdRippleModule} from '../ripple/index';
-import {MdPseudoCheckboxModule} from '../selection/index';
-import {MdOption} from './option';
-import {MdOptgroup} from './optgroup';
+import {MatRippleModule} from '../ripple/index';
+import {MatPseudoCheckboxModule} from '../selection/index';
+import {MatOption} from './option';
+import {MatOptgroup} from './optgroup';
 
 
 @NgModule({
-  imports: [MdRippleModule, CommonModule, MdPseudoCheckboxModule],
-  exports: [MdOption, MdOptgroup],
-  declarations: [MdOption, MdOptgroup]
+  imports: [MatRippleModule, CommonModule, MatPseudoCheckboxModule],
+  exports: [MatOption, MatOptgroup],
+  declarations: [MatOption, MatOptgroup]
 })
-export class MdOptionModule {}
+export class MatOptionModule {}
 
 
 export * from './option';

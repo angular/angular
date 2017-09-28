@@ -1,28 +1,28 @@
 <button (click)="showLinks = !showLinks">Toggle Navigation Links</button>
 
-<md-nav-list *ngIf="showLinks">
-  <a md-list-item [routerLink]="['block-scroll-strategy']">Block scroll strategy</a>
-  <a md-list-item [routerLink]="['button']">Button</a>
-  <a md-list-item [routerLink]="['button-toggle']">Button Toggle</a>
-  <a md-list-item [routerLink]="['checkbox']">Checkbox</a>
-  <a md-list-item [routerLink]="['dialog']">Dialog</a>
-  <a md-list-item [routerLink]="['expansion']">Expansion</a>
-  <a md-list-item [routerLink]="['fullscreen']">Fullscreen</a>
-  <a md-list-item [routerLink]="['grid-list']">Grid list</a>
-  <a md-list-item [routerLink]="['icon']">Icon</a>
-  <a md-list-item [routerLink]="['input']">Input</a>
-  <a md-list-item [routerLink]="['list']">List</a>
-  <a md-list-item [routerLink]="['menu']">Menu</a>
-  <a md-list-item [routerLink]="['progress-bar']">Progress bar</a>
-  <a md-list-item [routerLink]="['progress-spinner']">Progress Spinner</a>
-  <a md-list-item [routerLink]="['radio']">Radios</a>
-  <a md-list-item [routerLink]="['sidenav']">Sidenav</a>
-  <a md-list-item [routerLink]="['slide-toggle']">Slide Toggle</a>
-  <a md-list-item [routerLink]="['stepper']">Stepper</a>
-  <a md-list-item [routerLink]="['tabs']">Tabs</a>
-  <a md-list-item [routerLink]="['cards']">Cards</a>
-  <a md-list-item [routerLink]="['toolbar']">Toolbar</a>
-</md-nav-list>
+<mat-nav-list *ngIf="showLinks">
+  <a mat-list-item [routerLink]="['block-scroll-strategy']">Block scroll strategy</a>
+  <a mat-list-item [routerLink]="['button']">Button</a>
+  <a mat-list-item [routerLink]="['button-toggle']">Button Toggle</a>
+  <a mat-list-item [routerLink]="['checkbox']">Checkbox</a>
+  <a mat-list-item [routerLink]="['dialog']">Dialog</a>
+  <a mat-list-item [routerLink]="['expansion']">Expansion</a>
+  <a mat-list-item [routerLink]="['fullscreen']">Fullscreen</a>
+  <a mat-list-item [routerLink]="['grid-list']">Grid list</a>
+  <a mat-list-item [routerLink]="['icon']">Icon</a>
+  <a mat-list-item [routerLink]="['input']">Input</a>
+  <a mat-list-item [routerLink]="['list']">List</a>
+  <a mat-list-item [routerLink]="['menu']">Menu</a>
+  <a mat-list-item [routerLink]="['progress-bar']">Progress bar</a>
+  <a mat-list-item [routerLink]="['progress-spinner']">Progress Spinner</a>
+  <a mat-list-item [routerLink]="['radio']">Radios</a>
+  <a mat-list-item [routerLink]="['sidenav']">Sidenav</a>
+  <a mat-list-item [routerLink]="['slide-toggle']">Slide Toggle</a>
+  <a mat-list-item [routerLink]="['stepper']">Stepper</a>
+  <a mat-list-item [routerLink]="['tabs']">Tabs</a>
+  <a mat-list-item [routerLink]="['cards']">Cards</a>
+  <a mat-list-item [routerLink]="['toolbar']">Toolbar</a>
+</mat-nav-list>
 
 <main>
   <router-outlet role="main"></router-outlet>

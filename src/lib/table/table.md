@@ -1,9 +1,9 @@
-The `md-table` provides a Material Design styled data-table that can be used to display rows of
+The `mat-table` provides a Material Design styled data-table that can be used to display rows of
 data.
 
 This table builds on the foundation of the CDK data-table and uses a similar interface for its
 data source input and template, except that its element and attribute selectors will be prefixed 
-with `md-` instead of `cdk-`.
+with `mat-` instead of `cdk-`.
 
 For more information on the interface and how it works, see the
 [guide covering the CDK data-table](https://material.angular.io/guide/cdk-table).
@@ -12,7 +12,7 @@ For more information on the interface and how it works, see the
 
 ### Features
 
-The `<md-table>` itself only deals with the rendering of a table structure (rows and cells).
+The `<mat-table>` itself only deals with the rendering of a table structure (rows and cells).
 Additional features can be built on top of the table by adding behavior inside cell templates
 (e.g., sort headers) or next to the table (e.g. a paginator). Interactions that affect the
 rendered data (such as sorting and pagination) should be propagated through the table's data source.
@@ -20,14 +20,14 @@ rendered data (such as sorting and pagination) should be propagated through the 
 
 #### Pagination
 
-The `<md-paginator>` adds a pagination UI that can be used in conjunction with the `<md-table>`. The
+The `<mat-paginator>` adds a pagination UI that can be used in conjunction with the `<mat-table>`. The
 paginator emits events that can be used to trigger an update via the table's data source.
 
 <!-- example(table-pagination) -->
 
 #### Sorting
 
-Use the `mdSort` directive and `<md-sort-header>` adds a sorting UI the table's column headers. The
+Use the `matSort` directive and `<mat-sort-header>` adds a sorting UI the table's column headers. The
 sort headers emit events that can be used to trigger an update via the table's data source.
 
 <!-- example(table-sorting) -->
@@ -52,5 +52,5 @@ Tables without text or labels should be given a meaningful label via `aria-label
 
 Table's default role is `grid`, and it can be changed to `treegrid` through `role` attribute.
 
-`md-table` does not manage any focus/keyboard interaction on its own. Users can add desired
+`mat-table` does not manage any focus/keyboard interaction on its own. Users can add desired
 focus/keyboard interactions in their application.

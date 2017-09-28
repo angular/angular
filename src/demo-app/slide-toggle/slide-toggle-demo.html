@@ -1,27 +1,27 @@
 <div class="slide-toggle-example">
 
-  <md-slide-toggle color="primary" [(ngModel)]="firstToggle">
+  <mat-slide-toggle color="primary" [(ngModel)]="firstToggle">
     Default Slide Toggle
-  </md-slide-toggle>
+  </mat-slide-toggle>
 
-  <md-slide-toggle [(ngModel)]="firstToggle" disabled>
+  <mat-slide-toggle [(ngModel)]="firstToggle" disabled>
     Disabled Slide Toggle
-  </md-slide-toggle>
+  </mat-slide-toggle>
 
-  <md-slide-toggle [disabled]="firstToggle">
+  <mat-slide-toggle [disabled]="firstToggle">
     Disable Bound
-  </md-slide-toggle>
+  </mat-slide-toggle>
 
   <p>Example where the slide toggle is required inside of a form.</p>
 
   <form #form="ngForm" (ngSubmit)="onFormSubmit()" ngNativeValidate>
 
-    <md-slide-toggle name="slideToggle" required ngModel>
+    <mat-slide-toggle name="slideToggle" required ngModel>
       Slide Toggle
-    </md-slide-toggle>
+    </mat-slide-toggle>
 
     <p>
-      <button md-raised-button type="submit">Submit Form</button>
+      <button mat-raised-button type="submit">Submit Form</button>
     </p>
 
   </form>

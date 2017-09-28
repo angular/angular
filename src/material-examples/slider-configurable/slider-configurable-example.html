@@ -1,53 +1,53 @@
-<md-card>
-  <md-card-content>
+<mat-card>
+  <mat-card-content>
     <h2 class="example-h2">Slider configuration</h2>
 
     <section class="example-section">
-      <md-form-field class="example-margin">
-        <input mdInput type="number" placeholder="Value" [(ngModel)]="value">
-      </md-form-field>
-      <md-form-field class="example-margin">
-        <input mdInput type="number" placeholder="Min value" [(ngModel)]="min">
-      </md-form-field>
-      <md-form-field class="example-margin">
-        <input mdInput type="number" placeholder="Max value" [(ngModel)]="max">
-      </md-form-field>
-      <md-form-field class="example-margin">
-        <input mdInput type="number" placeholder="Step size" [(ngModel)]="step">
-      </md-form-field>
+      <mat-form-field class="example-margin">
+        <input matInput type="number" placeholder="Value" [(ngModel)]="value">
+      </mat-form-field>
+      <mat-form-field class="example-margin">
+        <input matInput type="number" placeholder="Min value" [(ngModel)]="min">
+      </mat-form-field>
+      <mat-form-field class="example-margin">
+        <input matInput type="number" placeholder="Max value" [(ngModel)]="max">
+      </mat-form-field>
+      <mat-form-field class="example-margin">
+        <input matInput type="number" placeholder="Step size" [(ngModel)]="step">
+      </mat-form-field>
     </section>
 
     <section class="example-section">
-      <md-checkbox class="example-margin" [(ngModel)]="showTicks">Show ticks</md-checkbox>
-      <md-checkbox class="example-margin" [(ngModel)]="autoTicks" *ngIf="showTicks">
+      <mat-checkbox class="example-margin" [(ngModel)]="showTicks">Show ticks</mat-checkbox>
+      <mat-checkbox class="example-margin" [(ngModel)]="autoTicks" *ngIf="showTicks">
         Auto ticks
-      </md-checkbox>
-      <md-form-field class="example-margin" *ngIf="showTicks && !autoTicks">
-        <input mdInput type="number" placeholder="Tick interval" [(ngModel)]="tickInterval">
-      </md-form-field>
+      </mat-checkbox>
+      <mat-form-field class="example-margin" *ngIf="showTicks && !autoTicks">
+        <input matInput type="number" placeholder="Tick interval" [(ngModel)]="tickInterval">
+      </mat-form-field>
     </section>
 
     <section class="example-section">
-      <md-checkbox class="example-margin" [(ngModel)]="thumbLabel">Show thumb label</md-checkbox>
+      <mat-checkbox class="example-margin" [(ngModel)]="thumbLabel">Show thumb label</mat-checkbox>
     </section>
 
     <section class="example-section">
-      <md-checkbox class="example-margin" [(ngModel)]="vertical">Vertical</md-checkbox>
-      <md-checkbox class="example-margin" [(ngModel)]="invert">Inverted</md-checkbox>
+      <mat-checkbox class="example-margin" [(ngModel)]="vertical">Vertical</mat-checkbox>
+      <mat-checkbox class="example-margin" [(ngModel)]="invert">Inverted</mat-checkbox>
     </section>
 
     <section class="example-section">
-      <md-checkbox class="example-margin" [(ngModel)]="disabled">Disabled</md-checkbox>
+      <mat-checkbox class="example-margin" [(ngModel)]="disabled">Disabled</mat-checkbox>
     </section>
 
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>
 
-<md-card class="result">
-  <md-card-content>
+<mat-card class="result">
+  <mat-card-content>
     <h2 class="example-h2">Result</h2>
 
-    <md-slider
+    <mat-slider
         class="example-margin"
         [disabled]="disabled"
         [invert]="invert"
@@ -58,6 +58,6 @@
         [tick-interval]="tickInterval"
         [value]="value"
         [vertical]="vertical">
-    </md-slider>
-  </md-card-content>
-</md-card>
+    </mat-slider>
+  </mat-card-content>
+</mat-card>

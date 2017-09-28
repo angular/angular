@@ -12,7 +12,7 @@
     <ng-container *ngIf="empty">{{'\xa0'}}</ng-container>
     <span class="mat-select-value-text" *ngIf="!empty" [ngSwitch]="!!customTrigger">
       <span *ngSwitchDefault>{{ triggerValue }}</span>
-      <ng-content select="md-select-trigger, mat-select-trigger" *ngSwitchCase="true"></ng-content>
+      <ng-content select="mat-select-trigger" *ngSwitchCase="true"></ng-content>
     </span>
   </div>
 

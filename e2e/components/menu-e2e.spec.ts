@@ -207,7 +207,7 @@ export class MenuPage {
   trigger = () => element(by.id('trigger'));
   triggerTwo = () => element(by.id('trigger-two'));
   backdrop = () => element(by.css('.cdk-overlay-backdrop'));
-  items = (index: number) => element.all(by.css('[md-menu-item]')).get(index);
+  items = (index: number) => element.all(by.css('[mat-menu-item]')).get(index);
   textArea = () => element(by.id('text'));
   beforeTrigger = () => element(by.id('before-t'));
   aboveTrigger = () => element(by.id('above-t'));

@@ -5,13 +5,13 @@ import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {dispatchFakeEvent, FakeViewportRuler} from '@angular/cdk/testing';
 import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '@angular/material/core';
-import {MdRadioButton, MdRadioChange, MdRadioGroup, MdRadioModule} from './index';
+import {MatRadioButton, MatRadioChange, MatRadioGroup, MatRadioModule} from './index';
 
-describe('MdRadio', () => {
+describe('MatRadio', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdRadioModule, FormsModule, ReactiveFormsModule],
+      imports: [MatRadioModule, FormsModule, ReactiveFormsModule],
       declarations: [
         FocusableRadioButton,
         RadiosInsideRadioGroup,
@@ -35,8 +35,8 @@ describe('MdRadio', () => {
     let radioNativeElements: HTMLElement[];
     let radioLabelElements: HTMLLabelElement[];
     let radioInputElements: HTMLInputElement[];
-    let groupInstance: MdRadioGroup;
-    let radioInstances: MdRadioButton[];
+    let groupInstance: MatRadioGroup;
+    let radioInstances: MatRadioButton[];
     let testComponent: RadiosInsideRadioGroup;
 
     beforeEach(async(() => {
@@ -45,11 +45,11 @@ describe('MdRadio', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
+      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
       groupNativeElement = groupDebugElement.nativeElement;
-      groupInstance = groupDebugElement.injector.get<MdRadioGroup>(MdRadioGroup);
+      groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
 
-      radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
       radioNativeElements = radioDebugElements.map(debugEl => debugEl.nativeElement);
       radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
 
@@ -269,7 +269,7 @@ describe('MdRadio', () => {
         .toBe(1, 'Expected an enabled radio button to show ripples');
     });
 
-    it('should not show ripples if mdRippleDisabled input is set', () => {
+    it('should not show ripples if matRippleDisabled input is set', () => {
       testComponent.disableRipple = true;
       fixture.detectChanges();
 
@@ -385,8 +385,8 @@ describe('MdRadio', () => {
     let radioDebugElements: DebugElement[];
     let innerRadios: DebugElement[];
     let radioLabelElements: HTMLLabelElement[];
-    let groupInstance: MdRadioGroup;
-    let radioInstances: MdRadioButton[];
+    let groupInstance: MatRadioGroup;
+    let radioInstances: MatRadioButton[];
     let testComponent: RadioGroupWithNgModel;
     let groupNgModel: NgModel;
 
@@ -396,12 +396,12 @@ describe('MdRadio', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
+      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
       groupNativeElement = groupDebugElement.nativeElement;
-      groupInstance = groupDebugElement.injector.get<MdRadioGroup>(MdRadioGroup);
+      groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
       groupNgModel = groupDebugElement.injector.get<NgModel>(NgModel);
 
-      radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
       radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
       innerRadios = fixture.debugElement.queryAll(By.css('input[type="radio"]'));
 
@@ -494,7 +494,7 @@ describe('MdRadio', () => {
   describe('group with FormControl', () => {
     let fixture: ComponentFixture<RadioGroupWithFormControl>;
     let groupDebugElement: DebugElement;
-    let groupInstance: MdRadioGroup;
+    let groupInstance: MatRadioGroup;
     let testComponent: RadioGroupWithFormControl;
 
     beforeEach(() => {
@@ -502,8 +502,8 @@ describe('MdRadio', () => {
       fixture.detectChanges();
 
       testComponent = fixture.debugElement.componentInstance;
-      groupDebugElement = fixture.debugElement.query(By.directive(MdRadioGroup));
-      groupInstance = groupDebugElement.injector.get<MdRadioGroup>(MdRadioGroup);
+      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
+      groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
     });
 
     it('should toggle the disabled state', () => {
@@ -524,9 +524,9 @@ describe('MdRadio', () => {
   describe('as standalone', () => {
     let fixture: ComponentFixture<StandaloneRadioButtons>;
     let radioDebugElements: DebugElement[];
-    let seasonRadioInstances: MdRadioButton[];
-    let weatherRadioInstances: MdRadioButton[];
-    let fruitRadioInstances: MdRadioButton[];
+    let seasonRadioInstances: MatRadioButton[];
+    let weatherRadioInstances: MatRadioButton[];
+    let fruitRadioInstances: MatRadioButton[];
     let fruitRadioNativeInputs: HTMLElement[];
     let testComponent: StandaloneRadioButtons;
 
@@ -536,7 +536,7 @@ describe('MdRadio', () => {
 
       testComponent = fixture.debugElement.componentInstance;
 
-      radioDebugElements = fixture.debugElement.queryAll(By.directive(MdRadioButton));
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
       seasonRadioInstances = radioDebugElements
           .filter(debugEl => debugEl.componentInstance.name == 'season')
           .map(debugEl => debugEl.componentInstance);
@@ -665,22 +665,22 @@ describe('MdRadio', () => {
 
 @Component({
   template: `
-  <md-radio-group [disabled]="isGroupDisabled"
+  <mat-radio-group [disabled]="isGroupDisabled"
                   [labelPosition]="labelPos"
                   [required]="isGroupRequired"
                   [value]="groupValue"
                   name="test-name">
-    <md-radio-button value="fire" [disableRipple]="disableRipple" [disabled]="isFirstDisabled"
+    <mat-radio-button value="fire" [disableRipple]="disableRipple" [disabled]="isFirstDisabled"
                      [color]="color">
       Charmander
-    </md-radio-button>
-    <md-radio-button value="water" [disableRipple]="disableRipple" [color]="color">
+    </mat-radio-button>
+    <mat-radio-button value="water" [disableRipple]="disableRipple" [color]="color">
       Squirtle
-    </md-radio-button>
-    <md-radio-button value="leaf" [disableRipple]="disableRipple" [color]="color">
+    </mat-radio-button>
+    <mat-radio-button value="leaf" [disableRipple]="disableRipple" [color]="color">
       Bulbasaur
-    </md-radio-button>
-  </md-radio-group>
+    </mat-radio-button>
+  </mat-radio-group>
   `
 })
 class RadiosInsideRadioGroup {
@@ -696,21 +696,21 @@ class RadiosInsideRadioGroup {
 
 @Component({
   template: `
-    <md-radio-button name="season" value="spring">Spring</md-radio-button>
-    <md-radio-button name="season" value="summer">Summer</md-radio-button>
-    <md-radio-button name="season" value="autum">Autumn</md-radio-button>
+    <mat-radio-button name="season" value="spring">Spring</mat-radio-button>
+    <mat-radio-button name="season" value="summer">Summer</mat-radio-button>
+    <mat-radio-button name="season" value="autum">Autumn</mat-radio-button>
 
-    <md-radio-button name="weather" value="warm">Spring</md-radio-button>
-    <md-radio-button name="weather" value="hot">Summer</md-radio-button>
-    <md-radio-button name="weather" value="cool">Autumn</md-radio-button>
+    <mat-radio-button name="weather" value="warm">Spring</mat-radio-button>
+    <mat-radio-button name="weather" value="hot">Summer</mat-radio-button>
+    <mat-radio-button name="weather" value="cool">Autumn</mat-radio-button>
 
     <span id="xyz">Baby Banana</span>
-    <md-radio-button name="fruit"
+    <mat-radio-button name="fruit"
                      value="banana"
                      [aria-label]="ariaLabel"
                      [aria-labelledby]="ariaLabelledby">
-    </md-radio-button>
-    <md-radio-button name="fruit" value="raspberry">Raspberry</md-radio-button>
+    </mat-radio-button>
+    <mat-radio-button name="fruit" value="raspberry">Raspberry</mat-radio-button>
   `
 })
 class StandaloneRadioButtons {
@@ -721,11 +721,11 @@ class StandaloneRadioButtons {
 
 @Component({
   template: `
-  <md-radio-group [(ngModel)]="modelValue" (change)="lastEvent = $event">
-    <md-radio-button *ngFor="let option of options" [value]="option.value">
+  <mat-radio-group [(ngModel)]="modelValue" (change)="lastEvent = $event">
+    <mat-radio-button *ngFor="let option of options" [value]="option.value">
       {{option.label}}
-    </md-radio-button>
-  </md-radio-group>
+    </mat-radio-button>
+  </mat-radio-group>
   `
 })
 class RadioGroupWithNgModel {
@@ -735,14 +735,14 @@ class RadioGroupWithNgModel {
     {label: 'Chocolate', value: 'chocolate'},
     {label: 'Strawberry', value: 'strawberry'},
   ];
-  lastEvent: MdRadioChange;
+  lastEvent: MatRadioChange;
 }
 
 @Component({
   template: `
-  <md-radio-group [formControl]="formControl">
-    <md-radio-button value="1">One</md-radio-button>
-  </md-radio-group>
+  <mat-radio-group [formControl]="formControl">
+    <mat-radio-button value="1">One</mat-radio-button>
+  </mat-radio-group>
   `
 })
 class RadioGroupWithFormControl {
@@ -750,6 +750,6 @@ class RadioGroupWithFormControl {
 }
 
 @Component({
-  template: `<md-radio-button tabindex="-1"></md-radio-button>`
+  template: `<mat-radio-button tabindex="-1"></mat-radio-button>`
 })
 class FocusableRadioButton {}

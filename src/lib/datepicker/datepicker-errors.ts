@@ -9,6 +9,6 @@
 /** @docs-private */
 export function createMissingDateImplError(provider: string) {
   return Error(
-      `MdDatepicker: No provider found for ${provider}. You must import one of the following ` +
-      `modules at your application root: MdNativeDateModule, or provide a custom implementation.`);
+      `MatDatepicker: No provider found for ${provider}. You must import one of the following ` +
+      `modules at your application root: MatNativeDateModule, or provide a custom implementation.`);
 }

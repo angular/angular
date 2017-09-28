@@ -1,10 +1,10 @@
 <form class="example-form">
-  <md-form-field class="example-full-width">
-    <input type="text" placeholder="Assignee" aria-label="Assignee" mdInput [formControl]="myControl" [mdAutocomplete]="auto">
-    <md-autocomplete #auto="mdAutocomplete" [displayWith]="displayFn">
-      <md-option *ngFor="let option of filteredOptions | async" [value]="option">
+  <mat-form-field class="example-full-width">
+    <input type="text" placeholder="Assignee" aria-label="Assignee" matInput [formControl]="myControl" [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
         {{ option.name }}
-      </md-option>
-    </md-autocomplete>
-  </md-form-field>
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
 </form>

@@ -1,51 +1,51 @@
 <div class="example-container mat-elevation-z8">
   <div class="example-loading-shade"
        *ngIf="dataSource.isLoadingResults || dataSource.isRateLimitReached">
-    <md-spinner *ngIf="dataSource.isLoadingResults"></md-spinner>
+    <mat-spinner *ngIf="dataSource.isLoadingResults"></mat-spinner>
     <div class="example-rate-limit-reached" *ngIf="dataSource.isRateLimitReached">
       GitHub's API rate limit has been reached. It will be reset in one minute.
     </div>
   </div>
 
-  <md-table #table [dataSource]="dataSource" class="example-table"
-            mdSort mdSortActive="created_at" mdSortDisableClear mdSortDirection="asc">
+  <mat-table #table [dataSource]="dataSource" class="example-table"
+            matSort matSortActive="created_at" matSortDisableClear matSortDirection="asc">
 
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
 
     <!-- Number Column -->
-    <ng-container mdColumnDef="number">
-      <md-header-cell *mdHeaderCellDef>#</md-header-cell>
-      <md-cell *mdCellDef="let row">{{ row.number }}</md-cell>
+    <ng-container matColumnDef="number">
+      <mat-header-cell *matHeaderCellDef>#</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.number }}</mat-cell>
     </ng-container>
 
     <!-- Title Column -->
-    <ng-container mdColumnDef="title">
-      <md-header-cell *mdHeaderCellDef>Title</md-header-cell>
-      <md-cell *mdCellDef="let row">{{ row.title }}</md-cell>
+    <ng-container matColumnDef="title">
+      <mat-header-cell *matHeaderCellDef>Title</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.title }}</mat-cell>
     </ng-container>
 
     <!-- State Column -->
-    <ng-container mdColumnDef="state">
-      <md-header-cell *mdHeaderCellDef>State</md-header-cell>
-      <md-cell *mdCellDef="let row">{{ row.state }}</md-cell>
+    <ng-container matColumnDef="state">
+      <mat-header-cell *matHeaderCellDef>State</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.state }}</mat-cell>
     </ng-container>
 
     <!-- Created Column -->
-    <ng-container mdColumnDef="created_at">
-      <md-header-cell *mdHeaderCellDef
-                      md-sort-header
+    <ng-container matColumnDef="created_at">
+      <mat-header-cell *matHeaderCellDef
+                      mat-sort-header
                       disableClear="true">
         Created
-      </md-header-cell>
-      <md-cell *mdCellDef="let row">{{ row.created_at | date }}</md-cell>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.created_at | date }}</mat-cell>
     </ng-container>
 
-    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-    <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
-  </md-table>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
 
-  <md-paginator [length]="dataSource.resultsLength"
+  <mat-paginator [length]="dataSource.resultsLength"
                 [pageSize]="30">
-  </md-paginator>
+  </mat-paginator>
 </div>

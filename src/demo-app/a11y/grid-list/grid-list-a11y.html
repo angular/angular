@@ -1,42 +1,42 @@
 <section>
   <h2>Types of coffee (fix-height grid-list)</h2>
-  <md-grid-list role="list" [cols]="fixedCols" [rowHeight]="fixedRowHeight">
-    <md-grid-tile *ngFor="let tile of tiles" [colspan]="tile.cols" [rowspan]="tile.rows"
+  <mat-grid-list role="list" [cols]="fixedCols" [rowHeight]="fixedRowHeight">
+    <mat-grid-tile *ngFor="let tile of tiles" [colspan]="tile.cols" [rowspan]="tile.rows"
                   [style.background]="tile.color" role="listitem">
       {{tile.text}}
-    </md-grid-tile>
-  </md-grid-list>
+    </mat-grid-tile>
+  </mat-grid-list>
 </section>
 
 <section>
   <h2>Types of coffee (ratio-height grid list)</h2>
-  <md-grid-list role="list" cols="2" [rowHeight]="ratio" gutterSize="4px">
-    <md-grid-tile *ngFor="let tile of tiles" [style.background]="'lightblue'" role="listitem">
+  <mat-grid-list role="list" cols="2" [rowHeight]="ratio" gutterSize="4px">
+    <mat-grid-tile *ngFor="let tile of tiles" [style.background]="'lightblue'" role="listitem">
       {{tile.text}}
-    </md-grid-tile>
-  </md-grid-list>
+    </mat-grid-tile>
+  </mat-grid-list>
 </section>
 
 <section>
   <h2>Types of coffee (fit-height grid list)</h2>
-  <md-grid-list role="list" cols="2" rowHeight="fit" [gutterSize]="ratioGutter"
+  <mat-grid-list role="list" cols="2" rowHeight="fit" [gutterSize]="ratioGutter"
                 [style.height]="fitListHeight">
-    <md-grid-tile *ngFor="let tile of tiles" role="listitem" [style.background]="'#F1EBBA'">
+    <mat-grid-tile *ngFor="let tile of tiles" role="listitem" [style.background]="'#F1EBBA'">
       {{tile.text}}
-    </md-grid-tile>
-  </md-grid-list>
+    </mat-grid-tile>
+  </mat-grid-list>
 </section>
 
 <section>
   <h2>Angular team dogs (Grid list with header and footer)</h2>
-  <md-grid-list role="list" cols="3" rowHeight="200px">
-    <md-grid-tile *ngFor="let dog of dogs" role="listitem">
-      <md-grid-tile-header>{{dog.name}}</md-grid-tile-header>
+  <mat-grid-list role="list" cols="3" rowHeight="200px">
+    <mat-grid-tile *ngFor="let dog of dogs" role="listitem">
+      <mat-grid-tile-header>{{dog.name}}</mat-grid-tile-header>
       <img alt="Photo of {{dog.name}}"
            src="https://material.angularjs.org/material2_assets/ngconf/{{dog.name}}.png">
-      <md-grid-tile-footer>
-        <span md-line>Human: {{dog.human}}</span>
-      </md-grid-tile-footer>
-    </md-grid-tile>
-  </md-grid-list>
+      <mat-grid-tile-footer>
+        <span mat-line>Human: {{dog.human}}</span>
+      </mat-grid-tile-footer>
+    </mat-grid-tile>
+  </mat-grid-list>
 </section>

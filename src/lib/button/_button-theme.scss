@@ -1,7 +1,7 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-// Applies a focus style to an md-button element for each of the supported palettes.
+// Applies a focus style to an mat-button element for each of the supported palettes.
 @mixin _mat-button-focus-color($theme) {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
@@ -42,7 +42,7 @@
   }
 }
 
-// Applies a property to an md-button element for each of the supported palettes.
+// Applies a property to an mat-button element for each of the supported palettes.
 @mixin _mat-button-theme-color($theme, $property, $color: 'default') {
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);

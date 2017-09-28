@@ -7,33 +7,33 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MdLineModule, MdCommonModule} from '@angular/material/core';
+import {MatLineModule, MatCommonModule} from '@angular/material/core';
 import {
-  MdGridTile, MdGridTileText, MdGridTileFooterCssMatStyler,
-  MdGridTileHeaderCssMatStyler, MdGridAvatarCssMatStyler
+  MatGridTile, MatGridTileText, MatGridTileFooterCssMatStyler,
+  MatGridTileHeaderCssMatStyler, MatGridAvatarCssMatStyler
 } from './grid-tile';
-import {MdGridList} from './grid-list';
+import {MatGridList} from './grid-list';
 
 
 @NgModule({
-  imports: [MdLineModule, MdCommonModule],
+  imports: [MatLineModule, MatCommonModule],
   exports: [
-    MdGridList,
-    MdGridTile,
-    MdGridTileText,
-    MdLineModule,
-    MdCommonModule,
-    MdGridTileHeaderCssMatStyler,
-    MdGridTileFooterCssMatStyler,
-    MdGridAvatarCssMatStyler
+    MatGridList,
+    MatGridTile,
+    MatGridTileText,
+    MatLineModule,
+    MatCommonModule,
+    MatGridTileHeaderCssMatStyler,
+    MatGridTileFooterCssMatStyler,
+    MatGridAvatarCssMatStyler
   ],
   declarations: [
-    MdGridList,
-    MdGridTile,
-    MdGridTileText,
-    MdGridTileHeaderCssMatStyler,
-    MdGridTileFooterCssMatStyler,
-    MdGridAvatarCssMatStyler
+    MatGridList,
+    MatGridTile,
+    MatGridTileText,
+    MatGridTileHeaderCssMatStyler,
+    MatGridTileFooterCssMatStyler,
+    MatGridAvatarCssMatStyler
   ],
 })
-export class MdGridListModule {}
+export class MatGridListModule {}

@@ -11,46 +11,46 @@ import {PortalModule} from '@angular/cdk/portal';
 import {ScrollDispatchModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MdCommonModule, MdRippleModule} from '@angular/material/core';
-import {MdInkBar} from './ink-bar';
-import {MdTab} from './tab';
-import {MdTabBody} from './tab-body';
-import {MdTabGroup} from './tab-group';
-import {MdTabHeader} from './tab-header';
-import {MdTabLabel} from './tab-label';
-import {MdTabLabelWrapper} from './tab-label-wrapper';
-import {MdTabLink, MdTabNav} from './tab-nav-bar/tab-nav-bar';
+import {MatCommonModule, MatRippleModule} from '@angular/material/core';
+import {MatInkBar} from './ink-bar';
+import {MatTab} from './tab';
+import {MatTabBody} from './tab-body';
+import {MatTabGroup} from './tab-group';
+import {MatTabHeader} from './tab-header';
+import {MatTabLabel} from './tab-label';
+import {MatTabLabelWrapper} from './tab-label-wrapper';
+import {MatTabLink, MatTabNav} from './tab-nav-bar/tab-nav-bar';
 
 
 @NgModule({
   imports: [
     CommonModule,
-    MdCommonModule,
+    MatCommonModule,
     PortalModule,
-    MdRippleModule,
+    MatRippleModule,
     ObserversModule,
     ScrollDispatchModule,
   ],
   // Don't export all components because some are only to be used internally.
   exports: [
-    MdCommonModule,
-    MdTabGroup,
-    MdTabLabel,
-    MdTab,
-    MdTabNav,
-    MdTabLink,
+    MatCommonModule,
+    MatTabGroup,
+    MatTabLabel,
+    MatTab,
+    MatTabNav,
+    MatTabLink,
   ],
   declarations: [
-    MdTabGroup,
-    MdTabLabel,
-    MdTab,
-    MdInkBar,
-    MdTabLabelWrapper,
-    MdTabNav,
-    MdTabLink,
-    MdTabBody,
-    MdTabHeader
+    MatTabGroup,
+    MatTabLabel,
+    MatTab,
+    MatInkBar,
+    MatTabLabelWrapper,
+    MatTabNav,
+    MatTabLink,
+    MatTabBody,
+    MatTabHeader
   ],
   providers: [VIEWPORT_RULER_PROVIDER],
 })
-export class MdTabsModule {}
+export class MatTabsModule {}

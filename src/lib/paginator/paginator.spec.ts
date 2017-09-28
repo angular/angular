@@ -1,37 +1,37 @@
 import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
-import {MdPaginatorModule} from './index';
-import {MdPaginator, PageEvent} from './paginator';
+import {MatPaginatorModule} from './index';
+import {MatPaginator, PageEvent} from './paginator';
 import {Component, ViewChild} from '@angular/core';
-import {MdPaginatorIntl} from './paginator-intl';
+import {MatPaginatorIntl} from './paginator-intl';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {dispatchMouseEvent} from '@angular/cdk/testing';
 
 
-describe('MdPaginator', () => {
-  let fixture: ComponentFixture<MdPaginatorApp>;
-  let component: MdPaginatorApp;
-  let paginator: MdPaginator;
+describe('MatPaginator', () => {
+  let fixture: ComponentFixture<MatPaginatorApp>;
+  let component: MatPaginatorApp;
+  let paginator: MatPaginator;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        MdPaginatorModule,
+        MatPaginatorModule,
         NoopAnimationsModule,
       ],
       declarations: [
-        MdPaginatorApp,
-        MdPaginatorWithoutPageSizeApp,
-        MdPaginatorWithoutOptionsApp,
-        MdPaginatorWithoutInputsApp,
+        MatPaginatorApp,
+        MatPaginatorWithoutPageSizeApp,
+        MatPaginatorWithoutOptionsApp,
+        MatPaginatorWithoutInputsApp,
       ],
-      providers: [MdPaginatorIntl]
+      providers: [MatPaginatorIntl]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MdPaginatorApp);
+    fixture = TestBed.createComponent(MatPaginatorApp);
     component = fixture.componentInstance;
-    paginator = component.mdPaginator;
+    paginator = component.paginator;
 
     fixture.detectChanges();
   });
@@ -92,7 +92,7 @@ describe('MdPaginator', () => {
     });
 
     it('should re-render when the i18n labels change',
-      inject([MdPaginatorIntl], (intl: MdPaginatorIntl) => {
+      inject([MatPaginatorIntl], (intl: MatPaginatorIntl) => {
         const label = fixture.nativeElement.querySelector('.mat-paginator-page-size-label');
 
         intl.itemsPerPageLabel = '1337 items per page';
@@ -175,18 +175,18 @@ describe('MdPaginator', () => {
   });
 
   it('should default the page size options to the page size if no options provided', () => {
-    const withoutOptionsAppFixture = TestBed.createComponent(MdPaginatorWithoutOptionsApp);
+    const withoutOptionsAppFixture = TestBed.createComponent(MatPaginatorWithoutOptionsApp);
     withoutOptionsAppFixture.detectChanges();
 
-    expect(withoutOptionsAppFixture.componentInstance.mdPaginator._displayedPageSizeOptions)
+    expect(withoutOptionsAppFixture.componentInstance.paginator._displayedPageSizeOptions)
         .toEqual([10]);
   });
 
   it('should default the page size to the first page size option if not provided', () => {
-    const withoutPageSizeAppFixture = TestBed.createComponent(MdPaginatorWithoutPageSizeApp);
+    const withoutPageSizeAppFixture = TestBed.createComponent(MatPaginatorWithoutPageSizeApp);
     withoutPageSizeAppFixture.detectChanges();
 
-    expect(withoutPageSizeAppFixture.componentInstance.mdPaginator.pageSize).toEqual(10);
+    expect(withoutPageSizeAppFixture.componentInstance.paginator.pageSize).toEqual(10);
   });
 
   it('should show a sorted list of page size options including the current page size', () => {
@@ -263,15 +263,15 @@ function getNextButton(fixture: ComponentFixture<any>) {
 
 @Component({
   template: `
-    <md-paginator [pageIndex]="pageIndex"
+    <mat-paginator [pageIndex]="pageIndex"
                   [pageSize]="pageSize"
                   [pageSizeOptions]="pageSizeOptions"
                   [length]="length"
                   (page)="latestPageEvent = $event">
-    </md-paginator>
+    </mat-paginator>
   `,
 })
-class MdPaginatorApp {
+class MatPaginatorApp {
   pageIndex = 0;
   pageSize = 10;
   pageSizeOptions = [5, 10, 25, 100];
@@ -279,7 +279,7 @@ class MdPaginatorApp {
 
   latestPageEvent: PageEvent | null;
 
-  @ViewChild(MdPaginator) mdPaginator: MdPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   goToLastPage() {
     this.pageIndex = Math.ceil(this.length / this.pageSize);
@@ -288,27 +288,27 @@ class MdPaginatorApp {
 
 @Component({
   template: `
-    <md-paginator></md-paginator>
+    <mat-paginator></mat-paginator>
   `,
 })
-class MdPaginatorWithoutInputsApp {
-  @ViewChild(MdPaginator) mdPaginator: MdPaginator;
+class MatPaginatorWithoutInputsApp {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 }
 
 @Component({
   template: `
-    <md-paginator [pageSizeOptions]="[10, 20, 30]"></md-paginator>
+    <mat-paginator [pageSizeOptions]="[10, 20, 30]"></mat-paginator>
   `,
 })
-class MdPaginatorWithoutPageSizeApp {
-  @ViewChild(MdPaginator) mdPaginator: MdPaginator;
+class MatPaginatorWithoutPageSizeApp {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 }
 
 @Component({
   template: `
-    <md-paginator [pageSize]="10"></md-paginator>
+    <mat-paginator [pageSize]="10"></mat-paginator>
   `,
 })
-class MdPaginatorWithoutOptionsApp {
-  @ViewChild(MdPaginator) mdPaginator: MdPaginator;
+class MatPaginatorWithoutOptionsApp {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 }

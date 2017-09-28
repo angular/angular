@@ -17,9 +17,8 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material/core';
 import {Subscription} from 'rxjs/Subscription';
-import {MdPaginatorIntl} from './paginator-intl';
+import {MatPaginatorIntl} from './paginator-intl';
 
 /** The default page size if there is no page size and there are no provided page size options. */
 const DEFAULT_PAGE_SIZE = 50;
@@ -46,18 +45,17 @@ export class PageEvent {
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-paginator, mat-paginator',
+  selector: 'mat-paginator',
   templateUrl: 'paginator.html',
   styleUrls: ['paginator.css'],
   host: {
     'class': 'mat-paginator',
   },
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdPaginator implements OnInit, OnDestroy {
+export class MatPaginator implements OnInit, OnDestroy {
   private _initialized: boolean;
   private _intlChanges: Subscription;
 
@@ -103,7 +101,7 @@ export class MdPaginator implements OnInit, OnDestroy {
   /** Displayed set of page size options. Will be sorted and include current page size. */
   _displayedPageSizeOptions: number[];
 
-  constructor(public _intl: MdPaginatorIntl,
+  constructor(public _intl: MatPaginatorIntl,
               private _changeDetectorRef: ChangeDetectorRef) {
     this._intlChanges = _intl.changes.subscribe(() => this._changeDetectorRef.markForCheck());
   }

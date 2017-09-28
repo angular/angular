@@ -32,17 +32,12 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {
-  DateAdapter,
-  MATERIAL_COMPATIBILITY_MODE,
-  MD_DATE_FORMATS,
-  MdDateFormats,
-} from '@angular/material/core';
+import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {first} from 'rxjs/operator/first';
 import {Subscription} from 'rxjs/Subscription';
 import {coerceDateProperty} from './coerce-date-property';
 import {createMissingDateImplError} from './datepicker-errors';
-import {MdDatepickerIntl} from './datepicker-intl';
+import {MatDatepickerIntl} from './datepicker-intl';
 
 
 /**
@@ -51,7 +46,7 @@ import {MdDatepickerIntl} from './datepicker-intl';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-calendar, mat-calendar',
+  selector: 'mat-calendar',
   templateUrl: 'calendar.html',
   styleUrls: ['calendar.css'],
   host: {
@@ -60,9 +55,8 @@ import {MdDatepickerIntl} from './datepicker-intl';
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdCalendar<D> implements AfterContentInit, OnDestroy {
+export class MatCalendar<D> implements AfterContentInit, OnDestroy {
   private _intlChanges: Subscription;
 
   /** A date representing the period (month or year) to start the calendar in. */
@@ -145,10 +139,10 @@ export class MdCalendar<D> implements AfterContentInit, OnDestroy {
   }
 
   constructor(private _elementRef: ElementRef,
-              private _intl: MdDatepickerIntl,
+              private _intl: MatDatepickerIntl,
               private _ngZone: NgZone,
               @Optional() private _dateAdapter: DateAdapter<D>,
-              @Optional() @Inject(MD_DATE_FORMATS) private _dateFormats: MdDateFormats,
+              @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
               changeDetectorRef: ChangeDetectorRef) {
 
     if (!this._dateAdapter) {
@@ -156,7 +150,7 @@ export class MdCalendar<D> implements AfterContentInit, OnDestroy {
     }
 
     if (!this._dateFormats) {
-      throw createMissingDateImplError('MD_DATE_FORMATS');
+      throw createMissingDateImplError('MAT_DATE_FORMATS');
     }
 
     this._intlChanges = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());

@@ -9,19 +9,19 @@
 export * from './expansion-module';
 export {
   CdkAccordion,
-  MdAccordion,
-  MdAccordionDisplayMode
+  MatAccordion,
+  MatAccordionDisplayMode
 } from './accordion';
 export {AccordionItem} from './accordion-item';
 export {
-  MdExpansionPanel,
-  MdExpansionPanelState,
-  MdExpansionPanelActionRow
+  MatExpansionPanel,
+  MatExpansionPanelState,
+  MatExpansionPanelActionRow
 } from './expansion-panel';
 export {
-  MdExpansionPanelHeader,
-  MdExpansionPanelDescription,
-  MdExpansionPanelTitle
+  MatExpansionPanelHeader,
+  MatExpansionPanelDescription,
+  MatExpansionPanelTitle
 } from './expansion-panel-header';
 
-export * from './mat-exports';
+

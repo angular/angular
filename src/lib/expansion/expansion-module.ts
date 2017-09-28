@@ -8,37 +8,37 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {CompatibilityModule, UNIQUE_SELECTION_DISPATCHER_PROVIDER} from '@angular/material/core';
+import {UNIQUE_SELECTION_DISPATCHER_PROVIDER} from '@angular/material/core';
 import {A11yModule} from '@angular/cdk/a11y';
-import {CdkAccordion, MdAccordion} from './accordion';
-import {MdExpansionPanel, MdExpansionPanelActionRow} from './expansion-panel';
+import {CdkAccordion, MatAccordion} from './accordion';
+import {MatExpansionPanel, MatExpansionPanelActionRow} from './expansion-panel';
 import {
-  MdExpansionPanelDescription,
-  MdExpansionPanelHeader,
-  MdExpansionPanelTitle,
+  MatExpansionPanelDescription,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
 } from './expansion-panel-header';
 
 
 @NgModule({
-  imports: [CompatibilityModule, CommonModule, A11yModule],
+  imports: [CommonModule, A11yModule],
   exports: [
     CdkAccordion,
-    MdAccordion,
-    MdExpansionPanel,
-    MdExpansionPanelActionRow,
-    MdExpansionPanelHeader,
-    MdExpansionPanelTitle,
-    MdExpansionPanelDescription
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelActionRow,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatExpansionPanelDescription
   ],
   declarations: [
     CdkAccordion,
-    MdAccordion,
-    MdExpansionPanel,
-    MdExpansionPanelActionRow,
-    MdExpansionPanelHeader,
-    MdExpansionPanelTitle,
-    MdExpansionPanelDescription
+    MatAccordion,
+    MatExpansionPanel,
+    MatExpansionPanelActionRow,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatExpansionPanelDescription
   ],
   providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER]
 })
-export class MdExpansionModule {}
+export class MatExpansionModule {}

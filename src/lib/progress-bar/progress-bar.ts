@@ -13,11 +13,11 @@ import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@ang
 
 
 /**
- * <md-progress-bar> component.
+ * <mat-progress-bar> component.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-progress-bar, mat-progress-bar',
+  selector: 'mat-progress-bar',
   host: {
     'role': 'progressbar',
     'aria-valuemin': '0',
@@ -35,7 +35,7 @@ import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@ang
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdProgressBar {
+export class MatProgressBar {
   /** Color of the progress bar. */
   @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
 

@@ -10,13 +10,13 @@ import {Observable} from 'rxjs/Observable';
 import {NgControl} from '@angular/forms';
 
 
-/** An interface which allows a control to work inside of a `MdFormField`. */
-export abstract class MdFormFieldControl<T> {
+/** An interface which allows a control to work inside of a `MatFormField`. */
+export abstract class MatFormFieldControl<T> {
   /** The value of the control. */
   value: T;
 
   /**
-   * Stream that emits whenever the state of the control changes such that the parent `MdFormField`
+   * Stream that emits whenever the state of the control changes such that the parent `MatFormField`
    * needs to run change detection.
    */
   readonly stateChanges: Observable<void>;
@@ -36,7 +36,7 @@ export abstract class MdFormFieldControl<T> {
   /** Whether the control is empty. */
   readonly empty: boolean;
 
-  /** Whether the `MdFormField` label should try to float. */
+  /** Whether the `MatFormField` label should try to float. */
   readonly shouldPlaceholderFloat: boolean;
 
   /** Whether the control is required. */
@@ -49,7 +49,7 @@ export abstract class MdFormFieldControl<T> {
   readonly errorState: boolean;
 
   /**
-   * An optional name for the control type that can be used to distinguish `md-form-field` elements
+   * An optional name for the control type that can be used to distinguish `mat-form-field` elements
    * based on their control type. The form field will add a class,
    * `mat-form-field-type-{{controlType}}` to its root element.
    */

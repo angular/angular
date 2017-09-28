@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdChipInputEvent} from '@angular/material';
+import {MatChipInputEvent} from '@angular/material';
 import {ENTER} from '@angular/cdk/keycodes';
 
 const COMMA = 188;
@@ -28,7 +28,7 @@ export class ChipsInputExample {
   ];
 
 
-  add(event: MdChipInputEvent): void {
+  add(event: MatChipInputEvent): void {
     let input = event.input;
     let value = event.value;
 

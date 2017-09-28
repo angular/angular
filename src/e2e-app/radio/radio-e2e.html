@@ -1,12 +1,12 @@
 <section>
-  <md-radio-group [disabled]="isGroupDisabled"
+  <mat-radio-group [disabled]="isGroupDisabled"
                   [(value)]="groupValue"
                   id="test-group" aria-label="Select a Pokemon">
 
-    <md-radio-button value="fire" id="fire">Charmander</md-radio-button>
-    <md-radio-button value="water" id="water">Squirtle</md-radio-button>
-    <md-radio-button value="leaf" id="leaf">Bulbasaur</md-radio-button>
+    <mat-radio-button value="fire" id="fire">Charmander</mat-radio-button>
+    <mat-radio-button value="water" id="water">Squirtle</mat-radio-button>
+    <mat-radio-button value="leaf" id="leaf">Bulbasaur</mat-radio-button>
 
-  </md-radio-group>
+  </mat-radio-group>
   <button (click)="isGroupDisabled=!isGroupDisabled" id="toggle-disable">Disable/enable group</button>
 </section>

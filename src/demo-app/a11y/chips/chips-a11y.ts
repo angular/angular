@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdChipInputEvent, MdSnackBar} from '@angular/material';
+import {MatChipInputEvent, MatSnackBar} from '@angular/material';
 
 
 export interface Person {
@@ -36,13 +36,13 @@ export class ChipsAccessibilityDemo {
     { name: 'Warn', color: 'warn' }
   ];
 
-  constructor(public snackBar: MdSnackBar) {}
+  constructor(public snackBar: MatSnackBar) {}
 
   displayMessage(message: string): void {
     this.message = message;
   }
 
-  add(event: MdChipInputEvent): void {
+  add(event: MatChipInputEvent): void {
     let input = event.input;
     let value = event.value;
 

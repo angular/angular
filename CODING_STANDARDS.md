@@ -49,16 +49,16 @@ In HTML code, use `<!-- ... -->` comments, which will be stripped when packaging
 
 For example, rather than doing this:
 ```html
-<md-button>Basic button</md-button>
-<md-button class="mat-fab">FAB</md-button>
-<md-button class="mat-icon-button">pony</md-button>
+<mat-button>Basic button</mat-button>
+<mat-button class="mat-fab">FAB</mat-button>
+<mat-button class="mat-icon-button">pony</mat-button>
 ```
 
 do this:
 ```html
-<md-button>Basic button</md-button>
-<md-fab>FAB</md-fab>
-<md-icon-button>pony</md-icon-button>
+<mat-button>Basic button</mat-button>
+<mat-fab>FAB</mat-fab>
+<mat-icon-button>pony</mat-icon-button>
 ```
 
 #### Prefer small, focused modules
@@ -191,7 +191,7 @@ and the return value:
    * @param config Dialog configuration options.
    * @returns Reference to the newly-opened dialog.
    */
-  open<T>(component: ComponentType<T>, config?: MdDialogConfig): MdDialogRef<T> { ... }
+  open<T>(component: ComponentType<T>, config?: MatDialogConfig): MatDialogRef<T> { ... }
 ```
 
 Boolean properties and return values should use "Whether..." as opposed to "True if...":
@@ -229,7 +229,7 @@ class UniqueSelectionDispatcher { }
 Avoid suffixing a class with "Service", as it communicates nothing about what the class does. Try to
 think of the class name as a person's job title.
 
-Classes that correspond to a directive with an `md-` prefix should also be prefixed with `Md`.
+Classes that correspond to a directive with an `mat-` prefix should also be prefixed with `Mat`.
 CDK classes should only have a `Cdk` prefix when the class is a directive with a `cdk` selector
 prefix.
 

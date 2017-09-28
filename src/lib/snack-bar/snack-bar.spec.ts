@@ -13,17 +13,17 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {
-  MdSnackBarModule,
-  MdSnackBar,
-  MdSnackBarConfig,
-  MdSnackBarRef,
+  MatSnackBarModule,
+  MatSnackBar,
+  MatSnackBarConfig,
+  MatSnackBarRef,
   SimpleSnackBar,
-  MD_SNACK_BAR_DATA,
+  MAT_SNACK_BAR_DATA,
 } from './index';
 
 
-describe('MdSnackBar', () => {
-  let snackBar: MdSnackBar;
+describe('MatSnackBar', () => {
+  let snackBar: MatSnackBar;
   let liveAnnouncer: LiveAnnouncer;
   let overlayContainerElement: HTMLElement;
 
@@ -35,7 +35,7 @@ describe('MdSnackBar', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
+      imports: [MatSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -46,7 +46,7 @@ describe('MdSnackBar', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdSnackBar, LiveAnnouncer], (sb: MdSnackBar, la: LiveAnnouncer) => {
+  beforeEach(inject([MatSnackBar, LiveAnnouncer], (sb: MatSnackBar, la: LiveAnnouncer) => {
     snackBar = sb;
     liveAnnouncer = la;
   }));
@@ -64,7 +64,7 @@ describe('MdSnackBar', () => {
   });
 
   it('should have the role of alert', () => {
-    let config: MdSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     snackBar.open(simpleMessage, simpleActionLabel, config);
 
     let containerElement = overlayContainerElement.querySelector('snack-bar-container')!;
@@ -90,7 +90,7 @@ describe('MdSnackBar', () => {
    }));
 
   it('should open a simple message with a button', () => {
-    let config: MdSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.open(simpleMessage, simpleActionLabel, config);
 
     viewContainerFixture.detectChanges();
@@ -114,7 +114,7 @@ describe('MdSnackBar', () => {
   });
 
   it('should open a simple message with no button', () => {
-    let config: MdSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.open(simpleMessage, undefined, config);
 
     viewContainerFixture.detectChanges();
@@ -132,7 +132,7 @@ describe('MdSnackBar', () => {
   });
 
   it('should dismiss the snack bar and remove itself from the view', async(() => {
-    let config: MdSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let dismissObservableCompleted = false;
 
     let snackBarRef = snackBar.open(simpleMessage, undefined, config);
@@ -182,7 +182,7 @@ describe('MdSnackBar', () => {
   }));
 
   it('should set the animation state to visible on entry', () => {
-    let config: MdSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.open(simpleMessage, undefined, config);
 
     viewContainerFixture.detectChanges();
@@ -196,7 +196,7 @@ describe('MdSnackBar', () => {
   });
 
   it('should set the animation state to complete on exit', () => {
-    let config: MdSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.open(simpleMessage, undefined, config);
     snackBarRef.dismiss();
 
@@ -207,7 +207,7 @@ describe('MdSnackBar', () => {
 
   it(`should set the old snack bar animation state to complete and the new snack bar animation
       state to visible on entry of new snack bar`, async(() => {
-    let config: MdSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.open(simpleMessage, undefined, config);
     let dismissObservableCompleted = false;
 
@@ -233,7 +233,7 @@ describe('MdSnackBar', () => {
   }));
 
   it('should open a new snackbar after dismissing a previous snackbar', async(() => {
-    let config: MdSnackBarConfig = {viewContainerRef: testViewContainerRef};
+    let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.open(simpleMessage, 'Dismiss', config);
 
     viewContainerFixture.detectChanges();
@@ -337,7 +337,7 @@ describe('MdSnackBar', () => {
 
   it('should dismiss automatically after a specified timeout', fakeAsync(() => {
     let dismissObservableCompleted = false;
-    let config = new MdSnackBarConfig();
+    let config = new MatSnackBarConfig();
     config.duration = 250;
     let snackBarRef = snackBar.open('content', 'test', config);
     snackBarRef.afterDismissed().subscribe(() => {
@@ -355,7 +355,7 @@ describe('MdSnackBar', () => {
   }));
 
   it('should clear the dismiss timeout when dismissed before timeout expiration', fakeAsync(() => {
-    let config = new MdSnackBarConfig();
+    let config = new MatSnackBarConfig();
     config.duration = 1000;
     snackBar.open('content', 'test', config);
 
@@ -443,17 +443,17 @@ describe('MdSnackBar', () => {
 
 });
 
-describe('MdSnackBar with parent MdSnackBar', () => {
-  let parentSnackBar: MdSnackBar;
-  let childSnackBar: MdSnackBar;
+describe('MatSnackBar with parent MatSnackBar', () => {
+  let parentSnackBar: MatSnackBar;
+  let childSnackBar: MatSnackBar;
   let overlayContainerElement: HTMLElement;
-  let fixture: ComponentFixture<ComponentThatProvidesMdSnackBar>;
+  let fixture: ComponentFixture<ComponentThatProvidesMatSnackBar>;
   let liveAnnouncer: LiveAnnouncer;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
-      declarations: [ComponentThatProvidesMdSnackBar],
+      imports: [MatSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
+      declarations: [ComponentThatProvidesMatSnackBar],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -465,11 +465,11 @@ describe('MdSnackBar with parent MdSnackBar', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdSnackBar, LiveAnnouncer], (sb: MdSnackBar, la: LiveAnnouncer) => {
+  beforeEach(inject([MatSnackBar, LiveAnnouncer], (sb: MatSnackBar, la: LiveAnnouncer) => {
     parentSnackBar = sb;
     liveAnnouncer = la;
 
-    fixture = TestBed.createComponent(ComponentThatProvidesMdSnackBar);
+    fixture = TestBed.createComponent(ComponentThatProvidesMatSnackBar);
     childSnackBar = fixture.componentInstance.snackBar;
     fixture.detectChanges();
   }));
@@ -479,7 +479,7 @@ describe('MdSnackBar with parent MdSnackBar', () => {
     liveAnnouncer.ngOnDestroy();
   });
 
-  it('should close snackBars opened by parent when opening from child MdSnackBar', fakeAsync(() => {
+  it('should close snackBars opened by parent when opening from child', fakeAsync(() => {
     parentSnackBar.open('Pizza');
     fixture.detectChanges();
     tick(1000);
@@ -495,7 +495,7 @@ describe('MdSnackBar with parent MdSnackBar', () => {
         .toContain('Taco', 'Expected parent snackbar msg to be dismissed by opening from child');
   }));
 
-  it('should close snackBars opened by child when opening from parent MdSnackBar', fakeAsync(() => {
+  it('should close snackBars opened by child when opening from parent', fakeAsync(() => {
     childSnackBar.open('Pizza');
     fixture.detectChanges();
     tick(1000);
@@ -513,8 +513,8 @@ describe('MdSnackBar with parent MdSnackBar', () => {
 });
 
 
-describe('MdSnackBar Positioning', () => {
-  let snackBar: MdSnackBar;
+describe('MatSnackBar Positioning', () => {
+  let snackBar: MatSnackBar;
   let liveAnnouncer: LiveAnnouncer;
   let overlayContainerEl: HTMLElement;
 
@@ -526,7 +526,7 @@ describe('MdSnackBar Positioning', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
+      imports: [MatSnackBarModule, SnackBarTestModule, NoopAnimationsModule],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerEl = document.createElement('div');
@@ -537,7 +537,7 @@ describe('MdSnackBar Positioning', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MdSnackBar, LiveAnnouncer], (sb: MdSnackBar, la: LiveAnnouncer) => {
+  beforeEach(inject([MatSnackBar, LiveAnnouncer], (sb: MatSnackBar, la: LiveAnnouncer) => {
     snackBar = sb;
     liveAnnouncer = la;
   }));
@@ -555,7 +555,7 @@ describe('MdSnackBar Positioning', () => {
   });
 
   it('should default to bottom center', () => {
-    let config: MdSnackBarConfig = {};
+    let config: MatSnackBarConfig = {};
     snackBar.open(simpleMessage, simpleActionLabel, config);
     let containerEl = overlayContainerEl.querySelector('snack-bar-container') as HTMLElement;
     let overlayPaneEl = overlayContainerEl.querySelector('.cdk-overlay-pane') as HTMLElement;
@@ -569,7 +569,7 @@ describe('MdSnackBar Positioning', () => {
    });
 
   it('should be in the bottom left corner', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'bottom',
       horizontalPosition: 'left'
     };
@@ -586,7 +586,7 @@ describe('MdSnackBar Positioning', () => {
    });
 
    it('should be in the bottom right corner', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'bottom',
       horizontalPosition: 'right'
     };
@@ -603,7 +603,7 @@ describe('MdSnackBar Positioning', () => {
    });
 
    it('should be in the bottom center', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'bottom',
       horizontalPosition: 'center'
     };
@@ -620,7 +620,7 @@ describe('MdSnackBar Positioning', () => {
    });
 
    it('should be in the top left corner', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'top',
       horizontalPosition: 'left'
     };
@@ -637,7 +637,7 @@ describe('MdSnackBar Positioning', () => {
    });
 
    it('should be in the top right corner', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'top',
       horizontalPosition: 'right'
     };
@@ -654,7 +654,7 @@ describe('MdSnackBar Positioning', () => {
    });
 
    it('should be in the top center', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'top',
       horizontalPosition: 'center'
     };
@@ -671,7 +671,7 @@ describe('MdSnackBar Positioning', () => {
    });
 
    it('should handle start based on direction (rtl)', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'top',
       horizontalPosition: 'start',
       direction: 'rtl',
@@ -689,7 +689,7 @@ describe('MdSnackBar Positioning', () => {
   });
 
   it('should handle start based on direction (ltr)', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'top',
       horizontalPosition: 'start',
       direction: 'ltr',
@@ -708,7 +708,7 @@ describe('MdSnackBar Positioning', () => {
 
 
   it('should handle end based on direction (rtl)', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'top',
       horizontalPosition: 'end',
       direction: 'rtl',
@@ -726,7 +726,7 @@ describe('MdSnackBar Positioning', () => {
   });
 
   it('should handle end based on direction (ltr)', () => {
-    let config: MdSnackBarConfig = {
+    let config: MatSnackBarConfig = {
       verticalPosition: 'top',
       horizontalPosition: 'end',
       direction: 'ltr',
@@ -769,17 +769,17 @@ class ComponentWithChildViewContainer {
 @Component({template: '<p>Burritos are on the way.</p>'})
 class BurritosNotification {
   constructor(
-    public snackBarRef: MdSnackBarRef<BurritosNotification>,
-    @Inject(MD_SNACK_BAR_DATA) public data: any) { }
+    public snackBarRef: MatSnackBarRef<BurritosNotification>,
+    @Inject(MAT_SNACK_BAR_DATA) public data: any) { }
 }
 
 
 @Component({
   template: '',
-  providers: [MdSnackBar]
+  providers: [MatSnackBar]
 })
-class ComponentThatProvidesMdSnackBar {
-  constructor(public snackBar: MdSnackBar) {}
+class ComponentThatProvidesMatSnackBar {
+  constructor(public snackBar: MatSnackBar) {}
 }
 
 
@@ -791,7 +791,7 @@ const TEST_DIRECTIVES = [ComponentWithChildViewContainer,
                          BurritosNotification,
                          DirectiveWithViewContainer];
 @NgModule({
-  imports: [CommonModule, MdSnackBarModule],
+  imports: [CommonModule, MatSnackBarModule],
   exports: TEST_DIRECTIVES,
   declarations: TEST_DIRECTIVES,
   entryComponents: [ComponentWithChildViewContainer, BurritosNotification],

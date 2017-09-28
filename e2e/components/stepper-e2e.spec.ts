@@ -10,8 +10,8 @@ describe('stepper', () => {
   beforeEach(() => browser.get('/stepper'));
 
   it('should render a stepper', () => {
-    expectToExist('md-horizontal-stepper');
-    screenshot('md-horizontal-stepper');
+    expectToExist('mat-horizontal-stepper');
+    screenshot('mat-horizontal-stepper');
   });
 
   describe('basic behavior', () => {
@@ -19,13 +19,13 @@ describe('stepper', () => {
       const previousButton = element.all(by.buttonText('Back'));
       const nextButton = element.all(by.buttonText('Next'));
 
-      expect(element(by.css('md-step-header[aria-selected="true"]')).getText())
+      expect(element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('1\nFill out your name');
 
       screenshot('start');
       nextButton.get(0).click();
 
-      expect(element(by.css('md-step-header[aria-selected="true"]')).getText())
+      expect(element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('2\nFill out your address');
 
       await browser.wait(ExpectedConditions.not(
@@ -34,7 +34,7 @@ describe('stepper', () => {
 
       previousButton.get(0).click();
 
-      expect(element(by.css('md-step-header[aria-selected="true"]')).getText())
+      expect(element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('1\nFill out your name');
 
       await browser.wait(ExpectedConditions.not(
@@ -43,7 +43,7 @@ describe('stepper', () => {
     });
 
     it('should change focus with keyboard interaction', () => {
-      let stepHeaders = element.all(by.css('md-step-header'));
+      let stepHeaders = element.all(by.css('mat-step-header'));
       stepHeaders.get(0).click();
 
       expectFocusOn(stepHeaders.get(0));
@@ -77,7 +77,7 @@ describe('stepper', () => {
       let nextButton = element.all(by.buttonText('Next'));
       nextButton.get(0).click();
 
-      expect(element(by.css('md-step-header[aria-selected="true"]')).getText())
+      expect(element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('1\nFill out your name');
     });
   });

@@ -1,23 +1,23 @@
 Space above cards: <input type="number" [formControl]="topHeightCtrl">
-<button md-button (click)="showSelect=!showSelect">SHOW SELECT</button>
+<button mat-button (click)="showSelect=!showSelect">SHOW SELECT</button>
 <div [style.height.px]="topHeightCtrl.value"></div>
 
 <div class="demo-select">
-  <md-card>
-    <md-card-subtitle>ngModel</md-card-subtitle>
+  <mat-card>
+    <mat-card-subtitle>ngModel</mat-card-subtitle>
 
-    <md-form-field [floatPlaceholder]="floatPlaceholder" [color]="drinksTheme">
-      <md-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="drinksRequired"
+    <mat-form-field [floatPlaceholder]="floatPlaceholder" [color]="drinksTheme">
+      <mat-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="drinksRequired"
         [disabled]="drinksDisabled" #drinkControl="ngModel">
-        <md-option>None</md-option>
-        <md-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
+        <mat-option>None</mat-option>
+        <mat-option *ngFor="let drink of drinks" [value]="drink.value" [disabled]="drink.disabled">
           {{ drink.viewValue }}
-        </md-option>
-      </md-select>
-      <md-icon mdPrefix class="demo-drink-icon">local_drink</md-icon>
-      <md-hint>Pick a drink!</md-hint>
-      <md-error>You must make a selection</md-error>
-    </md-form-field>
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix class="demo-drink-icon">local_drink</mat-icon>
+      <mat-hint>Pick a drink!</mat-hint>
+      <mat-error>You must make a selection</mat-error>
+    </mat-form-field>
     <p> Value: {{ currentDrink }} </p>
     <p> Touched: {{ drinkControl.touched }} </p>
     <p> Dirty: {{ drinkControl.dirty }} </p>
@@ -39,24 +39,24 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
       </select>
     </p>
 
-    <button md-button (click)="currentDrink='water-2'">SET VALUE</button>
-    <button md-button (click)="drinksRequired=!drinksRequired">TOGGLE REQUIRED</button>
-    <button md-button (click)="drinksDisabled=!drinksDisabled">TOGGLE DISABLED</button>
-    <button md-button (click)="drinkControl.reset()">RESET</button>
-  </md-card>
+    <button mat-button (click)="currentDrink='water-2'">SET VALUE</button>
+    <button mat-button (click)="drinksRequired=!drinksRequired">TOGGLE REQUIRED</button>
+    <button mat-button (click)="drinksDisabled=!drinksDisabled">TOGGLE DISABLED</button>
+    <button mat-button (click)="drinkControl.reset()">RESET</button>
+  </mat-card>
 
-  <md-card>
-    <md-card-subtitle>Multiple selection</md-card-subtitle>
+  <mat-card>
+    <mat-card-subtitle>Multiple selection</mat-card-subtitle>
 
-    <md-card-content>
-      <md-form-field [color]="pokemonTheme">
-        <md-select multiple placeholder="Pokemon" [(ngModel)]="currentPokemon"
+    <mat-card-content>
+      <mat-form-field [color]="pokemonTheme">
+        <mat-select multiple placeholder="Pokemon" [(ngModel)]="currentPokemon"
           [required]="pokemonRequired" [disabled]="pokemonDisabled" #pokemonControl="ngModel">
-          <md-option *ngFor="let creature of pokemon" [value]="creature.value">
+          <mat-option *ngFor="let creature of pokemon" [value]="creature.value">
             {{ creature.viewValue }}
-          </md-option>
-        </md-select>
-      </md-form-field>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
       <p> Value: {{ currentPokemon }} </p>
       <p> Touched: {{ pokemonControl.touched }} </p>
       <p> Dirty: {{ pokemonControl.dirty }} </p>
@@ -67,114 +67,114 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
           <option *ngFor="let theme of availableThemes" [value]="theme.value">{{ theme.name }}</option>
         </select>
       </p>
-      <button md-button (click)="setPokemonValue()">SET VALUE</button>
-      <button md-button (click)="pokemonRequired=!pokemonRequired">TOGGLE REQUIRED</button>
-      <button md-button (click)="pokemonDisabled=!pokemonDisabled">TOGGLE DISABLED</button>
-      <button md-button (click)="pokemonControl.reset()">RESET</button>
-    </md-card-content>
-  </md-card>
+      <button mat-button (click)="setPokemonValue()">SET VALUE</button>
+      <button mat-button (click)="pokemonRequired=!pokemonRequired">TOGGLE REQUIRED</button>
+      <button mat-button (click)="pokemonDisabled=!pokemonDisabled">TOGGLE DISABLED</button>
+      <button mat-button (click)="pokemonControl.reset()">RESET</button>
+    </mat-card-content>
+  </mat-card>
 
-  <md-card>
-    <md-card-subtitle>Without Angular forms</md-card-subtitle>
+  <mat-card>
+    <mat-card-subtitle>Without Angular forms</mat-card-subtitle>
 
-    <md-form-field>
-      <md-select placeholder="Digimon" [(value)]="currentDigimon">
-        <md-option>None</md-option>
-        <md-option *ngFor="let creature of digimon" [value]="creature.value">
+    <mat-form-field>
+      <mat-select placeholder="Digimon" [(value)]="currentDigimon">
+        <mat-option>None</mat-option>
+        <mat-option *ngFor="let creature of digimon" [value]="creature.value">
           {{ creature.viewValue }}
-        </md-option>
-      </md-select>
-    </md-form-field>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
     <p>Value: {{ currentDigimon }}</p>
 
-    <button md-button (click)="currentDigimon='pajiramon-3'">SET VALUE</button>
-    <button md-button (click)="currentDigimon=null">RESET</button>
-  </md-card>
+    <button mat-button (click)="currentDigimon='pajiramon-3'">SET VALUE</button>
+    <button mat-button (click)="currentDigimon=null">RESET</button>
+  </mat-card>
 
-  <md-card>
-    <md-card-subtitle>Option groups</md-card-subtitle>
+  <mat-card>
+    <mat-card-subtitle>Option groups</mat-card-subtitle>
 
-    <md-card-content>
-      <md-form-field>
-        <md-select placeholder="Pokemon" [(ngModel)]="currentPokemonFromGroup">
-          <md-optgroup *ngFor="let group of pokemonGroups" [label]="group.name"
+    <mat-card-content>
+      <mat-form-field>
+        <mat-select placeholder="Pokemon" [(ngModel)]="currentPokemonFromGroup">
+          <mat-optgroup *ngFor="let group of pokemonGroups" [label]="group.name"
             [disabled]="group.disabled">
-            <md-option *ngFor="let creature of group.pokemon" [value]="creature.value">
+            <mat-option *ngFor="let creature of group.pokemon" [value]="creature.value">
               {{ creature.viewValue }}
-            </md-option>
-          </md-optgroup>
-        </md-select>
-      </md-form-field>
-    </md-card-content>
-  </md-card>
+            </mat-option>
+          </mat-optgroup>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+  </mat-card>
 
 
-  <md-card>
-    <md-card-subtitle>compareWith</md-card-subtitle>
-    <md-card-content>
-      <md-form-field [color]="drinksTheme">
-        <md-select placeholder="Drink"
+  <mat-card>
+    <mat-card-subtitle>compareWith</mat-card-subtitle>
+    <mat-card-content>
+      <mat-form-field [color]="drinksTheme">
+        <mat-select placeholder="Drink"
                    [(ngModel)]="currentDrinkObject"
                    [required]="drinkObjectRequired"
                    [compareWith]="compareByValue ? compareDrinkObjectsByValue : compareByReference"
                    #drinkObjectControl="ngModel">
-          <md-option *ngFor="let drink of drinks" [value]="drink" [disabled]="drink.disabled">
+          <mat-option *ngFor="let drink of drinks" [value]="drink" [disabled]="drink.disabled">
             {{ drink.viewValue }}
-          </md-option>
-        </md-select>
-      </md-form-field>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
       <p> Value: {{ currentDrinkObject | json }} </p>
       <p> Touched: {{ drinkObjectControl.touched }} </p>
       <p> Dirty: {{ drinkObjectControl.dirty }} </p>
       <p> Status: {{ drinkObjectControl.control?.status }} </p>
       <p> Comparison Mode: {{ compareByValue ? 'VALUE' : 'REFERENCE' }} </p>
 
-      <button md-button (click)="reassignDrinkByCopy()"
-              mdTooltip="This action should clear the display value when comparing by reference.">
+      <button mat-button (click)="reassignDrinkByCopy()"
+              matTooltip="This action should clear the display value when comparing by reference.">
         REASSIGN DRINK BY COPY
       </button>
-      <button md-button (click)="drinkObjectRequired=!drinkObjectRequired">TOGGLE REQUIRED</button>
-      <button md-button (click)="compareByValue=!compareByValue">TOGGLE COMPARE BY VALUE</button>
-      <button md-button (click)="drinkObjectControl.reset()">RESET</button>
-    </md-card-content>
-  </md-card>
+      <button mat-button (click)="drinkObjectRequired=!drinkObjectRequired">TOGGLE REQUIRED</button>
+      <button mat-button (click)="compareByValue=!compareByValue">TOGGLE COMPARE BY VALUE</button>
+      <button mat-button (click)="drinkObjectControl.reset()">RESET</button>
+    </mat-card-content>
+  </mat-card>
 
   <div *ngIf="showSelect">
-    <md-card>
-      <md-card-subtitle>formControl</md-card-subtitle>
+    <mat-card>
+      <mat-card-subtitle>formControl</mat-card-subtitle>
 
-      <md-card-content>
-        <md-form-field>
-          <md-select placeholder="Food i would like to eat" [formControl]="foodControl">
-            <md-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }}</md-option>
-          </md-select>
-        </md-form-field>
+      <mat-card-content>
+        <mat-form-field>
+          <mat-select placeholder="Food i would like to eat" [formControl]="foodControl">
+            <mat-option *ngFor="let food of foods" [value]="food.value"> {{ food.viewValue }}</mat-option>
+          </mat-select>
+        </mat-form-field>
         <p> Value: {{ foodControl.value }} </p>
         <p> Touched: {{ foodControl.touched }} </p>
         <p> Dirty: {{ foodControl.dirty }} </p>
         <p> Status: {{ foodControl.status }} </p>
-        <button md-button (click)="foodControl.setValue('pizza-1')">SET VALUE</button>
-        <button md-button (click)="toggleDisabled()">TOGGLE DISABLED</button>
-        <button md-button (click)="foodControl.reset()">RESET</button>
-      </md-card-content>
-    </md-card>
+        <button mat-button (click)="foodControl.setValue('pizza-1')">SET VALUE</button>
+        <button mat-button (click)="toggleDisabled()">TOGGLE DISABLED</button>
+        <button mat-button (click)="foodControl.reset()">RESET</button>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <div *ngIf="showSelect">
-    <md-card>
-      <md-card-subtitle>Change event</md-card-subtitle>
+    <mat-card>
+      <mat-card-subtitle>Change event</mat-card-subtitle>
 
-      <md-card-content>
-        <md-form-field>
-          <md-select placeholder="Starter Pokemon" (change)="latestChangeEvent = $event">
-            <md-option *ngFor="let creature of pokemon" [value]="creature.value">{{ creature.viewValue }}</md-option>
-          </md-select>
-        </md-form-field>
+      <mat-card-content>
+        <mat-form-field>
+          <mat-select placeholder="Starter Pokemon" (change)="latestChangeEvent = $event">
+            <mat-option *ngFor="let creature of pokemon" [value]="creature.value">{{ creature.viewValue }}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
         <p> Change event value: {{ latestChangeEvent?.value }} </p>
-      </md-card-content>
-    </md-card>
+      </mat-card-content>
+    </mat-card>
   </div>
 
 </div>

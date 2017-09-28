@@ -1,8 +1,8 @@
-<md-sidenav-container class="demo-root" fullscreen>
-  <md-sidenav #start>
-    <md-nav-list>
+<mat-sidenav-container class="demo-root" fullscreen>
+  <mat-sidenav #start>
+    <mat-nav-list>
       <a *ngFor="let navItem of navItems"
-         md-list-item
+         mat-list-item
          (click)="start.close()"
          routerLinkActive
          #routerLinkActiveInstance="routerLinkActive"
@@ -13,36 +13,36 @@
 
       <hr>
 
-      <a md-list-item
+      <a mat-list-item
          tabindex="-1"
          (click)="start.close()"
          [routerLink]="['/baseline']">
         Baseline
       </a>
-    </md-nav-list>
-    <button md-button tabindex="-1" (click)="start.close()">CLOSE</button>
-  </md-sidenav>
+    </mat-nav-list>
+    <button mat-button tabindex="-1" (click)="start.close()">CLOSE</button>
+  </mat-sidenav>
   <div>
-    <md-toolbar color="primary">
-      <button md-icon-button (click)="start.open()">
-        <md-icon class="md-24">menu</md-icon>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="start.open()">
+        <mat-icon class="md-24">menu</mat-icon>
       </button>
       <div class="demo-toolbar">
         <h1>Angular Material Demos</h1>
         <div>
-          <button md-icon-button (click)="toggleFullscreen()" title="Toggle fullscreen">
-            <md-icon class="md-24">fullscreen</md-icon>
+          <button mat-icon-button (click)="toggleFullscreen()" title="Toggle fullscreen">
+            <mat-icon class="md-24">fullscreen</mat-icon>
           </button>
-          <button md-button (click)="toggleTheme()">{{dark ? 'Light' : 'Dark'}} theme</button>
-          <button md-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
+          <button mat-button (click)="toggleTheme()">{{dark ? 'Light' : 'Dark'}} theme</button>
+          <button mat-button (click)="root.dir = (root.dir == 'rtl' ? 'ltr' : 'rtl')" title="Toggle between RTL and LTR">
             {{root.dir.toUpperCase()}}
           </button>
         </div>
       </div>
-    </md-toolbar>
+    </mat-toolbar>
 
     <div #root="dir" dir="ltr" class="demo-content">
       <router-outlet></router-outlet>
     </div>
   </div>
-</md-sidenav-container>
+</mat-sidenav-container>

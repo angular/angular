@@ -51,24 +51,24 @@ type EasingFn = (currentTime: number, startValue: number,
  * @docs-private
  */
 @Directive({
-  selector: 'md-progress-spinner, mat-progress-spinner',
+  selector: 'mat-progress-spinner',
   host: {'class': 'mat-progress-spinner'}
 })
-export class MdProgressSpinnerCssMatStyler {}
+export class MatProgressSpinnerCssMatStyler {}
 
-// Boilerplate for applying mixins to MdProgressSpinner.
+// Boilerplate for applying mixins to MatProgressSpinner.
 /** @docs-private */
-export class MdProgressSpinnerBase {
+export class MatProgressSpinnerBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdProgressSpinnerMixinBase = mixinColor(MdProgressSpinnerBase, 'primary');
+export const _MatProgressSpinnerMixinBase = mixinColor(MatProgressSpinnerBase, 'primary');
 
 /**
- * <md-progress-spinner> component.
+ * <mat-progress-spinner> component.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-progress-spinner, mat-progress-spinner',
+  selector: 'mat-progress-spinner',
   host: {
     'role': 'progressbar',
     'class': 'mat-progress-spinner',
@@ -84,7 +84,7 @@ export const _MdProgressSpinnerMixinBase = mixinColor(MdProgressSpinnerBase, 'pr
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
+export class MatProgressSpinner extends _MatProgressSpinnerMixinBase
     implements OnDestroy, CanColor {
 
   /** The id of the last requested animation. */
@@ -272,14 +272,14 @@ export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
 
 
 /**
- * <md-spinner> component.
+ * <mat-spinner> component.
  *
  * This is a component definition to be used as a convenience reference to create an
- * indeterminate <md-progress-spinner> instance.
+ * indeterminate <mat-progress-spinner> instance.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-spinner, mat-spinner',
+  selector: 'mat-spinner',
   host: {
     'role': 'progressbar',
     'mode': 'indeterminate',
@@ -292,7 +292,7 @@ export class MdProgressSpinner extends _MdProgressSpinnerMixinBase
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdSpinner extends MdProgressSpinner {
+export class MatSpinner extends MatProgressSpinner {
   constructor(elementRef: ElementRef, ngZone: NgZone, renderer: Renderer2) {
     super(renderer, elementRef, ngZone);
     this.mode = 'indeterminate';

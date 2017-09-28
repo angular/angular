@@ -7,26 +7,26 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MdCommonModule} from '@angular/material/core';
+import {MatCommonModule} from '@angular/material/core';
 import {
-  MdProgressSpinner,
-  MdSpinner,
-  MdProgressSpinnerCssMatStyler,
+  MatProgressSpinner,
+  MatSpinner,
+  MatProgressSpinnerCssMatStyler,
 } from './progress-spinner';
 
 
 @NgModule({
-  imports: [MdCommonModule],
+  imports: [MatCommonModule],
   exports: [
-    MdProgressSpinner,
-    MdSpinner,
-    MdCommonModule,
-    MdProgressSpinnerCssMatStyler
+    MatProgressSpinner,
+    MatSpinner,
+    MatCommonModule,
+    MatProgressSpinnerCssMatStyler
   ],
   declarations: [
-    MdProgressSpinner,
-    MdSpinner,
-    MdProgressSpinnerCssMatStyler
+    MatProgressSpinner,
+    MatSpinner,
+    MatProgressSpinnerCssMatStyler
   ],
 })
-export class MdProgressSpinnerModule {}
+export class MatProgressSpinnerModule {}

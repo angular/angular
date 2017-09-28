@@ -1,57 +1,57 @@
 <p>
-  <md-checkbox (change)="isVertical = $event.checked">Show Button Toggles Vertical</md-checkbox>
+  <mat-checkbox (change)="isVertical = $event.checked">Show Button Toggles Vertical</mat-checkbox>
 </p>
 
 <p>
-  <md-checkbox (change)="isDisabled = $event.checked">Disable Button Toggle Items</md-checkbox>
+  <mat-checkbox (change)="isDisabled = $event.checked">Disable Button Toggle Items</mat-checkbox>
 </p>
 
 <h1>Exclusive Selection</h1>
 
 <section class="demo-section">
-  <md-button-toggle-group name="alignment" [vertical]="isVertical">
-    <md-button-toggle value="left"><md-icon>format_align_left</md-icon></md-button-toggle>
-    <md-button-toggle value="center"><md-icon>format_align_center</md-icon></md-button-toggle>
-    <md-button-toggle value="right"><md-icon>format_align_right</md-icon></md-button-toggle>
-    <md-button-toggle value="justify" [disabled]="isDisabled"><md-icon>format_align_justify</md-icon></md-button-toggle>
-  </md-button-toggle-group>
+  <mat-button-toggle-group name="alignment" [vertical]="isVertical">
+    <mat-button-toggle value="left"><mat-icon>format_align_left</mat-icon></mat-button-toggle>
+    <mat-button-toggle value="center"><mat-icon>format_align_center</mat-icon></mat-button-toggle>
+    <mat-button-toggle value="right"><mat-icon>format_align_right</mat-icon></mat-button-toggle>
+    <mat-button-toggle value="justify" [disabled]="isDisabled"><mat-icon>format_align_justify</mat-icon></mat-button-toggle>
+  </mat-button-toggle-group>
 </section>
 
 <h1>Disabled Group</h1>
 
 <section class="demo-section">
-  <md-button-toggle-group name="checkbox" [vertical]="isVertical" [disabled]="isDisabled">
-    <md-button-toggle value="bold">
-      <md-icon class="md-24">format_bold</md-icon>
-    </md-button-toggle>
-    <md-button-toggle value="italic">
-      <md-icon class="md-24">format_italic</md-icon>
-    </md-button-toggle>
-    <md-button-toggle value="underline">
-      <md-icon class="md-24">format_underline</md-icon>
-    </md-button-toggle>
-  </md-button-toggle-group>
+  <mat-button-toggle-group name="checkbox" [vertical]="isVertical" [disabled]="isDisabled">
+    <mat-button-toggle value="bold">
+      <mat-icon class="md-24">format_bold</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="italic">
+      <mat-icon class="md-24">format_italic</mat-icon>
+    </mat-button-toggle>
+    <mat-button-toggle value="underline">
+      <mat-icon class="md-24">format_underline</mat-icon>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
 </section>
 
 <h1>Multiple Selection</h1>
 <section class="demo-section">
-  <md-button-toggle-group multiple [vertical]="isVertical">
-    <md-button-toggle>Flour</md-button-toggle>
-    <md-button-toggle>Eggs</md-button-toggle>
-    <md-button-toggle>Sugar</md-button-toggle>
-    <md-button-toggle [disabled]="isDisabled">Milk</md-button-toggle>
-  </md-button-toggle-group>
+  <mat-button-toggle-group multiple [vertical]="isVertical">
+    <mat-button-toggle>Flour</mat-button-toggle>
+    <mat-button-toggle>Eggs</mat-button-toggle>
+    <mat-button-toggle>Sugar</mat-button-toggle>
+    <mat-button-toggle [disabled]="isDisabled">Milk</mat-button-toggle>
+  </mat-button-toggle-group>
 </section>
 
 <h1>Single Toggle</h1>
-<md-button-toggle>Yes</md-button-toggle>
+<mat-button-toggle>Yes</mat-button-toggle>
 
 <h1>Dynamic Exclusive Selection</h1>
 <section class="demo-section">
-  <md-button-toggle-group name="pies" [(ngModel)]="favoritePie" [vertical]="isVertical">
-    <md-button-toggle *ngFor="let pie of pieOptions" [value]="pie">
+  <mat-button-toggle-group name="pies" [(ngModel)]="favoritePie" [vertical]="isVertical">
+    <mat-button-toggle *ngFor="let pie of pieOptions" [value]="pie">
       {{pie}}
-    </md-button-toggle>
-  </md-button-toggle-group>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
   <p>Your favorite type of pie is: {{favoritePie}}</p>
 </section>

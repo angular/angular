@@ -8,44 +8,44 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdCommonModule, MdRippleModule} from '@angular/material/core';
+import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {A11yModule} from '@angular/cdk/a11y';
 import {
-  MdAnchor,
-  MdButton,
-  MdMiniFab,
-  MdButtonCssMatStyler,
-  MdFab,
-  MdIconButtonCssMatStyler,
-  MdRaisedButtonCssMatStyler
+  MatAnchor,
+  MatButton,
+  MatMiniFab,
+  MatButtonCssMatStyler,
+  MatFab,
+  MatIconButtonCssMatStyler,
+  MatRaisedButtonCssMatStyler
 } from './button';
 
 
 @NgModule({
   imports: [
     CommonModule,
-    MdRippleModule,
-    MdCommonModule,
+    MatRippleModule,
+    MatCommonModule,
     A11yModule,
   ],
   exports: [
-    MdButton,
-    MdAnchor,
-    MdMiniFab,
-    MdFab,
-    MdCommonModule,
-    MdButtonCssMatStyler,
-    MdRaisedButtonCssMatStyler,
-    MdIconButtonCssMatStyler,
+    MatButton,
+    MatAnchor,
+    MatMiniFab,
+    MatFab,
+    MatCommonModule,
+    MatButtonCssMatStyler,
+    MatRaisedButtonCssMatStyler,
+    MatIconButtonCssMatStyler,
   ],
   declarations: [
-    MdButton,
-    MdAnchor,
-    MdMiniFab,
-    MdFab,
-    MdButtonCssMatStyler,
-    MdRaisedButtonCssMatStyler,
-    MdIconButtonCssMatStyler,
+    MatButton,
+    MatAnchor,
+    MatMiniFab,
+    MatFab,
+    MatButtonCssMatStyler,
+    MatRaisedButtonCssMatStyler,
+    MatIconButtonCssMatStyler,
   ],
 })
-export class MdButtonModule {}
+export class MatButtonModule {}

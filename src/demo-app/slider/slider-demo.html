@@ -1,60 +1,60 @@
 <h1>Default Slider</h1>
-Label <md-slider #slidey aria-label="Basic slider"></md-slider>
+Label <mat-slider #slidey aria-label="Basic slider"></mat-slider>
 {{slidey.value}}
 
 <h1>Colors</h1>
-<md-slider color="primary" value="50" thumbLabel aria-label="Primary color slider"></md-slider>
-<md-slider color="accent" value="50" thumbLabel aria-label="Accent color slider"></md-slider>
-<md-slider color="warn" value="50" thumbLabel aria-label="Warn color slider"></md-slider>
+<mat-slider color="primary" value="50" thumbLabel aria-label="Primary color slider"></mat-slider>
+<mat-slider color="accent" value="50" thumbLabel aria-label="Accent color slider"></mat-slider>
+<mat-slider color="warn" value="50" thumbLabel aria-label="Warn color slider"></mat-slider>
 
 <h1>Slider with Min and Max</h1>
 <input [(ngModel)]="min" type="number">
-<md-slider [min]="min" [max]="max" tickInterval="5" #slider2 aria-label="Min & max slider">
-</md-slider>
+<mat-slider [min]="min" [max]="max" tickInterval="5" #slider2 aria-label="Min & max slider">
+</mat-slider>
 {{slider2.value}}
 <input [(ngModel)]="max" type="number">
 
 <h1>Disabled Slider</h1>
-<md-slider disabled [(ngModel)]="disabledValue" [tickInterval]="1" aria-label="Disabled slider">
-</md-slider>
+<mat-slider disabled [(ngModel)]="disabledValue" [tickInterval]="1" aria-label="Disabled slider">
+</mat-slider>
 <input [(ngModel)]="disabledValue" type="number">
 
 <h1>Slider with set value</h1>
-<md-slider value="43" aria-label="Initial value slider"></md-slider>
+<mat-slider value="43" aria-label="Initial value slider"></mat-slider>
 
 <h1>Slider with step defined</h1>
-<md-slider min="1" max="100" step="20" #slider5 aria-label="Slider with step"></md-slider>
+<mat-slider min="1" max="100" step="20" #slider5 aria-label="Slider with step"></mat-slider>
 {{slider5.value}}
 
 <h1>Slider with set tick interval</h1>
-<md-slider tickInterval="auto" aria-label="Slider with auto ticks"></md-slider>
-<md-slider tickInterval="9" aria-label="Slider with ticks"></md-slider>
+<mat-slider tickInterval="auto" aria-label="Slider with auto ticks"></mat-slider>
+<mat-slider tickInterval="9" aria-label="Slider with ticks"></mat-slider>
 
 <h1>Slider with Thumb Label</h1>
-<md-slider thumbLabel aria-label="Slider with thumb label"></md-slider>
+<mat-slider thumbLabel aria-label="Slider with thumb label"></mat-slider>
 
 <h1>Slider with one-way binding</h1>
-<md-slider [value]="val" step="40" aria-label="Slider with value binding"></md-slider>
+<mat-slider [value]="val" step="40" aria-label="Slider with value binding"></mat-slider>
 <input [(ngModel)]="val" type="number">
 
 <h1>Slider with two-way binding</h1>
-<md-slider [(ngModel)]="demo" step="40" aria-label="Slider with ngModel"></md-slider>
+<mat-slider [(ngModel)]="demo" step="40" aria-label="Slider with ngModel"></mat-slider>
 <input [(ngModel)]="demo" type="number">
 
 <h1>Inverted slider</h1>
-<md-slider invert value="50" tickInterval="5" aria-label="Inverted slider"></md-slider>
+<mat-slider invert value="50" tickInterval="5" aria-label="Inverted slider"></mat-slider>
 
 <h1>Vertical slider</h1>
-<md-slider vertical thumbLabel tickInterval="auto" value="50" aria-label="Vertical slider">
-</md-slider>
+<mat-slider vertical thumbLabel tickInterval="auto" value="50" aria-label="Vertical slider">
+</mat-slider>
 
 <h1>Inverted vertical slider</h1>
-<md-slider vertical invert thumbLabel tickInterval="auto" value="50"
+<mat-slider vertical invert thumbLabel tickInterval="auto" value="50"
            aria-label="Inverted vertical slider">
-</md-slider>
+</mat-slider>
 
-<md-tab-group>
-  <md-tab label="One">
-    <md-slider min="1" max="5" value="3" aria-label="Slider in a tab"></md-slider>
-  </md-tab>
-</md-tab-group>
+<mat-tab-group>
+  <mat-tab label="One">
+    <mat-slider min="1" max="5" value="3" aria-label="Slider in a tab"></mat-slider>
+  </mat-tab>
+</mat-tab-group>

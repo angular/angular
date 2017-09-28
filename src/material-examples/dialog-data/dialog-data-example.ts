@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MdDialog, MD_DIALOG_DATA} from '@angular/material';
+import {MatDialog, MAT_DIALOG_DATA} from '@angular/material';
 
 /**
  * @title Injecting data when opening a dialog
@@ -9,7 +9,7 @@ import {MdDialog, MD_DIALOG_DATA} from '@angular/material';
   templateUrl: 'dialog-data-example.html',
 })
 export class DialogDataExample {
-  constructor(public dialog: MdDialog) {}
+  constructor(public dialog: MatDialog) {}
 
   openDialog() {
     this.dialog.open(DialogDataExampleDialog, {
@@ -25,5 +25,5 @@ export class DialogDataExample {
   templateUrl: 'dialog-data-example-dialog.html',
 })
 export class DialogDataExampleDialog {
-  constructor(@Inject(MD_DIALOG_DATA) public data: any) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 }

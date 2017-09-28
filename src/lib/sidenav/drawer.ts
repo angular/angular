@@ -40,8 +40,8 @@ import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 
 
-/** Throws an exception when two MdDrawer are matching the same position. */
-export function throwMdDuplicatedDrawerError(position: string) {
+/** Throws an exception when two MatDrawer are matching the same position. */
+export function throwMatDuplicatedDrawerError(position: string) {
   throw Error(`A drawer was already declared for 'position="${position}"'`);
 }
 
@@ -50,14 +50,14 @@ export function throwMdDuplicatedDrawerError(position: string) {
  * Drawer toggle promise result.
  * @deprecated
  */
-export class MdDrawerToggleResult {
+export class MatDrawerToggleResult {
   constructor(public type: 'open' | 'close', public animationFinished: boolean) {}
 }
 
 
 @Component({
   moduleId: module.id,
-  selector: 'md-drawer-content, mat-drawer-content',
+  selector: 'mat-drawer-content',
   template: '<ng-content></ng-content>',
   host: {
     'class': 'mat-drawer-content',
@@ -68,7 +68,7 @@ export class MdDrawerToggleResult {
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdDrawerContent implements AfterContentInit {
+export class MatDrawerContent implements AfterContentInit {
   /**
    * Margins to be applied to the content. These are used to push / shrink the drawer content when a
    * drawer is open. We use margin rather than transform even for push mode because transform breaks
@@ -78,7 +78,7 @@ export class MdDrawerContent implements AfterContentInit {
 
   constructor(
       private _changeDetectorRef: ChangeDetectorRef,
-      @Inject(forwardRef(() => MdDrawerContainer)) private _container: MdDrawerContainer) {
+      @Inject(forwardRef(() => MatDrawerContainer)) private _container: MatDrawerContainer) {
   }
 
   ngAfterContentInit() {
@@ -91,7 +91,7 @@ export class MdDrawerContent implements AfterContentInit {
 
 
 /**
- * <md-drawer> component.
+ * <mat-drawer> component.
  *
  * This component corresponds to a drawer that can be opened on the drawer container.
  *
@@ -99,7 +99,7 @@ export class MdDrawerContent implements AfterContentInit {
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-drawer, mat-drawer',
+  selector: 'mat-drawer',
   template: '<ng-content></ng-content>',
   animations: [
     trigger('transform', [
@@ -133,7 +133,7 @@ export class MdDrawerContent implements AfterContentInit {
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdDrawer implements AfterContentInit, OnDestroy {
+export class MatDrawer implements AfterContentInit, OnDestroy {
   private _focusTrap: FocusTrap;
   private _elementFocusedBeforeDrawerWasOpened: HTMLElement | null = null;
 
@@ -191,13 +191,13 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
    * compatibility and should be removed next time we do drawer breaking changes.
    * @deprecated
    */
-  private _currentTogglePromise: Promise<MdDrawerToggleResult> | null;
+  private _currentTogglePromise: Promise<MatDrawerToggleResult> | null;
 
   /** Event emitted when the drawer is fully opened. */
-  @Output('open') onOpen = new EventEmitter<MdDrawerToggleResult | void>();
+  @Output('open') onOpen = new EventEmitter<MatDrawerToggleResult | void>();
 
   /** Event emitted when the drawer is fully closed. */
-  @Output('close') onClose = new EventEmitter<MdDrawerToggleResult | void>();
+  @Output('close') onClose = new EventEmitter<MatDrawerToggleResult | void>();
 
   /** Event emitted when the drawer's position changes. */
   @Output('positionChanged') onPositionChanged = new EventEmitter<void>();
@@ -273,12 +273,12 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
 
 
   /** Open the drawer. */
-  open(): Promise<MdDrawerToggleResult> {
+  open(): Promise<MatDrawerToggleResult> {
     return this.toggle(true);
   }
 
   /** Close the drawer. */
-  close(): Promise<MdDrawerToggleResult> {
+  close(): Promise<MatDrawerToggleResult> {
     return this.toggle(false);
   }
 
@@ -286,7 +286,7 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
    * Toggle this drawer.
    * @param isOpen Whether the drawer should be open.
    */
-  toggle(isOpen: boolean = !this.opened): Promise<MdDrawerToggleResult> {
+  toggle(isOpen: boolean = !this.opened): Promise<MatDrawerToggleResult> {
     if (!this._isAnimating) {
       this._opened = isOpen;
 
@@ -330,9 +330,9 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
     const {fromState, toState} = event;
 
     if (toState === 'open' && fromState === 'void') {
-      this.onOpen.emit(new MdDrawerToggleResult('open', true));
+      this.onOpen.emit(new MatDrawerToggleResult('open', true));
     } else if (toState === 'void' && fromState === 'open') {
-      this.onClose.emit(new MdDrawerToggleResult('close', true));
+      this.onClose.emit(new MatDrawerToggleResult('close', true));
     }
 
     // Note: as of Angular 4.3, the animations module seems to fire the `start` callback before
@@ -351,14 +351,14 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
 
 
 /**
- * <md-drawer-container> component.
+ * <mat-drawer-container> component.
  *
- * This is the parent component to one or two <md-drawer>s that validates the state internally
+ * This is the parent component to one or two <mat-drawer>s that validates the state internally
  * and coordinates the backdrop and content styling.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-drawer-container, mat-drawer-container',
+  selector: 'mat-drawer-container',
   templateUrl: 'drawer-container.html',
   styleUrls: [
     'drawer.css',
@@ -371,10 +371,10 @@ export class MdDrawer implements AfterContentInit, OnDestroy {
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdDrawerContainer implements AfterContentInit, OnDestroy {
-  @ContentChildren(MdDrawer) _drawers: QueryList<MdDrawer>;
+export class MatDrawerContainer implements AfterContentInit, OnDestroy {
+  @ContentChildren(MatDrawer) _drawers: QueryList<MatDrawer>;
 
-  @ContentChild(MdDrawerContent) _content: MdDrawerContent;
+  @ContentChild(MatDrawerContent) _content: MatDrawerContent;
 
   /** The drawer child with the `start` position. */
   get start() { return this._start; }
@@ -386,8 +386,8 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
   @Output() backdropClick = new EventEmitter<void>();
 
   /** The drawer at the start/end position, independent of direction. */
-  private _start: MdDrawer | null;
-  private _end: MdDrawer | null;
+  private _start: MatDrawer | null;
+  private _end: MatDrawer | null;
 
   /**
    * The drawer at the left/right. When direction changes, these will change as well.
@@ -395,8 +395,8 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
    * In LTR, _left == _start and _right == _end.
    * In RTL, _left == _end and _right == _start.
    */
-  private _left: MdDrawer | null;
-  private _right: MdDrawer | null;
+  private _left: MatDrawer | null;
+  private _right: MatDrawer | null;
 
   /** Subscription to the Directionality change EventEmitter. */
   private _dirChangeSubscription = Subscription.EMPTY;
@@ -416,7 +416,7 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
   ngAfterContentInit() {
     startWith.call(this._drawers.changes, null).subscribe(() => {
       this._validateDrawers();
-      this._drawers.forEach((drawer: MdDrawer) => {
+      this._drawers.forEach((drawer: MatDrawer) => {
         this._watchDrawerToggle(drawer);
         this._watchDrawerPosition(drawer);
         this._watchDrawerMode(drawer);
@@ -443,7 +443,7 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
    * drawer is open and the backdrop is visible. This ensures any overflow on the container element
    * is properly hidden.
    */
-  private _watchDrawerToggle(drawer: MdDrawer): void {
+  private _watchDrawerToggle(drawer: MatDrawer): void {
     takeUntil.call(drawer._animationStarted, this._drawers.changes).subscribe(() => {
       // Set the transition class on the container so that the animations occur. This should not
       // be set initially because animations should only be triggered via a change in state.
@@ -462,7 +462,7 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
    * Subscribes to drawer onPositionChanged event in order to re-validate drawers when the position
    * changes.
    */
-  private _watchDrawerPosition(drawer: MdDrawer): void {
+  private _watchDrawerPosition(drawer: MatDrawer): void {
     if (!drawer) {
       return;
     }
@@ -476,7 +476,7 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
   }
 
   /** Subscribes to changes in drawer mode so we can run change detection. */
-  private _watchDrawerMode(drawer: MdDrawer): void {
+  private _watchDrawerMode(drawer: MatDrawer): void {
     if (drawer) {
       takeUntil.call(drawer._modeChanged, this._drawers.changes).subscribe(() => {
         this._updateContentMargins();
@@ -485,7 +485,7 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
     }
   }
 
-  /** Toggles the 'mat-drawer-opened' class on the main 'md-drawer-container' element. */
+  /** Toggles the 'mat-drawer-opened' class on the main 'mat-drawer-container' element. */
   private _setContainerClass(isAdd: boolean): void {
     if (isAdd) {
       this._renderer.addClass(this._element.nativeElement, 'mat-drawer-opened');
@@ -502,12 +502,12 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
     this._drawers.forEach(drawer => {
       if (drawer.position == 'end') {
         if (this._end != null) {
-          throwMdDuplicatedDrawerError('end');
+          throwMatDuplicatedDrawerError('end');
         }
         this._end = drawer;
       } else {
         if (this._start != null) {
-          throwMdDuplicatedDrawerError('start');
+          throwMatDuplicatedDrawerError('start');
         }
         this._start = drawer;
       }
@@ -542,7 +542,7 @@ export class MdDrawerContainer implements AfterContentInit, OnDestroy {
         || (this._isDrawerOpen(this._end) && this._end!.mode != 'side');
   }
 
-  private _isDrawerOpen(drawer: MdDrawer | null): boolean {
+  private _isDrawerOpen(drawer: MatDrawer | null): boolean {
     return drawer != null && drawer.opened;
   }
 

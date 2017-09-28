@@ -14,11 +14,11 @@ import {Direction, Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {
-  MD_MENU_DEFAULT_OPTIONS,
-  MdMenu,
-  MdMenuModule,
-  MdMenuPanel,
-  MdMenuTrigger,
+  MAT_MENU_DEFAULT_OPTIONS,
+  MatMenu,
+  MatMenuModule,
+  MatMenuPanel,
+  MatMenuTrigger,
   MenuPositionX,
   MenuPositionY,
 } from './index';
@@ -33,14 +33,14 @@ import {
 } from '@angular/cdk/testing';
 
 
-describe('MdMenu', () => {
+describe('MatMenu', () => {
   let overlayContainerElement: HTMLElement;
   let dir: Direction;
 
   beforeEach(async(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
-      imports: [MdMenuModule, NoopAnimationsModule],
+      imports: [MatMenuModule, NoopAnimationsModule],
       declarations: [
         SimpleMenu,
         PositionedMenu,
@@ -145,7 +145,7 @@ describe('MdMenu', () => {
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
 
-    const menuEl = fixture.debugElement.query(By.css('md-menu')).nativeElement;
+    const menuEl = fixture.debugElement.query(By.css('mat-menu')).nativeElement;
     const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
 
     expect(menuEl.classList).not.toContain('custom-one');
@@ -489,7 +489,7 @@ describe('MdMenu', () => {
     });
 
     it('should emit an event when a menu item is clicked', () => {
-      const menuItem = overlayContainerElement.querySelector('[md-menu-item]') as HTMLElement;
+      const menuItem = overlayContainerElement.querySelector('[mat-menu-item]') as HTMLElement;
 
       menuItem.click();
       fixture.detectChanges();
@@ -576,7 +576,7 @@ describe('MdMenu', () => {
 
       const spy = jasmine.createSpy('hover spy');
       const subscription = instance.rootMenu.hover().subscribe(spy);
-      const menuItems = overlay.querySelectorAll('[md-menu-item]');
+      const menuItems = overlay.querySelectorAll('[mat-menu-item]');
 
       dispatchMouseEvent(menuItems[0], 'mouseenter');
       fixture.detectChanges();
@@ -597,7 +597,7 @@ describe('MdMenu', () => {
       fixture.detectChanges();
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
 
-      const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [md-menu-item]'));
+      const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
       const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
 
       dispatchMouseEvent(levelOneTrigger, 'mouseenter');
@@ -621,7 +621,7 @@ describe('MdMenu', () => {
         instance.rootTriggerEl.nativeElement.click();
         fixture.detectChanges();
 
-        const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [md-menu-item]'));
+        const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
         const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
 
         dispatchMouseEvent(levelOneTrigger, 'mouseenter');
@@ -895,7 +895,7 @@ describe('MdMenu', () => {
       instance.rootTrigger.openMenu();
       fixture.detectChanges();
 
-      const menuItems = overlay.querySelectorAll('[md-menu-item]');
+      const menuItems = overlay.querySelectorAll('[mat-menu-item]');
 
       expect(menuItems[0].classList).toContain('mat-menu-item-submenu-trigger');
       expect(menuItems[1].classList).not.toContain('mat-menu-item-submenu-trigger');
@@ -1025,7 +1025,7 @@ describe('MdMenu', () => {
       Object.defineProperty(event, 'buttons', {get: () => 1});
       event.preventDefault = jasmine.createSpy('preventDefault spy');
 
-      dispatchMouseEvent(overlay.querySelector('[md-menu-item]')!, 'mousedown', 0, 0, event);
+      dispatchMouseEvent(overlay.querySelector('[mat-menu-item]')!, 'mousedown', 0, 0, event);
       expect(event.preventDefault).toHaveBeenCalled();
     });
 
@@ -1033,13 +1033,13 @@ describe('MdMenu', () => {
 
 });
 
-describe('MdMenu default overrides', () => {
+describe('MatMenu default overrides', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdMenuModule, NoopAnimationsModule],
+      imports: [MatMenuModule, NoopAnimationsModule],
       declarations: [SimpleMenu],
       providers: [{
-        provide: MD_MENU_DEFAULT_OPTIONS,
+        provide: MAT_MENU_DEFAULT_OPTIONS,
         useValue: {overlapTrigger: false, xPosition: 'before', yPosition: 'above'},
       }],
     }).compileComponents();
@@ -1058,50 +1058,50 @@ describe('MdMenu default overrides', () => {
 
 @Component({
   template: `
-    <button [mdMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <md-menu class="custom-one custom-two" #menu="mdMenu" (close)="closeCallback()">
-      <button md-menu-item> Item </button>
-      <button md-menu-item disabled> Disabled </button>
-    </md-menu>
+    <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
+    <mat-menu class="custom-one custom-two" #menu="matMenu" (close)="closeCallback()">
+      <button mat-menu-item> Item </button>
+      <button mat-menu-item disabled> Disabled </button>
+    </mat-menu>
   `
 })
 class SimpleMenu {
-  @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @ViewChild('triggerEl') triggerEl: ElementRef;
-  @ViewChild(MdMenu) menu: MdMenu;
+  @ViewChild(MatMenu) menu: MatMenu;
   closeCallback = jasmine.createSpy('menu closed callback');
 }
 
 @Component({
   template: `
-    <button [mdMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <md-menu [xPosition]="xPosition" [yPosition]="yPosition" #menu="mdMenu">
-      <button md-menu-item> Positioned Content </button>
-    </md-menu>
+    <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
+    <mat-menu [xPosition]="xPosition" [yPosition]="yPosition" #menu="matMenu">
+      <button mat-menu-item> Positioned Content </button>
+    </mat-menu>
   `
 })
 class PositionedMenu {
-  @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @ViewChild('triggerEl') triggerEl: ElementRef;
   xPosition: MenuPositionX = 'before';
   yPosition: MenuPositionY = 'above';
 }
 
 interface TestableMenu {
-  trigger: MdMenuTrigger;
+  trigger: MatMenuTrigger;
   triggerEl: ElementRef;
 }
 @Component({
   template: `
-    <button [mdMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <md-menu [overlapTrigger]="overlapTrigger" #menu="mdMenu">
-      <button md-menu-item> Not overlapped Content </button>
-    </md-menu>
+    <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
+    <mat-menu [overlapTrigger]="overlapTrigger" #menu="matMenu">
+      <button mat-menu-item> Not overlapped Content </button>
+    </mat-menu>
   `
 })
 class OverlapMenu implements TestableMenu {
   @Input() overlapTrigger: boolean;
-  @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @ViewChild('triggerEl') triggerEl: ElementRef;
 }
 
@@ -1113,14 +1113,14 @@ class OverlapMenu implements TestableMenu {
       <ng-content></ng-content>
     </ng-template>
   `,
-  exportAs: 'mdCustomMenu, matCustomMenu'
+  exportAs: 'matCustomMenu'
 })
-class CustomMenuPanel implements MdMenuPanel {
+class CustomMenuPanel implements MatMenuPanel {
   direction: Direction;
   xPosition: MenuPositionX = 'after';
   yPosition: MenuPositionY = 'below';
   overlapTrigger = true;
-  parentMenu: MdMenuPanel;
+  parentMenu: MatMenuPanel;
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
   @Output() close = new EventEmitter<void | 'click' | 'keydown'>();
@@ -1130,96 +1130,96 @@ class CustomMenuPanel implements MdMenuPanel {
 
 @Component({
   template: `
-    <button [mdMenuTriggerFor]="menu">Toggle menu</button>
-    <custom-menu #menu="mdCustomMenu">
-      <button md-menu-item> Custom Content </button>
+    <button [matMenuTriggerFor]="menu">Toggle menu</button>
+    <custom-menu #menu="matCustomMenu">
+      <button mat-menu-item> Custom Content </button>
     </custom-menu>
   `
 })
 class CustomMenu {
-  @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
 }
 
 
 @Component({
   template: `
     <button
-      [mdMenuTriggerFor]="root"
-      #rootTrigger="mdMenuTrigger"
+      [matMenuTriggerFor]="root"
+      #rootTrigger="matMenuTrigger"
       #rootTriggerEl>Toggle menu</button>
 
     <button
-      [mdMenuTriggerFor]="levelTwo"
-      #alternateTrigger="mdMenuTrigger">Toggle alternate menu</button>
+      [matMenuTriggerFor]="levelTwo"
+      #alternateTrigger="matMenuTrigger">Toggle alternate menu</button>
 
-    <md-menu #root="mdMenu">
-      <button md-menu-item
+    <mat-menu #root="matMenu">
+      <button mat-menu-item
         id="level-one-trigger"
-        [mdMenuTriggerFor]="levelOne"
-        #levelOneTrigger="mdMenuTrigger">One</button>
-      <button md-menu-item>Two</button>
-      <button md-menu-item
+        [matMenuTriggerFor]="levelOne"
+        #levelOneTrigger="matMenuTrigger">One</button>
+      <button mat-menu-item>Two</button>
+      <button mat-menu-item
         *ngIf="showLazy"
         id="lazy-trigger"
-        [mdMenuTriggerFor]="lazy"
-        #lazyTrigger="mdMenuTrigger">Three</button>
-    </md-menu>
+        [matMenuTriggerFor]="lazy"
+        #lazyTrigger="matMenuTrigger">Three</button>
+    </mat-menu>
 
-    <md-menu #levelOne="mdMenu">
-      <button md-menu-item>Four</button>
-      <button md-menu-item
+    <mat-menu #levelOne="matMenu">
+      <button mat-menu-item>Four</button>
+      <button mat-menu-item
         id="level-two-trigger"
-        [mdMenuTriggerFor]="levelTwo"
-        #levelTwoTrigger="mdMenuTrigger">Five</button>
-      <button md-menu-item>Six</button>
-    </md-menu>
+        [matMenuTriggerFor]="levelTwo"
+        #levelTwoTrigger="matMenuTrigger">Five</button>
+      <button mat-menu-item>Six</button>
+    </mat-menu>
 
-    <md-menu #levelTwo="mdMenu">
-      <button md-menu-item>Seven</button>
-      <button md-menu-item>Eight</button>
-      <button md-menu-item>Nine</button>
-    </md-menu>
+    <mat-menu #levelTwo="matMenu">
+      <button mat-menu-item>Seven</button>
+      <button mat-menu-item>Eight</button>
+      <button mat-menu-item>Nine</button>
+    </mat-menu>
 
-    <md-menu #lazy="mdMenu">
-      <button md-menu-item>Ten</button>
-      <button md-menu-item>Eleven</button>
-      <button md-menu-item>Twelve</button>
-    </md-menu>
+    <mat-menu #lazy="matMenu">
+      <button mat-menu-item>Ten</button>
+      <button mat-menu-item>Eleven</button>
+      <button mat-menu-item>Twelve</button>
+    </mat-menu>
   `
 })
 class NestedMenu {
-  @ViewChild('root') rootMenu: MdMenu;
-  @ViewChild('rootTrigger') rootTrigger: MdMenuTrigger;
+  @ViewChild('root') rootMenu: MatMenu;
+  @ViewChild('rootTrigger') rootTrigger: MatMenuTrigger;
   @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef;
-  @ViewChild('alternateTrigger') alternateTrigger: MdMenuTrigger;
+  @ViewChild('alternateTrigger') alternateTrigger: MatMenuTrigger;
 
-  @ViewChild('levelOne') levelOneMenu: MdMenu;
-  @ViewChild('levelOneTrigger') levelOneTrigger: MdMenuTrigger;
+  @ViewChild('levelOne') levelOneMenu: MatMenu;
+  @ViewChild('levelOneTrigger') levelOneTrigger: MatMenuTrigger;
 
-  @ViewChild('levelTwo') levelTwoMenu: MdMenu;
-  @ViewChild('levelTwoTrigger') levelTwoTrigger: MdMenuTrigger;
+  @ViewChild('levelTwo') levelTwoMenu: MatMenu;
+  @ViewChild('levelTwoTrigger') levelTwoTrigger: MatMenuTrigger;
 
-  @ViewChild('lazy') lazyMenu: MdMenu;
-  @ViewChild('lazyTrigger') lazyTrigger: MdMenuTrigger;
+  @ViewChild('lazy') lazyMenu: MatMenu;
+  @ViewChild('lazyTrigger') lazyTrigger: MatMenuTrigger;
   showLazy = false;
 }
 
 @Component({
   template: `
-    <button [mdMenuTriggerFor]="root" #rootTrigger="mdMenuTrigger">Toggle menu</button>
+    <button [matMenuTriggerFor]="root" #rootTrigger="matMenuTrigger">Toggle menu</button>
 
-    <md-menu #root="mdMenu">
-      <button md-menu-item
-        [mdMenuTriggerFor]="levelOne"
-        #levelOneTrigger="mdMenuTrigger">One</button>
-    </md-menu>
+    <mat-menu #root="matMenu">
+      <button mat-menu-item
+        [matMenuTriggerFor]="levelOne"
+        #levelOneTrigger="matMenuTrigger">One</button>
+    </mat-menu>
 
-    <md-menu #levelOne="mdMenu" class="mat-elevation-z24">
-      <button md-menu-item>Two</button>
-    </md-menu>
+    <mat-menu #levelOne="matMenu" class="mat-elevation-z24">
+      <button mat-menu-item>Two</button>
+    </mat-menu>
   `
 })
 class NestedMenuCustomElevation {
-  @ViewChild('rootTrigger') rootTrigger: MdMenuTrigger;
-  @ViewChild('levelOneTrigger') levelOneTrigger: MdMenuTrigger;
+  @ViewChild('rootTrigger') rootTrigger: MatMenuTrigger;
+  @ViewChild('levelOneTrigger') levelOneTrigger: MatMenuTrigger;
 }

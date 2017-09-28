@@ -7,52 +7,54 @@
  */
 
 import {
-  ViewChild,
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  QueryList,
-  ContentChildren,
-  ElementRef,
-  Renderer2,
+  AfterContentChecked,
+  AfterContentInit,
+  AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  AfterViewChecked,
-  AfterContentInit,
-  AfterContentChecked,
+  Component,
+  ContentChildren,
+  ElementRef,
+  EventEmitter,
+  Input,
   OnDestroy,
+  Output,
+  QueryList,
+  Renderer2,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Subscription} from 'rxjs/Subscription';
-import {MdTab} from './tab';
+import {MatTab} from './tab';
 import {merge} from 'rxjs/observable/merge';
 import {
-  CanDisableRipple, MATERIAL_COMPATIBILITY_MODE,
-  mixinDisableRipple
+  CanColor,
+  CanDisableRipple,
+  mixinColor,
+  mixinDisableRipple,
+  ThemePalette
 } from '@angular/material/core';
-import {CanColor, mixinColor, ThemePalette} from '@angular/material/core';
 
 
 /** Used to generate unique ID's for each tab component */
 let nextId = 0;
 
 /** A simple change event emitted on focus or selection changes. */
-export class MdTabChangeEvent {
+export class MatTabChangeEvent {
   index: number;
-  tab: MdTab;
+  tab: MatTab;
 }
 
 /** Possible positions for the tab header. */
-export type MdTabHeaderPosition = 'above' | 'below';
+export type MatTabHeaderPosition = 'above' | 'below';
 
-// Boilerplate for applying mixins to MdTabGroup.
+// Boilerplate for applying mixins to MatTabGroup.
 /** @docs-private */
-export class MdTabGroupBase {
+export class MatTabGroupBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdTabGroupMixinBase = mixinColor(mixinDisableRipple(MdTabGroupBase), 'primary');
+export const _MatTabGroupMixinBase = mixinColor(mixinDisableRipple(MatTabGroupBase), 'primary');
 
 /**
  * Material design tab-group component.  Supports basic tab pairs (label + content) and includes
@@ -61,7 +63,7 @@ export const _MdTabGroupMixinBase = mixinColor(mixinDisableRipple(MdTabGroupBase
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-tab-group, mat-tab-group',
+  selector: 'mat-tab-group',
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
   encapsulation: ViewEncapsulation.None,
@@ -73,12 +75,11 @@ export const _MdTabGroupMixinBase = mixinColor(mixinDisableRipple(MdTabGroupBase
     '[class.mat-tab-group-dynamic-height]': 'dynamicHeight',
     '[class.mat-tab-group-inverted-header]': 'headerPosition === "below"',
   },
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit,
+export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentInit,
     AfterContentChecked, AfterViewChecked, OnDestroy, CanColor, CanDisableRipple {
 
-  @ContentChildren(MdTab) _tabs: QueryList<MdTab>;
+  @ContentChildren(MatTab) _tabs: QueryList<MatTab>;
 
   @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
 
@@ -104,7 +105,7 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
   private _dynamicHeight: boolean = false;
 
   /** @deprecated */
-  @Input('md-dynamic-height')
+  @Input('mat-dynamic-height')
   get _dynamicHeightDeprecated(): boolean { return this._dynamicHeight; }
   set _dynamicHeightDeprecated(value: boolean) { this._dynamicHeight = value; }
 
@@ -115,7 +116,7 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
   private _selectedIndex: number | null = null;
 
   /** Position of the tab header. */
-  @Input() headerPosition: MdTabHeaderPosition = 'above';
+  @Input() headerPosition: MatTabHeaderPosition = 'above';
 
   /** Background color of the tab group. */
   @Input()
@@ -137,10 +138,11 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
   @Output() selectedIndexChange: EventEmitter<number> = new EventEmitter();
 
   /** Event emitted when focus has changed within a tab group. */
-  @Output() focusChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>();
+  @Output() focusChange: EventEmitter<MatTabChangeEvent> = new EventEmitter<MatTabChangeEvent>();
 
   /** Event emitted when the tab selection has changed. */
-  @Output() selectChange: EventEmitter<MdTabChangeEvent> = new EventEmitter<MdTabChangeEvent>(true);
+  @Output() selectChange: EventEmitter<MatTabChangeEvent> =
+      new EventEmitter<MatTabChangeEvent>(true);
 
   private _groupId: number;
 
@@ -175,7 +177,7 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
     }
 
     // Setup the position for each tab and optionally setup an origin on the next selected tab.
-    this._tabs.forEach((tab: MdTab, index: number) => {
+    this._tabs.forEach((tab: MatTab, index: number) => {
       tab.position = index - indexToSelect;
       tab.isActive = index === indexToSelect;
 
@@ -220,8 +222,8 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
     this.focusChange.emit(this._createChangeEvent(index));
   }
 
-  private _createChangeEvent(index: number): MdTabChangeEvent {
-    const event = new MdTabChangeEvent;
+  private _createChangeEvent(index: number): MatTabChangeEvent {
+    const event = new MatTabChangeEvent;
     event.index = index;
     if (this._tabs && this._tabs.length) {
       event.tab = this._tabs.toArray()[index];
@@ -231,7 +233,7 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
 
   /**
    * Subscribes to changes in the tab labels. This is needed, because the @Input for the label is
-   * on the MdTab component, whereas the data binding is inside the MdTabGroup. In order for the
+   * on the MatTab component, whereas the data binding is inside the MatTabGroup. In order for the
    * binding to be updated, we need to subscribe to changes in it and trigger change detection
    * manually.
    */
@@ -249,12 +251,12 @@ export class MdTabGroup extends _MdTabGroupMixinBase implements AfterContentInit
 
   /** Returns a unique id for each tab label element */
   _getTabLabelId(i: number): string {
-    return `md-tab-label-${this._groupId}-${i}`;
+    return `mat-tab-label-${this._groupId}-${i}`;
   }
 
   /** Returns a unique id for each tab content element */
   _getTabContentId(i: number): string {
-    return `md-tab-content-${this._groupId}-${i}`;
+    return `mat-tab-content-${this._groupId}-${i}`;
   }
 
   /**

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {MdSelectChange} from '@angular/material';
+import {MatSelectChange} from '@angular/material';
 
 @Component({
     moduleId: module.id,
@@ -20,7 +20,7 @@ export class SelectDemo {
   currentPokemon: string[];
   currentPokemonFromGroup: string;
   currentDigimon: string;
-  latestChangeEvent: MdSelectChange;
+  latestChangeEvent: MatSelectChange;
   floatPlaceholder: string = 'auto';
   foodControl = new FormControl('pizza-1');
   topHeightCtrl = new FormControl(0);

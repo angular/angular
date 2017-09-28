@@ -1,10 +1,10 @@
-The `MdDialog` service can be used to open modal dialogs with Material Design styling and 
+The `MatDialog` service can be used to open modal dialogs with Material Design styling and 
 animations.
 
 <!-- example(dialog-overview) -->
 
 A dialog is opened by calling the `open` method with a component to be loaded and an optional 
-config object. The `open` method will return an instance of `MdDialogRef`:
+config object. The `open` method will return an instance of `MatDialogRef`:
 
 ```ts
 let dialogRef = dialog.open(UserProfileComponent, {
@@ -13,7 +13,7 @@ let dialogRef = dialog.open(UserProfileComponent, {
 });
 ```
 
-The `MdDialogRef` provides a handle on the opened dialog. It can be used to close the dialog and to
+The `MatDialogRef` provides a handle on the opened dialog. It can be used to close the dialog and to
 receive notification when the dialog has been closed.
 
 ```ts
@@ -24,14 +24,14 @@ dialogRef.afterClosed().subscribe(result => {
 dialogRef.close('Pizza!');
 ```
 
-Components created via `MdDialog` can _inject_ `MdDialogRef` and use it to close the dialog
+Components created via `MatDialog` can _inject_ `MatDialogRef` and use it to close the dialog
 in which they are contained. When closing, an optional result value can be provided. This result
 value is forwarded as the result of the `afterClosed` promise. 
 
 ```ts
 @Component({/* ... */})
 export class YourDialog {
-  constructor(public dialogRef: MdDialogRef<YourDialog>) { }
+  constructor(public dialogRef: MatDialogRef<YourDialog>) { }
   
   closeDialog() {
     this.dialogRef.close('Pizza!');
@@ -48,18 +48,18 @@ let dialogRef = dialog.open(YourDialog, {
 });
 ```
 
-To access the data in your dialog component, you have to use the MD_DIALOG_DATA injection token:
+To access the data in your dialog component, you have to use the MAT_DIALOG_DATA injection token:
 
 ```ts
 import {Component, Inject} from '@angular/core';
-import {MD_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA} from '@angular/material';
 
 @Component({
   selector: 'your-dialog',
   template: 'passed in {{ data.name }}',
 })
 export class YourDialog {
-  constructor(@Inject(MD_DIALOG_DATA) public data: any) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) { }
 }
 ```
 
@@ -70,20 +70,20 @@ Several directives are available to make it easier to structure your dialog cont
 
 | Name                  | Description                                                                                                   |
 |-----------------------|---------------------------------------------------------------------------------------------------------------|
-| `md-dialog-title`     | \[Attr] Dialog title, applied to a heading element (e.g., `<h1>`, `<h2>`)                                     |
-| `<md-dialog-content>` | Primary scrollable content of the dialog                                                                      |
-| `<md-dialog-actions>` | Container for action buttons at the bottom of the dialog                                                      |
-| `md-dialog-close`     | \[Attr] Added to a `<button>`, makes the button close the dialog with an optional result from the bound value.|
+| `mat-dialog-title`     | \[Attr] Dialog title, applied to a heading element (e.g., `<h1>`, `<h2>`)                                     |
+| `<mat-dialog-content>` | Primary scrollable content of the dialog                                                                      |
+| `<mat-dialog-actions>` | Container for action buttons at the bottom of the dialog                                                      |
+| `mat-dialog-close`     | \[Attr] Added to a `<button>`, makes the button close the dialog with an optional result from the bound value.|
 
 For example:
 ```html
-<h2 md-dialog-title>Delete all</h2>
-<md-dialog-content>Are you sure?</md-dialog-content>
-<md-dialog-actions>
-  <button md-button md-dialog-close>No</button>
+<h2 mat-dialog-title>Delete all</h2>
+<mat-dialog-content>Are you sure?</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>No</button>
   <!-- Can optionally provide a result for the closing dialog. -->
-  <button md-button [md-dialog-close]="true">Yes</button>
-</md-dialog-actions>
+  <button mat-button [mat-dialog-close]="true">Yes</button>
+</mat-dialog-actions>
 ```
 
 Once a dialog opens, the dialog will automatically focus the first tabbable element.
@@ -91,14 +91,14 @@ Once a dialog opens, the dialog will automatically focus the first tabbable elem
 You can control which elements are tab stops with the `tabindex` attribute
 
 ```html
-<button md-button tabindex="-1">Not Tabbable</button>
+<button mat-button tabindex="-1">Not Tabbable</button>
 ```
 
 <!-- example(dialog-content) -->
 
 ### AOT Compilation
 
-Due to the dynamic nature of the `MdDialog`, and its usage of `ViewContainerRef#createComponent()`
+Due to the dynamic nature of the `MatDialog`, and its usage of `ViewContainerRef#createComponent()`
 to create the component on the fly, the AOT compiler will not know to create the proper
 `ComponentFactory` for your dialog component by default.
 
@@ -109,7 +109,7 @@ that the AOT compiler knows to create the `ComponentFactory` for it.
 @NgModule({
   imports: [
     // ...
-    MdDialogModule
+    MatDialogModule
   ],
 
   declarations: [
@@ -129,10 +129,10 @@ export class AppModule() {}
 
 ### Accessibility
 By default, each dialog has `role="dialog"` on the root element. The role can be changed to
-`alertdialog` via the `MdDialogConfig` when opening.
+`alertdialog` via the `MatDialogConfig` when opening.
 
 The `aria-label`, `aria-labelledby`, and `aria-describedby` attributes can all be set to the
-dialog element via the `MdDialogConfig` as well. Each dialog should typically have a label
+dialog element via the `MatDialogConfig` as well. Each dialog should typically have a label
 set via `aria-label` or `aria-labelledby`.
 
 #### Focus management

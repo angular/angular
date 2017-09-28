@@ -3,50 +3,50 @@
     <h2>Button elements</h2>
     <p>Click on the buttons to increase the button counter.</p>
     <p>Current number of clicks: {{counter}}</p>
-    <button md-button (click)="increase()">Check</button>
-    <button md-raised-button (click)="increase()">Pitch</button>
-    <button md-fab (click)="increase()"
+    <button mat-button (click)="increase()">Check</button>
+    <button mat-raised-button (click)="increase()">Pitch</button>
+    <button mat-fab (click)="increase()"
             aria-label="Activate floating action style button to increase the button counter">
-      <md-icon class="md-24">plus_one</md-icon>
+      <mat-icon class="md-24">plus_one</mat-icon>
     </button>
-    <button md-mini-fab (click)="increase()"
+    <button mat-mini-fab (click)="increase()"
             aria-label="Mini floating action button to increase the button counter by 1">
-      <md-icon class="md-24">plus_one</md-icon>
+      <mat-icon class="md-24">plus_one</mat-icon>
     </button>
-    <button md-icon-button (click)="increase()"
+    <button mat-icon-button (click)="increase()"
             aria-label="Icon button to increase the button counter by 1">
-      <md-icon class="md-24">plus_one</md-icon>
+      <mat-icon class="md-24">plus_one</mat-icon>
     </button>
   </section>
 
   <section>
     <h2>Anchor elements</h2>
-    <a href="http://www.google.com" md-button color="primary">Google search</a>
-    <a href="https://www.youtube.com/" md-raised-button>YouTube</a>
-    <a href="http://www.google.com" md-fab
+    <a href="http://www.google.com" mat-button color="primary">Google search</a>
+    <a href="https://www.youtube.com/" mat-raised-button>YouTube</a>
+    <a href="http://www.google.com" mat-fab
        aria-label="Activate floating action style google search link">
-      <md-icon class="md-24">search</md-icon>
+      <mat-icon class="md-24">search</mat-icon>
     </a>
-    <a href="http://www.google.com" md-mini-fab
+    <a href="http://www.google.com" mat-mini-fab
        aria-label="Activate mini floating action style google search link">
-      <md-icon class="md-24">search</md-icon>
+      <mat-icon class="md-24">search</mat-icon>
     </a>
-    <a href="http://www.google.com" md-icon-button
+    <a href="http://www.google.com" mat-icon-button
        aria-label="Activate icon style google search link">
-      <md-icon class="md-24">search</md-icon>
+      <mat-icon class="md-24">search</mat-icon>
     </a>
   </section>
 
   <section>
     <h2>Buttons in different colors</h2>
-    <button md-button color="primary" (click)="openSnackBar('Color is primary.')">Primary</button>
-    <button md-button color="accent" (click)="openSnackBar('Color is accent.')">Accent</button>
-    <button md-button color="warn" (click)="openSnackBar('Color is warn.')">Warn</button>
+    <button mat-button color="primary" (click)="openSnackBar('Color is primary.')">Primary</button>
+    <button mat-button color="accent" (click)="openSnackBar('Color is accent.')">Accent</button>
+    <button mat-button color="warn" (click)="openSnackBar('Color is warn.')">Warn</button>
   </section>
 
   <section>
     <h2>Disabled button</h2>
     <p>The following "cancel" button is disabled</p>
-    <button md-button [disabled]="true">Cancel</button>
+    <button mat-button [disabled]="true">Cancel</button>
   </section>
 </div>

@@ -8,7 +8,7 @@ import {BaselineDemo} from '../baseline/baseline-demo';
 import {ButtonToggleDemo} from '../button-toggle/button-toggle-demo';
 import {ButtonDemo} from '../button/button-demo';
 import {CardDemo} from '../card/card-demo';
-import {CheckboxDemo, MdCheckboxDemoNestedChecklist} from '../checkbox/checkbox-demo';
+import {CheckboxDemo, MatCheckboxDemoNestedChecklist} from '../checkbox/checkbox-demo';
 import {ChipsDemo} from '../chips/chips-demo';
 import {DatepickerDemo} from '../datepicker/datepicker-demo';
 import {DemoMaterialModule} from '../demo-material-module';
@@ -79,7 +79,7 @@ import {DEMO_APP_ROUTES} from './routes';
     JazzDialog,
     ListDemo,
     LiveAnnouncerDemo,
-    MdCheckboxDemoNestedChecklist,
+    MatCheckboxDemoNestedChecklist,
     MenuDemo,
     OverlayDemo,
     PlatformDemo,

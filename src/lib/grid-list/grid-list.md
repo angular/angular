@@ -1,11 +1,11 @@
-`md-grid-list` is a two-dimensional list view that arranges cells into grid-based layout. 
+`mat-grid-list` is a two-dimensional list view that arranges cells into grid-based layout. 
 See Material Design spec [here](https://www.google.com/design/spec/components/grid-lists.html).
 
 <!-- example(grid-list-overview) -->
 
 ### Setting the number of columns
 
-An `md-grid-list` must specify a `cols` attribute which sets the number of columns in the grid. The
+An `mat-grid-list` must specify a `cols` attribute which sets the number of columns in the grid. The
 number of rows will be automatically determined based on the number of columns and the number of
 items.
 
@@ -32,15 +32,15 @@ units are specified, `px` units are assumed. By default the gutter size is `1px`
 
 ### Adding tiles that span multiple rows or columns
 
-It is possible to set the rowspan and colspan of each `md-grid-tile` individually, using the
+It is possible to set the rowspan and colspan of each `mat-grid-tile` individually, using the
 `rowspan` and `colspan` properties. If not set, they both default to `1`. The `colspan` must not
-exceed the number of `cols` in the `md-grid-list`. There is no such restriction on the `rowspan`
+exceed the number of `cols` in the `mat-grid-list`. There is no such restriction on the `rowspan`
 however, more rows will simply be added for it the tile to fill.
 
 ### Tile headers and footers
 
-A header and footer can be added to an `md-grid-tile` using the `md-grid-tile-header` and
-`md-grid-tile-footer` elements respectively.
+A header and footer can be added to an `mat-grid-tile` using the `mat-grid-tile-header` and
+`mat-grid-tile-footer` elements respectively.
 
 ### Accessibility
 By default, the grid-list assumes that it will be used in a purely decorative fashion and thus sets

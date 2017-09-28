@@ -7,14 +7,14 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MdPseudoCheckbox} from './pseudo-checkbox/pseudo-checkbox';
+import {MatPseudoCheckbox} from './pseudo-checkbox/pseudo-checkbox';
 
 
 @NgModule({
-  exports: [MdPseudoCheckbox],
-  declarations: [MdPseudoCheckbox]
+  exports: [MatPseudoCheckbox],
+  declarations: [MatPseudoCheckbox]
 })
-export class MdPseudoCheckboxModule { }
+export class MatPseudoCheckboxModule { }
 
 
 export * from './pseudo-checkbox/pseudo-checkbox';

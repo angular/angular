@@ -9,27 +9,27 @@
 import {PlatformModule} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MdFormFieldModule} from '@angular/material/form-field';
-import {MdTextareaAutosize} from './autosize';
-import {MdInput} from './input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatTextareaAutosize} from './autosize';
+import {MatInput} from './input';
 
 
 @NgModule({
   declarations: [
-    MdInput,
-    MdTextareaAutosize,
+    MatInput,
+    MatTextareaAutosize,
   ],
   imports: [
     CommonModule,
-    MdFormFieldModule,
+    MatFormFieldModule,
     PlatformModule,
   ],
   exports: [
-    // We re-export the `MdFormFieldModule` since `MdInput` will almost always be used together with
-    // `MdFormField`.
-    MdFormFieldModule,
-    MdInput,
-    MdTextareaAutosize,
+    // We re-export the `MatFormFieldModule` since `MatInput` will almost always
+    // be used together with `MatFormField`.
+    MatFormFieldModule,
+    MatInput,
+    MatTextareaAutosize,
   ],
 })
-export class MdInputModule {}
+export class MatInputModule {}

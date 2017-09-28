@@ -32,33 +32,33 @@ import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
 import {fadeInItems, transformMenu} from './menu-animations';
-import {throwMdMenuInvalidPositionX, throwMdMenuInvalidPositionY} from './menu-errors';
-import {MdMenuItem} from './menu-item';
-import {MdMenuPanel} from './menu-panel';
+import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu-errors';
+import {MatMenuItem} from './menu-item';
+import {MatMenuPanel} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 
 
-/** Default `md-menu` options that can be overridden. */
-export interface MdMenuDefaultOptions {
+/** Default `mat-menu` options that can be overridden. */
+export interface MatMenuDefaultOptions {
   xPosition: MenuPositionX;
   yPosition: MenuPositionY;
   overlapTrigger: boolean;
 }
 
-/** Injection token to be used to override the default options for `md-menu`. */
-export const MD_MENU_DEFAULT_OPTIONS =
-    new InjectionToken<MdMenuDefaultOptions>('md-menu-default-options');
+/** Injection token to be used to override the default options for `mat-menu`. */
+export const MAT_MENU_DEFAULT_OPTIONS =
+    new InjectionToken<MatMenuDefaultOptions>('mat-menu-default-options');
 
 /**
  * Start elevation for the menu panel.
  * @docs-private
  */
-const MD_MENU_BASE_ELEVATION = 2;
+const MAT_MENU_BASE_ELEVATION = 2;
 
 
 @Component({
   moduleId: module.id,
-  selector: 'md-menu, mat-menu',
+  selector: 'mat-menu',
   templateUrl: 'menu.html',
   styleUrls: ['menu.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,10 +68,10 @@ const MD_MENU_BASE_ELEVATION = 2;
     transformMenu,
     fadeInItems
   ],
-  exportAs: 'mdMenu, matMenu'
+  exportAs: 'matMenu'
 })
-export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
-  private _keyManager: FocusKeyManager<MdMenuItem>;
+export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
+  private _keyManager: FocusKeyManager<MatMenuItem>;
   private _xPosition: MenuPositionX = this._defaultOptions.xPosition;
   private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
   private _previousElevation: string;
@@ -86,7 +86,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   _panelAnimationState: 'void' | 'enter-start' | 'enter' = 'void';
 
   /** Parent menu of the current menu panel. */
-  parentMenu: MdMenuPanel | undefined;
+  parentMenu: MatMenuPanel | undefined;
 
   /** Layout direction of the menu. */
   direction: Direction;
@@ -96,7 +96,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   get xPosition() { return this._xPosition; }
   set xPosition(value: MenuPositionX) {
     if (value !== 'before' && value !== 'after') {
-      throwMdMenuInvalidPositionX();
+      throwMatMenuInvalidPositionX();
     }
     this._xPosition = value;
     this.setPositionClasses();
@@ -107,7 +107,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   get yPosition() { return this._yPosition; }
   set yPosition(value: MenuPositionY) {
     if (value !== 'above' && value !== 'below') {
-      throwMdMenuInvalidPositionY();
+      throwMatMenuInvalidPositionY();
     }
     this._yPosition = value;
     this.setPositionClasses();
@@ -116,13 +116,13 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
   /** List of the items inside of a menu. */
-  @ContentChildren(MdMenuItem) items: QueryList<MdMenuItem>;
+  @ContentChildren(MatMenuItem) items: QueryList<MatMenuItem>;
 
   /** Whether the menu should overlap its trigger. */
   @Input() overlapTrigger = this._defaultOptions.overlapTrigger;
 
   /**
-   * This method takes classes set on the host md-menu element and applies them on the
+   * This method takes classes set on the host mat-menu element and applies them on the
    * menu template that displays in the overlay container.  Otherwise, it's difficult
    * to style the containing menu from outside the component.
    * @param classes list of class names
@@ -145,10 +145,10 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
 
   constructor(
     private _elementRef: ElementRef,
-    @Inject(MD_MENU_DEFAULT_OPTIONS) private _defaultOptions: MdMenuDefaultOptions) { }
+    @Inject(MAT_MENU_DEFAULT_OPTIONS) private _defaultOptions: MatMenuDefaultOptions) { }
 
   ngAfterContentInit() {
-    this._keyManager = new FocusKeyManager<MdMenuItem>(this.items).withWrap();
+    this._keyManager = new FocusKeyManager<MatMenuItem>(this.items).withWrap();
     this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.close.emit('keydown'));
   }
 
@@ -159,10 +159,10 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
   }
 
   /** Stream that emits whenever the hovered menu item changes. */
-  hover(): Observable<MdMenuItem> {
+  hover(): Observable<MatMenuItem> {
     return RxChain.from(this.items.changes)
       .call(startWith, this.items)
-      .call(switchMap, (items: MdMenuItem[]) => merge(...items.map(item => item.hover)))
+      .call(switchMap, (items: MatMenuItem[]) => merge(...items.map(item => item.hover)))
       .result();
   }
 
@@ -213,7 +213,7 @@ export class MdMenu implements AfterContentInit, MdMenuPanel, OnDestroy {
    */
   setElevation(depth: number): void {
     // The elevation starts at the base and increases by one for each level.
-    const newElevation = `mat-elevation-z${MD_MENU_BASE_ELEVATION + depth}`;
+    const newElevation = `mat-elevation-z${MAT_MENU_BASE_ELEVATION + depth}`;
     const customElevation = Object.keys(this._classList).find(c => c.startsWith('mat-elevation-z'));
 
     if (!customElevation || customElevation === this._previousElevation) {

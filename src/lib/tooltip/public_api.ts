@@ -8,4 +8,4 @@
 
 export * from './tooltip-module';
 export * from './tooltip';
-export * from './mat-exports';
+

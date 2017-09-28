@@ -1,112 +1,112 @@
 <section>
   <h2>Choose a date (e.g. choose your date of birth)</h2>
-  <md-form-field>
-    <input mdInput
-           [mdDatepicker]="birthdayPicker"
+  <mat-form-field>
+    <input matInput
+           [matDatepicker]="birthdayPicker"
            [(ngModel)]="birthday"
            #birthdayModel="ngModel"
            [max]="maxBirthday"
            required
            placeholder="Date of birth">
-    <md-datepicker-toggle mdSuffix [for]="birthdayPicker"></md-datepicker-toggle>
-    <md-datepicker #birthdayPicker startView="year"></md-datepicker>
-    <md-error *ngIf="birthdayModel.hasError('required')">
+    <mat-datepicker-toggle matSuffix [for]="birthdayPicker"></mat-datepicker-toggle>
+    <mat-datepicker #birthdayPicker startView="year"></mat-datepicker>
+    <mat-error *ngIf="birthdayModel.hasError('required')">
       Please choose a date.
-    </md-error>
-    <md-error *ngIf="birthdayModel.hasError('mdDatepickerMax')">
+    </mat-error>
+    <mat-error *ngIf="birthdayModel.hasError('matDatepickerMax')">
       Please choose an earlier date.
-    </md-error>
-  </md-form-field>
+    </mat-error>
+  </mat-form-field>
 </section>
 
 <section>
   <h2>Choose a date with touch UI (e.g. choose a payment date on mobile)</h2>
   <p>When would you like to schedule your payment?</p>
-  <md-form-field>
-    <input mdInput
-           [mdDatepicker]="paymentPicker"
+  <mat-form-field>
+    <input matInput
+           [matDatepicker]="paymentPicker"
            [(ngModel)]="paymentDate"
            #paymentDateModel="ngModel"
            [min]="minPaymentDate"
            required
            aria-label="Payment date">
-    <md-datepicker-toggle mdSuffix [for]="paymentPicker"></md-datepicker-toggle>
-    <md-datepicker #paymentPicker></md-datepicker>
-    <md-error *ngIf="paymentDateModel.hasError('required')">
+    <mat-datepicker-toggle matSuffix [for]="paymentPicker"></mat-datepicker-toggle>
+    <mat-datepicker #paymentPicker></mat-datepicker>
+    <mat-error *ngIf="paymentDateModel.hasError('required')">
       Please choose a date.
-    </md-error>
-    <md-error *ngIf="paymentDateModel.hasError('mdDatepickerMin')">
+    </mat-error>
+    <mat-error *ngIf="paymentDateModel.hasError('matDatepickerMin')">
       Please choose a later date.
-    </md-error>
-  </md-form-field>
+    </mat-error>
+  </mat-form-field>
 </section>
 
 <section>
   <h2>Choose date with startAt, min and max (e.g. schedule a departing and returning flight)</h2>
-  <md-form-field>
-    <input mdInput
-           [mdDatepicker]="departPicker"
+  <mat-form-field>
+    <input matInput
+           [matDatepicker]="departPicker"
            [(ngModel)]="departDate"
            #departDateModel="ngModel"
            [min]="minTripDate"
            [max]="maxTripDate"
            required
            placeholder="Departure date">
-    <md-datepicker-toggle mdSuffix [for]="departPicker"></md-datepicker-toggle>
-    <md-datepicker #departPicker [startAt]="startTripDate"></md-datepicker>
-    <md-error *ngIf="departDateModel.hasError('required')">
+    <mat-datepicker-toggle matSuffix [for]="departPicker"></mat-datepicker-toggle>
+    <mat-datepicker #departPicker [startAt]="startTripDate"></mat-datepicker>
+    <mat-error *ngIf="departDateModel.hasError('required')">
       Please choose a date.
-    </md-error>
-    <md-error *ngIf="departDateModel.hasError('mdDatepickerMin')">
+    </mat-error>
+    <mat-error *ngIf="departDateModel.hasError('matDatepickerMin')">
       Please choose a later date.
-    </md-error>
-    <md-error *ngIf="departDateModel.hasError('mdDatepickerMax')">
+    </mat-error>
+    <mat-error *ngIf="departDateModel.hasError('matDatepickerMax')">
       Please choose an earlier date.
-    </md-error>
-  </md-form-field>
-  <md-form-field>
-    <input mdInput
-           [mdDatepicker]="returnPicker"
+    </mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput
+           [matDatepicker]="returnPicker"
            [(ngModel)]="returnDate"
            #returnDateModel="ngModel"
            [min]="departDate || minTripDate"
            [max]="maxTripDate"
            placeholder="Return date">
-    <md-datepicker-toggle mdSuffix [for]="returnPicker"></md-datepicker-toggle>
-    <md-datepicker #returnPicker [startAt]="startTripDate"></md-datepicker>
-    <md-error *ngIf="returnDateModel.hasError('mdDatepickerMin') && !departDate">
+    <mat-datepicker-toggle matSuffix [for]="returnPicker"></mat-datepicker-toggle>
+    <mat-datepicker #returnPicker [startAt]="startTripDate"></mat-datepicker>
+    <mat-error *ngIf="returnDateModel.hasError('matDatepickerMin') && !departDate">
       Please choose a later date.
-    </md-error>
-    <md-error *ngIf="returnDateModel.hasError('mdDatepickerMin') && departDate">
+    </mat-error>
+    <mat-error *ngIf="returnDateModel.hasError('matDatepickerMin') && departDate">
       Please choose a date after your departure.
-    </md-error>
-    <md-error *ngIf="returnDateModel.hasError('mdDatepickerMax')">
+    </mat-error>
+    <mat-error *ngIf="returnDateModel.hasError('matDatepickerMax')">
       Please choose an earlier date.
-    </md-error>
-  </md-form-field>
+    </mat-error>
+  </mat-form-field>
 </section>
 
 <section>
   <h2>Choose date with date filter (e.g. schedule a doctor appointment)</h2>
-  <md-form-field>
-    <input mdInput
-           [mdDatepicker]="appointmentPicker"
+  <mat-form-field>
+    <input matInput
+           [matDatepicker]="appointmentPicker"
            [(ngModel)]="appointmentDate"
            #appointmentDateModel="ngModel"
            [min]="minAppointmentDate"
            [max]="maxAppointmentDate"
-           [mdDatepickerFilter]="weekdaysOnly"
+           [matDatepickerFilter]="weekdaysOnly"
            required
            placeholder="Appointment date">
-    <md-datepicker-toggle mdSuffix [for]="appointmentPicker"></md-datepicker-toggle>
-    <md-datepicker #appointmentPicker></md-datepicker>
-    <md-error *ngIf="appointmentDateModel.hasError('required')">
+    <mat-datepicker-toggle matSuffix [for]="appointmentPicker"></mat-datepicker-toggle>
+    <mat-datepicker #appointmentPicker></mat-datepicker>
+    <mat-error *ngIf="appointmentDateModel.hasError('required')">
       Please choose a date.
-    </md-error>
-    <md-error *ngIf="appointmentDateModel.hasError('mdDatepickerMin') ||
-                     appointmentDateModel.hasError('mdDatepickerMax') ||
-                     appointmentDateModel.hasError('mdDatepickerFilter')">
+    </mat-error>
+    <mat-error *ngIf="appointmentDateModel.hasError('matDatepickerMin') ||
+                     appointmentDateModel.hasError('matDatepickerMax') ||
+                     appointmentDateModel.hasError('matDatepickerFilter')">
       No appointments available on this date.
-    </md-error>
-  </md-form-field>
+    </mat-error>
+  </mat-form-field>
 </section>

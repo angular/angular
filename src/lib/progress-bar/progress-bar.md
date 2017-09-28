@@ -1,4 +1,4 @@
-`<md-progress-bar>` is a horizontal progress-bar for indicating progress and activity.
+`<mat-progress-bar>` is a horizontal progress-bar for indicating progress and activity.
 
 <!-- example(progress-bar-overview) -->
 

@@ -3,44 +3,44 @@ You can read more about autocompletes in the [Material Design spec](https://mate
 
 ### Simple autocomplete
 
-Start by adding a regular `mdInput` to the page. Let's assume you're using the `formControl`
+Start by adding a regular `matInput` to the page. Let's assume you're using the `formControl`
 directive from the `@angular/forms` module to track the value of the input.
 
 *my-comp.html*
 ```html
-<md-form-field>
-   <input type="text" mdInput [formControl]="myControl">
-</md-form-field>
+<mat-form-field>
+   <input type="text" matInput [formControl]="myControl">
+</mat-form-field>
 ```
 
 Next, create the autocomplete panel and the options displayed inside it. Each option should be
-defined by an `md-option` tag. Set each option's value property to whatever you'd like the value
+defined by an `mat-option` tag. Set each option's value property to whatever you'd like the value
 of the text input to be upon that option's selection.
 
 *my-comp.html*
 ```html
-<md-autocomplete>
-   <md-option *ngFor="let option of options" [value]="option">
+<mat-autocomplete>
+   <mat-option *ngFor="let option of options" [value]="option">
       {{ option }}
-   </md-option>
-</md-autocomplete>
+   </mat-option>
+</mat-autocomplete>
 ```
 
 Now we'll need to link the text input to its panel. We can do this by exporting the autocomplete
 panel instance into a local template variable (here we called it "auto"), and binding that variable
-to the input's `mdAutocomplete` property.
+to the input's `matAutocomplete` property.
 
 *my-comp.html*
 ```html
-<md-form-field>
-   <input type="text" mdInput [formControl]="myControl" [mdAutocomplete]="auto">
-</md-form-field>
+<mat-form-field>
+   <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+</mat-form-field>
 
-<md-autocomplete #auto="mdAutocomplete">
-   <md-option *ngFor="let option of options" [value]="option">
+<mat-autocomplete #auto="matAutocomplete">
+   <mat-option *ngFor="let option of options" [value]="option">
       {{ option }}
-   </md-option>
-</md-autocomplete>
+   </mat-option>
+</mat-autocomplete>
 ```
 
 <!-- example(autocomplete-simple) -->
@@ -84,16 +84,16 @@ desired display value. Then bind it to the autocomplete's `displayWith` property
 - <kbd>ENTER</kbd>: Select currently active item.
 
 #### Option groups
-`md-option` can be collected into groups using the `md-optgroup` element:
+`mat-option` can be collected into groups using the `mat-optgroup` element:
 
 ```html
-<md-autocomplete #auto="mdAutocomplete">
-  <md-optgroup *ngFor="let group of filteredGroups | async" [label]="group.name">
-    <md-option *ngFor="let option of group.options" [value]="option">
+<mat-autocomplete #auto="matAutocomplete">
+  <mat-optgroup *ngFor="let group of filteredGroups | async" [label]="group.name">
+    <mat-option *ngFor="let option of group.options" [value]="option">
       {{ option.name }}
-    </md-option>
-  </md-optgroup>
-</md-autocomplete>
+    </mat-option>
+  </mat-optgroup>
+</mat-autocomplete>
 ```
 
 ### Accessibility

@@ -8,4 +8,4 @@
 
 export * from './progress-spinner-module';
 export * from './progress-spinner';
-export * from './mat-exports';
+

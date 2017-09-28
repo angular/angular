@@ -7,11 +7,11 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
 
 .mat-progress-bar {
   display: block;
-  // Height is provided for md-progress-bar to act as a default.
+  // Height is provided for mat-progress-bar to act as a default.
   height: $mat-progress-bar-height;
   overflow: hidden;
   position: relative;
-  // translateZ is added to force the md-progress-bar into its own GPU layer.
+  // translateZ is added to force the mat-progress-bar into its own GPU layer.
   transform: translateZ(0);
   transition: opacity $mat-progress-bar-piece-animation-duration linear;
   width: 100%;
@@ -110,7 +110,7 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
 }
 
 
-// The values used for animations in md-progress-bar, both timing and transformation, can be
+// The values used for animations in mat-progress-bar, both timing and transformation, can be
 // considered magic values. They are sourced from the Material Design example spec and duplicate
 // the values of the original designers definitions.
 //

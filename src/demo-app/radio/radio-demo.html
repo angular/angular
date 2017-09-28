@@ -1,52 +1,52 @@
 <h1>Basic Example</h1>
 <section class="demo-section">
-  <md-radio-button name="group1">Option 1</md-radio-button>
-  <md-radio-button name="group1">Option 2</md-radio-button>
-  <md-radio-button name="group1" disabled="true">Option 3 (disabled)</md-radio-button>
+  <mat-radio-button name="group1">Option 1</mat-radio-button>
+  <mat-radio-button name="group1">Option 2</mat-radio-button>
+  <mat-radio-button name="group1" disabled="true">Option 3 (disabled)</mat-radio-button>
 </section>
 
 <h1>Color Example</h1>
 <section class="demo-section">
-  <md-radio-button name="group2">Default (accent)</md-radio-button>
-  <md-radio-button name="group2" color="primary">Primary</md-radio-button>
-  <md-radio-button name="group2" color="accent">Accent</md-radio-button>
-  <md-radio-button name="group2" color="warn">Warn</md-radio-button>
+  <mat-radio-button name="group2">Default (accent)</mat-radio-button>
+  <mat-radio-button name="group2" color="primary">Primary</mat-radio-button>
+  <mat-radio-button name="group2" color="accent">Accent</mat-radio-button>
+  <mat-radio-button name="group2" color="warn">Warn</mat-radio-button>
 </section>
 
 <h1>Dynamic Example</h1>
 <section class="demo-section">
   <div>
     <span>isDisabled: {{isDisabled}}</span>
-    <button md-raised-button (click)="isDisabled=!isDisabled" class="demo-button">
+    <button mat-raised-button (click)="isDisabled=!isDisabled" class="demo-button">
       Disable buttons
     </button>
   </div>
   <div>
     <span>isRequired: {{isRequired}}</span>
-    <button md-raised-button (click)="isRequired=!isRequired" class="demo-button">
+    <button mat-raised-button (click)="isRequired=!isRequired" class="demo-button">
       Require buttons
     </button>
   </div>
   <div>
-    <span><md-checkbox [(ngModel)]="isAlignEnd">Align end</md-checkbox></span>
+    <span><mat-checkbox [(ngModel)]="isAlignEnd">Align end</mat-checkbox></span>
   </div>
-  <md-radio-group
+  <mat-radio-group
     name="my_options"
     [disabled]="isDisabled"
     [required]="isRequired"
     [align]="isAlignEnd ? 'end' : 'start'">
-    <md-radio-button value="option_1">Option 1</md-radio-button>
-    <md-radio-button value="option_2">Option 2</md-radio-button>
-    <md-radio-button value="option_3">Option 3</md-radio-button>
-  </md-radio-group>
+    <mat-radio-button value="option_1">Option 1</mat-radio-button>
+    <mat-radio-button value="option_2">Option 2</mat-radio-button>
+    <mat-radio-button value="option_3">Option 3</mat-radio-button>
+  </mat-radio-group>
 </section>
 <h1>Favorite Season Example</h1>
 <h2>Dynamic Example with two-way data-binding</h2>
 <section class="demo-section">
-  <md-radio-group name="more_options" [(ngModel)]="favoriteSeason">
-    <md-radio-button *ngFor="let season of seasonOptions" name="more_options" [value]="season">
+  <mat-radio-group name="more_options" [(ngModel)]="favoriteSeason">
+    <mat-radio-button *ngFor="let season of seasonOptions" name="more_options" [value]="season">
       {{season}}
-    </md-radio-button>
-  </md-radio-group>
+    </mat-radio-button>
+  </mat-radio-group>
   <p>Your favorite season is: {{favoriteSeason}}</p>
 </section>

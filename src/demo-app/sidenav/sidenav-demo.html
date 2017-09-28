@@ -1,60 +1,60 @@
-<button md-raised-button (click)="isLaunched = true" *ngIf="!isLaunched" color="primary">
+<button mat-raised-button (click)="isLaunched = true" *ngIf="!isLaunched" color="primary">
   Launch Fullscreen Sidenav Demo
 </button>
 
 <div class="demo-sidenav-area" *ngIf="isLaunched">
-  <md-toolbar *ngIf="showHeader && !coverHeader">Header</md-toolbar>
-  <md-sidenav-container>
-    <md-sidenav #start (open)="myinput.focus()" [mode]="mode"
+  <mat-toolbar *ngIf="showHeader && !coverHeader">Header</mat-toolbar>
+  <mat-sidenav-container>
+    <mat-sidenav #start (open)="myinput.focus()" [mode]="mode"
                 [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
       Start Side Sidenav
       <br>
-      <button md-button (click)="start.close()">Close</button>
+      <button mat-button (click)="start.close()">Close</button>
       <br>
-      <button md-button (click)="end.open()">Open End Side</button>
+      <button mat-button (click)="end.open()">Open End Side</button>
       <br>
-      <button md-button (click)="modeIndex = (modeIndex + 1) % 3">Toggle Mode</button>
+      <button mat-button (click)="modeIndex = (modeIndex + 1) % 3">Toggle Mode</button>
       <div>Mode: {{start.mode}}</div>
       <br>
       <input #myinput>
       <div class="demo-filler-content" *ngFor="let c of fillerContent">Filler Content</div>
-    </md-sidenav>
+    </mat-sidenav>
 
-    <md-sidenav #end position="end"
+    <mat-sidenav #end position="end"
                 [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
       End Side Sidenav
       <br>
-      <button md-button (click)="end.close()">Close</button>
+      <button mat-button (click)="end.close()">Close</button>
       <div class="demo-filler-content" *ngFor="let c of fillerContent">Filler Content</div>
-    </md-sidenav>
+    </mat-sidenav>
 
-    <md-sidenav-content>
-      <md-toolbar *ngIf="showHeader && coverHeader">Header</md-toolbar>
+    <mat-sidenav-content>
+      <mat-toolbar *ngIf="showHeader && coverHeader">Header</mat-toolbar>
       <div class="demo-sidenav-content">
         <div>
-          <button md-raised-button (click)="isLaunched = false">
+          <button mat-raised-button (click)="isLaunched = false">
             Exit Fullscreen Sidenav Demo
           </button>
         </div>
 
         <div>
           <h3>Sidenav</h3>
-          <button md-button (click)="start.toggle()">Toggle Start Side Sidenav</button>
-          <button md-button (click)="end.toggle()">Toggle End Side Sidenav</button>
-          <md-checkbox [(ngModel)]="fixed">Fixed mode</md-checkbox>
-          <md-checkbox [(ngModel)]="coverHeader">Sidenav covers header/footer</md-checkbox>
+          <button mat-button (click)="start.toggle()">Toggle Start Side Sidenav</button>
+          <button mat-button (click)="end.toggle()">Toggle End Side Sidenav</button>
+          <mat-checkbox [(ngModel)]="fixed">Fixed mode</mat-checkbox>
+          <mat-checkbox [(ngModel)]="coverHeader">Sidenav covers header/footer</mat-checkbox>
         </div>
 
         <div>
           <h3>Header / Footer</h3>
-          <md-checkbox [(ngModel)]="showHeader">Show header</md-checkbox>
-          <md-checkbox [(ngModel)]="showFooter">Show footer</md-checkbox>
+          <mat-checkbox [(ngModel)]="showHeader">Show header</mat-checkbox>
+          <mat-checkbox [(ngModel)]="showFooter">Show footer</mat-checkbox>
         </div>
 
         <div class="demo-filler-content" *ngFor="let c of fillerContent">Filler Content</div>
       </div>
-      <md-toolbar *ngIf="showFooter && coverHeader">Footer</md-toolbar>
-    </md-sidenav-content>
-  </md-sidenav-container>
-  <md-toolbar *ngIf="showFooter && !coverHeader">Footer</md-toolbar>
+      <mat-toolbar *ngIf="showFooter && coverHeader">Footer</mat-toolbar>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+  <mat-toolbar *ngIf="showFooter && !coverHeader">Footer</mat-toolbar>
 </div>

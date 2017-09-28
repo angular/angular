@@ -1,7 +1,7 @@
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {MdChip, MdChipsModule} from './index';
+import {MatChip, MatChipsModule} from './index';
 
 describe('Chip Remove', () => {
   let fixture: ComponentFixture<any>;
@@ -11,7 +11,7 @@ describe('Chip Remove', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdChipsModule],
+      imports: [MatChipsModule],
       declarations: [
         TestChip
       ]
@@ -25,7 +25,7 @@ describe('Chip Remove', () => {
     testChip = fixture.debugElement.componentInstance;
     fixture.detectChanges();
 
-    chipDebugElement = fixture.debugElement.query(By.directive(MdChip));
+    chipDebugElement = fixture.debugElement.query(By.directive(MatChip));
     chipNativeElement = chipDebugElement.nativeElement;
   }));
 
@@ -53,7 +53,7 @@ describe('Chip Remove', () => {
 
 @Component({
   template: `
-    <md-chip [removable]="removable" (remove)="didRemove()"><a mdChipRemove></a></md-chip>
+    <mat-chip [removable]="removable" (remove)="didRemove()"><a matChipRemove></a></mat-chip>
   `
 })
 class TestChip {

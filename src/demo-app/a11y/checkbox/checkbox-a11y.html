@@ -1,34 +1,34 @@
 <section>
   <h2>Checkbox without label</h2>
-  <md-checkbox aria-label="A single checkbox with no label example"></md-checkbox>
+  <mat-checkbox aria-label="A single checkbox with no label example"></mat-checkbox>
 </section>
 <section>
   <h2>Standalone checkbox</h2>
   <div>
-    <md-checkbox>Yes, I agree to the terms and conditions</md-checkbox>
+    <mat-checkbox>Yes, I agree to the terms and conditions</mat-checkbox>
   </div>
   <div>
-    <md-checkbox [disabled]="true">No, I do not agree to the terms and conditions</md-checkbox>
+    <mat-checkbox [disabled]="true">No, I do not agree to the terms and conditions</mat-checkbox>
   </div>
   <div>
-    <md-checkbox [indeterminate]="true">A partially done task</md-checkbox>
+    <mat-checkbox [indeterminate]="true">A partially done task</mat-checkbox>
   </div>
 </section>
 
 <section>
   <h2>Nested checklist</h2>
     <div *ngFor="let task of tasks">
-      <md-checkbox [(ngModel)]="task.completed"
+      <mat-checkbox [(ngModel)]="task.completed"
                    [checked]="allComplete(task)"
                    [indeterminate]="someComplete(task.subtasks)"
                    (change)="setAllCompleted(task.subtasks, $event.checked)">
         {{task.name}}
-      </md-checkbox>
+      </mat-checkbox>
       <div class="sub-list">
         <div *ngFor="let subtask of task.subtasks">
-          <md-checkbox [(ngModel)]="subtask.completed">
+          <mat-checkbox [(ngModel)]="subtask.completed">
             {{subtask.name}}
-          </md-checkbox>
+          </mat-checkbox>
         </div>
       </div>
     </div>
@@ -36,7 +36,7 @@
 
 <section>
   <h2>Colored checkboxes</h2>
-  <md-checkbox color="primary">Primary</md-checkbox>
-  <md-checkbox color="accent">Accent</md-checkbox>
-  <md-checkbox color="warn">Warn</md-checkbox>
+  <mat-checkbox color="primary">Primary</mat-checkbox>
+  <mat-checkbox color="accent">Accent</mat-checkbox>
+  <mat-checkbox color="warn">Warn</mat-checkbox>
 </section>

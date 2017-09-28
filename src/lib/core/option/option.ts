@@ -20,8 +20,7 @@ import {
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
-import {MATERIAL_COMPATIBILITY_MODE} from '../compatibility/compatibility';
-import {MdOptgroup} from './optgroup';
+import {MatOptgroup} from './optgroup';
 
 /**
  * Option IDs need to be unique across components, so this counter exists outside of
@@ -29,17 +28,17 @@ import {MdOptgroup} from './optgroup';
  */
 let _uniqueIdCounter = 0;
 
-/** Event object emitted by MdOption when selected or deselected. */
-export class MdOptionSelectionChange {
-  constructor(public source: MdOption, public isUserInput = false) { }
+/** Event object emitted by MatOption when selected or deselected. */
+export class MatOptionSelectionChange {
+  constructor(public source: MatOption, public isUserInput = false) { }
 }
 
 /**
- * Single option inside of a `<md-select>` element.
+ * Single option inside of a `<mat-select>` element.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-option, mat-option',
+  selector: 'mat-option',
   host: {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',
@@ -58,9 +57,8 @@ export class MdOptionSelectionChange {
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdOption {
+export class MatOption {
   private _selected: boolean = false;
   private _active: boolean = false;
   private _multiple: boolean = false;
@@ -69,7 +67,7 @@ export class MdOption {
   /** Whether the option is disabled.  */
   private _disabled: boolean = false;
 
-  private _id: string = `md-option-${_uniqueIdCounter++}`;
+  private _id: string = `mat-option-${_uniqueIdCounter++}`;
 
   /** Whether the wrapping component is in multiple selection mode. */
   get multiple() { return this._multiple; }
@@ -102,12 +100,12 @@ export class MdOption {
   }
 
   /** Event emitted when the option is selected or deselected. */
-  @Output() onSelectionChange = new EventEmitter<MdOptionSelectionChange>();
+  @Output() onSelectionChange = new EventEmitter<MatOptionSelectionChange>();
 
   constructor(
     private _element: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
-    @Optional() public readonly group: MdOptgroup) {}
+    @Optional() public readonly group: MatOptgroup) {}
 
   /**
    * Whether or not the option is currently active and ready to be selected.
@@ -214,7 +212,7 @@ export class MdOption {
 
   /** Emits the selection change event. */
   private _emitSelectionChangeEvent(isUserInput = false): void {
-    this.onSelectionChange.emit(new MdOptionSelectionChange(this, isUserInput));
+    this.onSelectionChange.emit(new MatOptionSelectionChange(this, isUserInput));
   }
 
   /**
@@ -223,8 +221,8 @@ export class MdOption {
    * @param options Flat list of all of the options.
    * @param optionGroups Flat list of all of the option groups.
    */
-  static countGroupLabelsBeforeOption(optionIndex: number, options: QueryList<MdOption>,
-    optionGroups: QueryList<MdOptgroup>): number {
+  static countGroupLabelsBeforeOption(optionIndex: number, options: QueryList<MatOption>,
+    optionGroups: QueryList<MatOptgroup>): number {
 
     if (optionGroups.length) {
       let optionsArray = options.toArray();

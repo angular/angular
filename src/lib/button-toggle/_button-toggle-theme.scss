@@ -2,7 +2,7 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-// Applies a focus style to an md-button-toggle element for each of the supported palettes.
+// Applies a focus style to an mat-button-toggle element for each of the supported palettes.
 @mixin _mat-button-toggle-focus-color($theme) {
   $background: map-get($theme, background);
 

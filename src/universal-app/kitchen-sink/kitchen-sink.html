@@ -1,227 +1,227 @@
 <h1>Kitchen sink app</h1>
 
 <h2>Autocomplete</h2>
-<md-autocomplete>
-  <md-option>Grace Hopper</md-option>
-  <md-option>Anita Borg</md-option>
-  <md-option>Ada Lovelace</md-option>
-</md-autocomplete>
+<mat-autocomplete>
+  <mat-option>Grace Hopper</mat-option>
+  <mat-option>Anita Borg</mat-option>
+  <mat-option>Ada Lovelace</mat-option>
+</mat-autocomplete>
 
 <h2>Button</h2>
 
-<button md-button>go</button>
-<button md-icon-button>go</button>
-<button md-raised-button>go</button>
-<button md-fab>go</button>
-<button md-mini-fab>go</button>
+<button mat-button>go</button>
+<button mat-icon-button>go</button>
+<button mat-raised-button>go</button>
+<button mat-fab>go</button>
+<button mat-mini-fab>go</button>
 
-<a md-button href="https://google.com">Google</a>
-<a md-icon-button href="https://google.com">Google</a>
-<a md-raised-button href="https://google.com">Google</a>
-<a md-fab href="https://google.com">Google</a>
-<a md-mini-fab href="https://google.com">Google</a>
+<a mat-button href="https://google.com">Google</a>
+<a mat-icon-button href="https://google.com">Google</a>
+<a mat-raised-button href="https://google.com">Google</a>
+<a mat-fab href="https://google.com">Google</a>
+<a mat-mini-fab href="https://google.com">Google</a>
 
 <h2>Button toggle</h2>
 
 <h3>Single selection</h3>
-<md-button-toggle-group>
-  <md-button-toggle>Ketchup</md-button-toggle>
-  <md-button-toggle>Mustard</md-button-toggle>
-  <md-button-toggle>Mayo</md-button-toggle>
-</md-button-toggle-group>
+<mat-button-toggle-group>
+  <mat-button-toggle>Ketchup</mat-button-toggle>
+  <mat-button-toggle>Mustard</mat-button-toggle>
+  <mat-button-toggle>Mayo</mat-button-toggle>
+</mat-button-toggle-group>
 
 <h3>Multi selection</h3>
-<md-button-toggle-group multiple>
-  <md-button-toggle>Ketchup</md-button-toggle>
-  <md-button-toggle>Mustard</md-button-toggle>
-  <md-button-toggle>Mayo</md-button-toggle>
-</md-button-toggle-group>
+<mat-button-toggle-group multiple>
+  <mat-button-toggle>Ketchup</mat-button-toggle>
+  <mat-button-toggle>Mustard</mat-button-toggle>
+  <mat-button-toggle>Mayo</mat-button-toggle>
+</mat-button-toggle-group>
 
 <h3>Standalone</h3>
-<md-button-toggle>Hyperspinner enabled</md-button-toggle>
+<mat-button-toggle>Hyperspinner enabled</mat-button-toggle>
 
 <h3>Card</h3>
 
-<md-card>
+<mat-card>
   Simple card
-</md-card>
+</mat-card>
 
-<md-card>
-  <md-card-title>Complicated card</md-card-title>
-  <md-card-subtitle>Subtitle</md-card-subtitle>
-  <md-card-content>
+<mat-card>
+  <mat-card-title>Complicated card</mat-card-title>
+  <mat-card-subtitle>Subtitle</mat-card-subtitle>
+  <mat-card-content>
     <p>This is some stuff</p>
     <p>And more stuff</p>
-  </md-card-content>
-  <md-card-actions>
-    <button md-button>LIKE</button>
-    <button md-button>SHARE</button>
-  </md-card-actions>
-  <md-card-footer>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-button>LIKE</button>
+    <button mat-button>SHARE</button>
+  </mat-card-actions>
+  <mat-card-footer>
     Hurray
-  </md-card-footer>
-</md-card>
+  </mat-card-footer>
+</mat-card>
 
 <h2>Checkbox</h2>
 
-<md-checkbox>With a label</md-checkbox>
-<md-checkbox></md-checkbox>Without a label
+<mat-checkbox>With a label</mat-checkbox>
+<mat-checkbox></mat-checkbox>Without a label
 
 <h2>Chips</h2>
 
-<md-chip-list>
-  <md-chip>Barbeque Cheddar</md-chip>
-  <md-chip>Sea Salt and Vinegar</md-chip>
-  <md-chip>Manta Ray</md-chip>
-</md-chip-list>
+<mat-chip-list>
+  <mat-chip>Barbeque Cheddar</mat-chip>
+  <mat-chip>Sea Salt and Vinegar</mat-chip>
+  <mat-chip>Manta Ray</mat-chip>
+</mat-chip-list>
 
-<md-chip-list>
-  <md-basic-chip>Tomato</md-basic-chip>
-  <md-basic-chip>Scallion</md-basic-chip>
-  <md-basic-chip>Cilantro</md-basic-chip>
-</md-chip-list>
+<mat-chip-list>
+  <mat-basic-chip>Tomato</mat-basic-chip>
+  <mat-basic-chip>Scallion</mat-basic-chip>
+  <mat-basic-chip>Cilantro</mat-basic-chip>
+</mat-chip-list>
 
 <h2>Datepicker</h2>
 
-<md-form-field>
-  <input type="text" mdInput [mdDatepicker]="birthday" placeholder="Birthday">
-  <md-datepicker-toggle mdSuffix [for]="birthday"></md-datepicker-toggle>
-  <md-datepicker #birthday></md-datepicker>
-</md-form-field>
+<mat-form-field>
+  <input type="text" matInput [matDatepicker]="birthday" placeholder="Birthday">
+  <mat-datepicker-toggle matSuffix [for]="birthday"></mat-datepicker-toggle>
+  <mat-datepicker #birthday></mat-datepicker>
+</mat-form-field>
 
 <h2>Grid list</h2>
 
-<md-grid-list cols="4">
-  <md-grid-tile>Fry</md-grid-tile>
-  <md-grid-tile>Leela</md-grid-tile>
-  <md-grid-tile>Amy</md-grid-tile>
-  <md-grid-tile>Bender</md-grid-tile>
-</md-grid-list>
+<mat-grid-list cols="4">
+  <mat-grid-tile>Fry</mat-grid-tile>
+  <mat-grid-tile>Leela</mat-grid-tile>
+  <mat-grid-tile>Amy</mat-grid-tile>
+  <mat-grid-tile>Bender</mat-grid-tile>
+</mat-grid-list>
 
 <h2>Icon</h2>
-<md-icon>ligature</md-icon>
+<mat-icon>ligature</mat-icon>
 
 <h2>Input</h2>
 
-<md-form-field>
-  <input type="number" mdInput placeholder="amount">
-  <span mdPrefix>$&nbsp;</span>
-  <span mdSuffix>.00</span>
-  <md-hint>Dolla dolla bills</md-hint>
-  <md-error>Recession</md-error>
-</md-form-field>
+<mat-form-field>
+  <input type="number" matInput placeholder="amount">
+  <span matPrefix>$&nbsp;</span>
+  <span matSuffix>.00</span>
+  <mat-hint>Dolla dolla bills</mat-hint>
+  <mat-error>Recession</mat-error>
+</mat-form-field>
 
 <h2>List</h2>
 
-<md-list>
-  <md-list-item>Robot</md-list-item>
-  <md-list-item>Android</md-list-item>
-  <md-list-item>Cyborg</md-list-item>
-</md-list>
+<mat-list>
+  <mat-list-item>Robot</mat-list-item>
+  <mat-list-item>Android</mat-list-item>
+  <mat-list-item>Cyborg</mat-list-item>
+</mat-list>
 
-<md-nav-list>
-  <a md-list-item href="https://google.com">Search</a>
-  <a md-list-item href="https://google.com">Find</a>
-  <a md-list-item href="https://google.com">Seek</a>
-</md-nav-list>
+<mat-nav-list>
+  <a mat-list-item href="https://google.com">Search</a>
+  <a mat-list-item href="https://google.com">Find</a>
+  <a mat-list-item href="https://google.com">Seek</a>
+</mat-nav-list>
 
 
 <h2>Menu</h2>
 
-<button md-button [mdMenuTriggerFor]="menu">Open</button>
-<md-menu #menu="mdMenu">
-  <button md-menu-item>Mercy</button>
-  <button md-menu-item>Lucio</button>
-  <button md-menu-item disabled>Sombra</button>
-</md-menu>
+<button mat-button [matMenuTriggerFor]="menu">Open</button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>Mercy</button>
+  <button mat-menu-item>Lucio</button>
+  <button mat-menu-item disabled>Sombra</button>
+</mat-menu>
 
 <h2>Progress bar</h2>
 
-<md-progress-bar value="25"></md-progress-bar>
-<md-progress-bar mode="buffer" value="25" bufferValue="60"></md-progress-bar>
-<md-progress-bar mode="indeterminate"></md-progress-bar>
-<md-progress-bar mode="query"></md-progress-bar>
+<mat-progress-bar value="25"></mat-progress-bar>
+<mat-progress-bar mode="buffer" value="25" bufferValue="60"></mat-progress-bar>
+<mat-progress-bar mode="indeterminate"></mat-progress-bar>
+<mat-progress-bar mode="query"></mat-progress-bar>
 
 
 <h2>Radio buttons</h2>
 
 <h3>Radio group</h3>
-<md-radio-group>
-  <md-radio-button>Charmander</md-radio-button>
-  <md-radio-button>Squirtle</md-radio-button>
-  <md-radio-button>Bulbasaur</md-radio-button>
-</md-radio-group>
+<mat-radio-group>
+  <mat-radio-button>Charmander</mat-radio-button>
+  <mat-radio-button>Squirtle</mat-radio-button>
+  <mat-radio-button>Bulbasaur</mat-radio-button>
+</mat-radio-group>
 
 <h3>Standalone radios</h3>
-<md-radio-button name="onions">White</md-radio-button>
-<md-radio-button name="onions">Yellow</md-radio-button>
-<md-radio-button name="onions">Green</md-radio-button>
-<md-radio-button name="onions" disabled>Red</md-radio-button>
+<mat-radio-button name="onions">White</mat-radio-button>
+<mat-radio-button name="onions">Yellow</mat-radio-button>
+<mat-radio-button name="onions">Green</mat-radio-button>
+<mat-radio-button name="onions" disabled>Red</mat-radio-button>
 
 <h2>Select</h2>
-<md-form-field>
-  <md-select value="ceramic">
-    <md-option value="glass">Glass</md-option>
-    <md-option value="ceramic">Ceramic</md-option>
-    <md-option value="steel">Steel</md-option>
-  </md-select>
-</md-form-field>
+<mat-form-field>
+  <mat-select value="ceramic">
+    <mat-option value="glass">Glass</mat-option>
+    <mat-option value="ceramic">Ceramic</mat-option>
+    <mat-option value="steel">Steel</mat-option>
+  </mat-select>
+</mat-form-field>
 
 <h2>Sidenav</h2>
-<md-sidenav-container>
-  <md-sidenav>On the side</md-sidenav>
+<mat-sidenav-container>
+  <mat-sidenav>On the side</mat-sidenav>
   Main content
-</md-sidenav-container>
+</mat-sidenav-container>
 
 <h2>Slide-toggle</h2>
-<md-slide-toggle>With a label</md-slide-toggle>
-<md-slide-toggle></md-slide-toggle>Without a label
+<mat-slide-toggle>With a label</mat-slide-toggle>
+<mat-slide-toggle></mat-slide-toggle>Without a label
 
 <h2>Slider</h2>
-<md-slider></md-slider>
-<md-slider value="50"></md-slider>
-<md-slider tickInterval="1" min="1" max="10" value="5" thumbLabel></md-slider>
+<mat-slider></mat-slider>
+<mat-slider value="50"></mat-slider>
+<mat-slider tickInterval="1" min="1" max="10" value="5" thumbLabel></mat-slider>
 
 <h2>Tabs</h2>
-<md-tab-group>
-  <md-tab label="Overview">
+<mat-tab-group>
+  <mat-tab label="Overview">
     The overview
-  </md-tab>
-  <md-tab>
-    <ng-template md-tab-label>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
       API docs
     </ng-template>
     The API docs
-  </md-tab>
-</md-tab-group>
+  </mat-tab>
+</mat-tab-group>
 
-<nav md-tab-nav-bar>
- <a md-tab-link href="https://google.com">Google</a>
- <a md-tab-link href="https://google.com" active>Also Google</a>
+<nav mat-tab-nav-bar>
+ <a mat-tab-link href="https://google.com">Google</a>
+ <a mat-tab-link href="https://google.com" active>Also Google</a>
 </nav>
 
 <h2>Paginator</h2>
 
-<md-paginator [length]="100"
+<mat-paginator [length]="100"
               [pageSizeOptions]="[5, 10, 25, 100]">
-</md-paginator>
+</mat-paginator>
 
 <h2>Toolbar</h2>
-<md-toolbar>Basic toolbar</md-toolbar>
-<md-toolbar>
-  <md-toolbar-row>Multi row</md-toolbar-row>
-  <md-toolbar-row>Toolbar</md-toolbar-row>
-</md-toolbar>
+<mat-toolbar>Basic toolbar</mat-toolbar>
+<mat-toolbar>
+  <mat-toolbar-row>Multi row</mat-toolbar-row>
+  <mat-toolbar-row>Toolbar</mat-toolbar-row>
+</mat-toolbar>
 
 <h2>Sort</h2>
 
-<table mdSort>
+<table matSort>
   <tr>
-    <th md-sort-header="name">Name</th>
-    <th md-sort-header="calories">Calories</th>
-    <th md-sort-header="fat">Fat</th>
-    <th md-sort-header="carbs">Carbs</th>
-    <th md-sort-header="protein">Protein</th>
+    <th mat-sort-header="name">Name</th>
+    <th mat-sort-header="calories">Calories</th>
+    <th mat-sort-header="fat">Fat</th>
+    <th mat-sort-header="carbs">Carbs</th>
+    <th mat-sort-header="protein">Protein</th>
   </tr>
 
   <tr>
@@ -235,20 +235,20 @@
 
 <h2>Tooltip</h2>
 
-<button mdTooltip="Action!">Go</button>
+<button matTooltip="Action!">Go</button>
 
 <h2>Autosize textarea</h2>
-<textarea mdTextareaAutosize mdAutosizeMaxRows="10"></textarea>
+<textarea matTextareaAutosize matAutosizeMaxRows="10"></textarea>
 
 <h2>Expansion Panel</h2>
-<md-expansion-panel>
-  <md-expansion-panel-header>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
     <mat-panel-description>This is a panel description.</mat-panel-description>
     <mat-panel-title>Panel Title</mat-panel-title>
-  </md-expansion-panel-header>
+  </mat-expansion-panel-header>
   This is the content text that makes sense here.
-  <md-action-row>Action</md-action-row>
-</md-expansion-panel>
+  <mat-action-row>Action</mat-action-row>
+</mat-expansion-panel>
 
 <h2>CDK Table</h2>
 
@@ -264,12 +264,12 @@
 
 <h2>Material Table</h2>
 
-<md-table [dataSource]="tableDataSource">
+<mat-table [dataSource]="tableDataSource">
   <ng-container cdkColumnDef="userId">
-    <md-header-cell *cdkHeaderCellDef>ID</md-header-cell>
-    <md-cell *cdkCellDef="let row"> {{row.userId}} </md-cell>
+    <mat-header-cell *cdkHeaderCellDef>ID</mat-header-cell>
+    <mat-cell *cdkCellDef="let row"> {{row.userId}} </mat-cell>
   </ng-container>
 
-  <md-header-row *cdkHeaderRowDef="tableColumns"></md-header-row>
-  <md-row *cdkRowDef="let row; columns: tableColumns;"></md-row>
-</md-table>
+  <mat-header-row *cdkHeaderRowDef="tableColumns"></mat-header-row>
+  <mat-row *cdkRowDef="let row; columns: tableColumns;"></mat-row>
+</mat-table>

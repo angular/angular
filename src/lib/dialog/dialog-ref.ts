@@ -11,7 +11,7 @@ import {filter, first, RxChain} from '@angular/cdk/rxjs';
 import {DialogPosition} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {MdDialogContainer} from './dialog-container';
+import {MatDialogContainer} from './dialog-container';
 
 
 // TODO(jelbourn): resizing
@@ -20,9 +20,9 @@ import {MdDialogContainer} from './dialog-container';
 let uniqueId = 0;
 
 /**
- * Reference to a dialog opened via the MdDialog service.
+ * Reference to a dialog opened via the MatDialog service.
  */
-export class MdDialogRef<T> {
+export class MatDialogRef<T> {
   /** The instance of component opened into the dialog. */
   componentInstance: T;
 
@@ -43,8 +43,8 @@ export class MdDialogRef<T> {
 
   constructor(
     private _overlayRef: OverlayRef,
-    private _containerInstance: MdDialogContainer,
-    public readonly id: string = `md-dialog-${uniqueId++}`) {
+    private _containerInstance: MatDialogContainer,
+    public readonly id: string = `mat-dialog-${uniqueId++}`) {
 
     // Emit when opening animation completes
     RxChain.from(_containerInstance._animationStateChanged)

@@ -21,6 +21,6 @@ export interface ScrollStrategy {
 /**
  * Returns an error to be thrown when attempting to attach an already-attached scroll strategy.
  */
-export function getMdScrollStrategyAlreadyAttachedError(): Error {
+export function getMatScrollStrategyAlreadyAttachedError(): Error {
   return Error(`Scroll strategy has already been attached.`);
 }

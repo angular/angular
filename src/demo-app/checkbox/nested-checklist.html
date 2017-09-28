@@ -1,17 +1,17 @@
 <h2>Tasks</h2>
 <ul>
   <li *ngFor="let task of tasks">
-    <md-checkbox [(ngModel)]="task.completed"
+    <mat-checkbox [(ngModel)]="task.completed"
                  [checked]="allComplete(task)"
                  [indeterminate]="someComplete(task.subtasks)"
                  (change)="setAllCompleted(task.subtasks, $event.checked)">
       <h3>{{task.name}}</h3>
-    </md-checkbox>
+    </mat-checkbox>
     <ul>
       <li *ngFor="let subtask of task.subtasks">
-        <md-checkbox [(ngModel)]="subtask.completed">
+        <mat-checkbox [(ngModel)]="subtask.completed">
           {{subtask.name}}
-        </md-checkbox>
+        </mat-checkbox>
       </li>
     </ul>
   </li>

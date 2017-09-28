@@ -1,18 +1,18 @@
 <div *ngIf="screenshotResultSummary.prNumber">
-  <md-card>
+  <mat-card>
     <p>
-      <a md-button [href]="screenshotResultSummary.prUrl" target="_blank" color="primary">
+      <a mat-button [href]="screenshotResultSummary.prUrl" target="_blank" color="primary">
         Pull Request: {{screenshotResultSummary.prNumber}}
       </a>
-      <a md-button [href]="screenshotResultSummary.commitLink" target="_blank" color="primary">
+      <a mat-button [href]="screenshotResultSummary.commitLink" target="_blank" color="primary">
         Commit: {{screenshotResultSummary.sha}}
       </a>
-      <a md-button [href]="screenshotResultSummary.travisLink" target="_blank" color="primary">
+      <a mat-button [href]="screenshotResultSummary.travisLink" target="_blank" color="primary">
         Travis: {{screenshotResultSummary.travis}}
       </a>
     </p>
     <p *ngIf="!isApproved">
-      <button md-button (click)="approve()" color="primary" >
+      <button mat-button (click)="approve()" color="primary" >
         Copy To Goldens
       </button>
       <span class="description">
@@ -21,23 +21,23 @@
       </span>
     </p>
     <p *ngIf="isApproved">
-      <button md-button disabled>Approved.</button>
-      <button md-button (click)="approve()">Copy to Goldens (Again)</button>
+      <button mat-button disabled>Approved.</button>
+      <button mat-button (click)="approve()">Copy to Goldens (Again)</button>
       <span class="description">
         Test images should be the same as golden images. Expand all to verify.
       </span>
     </p>
     <p>
-      <button md-button
+      <button mat-button
               [disabled]="screenshotResultSummary.allTestsPassedOrApproved" color="primary"
               (click)="updateGithubStatus()">
         Set Github to Success
       </button>
-      <a md-icon-button *ngIf="githubStatus" [ngClass]="githubClass">
-        <md-icon>{{githubIcon}}</md-icon>
+      <a mat-icon-button *ngIf="githubStatus" [ngClass]="githubClass">
+        <mat-icon>{{githubIcon}}</mat-icon>
       </a>
-      <a md-tooltip="Refresh Github Status" (click)="refreshGithubStatus()" md-icon-button>
-        <md-icon>refresh</md-icon>
+      <a mat-tooltip="Refresh Github Status" (click)="refreshGithubStatus()" mat-icon-button>
+        <mat-icon>refresh</mat-icon>
       </a>
       <br>
       <span class="description">
@@ -45,15 +45,15 @@
         Once the PR checked in, the golds will be updated automatically.
       </span>
     </p>
-    <md-card-actions>
-      <button md-raised-button color="primary" (click)="screenshotResultSummary.setCollapse(true)">
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="screenshotResultSummary.setCollapse(true)">
         Collapse All
       </button>
-      <button md-raised-button color="primary" (click)="screenshotResultSummary.setCollapse(false)">
+      <button mat-raised-button color="primary" (click)="screenshotResultSummary.setCollapse(false)">
         Expand All
       </button>
-    </md-card-actions>
-  </md-card>
+    </mat-card-actions>
+  </mat-card>
 
   <div *ngFor="let testname of screenshotResultSummary.testNames; let i = index">
     <app-result [filename]="testname"

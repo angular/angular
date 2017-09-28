@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Http} from '@angular/http';
 import {DataSource} from '@angular/cdk/collections';
-import {MdPaginator, MdSort} from '@angular/material';
+import {MatPaginator, MatSort} from '@angular/material';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/merge';
 import 'rxjs/add/observable/of';
@@ -23,8 +23,8 @@ export class TableHttpExample implements OnInit {
   exampleDatabase: ExampleHttpDao | null;
   dataSource: ExampleDataSource | null;
 
-  @ViewChild(MdPaginator) paginator: MdPaginator;
-  @ViewChild(MdSort) sort: MdSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(private http: Http) {}
 
@@ -75,8 +75,8 @@ export class ExampleDataSource extends DataSource<GithubIssue> {
   isRateLimitReached = false;
 
   constructor(private exampleDatabase: ExampleHttpDao,
-              private paginator: MdPaginator,
-              private sort: MdSort) {
+              private paginator: MatPaginator,
+              private sort: MatSort) {
     super();
   }
 

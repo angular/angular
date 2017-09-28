@@ -41,7 +41,7 @@ import {Directionality, Direction} from '@angular/cdk/bidi';
  * then left-origin-center or right-origin-center can be used, which will use left or right as its
  * psuedo-prior state.
  */
-export type MdTabBodyPositionState =
+export type MatTabBodyPositionState =
     'left' | 'center' | 'right' | 'left-origin-center' | 'right-origin-center';
 
 /**
@@ -50,7 +50,7 @@ export type MdTabBodyPositionState =
  * set to 1, and a new tab is created and selected at index 2, then the tab body would have an
  * origin of right because its index was greater than the prior selected index.
  */
-export type MdTabBodyOriginState = 'left' | 'right';
+export type MatTabBodyOriginState = 'left' | 'right';
 
 /**
  * Wrapper for the contents of a tab.
@@ -58,7 +58,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-tab-body, mat-tab-body',
+  selector: 'mat-tab-body',
   templateUrl: 'tab-body.html',
   styleUrls: ['tab-body.css'],
   encapsulation: ViewEncapsulation.None,
@@ -88,7 +88,7 @@ export type MdTabBodyOriginState = 'left' | 'right';
     ])
   ]
 })
-export class MdTabBody implements OnInit, AfterViewChecked {
+export class MatTabBody implements OnInit, AfterViewChecked {
   /** The portal host inside of this container into which the tab body content will be loaded. */
   @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
@@ -102,7 +102,7 @@ export class MdTabBody implements OnInit, AfterViewChecked {
   @Input('content') _content: TemplatePortal<any>;
 
   /** The shifted index position of the tab body, where zero represents the active center tab. */
-  _position: MdTabBodyPositionState;
+  _position: MatTabBodyPositionState;
   @Input('position') set position(position: number) {
     if (position < 0) {
       this._position = this._getLayoutDirection() == 'ltr' ? 'left' : 'right';
@@ -114,7 +114,7 @@ export class MdTabBody implements OnInit, AfterViewChecked {
   }
 
   /** The origin position from which this tab should appear when it is centered into view. */
-  _origin: MdTabBodyOriginState;
+  _origin: MatTabBodyOriginState;
 
   /** The origin position from which this tab should appear when it is centered into view. */
   @Input('origin') set origin(origin: number) {
@@ -175,7 +175,7 @@ export class MdTabBody implements OnInit, AfterViewChecked {
   }
 
   /** Whether the provided position state is considered center, regardless of origin. */
-  private _isCenterPosition(position: MdTabBodyPositionState|string): boolean {
+  private _isCenterPosition(position: MatTabBodyPositionState|string): boolean {
     return position == 'center' ||
         position == 'left-origin-center' ||
         position == 'right-origin-center';

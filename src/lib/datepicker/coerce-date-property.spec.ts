@@ -1,5 +1,5 @@
 import {async, inject, TestBed} from '@angular/core/testing';
-import {DateAdapter, JAN, MdNativeDateModule} from '@angular/material/core';
+import {DateAdapter, JAN, MatNativeDateModule} from '@angular/material/core';
 import {coerceDateProperty} from './index';
 
 
@@ -8,7 +8,7 @@ describe('coerceDateProperty', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdNativeDateModule],
+      imports: [MatNativeDateModule],
     });
 
     TestBed.compileComponents();

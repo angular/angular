@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdSnackBar} from '@angular/material';
+import {MatSnackBar} from '@angular/material';
 
 
 @Component({
@@ -12,7 +12,7 @@ export class SlideToggleAccessibilityDemo {
   termsToggle: boolean = false;
   musicToggle: boolean = false;
 
-  constructor(private snackBar: MdSnackBar) {}
+  constructor(private snackBar: MatSnackBar) {}
 
   onFormSubmit() {
     this.snackBar.open('Terms and condistions accepted!', '', {duration: 2000});

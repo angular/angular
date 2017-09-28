@@ -1,4 +1,4 @@
-`MdSnackBar` is a service for displaying snack-bar notifications.
+`MatSnackBar` is a service for displaying snack-bar notifications.
 
 <!-- example(snack-bar-overview) -->
 
@@ -15,11 +15,11 @@ let snackBarRef = snackBar.open('Message archived', 'Undo');
 let snackBarRef = snackbar.openFromComponent(MessageArchivedComponent);
 ```
 
-In either case, a `MdSnackBarRef` is returned. This can be used to dismiss the snack-bar or to
+In either case, a `MatSnackBarRef` is returned. This can be used to dismiss the snack-bar or to
 receive notification of when the snack-bar is dismissed. For simple messages with an action, the
-`MdSnackBarRef` exposes an observable for when the action is triggered.
+`MatSnackBarRef` exposes an observable for when the action is triggered.
 If you want to close a custom snack-bar that was opened via `openFromComponent`, from within the
-component itself, you can inject the `MdSnackBarRef`.
+component itself, you can inject the `MatSnackBarRef`.
 
 ```ts
 snackBarRef.afterDismissed().subscribe(() => {
@@ -35,7 +35,7 @@ snackBarRef.dismiss();
 ```
 
 ### Dismissal
-A snack-bar can be dismissed manually by calling the `dismiss` method on the `MdSnackBarRef`
+A snack-bar can be dismissed manually by calling the `dismiss` method on the `MatSnackBarRef`
 returned from the call to `open`.
 
 Only one snack-bar can ever be opened at one time. If a new snackbar is opened while a previous
@@ -58,18 +58,18 @@ snackbar.openFromComponent(MessageArchivedComponent, {
 });
 ```
 
-To access the data in your component, you have to use the `MD_SNACK_BAR_DATA` injection token:
+To access the data in your component, you have to use the `MAT_SNACK_BAR_DATA` injection token:
 
 ```ts
 import {Component, Inject} from '@angular/core';
-import {MD_SNACK_BAR_DATA} from '@angular/material';
+import {MAT_SNACK_BAR_DATA} from '@angular/material';
 
 @Component({
   selector: 'your-snack-bar',
   template: 'passed in {{ data }}',
 })
 export class MessageArchivedComponent {
-  constructor(@Inject(MD_SNACK_BAR_DATA) public data: any) { }
+  constructor(@Inject(MAT_SNACK_BAR_DATA) public data: any) { }
 }
 ```
 ### Accessibility

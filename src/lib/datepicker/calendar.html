@@ -22,14 +22,14 @@
 
 <div class="mat-calendar-content" (keydown)="_handleCalendarBodyKeydown($event)"
     [ngSwitch]="_monthView" cdkMonitorSubtreeFocus>
-  <md-month-view
+  <mat-month-view
       *ngSwitchCase="true"
       [activeDate]="_activeDate"
       [selected]="selected"
       [dateFilter]="_dateFilterForViews"
       (selectedChange)="_dateSelected($event)"
       (userSelection)="_userSelected()">
-  </md-month-view>
+  </mat-month-view>
 
   <mat-year-view
       *ngSwitchDefault

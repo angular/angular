@@ -2,52 +2,52 @@
   
   <section>
     <h2>Icon Trigger</h2>
-    <md-menu #menu1="mdMenu">
-      <button md-menu-item> Settings </button>
-      <button md-menu-item> Help </button>
-    </md-menu>
+    <mat-menu #menu1="matMenu">
+      <button mat-menu-item> Settings </button>
+      <button mat-menu-item> Help </button>
+    </mat-menu>
 
-    <button md-icon-button [mdMenuTriggerFor]="menu1" aria-label="Open Menu">
-      <md-icon>more_vert</md-icon>
+    <button mat-icon-button [matMenuTriggerFor]="menu1" aria-label="Open Menu">
+      <mat-icon>more_vert</mat-icon>
     </button>
   </section>
 
   <section>
     <h2>Menu with Icons</h2>
-    <button md-icon-button [mdMenuTriggerFor]="menu2" aria-label="Open Menu">
-      <md-icon>more_vert</md-icon>
+    <button mat-icon-button [matMenuTriggerFor]="menu2" aria-label="Open Menu">
+      <mat-icon>more_vert</mat-icon>
     </button>
 
-    <md-menu #menu2="mdMenu">
-      <button md-menu-item>
-        <md-icon>dialpad</md-icon>
+    <mat-menu #menu2="matMenu">
+      <button mat-menu-item>
+        <mat-icon>dialpad</mat-icon>
         <span>Redial</span>
       </button>
-      <button md-menu-item>
-        <md-icon>voicemail</md-icon>
+      <button mat-menu-item>
+        <mat-icon>voicemail</mat-icon>
         <span>Check voicemail</span>
       </button>
-      <button md-menu-item>
-        <md-icon>notifications_off</md-icon>
+      <button mat-menu-item>
+        <mat-icon>notifications_off</mat-icon>
         <span>Disable alerts</span>
       </button>
-    </md-menu>
+    </mat-menu>
   </section>
 
   <section>
     <h2>Menu with links</h2>
-    <button md-icon-button [mdMenuTriggerFor]="menu2" aria-label="Learn more about Angular">
-      <md-icon>more_vert</md-icon>
+    <button mat-icon-button [matMenuTriggerFor]="menu2" aria-label="Learn more about Angular">
+      <mat-icon>more_vert</mat-icon>
     </button>
     
-    <md-menu #menu2="mdMenu">
-      <a href="http://angular.io" md-menu-item>
+    <mat-menu #menu2="matMenu">
+      <a href="http://angular.io" mat-menu-item>
         Angular
       </a>
-      <a href="http://material.angular.io" md-menu-item>
+      <a href="http://material.angular.io" mat-menu-item>
         Angular Material
       </a>
-    </md-menu>
+    </mat-menu>
   </section>
 
 </div>

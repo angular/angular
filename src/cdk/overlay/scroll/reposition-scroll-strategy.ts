@@ -7,7 +7,7 @@
  */
 
 import {Subscription} from 'rxjs/Subscription';
-import {ScrollStrategy, getMdScrollStrategyAlreadyAttachedError} from './scroll-strategy';
+import {ScrollStrategy, getMatScrollStrategyAlreadyAttachedError} from './scroll-strategy';
 import {OverlayRef} from '../overlay-ref';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 
@@ -31,7 +31,7 @@ export class RepositionScrollStrategy implements ScrollStrategy {
 
   attach(overlayRef: OverlayRef) {
     if (this._overlayRef) {
-      throw getMdScrollStrategyAlreadyAttachedError();
+      throw getMatScrollStrategyAlreadyAttachedError();
     }
 
     this._overlayRef = overlayRef;

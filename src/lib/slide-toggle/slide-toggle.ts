@@ -31,8 +31,7 @@ import {
   CanDisableRipple,
   HammerInput,
   HasTabIndex,
-  MATERIAL_COMPATIBILITY_MODE,
-  MdRipple,
+  MatRipple,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
@@ -45,30 +44,30 @@ import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
 
-export const MD_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
+export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => MdSlideToggle),
+  useExisting: forwardRef(() => MatSlideToggle),
   multi: true
 };
 
-/** Change event object emitted by a MdSlideToggle. */
-export class MdSlideToggleChange {
-  source: MdSlideToggle;
+/** Change event object emitted by a MatSlideToggle. */
+export class MatSlideToggleChange {
+  source: MatSlideToggle;
   checked: boolean;
 }
 
-// Boilerplate for applying mixins to MdSlideToggle.
+// Boilerplate for applying mixins to MatSlideToggle.
 /** @docs-private */
-export class MdSlideToggleBase {
+export class MatSlideToggleBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdSlideToggleMixinBase =
-  mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MdSlideToggleBase)), 'accent'));
+export const _MatSlideToggleMixinBase =
+  mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase)), 'accent'));
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({
   moduleId: module.id,
-  selector: 'md-slide-toggle, mat-slide-toggle',
+  selector: 'mat-slide-toggle',
   host: {
     'class': 'mat-slide-toggle',
     '[id]': 'id',
@@ -78,20 +77,19 @@ export const _MdSlideToggleMixinBase =
   },
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
-  providers: [MD_SLIDE_TOGGLE_VALUE_ACCESSOR],
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
+  providers: [MAT_SLIDE_TOGGLE_VALUE_ACCESSOR],
   inputs: ['disabled', 'disableRipple', 'color', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy, AfterContentInit,
+export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestroy, AfterContentInit,
     ControlValueAccessor, CanDisable, CanColor, HasTabIndex, CanDisableRipple {
 
   private onChange = (_: any) => {};
   private onTouched = () => {};
 
-  private _uniqueId: string = `md-slide-toggle-${++nextUniqueId}`;
+  private _uniqueId: string = `mat-slide-toggle-${++nextUniqueId}`;
   private _slideRenderer: SlideToggleRenderer;
   private _required: boolean = false;
   private _checked: boolean = false;
@@ -129,7 +127,7 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy,
     this._changeDetectorRef.markForCheck();
   }
   /** An event will be dispatched each time the slide-toggle changes its value. */
-  @Output() change: EventEmitter<MdSlideToggleChange> = new EventEmitter<MdSlideToggleChange>();
+  @Output() change: EventEmitter<MatSlideToggleChange> = new EventEmitter<MatSlideToggleChange>();
 
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }
@@ -138,7 +136,7 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy,
   @ViewChild('input') _inputElement: ElementRef;
 
   /** Reference to the ripple directive on the thumb container. */
-  @ViewChild(MdRipple) _ripple: MdRipple;
+  @ViewChild(MatRipple) _ripple: MatRipple;
 
   constructor(elementRef: ElementRef,
               renderer: Renderer2,
@@ -250,7 +248,7 @@ export class MdSlideToggle extends _MdSlideToggleMixinBase implements OnDestroy,
    * Emits a change event on the `change` output. Also notifies the FormControl about the change.
    */
   private _emitChangeEvent() {
-    let event = new MdSlideToggleChange();
+    let event = new MatSlideToggleChange();
     event.source = this;
     event.checked = this.checked;
     this.change.emit(event);

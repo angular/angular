@@ -23,29 +23,29 @@ import {
 } from '@angular/core';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs/Subject';
-import {MdTabLabel} from './tab-label';
+import {MatTabLabel} from './tab-label';
 
 
-// Boilerplate for applying mixins to MdTab.
+// Boilerplate for applying mixins to MatTab.
 /** @docs-private */
-export class MdTabBase {}
-export const _MdTabMixinBase = mixinDisabled(MdTabBase);
+export class MatTabBase {}
+export const _MatTabMixinBase = mixinDisabled(MatTabBase);
 
 @Component({
   moduleId: module.id,
-  selector: 'md-tab, mat-tab',
+  selector: 'mat-tab',
   templateUrl: 'tab.html',
   inputs: ['disabled'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
-  exportAs: 'mdTab, matTab',
+  exportAs: 'matTab',
 })
-export class MdTab extends _MdTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
-  /** Content for the tab label given by <ng-template md-tab-label>. */
-  @ContentChild(MdTabLabel) templateLabel: MdTabLabel;
+export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnChanges, OnDestroy {
+  /** Content for the tab label given by <ng-template mat-tab-label>. */
+  @ContentChild(MatTabLabel) templateLabel: MatTabLabel;
 
-  /** Template inside the MdTab view that contains an <ng-content>. */
+  /** Template inside the MatTab view that contains an <ng-content>. */
   @ViewChild(TemplateRef) _content: TemplateRef<any>;
 
   /** The plain text label for the tab, used when there is no template label. */

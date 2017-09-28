@@ -11,14 +11,14 @@ import {CommonModule} from '@angular/common';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {PortalModule} from '@angular/cdk/portal';
 import {A11yModule} from '@angular/cdk/a11y';
-import {MdCommonModule} from '@angular/material/core';
-import {MdDialog, MD_DIALOG_SCROLL_STRATEGY_PROVIDER} from './dialog';
-import {MdDialogContainer} from './dialog-container';
+import {MatCommonModule} from '@angular/material/core';
+import {MatDialog, MAT_DIALOG_SCROLL_STRATEGY_PROVIDER} from './dialog';
+import {MatDialogContainer} from './dialog-container';
 import {
-  MdDialogClose,
-  MdDialogContent,
-  MdDialogTitle,
-  MdDialogActions
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogTitle,
+  MatDialogActions
 } from './dialog-content-directives';
 
 
@@ -28,27 +28,27 @@ import {
     OverlayModule,
     PortalModule,
     A11yModule,
-    MdCommonModule,
+    MatCommonModule,
   ],
   exports: [
-    MdDialogContainer,
-    MdDialogClose,
-    MdDialogTitle,
-    MdDialogContent,
-    MdDialogActions,
-    MdCommonModule,
+    MatDialogContainer,
+    MatDialogClose,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatCommonModule,
   ],
   declarations: [
-    MdDialogContainer,
-    MdDialogClose,
-    MdDialogTitle,
-    MdDialogActions,
-    MdDialogContent,
+    MatDialogContainer,
+    MatDialogClose,
+    MatDialogTitle,
+    MatDialogActions,
+    MatDialogContent,
   ],
   providers: [
-    MdDialog,
-    MD_DIALOG_SCROLL_STRATEGY_PROVIDER,
+    MatDialog,
+    MAT_DIALOG_SCROLL_STRATEGY_PROVIDER,
   ],
-  entryComponents: [MdDialogContainer],
+  entryComponents: [MatDialogContainer],
 })
-export class MdDialogModule {}
+export class MatDialogModule {}

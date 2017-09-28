@@ -20,15 +20,15 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {CanColor, mixinColor} from '@angular/material/core';
-import {MdIconRegistry} from './icon-registry';
+import {MatIconRegistry} from './icon-registry';
 
 
-// Boilerplate for applying mixins to MdIcon.
+// Boilerplate for applying mixins to MatIcon.
 /** @docs-private */
-export class MdIconBase {
+export class MatIconBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdIconMixinBase = mixinColor(MdIconBase);
+export const _MatIconMixinBase = mixinColor(MatIconBase);
 
 
 /**
@@ -36,32 +36,32 @@ export const _MdIconMixinBase = mixinColor(MdIconBase);
  *
  * - Specify the svgIcon input to load an SVG icon from a URL previously registered with the
  *   addSvgIcon, addSvgIconInNamespace, addSvgIconSet, or addSvgIconSetInNamespace methods of
- *   MdIconRegistry. If the svgIcon value contains a colon it is assumed to be in the format
+ *   MatIconRegistry. If the svgIcon value contains a colon it is assumed to be in the format
  *   "[namespace]:[name]", if not the value will be the name of an icon in the default namespace.
  *   Examples:
- *     <md-icon svgIcon="left-arrow"></md-icon>
- *     <md-icon svgIcon="animals:cat"></md-icon>
+ *     <mat-icon svgIcon="left-arrow"></mat-icon>
+ *     <mat-icon svgIcon="animals:cat"></mat-icon>
  *
- * - Use a font ligature as an icon by putting the ligature text in the content of the <md-icon>
+ * - Use a font ligature as an icon by putting the ligature text in the content of the <mat-icon>
  *   component. By default the Material icons font is used as described at
  *   http://google.github.io/material-design-icons/#icon-font-for-the-web. You can specify an
  *   alternate font by setting the fontSet input to either the CSS class to apply to use the
- *   desired font, or to an alias previously registered with MdIconRegistry.registerFontClassAlias.
+ *   desired font, or to an alias previously registered with MatIconRegistry.registerFontClassAlias.
  *   Examples:
- *     <md-icon>home</md-icon>
- *     <md-icon fontSet="myfont">sun</md-icon>
+ *     <mat-icon>home</mat-icon>
+ *     <mat-icon fontSet="myfont">sun</mat-icon>
  *
  * - Specify a font glyph to be included via CSS rules by setting the fontSet input to specify the
  *   font, and the fontIcon input to specify the icon. Typically the fontIcon will specify a
  *   CSS class which causes the glyph to be displayed via a :before selector, as in
  *   https://fortawesome.github.io/Font-Awesome/examples/
  *   Example:
- *     <md-icon fontSet="fa" fontIcon="alarm"></md-icon>
+ *     <mat-icon fontSet="fa" fontIcon="alarm"></mat-icon>
  */
 @Component({
   moduleId: module.id,
   template: '<ng-content></ng-content>',
-  selector: 'md-icon, mat-icon',
+  selector: 'mat-icon',
   styleUrls: ['icon.css'],
   inputs: ['color'],
   host: {
@@ -72,7 +72,7 @@ export const _MdIconMixinBase = mixinColor(MdIconBase);
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanColor {
+export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, CanColor {
 
   /** Name of the icon in the SVG icon set. */
   @Input() svgIcon: string;
@@ -89,7 +89,7 @@ export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanCo
   constructor(
       renderer: Renderer2,
       elementRef: ElementRef,
-      private _mdIconRegistry: MdIconRegistry,
+      private _iconRegistry: MatIconRegistry,
       @Attribute('aria-hidden') ariaHidden: string) {
     super(renderer, elementRef);
 
@@ -131,7 +131,7 @@ export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanCo
       if (this.svgIcon) {
         const [namespace, iconName] = this._splitIconName(this.svgIcon);
 
-        first.call(this._mdIconRegistry.getNamedSvgIcon(iconName, namespace)).subscribe(
+        first.call(this._iconRegistry.getNamedSvgIcon(iconName, namespace)).subscribe(
             svg => this._setSvgElement(svg),
             (err: Error) => console.log(`Error retrieving icon: ${err.message}`));
       } else {
@@ -146,7 +146,7 @@ export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanCo
 
   ngOnInit() {
     // Update font classes because ngOnChanges won't be called if none of the inputs are present,
-    // e.g. <md-icon>arrow</md-icon>. In this case we need to add a CSS class for the default font.
+    // e.g. <mat-icon>arrow</mat-icon> In this case we need to add a CSS class for the default font.
     if (this._usingFontIcon()) {
       this._updateFontIconClasses();
     }
@@ -179,8 +179,8 @@ export class MdIcon extends _MdIconMixinBase implements OnChanges, OnInit, CanCo
 
     const elem = this._elementRef.nativeElement;
     const fontSetClass = this.fontSet ?
-        this._mdIconRegistry.classNameForFontAlias(this.fontSet) :
-        this._mdIconRegistry.getDefaultFontSetClass();
+        this._iconRegistry.classNameForFontAlias(this.fontSet) :
+        this._iconRegistry.getDefaultFontSetClass();
 
     if (fontSetClass != this._previousFontSetClass) {
       if (this._previousFontSetClass) {

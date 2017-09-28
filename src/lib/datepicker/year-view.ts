@@ -17,8 +17,8 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {DateAdapter, MD_DATE_FORMATS, MdDateFormats} from '@angular/material/core';
-import {MdCalendarCell} from './calendar-body';
+import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
+import {MatCalendarCell} from './calendar-body';
 import {coerceDateProperty} from './coerce-date-property';
 import {createMissingDateImplError} from './datepicker-errors';
 
@@ -29,13 +29,13 @@ import {createMissingDateImplError} from './datepicker-errors';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-year-view, mat-year-view',
+  selector: 'mat-year-view',
   templateUrl: 'year-view.html',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdYearView<D> implements AfterContentInit {
+export class MatYearView<D> implements AfterContentInit {
   /** The date to display in this year view (everything other than the year is ignored). */
   @Input()
   get activeDate(): D { return this._activeDate; }
@@ -64,7 +64,7 @@ export class MdYearView<D> implements AfterContentInit {
   @Output() selectedChange = new EventEmitter<D>();
 
   /** Grid of calendar cells representing the months of the year. */
-  _months: MdCalendarCell[][];
+  _months: MatCalendarCell[][];
 
   /** The label for this year (e.g. "2017"). */
   _yearLabel: string;
@@ -79,12 +79,12 @@ export class MdYearView<D> implements AfterContentInit {
   _selectedMonth: number | null;
 
   constructor(@Optional() public _dateAdapter: DateAdapter<D>,
-              @Optional() @Inject(MD_DATE_FORMATS) private _dateFormats: MdDateFormats) {
+              @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }
     if (!this._dateFormats) {
-      throw createMissingDateImplError('MD_DATE_FORMATS');
+      throw createMissingDateImplError('MAT_DATE_FORMATS');
     }
 
     this._activeDate = this._dateAdapter.today();
@@ -124,12 +124,12 @@ export class MdYearView<D> implements AfterContentInit {
         this._dateAdapter.getMonth(date) : null;
   }
 
-  /** Creates an MdCalendarCell for the given month. */
+  /** Creates an MatCalendarCell for the given month. */
   private _createCellForMonth(month: number, monthName: string) {
     let ariaLabel = this._dateAdapter.format(
         this._dateAdapter.createDate(this._dateAdapter.getYear(this.activeDate), month, 1),
         this._dateFormats.display.monthYearA11yLabel);
-    return new MdCalendarCell(
+    return new MatCalendarCell(
         month, monthName.toLocaleUpperCase(), ariaLabel, this._isMonthEnabled(month));
   }
 

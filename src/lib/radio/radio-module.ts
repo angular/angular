@@ -10,17 +10,17 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {VIEWPORT_RULER_PROVIDER} from '@angular/cdk/overlay';
 import {
-  MdRippleModule,
-  MdCommonModule,
+  MatRippleModule,
+  MatCommonModule,
   UNIQUE_SELECTION_DISPATCHER_PROVIDER,
 } from '@angular/material/core';
-import {MdRadioGroup, MdRadioButton} from './radio';
+import {MatRadioGroup, MatRadioButton} from './radio';
 import {A11yModule} from '@angular/cdk/a11y';
 
 @NgModule({
-  imports: [CommonModule, MdRippleModule, MdCommonModule, A11yModule],
-  exports: [MdRadioGroup, MdRadioButton, MdCommonModule],
+  imports: [CommonModule, MatRippleModule, MatCommonModule, A11yModule],
+  exports: [MatRadioGroup, MatRadioButton, MatCommonModule],
   providers: [UNIQUE_SELECTION_DISPATCHER_PROVIDER, VIEWPORT_RULER_PROVIDER],
-  declarations: [MdRadioGroup, MdRadioButton],
+  declarations: [MatRadioGroup, MatRadioButton],
 })
-export class MdRadioModule {}
+export class MatRadioModule {}

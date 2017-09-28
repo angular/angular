@@ -9,23 +9,23 @@
 import {Directive, ElementRef} from '@angular/core';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
 
-// Boilerplate for applying mixins to MdTabLabelWrapper.
+// Boilerplate for applying mixins to MatTabLabelWrapper.
 /** @docs-private */
-export class MdTabLabelWrapperBase {}
-export const _MdTabLabelWrapperMixinBase = mixinDisabled(MdTabLabelWrapperBase);
+export class MatTabLabelWrapperBase {}
+export const _MatTabLabelWrapperMixinBase = mixinDisabled(MatTabLabelWrapperBase);
 
 /**
- * Used in the `md-tab-group` view to display tab labels.
+ * Used in the `mat-tab-group` view to display tab labels.
  * @docs-private
  */
 @Directive({
-  selector: '[mdTabLabelWrapper], [matTabLabelWrapper]',
+  selector: '[matTabLabelWrapper]',
   inputs: ['disabled'],
   host: {
     '[class.mat-tab-disabled]': 'disabled'
   }
 })
-export class MdTabLabelWrapper extends _MdTabLabelWrapperMixinBase implements CanDisable {
+export class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase implements CanDisable {
   constructor(public elementRef: ElementRef) {
     super();
   }

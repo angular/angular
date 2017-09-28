@@ -17,11 +17,8 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import {
-  DateAdapter, MATERIAL_COMPATIBILITY_MODE, MD_DATE_FORMATS,
-  MdDateFormats
-} from '@angular/material/core';
-import {MdCalendarCell} from './calendar-body';
+import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
+import {MatCalendarCell} from './calendar-body';
 import {coerceDateProperty} from './coerce-date-property';
 import {createMissingDateImplError} from './datepicker-errors';
 
@@ -35,14 +32,13 @@ const DAYS_PER_WEEK = 7;
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-month-view',
+  selector: 'mat-month-view',
   templateUrl: 'month-view.html',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdMonthView<D> implements AfterContentInit {
+export class MatMonthView<D> implements AfterContentInit {
   /**
    * The date to display in this month view (everything other than the month and year is ignored).
    */
@@ -79,7 +75,7 @@ export class MdMonthView<D> implements AfterContentInit {
   _monthLabel: string;
 
   /** Grid of calendar cells representing the dates of the month. */
-  _weeks: MdCalendarCell[][];
+  _weeks: MatCalendarCell[][];
 
   /** The number of blank cells in the first row before the 1st of the month. */
   _firstWeekOffset: number;
@@ -97,12 +93,12 @@ export class MdMonthView<D> implements AfterContentInit {
   _weekdays: {long: string, narrow: string}[];
 
   constructor(@Optional() public _dateAdapter: DateAdapter<D>,
-              @Optional() @Inject(MD_DATE_FORMATS) private _dateFormats: MdDateFormats) {
+              @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }
     if (!this._dateFormats) {
-      throw createMissingDateImplError('MD_DATE_FORMATS');
+      throw createMissingDateImplError('MAT_DATE_FORMATS');
     }
 
     const firstDayOfWeek = this._dateAdapter.getFirstDayOfWeek();
@@ -152,7 +148,7 @@ export class MdMonthView<D> implements AfterContentInit {
     this._createWeekCells();
   }
 
-  /** Creates MdCalendarCells for the dates in this month. */
+  /** Creates MatCalendarCells for the dates in this month. */
   private _createWeekCells() {
     let daysInMonth = this._dateAdapter.getNumDaysInMonth(this.activeDate);
     let dateNames = this._dateAdapter.getDateNames();
@@ -169,7 +165,7 @@ export class MdMonthView<D> implements AfterContentInit {
           this.dateFilter(date);
       let ariaLabel = this._dateAdapter.format(date, this._dateFormats.display.dateA11yLabel);
       this._weeks[this._weeks.length - 1]
-          .push(new MdCalendarCell(i + 1, dateNames[i], ariaLabel, enabled));
+          .push(new MatCalendarCell(i + 1, dateNames[i], ariaLabel, enabled));
     }
   }
 

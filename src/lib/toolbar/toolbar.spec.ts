@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {MdToolbarModule} from './index';
+import {MatToolbarModule} from './index';
 
 
-describe('MdToolbar', () => {
+describe('MatToolbar', () => {
 
   let fixture: ComponentFixture<TestApp>;
   let testComponent: TestApp;
@@ -12,7 +12,7 @@ describe('MdToolbar', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdToolbarModule],
+      imports: [MatToolbarModule],
       declarations: [TestApp],
     });
 
@@ -22,7 +22,7 @@ describe('MdToolbar', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TestApp);
     testComponent = fixture.debugElement.componentInstance;
-    toolbarElement = fixture.debugElement.query(By.css('md-toolbar')).nativeElement;
+    toolbarElement = fixture.debugElement.query(By.css('mat-toolbar')).nativeElement;
   });
 
   it('should apply class based on color attribute', () => {
@@ -51,7 +51,7 @@ describe('MdToolbar', () => {
 });
 
 
-@Component({template: `<md-toolbar [color]="toolbarColor">Test Toolbar</md-toolbar>`})
+@Component({template: `<mat-toolbar [color]="toolbarColor">Test Toolbar</mat-toolbar>`})
 class TestApp {
   toolbarColor: string;
 }

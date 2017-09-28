@@ -7,110 +7,110 @@ that drives a stepped workflow. Material stepper extends the CDK stepper and has
 styling.
 
 ### Stepper variants
-There are two stepper components: `md-horizontal-stepper` and `md-vertical-stepper`. They 
+There are two stepper components: `mat-horizontal-stepper` and `mat-vertical-stepper`. They 
 can be used the same way. The only difference is the orientation of stepper. 
-`md-horizontal-stepper` selector can be used to create a horizontal stepper, and
-`md-vertical-stepper` can be used to create a vertical stepper. `md-step` components need to be
+`mat-horizontal-stepper` selector can be used to create a horizontal stepper, and
+`mat-vertical-stepper` can be used to create a vertical stepper. `mat-step` components need to be
 placed inside either one of the two stepper components.
 
 ### Labels
 If a step's label is only text, then the `label` attribute can be used.
 ```html
-<md-vertical-stepper>
-  <md-step label="Step 1">
+<mat-vertical-stepper>
+  <mat-step label="Step 1">
     Content 1
-  </md-step>
-  <md-step label="Step 1">
+  </mat-step>
+  <mat-step label="Step 1">
     Content 2
-  </md-step>
-</md-vertical-stepper>
+  </mat-step>
+</mat-vertical-stepper>
 ```
 
-For more complex labels, add a template with the `mdStepLabel` directive inside the 
-`md-step`.
+For more complex labels, add a template with the `matStepLabel` directive inside the 
+`mat-step`.
 ```html
-<md-vertical-stepper>
-  <md-step>
-    <ng-template mdStepLabel>...</ng-template>
+<mat-vertical-stepper>
+  <mat-step>
+    <ng-template matStepLabel>...</ng-template>
     ...
-  </md-step>
-</md-vertical-stepper>
+  </mat-step>
+</mat-vertical-stepper>
 ```
 
 ### Stepper buttons
 There are two button directives to support navigation between different steps:
-`mdStepperPrevious` and `mdStepperNext`.
+`matStepperPrevious` and `matStepperNext`.
 ```html
-<md-horizontal-stepper>
-  <md-step>
+<mat-horizontal-stepper>
+  <mat-step>
     ...
     <div>
-      <button md-button mdStepperPrevious>Back</button>
-      <button md-button mdStepperNext>Next</button>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperNext>Next</button>
     </div>
-  </md-step>
-</md-horizontal-stepper>  
+  </mat-step>
+</mat-horizontal-stepper>  
 ```
 
 ### Linear stepper
-The `linear` attribute can be set on `md-horizontal-stepper` and `md-vertical-stepper` to create
+The `linear` attribute can be set on `mat-horizontal-stepper` and `mat-vertical-stepper` to create
 a linear stepper that requires the user to complete previous steps before proceeding
-to following steps. For each `md-step`, the `stepControl` attribute can be set to the top level
+to following steps. For each `mat-step`, the `stepControl` attribute can be set to the top level
 `AbstractControl` that is used to check the validity of the step. 
 
 There are two possible approaches. One is using a single form for stepper, and the other is
 using a different form for each step.
 
 #### Using a single form
-When using a single form for the stepper, `mdStepperPrevious` and `mdStepperNext` have to be
+When using a single form for the stepper, `matStepperPrevious` and `matStepperNext` have to be
 set to `type="button"` in order to prevent submission of the form before all steps
 are completed. 
 
 ```html
 <form [formGroup]="formGroup">
-  <md-horizontal-stepper formArrayName="formArray" linear>
-    <md-step formGroupName="0" [stepControl]="formArray.get([0])">
+  <mat-horizontal-stepper formArrayName="formArray" linear>
+    <mat-step formGroupName="0" [stepControl]="formArray.get([0])">
       ...
       <div>
-        <button md-button mdStepperNext type="button">Next</button>
+        <button mat-button matStepperNext type="button">Next</button>
       </div>
-    </md-step>
-    <md-step formGroupName="1" [stepControl]="formArray.get([1])">
+    </mat-step>
+    <mat-step formGroupName="1" [stepControl]="formArray.get([1])">
       ...
       <div>
-        <button md-button mdStepperPrevious type="button">Back</button>
-        <button md-button mdStepperNext type="button">Next</button>
+        <button mat-button matStepperPrevious type="button">Back</button>
+        <button mat-button matStepperNext type="button">Next</button>
       </div>
-    </md-step>
+    </mat-step>
     ...
-  </md-horizontal-stepper> 
+  </mat-horizontal-stepper> 
 </form>
 ```
 
 #### Using a different form for each step
 ```html
-<md-vertical-stepper linear>
-  <md-step [stepControl]="formGroup1">
+<mat-vertical-stepper linear>
+  <mat-step [stepControl]="formGroup1">
     <form [formGroup]="formGroup1">
       ...
     </form>
-  </md-step>
-  <md-step [stepControl]="formGroup2">
+  </mat-step>
+  <mat-step [stepControl]="formGroup2">
     <form [formGroup]="formGroup2">
       ...
     </form>
-  </md-step>
-</md-vertical-stepper>
+  </mat-step>
+</mat-vertical-stepper>
 ```
 ### Types of steps
 
 #### Optional step
 If completion of a step in linear stepper is not required, then the `optional` attribute can be set
-on `md-step`. 
+on `mat-step`. 
 
 #### Editable step
 By default, steps are editable, which means users can return to previously completed steps and
-edit their responses. `editable="true"` can be set on `md-step` to change the default. 
+edit their responses. `editable="true"` can be set on `mat-step` to change the default. 
 
 #### Completed step
 By default, the `completed` attribute of a step returns `true` if the step is valid (in case of

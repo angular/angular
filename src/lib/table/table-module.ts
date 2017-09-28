@@ -7,22 +7,20 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MdTable} from './table';
+import {MatTable} from './table';
 import {CdkTableModule} from '@angular/cdk/table';
-import {MdCell, MdHeaderCell, MdCellDef, MdHeaderCellDef, MdColumnDef} from './cell';
-import {MdHeaderRow, MdRow, MdHeaderRowDef, MdRowDef, MatHeaderRowDef, MatRowDef} from './row';
+import {MatCell, MatHeaderCell, MatCellDef, MatHeaderCellDef, MatColumnDef} from './cell';
+import {MatHeaderRow, MatRow, MatHeaderRowDef, MatRowDef} from './row';
 import {CommonModule} from '@angular/common';
-import {MdCommonModule} from '@angular/material/core';
+import {MatCommonModule} from '@angular/material/core';
 
 @NgModule({
-  imports: [CdkTableModule, CommonModule, MdCommonModule],
-  exports: [MdTable, MdCellDef, MdHeaderCellDef, MdColumnDef,
-    MdHeaderRowDef, MdRowDef,
-    MdHeaderCell, MdCell, MdHeaderRow, MdRow,
+  imports: [CdkTableModule, CommonModule, MatCommonModule],
+  exports: [MatTable, MatCellDef, MatHeaderCellDef, MatColumnDef,
+    MatHeaderCell, MatCell, MatHeaderRow, MatRow,
     MatHeaderRowDef, MatRowDef],
-  declarations: [MdTable, MdCellDef, MdHeaderCellDef, MdColumnDef,
-    MdHeaderRowDef, MdRowDef,
-    MdHeaderCell, MdCell, MdHeaderRow, MdRow,
+  declarations: [MatTable, MatCellDef, MatHeaderCellDef, MatColumnDef,
+    MatHeaderCell, MatCell, MatHeaderRow, MatRow,
     MatHeaderRowDef, MatRowDef],
 })
-export class MdTableModule {}
+export class MatTableModule {}

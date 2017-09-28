@@ -6,11 +6,11 @@ describe('list', () => {
   beforeEach(() => browser.get('/list'));
 
   it('should render a list container', () => {
-    expectToExist('md-list');
+    expectToExist('mat-list');
     screenshot();
   });
 
   it('should render list items inside the list container', () => {
-    expectToExist('md-list md-list-item');
+    expectToExist('mat-list mat-list-item');
   });
 });

@@ -14,23 +14,22 @@ import {Platform} from '@angular/cdk/platform';
  * Directive to automatically resize a textarea to fit its content.
  */
 @Directive({
-  selector: `textarea[md-autosize], textarea[mdTextareaAutosize],
-             textarea[mat-autosize], textarea[matTextareaAutosize]`,
-  exportAs: 'mdTextareaAutosize, matTextareaAutosize',
+  selector: `textarea[mat-autosize], textarea[matTextareaAutosize]`,
+  exportAs: 'matTextareaAutosize',
   host: {
     // Textarea elements that have the directive applied should have a single row by default.
     // Browsers normally show two rows by default and therefore this limits the minRows binding.
     'rows': '1',
   },
 })
-export class MdTextareaAutosize implements AfterViewInit, DoCheck {
+export class MatTextareaAutosize implements AfterViewInit, DoCheck {
   /** Keep track of the previous textarea value to avoid resizing when the value hasn't changed. */
   private _previousValue: string;
 
   private _minRows: number;
   private _maxRows: number;
 
-  @Input('mdAutosizeMinRows')
+  @Input('matAutosizeMinRows')
   get minRows() { return this._minRows; }
 
   set minRows(value: number) {
@@ -38,20 +37,12 @@ export class MdTextareaAutosize implements AfterViewInit, DoCheck {
     this._setMinHeight();
   }
 
-  @Input('mdAutosizeMaxRows')
+  @Input('matAutosizeMaxRows')
   get maxRows() { return this._maxRows; }
   set maxRows(value: number) {
     this._maxRows = value;
     this._setMaxHeight();
   }
-
-  @Input('matAutosizeMinRows')
-  get _matAutosizeMinRows() { return this.minRows; }
-  set _matAutosizeMinRows(v) { this.minRows = v; }
-
-  @Input('matAutosizeMaxRows')
-  get _matAutosizeMaxRows() { return this.maxRows; }
-  set _matAutosizeMaxRows(v) { this.maxRows = v; }
 
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;

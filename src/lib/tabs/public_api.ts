@@ -8,12 +8,12 @@
 
 export * from './tabs-module';
 export * from './tab-group';
-export {MdInkBar} from './ink-bar';
-export {MdTabBody, MdTabBodyOriginState, MdTabBodyPositionState} from './tab-body';
-export {MdTabHeader, ScrollDirection} from './tab-header';
-export {MdTabLabelWrapper} from './tab-label-wrapper';
-export {MdTab} from './tab';
-export {MdTabLabel} from './tab-label';
-export {MdTabNav, MdTabLink} from './tab-nav-bar/index';
+export {MatInkBar} from './ink-bar';
+export {MatTabBody, MatTabBodyOriginState, MatTabBodyPositionState} from './tab-body';
+export {MatTabHeader, ScrollDirection} from './tab-header';
+export {MatTabLabelWrapper} from './tab-label-wrapper';
+export {MatTab} from './tab';
+export {MatTabLabel} from './tab-label';
+export {MatTabNav, MatTabLink} from './tab-nav-bar/index';
 
-export * from './mat-exports';
+

@@ -9,7 +9,7 @@
 import {InjectionToken} from '@angular/core';
 
 
-export type MdDateFormats = {
+export type MatDateFormats = {
   parse: {
     dateInput: any
   },
@@ -22,4 +22,4 @@ export type MdDateFormats = {
 };
 
 
-export const MD_DATE_FORMATS = new InjectionToken<MdDateFormats>('md-date-formats');
+export const MAT_DATE_FORMATS = new InjectionToken<MatDateFormats>('mat-date-formats');

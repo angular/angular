@@ -7,16 +7,16 @@
  */
 
 /** @docs-private */
-export function getMdSortDuplicateMdSortableIdError(id: string): Error {
-  return Error(`Cannot have two MdSortables with the same id (${id}).`);
+export function getSortDuplicateSortableIdError(id: string): Error {
+  return Error(`Cannot have two MatSortables with the same id (${id}).`);
 }
 
 /** @docs-private */
-export function getMdSortHeaderNotContainedWithinMdSortError(): Error {
-  return Error(`MdSortHeader must be placed within a parent element with the MdSort directive.`);
+export function getSortHeaderNotContainedWithinSortError(): Error {
+  return Error(`MatSortHeader must be placed within a parent element with the MatSort directive.`);
 }
 
 /** @docs-private */
-export function getMdSortHeaderMissingIdError(): Error {
-  return Error(`MdSortHeader must be provided with a unique id.`);
+export function getSortHeaderMissingIdError(): Error {
+  return Error(`MatSortHeader must be provided with a unique id.`);
 }

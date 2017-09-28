@@ -11,20 +11,20 @@ import {PlatformModule} from '@angular/cdk/platform';
 import {NgModule} from '@angular/core';
 import {
   GestureConfig,
-  MdCommonModule,
-  MdRippleModule,
+  MatCommonModule,
+  MatRippleModule,
 } from '@angular/material/core';
 import {HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {A11yModule} from '@angular/cdk/a11y';
-import {MdSlideToggle} from './slide-toggle';
+import {MatSlideToggle} from './slide-toggle';
 
 
 @NgModule({
-  imports: [MdRippleModule, MdCommonModule, PlatformModule, ObserversModule, A11yModule],
-  exports: [MdSlideToggle, MdCommonModule],
-  declarations: [MdSlideToggle],
+  imports: [MatRippleModule, MatCommonModule, PlatformModule, ObserversModule, A11yModule],
+  exports: [MatSlideToggle, MatCommonModule],
+  declarations: [MatSlideToggle],
   providers: [
     {provide: HAMMER_GESTURE_CONFIG, useClass: GestureConfig}
   ],
 })
-export class MdSlideToggleModule {}
+export class MatSlideToggleModule {}

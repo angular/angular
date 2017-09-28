@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 
 /**
  * @title Dialog with header, scrollable content and actions
@@ -9,7 +9,7 @@ import {MdDialog} from '@angular/material';
   templateUrl: 'dialog-content-example.html',
 })
 export class DialogContentExample {
-  constructor(public dialog: MdDialog) {}
+  constructor(public dialog: MatDialog) {}
 
   openDialog() {
     const dialogRef = this.dialog.open(DialogContentExampleDialog, {

@@ -15,24 +15,24 @@ import {
 } from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MdOption} from '@angular/material/core';
-import {MdFormField, MdFormFieldModule} from '@angular/material/form-field';
+import {MatOption} from '@angular/material/core';
+import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {MdInputModule} from '../input/index';
+import {MatInputModule} from '../input/index';
 import {
-  getMdAutocompleteMissingPanelError,
-  MdAutocomplete,
-  MdAutocompleteModule,
-  MdAutocompleteSelectedEvent,
-  MdAutocompleteTrigger,
+  getMatAutocompleteMissingPanelError,
+  MatAutocomplete,
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+  MatAutocompleteTrigger,
 } from './index';
 
 
-describe('MdAutocomplete', () => {
+describe('MatAutocomplete', () => {
   let overlayContainerElement: HTMLElement;
   let dir: Direction;
   let scrolledSubject = new Subject();
@@ -41,9 +41,9 @@ describe('MdAutocomplete', () => {
     dir = 'ltr';
     TestBed.configureTestingModule({
       imports: [
-        MdAutocompleteModule,
-        MdFormFieldModule,
-        MdInputModule,
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatInputModule,
         FormsModule,
         ReactiveFormsModule,
         NoopAnimationsModule
@@ -183,7 +183,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
-        const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
+        const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
         option.click();
         fixture.detectChanges();
 
@@ -204,7 +204,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         let options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[0].click();
 
         // Changing value from 'Alabama' to 'al' to re-populate the option list,
@@ -214,7 +214,7 @@ describe('MdAutocomplete', () => {
 
         fixture.whenStable().then(() => {
           options =
-              overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+              overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
           options[1].click();
           fixture.detectChanges();
 
@@ -286,7 +286,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -319,7 +319,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -340,7 +340,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -440,7 +440,7 @@ describe('MdAutocomplete', () => {
 
       fixture.whenStable().then(() => {
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -456,7 +456,7 @@ describe('MdAutocomplete', () => {
 
       fixture.whenStable().then(() => {
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -474,7 +474,7 @@ describe('MdAutocomplete', () => {
 
       fixture.whenStable().then(() => {
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -493,7 +493,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
 
         fixture.detectChanges();
@@ -568,7 +568,7 @@ describe('MdAutocomplete', () => {
 
       fixture.whenStable().then(() => {
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -648,7 +648,7 @@ describe('MdAutocomplete', () => {
     it('should set the active item to the first option when DOWN key is pressed', fakeAsync(() => {
       tick();
       const optionEls =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+          overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
       fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
@@ -680,7 +680,7 @@ describe('MdAutocomplete', () => {
     it('should set the active item to the last option when UP key is pressed', fakeAsync(() => {
       tick();
       const optionEls =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+          overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
       fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
@@ -721,7 +721,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       const optionEls =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+          overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
       expect(fixture.componentInstance.trigger.activeOption)
           .toBe(fixture.componentInstance.options.first,
@@ -1196,7 +1196,7 @@ describe('MdAutocomplete', () => {
       fixture.detectChanges();
 
       fixture.whenStable().then(() => {
-        const option = overlayContainerElement.querySelector('md-option') as HTMLElement;
+        const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
 
         // Focus the option manually since the synthetic click may not do it.
         option.focus();
@@ -1309,7 +1309,7 @@ describe('MdAutocomplete', () => {
 
     it('should deselect any other selected option', async(() => {
       let options =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+          overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
       options[0].click();
       fixture.detectChanges();
 
@@ -1321,7 +1321,7 @@ describe('MdAutocomplete', () => {
             .toBe(true, `Clicked option should be selected.`);
 
         options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -1335,7 +1335,7 @@ describe('MdAutocomplete', () => {
 
     it('should call deselect only on the previous selected option', async(() => {
       let options =
-          overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+          overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
       options[0].click();
       fixture.detectChanges();
 
@@ -1349,7 +1349,7 @@ describe('MdAutocomplete', () => {
             .toBe(true, `Clicked option should be selected.`);
 
         options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         options[1].click();
         fixture.detectChanges();
 
@@ -1359,7 +1359,7 @@ describe('MdAutocomplete', () => {
     }));
   });
 
-  describe('without mdInput', () => {
+  describe('without matInput', () => {
     let fixture: ComponentFixture<AutocompleteWithNativeInput>;
 
     beforeEach(() => {
@@ -1389,7 +1389,7 @@ describe('MdAutocomplete', () => {
         fixture.detectChanges();
 
         const options =
-            overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+            overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         expect(options.length).toBe(1);
       }).not.toThrowError();
     });
@@ -1455,7 +1455,7 @@ describe('MdAutocomplete', () => {
       typeInElement('o', input);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.mdOptions.length).toBe(2);
+      expect(fixture.componentInstance.matOptions.length).toBe(2);
     }));
 
     it('should throw if the user attempts to open the panel too early', async(() => {
@@ -1464,7 +1464,7 @@ describe('MdAutocomplete', () => {
 
       expect(() => {
         fixture.componentInstance.trigger.openPanel();
-      }).toThrow(getMdAutocompleteMissingPanelError());
+      }).toThrow(getMatAutocompleteMissingPanelError());
     }));
 
     it('should hide the placeholder with a preselected form control value ' +
@@ -1559,7 +1559,7 @@ describe('MdAutocomplete', () => {
     tick();
     fixture.detectChanges();
 
-    let options = overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+    let options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
     let spy = fixture.componentInstance.optionSelected;
 
     options[1].click();
@@ -1568,7 +1568,7 @@ describe('MdAutocomplete', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
 
-    let event = spy.calls.mostRecent().args[0] as MdAutocompleteSelectedEvent;
+    let event = spy.calls.mostRecent().args[0] as MatAutocompleteSelectedEvent;
 
     expect(event.source).toBe(fixture.componentInstance.autocomplete);
     expect(event.option.value).toBe('Washington');
@@ -1585,7 +1585,7 @@ describe('MdAutocomplete', () => {
     fixture.componentInstance.states.push('Puerto Rico');
     fixture.detectChanges();
 
-    let options = overlayContainerElement.querySelectorAll('md-option') as NodeListOf<HTMLElement>;
+    let options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
     let spy = fixture.componentInstance.optionSelected;
 
     options[3].click();
@@ -1594,7 +1594,7 @@ describe('MdAutocomplete', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
 
-    let event = spy.calls.mostRecent().args[0] as MdAutocompleteSelectedEvent;
+    let event = spy.calls.mostRecent().args[0] as MatAutocompleteSelectedEvent;
 
     expect(event.source).toBe(fixture.componentInstance.autocomplete);
     expect(event.option.value).toBe('Puerto Rico');
@@ -1603,15 +1603,15 @@ describe('MdAutocomplete', () => {
 
 @Component({
   template: `
-    <md-form-field [floatPlaceholder]="placeholder" [style.width.px]="width">
-      <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="stateCtrl">
-    </md-form-field>
+    <mat-form-field [floatPlaceholder]="placeholder" [style.width.px]="width">
+      <input matInput placeholder="State" [matAutocomplete]="auto" [formControl]="stateCtrl">
+    </mat-form-field>
 
-    <md-autocomplete #auto="mdAutocomplete" [displayWith]="displayFn">
-      <md-option *ngFor="let state of filteredStates" [value]="state">
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+      <mat-option *ngFor="let state of filteredStates" [value]="state">
         <span> {{ state.code }}: {{ state.name }}  </span>
-      </md-option>
-    </md-autocomplete>
+      </mat-option>
+    </mat-autocomplete>
   `
 })
 class SimpleAutocomplete implements OnDestroy {
@@ -1621,10 +1621,10 @@ class SimpleAutocomplete implements OnDestroy {
   placeholder = 'auto';
   width: number;
 
-  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
-  @ViewChild(MdAutocomplete) panel: MdAutocomplete;
-  @ViewChild(MdFormField) formField: MdFormField;
-  @ViewChildren(MdOption) options: QueryList<MdOption>;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocomplete) panel: MatAutocomplete;
+  @ViewChild(MatFormField) formField: MatFormField;
+  @ViewChildren(MatOption) options: QueryList<MatOption>;
 
   states = [
     {code: 'AL', name: 'Alabama'},
@@ -1661,15 +1661,15 @@ class SimpleAutocomplete implements OnDestroy {
 
 @Component({
   template: `
-    <md-form-field *ngIf="isVisible">
-      <input mdInput placeholder="Choose" [mdAutocomplete]="auto" [formControl]="optionCtrl">
-    </md-form-field>
+    <mat-form-field *ngIf="isVisible">
+      <input matInput placeholder="Choose" [matAutocomplete]="auto" [formControl]="optionCtrl">
+    </mat-form-field>
 
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let option of filteredOptions | async" [value]="option">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
          {{option}}
-      </md-option>
-    </md-autocomplete>
+      </mat-option>
+    </mat-autocomplete>
   `
 })
 class NgIfAutocomplete {
@@ -1678,8 +1678,8 @@ class NgIfAutocomplete {
   isVisible = true;
   options = ['One', 'Two', 'Three'];
 
-  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
-  @ViewChildren(MdOption) mdOptions: QueryList<MdOption>;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChildren(MatOption) matOptions: QueryList<MatOption>;
 
   constructor() {
     this.filteredOptions = RxChain.from(this.optionCtrl.valueChanges)
@@ -1695,16 +1695,16 @@ class NgIfAutocomplete {
 
 @Component({
   template: `
-    <md-form-field>
-      <input mdInput placeholder="State" [mdAutocomplete]="auto"
+    <mat-form-field>
+      <input matInput placeholder="State" [matAutocomplete]="auto"
       (input)="onInput($event.target?.value)">
-    </md-form-field>
+    </mat-form-field>
 
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let state of filteredStates" [value]="state">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let state of filteredStates" [value]="state">
         <span> {{ state }}  </span>
-      </md-option>
-    </md-autocomplete>
+      </mat-option>
+    </mat-autocomplete>
   `
 })
 class AutocompleteWithoutForms {
@@ -1723,16 +1723,16 @@ class AutocompleteWithoutForms {
 
 @Component({
   template: `
-    <md-form-field>
-      <input mdInput placeholder="State" [mdAutocomplete]="auto" [(ngModel)]="selectedState"
+    <mat-form-field>
+      <input matInput placeholder="State" [matAutocomplete]="auto" [(ngModel)]="selectedState"
       (ngModelChange)="onInput($event)">
-    </md-form-field>
+    </mat-form-field>
 
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let state of filteredStates" [value]="state">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let state of filteredStates" [value]="state">
         <span>{{ state }}</span>
-      </md-option>
-    </md-autocomplete>
+      </mat-option>
+    </mat-autocomplete>
   `
 })
 class AutocompleteWithNgModel {
@@ -1751,15 +1751,15 @@ class AutocompleteWithNgModel {
 
 @Component({
   template: `
-    <md-form-field>
-      <input mdInput placeholder="Number" [mdAutocomplete]="auto" [(ngModel)]="selectedNumber">
-    </md-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Number" [matAutocomplete]="auto" [(ngModel)]="selectedNumber">
+    </mat-form-field>
 
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let number of numbers" [value]="number">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let number of numbers" [value]="number">
         <span>{{ number }}</span>
-      </md-option>
-    </md-autocomplete>
+      </mat-option>
+    </mat-autocomplete>
   `
 })
 class AutocompleteWithNumbers {
@@ -1770,13 +1770,13 @@ class AutocompleteWithNumbers {
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <md-form-field>
-      <input type="text" mdInput [mdAutocomplete]="auto">
-    </md-form-field>
+    <mat-form-field>
+      <input type="text" matInput [matAutocomplete]="auto">
+    </mat-form-field>
 
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let option of options" [value]="option">{{ option }}</md-option>
-    </md-autocomplete>
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let option of options" [value]="option">{{ option }}</mat-option>
+    </mat-autocomplete>
   `
 })
 class AutocompleteWithOnPushDelay implements OnInit {
@@ -1791,13 +1791,13 @@ class AutocompleteWithOnPushDelay implements OnInit {
 
 @Component({
   template: `
-    <input placeholder="Choose" [mdAutocomplete]="auto" [formControl]="optionCtrl">
+    <input placeholder="Choose" [matAutocomplete]="auto" [formControl]="optionCtrl">
 
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let option of filteredOptions | async" [value]="option">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
          {{option}}
-      </md-option>
-    </md-autocomplete>
+      </mat-option>
+    </mat-autocomplete>
   `
 })
 class AutocompleteWithNativeInput {
@@ -1805,8 +1805,8 @@ class AutocompleteWithNativeInput {
   filteredOptions: Observable<any>;
   options = ['En', 'To', 'Tre', 'Fire', 'Fem'];
 
-  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
-  @ViewChildren(MdOption) mdOptions: QueryList<MdOption>;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChildren(MatOption) matOptions: QueryList<MatOption>;
 
   constructor() {
     this.filteredOptions = RxChain.from(this.optionCtrl.valueChanges)
@@ -1821,22 +1821,22 @@ class AutocompleteWithNativeInput {
 
 
 @Component({
-  template: `<input placeholder="Choose" [mdAutocomplete]="auto">`
+  template: `<input placeholder="Choose" [matAutocomplete]="auto">`
 })
 class AutocompleteWithoutPanel {
-  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
 }
 
 
 @Component({
   template: `
-    <md-form-field floatPlaceholder="never">
-      <input placeholder="State" mdInput [mdAutocomplete]="auto" [formControl]="formControl">
-    </md-form-field>
+    <mat-form-field floatPlaceholder="never">
+      <input placeholder="State" matInput [matAutocomplete]="auto" [formControl]="formControl">
+    </mat-form-field>
 
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-option value="California">California</md-option>
-    </md-autocomplete>
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option value="California">California</mat-option>
+    </mat-autocomplete>
   `
 })
 class AutocompleteWithFormsAndNonfloatingPlaceholder {
@@ -1846,21 +1846,21 @@ class AutocompleteWithFormsAndNonfloatingPlaceholder {
 
 @Component({
   template: `
-    <md-input-container>
-      <input mdInput placeholder="State" [mdAutocomplete]="auto" [(ngModel)]="selectedState">
-    </md-input-container>
+    <mat-input-container>
+      <input matInput placeholder="State" [matAutocomplete]="auto" [(ngModel)]="selectedState">
+    </mat-input-container>
 
-    <md-autocomplete #auto="mdAutocomplete">
-      <md-optgroup *ngFor="let group of stateGroups" [label]="group.label">
-        <md-option *ngFor="let state of group.states" [value]="state">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-optgroup *ngFor="let group of stateGroups" [label]="group.label">
+        <mat-option *ngFor="let state of group.states" [value]="state">
           <span>{{ state }}</span>
-        </md-option>
-      </md-optgroup>
-    </md-autocomplete>
+        </mat-option>
+      </mat-optgroup>
+    </mat-autocomplete>
   `
 })
 class AutocompleteWithGroups {
-  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   selectedState: string;
   stateGroups = [
     {
@@ -1880,15 +1880,15 @@ class AutocompleteWithGroups {
 
 @Component({
   template: `
-    <md-input-container>
-      <input mdInput placeholder="State" [mdAutocomplete]="auto" [(ngModel)]="selectedState">
-    </md-input-container>
+    <mat-input-container>
+      <input matInput placeholder="State" [matAutocomplete]="auto" [(ngModel)]="selectedState">
+    </mat-input-container>
 
-    <md-autocomplete #auto="mdAutocomplete" (optionSelected)="optionSelected($event)">
-      <md-option *ngFor="let state of states" [value]="state">
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event)">
+      <mat-option *ngFor="let state of states" [value]="state">
         <span>{{ state }}</span>
-      </md-option>
-    </md-autocomplete>
+      </mat-option>
+    </mat-autocomplete>
   `
 })
 class AutocompleteWithSelectEvent {
@@ -1896,6 +1896,6 @@ class AutocompleteWithSelectEvent {
   states = ['New York', 'Washington', 'Oregon'];
   optionSelected = jasmine.createSpy('optionSelected callback');
 
-  @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
-  @ViewChild(MdAutocomplete) autocomplete: MdAutocomplete;
+  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocomplete) autocomplete: MatAutocomplete;
 }

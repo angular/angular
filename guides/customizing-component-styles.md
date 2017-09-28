@@ -30,7 +30,7 @@ You can read more about specificity and how it is calculated on the
 
 ##### Component location
 
-Some Angular Material components, specifically overlay-based ones like MdDialog, MdSnackbar, etc.,
+Some Angular Material components, specifically overlay-based ones like MatDialog, MatSnackbar, etc.,
 do not exist as children of your component. Often they are injected elsewhere in the DOM. This is
 important to keep in mind, since even using high specificity and shadow-piercing selectors will
 not target elements that are not direct children of your component. Global styles are recommended

@@ -1,24 +1,24 @@
-`<md-toolbar>` is a container for headers, titles, or actions.
+`<mat-toolbar>` is a container for headers, titles, or actions.
 
 <!-- example(toolbar-overview) -->
 
 ### Multiple rows
-Toolbars can have multiple rows using `<md-toolbar-row>` elements. Any content outside of an 
-`<md-toolbar-row>` element are automatically placed inside of one at the beginning of the toolbar.
+Toolbars can have multiple rows using `<mat-toolbar-row>` elements. Any content outside of an 
+`<mat-toolbar-row>` element are automatically placed inside of one at the beginning of the toolbar.
 Each toolbar row is a `display: flex` container.
 
 ```html
-<md-toolbar>
+<mat-toolbar>
   <span>First Row</span>
   
-  <md-toolbar-row>
+  <mat-toolbar-row>
     <span>Second Row</span>
-  </md-toolbar-row>
+  </mat-toolbar-row>
   
-  <md-toolbar-row>
+  <mat-toolbar-row>
     <span>Third Row</span>
-  </md-toolbar-row>
-</md-toolbar>
+  </mat-toolbar-row>
+</mat-toolbar>
 ```
 
 ### Positioning toolbar content
@@ -28,14 +28,14 @@ position the content as it suits their application.
 A common pattern is to position a title on the left with some actions on the right. This can be
 easily accomplished with `display: flex`:
 ```html
-<md-toolbar color="primary">
+<mat-toolbar color="primary">
   <span>Application Title</span>
   
   <!-- This fills the remaining space of the current row -->
   <span class="example-fill-remaining-space"></span>
   
   <span>Right Aligned Text</span>
-</md-toolbar>
+</mat-toolbar>
 ```
 ```scss
 .example-fill-remaining-space {
@@ -46,7 +46,7 @@ easily accomplished with `display: flex`:
 ```
 
 ### Theming
-The color of a `<md-toolbar>` can be changed by using the `color` property. By default, toolbars
+The color of a `<mat-toolbar>` can be changed by using the `color` property. By default, toolbars
 use a neutral background color based on the current theme (light or dark). This can be changed to 
 `'primary'`, `'accent'`, or `'warn'`.  
 

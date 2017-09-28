@@ -5,23 +5,23 @@ import {createKeyboardEvent, dispatchFakeEvent, dispatchKeyboardEvent} from '@an
 import {Component, DebugElement, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MdFormFieldModule} from '@angular/material/form-field';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdInputModule} from '../input/index';
-import {MdChip} from './chip';
-import {MdChipInputEvent} from './chip-input';
-import {MdChipList, MdChipsModule} from './index';
+import {MatInputModule} from '../input/index';
+import {MatChip} from './chip';
+import {MatChipInputEvent} from './chip-input';
+import {MatChipList, MatChipsModule} from './index';
 
 
-describe('MdChipList', () => {
+describe('MatChipList', () => {
   let fixture: ComponentFixture<any>;
   let chipListDebugElement: DebugElement;
   let chipListNativeElement: HTMLElement;
-  let chipListInstance: MdChipList;
+  let chipListInstance: MatChipList;
   let testComponent: StandardChipList;
   let chips: QueryList<any>;
-  let manager: FocusKeyManager<MdChip>;
+  let manager: FocusKeyManager<MatChip>;
   let dir = 'ltr';
 
   beforeEach(async(() => {
@@ -29,9 +29,9 @@ describe('MdChipList', () => {
       imports: [
         FormsModule,
         ReactiveFormsModule,
-        MdChipsModule,
-        MdFormFieldModule,
-        MdInputModule,
+        MatChipsModule,
+        MatFormFieldModule,
+        MatInputModule,
         NoopAnimationsModule
       ],
       declarations: [
@@ -141,7 +141,7 @@ describe('MdChipList', () => {
         }));
 
         it('should focus previous item when press LEFT ARROW', () => {
-          let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
+          let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
           let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
           let LEFT_EVENT = createKeyboardEvent('keydown', LEFT_ARROW, lastNativeChip);
@@ -162,7 +162,7 @@ describe('MdChipList', () => {
         });
 
         it('should focus next item when press RIGHT ARROW', () => {
-          let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
+          let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
           let RIGHT_EVENT: KeyboardEvent =
@@ -192,7 +192,7 @@ describe('MdChipList', () => {
         }));
 
         it('should focus previous item when press RIGHT ARROW', () => {
-          let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
+          let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
           let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
           let RIGHT_EVENT: KeyboardEvent =
@@ -214,7 +214,7 @@ describe('MdChipList', () => {
         });
 
         it('should focus next item when press LEFT ARROW', () => {
-          let nativeChips = chipListNativeElement.querySelectorAll('md-chip');
+          let nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
           let LEFT_EVENT: KeyboardEvent =
@@ -327,11 +327,11 @@ describe('MdChipList', () => {
       fixture.detectChanges();
 
       formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
-      nativeChips = fixture.debugElement.queryAll(By.css('md-chip'))
+      nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
           .map((chip) => chip.nativeElement);
 
 
-      chipListDebugElement = fixture.debugElement.query(By.directive(MdChipList));
+      chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
       chipListInstance = chipListDebugElement.componentInstance;
       chips = chipListInstance.chips;
 
@@ -366,7 +366,7 @@ describe('MdChipList', () => {
       fixture.componentInstance.foods.push({viewValue: 'Potatoes', value: 'potatoes-8'});
       fixture.detectChanges();
 
-      nativeChips = fixture.debugElement.queryAll(By.css('md-chip'))
+      nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
         .map((chip) => chip.nativeElement);
       const lastChip = nativeChips[8];
       dispatchKeyboardEvent(lastChip, 'keydown', SPACE);
@@ -403,7 +403,7 @@ describe('MdChipList', () => {
         fixture.detectChanges();
 
         formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
-        nativeChips = fixture.debugElement.queryAll(By.css('md-chip'))
+        nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
           .map((chip) => chip.nativeElement);
         chips = fixture.componentInstance.chips;
       });
@@ -556,7 +556,7 @@ describe('MdChipList', () => {
         fixture.detectChanges();
 
         formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
-        nativeChips = fixture.debugElement.queryAll(By.css('md-chip'))
+        nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
           .map((chip) => chip.nativeElement);
         chips = fixture.componentInstance.chips;
       });
@@ -641,7 +641,7 @@ describe('MdChipList', () => {
       fixture.detectChanges();
 
       formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
-      nativeChips = fixture.debugElement.queryAll(By.css('md-chip'))
+      nativeChips = fixture.debugElement.queryAll(By.css('mat-chip'))
         .map((chip) => chip.nativeElement);
     });
 
@@ -778,7 +778,7 @@ describe('MdChipList', () => {
       beforeEach(() => {
         fixture = TestBed.createComponent(InputChipList);
         fixture.detectChanges();
-        chipListDebugElement = fixture.debugElement.query(By.directive(MdChipList));
+        chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
         chipListInstance = chipListDebugElement.componentInstance;
         chips = chipListInstance.chips;
         manager = fixture.componentInstance.chipList._keyManager;
@@ -828,7 +828,7 @@ describe('MdChipList', () => {
     fixture = TestBed.createComponent(StandardChipList);
     fixture.detectChanges();
 
-    chipListDebugElement = fixture.debugElement.query(By.directive(MdChipList));
+    chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
     chipListNativeElement = chipListDebugElement.nativeElement;
     chipListInstance = chipListDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;
@@ -839,7 +839,7 @@ describe('MdChipList', () => {
     fixture = TestBed.createComponent(FormFieldChipList);
     fixture.detectChanges();
 
-    chipListDebugElement = fixture.debugElement.query(By.directive(MdChipList));
+    chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
     chipListNativeElement = chipListDebugElement.nativeElement;
     chipListInstance = chipListDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;
@@ -850,15 +850,15 @@ describe('MdChipList', () => {
 
 @Component({
   template: `
-    <md-chip-list [tabIndex]="tabIndex">
+    <mat-chip-list [tabIndex]="tabIndex">
       <div *ngFor="let i of [0,1,2,3,4]">
        <div *ngIf="remove != i">
-          <md-chip (select)="chipSelect(i)" (deselect)="chipDeselect(i)">
+          <mat-chip (select)="chipSelect(i)" (deselect)="chipDeselect(i)">
             {{name}} {{i + 1}}
-          </md-chip>
+          </mat-chip>
         </div>
       </div>
-    </md-chip-list>`
+    </mat-chip-list>`
 })
 class StandardChipList {
   name: string = 'Test';
@@ -871,14 +871,14 @@ class StandardChipList {
 
 @Component({
   template: `
-    <md-form-field>
-      <md-chip-list #chipList>
-        <md-chip>Chip 1</md-chip>
-        <md-chip>Chip 1</md-chip>
-        <md-chip>Chip 1</md-chip>
-      </md-chip-list>
-      <input mdInput name="test" [mdChipInputFor]="chipList"/>
-    </md-form-field>
+    <mat-form-field>
+      <mat-chip-list #chipList>
+        <mat-chip>Chip 1</mat-chip>
+        <mat-chip>Chip 1</mat-chip>
+        <mat-chip>Chip 1</mat-chip>
+      </mat-chip-list>
+      <input matInput name="test" [matChipInputFor]="chipList"/>
+    </mat-form-field>
   `
 })
 class FormFieldChipList {
@@ -888,14 +888,14 @@ class FormFieldChipList {
 @Component({
   selector: 'basic-chip-list',
   template: `
-    <md-form-field>
-      <md-chip-list placeholder="Food" [formControl]="control" [required]="isRequired"
+    <mat-form-field>
+      <mat-chip-list placeholder="Food" [formControl]="control" [required]="isRequired"
         [tabIndex]="tabIndexOverride" [selectable]="selectable">
-        <md-chip *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
+        <mat-chip *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
           {{ food.viewValue }}
-        </md-chip>
-      </md-chip-list>
-    </md-form-field>
+        </mat-chip>
+      </mat-chip-list>
+    </mat-form-field>
   `
 })
 class BasicChipList {
@@ -914,23 +914,23 @@ class BasicChipList {
   tabIndexOverride: number;
   selectable: boolean;
 
-  @ViewChild(MdChipList) chipList: MdChipList;
-  @ViewChildren(MdChip) chips: QueryList<MdChip>;
+  @ViewChild(MatChipList) chipList: MatChipList;
+  @ViewChildren(MatChip) chips: QueryList<MatChip>;
 }
 
 
 @Component({
   selector: 'multi-selection-chip-list',
   template: `
-    <md-form-field>
-      <md-chip-list [multiple]="true" placeholder="Food" [formControl]="control"
+    <mat-form-field>
+      <mat-chip-list [multiple]="true" placeholder="Food" [formControl]="control"
         [required]="isRequired"
         [tabIndex]="tabIndexOverride" [selectable]="selectable">
-        <md-chip *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
+        <mat-chip *ngFor="let food of foods" [value]="food.value" [disabled]="food.disabled">
           {{ food.viewValue }}
-        </md-chip>
-      </md-chip-list>
-    </md-form-field>
+        </mat-chip>
+      </mat-chip-list>
+    </mat-form-field>
   `
 })
 class MultiSelectionChipList {
@@ -949,26 +949,26 @@ class MultiSelectionChipList {
   tabIndexOverride: number;
   selectable: boolean;
 
-  @ViewChild(MdChipList) chipList: MdChipList;
-  @ViewChildren(MdChip) chips: QueryList<MdChip>;
+  @ViewChild(MatChipList) chipList: MatChipList;
+  @ViewChildren(MatChip) chips: QueryList<MatChip>;
 }
 
 @Component({
   selector: 'input-chip-list',
   template: `
-    <md-form-field>
-      <md-chip-list [multiple]="true"
+    <mat-form-field>
+      <mat-chip-list [multiple]="true"
                     placeholder="Food" [formControl]="control" [required]="isRequired" #chipList1>
-        <md-chip *ngFor="let food of foods" [value]="food.value">
+        <mat-chip *ngFor="let food of foods" [value]="food.value">
           {{ food.viewValue }}
-        </md-chip>
-      </md-chip-list>
+        </mat-chip>
+      </mat-chip-list>
       <input placeholder="New food..."
-          [mdChipInputFor]="chipList1"
-          [mdChipInputSeparatorKeyCodes]="separatorKeyCodes"
-          [mdChipInputAddOnBlur]="addOnBlur"
-          (mdChipInputTokenEnd)="add($event)" />/>
-    </md-form-field>
+          [matChipInputFor]="chipList1"
+          [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
+          [matChipInputAddOnBlur]="addOnBlur"
+          (matChipInputTokenEnd)="add($event)" />/>
+    </mat-form-field>
   `
 })
 class InputChipList {
@@ -988,7 +988,7 @@ class InputChipList {
   addOnBlur: boolean = true;
   isRequired: boolean;
 
-  add(event: MdChipInputEvent): void {
+  add(event: MatChipInputEvent): void {
     let input = event.input;
     let value = event.value;
 
@@ -1006,17 +1006,17 @@ class InputChipList {
     }
   }
 
-  @ViewChild(MdChipList) chipList: MdChipList;
-  @ViewChildren(MdChip) chips: QueryList<MdChip>;
+  @ViewChild(MatChipList) chipList: MatChipList;
+  @ViewChildren(MatChip) chips: QueryList<MatChip>;
 }
 
 @Component({
   template: `
-    <md-form-field>
-      <md-chip-list [formControl]="control">
-        <md-chip *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-chip>
-      </md-chip-list>
-    </md-form-field>
+    <mat-form-field>
+      <mat-chip-list [formControl]="control">
+        <mat-chip *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</mat-chip>
+      </mat-chip-list>
+    </mat-form-field>
   `
 })
 class FalsyValueChipList {
@@ -1025,5 +1025,5 @@ class FalsyValueChipList {
     { value: 1, viewValue: 'Pizza' },
   ];
   control = new FormControl();
-  @ViewChildren(MdChip) chips: QueryList<MdChip>;
+  @ViewChildren(MatChip) chips: QueryList<MatChip>;
 }

@@ -2,15 +2,15 @@ import {async, TestBed, fakeAsync, tick, ComponentFixture} from '@angular/core/t
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdExpansionModule, MdExpansionPanel} from './index';
+import {MatExpansionModule, MatExpansionPanel} from './index';
 
 
-describe('MdExpansionPanel', () => {
+describe('MatExpansionPanel', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
         NoopAnimationsModule,
-        MdExpansionModule
+        MatExpansionModule
       ],
       declarations: [
         PanelWithContent,
@@ -82,7 +82,7 @@ describe('MdExpansionPanel', () => {
     let fixture = TestBed.createComponent(PanelWithCustomMargin);
     fixture.detectChanges();
 
-    let panel = fixture.debugElement.query(By.css('md-expansion-panel'));
+    let panel = fixture.debugElement.query(By.css('mat-expansion-panel'));
     let styles = getComputedStyle(panel.nativeElement);
 
     expect(panel.componentInstance._hasSpacing()).toBe(false);
@@ -146,8 +146,8 @@ describe('MdExpansionPanel', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(PanelWithContent);
       fixture.detectChanges();
-      panel = fixture.debugElement.query(By.css('md-expansion-panel')).nativeElement;
-      header = fixture.debugElement.query(By.css('md-expansion-panel-header')).nativeElement;
+      panel = fixture.debugElement.query(By.css('mat-expansion-panel')).nativeElement;
+      header = fixture.debugElement.query(By.css('mat-expansion-panel-header')).nativeElement;
     });
 
     it('should toggle the aria-disabled attribute on the header', () => {
@@ -202,15 +202,15 @@ describe('MdExpansionPanel', () => {
 
 @Component({
   template: `
-  <md-expansion-panel [expanded]="expanded"
+  <mat-expansion-panel [expanded]="expanded"
                       [hideToggle]="hideToggle"
                       [disabled]="disabled"
                       (opened)="openCallback()"
                       (closed)="closeCallback()">
-    <md-expansion-panel-header>Panel Title</md-expansion-panel-header>
+    <mat-expansion-panel-header>Panel Title</mat-expansion-panel-header>
     <p>Some content</p>
     <button>I am a button</button>
-  </md-expansion-panel>`
+  </mat-expansion-panel>`
 })
 class PanelWithContent {
   expanded = false;
@@ -218,21 +218,21 @@ class PanelWithContent {
   disabled = false;
   openCallback = jasmine.createSpy('openCallback');
   closeCallback = jasmine.createSpy('closeCallback');
-  @ViewChild(MdExpansionPanel) panel: MdExpansionPanel;
+  @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;
 }
 
 
 @Component({
   styles: [
-    `md-expansion-panel {
+    `mat-expansion-panel {
       margin: 13px 37px;
     }`
   ],
   template: `
-  <md-expansion-panel [expanded]="expanded">
+  <mat-expansion-panel [expanded]="expanded">
     Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores officia, aliquam dicta
     corrupti maxime voluptate accusamus impedit atque incidunt pariatur.
-  </md-expansion-panel>`
+  </mat-expansion-panel>`
 })
 class PanelWithCustomMargin {
   expanded: boolean = false;

@@ -14,12 +14,12 @@ import {Directive, Renderer2, ElementRef, NgZone} from '@angular/core';
  * @docs-private
  */
 @Directive({
-  selector: 'md-ink-bar, mat-ink-bar',
+  selector: 'mat-ink-bar',
   host: {
     'class': 'mat-ink-bar',
   },
 })
-export class MdInkBar {
+export class MatInkBar {
   constructor(
     private _renderer: Renderer2,
     private _elementRef: ElementRef,

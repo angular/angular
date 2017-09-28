@@ -1,17 +1,17 @@
-<button md-icon-button [mdMenuTriggerFor]="menu">
-  <md-icon>more_vert</md-icon>
+<button mat-icon-button [matMenuTriggerFor]="menu">
+  <mat-icon>more_vert</mat-icon>
 </button>
-<md-menu #menu="mdMenu">
-  <button md-menu-item>
-    <md-icon>dialpad</md-icon>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>
+    <mat-icon>dialpad</mat-icon>
     <span>Redial</span>
   </button>
-  <button md-menu-item disabled>
-    <md-icon>voicemail</md-icon>
+  <button mat-menu-item disabled>
+    <mat-icon>voicemail</mat-icon>
     <span>Check voicemail</span>
   </button>
-  <button md-menu-item>
-    <md-icon>notifications_off</md-icon>
+  <button mat-menu-item>
+    <mat-icon>notifications_off</mat-icon>
     <span>Disable alerts</span>
   </button>
-</md-menu>
+</mat-menu>

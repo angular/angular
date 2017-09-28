@@ -13,14 +13,14 @@ import {CompatibilityModule} from '../compatibility/compatibility';
 
 
 /** Injection token that configures whether the Material sanity checks are enabled. */
-export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('md-sanity-checks');
+export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('mat-sanity-checks');
 
 
 /**
  * Module that captures anything that should be loaded and/or run for *all* Angular Material
  * components. This includes Bidi, compatibility mode, etc.
  *
- * This module should be imported to each top-level component module (e.g., MdTabsModule).
+ * This module should be imported to each top-level component module (e.g., MatTabsModule).
  */
 @NgModule({
   imports: [CompatibilityModule, BidiModule],
@@ -29,7 +29,7 @@ export const MATERIAL_SANITY_CHECKS = new InjectionToken<boolean>('md-sanity-che
     provide: MATERIAL_SANITY_CHECKS, useValue: true,
   }],
 })
-export class MdCommonModule {
+export class MatCommonModule {
   /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
   private _hasDoneGlobalChecks = false;
 

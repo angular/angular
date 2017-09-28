@@ -1,49 +1,49 @@
-<md-card>
-  <md-card-content>
+<mat-card>
+  <mat-card-content>
     <h2 class="example-h2">Progress spinner configuration</h2>
 
     <section class="example-section">
       <label class="example-margin">Color:</label>
-      <md-radio-group [(ngModel)]="color">
-        <md-radio-button class="example-margin" value="primary">
+      <mat-radio-group [(ngModel)]="color">
+        <mat-radio-button class="example-margin" value="primary">
           Primary
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="accent">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="accent">
           Accent
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="warn">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="warn">
           Warn
-        </md-radio-button>
-      </md-radio-group>
+        </mat-radio-button>
+      </mat-radio-group>
     </section>
 
     <section class="example-section">
       <label class="example-margin">Mode:</label>
-      <md-radio-group [(ngModel)]="mode">
-        <md-radio-button class="example-margin" value="determinate">
+      <mat-radio-group [(ngModel)]="mode">
+        <mat-radio-button class="example-margin" value="determinate">
           Determinate
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="indeterminate">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="indeterminate">
           Indeterminate
-        </md-radio-button>
-      </md-radio-group>
+        </mat-radio-button>
+      </mat-radio-group>
     </section>
 
     <section class="example-section" *ngIf="mode == 'determinate'">
       <label class="example-margin">Progress:</label>
-      <md-slider class="example-margin" [(ngModel)]="value"></md-slider>
+      <mat-slider class="example-margin" [(ngModel)]="value"></mat-slider>
     </section>
-  </md-card-content>
-</md-card>
-<md-card>
-  <md-card-content>
+  </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-content>
     <h2 class="example-h2">Result</h2>
 
-    <md-progress-spinner
+    <mat-progress-spinner
         class="example-margin"
         [color]="color"
         [mode]="mode"
         [value]="value">
-    </md-progress-spinner>
-  </md-card-content>
-</md-card>
+    </mat-progress-spinner>
+  </mat-card-content>
+</mat-card>

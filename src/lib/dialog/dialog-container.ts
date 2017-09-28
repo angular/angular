@@ -27,7 +27,7 @@ import {
   TemplatePortal
 } from '@angular/cdk/portal';
 import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
-import {MdDialogConfig} from './dialog-config';
+import {MatDialogConfig} from './dialog-config';
 
 
 /**
@@ -35,7 +35,7 @@ import {MdDialogConfig} from './dialog-config';
  * attached to a DomPortalHost without an origin.
  * @docs-private
  */
-export function throwMdDialogContentAlreadyAttachedError() {
+export function throwMatDialogContentAlreadyAttachedError() {
   throw Error('Attempting to attach dialog content after content is already attached');
 }
 
@@ -46,7 +46,7 @@ export function throwMdDialogContentAlreadyAttachedError() {
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-dialog-container, mat-dialog-container',
+  selector: 'mat-dialog-container',
   templateUrl: 'dialog-container.html',
   styleUrls: ['dialog.css'],
   encapsulation: ViewEncapsulation.None,
@@ -74,7 +74,7 @@ export function throwMdDialogContentAlreadyAttachedError() {
     '(@slideDialog.done)': '_onAnimationDone($event)',
   },
 })
-export class MdDialogContainer extends BasePortalHost {
+export class MatDialogContainer extends BasePortalHost {
   /** The portal host inside of this container into which the dialog content will be loaded. */
   @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
 
@@ -85,7 +85,7 @@ export class MdDialogContainer extends BasePortalHost {
   private _elementFocusedBeforeDialogWasOpened: HTMLElement | null = null;
 
   /** The dialog configuration. */
-  _config: MdDialogConfig;
+  _config: MatDialogConfig;
 
   /** State of the dialog animation. */
   _state: 'void' | 'enter' | 'exit' = 'enter';
@@ -114,7 +114,7 @@ export class MdDialogContainer extends BasePortalHost {
    */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     if (this._portalHost.hasAttached()) {
-      throwMdDialogContentAlreadyAttachedError();
+      throwMatDialogContentAlreadyAttachedError();
     }
 
     this._savePreviouslyFocusedElement();
@@ -127,7 +127,7 @@ export class MdDialogContainer extends BasePortalHost {
    */
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     if (this._portalHost.hasAttached()) {
-      throwMdDialogContentAlreadyAttachedError();
+      throwMatDialogContentAlreadyAttachedError();
     }
 
     this._savePreviouslyFocusedElement();

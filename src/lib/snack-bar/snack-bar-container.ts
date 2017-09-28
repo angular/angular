@@ -35,7 +35,7 @@ import {
 import {first} from '@angular/cdk/rxjs';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {MdSnackBarConfig} from './snack-bar-config';
+import {MatSnackBarConfig} from './snack-bar-config';
 
 
 export type SnackBarState = 'visible' | 'hidden' | 'void';
@@ -79,7 +79,7 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
     ])
   ],
 })
-export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
+export class MatSnackBarContainer extends BasePortalHost implements OnDestroy {
   /** Whether the component has been destroyed. */
   private _destroyed = false;
 
@@ -96,7 +96,7 @@ export class MdSnackBarContainer extends BasePortalHost implements OnDestroy {
   private _animationState: SnackBarState;
 
   /** The snack bar configuration. */
-  snackBarConfig: MdSnackBarConfig;
+  snackBarConfig: MatSnackBarConfig;
 
   constructor(
     private _ngZone: NgZone,

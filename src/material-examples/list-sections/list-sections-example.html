@@ -1,15 +1,15 @@
-<md-list>
-  <h3 md-subheader>Folders</h3>
-  <md-list-item *ngFor="let folder of folders">
-    <md-icon md-list-icon>folder</md-icon>
-    <h4 md-line>{{folder.name}}</h4>
-    <p md-line> {{folder.updated | date}} </p>
-  </md-list-item>
-  <md-divider></md-divider>
-  <h3 md-subheader>Notes</h3>
-  <md-list-item *ngFor="let note of notes">
-    <md-icon md-list-icon>note</md-icon>
-    <h4 md-line>{{note.name}}</h4>
-    <p md-line> {{note.updated | date}} </p>
-  </md-list-item>
-</md-list>
+<mat-list>
+  <h3 mat-subheader>Folders</h3>
+  <mat-list-item *ngFor="let folder of folders">
+    <mat-icon mat-list-icon>folder</mat-icon>
+    <h4 mat-line>{{folder.name}}</h4>
+    <p mat-line> {{folder.updated | date}} </p>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+  <h3 mat-subheader>Notes</h3>
+  <mat-list-item *ngFor="let note of notes">
+    <mat-icon mat-list-icon>note</mat-icon>
+    <h4 mat-line>{{note.name}}</h4>
+    <p mat-line> {{note.updated | date}} </p>
+  </mat-list-item>
+</mat-list>

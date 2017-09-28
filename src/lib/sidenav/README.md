@@ -1,21 +1,21 @@
-**NOTE: The <code>md-sidenav-layout</code> element is deprecated. <code>md-sidenav-container</code>
+**NOTE: The <code>mat-sidenav-layout</code> element is deprecated. <code>mat-sidenav-container</code>
 should be used instead.**
 
 
-# MdSidenav
+# MatSidenav
 
-MdSidenav is the side navigation component for Angular Material. It is composed of two components: `<md-sidenav-container>` and `<md-sidenav>`.
+MatSidenav is the side navigation component for Angular Material. It is composed of two components: `<mat-sidenav-container>` and `<mat-sidenav>`.
 
 ## Screenshots
 
 <img src="https://material.angularjs.org/material2_assets/sidenav-example.png">
 
 
-## `<md-sidenav-container>`
+## `<mat-sidenav-container>`
 
 The parent component. Contains the code necessary to coordinate one or two sidenav and the backdrop.
 
-## `<md-sidenav>`
+## `<mat-sidenav>`
 
 The sidenav panel.
 
@@ -24,7 +24,7 @@ The sidenav panel.
 | Name | Type | Description |
 | --- | --- | --- |
 | `position` | `"start"\|"end"` | The position of this sidenav. In LTR direction, `"start"` will be shown on the left, `"end"` on the right. In RTL, it is reversed. `"start"` is used by default. If there is more than 1 sidenav on either side the container will be considered invalid and none of the sidenavs will be visible or toggleable until the container is valid again. |
-| `mode` | `"over"\|"push"\|"side"` | The mode or styling of the sidenav, default being `"over"`. With `"over"` the sidenav will appear above the content, and a backdrop will be shown. With `"push"` the sidenav will push the content of the `<md-sidenav-container>` to the side, and show a backdrop over it. `"side"` will resize the content and keep the sidenav opened. Clicking the backdrop will close sidenavs that do not have `mode="side"`. |
+| `mode` | `"over"\|"push"\|"side"` | The mode or styling of the sidenav, default being `"over"`. With `"over"` the sidenav will appear above the content, and a backdrop will be shown. With `"push"` the sidenav will push the content of the `<mat-sidenav-container>` to the side, and show a backdrop over it. `"side"` will resize the content and keep the sidenav opened. Clicking the backdrop will close sidenavs that do not have `mode="side"`. |
 | `opened` | `boolean` | Whether or not the sidenav is opened. Use this binding to open/close the sidenav. |
 
 ### Events
@@ -46,10 +46,10 @@ The sidenav panel.
 
 ### Notes
 
-The `<md-sidenav>` will resize based on its content. You can also set its width in CSS, like so:
+The `<mat-sidenav>` will resize based on its content. You can also set its width in CSS, like so:
 
 ```css
-md-sidenav {
+mat-sidenav {
   width: 200px;
 }
 ```
@@ -62,38 +62,38 @@ Here's a simple example of using the sidenav:
 
 ```html
 <app>
-  <md-sidenav-container>
-    <md-sidenav #start (open)="closeStartButton.focus()">
+  <mat-sidenav-container>
+    <mat-sidenav #start (open)="closeStartButton.focus()">
       Start Sidenav.
       <br>
-      <button md-button #closeStartButton (click)="start.close()">Close</button>
-    </md-sidenav>
-    <md-sidenav #end position="end">
+      <button mat-button #closeStartButton (click)="start.close()">Close</button>
+    </mat-sidenav>
+    <mat-sidenav #end position="end">
       End Sidenav.
-      <button md-button (click)="end.close()">Close</button>
-    </md-sidenav>
+      <button mat-button (click)="end.close()">Close</button>
+    </mat-sidenav>
 
     My regular content. This will be moved into the proper DOM at runtime.
-    <button md-button (click)="start.open()">Open start sidenav</button>
-    <button md-button (click)="end.open()">Open end sidenav</button>
+    <button mat-button (click)="start.open()">Open start sidenav</button>
+    <button mat-button (click)="end.open()">Open end sidenav</button>
 
-  </md-sidenav-container>
+  </mat-sidenav-container>
 </app>
 ```
 
 For a fullscreen sidenav, the recommended approach is set up the DOM such that the
-`md-sidenav-container` can naturally take up the full space:
+`mat-sidenav-container` can naturally take up the full space:
 
 ```html
 <app>
-  <md-sidenav-container>
-    <md-sidenav mode="side" opened="true">Drawer content</md-sidenav>
+  <mat-sidenav-container>
+    <mat-sidenav mode="side" opened="true">Drawer content</mat-sidenav>
     <div class="my-content">Main content</div>
-  </md-sidenav-container>
+  </mat-sidenav-container>
 </app>
 ```
 ```css
-html, body, material-app, md-sidenav-container, .my-content {
+html, body, material-app, mat-sidenav-container, .my-content {
   margin: 0;
   width: 100%;
   height: 100%;
@@ -105,10 +105,10 @@ outside of the scrollable region and absolutely position it.
 
 ```html
 <app>
-  <md-sidenav-container class="my-container">
-    <md-sidenav mode="side" opened="true">
-      <button md-mini-fab class="my-fab">
-        <md-icon>add</md-icon>
+  <mat-sidenav-container class="my-container">
+    <mat-sidenav mode="side" opened="true">
+      <button mat-mini-fab class="my-fab">
+        <mat-icon>add</mat-icon>
       </button>
       <div class="my-scrolling-content">
         Lorem ipsum dolor sit amet, pede a libero aenean phasellus, lectus metus sint ut risus,
@@ -121,9 +121,9 @@ outside of the scrollable region and absolutely position it.
         tristique vehicula nibh ipsum vivamus, proin proin. Porta commodo nibh quis libero amet.
         Taciti dui, sapien consectetuer.
       </div>
-    </md-sidenav>
-    <button md-mini-fab class="my-fab">
-      <md-icon>add</md-icon>
+    </mat-sidenav>
+    <button mat-mini-fab class="my-fab">
+      <mat-icon>add</mat-icon>
     </button>
     <div class="my-scrolling-content">
       Lorem ipsum dolor sit amet, pede a libero aenean phasellus, lectus metus sint ut risus, fusce
@@ -136,7 +136,7 @@ outside of the scrollable region and absolutely position it.
       ipsum vivamus, proin proin. Porta commodo nibh quis libero amet. Taciti dui, sapien
       consectetuer.
     </div>
-  </md-sidenav-container>
+  </mat-sidenav-container>
 </app>
 ```
 ```css
@@ -150,7 +150,7 @@ outside of the scrollable region and absolutely position it.
 }
 
 .my-container .mat-sidenav-content,
-.my-container md-sidenav {
+.my-container mat-sidenav {
   display: flex;
 }
 

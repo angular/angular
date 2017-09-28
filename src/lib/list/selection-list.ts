@@ -32,9 +32,8 @@ import {
 import {
   CanDisable,
   CanDisableRipple,
-  MATERIAL_COMPATIBILITY_MODE,
-  MdLine,
-  MdLineSetter,
+  MatLine,
+  MatLineSetter,
   mixinDisabled,
   mixinDisableRipple,
 } from '@angular/material/core';
@@ -43,16 +42,16 @@ import {Subscription} from 'rxjs/Subscription';
 
 
 /** @docs-private */
-export class MdSelectionListBase {}
-export const _MdSelectionListMixinBase = mixinDisableRipple(mixinDisabled(MdSelectionListBase));
+export class MatSelectionListBase {}
+export const _MatSelectionListMixinBase = mixinDisableRipple(mixinDisabled(MatSelectionListBase));
 
 /** @docs-private */
-export class MdListOptionBase {}
-export const _MdListOptionMixinBase = mixinDisableRipple(MdListOptionBase);
+export class MatListOptionBase {}
+export const _MatListOptionMixinBase = mixinDisableRipple(MatListOptionBase);
 
 /** Event emitted by a selection-list whenever the state of an option is changed. */
-export interface MdSelectionListOptionEvent {
-  option: MdListOption;
+export interface MatSelectionListOptionEvent {
+  option: MatListOption;
 }
 
 const FOCUSED_STYLE: string = 'mat-list-item-focus';
@@ -64,7 +63,7 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-list-option, mat-list-option',
+  selector: 'mat-list-option',
   inputs: ['disableRipple'],
   host: {
     'role': 'option',
@@ -81,19 +80,18 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdListOption extends _MdListOptionMixinBase
+export class MatListOption extends _MatListOptionMixinBase
     implements AfterContentInit, OnDestroy, FocusableOption, CanDisableRipple {
 
-  private _lineSetter: MdLineSetter;
+  private _lineSetter: MatLineSetter;
   private _selected: boolean = false;
   private _disabled: boolean = false;
 
   /** Whether the option has focus. */
   _hasFocus: boolean = false;
 
-  @ContentChildren(MdLine) _lines: QueryList<MdLine>;
+  @ContentChildren(MatLine) _lines: QueryList<MatLine>;
 
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: 'before' | 'after' = 'after';
@@ -112,27 +110,27 @@ export class MdListOption extends _MdListOptionMixinBase
   set selected(value: boolean) { this._selected = coerceBooleanProperty(value); }
 
   /** Emitted when the option is focused. */
-  onFocus = new EventEmitter<MdSelectionListOptionEvent>();
+  onFocus = new EventEmitter<MatSelectionListOptionEvent>();
 
   /** Emitted when the option is selected. */
-  @Output() selectChange = new EventEmitter<MdSelectionListOptionEvent>();
+  @Output() selectChange = new EventEmitter<MatSelectionListOptionEvent>();
 
   /** Emitted when the option is deselected. */
-  @Output() deselected = new EventEmitter<MdSelectionListOptionEvent>();
+  @Output() deselected = new EventEmitter<MatSelectionListOptionEvent>();
 
   /** Emitted when the option is destroyed. */
-  @Output() destroyed = new EventEmitter<MdSelectionListOptionEvent>();
+  @Output() destroyed = new EventEmitter<MatSelectionListOptionEvent>();
 
   constructor(private _renderer: Renderer2,
               private _element: ElementRef,
               private _changeDetector: ChangeDetectorRef,
-              @Optional() @Inject(forwardRef(() => MdSelectionList))
-              public selectionList: MdSelectionList) {
+              @Optional() @Inject(forwardRef(() => MatSelectionList))
+              public selectionList: MatSelectionList) {
     super();
   }
 
   ngAfterContentInit() {
-    this._lineSetter = new MdLineSetter(this._lines, this._renderer, this._element);
+    this._lineSetter = new MatLineSetter(this._lines, this._renderer, this._element);
 
     if (this.selectionList.disabled) {
       this.disabled = true;
@@ -188,7 +186,7 @@ export class MdListOption extends _MdListOptionMixinBase
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-selection-list, mat-selection-list',
+  selector: 'mat-selection-list',
   inputs: ['disabled', 'disableRipple'],
   host: {
     'role': 'listbox',
@@ -203,7 +201,7 @@ export class MdListOption extends _MdListOptionMixinBase
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MdSelectionList extends _MdSelectionListMixinBase
+export class MatSelectionList extends _MatSelectionListMixinBase
     implements FocusableOption, CanDisable, CanDisableRipple, AfterContentInit, OnDestroy {
 
   /** Tab index for the selection-list. */
@@ -216,20 +214,20 @@ export class MdSelectionList extends _MdSelectionListMixinBase
   private _optionDestroyStream = Subscription.EMPTY;
 
   /** The FocusKeyManager which handles focus. */
-  _keyManager: FocusKeyManager<MdListOption>;
+  _keyManager: FocusKeyManager<MatListOption>;
 
   /** The option components contained within this selection-list. */
-  @ContentChildren(MdListOption) options: QueryList<MdListOption>;
+  @ContentChildren(MatListOption) options: QueryList<MatListOption>;
 
   /** The currently selected options. */
-  selectedOptions: SelectionModel<MdListOption> = new SelectionModel<MdListOption>(true);
+  selectedOptions: SelectionModel<MatListOption> = new SelectionModel<MatListOption>(true);
 
   constructor(private _element: ElementRef) {
     super();
   }
 
   ngAfterContentInit(): void {
-    this._keyManager = new FocusKeyManager<MdListOption>(this.options).withWrap();
+    this._keyManager = new FocusKeyManager<MatListOption>(this.options).withWrap();
 
     if (this.disabled) {
       this._tabIndex = -1;
@@ -271,9 +269,9 @@ export class MdSelectionList extends _MdSelectionListMixinBase
   private _onDestroySubscription(): Subscription {
     return RxChain.from(this.options.changes)
       .call(startWith, this.options)
-      .call(switchMap, (options: MdListOption[]) => {
+      .call(switchMap, (options: MatListOption[]) => {
         return merge(...options.map(option => option.destroyed));
-      }).subscribe((e: MdSelectionListOptionEvent) => {
+      }).subscribe((e: MatSelectionListOptionEvent) => {
         let optionIndex: number = this.options.toArray().indexOf(e.option);
         if (e.option._hasFocus) {
           // Check whether the option is the last item
@@ -291,9 +289,9 @@ export class MdSelectionList extends _MdSelectionListMixinBase
   private _onFocusSubscription(): Subscription {
     return RxChain.from(this.options.changes)
       .call(startWith, this.options)
-      .call(switchMap, (options: MdListOption[]) => {
+      .call(switchMap, (options: MatListOption[]) => {
         return merge(...options.map(option => option.onFocus));
-      }).subscribe((e: MdSelectionListOptionEvent) => {
+      }).subscribe((e: MatSelectionListOptionEvent) => {
       let optionIndex: number = this.options.toArray().indexOf(e.option);
       this._keyManager.updateActiveItemIndex(optionIndex);
     });
@@ -317,7 +315,7 @@ export class MdSelectionList extends _MdSelectionListMixinBase
     let focusedIndex = this._keyManager.activeItemIndex;
 
     if (focusedIndex != null && this._isValidIndex(focusedIndex)) {
-      let focusedOption: MdListOption = this.options.toArray()[focusedIndex];
+      let focusedOption: MatListOption = this.options.toArray()[focusedIndex];
 
       if (focusedOption) {
         focusedOption.toggle();

@@ -7,33 +7,33 @@
  */
 
 import {
-  Component,
   ChangeDetectionStrategy,
-  ViewEncapsulation,
+  Component,
   Directive,
   ElementRef,
   Renderer2,
+  ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, MATERIAL_COMPATIBILITY_MODE, mixinColor} from '@angular/material/core';
+import {CanColor, mixinColor} from '@angular/material/core';
 
 
 @Directive({
-  selector: 'md-toolbar-row, mat-toolbar-row',
+  selector: 'mat-toolbar-row',
   host: {'class': 'mat-toolbar-row'},
 })
-export class MdToolbarRow {}
+export class MatToolbarRow {}
 
-// Boilerplate for applying mixins to MdToolbar.
+// Boilerplate for applying mixins to MatToolbar.
 /** @docs-private */
-export class MdToolbarBase {
+export class MatToolbarBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MdToolbarMixinBase = mixinColor(MdToolbarBase);
+export const _MatToolbarMixinBase = mixinColor(MatToolbarBase);
 
 
 @Component({
   moduleId: module.id,
-  selector: 'md-toolbar, mat-toolbar',
+  selector: 'mat-toolbar',
   templateUrl: 'toolbar.html',
   styleUrls: ['toolbar.css'],
   inputs: ['color'],
@@ -44,9 +44,8 @@ export const _MdToolbarMixinBase = mixinColor(MdToolbarBase);
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdToolbar extends _MdToolbarMixinBase implements CanColor {
+export class MatToolbar extends _MatToolbarMixinBase implements CanColor {
 
   constructor(renderer: Renderer2, elementRef: ElementRef) {
     super(renderer, elementRef);

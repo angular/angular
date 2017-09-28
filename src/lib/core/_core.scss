@@ -40,7 +40,7 @@
   @include mat-pseudo-checkbox-theme($theme);
 
   // Wrapper element that provides the theme background when the
-  // user's content isn't inside of a `md-sidenav-container`.
+  // user's content isn't inside of a `mat-sidenav-container`.
   .mat-app-background {
     $background: map-get($theme, background);
     background-color: mat-color($background, background);

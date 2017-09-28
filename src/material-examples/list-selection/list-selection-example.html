@@ -1,8 +1,8 @@
-<md-selection-list #shoes>
-  <md-list-option *ngFor="let shoe of typesOfShoes">
+<mat-selection-list #shoes>
+  <mat-list-option *ngFor="let shoe of typesOfShoes">
     {{shoe}}
-  </md-list-option>
-</md-selection-list>
+  </mat-list-option>
+</mat-selection-list>
 
 <p>
   Options selected: {{shoes.selectedOptions.selected.length}}

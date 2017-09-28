@@ -1,4 +1,4 @@
-`<md-paginator>` provides navigation for paged information, typically used with a table.
+`<mat-paginator>` provides navigation for paged information, typically used with a table.
 
 <!-- example(paginator-overview) -->
 
@@ -19,11 +19,11 @@ dropdown can be set via `pageSizeOptions`
 The current pageSize will always appear in the dropdown, even if it is not included in pageSizeOptions.
 
 ### Internationalization
-The labels for the paginator can be customized by providing your own instance of `MdPaginatorIntl`.
+The labels for the paginator can be customized by providing your own instance of `MatPaginatorIntl`.
 This will allow you to change the following:
  1. The label for the length of each page.
  2. The range text displayed to the user.
  3. The tooltip messages on the navigation buttons.
 
 ### Accessibility
-The `aria-label`s for next page and previous page buttons can be set in `MdPaginatorIntl`.
+The `aria-label`s for next page and previous page buttons can be set in `MatPaginatorIntl`.

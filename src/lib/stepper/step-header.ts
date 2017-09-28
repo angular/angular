@@ -8,13 +8,12 @@
 
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {Component, Input, ViewEncapsulation} from '@angular/core';
-import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material/core';
-import {MdStepLabel} from './step-label';
+import {MatStepLabel} from './step-label';
 
 
 @Component({
   moduleId: module.id,
-  selector: 'md-step-header, mat-step-header',
+  selector: 'mat-step-header',
   templateUrl: 'step-header.html',
   styleUrls: ['step-header.css'],
   host: {
@@ -23,14 +22,13 @@ import {MdStepLabel} from './step-label';
   },
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdStepHeader {
+export class MatStepHeader {
   /** Icon for the given step. */
   @Input() icon: string;
 
   /** Label of the given step. */
-  @Input() label: MdStepLabel | string;
+  @Input() label: MatStepLabel | string;
 
   /** Index of the given step. */
   @Input()
@@ -66,11 +64,11 @@ export class MdStepHeader {
 
   /** Returns string label of given step if it is a text label. */
   _stringLabel(): string | null {
-    return this.label instanceof MdStepLabel ? null : this.label;
+    return this.label instanceof MatStepLabel ? null : this.label;
   }
 
-  /** Returns MdStepLabel if the label of given step is a template label. */
-  _templateLabel(): MdStepLabel | null {
-    return this.label instanceof MdStepLabel ? this.label : null;
+  /** Returns MatStepLabel if the label of given step is a template label. */
+  _templateLabel(): MatStepLabel | null {
+    return this.label instanceof MatStepLabel ? this.label : null;
   }
 }

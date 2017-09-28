@@ -9,34 +9,34 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {PlatformModule} from '@angular/cdk/platform';
-import {MdError} from './error';
-import {MdFormField} from './form-field';
-import {MdHint} from './hint';
-import {MdPlaceholder} from './placeholder';
-import {MdPrefix} from './prefix';
-import {MdSuffix} from './suffix';
+import {MatError} from './error';
+import {MatFormField} from './form-field';
+import {MatHint} from './hint';
+import {MatPlaceholder} from './placeholder';
+import {MatPrefix} from './prefix';
+import {MatSuffix} from './suffix';
 
 
 @NgModule({
   declarations: [
-    MdError,
-    MdHint,
-    MdFormField,
-    MdPlaceholder,
-    MdPrefix,
-    MdSuffix,
+    MatError,
+    MatHint,
+    MatFormField,
+    MatPlaceholder,
+    MatPrefix,
+    MatSuffix,
   ],
   imports: [
     CommonModule,
     PlatformModule,
   ],
   exports: [
-    MdError,
-    MdHint,
-    MdFormField,
-    MdPlaceholder,
-    MdPrefix,
-    MdSuffix,
+    MatError,
+    MatHint,
+    MatFormField,
+    MatPlaceholder,
+    MatPrefix,
+    MatSuffix,
   ],
 })
-export class MdFormFieldModule {}
+export class MatFormFieldModule {}

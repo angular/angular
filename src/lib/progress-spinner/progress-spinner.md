@@ -1,10 +1,10 @@
-`<md-progress-spinner>` and `<md-spinner>` are a circular indicators of progress and activity.
+`<mat-progress-spinner>` and `<mat-spinner>` are a circular indicators of progress and activity.
 
 <!-- example(progress-spinner-overview) -->
 
 ### Progress mode
 The progress-spinner supports two modes, "determinate" and "indeterminate". 
-The `<md-spinner>` component is an alias for `<md-progress-spinner mode="indeterminate">`.
+The `<mat-spinner>` component is an alias for `<mat-progress-spinner mode="indeterminate">`.
 
 | Mode          | Description                                                                      |
 |---------------|----------------------------------------------------------------------------------|

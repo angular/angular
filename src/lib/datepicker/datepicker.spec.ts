@@ -15,33 +15,33 @@ import {
   JUL,
   JUN,
   MAT_DATE_LOCALE,
-  MdNativeDateModule,
+  MatNativeDateModule,
   NativeDateModule,
   SEP,
 } from '@angular/material/core';
-import {MdFormFieldModule} from '@angular/material/form-field';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdInputModule} from '../input/index';
-import {MdDatepicker} from './datepicker';
-import {MdDatepickerInput} from './datepicker-input';
-import {MdDatepickerIntl, MdDatepickerModule} from './index';
+import {MatInputModule} from '../input/index';
+import {MatDatepicker} from './datepicker';
+import {MatDatepickerInput} from './datepicker-input';
+import {MatDatepickerIntl, MatDatepickerModule} from './index';
 
 
-describe('MdDatepicker', () => {
+describe('MatDatepicker', () => {
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
     container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
   }));
 
-  describe('with MdNativeDateModule', () => {
+  describe('with MatNativeDateModule', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         imports: [
           FormsModule,
-          MdDatepickerModule,
-          MdFormFieldModule,
-          MdInputModule,
-          MdNativeDateModule,
+          MatDatepickerModule,
+          MatFormFieldModule,
+          MatInputModule,
+          MatNativeDateModule,
           NoopAnimationsModule,
           ReactiveFormsModule,
         ],
@@ -94,12 +94,12 @@ describe('MdDatepicker', () => {
         testComponent.touch = true;
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).toBeNull();
+        expect(document.querySelector('mat-dialog-container')).toBeNull();
 
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).not.toBeNull();
+        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
       });
 
       it('open in disabled mode should not open the calendar', () => {
@@ -107,13 +107,13 @@ describe('MdDatepicker', () => {
         fixture.detectChanges();
 
         expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
-        expect(document.querySelector('md-dialog-container')).toBeNull();
+        expect(document.querySelector('mat-dialog-container')).toBeNull();
 
         testComponent.datepicker.open();
         fixture.detectChanges();
 
         expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
-        expect(document.querySelector('md-dialog-container')).toBeNull();
+        expect(document.querySelector('mat-dialog-container')).toBeNull();
       });
 
       it('disabled datepicker input should open the calendar if datepicker is enabled', () => {
@@ -149,7 +149,7 @@ describe('MdDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        let content = document.querySelector('.cdk-overlay-pane md-datepicker-content')!;
+        let content = document.querySelector('.cdk-overlay-pane mat-datepicker-content')!;
         expect(content).toBeTruthy('Expected datepicker to be open.');
 
         const keyboardEvent = createKeyboardEvent('keydown', ESCAPE);
@@ -158,7 +158,7 @@ describe('MdDatepicker', () => {
         dispatchEvent(content, keyboardEvent);
         fixture.detectChanges();
 
-        content = document.querySelector('.cdk-overlay-pane md-datepicker-content')!;
+        content = document.querySelector('.cdk-overlay-pane mat-datepicker-content')!;
 
         expect(content).toBeFalsy('Expected datepicker to be closed.');
         expect(stopPropagationSpy).toHaveBeenCalled();
@@ -173,13 +173,13 @@ describe('MdDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).not.toBeNull();
+        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
 
         testComponent.datepicker.close();
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
-          expect(document.querySelector('md-dialog-container')).toBeNull();
+          expect(document.querySelector('mat-dialog-container')).toBeNull();
         });
       });
 
@@ -190,7 +190,7 @@ describe('MdDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).not.toBeNull();
+        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
 
         let cells = document.querySelectorAll('.mat-calendar-body-cell');
@@ -198,7 +198,7 @@ describe('MdDatepicker', () => {
         fixture.detectChanges();
 
         fixture.whenStable().then(() => {
-          expect(document.querySelector('md-dialog-container')).toBeNull();
+          expect(document.querySelector('mat-dialog-container')).toBeNull();
           expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
         });
       });
@@ -212,7 +212,7 @@ describe('MdDatepicker', () => {
           testComponent.datepicker.open();
           fixture.detectChanges();
 
-          expect(document.querySelector('md-datepicker-content')).not.toBeNull();
+          expect(document.querySelector('mat-datepicker-content')).not.toBeNull();
           expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, currentDay));
 
           let cells = document.querySelectorAll('.mat-calendar-body-cell');
@@ -222,7 +222,7 @@ describe('MdDatepicker', () => {
 
         fixture.whenStable().then(() => {
           expect(selectedChangedSpy.calls.count()).toEqual(1);
-          expect(document.querySelector('md-dialog-container')).toBeNull();
+          expect(document.querySelector('mat-dialog-container')).toBeNull();
           expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
         });
       });
@@ -536,7 +536,7 @@ describe('MdDatepicker', () => {
       });
     });
 
-    describe('datepicker with md-datepicker-toggle', () => {
+    describe('datepicker with mat-datepicker-toggle', () => {
       let fixture: ComponentFixture<DatepickerWithToggle>;
       let testComponent: DatepickerWithToggle;
 
@@ -553,13 +553,13 @@ describe('MdDatepicker', () => {
       }));
 
       it('should open calendar when toggle clicked', () => {
-        expect(document.querySelector('md-dialog-container')).toBeNull();
+        expect(document.querySelector('mat-dialog-container')).toBeNull();
 
         let toggle = fixture.debugElement.query(By.css('button'));
         dispatchMouseEvent(toggle.nativeElement, 'click');
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).not.toBeNull();
+        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
       });
 
       it('should not open calendar when toggle clicked if datepicker is disabled', () => {
@@ -568,12 +568,12 @@ describe('MdDatepicker', () => {
         const toggle = fixture.debugElement.query(By.css('button')).nativeElement;
 
         expect(toggle.hasAttribute('disabled')).toBe(true);
-        expect(document.querySelector('md-dialog-container')).toBeNull();
+        expect(document.querySelector('mat-dialog-container')).toBeNull();
 
         dispatchMouseEvent(toggle, 'click');
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).toBeNull();
+        expect(document.querySelector('mat-dialog-container')).toBeNull();
       });
 
       it('should not open calendar when toggle clicked if input is disabled', () => {
@@ -584,12 +584,12 @@ describe('MdDatepicker', () => {
         const toggle = fixture.debugElement.query(By.css('button')).nativeElement;
 
         expect(toggle.hasAttribute('disabled')).toBe(true);
-        expect(document.querySelector('md-dialog-container')).toBeNull();
+        expect(document.querySelector('mat-dialog-container')).toBeNull();
 
         dispatchMouseEvent(toggle, 'click');
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).toBeNull();
+        expect(document.querySelector('mat-dialog-container')).toBeNull();
       });
 
       it('should set the `button` type on the trigger to prevent form submissions', () => {
@@ -627,7 +627,7 @@ describe('MdDatepicker', () => {
       });
 
       it('should re-render when the i18n labels change',
-        inject([MdDatepickerIntl], (intl: MdDatepickerIntl) => {
+        inject([MatDatepickerIntl], (intl: MatDatepickerIntl) => {
           const toggle = fixture.debugElement.query(By.css('button')).nativeElement;
 
           intl.openCalendarLabel = 'Open the calendar, perhaps?';
@@ -638,7 +638,7 @@ describe('MdDatepicker', () => {
         }));
     });
 
-    describe('datepicker inside md-form-field', () => {
+    describe('datepicker inside mat-form-field', () => {
       let fixture: ComponentFixture<FormFieldDatepicker>;
       let testComponent: FormFieldDatepicker;
 
@@ -654,10 +654,10 @@ describe('MdDatepicker', () => {
         fixture.detectChanges();
       }));
 
-      it('should attach popup to md-form-field underline', () => {
+      it('should attach popup to mat-form-field underline', () => {
         let attachToRef = testComponent.datepickerInput.getPopupConnectionElementRef();
         expect(attachToRef.nativeElement.classList.contains('mat-form-field-underline'))
-            .toBe(true, 'popup should be attached to md-form-field underline');
+            .toBe(true, 'popup should be attached to mat-form-field underline');
       });
     });
 
@@ -787,7 +787,7 @@ describe('MdDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).not.toBeNull();
+        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
 
         let cells = document.querySelectorAll('.mat-calendar-body-cell');
         expect(cells[0].classList).toContain('mat-calendar-body-disabled');
@@ -857,7 +857,7 @@ describe('MdDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('md-dialog-container')).not.toBeNull();
+        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
 
         let cells = document.querySelectorAll('.mat-calendar-body-cell');
         dispatchMouseEvent(cells[0], 'click');
@@ -897,14 +897,14 @@ describe('MdDatepicker', () => {
     });
   });
 
-  describe('with missing DateAdapter and MD_DATE_FORMATS', () => {
+  describe('with missing DateAdapter and MAT_DATE_FORMATS', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         imports: [
           FormsModule,
-          MdDatepickerModule,
-          MdFormFieldModule,
-          MdInputModule,
+          MatDatepickerModule,
+          MatFormFieldModule,
+          MatInputModule,
           NoopAnimationsModule,
           ReactiveFormsModule,
         ],
@@ -916,7 +916,7 @@ describe('MdDatepicker', () => {
 
     it('should throw when created', () => {
       expect(() => TestBed.createComponent(StandardDatepicker))
-          .toThrowError(/MdDatepicker: No provider found for .*/);
+          .toThrowError(/MatDatepicker: No provider found for .*/);
     });
   });
 
@@ -928,10 +928,10 @@ describe('MdDatepicker', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         imports: [
-          MdDatepickerModule,
-          MdFormFieldModule,
-          MdInputModule,
-          MdNativeDateModule,
+          MatDatepickerModule,
+          MatFormFieldModule,
+          MatInputModule,
+          MatNativeDateModule,
           NoopAnimationsModule
         ],
         declarations: [StandardDatepicker],
@@ -1010,10 +1010,10 @@ describe('MdDatepicker', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
         imports: [
-          MdDatepickerModule,
-          MdFormFieldModule,
-          MdInputModule,
-          MdNativeDateModule,
+          MatDatepickerModule,
+          MatFormFieldModule,
+          MatInputModule,
+          MatNativeDateModule,
           NoopAnimationsModule,
           NativeDateModule,
           FormsModule
@@ -1045,120 +1045,123 @@ describe('MdDatepicker', () => {
 
 @Component({
   template: `
-    <input [mdDatepicker]="d" [value]="date">
-    <md-datepicker #d [touchUi]="touch" [disabled]="disabled"></md-datepicker>
+    <input [matDatepicker]="d" [value]="date">
+    <mat-datepicker #d [touchUi]="touch" [disabled]="disabled"></mat-datepicker>
   `,
 })
 class StandardDatepicker {
   touch = false;
   disabled = false;
   date: Date | null = new Date(2020, JAN, 1);
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
-  @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
 }
 
 
 @Component({
   template: `
-    <input [mdDatepicker]="d"><input [mdDatepicker]="d"><md-datepicker #d></md-datepicker>
+    <input [matDatepicker]="d"><input [matDatepicker]="d"><mat-datepicker #d></mat-datepicker>
   `,
 })
 class MultiInputDatepicker {}
 
 
 @Component({
-  template: `<md-datepicker #d></md-datepicker>`,
+  template: `<mat-datepicker #d></mat-datepicker>`,
 })
 class NoInputDatepicker {
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
 }
 
 
 @Component({
   template: `
-    <input [mdDatepicker]="d" [value]="date">
-    <md-datepicker #d [startAt]="startDate"></md-datepicker>
+    <input [matDatepicker]="d" [value]="date">
+    <mat-datepicker #d [startAt]="startDate"></mat-datepicker>
   `,
 })
 class DatepickerWithStartAt {
   date = new Date(2020, JAN, 1);
   startDate = new Date(2010, JAN, 1);
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
 }
 
 
 @Component({
   template: `
-    <input [mdDatepicker]="d" [value]="date">
-    <md-datepicker #d startView="year"></md-datepicker>
+    <input [matDatepicker]="d" [value]="date">
+    <mat-datepicker #d startView="year"></mat-datepicker>
   `,
 })
 class DatepickerWithStartView {
   date = new Date(2020, JAN, 1);
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
-}
-
-
-@Component({
-  template: `<input [(ngModel)]="selected" [mdDatepicker]="d"><md-datepicker #d></md-datepicker>`,
-})
-class DatepickerWithNgModel {
-  selected: Date | null = null;
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
-  @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
 }
 
 
 @Component({
   template: `
-    <input [formControl]="formControl" [mdDatepicker]="d">
-    <md-datepicker #d></md-datepicker>
+    <input [(ngModel)]="selected" [matDatepicker]="d">
+    <mat-datepicker #d></mat-datepicker>
+  `,
+})
+class DatepickerWithNgModel {
+  selected: Date | null = null;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
+}
+
+
+@Component({
+  template: `
+    <input [formControl]="formControl" [matDatepicker]="d">
+    <mat-datepicker #d></mat-datepicker>
   `,
 })
 class DatepickerWithFormControl {
   formControl = new FormControl();
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
-  @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
 }
 
 
 @Component({
   template: `
-    <input [mdDatepicker]="d">
-    <md-datepicker-toggle [for]="d"></md-datepicker-toggle>
-    <md-datepicker #d [touchUi]="touchUI"></md-datepicker>
+    <input [matDatepicker]="d">
+    <mat-datepicker-toggle [for]="d"></mat-datepicker-toggle>
+    <mat-datepicker #d [touchUi]="touchUI"></mat-datepicker>
   `,
 })
 class DatepickerWithToggle {
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
-  @ViewChild(MdDatepickerInput) input: MdDatepickerInput<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepickerInput) input: MatDatepickerInput<Date>;
   touchUI = true;
 }
 
 
 @Component({
   template: `
-      <md-form-field>
-        <input mdInput [mdDatepicker]="d">
-        <md-datepicker #d></md-datepicker>
-      </md-form-field>
+      <mat-form-field>
+        <input matInput [matDatepicker]="d">
+        <mat-datepicker #d></mat-datepicker>
+      </mat-form-field>
   `,
 })
 class FormFieldDatepicker {
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
-  @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
 }
 
 
 @Component({
   template: `
-    <input [mdDatepicker]="d" [(ngModel)]="date" [min]="minDate" [max]="maxDate">
-    <md-datepicker-toggle [for]="d"></md-datepicker-toggle>
-    <md-datepicker #d></md-datepicker>
+    <input [matDatepicker]="d" [(ngModel)]="date" [min]="minDate" [max]="maxDate">
+    <mat-datepicker-toggle [for]="d"></mat-datepicker-toggle>
+    <mat-datepicker #d></mat-datepicker>
   `,
 })
 class DatepickerWithMinAndMaxValidation {
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
   date: Date | null;
   minDate = new Date(2010, JAN, 1);
   maxDate = new Date(2020, JAN, 1);
@@ -1167,13 +1170,13 @@ class DatepickerWithMinAndMaxValidation {
 
 @Component({
   template: `
-    <input [mdDatepicker]="d" [(ngModel)]="date" [mdDatepickerFilter]="filter">
-    <md-datepicker-toggle [for]="d"></md-datepicker-toggle>
-    <md-datepicker #d [touchUi]="true"></md-datepicker>
+    <input [matDatepicker]="d" [(ngModel)]="date" [matDatepickerFilter]="filter">
+    <mat-datepicker-toggle [for]="d"></mat-datepicker-toggle>
+    <mat-datepicker #d [touchUi]="true"></mat-datepicker>
   `,
 })
 class DatepickerWithFilterAndValidation {
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
   date: Date;
   filter = (date: Date) => date.getDate() != 1;
 }
@@ -1181,13 +1184,13 @@ class DatepickerWithFilterAndValidation {
 
 @Component({
   template: `
-    <input [mdDatepicker]="d" (change)="onChange()" (input)="onInput()"
+    <input [matDatepicker]="d" (change)="onChange()" (input)="onInput()"
            (dateChange)="onDateChange()" (dateInput)="onDateInput()">
-    <md-datepicker #d [touchUi]="true"></md-datepicker>
+    <mat-datepicker #d [touchUi]="true"></mat-datepicker>
   `
 })
 class DatepickerWithChangeAndInputEvents {
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
 
   onChange() {}
 
@@ -1200,20 +1203,20 @@ class DatepickerWithChangeAndInputEvents {
 
 @Component({
   template: `
-    <input [mdDatepicker]="d" [(ngModel)]="date">
-    <md-datepicker #d></md-datepicker>
+    <input [matDatepicker]="d" [(ngModel)]="date">
+    <mat-datepicker #d></mat-datepicker>
   `
 })
 class DatepickerWithi18n {
   date: Date | null = new Date(2010, JAN, 1);
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
-  @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
 }
 
 @Component({
   template: `
-    <input [mdDatepicker]="d" [(ngModel)]="value" [min]="min" [max]="max">
-    <md-datepicker #d [startAt]="startAt"></md-datepicker>
+    <input [matDatepicker]="d" [(ngModel)]="value" [min]="min" [max]="max">
+    <mat-datepicker #d [startAt]="startAt"></mat-datepicker>
   `
 })
 class DatepickerWithISOStrings {
@@ -1221,6 +1224,6 @@ class DatepickerWithISOStrings {
   min = new Date(2017, JAN, 1).toISOString();
   max = new Date (2017, DEC, 31).toISOString();
   startAt = new Date(2017, JUL, 1).toISOString();
-  @ViewChild('d') datepicker: MdDatepicker<Date>;
-  @ViewChild(MdDatepickerInput) datepickerInput: MdDatepickerInput<Date>;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
 }

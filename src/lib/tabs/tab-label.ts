@@ -10,13 +10,13 @@ import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
 import {TemplatePortalDirective} from '@angular/cdk/portal';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MdTabLabelBaseClass = TemplatePortalDirective;
+export const _MatTabLabelBaseClass = TemplatePortalDirective;
 
 /** Used to flag tab labels for use with the portal directive */
 @Directive({
-  selector: '[md-tab-label], [mat-tab-label], [mdTabLabel], [matTabLabel]',
+  selector: '[mat-tab-label], [matTabLabel]',
 })
-export class MdTabLabel extends _MdTabLabelBaseClass {
+export class MatTabLabel extends _MatTabLabelBaseClass {
   constructor(templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef) {
     super(templateRef, viewContainerRef);
   }

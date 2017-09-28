@@ -1,57 +1,57 @@
 <section>
   <h2>Basic chips</h2>
-  <md-chip-list>
-    <md-chip>Carnation</md-chip>
-    <md-chip>Irises</md-chip>
-    <md-chip>Buttercup</md-chip>
-  </md-chip-list>
+  <mat-chip-list>
+    <mat-chip>Carnation</mat-chip>
+    <mat-chip>Irises</mat-chip>
+    <mat-chip>Buttercup</mat-chip>
+  </mat-chip-list>
 
 </section>
 
 <section>
   <h2>Unstyled chips</h2>
 
-  <md-chip-list>
-    <md-basic-chip>Husky </md-basic-chip>
-    <md-basic-chip>Golden Retriever </md-basic-chip>
-    <md-basic-chip>Border Collie </md-basic-chip>
-  </md-chip-list>
+  <mat-chip-list>
+    <mat-basic-chip>Husky </mat-basic-chip>
+    <mat-basic-chip>Golden Retriever </mat-basic-chip>
+    <mat-basic-chip>Border Collie </mat-basic-chip>
+  </mat-chip-list>
 </section>
 
 <section>
   <h2>Removable chips in a form field</h2>
 
-  <md-form-field>
-    <md-chip-list mdPrefix #chipList>
-      <md-chip *ngFor="let person of people" [color]="color" (remove)="remove(person)">
+  <mat-form-field>
+    <mat-chip-list matPrefix #chipList>
+      <mat-chip *ngFor="let person of people" [color]="color" (remove)="remove(person)">
         {{person.name}}
-        <md-icon mdChipRemove>cancel</md-icon>
-      </md-chip>
-    </md-chip-list>
-    <input mdInput placeholder="New Contributor..."
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+    <input matInput placeholder="New Contributor..."
            aria-label="New contributor"
-           [mdChipInputFor]="chipList"
-           [mdChipInputAddOnBlur]="addOnBlur"
-           (mdChipInputTokenEnd)="add($event)" />
-  </md-form-field>
+           [matChipInputFor]="chipList"
+           [matChipInputAddOnBlur]="addOnBlur"
+           (matChipInputTokenEnd)="add($event)" />
+  </mat-form-field>
 </section>
 
 <section>
   <h2>Colored chips</h2>
   <p>This example is good for contrast-radio checking.</p>
-  <md-chip-list>
-    <md-chip color="primary" selected="true">Primary</md-chip>
-    <md-chip color="accent" selected="true">Accent</md-chip>
-    <md-chip color="warn" selected="true">Warn</md-chip>
-  </md-chip-list>
+  <mat-chip-list>
+    <mat-chip color="primary" selected="true">Primary</mat-chip>
+    <mat-chip color="accent" selected="true">Accent</mat-chip>
+    <mat-chip color="warn" selected="true">Warn</mat-chip>
+  </mat-chip-list>
 </section>
 
 
 <section>
   <h2>Stacked chips</h2>
-  <md-chip-list class="mat-chip-list-stacked">
-    <md-chip [selectable]="false">Lemon</md-chip>
-    <md-chip [selectable]="false">Lime</md-chip>
-    <md-chip [selectable]="false">Grapefruit</md-chip>
-  </md-chip-list>
+  <mat-chip-list class="mat-chip-list-stacked">
+    <mat-chip [selectable]="false">Lemon</mat-chip>
+    <mat-chip [selectable]="false">Lime</mat-chip>
+    <mat-chip [selectable]="false">Grapefruit</mat-chip>
+  </mat-chip-list>
 </section>

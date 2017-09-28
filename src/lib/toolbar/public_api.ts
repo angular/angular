@@ -8,4 +8,4 @@
 
 export * from './toolbar-module';
 export * from './toolbar';
-export * from './mat-exports';
+

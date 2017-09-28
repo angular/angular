@@ -165,7 +165,7 @@ export class SelectionModel<T> {
 }
 
 /**
- * Describes an event emitted when the value of a MdSelectionModel has changed.
+ * Describes an event emitted when the value of a MatSelectionModel has changed.
  * @docs-private
  */
 export class SelectionChange<T> {

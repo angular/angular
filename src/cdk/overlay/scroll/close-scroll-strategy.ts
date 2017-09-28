@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ScrollStrategy, getMdScrollStrategyAlreadyAttachedError} from './scroll-strategy';
+import {ScrollStrategy, getMatScrollStrategyAlreadyAttachedError} from './scroll-strategy';
 import {OverlayRef} from '../overlay-ref';
 import {Subscription} from 'rxjs/Subscription';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
@@ -23,7 +23,7 @@ export class CloseScrollStrategy implements ScrollStrategy {
 
   attach(overlayRef: OverlayRef) {
     if (this._overlayRef) {
-      throw getMdScrollStrategyAlreadyAttachedError();
+      throw getMatScrollStrategyAlreadyAttachedError();
     }
 
     this._overlayRef = overlayRef;

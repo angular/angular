@@ -21,7 +21,7 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import {MdOption, MdOptgroup} from '@angular/material/core';
+import {MatOption, MatOptgroup} from '@angular/material/core';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 
 
@@ -32,28 +32,28 @@ import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 let _uniqueAutocompleteIdCounter = 0;
 
 /** Event object that is emitted when an autocomplete option is selected */
-export class MdAutocompleteSelectedEvent {
-  constructor(public source: MdAutocomplete, public option: MdOption) { }
+export class MatAutocompleteSelectedEvent {
+  constructor(public source: MatAutocomplete, public option: MatOption) { }
 }
 
 
 @Component({
   moduleId: module.id,
-  selector: 'md-autocomplete, mat-autocomplete',
+  selector: 'mat-autocomplete',
   templateUrl: 'autocomplete.html',
   styleUrls: ['autocomplete.css'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  exportAs: 'mdAutocomplete, matAutocomplete',
+  exportAs: 'matAutocomplete',
   host: {
     'class': 'mat-autocomplete'
   }
 })
-export class MdAutocomplete implements AfterContentInit {
+export class MatAutocomplete implements AfterContentInit {
 
   /** Manages active item in option list based on key events. */
-  _keyManager: ActiveDescendantKeyManager<MdOption>;
+  _keyManager: ActiveDescendantKeyManager<MatOption>;
 
   /** Whether the autocomplete panel should be visible, depending on option length. */
   showPanel = false;
@@ -65,25 +65,25 @@ export class MdAutocomplete implements AfterContentInit {
   @ViewChild('panel') panel: ElementRef;
 
   /** @docs-private */
-  @ContentChildren(MdOption, { descendants: true }) options: QueryList<MdOption>;
+  @ContentChildren(MatOption, { descendants: true }) options: QueryList<MatOption>;
 
   /** @docs-private */
-  @ContentChildren(MdOptgroup) optionGroups: QueryList<MdOptgroup>;
+  @ContentChildren(MatOptgroup) optionGroups: QueryList<MatOptgroup>;
 
   /** Function that maps an option's control value to its display value in the trigger. */
   @Input() displayWith: ((value: any) => string) | null = null;
 
   /** Event that is emitted whenever an option from the list is selected. */
-  @Output() optionSelected: EventEmitter<MdAutocompleteSelectedEvent> =
-      new EventEmitter<MdAutocompleteSelectedEvent>();
+  @Output() optionSelected: EventEmitter<MatAutocompleteSelectedEvent> =
+      new EventEmitter<MatAutocompleteSelectedEvent>();
 
   /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
-  id: string = `md-autocomplete-${_uniqueAutocompleteIdCounter++}`;
+  id: string = `mat-autocomplete-${_uniqueAutocompleteIdCounter++}`;
 
   constructor(private _changeDetectorRef: ChangeDetectorRef) { }
 
   ngAfterContentInit() {
-    this._keyManager = new ActiveDescendantKeyManager<MdOption>(this.options).withWrap();
+    this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options).withWrap();
   }
 
   /**
@@ -110,8 +110,8 @@ export class MdAutocomplete implements AfterContentInit {
   }
 
   /** Emits the `select` event. */
-  _emitSelectEvent(option: MdOption): void {
-    const event = new MdAutocompleteSelectedEvent(this, option);
+  _emitSelectEvent(option: MatOption): void {
+    const event = new MatAutocompleteSelectedEvent(this, option);
     this.optionSelected.emit(event);
   }
 

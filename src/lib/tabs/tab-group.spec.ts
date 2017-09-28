@@ -5,13 +5,13 @@ import {By} from '@angular/platform-browser';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {dispatchFakeEvent, FakeViewportRuler} from '@angular/cdk/testing';
 import {Observable} from 'rxjs/Observable';
-import {MdTab, MdTabGroup, MdTabHeaderPosition, MdTabsModule} from './index';
+import {MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
 
 
-describe('MdTabGroup', () => {
+describe('MatTabGroup', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTabsModule, NoopAnimationsModule],
+      imports: [MatTabsModule, NoopAnimationsModule],
       declarations: [
         SimpleTabsTestApp,
         SimpleDynamicTabsTestApp,
@@ -91,7 +91,7 @@ describe('MdTabGroup', () => {
 
     it('should change tabs based on selectedIndex', fakeAsync(() => {
       let component = fixture.componentInstance;
-      let tabComponent = fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
+      let tabComponent = fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
 
       spyOn(component, 'handleSelection').and.callThrough();
 
@@ -108,9 +108,9 @@ describe('MdTabGroup', () => {
 
     it('should update tab positions when selected index is changed', () => {
       fixture.detectChanges();
-      const component: MdTabGroup =
-          fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
-      const tabs: MdTab[] = component._tabs.toArray();
+      const component: MatTabGroup =
+          fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
+      const tabs: MatTab[] = component._tabs.toArray();
 
       expect(tabs[0].position).toBeLessThan(0);
       expect(tabs[1].position).toBe(0);
@@ -133,8 +133,8 @@ describe('MdTabGroup', () => {
 
     it('should clamp the selected index to the size of the number of tabs', () => {
       fixture.detectChanges();
-      const component: MdTabGroup =
-          fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
+      const component: MatTabGroup =
+          fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
 
       // Set the index to be negative, expect first tab selected
       fixture.componentInstance.selectedIndex = -1;
@@ -246,10 +246,10 @@ describe('MdTabGroup', () => {
 
     it('should be able to add a new tab, select it, and have correct origin position', () => {
       fixture.detectChanges();
-      const component: MdTabGroup =
-          fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
+      const component: MatTabGroup =
+          fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
 
-      let tabs: MdTab[] = component._tabs.toArray();
+      let tabs: MatTab[] = component._tabs.toArray();
       expect(tabs[0].origin).toBe(null);
       expect(tabs[1].origin).toBe(0);
       expect(tabs[2].origin).toBe(null);
@@ -274,8 +274,8 @@ describe('MdTabGroup', () => {
 
     it('should update selected index if the last tab removed while selected', () => {
       fixture.detectChanges();
-      const component: MdTabGroup =
-          fixture.debugElement.query(By.css('md-tab-group')).componentInstance;
+      const component: MatTabGroup =
+          fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
 
       const numberOfTabs = component._tabs.length;
       fixture.componentInstance.selectedIndex = numberOfTabs - 1;
@@ -312,14 +312,14 @@ describe('MdTabGroup', () => {
 
   describe('with simple api', () => {
     let fixture: ComponentFixture<TabGroupWithSimpleApi>;
-    let tabGroup: MdTabGroup;
+    let tabGroup: MatTabGroup;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(TabGroupWithSimpleApi);
       fixture.detectChanges();
 
       tabGroup =
-          fixture.debugElement.query(By.directive(MdTabGroup)).componentInstance as MdTabGroup;
+          fixture.debugElement.query(By.directive(MatTabGroup)).componentInstance as MatTabGroup;
     });
 
     it('should support a tab-group with the simple api', () => {
@@ -345,7 +345,7 @@ describe('MdTabGroup', () => {
     });
 
     it('should support setting the header position', () => {
-      let tabGroupNode = fixture.debugElement.query(By.css('md-tab-group')).nativeElement;
+      let tabGroupNode = fixture.debugElement.query(By.css('mat-tab-group')).nativeElement;
 
       expect(tabGroupNode.classList).not.toContain('mat-tab-group-inverted-header');
 
@@ -363,8 +363,8 @@ describe('MdTabGroup', () => {
   function checkSelectedIndex(expectedIndex: number, fixture: ComponentFixture<any>) {
     fixture.detectChanges();
 
-    let tabComponent: MdTabGroup = fixture.debugElement
-        .query(By.css('md-tab-group')).componentInstance;
+    let tabComponent: MatTabGroup = fixture.debugElement
+        .query(By.css('mat-tab-group')).componentInstance;
     expect(tabComponent.selectedIndex).toBe(expectedIndex);
 
     let tabLabelElement = fixture.debugElement
@@ -386,10 +386,10 @@ describe('MdTabGroup', () => {
 });
 
 
-describe('nested MdTabGroup with enabled animations', () => {
+describe('nested MatTabGroup with enabled animations', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTabsModule, BrowserAnimationsModule],
+      imports: [MatTabsModule, BrowserAnimationsModule],
       declarations: [NestedTabs]
     });
 
@@ -407,34 +407,34 @@ describe('nested MdTabGroup with enabled animations', () => {
 
 @Component({
   template: `
-    <md-tab-group class="tab-group"
+    <mat-tab-group class="tab-group"
         [(selectedIndex)]="selectedIndex"
         [headerPosition]="headerPosition"
         [disableRipple]="disableRipple"
         (focusChange)="handleFocus($event)"
         (selectChange)="handleSelection($event)">
-      <md-tab>
-        <ng-template md-tab-label>Tab One</ng-template>
+      <mat-tab>
+        <ng-template mat-tab-label>Tab One</ng-template>
         Tab one content
-      </md-tab>
-      <md-tab>
-        <ng-template md-tab-label>Tab Two</ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>Tab Two</ng-template>
         Tab two content
-      </md-tab>
-      <md-tab>
-        <ng-template md-tab-label>Tab Three</ng-template>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>Tab Three</ng-template>
         Tab three content
-      </md-tab>
-    </md-tab-group>
+      </mat-tab>
+    </mat-tab-group>
   `
 })
 class SimpleTabsTestApp {
-  @ViewChildren(MdTab) tabs: QueryList<MdTab>;
+  @ViewChildren(MatTab) tabs: QueryList<MatTab>;
   selectedIndex: number = 1;
   focusEvent: any;
   selectEvent: any;
   disableRipple: boolean = false;
-  headerPosition: MdTabHeaderPosition = 'above';
+  headerPosition: MatTabHeaderPosition = 'above';
   handleFocus(event: any) {
     this.focusEvent = event;
   }
@@ -445,15 +445,15 @@ class SimpleTabsTestApp {
 
 @Component({
   template: `
-    <md-tab-group class="tab-group"
+    <mat-tab-group class="tab-group"
         [(selectedIndex)]="selectedIndex"
         (focusChange)="handleFocus($event)"
         (selectChange)="handleSelection($event)">
-      <md-tab *ngFor="let tab of tabs">
-        <ng-template md-tab-label>{{tab.label}}</ng-template>
+      <mat-tab *ngFor="let tab of tabs">
+        <ng-template mat-tab-label>{{tab.label}}</ng-template>
         {{tab.content}}
-      </md-tab>
-    </md-tab-group>
+      </mat-tab>
+    </mat-tab-group>
   `
 })
 class SimpleDynamicTabsTestApp {
@@ -475,11 +475,11 @@ class SimpleDynamicTabsTestApp {
 
 @Component({
   template: `
-    <md-tab-group class="tab-group" [(selectedIndex)]="selectedIndex">
-      <md-tab *ngFor="let tab of tabs" label="{{tab.label}}">
+    <mat-tab-group class="tab-group" [(selectedIndex)]="selectedIndex">
+      <mat-tab *ngFor="let tab of tabs" label="{{tab.label}}">
         {{tab.content}}
-      </md-tab>
-    </md-tab-group>
+      </mat-tab>
+    </mat-tab-group>
   `
 })
 class BindedTabsTestApp {
@@ -501,35 +501,35 @@ class BindedTabsTestApp {
 @Component({
   selector: 'test-app',
   template: `
-    <md-tab-group class="tab-group">
-      <md-tab>
-        <ng-template md-tab-label>Tab One</ng-template>
+    <mat-tab-group class="tab-group">
+      <mat-tab>
+        <ng-template mat-tab-label>Tab One</ng-template>
         Tab one content
-      </md-tab>
-      <md-tab disabled>
-        <ng-template md-tab-label>Tab Two</ng-template>
+      </mat-tab>
+      <mat-tab disabled>
+        <ng-template mat-tab-label>Tab Two</ng-template>
         Tab two content
-      </md-tab>
-      <md-tab [disabled]="isDisabled">
-        <ng-template md-tab-label>Tab Three</ng-template>
+      </mat-tab>
+      <mat-tab [disabled]="isDisabled">
+        <ng-template mat-tab-label>Tab Three</ng-template>
         Tab three content
-      </md-tab>
-    </md-tab-group>
+      </mat-tab>
+    </mat-tab-group>
   `,
 })
 class DisabledTabsTestApp {
-  @ViewChildren(MdTab) tabs: QueryList<MdTab>;
+  @ViewChildren(MatTab) tabs: QueryList<MatTab>;
   isDisabled = false;
 }
 
 @Component({
   template: `
-    <md-tab-group class="tab-group">
-      <md-tab *ngFor="let tab of tabs | async">
-        <ng-template md-tab-label>{{ tab.label }}</ng-template>
+    <mat-tab-group class="tab-group">
+      <mat-tab *ngFor="let tab of tabs | async">
+        <ng-template mat-tab-label>{{ tab.label }}</ng-template>
         {{ tab.content }}
-      </md-tab>
-   </md-tab-group>
+      </mat-tab>
+   </mat-tab-group>
   `
 })
 class AsyncTabsTestApp {
@@ -551,12 +551,12 @@ class AsyncTabsTestApp {
 
 @Component({
   template: `
-  <md-tab-group>
-    <md-tab label="Junk food"> Pizza, fries </md-tab>
-    <md-tab label="Vegetables"> Broccoli, spinach </md-tab>
-    <md-tab [label]="otherLabel"> {{otherContent}} </md-tab>
-    <md-tab label="Legumes"> <p #legumes>Peanuts</p> </md-tab>
-  </md-tab-group>
+  <mat-tab-group>
+    <mat-tab label="Junk food"> Pizza, fries </mat-tab>
+    <mat-tab label="Vegetables"> Broccoli, spinach </mat-tab>
+    <mat-tab [label]="otherLabel"> {{otherContent}} </mat-tab>
+    <mat-tab label="Legumes"> <p #legumes>Peanuts</p> </mat-tab>
+  </mat-tab-group>
   `
 })
 class TabGroupWithSimpleApi {
@@ -569,16 +569,16 @@ class TabGroupWithSimpleApi {
 @Component({
   selector: 'nested-tabs',
   template: `
-    <md-tab-group>
-      <md-tab label="One">Tab one content</md-tab>
-      <md-tab label="Two">
+    <mat-tab-group>
+      <mat-tab label="One">Tab one content</mat-tab>
+      <mat-tab label="Two">
         Tab two content
-         <md-tab-group [dynamicHeight]="true">
-          <md-tab label="Inner tab one">Inner content one</md-tab>
-          <md-tab label="Inner tab two">Inner content two</md-tab>
-        </md-tab-group>
-      </md-tab>
-    </md-tab-group>
+         <mat-tab-group [dynamicHeight]="true">
+          <mat-tab label="Inner tab one">Inner content one</mat-tab>
+          <mat-tab label="Inner tab two">Inner content two</mat-tab>
+        </mat-tab-group>
+      </mat-tab>
+    </mat-tab-group>
   `,
 })
 class NestedTabs {}

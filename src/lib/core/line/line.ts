@@ -13,26 +13,26 @@ import {
   ElementRef,
   QueryList,
 } from '@angular/core';
-import {MdCommonModule} from '../common-behaviors/common-module';
+import {MatCommonModule} from '../common-behaviors/common-module';
 
 
 /**
  * Shared directive to count lines inside a text area, such as a list item.
- * Line elements can be extracted with a @ContentChildren(MdLine) query, then
+ * Line elements can be extracted with a @ContentChildren(MatLine) query, then
  * counted by checking the query list's length.
  */
 @Directive({
-  selector: '[md-line], [mat-line], [mdLine], [matLine]',
+  selector: '[mat-line], [matLine]',
   host: {'class': 'mat-line'}
 })
-export class MdLine {}
+export class MatLine {}
 
 /**
  * Helper that takes a query list of lines and sets the correct class on the host.
  * @docs-private
  */
-export class MdLineSetter {
-  constructor(private _lines: QueryList<MdLine>, private _renderer: Renderer2,
+export class MatLineSetter {
+  constructor(private _lines: QueryList<MatLine>, private _renderer: Renderer2,
               private _element: ElementRef) {
     this._setLineClass(this._lines.length);
 
@@ -67,8 +67,8 @@ export class MdLineSetter {
 }
 
 @NgModule({
-  imports: [MdCommonModule],
-  exports: [MdLine, MdCommonModule],
-  declarations: [MdLine],
+  imports: [MatCommonModule],
+  exports: [MatLine, MatCommonModule],
+  declarations: [MatLine],
 })
-export class MdLineModule { }
+export class MatLineModule { }

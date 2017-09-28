@@ -1,81 +1,81 @@
 <h1>Dialog demo</h1>
 
-<button md-raised-button color="primary" (click)="openJazz()">
+<button mat-raised-button color="primary" (click)="openJazz()">
   Open dialog
 </button>
-<button md-raised-button color="accent" (click)="openContentElement()">
+<button mat-raised-button color="accent" (click)="openContentElement()">
   Open dialog with content elements
 </button>
-<button md-raised-button color="accent" (click)="openTemplate()">
+<button mat-raised-button color="accent" (click)="openTemplate()">
   Open dialog with template content
 </button>
 
-<md-card class="demo-dialog-card">
-  <md-card-content>
+<mat-card class="demo-dialog-card">
+  <mat-card-content>
     <h2>Dialog dimensions</h2>
 
     <p>
-      <md-form-field>
-        <input mdInput [(ngModel)]="config.width" placeholder="Width">
-      </md-form-field>
-      <md-form-field>
-        <input mdInput [(ngModel)]="config.height" placeholder="Height">
-      </md-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.width" placeholder="Width">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.height" placeholder="Height">
+      </mat-form-field>
     </p>
 
     <h2>Dialog position</h2>
 
     <p>
-      <md-form-field>
-        <input mdInput [(ngModel)]="config.position.top" (change)="config.position.bottom = ''" placeholder="Top">
-      </md-form-field>
-      <md-form-field>
-        <input mdInput [(ngModel)]="config.position.bottom" (change)="config.position.top = ''" placeholder="Bottom">
-      </md-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.position.top" (change)="config.position.bottom = ''" placeholder="Top">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.position.bottom" (change)="config.position.top = ''" placeholder="Bottom">
+      </mat-form-field>
     </p>
 
     <p>
-      <md-form-field>
-        <input mdInput [(ngModel)]="config.position.left" (change)="config.position.right = ''" placeholder="Left">
-      </md-form-field>
-      <md-form-field>
-        <input mdInput [(ngModel)]="config.position.right" (change)="config.position.left = ''" placeholder="Right">
-      </md-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.position.left" (change)="config.position.right = ''" placeholder="Left">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.position.right" (change)="config.position.left = ''" placeholder="Right">
+      </mat-form-field>
     </p>
 
     <h2>Dialog backdrop</h2>
 
     <p>
-      <md-form-field>
-        <input mdInput [(ngModel)]="config.backdropClass" placeholder="Backdrop class">
-      </md-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.backdropClass" placeholder="Backdrop class">
+      </mat-form-field>
     </p>
 
-    <md-checkbox [(ngModel)]="config.hasBackdrop">Has backdrop</md-checkbox>
+    <mat-checkbox [(ngModel)]="config.hasBackdrop">Has backdrop</mat-checkbox>
 
     <h2>Other options</h2>
 
     <p>
-      <md-form-field>
-        <md-select placeholder="Button alignment" [(ngModel)]="actionsAlignment">
-          <md-option>Start</md-option>
-          <md-option value="end">End</md-option>
-          <md-option value="center">Center</md-option>
-        </md-select>
-      </md-form-field>
+      <mat-form-field>
+        <mat-select placeholder="Button alignment" [(ngModel)]="actionsAlignment">
+          <mat-option>Start</mat-option>
+          <mat-option value="end">End</mat-option>
+          <mat-option value="center">Center</mat-option>
+        </mat-select>
+      </mat-form-field>
     </p>
 
     <p>
-      <md-form-field>
-        <input mdInput [(ngModel)]="config.data.message" placeholder="Dialog message">
-      </md-form-field>
+      <mat-form-field>
+        <input matInput [(ngModel)]="config.data.message" placeholder="Dialog message">
+      </mat-form-field>
     </p>
 
     <p>
-      <md-checkbox [(ngModel)]="config.disableClose">Disable close</md-checkbox>
+      <mat-checkbox [(ngModel)]="config.disableClose">Disable close</mat-checkbox>
     </p>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>
 
 <p>Last afterClosed result: {{lastAfterClosedResult}}</p>
 <p>Last beforeClose result: {{lastBeforeCloseResult}}</p>
@@ -85,9 +85,9 @@
 
   <p>It's Jazz!</p>
 
-  <md-input-container>
-    <input mdInput placeholder="How much?" #howMuch>
-  </md-input-container>
+  <mat-input-container>
+    <input matInput placeholder="How much?" #howMuch>
+  </mat-input-container>
 
   <p> {{ data.message }} </p>
   <button type="button" (click)="dialogRef.close(lastCloseResult = howMuch.value)">Close dialog</button>

@@ -2,13 +2,13 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
-import {MdOption, MdOptionModule} from './index';
+import {MatOption, MatOptionModule} from './index';
 
-describe('MdOption component', () => {
+describe('MatOption component', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdOptionModule],
+      imports: [MatOptionModule],
       declarations: [OptionWithDisable]
     }).compileComponents();
   }));
@@ -17,13 +17,13 @@ describe('MdOption component', () => {
     let fixture: ComponentFixture<OptionWithDisable>;
     let optionDebugElement: DebugElement;
     let optionNativeElement: HTMLElement;
-    let optionInstance: MdOption;
+    let optionInstance: MatOption;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(OptionWithDisable);
       fixture.detectChanges();
 
-      optionDebugElement = fixture.debugElement.query(By.directive(MdOption));
+      optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
       optionNativeElement = optionDebugElement.nativeElement;
       optionInstance = optionDebugElement.componentInstance;
     });
@@ -73,7 +73,7 @@ describe('MdOption component', () => {
 });
 
 @Component({
-  template: `<md-option [disabled]="disabled"></md-option>`
+  template: `<mat-option [disabled]="disabled"></mat-option>`
 })
 export class OptionWithDisable {
   disabled: boolean;

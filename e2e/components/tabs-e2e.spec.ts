@@ -19,9 +19,9 @@ describe('tabs', () => {
 
     beforeEach(() => {
       browser.get('/tabs');
-      tabGroup = element(by.css('md-tab-group'));
+      tabGroup = element(by.css('mat-tab-group'));
       tabLabels = element.all(by.css('.mat-tab-label'));
-      tabBodies = element.all(by.css('md-tab-body'));
+      tabBodies = element.all(by.css('mat-tab-body'));
     });
 
     it('should change tabs when the label is clicked', async () => {

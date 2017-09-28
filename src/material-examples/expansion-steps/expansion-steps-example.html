@@ -1,69 +1,69 @@
-<md-accordion class="example-headers-align">
-  <md-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle="true">
-    <md-expansion-panel-header>
-      <md-panel-title>
+<mat-accordion class="example-headers-align">
+  <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
         Personal data
-      </md-panel-title>
-      <md-panel-description>
+      </mat-panel-title>
+      <mat-panel-description>
         Type your name and age
-        <md-icon>account_circle</md-icon>
-      </md-panel-description>
-    </md-expansion-panel-header>
+        <mat-icon>account_circle</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
 
-    <md-form-field>
-      <input mdInput placeholder="First name">
-    </md-form-field>
+    <mat-form-field>
+      <input matInput placeholder="First name">
+    </mat-form-field>
 
-    <md-form-field>
-      <input mdInput type="number" min="1" placeholder="Age">
-    </md-form-field>
+    <mat-form-field>
+      <input matInput type="number" min="1" placeholder="Age">
+    </mat-form-field>
 
-    <md-action-row>
-      <button md-button color="primary" (click)="nextStep()">Next</button>
-    </md-action-row>
-  </md-expansion-panel>
+    <mat-action-row>
+      <button mat-button color="primary" (click)="nextStep()">Next</button>
+    </mat-action-row>
+  </mat-expansion-panel>
 
-  <md-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle="true">
-    <md-expansion-panel-header>
-      <md-panel-title>
+  <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
         Destination
-      </md-panel-title>
-      <md-panel-description>
+      </mat-panel-title>
+      <mat-panel-description>
         Type the country name
-        <md-icon>map</md-icon>
-      </md-panel-description>
-    </md-expansion-panel-header>
+        <mat-icon>map</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
 
-    <md-form-field>
-      <input mdInput placeholder="Country">
-    </md-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Country">
+    </mat-form-field>
 
-    <md-action-row>
-      <button md-button color="warn" (click)="prevStep()">Previous</button>
-      <button md-button color="primary" (click)="nextStep()">Next</button>
-    </md-action-row>
-  </md-expansion-panel>
+    <mat-action-row>
+      <button mat-button color="warn" (click)="prevStep()">Previous</button>
+      <button mat-button color="primary" (click)="nextStep()">Next</button>
+    </mat-action-row>
+  </mat-expansion-panel>
 
-  <md-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle="true">
-    <md-expansion-panel-header>
-      <md-panel-title>
+  <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
         Day of the trip
-      </md-panel-title>
-      <md-panel-description>
+      </mat-panel-title>
+      <mat-panel-description>
         Inform the date you wish to travel
-        <md-icon>date_range</md-icon>
-      </md-panel-description>
-    </md-expansion-panel-header>
+        <mat-icon>date_range</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
 
-    <md-form-field>
-      <input mdInput placeholder="Date" [mdDatepicker]="picker" (focus)="picker.open()" readonly>
-    </md-form-field>
-    <md-datepicker #picker></md-datepicker>
+    <mat-form-field>
+      <input matInput placeholder="Date" [matDatepicker]="picker" (focus)="picker.open()" readonly>
+    </mat-form-field>
+    <mat-datepicker #picker></mat-datepicker>
 
-    <md-action-row>
-      <button md-button color="warn" (click)="prevStep()">Previous</button>
-      <button md-button color="primary" (click)="nextStep()">End</button>
-    </md-action-row>
-  </md-expansion-panel>
+    <mat-action-row>
+      <button mat-button color="warn" (click)="prevStep()">Previous</button>
+      <button mat-button color="primary" (click)="nextStep()">End</button>
+    </mat-action-row>
+  </mat-expansion-panel>
 
-</md-accordion>
+</mat-accordion>

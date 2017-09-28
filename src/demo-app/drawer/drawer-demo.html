@@ -1,58 +1,58 @@
 <h2>Basic Use Case</h2>
 
-<md-drawer-container class="demo-drawer-container">
-  <md-drawer #start (open)="myinput.focus()" mode="side">
+<mat-drawer-container class="demo-drawer-container">
+  <mat-drawer #start (open)="myinput.focus()" mode="side">
     Start Side Drawer
     <br>
-    <button md-button (click)="start.close()">Close</button>
+    <button mat-button (click)="start.close()">Close</button>
     <br>
-    <button md-button (click)="end.open()">Open End Side</button>
+    <button mat-button (click)="end.open()">Open End Side</button>
     <br>
-    <button md-button
+    <button mat-button
             (click)="start.mode = (start.mode == 'push' ? 'over' : (start.mode == 'over' ? 'side' : 'push'))">Toggle Mode</button>
     <div>Mode: {{start.mode}}</div>
     <br>
     <input #myinput>
-  </md-drawer>
+  </mat-drawer>
 
-  <md-drawer #end position="end">
+  <mat-drawer #end position="end">
     End Side Drawer
     <br>
-    <button md-button (click)="end.close()">Close</button>
-  </md-drawer>
+    <button mat-button (click)="end.close()">Close</button>
+  </mat-drawer>
 
   <div class="demo-drawer-content">
     <h1>My Content</h1>
 
     <div>
       <header>Drawer</header>
-      <button md-button (click)="start.toggle()">Toggle Start Side Drawer</button>
-      <button md-button (click)="end.toggle()">Toggle End Side Drawer</button>
+      <button mat-button (click)="start.toggle()">Toggle Start Side Drawer</button>
+      <button mat-button (click)="end.toggle()">Toggle End Side Drawer</button>
     </div>
 
-    <button md-button>HELLO</button>
-    <button md-raised-button class="mat-primary">HELLO</button>
-    <button md-fab class="mat-accent">HI</button>
+    <button mat-button>HELLO</button>
+    <button mat-raised-button class="mat-primary">HELLO</button>
+    <button mat-fab class="mat-accent">HI</button>
   </div>
-</md-drawer-container>
+</mat-drawer-container>
 
 <h2>Drawer Already Opened</h2>
 
-<md-drawer-container class="demo-drawer-container">
-  <md-drawer #start2 opened mode="side">
+<mat-drawer-container class="demo-drawer-container">
+  <mat-drawer #start2 opened mode="side">
     Drawer
-  </md-drawer>
+  </mat-drawer>
 
   <div class="demo-drawer-content">
-    <button md-button (click)="start2.toggle()">Toggle Start Side Drawer</button>
+    <button mat-button (click)="start2.toggle()">Toggle Start Side Drawer</button>
   </div>
-</md-drawer-container>
+</mat-drawer-container>
 
 <h2>Dynamic Position Drawer</h2>
 
-<md-drawer-container class="demo-drawer-container">
-  <md-drawer #dynamicPosDrawer1 mode="side" [position]="invert ? 'end' : 'start'">Start</md-drawer>
-  <md-drawer #dynamicPosDrawer2 mode="side" [position]="invert ? 'start' : 'end'">End</md-drawer>
+<mat-drawer-container class="demo-drawer-container">
+  <mat-drawer #dynamicPosDrawer1 mode="side" [position]="invert ? 'end' : 'start'">Start</mat-drawer>
+  <mat-drawer #dynamicPosDrawer2 mode="side" [position]="invert ? 'start' : 'end'">End</mat-drawer>
 
   <div class="demo-drawer-content">
     <button (click)="dynamicPosDrawer1.toggle(); dynamicPosDrawer2.toggle()">
@@ -60,28 +60,28 @@
     </button>
     <button (click)="invert = !invert">Change sides</button>
   </div>
-</md-drawer-container>
+</mat-drawer-container>
 
 <h2>Drawer with focus attributes</h2>
 
-<md-drawer-container class="demo-drawer-container">
-  <md-drawer #focusDrawer>
-    <md-nav-list>
-      <a md-list-item routerLink>Link</a>
-      <a md-list-item routerLink cdk-focus-region-start>Focus region start</a>
-      <a md-list-item routerLink>Link</a>
-      <a md-list-item routerLink cdk-focus-initial>Initially focused</a>
-      <a md-list-item routerLink cdk-focus-region-end>Focus region end</a>
-      <a md-list-item routerLink>Link</a>
-    </md-nav-list>
-  </md-drawer>
+<mat-drawer-container class="demo-drawer-container">
+  <mat-drawer #focusDrawer>
+    <mat-nav-list>
+      <a mat-list-item routerLink>Link</a>
+      <a mat-list-item routerLink cdk-focus-region-start>Focus region start</a>
+      <a mat-list-item routerLink>Link</a>
+      <a mat-list-item routerLink cdk-focus-initial>Initially focused</a>
+      <a mat-list-item routerLink cdk-focus-region-end>Focus region end</a>
+      <a mat-list-item routerLink>Link</a>
+    </mat-nav-list>
+  </mat-drawer>
 
   <div class="demo-drawer-content">
     <h1>My Content</h1>
 
     <div>
       <header>Drawer</header>
-      <button md-button (click)="focusDrawer.toggle()">Toggle Drawer</button>
+      <button mat-button (click)="focusDrawer.toggle()">Toggle Drawer</button>
     </div>
   </div>
-</md-drawer-container>
+</mat-drawer-container>

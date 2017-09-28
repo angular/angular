@@ -5,15 +5,15 @@
     <div class="demo-color-sliders">
       <div>
         <label class="demo-color-label" for="r-slider">Red</label>
-        <md-slider id="r-slider" min="0" max="255" [(ngModel)]="red"></md-slider>
+        <mat-slider id="r-slider" min="0" max="255" [(ngModel)]="red"></mat-slider>
       </div>
       <div>
         <label class="demo-color-label" for="g-slider">Green</label>
-        <md-slider id="g-slider" min="0" max="255" [(ngModel)]="green"></md-slider>
+        <mat-slider id="g-slider" min="0" max="255" [(ngModel)]="green"></mat-slider>
       </div>
       <div>
         <label class="demo-color-label" for="b-slider">Blue</label>
-        <md-slider id="b-slider" min="0" max="255" [(ngModel)]="blue"></md-slider>
+        <mat-slider id="b-slider" min="0" max="255" [(ngModel)]="blue"></mat-slider>
       </div>
     </div>
   <div class="demo-color-swatch" [style.background]="swatchBackground"></div>
@@ -23,7 +23,7 @@
 <section>
   <h2>Discrete slider (e.g. rate a product)</h2>
   <p>Please rate our product on a scale of 1 (not satisfied) to 5 (extremely satisfied).</p>
-  <md-slider min="1" max="5" tickInterval="1" thumbLabel aria-label="Rating"></md-slider>
+  <mat-slider min="1" max="5" tickInterval="1" thumbLabel aria-label="Rating"></mat-slider>
 </section>
 
 <section>
@@ -31,9 +31,9 @@
   <p>Use the slider to adjust the volume.</p>
   <div class="demo-volume-container">
     <label for="vol-slider">
-      <md-icon aria-hidden>volume_up</md-icon>
+      <mat-icon aria-hidden>volume_up</mat-icon>
       <span class="cdk-visually-hidden">Volume</span>
     </label>
-    <md-slider id="vol-slider" min="0" max="100" vertical inverted></md-slider>
+    <mat-slider id="vol-slider" min="0" max="100" vertical inverted></mat-slider>
   </div>
 </section>

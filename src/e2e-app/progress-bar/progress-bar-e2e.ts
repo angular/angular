@@ -6,7 +6,7 @@ import {Component} from '@angular/core';
   selector: 'progress-bar-e2e',
   templateUrl: 'progress-bar-e2e.html',
   styles: [`
-    md-progress-bar {
+    mat-progress-bar {
       margin-bottom: 10px;
     }
   `]

@@ -1,25 +1,25 @@
 <p>Slide Toggle using a simple NgModel.</p>
 
-<md-slide-toggle [(ngModel)]="isChecked">Slide Toggle Checked: {{ isChecked }}</md-slide-toggle>
+<mat-slide-toggle [(ngModel)]="isChecked">Slide Toggle Checked: {{ isChecked }}</mat-slide-toggle>
 
 <p>Slide Toggle inside of a Template-driven form</p>
 
 <form class="example-form" #form="ngForm" (ngSubmit)="onFormSubmit(form.value)" ngNativeValidate>
 
-  <md-slide-toggle ngModel name="enableWifi">Enable Wifi</md-slide-toggle>
-  <md-slide-toggle ngModel name="acceptTerms" required>Accept Terms of Service</md-slide-toggle>
+  <mat-slide-toggle ngModel name="enableWifi">Enable Wifi</mat-slide-toggle>
+  <mat-slide-toggle ngModel name="acceptTerms" required>Accept Terms of Service</mat-slide-toggle>
 
-  <button md-raised-button type="submit">Save Settings</button>
+  <button mat-raised-button type="submit">Save Settings</button>
 </form>
 
 <p>Slide Toggle inside of a Reactive form</p>
 
 <form class="example-form" [formGroup]="formGroup" (ngSubmit)="onFormSubmit(formGroup.value)" ngNativeValidate>
 
-  <md-slide-toggle formControlName="enableWifi">Enable Wifi</md-slide-toggle>
-  <md-slide-toggle formControlName="acceptTerms">Accept Terms of Service</md-slide-toggle>
+  <mat-slide-toggle formControlName="enableWifi">Enable Wifi</mat-slide-toggle>
+  <mat-slide-toggle formControlName="acceptTerms">Accept Terms of Service</mat-slide-toggle>
 
   <p>Form Group Status: {{ formGroup.status}}</p>
 
-  <button md-rasied-button type="submit">Save Settings</button>
+  <button mat-rasied-button type="submit">Save Settings</button>
 </form>

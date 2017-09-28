@@ -28,21 +28,21 @@ import {
 } from '@angular/core';
 import {
   FloatPlaceholderType,
-  MD_PLACEHOLDER_GLOBAL_OPTIONS,
+  MAT_PLACEHOLDER_GLOBAL_OPTIONS,
   PlaceholderOptions,
 } from '@angular/material/core';
 import {fromEvent} from 'rxjs/observable/fromEvent';
-import {MdError} from './error';
-import {MdFormFieldControl} from './form-field-control';
+import {MatError} from './error';
+import {MatFormFieldControl} from './form-field-control';
 import {
-  getMdFormFieldDuplicatedHintError,
-  getMdFormFieldMissingControlError,
-  getMdFormFieldPlaceholderConflictError,
+  getMatFormFieldDuplicatedHintError,
+  getMatFormFieldMissingControlError,
+  getMatFormFieldPlaceholderConflictError,
 } from './form-field-errors';
-import {MdHint} from './hint';
-import {MdPlaceholder} from './placeholder';
-import {MdPrefix} from './prefix';
-import {MdSuffix} from './suffix';
+import {MatHint} from './hint';
+import {MatPlaceholder} from './placeholder';
+import {MatPrefix} from './prefix';
+import {MatSuffix} from './suffix';
 
 
 let nextUniqueId = 0;
@@ -52,11 +52,11 @@ let nextUniqueId = 0;
 @Component({
   moduleId: module.id,
   // TODO(mmalerba): the input-container selectors and classes are deprecated and will be removed.
-  selector: 'md-input-container, mat-input-container, md-form-field, mat-form-field',
+  selector: 'mat-input-container, mat-form-field',
   templateUrl: 'form-field.html',
-  // MdInput is a directive and can't have styles, so we need to include its styles here.
-  // The MdInput styles are fairly minimal so it shouldn't be a big deal for people who aren't using
-  // MdInput.
+  // MatInput is a directive and can't have styles, so we need to include its styles here.
+  // The MatInput styles are fairly minimal so it shouldn't be a big deal for people who
+  // aren't using MatInput.
   styleUrls: ['form-field.css', '../input/input.css'],
   animations: [
     // TODO(mmalerba): Use angular animations for placeholder animation as well.
@@ -91,7 +91,7 @@ let nextUniqueId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class MdFormField implements AfterViewInit, AfterContentInit, AfterContentChecked {
+export class MatFormField implements AfterViewInit, AfterContentInit, AfterContentChecked {
   private _placeholderOptions: PlaceholderOptions;
 
   /** Color of the form field underline, based on the theme. */
@@ -121,7 +121,7 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   /** Whether the placeholder can float or not. */
   get _canPlaceholderFloat() { return this._floatPlaceholder !== 'never'; }
 
-  /** State of the md-hint and md-error animations. */
+  /** State of the mat-hint and mat-error animations. */
   _subscriptAnimationState: string = '';
 
   /** Text for the form field hint. */
@@ -134,7 +134,7 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   private _hintLabel = '';
 
   // Unique id for the hint label.
-  _hintLabelId: string = `md-hint-${nextUniqueId++}`;
+  _hintLabelId: string = `mat-hint-${nextUniqueId++}`;
 
   /** Whether the placeholder should always float, never float or float as the user types. */
   @Input()
@@ -151,18 +151,18 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   @ViewChild('underline') underlineRef: ElementRef;
   @ViewChild('connectionContainer') _connectionContainerRef: ElementRef;
   @ViewChild('placeholder') private _placeholder: ElementRef;
-  @ContentChild(MdFormFieldControl) _control: MdFormFieldControl<any>;
-  @ContentChild(MdPlaceholder) _placeholderChild: MdPlaceholder;
-  @ContentChildren(MdError) _errorChildren: QueryList<MdError>;
-  @ContentChildren(MdHint) _hintChildren: QueryList<MdHint>;
-  @ContentChildren(MdPrefix) _prefixChildren: QueryList<MdPrefix>;
-  @ContentChildren(MdSuffix) _suffixChildren: QueryList<MdSuffix>;
+  @ContentChild(MatFormFieldControl) _control: MatFormFieldControl<any>;
+  @ContentChild(MatPlaceholder) _placeholderChild: MatPlaceholder;
+  @ContentChildren(MatError) _errorChildren: QueryList<MatError>;
+  @ContentChildren(MatHint) _hintChildren: QueryList<MatHint>;
+  @ContentChildren(MatPrefix) _prefixChildren: QueryList<MatPrefix>;
+  @ContentChildren(MatSuffix) _suffixChildren: QueryList<MatSuffix>;
 
   constructor(
       public _elementRef: ElementRef,
       private _renderer: Renderer2,
       private _changeDetectorRef: ChangeDetectorRef,
-      @Optional() @Inject(MD_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
+      @Optional() @Inject(MAT_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
     this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
     this.floatPlaceholder = this._placeholderOptions.float || 'auto';
   }
@@ -244,11 +244,11 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
 
   /**
    * Ensure that there is only one placeholder (either `placeholder` attribute on the child control
-   * or child element with the `md-placeholder` directive).
+   * or child element with the `mat-placeholder` directive).
    */
   private _validatePlaceholders() {
     if (this._control.placeholder && this._placeholderChild) {
-      throw getMdFormFieldPlaceholderConflictError();
+      throw getMatFormFieldPlaceholderConflictError();
     }
   }
 
@@ -259,22 +259,22 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   }
 
   /**
-   * Ensure that there is a maximum of one of each `<md-hint>` alignment specified, with the
+   * Ensure that there is a maximum of one of each `<mat-hint>` alignment specified, with the
    * attribute being considered as `align="start"`.
    */
   private _validateHints() {
     if (this._hintChildren) {
-      let startHint: MdHint;
-      let endHint: MdHint;
-      this._hintChildren.forEach((hint: MdHint) => {
+      let startHint: MatHint;
+      let endHint: MatHint;
+      this._hintChildren.forEach((hint: MatHint) => {
         if (hint.align == 'start') {
           if (startHint || this.hintLabel) {
-            throw getMdFormFieldDuplicatedHintError('start');
+            throw getMatFormFieldDuplicatedHintError('start');
           }
           startHint = hint;
         } else if (hint.align == 'end') {
           if (endHint) {
-            throw getMdFormFieldDuplicatedHintError('end');
+            throw getMatFormFieldDuplicatedHintError('end');
           }
           endHint = hint;
         }
@@ -306,7 +306,7 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
           ids.push(endHint.id);
         }
       } else if (this._errorChildren) {
-        ids = this._errorChildren.map(mdError => mdError.id);
+        ids = this._errorChildren.map(error => error.id);
       }
 
       this._control.setDescribedByIds(ids);
@@ -316,7 +316,7 @@ export class MdFormField implements AfterViewInit, AfterContentInit, AfterConten
   /** Throws an error if the form field's control is missing. */
   protected _validateControlChild() {
     if (!this._control) {
-      throw getMdFormFieldMissingControlError();
+      throw getMatFormFieldMissingControlError();
     }
   }
 }

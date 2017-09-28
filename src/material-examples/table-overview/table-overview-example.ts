@@ -1,6 +1,6 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
-import {MdPaginator, MdSort} from '@angular/material';
+import {MatPaginator, MatSort} from '@angular/material';
 import {SelectionModel} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
@@ -25,8 +25,8 @@ export class TableOverviewExample {
   selection = new SelectionModel<string>(true, []);
   dataSource: ExampleDataSource | null;
 
-  @ViewChild(MdPaginator) paginator: MdPaginator;
-  @ViewChild(MdSort) sort: MdSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   @ViewChild('filter') filter: ElementRef;
 
   ngOnInit() {
@@ -127,8 +127,8 @@ export class ExampleDataSource extends DataSource<any> {
   renderedData: UserData[] = [];
 
   constructor(private _exampleDatabase: ExampleDatabase,
-              private _paginator: MdPaginator,
-              private _sort: MdSort) {
+              private _paginator: MatPaginator,
+              private _sort: MatSort) {
     super();
 
     // Reset to the first page when the user changes the filter.

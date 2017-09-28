@@ -8,27 +8,27 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdCommonModule} from '@angular/material/core';
+import {MatCommonModule} from '@angular/material/core';
 import {OverlayModule} from '@angular/cdk/overlay';
-import {MdMenu, MD_MENU_DEFAULT_OPTIONS} from './menu-directive';
-import {MdMenuItem} from './menu-item';
-import {MdMenuTrigger, MD_MENU_SCROLL_STRATEGY_PROVIDER} from './menu-trigger';
-import {MdRippleModule} from '@angular/material/core';
+import {MatMenu, MAT_MENU_DEFAULT_OPTIONS} from './menu-directive';
+import {MatMenuItem} from './menu-item';
+import {MatMenuTrigger, MAT_MENU_SCROLL_STRATEGY_PROVIDER} from './menu-trigger';
+import {MatRippleModule} from '@angular/material/core';
 
 
 @NgModule({
   imports: [
     OverlayModule,
     CommonModule,
-    MdRippleModule,
-    MdCommonModule,
+    MatRippleModule,
+    MatCommonModule,
   ],
-  exports: [MdMenu, MdMenuItem, MdMenuTrigger, MdCommonModule],
-  declarations: [MdMenu, MdMenuItem, MdMenuTrigger],
+  exports: [MatMenu, MatMenuItem, MatMenuTrigger, MatCommonModule],
+  declarations: [MatMenu, MatMenuItem, MatMenuTrigger],
   providers: [
-    MD_MENU_SCROLL_STRATEGY_PROVIDER,
+    MAT_MENU_SCROLL_STRATEGY_PROVIDER,
     {
-      provide: MD_MENU_DEFAULT_OPTIONS,
+      provide: MAT_MENU_DEFAULT_OPTIONS,
       useValue: {
         overlapTrigger: true,
         xPosition: 'after',
@@ -37,4 +37,4 @@ import {MdRippleModule} from '@angular/material/core';
     }
   ],
 })
-export class MdMenuModule {}
+export class MatMenuModule {}

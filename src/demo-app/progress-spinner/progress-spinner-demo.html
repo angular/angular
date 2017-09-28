@@ -2,29 +2,29 @@
 
 <div class="demo-progress-spinner-controls">
   <p>Value: {{progressValue}}</p>
-  <button md-raised-button (click)="step(10)">Increase</button>
-  <button md-raised-button (click)="step(-10)">Decrease</button>
-  <md-checkbox [(ngModel)]="isDeterminate">Is determinate</md-checkbox>
+  <button mat-raised-button (click)="step(10)">Increase</button>
+  <button mat-raised-button (click)="step(-10)">Decrease</button>
+  <mat-checkbox [(ngModel)]="isDeterminate">Is determinate</mat-checkbox>
 </div>
 
 <div class="demo-progress-spinner">
-  <md-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
-      [value]="progressValue" color="primary" [strokeWidth]="1"></md-progress-spinner>
-  <md-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
-      [value]="progressValue" color="accent"></md-progress-spinner>
+  <mat-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
+      [value]="progressValue" color="primary" [strokeWidth]="1"></mat-progress-spinner>
+  <mat-progress-spinner [mode]="isDeterminate ? 'determinate' : 'indeterminate'"
+      [value]="progressValue" color="accent"></mat-progress-spinner>
 </div>
 
 <h1>Indeterminate</h1>
 
-<md-button-toggle-group class="demo-progress-spinner-controls" [(ngModel)]="color">
-  <md-button-toggle value="primary">Primary Color</md-button-toggle>
-  <md-button-toggle value="accent">Accent Color</md-button-toggle>
-  <md-button-toggle value="warn">Warn Color</md-button-toggle>
-</md-button-toggle-group>
+<mat-button-toggle-group class="demo-progress-spinner-controls" [(ngModel)]="color">
+  <mat-button-toggle value="primary">Primary Color</mat-button-toggle>
+  <mat-button-toggle value="accent">Accent Color</mat-button-toggle>
+  <mat-button-toggle value="warn">Warn Color</mat-button-toggle>
+</mat-button-toggle-group>
 
 <div class="demo-progress-spinner">
-  <md-progress-spinner mode="indeterminate" [color]="color"></md-progress-spinner>
-  <md-progress-spinner mode="indeterminate" [color]="color"></md-progress-spinner>
-  <md-spinner [color]="color"></md-spinner>
+  <mat-progress-spinner mode="indeterminate" [color]="color"></mat-progress-spinner>
+  <mat-progress-spinner mode="indeterminate" [color]="color"></mat-progress-spinner>
+  <mat-spinner [color]="color"></mat-spinner>
 </div>
 

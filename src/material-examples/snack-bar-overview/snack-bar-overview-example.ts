@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdSnackBar} from '@angular/material';
+import {MatSnackBar} from '@angular/material';
 
 /**
  * @title Basic snack-bar
@@ -9,7 +9,7 @@ import {MdSnackBar} from '@angular/material';
   templateUrl: 'snack-bar-overview-example.html',
 })
 export class SnackBarOverviewExample {
-  constructor(public snackBar: MdSnackBar) {}
+  constructor(public snackBar: MatSnackBar) {}
 
   openSnackBar(message: string, action: string) {
     this.snackBar.open(message, action, {

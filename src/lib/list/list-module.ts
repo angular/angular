@@ -9,55 +9,55 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {
-  MdCommonModule,
-  MdLineModule,
-  MdPseudoCheckboxModule,
-  MdRippleModule,
+  MatCommonModule,
+  MatLineModule,
+  MatPseudoCheckboxModule,
+  MatRippleModule,
 } from '@angular/material/core';
 import {
-  MdDividerCssMatStyler,
-  MdList,
-  MdListAvatarCssMatStyler,
-  MdListCssMatStyler,
-  MdListDivider,
-  MdListIconCssMatStyler,
-  MdListItem,
-  MdListSubheaderCssMatStyler,
-  MdNavListCssMatStyler,
+  MatDividerCssMatStyler,
+  MatList,
+  MatListAvatarCssMatStyler,
+  MatListCssMatStyler,
+  MatListDivider,
+  MatListIconCssMatStyler,
+  MatListItem,
+  MatListSubheaderCssMatStyler,
+  MatNavListCssMatStyler,
 } from './list';
-import {MdListOption, MdSelectionList} from './selection-list';
+import {MatListOption, MatSelectionList} from './selection-list';
 
 
 @NgModule({
-  imports: [MdLineModule, MdRippleModule, MdCommonModule, MdPseudoCheckboxModule, CommonModule],
+  imports: [MatLineModule, MatRippleModule, MatCommonModule, MatPseudoCheckboxModule, CommonModule],
   exports: [
-    MdList,
-    MdListItem,
-    MdListDivider,
-    MdListAvatarCssMatStyler,
-    MdLineModule,
-    MdCommonModule,
-    MdListIconCssMatStyler,
-    MdListCssMatStyler,
-    MdNavListCssMatStyler,
-    MdDividerCssMatStyler,
-    MdListSubheaderCssMatStyler,
-    MdPseudoCheckboxModule,
-    MdSelectionList,
-    MdListOption
+    MatList,
+    MatListItem,
+    MatListDivider,
+    MatListAvatarCssMatStyler,
+    MatLineModule,
+    MatCommonModule,
+    MatListIconCssMatStyler,
+    MatListCssMatStyler,
+    MatNavListCssMatStyler,
+    MatDividerCssMatStyler,
+    MatListSubheaderCssMatStyler,
+    MatPseudoCheckboxModule,
+    MatSelectionList,
+    MatListOption
   ],
   declarations: [
-    MdList,
-    MdListItem,
-    MdListDivider,
-    MdListAvatarCssMatStyler,
-    MdListIconCssMatStyler,
-    MdListCssMatStyler,
-    MdNavListCssMatStyler,
-    MdDividerCssMatStyler,
-    MdListSubheaderCssMatStyler,
-    MdSelectionList,
-    MdListOption
+    MatList,
+    MatListItem,
+    MatListDivider,
+    MatListAvatarCssMatStyler,
+    MatListIconCssMatStyler,
+    MatListCssMatStyler,
+    MatNavListCssMatStyler,
+    MatDividerCssMatStyler,
+    MatListSubheaderCssMatStyler,
+    MatSelectionList,
+    MatListOption
   ],
 })
-export class MdListModule {}
+export class MatListModule {}

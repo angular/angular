@@ -29,7 +29,7 @@ export type Direction = 'ltr' | 'rtl';
  * We also can't re-provide the DOCUMENT token from platform-brower because the unit tests
  * themselves use things like `querySelector` in test code.
  */
-export const DIR_DOCUMENT = new InjectionToken<Document>('md-dir-doc');
+export const DIR_DOCUMENT = new InjectionToken<Document>('mat-dir-doc');
 
 /**
  * The directionality (LTR / RTL) context for the application (or a subtree of it).

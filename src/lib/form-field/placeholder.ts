@@ -9,8 +9,8 @@
 import {Directive} from '@angular/core';
 
 
-/** The floating placeholder for an `MdFormField`. */
+/** The floating placeholder for an `MatFormField`. */
 @Directive({
-  selector: 'md-placeholder, mat-placeholder'
+  selector: 'mat-placeholder'
 })
-export class MdPlaceholder {}
+export class MatPlaceholder {}

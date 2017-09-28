@@ -12,17 +12,17 @@ There are five button variants, each applied as an attribute:
 
 | Attribute          | Description                                                                 |
 |--------------------|-----------------------------------------------------------------------------|
-| `md-button`        | Rectangular button w/ no elevation.                                         |
-| `md-raised-button` | Rectangular button w/ elevation                                             |
-| `md-icon-button`   | Circular button with a transparent background, meant to contain an icon     |
-| `md-fab`           | Circular button w/ elevation, defaults to theme's accent color              |
-| `md-mini-fab`      | Same as `md-fab` but smaller                                                |
+| `mat-button`        | Rectangular button w/ no elevation.                                         |
+| `mat-raised-button` | Rectangular button w/ elevation                                             |
+| `mat-icon-button`   | Circular button with a transparent background, meant to contain an icon     |
+| `mat-fab`           | Circular button w/ elevation, defaults to theme's accent color              |
+| `mat-mini-fab`      | Same as `mat-fab` but smaller                                                |
 
 
 ### Theming
 Buttons can be colored in terms of the current theme using the `color` property to set the
 background color to `primary`, `accent`, or `warn`. By default, only FABs (Floating Action Button) 
-are colored; the default background color for `md-button` and `md-raised-button` matches the theme's 
+are colored; the default background color for `mat-button` and `mat-raised-button` matches the theme's 
 background color.
 
 ### Capitalization
@@ -38,5 +38,5 @@ default. The `<button>` element should be used for any interaction that _perform
 current page_. The `<a>` element should be used for any interaction that _navigates to another
 view_.
 
-Buttons or links containing only icons (such as `md-fab`, `md-mini-fab`, and `md-icon-button`) should
+Buttons or links containing only icons (such as `mat-fab`, `mat-mini-fab`, and `mat-icon-button`) should
 be given a meaningful label via `aria-label` or `aria-labelledby`.

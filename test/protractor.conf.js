@@ -25,8 +25,8 @@ const config = {
       path: '../tools/axe-protractor/axe-protractor.js',
 
       rules: [
-        // Exclude md-menu elements because those are empty if not active.
-        { id: 'aria-required-children', selector: '*:not(md-menu)' },
+        // Exclude mat-menu elements because those are empty if not active.
+        { id: 'aria-required-children', selector: '*:not(mat-menu)' },
 
         // Disable color constrast checks since the final colors will vary based on the theme.
         { id: 'color-contrast', enabled: false },

@@ -21,7 +21,7 @@ import {
 import {CdkCellDef} from './cell';
 
 /**
- * The row template that can be used by the md-table. Should not be used outside of the
+ * The row template that can be used by the mat-table. Should not be used outside of the
  * material library.
  */
 export const CDK_ROW_TEMPLATE = `<ng-container cdkCellOutlet></ng-container>`;

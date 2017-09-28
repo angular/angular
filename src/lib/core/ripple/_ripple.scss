@@ -4,7 +4,7 @@
 $mat-ripple-color-opacity: 0.1;
 
 @mixin mat-ripple() {
-  // The host element of an md-ripple directive should always have a position of "absolute" or
+  // The host element of an mat-ripple directive should always have a position of "absolute" or
   // "relative" so that the ripple divs it creates inside itself are correctly positioned.
   .mat-ripple {
     overflow: hidden;

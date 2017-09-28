@@ -6,19 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule, Directive, Inject, Optional, ElementRef, InjectionToken} from '@angular/core';
+import {Directive, InjectionToken, NgModule} from '@angular/core';
 
 export const MATERIAL_COMPATIBILITY_MODE = new InjectionToken<boolean>('md-compatibility-mode');
-
-/**
- * Returns an exception to be thrown if the consumer has used
- * an invalid Material prefix on a component.
- * @docs-private
- */
-export function getMdCompatibilityInvalidPrefixError(prefix: string, nodeName: string) {
-  return Error(`The "${prefix}-" prefix cannot be used in ng-material v1 compatibility mode. ` +
-                   `It was used on an "${nodeName.toLowerCase()}" element.`);
-}
 
 /** Selector that matches all elements that may have style collisions with AngularJS Material. */
 export const MAT_ELEMENTS_SELECTOR = `
@@ -188,29 +178,11 @@ export const MD_ELEMENTS_SELECTOR = `
 
 /** Directive that enforces that the `mat-` prefix cannot be used. */
 @Directive({selector: MAT_ELEMENTS_SELECTOR})
-export class MatPrefixRejector {
-  constructor(
-    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) isCompatibilityMode: boolean,
-    elementRef: ElementRef) {
-
-    if (!isCompatibilityMode) {
-      throw getMdCompatibilityInvalidPrefixError('mat', elementRef.nativeElement.nodeName);
-    }
-  }
-}
+export class MatPrefixRejector {}
 
 /** Directive that enforces that the `md-` prefix cannot be used. */
 @Directive({selector: MD_ELEMENTS_SELECTOR})
-export class MdPrefixRejector {
-  constructor(
-    @Optional() @Inject(MATERIAL_COMPATIBILITY_MODE) isCompatibilityMode: boolean,
-    elementRef: ElementRef) {
-
-    if (isCompatibilityMode) {
-      throw getMdCompatibilityInvalidPrefixError('md', elementRef.nativeElement.nodeName);
-    }
-  }
-}
+export class MdPrefixRejector {}
 
 
 /**
@@ -229,9 +201,5 @@ export class CompatibilityModule {}
  * Module that enforces "no-conflict" compatibility mode settings. When this module is loaded,
  * it will throw an error if there are any uses of the `md-` prefix.
  */
-@NgModule({
-  providers: [{
-    provide: MATERIAL_COMPATIBILITY_MODE, useValue: true,
-  }],
-})
+@NgModule()
 export class NoConflictStyleCompatibilityMode {}

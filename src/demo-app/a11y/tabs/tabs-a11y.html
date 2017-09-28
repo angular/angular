@@ -2,8 +2,8 @@
   <h2>Weather</h2>
   <p>Switch tabs to navigate</p>
 
-  <nav md-tab-nav-bar aria-label="weather navigation links">
-    <a md-tab-link
+  <nav mat-tab-nav-bar aria-label="weather navigation links">
+    <a mat-tab-link
        *ngFor="let tabLink of tabLinks; let i = index"
        [routerLink]="tabLink.link"
        routerLinkActive #rla="routerLinkActive"
@@ -18,9 +18,9 @@
   <h2>Dog breeds</h2>
   <p>Dynamic height tabs</p>
 
-  <md-tab-group class="demo-tab-group" dynamicHeight>
-    <md-tab *ngFor="let tab of tabs" [disabled]="tab.disabled">
-      <ng-template md-tab-label>{{tab.label}}</ng-template>
+  <mat-tab-group class="demo-tab-group" dynamicHeight>
+    <mat-tab *ngFor="let tab of tabs" [disabled]="tab.disabled">
+      <ng-template mat-tab-label>{{tab.label}}</ng-template>
       <div class="tab-content">
         {{tab.content}}
         <br>
@@ -57,7 +57,7 @@
           <br>
         </div>
       </div>
-    </md-tab>
-  </md-tab-group>
+    </mat-tab>
+  </mat-tab-group>
 </section>
 

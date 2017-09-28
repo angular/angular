@@ -9,20 +9,20 @@
 import {Component, ViewEncapsulation, Input, ChangeDetectionStrategy} from '@angular/core';
 import {mixinDisabled, CanDisable} from '../common-behaviors/disabled';
 
-// Boilerplate for applying mixins to MdOptgroup.
+// Boilerplate for applying mixins to MatOptgroup.
 /** @docs-private */
-export class MdOptgroupBase { }
-export const _MdOptgroupMixinBase = mixinDisabled(MdOptgroupBase);
+export class MatOptgroupBase { }
+export const _MatOptgroupMixinBase = mixinDisabled(MatOptgroupBase);
 
 // Counter for unique group ids.
 let _uniqueOptgroupIdCounter = 0;
 
 /**
- * Component that is used to group instances of `md-option`.
+ * Component that is used to group instances of `mat-option`.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-optgroup, mat-optgroup',
+  selector: 'mat-optgroup',
   templateUrl: 'optgroup.html',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
@@ -36,7 +36,7 @@ let _uniqueOptgroupIdCounter = 0;
     '[attr.aria-labelledby]': '_labelId',
   }
 })
-export class MdOptgroup extends _MdOptgroupMixinBase implements CanDisable {
+export class MatOptgroup extends _MatOptgroupMixinBase implements CanDisable {
   /** Label for the option group. */
   @Input() label: string;
 

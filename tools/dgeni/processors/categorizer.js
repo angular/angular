@@ -6,7 +6,7 @@
 const SELECTOR_BLACKLIST  = new Set([
   '[portal]',
   '[portalHost]',
-  'textarea[md-autosize]',
+  'textarea[mat-autosize]',
   '[overlay-origin]',
   '[connected-overlay]',
 ]);

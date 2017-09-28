@@ -2,118 +2,118 @@
   <div class="menu-section">
     <p>You clicked on: {{ selected }}</p>
 
-    <md-toolbar>
-      <button md-icon-button [mdMenuTriggerFor]="menu" aria-label="Open basic menu">
-        <md-icon>more_vert</md-icon>
+    <mat-toolbar>
+      <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Open basic menu">
+        <mat-icon>more_vert</mat-icon>
       </button>
-    </md-toolbar>
+    </mat-toolbar>
 
-    <md-menu #menu="mdMenu">
-      <button md-menu-item *ngFor="let item of items" (click)="select(item.text)" [disabled]="item.disabled">
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item *ngFor="let item of items" (click)="select(item.text)" [disabled]="item.disabled">
         {{ item.text }}
       </button>
-    </md-menu>
+    </mat-menu>
   </div>
   <div class="menu-section">
     <p>Nested menu</p>
 
-    <md-toolbar>
-      <button md-icon-button [mdMenuTriggerFor]="animals">
-        <md-icon>more_vert</md-icon>
+    <mat-toolbar>
+      <button mat-icon-button [matMenuTriggerFor]="animals">
+        <mat-icon>more_vert</mat-icon>
       </button>
-    </md-toolbar>
+    </mat-toolbar>
 
-    <md-menu #animals="mdMenu">
-      <button md-menu-item [mdMenuTriggerFor]="vertebrates">Vertebrates</button>
-      <button md-menu-item [mdMenuTriggerFor]="invertebrates">Invertebrates</button>
-    </md-menu>
+    <mat-menu #animals="matMenu">
+      <button mat-menu-item [matMenuTriggerFor]="vertebrates">Vertebrates</button>
+      <button mat-menu-item [matMenuTriggerFor]="invertebrates">Invertebrates</button>
+    </mat-menu>
 
-    <md-menu #vertebrates="mdMenu">
-      <button md-menu-item [mdMenuTriggerFor]="fish">Fishes</button>
-      <button md-menu-item [mdMenuTriggerFor]="amphibians">Amphibians</button>
-      <button md-menu-item [mdMenuTriggerFor]="reptiles">Reptiles</button>
-      <button md-menu-item>Birds</button>
-      <button md-menu-item>Mammals</button>
-    </md-menu>
+    <mat-menu #vertebrates="matMenu">
+      <button mat-menu-item [matMenuTriggerFor]="fish">Fishes</button>
+      <button mat-menu-item [matMenuTriggerFor]="amphibians">Amphibians</button>
+      <button mat-menu-item [matMenuTriggerFor]="reptiles">Reptiles</button>
+      <button mat-menu-item>Birds</button>
+      <button mat-menu-item>Mammals</button>
+    </mat-menu>
 
-    <md-menu #invertebrates="mdMenu">
-      <button md-menu-item>Insects</button>
-      <button md-menu-item>Molluscs</button>
-      <button md-menu-item>Crustaceans</button>
-      <button md-menu-item>Corals</button>
-      <button md-menu-item>Arachnids</button>
-      <button md-menu-item>Velvet worms</button>
-      <button md-menu-item>Horseshoe crabs</button>
-    </md-menu>
+    <mat-menu #invertebrates="matMenu">
+      <button mat-menu-item>Insects</button>
+      <button mat-menu-item>Molluscs</button>
+      <button mat-menu-item>Crustaceans</button>
+      <button mat-menu-item>Corals</button>
+      <button mat-menu-item>Arachnids</button>
+      <button mat-menu-item>Velvet worms</button>
+      <button mat-menu-item>Horseshoe crabs</button>
+    </mat-menu>
 
-    <md-menu #fish="mdMenu">
-      <button md-menu-item>Baikal oilfish</button>
-      <button md-menu-item>Bala shark</button>
-      <button md-menu-item>Ballan wrasse</button>
-      <button md-menu-item>Bamboo shark</button>
-      <button md-menu-item>Banded killifish</button>
-    </md-menu>
+    <mat-menu #fish="matMenu">
+      <button mat-menu-item>Baikal oilfish</button>
+      <button mat-menu-item>Bala shark</button>
+      <button mat-menu-item>Ballan wrasse</button>
+      <button mat-menu-item>Bamboo shark</button>
+      <button mat-menu-item>Banded killifish</button>
+    </mat-menu>
 
-    <md-menu #amphibians="mdMenu">
-      <button md-menu-item>Sonoran desert toad</button>
-      <button md-menu-item>Western toad</button>
-      <button md-menu-item>Arroyo toad</button>
-      <button md-menu-item>Yosemite toad</button>
-    </md-menu>
+    <mat-menu #amphibians="matMenu">
+      <button mat-menu-item>Sonoran desert toad</button>
+      <button mat-menu-item>Western toad</button>
+      <button mat-menu-item>Arroyo toad</button>
+      <button mat-menu-item>Yosemite toad</button>
+    </mat-menu>
 
-    <md-menu #reptiles="mdMenu">
-      <button md-menu-item>Banded Day Gecko</button>
-      <button md-menu-item>Banded Gila Monster</button>
-      <button md-menu-item>Black Tree Monitor</button>
-      <button md-menu-item>Blue Spiny Lizard</button>
-    </md-menu>
+    <mat-menu #reptiles="matMenu">
+      <button mat-menu-item>Banded Day Gecko</button>
+      <button mat-menu-item>Banded Gila Monster</button>
+      <button mat-menu-item>Black Tree Monitor</button>
+      <button mat-menu-item>Blue Spiny Lizard</button>
+    </mat-menu>
   </div>
   <div class="menu-section">
     <p>Clicking these will navigate:</p>
-    <md-toolbar>
-      <button md-icon-button [mdMenuTriggerFor]="anchorMenu" aria-label="Open anchor menu">
-        <md-icon>more_vert</md-icon>
+    <mat-toolbar>
+      <button mat-icon-button [matMenuTriggerFor]="anchorMenu" aria-label="Open anchor menu">
+        <mat-icon>more_vert</mat-icon>
       </button>
-    </md-toolbar>
+    </mat-toolbar>
 
-    <md-menu #anchorMenu="mdMenu">
-      <a md-menu-item *ngFor="let item of items" href="http://www.google.com" [disabled]="item.disabled">
+    <mat-menu #anchorMenu="matMenu">
+      <a mat-menu-item *ngFor="let item of items" href="http://www.google.com" [disabled]="item.disabled">
         {{ item.text }}
       </a>
-    </md-menu>
+    </mat-menu>
   </div>
   <div class="menu-section">
     <p>
       Position x: before
     </p>
-    <md-toolbar class="end-icon">
-      <button md-icon-button [mdMenuTriggerFor]="posXMenu" aria-label="Open x-positioned menu">
-        <md-icon>more_vert</md-icon>
+    <mat-toolbar class="end-icon">
+      <button mat-icon-button [matMenuTriggerFor]="posXMenu" aria-label="Open x-positioned menu">
+        <mat-icon>more_vert</mat-icon>
       </button>
-    </md-toolbar>
+    </mat-toolbar>
 
-    <md-menu xPosition="before" #posXMenu="mdMenu" class="before">
-      <button md-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
-        <md-icon>{{ item.icon }}</md-icon>
+    <mat-menu xPosition="before" #posXMenu="matMenu" class="before">
+      <button mat-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
+        <mat-icon>{{ item.icon }}</mat-icon>
         {{ item.text }}
       </button>
-    </md-menu>
+    </mat-menu>
   </div>
   <div class="menu-section">
     <p>
       Position y: above
     </p>
-    <md-toolbar>
-      <button md-icon-button [mdMenuTriggerFor]="posYMenu" aria-label="Open y-positioned menu">
-        <md-icon>more_vert</md-icon>
+    <mat-toolbar>
+      <button mat-icon-button [matMenuTriggerFor]="posYMenu" aria-label="Open y-positioned menu">
+        <mat-icon>more_vert</mat-icon>
       </button>
-    </md-toolbar>
+    </mat-toolbar>
 
-    <md-menu yPosition="above" #posYMenu="mdMenu">
-      <button md-menu-item *ngFor="let item of items" [disabled]="item.disabled">
+    <mat-menu yPosition="above" #posYMenu="matMenu">
+      <button mat-menu-item *ngFor="let item of items" [disabled]="item.disabled">
         {{ item.text }}
       </button>
-    </md-menu>
+    </mat-menu>
   </div>
 </div>
 
@@ -121,49 +121,49 @@
   <div class="menu-section">
     <p>overlapTrigger: false</p>
 
-    <md-toolbar>
-      <button md-icon-button [md-menu-trigger-for]="menuOverlay">
-        <md-icon>more_vert</md-icon>
+    <mat-toolbar>
+      <button mat-icon-button [mat-menu-trigger-for]="menuOverlay">
+        <mat-icon>more_vert</mat-icon>
       </button>
-    </md-toolbar>
+    </mat-toolbar>
 
-    <md-menu [overlapTrigger]="false" #menuOverlay="mdMenu">
-      <button md-menu-item *ngFor="let item of items" [disabled]="item.disabled">
+    <mat-menu [overlapTrigger]="false" #menuOverlay="matMenu">
+      <button mat-menu-item *ngFor="let item of items" [disabled]="item.disabled">
         {{ item.text }}
       </button>
-    </md-menu>
+    </mat-menu>
   </div>
   <div class="menu-section">
     <p>
       Position x: before, overlapTrigger: false
     </p>
-    <md-toolbar class="end-icon">
-      <button md-icon-button [md-menu-trigger-for]="posXMenuOverlay">
-        <md-icon>more_vert</md-icon>
+    <mat-toolbar class="end-icon">
+      <button mat-icon-button [mat-menu-trigger-for]="posXMenuOverlay">
+        <mat-icon>more_vert</mat-icon>
       </button>
-    </md-toolbar>
+    </mat-toolbar>
 
-    <md-menu xPosition="before" [overlapTrigger]="false" #posXMenuOverlay="mdMenu" class="before">
-      <button md-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
-        <md-icon>{{ item.icon }}</md-icon>
+    <mat-menu xPosition="before" [overlapTrigger]="false" #posXMenuOverlay="matMenu" class="before">
+      <button mat-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
+        <mat-icon>{{ item.icon }}</mat-icon>
         {{ item.text }}
       </button>
-    </md-menu>
+    </mat-menu>
   </div>
   <div class="menu-section">
     <p>
       Position y: above, overlapTrigger: false
     </p>
-    <md-toolbar>
-      <button md-icon-button [md-menu-trigger-for]="posYMenuOverlay">
-        <md-icon>more_vert</md-icon>
+    <mat-toolbar>
+      <button mat-icon-button [mat-menu-trigger-for]="posYMenuOverlay">
+        <mat-icon>more_vert</mat-icon>
       </button>
-    </md-toolbar>
+    </mat-toolbar>
 
-    <md-menu yPosition="above" [overlapTrigger]="false" #posYMenuOverlay="mdMenu">
-      <button md-menu-item *ngFor="let item of items" [disabled]="item.disabled">
+    <mat-menu yPosition="above" [overlapTrigger]="false" #posYMenuOverlay="matMenu">
+      <button mat-menu-item *ngFor="let item of items" [disabled]="item.disabled">
         {{ item.text }}
       </button>
-    </md-menu>
+    </mat-menu>
   </div>
 </div>

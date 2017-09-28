@@ -5,24 +5,24 @@ import {createKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {MdChipInput, MdChipInputEvent} from './chip-input';
-import {MdChipsModule} from './index';
+import {MatChipInput, MatChipInputEvent} from './chip-input';
+import {MatChipsModule} from './index';
 
 
 const COMMA = 188;
 
-describe('MdChipInput', () => {
+describe('MatChipInput', () => {
   let fixture: ComponentFixture<any>;
   let testChipInput: TestChipInput;
   let inputDebugElement: DebugElement;
   let inputNativeElement: HTMLElement;
-  let chipInputDirective: MdChipInput;
+  let chipInputDirective: MatChipInput;
 
   let dir = 'ltr';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdChipsModule, PlatformModule],
+      imports: [MatChipsModule, PlatformModule],
       declarations: [TestChipInput],
       providers: [{
         provide: Directionality, useFactory: () => {
@@ -39,8 +39,8 @@ describe('MdChipInput', () => {
     testChipInput = fixture.debugElement.componentInstance;
     fixture.detectChanges();
 
-    inputDebugElement = fixture.debugElement.query(By.directive(MdChipInput));
-    chipInputDirective = inputDebugElement.injector.get(MdChipInput) as MdChipInput;
+    inputDebugElement = fixture.debugElement.query(By.directive(MatChipInput));
+    chipInputDirective = inputDebugElement.injector.get(MatChipInput) as MatChipInput;
     inputNativeElement = inputDebugElement.nativeElement;
   }));
 
@@ -104,18 +104,18 @@ describe('MdChipInput', () => {
 
 @Component({
   template: `
-    <md-chip-list #chipList>
-    </md-chip-list>
-    <input mdInput [mdChipInputFor]="chipList"
-              [mdChipInputAddOnBlur]="addOnBlur"
-              [mdChipInputSeparatorKeyCodes]="separatorKeys"
-              (mdChipInputTokenEnd)="add($event)" />
+    <mat-chip-list #chipList>
+    </mat-chip-list>
+    <input matInput [matChipInputFor]="chipList"
+              [matChipInputAddOnBlur]="addOnBlur"
+              [matChipInputSeparatorKeyCodes]="separatorKeys"
+              (matChipInputTokenEnd)="add($event)" />
   `
 })
 class TestChipInput {
   addOnBlur: boolean = false;
   separatorKeys: number[] = [ENTER];
 
-  add(_: MdChipInputEvent) {
+  add(_: MatChipInputEvent) {
   }
 }

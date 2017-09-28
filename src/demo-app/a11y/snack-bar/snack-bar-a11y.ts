@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdSnackBar} from '@angular/material';
+import {MatSnackBar} from '@angular/material';
 
 @Component({
   moduleId: module.id,
@@ -7,7 +7,7 @@ import {MdSnackBar} from '@angular/material';
   templateUrl: 'snack-bar-a11y.html',
 })
 export class SnackBarAccessibilityDemo {
-  constructor(private snackBar: MdSnackBar) {}
+  constructor(private snackBar: MatSnackBar) {}
 
   openDiscoPartySnackBar() {
     this.snackBar.open('Disco party!', 'Dismiss', {duration: 5000});

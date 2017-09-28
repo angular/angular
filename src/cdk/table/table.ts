@@ -57,7 +57,7 @@ export class HeaderRowPlaceholder {
 }
 
 /**
- * The table template that can be used by the md-table. Should not be used outside of the
+ * The table template that can be used by the mat-table. Should not be used outside of the
  * material library.
  */
 export const CDK_TABLE_TEMPLATE = `

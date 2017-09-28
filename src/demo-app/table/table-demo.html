@@ -1,34 +1,34 @@
 <div class="demo-data-source-actions">
   <div>
-    <button md-raised-button (click)="connect()">Connect New Data Source</button>
-    <button md-raised-button (click)="disconnect()" [disabled]="!dataSource">Disconnect Data Source</button>
+    <button mat-raised-button (click)="connect()">Connect New Data Source</button>
+    <button mat-raised-button (click)="disconnect()" [disabled]="!dataSource">Disconnect Data Source</button>
   </div>
 
   <div>
-    <button md-raised-button (click)="_peopleDatabase.shuffle(changeReferences)">Randomize Data</button>
-    <md-checkbox [(ngModel)]="changeReferences">Change references</md-checkbox>
+    <button mat-raised-button (click)="_peopleDatabase.shuffle(changeReferences)">Randomize Data</button>
+    <mat-checkbox [(ngModel)]="changeReferences">Change references</mat-checkbox>
   </div>
 
   <div class="demo-track-by-select">
     <div class="demo-track-by-label">Track By</div>
-    <md-radio-group [(ngModel)]="trackByStrategy">
-      <md-radio-button [value]="'reference'">Reference</md-radio-button>
-      <md-radio-button [value]="'id'">ID</md-radio-button>
-      <md-radio-button [value]="'index'">Index</md-radio-button>
-    </md-radio-group>
+    <mat-radio-group [(ngModel)]="trackByStrategy">
+      <mat-radio-button [value]="'reference'">Reference</mat-radio-button>
+      <mat-radio-button [value]="'id'">ID</mat-radio-button>
+      <mat-radio-button [value]="'index'">Index</mat-radio-button>
+    </mat-radio-group>
   </div>
 </div>
 
-<md-card class="demo-table-card">
+<mat-card class="demo-table-card">
   <h3>
     CdkTable With Dynamic Column Def
     <div>
-      <button md-raised-button
+      <button mat-raised-button
               (click)="addDynamicColumnDef()"
               [disabled]="dynamicColumnIds.length >= 4">
         Add Column Def
       </button>
-      <button md-raised-button
+      <button mat-raised-button
               (click)="removeDynamicColumnDef()"
               [disabled]="dynamicColumnIds.length == 0">
         Remove Column Def
@@ -45,27 +45,27 @@
     <cdk-header-row *cdkHeaderRowDef="dynamicColumnIds"></cdk-header-row>
     <cdk-row *cdkRowDef="let row; columns: dynamicColumnIds;"></cdk-row>
   </cdk-table>
-</md-card>
+</mat-card>
 
-<md-card class="demo-table-card">
+<mat-card class="demo-table-card">
   <h3>CdkTable Example</h3>
 
   <div class="demo-highlighter">
     Highlight:
-    <md-checkbox (change)="toggleHighlight('first', $event.checked)">First Row</md-checkbox>
-    <md-checkbox (change)="toggleHighlight('last', $event.checked)">Last Row</md-checkbox>
-    <md-checkbox (change)="toggleHighlight('even', $event.checked)">Even Rows</md-checkbox>
-    <md-checkbox (change)="toggleHighlight('odd', $event.checked)">Odd Rows</md-checkbox>
+    <mat-checkbox (change)="toggleHighlight('first', $event.checked)">First Row</mat-checkbox>
+    <mat-checkbox (change)="toggleHighlight('last', $event.checked)">Last Row</mat-checkbox>
+    <mat-checkbox (change)="toggleHighlight('even', $event.checked)">Even Rows</mat-checkbox>
+    <mat-checkbox (change)="toggleHighlight('odd', $event.checked)">Odd Rows</mat-checkbox>
   </div>
 
-  <cdk-table #table mdSort
+  <cdk-table #table matSort
                [dataSource]="dataSource"
                [trackBy]="userTrackBy">
 
     <!-- Column Definition: ID -->
     <ng-container cdkColumnDef="userId">
       <cdk-header-cell *cdkHeaderCellDef
-                       md-sort-header arrowPosition="before">
+                       mat-sort-header arrowPosition="before">
           ID
         </cdk-header-cell>
       <cdk-cell *cdkCellDef="let row"> {{row.id}} </cdk-cell>
@@ -74,7 +74,7 @@
     <!-- Column Definition: Progress -->
     <ng-container cdkColumnDef="progress">
       <cdk-header-cell *cdkHeaderCellDef
-                         md-sort-header start="desc">
+                         mat-sort-header start="desc">
           Progress
         </cdk-header-cell>
       <cdk-cell *cdkCellDef="let row">
@@ -90,7 +90,7 @@
 
     <!-- Column Definition: Name -->
     <ng-container cdkColumnDef="userName">
-      <cdk-header-cell *cdkHeaderCellDef md-sort-header>
+      <cdk-header-cell *cdkHeaderCellDef mat-sort-header>
           Name
         </cdk-header-cell>
       <cdk-cell *cdkCellDef="let row"> {{row.name}} </cdk-cell>
@@ -99,7 +99,7 @@
     <!-- Column Definition: Color -->
     <ng-container cdkColumnDef="color">
       <cdk-header-cell *cdkHeaderCellDef
-                         md-sort-header disableClear>
+                         mat-sort-header disableClear>
           Color
         </cdk-header-cell>
       <cdk-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </cdk-cell>
@@ -116,9 +116,9 @@
                }">
       </cdk-row>
   </cdk-table>
-</md-card>
+</mat-card>
 
-<h3>MdTable Example</h3>
+<h3>MatTable Example</h3>
 
 <div class="demo-table-container demo-mat-table-example mat-elevation-z4">
 
@@ -126,18 +126,18 @@
                      (toggleColorColumn)="toggleColorColumn()">
   </table-header-demo>
 
-  <md-table [dataSource]="dataSource" [trackBy]="userTrackBy">
+  <mat-table [dataSource]="dataSource" [trackBy]="userTrackBy">
 
     <!-- Column Definition: ID -->
     <ng-container cdkColumnDef="userId">
-      <md-header-cell *mdHeaderCellDef> ID </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.id}} </md-cell>
+      <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.id}} </mat-cell>
     </ng-container>
 
     <!-- Column Definition: Progress -->
-    <ng-container mdColumnDef="progress">
-      <md-header-cell *mdHeaderCellDef> Progress </md-header-cell>
-      <md-cell *mdCellDef="let row">
+    <ng-container matColumnDef="progress">
+      <mat-header-cell *matHeaderCellDef> Progress </mat-header-cell>
+      <mat-cell *matCellDef="let row">
         <div class="demo-progress-stat">{{row.progress}}%</div>
         <div class="demo-progress-indicator-container">
           <div class="demo-progress-indicator"
@@ -145,28 +145,28 @@
                [style.opacity]="getOpacity(row.progress)"
                [style.width.%]="row.progress"></div>
         </div>
-      </md-cell>
+      </mat-cell>
     </ng-container>
 
     <!-- Column Definition: Name -->
-    <ng-container mdColumnDef="userName">
-      <md-header-cell *mdHeaderCellDef> Name </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.name}} </md-cell>
+    <ng-container matColumnDef="userName">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
     </ng-container>
 
     <!-- Column Definition: Color -->
-    <ng-container mdColumnDef="color">
-      <md-header-cell *mdHeaderCellDef>Color</md-header-cell>
-      <md-cell *mdCellDef="let row" [style.color]="row.color"> {{row.color}} </md-cell>
+    <ng-container matColumnDef="color">
+      <mat-header-cell *matHeaderCellDef>Color</mat-header-cell>
+      <mat-cell *matCellDef="let row" [style.color]="row.color"> {{row.color}} </mat-cell>
     </ng-container>
 
-    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-    <md-row *mdRowDef="let row; columns: displayedColumns"></md-row>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 
-  </md-table>
+  </mat-table>
 
-  <md-paginator #paginator
+  <mat-paginator #paginator
                 [length]="_peopleDatabase.data.length"
                 [pageSizeOptions]="[5, 10, 25, 100]">
-  </md-paginator>
+  </mat-paginator>
 </div>

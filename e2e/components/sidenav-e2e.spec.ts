@@ -6,7 +6,7 @@ describe('sidenav', () => {
 
     beforeEach(() => {
       browser.get('/sidenav');
-      sidenav = element(by.tagName('md-sidenav'));
+      sidenav = element(by.tagName('mat-sidenav'));
     });
 
     it('should be closed', () => {

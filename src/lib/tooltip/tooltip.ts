@@ -56,25 +56,25 @@ export const SCROLL_THROTTLE_MS = 20;
 export const TOOLTIP_PANEL_CLASS = 'mat-tooltip-panel';
 
 /** Creates an error to be thrown if the user supplied an invalid tooltip position. */
-export function getMdTooltipInvalidPositionError(position: string) {
+export function getMatTooltipInvalidPositionError(position: string) {
   return Error(`Tooltip position "${position}" is invalid.`);
 }
 
 /** Injection token that determines the scroll handling while a tooltip is visible. */
-export const MD_TOOLTIP_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('md-tooltip-scroll-strategy');
+export const MAT_TOOLTIP_SCROLL_STRATEGY =
+    new InjectionToken<() => ScrollStrategy>('mat-tooltip-scroll-strategy');
 
 /** @docs-private */
-export function MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
+export function MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
     () => RepositionScrollStrategy {
   return () => overlay.scrollStrategies.reposition({ scrollThrottle: SCROLL_THROTTLE_MS });
 }
 
 /** @docs-private */
-export const MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
-  provide: MD_TOOLTIP_SCROLL_STRATEGY,
+export const MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
+  provide: MAT_TOOLTIP_SCROLL_STRATEGY,
   deps: [Overlay],
-  useFactory: MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY
+  useFactory: MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY
 };
 /**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
@@ -83,7 +83,7 @@ export const MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
  * https://material.google.com/components/tooltips.html
  */
 @Directive({
-  selector: '[md-tooltip], [mdTooltip], [mat-tooltip], [matTooltip]',
+  selector: '[mat-tooltip], [matTooltip]',
   host: {
     '(longpress)': 'show()',
     '(focus)': 'show()',
@@ -91,9 +91,9 @@ export const MD_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
     '(keydown)': '_handleKeydown($event)',
     '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
   },
-  exportAs: 'mdTooltip, matTooltip',
+  exportAs: 'matTooltip',
 })
-export class MdTooltip implements OnDestroy {
+export class MatTooltip implements OnDestroy {
   _overlayRef: OverlayRef | null;
   _tooltipInstance: TooltipComponent | null;
 
@@ -102,7 +102,7 @@ export class MdTooltip implements OnDestroy {
   private _tooltipClass: string|string[]|Set<string>|{[key: string]: any};
 
   /** Allows the user to define the position of the tooltip relative to the parent element */
-  @Input('mdTooltipPosition')
+  @Input('matTooltipPosition')
   get position(): TooltipPosition { return this._position; }
   set position(value: TooltipPosition) {
     if (value !== this._position) {
@@ -117,7 +117,7 @@ export class MdTooltip implements OnDestroy {
   }
 
   /** Disables the display of the tooltip. */
-  @Input('mdTooltipDisabled')
+  @Input('matTooltipDisabled')
   get disabled(): boolean { return this._disabled; }
   set disabled(value) {
     this._disabled = coerceBooleanProperty(value);
@@ -134,15 +134,15 @@ export class MdTooltip implements OnDestroy {
   set _positionDeprecated(value: TooltipPosition) { this._position = value; }
 
   /** The default delay in ms before showing the tooltip after show is called */
-  @Input('mdTooltipShowDelay') showDelay = 0;
+  @Input('matTooltipShowDelay') showDelay = 0;
 
   /** The default delay in ms before hiding the tooltip after hide is called */
-  @Input('mdTooltipHideDelay') hideDelay = 0;
+  @Input('matTooltipHideDelay') hideDelay = 0;
 
   private _message = '';
 
   /** The message to be displayed in the tooltip */
-  @Input('mdTooltip') get message() { return this._message; }
+  @Input('matTooltip') get message() { return this._message; }
   set message(value: string) {
     this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
 
@@ -153,7 +153,7 @@ export class MdTooltip implements OnDestroy {
   }
 
   /** Classes to be passed to the tooltip. Supports the same syntax as `ngClass`. */
-  @Input('mdTooltipClass')
+  @Input('matTooltipClass')
   get tooltipClass() { return this._tooltipClass; }
   set tooltipClass(value: string|string[]|Set<string>|{[key: string]: any}) {
     this._tooltipClass = value;
@@ -161,41 +161,6 @@ export class MdTooltip implements OnDestroy {
       this._setTooltipClass(this._tooltipClass);
     }
   }
-
-  /** @deprecated */
-  @Input('md-tooltip')
-  get _deprecatedMessage(): string { return this.message; }
-  set _deprecatedMessage(v: string) { this.message = v; }
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matTooltip')
-  get _matMessage() { return this.message; }
-  set _matMessage(v) { this.message = v; }
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matTooltipPosition')
-  get _matPosition() { return this.position; }
-  set _matPosition(v) { this.position = v; }
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matTooltipDisabled')
-  get _matDisabled() { return this.disabled; }
-  set _matDisabled(v) { this.disabled = v; }
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matTooltipHideDelay')
-  get _matHideDelay() { return this.hideDelay; }
-  set _matHideDelay(v) { this.hideDelay = v; }
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matTooltipShowDelay')
-  get _matShowDelay() { return this.showDelay; }
-  set _matShowDelay(v) { this.showDelay = v; }
-
-  // Properties with `mat-` prefix for nonconflict mode.
-  @Input('matTooltipClass')
-  get _matClass() { return this.tooltipClass; }
-  set _matClass(v) { this.tooltipClass = v; }
 
   private _enterListener: Function;
   private _leaveListener: Function;
@@ -209,7 +174,7 @@ export class MdTooltip implements OnDestroy {
     private _ngZone: NgZone,
     private _platform: Platform,
     private _ariaDescriber: AriaDescriber,
-    @Inject(MD_TOOLTIP_SCROLL_STRATEGY) private _scrollStrategy,
+    @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) private _scrollStrategy,
     @Optional() private _dir: Directionality) {
 
     // The mouse events shouldn't be bound on iOS devices, because
@@ -350,7 +315,7 @@ export class MdTooltip implements OnDestroy {
       return {originX: 'end', originY: 'center'};
     }
 
-    throw getMdTooltipInvalidPositionError(this.position);
+    throw getMatTooltipInvalidPositionError(this.position);
   }
 
   /** Returns the overlay position based on the user's preference */
@@ -376,7 +341,7 @@ export class MdTooltip implements OnDestroy {
       return {overlayX: 'start', overlayY: 'center'};
     }
 
-    throw getMdTooltipInvalidPositionError(this.position);
+    throw getMatTooltipInvalidPositionError(this.position);
   }
 
   /** Updates the tooltip message and repositions the overlay according to the new message length */
@@ -412,7 +377,7 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-tooltip-component, mat-tooltip-component',
+  selector: 'mat-tooltip-component',
   templateUrl: 'tooltip.html',
   styleUrls: ['tooltip.css'],
   encapsulation: ViewEncapsulation.None,
@@ -526,7 +491,7 @@ export class TooltipComponent {
       case 'right':  this._transformOrigin = 'left'; break;
       case 'above':  this._transformOrigin = 'bottom'; break;
       case 'below':  this._transformOrigin = 'top'; break;
-      default: throw getMdTooltipInvalidPositionError(value);
+      default: throw getMatTooltipInvalidPositionError(value);
     }
   }
 

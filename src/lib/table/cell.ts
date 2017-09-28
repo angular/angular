@@ -16,59 +16,54 @@ import {
 } from '@angular/cdk/table';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MdCellDef = CdkCellDef;
-export const _MdHeaderCellDef = CdkHeaderCellDef;
-export const _MdColumnDef = CdkColumnDef;
-export const _MdHeaderCell = CdkHeaderCell;
-export const _MdCell = CdkCell;
+export const _MatCellDef = CdkCellDef;
+export const _MatHeaderCellDef = CdkHeaderCellDef;
+export const _MatColumnDef = CdkColumnDef;
+export const _MatHeaderCell = CdkHeaderCell;
+export const _MatCell = CdkCell;
 
 /**
- * Cell definition for the md-table.
+ * Cell definition for the mat-table.
  * Captures the template of a column's data row cell as well as cell-specific properties.
  */
 @Directive({
-  selector: '[mdCellDef], [matCellDef]',
-  providers: [{provide: CdkCellDef, useExisting: MdCellDef}]
+  selector: '[matCellDef]',
+  providers: [{provide: CdkCellDef, useExisting: MatCellDef}]
 })
-export class MdCellDef extends _MdCellDef { }
+export class MatCellDef extends _MatCellDef { }
 
 /**
- * Header cell definition for the md-table.
+ * Header cell definition for the mat-table.
  * Captures the template of a column's header cell and as well as cell-specific properties.
  */
 @Directive({
-  selector: '[mdHeaderCellDef], [matHeaderCellDef]',
-  providers: [{provide: CdkHeaderCellDef, useExisting: MdHeaderCellDef}]
+  selector: '[matHeaderCellDef]',
+  providers: [{provide: CdkHeaderCellDef, useExisting: MatHeaderCellDef}]
 })
-export class MdHeaderCellDef extends _MdHeaderCellDef { }
+export class MatHeaderCellDef extends _MatHeaderCellDef { }
 
 /**
- * Column definition for the md-table.
+ * Column definition for the mat-table.
  * Defines a set of cells available for a table column.
  */
 @Directive({
-  selector: '[mdColumnDef], [matColumnDef]',
-  providers: [{provide: CdkColumnDef, useExisting: MdColumnDef}],
+  selector: '[matColumnDef]',
+  providers: [{provide: CdkColumnDef, useExisting: MatColumnDef}],
 })
-export class MdColumnDef extends _MdColumnDef {
+export class MatColumnDef extends _MatColumnDef {
   /** Unique name for this column. */
-  @Input('mdColumnDef') name: string;
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matColumnDef')
-  get _matColumnDefName() { return this.name; }
-  set _matColumnDefName(name) { this.name = name; }
+  @Input('matColumnDef') name: string;
 }
 
 /** Header cell template container that adds the right classes and role. */
 @Directive({
-  selector: 'md-header-cell, mat-header-cell',
+  selector: 'mat-header-cell',
   host: {
     'class': 'mat-header-cell',
     'role': 'columnheader',
   },
 })
-export class MdHeaderCell extends _MdHeaderCell {
+export class MatHeaderCell extends _MatHeaderCell {
   constructor(columnDef: CdkColumnDef,
               elementRef: ElementRef,
               renderer: Renderer2) {
@@ -79,13 +74,13 @@ export class MdHeaderCell extends _MdHeaderCell {
 
 /** Cell template container that adds the right classes and role. */
 @Directive({
-  selector: 'md-cell, mat-cell',
+  selector: 'mat-cell',
   host: {
     'class': 'mat-cell',
     'role': 'gridcell',
   },
 })
-export class MdCell extends _MdCell {
+export class MatCell extends _MatCell {
   constructor(columnDef: CdkColumnDef,
               elementRef: ElementRef,
               renderer: Renderer2) {

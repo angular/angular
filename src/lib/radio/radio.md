@@ -1,4 +1,4 @@
-`<md-radio>` provides the same functionality as a native `<input type="radio">` enhanced with
+`<mat-radio>` provides the same functionality as a native `<input type="radio">` enhanced with
 Material Design styling and animations.
 
 <!-- example(radio-overview) -->
@@ -6,7 +6,7 @@ Material Design styling and animations.
 All radio-buttons with the same `name` comprise a set from which only one may be selected at a time.
 
 ### Radio-button label
-The radio-button label is provided as the content to the `<md-radio-button>` element. The label can
+The radio-button label is provided as the content to the `<mat-radio-button>` element. The label can
 be positioned before or after the radio-button by setting the `labelPosition` property to `'before'`
 or `'after'`.
 
@@ -17,7 +17,7 @@ specify an appropriate label.
 
 
 ### Radio groups
-Radio-buttons should typically be placed inside of an `<md-radio-group>` unless the DOM structure
+Radio-buttons should typically be placed inside of an `<mat-radio-group>` unless the DOM structure
 would make that impossible (e.g., radio-buttons inside of table cells). The radio-group has a
 `value` property that reflects the currently selected radio-button inside of the group.
 
@@ -25,12 +25,12 @@ Individual radio-buttons inside of a radio-group will inherit the `name` of the 
 
 
 ### Use with `@angular/forms`
-`<md-radio-group>` is compatible with `@angular/forms` and supports both `FormsModule`
+`<mat-radio-group>` is compatible with `@angular/forms` and supports both `FormsModule`
 and `ReactiveFormsModule`.
 
 ### Accessibility
-The `<md-radio-button>` uses an internal `<input type="radio">` to provide an accessible experience.
+The `<mat-radio-button>` uses an internal `<input type="radio">` to provide an accessible experience.
 This internal radio button receives focus and is automatically labelled by the text content of the
-`<md-radio-button>` element.
+`<mat-radio-button>` element.
 
 Radio button groups should should be given a meaningful label via `aria-label` or `aria-labelledby`.

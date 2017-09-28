@@ -1,28 +1,28 @@
 <section>
   <h2>Receive email update</h2>
   <p>Showing a toggle to manage whether receive email update.</p>
-  <md-slide-toggle color="primary" [(ngModel)]="emailToggle">
+  <mat-slide-toggle color="primary" [(ngModel)]="emailToggle">
     Receive email update
-  </md-slide-toggle>
+  </mat-slide-toggle>
 </section>
 
 <section>
   <h2>Music</h2>
   <p>Showing a disabled toggle to control music on/off status.</p>
-  <md-slide-toggle color="accent" [disabled]="true" [(ngModel)]="musicToggle">
+  <mat-slide-toggle color="accent" [disabled]="true" [(ngModel)]="musicToggle">
     Music {{musicToggle ? 'on' : 'off'}}   (disabled)
-  </md-slide-toggle>
+  </mat-slide-toggle>
 </section>
 
 <section>
   <h2>Terms and conditions</h2>
   <p>Showing a required toggle to accept terms and conditions in a form.</p>
   <form #form="ngForm" (ngSubmit)="onFormSubmit()" ngNativeValidate>
-    <md-slide-toggle name="termsToggle" required ngModel>
+    <mat-slide-toggle name="termsToggle" required ngModel>
       I agree to terms and conditions
-    </md-slide-toggle>
+    </mat-slide-toggle>
     <p>
-      <button md-raised-button type="submit">Submit</button>
+      <button mat-raised-button type="submit">Submit</button>
     </p>
   </form>
 </section>

@@ -1,5 +1,5 @@
 import {Component, ViewChild, TemplateRef} from '@angular/core';
-import {MdDialog, MdDialogRef, MdDialogConfig} from '@angular/material';
+import {MatDialog, MatDialogRef, MatDialogConfig} from '@angular/material';
 
 @Component({
   selector: 'dialog-e2e',
@@ -7,13 +7,13 @@ import {MdDialog, MdDialogRef, MdDialogConfig} from '@angular/material';
   templateUrl: 'dialog-e2e.html'
 })
 export class DialogE2E {
-  dialogRef: MdDialogRef<TestDialog> | null;
+  dialogRef: MatDialogRef<TestDialog> | null;
 
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
-  constructor (private _dialog: MdDialog) { }
+  constructor (private _dialog: MatDialog) { }
 
-  private _openDialog(config?: MdDialogConfig) {
+  private _openDialog(config?: MatDialogConfig) {
     this.dialogRef = this._dialog.open(TestDialog, config);
     this.dialogRef.afterClosed().subscribe(() => this.dialogRef = null);
   }
@@ -41,5 +41,5 @@ export class DialogE2E {
   <button type="button" (click)="dialogRef.close()" id="close">CLOSE</button>`
 })
 export class TestDialog {
-  constructor(public dialogRef: MdDialogRef<TestDialog>) { }
+  constructor(public dialogRef: MatDialogRef<TestDialog>) { }
 }

@@ -14,7 +14,7 @@ let nextUniqueId = 0;
 
 /** Hint text to be shown underneath the form field control. */
 @Directive({
-  selector: 'md-hint, mat-hint',
+  selector: 'mat-hint',
   host: {
     'class': 'mat-hint',
     '[class.mat-right]': 'align == "end"',
@@ -23,7 +23,7 @@ let nextUniqueId = 0;
     '[attr.align]': 'null',
   }
 })
-export class MdHint {
+export class MatHint {
   /** Whether to align the hint label at the start or end of the line. */
   @Input() align: 'start' | 'end' = 'start';
 

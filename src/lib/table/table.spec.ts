@@ -3,21 +3,21 @@ import {Component, ViewChild} from '@angular/core';
 import {DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
-import {MdTableModule} from './index';
-import {MdTable} from './table';
+import {MatTableModule} from './index';
+import {MatTable} from './table';
 
-describe('MdTable', () => {
-  let fixture: ComponentFixture<SimpleMdTableApp>;
+describe('MatTable', () => {
+  let fixture: ComponentFixture<SimpleMatTableApp>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdTableModule],
-      declarations: [SimpleMdTableApp],
+      imports: [MatTableModule],
+      declarations: [SimpleMatTableApp],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SimpleMdTableApp);
+    fixture = TestBed.createComponent(SimpleMatTableApp);
     fixture.detectChanges();
     fixture.detectChanges();
   });
@@ -85,31 +85,31 @@ class FakeDataSource extends DataSource<TestData> {
 
 @Component({
   template: `
-    <md-table [dataSource]="dataSource">
-      <ng-container mdColumnDef="column_a">
-        <md-header-cell *mdHeaderCellDef> Column A</md-header-cell>
-        <md-cell *mdCellDef="let row"> {{row.a}}</md-cell>
+    <mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="column_a">
+        <mat-header-cell *matHeaderCellDef> Column A</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.a}}</mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="column_b">
-        <md-header-cell *mdHeaderCellDef> Column B</md-header-cell>
-        <md-cell *mdCellDef="let row"> {{row.b}}</md-cell>
+      <ng-container matColumnDef="column_b">
+        <mat-header-cell *matHeaderCellDef> Column B</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.b}}</mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="column_c">
-        <md-header-cell *mdHeaderCellDef> Column C</md-header-cell>
-        <md-cell *mdCellDef="let row"> {{row.c}}</md-cell>
+      <ng-container matColumnDef="column_c">
+        <mat-header-cell *matHeaderCellDef> Column C</mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.c}}</mat-cell>
       </ng-container>
 
-      <md-header-row *mdHeaderRowDef="columnsToRender"></md-header-row>
-      <md-row *mdRowDef="let row; columns: columnsToRender"></md-row>
-    </md-table>
+      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
+    </mat-table>
   `
 })
-class SimpleMdTableApp {
+class SimpleMatTableApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
-  @ViewChild(MdTable) table: MdTable<TestData>;
+  @ViewChild(MatTable) table: MatTable<TestData>;
 }
 

@@ -7,7 +7,7 @@ built. Because it enforces no opinions on these matters, developers have full co
 interaction patterns associated with the table.
 
 For a Material Design styled table, see the
-[documentation for `<md-table>`](https://material.angular.io/components/table) which builds on
+[documentation for `<mat-table>`](https://material.angular.io/components/table) which builds on
 top of the CDK data-table.
 
 <!-- example(cdk-table-basic) -->

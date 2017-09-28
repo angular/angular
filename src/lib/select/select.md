@@ -1,23 +1,23 @@
-`<md-select>` is a form control for selecting a value from a set of options, similar to the native
+`<mat-select>` is a form control for selecting a value from a set of options, similar to the native
 `<select>` element. You can read more about selects in the
 [Material Design spec](https://material.google.com/components/menus.html). It is designed to work
-inside of an `<md-form-field>` element.
+inside of an `<mat-form-field>` element.
 
 <!-- example(select-overview) -->
 
 ### Simple select
 
-In your template, create an `md-select` element. For each option you'd like in your select, add an
-`md-option` tag. Note that you can disable items by adding the `disabled` boolean attribute or
+In your template, create an `mat-select` element. For each option you'd like in your select, add an
+`mat-option` tag. Note that you can disable items by adding the `disabled` boolean attribute or
 binding to it.
 
 *my-comp.html*
 ```html
-<md-form-field>
-  <md-select placeholder="State">
-    <md-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</md-option>
-  </md-select>
-</md-form-field>
+<mat-form-field>
+  <mat-select placeholder="State">
+    <mat-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</mat-option>
+  </mat-select>
+</mat-form-field>
 ```
 
 ### Getting and setting the select value
@@ -27,11 +27,11 @@ any of the form directives from the core `FormsModule` or `ReactiveFormsModule`:
 
 *my-comp.html*
 ```html
-<md-form-field>
-  <md-select placeholder="State" [(ngModel)]="myState">
-    <md-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</md-option>
-  </md-select>
-</md-form-field>
+<mat-form-field>
+  <mat-select placeholder="State" [(ngModel)]="myState">
+    <mat-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</mat-option>
+  </mat-select>
+</mat-form-field>
 ```
 
 *my-comp.ts*
@@ -48,12 +48,12 @@ If you want one of your options to reset the select's value, you can omit specif
 
 *my-comp.html*
 ```html
-<md-form-field>
-  <md-select placeholder="State">
-    <md-option>None</md-option>
-    <md-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</md-option>
-  </md-select>
-</md-form-field>
+<mat-form-field>
+  <mat-select placeholder="State">
+    <mat-option>None</mat-option>
+    <mat-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</mat-option>
+  </mat-select>
+</mat-form-field>
 ```
 
 ### Setting a static placeholder
@@ -64,33 +64,33 @@ It's possible to turn off the placeholder's floating animation using the `floatP
 - `'always'`: This makes the placeholder permanently float above the input. It will not animate up or down.
 
 ```html
-<md-form-field floatPlaceholder="never">
-  <md-select placeholder="State" [(ngModel)]="myState">
-  <md-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</md-option>
-  </md-select>
-</md-form-field>
+<mat-form-field floatPlaceholder="never">
+  <mat-select placeholder="State" [(ngModel)]="myState">
+  <mat-option *ngFor="let state of states" [value]="state.code">{{ state.name }}</mat-option>
+  </mat-select>
+</mat-form-field>
 ```
 
-Global default placeholder options can be specified by setting the `MD_PLACEHOLDER_GLOBAL_OPTIONS` provider. This setting will apply to all components that support the floating placeholder.
+Global default placeholder options can be specified by setting the `MAT_PLACEHOLDER_GLOBAL_OPTIONS` provider. This setting will apply to all components that support the floating placeholder.
 
 ```ts
 @NgModule({
   providers: [
-    {provide: MD_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'always' }}
+    {provide: MAT_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'always' }}
   ]
 })
 ```
 
 ### Customizing the trigger label
-If you want to display a custom trigger label inside a select, you can use the `md-select-trigger` element:
+If you want to display a custom trigger label inside a select, you can use the `mat-select-trigger` element:
 
 ```html
-<md-form-field>
-  <md-select placeholder="Favorite food" #select="mdSelect">
-    <md-select-trigger>You have selected: {{ select.selected?.viewValue }}</md-select-trigger>
-    <md-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</md-option>
-  </md-select>
-</md-form-field>
+<mat-form-field>
+  <mat-select placeholder="Favorite food" #select="matSelect">
+    <mat-select-trigger>You have selected: {{ select.selected?.viewValue }}</mat-select-trigger>
+    <mat-option *ngFor="let food of foods" [value]="food.value">{{ food.viewValue }}</mat-option>
+  </mat-select>
+</mat-form-field>
 ```
 
 Here are the available global options:

@@ -10,36 +10,36 @@ import {PortalModule} from '@angular/cdk/portal';
 import {CdkStepperModule} from '@angular/cdk/stepper';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {MdButtonModule} from '@angular/material/button';
-import {MdCommonModule} from '@angular/material/core';
-import {MdIconModule} from '@angular/material/icon';
-import {MdStepHeader} from './step-header';
-import {MdStepLabel} from './step-label';
-import {MdHorizontalStepper, MdStep, MdStepper, MdVerticalStepper} from './stepper';
-import {MdStepperNext, MdStepperPrevious} from './stepper-button';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCommonModule} from '@angular/material/core';
+import {MatIconModule} from '@angular/material/icon';
+import {MatStepHeader} from './step-header';
+import {MatStepLabel} from './step-label';
+import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
+import {MatStepperNext, MatStepperPrevious} from './stepper-button';
 
 
 @NgModule({
   imports: [
-    MdCommonModule,
+    MatCommonModule,
     CommonModule,
     PortalModule,
-    MdButtonModule,
+    MatButtonModule,
     CdkStepperModule,
-    MdIconModule
+    MatIconModule
   ],
   exports: [
-    MdCommonModule,
-    MdHorizontalStepper,
-    MdVerticalStepper,
-    MdStep,
-    MdStepLabel,
-    MdStepper,
-    MdStepperNext,
-    MdStepperPrevious,
-    MdStepHeader
+    MatCommonModule,
+    MatHorizontalStepper,
+    MatVerticalStepper,
+    MatStep,
+    MatStepLabel,
+    MatStepper,
+    MatStepperNext,
+    MatStepperPrevious,
+    MatStepHeader
   ],
-  declarations: [MdHorizontalStepper, MdVerticalStepper, MdStep, MdStepLabel, MdStepper,
-    MdStepperNext, MdStepperPrevious, MdStepHeader],
+  declarations: [MatHorizontalStepper, MatVerticalStepper, MatStep, MatStepLabel, MatStepper,
+    MatStepperNext, MatStepperPrevious, MatStepHeader],
 })
-export class MdStepperModule {}
+export class MatStepperModule {}

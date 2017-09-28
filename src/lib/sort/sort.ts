@@ -9,9 +9,9 @@
 import {Directive, EventEmitter, Input, Output} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SortDirection} from './sort-direction';
-import {getMdSortDuplicateMdSortableIdError, getMdSortHeaderMissingIdError} from './sort-errors';
+import {getSortDuplicateSortableIdError, getSortHeaderMissingIdError} from './sort-errors';
 
-export interface MdSortable {
+export interface MatSortable {
   id: string;
   start: 'asc' | 'desc';
   disableClear: boolean;
@@ -22,86 +22,63 @@ export interface Sort {
   direction: SortDirection;
 }
 
-/** Container for MdSortables to manage the sort state and provide default sort parameters. */
+/** Container for MatSortables to manage the sort state and provide default sort parameters. */
 @Directive({
-  selector: '[mdSort], [matSort]',
+  selector: '[matSort]',
 })
-export class MdSort {
+export class MatSort {
   /** Collection of all registered sortables that this directive manages. */
-  sortables = new Map<string, MdSortable>();
+  sortables = new Map<string, MatSortable>();
 
-  /** The id of the most recently sorted MdSortable. */
-  @Input('mdSortActive') active: string;
+  /** The id of the most recently sorted MatSortable. */
+  @Input('matSortActive') active: string;
 
   /**
-   * The direction to set when an MdSortable is initially sorted.
-   * May be overriden by the MdSortable's sort start.
+   * The direction to set when an MatSortable is initially sorted.
+   * May be overriden by the MatSortable's sort start.
    */
-  @Input('mdSortStart') start: 'asc' | 'desc' = 'asc';
+  @Input('matSortStart') start: 'asc' | 'desc' = 'asc';
 
-  /** The sort direction of the currently active MdSortable. */
-  @Input('mdSortDirection') direction: SortDirection = '';
+  /** The sort direction of the currently active MatSortable. */
+  @Input('matSortDirection') direction: SortDirection = '';
 
   /**
    * Whether to disable the user from clearing the sort by finishing the sort direction cycle.
-   * May be overriden by the MdSortable's disable clear input.
+   * May be overriden by the MatSortable's disable clear input.
    */
-  @Input('mdSortDisableClear')
+  @Input('matSortDisableClear')
   get disableClear() { return this._disableClear; }
   set disableClear(v) { this._disableClear = coerceBooleanProperty(v); }
   private _disableClear: boolean;
 
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matSortActive')
-  get _matSortActive() { return this.active; }
-  set _matSortActive(v) { this.active = v; }
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matSortStart')
-  get _matSortStart() { return this.start; }
-  set _matSortStart(v) { this.start = v; }
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matSortDirection')
-  get _matSortDirection() { return this.direction; }
-  set _matSortDirection(v) { this.direction = v; }
-
-  // Properties with `mat-` prefix for noconflict mode.
-  @Input('matSortDisableClear')
-  get _matSortDisableClear() { return this.disableClear; }
-  set _matSortDisableClear(v) { this.disableClear = v; }
-
   /** Event emitted when the user changes either the active sort or sort direction. */
-  @Output('mdSortChange') readonly sortChange = new EventEmitter<Sort>();
-
-  @Output('matSortChange')
-  get _matSortChange(): EventEmitter<Sort> { return this.sortChange; }
+  @Output('matSortChange') readonly sortChange = new EventEmitter<Sort>();
 
   /**
-   * Register function to be used by the contained MdSortables. Adds the MdSortable to the
-   * collection of MdSortables.
+   * Register function to be used by the contained MatSortables. Adds the MatSortable to the
+   * collection of MatSortables.
    */
-  register(sortable: MdSortable) {
+  register(sortable: MatSortable) {
     if (!sortable.id) {
-      throw getMdSortHeaderMissingIdError();
+      throw getSortHeaderMissingIdError();
     }
 
     if (this.sortables.has(sortable.id)) {
-      throw getMdSortDuplicateMdSortableIdError(sortable.id);
+      throw getSortDuplicateSortableIdError(sortable.id);
     }
     this.sortables.set(sortable.id, sortable);
   }
 
   /**
-   * Unregister function to be used by the contained MdSortables. Removes the MdSortable from the
-   * collection of contained MdSortables.
+   * Unregister function to be used by the contained MatSortables. Removes the MatSortable from the
+   * collection of contained MatSortables.
    */
-  deregister(sortable: MdSortable) {
+  deregister(sortable: MatSortable) {
     this.sortables.delete(sortable.id);
   }
 
   /** Sets the active sort id and determines the new sort direction. */
-  sort(sortable: MdSortable) {
+  sort(sortable: MatSortable) {
     if (this.active != sortable.id) {
       this.active = sortable.id;
       this.direction = sortable.start ? sortable.start : this.start;
@@ -113,7 +90,7 @@ export class MdSort {
   }
 
   /** Returns the next sort direction of the active sortable, checking for potential overrides. */
-  getNextSortDirection(sortable: MdSortable): SortDirection {
+  getNextSortDirection(sortable: MatSortable): SortDirection {
     if (!sortable) { return ''; }
 
     // Get the sort direction cycle with the potential sortable overrides.

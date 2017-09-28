@@ -16,7 +16,7 @@ import{
 } from '@angular/animations';
 
 /**
- * Below are all the animations for the md-menu component.
+ * Below are all the animations for the mat-menu component.
  * Animation duration and timing values are based on:
  * https://material.io/guidelines/components/menus.html#menus-usage
  */

@@ -7,13 +7,13 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MdCommonModule} from '@angular/material/core';
-import {MdToolbar, MdToolbarRow} from './toolbar';
+import {MatCommonModule} from '@angular/material/core';
+import {MatToolbar, MatToolbarRow} from './toolbar';
 
 
 @NgModule({
-  imports: [MdCommonModule],
-  exports: [MdToolbar, MdToolbarRow, MdCommonModule],
-  declarations: [MdToolbar, MdToolbarRow],
+  imports: [MatCommonModule],
+  exports: [MatToolbar, MatToolbarRow, MatCommonModule],
+  declarations: [MatToolbar, MatToolbarRow],
 })
-export class MdToolbarModule {}
+export class MatToolbarModule {}

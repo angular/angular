@@ -22,7 +22,7 @@ $mat-drawer-over-drawer-z-index: 4;
 
 .mat-drawer-container {
   // We need a stacking context here so that the backdrop and drawers are clipped to the
-  // MdDrawerContainer. This creates a new z-index stack so we use low numbered z-indices.
+  // MatDrawerContainer. This creates a new z-index stack so we use low numbered z-indices.
   // We create another stacking context in the '.mat-drawer-content' and in each drawer so that
   // the application content does not get messed up with our own CSS.
   @include mat-drawer-stacking-context();

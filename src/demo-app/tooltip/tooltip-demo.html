@@ -1,4 +1,4 @@
-<button *ngFor="let tooltip of tooltips" mdTooltip="Tooltip message">Tooltip Button</button>
+<button *ngFor="let tooltip of tooltips" matTooltip="Tooltip message">Tooltip Button</button>
 <button (click)="tooltips.push(null)">Add tooltip</button>
 <button (click)="tooltips.shift()" [disabled]="tooltips.length == 0">Remove tooltip</button>
 
@@ -6,15 +6,15 @@
   <h1>Tooltip Demo</h1>
 
   <div class="centered" cdk-scrollable>
-    <button #tooltip="mdTooltip"
-            md-raised-button
+    <button #tooltip="matTooltip"
+            mat-raised-button
             color="primary"
-            [mdTooltip]="message"
-            [mdTooltipPosition]="position"
-            [mdTooltipDisabled]="disabled"
-            [mdTooltipShowDelay]="showDelay"
-            [mdTooltipHideDelay]="hideDelay"
-            [mdTooltipClass]="{'red-tooltip': showExtraClass}">
+            [matTooltip]="message"
+            [matTooltipPosition]="position"
+            [matTooltipDisabled]="disabled"
+            [matTooltipShowDelay]="showDelay"
+            [matTooltipHideDelay]="hideDelay"
+            [matTooltipClass]="{'red-tooltip': showExtraClass}">
       Mouse over to see the tooltip
     </button>
     <div>Scroll down while tooltip is open to see it hide automatically</div>
@@ -22,50 +22,50 @@
   </div>
 
   <p>
-    <md-radio-group [(ngModel)]="position">
-      <md-radio-button value="below">Below</md-radio-button>
-      <md-radio-button value="above">Above</md-radio-button>
-      <md-radio-button value="left">Left</md-radio-button>
-      <md-radio-button value="right">Right</md-radio-button>
-      <md-radio-button value="before">Before</md-radio-button>
-      <md-radio-button value="after">After</md-radio-button>
-    </md-radio-group>
+    <mat-radio-group [(ngModel)]="position">
+      <mat-radio-button value="below">Below</mat-radio-button>
+      <mat-radio-button value="above">Above</mat-radio-button>
+      <mat-radio-button value="left">Left</mat-radio-button>
+      <mat-radio-button value="right">Right</mat-radio-button>
+      <mat-radio-button value="before">Before</mat-radio-button>
+      <mat-radio-button value="after">After</mat-radio-button>
+    </mat-radio-group>
   </p>
   <p>
     <strong>Message: </strong>
-    <md-form-field><input mdInput [(ngModel)]="message"></md-form-field>
+    <mat-form-field><input matInput [(ngModel)]="message"></mat-form-field>
   </p>
 
   <p>
     <strong>Disabled: </strong>
-    <md-checkbox [(ngModel)]="disabled"></md-checkbox>
+    <mat-checkbox [(ngModel)]="disabled"></mat-checkbox>
   </p>
 
   <p>
     <strong>Show Delay (ms): </strong>
-    <md-form-field>
-      <input mdInput type="number" [(ngModel)]="showDelay">
-    </md-form-field>
+    <mat-form-field>
+      <input matInput type="number" [(ngModel)]="showDelay">
+    </mat-form-field>
   </p>
 
   <p>
     <strong>Hide Delay (ms): </strong>
-    <md-form-field>
-      <input mdInput type="number" [(ngModel)]="hideDelay">
-    </md-form-field>
+    <mat-form-field>
+      <input matInput type="number" [(ngModel)]="hideDelay">
+    </mat-form-field>
   </p>
 
   <strong>Mouse over to</strong>
-  <button md-raised-button color="primary" (mouseenter)="tooltip.show()">
+  <button mat-raised-button color="primary" (mouseenter)="tooltip.show()">
     Show tooltip
   </button>
-  <button md-raised-button color="primary" (mouseenter)="tooltip.hide()">
+  <button mat-raised-button color="primary" (mouseenter)="tooltip.hide()">
     Hide tooltip
   </button>
-  <button md-raised-button color="primary" (mouseenter)="tooltip.toggle()">
+  <button mat-raised-button color="primary" (mouseenter)="tooltip.toggle()">
     Toggle tooltip
   </button>
-  <button md-raised-button color="primary" (mouseenter)="showExtraClass = !showExtraClass">
+  <button mat-raised-button color="primary" (mouseenter)="showExtraClass = !showExtraClass">
     Toggle tooltipClass
   </button>
 </div>

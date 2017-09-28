@@ -2,7 +2,7 @@
 @import './elevation';
 @import './list-common';
 
-/** The mixins below are shared between md-menu and md-select */
+/** The mixins below are shared between mat-menu and mat-select */
 
 // menu width must be a multiple of 56px
 $mat-menu-overlay-min-width: 112px !default;   // 56 * 2

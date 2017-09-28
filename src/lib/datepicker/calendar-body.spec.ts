@@ -1,14 +1,14 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
-import {MdCalendarBody, MdCalendarCell} from './calendar-body';
+import {MatCalendarBody, MatCalendarCell} from './calendar-body';
 import {By} from '@angular/platform-browser';
 
 
-describe('MdCalendarBody', () => {
+describe('MatCalendarBody', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        MdCalendarBody,
+        MatCalendarBody,
 
         // Test components.
         StandardCalendarBody,
@@ -37,7 +37,7 @@ describe('MdCalendarBody', () => {
       fixture = TestBed.createComponent(StandardCalendarBody);
       fixture.detectChanges();
 
-      let calendarBodyDebugElement = fixture.debugElement.query(By.directive(MdCalendarBody));
+      let calendarBodyDebugElement = fixture.debugElement.query(By.directive(MatCalendarBody));
       calendarBodyNativeElement = calendarBodyDebugElement.nativeElement;
       testComponent = fixture.componentInstance;
 
@@ -102,7 +102,7 @@ describe('MdCalendarBody', () => {
       fixture = TestBed.createComponent(CalendarBodyWithDisabledCells);
       fixture.detectChanges();
 
-      let calendarBodyDebugElement = fixture.debugElement.query(By.directive(MdCalendarBody));
+      let calendarBodyDebugElement = fixture.debugElement.query(By.directive(MatCalendarBody));
       calendarBodyNativeElement = calendarBodyDebugElement.nativeElement;
       testComponent = fixture.componentInstance;
       cellEls = calendarBodyNativeElement.querySelectorAll('.mat-calendar-body-cell');
@@ -127,7 +127,7 @@ describe('MdCalendarBody', () => {
 
 
 @Component({
-  template: `<table md-calendar-body
+  template: `<table mat-calendar-body
                     [label]="label"
                     [rows]="rows"
                     [todayValue]="todayValue"
@@ -153,7 +153,7 @@ class StandardCalendarBody {
 
 
 @Component({
-  template: `<table md-calendar-body
+  template: `<table mat-calendar-body
                     [rows]="rows"
                     [allowDisabledSelection]="allowDisabledSelection"
                     (selectedValueChange)="selected = $event">
@@ -171,5 +171,5 @@ class CalendarBodyWithDisabledCells {
 
 
 function createCell(value: number) {
-  return new MdCalendarCell(value, `${value}`, `${value}-label`, true);
+  return new MatCalendarCell(value, `${value}`, `${value}-label`, true);
 }

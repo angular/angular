@@ -8,8 +8,8 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MdSelect, MdSelectTrigger, MD_SELECT_SCROLL_STRATEGY_PROVIDER} from './select';
-import {MdCommonModule, MdOptionModule} from '@angular/material/core';
+import {MatSelect, MatSelectTrigger, MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from './select';
+import {MatCommonModule, MatOptionModule} from '@angular/material/core';
 import {OverlayModule} from '@angular/cdk/overlay';
 
 
@@ -17,11 +17,11 @@ import {OverlayModule} from '@angular/cdk/overlay';
   imports: [
     CommonModule,
     OverlayModule,
-    MdOptionModule,
-    MdCommonModule,
+    MatOptionModule,
+    MatCommonModule,
   ],
-  exports: [MdSelect, MdSelectTrigger, MdOptionModule, MdCommonModule],
-  declarations: [MdSelect, MdSelectTrigger],
-  providers: [MD_SELECT_SCROLL_STRATEGY_PROVIDER]
+  exports: [MatSelect, MatSelectTrigger, MatOptionModule, MatCommonModule],
+  declarations: [MatSelect, MatSelectTrigger],
+  providers: [MAT_SELECT_SCROLL_STRATEGY_PROVIDER]
 })
-export class MdSelectModule {}
+export class MatSelectModule {}

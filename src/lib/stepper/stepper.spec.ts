@@ -6,22 +6,22 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MdStepperModule} from './index';
-import {MdHorizontalStepper, MdStepper, MdVerticalStepper} from './stepper';
-import {MdStepperNext, MdStepperPrevious} from './stepper-button';
+import {MatStepperModule} from './index';
+import {MatHorizontalStepper, MatStepper, MatVerticalStepper} from './stepper';
+import {MatStepperNext, MatStepperPrevious} from './stepper-button';
 
 
 const VALID_REGEX = /valid/;
 
-describe('MdHorizontalStepper', () => {
+describe('MatHorizontalStepper', () => {
   let dir = 'ltr';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdStepperModule, NoopAnimationsModule, ReactiveFormsModule],
+      imports: [MatStepperModule, NoopAnimationsModule, ReactiveFormsModule],
       declarations: [
-        SimpleMdHorizontalStepperApp,
-        LinearMdHorizontalStepperApp
+        SimpleMatHorizontalStepperApp,
+        LinearMatHorizontalStepperApp
       ],
       providers: [
         {provide: Directionality, useFactory: () => ({value: dir})}
@@ -32,16 +32,16 @@ describe('MdHorizontalStepper', () => {
   }));
 
   describe('basic horizontal stepper', () => {
-    let fixture: ComponentFixture<SimpleMdHorizontalStepperApp>;
+    let fixture: ComponentFixture<SimpleMatHorizontalStepperApp>;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(SimpleMdHorizontalStepperApp);
+      fixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
     });
 
     it('should default to the first step', () => {
       let stepperComponent = fixture.debugElement
-          .query(By.css('md-horizontal-stepper')).componentInstance;
+          .query(By.css('mat-horizontal-stepper')).componentInstance;
       expect(stepperComponent.selectedIndex).toBe(0);
     });
 
@@ -51,7 +51,7 @@ describe('MdHorizontalStepper', () => {
     });
 
     it('should set the "tablist" role on stepper', () => {
-      let stepperEl = fixture.debugElement.query(By.css('md-horizontal-stepper')).nativeElement;
+      let stepperEl = fixture.debugElement.query(By.css('mat-horizontal-stepper')).nativeElement;
       expect(stepperEl.getAttribute('role')).toBe('tablist');
     });
 
@@ -99,11 +99,11 @@ describe('MdHorizontalStepper', () => {
   });
 
   describe('RTL', () => {
-    let fixture: ComponentFixture<SimpleMdHorizontalStepperApp>;
+    let fixture: ComponentFixture<SimpleMatHorizontalStepperApp>;
 
     beforeEach(() => {
       dir = 'rtl';
-      fixture = TestBed.createComponent(SimpleMdHorizontalStepperApp);
+      fixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
     });
 
@@ -118,17 +118,17 @@ describe('MdHorizontalStepper', () => {
   });
 
   describe('linear horizontal stepper', () => {
-    let fixture: ComponentFixture<LinearMdHorizontalStepperApp>;
-    let testComponent: LinearMdHorizontalStepperApp;
-    let stepperComponent: MdHorizontalStepper;
+    let fixture: ComponentFixture<LinearMatHorizontalStepperApp>;
+    let testComponent: LinearMatHorizontalStepperApp;
+    let stepperComponent: MatHorizontalStepper;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(LinearMdHorizontalStepperApp);
+      fixture = TestBed.createComponent(LinearMatHorizontalStepperApp);
       fixture.detectChanges();
 
       testComponent = fixture.componentInstance;
       stepperComponent = fixture.debugElement
-          .query(By.css('md-horizontal-stepper')).componentInstance;
+          .query(By.css('mat-horizontal-stepper')).componentInstance;
     });
 
     it('should have true linear attribute', () => {
@@ -156,15 +156,15 @@ describe('MdHorizontalStepper', () => {
   });
 });
 
-describe('MdVerticalStepper', () => {
+describe('MatVerticalStepper', () => {
   let dir = 'ltr';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdStepperModule, NoopAnimationsModule, ReactiveFormsModule],
+      imports: [MatStepperModule, NoopAnimationsModule, ReactiveFormsModule],
       declarations: [
-        SimpleMdVerticalStepperApp,
-        LinearMdVerticalStepperApp
+        SimpleMatVerticalStepperApp,
+        LinearMatVerticalStepperApp
       ],
       providers: [
         {provide: Directionality, useFactory: () => ({value: dir})}
@@ -175,16 +175,16 @@ describe('MdVerticalStepper', () => {
   }));
 
   describe('basic vertical stepper', () => {
-    let fixture: ComponentFixture<SimpleMdVerticalStepperApp>;
+    let fixture: ComponentFixture<SimpleMatVerticalStepperApp>;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(SimpleMdVerticalStepperApp);
+      fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
     });
 
     it('should default to the first step', () => {
       let stepperComponent = fixture.debugElement
-          .query(By.css('md-vertical-stepper')).componentInstance;
+          .query(By.css('mat-vertical-stepper')).componentInstance;
       expect(stepperComponent.selectedIndex).toBe(0);
     });
 
@@ -195,7 +195,7 @@ describe('MdVerticalStepper', () => {
     });
 
     it('should set the "tablist" role on stepper', () => {
-      let stepperEl = fixture.debugElement.query(By.css('md-vertical-stepper')).nativeElement;
+      let stepperEl = fixture.debugElement.query(By.css('mat-vertical-stepper')).nativeElement;
       expect(stepperEl.getAttribute('role')).toBe('tablist');
     });
 
@@ -243,11 +243,11 @@ describe('MdVerticalStepper', () => {
   });
 
   describe('RTL', () => {
-    let fixture: ComponentFixture<SimpleMdVerticalStepperApp>;
+    let fixture: ComponentFixture<SimpleMatVerticalStepperApp>;
 
     beforeEach(() => {
       dir = 'rtl';
-      fixture = TestBed.createComponent(SimpleMdVerticalStepperApp);
+      fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
     });
 
@@ -262,17 +262,17 @@ describe('MdVerticalStepper', () => {
   });
 
   describe('linear vertical stepper', () => {
-    let fixture: ComponentFixture<LinearMdVerticalStepperApp>;
-    let testComponent: LinearMdVerticalStepperApp;
-    let stepperComponent: MdVerticalStepper;
+    let fixture: ComponentFixture<LinearMatVerticalStepperApp>;
+    let testComponent: LinearMatVerticalStepperApp;
+    let stepperComponent: MatVerticalStepper;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(LinearMdVerticalStepperApp);
+      fixture = TestBed.createComponent(LinearMatVerticalStepperApp);
       fixture.detectChanges();
 
       testComponent = fixture.componentInstance;
       stepperComponent = fixture.debugElement
-          .query(By.css('md-vertical-stepper')).componentInstance;
+          .query(By.css('mat-vertical-stepper')).componentInstance;
     });
 
     it('should have true linear attribute', () => {
@@ -304,7 +304,7 @@ describe('MdVerticalStepper', () => {
 /** Asserts that `selectedIndex` updates correctly when header of another step is clicked. */
 function assertSelectionChangeOnHeaderClick(fixture: ComponentFixture<any>,
                                             stepHeaders: DebugElement[]) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   expect(stepperComponent.selectedIndex).toBe(0);
 
@@ -326,7 +326,7 @@ function assertSelectionChangeOnHeaderClick(fixture: ComponentFixture<any>,
 /** Asserts that 'aria-expanded' attribute is correct for expanded content of step. */
 function assertCorrectAriaExpandedAttribute(fixture: ComponentFixture<any>,
                                             stepContents: DebugElement[]) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
   let firstStepContentEl = stepContents[0].nativeElement;
   expect(firstStepContentEl.getAttribute('aria-expanded')).toBe('true');
 
@@ -340,7 +340,7 @@ function assertCorrectAriaExpandedAttribute(fixture: ComponentFixture<any>,
 
 /** Asserts that step has correct label. */
 function assertCorrectStepLabel(fixture: ComponentFixture<any>) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
   let selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
   expect(selectedLabel.textContent).toMatch('Step 1');
 
@@ -357,57 +357,57 @@ function assertCorrectStepLabel(fixture: ComponentFixture<any>) {
   expect(selectedLabel.textContent).toMatch('New Label');
 }
 
-/** Asserts that clicking on MdStepperNext button updates `selectedIndex` correctly. */
+/** Asserts that clicking on MatStepperNext button updates `selectedIndex` correctly. */
 function assertNextStepperButtonClick(fixture: ComponentFixture<any>) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   expect(stepperComponent.selectedIndex).toBe(0);
 
   let nextButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperNext))[0].nativeElement;
+      .queryAll(By.directive(MatStepperNext))[0].nativeElement;
   nextButtonNativeEl.click();
   fixture.detectChanges();
 
   expect(stepperComponent.selectedIndex).toBe(1);
 
   nextButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperNext))[1].nativeElement;
+      .queryAll(By.directive(MatStepperNext))[1].nativeElement;
   nextButtonNativeEl.click();
   fixture.detectChanges();
 
   expect(stepperComponent.selectedIndex).toBe(2);
 
   nextButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperNext))[2].nativeElement;
+      .queryAll(By.directive(MatStepperNext))[2].nativeElement;
   nextButtonNativeEl.click();
   fixture.detectChanges();
 
   expect(stepperComponent.selectedIndex).toBe(2);
 }
 
-/** Asserts that clicking on MdStepperPrevious button updates `selectedIndex` correctly. */
+/** Asserts that clicking on MatStepperPrevious button updates `selectedIndex` correctly. */
 function assertPreviousStepperButtonClick(fixture: ComponentFixture<any>) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   expect(stepperComponent.selectedIndex).toBe(0);
 
   stepperComponent.selectedIndex = 2;
   let previousButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperPrevious))[2].nativeElement;
+      .queryAll(By.directive(MatStepperPrevious))[2].nativeElement;
   previousButtonNativeEl.click();
   fixture.detectChanges();
 
   expect(stepperComponent.selectedIndex).toBe(1);
 
   previousButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperPrevious))[1].nativeElement;
+      .queryAll(By.directive(MatStepperPrevious))[1].nativeElement;
   previousButtonNativeEl.click();
   fixture.detectChanges();
 
   expect(stepperComponent.selectedIndex).toBe(0);
 
   previousButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperPrevious))[0].nativeElement;
+      .queryAll(By.directive(MatStepperPrevious))[0].nativeElement;
   previousButtonNativeEl.click();
   fixture.detectChanges();
 
@@ -416,7 +416,7 @@ function assertPreviousStepperButtonClick(fixture: ComponentFixture<any>) {
 
 /** Asserts that step position is correct for animation. */
 function assertCorrectStepAnimationDirection(fixture: ComponentFixture<any>, rtl?: 'rtl') {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   expect(stepperComponent._getAnimationDirection(0)).toBe('current');
   if (rtl === 'rtl') {
@@ -455,7 +455,7 @@ function assertCorrectStepAnimationDirection(fixture: ComponentFixture<any>, rtl
 /** Asserts that keyboard interaction works correctly. */
 function assertCorrectKeyboardInteraction(fixture: ComponentFixture<any>,
                                           stepHeaders: DebugElement[]) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   expect(stepperComponent._focusIndex).toBe(0);
   expect(stepperComponent.selectedIndex).toBe(0);
@@ -514,10 +514,10 @@ function assertCorrectKeyboardInteraction(fixture: ComponentFixture<any>,
 
 /** Asserts that step selection change using stepper buttons does not focus step header. */
 function assertStepHeaderFocusNotCalled(fixture: ComponentFixture<any>) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
   let stepHeaderEl = fixture.debugElement.queryAll(By.css('mat-step-header'))[1].nativeElement;
   let nextButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperNext))[0].nativeElement;
+      .queryAll(By.directive(MatStepperNext))[0].nativeElement;
   spyOn(stepHeaderEl, 'focus');
   nextButtonNativeEl.click();
   fixture.detectChanges();
@@ -529,7 +529,7 @@ function assertStepHeaderFocusNotCalled(fixture: ComponentFixture<any>) {
 /** Asserts that arrow key direction works correctly in RTL mode. */
 function assertArrowKeyInteractionInRtl(fixture: ComponentFixture<any>,
                                         stepHeaders: DebugElement[]) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   expect(stepperComponent._focusIndex).toBe(0);
 
@@ -551,9 +551,10 @@ function assertArrowKeyInteractionInRtl(fixture: ComponentFixture<any>,
  */
 function assertLinearStepperValidity(stepHeaderEl: HTMLElement,
                                      testComponent:
-                                         LinearMdHorizontalStepperApp | LinearMdVerticalStepperApp,
+                                         LinearMatHorizontalStepperApp |
+                                         LinearMatVerticalStepperApp,
                                      fixture: ComponentFixture<any>) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   stepHeaderEl.click();
   fixture.detectChanges();
@@ -561,7 +562,7 @@ function assertLinearStepperValidity(stepHeaderEl: HTMLElement,
   expect(stepperComponent.selectedIndex).toBe(0);
 
   let nextButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperNext))[0].nativeElement;
+      .queryAll(By.directive(MatStepperNext))[0].nativeElement;
   nextButtonNativeEl.click();
   fixture.detectChanges();
 
@@ -588,12 +589,12 @@ function assertStepHeaderBlurred(fixture: ComponentFixture<any>) {
 
 /** Asserts that it is only possible to go back to a previous step if the step is editable. */
 function assertEditableStepChange(fixture: ComponentFixture<any>) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   stepperComponent.selectedIndex = 1;
   stepperComponent._steps.toArray()[0].editable = false;
   let previousButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperPrevious))[1].nativeElement;
+      .queryAll(By.directive(MatStepperPrevious))[1].nativeElement;
   previousButtonNativeEl.click();
   fixture.detectChanges();
 
@@ -611,9 +612,9 @@ function assertEditableStepChange(fixture: ComponentFixture<any>) {
  * or the input is valid.
  */
 function assertOptionalStepValidity(testComponent:
-                                        LinearMdHorizontalStepperApp | LinearMdVerticalStepperApp,
+                                        LinearMatHorizontalStepperApp | LinearMatVerticalStepperApp,
                                     fixture: ComponentFixture<any>) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   testComponent.oneGroup.get('oneCtrl')!.setValue('input');
   testComponent.twoGroup.get('twoCtrl')!.setValue('input');
@@ -624,7 +625,7 @@ function assertOptionalStepValidity(testComponent:
   expect(testComponent.threeGroup.get('threeCtrl')!.valid).toBe(true);
 
   let nextButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperNext))[2].nativeElement;
+      .queryAll(By.directive(MatStepperNext))[2].nativeElement;
   nextButtonNativeEl.click();
   fixture.detectChanges();
 
@@ -653,9 +654,9 @@ function assertOptionalStepValidity(testComponent:
 function assertCorrectStepIcon(fixture: ComponentFixture<any>,
                                isEditable: boolean,
                                icon: String) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MdStepper)).componentInstance;
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
   let nextButtonNativeEl = fixture.debugElement
-      .queryAll(By.directive(MdStepperNext))[0].nativeElement;
+      .queryAll(By.directive(MatStepperNext))[0].nativeElement;
   expect(stepperComponent._getIndicatorType(0)).toBe('number');
   stepperComponent._steps.toArray()[0].editable = isEditable;
   nextButtonNativeEl.click();
@@ -666,83 +667,83 @@ function assertCorrectStepIcon(fixture: ComponentFixture<any>,
 
 @Component({
   template: `
-    <md-horizontal-stepper>
-      <md-step>
-        <ng-template mdStepLabel>Step 1</ng-template>
+    <mat-horizontal-stepper>
+      <mat-step>
+        <ng-template matStepLabel>Step 1</ng-template>
         Content 1
         <div>
-          <button md-button mdStepperPrevious>Back</button>
-          <button md-button mdStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
         </div>
-      </md-step>
-      <md-step>
-        <ng-template mdStepLabel>Step 2</ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Step 2</ng-template>
         Content 2
         <div>
-          <button md-button mdStepperPrevious>Back</button>
-          <button md-button mdStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
         </div>
-      </md-step>
-      <md-step [label]="inputLabel">
+      </mat-step>
+      <mat-step [label]="inputLabel">
         Content 3
         <div>
-          <button md-button mdStepperPrevious>Back</button>
-          <button md-button mdStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
         </div>
-      </md-step>
-    </md-horizontal-stepper>
+      </mat-step>
+    </mat-horizontal-stepper>
   `
 })
-class SimpleMdHorizontalStepperApp {
+class SimpleMatHorizontalStepperApp {
   inputLabel = 'Step 3';
 }
 
 @Component({
   template: `
-    <md-horizontal-stepper linear>
-      <md-step [stepControl]="oneGroup">
+    <mat-horizontal-stepper linear>
+      <mat-step [stepControl]="oneGroup">
         <form [formGroup]="oneGroup">
-          <ng-template mdStepLabel>Step one</ng-template>
-          <md-form-field>
-            <input mdInput formControlName="oneCtrl" required>
-          </md-form-field>
+          <ng-template matStepLabel>Step one</ng-template>
+          <mat-form-field>
+            <input matInput formControlName="oneCtrl" required>
+          </mat-form-field>
           <div>
-            <button md-button mdStepperPrevious>Back</button>
-            <button md-button mdStepperNext>Next</button>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
           </div>
         </form>
-      </md-step>
-      <md-step [stepControl]="twoGroup">
+      </mat-step>
+      <mat-step [stepControl]="twoGroup">
         <form [formGroup]="twoGroup">
-          <ng-template mdStepLabel>Step two</ng-template>
-          <md-form-field>
-            <input mdInput formControlName="twoCtrl" required>
-          </md-form-field>
+          <ng-template matStepLabel>Step two</ng-template>
+          <mat-form-field>
+            <input matInput formControlName="twoCtrl" required>
+          </mat-form-field>
           <div>
-            <button md-button mdStepperPrevious>Back</button>
-            <button md-button mdStepperNext>Next</button>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
           </div>
         </form>
-      </md-step>
-      <md-step [stepControl]="threeGroup" optional>
+      </mat-step>
+      <mat-step [stepControl]="threeGroup" optional>
         <form [formGroup]="threeGroup">
-          <ng-template mdStepLabel>Step two</ng-template>
-          <md-form-field>
-            <input mdInput formControlName="threeCtrl">
-          </md-form-field>
+          <ng-template matStepLabel>Step two</ng-template>
+          <mat-form-field>
+            <input matInput formControlName="threeCtrl">
+          </mat-form-field>
           <div>
-            <button md-button mdStepperPrevious>Back</button>
-            <button md-button mdStepperNext>Next</button>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
           </div>
         </form>
-      </md-step>
-      <md-step>
+      </mat-step>
+      <mat-step>
         Done
-      </md-step>
-    </md-horizontal-stepper>
+      </mat-step>
+    </mat-horizontal-stepper>
   `
 })
-class LinearMdHorizontalStepperApp {
+class LinearMatHorizontalStepperApp {
   oneGroup: FormGroup;
   twoGroup: FormGroup;
   threeGroup: FormGroup;
@@ -762,83 +763,83 @@ class LinearMdHorizontalStepperApp {
 
 @Component({
   template: `
-    <md-vertical-stepper>
-      <md-step>
-        <ng-template mdStepLabel>Step 1</ng-template>
+    <mat-vertical-stepper>
+      <mat-step>
+        <ng-template matStepLabel>Step 1</ng-template>
         Content 1
         <div>
-          <button md-button mdStepperPrevious>Back</button>
-          <button md-button mdStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
         </div>
-      </md-step>
-      <md-step>
-        <ng-template mdStepLabel>Step 2</ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Step 2</ng-template>
         Content 2
         <div>
-          <button md-button mdStepperPrevious>Back</button>
-          <button md-button mdStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
         </div>
-      </md-step>
-      <md-step [label]="inputLabel">
+      </mat-step>
+      <mat-step [label]="inputLabel">
         Content 3
         <div>
-          <button md-button mdStepperPrevious>Back</button>
-          <button md-button mdStepperNext>Next</button>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
         </div>
-      </md-step>
-    </md-vertical-stepper>
+      </mat-step>
+    </mat-vertical-stepper>
   `
 })
-class SimpleMdVerticalStepperApp {
+class SimpleMatVerticalStepperApp {
   inputLabel = 'Step 3';
 }
 
 @Component({
   template: `
-    <md-vertical-stepper linear>
-      <md-step [stepControl]="oneGroup">
+    <mat-vertical-stepper linear>
+      <mat-step [stepControl]="oneGroup">
         <form [formGroup]="oneGroup">
-          <ng-template mdStepLabel>Step one</ng-template>
-          <md-form-field>
-            <input mdInput formControlName="oneCtrl" required>
-          </md-form-field>
+          <ng-template matStepLabel>Step one</ng-template>
+          <mat-form-field>
+            <input matInput formControlName="oneCtrl" required>
+          </mat-form-field>
           <div>
-            <button md-button mdStepperPrevious>Back</button>
-            <button md-button mdStepperNext>Next</button>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
           </div>
         </form>
-      </md-step>
-      <md-step [stepControl]="twoGroup">
+      </mat-step>
+      <mat-step [stepControl]="twoGroup">
         <form [formGroup]="twoGroup">
-          <ng-template mdStepLabel>Step two</ng-template>
-          <md-form-field>
-            <input mdInput formControlName="twoCtrl" required>
-          </md-form-field>
+          <ng-template matStepLabel>Step two</ng-template>
+          <mat-form-field>
+            <input matInput formControlName="twoCtrl" required>
+          </mat-form-field>
           <div>
-            <button md-button mdStepperPrevious>Back</button>
-            <button md-button mdStepperNext>Next</button>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
           </div>
         </form>
-      </md-step>
-      <md-step [stepControl]="threeGroup" optional>
+      </mat-step>
+      <mat-step [stepControl]="threeGroup" optional>
         <form [formGroup]="threeGroup">
-          <ng-template mdStepLabel>Step two</ng-template>
-          <md-form-field>
-            <input mdInput formControlName="threeCtrl">
-          </md-form-field>
+          <ng-template matStepLabel>Step two</ng-template>
+          <mat-form-field>
+            <input matInput formControlName="threeCtrl">
+          </mat-form-field>
           <div>
-            <button md-button mdStepperPrevious>Back</button>
-            <button md-button mdStepperNext>Next</button>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
           </div>
         </form>
-      </md-step>
-      <md-step>
+      </mat-step>
+      <mat-step>
         Done
-      </md-step>
-    </md-vertical-stepper>
+      </mat-step>
+    </mat-vertical-stepper>
   `
 })
-class LinearMdVerticalStepperApp {
+class LinearMatVerticalStepperApp {
   oneGroup: FormGroup;
   twoGroup: FormGroup;
   threeGroup: FormGroup;

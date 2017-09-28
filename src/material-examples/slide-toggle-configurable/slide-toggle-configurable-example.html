@@ -1,44 +1,44 @@
-<md-card>
-  <md-card-content>
+<mat-card>
+  <mat-card-content>
     <h2 class="example-h2">Slider configuration</h2>
 
     <section class="example-section">
       <label class="example-margin">Color:</label>
-      <md-radio-group [(ngModel)]="color">
-        <md-radio-button class="example-margin" value="primary">
+      <mat-radio-group [(ngModel)]="color">
+        <mat-radio-button class="example-margin" value="primary">
           Primary
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="accent">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="accent">
           Accent
-        </md-radio-button>
-        <md-radio-button class="example-margin" value="warn">
+        </mat-radio-button>
+        <mat-radio-button class="example-margin" value="warn">
           Warn
-        </md-radio-button>
-      </md-radio-group>
+        </mat-radio-button>
+      </mat-radio-group>
     </section>
 
     <section class="example-section">
-      <md-checkbox class="example-margin" [(ngModel)]="checked">Checked</md-checkbox>
+      <mat-checkbox class="example-margin" [(ngModel)]="checked">Checked</mat-checkbox>
     </section>
 
     <section class="example-section">
-      <md-checkbox class="example-margin" [(ngModel)]="disabled">Disabled</md-checkbox>
+      <mat-checkbox class="example-margin" [(ngModel)]="disabled">Disabled</mat-checkbox>
     </section>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>
 
-<md-card class="result">
-  <md-card-content>
+<mat-card class="result">
+  <mat-card-content>
     <h2 class="example-h2">Result</h2>
 
     <section class="example-section">
-      <md-slide-toggle
+      <mat-slide-toggle
           class="example-margin"
           [color]="color"
           [checked]="checked"
           [disabled]="disabled">
         Slide me!
-      </md-slide-toggle>
+      </mat-slide-toggle>
     </section>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>

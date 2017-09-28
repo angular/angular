@@ -31,29 +31,29 @@ import {extendObject} from '@angular/material/core';
 import {Observable} from 'rxjs/Observable';
 import {defer} from 'rxjs/observable/defer';
 import {Subject} from 'rxjs/Subject';
-import {MdDialogConfig} from './dialog-config';
-import {MdDialogContainer} from './dialog-container';
-import {MdDialogRef} from './dialog-ref';
+import {MatDialogConfig} from './dialog-config';
+import {MatDialogContainer} from './dialog-container';
+import {MatDialogRef} from './dialog-ref';
 
 
-export const MD_DIALOG_DATA = new InjectionToken<any>('MdDialogData');
+export const MAT_DIALOG_DATA = new InjectionToken<any>('MatDialogData');
 
 
 /** Injection token that determines the scroll handling while the dialog is open. */
-export const MD_DIALOG_SCROLL_STRATEGY =
-    new InjectionToken<() => ScrollStrategy>('md-dialog-scroll-strategy');
+export const MAT_DIALOG_SCROLL_STRATEGY =
+    new InjectionToken<() => ScrollStrategy>('mat-dialog-scroll-strategy');
 
 /** @docs-private */
-export function MD_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
+export function MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY(overlay: Overlay):
     () => BlockScrollStrategy {
   return () => overlay.scrollStrategies.block();
 }
 
 /** @docs-private */
-export const MD_DIALOG_SCROLL_STRATEGY_PROVIDER = {
-  provide: MD_DIALOG_SCROLL_STRATEGY,
+export const MAT_DIALOG_SCROLL_STRATEGY_PROVIDER = {
+  provide: MAT_DIALOG_SCROLL_STRATEGY,
   deps: [Overlay],
-  useFactory: MD_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY,
+  useFactory: MAT_DIALOG_SCROLL_STRATEGY_PROVIDER_FACTORY,
 };
 
 
@@ -61,19 +61,19 @@ export const MD_DIALOG_SCROLL_STRATEGY_PROVIDER = {
  * Service to open Material Design modal dialogs.
  */
 @Injectable()
-export class MdDialog {
-  private _openDialogsAtThisLevel: MdDialogRef<any>[] = [];
+export class MatDialog {
+  private _openDialogsAtThisLevel: MatDialogRef<any>[] = [];
   private _afterAllClosedAtThisLevel = new Subject<void>();
-  private _afterOpenAtThisLevel = new Subject<MdDialogRef<any>>();
+  private _afterOpenAtThisLevel = new Subject<MatDialogRef<any>>();
   private _boundKeydown = this._handleKeydown.bind(this);
 
   /** Keeps track of the currently-open dialogs. */
-  get openDialogs(): MdDialogRef<any>[] {
+  get openDialogs(): MatDialogRef<any>[] {
     return this._parentDialog ? this._parentDialog.openDialogs : this._openDialogsAtThisLevel;
   }
 
   /** Stream that emits when a dialog has been opened. */
-  get afterOpen(): Subject<MdDialogRef<any>> {
+  get afterOpen(): Subject<MatDialogRef<any>> {
     return this._parentDialog ? this._parentDialog.afterOpen : this._afterOpenAtThisLevel;
   }
 
@@ -94,8 +94,8 @@ export class MdDialog {
       private _overlay: Overlay,
       private _injector: Injector,
       @Optional() location: Location,
-      @Inject(MD_DIALOG_SCROLL_STRATEGY) private _scrollStrategy,
-      @Optional() @SkipSelf() private _parentDialog: MdDialog) {
+      @Inject(MAT_DIALOG_SCROLL_STRATEGY) private _scrollStrategy,
+      @Optional() @SkipSelf() private _parentDialog: MatDialog) {
 
     // Close all of the dialogs when the user goes forwards/backwards in history or when the
     // location hash changes. Note that this usually doesn't include clicking on links (unless
@@ -113,7 +113,7 @@ export class MdDialog {
    * @returns Reference to the newly-opened dialog.
    */
   open<T>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
-          config?: MdDialogConfig): MdDialogRef<T> {
+          config?: MatDialogConfig): MatDialogRef<T> {
 
     const inProgressDialog = this.openDialogs.find(dialog => dialog._isAnimating());
 
@@ -163,7 +163,7 @@ export class MdDialog {
    * Finds an open dialog by its id.
    * @param id ID to use when looking up the dialog.
    */
-  getDialogById(id: string): MdDialogRef<any> | undefined {
+  getDialogById(id: string): MatDialogRef<any> | undefined {
     return this.openDialogs.find(dialog => dialog.id === id);
   }
 
@@ -172,7 +172,7 @@ export class MdDialog {
    * @param config The dialog configuration.
    * @returns A promise resolving to the OverlayRef for the created overlay.
    */
-  private _createOverlay(config: MdDialogConfig): OverlayRef {
+  private _createOverlay(config: MatDialogConfig): OverlayRef {
     const overlayState = this._getOverlayState(config);
     return this._overlay.create(overlayState);
   }
@@ -182,7 +182,7 @@ export class MdDialog {
    * @param dialogConfig The dialog configuration.
    * @returns The overlay configuration.
    */
-  private _getOverlayState(dialogConfig: MdDialogConfig): OverlayConfig {
+  private _getOverlayState(dialogConfig: MatDialogConfig): OverlayConfig {
     const state = new OverlayConfig({
       positionStrategy: this._overlay.position().global(),
       scrollStrategy: this._scrollStrategy(),
@@ -199,37 +199,37 @@ export class MdDialog {
   }
 
   /**
-   * Attaches an MdDialogContainer to a dialog's already-created overlay.
+   * Attaches an MatDialogContainer to a dialog's already-created overlay.
    * @param overlay Reference to the dialog's underlying overlay.
    * @param config The dialog configuration.
    * @returns A promise resolving to a ComponentRef for the attached container.
    */
-  private _attachDialogContainer(overlay: OverlayRef, config: MdDialogConfig): MdDialogContainer {
-    let containerPortal = new ComponentPortal(MdDialogContainer, config.viewContainerRef);
-    let containerRef: ComponentRef<MdDialogContainer> = overlay.attach(containerPortal);
+  private _attachDialogContainer(overlay: OverlayRef, config: MatDialogConfig): MatDialogContainer {
+    let containerPortal = new ComponentPortal(MatDialogContainer, config.viewContainerRef);
+    let containerRef: ComponentRef<MatDialogContainer> = overlay.attach(containerPortal);
     containerRef.instance._config = config;
 
     return containerRef.instance;
   }
 
   /**
-   * Attaches the user-provided component to the already-created MdDialogContainer.
+   * Attaches the user-provided component to the already-created MatDialogContainer.
    * @param componentOrTemplateRef The type of component being loaded into the dialog,
    *     or a TemplateRef to instantiate as the content.
-   * @param dialogContainer Reference to the wrapping MdDialogContainer.
+   * @param dialogContainer Reference to the wrapping MatDialogContainer.
    * @param overlayRef Reference to the overlay in which the dialog resides.
    * @param config The dialog configuration.
-   * @returns A promise resolving to the MdDialogRef that should be returned to the user.
+   * @returns A promise resolving to the MatDialogRef that should be returned to the user.
    */
   private _attachDialogContent<T>(
       componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
-      dialogContainer: MdDialogContainer,
+      dialogContainer: MatDialogContainer,
       overlayRef: OverlayRef,
-      config: MdDialogConfig): MdDialogRef<T> {
+      config: MatDialogConfig): MatDialogRef<T> {
 
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
-    const dialogRef = new MdDialogRef<T>(overlayRef, dialogContainer, config.id);
+    const dialogRef = new MatDialogRef<T>(overlayRef, dialogContainer, config.id);
 
     // When the dialog backdrop is clicked, we want to close it.
     if (config.hasBackdrop) {
@@ -267,16 +267,16 @@ export class MdDialog {
    * @returns The custom injector that can be used inside the dialog.
    */
   private _createInjector<T>(
-      config: MdDialogConfig,
-      dialogRef: MdDialogRef<T>,
-      dialogContainer: MdDialogContainer): PortalInjector {
+      config: MatDialogConfig,
+      dialogRef: MatDialogRef<T>,
+      dialogContainer: MatDialogContainer): PortalInjector {
 
     const userInjector = config && config.viewContainerRef && config.viewContainerRef.injector;
     const injectionTokens = new WeakMap();
 
-    injectionTokens.set(MdDialogRef, dialogRef);
-    injectionTokens.set(MdDialogContainer, dialogContainer);
-    injectionTokens.set(MD_DIALOG_DATA, config.data);
+    injectionTokens.set(MatDialogRef, dialogRef);
+    injectionTokens.set(MatDialogContainer, dialogContainer);
+    injectionTokens.set(MAT_DIALOG_DATA, config.data);
 
     return new PortalInjector(userInjector || this._injector, injectionTokens);
   }
@@ -285,7 +285,7 @@ export class MdDialog {
    * Removes a dialog from the array of open dialogs.
    * @param dialogRef Dialog to be removed.
    */
-  private _removeOpenDialog(dialogRef: MdDialogRef<any>) {
+  private _removeOpenDialog(dialogRef: MatDialogRef<any>) {
     const index = this.openDialogs.indexOf(dialogRef);
 
     if (index > -1) {
@@ -318,6 +318,6 @@ export class MdDialog {
  * @param config Config to be modified.
  * @returns The new configuration object.
  */
-function _applyConfigDefaults(config?: MdDialogConfig): MdDialogConfig {
-  return extendObject(new MdDialogConfig(), config);
+function _applyConfigDefaults(config?: MatDialogConfig): MatDialogConfig {
+  return extendObject(new MatDialogConfig(), config);
 }

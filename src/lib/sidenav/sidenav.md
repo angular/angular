@@ -1,21 +1,21 @@
-`<md-sidenav>` is a panel that can be placed next to or above some primary content. A sidenav is
+`<mat-sidenav>` is a panel that can be placed next to or above some primary content. A sidenav is
 typically used for navigation, but can contain any content.
 
 <!-- example(sidenav-overview) -->
 
-The sidenav and its associated content live inside of an `<md-sidenav-container>`:
+The sidenav and its associated content live inside of an `<mat-sidenav-container>`:
 ```html
-<md-sidenav-container>
-  <md-sidenav>
+<mat-sidenav-container>
+  <mat-sidenav>
     <!-- sidenav content -->
-  </md-sidenav>
+  </mat-sidenav>
 
   <!-- primary content -->
-</md-sidenav-container>
+</mat-sidenav-container>
 ```
 
-A sidenav container may contain one or two `<md-sidenav>` elements. When there are two 
-`<md-sidenav>` elements, each must be placed on a different side of the container.
+A sidenav container may contain one or two `<mat-sidenav>` elements. When there are two 
+`<mat-sidenav>` elements, each must be placed on a different side of the container.
 See the section on positioning below.
 
 ### Sidenav mode
@@ -37,11 +37,11 @@ appears at the start of the container.
 
 
 ### Sizing the sidenav
-The `<md-sidenav>` will, by default, fit the size of its content. The width can be explicitly set
+The `<mat-sidenav>` will, by default, fit the size of its content. The width can be explicitly set
 via CSS:
 
 ```css
-md-sidenav {
+mat-sidenav {
   width: 200px;
 }
 ```
@@ -49,18 +49,18 @@ md-sidenav {
 Try to avoid percent based width as `resize` events are not (yet) supported.
 
 For a fullscreen sidenav, the recommended approach is set up the DOM such that the
-`<md-sidenav-container>` can naturally take up the full space:
+`<mat-sidenav-container>` can naturally take up the full space:
 
 ```html
 <app>
-  <md-sidenav-container>
-    <md-sidenav mode="side" opened="true">Drawer content</md-sidenav>
+  <mat-sidenav-container>
+    <mat-sidenav mode="side" opened="true">Drawer content</mat-sidenav>
     <div class="my-content">Main content</div>
-  </md-sidenav-container>
+  </mat-sidenav-container>
 </app>
 ```
 ```css
-html, body, material-app, md-sidenav-container, .my-content {
+html, body, material-app, mat-sidenav-container, .my-content {
   margin: 0;
   width: 100%;
   height: 100%;
@@ -74,11 +74,11 @@ outside of the scrollable region and absolutely position it.
 
 ### Disabling closing of sidenav
 By default, sidenav can be closed either by clicking on the backdrop or by pressing <kbd>ESCAPE</kbd>.
-The `disableClose` attribute can be set on `md-sidenav` to disable automatic closing when the backdrop
+The `disableClose` attribute can be set on `mat-sidenav` to disable automatic closing when the backdrop
 is clicked or <kbd>ESCAPE</kbd> is pressed. To add custom logic on backdrop click, add a `(backdropClick)` listener to
-`md-sidenav-container`. For custom <kbd>ESCAPE</kbd> logic, a standard `(keydown)` listener will suffice.
+`mat-sidenav-container`. For custom <kbd>ESCAPE</kbd> logic, a standard `(keydown)` listener will suffice.
 ```html
-<md-sidenav-container (backdropClick)="customBackdropClickHandler()">
-  <md-sidenav disableClose (keydown)="customKeydownHandler($event)"></md-sidenav>
-</md-sidenav-container>
+<mat-sidenav-container (backdropClick)="customBackdropClickHandler()">
+  <mat-sidenav disableClose (keydown)="customKeydownHandler($event)"></mat-sidenav>
+</mat-sidenav-container>
 ```

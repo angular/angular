@@ -55,11 +55,11 @@ export class PizzaPartyAppModule { }
 Import the NgModule for each component you want to use: 
 
 ```ts
-import {MdButtonModule, MdCheckboxModule} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule} from '@angular/material';
 
 @NgModule({
   ...
-  imports: [MdButtonModule, MdCheckboxModule],
+  imports: [MatButtonModule, MatCheckboxModule],
   ...
 })
 export class PizzaPartyAppModule { }
@@ -70,11 +70,11 @@ Angular Material components that you will use in your application. You can then
 include this module wherever you'd like to use the components.
 
 ```ts
-import {MdButtonModule, MdCheckboxModule} from '@angular/material';
+import {MatButtonModule, MatCheckboxModule} from '@angular/material';
 
 @NgModule({
-  imports: [MdButtonModule, MdCheckboxModule],
-  exports: [MdButtonModule, MdCheckboxModule],
+  imports: [MatButtonModule, MatCheckboxModule],
+  exports: [MatButtonModule, MatCheckboxModule],
 })
 export class MyOwnCustomMaterialModule { }
 ```
@@ -100,7 +100,7 @@ For more information on theming and instructions on how to create a custom theme
 
 ### Step 5: Gesture Support
 
-Some components (`md-slide-toggle`, `md-slider`, `mdTooltip`) rely on
+Some components (`mat-slide-toggle`, `mat-slider`, `matTooltip`) rely on
 [HammerJS](http://hammerjs.github.io/) for gestures. In order to get the full feature-set of these
 components, HammerJS must be loaded into the application.
 
@@ -120,7 +120,7 @@ import 'hammerjs';
 
 ### Step 6 (Optional): Add Material Icons
 
-If you want to use the `md-icon` component with the official 
+If you want to use the `mat-icon` component with the official 
 [Material Design Icons](https://material.io/icons/), load the icon font in your `index.html`.
 
 ```html
@@ -130,7 +130,7 @@ If you want to use the `md-icon` component with the official
 For more information on using Material Icons, check out the
 [Material Icons Guide](https://google.github.io/material-design-icons/).
 
-Note that `md-icon` supports any font or svg icons; using Material Icons is one of many options.
+Note that `mat-icon` supports any font or svg icons; using Material Icons is one of many options.
 
 
 ### Appendix: Configuring SystemJS

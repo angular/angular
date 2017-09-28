@@ -19,7 +19,7 @@ import {
   Optional,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import {MdGridTile} from './grid-tile';
+import {MatGridTile} from './grid-tile';
 import {TileCoordinator} from './tile-coordinator';
 import {TileStyler, FitTileStyler, RatioTileStyler, FixedTileStyler} from './tile-styler';
 import {Directionality} from '@angular/cdk/bidi';
@@ -33,11 +33,11 @@ import {
 // TODO(kara): Re-layout on window resize / media change (debounced).
 // TODO(kara): gridTileHeader and gridTileFooter.
 
-const MD_FIT_MODE = 'fit';
+const MAT_FIT_MODE = 'fit';
 
 @Component({
   moduleId: module.id,
-  selector: 'md-grid-list, mat-grid-list',
+  selector: 'mat-grid-list',
   templateUrl: 'grid-list.html',
   styleUrls: ['grid-list.css'],
   host: {
@@ -47,7 +47,7 @@ const MD_FIT_MODE = 'fit';
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdGridList implements OnInit, AfterContentChecked {
+export class MatGridList implements OnInit, AfterContentChecked {
   /** Number of columns being rendered. */
   private _cols: number;
 
@@ -66,7 +66,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
   private _tileStyler: TileStyler;
 
   /** Query list of tiles that are being rendered. */
-  @ContentChildren(MdGridTile) _tiles: QueryList<MdGridTile>;
+  @ContentChildren(MatGridTile) _tiles: QueryList<MatGridTile>;
 
   constructor(
       private _renderer: Renderer2,
@@ -110,8 +110,8 @@ export class MdGridList implements OnInit, AfterContentChecked {
   /** Throw a friendly error if cols property is missing */
   private _checkCols() {
     if (!this.cols) {
-      throw Error(`md-grid-list: must pass in number of columns. ` +
-                  `Example: <md-grid-list cols="3">`);
+      throw Error(`mat-grid-list: must pass in number of columns. ` +
+                  `Example: <mat-grid-list cols="3">`);
     }
   }
 
@@ -128,7 +128,7 @@ export class MdGridList implements OnInit, AfterContentChecked {
       this._tileStyler.reset(this);
     }
 
-    if (rowHeight === MD_FIT_MODE) {
+    if (rowHeight === MAT_FIT_MODE) {
       this._tileStyler = new FitTileStyler();
     } else if (rowHeight && rowHeight.indexOf(':') > -1) {
       this._tileStyler = new RatioTileStyler(rowHeight);

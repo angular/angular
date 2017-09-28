@@ -5,32 +5,32 @@
       isDisabled: {{isDisabled}}, clickCounter:
       <span id="click-counter">{{clickCounter}}</span>
     </p>
-    <button md-raised-button (click)="isDisabled=!isDisabled" id="disable-toggle">
+    <button mat-raised-button (click)="isDisabled=!isDisabled" id="disable-toggle">
       Disable buttons
     </button>
   </div>
 
-  <button md-button [disabled]="isDisabled" (click)="clickCounter=clickCounter+1" id="test-button">
+  <button mat-button [disabled]="isDisabled" (click)="clickCounter=clickCounter+1" id="test-button">
     off
   </button>
 
-  <button md-button color="primary" [disabled]="isDisabled">
+  <button mat-button color="primary" [disabled]="isDisabled">
     off
   </button>
 
-  <a href="http://www.google.com" md-button color="accent" [disabled]="isDisabled">
+  <a href="http://www.google.com" mat-button color="accent" [disabled]="isDisabled">
     off
   </a>
 
-  <button md-raised-button color="primary" [disabled]="isDisabled">
+  <button mat-raised-button color="primary" [disabled]="isDisabled">
     off
   </button>
 
-  <button md-mini-fab [disabled]="isDisabled" aria-label="Check">
-    <md-icon class="md-24">check</md-icon>
+  <button mat-mini-fab [disabled]="isDisabled" aria-label="Check">
+    <mat-icon class="md-24">check</mat-icon>
   </button>
 
-  <button md-icon-button color="accent" [disabled]="isDisabled" aria-label="Check">
-    <md-icon class="md-24">favorite</md-icon>
+  <button mat-icon-button color="accent" [disabled]="isDisabled" aria-label="Check">
+    <mat-icon class="md-24">favorite</mat-icon>
   </button>
 </section>

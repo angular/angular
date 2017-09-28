@@ -1,28 +1,28 @@
-`<md-menu>` is a floating panel containing list of options.
+`<mat-menu>` is a floating panel containing list of options.
 
 <!-- example(menu-overview) -->
 <!-- example(nested-menu) -->
 
-By itself, the `<md-menu>` element does not render anything. The menu is attached to and opened
-via application of the `mdMenuTriggerFor` directive:
+By itself, the `<mat-menu>` element does not render anything. The menu is attached to and opened
+via application of the `matMenuTriggerFor` directive:
 ```html
-<md-menu #appMenu="mdMenu">
-  <button md-menu-item> Settings </button>
-  <button md-menu-item> Help </button>
-</md-menu>
+<mat-menu #appMenu="matMenu">
+  <button mat-menu-item> Settings </button>
+  <button mat-menu-item> Help </button>
+</mat-menu>
 
-<button md-icon-button [mdMenuTriggerFor]="appMenu">
-   <md-icon>more_vert</md-icon>
+<button mat-icon-button [matMenuTriggerFor]="appMenu">
+   <mat-icon>more_vert</mat-icon>
 </button>
 ```
 
 ### Toggling the menu programmatically
 The menu exposes an API to open/close programmatically. Please note that in this case, an
-`mdMenuTriggerFor` directive is still necessary to attach the menu to a trigger element in the DOM.
+`matMenuTriggerFor` directive is still necessary to attach the menu to a trigger element in the DOM.
 
 ```ts
 class MyComponent {
-  @ViewChild(MdMenuTrigger) trigger: MdMenuTrigger;
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
 
   someMethod() {
     this.trigger.openMenu();
@@ -31,24 +31,24 @@ class MyComponent {
 ```
 
 ### Icons
-Menus support displaying `md-icon` elements before the menu item text.
+Menus support displaying `mat-icon` elements before the menu item text.
 
 *my-comp.html*
 ```html
-<md-menu #menu="mdMenu">
-  <button md-menu-item>
-    <md-icon> dialpad </md-icon>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>
+    <mat-icon> dialpad </mat-icon>
     <span> Redial </span>
   </button>
-  <button md-menu-item disabled>
-    <md-icon> voicemail </md-icon>
+  <button mat-menu-item disabled>
+    <mat-icon> voicemail </mat-icon>
     <span> Check voicemail </span>
   </button>
-  <button md-menu-item>
-    <md-icon> notifications_off </md-icon>
+  <button mat-menu-item>
+    <mat-icon> notifications_off </mat-icon>
     <span> Disable alerts </span>
   </button>
-</md-menu>
+</mat-menu>
 ```
 
 ### Customizing menu position
@@ -59,36 +59,36 @@ The position can be changed using the `xPosition` (`before | after`) and `yPosit
 `[overlapTrigger]="false"` attribute.
 
 ```html
-<md-menu #appMenu="mdMenu" yPosition="above">
-  <button md-menu-item> Settings </button>
-  <button md-menu-item> Help </button>
-</md-menu>
+<mat-menu #appMenu="matMenu" yPosition="above">
+  <button mat-menu-item> Settings </button>
+  <button mat-menu-item> Help </button>
+</mat-menu>
 
-<button md-icon-button [mdMenuTriggerFor]="appMenu">
-  <md-icon>more_vert</md-icon>
+<button mat-icon-button [matMenuTriggerFor]="appMenu">
+  <mat-icon>more_vert</mat-icon>
 </button>
 ```
 
 ### Nested menu
 
-Material supports the ability for an `md-menu-item` to open a sub-menu. To do so, you have to define
-your root menu and sub-menus, in addition to setting the `[mdMenuTriggerFor]` on the `md-menu-item`
+Material supports the ability for an `mat-menu-item` to open a sub-menu. To do so, you have to define
+your root menu and sub-menus, in addition to setting the `[matMenuTriggerFor]` on the `mat-menu-item`
 that should trigger the sub-menu:
 
 ```html
-<md-menu #rootMenu="mdMenu">
-  <button md-menu-item [mdMenuTriggerFor]="subMenu">Power</button>
-  <button md-menu-item>System settings</button>
-</md-menu>
+<mat-menu #rootMenu="matMenu">
+  <button mat-menu-item [matMenuTriggerFor]="subMenu">Power</button>
+  <button mat-menu-item>System settings</button>
+</mat-menu>
 
-<md-menu #subMenu="mdMenu">
-  <button md-menu-item>Shut down</button>
-  <button md-menu-item>Restart</button>
-  <button md-menu-item>Hibernate</button>
-</md-menu>
+<mat-menu #subMenu="matMenu">
+  <button mat-menu-item>Shut down</button>
+  <button mat-menu-item>Restart</button>
+  <button mat-menu-item>Hibernate</button>
+</mat-menu>
 
-<button md-icon-button [mdMenuTriggerFor]="rootMenu">
-  <md-icon>more_vert</md-icon>
+<button mat-icon-button [matMenuTriggerFor]="rootMenu">
+  <mat-icon>more_vert</mat-icon>
 </button>
 ```
 

@@ -7,72 +7,79 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
-import {MdTableModule} from '../table/index';
-import {MdSort, MdSortHeader, MdSortHeaderIntl, MdSortModule, Sort, SortDirection} from './index';
+import {MatTableModule} from '../table/index';
 import {
-  getMdSortDuplicateMdSortableIdError,
-  getMdSortHeaderMissingIdError,
-  getMdSortHeaderNotContainedWithinMdSortError,
+  MatSort,
+  MatSortHeader,
+  MatSortHeaderIntl,
+  MatSortModule,
+  Sort,
+  SortDirection
+} from './index';
+import {
+  getSortDuplicateSortableIdError,
+  getSortHeaderMissingIdError,
+  getSortHeaderNotContainedWithinSortError,
 } from './sort-errors';
 
 
-describe('MdSort', () => {
-  let fixture: ComponentFixture<SimpleMdSortApp>;
+describe('MatSort', () => {
+  let fixture: ComponentFixture<SimpleMatSortApp>;
 
-  let component: SimpleMdSortApp;
+  let component: SimpleMatSortApp;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MdSortModule, MdTableModule, CdkTableModule, NoopAnimationsModule],
+      imports: [MatSortModule, MatTableModule, CdkTableModule, NoopAnimationsModule],
       declarations: [
-        SimpleMdSortApp,
-        CdkTableMdSortApp,
-        MdTableMdSortApp,
-        MdSortHeaderMissingMdSortApp,
-        MdSortDuplicateMdSortableIdsApp,
-        MdSortableMissingIdApp
+        SimpleMatSortApp,
+        CdkTableMatSortApp,
+        MatTableMatSortApp,
+        MatSortHeaderMissingMatSortApp,
+        MatSortDuplicateMatSortableIdsApp,
+        MatSortableMissingIdApp
       ],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SimpleMdSortApp);
+    fixture = TestBed.createComponent(SimpleMatSortApp);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should have the sort headers register and deregister themselves', () => {
-    const sortables = component.mdSort.sortables;
+    const sortables = component.matSort.sortables;
     expect(sortables.size).toBe(4);
-    expect(sortables.get('defaultSortHeaderA')).toBe(component.mdSortHeaderDefaultA);
-    expect(sortables.get('defaultSortHeaderB')).toBe(component.mdSortHeaderDefaultB);
+    expect(sortables.get('defaultSortHeaderA')).toBe(component.matSortHeaderDefaultA);
+    expect(sortables.get('defaultSortHeaderB')).toBe(component.matSortHeaderDefaultB);
 
     fixture.destroy();
     expect(sortables.size).toBe(0);
   });
 
   it('should use the column definition if used within a cdk table', () => {
-    let cdkTableMdSortAppFixture = TestBed.createComponent(CdkTableMdSortApp);
-    let cdkTableMdSortAppComponent = cdkTableMdSortAppFixture.componentInstance;
+    let cdkTableMatSortAppFixture = TestBed.createComponent(CdkTableMatSortApp);
+    let cdkTableMatSortAppComponent = cdkTableMatSortAppFixture.componentInstance;
 
-    cdkTableMdSortAppFixture.detectChanges();
-    cdkTableMdSortAppFixture.detectChanges();
+    cdkTableMatSortAppFixture.detectChanges();
+    cdkTableMatSortAppFixture.detectChanges();
 
-    const sortables = cdkTableMdSortAppComponent.mdSort.sortables;
+    const sortables = cdkTableMatSortAppComponent.matSort.sortables;
     expect(sortables.size).toBe(3);
     expect(sortables.has('column_a')).toBe(true);
     expect(sortables.has('column_b')).toBe(true);
     expect(sortables.has('column_c')).toBe(true);
   });
 
-  it('should use the column definition if used within an md table', () => {
-    let mdTableMdSortAppFixture = TestBed.createComponent(MdTableMdSortApp);
-    let mdTableMdSortAppComponent = mdTableMdSortAppFixture.componentInstance;
+  it('should use the column definition if used within an mat table', () => {
+    let matTableMatSortAppFixture = TestBed.createComponent(MatTableMatSortApp);
+    let matTableMatSortAppComponent = matTableMatSortAppFixture.componentInstance;
 
-    mdTableMdSortAppFixture.detectChanges();
-    mdTableMdSortAppFixture.detectChanges();
+    matTableMatSortAppFixture.detectChanges();
+    matTableMatSortAppFixture.detectChanges();
 
-    const sortables = mdTableMdSortAppComponent.mdSort.sortables;
+    const sortables = matTableMatSortAppComponent.matSort.sortables;
     expect(sortables.size).toBe(3);
     expect(sortables.has('column_a')).toBe(true);
     expect(sortables.has('column_b')).toBe(true);
@@ -102,34 +109,34 @@ describe('MdSort', () => {
 
   it('should reset sort direction when a different column is sorted', () => {
     component.sort('defaultSortHeaderA');
-    expect(component.mdSort.active).toBe('defaultSortHeaderA');
-    expect(component.mdSort.direction).toBe('asc');
+    expect(component.matSort.active).toBe('defaultSortHeaderA');
+    expect(component.matSort.direction).toBe('asc');
 
     component.sort('defaultSortHeaderA');
-    expect(component.mdSort.active).toBe('defaultSortHeaderA');
-    expect(component.mdSort.direction).toBe('desc');
+    expect(component.matSort.active).toBe('defaultSortHeaderA');
+    expect(component.matSort.direction).toBe('desc');
 
     component.sort('defaultSortHeaderB');
-    expect(component.mdSort.active).toBe('defaultSortHeaderB');
-    expect(component.mdSort.direction).toBe('asc');
+    expect(component.matSort.active).toBe('defaultSortHeaderB');
+    expect(component.matSort.direction).toBe('asc');
   });
 
-  it('should throw an error if an MdSortable is not contained within an MdSort directive', () => {
-    expect(() => TestBed.createComponent(MdSortHeaderMissingMdSortApp).detectChanges())
-        .toThrowError(wrappedErrorMessage(getMdSortHeaderNotContainedWithinMdSortError()));
+  it('should throw an error if an MatSortable is not contained within an MatSort directive', () => {
+    expect(() => TestBed.createComponent(MatSortHeaderMissingMatSortApp).detectChanges())
+        .toThrowError(wrappedErrorMessage(getSortHeaderNotContainedWithinSortError()));
   });
 
-  it('should throw an error if two MdSortables have the same id', () => {
-    expect(() => TestBed.createComponent(MdSortDuplicateMdSortableIdsApp).detectChanges())
-        .toThrowError(wrappedErrorMessage(getMdSortDuplicateMdSortableIdError('duplicateId')));
+  it('should throw an error if two MatSortables have the same id', () => {
+    expect(() => TestBed.createComponent(MatSortDuplicateMatSortableIdsApp).detectChanges())
+        .toThrowError(wrappedErrorMessage(getSortDuplicateSortableIdError('duplicateId')));
   });
 
-  it('should throw an error if an MdSortable is missing an id', () => {
-    expect(() => TestBed.createComponent(MdSortableMissingIdApp).detectChanges())
-        .toThrowError(wrappedErrorMessage(getMdSortHeaderMissingIdError()));
+  it('should throw an error if an MatSortable is missing an id', () => {
+    expect(() => TestBed.createComponent(MatSortableMissingIdApp).detectChanges())
+        .toThrowError(wrappedErrorMessage(getSortHeaderMissingIdError()));
   });
 
-  it('should allow let MdSortable override the default sort parameters', () => {
+  it('should allow let MatSortable override the default sort parameters', () => {
     testSingleColumnSortDirectionSequence(
         fixture, ['asc', 'desc', '']);
 
@@ -146,8 +153,8 @@ describe('MdSort', () => {
   });
 
   it('should re-render when the i18n labels have changed',
-    inject([MdSortHeaderIntl], (intl: MdSortHeaderIntl) => {
-      const header = fixture.debugElement.query(By.directive(MdSortHeader)).nativeElement;
+    inject([MatSortHeaderIntl], (intl: MatSortHeaderIntl) => {
+      const header = fixture.debugElement.query(By.directive(MatSortHeader)).nativeElement;
       const button = header.querySelector('.mat-sort-header-button');
 
       intl.sortButtonLabel = () => 'Sort all of the things';
@@ -161,54 +168,58 @@ describe('MdSort', () => {
 /**
  * Performs a sequence of sorting on a single column to see if the sort directions are
  * consistent with expectations. Detects any changes in the fixture to reflect any changes in
- * the inputs and resets the MdSort to remove any side effects from previous tests.
+ * the inputs and resets the MatSort to remove any side effects from previous tests.
  */
-function testSingleColumnSortDirectionSequence(fixture: ComponentFixture<SimpleMdSortApp>,
+function testSingleColumnSortDirectionSequence(fixture: ComponentFixture<SimpleMatSortApp>,
                                                expectedSequence: SortDirection[],
                                                id: string = 'defaultSortHeaderA') {
   // Detect any changes that were made in preparation for this sort sequence
   fixture.detectChanges();
 
-  // Reset the md sort to make sure there are no side affects from previous tests
+  // Reset the sort to make sure there are no side affects from previous tests
   const component = fixture.componentInstance;
-  component.mdSort.active = '';
-  component.mdSort.direction = '';
+  component.matSort.active = '';
+  component.matSort.direction = '';
 
   // Run through the sequence to confirm the order
   let actualSequence = expectedSequence.map(() => {
     component.sort(id);
 
-    // Check that the sort event's active sort is consistent with the MdSort
-    expect(component.mdSort.active).toBe(id);
+    // Check that the sort event's active sort is consistent with the MatSort
+    expect(component.matSort.active).toBe(id);
     expect(component.latestSortEvent.active).toBe(id);
 
-    // Check that the sort event's direction is consistent with the MdSort
-    expect(component.mdSort.direction).toBe(component.latestSortEvent.direction);
-    return component.mdSort.direction;
+    // Check that the sort event's direction is consistent with the MatSort
+    expect(component.matSort.direction).toBe(component.latestSortEvent.direction);
+    return component.matSort.direction;
   });
   expect(actualSequence).toEqual(expectedSequence);
 
   // Expect that performing one more sort will loop it back to the beginning.
   component.sort(id);
-  expect(component.mdSort.direction).toBe(expectedSequence[0]);
+  expect(component.matSort.direction).toBe(expectedSequence[0]);
 }
 
 @Component({
   template: `
-    <div mdSort
-         [mdSortActive]="active"
-         [mdSortStart]="start"
-         [mdSortDirection]="direction"
-         [mdSortDisableClear]="disableClear"
-         (mdSortChange)="latestSortEvent = $event">
-      <div id="defaultSortHeaderA" #defaultSortHeaderA md-sort-header="defaultSortHeaderA"> A</div>
-      <div id="defaultSortHeaderB" #defaultSortHeaderB md-sort-header="defaultSortHeaderB"> B</div>
-      <div id="overrideStart" md-sort-header="overrideStart" start="desc"> D</div>
-      <div id="overrideDisableClear" md-sort-header="overrideDisableClear" disableClear> E</div>
+    <div matSort
+         [matSortActive]="active"
+         [matSortStart]="start"
+         [matSortDirection]="direction"
+         [matSortDisableClear]="disableClear"
+         (matSortChange)="latestSortEvent = $event">
+      <div id="defaultSortHeaderA" #defaultSortHeaderA mat-sort-header="defaultSortHeaderA">
+        A
+      </div>
+      <div id="defaultSortHeaderB" #defaultSortHeaderB mat-sort-header="defaultSortHeaderB">
+        B
+      </div>
+      <div id="overrideStart" mat-sort-header="overrideStart" start="desc"> D </div>
+      <div id="overrideDisableClear" mat-sort-header="overrideDisableClear" disableClear> E </div>
     </div>
   `
 })
-class SimpleMdSortApp {
+class SimpleMatSortApp {
   latestSortEvent: Sort;
 
   active: string;
@@ -216,9 +227,9 @@ class SimpleMdSortApp {
   direction: SortDirection = '';
   disableClear: boolean;
 
-  @ViewChild(MdSort) mdSort: MdSort;
-  @ViewChild('defaultSortHeaderA') mdSortHeaderDefaultA: MdSortHeader;
-  @ViewChild('defaultSortHeaderB') mdSortHeaderDefaultB: MdSortHeader;
+  @ViewChild(MatSort) matSort: MatSort;
+  @ViewChild('defaultSortHeaderA') matSortHeaderDefaultA: MatSortHeader;
+  @ViewChild('defaultSortHeaderB') matSortHeaderDefaultB: MatSortHeader;
 
   constructor (public elementRef: ElementRef) { }
 
@@ -238,19 +249,19 @@ class FakeDataSource extends DataSource<any> {
 
 @Component({
   template: `
-    <cdk-table [dataSource]="dataSource" mdSort>
+    <cdk-table [dataSource]="dataSource" matSort>
       <ng-container cdkColumnDef="column_a">
-        <cdk-header-cell *cdkHeaderCellDef #sortHeaderA md-sort-header> Column A </cdk-header-cell>
+        <cdk-header-cell *cdkHeaderCellDef #sortHeaderA mat-sort-header> Column A </cdk-header-cell>
         <cdk-cell *cdkCellDef="let row"> {{row.a}} </cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="column_b">
-        <cdk-header-cell *cdkHeaderCellDef #sortHeaderB md-sort-header> Column B </cdk-header-cell>
+        <cdk-header-cell *cdkHeaderCellDef #sortHeaderB mat-sort-header> Column B </cdk-header-cell>
         <cdk-cell *cdkCellDef="let row"> {{row.b}} </cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="column_c">
-        <cdk-header-cell *cdkHeaderCellDef #sortHeaderC md-sort-header> Column C </cdk-header-cell>
+        <cdk-header-cell *cdkHeaderCellDef #sortHeaderC mat-sort-header> Column C </cdk-header-cell>
         <cdk-cell *cdkCellDef="let row"> {{row.c}} </cdk-cell>
       </ng-container>
 
@@ -259,8 +270,8 @@ class FakeDataSource extends DataSource<any> {
     </cdk-table>
   `
 })
-class CdkTableMdSortApp {
-  @ViewChild(MdSort) mdSort: MdSort;
+class CdkTableMatSortApp {
+  @ViewChild(MatSort) matSort: MatSort;
 
   dataSource = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
@@ -268,29 +279,29 @@ class CdkTableMdSortApp {
 
 @Component({
   template: `
-    <md-table [dataSource]="dataSource" mdSort>
-      <ng-container mdColumnDef="column_a">
-        <md-header-cell *mdHeaderCellDef #sortHeaderA md-sort-header> Column A </md-header-cell>
-        <md-cell *mdCellDef="let row"> {{row.a}} </md-cell>
+    <mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="column_a">
+        <mat-header-cell *matHeaderCellDef #sortHeaderA mat-sort-header> Column A </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.a}} </mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="column_b">
-        <md-header-cell *mdHeaderCellDef #sortHeaderB md-sort-header> Column B </md-header-cell>
-        <md-cell *mdCellDef="let row"> {{row.b}} </md-cell>
+      <ng-container matColumnDef="column_b">
+        <mat-header-cell *matHeaderCellDef #sortHeaderB mat-sort-header> Column B </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.b}} </mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="column_c">
-        <md-header-cell *mdHeaderCellDef #sortHeaderC md-sort-header> Column C </md-header-cell>
-        <md-cell *mdCellDef="let row"> {{row.c}} </md-cell>
+      <ng-container matColumnDef="column_c">
+        <mat-header-cell *matHeaderCellDef #sortHeaderC mat-sort-header> Column C </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.c}} </mat-cell>
       </ng-container>
 
-      <md-header-row *mdHeaderRowDef="columnsToRender"></md-header-row>
-      <md-row *mdRowDef="let row; columns: columnsToRender"></md-row>
-    </md-table>
+      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: columnsToRender"></mat-row>
+    </mat-table>
   `
 })
-class MdTableMdSortApp {
-  @ViewChild(MdSort) mdSort: MdSort;
+class MatTableMatSortApp {
+  @ViewChild(MatSort) matSort: MatSort;
 
   dataSource = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
@@ -298,27 +309,27 @@ class MdTableMdSortApp {
 
 
 @Component({
-  template: `<div md-sort-header="a"> A </div>`
+  template: `<div mat-sort-header="a"> A </div>`
 })
-class MdSortHeaderMissingMdSortApp { }
+class MatSortHeaderMissingMatSortApp { }
 
 
 @Component({
   template: `
-    <div mdSort>
-      <div md-sort-header="duplicateId"> A </div>
-      <div md-sort-header="duplicateId"> A </div>
+    <div matSort>
+      <div mat-sort-header="duplicateId"> A </div>
+      <div mat-sort-header="duplicateId"> A </div>
     </div>
   `
 })
-class MdSortDuplicateMdSortableIdsApp { }
+class MatSortDuplicateMatSortableIdsApp { }
 
 
 @Component({
   template: `
-    <div mdSort>
-      <div md-sort-header> A </div>
+    <div matSort>
+      <div mat-sort-header> A </div>
     </div>
   `
 })
-class MdSortableMissingIdApp { }
+class MatSortableMissingIdApp { }

@@ -1,12 +1,12 @@
-<md-card>
-  <md-card-header>
-    <md-card-title>
-      <md-icon (click)="toggleCollapse()">{{collapseIcon}}</md-icon>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon (click)="toggleCollapse()">{{collapseIcon}}</mat-icon>
       {{testName}}
-    </md-card-title>
-    <md-card-subtitle [ngClass]="resultText.toLowerCase()">{{resultText}}</md-card-subtitle>
-  </md-card-header>
-  <md-card-content *ngIf="!collapse">
+    </mat-card-title>
+    <mat-card-subtitle [ngClass]="resultText.toLowerCase()">{{resultText}}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content *ngIf="!collapse">
     <div class="images-section" [ngClass]="mode" [class.flipping]="flipping">
       <div class="image-section test-section" >
         <div class="image-title">Test image</div>
@@ -21,19 +21,19 @@
         <div><img [src]="goldImageUrl"/></div>
       </div>
     </div>
-  </md-card-content>
-  <md-card-actions>
-    <md-button-toggle-group [(ngModel)]="mode" class="mode-section">
-      <md-button-toggle value="diff">
+  </mat-card-content>
+  <mat-card-actions>
+    <mat-button-toggle-group [(ngModel)]="mode" class="mode-section">
+      <mat-button-toggle value="diff">
         Diff
-      </md-button-toggle>
-      <md-button-toggle value="flip">
+      </mat-button-toggle>
+      <mat-button-toggle value="flip">
         Flip
-      </md-button-toggle>
-      <md-button-toggle value="side">
+      </mat-button-toggle>
+      <mat-button-toggle value="side">
         Side by side
-      </md-button-toggle>
-    </md-button-toggle-group>
-    <button md-button color="primary" (click)="flip()" *ngIf="mode === 'flip'">Flip</button>
-  </md-card-actions>
-</md-card>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+    <button mat-button color="primary" (click)="flip()" *ngIf="mode === 'flip'">Flip</button>
+  </mat-card-actions>
+</mat-card>

@@ -26,34 +26,35 @@ import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {
   defaultErrorStateMatcher,
   ErrorOptions,
-  ErrorStateMatcher, MATERIAL_COMPATIBILITY_MODE,
-  MD_ERROR_GLOBAL_OPTIONS,
+  ErrorStateMatcher,
+  MAT_ERROR_GLOBAL_OPTIONS,
 } from '@angular/material/core';
-import {MdStepHeader} from './step-header';
-import {MdStepLabel} from './step-label';
+import {MatStepHeader} from './step-header';
+import {MatStepLabel} from './step-label';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MdStep = CdkStep;
-export const _MdStepper = CdkStepper;
+export const _MatStep = CdkStep;
+export const _MatStepper = CdkStepper;
 
 @Component({
   moduleId: module.id,
-  selector: 'md-step, mat-step',
+  selector: 'mat-step',
   templateUrl: 'step.html',
-  providers: [{provide: MD_ERROR_GLOBAL_OPTIONS, useExisting: MdStep}],
+  providers: [{provide: MAT_ERROR_GLOBAL_OPTIONS, useExisting: MatStep}],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdStep extends _MdStep implements ErrorOptions {
-  /** Content for step label given by <ng-template matStepLabel> or <ng-template mdStepLabel>. */
-  @ContentChild(MdStepLabel) stepLabel: MdStepLabel;
+export class MatStep extends _MatStep implements ErrorOptions {
+  /** Content for step label given by <ng-template matStepLabel>. */
+  @ContentChild(MatStepLabel) stepLabel: MatStepLabel;
 
   /** Original ErrorStateMatcher that checks the validity of form control. */
   private _originalErrorStateMatcher: ErrorStateMatcher;
 
-  constructor(@Inject(forwardRef(() => MdStepper)) mdStepper: MdStepper,
-              @Optional() @SkipSelf() @Inject(MD_ERROR_GLOBAL_OPTIONS) errorOptions: ErrorOptions) {
-    super(mdStepper);
+  constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,
+              @Optional() @SkipSelf() @Inject(MAT_ERROR_GLOBAL_OPTIONS)
+                  errorOptions: ErrorOptions) {
+    super(stepper);
     if (errorOptions && errorOptions.errorStateMatcher) {
       this._originalErrorStateMatcher = errorOptions.errorStateMatcher;
     } else {
@@ -75,19 +76,19 @@ export class MdStep extends _MdStep implements ErrorOptions {
 }
 
 @Directive({
-  selector: '[mdStepper]'
+  selector: '[matStepper]'
 })
-export class MdStepper extends _MdStepper {
+export class MatStepper extends _MatStepper {
   /** The list of step headers of the steps in the stepper. */
-  @ViewChildren(MdStepHeader, {read: ElementRef}) _stepHeader: QueryList<ElementRef>;
+  @ViewChildren(MatStepHeader, {read: ElementRef}) _stepHeader: QueryList<ElementRef>;
 
   /** Steps that the stepper holds. */
-  @ContentChildren(MdStep) _steps: QueryList<MdStep>;
+  @ContentChildren(MatStep) _steps: QueryList<MatStep>;
 }
 
 @Component({
   moduleId: module.id,
-  selector: 'md-horizontal-stepper, mat-horizontal-stepper',
+  selector: 'mat-horizontal-stepper',
   templateUrl: 'stepper-horizontal.html',
   styleUrls: ['stepper.css'],
   inputs: ['selectedIndex'],
@@ -104,16 +105,15 @@ export class MdStepper extends _MdStepper {
           animate('500ms cubic-bezier(0.35, 0, 0.25, 1)'))
     ])
   ],
-  providers: [{provide: MdStepper, useExisting: MdHorizontalStepper}],
+  providers: [{provide: MatStepper, useExisting: MatHorizontalStepper}],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
 })
-export class MdHorizontalStepper extends MdStepper { }
+export class MatHorizontalStepper extends MatStepper { }
 
 @Component({
   moduleId: module.id,
-  selector: 'md-vertical-stepper, mat-vertical-stepper',
+  selector: 'mat-vertical-stepper',
   templateUrl: 'stepper-vertical.html',
   styleUrls: ['stepper.css'],
   inputs: ['selectedIndex'],
@@ -129,9 +129,8 @@ export class MdHorizontalStepper extends MdStepper { }
       transition('* <=> current', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
     ])
   ],
-  providers: [{provide: MdStepper, useExisting: MdVerticalStepper}],
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
+  providers: [{provide: MatStepper, useExisting: MatVerticalStepper}],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MdVerticalStepper extends MdStepper { }
+export class MatVerticalStepper extends MatStepper { }

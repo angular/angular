@@ -14,21 +14,21 @@ import {
   OnDestroy,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanDisable, MATERIAL_COMPATIBILITY_MODE, mixinDisabled} from '@angular/material/core';
+import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs/Subject';
 
-// Boilerplate for applying mixins to MdMenuItem.
+// Boilerplate for applying mixins to MatMenuItem.
 /** @docs-private */
-export class MdMenuItemBase {}
-export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
+export class MatMenuItemBase {}
+export const _MatMenuItemMixinBase = mixinDisabled(MatMenuItemBase);
 
 /**
- * This directive is intended to be used inside an md-menu tag.
+ * This directive is intended to be used inside an mat-menu tag.
  * It exists mostly to set the role attribute.
  */
 @Component({
   moduleId: module.id,
-  selector: '[md-menu-item], [mat-menu-item]',
+  selector: '[mat-menu-item]',
   inputs: ['disabled'],
   host: {
     'role': 'menuitem',
@@ -45,14 +45,13 @@ export const _MdMenuItemMixinBase = mixinDisabled(MdMenuItemBase);
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   templateUrl: 'menu-item.html',
-  exportAs: 'mdMenuItem, matMenuItem',
-  viewProviders: [{provide: MATERIAL_COMPATIBILITY_MODE, useValue: true}],
+  exportAs: 'matMenuItem',
 })
-export class MdMenuItem extends _MdMenuItemMixinBase implements FocusableOption, CanDisable,
+export class MatMenuItem extends _MatMenuItemMixinBase implements FocusableOption, CanDisable,
   OnDestroy {
 
   /** Stream that emits when the menu item is hovered. */
-  hover: Subject<MdMenuItem> = new Subject();
+  hover: Subject<MatMenuItem> = new Subject();
 
   /** Whether the menu item is highlighted. */
   _highlighted: boolean = false;

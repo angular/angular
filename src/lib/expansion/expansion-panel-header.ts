@@ -24,19 +24,19 @@ import {
 } from '@angular/core';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
-import {EXPANSION_PANEL_ANIMATION_TIMING, MdExpansionPanel} from './expansion-panel';
+import {EXPANSION_PANEL_ANIMATION_TIMING, MatExpansionPanel} from './expansion-panel';
 
 
 /**
- * <md-expansion-panel-header> component.
+ * <mat-expansion-panel-header> component.
  *
- * This component corresponds to the header element of an <md-expansion-panel>.
+ * This component corresponds to the header element of an <mat-expansion-panel>.
  *
  * Please refer to README.md for examples on how to use it.
  */
 @Component({
   moduleId: module.id,
-  selector: 'md-expansion-panel-header, mat-expansion-panel-header',
+  selector: 'mat-expansion-panel-header',
   styleUrls: ['./expansion-panel-header.css'],
   templateUrl: './expansion-panel-header.html',
   encapsulation: ViewEncapsulation.None,
@@ -81,12 +81,12 @@ import {EXPANSION_PANEL_ANIMATION_TIMING, MdExpansionPanel} from './expansion-pa
     ]),
   ],
 })
-export class MdExpansionPanelHeader implements OnDestroy {
+export class MatExpansionPanelHeader implements OnDestroy {
   private _parentChangeSubscription = Subscription.EMPTY;
 
   constructor(
     renderer: Renderer2,
-    @Host() public panel: MdExpansionPanel,
+    @Host() public panel: MatExpansionPanel,
     private _element: ElementRef,
     private _focusMonitor: FocusMonitor,
     private _changeDetectorRef: ChangeDetectorRef) {
@@ -157,27 +157,27 @@ export class MdExpansionPanelHeader implements OnDestroy {
 }
 
 /**
- * <md-panel-description> directive.
+ * <mat-panel-description> directive.
  *
- * This direction is to be used inside of the MdExpansionPanelHeader component.
+ * This direction is to be used inside of the MatExpansionPanelHeader component.
  */
 @Directive({
-  selector: 'md-panel-description, mat-panel-description',
+  selector: 'mat-panel-description',
   host : {
     class: 'mat-expansion-panel-header-description'
   }
 })
-export class MdExpansionPanelDescription {}
+export class MatExpansionPanelDescription {}
 
 /**
- * <md-panel-title> directive.
+ * <mat-panel-title> directive.
  *
- * This direction is to be used inside of the MdExpansionPanelHeader component.
+ * This direction is to be used inside of the MatExpansionPanelHeader component.
  */
 @Directive({
-  selector: 'md-panel-title, mat-panel-title',
+  selector: 'mat-panel-title',
   host : {
     class: 'mat-expansion-panel-header-title'
   }
 })
-export class MdExpansionPanelTitle {}
+export class MatExpansionPanelTitle {}
