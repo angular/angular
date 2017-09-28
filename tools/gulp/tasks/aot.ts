@@ -32,7 +32,7 @@ task('aot:copy-release', () => {
 });
 
 /** Build the demo-app and a release to confirm that the library is AOT-compatible. */
-task('aot:build', sequenceTask('aot:deps', 'aot:compiler-cli'));
+task('aot:build', sequenceTask('clean', 'aot:deps', 'aot:compiler-cli'));
 
 /** Build the demo-app and a release to confirm that the library is AOT-compatible. */
 task('aot:compiler-cli', execNodeTask(

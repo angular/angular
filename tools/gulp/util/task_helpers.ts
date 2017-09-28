@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import {buildConfig, sequenceTask} from 'material2-build-tools';
+import {buildConfig} from 'material2-build-tools';
 
 /* Those imports lack typings. */
 const gulpClean = require('gulp-clean');
@@ -120,21 +120,6 @@ export function copyTask(srcGlobOrDir: string | string[], outRoot: string) {
 /** Delete files. */
 export function cleanTask(glob: string) {
   return () => gulp.src(glob, { read: false }).pipe(gulpClean(null));
-}
-
-
-/** Build an task that depends on all application build tasks. */
-export function buildAppTask(appName: string) {
-  const buildTasks = ['ts', 'scss', 'assets']
-    .map(taskName => `:build:${appName}:${taskName}`)
-    .filter(taskName => gulp.hasTask(taskName));
-
-  return sequenceTask(
-    // Build all required packages for serving the devapp by just building the moment-adapter
-    // package. All dependencies of that package (material, cdk) will be built automatically.
-    'material-moment-adapter:clean-build',
-    [...buildTasks]
-  );
 }
 
 /**

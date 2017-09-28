@@ -12,7 +12,7 @@ task(':test:build', sequenceTask(
   'clean',
   // Build tests for all different packages by just building the tests of the moment-adapter
   // package. All dependencies of that package (material, cdk) will be built as well.
-  'material-moment-adapter:build-tests'
+  'material-moment-adapter:build-no-bundles'
 ));
 
 /**
