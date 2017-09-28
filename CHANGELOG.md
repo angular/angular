@@ -28,7 +28,7 @@ overlayContainer.getContainerElement().classList.add('my-theme-class');
 ```
 * DateAdapter method `getISODateString` has been renamed to `toIso8601` and a new method
 `fromIso8601` has been added.
-
+* **sort:** The sort-change stream `mdSortChange` has been renamed to `sortChange`.
 
 ### Deprecation of "md" prefix.
 
