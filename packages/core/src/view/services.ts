@@ -618,8 +618,9 @@ class DebugRendererFactory2 implements RendererFactory2 {
 
 
 class DebugRenderer2 implements Renderer2 {
-  readonly data: {[key: string]: any};
-  constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
+  constructor(private delegate: Renderer2) {}
+
+  get data() { return this.delegate.data; }
 
   destroyNode(node: any) {
     removeDebugNodeFromIndex(getDebugNode(node) !);
