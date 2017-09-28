@@ -1042,10 +1042,14 @@ describe('MatSelect', () => {
       // Extra trigger height beyond the font size caused by the fact that the line-height is
       // greater than 1em.
       const triggerExtraLineSpaceAbove = (1 - triggerLineHeightEm) * triggerFontSize / 2;
+      const topDifference = Math.floor(optionTop) -
+          Math.floor(triggerTop - triggerFontSize - triggerExtraLineSpaceAbove);
 
-      expect(Math.floor(optionTop))
-          .toBe(Math.floor(triggerTop - triggerFontSize - triggerExtraLineSpaceAbove),
-              `Expected trigger to align with option ${index}.`);
+      // Expect the coordinates to be within a pixel of each other. We can't rely on comparing
+      // the exact value, because different browsers report the various sizes with slight (< 1px)
+      // deviations.
+      expect(Math.abs(topDifference) < 2)
+          .toBe(true, `Expected trigger to align with option ${index}.`);
 
       // For the animation to start at the option's center, its origin must be the distance
       // from the top of the overlay to the option top + half the option height (48/2 = 24).
@@ -1218,8 +1222,8 @@ describe('MatSelect', () => {
         const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
         fixture.whenStable().then(() => {
-          expect(scrollContainer.scrollTop)
-              .toEqual(idealScrollTop + 5,
+          expect(Math.ceil(scrollContainer.scrollTop))
+              .toEqual(Math.ceil(idealScrollTop + 5),
                   `Expected panel to adjust scroll position to fit in viewport.`);
 
           checkTriggerAlignedWithOption(4);
@@ -1280,9 +1284,14 @@ describe('MatSelect', () => {
             // (56px from the bottom of the screen - 8px padding = 48px)
             // and the height of the panel below the option (113px).
             // 113px - 48px = 75px difference. Original scrollTop 88px - 75px = 23px
-            expect(scrollContainer.scrollTop)
-                .toEqual(idealScrollTop - expectedExtraScroll,
-                    `Expected panel to adjust scroll position to fit in viewport.`);
+            const difference = Math.ceil(scrollContainer.scrollTop) -
+                Math.ceil(idealScrollTop - expectedExtraScroll);
+
+            // Note that different browser/OS combinations report the different dimensions with
+            // slight deviations (< 1px). We round the expectation and check that the values
+            // are within a pixel of each other to avoid flakes.
+            expect(Math.abs(difference) < 2)
+                .toBe(true, `Expected panel to adjust scroll position to fit in viewport.`);
 
             checkTriggerAlignedWithOption(4);
           });
@@ -1309,9 +1318,12 @@ describe('MatSelect', () => {
         // Expect no scroll to be attempted
         expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
 
-        expect(Math.floor(overlayBottom))
-            .toEqual(Math.floor(triggerBottom),
-                `Expected trigger bottom to align with overlay bottom.`);
+        const difference = Math.floor(overlayBottom) - Math.floor(triggerBottom);
+
+        // Check that the values are within a pixel of each other. This avoids sub-pixel
+        // deviations between OS and browser versions.
+        expect(Math.abs(difference) < 2)
+            .toEqual(true, `Expected trigger bottom to align with overlay bottom.`);
 
         expect(fixture.componentInstance.select._transformOrigin)
             .toContain(`bottom`, `Expected panel animation to originate at the bottom.`);
@@ -1521,10 +1533,12 @@ describe('MatSelect', () => {
         const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
         const triggerBottom = trigger.getBoundingClientRect().bottom;
         const overlayBottom = overlayPane.getBoundingClientRect().bottom;
+        const difference = Math.floor(overlayBottom) - Math.floor(triggerBottom);
 
-        expect(Math.floor(overlayBottom))
-            .toEqual(Math.floor(triggerBottom),
-                `Expected trigger bottom to align with overlay bottom.`);
+        // Check that the values are within a pixel of each other. This avoids sub-pixel
+        // deviations between OS and browser versions.
+        expect(Math.abs(difference) < 2)
+            .toEqual(true, `Expected trigger bottom to align with overlay bottom.`);
       });
 
       it('should fall back to "below" positioning properly when scrolled', () => {
@@ -1731,8 +1745,8 @@ describe('MatSelect', () => {
             expect(difference)
                 .toBeLessThan(0.1, 'Expected trigger to align with the first option.');
           } else {
-            expect(optionTop + (menuItemHeight - triggerHeight) / 2)
-                .toBe(triggerTop, 'Expected trigger to align with the first option.');
+            expect(Math.floor(optionTop + (menuItemHeight - triggerHeight) / 2))
+                .toBe(Math.floor(triggerTop), 'Expected trigger to align with the first option.');
           }
         });
       }));
