@@ -48,13 +48,13 @@ function runE2e() {
   if (argv.setup) {
     // Run setup.
     console.log('runE2e: copy boilerplate');
-    const spawnInfo = spawnExt('yarn', ['boilerplate:add', '--', argv.local ? '--local' : ''], { cwd: AIO_PATH });
+    const spawnInfo = spawnExt('yarn', ['boilerplate:add', argv.local ? '--local' : ''], { cwd: AIO_PATH });
     promise = spawnInfo.promise
       .then(() => {
         console.log('runE2e: update webdriver');
         return spawnExt('yarn', ['webdriver:update'], { cwd: SHARED_PATH }).promise;
       });
-  };
+  }
 
   const outputFile = path.join(AIO_PATH, './protractor-results.txt');
 
@@ -91,7 +91,7 @@ function findAndRunE2eTests(filter, outputFile, shard) {
     .then(e2eSpecPaths => {
       Object.keys(e2eSpecPaths).forEach(key => {
         const value = e2eSpecPaths[key];
-        e2eSpecPaths[key] = value.filter((p, index) => index % shardDivider === shardModulo)
+        e2eSpecPaths[key] = value.filter((p, index) => index % shardDivider === shardModulo);
       });
 
       return e2eSpecPaths.systemjs.reduce((promise, specPath) => {
@@ -111,13 +111,14 @@ function findAndRunE2eTests(filter, outputFile, shard) {
               arr.push(specPath);
             });
           });
-        }, Promise.resolve())
-      })})
-      .then(() => {
-        const stopTime = new Date().getTime();
-        status.elapsedTime = (stopTime - startTime) / 1000;
-        return status;
+        }, Promise.resolve());
       });
+    })
+    .then(() => {
+      const stopTime = new Date().getTime();
+      status.elapsedTime = (stopTime - startTime) / 1000;
+      return status;
+    });
 }
 
 // Start the example in appDir; then run protractor with the specified
@@ -128,7 +129,7 @@ function runE2eTestsSystemJS(appDir, outputFile) {
   const config = loadExampleConfig(appDir);
 
   const appBuildSpawnInfo = spawnExt('yarn', [config.build], { cwd: appDir });
-  const appRunSpawnInfo = spawnExt('yarn', [config.run, '--', '-s'], { cwd: appDir }, true);
+  const appRunSpawnInfo = spawnExt('yarn', [config.run, '-s'], { cwd: appDir }, true);
 
   let run = runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
 
@@ -147,12 +148,12 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
       fs.appendFileSync(outputFile, emsg);
       return Promise.reject(emsg);
     })
-    .then(function (data) {
+    .then(function () {
       let transpileError = false;
 
       // Start protractor.
 
-      const spawnInfo = spawnExt('yarn', ['protractor', '--',
+      const spawnInfo = spawnExt('yarn', ['protractor',
         PROTRACTOR_CONFIG_FILENAME,
         `--specs=${specFilename}`,
         '--params.appDir=' + appDir,
@@ -162,19 +163,19 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
       spawnInfo.proc.stderr.on('data', function (data) {
         transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
       });
-      return spawnInfo.promise.catch(function (err) {
+      return spawnInfo.promise.catch(function () {
         if (transpileError) {
           const emsg = `${specFilename} failed to transpile.\n\n`;
           console.log(emsg);
           fs.appendFileSync(outputFile, emsg);
         }
-        return Promise.reject(emsg);
+        return Promise.reject();
       });
     })
     .then(
     function () { return finish(appRunSpawnInfo.proc.pid, true); },
     function () { return finish(appRunSpawnInfo.proc.pid, false); }
-    )
+    );
 }
 
 function finish(spawnProcId, ok) {
@@ -243,7 +244,7 @@ function reportStatus(status, outputFile) {
 function spawnExt(command, args, options, ignoreClose = false) {
   let proc;
   const promise = new Promise((resolve, reject) => {
-    let descr = command + " " + args.join(' ');
+    let descr = command + ' ' + args.join(' ');
     console.log('running: ' + descr);
     try {
       proc = xSpawn.spawn(command, args, options);
