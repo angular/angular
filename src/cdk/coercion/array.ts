@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './boolean-property';
-export * from './number-property';
-export * from './array';
+/** Wraps the provided value in an array, unless the provided value is an array. */
+export function coerceArray<T>(value: T | T[]): T[] {
+  return Array.isArray(value) ? value : [value];
+}

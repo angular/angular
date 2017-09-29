@@ -1,0 +1,24 @@
+.mat-grid-list {
+  max-width: 700px;
+  margin: 0 auto;
+  min-width: 400px;
+}
+
+.mat-grid-tile {
+  outline: 1px solid lightgray;
+
+  .mat-figure {
+    flex-direction: column;
+  }
+  
+  &.active {
+    background: rgba(0, 0, 0, 0.12);
+  }
+}
+
+h2 {
+  max-width: 700px;
+  min-width: 400px;
+  text-align: center;
+  margin: 15px auto;
+}

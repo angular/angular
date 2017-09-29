@@ -1,0 +1,29 @@
+<h2>Screen Type</h2>
+
+<md-grid-list cols="6" rowHeight="1:2">
+  <md-grid-tile [class.active]="(isHandset | async)?.matches"
+                colspan="2">
+    <md-icon>smartphone</md-icon>
+    <p>Handset</p>
+  </md-grid-tile>
+  <md-grid-tile [class.active]="(isTablet | async)?.matches"
+                colspan="2">
+    <md-icon>tablet_android</md-icon>
+    <p>Tablet</p>
+  </md-grid-tile>
+  <md-grid-tile [class.active]="(isWeb | async)?.matches"
+                colspan="2">
+    <md-icon>laptop</md-icon>
+    <p>Web</p>
+  </md-grid-tile>
+  <md-grid-tile [class.active]="(isPortrait | async)?.matches"
+                colspan="3">
+    <md-icon>stay_current_portrait</md-icon>
+    <p>Portrait</p>
+  </md-grid-tile>
+  <md-grid-tile [class.active]="(isLandscape | async)?.matches"
+                colspan="3">
+    <md-icon>stay_current_landscape</md-icon>
+    <p>Landscape</p>
+  </md-grid-tile>
+</md-grid-list>

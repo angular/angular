@@ -67,6 +67,7 @@ export class DemoApp {
     {name: 'Progress Spinner', route: '/progress-spinner'},
     {name: 'Radio', route: '/radio'},
     {name: 'Ripple', route: '/ripple'},
+    {name: 'Screen Type', route: '/screen-type'},
     {name: 'Select', route: '/select'},
     {name: 'Sidenav', route: '/sidenav'},
     {name: 'Slide Toggle', route: '/slide-toggle'},

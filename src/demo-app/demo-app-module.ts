@@ -32,4 +32,3 @@ export class DemoAppModule {
     this._appRef.bootstrap(EntryApp);
   }
 }
-
