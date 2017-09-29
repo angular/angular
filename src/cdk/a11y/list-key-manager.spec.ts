@@ -481,6 +481,16 @@ describe('Key managers', () => {
         expect(keyManager.activeItem).toBe(itemList.items[0]);
       }));
 
+      it('should not focus disabled items', fakeAsync(() => {
+        expect(keyManager.activeItem).toBeFalsy();
+
+        itemList.items[0].disabled = true;
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, undefined, 'o')); // types "o"
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBeFalsy();
+      }));
+
     });
 
   });

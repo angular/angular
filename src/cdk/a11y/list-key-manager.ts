@@ -74,7 +74,9 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
         const items = this._items.toArray();
 
         for (let i = 0; i < items.length; i++) {
-          if (items[i].getLabel!().toUpperCase().trim().indexOf(inputString) === 0) {
+          let item = items[i];
+
+          if (!item.disabled && item.getLabel!().toUpperCase().trim().indexOf(inputString) === 0) {
             this.setActiveItem(i);
             break;
           }
