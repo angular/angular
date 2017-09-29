@@ -150,7 +150,7 @@ export class CdkStepper {
 
   /** The step that is selected. */
   @Input()
-  get selected() { return this._steps[this.selectedIndex]; }
+  get selected() { return this._steps.toArray()[this.selectedIndex]; }
   set selected(step: CdkStep) {
     this.selectedIndex = this._steps.toArray().indexOf(step);
   }
