@@ -329,9 +329,9 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
   _onAnimationEnd(event: AnimationEvent) {
     const {fromState, toState} = event;
 
-    if (toState === 'open' && fromState === 'void') {
+    if (toState.indexOf('open') === 0 && fromState === 'void') {
       this.onOpen.emit(new MatDrawerToggleResult('open', true));
-    } else if (toState === 'void' && fromState === 'open') {
+    } else if (toState === 'void' && fromState.indexOf('open') === 0) {
       this.onClose.emit(new MatDrawerToggleResult('close', true));
     }
 

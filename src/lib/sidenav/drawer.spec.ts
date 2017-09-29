@@ -126,6 +126,15 @@ describe('MatDrawer', () => {
       expect(testComponent.closeCount).toBe(1, 'Expected one close event.');
     }));
 
+    it('should fire the open event when open on init', fakeAsync(() => {
+      let fixture = TestBed.createComponent(DrawerSetToOpenedTrue);
+
+      fixture.detectChanges();
+      tick();
+
+      expect(fixture.componentInstance.openCallback).toHaveBeenCalledTimes(1);
+    }));
+
     it('should not close by pressing escape when disableClose is set', fakeAsync(() => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let testComponent = fixture.debugElement.componentInstance;
@@ -430,12 +439,14 @@ class DrawerSetToOpenedFalse { }
 @Component({
   template: `
     <mat-drawer-container>
-      <mat-drawer #drawer mode="side" opened="true">
+      <mat-drawer #drawer mode="side" opened="true" (open)="openCallback()">
         Closed Drawer.
       </mat-drawer>
     </mat-drawer-container>`,
 })
-class DrawerSetToOpenedTrue { }
+class DrawerSetToOpenedTrue {
+  openCallback = jasmine.createSpy('open callback');
+}
 
 @Component({
   template: `
