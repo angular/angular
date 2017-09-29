@@ -16,6 +16,7 @@ import {
   Optional,
   Output,
   ViewEncapsulation,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {MatCalendarCell} from './calendar-body';
@@ -93,7 +94,8 @@ export class MatMonthView<D> implements AfterContentInit {
   _weekdays: {long: string, narrow: string}[];
 
   constructor(@Optional() public _dateAdapter: DateAdapter<D>,
-              @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats) {
+              @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
+              private _changeDetectorRef: ChangeDetectorRef) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }
@@ -132,7 +134,7 @@ export class MatMonthView<D> implements AfterContentInit {
   }
 
   /** Initializes this month view. */
-  private _init() {
+  _init() {
     this._selectedDate = this._getDateInCurrentMonth(this.selected);
     this._todayDate = this._getDateInCurrentMonth(this._dateAdapter.today());
     this._monthLabel =
@@ -146,6 +148,7 @@ export class MatMonthView<D> implements AfterContentInit {
          this._dateAdapter.getFirstDayOfWeek()) % DAYS_PER_WEEK;
 
     this._createWeekCells();
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Creates MatCalendarCells for the dates in this month. */

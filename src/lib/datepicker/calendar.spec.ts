@@ -528,6 +528,57 @@ describe('MatCalendar', () => {
 
       expect(calendarInstance._activeDate).toEqual(new Date(2018, JAN, 1));
     });
+
+    it('should re-render the month view when the minDate changes', () => {
+      fixture.detectChanges();
+      spyOn(calendarInstance.monthView, '_init').and.callThrough();
+
+      testComponent.minDate = new Date(2017, NOV, 1);
+      fixture.detectChanges();
+
+      expect(calendarInstance.monthView._init).toHaveBeenCalled();
+    });
+
+    it('should re-render the month view when the maxDate changes', () => {
+      fixture.detectChanges();
+      spyOn(calendarInstance.monthView, '_init').and.callThrough();
+
+      testComponent.maxDate = new Date(2017, DEC, 1);
+      fixture.detectChanges();
+
+      expect(calendarInstance.monthView._init).toHaveBeenCalled();
+    });
+
+    it('should re-render the year view when the minDate changes', () => {
+      fixture.detectChanges();
+      const periodButton =
+          calendarElement.querySelector('.mat-calendar-period-button') as HTMLElement;
+      periodButton.click();
+      fixture.detectChanges();
+
+      spyOn(calendarInstance.yearView, '_init').and.callThrough();
+
+      testComponent.minDate = new Date(2017, NOV, 1);
+      fixture.detectChanges();
+
+      expect(calendarInstance.yearView._init).toHaveBeenCalled();
+    });
+
+    it('should re-render the year view when the maxDate changes', () => {
+      fixture.detectChanges();
+      const periodButton =
+          calendarElement.querySelector('.mat-calendar-period-button') as HTMLElement;
+      periodButton.click();
+      fixture.detectChanges();
+
+      spyOn(calendarInstance.yearView, '_init').and.callThrough();
+
+      testComponent.maxDate = new Date(2017, DEC, 1);
+      fixture.detectChanges();
+
+      expect(calendarInstance.yearView._init).toHaveBeenCalled();
+    });
+
   });
 
   describe('calendar with date filter', () => {
