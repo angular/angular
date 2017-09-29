@@ -251,8 +251,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     let event = new MatSlideToggleChange();
     event.source = this;
     event.checked = this.checked;
-    this.change.emit(event);
     this.onChange(this.checked);
+    this.change.emit(event);
   }
 
   _onDragStart() {

@@ -563,7 +563,8 @@ describe('MatSlideToggle with forms', () => {
       declarations: [
         SlideToggleWithForm,
         SlideToggleWithModel,
-        SlideToggleWithFormControl
+        SlideToggleWithFormControl,
+        SlideToggleWithModelAndChangeEvent,
       ]
     });
 
@@ -795,6 +796,24 @@ describe('MatSlideToggle with forms', () => {
       expect(testComponent.isSubmitted).toBe(true);
     });
   });
+
+  describe('with model and change event', () => {
+    it('should report changes to NgModel before emitting change event', () => {
+      const fixture = TestBed.createComponent(SlideToggleWithModelAndChangeEvent);
+      fixture.detectChanges();
+
+      const labelEl = fixture.debugElement.query(By.css('label')).nativeElement;
+
+      spyOn(fixture.componentInstance, 'onChange').and.callFake(() => {
+        expect(fixture.componentInstance.checked)
+          .toBe(true, 'Expected the model value to have changed before the change event fired.');
+      });
+
+      labelEl.click();
+
+      expect(fixture.componentInstance.onChange).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 @Component({
@@ -872,4 +891,12 @@ class SlideToggleWithTabindexAttr {}
 })
 class SlideToggleWithoutLabel {
   label: string;
+}
+
+@Component({
+  template: `<md-slide-toggle [(ngModel)]="checked" (change)="onChange()"></md-slide-toggle>`
+})
+class SlideToggleWithModelAndChangeEvent {
+  checked: boolean;
+  onChange: () => void = () => {};
 }
