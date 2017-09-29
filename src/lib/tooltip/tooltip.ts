@@ -525,8 +525,7 @@ export class TooltipComponent {
   /** Sets the tooltip transform origin according to the position of the tooltip overlay. */
   _setTransformOrigin(overlayPosition: ConnectionPositionPair) {
     const axis = (this._position === 'above' || this._position === 'below') ? 'Y' : 'X';
-    const position = overlayPosition[`overlay${axis}`] as HorizontalConnectionPos |
-                                                          VerticalConnectionPos;
+    const position = axis == 'X' ? overlayPosition.overlayX : overlayPosition.overlayY;
 
     if (position === 'top' || position === 'bottom') {
       this._transformOrigin = position;
