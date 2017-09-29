@@ -533,7 +533,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
     locale: options.i18nInLocale,
     i18nFormat: options.i18nInFormat || options.i18nOutFormat, translations, missingTranslation,
     enableLegacyTemplate: options.enableLegacyTemplate,
-    enableSummariesForJit: true,
+    enableSummariesForJit: options.enableSummariesForJit,
     preserveWhitespaces: options.preserveWhitespaces,
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,
     allowEmptyCodegenFiles: options.allowEmptyCodegenFiles,

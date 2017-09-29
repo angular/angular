@@ -98,7 +98,9 @@ export class AotCompiler {
     if (this._options.allowEmptyCodegenFiles || file.directives.length || file.pipes.length ||
         file.injectables.length || file.ngModules.length || file.exportsNonSourceFiles) {
       genFileNames.push(ngfactoryFilePath(file.fileName, true));
-      genFileNames.push(summaryForJitFileName(file.fileName, true));
+      if (this._options.enableSummariesForJit) {
+        genFileNames.push(summaryForJitFileName(file.fileName, true));
+      }
     }
     const fileSuffix = splitTypescriptSuffix(file.fileName, true)[1];
     file.directives.forEach((dirSymbol) => {
@@ -376,7 +378,9 @@ export class AotCompiler {
                                metadata: this._metadataResolver.getInjectableSummary(ref) !.type
                              }))
         ];
-    const forJitOutputCtx = this._createOutputContext(summaryForJitFileName(srcFileName, true));
+    const forJitOutputCtx = this._options.enableSummariesForJit ?
+        this._createOutputContext(summaryForJitFileName(srcFileName, true)) :
+        null;
     const {json, exportAs} = serializeSummaries(
         srcFileName, forJitOutputCtx, this._summaryResolver, this._symbolResolver, symbolSummaries,
         typeData);
@@ -387,11 +391,11 @@ export class AotCompiler {
           ]));
     });
     const summaryJson = new GeneratedFile(srcFileName, summaryFileName(srcFileName), json);
-    if (this._options.enableSummariesForJit) {
-      return [summaryJson, this._codegenSourceModule(srcFileName, forJitOutputCtx)];
+    const result = [summaryJson];
+    if (forJitOutputCtx) {
+      result.push(this._codegenSourceModule(srcFileName, forJitOutputCtx));
     }
-
-    return [summaryJson];
+    return result;
   }
 
   private _compileModule(outputCtx: OutputContext, ngModule: CompileNgModuleMetadata): void {
