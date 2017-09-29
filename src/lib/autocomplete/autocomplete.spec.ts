@@ -677,85 +677,86 @@ describe('MatAutocomplete', () => {
 
     it('should set the active item to the first option when DOWN key is pressed', fakeAsync(() => {
       tick();
+      const componentInstance = fixture.componentInstance;
       const optionEls =
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.trigger.panelOpen)
+      expect(componentInstance.trigger.panelOpen)
           .toBe(true, 'Expected first down press to open the pane.');
 
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.trigger.activeOption)
-          .toBe(fixture.componentInstance.options.first, 'Expected first option to be active.');
+      expect(componentInstance.trigger.activeOption === componentInstance.options.first)
+          .toBe(true, 'Expected first option to be active.');
       expect(optionEls[0].classList).toContain('mat-active');
       expect(optionEls[1].classList).not.toContain('mat-active');
 
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.trigger.activeOption)
-          .toBe(fixture.componentInstance.options.toArray()[1],
-              'Expected second option to be active.');
+      expect(componentInstance.trigger.activeOption === componentInstance.options.toArray()[1])
+          .toBe(true, 'Expected second option to be active.');
       expect(optionEls[0].classList).not.toContain('mat-active');
       expect(optionEls[1].classList).toContain('mat-active');
     }));
 
     it('should set the active item to the last option when UP key is pressed', fakeAsync(() => {
       tick();
+      const componentInstance = fixture.componentInstance;
       const optionEls =
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
-      fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+      componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.trigger.panelOpen)
+      expect(componentInstance.trigger.panelOpen)
           .toBe(true, 'Expected first up press to open the pane.');
 
-      fixture.componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
+      componentInstance.trigger._handleKeydown(UP_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.trigger.activeOption)
-          .toBe(fixture.componentInstance.options.last, 'Expected last option to be active.');
+      expect(componentInstance.trigger.activeOption === componentInstance.options.last)
+          .toBe(true, 'Expected last option to be active.');
       expect(optionEls[10].classList).toContain('mat-active');
       expect(optionEls[0].classList).not.toContain('mat-active');
 
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.trigger.activeOption)
-          .toBe(fixture.componentInstance.options.first,
-              'Expected first option to be active.');
+      expect(componentInstance.trigger.activeOption === componentInstance.options.first)
+          .toBe(true, 'Expected first option to be active.');
       expect(optionEls[0].classList).toContain('mat-active');
     }));
 
     it('should set the active item properly after filtering', fakeAsync(() => {
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      const componentInstance = fixture.componentInstance;
+
+      componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
       typeInElement('o', input);
       fixture.detectChanges();
 
-      fixture.componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
+      componentInstance.trigger._handleKeydown(DOWN_ARROW_EVENT);
       tick();
       fixture.detectChanges();
 
       const optionEls =
           overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
-      expect(fixture.componentInstance.trigger.activeOption)
-          .toBe(fixture.componentInstance.options.first,
-              'Expected first option to be active.');
+      expect(componentInstance.trigger.activeOption === componentInstance.options.first)
+          .toBe(true, 'Expected first option to be active.');
       expect(optionEls[0].classList).toContain('mat-active');
       expect(optionEls[1].classList).not.toContain('mat-active');
     }));

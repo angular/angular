@@ -273,3 +273,11 @@
   <mat-header-row *cdkHeaderRowDef="tableColumns"></mat-header-row>
   <mat-row *cdkRowDef="let row; columns: tableColumns;"></mat-row>
 </mat-table>
+
+<h2>Selection list</h2>
+<mat-selection-list>
+  <h3 mat-subheader>Groceries</h3>
+  <mat-list-option value="apples">Apples</mat-list-option>
+  <mat-list-option value="bananas">Bananas</mat-list-option>
+  <mat-list-option value="oranges">Oranges</mat-list-option>
+</mat-selection-list>
