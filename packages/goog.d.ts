@@ -11,5 +11,14 @@
  * Typings for google closure.
  */
 declare namespace goog {
+  /**
+   * Note: Don't use this to check for advanced compilation,
+   * as it is sometimes true.
+   */
   export const DEBUG: boolean;
 }
+
+/**
+ * Use this flag to check for advanced compilation.
+ */
+declare const COMPILED: boolean;
