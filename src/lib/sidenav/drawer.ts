@@ -211,7 +211,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
    */
   _modeChanged = new Subject();
 
-  get isFocusTrapEnabled() {
+  get _isFocusTrapEnabled() {
     // The focus trap is only enabled when the drawer is open in any mode other than side.
     return this.opened && this.mode !== 'side';
   }
@@ -224,7 +224,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
         this._elementFocusedBeforeDrawerWasOpened = this._doc.activeElement as HTMLElement;
       }
 
-      if (this.isFocusTrapEnabled && this._focusTrap) {
+      if (this._isFocusTrapEnabled && this._focusTrap) {
         this._focusTrap.focusInitialElementWhenReady();
       }
     });
@@ -251,7 +251,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
 
   ngAfterContentInit() {
     this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
-    this._focusTrap.enabled = this.isFocusTrapEnabled;
+    this._focusTrap.enabled = this._isFocusTrapEnabled;
     this._enableAnimations = true;
   }
 
@@ -301,7 +301,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
       });
 
       if (this._focusTrap) {
-        this._focusTrap.enabled = this.isFocusTrapEnabled;
+        this._focusTrap.enabled = this._isFocusTrapEnabled;
       }
     }
 

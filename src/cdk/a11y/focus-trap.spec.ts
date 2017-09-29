@@ -103,7 +103,7 @@ describe('FocusTrap', () => {
 
       expect(anchors.every(current => current.getAttribute('tabindex') === '0')).toBe(true);
 
-      fixture.componentInstance.isFocusTrapEnabled = false;
+      fixture.componentInstance._isFocusTrapEnabled = false;
       fixture.detectChanges();
 
       expect(anchors.every(current => current.getAttribute('tabindex') === '-1')).toBe(true);
@@ -172,7 +172,7 @@ class SimpleFocusTrap {
 
 @Component({
   template: `
-    <div *ngIf="renderFocusTrap" [cdkTrapFocus]="isFocusTrapEnabled">
+    <div *ngIf="renderFocusTrap" [cdkTrapFocus]="_isFocusTrapEnabled">
       <input>
       <button>SAVE</button>
     </div>
@@ -181,7 +181,7 @@ class SimpleFocusTrap {
 class FocusTrapWithBindings {
   @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
   renderFocusTrap = true;
-  isFocusTrapEnabled = true;
+  _isFocusTrapEnabled = true;
 }
 
 
