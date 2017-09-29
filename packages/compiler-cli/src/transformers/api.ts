@@ -144,6 +144,12 @@ export interface CompilerOptions extends ts.CompilerOptions {
 
   /** generate all possible generated files  */
   allowEmptyCodegenFiles?: boolean;
+
+  /**
+   * Whether to generate .ngsummary.ts files that allow to use AOTed artifacts
+   * in JIT mode. This is off by default.
+   */
+  enableSummariesForJit?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {
