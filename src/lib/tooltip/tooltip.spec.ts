@@ -342,71 +342,81 @@ describe('MatTooltip', () => {
 
     it('should consistently position before and after overlay origin in ltr and rtl dir', () => {
       tooltipDirective.position = 'left';
-      const leftOrigin = tooltipDirective._getOrigin();
+      const leftOrigin = tooltipDirective._getOrigin().main;
       tooltipDirective.position = 'right';
-      const rightOrigin = tooltipDirective._getOrigin();
+      const rightOrigin = tooltipDirective._getOrigin().main;
 
       // Test expectations in LTR
       tooltipDirective.position = 'before';
-      expect(tooltipDirective._getOrigin()).toEqual(leftOrigin);
+      expect(tooltipDirective._getOrigin().main).toEqual(leftOrigin);
       tooltipDirective.position = 'after';
-      expect(tooltipDirective._getOrigin()).toEqual(rightOrigin);
+      expect(tooltipDirective._getOrigin().main).toEqual(rightOrigin);
 
       // Test expectations in LTR
       dir.value = 'rtl';
       tooltipDirective.position = 'before';
-      expect(tooltipDirective._getOrigin()).toEqual(rightOrigin);
+      expect(tooltipDirective._getOrigin().main).toEqual(rightOrigin);
       tooltipDirective.position = 'after';
-      expect(tooltipDirective._getOrigin()).toEqual(leftOrigin);
+      expect(tooltipDirective._getOrigin().main).toEqual(leftOrigin);
     });
 
     it('should consistently position before and after overlay position in ltr and rtl dir', () => {
       tooltipDirective.position = 'left';
-      const leftOverlayPosition = tooltipDirective._getOverlayPosition();
+      const leftOverlayPosition = tooltipDirective._getOverlayPosition().main;
       tooltipDirective.position = 'right';
-      const rightOverlayPosition = tooltipDirective._getOverlayPosition();
+      const rightOverlayPosition = tooltipDirective._getOverlayPosition().main;
 
       // Test expectations in LTR
       tooltipDirective.position = 'before';
-      expect(tooltipDirective._getOverlayPosition()).toEqual(leftOverlayPosition);
+      expect(tooltipDirective._getOverlayPosition().main).toEqual(leftOverlayPosition);
       tooltipDirective.position = 'after';
-      expect(tooltipDirective._getOverlayPosition()).toEqual(rightOverlayPosition);
+      expect(tooltipDirective._getOverlayPosition().main).toEqual(rightOverlayPosition);
 
       // Test expectations in LTR
       dir.value = 'rtl';
       tooltipDirective.position = 'before';
-      expect(tooltipDirective._getOverlayPosition()).toEqual(rightOverlayPosition);
+      expect(tooltipDirective._getOverlayPosition().main).toEqual(rightOverlayPosition);
       tooltipDirective.position = 'after';
-      expect(tooltipDirective._getOverlayPosition()).toEqual(leftOverlayPosition);
+      expect(tooltipDirective._getOverlayPosition().main).toEqual(leftOverlayPosition);
     });
 
     it('should have consistent left transform origin in any dir', () => {
       tooltipDirective.position = 'right';
       tooltipDirective.show();
+      fixture.detectChanges();
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
 
       tooltipDirective.position = 'after';
       tooltipDirective.show();
+      fixture.detectChanges();
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
 
       dir.value = 'rtl';
       tooltipDirective.position = 'before';
       tooltipDirective.show();
+      fixture.detectChanges();
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('left');
     });
 
     it('should have consistent right transform origin in any dir', () => {
+      // Move the button away from the edge of the screen so
+      // we don't get into the fallback positions.
+      fixture.componentInstance.button.nativeElement.style.margin = '200px';
+
       tooltipDirective.position = 'left';
       tooltipDirective.show();
+      fixture.detectChanges();
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
 
       tooltipDirective.position = 'before';
       tooltipDirective.show();
+      fixture.detectChanges();
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
 
       dir.value = 'rtl';
       tooltipDirective.position = 'after';
       tooltipDirective.show();
+      fixture.detectChanges();
       expect(tooltipDirective._tooltipInstance!._transformOrigin).toBe('right');
     });
 
@@ -463,10 +473,8 @@ describe('MatTooltip', () => {
 
       document.body.click();
       fixture.detectChanges();
-
       tick(500);
 
-      expect(tooltipDirective._isTooltipVisible()).toBe(true);
       expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
     }));
 
@@ -477,6 +485,53 @@ describe('MatTooltip', () => {
       }).not.toThrow();
     }));
 
+  });
+
+  describe('fallback positions', () => {
+    let fixture: ComponentFixture<BasicTooltipDemo>;
+    let tooltip: MatTooltip;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(BasicTooltipDemo);
+      fixture.detectChanges();
+      tooltip = fixture.debugElement.query(By.css('button')).injector.get<MatTooltip>(MatTooltip);
+    });
+
+    it('should set a fallback origin position by inverting the main origin position', () => {
+      tooltip.position = 'left';
+      expect(tooltip._getOrigin().main.originX).toBe('start');
+      expect(tooltip._getOrigin().fallback.originX).toBe('end');
+
+      tooltip.position = 'right';
+      expect(tooltip._getOrigin().main.originX).toBe('end');
+      expect(tooltip._getOrigin().fallback.originX).toBe('start');
+
+      tooltip.position = 'above';
+      expect(tooltip._getOrigin().main.originY).toBe('top');
+      expect(tooltip._getOrigin().fallback.originY).toBe('bottom');
+
+      tooltip.position = 'below';
+      expect(tooltip._getOrigin().main.originY).toBe('bottom');
+      expect(tooltip._getOrigin().fallback.originY).toBe('top');
+    });
+
+    it('should set a fallback overlay position by inverting the main overlay position', () => {
+      tooltip.position = 'left';
+      expect(tooltip._getOverlayPosition().main.overlayX).toBe('end');
+      expect(tooltip._getOverlayPosition().fallback.overlayX).toBe('start');
+
+      tooltip.position = 'right';
+      expect(tooltip._getOverlayPosition().main.overlayX).toBe('start');
+      expect(tooltip._getOverlayPosition().fallback.overlayX).toBe('end');
+
+      tooltip.position = 'above';
+      expect(tooltip._getOverlayPosition().main.overlayY).toBe('bottom');
+      expect(tooltip._getOverlayPosition().fallback.overlayY).toBe('top');
+
+      tooltip.position = 'below';
+      expect(tooltip._getOverlayPosition().main.overlayY).toBe('top');
+      expect(tooltip._getOverlayPosition().fallback.overlayY).toBe('bottom');
+    });
   });
 
   describe('scrollable usage', () => {
@@ -581,7 +636,8 @@ describe('MatTooltip', () => {
 @Component({
   selector: 'app',
   template: `
-    <button *ngIf="showButton"
+    <button #button
+            *ngIf="showButton"
             [matTooltip]="message"
             [matTooltipPosition]="position"
             [matTooltipClass]="{'custom-one': showTooltipClass, 'custom-two': showTooltipClass }">
@@ -594,6 +650,7 @@ class BasicTooltipDemo {
   showButton: boolean = true;
   showTooltipClass = false;
   @ViewChild(MatTooltip) tooltip: MatTooltip;
+  @ViewChild('button') button: ElementRef;
 }
 
 @Component({
