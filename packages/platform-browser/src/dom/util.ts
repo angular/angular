@@ -28,7 +28,7 @@ export function dashCaseToCamelCase(input: string): string {
  * @param value The value to export.
  */
 export function exportNgVar(name: string, value: any): void {
-  if (typeof goog === 'undefined' || goog.DEBUG) {
+  if (typeof COMPILED === 'undefined' || !COMPILED) {
     // Note: we can't export `ng` when using closure enhanced optimization as:
     // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
     // - we can't declare a closure extern as the namespace `ng` is already used within Google
