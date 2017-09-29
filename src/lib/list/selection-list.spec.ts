@@ -1,6 +1,6 @@
 import {DOWN_ARROW, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
-import {createKeyboardEvent} from '@angular/cdk/testing';
+import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -28,24 +28,29 @@ describe('MatSelectionList', () => {
       TestBed.compileComponents();
     }));
 
+
     beforeEach(async(() => {
       fixture = TestBed.createComponent(SelectionListWithListOptions);
+      fixture.detectChanges();
+
       listOption = fixture.debugElement.queryAll(By.directive(MatListOption));
       listItemEl = fixture.debugElement.query(By.css('.mat-list-item'));
       selectionList = fixture.debugElement.query(By.directive(MatSelectionList));
-      fixture.detectChanges();
     }));
 
     it('should add and remove focus class on focus/blur', () => {
-      expect(listItemEl.nativeElement.classList).not.toContain('mat-list-item-focus');
+      // Use the second list item, because the first one is always disabled.
+      const listItem = listOption[1].nativeElement;
 
-      listOption[0].componentInstance._handleFocus();
-      fixture.detectChanges();
-      expect(listItemEl.nativeElement.className).toContain('mat-list-item-focus');
+      expect(listItem.classList).not.toContain('mat-list-item-focus');
 
-      listOption[0].componentInstance._handleBlur();
+      dispatchFakeEvent(listItem, 'focus');
       fixture.detectChanges();
-      expect(listItemEl.nativeElement.className).not.toContain('mat-list-item-focus');
+      expect(listItem.className).toContain('mat-list-item-focus');
+
+      dispatchFakeEvent(listItem, 'blur');
+      fixture.detectChanges();
+      expect(listItem.className).not.toContain('mat-list-item-focus');
     });
 
     it('should be able to set a value on a list option', () => {
@@ -144,12 +149,9 @@ describe('MatSelectionList', () => {
         createKeyboardEvent('keydown', SPACE, testListItem);
       let selectList =
           selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
-      let options = selectionList.componentInstance.options;
-      let array = options.toArray();
-      let focusItem = array[1];
       expect(selectList.selected.length).toBe(0);
 
-      focusItem.focus();
+      dispatchFakeEvent(testListItem, 'focus');
       selectionList.componentInstance._keydown(SPACE_EVENT);
 
       fixture.detectChanges();
@@ -157,16 +159,26 @@ describe('MatSelectionList', () => {
       expect(selectList.selected.length).toBe(1);
     });
 
+    it('should restore focus if active option is destroyed', () => {
+      const manager = selectionList.componentInstance._keyManager;
+
+      listOption[3].componentInstance._handleFocus();
+
+      expect(manager.activeItemIndex).toBe(3);
+
+      fixture.componentInstance.showLastOption = false;
+      fixture.detectChanges();
+
+      expect(manager.activeItemIndex).toBe(2);
+    });
+
     it('should focus previous item when press UP ARROW', () => {
       let testListItem = listOption[2].nativeElement as HTMLElement;
       let UP_EVENT: KeyboardEvent =
         createKeyboardEvent('keydown', UP_ARROW, testListItem);
-      let options = selectionList.componentInstance.options;
-      let array = options.toArray();
-      let focusItem = array[2];
       let manager = selectionList.componentInstance._keyManager;
 
-      focusItem.focus();
+      dispatchFakeEvent(listOption[2].nativeElement, 'focus');
       expect(manager.activeItemIndex).toEqual(2);
 
       selectionList.componentInstance._keydown(UP_EVENT);
@@ -180,12 +192,9 @@ describe('MatSelectionList', () => {
       let testListItem = listOption[2].nativeElement as HTMLElement;
       let DOWN_EVENT: KeyboardEvent =
         createKeyboardEvent('keydown', DOWN_ARROW, testListItem);
-      let options = selectionList.componentInstance.options;
-      let array = options.toArray();
-      let focusItem = array[2];
       let manager = selectionList.componentInstance._keyManager;
 
-      focusItem.focus();
+      dispatchFakeEvent(listOption[2].nativeElement, 'focus');
       expect(manager.activeItemIndex).toEqual(2);
 
       selectionList.componentInstance._keydown(DOWN_EVENT);
@@ -432,11 +441,12 @@ describe('MatSelectionList', () => {
     <mat-list-option checkboxPosition="before" value="sent-mail">
       Sent Mail
     </mat-list-option>
-    <mat-list-option checkboxPosition="before" value="drafts">
+    <mat-list-option checkboxPosition="before" value="drafts" *ngIf="showLastOption">
       Drafts
     </mat-list-option>
   </mat-selection-list>`})
 class SelectionListWithListOptions {
+  showLastOption: boolean = true;
 }
 
 @Component({template: `

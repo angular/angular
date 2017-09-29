@@ -10,7 +10,6 @@ import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {SPACE} from '@angular/cdk/keycodes';
-import {RxChain, startWith, switchMap} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -38,8 +37,6 @@ import {
   mixinDisabled,
   mixinDisableRipple,
 } from '@angular/material/core';
-import {merge} from 'rxjs/observable/merge';
-import {Subscription} from 'rxjs/Subscription';
 
 
 /** @docs-private */
@@ -55,8 +52,6 @@ export interface MatSelectionListOptionEvent {
   option: MatListOption;
 }
 
-const FOCUSED_STYLE: string = 'mat-list-item-focus';
-
 /**
  * Component for list-options of selection-list. Each list-option can automatically
  * generate a checkbox and can put current item into the selectionModel of selection-list
@@ -70,10 +65,11 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
     'role': 'option',
     'class': 'mat-list-item mat-list-option',
     '(focus)': '_handleFocus()',
-    '(blur)': '_handleBlur()',
+    '(blur)': '_hasFocus = false',
     '(click)': '_handleClick()',
     'tabindex': '-1',
     '[class.mat-list-item-disabled]': 'disabled',
+    '[class.mat-list-item-focus]': '_hasFocus',
     '[attr.aria-selected]': 'selected.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
   },
@@ -109,17 +105,11 @@ export class MatListOption extends _MatListOptionMixinBase
   get selected() { return this._selected; }
   set selected(value: boolean) { this._selected = coerceBooleanProperty(value); }
 
-  /** Emitted when the option is focused. */
-  onFocus = new EventEmitter<MatSelectionListOptionEvent>();
-
   /** Emitted when the option is selected. */
   @Output() selectChange = new EventEmitter<MatSelectionListOptionEvent>();
 
   /** Emitted when the option is deselected. */
   @Output() deselected = new EventEmitter<MatSelectionListOptionEvent>();
-
-  /** Emitted when the option is destroyed. */
-  @Output() destroyed = new EventEmitter<MatSelectionListOptionEvent>();
 
   constructor(private _renderer: Renderer2,
               private _element: ElementRef,
@@ -144,7 +134,7 @@ export class MatListOption extends _MatListOptionMixinBase
   }
 
   ngOnDestroy(): void {
-    this.destroyed.emit({option: this});
+    this.selectionList._removeOptionFromList(this);
   }
 
   /** Toggles the selection state of the option. */
@@ -157,7 +147,6 @@ export class MatListOption extends _MatListOptionMixinBase
   /** Allows for programmatic focusing of the option. */
   focus(): void {
     this._element.nativeElement.focus();
-    this.onFocus.emit({option: this});
   }
 
   /** Whether this list item should show a ripple effect when clicked.  */
@@ -173,11 +162,7 @@ export class MatListOption extends _MatListOptionMixinBase
 
   _handleFocus() {
     this._hasFocus = true;
-    this._renderer.addClass(this._element.nativeElement, FOCUSED_STYLE);
-  }
-
-  _handleBlur() {
-    this._renderer.removeClass(this._element.nativeElement, FOCUSED_STYLE);
+    this.selectionList._setFocusedOption(this);
   }
 
   /** Retrieves the DOM element of the component host. */
@@ -208,16 +193,10 @@ export class MatListOption extends _MatListOptionMixinBase
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatSelectionList extends _MatSelectionListMixinBase
-    implements FocusableOption, CanDisable, CanDisableRipple, AfterContentInit, OnDestroy {
+    implements FocusableOption, CanDisable, CanDisableRipple, AfterContentInit {
 
   /** Tab index for the selection-list. */
   _tabIndex = 0;
-
-  /** Subscription to all list options' onFocus events */
-  private _optionFocusSubscription = Subscription.EMPTY;
-
-  /** Subscription to all list options' destroy events  */
-  private _optionDestroyStream = Subscription.EMPTY;
 
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MatListOption>;
@@ -238,14 +217,6 @@ export class MatSelectionList extends _MatSelectionListMixinBase
     if (this.disabled) {
       this._tabIndex = -1;
     }
-
-    this._optionFocusSubscription = this._onFocusSubscription();
-    this._optionDestroyStream = this._onDestroySubscription();
-  }
-
-  ngOnDestroy(): void {
-    this._optionDestroyStream.unsubscribe();
-    this._optionFocusSubscription.unsubscribe();
   }
 
   /** Focus the selection-list. */
@@ -271,36 +242,23 @@ export class MatSelectionList extends _MatSelectionListMixinBase
     });
   }
 
-  /** Map all the options' destroy event subscriptions and merge them into one stream. */
-  private _onDestroySubscription(): Subscription {
-    return RxChain.from(this.options.changes)
-      .call(startWith, this.options)
-      .call(switchMap, (options: MatListOption[]) => {
-        return merge(...options.map(option => option.destroyed));
-      }).subscribe((e: MatSelectionListOptionEvent) => {
-        let optionIndex: number = this.options.toArray().indexOf(e.option);
-        if (e.option._hasFocus) {
-          // Check whether the option is the last item
-          if (optionIndex < this.options.length - 1) {
-            this._keyManager.setActiveItem(optionIndex);
-          } else if (optionIndex - 1 >= 0) {
-            this._keyManager.setActiveItem(optionIndex - 1);
-          }
-        }
-        e.option.destroyed.unsubscribe();
-      });
+  /** Sets the focused option of the selection-list. */
+  _setFocusedOption(option: MatListOption) {
+    this._keyManager.updateActiveItemIndex(this._getOptionIndex(option));
   }
 
-  /** Map all the options' onFocus event subscriptions and merge them into one stream. */
-  private _onFocusSubscription(): Subscription {
-    return RxChain.from(this.options.changes)
-      .call(startWith, this.options)
-      .call(switchMap, (options: MatListOption[]) => {
-        return merge(...options.map(option => option.onFocus));
-      }).subscribe((e: MatSelectionListOptionEvent) => {
-      let optionIndex: number = this.options.toArray().indexOf(e.option);
-      this._keyManager.updateActiveItemIndex(optionIndex);
-    });
+  /** Removes an option from the selection list and updates the active item. */
+  _removeOptionFromList(option: MatListOption) {
+    if (option._hasFocus) {
+      const optionIndex = this._getOptionIndex(option);
+
+      // Check whether the option is the last item
+      if (optionIndex > 0) {
+        this._keyManager.setPreviousItemActive();
+      } else if (optionIndex === 0 && this.options.length > 1) {
+        this._keyManager.setNextItemActive();
+      }
+    }
   }
 
   /** Passes relevant key presses to our key manager. */
@@ -337,5 +295,10 @@ export class MatSelectionList extends _MatSelectionListMixinBase
    */
   private _isValidIndex(index: number): boolean {
     return index >= 0 && index < this.options.length;
+  }
+
+  /** Returns the index of the specified list option. */
+  private _getOptionIndex(option: MatListOption): number {
+    return this.options.toArray().indexOf(option);
   }
 }
