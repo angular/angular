@@ -409,6 +409,17 @@ describe('MatAutocomplete', () => {
       expect(inputContainer._animateAndLockPlaceholder).toHaveBeenCalled();
     });
 
+    it('should provide the open state of the panel', async(() => {
+      expect(fixture.componentInstance.panel.isOpen).toBeFalsy(
+        `Expected the panel to be unopened initially.`);
+
+      dispatchFakeEvent(input, 'focusin');
+      fixture.detectChanges();
+      fixture.whenStable().then(() => {
+        expect(fixture.componentInstance.panel.isOpen).toBeTruthy(
+          `Expected the panel to be opened on focus.`);
+      });
+    }));
   });
 
   it('should have the correct text direction in RTL', () => {

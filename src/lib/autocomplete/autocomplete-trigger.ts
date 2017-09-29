@@ -169,7 +169,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     this._resetPlaceholder();
 
     if (this._panelOpen) {
-      this._panelOpen = false;
+      this.autocomplete._isOpen = this._panelOpen = false;
 
       // We need to trigger change detection manually, because
       // `fromEvent` doesn't seem to do it at the proper time.
@@ -454,7 +454,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     }
 
     this.autocomplete._setVisibility();
-    this._panelOpen = true;
+    this.autocomplete._isOpen = this._panelOpen = true;
   }
 
   private _getOverlayConfig(): OverlayConfig {

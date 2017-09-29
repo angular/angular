@@ -66,19 +66,6 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   </mat-card>
 </div>
 
-<mat-autocomplete #reactiveAuto="matAutocomplete" [displayWith]="displayFn">
-  <mat-option *ngFor="let state of reactiveStates | async" [value]="state">
-    <span>{{ state.name }}</span>
-    <span class="demo-secondary-text"> ({{state.code}}) </span>
-  </mat-option>
-</mat-autocomplete>
-
-<mat-autocomplete #tdAuto="matAutocomplete">
-  <mat-option *ngFor="let state of tdStates" [value]="state.name">
-    <span>{{ state.name }}</span>
-  </mat-option>
-</mat-autocomplete>
-
 <mat-autocomplete #groupedAuto="matAutocomplete">
   <mat-optgroup *ngFor="let group of filteredGroupedStates"
     [label]="'States starting with ' + group.letter">

@@ -58,6 +58,12 @@ export class MatAutocomplete implements AfterContentInit {
   /** Whether the autocomplete panel should be visible, depending on option length. */
   showPanel = false;
 
+  /** Whether the autocomplete panel is open. */
+  get isOpen(): boolean {
+    return this._isOpen && this.showPanel;
+  }
+  _isOpen: boolean = false;
+
   /** @docs-private */
   @ViewChild(TemplateRef) template: TemplateRef<any>;
 
@@ -97,6 +103,8 @@ export class MatAutocomplete implements AfterContentInit {
 
   ngAfterContentInit() {
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options).withWrap();
+    // Set the initial visibiity state.
+    this._setVisibility();
   }
 
   /**
