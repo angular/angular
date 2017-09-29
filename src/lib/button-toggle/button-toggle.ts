@@ -224,6 +224,13 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
    */
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
+    this._markButtonTogglesForCheck();
+  }
+
+  private _markButtonTogglesForCheck() {
+    if (this._buttonToggles) {
+      this._buttonToggles.forEach((toggle) => toggle._markForCheck());
+    }
   }
 }
 
@@ -463,5 +470,16 @@ export class MatButtonToggle implements OnInit, OnDestroy {
   // Unregister buttonToggleDispatcherListener on destroy
   ngOnDestroy(): void {
     this._removeUniqueSelectionListener();
+  }
+
+  /**
+   * Marks the button toggle as needing checking for change detection.
+   * This method is exposed because the parent button toggle group will directly
+   * update bound properties of the radio button.
+   */
+  _markForCheck() {
+    // When group value changes, the button will not be notified. Use `markForCheck` to explicit
+    // update button toggle's status
+    this._changeDetectorRef.markForCheck();
   }
 }

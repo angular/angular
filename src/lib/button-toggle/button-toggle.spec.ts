@@ -245,6 +245,17 @@ describe('MatButtonToggle without forms', () => {
 
       buttonToggleNativeElements[0].click();
       expect(buttonToggleInstances[0].checked).toBe(false);
+      expect(buttonToggleInstances[0].disabled).toBe(true);
+
+      testComponent.isGroupDisabled = false;
+      fixture.detectChanges();
+
+      expect(buttonToggleInstances[0].disabled).toBe(false);
+
+      buttonToggleLabelElements[0].click();
+      fixture.detectChanges();
+
+      expect(buttonToggleInstances[0].checked).toBe(true);
     });
 
     it('should update the group value when one of the toggles changes', () => {
