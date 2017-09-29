@@ -15,14 +15,14 @@ import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolv
 import {summaryForJitFileName, summaryForJitName} from './util';
 
 export function serializeSummaries(
-    srcFileName: string, forJitCtx: OutputContext, summaryResolver: SummaryResolver<StaticSymbol>,
-    symbolResolver: StaticSymbolResolver, symbols: ResolvedStaticSymbol[], types: {
+    srcFileName: string, forJitCtx: OutputContext | null,
+    summaryResolver: SummaryResolver<StaticSymbol>, symbolResolver: StaticSymbolResolver,
+    symbols: ResolvedStaticSymbol[], types: {
       summary: CompileTypeSummary,
       metadata: CompileNgModuleMetadata | CompileDirectiveMetadata | CompilePipeMetadata |
           CompileTypeMetadata
     }[]): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
   const toJsonSerializer = new ToJsonSerializer(symbolResolver, summaryResolver, srcFileName);
-  const forJitSerializer = new ForJitSerializer(forJitCtx, symbolResolver);
 
   // for symbols, we use everything except for the class metadata itself
   // (we keep the statics though), as the class metadata is contained in the
@@ -33,18 +33,20 @@ export function serializeSummaries(
 
   // Add type summaries.
   types.forEach(({summary, metadata}) => {
-    forJitSerializer.addSourceType(summary, metadata);
     toJsonSerializer.addSummary(
         {symbol: summary.type.reference, metadata: undefined, type: summary});
   });
-  toJsonSerializer.unprocessedSymbolSummariesBySymbol.forEach((summary) => {
-    if (summaryResolver.isLibraryFile(summary.symbol.filePath) && summary.type) {
-      forJitSerializer.addLibType(summary.type);
-    }
-  });
-
   const {json, exportAs} = toJsonSerializer.serialize();
-  forJitSerializer.serialize(exportAs);
+  if (forJitCtx) {
+    const forJitSerializer = new ForJitSerializer(forJitCtx, symbolResolver);
+    types.forEach(({summary, metadata}) => { forJitSerializer.addSourceType(summary, metadata); });
+    toJsonSerializer.unprocessedSymbolSummariesBySymbol.forEach((summary) => {
+      if (summaryResolver.isLibraryFile(summary.symbol.filePath) && summary.type) {
+        forJitSerializer.addLibType(summary.type);
+      }
+    });
+    forJitSerializer.serialize(exportAs);
+  }
   return {json, exportAs};
 }
 

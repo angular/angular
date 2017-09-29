@@ -300,7 +300,10 @@ describe('ng program', () => {
         export * from './main';
       `,
     });
-    const options = testSupport.createCompilerOptions({allowEmptyCodegenFiles: true});
+    const options = testSupport.createCompilerOptions({
+      allowEmptyCodegenFiles: true,
+      enableSummariesForJit: true,
+    });
     const host = ng.createCompilerHost({options});
     const written = new Map < string, {
       original: ts.SourceFile[]|undefined;
@@ -384,11 +387,11 @@ describe('ng program', () => {
     testSupport.shouldExist('built/main.ngfactory.js');
     testSupport.shouldExist('built/main.ngfactory.d.ts');
     testSupport.shouldExist('built/main.ngsummary.json');
-    testSupport.shouldNotExist('build/node_modules/lib/index.js');
-    testSupport.shouldNotExist('build/node_modules/lib/index.d.ts');
-    testSupport.shouldNotExist('build/node_modules/lib/index.ngfactory.js');
-    testSupport.shouldNotExist('build/node_modules/lib/index.ngfactory.d.ts');
-    testSupport.shouldNotExist('build/node_modules/lib/index.ngsummary.json');
+    testSupport.shouldNotExist('built/node_modules/lib/index.js');
+    testSupport.shouldNotExist('built/node_modules/lib/index.d.ts');
+    testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.js');
+    testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.d.ts');
+    testSupport.shouldNotExist('built/node_modules/lib/index.ngsummary.json');
   });
 
   describe('createSrcToOutPathMapper', () => {
