@@ -873,6 +873,17 @@ describe('MatCheckbox', () => {
           .not.toContain('mat-checkbox-inner-container-no-side-margin');
       }, 1);
     }));
+
+    it('should not add the "name" attribute if it is not passed in', () => {
+      fixture.detectChanges();
+      expect(checkboxInnerContainer.querySelector('input')!.hasAttribute('name')).toBe(false);
+    });
+
+    it('should not add the "value" attribute if it is not passed in', () => {
+      fixture.detectChanges();
+      expect(checkboxInnerContainer.querySelector('input')!.hasAttribute('value')).toBe(false);
+    });
+
   });
 });
 
