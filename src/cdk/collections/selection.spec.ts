@@ -1,4 +1,4 @@
-import {SelectionModel} from './selection';
+import {getMultipleValuesInSingleSelectionError, SelectionModel} from './selection';
 
 
 describe('SelectionModel', () => {
@@ -22,6 +22,10 @@ describe('SelectionModel', () => {
       expect(model.isSelected(2)).toBe(true);
     });
 
+    it('should throw an error if multiple values are passed to model', () => {
+      expect(() => model.select(1, 2)).toThrow(getMultipleValuesInSingleSelectionError());
+    });
+
     it('should only preselect one value', () => {
       model = new SelectionModel(false, [1, 2]);
 
@@ -36,13 +40,29 @@ describe('SelectionModel', () => {
 
     beforeEach(() => model = new SelectionModel(true));
 
-    it('should be able to select multiple options at the same time', () => {
+    it('should be able to select multiple options', () => {
+      const onChangeSpy = jasmine.createSpy('onChange spy');
+
+      model.onChange!.subscribe(onChangeSpy);
       model.select(1);
       model.select(2);
 
       expect(model.selected.length).toBe(2);
       expect(model.isSelected(1)).toBe(true);
       expect(model.isSelected(2)).toBe(true);
+      expect(onChangeSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should be able to select multiple options at the same time', () => {
+      const onChangeSpy = jasmine.createSpy('onChange spy');
+
+      model.onChange!.subscribe(onChangeSpy);
+      model.select(1, 2);
+
+      expect(model.selected.length).toBe(2);
+      expect(model.isSelected(1)).toBe(true);
+      expect(model.isSelected(2)).toBe(true);
+      expect(onChangeSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should be able to preselect multiple options', () => {
