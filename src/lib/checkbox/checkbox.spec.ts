@@ -33,6 +33,7 @@ describe('MatCheckbox', () => {
         CheckboxWithChangeEvent,
         CheckboxWithFormControl,
         CheckboxWithoutLabel,
+        CheckboxWithTabindexAttr,
       ],
       providers: [
         {provide: ViewportRuler, useClass: FakeViewportRuler}
@@ -677,6 +678,20 @@ describe('MatCheckbox', () => {
 
   });
 
+  describe('with native tabindex attribute', () => {
+
+    it('should properly detect native tabindex attribute', async(() => {
+      fixture = TestBed.createComponent(CheckboxWithTabindexAttr);
+      fixture.detectChanges();
+
+      const checkbox = fixture.debugElement
+        .query(By.directive(MatCheckbox)).componentInstance as MatCheckbox;
+
+      expect(checkbox.tabIndex)
+        .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
+    }));
+  });
+
   describe('with multiple checkboxes', () => {
     beforeEach(() => {
       fixture = TestBed.createComponent(MultipleCheckboxes);
@@ -1009,3 +1024,9 @@ class CheckboxWithFormControl {
 class CheckboxWithoutLabel {
   label: string;
 }
+
+/** Test component with the native tabindex attribute. */
+@Component({
+  template: `<mat-checkbox tabindex="5"></mat-checkbox>`
+})
+class CheckboxWithTabindexAttr {}
