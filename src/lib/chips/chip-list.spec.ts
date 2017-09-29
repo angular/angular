@@ -279,7 +279,7 @@ describe('MatChipList', () => {
 
       describe('when the input has focus', () => {
 
-        it('should focus the last chip when press DELETE', () => {
+        it('should not focus the last chip when press DELETE', () => {
           let nativeInput = fixture.nativeElement.querySelector('input');
           let DELETE_EVENT: KeyboardEvent =
               createKeyboardEvent('keydown', DELETE, nativeInput);
@@ -292,8 +292,8 @@ describe('MatChipList', () => {
           chipListInstance._keydown(DELETE_EVENT);
           fixture.detectChanges();
 
-          // It focuses the last chip
-          expect(manager.activeItemIndex).toEqual(chips.length - 1);
+          // It doesn't focus the last chip
+          expect(manager.activeItemIndex).toEqual(-1);
         });
 
         it('should focus the last chip when press BACKSPACE', () => {
@@ -786,7 +786,7 @@ describe('MatChipList', () => {
 
       describe('when the input has focus', () => {
 
-        it('should focus the last chip when press DELETE', () => {
+        it('should not focus the last chip when press DELETE', () => {
           let nativeInput = fixture.nativeElement.querySelector('input');
           let DELETE_EVENT: KeyboardEvent =
             createKeyboardEvent('keydown', DELETE, nativeInput);
@@ -799,8 +799,8 @@ describe('MatChipList', () => {
           chipListInstance._keydown(DELETE_EVENT);
           fixture.detectChanges();
 
-          // It focuses the last chip
-          expect(manager.activeItemIndex).toEqual(chips.length - 1);
+          // It doesn't focus the last chip
+          expect(manager.activeItemIndex).toEqual(-1);
         });
 
         it('should focus the last chip when press BACKSPACE', () => {

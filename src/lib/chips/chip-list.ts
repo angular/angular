@@ -10,7 +10,7 @@ import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {BACKSPACE, DELETE, LEFT_ARROW, RIGHT_ARROW, UP_ARROW} from '@angular/cdk/keycodes';
+import {BACKSPACE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {startWith} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
@@ -432,8 +432,8 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
 
     let isPrevKey = (code === (isRtl ? RIGHT_ARROW : LEFT_ARROW));
     let isNextKey = (code === (isRtl ? LEFT_ARROW : RIGHT_ARROW));
-    let isBackKey = (code === BACKSPACE || code == DELETE || code == UP_ARROW || isPrevKey);
-    // If they are on an empty input and hit backspace/delete/left arrow, focus the last chip
+    let isBackKey = code === BACKSPACE;
+    // If they are on an empty input and hit backspace, focus the last chip
     if (isInputEmpty && isBackKey) {
       this._keyManager.setLastItemActive();
       event.preventDefault();
@@ -504,8 +504,6 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
       if (focusChip) {
         focusChip.focus();
       }
-    } else if (chipsArray.length === 0) {
-      this._focusInput();
     }
 
     // Reset our destroyed index
