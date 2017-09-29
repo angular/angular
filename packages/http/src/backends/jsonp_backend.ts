@@ -20,6 +20,7 @@ import {BrowserJsonp} from './browser_jsonp';
 
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
+const JSONP_ERR_HEADERS_NOT_SUPPORTED = 'JSONP requests do not support headers.';
 
 /**
  * Base class for an in-flight JSONP request.
@@ -52,6 +53,9 @@ export class JSONPConnection implements Connection {
       req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
     if (req.method !== RequestMethod.Get) {
       throw new TypeError(JSONP_ERR_WRONG_METHOD);
+    }
+    if (req.headers.values().length) {
+      throw new TypeError(JSONP_ERR_HEADERS_NOT_SUPPORTED);
     }
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {

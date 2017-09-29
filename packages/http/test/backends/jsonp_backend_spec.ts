@@ -15,6 +15,7 @@ import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../../src/enums';
 import {Request} from '../../src/static_request';
+import {Headers} from '../../src/headers';
 
 let existingScripts: MockBrowserJsonp[] = [];
 
@@ -154,18 +155,28 @@ export function main() {
             });
       });
 
+      it('should throw if request headers are passed', () => {
+        let base = new BaseRequestOptions();
+        let req = new Request(base.merge(new RequestOptions({
+          url: 'https://google.com',
+          headers: new Headers({'Content-Type': 'application/json'})
+        })));
+        expect(() => new JSONPConnection(req, new MockBrowserJsonp()).response.subscribe())
+            .toThrowError();
+      });
+
       it('should respond with data passed to callback',
-         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-           const connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+          const connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
 
-           connection.response.subscribe(res => {
-             expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));
-             async.done();
-           });
+          connection.response.subscribe(res => {
+            expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));
+            async.done();
+          });
 
-           connection.finished(({fake_payload: true, blob_id: 12345}));
-           existingScripts[0].dispatchEvent('load');
-         }));
+          connection.finished(({fake_payload: true, blob_id: 12345}));
+          existingScripts[0].dispatchEvent('load');
+        }));
     });
   });
 }
