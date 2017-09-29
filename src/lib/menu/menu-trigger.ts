@@ -44,7 +44,6 @@ import {MatMenuItem} from './menu-item';
 import {MatMenuPanel} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 
-
 /** Injection token that determines the scroll handling while the menu is open. */
 export const MAT_MENU_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('mat-menu-scroll-strategy');
@@ -130,7 +129,7 @@ export class MatMenuTrigger implements AfterViewInit, OnDestroy {
     this._checkMenu();
 
     this.menu.close.subscribe(reason => {
-      this.closeMenu();
+      this._destroyMenu();
 
       // If a click closed the menu, we should close the entire chain of nested menus.
       if (reason === 'click' && this._parentMenu) {
@@ -182,7 +181,9 @@ export class MatMenuTrigger implements AfterViewInit, OnDestroy {
   openMenu(): void {
     if (!this._menuOpen) {
       this._createOverlay().attach(this._portal);
-      this._closeSubscription = this._menuClosingActions().subscribe(() => this.menu.close.emit());
+      this._closeSubscription = this._menuClosingActions().subscribe(() => {
+        this.menu.close.emit();
+      });
       this._initMenu();
 
       if (this.menu instanceof MatMenu) {
@@ -193,21 +194,25 @@ export class MatMenuTrigger implements AfterViewInit, OnDestroy {
 
   /** Closes the menu. */
   closeMenu(): void {
-    if (this._overlayRef && this.menuOpen) {
-      this._resetMenu();
-      this._overlayRef.detach();
-      this._closeSubscription.unsubscribe();
-      this.menu.close.emit();
-
-      if (this.menu instanceof MatMenu) {
-        this.menu._resetAnimation();
-      }
-    }
+    this.menu.close.emit();
   }
 
   /** Focuses the menu trigger. */
   focus() {
     this._element.nativeElement.focus();
+  }
+
+  /** Closes the menu and does the necessary cleanup. */
+  private _destroyMenu() {
+    if (this._overlayRef && this.menuOpen) {
+      this._resetMenu();
+      this._overlayRef.detach();
+      this._closeSubscription.unsubscribe();
+
+      if (this.menu instanceof MatMenu) {
+        this.menu._resetAnimation();
+      }
+    }
   }
 
   /**
@@ -377,11 +382,11 @@ export class MatMenuTrigger implements AfterViewInit, OnDestroy {
   /** Returns a stream that emits whenever an action that should close the menu occurs. */
   private _menuClosingActions() {
     const backdrop = this._overlayRef!.backdropClick();
-    const parentClose = this._parentMenu ? this._parentMenu.close : observableOf(null);
+    const parentClose = this._parentMenu ? this._parentMenu.close : observableOf();
     const hover = this._parentMenu ? RxChain.from(this._parentMenu.hover())
         .call(filter, active => active !== this._menuItemInstance)
         .call(filter, () => this._menuOpen)
-        .result() : observableOf(null);
+        .result() : observableOf();
 
     return merge(backdrop, parentClose, hover);
   }
