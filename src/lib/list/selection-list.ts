@@ -23,6 +23,7 @@ import {
   Inject,
   Input,
   OnDestroy,
+  OnInit,
   Optional,
   Output,
   QueryList,
@@ -82,8 +83,7 @@ const FOCUSED_STYLE: string = 'mat-list-item-focus';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatListOption extends _MatListOptionMixinBase
-    implements AfterContentInit, OnDestroy, FocusableOption, CanDisableRipple {
-
+    implements AfterContentInit, OnInit, OnDestroy, FocusableOption, CanDisableRipple {
   private _lineSetter: MatLineSetter;
   private _selected: boolean = false;
   private _disabled: boolean = false;
@@ -127,6 +127,12 @@ export class MatListOption extends _MatListOptionMixinBase
               @Optional() @Inject(forwardRef(() => MatSelectionList))
               public selectionList: MatSelectionList) {
     super();
+  }
+
+  ngOnInit() {
+    if (this.selected) {
+      this.selectionList.selectedOptions.select(this);
+    }
   }
 
   ngAfterContentInit() {

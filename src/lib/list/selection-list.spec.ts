@@ -219,6 +219,34 @@ describe('MatSelectionList', () => {
     });
   });
 
+  describe('with list option selected', () => {
+    let fixture: ComponentFixture<SelectionListWithListOptions>;
+    let listItemEl: DebugElement;
+    let selectionList: DebugElement;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MdListModule],
+        declarations: [SelectionListWithSelecedOption],
+      });
+
+      TestBed.compileComponents();
+    }));
+
+    beforeEach(async(() => {
+      fixture = TestBed.createComponent(SelectionListWithSelecedOption);
+      listItemEl = fixture.debugElement.query(By.directive(MdListOption));
+      selectionList = fixture.debugElement.query(By.directive(MdSelectionList));
+      fixture.detectChanges();
+    }));
+
+    it('should set its initial selected state in the selectedOptions', () => {
+      let optionEl = listItemEl.injector.get(MdListOption);
+      let selectedOptions = selectionList.componentInstance.selectedOptions;
+      expect(selectedOptions.isSelected(optionEl)).toBeTruthy();
+    });
+  });
+
   describe('with single option', () => {
     let fixture: ComponentFixture<SelectionListWithOnlyOneOption>;
     let listOption: DebugElement;
@@ -454,6 +482,13 @@ class SelectionListWithListDisabled {
   `})
 class SelectionListWithDisabledOption {
   disableItem: boolean = false;
+}
+
+@Component({template: `
+  <mat-selection-list>
+    <md-list-option [selected]="true">Item</md-list-option>
+  </mat-selection-list>`})
+class SelectionListWithSelecedOption {
 }
 
 @Component({template: `
