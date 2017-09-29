@@ -142,6 +142,33 @@ describe('MatSlider without forms', () => {
       expect(sliderNativeElement.classList).not.toContain('mat-slider-sliding');
     });
 
+    it('should not change value without emitting a change event', () => {
+      const onChangeSpy = jasmine.createSpy('slider onChange');
+
+      sliderInstance.change.subscribe(onChangeSpy);
+      sliderInstance.value = 50;
+      fixture.detectChanges();
+
+      dispatchSlideStartEvent(sliderNativeElement, 0, gestureConfig);
+      fixture.detectChanges();
+
+      dispatchSlideEvent(sliderNativeElement, 10, gestureConfig);
+      fixture.detectChanges();
+
+      // In some situations, HammerJS will fire a second "slidestart" event because the user
+      // holds the thumb and drags it around. This would mean that the `_valueOnSlideStart`
+      // value will be updated to the actual end value. Causing the slider to think that the value
+      // didn't change at all.
+      dispatchSlideStartEvent(sliderNativeElement, 10, gestureConfig);
+      fixture.detectChanges();
+
+      dispatchSlideEndEvent(sliderNativeElement, 10, gestureConfig);
+      fixture.detectChanges();
+
+      expect(sliderNativeElement.classList).not.toContain('mat-slider-sliding');
+      expect(onChangeSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should reset active state upon blur', () => {
       sliderInstance._isActive = true;
 

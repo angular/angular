@@ -492,7 +492,7 @@ export class MatSlider extends _MatSliderMixinBase
   }
 
   _onSlideStart(event: HammerInput | null) {
-    if (this.disabled) {
+    if (this.disabled || this._isSliding) {
       return;
     }
 
