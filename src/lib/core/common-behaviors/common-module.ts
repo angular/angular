@@ -7,7 +7,6 @@
  */
 
 import {NgModule, InjectionToken, Optional, Inject, isDevMode} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
 import {BidiModule} from '@angular/cdk/bidi';
 import {CompatibilityModule} from '../compatibility/compatibility';
 
@@ -33,11 +32,11 @@ export class MatCommonModule {
   /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
   private _hasDoneGlobalChecks = false;
 
-  constructor(
-    @Optional() @Inject(DOCUMENT) private _document: any,
-    @Optional() @Inject(MATERIAL_SANITY_CHECKS) _sanityChecksEnabled: boolean) {
+  /** Reference to the global `document` object. */
+  private _document = typeof document === 'object' && document ? document : null;
 
-    if (_sanityChecksEnabled && !this._hasDoneGlobalChecks && _document && isDevMode()) {
+  constructor(@Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecksEnabled: boolean) {
+    if (sanityChecksEnabled && !this._hasDoneGlobalChecks && isDevMode()) {
       this._checkDoctype();
       this._checkTheme();
       this._hasDoneGlobalChecks = true;
@@ -45,7 +44,7 @@ export class MatCommonModule {
   }
 
   private _checkDoctype(): void {
-    if (!this._document.doctype) {
+    if (this._document && !this._document.doctype) {
       console.warn(
         'Current document does not have a doctype. This may cause ' +
         'some Angular Material components not to behave as expected.'
@@ -54,7 +53,7 @@ export class MatCommonModule {
   }
 
   private _checkTheme(): void {
-    if (typeof getComputedStyle === 'function') {
+    if (this._document && typeof getComputedStyle === 'function') {
       const testElement = this._document.createElement('div');
 
       testElement.classList.add('mat-theme-loaded-marker');
