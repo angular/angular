@@ -914,6 +914,154 @@ describe('StaticReflector', () => {
         .toEqual([{data: {c: [3]}}]);
   });
 
+  // Regression #18170
+  it('should evaluate enums and statics that are 0', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {MyEnum, MyClass} from './consts';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: MyEnum.Value
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 0,
+      }
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 0}});
+  });
+
+  // Regression #18170
+  it('should agressively evaluate enums selects', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {E} from './indirect';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: E.Value,
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/indirect.ts'] = `
+      import {MyEnum} from './consts';
+
+      export const E = MyEnum;
+    `,
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 1,
+      }
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 1}});
+  });
+
+  // Regression #18170
+  it('should agressively evaluate array indexes', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {E} from './indirect';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: E[E[E[1]]],
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/indirect.ts'] = `
+      import {A} from './consts';
+
+      export const E = A;
+    `,
+    data['/tmp/src/consts.ts'] = `
+      export const A = [0, 1];
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 1}});
+  });
 });
 
 const DEFAULT_TEST_DATA: {[key: string]: any} = {

@@ -444,7 +444,7 @@ export class StaticReflector implements CompileReflector {
           } else {
             const staticSymbol = expression;
             const declarationValue = resolveReferenceValue(staticSymbol);
-            if (declarationValue) {
+            if (declarationValue != null) {
               return simplifyInContext(staticSymbol, declarationValue, depth + 1, references);
             } else {
               return staticSymbol;
@@ -522,8 +522,8 @@ export class StaticReflector implements CompileReflector {
                 }
                 return null;
               case 'index':
-                let indexTarget = simplify(expression['expression']);
-                let index = simplify(expression['index']);
+                let indexTarget = simplifyInContext(context, expression['expression'], depth, 0);
+                let index = simplifyInContext(context, expression['index'], depth, 0);
                 if (indexTarget && isPrimitive(index)) return indexTarget[index];
                 return null;
               case 'select':
@@ -535,7 +535,7 @@ export class StaticReflector implements CompileReflector {
                   selectContext =
                       self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
                   const declarationValue = resolveReferenceValue(selectContext);
-                  if (declarationValue) {
+                  if (declarationValue != null) {
                     return simplifyInContext(
                         selectContext, declarationValue, depth + 1, references);
                   } else {
