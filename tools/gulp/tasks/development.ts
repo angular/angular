@@ -25,6 +25,9 @@ const appVendors = [
 /** Glob that matches all required vendors for the demo-app. */
 const vendorGlob = `+(${appVendors.join('|')})/**/*.+(html|css|js|map)`;
 
+/** Glob that matches all assets that need to be copied to the output. */
+const assetsGlob = join(appDir, `**/*.+(html|css)`);
+
 task(':watch:devapp', () => {
   watchFiles(join(appDir, '**/*.ts'), [':build:devapp:ts']);
   watchFiles(join(appDir, '**/*.scss'), [':build:devapp:scss']);
@@ -44,7 +47,8 @@ const tsconfigPath = join(appDir, 'tsconfig-build.json');
 
 task(':build:devapp:ts', tsBuildTask(tsconfigPath));
 task(':build:devapp:scss', buildScssTask(outDir, appDir));
-task(':build:devapp:assets', copyTask(appDir, outDir));
+task(':build:devapp:assets', copyTask(assetsGlob, outDir));
+
 task(':serve:devapp', serverTask(outDir, true));
 
 // The themes for the demo-app are built by using the SCSS mixins from Material.

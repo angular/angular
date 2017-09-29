@@ -4,10 +4,13 @@ import {execNodeTask} from '../util/task_helpers';
 import {join} from 'path';
 import {buildConfig, sequenceTask} from 'material2-build-tools';
 
-const {outputDir} = buildConfig;
+const {outputDir, packagesDir} = buildConfig;
 
 /** Path to the directory where all releases are living. */
 const releasesDir = join(outputDir, 'releases');
+
+/** Path to the demo-app source directory. */
+const demoAppSource = join(packagesDir, 'demo-app');
 
 /** Path to the demo-app output directory. */
 const demoAppOut = join(outputDir, 'packages', 'demo-app');
@@ -17,9 +20,8 @@ const tsconfigFile = join(demoAppOut, 'tsconfig-aot.json');
 
 /** Builds the demo-app and material. To be able to run NGC, apply the metadata workaround. */
 task('aot:deps', sequenceTask(
-  'build:devapp',
   ['material:build-release', 'cdk:build-release', 'material-moment-adapter:build-release'],
-  'aot:copy-release'
+  [':build:devapp:assets', ':build:devapp:scss', 'aot:copy-devapp', 'aot:copy-release'],
 ));
 
 // As a workaround for https://github.com/angular/angular/issues/12249, we need to
@@ -30,6 +32,10 @@ task('aot:copy-release', () => {
   copySync(
       join(releasesDir, 'material-moment-adapter'), join(demoAppOut, 'material-moment-adapter'));
 });
+
+// // As a workaround for https://github.com/angular/angular/issues/12249, we need to
+// copy the demo-app sources to distribution and run the NGC inside of the dist folder.
+task('aot:copy-devapp', () => copySync(demoAppSource, demoAppOut));
 
 /** Build the demo-app and a release to confirm that the library is AOT-compatible. */
 task('aot:build', sequenceTask('clean', 'aot:deps', 'aot:compiler-cli'));
