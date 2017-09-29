@@ -41,6 +41,7 @@ describe('MatChipList', () => {
         InputChipList,
         MultiSelectionChipList,
         FalsyValueChipList,
+        SelectedChipList
       ],
       providers: [{
         provide: Directionality, useFactory: () => {
@@ -60,6 +61,21 @@ describe('MatChipList', () => {
 
       it('should add the `mat-chip-list` class', () => {
         expect(chipListNativeElement.classList).toContain('mat-chip-list');
+      });
+    });
+
+    describe('with selected chips', () => {
+      beforeEach(async(() => {
+        fixture = TestBed.createComponent(SelectedChipList);
+        fixture.detectChanges();
+      }));
+
+      it('should not override chips selected', () => {
+        const instanceChips = fixture.componentInstance.chips.toArray();
+
+        expect(instanceChips[0].selected).toBe(true, 'Expected first option to be selected.');
+        expect(instanceChips[1].selected).toBe(false, 'Expected second option to be not selected.');
+        expect(instanceChips[2].selected).toBe(true, 'Expected third option to be selected.');
       });
     });
 
@@ -1026,4 +1042,22 @@ class FalsyValueChipList {
   ];
   control = new FormControl();
   @ViewChildren(MatChip) chips: QueryList<MatChip>;
+}
+
+@Component({
+  template: `
+    <mat-chip-list>
+        <mat-chip *ngFor="let food of foods" [value]="food.value" [selected]="food.selected">
+            {{ food.viewValue }}
+        </mat-chip>
+    </mat-chip-list>
+  `
+})
+class SelectedChipList {
+  foods: any[] = [
+    { value: 0, viewValue: 'Steak', selected: true },
+    { value: 1, viewValue: 'Pizza', selected: false },
+    { value: 2, viewValue: 'Pasta', selected: true },
+  ];
+  @ViewChildren(MdChip) chips: QueryList<MdChip>;
 }
