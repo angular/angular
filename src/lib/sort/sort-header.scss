@@ -54,6 +54,7 @@ $mat-sort-header-arrow-transition: 225ms cubic-bezier(0.4, 0, 0.2, 1);
   align-items: center;
   position: absolute;
   top: 0;
+  left: 0;
   transition: $mat-sort-header-arrow-transition;
 }
 
@@ -72,6 +73,7 @@ $mat-sort-header-arrow-transition: 225ms cubic-bezier(0.4, 0, 0.2, 1);
   height: $mat-sort-header-arrow-thickness;
   transition: $mat-sort-header-arrow-transition;
   position: absolute;
+  top: 0;
 }
 
 .mat-sort-header-pointer-left {
