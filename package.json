@@ -64,7 +64,7 @@
     "dgeni-packages": "^0.19.1",
     "firebase": "^4.0.0",
     "firebase-admin": "^5.0.0",
-    "firebase-tools": "^3.9.0",
+    "firebase-tools": "^3.11.0",
     "fs-extra": "^3.0.1",
     "glob": "^7.1.2",
     "google-closure-compiler": "20170409.0.0",

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Load the retry-call utility function.
-source ./scripts/ci/sources/retry-call.sh
+source ./scripts/retry-call.sh
 
 # Variable the specifies how often the wait script should be invoked if it fails.
 WAIT_RETRIES=2
