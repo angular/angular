@@ -51,7 +51,7 @@ describe('NgCompilerHost', () => {
   } = {}) {
     return new TsCompilerAotCompilerTypeCheckHostAdapter(
         ['/tmp/index.ts'], options, ngHost, new MetadataCollector(), codeGenerator,
-        librarySummaries);
+        new Map(librarySummaries.map(entry => [entry.fileName, entry] as[string, LibrarySummary])));
   }
 
   describe('fileNameToModuleName', () => {

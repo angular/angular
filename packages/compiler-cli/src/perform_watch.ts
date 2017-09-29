@@ -13,27 +13,7 @@ import * as ts from 'typescript';
 import {Diagnostics, ParsedConfiguration, PerformCompilationResult, exitCodeFromResult, performCompilation, readConfiguration} from './perform_compile';
 import * as api from './transformers/api';
 import {createCompilerHost} from './transformers/entry_points';
-
-const ChangeDiagnostics = {
-  Compilation_complete_Watching_for_file_changes: {
-    category: ts.DiagnosticCategory.Message,
-    messageText: 'Compilation complete. Watching for file changes.',
-    code: api.DEFAULT_ERROR_CODE,
-    source: api.SOURCE
-  },
-  Compilation_failed_Watching_for_file_changes: {
-    category: ts.DiagnosticCategory.Message,
-    messageText: 'Compilation failed. Watching for file changes.',
-    code: api.DEFAULT_ERROR_CODE,
-    source: api.SOURCE
-  },
-  File_change_detected_Starting_incremental_compilation: {
-    category: ts.DiagnosticCategory.Message,
-    messageText: 'File change detected. Starting incremental compilation.',
-    code: api.DEFAULT_ERROR_CODE,
-    source: api.SOURCE
-  },
-};
+import {createMessageDiagnostic} from './transformers/util';
 
 function totalCompilationTimeDiagnostic(timeInMillis: number): api.Diagnostic {
   let duration: string;
@@ -231,9 +211,11 @@ export function performWatchCompilation(host: PerformWatchHost):
     const exitCode = exitCodeFromResult(compileResult.diagnostics);
     if (exitCode == 0) {
       cachedProgram = compileResult.program;
-      host.reportDiagnostics([ChangeDiagnostics.Compilation_complete_Watching_for_file_changes]);
+      host.reportDiagnostics(
+          [createMessageDiagnostic('Compilation complete. Watching for file changes.')]);
     } else {
-      host.reportDiagnostics([ChangeDiagnostics.Compilation_failed_Watching_for_file_changes]);
+      host.reportDiagnostics(
+          [createMessageDiagnostic('Compilation failed. Watching for file changes.')]);
     }
 
     return compileResult.diagnostics;
@@ -285,7 +267,7 @@ export function performWatchCompilation(host: PerformWatchHost):
   function recompile() {
     timerHandleForRecompilation = undefined;
     host.reportDiagnostics(
-        [ChangeDiagnostics.File_change_detected_Starting_incremental_compilation]);
+        [createMessageDiagnostic('File change detected. Starting incremental compilation.')]);
     doCompilation();
   }
 }

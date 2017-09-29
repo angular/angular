@@ -18,7 +18,13 @@ import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, D
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
-import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from './util';
+import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, tsStructureIsReused} from './util';
+
+/**
+ * Maximum number of files that are emitable via calling ts.Program.emit
+ * passing individual targetSourceFiles.
+ */
+const MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT = 20;
 
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
@@ -32,18 +38,20 @@ const defaultEmitCallback: TsEmitCallback =
         program.emit(
             targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
 
-
 class AngularCompilerProgram implements Program {
   private metadataCache: LowerMetadataCache;
-  private oldProgramLibrarySummaries: LibrarySummary[] = [];
+  private oldProgramLibrarySummaries: Map<string, LibrarySummary>|undefined;
+  private oldProgramEmittedGeneratedFiles: Map<string, GeneratedFile>|undefined;
   // Note: This will be cleared out as soon as we create the _tsProgram
   private oldTsProgram: ts.Program|undefined;
   private emittedLibrarySummaries: LibrarySummary[]|undefined;
+  private emittedGeneratedFiles: GeneratedFile[]|undefined;
 
   // Lazily initialized fields
   private _typeCheckHost: TypeCheckHost;
   private _compiler: AotCompiler;
   private _tsProgram: ts.Program;
+  private _changedNonGenFileNames: string[]|undefined;
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
   private _programWithStubs: ts.Program|undefined;
@@ -60,6 +68,7 @@ class AngularCompilerProgram implements Program {
     this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
     if (oldProgram) {
       this.oldProgramLibrarySummaries = oldProgram.getLibrarySummaries();
+      this.oldProgramEmittedGeneratedFiles = oldProgram.getEmittedGeneratedFiles();
     }
 
     if (options.flatModuleOutFile) {
@@ -81,10 +90,26 @@ class AngularCompilerProgram implements Program {
     this.metadataCache = new LowerMetadataCache({quotedNames: true}, !!options.strictMetadataEmit);
   }
 
-  getLibrarySummaries(): LibrarySummary[] {
-    const result = [...this.oldProgramLibrarySummaries];
+  getLibrarySummaries(): Map<string, LibrarySummary> {
+    const result = new Map<string, LibrarySummary>();
+    if (this.oldProgramLibrarySummaries) {
+      this.oldProgramLibrarySummaries.forEach((summary, fileName) => result.set(fileName, summary));
+    }
     if (this.emittedLibrarySummaries) {
-      result.push(...this.emittedLibrarySummaries);
+      this.emittedLibrarySummaries.forEach(
+          (summary, fileName) => result.set(summary.fileName, summary));
+    }
+    return result;
+  }
+
+  getEmittedGeneratedFiles(): Map<string, GeneratedFile> {
+    const result = new Map<string, GeneratedFile>();
+    if (this.oldProgramEmittedGeneratedFiles) {
+      this.oldProgramEmittedGeneratedFiles.forEach(
+          (genFile, fileName) => result.set(fileName, genFile));
+    }
+    if (this.emittedGeneratedFiles) {
+      this.emittedGeneratedFiles.forEach((genFile) => result.set(genFile.genFileUrl, genFile));
     }
     return result;
   }
@@ -142,6 +167,7 @@ class AngularCompilerProgram implements Program {
         customTransformers?: CustomTransformers,
         emitCallback?: TsEmitCallback
       } = {}): ts.EmitResult {
+    const emitStart = Date.now();
     if (emitFlags & EmitFlags.I18nBundle) {
       const locale = this.options.i18nOutLocale || null;
       const file = this.options.i18nOutFile || null;
@@ -153,7 +179,7 @@ class AngularCompilerProgram implements Program {
         0) {
       return {emitSkipped: true, diagnostics: [], emittedFiles: []};
     }
-    const {genFiles, genDiags} = this.generateFilesForEmit(emitFlags);
+    let {genFiles, genDiags} = this.generateFilesForEmit(emitFlags);
     if (genDiags.length) {
       return {
         diagnostics: genDiags,
@@ -161,11 +187,11 @@ class AngularCompilerProgram implements Program {
         emittedFiles: [],
       };
     }
-    const emittedLibrarySummaries = this.emittedLibrarySummaries = [];
-
+    this.emittedGeneratedFiles = genFiles;
     const outSrcMapping: Array<{sourceFile: ts.SourceFile, outFileName: string}> = [];
     const genFileByFileName = new Map<string, GeneratedFile>();
     genFiles.forEach(genFile => genFileByFileName.set(genFile.genFileUrl, genFile));
+    this.emittedLibrarySummaries = [];
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
           const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
@@ -176,7 +202,8 @@ class AngularCompilerProgram implements Program {
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
         };
-
+    const tsCustomTansformers = this.calculateTransforms(genFileByFileName, customTransformers);
+    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
     const augmentedReferences = new Map<ts.SourceFile, ts.FileReference[]>();
@@ -187,16 +214,44 @@ class AngularCompilerProgram implements Program {
         sourceFile.referencedFiles = originalReferences;
       }
     }
+    const genTsFiles: GeneratedFile[] = [];
+    const genJsonFiles: GeneratedFile[] = [];
+    genFiles.forEach(gf => {
+      if (gf.stmts) {
+        genTsFiles.push(gf);
+      }
+      if (gf.source) {
+        genJsonFiles.push(gf);
+      }
+    });
     let emitResult: ts.EmitResult;
+    let emittedUserTsCount: number;
     try {
-      emitResult = emitCallback({
-        program: this.tsProgram,
-        host: this.host,
-        options: this.options,
-        writeFile: writeTsFile,
-        emitOnlyDtsFiles: (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS,
-        customTransformers: this.calculateTransforms(genFiles, customTransformers)
-      });
+      const emitChangedFilesOnly = this._changedNonGenFileNames &&
+          this._changedNonGenFileNames.length < MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT;
+      if (emitChangedFilesOnly) {
+        const fileNamesToEmit =
+            [...this._changedNonGenFileNames !, ...genTsFiles.map(gf => gf.genFileUrl)];
+        emitResult = mergeEmitResults(
+            fileNamesToEmit.map((fileName) => emitResult = emitCallback({
+                                  program: this.tsProgram,
+                                  host: this.host,
+                                  options: this.options,
+                                  writeFile: writeTsFile, emitOnlyDtsFiles,
+                                  customTransformers: tsCustomTansformers,
+                                  targetSourceFile: this.tsProgram.getSourceFile(fileName),
+                                })));
+        emittedUserTsCount = this._changedNonGenFileNames !.length;
+      } else {
+        emitResult = emitCallback({
+          program: this.tsProgram,
+          host: this.host,
+          options: this.options,
+          writeFile: writeTsFile, emitOnlyDtsFiles,
+          customTransformers: tsCustomTansformers
+        });
+        emittedUserTsCount = this.tsProgram.getSourceFiles().length - genTsFiles.length;
+      }
     } finally {
       // Restore the references back to the augmented value to ensure that the
       // checks that TypeScript makes for project structure reuse will succeed.
@@ -207,9 +262,9 @@ class AngularCompilerProgram implements Program {
 
     if (!outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
+      emitResult.diagnostics.push(createMessageDiagnostic(`Emitted no files.`));
       return emitResult;
     }
-
 
     let sampleSrcFileName: string|undefined;
     let sampleOutFileName: string|undefined;
@@ -220,22 +275,31 @@ class AngularCompilerProgram implements Program {
     const srcToOutPath =
         createSrcToOutPathMapper(this.options.outDir, sampleSrcFileName, sampleOutFileName);
     if (emitFlags & EmitFlags.Codegen) {
-      genFiles.forEach(gf => {
-        if (gf.source) {
-          const outFileName = srcToOutPath(gf.genFileUrl);
-          this.writeFile(outFileName, gf.source, false, undefined, gf);
-        }
+      genJsonFiles.forEach(gf => {
+        const outFileName = srcToOutPath(gf.genFileUrl);
+        this.writeFile(outFileName, gf.source !, false, undefined, gf);
       });
     }
+    let metadataJsonCount = 0;
     if (emitFlags & EmitFlags.Metadata) {
       this.tsProgram.getSourceFiles().forEach(sf => {
         if (!sf.isDeclarationFile && !GENERATED_FILES.test(sf.fileName)) {
+          metadataJsonCount++;
           const metadata = this.metadataCache.getMetadata(sf);
           const metadataText = JSON.stringify([metadata]);
           const outFileName = srcToOutPath(sf.fileName.replace(/\.ts$/, '.metadata.json'));
           this.writeFile(outFileName, metadataText, false, undefined, undefined, [sf]);
         }
       });
+    }
+    const emitEnd = Date.now();
+    if (this.options.diagnostics) {
+      emitResult.diagnostics.push(createMessageDiagnostic([
+        `Emitted in ${emitEnd - emitStart}ms`,
+        `- ${emittedUserTsCount} user ts files`,
+        `- ${genTsFiles.length} generated ts files`,
+        `- ${genJsonFiles.length + metadataJsonCount} generated json files`,
+      ].join('\n')));
     }
     return emitResult;
   }
@@ -281,8 +345,9 @@ class AngularCompilerProgram implements Program {
         (this._semanticDiagnostics = this.generateSemanticDiagnostics());
   }
 
-  private calculateTransforms(genFiles: GeneratedFile[], customTransformers?: CustomTransformers):
-      ts.CustomTransformers {
+  private calculateTransforms(
+      genFiles: Map<string, GeneratedFile>,
+      customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (!this.options.disableExpressionLowering) {
       beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache));
@@ -353,6 +418,16 @@ class AngularCompilerProgram implements Program {
         sourceFiles.push(sf.fileName);
       }
     });
+    if (oldTsProgram) {
+      // TODO(tbosch): if one of the files contains a `const enum`
+      // always emit all files!
+      const changedNonGenFileNames = this._changedNonGenFileNames = [] as string[];
+      tmpProgram.getSourceFiles().forEach(sf => {
+        if (!GENERATED_FILES.test(sf.fileName) && oldTsProgram.getSourceFile(sf.fileName) !== sf) {
+          changedNonGenFileNames.push(sf.fileName);
+        }
+      });
+    }
     return {tmpProgram, sourceFiles, hostAdapter, rootNames};
   }
 
@@ -418,7 +493,14 @@ class AngularCompilerProgram implements Program {
       if (!(emitFlags & EmitFlags.Codegen)) {
         return {genFiles: [], genDiags: []};
       }
-      const genFiles = this.compiler.emitAllImpls(this.analyzedModules);
+      let genFiles = this.compiler.emitAllImpls(this.analyzedModules);
+      if (this.oldProgramEmittedGeneratedFiles) {
+        const oldProgramEmittedGeneratedFiles = this.oldProgramEmittedGeneratedFiles;
+        genFiles = genFiles.filter(genFile => {
+          const oldGenFile = oldProgramEmittedGeneratedFiles.get(genFile.genFileUrl);
+          return !oldGenFile || !genFile.isEquivalent(oldGenFile);
+        });
+      }
       return {genFiles, genDiags: []};
     } catch (e) {
       // TODO(tbosch): check whether we can actually have syntax errors here,
@@ -648,4 +730,16 @@ export function i18nGetExtension(formatName: string): string {
   }
 
   throw new Error(`Unsupported format "${formatName}"`);
+}
+
+function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
+  const diagnostics: ts.Diagnostic[] = [];
+  let emitSkipped = true;
+  const emittedFiles: string[] = [];
+  for (const er of emitResults) {
+    diagnostics.push(...er.diagnostics);
+    emitSkipped = emitSkipped || er.emitSkipped;
+    emittedFiles.push(...er.emittedFiles);
+  }
+  return {diagnostics, emitSkipped, emittedFiles};
 }

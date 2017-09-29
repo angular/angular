@@ -19,8 +19,10 @@ import {ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {formatDiagnostics as formatDiagnosticsOrig} from './perform_compile';
+import {Program as ProgramOrig} from './transformers/api';
 import {createCompilerHost as createCompilerOrig} from './transformers/compiler_host';
 import {createProgram as createProgramOrig} from './transformers/program';
+
 
 // Interfaces from ./transformers/api;
 export interface Diagnostic {
@@ -92,12 +94,6 @@ export interface TsEmitArguments {
 
 export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
 
-export interface LibrarySummary {
-  fileName: string;
-  text: string;
-  sourceFile?: ts.SourceFile;
-}
-
 export interface Program {
   getTsProgram(): ts.Program;
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken): ts.Diagnostic[];
@@ -116,7 +112,6 @@ export interface Program {
     customTransformers?: CustomTransformers,
     emitCallback?: TsEmitCallback
   }): ts.EmitResult;
-  getLibrarySummaries(): LibrarySummary[];
 }
 
 // Wrapper for createProgram.
@@ -124,7 +119,7 @@ export function createProgram(
     {rootNames, options, host, oldProgram}:
         {rootNames: string[], options: CompilerOptions, host: CompilerHost, oldProgram?: Program}):
     Program {
-  return createProgramOrig({rootNames, options, host, oldProgram});
+  return createProgramOrig({rootNames, options, host, oldProgram: oldProgram as ProgramOrig});
 }
 
 // Wrapper for createCompilerHost.

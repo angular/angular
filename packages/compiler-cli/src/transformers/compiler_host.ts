@@ -58,7 +58,6 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   private generatedSourceFiles = new Map<string, GenSourceFile>();
   private generatedCodeFor = new Map<string, string[]>();
   private emitter = new TypeScriptEmitter();
-  private librarySummaries = new Map<string, LibrarySummary>();
   getCancellationToken: () => ts.CancellationToken;
   getDefaultLibLocation: () => string;
   trace: (s: string) => void;
@@ -68,9 +67,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   constructor(
       private rootFiles: string[], options: CompilerOptions, context: CompilerHost,
       private metadataProvider: MetadataProvider, private codeGenerator: CodeGenerator,
-      librarySummaries: LibrarySummary[]) {
+      private librarySummaries = new Map<string, LibrarySummary>()) {
     super(options, context);
-    librarySummaries.forEach(summary => this.librarySummaries.set(summary.fileName, summary));
     this.moduleResolutionCache = ts.createModuleResolutionCache(
         this.context.getCurrentDirectory !(), this.context.getCanonicalFileName.bind(this.context));
     const basePath = this.options.basePath !;

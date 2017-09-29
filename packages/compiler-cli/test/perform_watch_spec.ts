@@ -86,10 +86,9 @@ describe('perform watch', () => {
 
     // trigger a single file change
     // -> all other files should be cached
-    fs.unlinkSync(mainNgFactory);
     host.triggerFileChange(FileChangeEvent.Change, utilTsPath);
+    expectNoDiagnostics(config.options, host.diagnostics);
 
-    expect(fs.existsSync(mainNgFactory)).toBe(true);
     expect(fileExistsSpy !).not.toHaveBeenCalledWith(mainTsPath);
     expect(fileExistsSpy !).toHaveBeenCalledWith(utilTsPath);
     expect(getSourceFileSpy !).not.toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
@@ -97,11 +96,10 @@ describe('perform watch', () => {
 
     // trigger a folder change
     // -> nothing should be cached
-    fs.unlinkSync(mainNgFactory);
     host.triggerFileChange(
         FileChangeEvent.CreateDeleteDir, path.resolve(testSupport.basePath, 'src'));
+    expectNoDiagnostics(config.options, host.diagnostics);
 
-    expect(fs.existsSync(mainNgFactory)).toBe(true);
     expect(fileExistsSpy !).toHaveBeenCalledWith(mainTsPath);
     expect(fileExistsSpy !).toHaveBeenCalledWith(utilTsPath);
     expect(getSourceFileSpy !).toHaveBeenCalledWith(mainTsPath, ts.ScriptTarget.ES5);
