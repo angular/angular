@@ -371,7 +371,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   @Input('aria-label') ariaLabel: string = '';
 
   /** Input that can be used to specify the `aria-labelledby` attribute. */
-  @Input('aria-labelledby') ariaLabelledby: string = '';
+  @Input('aria-labelledby') ariaLabelledby: string;
 
   /** Unique id of the element. */
   @Input()

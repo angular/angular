@@ -1802,6 +1802,15 @@ describe('MatSelect', () => {
         expect(select.getAttribute('aria-labelledby')).toBe('myLabelId');
       });
 
+      it('should not have aria-labelledby in the DOM if it`s not specified', async(() => {
+
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          expect(select.hasAttribute('aria-labelledby')).toBeFalsy();
+        });
+      }));
+
       it('should set the tabindex of the select to 0 by default', () => {
         expect(select.getAttribute('tabindex')).toEqual('0');
       });
