@@ -9,13 +9,14 @@
 import {Injector} from '@angular/core';
 import {AsyncTestCompleter, SpyObject, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+
 import {BrowserJsonp} from '../../src/backends/browser_jsonp';
 import {JSONPBackend, JSONPConnection} from '../../src/backends/jsonp_backend';
 import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../../src/enums';
-import {Request} from '../../src/static_request';
 import {Headers} from '../../src/headers';
+import {Request} from '../../src/static_request';
 
 let existingScripts: MockBrowserJsonp[] = [];
 
@@ -166,17 +167,17 @@ export function main() {
       });
 
       it('should respond with data passed to callback',
-        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-          const connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
 
-          connection.response.subscribe(res => {
-            expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));
-            async.done();
-          });
+           connection.response.subscribe(res => {
+             expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));
+             async.done();
+           });
 
-          connection.finished(({fake_payload: true, blob_id: 12345}));
-          existingScripts[0].dispatchEvent('load');
-        }));
+           connection.finished(({fake_payload: true, blob_id: 12345}));
+           existingScripts[0].dispatchEvent('load');
+         }));
     });
   });
 }
