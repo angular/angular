@@ -25,7 +25,7 @@ export function moduleProvideDef(
   // lowered the expression and then stopped evaluating it,
   // i.e. also didn't unwrap it.
   value = resolveForwardRef(value);
-  const depDefs = splitDepsDsl(deps);
+  const depDefs = splitDepsDsl(deps, token.name);
   return {
     // will bet set by the module definition
     index: -1,
