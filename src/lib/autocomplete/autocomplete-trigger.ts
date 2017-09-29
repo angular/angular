@@ -296,8 +296,10 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   _handleFocus(): void {
-    this._attachOverlay();
-    this._floatPlaceholder(true);
+    if (!this._element.nativeElement.readOnly) {
+      this._attachOverlay();
+      this._floatPlaceholder(true);
+    }
   }
 
   /**

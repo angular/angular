@@ -118,6 +118,20 @@ describe('MatAutocomplete', () => {
       });
     }));
 
+    it('should not open the panel on focus if the input is readonly', async(() => {
+      const trigger = fixture.componentInstance.trigger;
+      input.readOnly = true;
+      fixture.detectChanges();
+
+      expect(trigger.panelOpen).toBe(false, 'Expected panel state to start out closed.');
+      dispatchFakeEvent(input, 'focusin');
+
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(trigger.panelOpen).toBe(false, 'Expected panel to stay closed.');
+      });
+    }));
+
     it('should open the panel programmatically', async(() => {
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected panel state to start out closed.`);
