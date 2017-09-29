@@ -13,10 +13,15 @@ import * as ts from 'typescript';
 
 import * as api from './transformers/api';
 import * as ng from './transformers/entry_points';
+import {createMessageDiagnostic} from './transformers/util';
 
 const TS_EXT = /\.ts$/;
 
 export type Diagnostics = Array<ts.Diagnostic|api.Diagnostic>;
+
+export function filterErrorsAndWarnings(diagnostics: Diagnostics): Diagnostics {
+  return diagnostics.filter(d => d.category !== ts.DiagnosticCategory.Message);
+}
 
 export function formatDiagnostics(options: api.CompilerOptions, diags: Diagnostics): string {
   if (diags && diags.length) {
@@ -123,7 +128,7 @@ export interface PerformCompilationResult {
 }
 
 export function exitCodeFromResult(diags: Diagnostics | undefined): number {
-  if (!diags || diags.length === 0) {
+  if (!diags || filterErrorsAndWarnings(diags).length === 0) {
     // If we have a result and didn't get any errors, we succeeded.
     return 0;
   }
@@ -154,7 +159,13 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
 
     program = ng.createProgram({rootNames, host, options, oldProgram});
 
+    const beforeDiags = Date.now();
     allDiagnostics.push(...gatherDiagnostics(program !));
+    if (options.diagnostics) {
+      const afterDiags = Date.now();
+      allDiagnostics.push(
+          createMessageDiagnostic(`Time for diagnostics: ${afterDiags - beforeDiags}ms.`));
+    }
 
     if (!hasErrors(allDiagnostics)) {
       emitResult = program !.emit({emitCallback, customTransformers, emitFlags});

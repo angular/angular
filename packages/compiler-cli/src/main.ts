@@ -18,7 +18,7 @@ import * as api from './transformers/api';
 import * as ngc from './transformers/entry_points';
 import {GENERATED_FILES} from './transformers/util';
 
-import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult} from './perform_compile';
+import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult, filterErrorsAndWarnings} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
 import {isSyntaxError} from '@angular/compiler';
 
@@ -130,8 +130,9 @@ export function readCommandLineAndConfiguration(
 function reportErrorsAndExit(
     options: api.CompilerOptions, allDiagnostics: Diagnostics,
     consoleError: (s: string) => void = console.error): number {
-  if (allDiagnostics.length) {
-    consoleError(formatDiagnostics(options, allDiagnostics));
+  const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
+  if (errorsAndWarnings.length) {
+    consoleError(formatDiagnostics(options, errorsAndWarnings));
   }
   return exitCodeFromResult(allDiagnostics);
 }
