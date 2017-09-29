@@ -1521,6 +1521,25 @@ describe('MatAutocomplete', () => {
         expect(placeholder.classList).not.toContain('mat-form-field-empty');
       }));
 
+    it('should transfer the mat-autocomplete classes to the panel element', fakeAsync(() => {
+      const fixture = TestBed.createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openPanel();
+      tick();
+      fixture.detectChanges();
+
+      const autocomplete = fixture.debugElement.nativeElement.querySelector('mat-autocomplete');
+      const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
+
+      expect(autocomplete.classList).not.toContain('class-one');
+      expect(autocomplete.classList).not.toContain('class-two');
+
+      expect(panel.classList).toContain('class-one');
+      expect(panel.classList).toContain('class-two');
+    }));
+
+
   });
 
   it('should have correct width when opened', () => {
@@ -1646,7 +1665,7 @@ describe('MatAutocomplete', () => {
       <input matInput placeholder="State" [matAutocomplete]="auto" [formControl]="stateCtrl">
     </mat-form-field>
 
-    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+    <mat-autocomplete class="class-one class-two" #auto="matAutocomplete" [displayWith]="displayFn">
       <mat-option *ngFor="let state of filteredStates" [value]="state">
         <span> {{ state.code }}: {{ state.name }}  </span>
       </mat-option>

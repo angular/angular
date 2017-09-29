@@ -77,10 +77,23 @@ export class MatAutocomplete implements AfterContentInit {
   @Output() optionSelected: EventEmitter<MatAutocompleteSelectedEvent> =
       new EventEmitter<MatAutocompleteSelectedEvent>();
 
+  /**
+   * Takes classes set on the host md-autocomplete element and applies them to the panel
+   * inside the overlay container to allow for easy styling.
+   */
+  @Input('class')
+  set classList(classList: string) {
+    if (classList && classList.length) {
+      classList.split(' ').forEach(className => this._classList[className.trim()] = true);
+      this._elementRef.nativeElement.className = '';
+    }
+  }
+  _classList: {[key: string]: boolean} = {};
+
   /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
   id: string = `mat-autocomplete-${_uniqueAutocompleteIdCounter++}`;
 
-  constructor(private _changeDetectorRef: ChangeDetectorRef) { }
+  constructor(private _changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef) { }
 
   ngAfterContentInit() {
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options).withWrap();
@@ -105,6 +118,8 @@ export class MatAutocomplete implements AfterContentInit {
   _setVisibility(): void {
     Promise.resolve().then(() => {
       this.showPanel = !!this.options.length;
+      this._classList['mat-autocomplete-visible'] = this.showPanel;
+      this._classList['mat-autocomplete-hidden'] = !this.showPanel;
       this._changeDetectorRef.markForCheck();
     });
   }
@@ -114,14 +129,5 @@ export class MatAutocomplete implements AfterContentInit {
     const event = new MatAutocompleteSelectedEvent(this, option);
     this.optionSelected.emit(event);
   }
-
-  /** Sets a class on the panel based on whether it is visible. */
-  _getClassList() {
-    return {
-      'mat-autocomplete-visible': this.showPanel,
-      'mat-autocomplete-hidden': !this.showPanel
-    };
-  }
-
 }
 
