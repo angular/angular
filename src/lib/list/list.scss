@@ -112,9 +112,10 @@ $mat-dense-list-icon-size: 20px;
 }
 
 .mat-subheader {
-  display: block;
+  display: flex;
   box-sizing: border-box;
   padding: $mat-list-side-padding;
+  align-items: center;
 
   // This needs slightly more specificity, because it
   // can be overwritten by the typography styles.
