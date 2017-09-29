@@ -126,6 +126,7 @@ export class MatSortHeader implements MatSortable {
 
   /** Whether this MatSortHeader is currently sorted in either ascending or descending order. */
   _isSorted() {
-    return this._sort.active == this.id && this._sort.direction;
+    return this._sort.active == this.id &&
+        this._sort.direction === 'asc' || this._sort.direction === 'desc';
   }
 }

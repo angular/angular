@@ -20,3 +20,8 @@ export function getSortHeaderNotContainedWithinSortError(): Error {
 export function getSortHeaderMissingIdError(): Error {
   return Error(`MatSortHeader must be provided with a unique id.`);
 }
+
+/** @docs-private */
+export function getSortInvalidDirectionError(direction: string): Error {
+  return Error(`${direction} is not a valid sort direction ('asc' or 'desc').`);
+}

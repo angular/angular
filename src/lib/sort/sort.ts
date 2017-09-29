@@ -6,10 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Input, Output} from '@angular/core';
+import {Directive, EventEmitter, Input, isDevMode, Output} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SortDirection} from './sort-direction';
-import {getSortDuplicateSortableIdError, getSortHeaderMissingIdError} from './sort-errors';
+import {
+  getSortInvalidDirectionError,
+  getSortDuplicateSortableIdError,
+  getSortHeaderMissingIdError
+} from './sort-errors';
 
 export interface MatSortable {
   id: string;
@@ -40,7 +44,15 @@ export class MatSort {
   @Input('matSortStart') start: 'asc' | 'desc' = 'asc';
 
   /** The sort direction of the currently active MatSortable. */
-  @Input('matSortDirection') direction: SortDirection = '';
+  @Input('matSortDirection')
+  set direction(direction: SortDirection) {
+    if (isDevMode() && direction && direction !== 'asc' && direction !== 'desc') {
+      throw getSortInvalidDirectionError(direction);
+    }
+    this._direction = direction;
+  }
+  get direction(): SortDirection { return this._direction; }
+  private _direction: SortDirection = '';
 
   /**
    * Whether to disable the user from clearing the sort by finishing the sort direction cycle.

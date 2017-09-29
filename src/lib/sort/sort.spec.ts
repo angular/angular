@@ -20,6 +20,7 @@ import {
   getSortDuplicateSortableIdError,
   getSortHeaderMissingIdError,
   getSortHeaderNotContainedWithinSortError,
+  getSortInvalidDirectionError,
 } from './sort-errors';
 
 
@@ -37,7 +38,8 @@ describe('MatSort', () => {
         MatTableMatSortApp,
         MatSortHeaderMissingMatSortApp,
         MatSortDuplicateMatSortableIdsApp,
-        MatSortableMissingIdApp
+        MatSortableMissingIdApp,
+        MatSortableInvalidDirection
       ],
     }).compileComponents();
   }));
@@ -134,6 +136,11 @@ describe('MatSort', () => {
   it('should throw an error if an MatSortable is missing an id', () => {
     expect(() => TestBed.createComponent(MatSortableMissingIdApp).detectChanges())
         .toThrowError(wrappedErrorMessage(getSortHeaderMissingIdError()));
+  });
+
+  it('should throw an error if the provided direction is invalid', () => {
+    expect(() => TestBed.createComponent(MatSortableInvalidDirection).detectChanges())
+        .toThrowError(wrappedErrorMessage(getSortInvalidDirectionError('ascending')));
   });
 
   it('should allow let MatSortable override the default sort parameters', () => {
@@ -333,3 +340,13 @@ class MatSortDuplicateMatSortableIdsApp { }
   `
 })
 class MatSortableMissingIdApp { }
+
+
+@Component({
+  template: `
+    <div matSort matSortDirection="ascending">
+      <div mat-sort-header="a"> A </div>
+    </div>
+  `
+})
+class MatSortableInvalidDirection { }
