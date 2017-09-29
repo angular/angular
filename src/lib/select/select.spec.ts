@@ -2275,6 +2275,19 @@ describe('MatSelect', () => {
 
       expect(() => fixture.componentInstance.select.triggerValue).not.toThrow();
     });
+
+    it('should allow the user to customize the label', () => {
+      const fixture = TestBed.createComponent(SelectWithCustomTrigger);
+      fixture.detectChanges();
+
+      fixture.componentInstance.control.setValue('pizza-1');
+      fixture.detectChanges();
+
+      const label = fixture.debugElement.query(By.css('.mat-select-value')).nativeElement;
+
+      expect(label.textContent).toContain('azziP',
+          'Expected the displayed text to be "Pizza" in reverse.');
+    });
   });
 
   describe('change event', () => {
@@ -2622,30 +2635,21 @@ describe('MatSelect', () => {
 
   describe('theming', () => {
     let fixture: ComponentFixture<BasicSelectWithTheming>;
-    let testInstance: BasicSelectWithTheming;
-    let selectElement: HTMLElement;
 
     beforeEach(async(() => {
       fixture = TestBed.createComponent(BasicSelectWithTheming);
-      testInstance = fixture.componentInstance;
       fixture.detectChanges();
-
-      selectElement = fixture.debugElement.query(By.css('.mat-select')).nativeElement;
     }));
 
-    it('should allow the user to customize the label', () => {
-      fixture.destroy();
+    it('should transfer the theme to the select panel', () => {
+      fixture.componentInstance.theme = 'warn';
+      fixture.detectChanges();
 
-      const labelFixture = TestBed.createComponent(SelectWithCustomTrigger);
-      labelFixture.detectChanges();
+      fixture.componentInstance.select.open();
+      fixture.detectChanges();
 
-      labelFixture.componentInstance.control.setValue('pizza-1');
-      labelFixture.detectChanges();
-
-      const label = labelFixture.debugElement.query(By.css('.mat-select-value')).nativeElement;
-
-      expect(label.textContent).toContain('azziP',
-          'Expected the displayed text to be "Pizza" in reverse.');
+      const panel = overlayContainerElement.querySelector('.mat-select-panel')! as HTMLElement;
+      expect(panel.classList).toContain('mat-warn');
     });
   });
 

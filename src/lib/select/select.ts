@@ -55,7 +55,7 @@ import {
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material/core';
-import {MatFormFieldControl} from '@angular/material/form-field';
+import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {Subject} from 'rxjs/Subject';
@@ -410,6 +410,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     @Optional() private _dir: Directionality,
     @Optional() private _parentForm: NgForm,
     @Optional() private _parentFormGroup: FormGroupDirective,
+    @Optional() private _parentFormField: MatFormField,
     @Self() @Optional() public ngControl: NgControl,
     @Attribute('tabindex') tabIndex: string,
     @Inject(MAT_SELECT_SCROLL_STRATEGY) private _scrollStrategyFactory) {
@@ -639,6 +640,11 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   _onAttached(): void {
     this._calculateOverlayOffsetX();
     this._setScrollTop();
+  }
+
+  /** Returns the theme to be used on the panel. */
+  _getPanelTheme(): string {
+    return this._parentFormField ? `mat-${this._parentFormField.color}` : '';
   }
 
   /** Whether the select has a value. */

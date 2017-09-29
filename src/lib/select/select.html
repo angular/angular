@@ -34,7 +34,7 @@
   (detach)="close()">
 
   <div
-    class="mat-select-panel {{ 'mat-' + color }}"
+    class="mat-select-panel {{ _getPanelTheme() }}"
     [ngClass]="panelClass"
     [@transformPanel]="multiple ? 'showing-multiple' : 'showing'"
     (@transformPanel.done)="_onPanelDone()"
