@@ -60,7 +60,12 @@ export class MatCommonModule {
       testElement.classList.add('mat-theme-loaded-marker');
       this._document.body.appendChild(testElement);
 
-      if (getComputedStyle(testElement).display !== 'none') {
+      const computedStyle = getComputedStyle(testElement);
+
+      // In some situations, the computed style of the test element can be null. For example in
+      // Firefox, the computed style is null if an application is running inside of a hidden iframe.
+      // See: https://bugzilla.mozilla.org/show_bug.cgi?id=548397
+      if (computedStyle && computedStyle.display !== 'none') {
         console.warn(
           'Could not find Angular Material core theme. Most Material ' +
           'components may not work as expected. For more info refer ' +
