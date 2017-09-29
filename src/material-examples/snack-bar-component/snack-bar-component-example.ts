@@ -22,6 +22,6 @@ export class SnackBarComponentExample {
 @Component({
   selector: 'snack-bar-component-example-snack',
   templateUrl: 'snack-bar-component-example-snack.html',
-  styleUrls: ['snack-bar-component-example-snack.css'],
+  styles: [`.example-pizza-party { color: hotpink; }`],
 })
 export class PizzaPartyComponent {}

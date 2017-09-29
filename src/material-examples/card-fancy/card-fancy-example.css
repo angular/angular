@@ -3,6 +3,6 @@
 }
 
 .example-header-image {
-  background-image: url('../../../assets/img/examples/shiba1.jpg');
+  background-image: url('http://material.angular.io/assets/img/examples/shiba1.jpg');
   background-size: cover;
 }
