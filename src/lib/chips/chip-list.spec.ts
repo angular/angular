@@ -1059,5 +1059,5 @@ class SelectedChipList {
     { value: 1, viewValue: 'Pizza', selected: false },
     { value: 2, viewValue: 'Pasta', selected: true },
   ];
-  @ViewChildren(MdChip) chips: QueryList<MdChip>;
+  @ViewChildren(MatChip) chips: QueryList<MatChip>;
 }

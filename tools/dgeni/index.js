@@ -88,6 +88,7 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
     'cdk/coercion/index.ts',
     'cdk/collections/index.ts',
     'cdk/keycodes/index.ts',
+    'cdk/layout/index.ts',
     'cdk/overlay/index.ts',
     'cdk/platform/index.ts',
     'cdk/portal/index.ts',

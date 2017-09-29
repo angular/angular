@@ -7,7 +7,7 @@ import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatStepperModule} from './index';
-import {MatHorizontalStepper, MatStepper, MatVerticalStepper} from './stepper';
+import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
 
 const VALID_REGEX = /valid/;
@@ -306,7 +306,7 @@ function assertSelectionChangeOnHeaderClick(fixture: ComponentFixture<any>,
   let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
   expect(stepperComponent.selectedIndex).toBe(0);
-  expect(stepperComponent.selected instanceof MdStep).toBe(true);
+  expect(stepperComponent.selected instanceof MatStep).toBe(true);
 
   // select the second step
   let stepHeaderEl = stepHeaders[1].nativeElement;
@@ -314,7 +314,7 @@ function assertSelectionChangeOnHeaderClick(fixture: ComponentFixture<any>,
   fixture.detectChanges();
 
   expect(stepperComponent.selectedIndex).toBe(1);
-  expect(stepperComponent.selected instanceof MdStep).toBe(true);
+  expect(stepperComponent.selected instanceof MatStep).toBe(true);
 
   // select the third step
   stepHeaderEl = stepHeaders[2].nativeElement;
@@ -322,7 +322,7 @@ function assertSelectionChangeOnHeaderClick(fixture: ComponentFixture<any>,
   fixture.detectChanges();
 
   expect(stepperComponent.selectedIndex).toBe(2);
-  expect(stepperComponent.selected instanceof MdStep).toBe(true);
+  expect(stepperComponent.selected instanceof MatStep).toBe(true);
 }
 
 /** Asserts that 'aria-expanded' attribute is correct for expanded content of step. */
