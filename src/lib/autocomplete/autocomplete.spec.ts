@@ -1512,6 +1512,15 @@ describe('MatAutocomplete', () => {
       }).toThrow(getMatAutocompleteMissingPanelError());
     }));
 
+    it('should not throw on init, even if the panel is not defined', fakeAsync(() => {
+      expect(() => {
+        const fixture = TestBed.createComponent(AutocompleteWithoutPanel);
+        fixture.componentInstance.control.setValue('Something');
+        fixture.detectChanges();
+        tick();
+      }).not.toThrow();
+    }));
+
     it('should hide the placeholder with a preselected form control value ' +
       'and a disabled floating placeholder', fakeAsync(() => {
         const fixture = TestBed.createComponent(AutocompleteWithFormsAndNonfloatingPlaceholder);
@@ -1885,10 +1894,11 @@ class AutocompleteWithNativeInput {
 
 
 @Component({
-  template: `<input placeholder="Choose" [matAutocomplete]="auto">`
+  template: `<input placeholder="Choose" [matAutocomplete]="auto" [formControl]="control">`
 })
 class AutocompleteWithoutPanel {
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  control = new FormControl();
 }
 
 

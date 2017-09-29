@@ -390,7 +390,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   private _setTriggerValue(value: any): void {
-    const toDisplay = this.autocomplete.displayWith ? this.autocomplete.displayWith(value) : value;
+    const toDisplay = this.autocomplete && this.autocomplete.displayWith ?
+      this.autocomplete.displayWith(value) :
+      value;
 
     // Simply falling back to an empty string if the display value is falsy does not work properly.
     // The display value can also be the number zero and shouldn't fall back to an empty string.
