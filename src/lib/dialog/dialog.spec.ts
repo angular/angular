@@ -22,6 +22,7 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
+import {Directionality} from '@angular/cdk/bidi';
 import {MatDialogContainer} from './dialog-container';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {ESCAPE} from '@angular/cdk/keycodes';
@@ -431,6 +432,14 @@ describe('MatDialog', () => {
     let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
 
     expect(overlayPane.getAttribute('dir')).toBe('rtl');
+  });
+
+  it('should inject the correct layout direction in the component instance', () => {
+    const dialogRef = dialog.open(PizzaMsg, { direction: 'rtl' });
+
+    viewContainerFixture.detectChanges();
+
+    expect(dialogRef.componentInstance.directionality.value).toBe('rtl');
   });
 
   it('should close all of the dialogs', async(() => {
@@ -970,7 +979,8 @@ class ComponentWithTemplateRef {
 @Component({template: '<p>Pizza</p> <input> <button>Close</button>'})
 class PizzaMsg {
   constructor(public dialogRef: MatDialogRef<PizzaMsg>,
-              public dialogInjector: Injector) {}
+              public dialogInjector: Injector,
+              public directionality: Directionality) {}
 }
 
 @Component({

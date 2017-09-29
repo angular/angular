@@ -28,12 +28,14 @@ import {
   TemplateRef,
 } from '@angular/core';
 import {extendObject} from '@angular/material/core';
+import {Directionality} from '@angular/cdk/bidi';
 import {Observable} from 'rxjs/Observable';
 import {defer} from 'rxjs/observable/defer';
 import {Subject} from 'rxjs/Subject';
 import {MatDialogConfig} from './dialog-config';
 import {MatDialogContainer} from './dialog-container';
 import {MatDialogRef} from './dialog-ref';
+import {of as observableOf} from 'rxjs/observable/of';
 
 
 export const MAT_DIALOG_DATA = new InjectionToken<any>('MatDialogData');
@@ -277,6 +279,10 @@ export class MatDialog {
     injectionTokens.set(MatDialogRef, dialogRef);
     injectionTokens.set(MatDialogContainer, dialogContainer);
     injectionTokens.set(MAT_DIALOG_DATA, config.data);
+    injectionTokens.set(Directionality, {
+      value: config.direction,
+      change: observableOf()
+    });
 
     return new PortalInjector(userInjector || this._injector, injectionTokens);
   }
