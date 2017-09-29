@@ -7,7 +7,7 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {DOWN_ARROW, ENTER, ESCAPE, UP_ARROW} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, ENTER, ESCAPE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
 import {
   ConnectedPositionStrategy,
   Overlay,
@@ -259,19 +259,21 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   _handleKeydown(event: KeyboardEvent): void {
-    if (event.keyCode === ESCAPE && this.panelOpen) {
+    const keyCode = event.keyCode;
+
+    if (keyCode === ESCAPE && this.panelOpen) {
       this._resetActiveItem();
       this.closePanel();
       event.stopPropagation();
-    } else if (this.activeOption && event.keyCode === ENTER && this.panelOpen) {
+    } else if (this.activeOption && keyCode === ENTER && this.panelOpen) {
       this.activeOption._selectViaInteraction();
       this._resetActiveItem();
       event.preventDefault();
     } else {
       const prevActiveItem = this.autocomplete._keyManager.activeItem;
-      const isArrowKey = event.keyCode === UP_ARROW || event.keyCode === DOWN_ARROW;
+      const isArrowKey = keyCode === UP_ARROW || keyCode === DOWN_ARROW;
 
-      if (this.panelOpen) {
+      if (this.panelOpen || keyCode === TAB) {
         this.autocomplete._keyManager.onKeydown(event);
       } else if (isArrowKey) {
         this.openPanel();

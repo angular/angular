@@ -1,9 +1,14 @@
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {map, RxChain, startWith} from '@angular/cdk/rxjs';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
-import {createKeyboardEvent, dispatchFakeEvent, typeInElement} from '@angular/cdk/testing';
+import {
+  createKeyboardEvent,
+  dispatchKeyboardEvent,
+  dispatchFakeEvent,
+  typeInElement,
+} from '@angular/cdk/testing';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -955,6 +960,26 @@ describe('MatAutocomplete', () => {
         expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
         expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
         expect(stopPropagationSpy).toHaveBeenCalled();
+      });
+    }));
+
+    it('should close the panel when tabbing away from a trigger without results', async(() => {
+      const trigger = fixture.componentInstance.trigger;
+
+      fixture.componentInstance.states = [];
+      fixture.componentInstance.filteredStates = [];
+      fixture.detectChanges();
+      input.focus();
+
+      fixture.whenStable().then(() => {
+        expect(overlayContainerElement.querySelector('.mat-autocomplete-panel'))
+            .toBeTruthy('Expected panel to be rendered.');
+
+        dispatchKeyboardEvent(input, 'keydown', TAB);
+        fixture.detectChanges();
+
+        expect(overlayContainerElement.querySelector('.mat-autocomplete-panel'))
+            .toBeFalsy('Expected panel to be removed.');
       });
     }));
 
