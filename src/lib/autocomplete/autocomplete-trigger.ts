@@ -99,7 +99,6 @@ export function getMatAutocompleteMissingPanelError(): Error {
     'role': 'combobox',
     'autocomplete': 'off',
     'aria-autocomplete': 'list',
-    'aria-multiline': 'false',
     '[attr.aria-activedescendant]': 'activeOption?.id',
     '[attr.aria-expanded]': 'panelOpen.toString()',
     '[attr.aria-owns]': 'autocomplete?.id',

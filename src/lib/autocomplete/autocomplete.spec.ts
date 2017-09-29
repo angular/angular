@@ -1154,11 +1154,6 @@ describe('MatAutocomplete', () => {
           .toEqual('list', 'Expected aria-autocomplete attribute to equal list.');
     });
 
-    it('should set aria-multiline to false', () => {
-      expect(input.getAttribute('aria-multiline'))
-          .toEqual('false', 'Expected aria-multiline attribute to equal false.');
-    });
-
     it('should set aria-activedescendant based on the active option', async(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
