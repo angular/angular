@@ -1,7 +1,5 @@
 <mat-chip-list class="mat-chip-list-stacked">
-  <mat-chip *ngFor="let chipColor of availableColors"
-      selected="true"
-      color="{{chipColor.color}}">
-    {{chipColor.name}}
+  <mat-chip *ngFor="let chip of availableColors" selected="true" [color]="chip.color">
+    {{chip.name}}
   </mat-chip>
 </mat-chip-list>

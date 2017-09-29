@@ -35,7 +35,7 @@ between the two components. This directive adds chip-specific behaviors to the i
 within `<mat-form-field>` for adding and removing chips. The `<input>` with `MatChipInput` can
 be placed inside or outside the chip-list element.
 
-An exmaple of chip input placed inside the chip-list element.
+An example of chip input placed inside the chip-list element.
 <!-- example(chips-input) -->
 
 An example of chip input placed outside the chip-list element.
