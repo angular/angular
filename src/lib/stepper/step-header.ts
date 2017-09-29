@@ -9,7 +9,6 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {Component, Input, ViewEncapsulation, ElementRef, OnDestroy, Renderer2} from '@angular/core';
-import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material/core';
 import {MatStepLabel} from './step-label';
 
 

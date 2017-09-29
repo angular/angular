@@ -894,7 +894,7 @@ class SlideToggleWithoutLabel {
 }
 
 @Component({
-  template: `<md-slide-toggle [(ngModel)]="checked" (change)="onChange()"></md-slide-toggle>`
+  template: `<mat-slide-toggle [(ngModel)]="checked" (change)="onChange()"></mat-slide-toggle>`
 })
 class SlideToggleWithModelAndChangeEvent {
   checked: boolean;

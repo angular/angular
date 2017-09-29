@@ -879,10 +879,10 @@ describe('MatSelect', () => {
       fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
       fixture.detectChanges();
 
-      (overlayContainerElement.querySelector('md-option') as HTMLElement).click();
+      (overlayContainerElement.querySelector('mat-option') as HTMLElement).click();
       fixture.detectChanges();
 
-      const select = fixture.debugElement.nativeElement.querySelector('md-select');
+      const select = fixture.debugElement.nativeElement.querySelector('mat-select');
 
       expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
     });
@@ -2347,7 +2347,7 @@ describe('MatSelect', () => {
     });
 
     it('should only emit one event when pressing the arrow keys on a closed select', () => {
-      const select = fixture.debugElement.query(By.css('md-select')).nativeElement;
+      const select = fixture.debugElement.query(By.css('mat-select')).nativeElement;
       dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
 
       expect(fixture.componentInstance.changeListener).toHaveBeenCalledTimes(1);

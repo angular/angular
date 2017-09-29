@@ -37,7 +37,6 @@ import {first} from 'rxjs/operator/first';
 import {startWith} from 'rxjs/operator/startWith';
 import {takeUntil} from 'rxjs/operator/takeUntil';
 import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
 
 
 /** Throws an exception when two MatDrawer are matching the same position. */

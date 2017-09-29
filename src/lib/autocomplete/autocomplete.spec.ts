@@ -976,8 +976,6 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should close the panel when tabbing away from a trigger without results', async(() => {
-      const trigger = fixture.componentInstance.trigger;
-
       fixture.componentInstance.states = [];
       fixture.componentInstance.filteredStates = [];
       fixture.detectChanges();

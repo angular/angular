@@ -171,19 +171,21 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._isTooltipVisible()).toBe(false);
     }));
 
-    it('should not show if hide is called before delay finishes', fakeAsync(() => {
+    it('should not show if hide is called before delay finishes', async(() => {
       expect(tooltipDirective._tooltipInstance).toBeUndefined();
 
       const tooltipDelay = 1000;
+
       tooltipDirective.show(tooltipDelay);
       expect(tooltipDirective._isTooltipVisible()).toBe(false);
 
       fixture.detectChanges();
       expect(overlayContainerElement.textContent).toContain('');
-
       tooltipDirective.hide();
-      tick(tooltipDelay);
-      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+
+      fixture.whenStable().then(() => {
+        expect(tooltipDirective._isTooltipVisible()).toBe(false);
+      });
     }));
 
     it('should not show tooltip if message is not present or empty', () => {
