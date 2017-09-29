@@ -1,3 +1,4 @@
+<div class="mat-step-header-ripple" mat-ripple [matRippleTrigger]="_getHostElement()"></div>
 <div [class.mat-step-icon]="icon !== 'number' || selected"
      [class.mat-step-icon-not-touched]="icon == 'number' && !selected"
      [ngSwitch]="icon">
@@ -6,7 +7,8 @@
   <mat-icon *ngSwitchCase="'done'">done</mat-icon>
 </div>
 <div class="mat-step-label"
-     [class.mat-step-label-active]="active">
+     [class.mat-step-label-active]="active"
+     [class.mat-step-label-selected]="selected">
   <!-- If there is a label template, use it. -->
   <ng-container *ngIf="_templateLabel()" [ngTemplateOutlet]="label.template">
   </ng-container>

@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {Component, Input, ViewEncapsulation} from '@angular/core';
+import {Component, Input, ViewEncapsulation, ElementRef, OnDestroy, Renderer2} from '@angular/core';
+import {MATERIAL_COMPATIBILITY_MODE} from '@angular/material/core';
 import {MatStepLabel} from './step-label';
 
 
@@ -23,7 +25,7 @@ import {MatStepLabel} from './step-label';
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MatStepHeader {
+export class MatStepHeader implements OnDestroy {
   /** Icon for the given step. */
   @Input() icon: string;
 
@@ -62,6 +64,17 @@ export class MatStepHeader {
   }
   private _optional: boolean;
 
+  constructor(
+    private _focusMonitor: FocusMonitor,
+    private _element: ElementRef,
+    renderer: Renderer2) {
+    _focusMonitor.monitor(_element.nativeElement, renderer, true);
+  }
+
+  ngOnDestroy() {
+    this._focusMonitor.stopMonitoring(this._element.nativeElement);
+  }
+
   /** Returns string label of given step if it is a text label. */
   _stringLabel(): string | null {
     return this.label instanceof MatStepLabel ? null : this.label;
@@ -70,5 +83,10 @@ export class MatStepHeader {
   /** Returns MatStepLabel if the label of given step is a template label. */
   _templateLabel(): MatStepLabel | null {
     return this.label instanceof MatStepLabel ? this.label : null;
+  }
+
+  /** Returns the host HTML element. */
+  _getHostElement() {
+    return this._element.nativeElement;
   }
 }

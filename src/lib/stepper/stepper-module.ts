@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {A11yModule} from '@angular/cdk/a11y';
 import {PortalModule} from '@angular/cdk/portal';
 import {CdkStepperModule} from '@angular/cdk/stepper';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material/button';
-import {MatCommonModule} from '@angular/material/core';
+import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
@@ -26,7 +27,9 @@ import {MatStepperNext, MatStepperPrevious} from './stepper-button';
     PortalModule,
     MatButtonModule,
     CdkStepperModule,
-    MatIconModule
+    MatIconModule,
+    A11yModule,
+    MatRippleModule,
   ],
   exports: [
     MatCommonModule,
