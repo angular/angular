@@ -10,7 +10,7 @@ import {AnimationEvent} from '@angular/animations';
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Direction} from '@angular/cdk/bidi';
 import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {RxChain, startWith, switchMap} from '@angular/cdk/rxjs';
+import {RxChain, startWith, switchMap, first} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -27,10 +27,12 @@ import {
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
+  NgZone,
 } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
+import {Subject} from 'rxjs/Subject';
 import {fadeInItems, transformMenu} from './menu-animations';
 import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu-errors';
 import {MatMenuItem} from './menu-item';
@@ -80,7 +82,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
   private _tabSubscription = Subscription.EMPTY;
 
   /** Config object to be passed into the menu's ngClass */
-  _classList: any = {};
+  _classList: {[key: string]: boolean} = {};
 
   /** Current state of the panel animation. */
   _panelAnimationState: 'void' | 'enter-start' | 'enter' = 'void';
@@ -145,6 +147,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
 
   constructor(
     private _elementRef: ElementRef,
+    private _ngZone: NgZone,
     @Inject(MAT_MENU_DEFAULT_OPTIONS) private _defaultOptions: MatMenuDefaultOptions) { }
 
   ngAfterContentInit() {
@@ -160,9 +163,16 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
 
   /** Stream that emits whenever the hovered menu item changes. */
   hover(): Observable<MatMenuItem> {
-    return RxChain.from(this.items.changes)
-      .call(startWith, this.items)
-      .call(switchMap, (items: MatMenuItem[]) => merge(...items.map(item => item.hover)))
+    if (this.items) {
+      return RxChain.from(this.items.changes)
+        .call(startWith, this.items)
+        .call(switchMap, (items: MatMenuItem[]) => merge(...items.map(item => item.hover)))
+        .result();
+    }
+
+    return RxChain.from(this._ngZone.onStable.asObservable())
+      .call(first)
+      .call(switchMap, () => this.hover())
       .result();
   }
 

@@ -48,7 +48,8 @@ describe('MatMenu', () => {
         CustomMenuPanel,
         CustomMenu,
         NestedMenu,
-        NestedMenuCustomElevation
+        NestedMenuCustomElevation,
+        NestedMenuRepeater
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1046,6 +1047,21 @@ describe('MatMenu', () => {
       expect(event.preventDefault).toHaveBeenCalled();
     });
 
+    it('should handle the items being rendered in a repeater', fakeAsync(() => {
+      const repeaterFixture = TestBed.createComponent(NestedMenuRepeater);
+      overlay = overlayContainerElement;
+
+      expect(() => repeaterFixture.detectChanges()).not.toThrow();
+
+      repeaterFixture.componentInstance.rootTriggerEl.nativeElement.click();
+      repeaterFixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
+
+      dispatchMouseEvent(overlay.querySelector('.level-one-trigger')!, 'mouseenter');
+      repeaterFixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
+    }));
+
   });
 
 });
@@ -1242,4 +1258,29 @@ class NestedMenu {
 class NestedMenuCustomElevation {
   @ViewChild('rootTrigger') rootTrigger: MatMenuTrigger;
   @ViewChild('levelOneTrigger') levelOneTrigger: MatMenuTrigger;
+}
+
+
+@Component({
+  template: `
+    <button [matMenuTriggerFor]="root" #rootTriggerEl>Toggle menu</button>
+    <mat-menu #root="matMenu">
+      <button
+        mat-menu-item
+        class="level-one-trigger"
+        *ngFor="let item of items"
+        [matMenuTriggerFor]="levelOne">{{item}}</button>
+    </mat-menu>
+
+    <mat-menu #levelOne="matMenu">
+      <button mat-menu-item>Four</button>
+      <button mat-menu-item>Five</button>
+    </mat-menu>
+  `
+})
+class NestedMenuRepeater {
+  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef;
+  @ViewChild('levelOneTrigger') levelOneTrigger: MatMenuTrigger;
+
+  items = ['one', 'two', 'three'];
 }
