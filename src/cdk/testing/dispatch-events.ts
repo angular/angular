@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createFakeEvent, createKeyboardEvent, createMouseEvent} from './event-objects';
+import {
+  createFakeEvent,
+  createKeyboardEvent,
+  createMouseEvent,
+  createTouchEvent
+} from './event-objects';
 
 /** Utility to dispatch any event on a Node. */
 export function dispatchEvent(node: Node | Window, event: Event): Event {
@@ -28,4 +33,9 @@ export function dispatchKeyboardEvent(node: Node, type: string, keyCode: number)
 export function dispatchMouseEvent(node: Node, type: string, x = 0, y = 0,
   event = createMouseEvent(type, x, y)): MouseEvent {
   return dispatchEvent(node, event) as MouseEvent;
+}
+
+/** Shorthand to dispatch a touch event on the specified coordinates. */
+export function dispatchTouchEvent(node: Node, type: string, x = 0, y = 0) {
+  return dispatchEvent(node, createTouchEvent(type, x, y));
 }
