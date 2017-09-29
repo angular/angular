@@ -10,14 +10,11 @@ $mat-card-header-size: 40px !default;
 
 .mat-card {
   @include mat-elevation-transition;
+  @include mat-overridable-elevation(2);
   display: block;
   position: relative;
   padding: $mat-card-default-padding;
   border-radius: $mat-card-border-radius;
-
-  &:not([class*='mat-elevation-z']) {
-    @include mat-elevation(2);
-  }
 
   @include cdk-high-contrast {
     outline: solid 1px;

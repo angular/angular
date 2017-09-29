@@ -66,7 +66,7 @@ $mat-mini-fab-padding: 8px !default;
 %mat-raised-button {
   @extend %mat-button-base;
 
-  @include mat-elevation(2);
+  @include mat-overridable-elevation(2);
 
   // Force hardware acceleration.
   transform: translate3d(0, 0, 0);
@@ -76,7 +76,7 @@ $mat-mini-fab-padding: 8px !default;
               mat-elevation-transition-property-value();
 
   &:not([disabled]):active {
-    @include mat-elevation(8);
+    @include mat-overridable-elevation(8);
   }
 
   &[disabled] {
@@ -88,7 +88,7 @@ $mat-mini-fab-padding: 8px !default;
 @mixin mat-fab($size, $padding) {
   @extend %mat-raised-button;
 
-  @include mat-elevation(6);
+  @include mat-overridable-elevation(6);
 
   // Reset the min-width from the button base.
   min-width: 0;
@@ -101,7 +101,7 @@ $mat-mini-fab-padding: 8px !default;
   flex-shrink: 0;
 
   &:not([disabled]):active {
-    @include mat-elevation(12);
+    @include mat-overridable-elevation(12);
   }
 
   .mat-button-wrapper {

@@ -126,6 +126,9 @@ $mat-elevation-transition-duration: 280ms !default;
 // The default easing value for elevation transitions.
 $mat-elevation-transition-timing-function: $mat-fast-out-slow-in-timing-function;
 
+// Prefix for elevation-related selectors.
+$_mat-elevation-prefix: 'mat-elevation-z';
+
 // Applies the correct css rules to an element to give it the elevation specified by $zValue.
 // The $zValue must be between 0 and 24.
 @mixin mat-elevation($zValue) {
@@ -139,6 +142,14 @@ $mat-elevation-transition-timing-function: $mat-fast-out-slow-in-timing-function
   box-shadow: #{map-get($_umbra-elevation-map, $zValue)},
               #{map-get($_penumbra-elevation-map, $zValue)},
               #{map-get($_ambient-elevation-map, $zValue)};
+}
+
+// Applies the elevation to an element in a manner that allows
+// consumers to override it via the Material elevation classes.
+@mixin mat-overridable-elevation($zValue) {
+  &:not([class*='#{$_mat-elevation-prefix}']) {
+    @include mat-elevation($zValue);
+  }
 }
 
 // Returns a string that can be used as the value for a transition property for elevation.
