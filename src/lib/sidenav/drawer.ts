@@ -398,8 +398,8 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   private _left: MatDrawer | null;
   private _right: MatDrawer | null;
 
-  /** Subscription to the Directionality change EventEmitter. */
-  private _dirChangeSubscription = Subscription.EMPTY;
+  /** Emits when the component is destroyed. */
+  private _destroyed = new Subject<void>();
 
   _contentMargins = new Subject<{left: number, right: number}>();
 
@@ -409,23 +409,33 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
-      this._dirChangeSubscription = _dir.change.subscribe(() => this._validateDrawers());
+      takeUntil.call(_dir.change, this._destroyed).subscribe(() => this._validateDrawers());
     }
   }
 
   ngAfterContentInit() {
     startWith.call(this._drawers.changes, null).subscribe(() => {
       this._validateDrawers();
+
       this._drawers.forEach((drawer: MatDrawer) => {
         this._watchDrawerToggle(drawer);
         this._watchDrawerPosition(drawer);
         this._watchDrawerMode(drawer);
       });
+
+      if (!this._drawers.length ||
+          this._isDrawerOpen(this._start) ||
+          this._isDrawerOpen(this._end)) {
+        this._updateContentMargins();
+      }
+
+      this._changeDetectorRef.markForCheck();
     });
   }
 
   ngOnDestroy() {
-    this._dirChangeSubscription.unsubscribe();
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   /** Calls `open` of both start and end drawers */
@@ -478,10 +488,11 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   /** Subscribes to changes in drawer mode so we can run change detection. */
   private _watchDrawerMode(drawer: MatDrawer): void {
     if (drawer) {
-      takeUntil.call(drawer._modeChanged, this._drawers.changes).subscribe(() => {
-        this._updateContentMargins();
-        this._changeDetectorRef.markForCheck();
-      });
+      takeUntil.call(drawer._modeChanged, merge(this._drawers.changes, this._destroyed))
+        .subscribe(() => {
+          this._updateContentMargins();
+          this._changeDetectorRef.markForCheck();
+        });
     }
   }
 

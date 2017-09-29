@@ -323,7 +323,11 @@ describe('MatDrawerContainer', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MatSidenavModule, A11yModule, PlatformModule, NoopAnimationsModule],
-      declarations: [DrawerContainerTwoDrawerTestApp, DrawerDelayed],
+      declarations: [
+        DrawerContainerTwoDrawerTestApp,
+        DrawerDelayed,
+        DrawerContainerStateChangesTestApp,
+      ],
     });
 
     TestBed.compileComponents();
@@ -372,6 +376,47 @@ describe('MatDrawerContainer', () => {
 
     expect(parseInt(contentElement.style.marginLeft)).toBeGreaterThan(0);
   }));
+
+  it('should recalculate the margin if a drawer is destroyed', fakeAsync(() => {
+    const fixture = TestBed.createComponent(DrawerContainerStateChangesTestApp);
+
+    fixture.detectChanges();
+    fixture.componentInstance.drawer.open();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const contentElement = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
+    const initialMargin = parseInt(contentElement.style.marginLeft);
+
+    expect(initialMargin).toBeGreaterThan(0);
+
+    fixture.componentInstance.renderDrawer = false;
+    fixture.detectChanges();
+
+    expect(parseInt(contentElement.style.marginLeft)).toBeLessThan(initialMargin);
+  }));
+
+  it('should recalculate the margin if the drawer mode is changed', fakeAsync(() => {
+    const fixture = TestBed.createComponent(DrawerContainerStateChangesTestApp);
+
+    fixture.detectChanges();
+    fixture.componentInstance.drawer.open();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const contentElement = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
+    const initialMargin = parseInt(contentElement.style.marginLeft);
+
+    expect(initialMargin).toBeGreaterThan(0);
+
+    fixture.componentInstance.mode = 'over';
+    fixture.detectChanges();
+
+    expect(parseInt(contentElement.style.marginLeft)).toBeLessThan(initialMargin);
+  }));
+
 });
 
 
@@ -485,3 +530,19 @@ class DrawerDelayed {
   @ViewChild(MatDrawer) drawer: MatDrawer;
   showDrawer = false;
 }
+
+
+@Component({
+  template: `
+    <mat-drawer-container>
+      <mat-drawer *ngIf="renderDrawer" [mode]="mode"></mat-drawer>
+    </mat-drawer-container>`,
+})
+class DrawerContainerStateChangesTestApp {
+  @ViewChild(MatDrawer) drawer: MatDrawer;
+  @ViewChild(MatDrawerContainer) drawerContainer: MatDrawerContainer;
+
+  mode = 'side';
+  renderDrawer = true;
+}
+
