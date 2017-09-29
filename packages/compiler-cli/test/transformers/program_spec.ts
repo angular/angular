@@ -57,17 +57,20 @@ describe('ng program', () => {
   }
 
   function compile(
-      oldProgram?: ng.Program, overrideOptions?: ng.CompilerOptions,
-      rootNames?: string[]): ng.Program {
+      oldProgram?: ng.Program, overrideOptions?: ng.CompilerOptions, rootNames?: string[],
+      host?: CompilerHost): ng.Program {
     const options = testSupport.createCompilerOptions(overrideOptions);
     if (!rootNames) {
       rootNames = [path.resolve(testSupport.basePath, 'src/index.ts')];
     }
-
+    if (!host) {
+      host = ng.createCompilerHost({options});
+    }
     const program = ng.createProgram({
       rootNames: rootNames,
       options,
-      host: ng.createCompilerHost({options}), oldProgram,
+      host,
+      oldProgram,
     });
     expectNoDiagnosticsInProgram(options, program);
     program.emit();
@@ -153,6 +156,59 @@ describe('ng program', () => {
              .toBe(false);
        });
 
+    it('should only emit changed files', () => {
+      testSupport.writeFiles({
+        'src/index.ts': createModuleAndCompSource('comp', 'index.html'),
+        'src/index.html': `Start`
+      });
+      const options: ng.CompilerOptions = {declaration: false};
+      const host = ng.createCompilerHost({options});
+      const originalGetSourceFile = host.getSourceFile;
+      const fileCache = new Map<string, ts.SourceFile>();
+      host.getSourceFile = (fileName: string) => {
+        if (fileCache.has(fileName)) {
+          return fileCache.get(fileName);
+        }
+        const sf = originalGetSourceFile.call(host, fileName);
+        fileCache.set(fileName, sf);
+        return sf;
+      };
+
+      const written = new Map<string, string>();
+      host.writeFile = (fileName: string, data: string) => written.set(fileName, data);
+
+      // compile libraries
+      const p1 = compile(undefined, options, undefined, host);
+
+      // first compile without libraries
+      const p2 = compile(p1, options, undefined, host);
+      expect(written.has(path.resolve(testSupport.basePath, 'built/src/index.js'))).toBe(true);
+      let ngFactoryContent =
+          written.get(path.resolve(testSupport.basePath, 'built/src/index.ngfactory.js'));
+      expect(ngFactoryContent).toMatch(/Start/);
+
+      // no change -> no emit
+      written.clear();
+      const p3 = compile(p2, options, undefined, host);
+      expect(written.size).toBe(0);
+
+      // change a user file
+      written.clear();
+      fileCache.delete(path.resolve(testSupport.basePath, 'src/index.ts'));
+      const p4 = compile(p3, options, undefined, host);
+      expect(written.size).toBe(1);
+      expect(written.has(path.resolve(testSupport.basePath, 'built/src/index.js'))).toBe(true);
+
+      // change a file that is input to generated files
+      written.clear();
+      testSupport.writeFiles({'src/index.html': 'Hello'});
+      const p5 = compile(p4, options, undefined, host);
+      expect(written.size).toBe(1);
+      ngFactoryContent =
+          written.get(path.resolve(testSupport.basePath, 'built/src/index.ngfactory.js'));
+      expect(ngFactoryContent).toMatch(/Hello/);
+    });
+
     it('should store library summaries on emit', () => {
       compileLib('lib');
       testSupport.writeFiles({
@@ -163,17 +219,19 @@ describe('ng program', () => {
           `
       });
       const p1 = compile();
-      expect(p1.getLibrarySummaries().some(
-                 sf => /node_modules\/lib\/index\.ngfactory\.d\.ts$/.test(sf.fileName)))
+      expect(Array.from(p1.getLibrarySummaries().values())
+                 .some(sf => /node_modules\/lib\/index\.ngfactory\.d\.ts$/.test(sf.fileName)))
           .toBe(true);
-      expect(p1.getLibrarySummaries().some(
-                 sf => /node_modules\/lib\/index\.ngsummary\.json$/.test(sf.fileName)))
+      expect(Array.from(p1.getLibrarySummaries().values())
+                 .some(sf => /node_modules\/lib\/index\.ngsummary\.json$/.test(sf.fileName)))
           .toBe(true);
-      expect(
-          p1.getLibrarySummaries().some(sf => /node_modules\/lib\/index\.d\.ts$/.test(sf.fileName)))
+      expect(Array.from(p1.getLibrarySummaries().values())
+                 .some(sf => /node_modules\/lib\/index\.d\.ts$/.test(sf.fileName)))
           .toBe(true);
 
-      expect(p1.getLibrarySummaries().some(sf => /src\/main.*$/.test(sf.fileName))).toBe(false);
+      expect(Array.from(p1.getLibrarySummaries().values())
+                 .some(sf => /src\/main.*$/.test(sf.fileName)))
+          .toBe(false);
     });
 
     it('should reuse the old ts program completely if nothing changed', () => {
