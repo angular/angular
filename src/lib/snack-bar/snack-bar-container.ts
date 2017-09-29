@@ -38,8 +38,6 @@ import {Subject} from 'rxjs/Subject';
 import {MatSnackBarConfig} from './snack-bar-config';
 
 
-export type SnackBarState = 'visible' | 'hidden' | 'void';
-
 // TODO(jelbourn): we can't use constants from animation.ts here because you can't use
 // a text interpolation in anything that is analyzed statically with ngc (for AoT compile).
 export const SHOW_ANIMATION = '225ms cubic-bezier(0.4,0.0,1,1)';
@@ -60,7 +58,7 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
   host: {
     'role': 'alert',
     'class': 'mat-snack-bar-container',
-    '[@state]': 'getAnimationState()',
+    '[@state]': '_animationState',
     '(@state.done)': 'onAnimationEnd($event)'
   },
   animations: [
@@ -93,7 +91,7 @@ export class MatSnackBarContainer extends BasePortalHost implements OnDestroy {
   _onEnter: Subject<any> = new Subject();
 
   /** The state of the snack bar animations. */
-  private _animationState: SnackBarState;
+  _animationState = 'void';
 
   /** The snack bar configuration. */
   snackBarConfig: MatSnackBarConfig;
@@ -104,14 +102,6 @@ export class MatSnackBarContainer extends BasePortalHost implements OnDestroy {
     private _elementRef: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef) {
     super();
-  }
-
-  /**
-   * Gets the current animation state both combining one of the possibilities from
-   * SnackBarState and the vertical location.
-   */
-  getAnimationState(): string {
-    return `${this._animationState}-${this.snackBarConfig.verticalPosition}`;
   }
 
   /** Attach a component portal as content to this snack bar container. */
@@ -146,11 +136,13 @@ export class MatSnackBarContainer extends BasePortalHost implements OnDestroy {
 
   /** Handle end of animations, updating the state of the snackbar. */
   onAnimationEnd(event: AnimationEvent) {
-    if (event.toState === 'void' || event.toState.startsWith('hidden')) {
+    const {fromState, toState} = event;
+
+    if ((toState === 'void' && fromState !== 'void') || toState.startsWith('hidden')) {
       this._completeExit();
     }
 
-    if (event.toState.startsWith('visible')) {
+    if (toState.startsWith('visible')) {
       // Note: we shouldn't use `this` inside the zone callback,
       // because it can cause a memory leak.
       const onEnter = this._onEnter;
@@ -165,14 +157,14 @@ export class MatSnackBarContainer extends BasePortalHost implements OnDestroy {
   /** Begin animation of snack bar entrance into view. */
   enter(): void {
     if (!this._destroyed) {
-      this._animationState = 'visible';
+      this._animationState = `visible-${this.snackBarConfig.verticalPosition}`;
       this._changeDetectorRef.detectChanges();
     }
   }
 
   /** Begin animation of the snack bar exiting from view. */
   exit(): Observable<void> {
-    this._animationState = 'hidden';
+    this._animationState = `hidden-${this.snackBarConfig.verticalPosition}`;
     return this._onExit;
   }
 
