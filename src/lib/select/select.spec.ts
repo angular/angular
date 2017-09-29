@@ -872,6 +872,21 @@ describe('MatSelect', () => {
       expect(trigger.textContent).toContain('Steak, Pizza, Sandwich');
     });
 
+    it('should restore focus to the host element', () => {
+      const fixture = TestBed.createComponent(BasicSelectWithoutForms);
+
+      fixture.detectChanges();
+      fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
+      fixture.detectChanges();
+
+      (overlayContainerElement.querySelector('md-option') as HTMLElement).click();
+      fixture.detectChanges();
+
+      const select = fixture.debugElement.nativeElement.querySelector('md-select');
+
+      expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
+    });
+
   });
 
   describe('disabled behavior', () => {
