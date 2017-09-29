@@ -147,7 +147,8 @@ export class MatDatepicker<D> implements OnDestroy {
   /** Whether the datepicker pop-up should be disabled. */
   @Input()
   get disabled() {
-    return this._disabled === undefined ? this._datepickerInput.disabled : this._disabled;
+    return this._disabled === undefined && this._datepickerInput ?
+        this._datepickerInput.disabled : this._disabled;
   }
   set disabled(value: any) {
     const newValue = coerceBooleanProperty(value);

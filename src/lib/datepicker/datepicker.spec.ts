@@ -304,6 +304,10 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
       }));
 
+      it('should not throw when accessing disabled property', () => {
+        expect(() => testComponent.datepicker.disabled).not.toThrow();
+      });
+
       it('should throw when opened with no registered inputs', async(() => {
         expect(() => testComponent.datepicker.open()).toThrow();
       }));
