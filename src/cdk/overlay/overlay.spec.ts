@@ -133,9 +133,9 @@ describe('Overlay', () => {
   });
 
   it('should set the direction', () => {
-    const state = new OverlayConfig({direction: 'rtl'});
+    const config = new OverlayConfig({direction: 'rtl'});
 
-    overlay.create(state).attach(componentPortal);
+    overlay.create(config).attach(componentPortal);
 
     const pane = overlayContainerElement.children[0] as HTMLElement;
     expect(pane.getAttribute('dir')).toEqual('rtl');
@@ -152,8 +152,8 @@ describe('Overlay', () => {
   });
 
   it('should emit the attachment event after everything is added to the DOM', () => {
-    let state = new OverlayConfig({hasBackdrop: true});
-    let overlayRef = overlay.create(state);
+    let config = new OverlayConfig({hasBackdrop: true});
+    let overlayRef = overlay.create(config);
 
     overlayRef.attachments().subscribe(() => {
       expect(overlayContainerElement.querySelector('pizza'))
@@ -220,99 +220,99 @@ describe('Overlay', () => {
   });
 
   describe('positioning', () => {
-    let state: OverlayConfig;
+    let config: OverlayConfig;
 
     beforeEach(() => {
-      state = new OverlayConfig();
+      config = new OverlayConfig();
     });
 
     it('should apply the positioning strategy', () => {
-      state.positionStrategy = new FakePositionStrategy();
+      config.positionStrategy = new FakePositionStrategy();
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
 
       expect(overlayContainerElement.querySelectorAll('.fake-positioned').length).toBe(1);
     });
   });
 
   describe('size', () => {
-    let state: OverlayConfig;
+    let config: OverlayConfig;
 
     beforeEach(() => {
-      state = new OverlayConfig();
+      config = new OverlayConfig();
     });
 
     it('should apply the width set in the config', () => {
-      state.width = 500;
+      config.width = 500;
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.width).toEqual('500px');
     });
 
     it('should support using other units if a string width is provided', () => {
-      state.width = '200%';
+      config.width = '200%';
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.width).toEqual('200%');
     });
 
     it('should apply the height set in the config', () => {
-      state.height = 500;
+      config.height = 500;
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.height).toEqual('500px');
     });
 
     it('should support using other units if a string height is provided', () => {
-      state.height = '100vh';
+      config.height = '100vh';
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.height).toEqual('100vh');
     });
 
     it('should apply the min width set in the config', () => {
-      state.minWidth = 200;
+      config.minWidth = 200;
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.minWidth).toEqual('200px');
     });
 
 
     it('should apply the min height set in the config', () => {
-      state.minHeight = 500;
+      config.minHeight = 500;
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.minHeight).toEqual('500px');
     });
 
     it('should apply the max width set in the config', () => {
-      state.maxWidth = 200;
+      config.maxWidth = 200;
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.maxWidth).toEqual('200px');
     });
 
 
     it('should apply the max height set in the config', () => {
-      state.maxHeight = 500;
+      config.maxHeight = 500;
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.maxHeight).toEqual('500px');
     });
 
     it('should support zero widths and heights', () => {
-      state.width = 0;
-      state.height = 0;
+      config.width = 0;
+      config.height = 0;
 
-      overlay.create(state).attach(componentPortal);
+      overlay.create(config).attach(componentPortal);
       const pane = overlayContainerElement.children[0] as HTMLElement;
       expect(pane.style.width).toEqual('0px');
       expect(pane.style.height).toEqual('0px');

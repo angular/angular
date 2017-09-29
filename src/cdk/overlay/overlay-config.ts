@@ -50,9 +50,9 @@ export class OverlayConfig {
   /** The direction of the text in the overlay panel. */
   direction?: Direction = 'ltr';
 
-  constructor(state?: OverlayConfig) {
-    if (state) {
-      Object.keys(state).forEach(key => this[key] = state[key]);
+  constructor(config?: OverlayConfig) {
+    if (config) {
+      Object.keys(config).forEach(key => this[key] = config[key]);
     }
   }
 }

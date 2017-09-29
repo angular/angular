@@ -152,8 +152,8 @@ export class MatSnackBar {
    * @param config The user-specified snack bar config.
    */
   private _createOverlay(config: MatSnackBarConfig): OverlayRef {
-    const state = new OverlayConfig();
-    state.direction = config.direction;
+    const overlayConfig = new OverlayConfig();
+    overlayConfig.direction = config.direction;
 
     let positionStrategy = this._overlay.position().global();
     // Set horizontal position.
@@ -177,8 +177,8 @@ export class MatSnackBar {
       positionStrategy.bottom('0');
     }
 
-    state.positionStrategy = positionStrategy;
-    return this._overlay.create(state);
+    overlayConfig.positionStrategy = positionStrategy;
+    return this._overlay.create(overlayConfig);
   }
 
   /**

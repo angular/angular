@@ -337,7 +337,7 @@ export class ConnectedOverlayDirective implements OnDestroy, OnChanges {
     }
 
     this._position.withDirection(this.dir);
-    this._overlayRef.getState().direction = this.dir;
+    this._overlayRef.getConfig().direction = this.dir;
     this._initEscapeListener();
 
     if (!this._overlayRef.hasAttached()) {

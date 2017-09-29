@@ -157,6 +157,6 @@ export class MatDialogRef<T> {
 
   /** Fetches the position strategy object from the overlay ref. */
   private _getPositionStrategy(): GlobalPositionStrategy {
-    return this._overlayRef.getState().positionStrategy as GlobalPositionStrategy;
+    return this._overlayRef.getConfig().positionStrategy as GlobalPositionStrategy;
   }
 }

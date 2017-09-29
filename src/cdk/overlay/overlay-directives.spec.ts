@@ -76,7 +76,7 @@ describe('Overlay directives', () => {
     let overlayDirective = testComponent.connectedOverlayDirective;
 
     let strategy =
-        <ConnectedPositionStrategy> overlayDirective.overlayRef.getState().positionStrategy;
+        <ConnectedPositionStrategy> overlayDirective.overlayRef.getConfig().positionStrategy;
     expect(strategy instanceof ConnectedPositionStrategy).toBe(true);
 
     let positions = strategy.positions;

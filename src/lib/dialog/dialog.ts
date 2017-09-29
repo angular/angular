@@ -173,16 +173,16 @@ export class MatDialog {
    * @returns A promise resolving to the OverlayRef for the created overlay.
    */
   private _createOverlay(config: MatDialogConfig): OverlayRef {
-    const overlayState = this._getOverlayState(config);
-    return this._overlay.create(overlayState);
+    const overlayConfig = this._getOverlayConfig(config);
+    return this._overlay.create(overlayConfig);
   }
 
   /**
-   * Creates an overlay state from a dialog config.
+   * Creates an overlay config from a dialog config.
    * @param dialogConfig The dialog configuration.
    * @returns The overlay configuration.
    */
-  private _getOverlayState(dialogConfig: MatDialogConfig): OverlayConfig {
+  private _getOverlayConfig(dialogConfig: MatDialogConfig): OverlayConfig {
     const state = new OverlayConfig({
       positionStrategy: this._overlay.position().global(),
       scrollStrategy: this._scrollStrategy(),

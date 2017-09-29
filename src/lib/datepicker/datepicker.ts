@@ -332,7 +332,7 @@ export class MatDatepicker<D> implements OnDestroy {
 
   /** Create the popup. */
   private _createPopup(): void {
-    const overlayState = new OverlayConfig({
+    const overlayConfig = new OverlayConfig({
       positionStrategy: this._createPopupPositionStrategy(),
       hasBackdrop: true,
       backdropClass: 'mat-overlay-transparent-backdrop',
@@ -340,7 +340,7 @@ export class MatDatepicker<D> implements OnDestroy {
       scrollStrategy: this._scrollStrategy()
     });
 
-    this._popupRef = this._overlay.create(overlayState);
+    this._popupRef = this._overlay.create(overlayConfig);
   }
 
   /** Create the popup PositionStrategy. */
