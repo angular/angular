@@ -99,10 +99,9 @@ export class MatStepper extends _MatStepper {
   animations: [
     trigger('stepTransition', [
       state('previous', style({transform: 'translate3d(-100%, 0, 0)', visibility: 'hidden'})),
-      state('current', style({transform: 'translate3d(0%, 0, 0)', visibility: 'visible'})),
+      state('current', style({transform: 'none', visibility: 'visible'})),
       state('next', style({transform: 'translate3d(100%, 0, 0)', visibility: 'hidden'})),
-      transition('* => *',
-          animate('500ms cubic-bezier(0.35, 0, 0.25, 1)'))
+      transition('* => *', animate('500ms cubic-bezier(0.35, 0, 0.25, 1)'))
     ])
   ],
   providers: [{provide: MatStepper, useExisting: MatHorizontalStepper}],
