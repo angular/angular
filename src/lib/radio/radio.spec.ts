@@ -638,6 +638,12 @@ describe('MatRadio', () => {
         expect(document.activeElement).toBe(fruitRadioNativeInputs[i]);
       }
     });
+
+    it('should not add the "name" attribute if it is not passed in', () => {
+      const radio = fixture.debugElement.nativeElement.querySelector('#nameless input');
+      expect(radio.hasAttribute('name')).toBe(false);
+    });
+
   });
 
   describe('with tabindex', () => {
@@ -711,6 +717,7 @@ class RadiosInsideRadioGroup {
                      [aria-labelledby]="ariaLabelledby">
     </mat-radio-button>
     <mat-radio-button name="fruit" value="raspberry">Raspberry</mat-radio-button>
+    <mat-radio-button id="nameless" value="no-name">No name</mat-radio-button>
   `
 })
 class StandaloneRadioButtons {
