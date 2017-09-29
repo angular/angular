@@ -15,7 +15,8 @@
 }
 
 .mat-expansion-panel-body {
-  padding: 0 24px 16px;
+  margin: 0 24px 16px;
+  overflow: auto;
 }
 
 .mat-expansion-panel-spacing {
