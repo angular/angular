@@ -10,15 +10,19 @@
  * This is a private API for @ngtools/webpack. This API should be stable for NG 5.
  *
  * It contains copies of the interfaces needed and wrapper functions to ensure that
- * they are not broken accidentally.
+ * they are not broken accidentally. It also contains the NG 2/4 lazy route listing API.
  *
  * Once the ngc api is public and stable, this can be removed.
  */
 
-import {ParseSourceSpan} from '@angular/compiler';
+import {AotCompilerHost, AotSummaryResolver, ParseSourceSpan, StaticReflector, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {CompilerHost as oldCompilerHost, ModuleResolutionHostAdapter} from './compiler_host';
+import {listLazyRoutesOfModule} from './ngtools_impl';
+import {PathMappedCompilerHost} from './path_mapped_compiler_host';
 import {formatDiagnostics as formatDiagnosticsOrig} from './perform_compile';
+import {CompilerOptions} from './transformers/api';
 import {createCompilerHost as createCompilerOrig} from './transformers/compiler_host';
 import {createProgram as createProgramOrig} from './transformers/program';
 
@@ -138,4 +142,38 @@ export function createCompilerHost(
 export type Diagnostics = Array<ts.Diagnostic|Diagnostic>;
 export function formatDiagnostics(options: CompilerOptions, diags: Diagnostics): string {
   return formatDiagnosticsOrig(options, diags);
+}
+
+// Lazy route detection code from old ngtools api for Angular 2/4.
+
+export interface ListLazyRoutesOptions {
+  program: ts.Program;
+  host: ts.CompilerHost;
+  angularCompilerOptions: CompilerOptions;
+  entryModule: string;
+}
+
+export interface LazyRouteMap { [route: string]: string; }
+
+export function listLazyRoutes(options: ListLazyRoutesOptions): LazyRouteMap {
+  const angularCompilerOptions = options.angularCompilerOptions;
+  const program = options.program;
+
+  const moduleResolutionHost = new ModuleResolutionHostAdapter(options.host);
+  const usePathMapping =
+      !!angularCompilerOptions.rootDirs && angularCompilerOptions.rootDirs.length > 0;
+  const ngCompilerHost: AotCompilerHost = usePathMapping ?
+      new PathMappedCompilerHost(program, angularCompilerOptions, moduleResolutionHost) :
+      new oldCompilerHost(program, angularCompilerOptions, moduleResolutionHost);
+
+  const symbolCache = new StaticSymbolCache();
+  const summaryResolver = new AotSummaryResolver(ngCompilerHost, symbolCache);
+  const symbolResolver = new StaticSymbolResolver(ngCompilerHost, symbolCache, summaryResolver);
+  const staticReflector = new StaticReflector(summaryResolver, symbolResolver);
+  const routeMap = listLazyRoutesOfModule(options.entryModule, ngCompilerHost, staticReflector);
+
+  return Object.keys(routeMap).reduce((acc: LazyRouteMap, route: string) => {
+    acc[route] = routeMap[route].absoluteFilePath;
+    return acc;
+  }, {});
 }

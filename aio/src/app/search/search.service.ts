@@ -47,7 +47,7 @@ export class SearchService {
       // Wait for the initDelay or the first search
       .race(
         Observable.timer(initDelay),
-        this.searchesSubject.first()
+        this.searchesSubject.first() as any
       )
       .concatMap(() => {
         // Create the worker and load the index
