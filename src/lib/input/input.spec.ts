@@ -697,6 +697,22 @@ describe('MatInput without forms', function () {
     expect(inputContainer._shouldAlwaysFloat).toBe(true);
     expect(inputContainer.floatPlaceholder).toBe('always');
   });
+
+  it('should not highlight when focusing a readonly input', () => {
+    let fixture = TestBed.createComponent(MatInputWithReadonlyInput);
+    fixture.detectChanges();
+
+    let input = fixture.debugElement.query(By.directive(MatInput)).injector.get<MatInput>(MatInput);
+    let container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+
+    // Call the focus handler directly to avoid flakyness where
+    // browsers don't focus elements if the window is minimized.
+    input._focusChanged(true);
+    fixture.detectChanges();
+
+    expect(input.focused).toBe(false);
+    expect(container.classList).not.toContain('mat-focused');
+  });
 });
 
 describe('MatInput with forms', () => {

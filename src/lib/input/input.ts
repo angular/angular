@@ -76,6 +76,7 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
   protected _uid = `mat-input-${nextUniqueId++}`;
   protected _errorOptions: ErrorOptions;
   protected _previousNativeValue = this.value;
+  private _readonly = false;
 
   /** Whether the input is focused. */
   focused = false;
@@ -141,6 +142,11 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
     }
   }
 
+  /** Whether the element is readonly. */
+  @Input()
+  get readonly() { return this._readonly; }
+  set readonly(value: any) { this._readonly = coerceBooleanProperty(value); }
+
   protected _neverEmptyInputTypes = [
     'date',
     'datetime',
@@ -205,7 +211,7 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
 
   /** Callback for the cases where the focused state of the input changes. */
   _focusChanged(isFocused: boolean) {
-    if (isFocused !== this.focused) {
+    if (isFocused !== this.focused && !this.readonly) {
       this.focused = isFocused;
       this.stateChanges.next();
     }
