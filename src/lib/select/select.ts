@@ -1135,7 +1135,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       if (currentActiveItem !== prevActiveItem) {
         this._clearSelection();
         this._setSelectionByValue(currentActiveItem.value, true);
-        this._propagateChanges();
       }
     }
   }

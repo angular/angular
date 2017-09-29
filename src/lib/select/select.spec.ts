@@ -2336,6 +2336,14 @@ describe('MatSelect', () => {
 
       expect(fixture.componentInstance.changeListener).toHaveBeenCalledTimes(1);
     });
+
+    it('should only emit one event when pressing the arrow keys on a closed select', () => {
+      const select = fixture.debugElement.query(By.css('md-select')).nativeElement;
+      dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+
+      expect(fixture.componentInstance.changeListener).toHaveBeenCalledTimes(1);
+    });
+
   });
 
   describe('floatPlaceholder option', () => {
