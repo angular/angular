@@ -5,7 +5,7 @@
     <ng-content></ng-content>
   </button>
 
-  <div *ngIf="_isSorted()" class="mat-sort-header-arrow">
+  <div *ngIf="_isSorted()" class="mat-sort-header-arrow" [@indicatorToggle]="_sort.direction">
     <div class="mat-sort-header-stem"></div>
     <div class="mat-sort-header-indicator" [@indicator]="_sort.direction" >
       <div class="mat-sort-header-pointer-left" [@leftPointer]="_sort.direction"></div>

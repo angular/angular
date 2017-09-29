@@ -20,7 +20,8 @@ import {
   state,
   style,
   animate,
-  transition
+  transition,
+  keyframes,
 } from '@angular/animations';
 import {CdkColumnDef} from '@angular/cdk/table';
 import {Subscription} from 'rxjs/Subscription';
@@ -70,6 +71,24 @@ const SORT_ANIMATION_TRANSITION =
       state('asc', style({transform: 'rotate(45deg)'})),
       state('desc', style({transform: 'rotate(-45deg)'})),
       transition('asc <=> desc', animate(SORT_ANIMATION_TRANSITION))
+    ]),
+    trigger('indicatorToggle', [
+      transition('void => asc', animate(SORT_ANIMATION_TRANSITION, keyframes([
+        style({transform: 'translateY(25%)', opacity: 0}),
+        style({transform: 'none', opacity: 1})
+      ]))),
+      transition('asc => void', animate(SORT_ANIMATION_TRANSITION, keyframes([
+        style({transform: 'none', opacity: 1}),
+        style({transform: 'translateY(-25%)', opacity: 0})
+      ]))),
+      transition('void => desc', animate(SORT_ANIMATION_TRANSITION, keyframes([
+        style({transform: 'translateY(-25%)', opacity: 0}),
+        style({transform: 'none', opacity: 1})
+      ]))),
+      transition('desc => void', animate(SORT_ANIMATION_TRANSITION, keyframes([
+        style({transform: 'none', opacity: 1}),
+        style({transform: 'translateY(25%)', opacity: 0})
+      ]))),
     ])
   ]
 })
