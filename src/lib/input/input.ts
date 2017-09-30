@@ -59,6 +59,7 @@ let nextUniqueId = 0;
     '[placeholder]': 'placeholder',
     '[disabled]': 'disabled',
     '[required]': 'required',
+    '[readonly]': 'readonly',
     '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-invalid]': 'errorState',
     '(blur)': '_focusChanged(false)',
