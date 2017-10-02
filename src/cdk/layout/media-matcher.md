@@ -9,7 +9,7 @@ matchMedia method, if available on the platform.
 export class MyWidget {  
   constructor(mm: MediaMatcher) {
     mm.matchMedia('(orientation: landscape)').matches ? 
-      this.setPortraitMode() :
+      this.setLandscapeMode() :
       this.setPortraitMode();
   }
 }  
