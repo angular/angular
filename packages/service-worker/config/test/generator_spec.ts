@@ -33,6 +33,7 @@ export function main() {
             versionedFiles: [],
             urls: [
               '/absolute/**',
+              '/some/url?with+escaped+chars',
               'relative/*.txt',
             ]
           }
@@ -62,7 +63,11 @@ export function main() {
                'installMode': 'prefetch',
                'updateMode': 'prefetch',
                'urls': ['/test/index.html', '/test/foo/test.html'],
-               'patterns': ['\\/absolute\\/.*', '\\/test\\/relative\\/[^\\/]+\\.txt']
+               'patterns': [
+                 '\\/absolute\\/.*',
+                 '\\/some\\/url\\?with\\+escaped\\+chars',
+                 '\\/test\\/relative\\/[^\\/]+\\.txt',
+               ]
              }],
              'dataGroups': [{
                'name': 'other',

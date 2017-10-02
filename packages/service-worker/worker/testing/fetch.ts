@@ -11,7 +11,19 @@ export class MockBody implements Body {
 
   constructor(public _body: string|null) {}
 
-  async arrayBuffer(): Promise<ArrayBuffer> { throw 'Not implemented'; }
+  async arrayBuffer(): Promise<ArrayBuffer> {
+    this.bodyUsed = true;
+    if (this._body !== null) {
+      const buffer = new ArrayBuffer(this._body.length);
+      const access = new Uint8Array(buffer);
+      for (let i = 0; i < this._body.length; i++) {
+        access[i] = this._body.charCodeAt(i);
+      }
+      return buffer;
+    } else {
+      throw new Error('No body');
+    }
+  }
 
   async blob(): Promise<Blob> { throw 'Not implemented'; }
 
@@ -64,7 +76,7 @@ export class MockRequest extends MockBody implements Request {
   readonly referrer: string = '';
   readonly referrerPolicy: ReferrerPolicy = 'no-referrer';
   readonly type: RequestType = '';
-  readonly url: string;
+  url: string;
 
   constructor(input: string|Request, init: RequestInit = {}) {
     super(init !== undefined ? init.body || null : null);
@@ -84,13 +96,18 @@ export class MockRequest extends MockBody implements Request {
     if (init.mode !== undefined) {
       this.mode = init.mode;
     }
+    if (init.credentials !== undefined) {
+      this.credentials = init.credentials;
+    }
   }
 
   clone(): Request {
     if (this.bodyUsed) {
       throw 'Body already consumed';
     }
-    return new MockRequest(this.url, {body: this._body});
+    return new MockRequest(
+        this.url,
+        {body: this._body, mode: this.mode, credentials: this.credentials, headers: this.headers});
   }
 }
 
@@ -102,8 +119,11 @@ export class MockResponse extends MockBody implements Response {
   readonly type: ResponseType = 'basic';
   readonly url: string = '';
   readonly body: ReadableStream|null = null;
+  readonly redirected: boolean = false;
 
-  constructor(body?: any, init: ResponseInit = {}) {
+  constructor(
+      body?: any,
+      init: ResponseInit&{type?: ResponseType, redirected?: boolean, url?: string} = {}) {
     super(typeof body === 'string' ? body : null);
     this.status = (init.status !== undefined) ? init.status : 200;
     this.statusText = init.statusText || 'OK';
@@ -115,6 +135,15 @@ export class MockResponse extends MockBody implements Response {
           this.headers.set(header, init.headers[header]);
         });
       }
+    }
+    if (init.type !== undefined) {
+      this.type = init.type;
+    }
+    if (init.redirected !== undefined) {
+      this.redirected = init.redirected;
+    }
+    if (init.url !== undefined) {
+      this.url = init.url;
     }
   }
 

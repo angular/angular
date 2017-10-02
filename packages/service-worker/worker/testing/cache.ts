@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockResponse} from './fetch';
+import {MockRequest, MockResponse} from './fetch';
 
 export interface DehydratedResponse {
   body: string|null;
@@ -25,11 +25,11 @@ export type DehydratedCacheStorage = {
 export class MockCacheStorage implements CacheStorage {
   private caches = new Map<string, MockCache>();
 
-  constructor(hydrateFrom?: string) {
+  constructor(private origin: string, hydrateFrom?: string) {
     if (hydrateFrom !== undefined) {
       const hydrated = JSON.parse(hydrateFrom) as DehydratedCacheStorage;
       Object.keys(hydrated).forEach(
-          name => { this.caches.set(name, new MockCache(hydrated[name])); });
+          name => { this.caches.set(name, new MockCache(this.origin, hydrated[name])); });
     }
   }
 
@@ -39,7 +39,7 @@ export class MockCacheStorage implements CacheStorage {
 
   async open(name: string): Promise<Cache> {
     if (!this.caches.has(name)) {
-      this.caches.set(name, new MockCache());
+      this.caches.set(name, new MockCache(this.origin));
     }
     return this.caches.get(name) !;
   }
@@ -77,7 +77,7 @@ export class MockCacheStorage implements CacheStorage {
 export class MockCache implements Cache {
   private cache = new Map<string, Response>();
 
-  constructor(hydrated?: DehydratedCache) {
+  constructor(private origin: string, hydrated?: DehydratedCache) {
     if (hydrated !== undefined) {
       Object.keys(hydrated).forEach(url => {
         const resp = hydrated[url];
@@ -110,7 +110,10 @@ export class MockCache implements Cache {
   }
 
   async match(request: RequestInfo, options?: CacheQueryOptions): Promise<Response> {
-    const url = (typeof request === 'string' ? request : request.url);
+    let url = (typeof request === 'string' ? request : request.url);
+    if (url.startsWith(this.origin)) {
+      url = '/' + url.substr(this.origin.length);
+    }
     // TODO: cleanup typings. Typescript doesn't know this can resolve to undefined.
     let res = this.cache.get(url);
     if (res !== undefined) {

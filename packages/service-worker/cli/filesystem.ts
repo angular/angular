@@ -8,6 +8,8 @@
 
 import {Filesystem} from '@angular/service-worker/config';
 
+import {sha1Binary} from './sha1';
+
 const fs = require('fs');
 const path = require('path');
 
@@ -31,6 +33,12 @@ export class NodeFilesystem implements Filesystem {
   async read(_path: string): Promise<string> {
     const file = this.canonical(_path);
     return fs.readFileSync(file).toString();
+  }
+
+  async hash(_path: string): Promise<string> {
+    const file = this.canonical(_path);
+    const contents: Buffer = fs.readFileSync(file);
+    return sha1Binary(contents as any as ArrayBuffer);
   }
 
   async write(_path: string, contents: string): Promise<void> {

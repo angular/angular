@@ -16,11 +16,19 @@
  *
  * Borrowed from @angular/compiler/src/i18n/digest.ts
  */
+
 export function sha1(str: string): string {
   const utf8 = str;
   const words32 = stringToWords32(utf8, Endian.Big);
-  const len = utf8.length * 8;
+  return _sha1(words32, utf8.length * 8);
+}
 
+export function sha1Binary(buffer: ArrayBuffer): string {
+  const words32 = arrayBufferToWords32(buffer, Endian.Big);
+  return _sha1(words32, buffer.byteLength * 8);
+}
+
+function _sha1(words32: number[], len: number): string {
   const w = new Array(80);
   let [a, b, c, d, e]: number[] = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
 
@@ -114,11 +122,24 @@ function stringToWords32(str: string, endian: Endian): number[] {
   return words32;
 }
 
-function byteAt(str: string, index: number): number {
-  return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
+function arrayBufferToWords32(buffer: ArrayBuffer, endian: Endian): number[] {
+  const words32 = Array((buffer.byteLength + 3) >>> 2);
+  const view = new Uint8Array(buffer);
+  for (let i = 0; i < words32.length; i++) {
+    words32[i] = wordAt(view, i * 4, endian);
+  }
+  return words32;
 }
 
-function wordAt(str: string, index: number, endian: Endian): number {
+function byteAt(str: string | Uint8Array, index: number): number {
+  if (typeof str === 'string') {
+    return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
+  } else {
+    return index >= str.byteLength ? 0 : str[index] & 0xff;
+  }
+}
+
+function wordAt(str: string | Uint8Array, index: number, endian: Endian): number {
   let word = 0;
   if (endian === Endian.Big) {
     for (let i = 0; i < 4; i++) {
