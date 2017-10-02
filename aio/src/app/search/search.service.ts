@@ -45,7 +45,7 @@ export class SearchService {
   initWorker(workerUrl: string, initDelay: number) {
     const searchResults = Observable
       // Wait for the initDelay or the first search
-      .race(
+      .race<any>(
         Observable.timer(initDelay),
         this.searchesSubject.first()
       )
