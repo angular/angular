@@ -58,7 +58,7 @@ describe('ng program', () => {
 
   function compile(
       oldProgram?: ng.Program, overrideOptions?: ng.CompilerOptions, rootNames?: string[],
-      host?: CompilerHost): ng.Program {
+      host?: CompilerHost): {program: ng.Program, emitResult: ts.EmitResult} {
     const options = testSupport.createCompilerOptions(overrideOptions);
     if (!rootNames) {
       rootNames = [path.resolve(testSupport.basePath, 'src/index.ts')];
@@ -73,8 +73,8 @@ describe('ng program', () => {
       oldProgram,
     });
     expectNoDiagnosticsInProgram(options, program);
-    program.emit();
-    return program;
+    const emitResult = program.emit();
+    return {emitResult, program};
   }
 
   describe('reuse of old program', () => {
@@ -87,14 +87,14 @@ describe('ng program', () => {
             export * from 'lib/index';
           `
       });
-      const p1 = compile();
+      const p1 = compile().program;
       expect(p1.getTsProgram().getSourceFiles().some(
                  sf => /node_modules\/lib\/.*\.ngfactory\.ts$/.test(sf.fileName)))
           .toBe(true);
       expect(p1.getTsProgram().getSourceFiles().some(
                  sf => /node_modules\/lib2\/.*\.ngfactory.*$/.test(sf.fileName)))
           .toBe(false);
-      const p2 = compile(p1);
+      const p2 = compile(p1).program;
       expect(p2.getTsProgram().getSourceFiles().some(
                  sf => /node_modules\/lib\/.*\.ngfactory.*$/.test(sf.fileName)))
           .toBe(false);
@@ -111,7 +111,7 @@ describe('ng program', () => {
           export * from 'lib2/index';
         `,
       });
-      const p3 = compile(p2);
+      const p3 = compile(p2).program;
       expect(p3.getTsProgram().getSourceFiles().some(
                  sf => /node_modules\/lib\/.*\.ngfactory.*$/.test(sf.fileName)))
           .toBe(false);
@@ -119,7 +119,7 @@ describe('ng program', () => {
                  sf => /node_modules\/lib2\/.*\.ngfactory\.ts$/.test(sf.fileName)))
           .toBe(true);
 
-      const p4 = compile(p3);
+      const p4 = compile(p3).program;
       expect(p4.getTsProgram().getSourceFiles().some(
                  sf => /node_modules\/lib\/.*\.ngfactory.*$/.test(sf.fileName)))
           .toBe(false);
@@ -140,14 +140,14 @@ describe('ng program', () => {
             export * from 'lib/index';
           `
          });
-         const p1 = compile(undefined, {declaration: false});
+         const p1 = compile(undefined, {declaration: false}).program;
          expect(p1.getTsProgram().getSourceFiles().some(
                     sf => /node_modules\/lib\/.*\.ngfactory\.ts$/.test(sf.fileName)))
              .toBe(true);
          expect(p1.getTsProgram().getSourceFiles().some(
                     sf => /node_modules\/lib2\/.*\.ngfactory.*$/.test(sf.fileName)))
              .toBe(false);
-         const p2 = compile(p1, {declaration: false});
+         const p2 = compile(p1, {declaration: false}).program;
          expect(p2.getTsProgram().getSourceFiles().some(
                     sf => /node_modules\/lib\/.*\.ngfactory.*$/.test(sf.fileName)))
              .toBe(false);
@@ -178,10 +178,10 @@ describe('ng program', () => {
       host.writeFile = (fileName: string, data: string) => written.set(fileName, data);
 
       // compile libraries
-      const p1 = compile(undefined, options, undefined, host);
+      const p1 = compile(undefined, options, undefined, host).program;
 
       // first compile without libraries
-      const p2 = compile(p1, options, undefined, host);
+      const p2 = compile(p1, options, undefined, host).program;
       expect(written.has(path.resolve(testSupport.basePath, 'built/src/index.js'))).toBe(true);
       let ngFactoryContent =
           written.get(path.resolve(testSupport.basePath, 'built/src/index.ngfactory.js'));
@@ -189,24 +189,36 @@ describe('ng program', () => {
 
       // no change -> no emit
       written.clear();
-      const p3 = compile(p2, options, undefined, host);
+      const p3 = compile(p2, options, undefined, host).program;
       expect(written.size).toBe(0);
 
       // change a user file
       written.clear();
       fileCache.delete(path.resolve(testSupport.basePath, 'src/index.ts'));
-      const p4 = compile(p3, options, undefined, host);
+      const p4 = compile(p3, options, undefined, host).program;
       expect(written.size).toBe(1);
       expect(written.has(path.resolve(testSupport.basePath, 'built/src/index.js'))).toBe(true);
 
       // change a file that is input to generated files
       written.clear();
       testSupport.writeFiles({'src/index.html': 'Hello'});
-      const p5 = compile(p4, options, undefined, host);
+      compile(p4, options, undefined, host);
       expect(written.size).toBe(1);
       ngFactoryContent =
           written.get(path.resolve(testSupport.basePath, 'built/src/index.ngfactory.js'));
       expect(ngFactoryContent).toMatch(/Hello/);
+    });
+
+    it('should set emitSkipped to false for full and incremental emit', () => {
+      testSupport.writeFiles({
+        'src/index.ts': createModuleAndCompSource('main'),
+      });
+      const {emitResult: emitResult1, program: p1} = compile();
+      expect(emitResult1.emitSkipped).toBe(false);
+      const {emitResult: emitResult2, program: p2} = compile(p1);
+      expect(emitResult2.emitSkipped).toBe(false);
+      const {emitResult: emitResult3, program: p3} = compile(p2);
+      expect(emitResult3.emitSkipped).toBe(false);
     });
 
     it('should store library summaries on emit', () => {
@@ -218,7 +230,7 @@ describe('ng program', () => {
             export * from 'lib/index';
           `
       });
-      const p1 = compile();
+      const p1 = compile().program;
       expect(Array.from(p1.getLibrarySummaries().values())
                  .some(sf => /node_modules\/lib\/index\.ngfactory\.d\.ts$/.test(sf.fileName)))
           .toBe(true);
@@ -238,9 +250,9 @@ describe('ng program', () => {
       testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
       // Note: the second compile drops factories for library files,
       // and therefore changes the structure again
-      const p1 = compile();
-      const p2 = compile(p1);
-      const p3 = compile(p2);
+      const p1 = compile().program;
+      const p2 = compile(p1).program;
+      compile(p2);
       expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
     });
 
@@ -256,13 +268,13 @@ describe('ng program', () => {
       });
       // Note: the second compile drops factories for library files,
       // and therefore changes the structure again
-      const p1 = compile();
-      const p2 = compile(p1);
+      const p1 = compile().program;
+      const p2 = compile(p1).program;
       testSupport.writeFiles({
         'src/main.html': `Another template`,
         'src/util.ts': `export const x = 2`,
       });
-      const p3 = compile(p2);
+      compile(p2);
       expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
     });
 
@@ -277,11 +289,11 @@ describe('ng program', () => {
       });
       // Note: the second compile drops factories for library files,
       // and therefore changes the structure again
-      const p1 = compile();
-      const p2 = compile(p1);
+      const p1 = compile().program;
+      const p2 = compile(p1).program;
       testSupport.writeFiles(
           {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
-      const p3 = compile(p2);
+      compile(p2);
       expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
     });
   });
