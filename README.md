@@ -9,7 +9,7 @@ This is the home for the Angular team's Material Design components built for and
 [Documentation, demos, and guides][aio] |
 [Google group](https://groups.google.com/forum/#!forum/angular-material2) |
 [Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md) |
-[Plunker Template](http://plnkr.co/edit/o077B6uEiiIgkC0S06dd?p=preview) |
+[Plunker Template](http://plnkr.co/edit/LSgU9X5sYVhx4bc3LBWm?p=preview) |
 [StackBlitz Template](https://stackblitz.com/edit/angular-material2-issue?file=app%2Fapp.component.ts)
 
 ### Getting started
