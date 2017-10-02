@@ -43,9 +43,9 @@ export class Adapter {
   /**
    * Extract the pathname of a URL.
    */
-  getPath(url: string): string {
-    const parsed = new URL(url);
-    return parsed.pathname;
+  parseUrl(url: string, relativeTo: string): {origin: string, path: string} {
+    const parsed = new URL(url, relativeTo);
+    return {origin: parsed.origin, path: parsed.pathname};
   }
 
   /**

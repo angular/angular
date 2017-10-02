@@ -8,14 +8,14 @@
 
 import {Adapter} from './adapter';
 
-export function isNavigationRequest(req: Request, adapter: Adapter): boolean {
+export function isNavigationRequest(req: Request, relativeTo: string, adapter: Adapter): boolean {
   if (req.mode !== 'navigate') {
     return false;
   }
   if (req.url.indexOf('__') !== -1) {
     return false;
   }
-  if (hasFileExtension(req.url, adapter)) {
+  if (hasFileExtension(req.url, relativeTo, adapter)) {
     return false;
   }
   if (!acceptsTextHtml(req)) {
@@ -24,8 +24,8 @@ export function isNavigationRequest(req: Request, adapter: Adapter): boolean {
   return true;
 }
 
-function hasFileExtension(url: string, adapter: Adapter): boolean {
-  const path = adapter.getPath(url);
+function hasFileExtension(url: string, relativeTo: string, adapter: Adapter): boolean {
+  const path = adapter.parseUrl(url, relativeTo).path;
   const lastSegment = path.split('/').pop() !;
   return lastSegment.indexOf('.') !== -1;
 }

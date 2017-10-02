@@ -9,6 +9,13 @@
 const WILD_SINGLE = '[^\\/]+';
 const WILD_OPEN = '(?:.+\\/)?';
 
+const TO_ESCAPE = [
+  {replace: /\./g, with: '\\.'},
+  {replace: /\?/g, with: '\\?'},
+  {replace: /\+/g, with: '\\+'},
+  {replace: /\*/g, with: WILD_SINGLE},
+];
+
 export function globToRegex(glob: string): string {
   const segments = glob.split('/').reverse();
   let regex: string = '';
@@ -20,9 +27,9 @@ export function globToRegex(glob: string): string {
       } else {
         regex += '.*';
       }
-      continue;
     } else {
-      const processed = segment.replace(/\./g, '\\.').replace(/\*/g, WILD_SINGLE);
+      const processed = TO_ESCAPE.reduce(
+          (segment, escape) => segment.replace(escape.replace, escape.with), segment);
       regex += processed;
       if (segments.length > 0) {
         regex += '\\/';

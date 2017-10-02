@@ -36,6 +36,7 @@ export declare type Duration = string;
 
 /** @experimental */
 export interface Filesystem {
+    hash(file: string): Promise<string>;
     list(dir: string): Promise<string[]>;
     read(file: string): Promise<string>;
     write(file: string, contents: string): Promise<void>;

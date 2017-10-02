@@ -7,9 +7,25 @@
  */
 
 import {Adapter} from './adapter';
-import {Debuggable} from './api';
+import {DebugLogger, Debuggable} from './api';
 
-export class DebugHandler {
+const DEBUG_LOG_BUFFER_SIZE = 100;
+
+interface DebugMessage {
+  time: number;
+  value: string;
+  context: string;
+}
+
+export class DebugHandler implements DebugLogger {
+  // There are two debug log message arrays. debugLogA records new debugging messages.
+  // Once it reaches DEBUG_LOG_BUFFER_SIZE, the array is moved to debugLogB and a new
+  // array is assigned to debugLogA. This ensures that insertion to the debug log is
+  // always O(1) no matter the number of logged messages, and that the total number
+  // of messages in the log never exceeds 2 * DEBUG_LOG_BUFFER_SIZE.
+  private debugLogA: DebugMessage[] = [];
+  private debugLogB: DebugMessage[] = [];
+
   constructor(readonly driver: Debuggable, readonly adapter: Adapter) {}
 
   async handleFetch(req: Request): Promise<Response> {
@@ -36,6 +52,10 @@ Last update tick: ${this.since(idle.lastTrigger)}
 Last update run: ${this.since(idle.lastRun)}
 Task queue:
 ${idle.queue.map(v => ' * ' + v).join('\n')}
+
+Debug log:
+${this.formatDebugLog(this.debugLogB)}
+${this.formatDebugLog(this.debugLogA)}
 `;
 
     return this.adapter.newResponse(
@@ -64,5 +84,28 @@ ${msgIdle}`,
     return '' + (days > 0 ? `${days}d` : '') + (hours > 0 ? `${hours}h` : '') +
         (minutes > 0 ? `${minutes}m` : '') + (seconds > 0 ? `${seconds}s` : '') +
         (millis > 0 ? `${millis}u` : '');
+  }
+
+  log(value: string|Error, context: string = ''): void {
+    // Rotate the buffers if debugLogA has grown too large.
+    if (this.debugLogA.length === DEBUG_LOG_BUFFER_SIZE) {
+      this.debugLogB = this.debugLogA;
+      this.debugLogA = [];
+    }
+
+    // Convert errors to string for logging.
+    if (typeof value !== 'string') {
+      value = this.errorToString(value);
+    }
+
+    // Log the message.
+    this.debugLogA.push({value, time: this.adapter.time, context});
+  }
+
+  private errorToString(err: Error): string { return `${err.name}(${err.message}, ${err.stack})`; }
+
+  private formatDebugLog(log: DebugMessage[]): string {
+    return log.map(entry => `[${this.since(entry.time)}] ${entry.value} ${entry.context}`)
+        .join('\n');
   }
 }
