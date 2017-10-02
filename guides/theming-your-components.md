@@ -4,11 +4,11 @@ In order to style your own components with Angular Material's tooling, the compo
 ### Using `@mixin` to automatically apply a theme
 
 #### Why using `@mixin`
-The advantage of using a `@mixin` function is that when you change your theme, every file that uses it will be updated automatically.
-Calling it with a different theme argument allow multiple themes within the app or component.
+The advantage of using a `@mixin` function is that when you change your theme, every file that uses it will be automatically updated.
+Calling the `@mixin` with a different theme argument allows multiple themes within the app or component.
 
 #### How to use `@mixin`
-We can better theming our custom components adding a `@mixin` function to its theme file and then calling this function to apply a theme.
+We can better theme our custom components by adding a `@mixin` function to its theme file, and then call this function to apply a theme.
 
 All you need is to create a `@mixin` function in the custom-component-theme.scss
 
