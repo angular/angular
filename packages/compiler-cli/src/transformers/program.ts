@@ -734,7 +734,7 @@ export function i18nGetExtension(formatName: string): string {
 
 function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
   const diagnostics: ts.Diagnostic[] = [];
-  let emitSkipped = true;
+  let emitSkipped = false;
   const emittedFiles: string[] = [];
   for (const er of emitResults) {
     diagnostics.push(...er.diagnostics);
