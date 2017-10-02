@@ -18,6 +18,8 @@ import {MockServerState, MockServerStateBuilder} from './mock';
 
 const EMPTY_SERVER_STATE = new MockServerStateBuilder().build();
 
+const MOCK_ORIGIN = 'http://localhost/';
+
 export class MockClient {
   queue = new Subject<Object>();
 
@@ -33,10 +35,10 @@ export class MockClient {
 
 export class SwTestHarnessBuilder {
   private server = EMPTY_SERVER_STATE;
-  private caches = new MockCacheStorage();
+  private caches = new MockCacheStorage(MOCK_ORIGIN);
 
   withCacheState(cache: string): SwTestHarnessBuilder {
-    this.caches = new MockCacheStorage(cache);
+    this.caches = new MockCacheStorage(MOCK_ORIGIN, cache);
     return this;
   }
 
@@ -86,7 +88,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     active: {
       postMessage: (msg: any) => { this.selfMessageQueue.push(msg); },
     },
-    scope: 'http://localhost/',
+    scope: MOCK_ORIGIN,
     showNotification: (title: string, options: Object) => {
       this.notifications.push({title, options});
     },
@@ -144,9 +146,16 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
 
   fetch(req: string|Request): Promise<Response> {
     if (typeof req === 'string') {
+      if (req.startsWith(MOCK_ORIGIN)) {
+        req = '/' + req.substr(MOCK_ORIGIN.length);
+      }
       return this.server.fetch(new MockRequest(req));
     } else {
-      return this.server.fetch(req);
+      const mockReq = req.clone() as MockRequest;
+      if (mockReq.url.startsWith(MOCK_ORIGIN)) {
+        mockReq.url = '/' + mockReq.url.substr(MOCK_ORIGIN.length);
+      }
+      return this.server.fetch(mockReq);
     }
   }
 
@@ -156,9 +165,9 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
 
   removeEventListener(event: string, handler?: Function): void { this.eventHandlers.delete(event); }
 
-  newRequest(url: string): Request { return new MockRequest(url); }
+  newRequest(url: string, init: Object = {}): Request { return new MockRequest(url, init); }
 
-  newResponse(body: string): Response { return new MockResponse(body); }
+  newResponse(body: string, init: Object = {}): Response { return new MockResponse(body, init); }
 
   newHeaders(headers: {[name: string]: string}): Headers {
     return Object.keys(headers).reduce((mock, name) => {
@@ -167,11 +176,13 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     }, new MockHeaders());
   }
 
-  getPath(url: string): string {
+  parseUrl(url: string, relativeTo: string): {origin: string, path: string} {
     if (typeof URL === 'function') {
-      return new URL(url, 'http://localhost/').pathname;
+      const obj = new URL(url, relativeTo);
+      return {origin: obj.origin, path: obj.pathname};
     } else {
-      return require('url').parse(url).pathname;
+      const obj = require('url').parse(url);
+      return {origin: obj.origin, path: obj.pathname};
     }
   }
 

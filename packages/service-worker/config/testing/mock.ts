@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {sha1} from '../../cli/sha1';
 import {Filesystem} from '../src/filesystem';
 
 export class MockFilesystem implements Filesystem {
@@ -20,6 +21,8 @@ export class MockFilesystem implements Filesystem {
   }
 
   async read(path: string): Promise<string> { return this.files.get(path) !; }
+
+  async hash(path: string): Promise<string> { return sha1(this.files.get(path) !); }
 
   async write(path: string, contents: string): Promise<void> { this.files.set(path, contents); }
 }

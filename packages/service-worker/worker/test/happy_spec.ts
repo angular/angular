@@ -26,7 +26,6 @@ const dist =
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
         .build();
 
-
 const distUpdate =
     new MockFileSystemBuilder()
         .addFile('/foo.txt', 'this is foo v2')
@@ -51,6 +50,7 @@ const manifest: Manifest = {
       urls: [
         '/foo.txt',
         '/bar.txt',
+        '/redirected.txt',
       ],
       patterns: [
         '/unhashed/.*',
@@ -91,6 +91,7 @@ const manifestUpdate: Manifest = {
       urls: [
         '/foo.txt',
         '/bar.txt',
+        '/redirected.txt',
       ],
       patterns: [
         '/unhashed/.*',
@@ -117,10 +118,19 @@ const manifestUpdate: Manifest = {
   hashTable: tmpHashTableForFs(distUpdate),
 };
 
-const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(manifest).build();
+const server = new MockServerStateBuilder()
+                   .withStaticFiles(dist)
+                   .withManifest(manifest)
+                   .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
+                   .withError('/error.txt')
+                   .build();
 
 const serverUpdate =
-    new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifestUpdate).build();
+    new MockServerStateBuilder()
+        .withStaticFiles(distUpdate)
+        .withManifest(manifestUpdate)
+        .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
+        .build();
 
 const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
 
@@ -151,6 +161,7 @@ export function main() {
       server.assertSawRequestFor('/ngsw.json');
       server.assertSawRequestFor('/foo.txt');
       server.assertSawRequestFor('/bar.txt');
+      server.assertSawRequestFor('/redirected.txt');
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
       server.assertNoOtherRequests();
@@ -162,8 +173,37 @@ export function main() {
       server.assertSawRequestFor('/ngsw.json');
       server.assertSawRequestFor('/foo.txt');
       server.assertSawRequestFor('/bar.txt');
+      server.assertSawRequestFor('/redirected.txt');
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
+      server.assertNoOtherRequests();
+    });
+
+    async_it('handles non-relative URLs', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.clearRequests();
+      expect(await makeRequest(scope, 'http://localhost/foo.txt')).toEqual('this is foo');
+      server.assertNoOtherRequests();
+    });
+
+    async_it('handles actual errors from the browser', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.clearRequests();
+
+      const [resPromise, done] = scope.handleFetch(new MockRequest('/error.txt'), 'default');
+      await done;
+      const res = (await resPromise) !;
+      expect(res.status).toEqual(504);
+      expect(res.statusText).toEqual('Gateway Timeout');
+    });
+
+    async_it('handles redirected responses', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.clearRequests();
+      expect(await makeRequest(scope, '/redirected.txt')).toEqual('this was a redirect');
       server.assertNoOtherRequests();
     });
 
@@ -192,6 +232,7 @@ export function main() {
       expect(await driver.checkForUpdate()).toEqual(true);
       serverUpdate.assertSawRequestFor('/ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
+      serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();
 
       expect(client.messages).toEqual([{
@@ -224,6 +265,7 @@ export function main() {
       expect(await driver.checkForUpdate()).toEqual(true);
       serverUpdate.assertSawRequestFor('/ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
+      serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();
 
       expect(client.messages).toEqual([{
@@ -288,8 +330,10 @@ export function main() {
 
       scope.advance(12000);
       await driver.idle.empty;
+
       serverUpdate.assertSawRequestFor('/ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
+      serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();
     });
 
@@ -451,6 +495,15 @@ export function main() {
 
       async_it('are cached appropriately', async() => {
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
+        server.assertSawRequestFor('/unhashed/a.txt');
+        expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
+        server.assertNoOtherRequests();
+      });
+
+      async_it('avoid opaque responses', async() => {
+        expect(await makeRequest(scope, '/unhashed/a.txt', 'default', {
+          credentials: 'include'
+        })).toEqual('this is unhashed');
         server.assertSawRequestFor('/unhashed/a.txt');
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
         server.assertNoOtherRequests();

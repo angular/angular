@@ -38,7 +38,9 @@ export function main() {
     let group: PrefetchAssetGroup;
     let idle: IdleScheduler;
     beforeEach(() => {
-      idle = new IdleScheduler(null !, 3000);
+      idle = new IdleScheduler(null !, 3000, {
+        log: (v, ctx = '') => console.error(v, ctx),
+      });
       group = new PrefetchAssetGroup(
           scope, scope, idle, manifest.assetGroups ![0], tmpHashTable(manifest), db, 'test');
     });

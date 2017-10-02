@@ -10,7 +10,6 @@ import {parseDurationToMs} from './duration';
 import {Filesystem} from './filesystem';
 import {globToRegex} from './glob';
 import {Config} from './in';
-import {sha1} from './sha1';
 
 /**
  * Consumes service worker configuration files and processes them into control files.
@@ -49,7 +48,7 @@ export class Generator {
       // Add the hashes.
       await plainFiles.reduce(async(previous, file) => {
         await previous;
-        const hash = sha1(await this.fs.read(file));
+        const hash = await this.fs.hash(file);
         hashTable[joinUrls(this.baseHref, file)] = hash;
       }, Promise.resolve());
 

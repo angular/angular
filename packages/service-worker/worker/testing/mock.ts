@@ -62,6 +62,7 @@ export class MockFileSystem {
 
 export class MockServerStateBuilder {
   private resources = new Map<string, Response>();
+  private errors = new Set<string>();
 
   withStaticFiles(fs: MockFileSystem): MockServerStateBuilder {
     fs.list().forEach(path => {
@@ -76,7 +77,18 @@ export class MockServerStateBuilder {
     return this;
   }
 
-  build(): MockServerState { return new MockServerState(this.resources); }
+  withRedirect(from: string, to: string, toContents: string): MockServerStateBuilder {
+    this.resources.set(from, new MockResponse(toContents, {redirected: true, url: to}));
+    this.resources.set(to, new MockResponse(toContents));
+    return this;
+  }
+
+  withError(url: string): MockServerStateBuilder {
+    this.errors.add(url);
+    return this;
+  }
+
+  build(): MockServerState { return new MockServerState(this.resources, this.errors); }
 }
 
 export class MockServerState {
@@ -86,7 +98,7 @@ export class MockServerState {
   private resolveNextRequest: Function;
   nextRequest: Promise<Request>;
 
-  constructor(private resources: Map<string, Response>) {
+  constructor(private resources: Map<string, Response>, private errors: Set<string>) {
     this.nextRequest = new Promise(resolve => { this.resolveNextRequest = resolve; });
   }
 
@@ -95,10 +107,17 @@ export class MockServerState {
     this.nextRequest = new Promise(resolve => { this.resolveNextRequest = resolve; });
 
     await this.gate;
+
+    if (req.credentials === 'include') {
+      return new MockResponse(null, {status: 0, statusText: '', type: 'opaque'});
+    }
     const url = req.url.split('?')[0];
     this.requests.push(req);
     if (this.resources.has(url)) {
       return this.resources.get(url) !.clone();
+    }
+    if (this.errors.has(url)) {
+      throw new Error('Intentional failure!');
     }
     return new MockResponse(null, {status: 404, statusText: 'Not Found'});
   }
