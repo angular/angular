@@ -10,7 +10,7 @@ tab labels in the header.
 
 ### Events
 
-The `selectChange` output event is emitted when the active tab changes.
+The `selectedTabChange` output event is emitted when the active tab changes.
 
 The `focusChange` output event is emitted when the user puts focus on any of the tab labels in
 the header, usually through keyboard navigation.

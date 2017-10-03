@@ -33,7 +33,7 @@
                [content]="tab.content"
                [position]="tab.position"
                [origin]="tab.origin"
-               (onCentered)="_removeTabBodyWrapperHeight()"
-               (onCentering)="_setTabBodyWrapperHeight($event)">
+               (_onCentered)="_removeTabBodyWrapperHeight()"
+               (_onCentering)="_setTabBodyWrapperHeight($event)">
   </mat-tab-body>
 </div>

@@ -412,7 +412,7 @@ describe('nested MatTabGroup with enabled animations', () => {
         [headerPosition]="headerPosition"
         [disableRipple]="disableRipple"
         (focusChange)="handleFocus($event)"
-        (selectChange)="handleSelection($event)">
+        (selectedTabChange)="handleSelection($event)">
       <mat-tab>
         <ng-template mat-tab-label>Tab One</ng-template>
         Tab one content
@@ -448,7 +448,7 @@ class SimpleTabsTestApp {
     <mat-tab-group class="tab-group"
         [(selectedIndex)]="selectedIndex"
         (focusChange)="handleFocus($event)"
-        (selectChange)="handleSelection($event)">
+        (selectedTabChange)="handleSelection($event)">
       <mat-tab *ngFor="let tab of tabs">
         <ng-template mat-tab-label>{{tab.label}}</ng-template>
         {{tab.content}}

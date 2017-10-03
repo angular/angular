@@ -141,8 +141,14 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   @Output() focusChange: EventEmitter<MatTabChangeEvent> = new EventEmitter<MatTabChangeEvent>();
 
   /** Event emitted when the tab selection has changed. */
-  @Output() selectChange: EventEmitter<MatTabChangeEvent> =
+  @Output() selectedTabChange: EventEmitter<MatTabChangeEvent> =
       new EventEmitter<MatTabChangeEvent>(true);
+
+  /**
+   * Event emitted when the tab selection has changed.
+   * @deprecated Use `selectedTabChange` instead.
+   */
+  @Output() selectChange: EventEmitter<MatTabChangeEvent> = this.selectedTabChange;
 
   private _groupId: number;
 
@@ -170,7 +176,8 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
     // If there is a change in selected index, emit a change event. Should not trigger if
     // the selected index has not yet been initialized.
     if (this._selectedIndex != indexToSelect && this._selectedIndex != null) {
-      this.selectChange.emit(this._createChangeEvent(indexToSelect));
+      const tabChangeEvent = this._createChangeEvent(indexToSelect);
+      this.selectedTabChange.emit(tabChangeEvent);
       // Emitting this value after change detection has run
       // since the checked content may contain this variable'
       Promise.resolve().then(() => this.selectedIndexChange.emit(indexToSelect));
