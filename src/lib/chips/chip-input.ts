@@ -63,17 +63,6 @@ export class MatChipInput {
   @Output('matChipInputTokenEnd')
   chipEnd = new EventEmitter<MatChipInputEvent>();
 
-  @Input('matChipInputFor')
-  set matChipList(value: MatChipList) { this.chipList = value; }
-
-  @Input('matChipInputAddOnBlur')
-  get matAddOnBlur() { return this._addOnBlur; }
-  set matAddOnBlur(value) { this.addOnBlur = value; }
-
-  @Input('matChipInputSeparatorKeyCodes')
-  get matSeparatorKeyCodes() { return this.separatorKeyCodes; }
-  set matSeparatorKeyCodes(v: number[]) { this.separatorKeyCodes = v; }
-
   @Input() placeholder: string = '';
 
   get empty(): boolean {

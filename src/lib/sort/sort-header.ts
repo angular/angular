@@ -113,10 +113,6 @@ export class MatSortHeader implements MatSortable {
   set disableClear(v) { this._disableClear = coerceBooleanProperty(v); }
   private _disableClear: boolean;
 
-  @Input('mat-sort-header')
-  get _id() { return this.id; }
-  set _id(v: string) { this.id = v; }
-
   constructor(public _intl: MatSortHeaderIntl,
               changeDetectorRef: ChangeDetectorRef,
               @Optional() public _sort: MatSort,
