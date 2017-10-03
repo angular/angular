@@ -8,7 +8,6 @@
 
 import {ElementRef, NgZone} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
-import {ViewportRuler} from '@angular/cdk/scrolling';
 import {RippleRef, RippleState} from './ripple-ref';
 
 
@@ -56,11 +55,7 @@ export class RippleRenderer {
   /** Whether mouse ripples should be created or not. */
   rippleDisabled: boolean = false;
 
-  constructor(
-      elementRef: ElementRef,
-      private _ngZone: NgZone,
-      private _ruler: ViewportRuler,
-      platform: Platform) {
+  constructor(elementRef: ElementRef, private _ngZone: NgZone, platform: Platform) {
     // Only do anything if we're on the browser.
     if (platform.isBrowser) {
       this._containerElement = elementRef.nativeElement;
@@ -79,27 +74,26 @@ export class RippleRenderer {
     }
   }
 
-  /** Fades in a ripple at the given coordinates. */
-  fadeInRipple(pageX: number, pageY: number, config: RippleConfig = {}): RippleRef {
-    let containerRect = this._containerElement.getBoundingClientRect();
+  /**
+   * Fades in a ripple at the given coordinates.
+   * @param x Coordinate within the element, along the X axis at which to start the ripple.
+   * @param Y Coordinate within the element, along the Y axis at which to start the ripple.
+   * @param config Extra ripple options.
+   */
+  fadeInRipple(x: number, y: number, config: RippleConfig = {}): RippleRef {
+    const containerRect = this._containerElement.getBoundingClientRect();
 
     if (config.centered) {
-      pageX = containerRect.left + containerRect.width / 2;
-      pageY = containerRect.top + containerRect.height / 2;
-    } else {
-      // Subtract scroll values from the coordinates because calculations below
-      // are always relative to the viewport rectangle.
-      let scrollPosition = this._ruler.getViewportScrollPosition();
-      pageX -= scrollPosition.left;
-      pageY -= scrollPosition.top;
+      x = containerRect.left + containerRect.width / 2;
+      y = containerRect.top + containerRect.height / 2;
     }
 
-    let radius = config.radius || distanceToFurthestCorner(pageX, pageY, containerRect);
-    let duration = RIPPLE_FADE_IN_DURATION * (1 / (config.speedFactor || 1));
-    let offsetX = pageX - containerRect.left;
-    let offsetY = pageY - containerRect.top;
+    const radius = config.radius || distanceToFurthestCorner(x, y, containerRect);
+    const duration = RIPPLE_FADE_IN_DURATION * (1 / (config.speedFactor || 1));
+    const offsetX = x - containerRect.left;
+    const offsetY = y - containerRect.top;
 
-    let ripple = document.createElement('div');
+    const ripple = document.createElement('div');
     ripple.classList.add('mat-ripple-element');
 
     ripple.style.left = `${offsetX - radius}px`;
@@ -189,7 +183,7 @@ export class RippleRenderer {
   private onMousedown(event: MouseEvent) {
     if (!this.rippleDisabled) {
       this._isPointerDown = true;
-      this.fadeInRipple(event.pageX, event.pageY, this.rippleConfig);
+      this.fadeInRipple(event.clientX, event.clientY, this.rippleConfig);
     }
   }
 
@@ -215,9 +209,9 @@ export class RippleRenderer {
   /** Function being called whenever the trigger is being touched. */
   private onTouchstart(event: TouchEvent) {
     if (!this.rippleDisabled) {
-      const {pageX, pageY} = event.touches[0];
+      const {clientX, clientY} = event.touches[0];
       this._isPointerDown = true;
-      this.fadeInRipple(pageX, pageY, this.rippleConfig);
+      this.fadeInRipple(clientX, clientY, this.rippleConfig);
     }
   }
 

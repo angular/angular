@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {ScrollDispatchModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
+import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import {PlatformModule} from '@angular/cdk/platform';
 import {MatCommonModule} from '../common-behaviors/common-module';
 import {MatRipple} from './ripple';
@@ -20,6 +20,5 @@ export {RippleConfig, RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '.
   imports: [MatCommonModule, PlatformModule, ScrollDispatchModule],
   exports: [MatRipple, MatCommonModule],
   declarations: [MatRipple],
-  providers: [VIEWPORT_RULER_PROVIDER],
 })
 export class MatRippleModule {}

@@ -10,7 +10,6 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {auditTime, takeUntil} from '@angular/cdk/rxjs';
-import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -225,14 +224,13 @@ export class MatTabLink extends _MatTabLinkMixinBase implements OnDestroy, CanDi
   constructor(private _tabNavBar: MatTabNav,
               private _elementRef: ElementRef,
               ngZone: NgZone,
-              ruler: ViewportRuler,
               platform: Platform,
               @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions) {
     super();
 
     // Manually create a ripple instance that uses the tab link element as trigger element.
     // Notice that the lifecycle hooks for the ripple config won't be called anymore.
-    this._tabLinkRipple = new MatRipple(_elementRef, ngZone, ruler, platform, globalOptions);
+    this._tabLinkRipple = new MatRipple(_elementRef, ngZone, platform, globalOptions);
   }
 
   ngOnDestroy() {

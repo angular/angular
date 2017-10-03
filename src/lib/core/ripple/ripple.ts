@@ -18,7 +18,6 @@ import {
   InjectionToken,
   Optional,
 } from '@angular/core';
-import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Platform} from '@angular/cdk/platform';
 import {RippleConfig, RippleRenderer} from './ripple-renderer';
 import {RippleRef} from './ripple-ref';
@@ -91,11 +90,10 @@ export class MatRipple implements OnChanges, OnDestroy {
   constructor(
     elementRef: ElementRef,
     ngZone: NgZone,
-    ruler: ViewportRuler,
     platform: Platform,
     @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions
   ) {
-    this._rippleRenderer = new RippleRenderer(elementRef, ngZone, ruler, platform);
+    this._rippleRenderer = new RippleRenderer(elementRef, ngZone, platform);
     this._globalOptions = globalOptions ? globalOptions : {};
 
     this._updateRippleRenderer();
@@ -115,8 +113,8 @@ export class MatRipple implements OnChanges, OnDestroy {
   }
 
   /** Launches a manual ripple at the specified position. */
-  launch(pageX: number, pageY: number, config = this.rippleConfig): RippleRef {
-    return this._rippleRenderer.fadeInRipple(pageX, pageY, config);
+  launch(x: number, y: number, config = this.rippleConfig): RippleRef {
+    return this._rippleRenderer.fadeInRipple(x, y, config);
   }
 
   /** Fades out all currently showing ripple elements. */
