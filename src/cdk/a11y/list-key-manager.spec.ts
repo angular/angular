@@ -550,13 +550,12 @@ describe('Key managers', () => {
   describe('ActiveDescendantKeyManager', () => {
     let keyManager: ActiveDescendantKeyManager<FakeHighlightable>;
 
-    beforeEach(fakeAsync(() => {
+    beforeEach(() => {
       itemList.items = [new FakeHighlightable(), new FakeHighlightable(), new FakeHighlightable()];
       keyManager = new ActiveDescendantKeyManager<FakeHighlightable>(itemList);
 
       // first item is already focused
       keyManager.setFirstItemActive();
-      tick();
 
       spyOn(itemList.items[0], 'setActiveStyles');
       spyOn(itemList.items[1], 'setActiveStyles');
@@ -565,44 +564,38 @@ describe('Key managers', () => {
       spyOn(itemList.items[0], 'setInactiveStyles');
       spyOn(itemList.items[1], 'setInactiveStyles');
       spyOn(itemList.items[2], 'setInactiveStyles');
-    }));
+    });
 
-    it('should set subsequent items as active with the DOWN arrow', fakeAsync(() => {
+    it('should set subsequent items as active with the DOWN arrow', () => {
       keyManager.onKeydown(fakeKeyEvents.downArrow);
-      tick();
 
       expect(itemList.items[1].setActiveStyles).toHaveBeenCalled();
       expect(itemList.items[2].setActiveStyles).not.toHaveBeenCalled();
 
       keyManager.onKeydown(fakeKeyEvents.downArrow);
-      tick();
 
       expect(itemList.items[2].setActiveStyles).toHaveBeenCalled();
-    }));
+    });
 
-    it('should set previous items as active with the UP arrow', fakeAsync(() => {
+    it('should set previous items as active with the UP arrow', () => {
       keyManager.setLastItemActive();
-      tick();
-
       keyManager.onKeydown(fakeKeyEvents.upArrow);
-      tick();
+
       expect(itemList.items[1].setActiveStyles).toHaveBeenCalled();
       expect(itemList.items[0].setActiveStyles).not.toHaveBeenCalled();
 
       keyManager.onKeydown(fakeKeyEvents.upArrow);
-      tick();
-      expect(itemList.items[0].setActiveStyles).toHaveBeenCalled();
-    }));
 
-    it('should set inactive styles on previously active items', fakeAsync(() => {
+      expect(itemList.items[0].setActiveStyles).toHaveBeenCalled();
+    });
+
+    it('should set inactive styles on previously active items', () => {
       keyManager.onKeydown(fakeKeyEvents.downArrow);
-      tick();
       expect(itemList.items[0].setInactiveStyles).toHaveBeenCalled();
 
       keyManager.onKeydown(fakeKeyEvents.upArrow);
-      tick();
       expect(itemList.items[1].setInactiveStyles).toHaveBeenCalled();
-    }));
+    });
 
   });
 

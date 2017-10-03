@@ -22,6 +22,7 @@ import {startWith as startWithOperator} from 'rxjs/operator/startWith';
 import {debounceTime as debounceTimeOperator} from 'rxjs/operator/debounceTime';
 import {auditTime as auditTimeOperator} from 'rxjs/operator/auditTime';
 import {takeUntil as takeUntilOperator} from 'rxjs/operator/takeUntil';
+import {delay as delayOperator} from 'rxjs/operator/delay';
 
 /**
  * Represents a strongly-typed chain of RxJS operators.
@@ -71,6 +72,9 @@ export interface StrictRxChain<T> {
 
   call(operator: takeUntilOperatorType<T>, notifier: Observable<any>): StrictRxChain<T>;
 
+  call(operator: delayOperatorType<T>, delay: number | Date, scheduler?: IScheduler):
+        StrictRxChain<T>;
+
   subscribe(fn: (t: T) => void): Subscription;
 
   result(): Observable<T>;
@@ -89,6 +93,7 @@ export class StartWithBrand { private _; }
 export class DebounceTimeBrand { private _; }
 export class AuditTimeBrand { private _; }
 export class TakeUntilBrand { private _; }
+export class DelayBrand { private _; }
 /* tslint:enable:no-unused-variable */
 
 
@@ -104,6 +109,7 @@ export type startWithOperatorType<T> = typeof startWithOperator & StartWithBrand
 export type debounceTimeOperatorType<T> = typeof debounceTimeOperator & DebounceTimeBrand;
 export type auditTimeOperatorType<T> = typeof auditTimeOperator & AuditTimeBrand;
 export type takeUntilOperatorType<T> = typeof takeUntilOperator & TakeUntilBrand;
+export type delayOperatorType<T> = typeof delayOperator & DelayBrand;
 
 // We add `Function` to the type intersection to make this nomically different from
 // `finallyOperatorType` while still being structurally the same. Without this, TypeScript tries to
@@ -123,3 +129,4 @@ export const debounceTime =
     debounceTimeOperator as typeof debounceTimeOperator & DebounceTimeBrand & Function;
 export const auditTime = auditTimeOperator as typeof auditTimeOperator & AuditTimeBrand & Function;
 export const takeUntil = takeUntilOperator as typeof takeUntilOperator & TakeUntilBrand & Function;
+export const delay = delayOperator as typeof delayOperator & DelayBrand & Function;

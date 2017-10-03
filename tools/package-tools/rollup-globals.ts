@@ -80,6 +80,7 @@ export const rollupGlobals = {
   'rxjs/operator/switchMap': 'Rx.Observable.prototype',
   'rxjs/operator/takeUntil': 'Rx.Observable.prototype',
   'rxjs/operator/toPromise': 'Rx.Observable.prototype',
+  'rxjs/operator/delay': 'Rx.Observable.prototype',
 
   'rxjs/add/observable/merge': 'Rx.Observable',
   'rxjs/add/observable/fromEvent': 'Rx.Observable',

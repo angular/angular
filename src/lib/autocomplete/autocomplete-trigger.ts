@@ -18,7 +18,7 @@ import {
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {filter, first, map, RxChain, switchMap} from '@angular/cdk/rxjs';
+import {filter, first, RxChain, switchMap, doOperator, delay} from '@angular/cdk/rxjs';
 import {
   ChangeDetectorRef,
   Directive,
@@ -284,11 +284,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
         this.openPanel();
       }
 
-      Promise.resolve().then(() => {
-        if (isArrowKey || this.autocomplete._keyManager.activeItem !== prevActiveItem) {
-          this._scrollToOption();
-        }
-      });
+      if (isArrowKey || this.autocomplete._keyManager.activeItem !== prevActiveItem) {
+        this._scrollToOption();
+      }
     }
   }
 
@@ -356,9 +354,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this.autocomplete._setScrollTop(optionOffset);
     } else if (optionOffset + AUTOCOMPLETE_OPTION_HEIGHT > panelTop + AUTOCOMPLETE_PANEL_HEIGHT) {
       // Scroll down to reveal selected option scrolled below the panel bottom
-      const newScrollTop =
-          Math.max(0, optionOffset - AUTOCOMPLETE_PANEL_HEIGHT + AUTOCOMPLETE_OPTION_HEIGHT);
-      this.autocomplete._setScrollTop(newScrollTop);
+      const newScrollTop = optionOffset - AUTOCOMPLETE_PANEL_HEIGHT + AUTOCOMPLETE_OPTION_HEIGHT;
+      this.autocomplete._setScrollTop(Math.max(0, newScrollTop));
     }
   }
 
@@ -368,8 +365,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    */
   private _subscribeToClosingActions(): Subscription {
     const firstStable = first.call(this._zone.onStable.asObservable());
-    const optionChanges = map.call(this.autocomplete.options.changes, () =>
-      this._positionStrategy.recalculateLastPosition());
+    const optionChanges = RxChain.from(this.autocomplete.options.changes)
+      .call(doOperator, () => this._positionStrategy.recalculateLastPosition())
+      // Defer emitting to the stream until the next tick, because changing
+      // bindings in here will cause "changed after checked" errors.
+      .call(delay, 0)
+      .result();
 
     // When the zone is stable initially, and when the option list changes...
     return RxChain.from(merge(firstStable, optionChanges))

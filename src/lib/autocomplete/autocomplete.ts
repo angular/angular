@@ -123,14 +123,12 @@ export class MatAutocomplete implements AfterContentInit {
   }
 
   /** Panel should hide itself when the option list is empty. */
-  _setVisibility(): void {
-    Promise.resolve().then(() => {
-      this.showPanel = !!this.options.length;
-      this._classList['mat-autocomplete-visible'] = this.showPanel;
-      this._classList['mat-autocomplete-hidden'] = !this.showPanel;
-      this._changeDetectorRef.markForCheck();
-    });
-  }
+  _setVisibility() {
+    this.showPanel = !!this.options.length;
+    this._classList['mat-autocomplete-visible'] = this.showPanel;
+    this._classList['mat-autocomplete-hidden'] = !this.showPanel;
+    this._changeDetectorRef.markForCheck();
+}
 
   /** Emits the `select` event. */
   _emitSelectEvent(option: MatOption): void {
