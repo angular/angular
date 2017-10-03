@@ -180,7 +180,7 @@ describe('ng program', () => {
       // compile libraries
       const p1 = compile(undefined, options, undefined, host).program;
 
-      // first compile without libraries
+      // compile without libraries
       const p2 = compile(p1, options, undefined, host).program;
       expect(written.has(path.resolve(testSupport.basePath, 'built/src/index.js'))).toBe(true);
       let ngFactoryContent =
@@ -202,11 +202,22 @@ describe('ng program', () => {
       // change a file that is input to generated files
       written.clear();
       testSupport.writeFiles({'src/index.html': 'Hello'});
-      compile(p4, options, undefined, host);
+      const p5 = compile(p4, options, undefined, host).program;
       expect(written.size).toBe(1);
       ngFactoryContent =
           written.get(path.resolve(testSupport.basePath, 'built/src/index.ngfactory.js'));
       expect(ngFactoryContent).toMatch(/Hello/);
+
+      // change a file and create an intermediate program that is not emitted
+      written.clear();
+      fileCache.delete(path.resolve(testSupport.basePath, 'src/index.ts'));
+      const p6 = ng.createProgram({
+        rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
+        options: testSupport.createCompilerOptions(options), host,
+        oldProgram: p5
+      });
+      const p7 = compile(p6, options, undefined, host).program;
+      expect(written.size).toBe(1);
     });
 
     it('should set emitSkipped to false for full and incremental emit', () => {
