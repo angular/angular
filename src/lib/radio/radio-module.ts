@@ -12,9 +12,9 @@ import {VIEWPORT_RULER_PROVIDER} from '@angular/cdk/overlay';
 import {
   MatRippleModule,
   MatCommonModule,
-  UNIQUE_SELECTION_DISPATCHER_PROVIDER,
 } from '@angular/material/core';
 import {MatRadioGroup, MatRadioButton} from './radio';
+import {UNIQUE_SELECTION_DISPATCHER_PROVIDER} from '@angular/cdk/collections';
 import {A11yModule} from '@angular/cdk/a11y';
 
 @NgModule({

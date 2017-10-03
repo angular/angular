@@ -37,9 +37,9 @@ import {
   mixinDisabled,
   mixinDisableRipple,
   RippleRef,
-  UniqueSelectionDispatcher,
 } from '@angular/material/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 
 // Increasing integer for generating unique ids for radio components.

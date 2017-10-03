@@ -8,7 +8,7 @@
 
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {UNIQUE_SELECTION_DISPATCHER_PROVIDER} from '@angular/material/core';
+import {UNIQUE_SELECTION_DISPATCHER_PROVIDER} from '@angular/cdk/collections';
 import {A11yModule} from '@angular/cdk/a11y';
 import {CdkAccordion, MatAccordion} from './accordion';
 import {MatExpansionPanel, MatExpansionPanelActionRow} from './expansion-panel';

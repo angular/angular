@@ -9,3 +9,8 @@
 export * from './collection-viewer';
 export * from './data-source';
 export * from './selection';
+export {
+  UniqueSelectionDispatcher,
+  UniqueSelectionDispatcherListener,
+  UNIQUE_SELECTION_DISPATCHER_PROVIDER,
+} from './unique-selection-dispatcher';

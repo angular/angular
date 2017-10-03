@@ -21,7 +21,8 @@ import {
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanDisable, mixinDisabled, UniqueSelectionDispatcher} from '@angular/material/core';
+import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
+import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs/Subject';
 import {MatAccordion} from './accordion';
 import {AccordionItem} from './accordion-item';

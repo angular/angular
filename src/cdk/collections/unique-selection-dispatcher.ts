@@ -39,7 +39,7 @@ export class UniqueSelectionDispatcher {
   /**
    * Listen for future changes to item selection.
    * @return Function used to deregister listener
-   **/
+   */
   listen(listener: UniqueSelectionDispatcherListener): () => void {
     this._listeners.push(listener);
     return () => {
