@@ -82,24 +82,25 @@ describe('MatDatepicker', () => {
       }));
 
       it('open non-touch should open popup', () => {
-        expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
+        expect(document.querySelector('.cdk-overlay-pane.mat-datepicker-popup')).toBeNull();
 
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('.cdk-overlay-pane')).not.toBeNull();
+        expect(document.querySelector('.cdk-overlay-pane.mat-datepicker-popup')).not.toBeNull();
       });
 
       it('open touch should open dialog', () => {
         testComponent.touch = true;
         fixture.detectChanges();
 
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog mat-dialog-container')).toBeNull();
 
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog mat-dialog-container'))
+            .not.toBeNull();
       });
 
       it('open in disabled mode should not open the calendar', () => {
