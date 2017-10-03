@@ -167,6 +167,46 @@
 
   <mat-paginator #paginator
                 [length]="_peopleDatabase.data.length"
+                [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]">
   </mat-paginator>
 </div>
+
+<mat-card class="demo-table-card">
+  <h3> MatTable Using 'When' Rows for Interactive Details</h3>
+
+  <mat-table [dataSource]="dataSourceWithDetails">
+    <!-- Column Definition: ID -->
+    <ng-container matColumnDef="userId">
+      <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.id}} </mat-cell>
+    </ng-container>
+
+    <!-- Column Definition: Name -->
+    <ng-container matColumnDef="userName">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+    </ng-container>
+
+    <!-- Detail Column -->
+    <ng-container matColumnDef="details">
+      <mat-cell *matCellDef="let row">
+        <ng-container *ngIf="wasExpanded.has(row.data)">
+          {{row.data.name.split(' ')[0]}}'s favorite color is {{row.data.color}} and has a progress
+          of {{row.data.progress}}%.
+        </ng-container>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="['userId', 'userName']"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: ['userId', 'userName'];"
+            matRipple
+            class="user-row"
+            [style.borderBottomColor]="expandedPerson == row ? 'transparent' : ''"
+            (click)="expandedPerson = row; wasExpanded.add(row)"></mat-row>
+    <mat-row *matRowDef="let row; columns: ['details']; when: isDetailRow"
+            [@detailExpand]="row.data == expandedPerson ? 'expanded' : 'collapsed'"
+            style="overflow: hidden">
+    </mat-row>
+  </mat-table>
+</mat-card>

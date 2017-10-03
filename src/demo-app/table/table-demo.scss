@@ -24,13 +24,25 @@
 
 .demo-table-card {
   margin: 24px 0;
-  max-height: 200px;
+  max-height: 450px;
   overflow: auto;
 
   h3 {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+}
+
+.user-row {
+  cursor: pointer;
+  position: relative; // For mdRipple
+
+  &:hover {
+    background: #f5f5f5;
+  }
+  &:active {
+    background: #eaeaea;
   }
 }
 
@@ -75,7 +87,6 @@
 /* Column max widths */
 .cdk-column-userId {
   max-width: 32px;
-  text-align: right;
   justify-content: flex-end;
 }
 

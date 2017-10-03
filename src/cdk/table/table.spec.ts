@@ -7,7 +7,12 @@ import {Observable} from 'rxjs/Observable';
 import {combineLatest} from 'rxjs/observable/combineLatest';
 import {CdkTableModule} from './index';
 import {map} from 'rxjs/operator/map';
-import {getTableDuplicateColumnNameError, getTableUnknownColumnError} from './table-errors';
+import {
+  getTableDuplicateColumnNameError,
+  getTableMissingMatchingRowDefError,
+  getTableMultipleDefaultRowDefsError,
+  getTableUnknownColumnError
+} from './table-errors';
 
 describe('CdkTable', () => {
   let fixture: ComponentFixture<SimpleCdkTableApp>;
@@ -31,6 +36,9 @@ describe('CdkTable', () => {
         MissingColumnDefCdkTableApp,
         CrazyColumnNameCdkTableApp,
         UndefinedColumnsCdkTableApp,
+        WhenRowCdkTableApp,
+        WhenRowWithoutDefaultCdkTableApp,
+        WhenRowMultipleDefaultsCdkTableApp
       ],
     }).compileComponents();
   }));
@@ -199,6 +207,34 @@ describe('CdkTable', () => {
     // Check that the number of cells is correct
     getRows(tableElement).forEach(row => {
       expect(getCells(row).length).toBe(component.columnsToRender.length);
+    });
+  });
+
+  describe('using when predicate', () => {
+    it('should be able to display different row templates based on the row data', () => {
+      let whenFixture = TestBed.createComponent(WhenRowCdkTableApp);
+      whenFixture.detectChanges();
+
+      let data = whenFixture.componentInstance.dataSource.data;
+      expectTableToMatchContent(whenFixture.nativeElement.querySelector('cdk-table'), [
+        ['Column A', 'Column B', 'Column C'],
+        [data[0].a, data[0].b, data[0].c],
+        ['index_1_special_row'],
+        ['c3_special_row'],
+        [data[3].a, data[3].b, data[3].c],
+      ]);
+    });
+
+    it('should error if there is row data that does not have a matching row template', () => {
+      let whenFixture = TestBed.createComponent(WhenRowWithoutDefaultCdkTableApp);
+      expect(() => whenFixture.detectChanges())
+          .toThrowError(getTableMissingMatchingRowDefError().message);
+    });
+
+    it('should error if there are multiple rows that do not have a when function', () => {
+      let whenFixture = TestBed.createComponent(WhenRowMultipleDefaultsCdkTableApp);
+      expect(() => whenFixture.detectChanges())
+          .toThrowError(getTableMultipleDefaultRowDefsError().message);
     });
   });
 
@@ -611,6 +647,139 @@ class FakeDataSource extends DataSource<TestData> {
 class SimpleCdkTableApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_b">
+        <cdk-header-cell *cdkHeaderCellDef> Column B</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.b}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_c">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.c}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="index1Column">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> index_1_special_row </cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="c3Column">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> c3_special_row </cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: columnsToRender"></cdk-row>
+      <cdk-row *cdkRowDef="let row; columns: ['index1Column']; when: isIndex1"></cdk-row>
+      <cdk-row *cdkRowDef="let row; columns: ['c3Column']; when: hasC3"></cdk-row>
+    </cdk-table>
+  `
+})
+class WhenRowCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+  isIndex1 = (_rowData: TestData, index: number) => index == 1;
+  hasC3 = (rowData: TestData) => rowData.c == 'c_3';
+
+  constructor() { this.dataSource.addData(); }
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_b">
+        <cdk-header-cell *cdkHeaderCellDef> Column B</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.b}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_c">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.c}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="index1Column">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> index_1_special_row </cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="c3Column">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> c3_special_row </cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: ['index1Column']; when: isIndex1"></cdk-row>
+      <cdk-row *cdkRowDef="let row; columns: ['c3Column']; when: hasC3"></cdk-row>
+    </cdk-table>
+  `
+})
+class WhenRowWithoutDefaultCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+  isIndex1 = (_rowData: TestData, index: number) => index == 1;
+  hasC3 = (rowData: TestData) => rowData.c == 'c_3';
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_b">
+        <cdk-header-cell *cdkHeaderCellDef> Column B</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.b}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_c">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.c}}</cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="index1Column">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> index_1_special_row </cdk-cell>
+      </ng-container>
+
+      <ng-container cdkColumnDef="c3Column">
+        <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> c3_special_row </cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: columnsToRender"></cdk-row>
+      <cdk-row *cdkRowDef="let row; columns: ['index1Column']"></cdk-row>
+      <cdk-row *cdkRowDef="let row; columns: ['c3Column']; when: hasC3"></cdk-row>
+    </cdk-table>
+  `
+})
+class WhenRowMultipleDefaultsCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+  isIndex1 = (_rowData: TestData, index: number) => index == 1;
+  hasC3 = (rowData: TestData) => rowData.c == 'c_3';
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
 }

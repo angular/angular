@@ -8,11 +8,11 @@
 
 import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '@angular/core';
 import {
-  CdkHeaderRow,
-  CdkRow,
   CDK_ROW_TEMPLATE,
-  CdkRowDef,
+  CdkHeaderRow,
   CdkHeaderRowDef,
+  CdkRow,
+  CdkRowDef,
 } from '@angular/cdk/table';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
@@ -34,14 +34,16 @@ export class MatHeaderRowDef extends _MatHeaderRowDef { }
 
 /**
  * Data row definition for the mat-table.
- * Captures the header row's template and other row properties such as the columns to display.
+ * Captures the header row's template and other row properties such as the columns to display and
+ * a when predicate that describes when this row should be used.
  */
 @Directive({
   selector: '[matRowDef]',
   providers: [{provide: CdkRowDef, useExisting: MatRowDef}],
-  inputs: ['columns: matRowDefColumns'],
+  inputs: ['columns: matRowDefColumns', 'when: matRowDefWhen'],
 })
-export class MatRowDef extends _MatCdkRowDef { }
+export class MatRowDef<T> extends _MatCdkRowDef<T> {
+}
 
 /** Header template container that contains the cell outlet. Adds the right class and role. */
 @Component({

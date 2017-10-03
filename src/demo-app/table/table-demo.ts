@@ -2,6 +2,8 @@ import {Component, ViewChild} from '@angular/core';
 import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
 import {MatPaginator, MatSort} from '@angular/material';
+import {DetailRow, PersonDetailDataSource} from './person-detail-data-source';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 
@@ -14,20 +16,33 @@ const properties = ['id', 'name', 'progress', 'color'];
   selector: 'table-demo',
   templateUrl: 'table-demo.html',
   styleUrls: ['table-demo.css'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0', visibility: 'hidden'})),
+      state('expanded', style({height: '*', visibility: 'visible'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class TableDemo {
   dataSource: PersonDataSource | null;
+  dataSourceWithDetails: PersonDetailDataSource | null;
   displayedColumns: UserProperties[] = [];
   trackByStrategy: TrackByStrategy = 'reference';
   changeReferences = false;
   highlights = new Set<string>();
+  wasExpanded = new Set<UserData>();
 
   dynamicColumnDefs: any[] = [];
   dynamicColumnIds: string[] = [];
 
+  expandedPerson: UserData;
+
   @ViewChild(MatPaginator) _paginator: MatPaginator;
 
   @ViewChild(MatSort) sort: MatSort;
+
+  isDetailRow = (row: DetailRow|UserData) => row.hasOwnProperty('detailRow');
 
   constructor(public _peopleDatabase: PeopleDatabase) { }
 
@@ -55,6 +70,7 @@ export class TableDemo {
     this.displayedColumns = ['userId', 'userName', 'progress', 'color'];
     this.dataSource = new PersonDataSource(this._peopleDatabase,
         this._paginator, this.sort);
+    this.dataSourceWithDetails = new PersonDetailDataSource(this.dataSource);
     this._peopleDatabase.initialize();
   }
 
