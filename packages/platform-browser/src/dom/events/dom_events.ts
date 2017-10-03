@@ -22,9 +22,9 @@ import {EventManagerPlugin} from './event_manager';
  * addEventListener by 3x.
  */
 const __symbol__ =
-    (typeof Zone !== 'undefined') && (Zone as any)['__symbol__'] || function<T>(v: T): T {
-  return v;
-};
+    (typeof Zone !== 'undefined') && (Zone as any)['__symbol__'] || function(v: string): string {
+      return '__zone_symbol__' + v;
+    };
 const ADD_EVENT_LISTENER: 'addEventListener' = __symbol__('addEventListener');
 const REMOVE_EVENT_LISTENER: 'removeEventListener' = __symbol__('removeEventListener');
 
