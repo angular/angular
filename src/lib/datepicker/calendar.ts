@@ -98,7 +98,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   @Output() selectedChange = new EventEmitter<D>();
 
   /** Emits when any date is selected. */
-  @Output() userSelection = new EventEmitter<void>();
+  @Output() _userSelection = new EventEmitter<void>();
 
   /** Reference to the current month view component. */
   @ViewChild(MatMonthView) monthView: MatMonthView<D>;
@@ -197,7 +197,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   }
 
   _userSelected(): void {
-    this.userSelection.emit();
+    this._userSelection.emit();
   }
 
   /** Handles month selection in the year view. */
