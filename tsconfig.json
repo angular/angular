@@ -3,8 +3,6 @@
 {
   "compilerOptions": {
     "outDir": "./dist/packages/all",
-    // Needed for Moment.js since it doesn't have a default export.
-    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "module": "es2015",
     "moduleResolution": "node",

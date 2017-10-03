@@ -9,7 +9,7 @@
       TODO(mmalerba): &nbsp; is currently broken in components with preserveWhitespace: false, so we
       evaluate it as a JS string binding instead. Change back to &nbsp; once it works again.
     -->
-    <ng-container *ngIf="empty">{{'\u00A0'}}</ng-container>
+    <ng-container *ngIf="empty">&nbsp;</ng-container>
     <span class="mat-select-value-text" *ngIf="!empty" [ngSwitch]="!!customTrigger">
       <span *ngSwitchDefault>{{ triggerValue }}</span>
       <ng-content select="mat-select-trigger" *ngSwitchCase="true"></ng-content>
