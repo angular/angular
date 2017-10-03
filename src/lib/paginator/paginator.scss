@@ -32,13 +32,8 @@ $mat-paginator-button-increment-icon-margin: 16px;
 }
 
 .mat-paginator-page-size-select {
-  // Since the select won't have a placeholder we can remove the space that is reserved for it.
-  padding-top: 0;
   margin: $mat-paginator-selector-margin;
-
-  .mat-select-trigger {
-    min-width: $mat-paginator-selector-trigger-min-width;
-  }
+  width: $mat-paginator-selector-trigger-min-width;
 }
 
 .mat-paginator-range-label {

@@ -3,11 +3,13 @@
     {{_intl.itemsPerPageLabel}}
   </div>
 
-  <mat-form-field *ngIf="_displayedPageSizeOptions.length > 1">
-    <mat-select class="mat-paginator-page-size-select"
-               [value]="pageSize"
-               [aria-label]="_intl.itemsPerPageLabel"
-               (change)="_changePageSize($event.value)">
+  <mat-form-field
+    *ngIf="_displayedPageSizeOptions.length > 1"
+    class="mat-paginator-page-size-select">
+    <mat-select
+      [value]="pageSize"
+      [aria-label]="_intl.itemsPerPageLabel"
+      (change)="_changePageSize($event.value)">
       <mat-option *ngFor="let pageSizeOption of _displayedPageSizeOptions" [value]="pageSizeOption">
         {{pageSizeOption}}
       </mat-option>

@@ -11,6 +11,7 @@ import {CommonModule} from '@angular/common';
 import {MatSelect, MatSelectTrigger, MAT_SELECT_SCROLL_STRATEGY_PROVIDER} from './select';
 import {MatCommonModule, MatOptionModule} from '@angular/material/core';
 import {OverlayModule} from '@angular/cdk/overlay';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 
 @NgModule({
@@ -20,7 +21,7 @@ import {OverlayModule} from '@angular/cdk/overlay';
     MatOptionModule,
     MatCommonModule,
   ],
-  exports: [MatSelect, MatSelectTrigger, MatOptionModule, MatCommonModule],
+  exports: [MatFormFieldModule, MatSelect, MatSelectTrigger, MatOptionModule, MatCommonModule],
   declarations: [MatSelect, MatSelectTrigger],
   providers: [MAT_SELECT_SCROLL_STRATEGY_PROVIDER]
 })
