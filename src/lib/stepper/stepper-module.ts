@@ -18,6 +18,7 @@ import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
 import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
+import {MatStepperIntl} from './stepper-intl';
 
 
 @NgModule({
@@ -44,5 +45,6 @@ import {MatStepperNext, MatStepperPrevious} from './stepper-button';
   ],
   declarations: [MatHorizontalStepper, MatVerticalStepper, MatStep, MatStepLabel, MatStepper,
     MatStepperNext, MatStepperPrevious, MatStepHeader],
+  providers: [MatStepperIntl],
 })
 export class MatStepperModule {}

@@ -7,8 +7,8 @@ that drives a stepped workflow. Material stepper extends the CDK stepper and has
 styling.
 
 ### Stepper variants
-There are two stepper components: `mat-horizontal-stepper` and `mat-vertical-stepper`. They 
-can be used the same way. The only difference is the orientation of stepper. 
+There are two stepper components: `mat-horizontal-stepper` and `mat-vertical-stepper`. They
+can be used the same way. The only difference is the orientation of stepper.
 `mat-horizontal-stepper` selector can be used to create a horizontal stepper, and
 `mat-vertical-stepper` can be used to create a vertical stepper. `mat-step` components need to be
 placed inside either one of the two stepper components.
@@ -26,7 +26,7 @@ If a step's label is only text, then the `label` attribute can be used.
 </mat-vertical-stepper>
 ```
 
-For more complex labels, add a template with the `matStepLabel` directive inside the 
+For more complex labels, add a template with the `matStepLabel` directive inside the
 `mat-step`.
 ```html
 <mat-vertical-stepper>
@@ -49,14 +49,14 @@ There are two button directives to support navigation between different steps:
       <button mat-button matStepperNext>Next</button>
     </div>
   </mat-step>
-</mat-horizontal-stepper>  
+</mat-horizontal-stepper>
 ```
 
 ### Linear stepper
 The `linear` attribute can be set on `mat-horizontal-stepper` and `mat-vertical-stepper` to create
 a linear stepper that requires the user to complete previous steps before proceeding
 to following steps. For each `mat-step`, the `stepControl` attribute can be set to the top level
-`AbstractControl` that is used to check the validity of the step. 
+`AbstractControl` that is used to check the validity of the step.
 
 There are two possible approaches. One is using a single form for stepper, and the other is
 using a different form for each step.
@@ -64,7 +64,7 @@ using a different form for each step.
 #### Using a single form
 When using a single form for the stepper, `matStepperPrevious` and `matStepperNext` have to be
 set to `type="button"` in order to prevent submission of the form before all steps
-are completed. 
+are completed.
 
 ```html
 <form [formGroup]="formGroup">
@@ -83,7 +83,7 @@ are completed.
       </div>
     </mat-step>
     ...
-  </mat-horizontal-stepper> 
+  </mat-horizontal-stepper>
 </form>
 ```
 
@@ -106,11 +106,11 @@ are completed.
 
 #### Optional step
 If completion of a step in linear stepper is not required, then the `optional` attribute can be set
-on `mat-step`. 
+on `mat-step`.
 
 #### Editable step
 By default, steps are editable, which means users can return to previously completed steps and
-edit their responses. `editable="true"` can be set on `mat-step` to change the default. 
+edit their responses. `editable="true"` can be set on `mat-step` to change the default.
 
 #### Completed step
 By default, the `completed` attribute of a step returns `true` if the step is valid (in case of
@@ -123,6 +123,20 @@ this default `completed` behavior by setting the `completed` attribute as needed
 - <kbd>ENTER</kbd>, <kbd>SPACE</kbd>: Selects the step that the focus is currently on
 - <kbd>TAB</kbd>: Focuses the next tabbable element
 - <kbd>TAB</kbd>+<kbd>SHIFT</kbd>: Focuses the previous tabbable element
+
+### Localizing labels
+Labels used by the stepper are provided through `MatStepperIntl`. Localization of these messages
+can be done by providing a subclass with translated values in your application root module.
+
+```ts
+@NgModule({
+  imports: [MatStepperModule],
+  providers: [
+    {provide: MatStepperIntl, useClass: MyIntl},
+  ],
+})
+export class MyApp {}
+```
 
 ### Accessibility
 The stepper is treated as a tabbed view for accessibility purposes, so it is given

@@ -2,13 +2,14 @@ import {Directionality} from '@angular/cdk/bidi';
 import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatStepperModule} from './index';
 import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
+import {MatStepperIntl} from './stepper-intl';
 
 const VALID_REGEX = /valid/;
 
@@ -95,6 +96,21 @@ describe('MatHorizontalStepper', () => {
     it('should set done icon if step is not editable and is completed', () => {
       assertCorrectStepIcon(fixture, false, 'done');
     });
+
+    it('should re-render when the i18n labels change',
+      inject([MatStepperIntl], (intl: MatStepperIntl) => {
+        const header = fixture.debugElement.queryAll(By.css('mat-step-header'))[2].nativeElement;
+        const optionalLabel = header.querySelector('.mat-step-optional');
+
+        expect(optionalLabel).toBeTruthy();
+        expect(optionalLabel.textContent).toBe('Optional');
+
+        intl.optionalLabel = 'Valgfri';
+        intl.changes.next();
+        fixture.detectChanges();
+
+        expect(optionalLabel.textContent).toBe('Valgfri');
+      }));
   });
 
   describe('RTL', () => {
@@ -686,7 +702,7 @@ function assertCorrectStepIcon(fixture: ComponentFixture<any>,
           <button mat-button matStepperNext>Next</button>
         </div>
       </mat-step>
-      <mat-step [label]="inputLabel">
+      <mat-step [label]="inputLabel" optional>
         Content 3
         <div>
           <button mat-button matStepperPrevious>Back</button>

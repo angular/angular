@@ -15,6 +15,6 @@
   <!-- It there is no label template, fall back to the text label. -->
   <div class="mat-step-text-label" *ngIf="_stringLabel()">{{label}}</div>
 
-  <div class="mat-step-optional" *ngIf="optional">Optional</div>
+  <div class="mat-step-optional" *ngIf="optional">{{_intl.optionalLabel}}</div>
 </div>
 
