@@ -73,11 +73,14 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
       .subscribe(inputString => {
         const items = this._items.toArray();
 
-        for (let i = 0; i < items.length; i++) {
-          let item = items[i];
+        // Start at 1 because we want to start searching at the item immediately
+        // following the current active item.
+        for (let i = 1; i < items.length + 1; i++) {
+          const index = (this._activeItemIndex + i) % items.length;
+          const item = items[index];
 
           if (!item.disabled && item.getLabel!().toUpperCase().trim().indexOf(inputString) === 0) {
-            this.setActiveItem(i);
+            this.setActiveItem(index);
             break;
           }
         }

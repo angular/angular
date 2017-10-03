@@ -491,6 +491,62 @@ describe('Key managers', () => {
         expect(keyManager.activeItem).toBeFalsy();
       }));
 
+      it('should start looking for matches after the active item', fakeAsync(() => {
+        itemList.items = [
+          new FakeFocusable('Bilbo'),
+          new FakeFocusable('Frodo'),
+          new FakeFocusable('Pippin'),
+          new FakeFocusable('Boromir'),
+          new FakeFocusable('Aragorn')
+        ];
+
+        keyManager.setActiveItem(1);
+        keyManager.onKeydown(createKeyboardEvent('keydown', 66, undefined, 'b'));
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBe(itemList.items[3]);
+      }));
+
+      it('should wrap back around if there were no matches after the active item', fakeAsync(() => {
+        itemList.items = [
+          new FakeFocusable('Bilbo'),
+          new FakeFocusable('Frodo'),
+          new FakeFocusable('Pippin'),
+          new FakeFocusable('Boromir'),
+          new FakeFocusable('Aragorn')
+        ];
+
+        keyManager.setActiveItem(3);
+        keyManager.onKeydown(createKeyboardEvent('keydown', 66, undefined, 'b'));
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBe(itemList.items[0]);
+      }));
+
+      it('should wrap back around if the last item is active', fakeAsync(() => {
+        keyManager.setActiveItem(2);
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, undefined, 'o'));
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBe(itemList.items[0]);
+      }));
+
+      it('should be able to select the first item', fakeAsync(() => {
+        keyManager.setActiveItem(-1);
+        keyManager.onKeydown(createKeyboardEvent('keydown', 79, undefined, 'o'));
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBe(itemList.items[0]);
+      }));
+
+      it('should not do anything if there is no match', fakeAsync(() => {
+        keyManager.setActiveItem(1);
+        keyManager.onKeydown(createKeyboardEvent('keydown', 87, undefined, 'w'));
+        tick(debounceInterval);
+
+        expect(keyManager.activeItem).toBe(itemList.items[1]);
+      }));
+
     });
 
   });
