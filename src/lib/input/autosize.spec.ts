@@ -4,6 +4,9 @@ import {ComponentFixture, TestBed, async, fakeAsync, flushMicrotasks} from '@ang
 import {By} from '@angular/platform-browser';
 import {MatInputModule} from './index';
 import {MatTextareaAutosize} from './autosize';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatTabsModule} from '@angular/material/tabs';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 
 describe('MatTextareaAutosize', () => {
@@ -13,8 +16,16 @@ describe('MatTextareaAutosize', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MatInputModule, FormsModule],
+      imports: [
+        FormsModule,
+        MatInputModule,
+        MatStepperModule,
+        MatTabsModule,
+        NoopAnimationsModule,
+      ],
       declarations: [
+        AutosizeTextareaInAStep,
+        AutosizeTextareaInATab,
         AutosizeTextAreaWithContent,
         AutosizeTextAreaWithValue,
         AutosizeTextareaWithNgModel
@@ -202,6 +213,20 @@ describe('MatTextareaAutosize', () => {
     expect(textarea.clientHeight)
         .toBeGreaterThan(previousHeight, 'Expected the textarea height to have increased.');
   }));
+
+  it('should work in a tab', () => {
+    const fixtureWithForms = TestBed.createComponent(AutosizeTextareaInATab);
+    fixtureWithForms.detectChanges();
+    textarea = fixtureWithForms.nativeElement.querySelector('textarea');
+    expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
+  });
+
+  it('should work in a step', () => {
+    const fixtureWithForms = TestBed.createComponent(AutosizeTextareaInAStep);
+    fixtureWithForms.detectChanges();
+    textarea = fixtureWithForms.nativeElement.querySelector('textarea');
+    expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
+  });
 });
 
 
@@ -243,3 +268,33 @@ class AutosizeTextAreaWithValue {
 class AutosizeTextareaWithNgModel {
   model = '';
 }
+
+@Component({
+  template: `
+    <mat-tab-group>
+      <mat-tab label="Tab 1">
+        <mat-form-field>
+          <textarea matInput matTextareaAutosize>
+            Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+          </textarea>
+        </mat-form-field>
+      </mat-tab>
+    </mat-tab-group>
+  `
+})
+class AutosizeTextareaInATab {}
+
+@Component({
+  template: `
+    <mat-horizontal-stepper>
+      <mat-step label="Step 1">
+        <mat-form-field>
+          <textarea matInput matTextareaAautosize>
+            Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
+          </textarea>
+        </mat-form-field>
+      </mat-step>
+    </mat-horizontal-stepper>
+  `
+})
+class AutosizeTextareaInAStep {}

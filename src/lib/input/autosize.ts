@@ -71,7 +71,6 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
 
   ngAfterViewInit() {
     if (this._platform.isBrowser) {
-      this._cacheTextareaLineHeight();
       this.resizeToFitContent();
     }
   }
@@ -83,13 +82,17 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
   }
 
   /**
-   * Cache the height of a single-row textarea.
+   * Cache the height of a single-row textarea if it has not already been cached.
    *
    * We need to know how large a single "row" of a textarea is in order to apply minRows and
    * maxRows. For the initial version, we will assume that the height of a single line in the
    * textarea does not ever change.
    */
   private _cacheTextareaLineHeight(): void {
+    if (this._cachedLineHeight) {
+      return;
+    }
+
     let textarea = this._elementRef.nativeElement as HTMLTextAreaElement;
 
     // Use a clone element because we have to override some styles.
@@ -124,11 +127,21 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
   }
 
   ngDoCheck() {
-    this.resizeToFitContent();
+    if (this._platform.isBrowser) {
+      this.resizeToFitContent();
+    }
   }
 
   /** Resize the textarea to fit its content. */
   resizeToFitContent() {
+    this._cacheTextareaLineHeight();
+
+    // If we haven't determined the line-height yet, we know we're still hidden and there's no point
+    // in checking the height of the textarea.
+    if (!this._cachedLineHeight) {
+      return;
+    }
+
     const textarea = this._elementRef.nativeElement as HTMLTextAreaElement;
     const value = textarea.value;
 

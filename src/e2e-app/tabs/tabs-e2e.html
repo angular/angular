@@ -2,7 +2,9 @@
   <mat-tab-group>
     <mat-tab>
       <ng-template mat-tab-label>One</ng-template>
-      First tab's content
+      <mat-form-field>
+        <textarea matInput placeholder="Autosize textarea" matTextareaAutosize>This is an autosize textarea, it should adjust to the size of its content.</textarea>
+      </mat-form-field>
     </mat-tab>
     <mat-tab>
       <ng-template mat-tab-label>Two</ng-template>
