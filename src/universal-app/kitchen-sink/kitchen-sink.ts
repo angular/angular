@@ -32,6 +32,7 @@ import {
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
+  MatStepperModule,
 } from '@angular/material';
 import {
   CdkTableModule,
@@ -97,6 +98,7 @@ export class KitchenSink {
     MatExpansionModule,
     MatSortModule,
     MatTableModule,
+    MatStepperModule,
 
     // CDK Modules
     CdkTableModule
