@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ɵStyleData} from '@angular/animations';
+import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
 
 import {copyStyles, interpolateParams} from '../util';
 
 import {SequenceAst, StyleAst, TransitionAst, TriggerAst} from './animation_ast';
 import {AnimationStateStyles, AnimationTransitionFactory} from './animation_transition_factory';
+
 
 
 /**
@@ -60,8 +61,15 @@ function createFallbackTransition(
     triggerName: string,
     states: {[stateName: string]: AnimationStateStyles}): AnimationTransitionFactory {
   const matchers = [(fromState: any, toState: any) => true];
-  const animation = new SequenceAst([]);
-  const transition = new TransitionAst(matchers, animation);
+  const animation: SequenceAst = {type: AnimationMetadataType.Sequence, steps: [], options: null};
+  const transition: TransitionAst = {
+    type: AnimationMetadataType.Transition,
+    animation,
+    matchers,
+    options: null,
+    queryCount: 0,
+    depCount: 0
+  };
   return new AnimationTransitionFactory(triggerName, transition, states);
 }
 
