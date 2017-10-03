@@ -65,6 +65,14 @@ $mat-drawer-over-drawer-z-index: 4;
     visibility: visible;
   }
 
+  .mat-drawer-transition & {
+    transition: {
+      duration: $swift-ease-out-duration;
+      timing-function: $swift-ease-out-timing-function;
+      property: background-color, visibility;
+    }
+  }
+
   @include cdk-high-contrast {
     opacity: 0.5;
   }
@@ -76,6 +84,14 @@ $mat-drawer-over-drawer-z-index: 4;
   display: block;
   height: 100%;
   overflow: auto;
+
+  .mat-drawer-transition & {
+    transition: {
+      duration: $swift-ease-out-duration;
+      timing-function: $swift-ease-out-timing-function;
+      property: transform, margin-left, margin-right;
+    }
+  }
 }
 
 .mat-drawer {

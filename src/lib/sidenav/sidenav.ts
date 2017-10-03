@@ -109,10 +109,7 @@ export class MatSidenav extends MatDrawer {
   moduleId: module.id,
   selector: 'mat-sidenav-container',
   templateUrl: 'sidenav-container.html',
-  styleUrls: [
-    'drawer.css',
-    'drawer-transitions.css',
-  ],
+  styleUrls: ['drawer.css'],
   host: {
     'class': 'mat-drawer-container mat-sidenav-container',
   },

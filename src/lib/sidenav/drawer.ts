@@ -355,10 +355,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
   moduleId: module.id,
   selector: 'mat-drawer-container',
   templateUrl: 'drawer-container.html',
-  styleUrls: [
-    'drawer.css',
-    'drawer-transitions.css',
-  ],
+  styleUrls: ['drawer.css'],
   host: {
     'class': 'mat-drawer-container',
   },
