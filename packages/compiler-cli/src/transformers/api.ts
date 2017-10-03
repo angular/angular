@@ -318,4 +318,9 @@ export interface Program {
    * @internal
    */
   getEmittedGeneratedFiles(): Map<string, GeneratedFile>;
+
+  /**
+   * @internal
+   */
+  getEmittedSourceFiles(): Map<string, ts.SourceFile>;
 }
