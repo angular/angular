@@ -11,12 +11,19 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
+import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import {MatDrawer, MatDrawerContainer, MatDrawerContent} from './drawer';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from './sidenav';
 
 
 @NgModule({
-  imports: [CommonModule, MatCommonModule, A11yModule, OverlayModule],
+  imports: [
+    CommonModule,
+    MatCommonModule,
+    A11yModule,
+    OverlayModule,
+    ScrollDispatchModule,
+  ],
   exports: [
     MatCommonModule,
     MatDrawer,
