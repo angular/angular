@@ -108,9 +108,10 @@
     <mat-selection-list #groceries>
       <h3 mat-subheader>Groceries</h3>
 
-      <mat-list-option *ngFor="let item of items" [value]="item">
-        {{item}}
-      </mat-list-option>
+      <mat-list-option value="bananas">Bananas</mat-list-option>
+      <mat-list-option selected value="oranges">Oranges</mat-list-option>
+      <mat-list-option value="apples">Apples</mat-list-option>
+      <mat-list-option value="strawberries">Strawberries</mat-list-option>
     </mat-selection-list>
 
     <p>Selected: {{groceries.selectedOptions.selected.length}}</p>

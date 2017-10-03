@@ -103,7 +103,17 @@ export class MatListOption extends _MatListOptionMixinBase
   /** Whether the option is selected. */
   @Input()
   get selected() { return this._selected; }
-  set selected(value: boolean) { this._selected = coerceBooleanProperty(value); }
+  set selected(value: boolean) {
+    const isSelected = coerceBooleanProperty(value);
+
+    if (isSelected !== this._selected) {
+      const selectionModel = this.selectionList.selectedOptions;
+
+      this._selected = isSelected;
+      isSelected ? selectionModel.select(this) : selectionModel.deselect(this);
+      this._changeDetector.markForCheck();
+    }
+  }
 
   /** Emitted when the option is selected. */
   @Output() selectChange = new EventEmitter<MatSelectionListOptionEvent>();
@@ -140,8 +150,6 @@ export class MatListOption extends _MatListOptionMixinBase
   /** Toggles the selection state of the option. */
   toggle(): void {
     this.selected = !this.selected;
-    this.selectionList.selectedOptions.toggle(this);
-    this._changeDetector.markForCheck();
   }
 
   /** Allows for programmatic focusing of the option. */
