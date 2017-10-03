@@ -85,9 +85,9 @@ export class OverlayRef implements PortalHost {
 
   /**
    * Detaches an overlay from a portal.
-   * @returns Resolves when the overlay has been detached.
+   * @returns The portal detachment result.
    */
-  detach(): Promise<any> {
+  detach(): any {
     this.detachBackdrop();
 
     // When the overlay is detached, the pane element should disable pointer events.
@@ -99,7 +99,7 @@ export class OverlayRef implements PortalHost {
       this._config.scrollStrategy.disable();
     }
 
-    let detachmentResult = this._portalHost.detach();
+    const detachmentResult  = this._portalHost.detach();
 
     // Only emit after everything is detached.
     this._detachments.next();
