@@ -6,7 +6,8 @@
   "scripts": {
     "http-server": "http-server",
     "protractor": "protractor",
-    "webdriver:update": "webdriver-manager update --standalone false --gecko false"
+    "webdriver:update": "webdriver-manager update --standalone false --gecko false",
+    "postinstall": "yarn webdriver:update"
   },
   "keywords": [],
   "author": "",
