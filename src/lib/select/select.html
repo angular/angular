@@ -34,16 +34,19 @@
   (detach)="close()">
 
   <div
+    #panel
     class="mat-select-panel {{ _getPanelTheme() }}"
     [ngClass]="panelClass"
     [@transformPanel]="multiple ? 'showing-multiple' : 'showing'"
     (@transformPanel.done)="_onPanelDone()"
-    (keydown)="_handlePanelKeydown($event)"
     [style.transformOrigin]="_transformOrigin"
     [class.mat-select-panel-done-animating]="_panelDoneAnimating"
     [style.font-size.px]="_triggerFontSize">
 
-    <div class="mat-select-content" [@fadeInContent]="'showing'" (@fadeInContent.done)="_onFadeInDone()">
+    <div
+      class="mat-select-content"
+      [@fadeInContent]="'showing'"
+      (@fadeInContent.done)="_onFadeInDone()">
       <ng-content></ng-content>
     </div>
   </div>
