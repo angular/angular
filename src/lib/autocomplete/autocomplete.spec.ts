@@ -1403,6 +1403,71 @@ describe('MatAutocomplete', () => {
     }));
   });
 
+  describe('panel closing', () => {
+    let fixture: ComponentFixture<SimpleAutocomplete>;
+    let input: HTMLInputElement;
+    let trigger: MatAutocompleteTrigger;
+    let closingActionSpy: jasmine.Spy;
+    let closingActionsSub: Subscription;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+
+      input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      trigger = fixture.componentInstance.trigger;
+      closingActionSpy = jasmine.createSpy('closing action listener');
+      closingActionsSub = trigger.panelClosingActions.subscribe(closingActionSpy);
+    });
+
+    afterEach(() => {
+      closingActionsSub.unsubscribe();
+    });
+
+    it('should emit panel close event when clicking away', async(() => {
+      fixture.whenStable().then(() => {
+        expect(closingActionSpy).not.toHaveBeenCalled();
+        dispatchFakeEvent(document, 'click');
+        expect(closingActionSpy).toHaveBeenCalled();
+      });
+    }));
+
+    it('should emit panel close event when tabbing out', async(() => {
+      const tabEvent = createKeyboardEvent('keydown', TAB);
+      input.focus();
+
+      fixture.whenStable().then(() => {
+        expect(closingActionSpy).not.toHaveBeenCalled();
+        trigger._handleKeydown(tabEvent);
+        expect(closingActionSpy).toHaveBeenCalled();
+      });
+    }));
+
+    it('should emit panel close event when selecting an option', async(() => {
+      fixture.whenStable().then(() => {
+        const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
+
+        expect(closingActionSpy).not.toHaveBeenCalled();
+        option.click();
+        expect(closingActionSpy).toHaveBeenCalled();
+      });
+    }));
+
+    it('should close the panel when pressing escape', async(() => {
+      const escapeEvent = createKeyboardEvent('keydown', ESCAPE);
+
+      fixture.whenStable().then(() => {
+        expect(closingActionSpy).not.toHaveBeenCalled();
+        trigger._handleKeydown(escapeEvent);
+        expect(closingActionSpy).toHaveBeenCalled();
+      });
+    }));
+  });
+
   describe('without matInput', () => {
     let fixture: ComponentFixture<AutocompleteWithNativeInput>;
 

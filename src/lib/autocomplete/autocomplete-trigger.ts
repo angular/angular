@@ -38,6 +38,7 @@ import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField} from '@angular/material/form-field';
 import {DOCUMENT} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
@@ -125,6 +126,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** The subscription for closing actions (some are bound to document). */
   private _closingActionsSubscription: Subscription;
 
+  /** Stream of escape keyboard events. */
+  private _escapeEventStream = new Subject<void>();
+
   /** View -> model callback called when value changes */
   _onChange: (value: any) => void = () => {};
 
@@ -145,6 +149,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   ngOnDestroy() {
     this._destroyPanel();
+    this._escapeEventStream.complete();
   }
 
   /* Whether or not the autocomplete panel is open. */
@@ -186,6 +191,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     return merge(
       this.optionSelections,
       this.autocomplete._keyManager.tabOut,
+      this._escapeEventStream,
       this._outsideClickStream
     );
   }
@@ -262,7 +268,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
     if (keyCode === ESCAPE && this.panelOpen) {
       this._resetActiveItem();
-      this.closePanel();
+      this._escapeEventStream.next();
       event.stopPropagation();
     } else if (this.activeOption && keyCode === ENTER && this.panelOpen) {
       this.activeOption._selectViaInteraction();
