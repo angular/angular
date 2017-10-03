@@ -19,7 +19,7 @@ import {
   DialogNeptuneIFrameDialog,
   DialogWelcomeExampleDialog
 } from './dialog/dialog-a11y';
-
+import {ExpansionPanelAccessibilityDemo} from './expansion/expansion-a11y';
 import {GridListAccessibilityDemo} from './grid-list/grid-list-a11y';
 import {RadioAccessibilityDemo} from './radio/radio-a11y';
 import {ToolbarAccessibilityDemo} from './toolbar/toolbar-a11y';
@@ -76,6 +76,7 @@ export class AccessibilityRoutingModule {}
     DialogNeptuneExampleDialog,
     DialogNeptuneIFrameDialog,
     DialogWelcomeExampleDialog,
+    ExpansionPanelAccessibilityDemo,
     GridListAccessibilityDemo,
     IconAccessibilityDemo,
     InputAccessibilityDemo,
