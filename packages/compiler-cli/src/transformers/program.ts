@@ -227,9 +227,10 @@ class AngularCompilerProgram implements Program {
     let emitResult: ts.EmitResult;
     let emittedUserTsCount: number;
     try {
-      const emitChangedFilesOnly = this._changedNonGenFileNames &&
-          this._changedNonGenFileNames.length < MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT;
-      if (emitChangedFilesOnly) {
+      const useSingleFileEmit = this._changedNonGenFileNames &&
+          (this._changedNonGenFileNames.length + genTsFiles.length) <
+              MAX_FILE_COUNT_FOR_SINGLE_FILE_EMIT;
+      if (useSingleFileEmit) {
         const fileNamesToEmit =
             [...this._changedNonGenFileNames !, ...genTsFiles.map(gf => gf.genFileUrl)];
         emitResult = mergeEmitResults(
