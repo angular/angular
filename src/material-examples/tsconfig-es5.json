@@ -1,0 +1,38 @@
+// TypeScript config file that is used to compile the examples. Target environment needs to be
+// ES2015 since the build process will create FESM bundles using rollup.
+{
+  "compilerOptions": {
+    "declaration": false,
+    "stripInternal": false,
+    "experimentalDecorators": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "importHelpers": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../dist/packages/material-examples/esm5",
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es5",
+    "lib": ["es2015", "dom"],
+    "skipLibCheck": true,
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "@angular/material/*": ["../../dist/packages/material/*/public-api"],
+      "@angular/material": ["../../dist/packages/material/public-api"],
+      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"]
+    }
+  },
+  "files": [
+    "public-api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/material-examples",
+    "skipTemplateCodegen": true
+  }
+}

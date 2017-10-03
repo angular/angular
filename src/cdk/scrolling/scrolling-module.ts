@@ -18,7 +18,3 @@ import {PlatformModule} from '@angular/cdk/platform';
   providers: [SCROLL_DISPATCHER_PROVIDER],
 })
 export class ScrollDispatchModule {}
-
-export * from './scroll-dispatcher';
-export * from './scrollable';
-export * from './viewport-ruler';

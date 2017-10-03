@@ -6,11 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
-import {Dir} from './dir';
-import {DIR_DOCUMENT, Directionality} from './directionality';
-
 export {
   Directionality,
   DIRECTIONALITY_PROVIDER_FACTORY,
@@ -19,13 +14,5 @@ export {
   Direction,
 } from './directionality';
 export {Dir} from './dir';
+export * from './bidi-module';
 
-@NgModule({
-  exports: [Dir],
-  declarations: [Dir],
-  providers: [
-    {provide: DIR_DOCUMENT, useExisting: DOCUMENT},
-    Directionality,
-  ]
-})
-export class BidiModule { }

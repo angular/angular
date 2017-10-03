@@ -7,7 +7,7 @@
     "paths": {
       "@angular/cdk/*": ["../cdk/*"],
       "@angular/material/*": ["../lib/*"],
-      "@angular/material": ["../lib/public_api.ts"]
+      "@angular/material": ["../lib/public-api.ts"]
     }
   },
   "include": ["./**/*.ts"]

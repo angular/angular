@@ -7,8 +7,11 @@ import {compileEntryPoint, renamePrivateReExportsToBeUnique} from './compile-ent
 
 const {packagesDir, outputDir} = buildConfig;
 
-/** Name of the tsconfig file that is responsible for building a package. */
+/** Name of the tsconfig file that is responsible for building an ES2015 package. */
 const buildTsconfigName = 'tsconfig-build.json';
+
+/** Name of the tsconfig file that is responsible for building an ES5 package. */
+const es5TsconfigName = 'tsconfig-es5.json';
 
 /** Name of the tsconfig file that is responsible for building the tests. */
 const testsTsconfigName = 'tsconfig-tests.json';
@@ -17,8 +20,11 @@ export class BuildPackage {
   /** Path to the package sources. */
   sourceDir: string;
 
-  /** Path to the package output. */
+  /** Path to the ES2015 package output. */
   outputDir: string;
+
+  /** Path to the ES5 package output. */
+  esm5OutputDir: string;
 
   /** Whether this package will re-export its secondary-entry points at the root module. */
   exportsSecondaryEntryPointsAtRoot = false;
@@ -55,6 +61,7 @@ export class BuildPackage {
   constructor(public readonly name: string, public readonly dependencies: BuildPackage[] = []) {
     this.sourceDir = join(packagesDir, name);
     this.outputDir = join(outputDir, 'packages', name);
+    this.esm5OutputDir = join(outputDir, 'packages', name, 'esm5');
 
     this.tsconfigBuild = join(this.sourceDir, buildTsconfigName);
     this.tsconfigTests = join(this.sourceDir, testsTsconfigName);
@@ -70,11 +77,11 @@ export class BuildPackage {
     // Depth 1: a11y, scrolling
     // Depth 2: overlay
     for (const entryPointGroup of this.secondaryEntryPointsByDepth) {
-      await Promise.all(entryPointGroup.map(p => compileEntryPoint(this, buildTsconfigName, p)));
+      await Promise.all(entryPointGroup.map(p => this._compileBothTargets(p)));
     }
 
     // Compile the primary entry-point.
-    await compileEntryPoint(this, buildTsconfigName);
+    await this._compileBothTargets();
   }
 
   /** Compiles the TypeScript test source files for the package. */
@@ -85,6 +92,13 @@ export class BuildPackage {
   /** Creates all bundles for the package and all associated entry points. */
   async createBundles() {
     await this.bundler.createBundles();
+  }
+
+  /** Compiles TS into both ES2015 and ES5, then updates exports. */
+  private async _compileBothTargets(p = '') {
+    return compileEntryPoint(this, buildTsconfigName, p)
+        .then(() => compileEntryPoint(this, es5TsconfigName, p))
+        .then(() => renamePrivateReExportsToBeUnique(this, p));
   }
 
   /** Compiles the TypeScript sources of a primary or secondary entry point. */

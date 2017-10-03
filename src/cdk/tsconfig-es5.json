@@ -1,0 +1,38 @@
+// TypeScript config file that is used to compile the cdk's ES5 package.
+// TODO: Remove this file in favor of overrides when we update to ngc 5.x
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": false,
+    "stripInternal": false,
+    "experimentalDecorators": true,
+    "noUnusedParameters": true,
+    "strictNullChecks": true,
+    "importHelpers": true,
+    "newLine": "lf",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "outDir": "../../dist/packages/cdk/esm5",
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true,
+    "target": "es5",
+    "lib": ["es2015", "dom"],
+    "skipLibCheck": true,
+    "types": [],
+    "paths": {
+      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"]
+    }
+  },
+  "files": [
+    "public-api.ts",
+    "typings.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/cdk",
+    "skipTemplateCodegen": true
+  }
+}

@@ -1,8 +1,5 @@
 import {join, dirname} from 'path';
-import {ScriptTarget, ModuleKind, NewLineKind} from 'typescript';
 import {uglifyJsFile} from './minify-sources';
-import {remapSourcemap} from './sourcemap-remap';
-import {transpileFile} from './typescript-transpile';
 import {buildConfig} from './build-config';
 import {BuildPackage} from './build-package';
 import {rollupRemoveLicensesPlugin} from './rollup-remove-licenses';
@@ -36,6 +33,7 @@ export class PackageBundler {
 
     return this.bundleEntryPoint({
       entryFile: this.buildPackage.entryFilePath,
+      esm5EntryFile: join(this.buildPackage.esm5OutputDir, 'index.js'),
       moduleName: `ng.${this.buildPackage.name}`,
       esm2015Dest: join(bundlesDir, `${packageName}.js`),
       esm5Dest: join(bundlesDir, `${packageName}.es5.js`),
@@ -48,9 +46,11 @@ export class PackageBundler {
   private async bundleSecondaryEntryPoint(entryPoint: string) {
     const packageName = this.buildPackage.name;
     const entryFile = join(this.buildPackage.outputDir, entryPoint, 'index.js');
+    const esm5EntryFile = join(this.buildPackage.esm5OutputDir, entryPoint, 'index.js');
 
     return this.bundleEntryPoint({
       entryFile,
+      esm5EntryFile,
       moduleName: `ng.${packageName}.${entryPoint}`,
       esm2015Dest: join(bundlesDir, `${packageName}`, `${entryPoint}.js`),
       esm5Dest: join(bundlesDir, `${packageName}`, `${entryPoint}.es5.js`),
@@ -66,6 +66,7 @@ export class PackageBundler {
    */
   private async bundleEntryPoint(config: BundlesConfig) {
     // Build FESM-2015 bundle file.
+    // TODO: re-add sorcery when we upgrade to Angular 5.x
     await this.createRollupBundle({
       moduleName: config.moduleName,
       entry: config.entryFile,
@@ -73,20 +74,17 @@ export class PackageBundler {
       format: 'es',
     });
 
-    await remapSourcemap(config.esm2015Dest);
-
-    // Downlevel ES2015 bundle to ES5.
-    transpileFile(config.esm2015Dest, config.esm5Dest, {
-      importHelpers: true,
-      target: ScriptTarget.ES5,
-      module: ModuleKind.ES2015,
-      allowJs: true,
-      newLine: NewLineKind.LineFeed
+    // Build FESM-5 bundle file.
+    // TODO: re-add sorcery when we upgrade to Angular 5.x
+    await this.createRollupBundle({
+      moduleName: config.moduleName,
+      entry: config.esm5EntryFile,
+      dest: config.esm5Dest,
+      format: 'es',
     });
 
-    await remapSourcemap(config.esm5Dest);
-
     // Create UMD bundle of ES5 output.
+    // TODO: re-add sorcery when we upgrade to Angular 5.x
     await this.createRollupBundle({
       moduleName: config.moduleName,
       entry: config.esm5Dest,
@@ -94,12 +92,9 @@ export class PackageBundler {
       format: 'umd'
     });
 
-    await remapSourcemap(config.umdDest);
-
     // Create a minified UMD bundle using UglifyJS
+    // TODO: re-add sorcery when we upgrade to Angular 5.x
     uglifyJsFile(config.umdDest, config.umdMinDest);
-
-    await remapSourcemap(config.umdMinDest);
   }
 
   /** Creates a rollup bundle of a specified JavaScript file.*/
@@ -182,6 +177,7 @@ export class PackageBundler {
 /** Configuration for creating library bundles. */
 interface BundlesConfig {
   entryFile: string;
+  esm5EntryFile: string;
   moduleName: string;
   esm2015Dest: string;
   esm5Dest: string;

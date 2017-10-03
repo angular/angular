@@ -1,5 +1,4 @@
-// TypeScript config file that is used to compile the moment-adapter package. Target environment
-// needs to be ES2015 since the build process will create FESM bundles using rollup.
+// TypeScript config file that is used to compile the moment-adapter package into ES2015.
 {
   "compilerOptions": {
     // Needed for Moment.js since it doesn't have a default export.
@@ -23,13 +22,13 @@
     "skipLibCheck": true,
     "types": [],
     "paths": {
-      "@angular/material/*": ["../../dist/packages/material/*/public_api"],
-      "@angular/material": ["../../dist/packages/material/public_api"],
-      "@angular/cdk/*": ["../../dist/packages/cdk/*/public_api"]
+      "@angular/material/*": ["../../dist/packages/material/*/public-api"],
+      "@angular/material": ["../../dist/packages/material/public-api"],
+      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"]
     }
   },
   "files": [
-    "public_api.ts"
+    "public-api.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,

@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig-build",
   "files": [
-    "public_api.ts",
+    "public-api.ts",
     "../typings.d.ts"
   ],
   "angularCompilerOptions": {

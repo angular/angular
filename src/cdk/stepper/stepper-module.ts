@@ -19,7 +19,3 @@ import {BidiModule} from '@angular/cdk/bidi';
   declarations: [CdkStep, CdkStepper, CdkStepLabel, CdkStepperNext, CdkStepperPrevious]
 })
 export class CdkStepperModule {}
-
-export * from './stepper';
-export * from './step-label';
-export * from './stepper-button';

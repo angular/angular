@@ -12,13 +12,6 @@ import {HeaderRowPlaceholder, RowPlaceholder, CdkTable} from './table';
 import {CdkCellOutlet, CdkHeaderRow, CdkHeaderRowDef, CdkRow, CdkRowDef} from './row';
 import {CdkColumnDef, CdkHeaderCellDef, CdkHeaderCell, CdkCell, CdkCellDef} from './cell';
 
-export * from './table';
-export * from './cell';
-export * from './row';
-
-/** Re-export DataSource for a more intuitive experience for users of just the table. */
-export {DataSource} from '@angular/cdk/collections';
-
 const EXPORTED_DECLARATIONS = [
   CdkTable,
   CdkRowDef,

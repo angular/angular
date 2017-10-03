@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig-es5",
+  "files": [
+    "public-api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/cdk/scrolling",
+    "skipTemplateCodegen": true
+  }
+}

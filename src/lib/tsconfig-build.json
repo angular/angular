@@ -1,5 +1,4 @@
-// TypeScript config file that is used to compile the library. Target environment needs to be
-// ES2015 since the build process will create FESM bundles using rollup.
+// TypeScript config file that is used to compile the library into ES2015.
 {
   "compilerOptions": {
     "declaration": true,
@@ -21,12 +20,12 @@
     "types": [],
     "baseUrl": ".",
     "paths": {
-      "@angular/cdk/*": ["../../dist/packages/cdk/*/public_api"],
-      "@angular/material/*": ["../../dist/packages/material/*/public_api"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"],
+      "@angular/material/*": ["../../dist/packages/material/*/public-api"]
     }
   },
   "files": [
-    "public_api.ts",
+    "public-api.ts",
     "typings.d.ts"
   ],
   "angularCompilerOptions": {
