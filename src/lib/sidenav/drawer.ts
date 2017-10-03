@@ -90,11 +90,7 @@ export class MatDrawerContent implements AfterContentInit {
 
 
 /**
- * <mat-drawer> component.
- *
  * This component corresponds to a drawer that can be opened on the drawer container.
- *
- * Please refer to README.md for examples on how to use it.
  */
 @Component({
   moduleId: module.id,
