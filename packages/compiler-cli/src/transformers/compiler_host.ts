@@ -108,7 +108,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   private resolveModuleName(moduleName: string, containingFile: string): ts.ResolvedModule
       |undefined {
     const rm = ts.resolveModuleName(
-                     moduleName, containingFile, this.options, this, this.moduleResolutionCache)
+                     moduleName, containingFile.replace(/\\/g, '/'), this.options, this,
+                     this.moduleResolutionCache)
                    .resolvedModule;
     if (rm && this.isSourceFile(rm.resolvedFileName)) {
       // Case: generateCodeForLibraries = true and moduleName is
