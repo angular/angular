@@ -41,16 +41,18 @@ describe('NgCompilerHost', () => {
       basePath: '/tmp',
       moduleResolution: ts.ModuleResolutionKind.NodeJs,
     },
+    rootNames = ['/tmp/index.ts'],
     ngHost = createNgHost({files}),
     librarySummaries = [],
   }: {
     files?: Directory,
     options?: CompilerOptions,
+    rootNames?: string[],
     ngHost?: CompilerHost,
     librarySummaries?: LibrarySummary[]
   } = {}) {
     return new TsCompilerAotCompilerTypeCheckHostAdapter(
-        ['/tmp/index.ts'], options, ngHost, new MetadataCollector(), codeGenerator,
+        rootNames, options, ngHost, new MetadataCollector(), codeGenerator,
         new Map(librarySummaries.map(entry => [entry.fileName, entry] as[string, LibrarySummary])));
   }
 
@@ -142,6 +144,15 @@ describe('NgCompilerHost', () => {
       ngHost.moduleNameToFileName = () => 'someResult';
       const host = createHost({ngHost});
       expect(host.moduleNameToFileName('a', 'b')).toBe('someResult');
+    });
+
+    it('should work well with windows paths', () => {
+      const host = createHost({
+        rootNames: ['\\tmp\\index.ts'],
+        options: {basePath: '\\tmp'},
+        files: {'tmp': {'node_modules': {'@core': {'index.d.ts': dummyModule}}}}
+      });
+      expect(host.moduleNameToFileName('@core/index')).toBe('/tmp/node_modules/@core/index.d.ts');
     });
   });
 
