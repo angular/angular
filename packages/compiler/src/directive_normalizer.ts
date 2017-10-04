@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation, ɵstringify as stringify} from '@angular/core';
 
-import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, templateSourceUrl} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, templateSourceUrl} from './compile_metadata';
 import {CompilerConfig, preserveWhitespacesDefault} from './config';
 import {CompilerInjectable} from './injectable';
 import * as html from './ml_parser/ast';
@@ -30,7 +30,7 @@ export interface PrenormalizedTemplateMetadata {
   styleUrls: string[];
   interpolation: [string, string]|null;
   encapsulation: ViewEncapsulation|null;
-  animations: CompileAnimationEntryMetadata[];
+  animations: any[];
   preserveWhitespaces: boolean|null;
 }
 

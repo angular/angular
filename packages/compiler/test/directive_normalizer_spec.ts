@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CompileAnimationEntryMetadata} from '@angular/compiler';
 import {CompileStylesheetMetadata, CompileTemplateMetadata} from '@angular/compiler/src/compile_metadata';
 import {CompilerConfig, preserveWhitespacesDefault} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
@@ -30,7 +29,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
   styleUrls?: string[];
   interpolation?: [string, string] | null;
   encapsulation?: ViewEncapsulation | null;
-  animations?: CompileAnimationEntryMetadata[];
+  animations?: any[];
   preserveWhitespaces?: boolean | null;
 }) {
   return normalizer.normalizeTemplate({
@@ -55,7 +54,7 @@ function normalizeTemplateOnly(normalizer: DirectiveNormalizer, o: {
   styleUrls?: string[];
   interpolation?: [string, string] | null;
   encapsulation?: ViewEncapsulation | null;
-  animations?: CompileAnimationEntryMetadata[];
+  animations?: any[];
   preserveWhitespaces?: boolean | null;
 }) {
   return normalizer.normalizeTemplateOnly({
@@ -111,7 +110,7 @@ function normalizeLoadedTemplate(
       styleUrls?: string[];
       interpolation?: [string, string] | null;
       encapsulation?: ViewEncapsulation | null;
-      animations?: CompileAnimationEntryMetadata[];
+      animations?: any[];
       preserveWhitespaces?: boolean;
     },
     template: string, templateAbsUrl: string) {
