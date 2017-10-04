@@ -209,9 +209,6 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
         return;
       }
       if (nodeDef.flags & NodeFlags.CatProviderNoDirective) {
-        // Make all providers lazy, so that we don't get into trouble
-        // with ordering problems of providers on the same element
-        nodeDef.flags |= NodeFlags.LazyProvider;
         const provider = nodeDef.provider !;
         const override = providerOverrides.get(provider.token);
         if (override) {
@@ -228,7 +225,8 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
 // We only create new datastructures if we need to, to keep perf impact
 // reasonable.
 function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefinition {
-  if (providerOverrides.size === 0 || !hasOverrrides(def)) {
+  const {hasOverrides, hasDeprecatedOverrides} = calcHasOverrides(def);
+  if (!hasOverrides) {
     return def;
   }
   // clone the whole view definition,
@@ -237,18 +235,32 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
   applyProviderOverrides(def);
   return def;
 
-  function hasOverrrides(def: NgModuleDefinition): boolean {
-    return def.providers.some(
-        node =>
-            !!(node.flags & NodeFlags.CatProviderNoDirective) && providerOverrides.has(node.token));
+  function calcHasOverrides(def: NgModuleDefinition):
+      {hasOverrides: boolean, hasDeprecatedOverrides: boolean} {
+    let hasOverrides = false;
+    let hasDeprecatedOverrides = false;
+    if (providerOverrides.size === 0) {
+      return {hasOverrides, hasDeprecatedOverrides};
+    }
+    def.providers.forEach(node => {
+      const override = providerOverrides.get(node.token);
+      if ((node.flags & NodeFlags.CatProviderNoDirective) && override) {
+        hasOverrides = true;
+        hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
+      }
+    });
+    return {hasOverrides, hasDeprecatedOverrides};
   }
 
   function applyProviderOverrides(def: NgModuleDefinition) {
     for (let i = 0; i < def.providers.length; i++) {
       const provider = def.providers[i];
-      // Make all providers lazy, so that we don't get into trouble
-      // with ordering problems of providers on the same element
-      provider.flags |= NodeFlags.LazyProvider;
+      if (hasDeprecatedOverrides) {
+        // We had a bug where me made
+        // all providers lazy. Keep this logic behind a flag
+        // for migrating existing users.
+        provider.flags |= NodeFlags.LazyProvider;
+      }
       const override = providerOverrides.get(provider.token);
       if (override) {
         provider.flags = (provider.flags & ~NodeFlags.CatProviderNoDirective) | override.flags;
