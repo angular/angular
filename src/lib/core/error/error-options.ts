@@ -6,29 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '@angular/core';
-import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
+import {Injectable} from '@angular/core';
+import {FormGroupDirective, NgForm, NgControl} from '@angular/forms';
 
-/** Injection token that can be used to specify the global error options. */
-export const MAT_ERROR_GLOBAL_OPTIONS =
-    new InjectionToken<ErrorOptions>('mat-error-global-options');
-
-export type ErrorStateMatcher =
-    (control: FormControl, form: FormGroupDirective | NgForm) => boolean;
-
-export interface ErrorOptions {
-  errorStateMatcher?: ErrorStateMatcher;
+/** Error state matcher that matches when a control is invalid and dirty. */
+@Injectable()
+export class ShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: NgControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    return !!(control && control.invalid && (control.dirty || (form && form.submitted)));
+  }
 }
 
-/** Returns whether control is invalid and is either touched or is a part of a submitted form. */
-export function defaultErrorStateMatcher(control: FormControl, form: FormGroupDirective | NgForm) {
-  const isSubmitted = form && form.submitted;
-  return !!(control.invalid && (control.touched || isSubmitted));
-}
-
-/** Returns whether control is invalid and is either dirty or is a part of a submitted form. */
-export function showOnDirtyErrorStateMatcher(control: FormControl,
-    form: FormGroupDirective | NgForm) {
-  const isSubmitted = form && form.submitted;
-  return !!(control.invalid && (control.dirty || isSubmitted));
+/** Provider that defines how form controls behave with regards to displaying error messages. */
+@Injectable()
+export class ErrorStateMatcher {
+  isErrorState(control: NgControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    return !!(control && control.invalid && (control.touched || (form && form.submitted)));
+  }
 }

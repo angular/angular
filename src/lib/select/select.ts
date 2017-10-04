@@ -54,6 +54,7 @@ import {
   MatOptionSelectionChange,
   mixinDisabled,
   mixinTabIndex,
+  ErrorStateMatcher,
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
@@ -377,6 +378,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Input that can be used to specify the `aria-labelledby` attribute. */
   @Input('aria-labelledby') ariaLabelledby: string;
 
+  /** An object used to control when error messages are shown. */
+  @Input() errorStateMatcher: ErrorStateMatcher;
+
   /** Unique id of the element. */
   @Input()
   get id() { return this._id; }
@@ -411,6 +415,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     private _viewportRuler: ViewportRuler,
     private _changeDetectorRef: ChangeDetectorRef,
     private _ngZone: NgZone,
+    private _defaultErrorStateMatcher: ErrorStateMatcher,
     renderer: Renderer2,
     elementRef: ElementRef,
     @Optional() private _dir: Directionality,
@@ -680,12 +685,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Whether the select is in an error state. */
   get errorState(): boolean {
-    const isInvalid = this.ngControl && this.ngControl.invalid;
-    const isTouched = this.ngControl && this.ngControl.touched;
-    const isSubmitted = (this._parentFormGroup && this._parentFormGroup.submitted) ||
-        (this._parentForm && this._parentForm.submitted);
+    const parent = this._parentFormGroup || this._parentForm;
+    const matcher = this.errorStateMatcher || this._defaultErrorStateMatcher;
 
-    return !!(isInvalid && (isTouched || isSubmitted));
+    return matcher.isErrorState(this.ngControl, parent);
   }
 
   private _initializeSelection(): void {

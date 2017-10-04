@@ -12,6 +12,7 @@ import {NgModule} from '@angular/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatTextareaAutosize} from './autosize';
 import {MatInput} from './input';
+import {ErrorStateMatcher} from '@angular/material/core';
 
 
 @NgModule({
@@ -31,5 +32,6 @@ import {MatInput} from './input';
     MatInput,
     MatTextareaAutosize,
   ],
+  providers: [ErrorStateMatcher],
 })
 export class MatInputModule {}

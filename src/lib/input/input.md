@@ -111,12 +111,12 @@ warn color.
 
 ### Custom Error Matcher
 
-By default, error messages are shown when the control is invalid and either the user has interacted with
-(touched) the element or the parent form has been submitted. If you wish to override this
+By default, error messages are shown when the control is invalid and either the user has interacted
+with (touched) the element or the parent form has been submitted. If you wish to override this
 behavior (e.g. to show the error as soon as the invalid control is dirty or when a parent form group
 is invalid), you can use the `errorStateMatcher` property of the `matInput`. To use this property,
-create a function in your component class that returns a boolean. A result of `true` will display
-the error messages.
+create an `ErrorStateMatcher` object in your component class that has a `isErrorState` function which
+returns a boolean. A result of `true` will display the error messages.
 
 ```html
 <mat-form-field>
@@ -126,25 +126,26 @@ the error messages.
 ```
 
 ```ts
-function myErrorStateMatcher(control: FormControl, form: FormGroupDirective | NgForm): boolean {
-  // Error when invalid control is dirty, touched, or submitted
-  const isSubmitted = form && form.submitted;
-  return !!(control.invalid && (control.dirty || control.touched || isSubmitted));
+class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: NgControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    // Error when invalid control is dirty, touched, or submitted
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted)));
+  }
 }
 ```
 
-A global error state matcher can be specified by setting the `MAT_ERROR_GLOBAL_OPTIONS` provider. This applies
-to all inputs. For convenience, `showOnDirtyErrorStateMatcher` is available in order to globally set
-input errors to show when the input is dirty and invalid.
+A global error state matcher can be specified by setting the `ErrorStateMatcher` provider. This
+applies to all inputs. For convenience, `ShowOnDirtyErrorStateMatcher` is available in order to
+globally cause input errors to show when the input is dirty and invalid.
 
 ```ts
 @NgModule({
   providers: [
-    {provide: MAT_ERROR_GLOBAL_OPTIONS, useValue: {errorStateMatcher: showOnDirtyErrorStateMatcher}}
+    {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
   ]
 })
 ```
-
 Here are the available global options:
 
 | Name              | Type     | Description |

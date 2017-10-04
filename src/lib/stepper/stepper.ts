@@ -16,19 +16,13 @@ import {
   ElementRef,
   forwardRef,
   Inject,
-  Optional,
   QueryList,
   SkipSelf,
   ViewChildren,
   ViewEncapsulation,
 } from '@angular/core';
-import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
-import {
-  defaultErrorStateMatcher,
-  ErrorOptions,
-  ErrorStateMatcher,
-  MAT_ERROR_GLOBAL_OPTIONS,
-} from '@angular/material/core';
+import {NgControl, FormGroupDirective, NgForm} from '@angular/forms';
+import {ErrorStateMatcher} from '@angular/material/core';
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
 
@@ -40,36 +34,27 @@ export const _MatStepper = CdkStepper;
   moduleId: module.id,
   selector: 'mat-step',
   templateUrl: 'step.html',
-  providers: [{provide: MAT_ERROR_GLOBAL_OPTIONS, useExisting: MatStep}],
+  providers: [{provide: ErrorStateMatcher, useExisting: MatStep}],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MatStep extends _MatStep implements ErrorOptions {
+export class MatStep extends _MatStep implements ErrorStateMatcher {
   /** Content for step label given by <ng-template matStepLabel>. */
   @ContentChild(MatStepLabel) stepLabel: MatStepLabel;
 
-  /** Original ErrorStateMatcher that checks the validity of form control. */
-  private _originalErrorStateMatcher: ErrorStateMatcher;
-
   constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,
-              @Optional() @SkipSelf() @Inject(MAT_ERROR_GLOBAL_OPTIONS)
-                  errorOptions: ErrorOptions) {
+              @SkipSelf() private _errorStateMatcher: ErrorStateMatcher) {
     super(stepper);
-    if (errorOptions && errorOptions.errorStateMatcher) {
-      this._originalErrorStateMatcher = errorOptions.errorStateMatcher;
-    } else {
-      this._originalErrorStateMatcher = defaultErrorStateMatcher;
-    }
   }
 
   /** Custom error state matcher that additionally checks for validity of interacted form. */
-  errorStateMatcher = (control: FormControl, form: FormGroupDirective | NgForm) => {
-    let originalErrorState = this._originalErrorStateMatcher(control, form);
+  isErrorState(control: NgControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const originalErrorState = this._errorStateMatcher.isErrorState(control, form);
 
     // Custom error state checks for the validity of form that is not submitted or touched
     // since user can trigger a form change by calling for another step without directly
     // interacting with the current form.
-    let customErrorState =  control.invalid && this.interacted;
+    const customErrorState = !!(control && control.invalid && this.interacted);
 
     return originalErrorState || customErrorState;
   }

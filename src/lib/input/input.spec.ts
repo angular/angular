@@ -12,9 +12,9 @@ import {
   Validators,
 } from '@angular/forms';
 import {
-  MAT_ERROR_GLOBAL_OPTIONS,
   MAT_PLACEHOLDER_GLOBAL_OPTIONS,
-  showOnDirtyErrorStateMatcher,
+  ShowOnDirtyErrorStateMatcher,
+  ErrorStateMatcher,
 } from '@angular/material/core';
 import {
   getMatFormFieldDuplicatedHintError,
@@ -926,12 +926,6 @@ describe('MatInput with forms', () => {
     });
 
     it('should display an error message when global error matcher returns true', () => {
-
-      // Global error state matcher that will always cause errors to show
-      function globalErrorStateMatcher() {
-        return true;
-      }
-
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [
@@ -944,11 +938,7 @@ describe('MatInput with forms', () => {
         declarations: [
           MatInputWithFormErrorMessages
         ],
-        providers: [
-          {
-            provide: MAT_ERROR_GLOBAL_OPTIONS,
-            useValue: { errorStateMatcher: globalErrorStateMatcher } }
-        ]
+        providers: [{provide: ErrorStateMatcher, useValue: {isErrorState: () => true}}]
       });
 
       let fixture = TestBed.createComponent(MatInputWithFormErrorMessages);
@@ -963,7 +953,7 @@ describe('MatInput with forms', () => {
       expect(containerEl.querySelectorAll('mat-error').length).toBe(1, 'Expected an error message');
     });
 
-    it('should display an error message when using showOnDirtyErrorStateMatcher', async(() => {
+    it('should display an error message when using ShowOnDirtyErrorStateMatcher', async(() => {
       TestBed.resetTestingModule();
       TestBed.configureTestingModule({
         imports: [
@@ -976,12 +966,7 @@ describe('MatInput with forms', () => {
         declarations: [
           MatInputWithFormErrorMessages
         ],
-        providers: [
-          {
-            provide: MAT_ERROR_GLOBAL_OPTIONS,
-            useValue: { errorStateMatcher: showOnDirtyErrorStateMatcher }
-          }
-        ]
+        providers: [{provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}]
       });
 
       let fixture = TestBed.createComponent(MatInputWithFormErrorMessages);
@@ -1298,7 +1283,7 @@ class MatInputWithFormErrorMessages {
       <mat-form-field>
         <input matInput
             formControlName="name"
-            [errorStateMatcher]="customErrorStateMatcher.bind(this)">
+            [errorStateMatcher]="customErrorStateMatcher">
         <mat-hint>Please type something</mat-hint>
         <mat-error>This field is required</mat-error>
       </mat-form-field>
@@ -1312,9 +1297,9 @@ class MatInputWithCustomErrorStateMatcher {
 
   errorState = false;
 
-  customErrorStateMatcher(): boolean {
-    return this.errorState;
-  }
+  customErrorStateMatcher = {
+    isErrorState: () => this.errorState
+  };
 }
 
 @Component({

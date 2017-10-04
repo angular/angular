@@ -28,7 +28,8 @@ import {
   extendObject,
   FloatPlaceholderType,
   MAT_PLACEHOLDER_GLOBAL_OPTIONS,
-  MatOption
+  MatOption,
+  ErrorStateMatcher,
 } from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
@@ -97,6 +98,7 @@ describe('MatSelect', () => {
         FalsyValueSelect,
         SelectInsideFormGroup,
         NgModelCompareWithSelect,
+        CustomErrorBehaviorSelect,
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -2946,6 +2948,47 @@ describe('MatSelect', () => {
       expect(select.getAttribute('aria-invalid'))
           .toBe('true', 'Expected aria-invalid to be set to true.');
     });
+
+    it('should be able to override the error matching behavior via an @Input', () => {
+      fixture.destroy();
+
+      const customErrorFixture = TestBed.createComponent(CustomErrorBehaviorSelect);
+      const component = customErrorFixture.componentInstance;
+      const matcher = jasmine.createSpy('error state matcher').and.returnValue(true);
+
+      customErrorFixture.detectChanges();
+
+      expect(component.control.invalid).toBe(false);
+      expect(component.select.errorState).toBe(false);
+
+      customErrorFixture.componentInstance.errorStateMatcher = { isErrorState: matcher };
+      customErrorFixture.detectChanges();
+
+      expect(component.select.errorState).toBe(true);
+      expect(matcher).toHaveBeenCalled();
+    });
+
+    it('should be able to override the error matching behavior via the injection token', () => {
+      const errorStateMatcher: ErrorStateMatcher = {
+        isErrorState: jasmine.createSpy('error state matcher').and.returnValue(true)
+      };
+
+      fixture.destroy();
+
+      TestBed.resetTestingModule().configureTestingModule({
+        imports: [MatSelectModule, ReactiveFormsModule, FormsModule, NoopAnimationsModule],
+        declarations: [SelectInsideFormGroup],
+        providers: [{ provide: ErrorStateMatcher, useValue: errorStateMatcher }],
+      });
+
+      const errorFixture = TestBed.createComponent(SelectInsideFormGroup);
+      const component = errorFixture.componentInstance;
+
+      errorFixture.detectChanges();
+
+      expect(component.select.errorState).toBe(true);
+      expect(errorStateMatcher.isErrorState).toHaveBeenCalled();
+    });
   });
 
   describe('compareWith behavior', () => {
@@ -3617,6 +3660,7 @@ class InvalidSelectInForm {
 })
 class SelectInsideFormGroup {
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
+  @ViewChild(MatSelect) select: MatSelect;
   formControl = new FormControl('', Validators.required);
   formGroup = new FormGroup({
     food: this.formControl
@@ -3750,4 +3794,23 @@ class NgModelCompareWithSelect {
   setFoodByCopy(newValue: {value: string, viewValue: string}) {
     this.selectedFood = extendObject({}, newValue);
   }
+}
+
+@Component({
+  template: `
+    <mat-select placeholder="Food" [formControl]="control" [errorStateMatcher]="errorStateMatcher">
+      <mat-option *ngFor="let food of foods" [value]="food.value">
+        {{ food.viewValue }}
+      </mat-option>
+    </mat-select>
+  `
+})
+class CustomErrorBehaviorSelect {
+  @ViewChild(MatSelect) select: MatSelect;
+  control = new FormControl();
+  foods: any[] = [
+    { value: 'steak-0', viewValue: 'Steak' },
+    { value: 'pizza-1', viewValue: 'Pizza' },
+  ];
+  errorStateMatcher: ErrorStateMatcher;
 }
