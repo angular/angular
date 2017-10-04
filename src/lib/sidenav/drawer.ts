@@ -33,10 +33,8 @@ import {
 } from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {merge} from 'rxjs/observable/merge';
-import {first} from 'rxjs/operator/first';
-import {startWith} from 'rxjs/operator/startWith';
-import {takeUntil} from 'rxjs/operator/takeUntil';
 import {Subject} from 'rxjs/Subject';
+import {RxChain, filter, first, startWith, takeUntil} from '@angular/cdk/rxjs';
 
 
 /** Throws an exception when two MatDrawer are matching the same position. */
@@ -114,7 +112,7 @@ export class MatDrawerContent implements AfterContentInit {
   host: {
     'class': 'mat-drawer',
     '[@transform]': '_animationState',
-    '(@transform.start)': '_onAnimationStart()',
+    '(@transform.start)': '_onAnimationStart($event)',
     '(@transform.done)': '_onAnimationEnd($event)',
     '(keydown)': 'handleKeydown($event)',
     // must prevent the browser from aligning text based on value
@@ -174,7 +172,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
   private _opened: boolean = false;
 
   /** Emits whenever the drawer has started animating. */
-  _animationStarted = new EventEmitter<void>();
+  _animationStarted = new EventEmitter<AnimationEvent>();
 
   /** Whether the drawer is animating. Used to prevent overlapping animations. */
   _isAnimating = false;
@@ -317,9 +315,9 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
     }
   }
 
-  _onAnimationStart() {
+  _onAnimationStart(event: AnimationEvent) {
     this._isAnimating = true;
-    this._animationStarted.emit();
+    this._animationStarted.emit(event);
   }
 
   _onAnimationEnd(event: AnimationEvent) {
@@ -448,13 +446,19 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
    * is properly hidden.
    */
   private _watchDrawerToggle(drawer: MatDrawer): void {
-    takeUntil.call(drawer._animationStarted, this._drawers.changes).subscribe(() => {
-      // Set the transition class on the container so that the animations occur. This should not
-      // be set initially because animations should only be triggered via a change in state.
-      this._renderer.addClass(this._element.nativeElement, 'mat-drawer-transition');
-      this._updateContentMargins();
-      this._changeDetectorRef.markForCheck();
-    });
+    RxChain.from(drawer._animationStarted)
+      .call(takeUntil, this._drawers.changes)
+      .call(filter, (event: AnimationEvent) => event.fromState !== event.toState)
+      .subscribe((event: AnimationEvent) => {
+        // Set the transition class on the container so that the animations occur. This should not
+        // be set initially because animations should only be triggered via a change in state.
+        if (event.toState !== 'open-instant') {
+          this._renderer.addClass(this._element.nativeElement, 'mat-drawer-transition');
+        }
+
+        this._updateContentMargins();
+        this._changeDetectorRef.markForCheck();
+      });
 
     if (drawer.mode !== 'side') {
       takeUntil.call(merge(drawer.onOpen, drawer.onClose), this._drawers.changes).subscribe(() =>
@@ -463,8 +467,8 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   }
 
   /**
-   * Subscribes to drawer onPositionChanged event in order to re-validate drawers when the position
-   * changes.
+   * Subscribes to drawer onPositionChanged event in order to
+   * re-validate drawers when the position changes.
    */
   private _watchDrawerPosition(drawer: MatDrawer): void {
     if (!drawer) {
