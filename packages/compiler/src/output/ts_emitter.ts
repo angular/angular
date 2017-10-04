@@ -39,7 +39,7 @@ export type ReferenceFilter = (reference: o.ExternalReference) => boolean;
 
 export class TypeScriptEmitter implements OutputEmitter {
   emitStatementsAndContext(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[], preamble: string = '',
+      genFilePath: string, stmts: o.Statement[], preamble: string = '',
       emitSourceMaps: boolean = true,
       referenceFilter?: ReferenceFilter): {sourceText: string, context: EmitterVisitorContext} {
     const converter = new _TsEmitterVisitor(referenceFilter);
@@ -63,7 +63,7 @@ export class TypeScriptEmitter implements OutputEmitter {
     });
 
     const sm = emitSourceMaps ?
-        ctx.toSourceMapGenerator(srcFilePath, genFilePath, preambleLines.length).toJsComment() :
+        ctx.toSourceMapGenerator(genFilePath, preambleLines.length).toJsComment() :
         '';
     const lines = [...preambleLines, ctx.toSource(), sm];
     if (sm) {
@@ -74,9 +74,8 @@ export class TypeScriptEmitter implements OutputEmitter {
     return {sourceText: lines.join('\n'), context: ctx};
   }
 
-  emitStatements(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[], preamble: string = '') {
-    return this.emitStatementsAndContext(srcFilePath, genFilePath, stmts, preamble).sourceText;
+  emitStatements(genFilePath: string, stmts: o.Statement[], preamble: string = '') {
+    return this.emitStatementsAndContext(genFilePath, stmts, preamble).sourceText;
   }
 }
 

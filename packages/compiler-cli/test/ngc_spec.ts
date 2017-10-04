@@ -184,7 +184,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0])
-          .toContain('Error at ng://' + path.join(basePath, 'mymodule.ts.MyComp.html'));
+          .toContain('Error at ' + path.join(basePath, 'mymodule.ts.MyComp.html'));
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain(`Property 'unknownProp' does not exist on type 'MyComp'`);
 
@@ -215,7 +215,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0])
-          .toContain('Error at ng://' + path.join(basePath, 'my.component.html(1,5):'));
+          .toContain('Error at ' + path.join(basePath, 'my.component.html(1,5):'));
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain(`Property 'unknownProp' does not exist on type 'MyComp'`);
 

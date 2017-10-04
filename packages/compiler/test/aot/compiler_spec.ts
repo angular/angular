@@ -29,7 +29,7 @@ describe('compiler (unbundled Angular)', () => {
 
   describe('aot source mapping', () => {
     const componentPath = '/app/app.component.ts';
-    const ngComponentPath = 'ng:///app/app.component.ts';
+    const ngFactoryPath = '/app/app.component.ngfactory.ts';
 
     let rootDir: MockDirectory;
     let appDir: MockDirectory;
@@ -83,7 +83,7 @@ describe('compiler (unbundled Angular)', () => {
     }
 
     describe('inline templates', () => {
-      const ngUrl = `${ngComponentPath}.AppComponent.html`;
+      const ngUrl = `${componentPath}.AppComponent.html`;
 
       function templateDecorator(template: string) { return `template: \`${template}\`,`; }
 
@@ -91,7 +91,7 @@ describe('compiler (unbundled Angular)', () => {
     });
 
     describe('external templates', () => {
-      const ngUrl = 'ng:///app/app.component.html';
+      const ngUrl = '/app/app.component.html';
       const templateUrl = '/app/app.component.html';
 
       function templateDecorator(template: string) {
@@ -129,14 +129,14 @@ describe('compiler (unbundled Angular)', () => {
         const sourceMap = extractSourceMap(genSource) !;
         expect(sourceMap.file).toEqual(genFile.genFileUrl);
 
-        // the generated file contains code that is not mapped to
-        // the template but rather to the original source file (e.g. import statements, ...)
+        // Note: the generated file also contains code that is not mapped to
+        // the template (e.g. import statements, ...)
         const templateIndex = sourceMap.sources.indexOf(ngUrl);
         expect(sourceMap.sourcesContent[templateIndex]).toEqual(template);
 
         // for the mapping to the original source file we don't store the source code
         // as we want to keep whatever TypeScript / ... produced for them.
-        const sourceIndex = sourceMap.sources.indexOf(ngComponentPath);
+        const sourceIndex = sourceMap.sources.indexOf(ngFactoryPath);
         expect(sourceMap.sourcesContent[sourceIndex]).toBe(' ');
       });
 
@@ -176,14 +176,14 @@ describe('compiler (unbundled Angular)', () => {
             .toEqual({line: 2, column: 9, source: ngUrl});
       });
 
-      it('should map non template parts to the source file', () => {
+      it('should map non template parts to the factory file', () => {
         appDir['app.component.ts'] = createComponentSource(templateDecorator('Hello World!'));
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
         const sourceMap = extractSourceMap(genSource) !;
         expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
-            .toEqual({line: 1, column: 0, source: ngComponentPath});
+            .toEqual({line: 1, column: 0, source: ngFactoryPath});
       });
     }
   });
