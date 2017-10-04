@@ -12,70 +12,11 @@ import {LifecycleHooks} from './lifecycle_reflector';
 import {ParseTreeResult as HtmlParseTreeResult} from './ml_parser/parser';
 import {splitAtColon, stringify} from './util';
 
-
-
 // group 0: "[prop] or (event) or @trigger"
 // group 1: "prop" from "[prop]"
 // group 2: "event" from "(event)"
 // group 3: "@trigger" from "@trigger"
 const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
-
-export class CompileAnimationEntryMetadata {
-  constructor(
-      public name: string|null = null,
-      public definitions: CompileAnimationStateMetadata[]|null = null) {}
-}
-
-export abstract class CompileAnimationStateMetadata {}
-
-export class CompileAnimationStateDeclarationMetadata extends CompileAnimationStateMetadata {
-  constructor(public stateNameExpr: string, public styles: CompileAnimationStyleMetadata) {
-    super();
-  }
-}
-
-export class CompileAnimationStateTransitionMetadata extends CompileAnimationStateMetadata {
-  constructor(
-      public stateChangeExpr: string|StaticSymbol|((stateA: string, stateB: string) => boolean),
-      public steps: CompileAnimationMetadata) {
-    super();
-  }
-}
-
-export abstract class CompileAnimationMetadata {}
-
-export class CompileAnimationKeyframesSequenceMetadata extends CompileAnimationMetadata {
-  constructor(public steps: CompileAnimationStyleMetadata[] = []) { super(); }
-}
-
-export class CompileAnimationStyleMetadata extends CompileAnimationMetadata {
-  constructor(
-      public offset: number,
-      public styles: Array<string|{[key: string]: string | number}>|null = null) {
-    super();
-  }
-}
-
-export class CompileAnimationAnimateMetadata extends CompileAnimationMetadata {
-  constructor(
-      public timings: string|number = 0, public styles: CompileAnimationStyleMetadata|
-      CompileAnimationKeyframesSequenceMetadata|null = null) {
-    super();
-  }
-}
-
-export abstract class CompileAnimationWithStepsMetadata extends CompileAnimationMetadata {
-  constructor(public steps: CompileAnimationMetadata[]|null = null) { super(); }
-}
-
-export class CompileAnimationSequenceMetadata extends CompileAnimationWithStepsMetadata {
-  constructor(steps: CompileAnimationMetadata[]|null = null) { super(steps); }
-}
-
-export class CompileAnimationGroupMetadata extends CompileAnimationWithStepsMetadata {
-  constructor(steps: CompileAnimationMetadata[]|null = null) { super(steps); }
-}
-
 
 function _sanitizeIdentifier(name: string): string {
   return name.replace(/\W/g, '_');
@@ -232,7 +173,6 @@ export class CompileStylesheetMetadata {
  * Summary Metadata regarding compilation of a template.
  */
 export interface CompileTemplateSummary {
-  animations: string[]|null;
   ngContentSelectors: string[];
   encapsulation: ViewEncapsulation|null;
 }
@@ -288,7 +228,6 @@ export class CompileTemplateMetadata {
 
   toSummary(): CompileTemplateSummary {
     return {
-      animations: this.animations.map(anim => anim.name),
       ngContentSelectors: this.ngContentSelectors,
       encapsulation: this.encapsulation,
     };

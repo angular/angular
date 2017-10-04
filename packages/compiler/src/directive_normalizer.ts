@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileAnimationEntryMetadata, CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, templateSourceUrl} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileStylesheetMetadata, CompileTemplateMetadata, templateSourceUrl} from './compile_metadata';
 import {CompilerConfig, preserveWhitespacesDefault} from './config';
 import {ViewEncapsulation} from './core';
 import * as html from './ml_parser/ast';
@@ -29,7 +29,7 @@ export interface PrenormalizedTemplateMetadata {
   styleUrls: string[];
   interpolation: [string, string]|null;
   encapsulation: ViewEncapsulation|null;
-  animations: CompileAnimationEntryMetadata[];
+  animations: any[];
   preserveWhitespaces: boolean|null;
 }
 
