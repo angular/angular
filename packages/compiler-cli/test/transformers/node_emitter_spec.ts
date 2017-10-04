@@ -422,8 +422,8 @@ describe('TypeScriptNodeEmitter', () => {
     it('should produce a source map that maps back to the source', () => {
       const statement = someVar.set(o.literal(1)).toDeclStmt();
       const text = '<my-comp> a = 1 </my-comp>';
-      const sourceName = 'ng://some.file.html';
-      const sourceUrl = 'file:///ng:/some.file.html';
+      const sourceName = '/some/file.html';
+      const sourceUrl = '../some/file.html';
       const file = new ParseSourceFile(text, sourceName);
       const start = new ParseLocation(file, 0, 0, 0);
       const end = new ParseLocation(file, text.length, 0, text.length);

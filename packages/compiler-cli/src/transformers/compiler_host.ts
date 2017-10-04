@@ -287,7 +287,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
           `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileUrl}`);
     }
     const {sourceText, context} = this.emitter.emitStatementsAndContext(
-        genFile.srcFileUrl, genFile.genFileUrl, genFile.stmts, /* preamble */ '',
+        genFile.genFileUrl, genFile.stmts, /* preamble */ '',
         /* emitSourceMaps */ false);
     const sf = ts.createSourceFile(
         genFile.genFileUrl, sourceText, this.options.target || ts.ScriptTarget.Latest);

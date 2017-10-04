@@ -13,7 +13,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
 const someGenFilePath = 'somePackage/someGenFile';
-const someSourceFilePath = 'somePackage/someSourceFile';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
@@ -36,7 +35,7 @@ export function main() {
 
     function emitStmt(stmt: o.Statement | o.Statement[], preamble?: string): string {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
-      const source = emitter.emitStatements(someSourceFilePath, someGenFilePath, stmts, preamble);
+      const source = emitter.emitStatements(someGenFilePath, stmts, preamble);
       return stripSourceMapAndNewLine(source);
     }
 
@@ -435,7 +434,7 @@ export function main() {
               new o.ReturnStatement(o.variable('someVar', null, referenceSpan), returnSpan)
             ])])];
         const {sourceText, context} =
-            emitter.emitStatementsAndContext('a.ts', 'a.ts', statements, '/* some preamble /*\n\n');
+            emitter.emitStatementsAndContext('a.ts', statements, '/* some preamble /*\n\n');
         const spanOf = (text: string, after: number = 0) => {
           const location = sourceText.indexOf(text, after);
           const {line, col} = calculateLineCol(sourceText, location);
