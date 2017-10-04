@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {sourceUrl} from '../compile_metadata';
 import {Statement, areAllEquivalent} from '../output/output_ast';
 import {TypeScriptEmitter} from '../output/ts_emitter';
 
@@ -45,6 +44,5 @@ export function toTypeScript(file: GeneratedFile, preamble: string = ''): string
   if (!file.stmts) {
     throw new Error(`Illegal state: No stmts present on GeneratedFile ${file.genFileUrl}`);
   }
-  return new TypeScriptEmitter().emitStatements(
-      sourceUrl(file.srcFileUrl), file.genFileUrl, file.stmts, preamble);
+  return new TypeScriptEmitter().emitStatements(file.genFileUrl, file.stmts, preamble);
 }

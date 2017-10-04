@@ -653,7 +653,7 @@ export function flatten<T>(list: Array<T|T[]>): T[] {
   }, []);
 }
 
-export function sourceUrl(url: string) {
+function jitSourceUrl(url: string) {
   // Note: We need 3 "/" so that ng shows up as a separate domain
   // in the chrome dev tools.
   return url.replace(/(\w+:\/\/[\w:-]+)?(\/+)?/, 'ng:///');
@@ -674,22 +674,21 @@ export function templateSourceUrl(
   } else {
     url = templateMeta.templateUrl !;
   }
-  // always prepend ng:// to make angular resources easy to find and not clobber
-  // user resources.
-  return sourceUrl(url);
+  return compMeta.type.reference instanceof StaticSymbol ? url : jitSourceUrl(url);
 }
 
 export function sharedStylesheetJitUrl(meta: CompileStylesheetMetadata, id: number) {
   const pathParts = meta.moduleUrl !.split(/\/\\/g);
   const baseName = pathParts[pathParts.length - 1];
-  return sourceUrl(`css/${id}${baseName}.ngstyle.js`);
+  return jitSourceUrl(`css/${id}${baseName}.ngstyle.js`);
 }
 
 export function ngModuleJitUrl(moduleMeta: CompileNgModuleMetadata): string {
-  return sourceUrl(`${identifierName(moduleMeta.type)}/module.ngfactory.js`);
+  return jitSourceUrl(`${identifierName(moduleMeta.type)}/module.ngfactory.js`);
 }
 
 export function templateJitUrl(
     ngModuleType: CompileIdentifierMetadata, compMeta: CompileDirectiveMetadata): string {
-  return sourceUrl(`${identifierName(ngModuleType)}/${identifierName(compMeta.type)}.ngfactory.js`);
+  return jitSourceUrl(
+      `${identifierName(ngModuleType)}/${identifierName(compMeta.type)}.ngfactory.js`);
 }

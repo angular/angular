@@ -31,7 +31,7 @@ function evalExpression(
     // We don't want to hard code this fact, so we auto detect it via an empty function first.
     const emptyFn = new Function(...fnArgNames.concat('return null;')).toString();
     const headerLines = emptyFn.slice(0, emptyFn.indexOf('return null;')).split('\n').length - 1;
-    fnBody += `\n${ctx.toSourceMapGenerator(sourceUrl, sourceUrl, headerLines).toJsComment()}`;
+    fnBody += `\n${ctx.toSourceMapGenerator(sourceUrl, headerLines).toJsComment()}`;
   }
   return new Function(...fnArgNames.concat(fnBody))(...fnArgValues);
 }
