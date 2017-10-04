@@ -1,0 +1,14 @@
+<form class="example-container" [formGroup]="options" [style.fontSize.px]="getFontSize()">
+  <mat-form-field [color]="options.value.color">
+    <mat-select placeholder="Color" formControlName="color">
+      <mat-option value="primary">Primary</mat-option>
+      <mat-option value="accent">Accent</mat-option>
+      <mat-option value="warn">Warn</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field [color]="options.value.color">
+    <input matInput type="number" placeholder="Font size (px)" formControlName="fontSize" min="10">
+    <mat-error *ngIf="options.get('fontSize').invalid">Min size: 10px</mat-error>
+  </mat-form-field>
+</form>
