@@ -214,7 +214,6 @@ Note the following:
 * You use your custom pipe the same way you use built-in pipes.
 * You must include your pipe in the `declarations` array of the `AppModule`.
 
-
 <div class="callout is-helpful">
 
 <header>
@@ -222,10 +221,9 @@ Note the following:
 </header>
 
 
-You must manually register custom pipes.
+You must register custom pipes.
 If you don't, Angular reports an error.
-In the previous example, you didn't list the `DatePipe` because all
-Angular built-in pipes are pre-registered.
+Angular CLI's generator registers the pipe automatically.
 
 
 </div>
