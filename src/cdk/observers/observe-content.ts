@@ -27,7 +27,7 @@ import {RxChain, debounceTime} from '@angular/cdk/rxjs';
  */
 @Injectable()
 export class MatMutationObserverFactory {
-  create(callback): MutationObserver | null {
+  create(callback: MutationCallback): MutationObserver | null {
     return typeof MutationObserver === 'undefined' ? null : new MutationObserver(callback);
   }
 }

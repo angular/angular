@@ -99,7 +99,7 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
 
   /** @deprecated Use `color` instead. */
   @Input()
-  get dividerColor() { return this.color; }
+  get dividerColor(): 'primary' | 'accent' | 'warn' { return this.color; }
   set dividerColor(value) { this.color = value; }
 
   /** Whether the required marker should be hidden. */

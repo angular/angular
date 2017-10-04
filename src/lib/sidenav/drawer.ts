@@ -137,7 +137,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
 
   /** The side that the drawer is attached to. */
   @Input()
-  get position() { return this._position; }
+  get position(): 'start' | 'end' { return this._position; }
   set position(value) {
     // Make sure we have a valid value.
     value = value === 'end' ? 'end' : 'start';
@@ -151,12 +151,12 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
 
   /** @deprecated */
   @Input()
-  get align() { return this.position; }
+  get align(): 'start' | 'end' { return this.position; }
   set align(value) { this.position = value; }
 
   /** Mode of the drawer; one of 'over', 'push' or 'side'. */
   @Input()
-  get mode() { return this._mode; }
+  get mode(): 'over' | 'push' | 'side' { return this._mode; }
   set mode(value) {
     this._mode = value;
     this._modeChanged.next();
@@ -206,7 +206,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
    */
   _modeChanged = new Subject();
 
-  get _isFocusTrapEnabled() {
+  get _isFocusTrapEnabled(): boolean {
     // The focus trap is only enabled when the drawer is open in any mode other than side.
     return this.opened && this.mode !== 'side';
   }
@@ -369,10 +369,10 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   @ContentChild(MatDrawerContent) _content: MatDrawerContent;
 
   /** The drawer child with the `start` position. */
-  get start() { return this._start; }
+  get start(): MatDrawer | null { return this._start; }
 
   /** The drawer child with the `end` position. */
-  get end() { return this._end; }
+  get end(): MatDrawer | null { return this._end; }
 
   /** Event emitted when the drawer backdrop is clicked. */
   @Output() backdropClick = new EventEmitter<void>();

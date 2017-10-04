@@ -60,7 +60,7 @@ export class MatSort {
    */
   @Input('matSortDisableClear')
   get disableClear() { return this._disableClear; }
-  set disableClear(v) { this._disableClear = coerceBooleanProperty(v); }
+  set disableClear(v: boolean) { this._disableClear = coerceBooleanProperty(v); }
   private _disableClear: boolean;
 
   /** Event emitted when the user changes either the active sort or sort direction. */

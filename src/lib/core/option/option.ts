@@ -79,7 +79,7 @@ export class MatOption {
   }
 
   /** The unique ID of the option. */
-  get id() { return this._id; }
+  get id(): string { return this._id; }
 
   /** Whether or not the option is currently selected. */
   get selected(): boolean { return this._selected; }

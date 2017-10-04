@@ -148,7 +148,7 @@ export class MatIconRegistry {
    * @param alias Alias for the font.
    * @param className Class name override to be used instead of the alias.
    */
-  registerFontClassAlias(alias: string, className = alias): this {
+  registerFontClassAlias(alias: string, className: string = alias): this {
     this._fontCssClassesByAlias.set(alias, className);
     return this;
   }
@@ -215,7 +215,7 @@ export class MatIconRegistry {
    * @param name Name of the icon to be retrieved.
    * @param namespace Namespace in which to look for the icon.
    */
-  getNamedSvgIcon(name: string, namespace = ''): Observable<SVGElement> {
+  getNamedSvgIcon(name: string, namespace: string = ''): Observable<SVGElement> {
     // Return (copy of) cached icon if possible.
     const key = iconKey(namespace, name);
     const config = this._svgIconConfigs.get(key);

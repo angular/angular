@@ -113,7 +113,7 @@ export class MatRipple implements OnChanges, OnDestroy {
   }
 
   /** Launches a manual ripple at the specified position. */
-  launch(x: number, y: number, config = this.rippleConfig): RippleRef {
+  launch(x: number, y: number, config: RippleConfig = this.rippleConfig): RippleRef {
     return this._rippleRenderer.fadeInRipple(x, y, config);
   }
 

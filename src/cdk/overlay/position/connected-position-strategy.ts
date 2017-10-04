@@ -81,7 +81,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   }
 
   /** Ordered list of preferred positions, from most to least desirable. */
-  get positions() {
+  get positions(): ConnectionPositionPair[] {
     return this._preferredPositions;
   }
 

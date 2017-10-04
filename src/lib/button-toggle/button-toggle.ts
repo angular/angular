@@ -94,7 +94,7 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
   _controlValueAccessorChangeFn: (value: any) => void = () => {};
 
   /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
-  onTouched: () => any = () => {};
+  _onTouched: () => any = () => {};
 
   /** Child button toggle buttons. */
   @ContentChildren(forwardRef(() => MatButtonToggle)) _buttonToggles: QueryList<MatButtonToggle>;
@@ -215,7 +215,7 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
    * @param fn On touch callback function.
    */
   registerOnTouched(fn: any) {
-    this.onTouched = fn;
+    this._onTouched = fn;
   }
 
   /**
@@ -436,7 +436,7 @@ export class MatButtonToggle implements OnInit, OnDestroy {
       let groupValueChanged = this.buttonToggleGroup.selected != this;
       this.checked = true;
       this.buttonToggleGroup.selected = this;
-      this.buttonToggleGroup.onTouched();
+      this.buttonToggleGroup._onTouched();
       if (groupValueChanged) {
         this.buttonToggleGroup._emitChangeEvent();
       }

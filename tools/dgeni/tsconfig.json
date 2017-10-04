@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "noUnusedParameters": true,
+    "lib": ["es2015", "dom", "es2016.array.include"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../../dist/tools/dgeni",
+    "strictNullChecks": true,
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "target": "es5",
+    "types": [
+      "node"
+    ]
+  },
+  "files": [
+    "index.ts"
+  ]
+}

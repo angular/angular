@@ -2,6 +2,7 @@ import {task, src, dest} from 'gulp';
 import {Dgeni} from 'dgeni';
 import * as path from 'path';
 import {buildConfig} from 'material2-build-tools';
+import {apiDocsPackage} from '../../dgeni/index';
 
 // There are no type definitions available for these imports.
 const markdown = require('gulp-markdown');
@@ -123,8 +124,7 @@ task('highlight-examples', () => {
 
 /** Generates API docs from the source JsDoc using dgeni. */
 task('api-docs', () => {
-  const docsPackage = require(path.resolve(__dirname, '../../dgeni'));
-  const docs = new Dgeni([docsPackage]);
+  const docs = new Dgeni([apiDocsPackage]);
   return docs.generate();
 });
 

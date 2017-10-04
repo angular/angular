@@ -229,7 +229,7 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   }
 
   /** Whether any chips or the matChipInput inside of this chip-list has focus. */
-  get focused() {
+  get focused(): boolean {
     return this.chips.some(chip => chip._hasFocus) ||
       (this._chipInput && this._chipInput.focused);
   }

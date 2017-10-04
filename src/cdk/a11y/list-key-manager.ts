@@ -55,7 +55,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * Turns on typeahead mode which allows users to set the active item by typing.
    * @param debounceInterval Time to wait after the last keystroke before setting the active item.
    */
-  withTypeAhead(debounceInterval = 200): this {
+  withTypeAhead(debounceInterval: number = 200): this {
     if (this._items.length && this._items.some(item => typeof item.getLabel !== 'function')) {
       throw Error('ListKeyManager items in typeahead mode must implement the `getLabel` method.');
     }

@@ -109,7 +109,7 @@ export class MatSortHeader implements MatSortable {
 
   /** Overrides the disable clear value of the containing MatSort for this MatSortable. */
   @Input()
-  get disableClear() { return this._disableClear; }
+  get disableClear(): boolean { return this._disableClear; }
   set disableClear(v) { this._disableClear = coerceBooleanProperty(v); }
   private _disableClear: boolean;
 

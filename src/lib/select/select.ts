@@ -1205,5 +1205,5 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   // Implemented as part of MatFormFieldControl.
-  get shouldPlaceholderFloat() { return this._panelOpen || !this.empty; }
+  get shouldPlaceholderFloat(): boolean { return this._panelOpen || !this.empty; }
 }

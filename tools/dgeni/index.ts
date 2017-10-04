@@ -1,13 +1,16 @@
-const path = require('path');
-const fs = require('fs');
-const Dgeni = require('dgeni');
-const DgeniPackage = Dgeni.Package;
+import {Package} from 'dgeni';
+import {DocsPrivateFilter} from './processors/docs-private-filter';
+import {Categorizer} from './processors/categorizer';
+import {ComponentGrouper} from './processors/component-grouper';
+import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTypeScriptModules';
+import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
+import {sync as globSync} from 'glob';
+import * as path from 'path';
 
-// dgeni packages
+// Dgeni packages
 const jsdocPackage = require('dgeni-packages/jsdoc');
 const nunjucksPackage = require('dgeni-packages/nunjucks');
 const typescriptPackage = require('dgeni-packages/typescript');
-
 
 // Project configuration.
 const projectRootDir = path.resolve(__dirname, '../..');
@@ -33,106 +36,79 @@ const dgeniPackageDeps = [
   typescriptPackage,
 ];
 
-let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
+/** List of CDK packages that need to be documented. */
+const cdkPackages = globSync(path.join(sourceDir, 'cdk', '*/'))
+  .filter(packagePath => !packagePath.endsWith('testing/'))
+  .map(packagePath => path.basename(packagePath));
+
+/** List of Material packages that need to be documented. */
+const materialPackages = globSync(path.join(sourceDir, 'lib', '*/'))
+  .map(packagePath => path.basename(packagePath));
+
+export const apiDocsPackage = new Package('material2-api-docs', dgeniPackageDeps);
+
 
 // Processor that filters out symbols that should not be shown in the docs.
-.processor(require('./processors/docs-private-filter'))
+apiDocsPackage.processor(new DocsPrivateFilter());
 
 // Processor that appends categorization flags to the docs, e.g. `isDirective`, `isNgModule`, etc.
-.processor(require('./processors/categorizer'))
+apiDocsPackage.processor(new Categorizer());
 
 // Processor to group components into top-level groups such as "Tabs", "Sidenav", etc.
-.processor(require('./processors/component-grouper'))
+apiDocsPackage.processor(new ComponentGrouper());
 
-.config(function(log) {
-  log.level = 'info';
-})
+// Configure the log level of the API docs dgeni package.
+apiDocsPackage.config((log: any) => log.level = 'info');
 
 // Configure the processor for reading files from the file system.
-.config(function(readFilesProcessor, writeFilesProcessor) {
+apiDocsPackage.config((readFilesProcessor: any, writeFilesProcessor: any) => {
   readFilesProcessor.basePath = sourceDir;
   readFilesProcessor.$enabled = false; // disable for now as we are using readTypeScriptModules
 
   writeFilesProcessor.outputFolder = outputDir;
-})
+});
 
 // Configure the output path for written files (i.e., file names).
-.config(function(computePathsProcessor) {
+apiDocsPackage.config((computePathsProcessor: any) => {
   computePathsProcessor.pathTemplates = [{
     docTypes: ['componentGroup'],
     pathTemplate: '${name}',
     outputPathTemplate: '${name}.html',
   }];
-})
+});
 
 // Configure custom JsDoc tags.
-.config(function(parseTagsProcessor) {
+apiDocsPackage.config((parseTagsProcessor: any) => {
   parseTagsProcessor.tagDefinitions = parseTagsProcessor.tagDefinitions.concat([
     {name: 'docs-private'}
   ]);
-})
+});
 
 // Configure the processor for understanding TypeScript.
-.config(function(readTypeScriptModules) {
-  console.log(sourceDir);
+apiDocsPackage.config((readTypeScriptModules: ReadTypeScriptModules, tsParser: TsParser) => {
   readTypeScriptModules.basePath = sourceDir;
   readTypeScriptModules.ignoreExportsMatching = [/^_/];
   readTypeScriptModules.hidePrivateMembers = true;
 
+  const typescriptPathMap: any = {};
+
+  cdkPackages.forEach(packageName => {
+    typescriptPathMap[`@angular/cdk/${packageName}`] = [`./cdk/${packageName}/index.ts`];
+  });
+
+  tsParser.options.baseUrl = sourceDir;
+  tsParser.options.paths = typescriptPathMap;
+
   // Entry points for docs generation. All publically exported symbols found through these
   // files will have docs generated.
   readTypeScriptModules.sourceFiles = [
-    // @angular/cdk
-    'cdk/a11y/index.ts',
-    'cdk/bidi/index.ts',
-    'cdk/coercion/index.ts',
-    'cdk/collections/index.ts',
-    'cdk/keycodes/index.ts',
-    'cdk/layout/index.ts',
-    'cdk/overlay/index.ts',
-    'cdk/platform/index.ts',
-    'cdk/portal/index.ts',
-    'cdk/rxjs/index.ts',
-    'cdk/scrolling/index.ts',
-    'cdk/table/index.ts',
-
-    // @angular/material
-    'lib/autocomplete/index.ts',
-    'lib/button/index.ts',
-    'lib/button-toggle/index.ts',
-    'lib/card/index.ts',
-    'lib/checkbox/index.ts',
-    'lib/chips/index.ts',
-    'lib/core/index.ts',
-    'lib/datepicker/index.ts',
-    'lib/dialog/index.ts',
-    'lib/expansion/index.ts',
-    'lib/grid-list/index.ts',
-    'lib/icon/index.ts',
-    'lib/input/index.ts',
-    'lib/list/index.ts',
-    'lib/menu/index.ts',
-    'lib/paginator/index.ts',
-    'lib/progress-bar/index.ts',
-    'lib/progress-spinner/index.ts',
-    'lib/radio/index.ts',
-    'lib/select/index.ts',
-    'lib/sidenav/index.ts',
-    'lib/slide-toggle/index.ts',
-    'lib/slider/index.ts',
-    'lib/snack-bar/index.ts',
-    'lib/sort/index.ts',
-    'lib/stepper/index.ts',
-    'lib/table/index.ts',
-    'lib/tabs/index.ts',
-    'lib/toolbar/index.ts',
-    'lib/tooltip/index.ts',
+    ...cdkPackages.map(packageName => `./cdk/${packageName}/index.ts`),
+    ...materialPackages.map(packageName => `./lib/${packageName}/index.ts`)
   ];
-})
-
+});
 
 // Configure processor for finding nunjucks templates.
-.config(function(templateFinder, templateEngine) {
+apiDocsPackage.config((templateFinder: any, templateEngine: any) => {
   // Where to find the templates for the doc rendering
   templateFinder.templateFolders = [templateDir];
 
@@ -160,6 +136,3 @@ let apiDocsPackage = new DgeniPackage('material2-api-docs', dgeniPackageDeps)
     variableEnd: '$}'
   };
 });
-
-
-module.exports = apiDocsPackage;

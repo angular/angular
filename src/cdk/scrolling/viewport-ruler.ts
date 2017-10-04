@@ -26,7 +26,7 @@ export class ViewportRuler {
   }
 
   /** Gets a ClientRect for the viewport's bounds. */
-  getViewportRect(documentRect = this._documentRect): ClientRect {
+  getViewportRect(documentRect: ClientRect | undefined = this._documentRect): ClientRect {
     // Cache the document bounding rect so that we don't recompute it for multiple calls.
     if (!documentRect) {
       this._cacheViewportGeometry();
@@ -61,7 +61,7 @@ export class ViewportRuler {
    * Gets the (top, left) scroll position of the viewport.
    * @param documentRect
    */
-  getViewportScrollPosition(documentRect = this._documentRect) {
+  getViewportScrollPosition(documentRect: ClientRect | undefined = this._documentRect) {
     // Cache the document bounding rect so that we don't recompute it for multiple calls.
     if (!documentRect) {
       this._cacheViewportGeometry();

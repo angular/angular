@@ -43,7 +43,7 @@ export class MatDatepickerToggle<D> implements OnChanges, OnDestroy {
 
   /** Whether the toggle button is disabled. */
   @Input()
-  get disabled() {
+  get disabled(): boolean {
     return this._disabled === undefined ? this.datepicker.disabled : this._disabled;
   }
   set disabled(value) {

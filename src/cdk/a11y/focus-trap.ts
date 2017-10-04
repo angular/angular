@@ -279,7 +279,7 @@ export class FocusTrapFactory {
       private _platform: Platform,
       private _ngZone: NgZone) { }
 
-  create(element: HTMLElement, deferAnchors = false): FocusTrap {
+  create(element: HTMLElement, deferAnchors: boolean = false): FocusTrap {
     return new FocusTrap(element, this._platform, this._checker, this._ngZone, deferAnchors);
   }
 }

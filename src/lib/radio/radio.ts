@@ -155,7 +155,7 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
 
   /** Whether the labels should appear after or before the radio-buttons. Defaults to 'after' */
   @Input()
-  get labelPosition() {
+  get labelPosition(): 'before' | 'after' {
     return this._labelPosition;
   }
 

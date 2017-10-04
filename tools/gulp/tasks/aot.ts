@@ -33,7 +33,7 @@ task('aot:copy-release', () => {
       join(releasesDir, 'material-moment-adapter'), join(demoAppOut, 'material-moment-adapter'));
 });
 
-// // As a workaround for https://github.com/angular/angular/issues/12249, we need to
+// As a workaround for https://github.com/angular/angular/issues/12249, we need to
 // copy the demo-app sources to distribution and run the NGC inside of the dist folder.
 task('aot:copy-devapp', () => copySync(demoAppSource, demoAppOut));
 

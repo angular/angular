@@ -99,7 +99,8 @@ export class MatSnackBar {
    * @param action The label for the snackbar action.
    * @param config Additional configuration options for the snackbar.
    */
-  open(message: string, action = '', config?: MatSnackBarConfig): MatSnackBarRef<SimpleSnackBar> {
+  open(message: string, action: string = '', config?: MatSnackBarConfig):
+      MatSnackBarRef<SimpleSnackBar> {
     const _config = _applyConfigDefaults(config);
 
     // Since the user doesn't have access to the component, we can

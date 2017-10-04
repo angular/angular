@@ -41,12 +41,12 @@ export class MatGridTile {
 
   /** Amount of rows that the grid tile takes up. */
   @Input()
-  get rowspan() { return this._rowspan; }
+  get rowspan(): number { return this._rowspan; }
   set rowspan(value) { this._rowspan = coerceToNumber(value); }
 
   /** Amount of columns that the grid tile takes up. */
   @Input()
-  get colspan() { return this._colspan; }
+  get colspan(): number { return this._colspan; }
   set colspan(value) { this._colspan = coerceToNumber(value); }
 
   /**
