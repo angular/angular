@@ -467,7 +467,7 @@ export class TestBed implements Injector {
       }
       return [depFlags, depToken];
     });
-    overrideProvider({token, flags, deps, value});
+    overrideProvider({token, flags, deps, value, deprecatedBehavior: deprecated});
   }
 
   createComponent<T>(component: Type<T>): ComponentFixture<T> {
