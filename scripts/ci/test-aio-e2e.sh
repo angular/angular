@@ -13,6 +13,6 @@ source ${thisDir}/_travis-fold.sh
 
   # Run example e2e tests
   travisFoldStart "test.aio.example-e2e"
-    yarn example-e2e -- --setup --local --shard=${AIO_SHARD}/2
+    yarn example-e2e --setup --local --shard=${AIO_SHARD}/2
   travisFoldEnd "test.aio.example-e2e"
 )
