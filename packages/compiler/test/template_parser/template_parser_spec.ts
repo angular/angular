@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {CompileQueryMetadata, CompilerConfig, ProxyClass, StaticSymbol, preserveWhitespacesDefault} from '@angular/compiler';
-import {CompileAnimationEntryMetadata, CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompileDirectiveSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileTemplateMetadata, CompileTokenMetadata, CompileTypeMetadata, tokenReference} from '@angular/compiler/src/compile_metadata';
 import {DomElementSchemaRegistry} from '@angular/compiler/src/schema/dom_element_schema_registry';
 import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAstType, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '@angular/compiler/src/template_parser/template_ast';
@@ -136,7 +136,7 @@ export function main() {
 
   function commonBeforeEach() {
     beforeEach(inject([TemplateParser], (parser: TemplateParser) => {
-      const someAnimation = new CompileAnimationEntryMetadata('someAnimation', []);
+      const someAnimation = ['someAnimation'];
       const someTemplate = compileTemplateMetadata({animations: [someAnimation]});
       const component = compileDirectiveMetadataCreate({
         isHost: false,
@@ -550,7 +550,7 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
 
         it('should not issue a warning when host attributes contain a valid property-bound animation trigger',
            () => {
-             const animationEntries = [new CompileAnimationEntryMetadata('prop', [])];
+             const animationEntries = ['prop'];
              const dirA = compileDirectiveMetadataCreate({
                             selector: 'div',
                             template: compileTemplateMetadata({animations: animationEntries}),
