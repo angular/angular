@@ -97,5 +97,26 @@ export class MatMenuItem extends _MatMenuItemMixinBase implements FocusableOptio
     }
   }
 
+  /** Gets the label to be used when determining whether the option should be focused. */
+  getLabel(): string {
+    const element: HTMLElement = this._elementRef.nativeElement;
+    let output = '';
+
+    if (element.childNodes) {
+      const length = element.childNodes.length;
+
+      // Go through all the top-level text nodes and extract their text.
+      // We skip anything that's not a text node to prevent the text from
+      // being thrown off by something like an icon.
+      for (let i = 0; i < length; i++) {
+        if (element.childNodes[i].nodeType === Node.TEXT_NODE) {
+          output += element.childNodes[i].textContent;
+        }
+      }
+    }
+
+    return output.trim();
+  }
+
 }
 

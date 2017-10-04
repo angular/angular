@@ -9,6 +9,8 @@ import {
   Output,
   TemplateRef,
   ViewChild,
+  ViewChildren,
+  QueryList,
 } from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer} from '@angular/cdk/overlay';
@@ -21,6 +23,7 @@ import {
   MatMenuTrigger,
   MenuPositionX,
   MenuPositionY,
+  MatMenuItem,
 } from './index';
 import {MENU_PANEL_TOP_PADDING} from './menu-trigger';
 import {extendObject} from '@angular/material/core';
@@ -49,7 +52,8 @@ describe('MatMenu', () => {
         CustomMenu,
         NestedMenu,
         NestedMenuCustomElevation,
-        NestedMenuRepeater
+        NestedMenuRepeater,
+        FakeIcon
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -173,6 +177,18 @@ describe('MatMenu', () => {
   it('should not throw an error on destroy', () => {
     const fixture = TestBed.createComponent(SimpleMenu);
     expect(fixture.destroy.bind(fixture)).not.toThrow();
+  });
+
+  it('should be able to extract the menu item text', () => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.items.first.getLabel()).toBe('Item');
+  });
+
+  it('should filter out non-text nodes when figuring out the label', () => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.items.last.getLabel()).toBe('Item with an icon');
   });
 
   describe('positions', () => {
@@ -1070,7 +1086,7 @@ describe('MatMenu default overrides', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MatMenuModule, NoopAnimationsModule],
-      declarations: [SimpleMenu],
+      declarations: [SimpleMenu, FakeIcon],
       providers: [{
         provide: MAT_MENU_DEFAULT_OPTIONS,
         useValue: {overlapTrigger: false, xPosition: 'before', yPosition: 'above'},
@@ -1095,6 +1111,10 @@ describe('MatMenu default overrides', () => {
     <mat-menu class="custom-one custom-two" #menu="matMenu" (close)="closeCallback($event)">
       <button mat-menu-item> Item </button>
       <button mat-menu-item disabled> Disabled </button>
+      <button mat-menu-item>
+        <fake-icon>unicorn</fake-icon>
+        Item with an icon
+      </button>
     </mat-menu>
   `
 })
@@ -1102,6 +1122,7 @@ class SimpleMenu {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
   @ViewChild('triggerEl') triggerEl: ElementRef;
   @ViewChild(MatMenu) menu: MatMenu;
+  @ViewChildren(MatMenuItem) items: QueryList<MatMenuItem>;
   closeCallback = jasmine.createSpy('menu closed callback');
 }
 
@@ -1284,3 +1305,9 @@ class NestedMenuRepeater {
 
   items = ['one', 'two', 'three'];
 }
+
+@Component({
+  selector: 'fake-icon',
+  template: '<ng-content></ng-content>'
+})
+class FakeIcon { }
