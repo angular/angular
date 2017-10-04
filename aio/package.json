@@ -6,7 +6,7 @@
   "author": "Angular",
   "license": "MIT",
   "scripts": {
-    "aio-use-local": "node tools/ng-packages-installer overwrite .",
+    "aio-use-local": "node tools/ng-packages-installer overwrite . --debug --ignore-packages @angular/service-worker",
     "aio-use-npm": "node tools/ng-packages-installer restore .",
     "aio-check-local": "node tools/ng-packages-installer check .",
     "ng": "yarn check-env && ng",
