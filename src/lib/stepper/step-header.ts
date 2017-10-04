@@ -16,6 +16,7 @@ import {
   OnDestroy,
   ElementRef,
   Renderer2,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {MatStepLabel} from './step-label';
 import {MatStepperIntl} from './stepper-intl';
@@ -33,6 +34,7 @@ import {Subscription} from 'rxjs/Subscription';
   },
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatStepHeader implements OnDestroy {
   private _intlSubscription: Subscription;

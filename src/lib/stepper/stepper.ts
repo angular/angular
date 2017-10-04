@@ -20,6 +20,7 @@ import {
   SkipSelf,
   ViewChildren,
   ViewEncapsulation,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import {NgControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
@@ -38,6 +39,7 @@ export const _MatStepper = CdkStepper;
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matStep',
   preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatStep extends _MatStep implements ErrorStateMatcher {
   /** Content for step label given by <ng-template matStepLabel>. */
@@ -94,6 +96,7 @@ export class MatStepper extends _MatStepper {
   providers: [{provide: MatStepper, useExisting: MatHorizontalStepper}],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatHorizontalStepper extends MatStepper { }
 
@@ -119,5 +122,6 @@ export class MatHorizontalStepper extends MatStepper { }
   providers: [{provide: MatStepper, useExisting: MatVerticalStepper}],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatVerticalStepper extends MatStepper { }

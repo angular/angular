@@ -24,7 +24,10 @@ import {
   ViewEncapsulation,
   Optional,
   Inject,
-  forwardRef
+  forwardRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  OnChanges,
 } from '@angular/core';
 import {LEFT_ARROW, RIGHT_ARROW, ENTER, SPACE} from '@angular/cdk/keycodes';
 import {CdkStepLabel} from './step-label';
@@ -63,8 +66,9 @@ export class StepperSelectionEvent {
   templateUrl: 'step.html',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CdkStep {
+export class CdkStep implements OnChanges {
   /** Template for step label if it exists. */
   @ContentChild(CdkStepLabel) stepLabel: CdkStepLabel;
 
@@ -74,12 +78,11 @@ export class CdkStep {
   /** The top level abstract control of the step. */
   @Input() stepControl: AbstractControl;
 
-  /** Whether user has seen the expanded step content or not . */
+  /** Whether user has seen the expanded step content or not. */
   interacted = false;
 
   /** Label of the step. */
-  @Input()
-  label: string;
+  @Input() label: string;
 
   @Input()
   get editable() { return this._editable; }
@@ -115,6 +118,12 @@ export class CdkStep {
   /** Selects this step component. */
   select(): void {
     this._stepper.selected = this;
+  }
+
+  ngOnChanges() {
+    // Since basically all inputs of the MdStep get proxied through the view down to the
+    // underlying MdStepHeader, we have to make sure that change detection runs correctly.
+    this._stepper._stateChanged();
   }
 }
 
@@ -166,7 +175,9 @@ export class CdkStepper {
   /** Used to track unique ID for each stepper component. */
   _groupId: number;
 
-  constructor(@Optional() private _dir: Directionality) {
+  constructor(
+    @Optional() private _dir: Directionality,
+    private _changeDetectorRef: ChangeDetectorRef) {
     this._groupId = nextId++;
   }
 
@@ -188,6 +199,11 @@ export class CdkStepper {
   /** Returns unique id for each step content element. */
   _getStepContentId(i: number): string {
     return `mat-step-content-${this._groupId}-${i}`;
+  }
+
+  /** Marks the component to be change detected. */
+  _stateChanged() {
+    this._changeDetectorRef.markForCheck();
   }
 
   /** Returns position state of the step with the given index. */
@@ -220,6 +236,7 @@ export class CdkStepper {
       previouslySelectedStep: stepsArray[this._selectedIndex],
     });
     this._selectedIndex = newIndex;
+    this._stateChanged();
   }
 
   _onKeydown(event: KeyboardEvent) {

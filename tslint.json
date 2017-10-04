@@ -91,7 +91,8 @@
       "Component": {
         "encapsulation": "\\.None$",
         "moduleId": "^module\\.id$",
-        "preserveWhitespaces": "false$"
+        "preserveWhitespaces": "false$",
+        "changeDetection": "\\.OnPush$"
       }
     }, "src/+(lib|cdk)/**/!(*.spec).ts"],
     "require-license-banner": [
