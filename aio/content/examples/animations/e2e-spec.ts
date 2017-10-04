@@ -335,17 +335,17 @@ describe('Animation Tests', () => {
     });
   }
 
-  function getBoundingClientWidth(el: ElementFinder): promise.Promise<number> {
+  function getBoundingClientWidth(el: ElementFinder) {
     return browser.executeScript(
       'return arguments[0].getBoundingClientRect().width',
       el.getWebElement()
-    );
+    ) as PromiseLike<number>;
   }
 
-  function getOffsetWidth(el: ElementFinder): promise.Promise<number> {
+  function getOffsetWidth(el: ElementFinder) {
     return browser.executeScript(
       'return arguments[0].offsetWidth',
       el.getWebElement()
-    );
+    ) as PromiseLike<number>;
   }
 });
