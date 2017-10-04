@@ -32,7 +32,7 @@ if [[ ${CI_MODE:-} == "aio" ]]; then
        ([[ $TRAVIS_BRANCH == "master" ]] || [[ $TRAVIS_BRANCH == $STABLE_BRANCH ]]) &&
        [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
       travisFoldStart "deploy.aio.pr-preview"
-        yarn deploy-preview -- --skip-build
+        yarn deploy-preview --skip-build
       travisFoldEnd "deploy.aio.pr-preview"
     fi
   )

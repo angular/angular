@@ -106,7 +106,7 @@ function runE2eTests(appDir, outputFile) {
   const config = loadExampleConfig(appDir);
 
   const appBuildSpawnInfo = spawnExt('yarn', [config.build], { cwd: appDir });
-  const appRunSpawnInfo = spawnExt('yarn', [config.run, '--', '-s'], { cwd: appDir }, true);
+  const appRunSpawnInfo = spawnExt('yarn', [config.run, '-s'], { cwd: appDir }, true);
 
   let run = runProtractor(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
 
@@ -125,12 +125,12 @@ function runProtractor(prepPromise, appDir, appRunSpawnInfo, outputFile) {
       fs.appendFileSync(outputFile, emsg);
       return Promise.reject(emsg);
     })
-    .then(function (data) {
+    .then(function () {
       let transpileError = false;
 
       // Start protractor.
 
-      const spawnInfo = spawnExt('yarn', ['protractor', '--',
+      const spawnInfo = spawnExt('yarn', ['protractor',
         PROTRACTOR_CONFIG_FILENAME,
         `--specs=${specFilename}`,
         '--params.appDir=' + appDir,
@@ -140,19 +140,19 @@ function runProtractor(prepPromise, appDir, appRunSpawnInfo, outputFile) {
       spawnInfo.proc.stderr.on('data', function (data) {
         transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
       });
-      return spawnInfo.promise.catch(function (err) {
+      return spawnInfo.promise.catch(function () {
         if (transpileError) {
           const emsg = `${specFilename} failed to transpile.\n\n`;
           console.log(emsg);
           fs.appendFileSync(outputFile, emsg);
         }
-        return Promise.reject(emsg);
+        return Promise.reject();
       });
     })
     .then(
     function () { return finish(true); },
     function () { return finish(false); }
-    )
+    );
 
   function finish(ok) {
     // Ugh... proc.kill does not work properly on windows with child processes.
@@ -202,7 +202,7 @@ function reportStatus(status, outputFile) {
 function spawnExt(command, args, options, ignoreClose = false) {
   let proc;
   const promise = new Promise((resolve, reject) => {
-    let descr = command + " " + args.join(' ');
+    let descr = command + ' ' + args.join(' ');
     console.log('running: ' + descr);
     try {
       proc = xSpawn.spawn(command, args, options);

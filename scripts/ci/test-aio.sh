@@ -20,7 +20,7 @@ source ${thisDir}/_travis-fold.sh
 
   # Run unit tests
   travisFoldStart "test.aio.unit"
-    yarn test -- --single-run
+    yarn test --single-run
   travisFoldEnd "test.aio.unit"
 
 
