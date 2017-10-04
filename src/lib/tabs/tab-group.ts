@@ -64,6 +64,7 @@ export const _MatTabGroupMixinBase = mixinColor(mixinDisableRipple(MatTabGroupBa
 @Component({
   moduleId: module.id,
   selector: 'mat-tab-group',
+  exportAs: 'matTabGroup',
   templateUrl: 'tab-group.html',
   styleUrls: ['tab-group.css'],
   encapsulation: ViewEncapsulation.None,

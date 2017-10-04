@@ -46,6 +46,7 @@ export class MatListDivider {}
 @Component({
   moduleId: module.id,
   selector: 'mat-list, mat-nav-list',
+  exportAs: 'matList, matNavList',
   host: {'role': 'list'},
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
@@ -120,6 +121,7 @@ export class MatListSubheaderCssMatStyler {}
 @Component({
   moduleId: module.id,
   selector: 'mat-list-item, a[mat-list-item]',
+  exportAs: 'matListItem',
   host: {
     'role': 'listitem',
     'class': 'mat-list-item',

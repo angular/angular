@@ -46,6 +46,7 @@ export class PageEvent {
 @Component({
   moduleId: module.id,
   selector: 'mat-paginator',
+  exportAs: 'matPaginator',
   templateUrl: 'paginator.html',
   styleUrls: ['paginator.css'],
   host: {

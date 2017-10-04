@@ -62,6 +62,7 @@ export const _MatIconMixinBase = mixinColor(MatIconBase);
   moduleId: module.id,
   template: '<ng-content></ng-content>',
   selector: 'mat-icon',
+  exportAs: 'matIcon',
   styleUrls: ['icon.css'],
   inputs: ['color'],
   host: {

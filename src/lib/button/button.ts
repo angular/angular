@@ -116,6 +116,7 @@ export const _MatButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(M
   moduleId: module.id,
   selector: `button[mat-button], button[mat-raised-button], button[mat-icon-button],
              button[mat-fab], button[mat-mini-fab]`,
+  exportAs: 'matButton',
   host: {
     '[disabled]': 'disabled || null',
   },
@@ -181,6 +182,7 @@ export class MatButton extends _MatButtonMixinBase
 @Component({
   moduleId: module.id,
   selector: `a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab], a[mat-mini-fab]`,
+  exportAs: 'matButton, matAnchor',
   host: {
     '[attr.tabindex]': 'disabled ? -1 : 0',
     '[attr.disabled]': 'disabled || null',

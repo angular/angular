@@ -59,6 +59,7 @@ export class StepperSelectionEvent {
 @Component({
   moduleId: module.id,
   selector: 'cdk-step',
+  exportAs: 'cdkStep',
   templateUrl: 'step.html',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
@@ -119,6 +120,7 @@ export class CdkStep {
 
 @Directive({
   selector: '[cdkStepper]',
+  exportAs: 'cdkStepper',
 })
 export class CdkStepper {
   /** The list of step components that the stepper is holding. */

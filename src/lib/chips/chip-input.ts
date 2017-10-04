@@ -23,6 +23,7 @@ export interface MatChipInputEvent {
  */
 @Directive({
   selector: 'input[matChipInputFor]',
+  exportAs: 'matChipInput, matChipInputFor',
   host: {
     'class': 'mat-chip-input mat-input-element',
     '(keydown)': '_keydown($event)',

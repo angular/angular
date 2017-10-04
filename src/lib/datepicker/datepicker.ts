@@ -120,6 +120,7 @@ export class MatDatepickerContent<D> implements AfterContentInit {
   moduleId: module.id,
   selector: 'mat-datepicker',
   template: '',
+  exportAs: 'matDatepicker',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,

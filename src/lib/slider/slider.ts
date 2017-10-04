@@ -94,6 +94,7 @@ export const _MatSliderMixinBase = mixinColor(mixinDisabled(MatSliderBase), 'acc
 @Component({
   moduleId: module.id,
   selector: 'mat-slider',
+  exportAs: 'matSlider',
   providers: [MAT_SLIDER_VALUE_ACCESSOR],
   host: {
     '(focus)': '_onFocus()',

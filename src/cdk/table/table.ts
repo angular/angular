@@ -75,6 +75,7 @@ export const CDK_TABLE_TEMPLATE = `
 @Component({
   moduleId: module.id,
   selector: 'cdk-table',
+  exportAs: 'cdkTable',
   template: CDK_TABLE_TEMPLATE,
   host: {
     'class': 'cdk-table',

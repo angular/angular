@@ -23,6 +23,7 @@ let _uniqueOptgroupIdCounter = 0;
 @Component({
   moduleId: module.id,
   selector: 'mat-optgroup',
+  exportAs: 'matOptgroup',
   templateUrl: 'optgroup.html',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,

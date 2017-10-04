@@ -37,7 +37,8 @@ export class MatMutationObserverFactory {
  * its associated element has changed.
  */
 @Directive({
-  selector: '[cdkObserveContent]'
+  selector: '[cdkObserveContent]',
+  exportAs: 'cdkObserveContent',
 })
 export class ObserveContent implements AfterContentInit, OnDestroy {
   private _observer: MutationObserver | null;

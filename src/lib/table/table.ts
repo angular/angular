@@ -18,6 +18,7 @@ export const _MatTable = CdkTable;
 @Component({
   moduleId: module.id,
   selector: 'mat-table',
+  exportAs: 'matTable',
   template: CDK_TABLE_TEMPLATE,
   styleUrls: ['table.css'],
   host: {

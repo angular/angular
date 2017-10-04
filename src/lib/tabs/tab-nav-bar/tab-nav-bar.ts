@@ -62,6 +62,7 @@ export const _MatTabNavMixinBase = mixinDisableRipple(mixinColor(MatTabNavBase, 
 @Component({
   moduleId: module.id,
   selector: '[mat-tab-nav-bar]',
+  exportAs: 'matTabNavBar, matTabNav',
   inputs: ['color', 'disableRipple'],
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
@@ -180,6 +181,7 @@ export const _MatTabLinkMixinBase = mixinDisabled(MatTabLinkBase);
  */
 @Directive({
   selector: '[mat-tab-link], [matTabLink]',
+  exportAs: 'matTabLink',
   inputs: ['disabled'],
   host: {
     'class': 'mat-tab-link',

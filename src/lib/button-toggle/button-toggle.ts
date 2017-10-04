@@ -270,6 +270,7 @@ export class MatButtonToggleGroupMultiple extends _MatButtonToggleGroupMixinBase
   styleUrls: ['button-toggle.css'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
+  exportAs: 'matButtonToggle',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.mat-button-toggle-standalone]': '!buttonToggleGroup && !buttonToggleGroupMultiple',

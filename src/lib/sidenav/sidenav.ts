@@ -42,6 +42,7 @@ export class MatSidenavContent extends MatDrawerContent {
 @Component({
   moduleId: module.id,
   selector: 'mat-sidenav',
+  exportAs: 'matSidenav',
   template: '<ng-content></ng-content>',
   animations: [
     trigger('transform', [
@@ -108,6 +109,7 @@ export class MatSidenav extends MatDrawer {
 @Component({
   moduleId: module.id,
   selector: 'mat-sidenav-container',
+  exportAs: 'matSidenavContainer',
   templateUrl: 'sidenav-container.html',
   styleUrls: ['drawer.css'],
   host: {

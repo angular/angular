@@ -24,6 +24,7 @@ import {coerceToNumber} from './grid-list-measure';
 @Component({
   moduleId: module.id,
   selector: 'mat-grid-tile',
+  exportAs: 'matGridTile',
   host: {
     'class': 'mat-grid-tile',
   },

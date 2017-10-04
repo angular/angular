@@ -147,6 +147,7 @@ export class MatSelectTrigger {}
 @Component({
   moduleId: module.id,
   selector: 'mat-select',
+  exportAs: 'matSelect',
   templateUrl: 'select.html',
   styleUrls: ['select.css'],
   inputs: ['disabled', 'tabIndex'],
@@ -179,7 +180,6 @@ export class MatSelectTrigger {}
     fadeInContent
   ],
   providers: [{provide: MatFormFieldControl, useExisting: MatSelect}],
-  exportAs: 'matSelect',
 })
 export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, OnDestroy, OnInit,
     ControlValueAccessor, CanDisable, HasTabIndex, MatFormFieldControl<any> {

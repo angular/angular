@@ -36,6 +36,7 @@ export const _MatStepper = CdkStepper;
   templateUrl: 'step.html',
   providers: [{provide: ErrorStateMatcher, useExisting: MatStep}],
   encapsulation: ViewEncapsulation.None,
+  exportAs: 'matStep',
   preserveWhitespaces: false,
 })
 export class MatStep extends _MatStep implements ErrorStateMatcher {
@@ -74,6 +75,7 @@ export class MatStepper extends _MatStepper {
 @Component({
   moduleId: module.id,
   selector: 'mat-horizontal-stepper',
+  exportAs: 'matHorizontalStepper',
   templateUrl: 'stepper-horizontal.html',
   styleUrls: ['stepper.css'],
   inputs: ['selectedIndex'],
@@ -98,6 +100,7 @@ export class MatHorizontalStepper extends MatStepper { }
 @Component({
   moduleId: module.id,
   selector: 'mat-vertical-stepper',
+  exportAs: 'matVerticalStepper',
   templateUrl: 'stepper-vertical.html',
   styleUrls: ['stepper.css'],
   inputs: ['selectedIndex'],

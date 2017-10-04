@@ -98,6 +98,7 @@ export const _MatCheckboxMixinBase =
   selector: 'mat-checkbox',
   templateUrl: 'checkbox.html',
   styleUrls: ['checkbox.css'],
+  exportAs: 'matCheckbox',
   host: {
     'class': 'mat-checkbox',
     '[id]': 'id',

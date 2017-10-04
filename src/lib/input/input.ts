@@ -45,6 +45,7 @@ let nextUniqueId = 0;
 /** Directive that allows a native input to work inside a `MatFormField`. */
 @Directive({
   selector: `input[matInput], textarea[matInput]`,
+  exportAs: 'matInput',
   host: {
     'class': 'mat-input-element mat-form-field-autofill-control',
     // Native input properties that are overwritten by Angular inputs need to be synced with

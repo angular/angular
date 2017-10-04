@@ -69,6 +69,7 @@ export const _MatProgressSpinnerMixinBase = mixinColor(MatProgressSpinnerBase, '
 @Component({
   moduleId: module.id,
   selector: 'mat-progress-spinner',
+  exportAs: 'matProgressSpinner',
   host: {
     'role': 'progressbar',
     'class': 'mat-progress-spinner',

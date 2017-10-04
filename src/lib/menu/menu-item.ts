@@ -29,6 +29,7 @@ export const _MatMenuItemMixinBase = mixinDisabled(MatMenuItemBase);
 @Component({
   moduleId: module.id,
   selector: '[mat-menu-item]',
+  exportAs: 'matMenuItem',
   inputs: ['disabled'],
   host: {
     'role': 'menuitem',
@@ -45,7 +46,6 @@ export const _MatMenuItemMixinBase = mixinDisabled(MatMenuItemBase);
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   templateUrl: 'menu-item.html',
-  exportAs: 'matMenuItem',
 })
 export class MatMenuItem extends _MatMenuItemMixinBase implements FocusableOption, CanDisable,
   OnDestroy {

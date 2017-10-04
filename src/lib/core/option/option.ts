@@ -39,6 +39,7 @@ export class MatOptionSelectionChange {
 @Component({
   moduleId: module.id,
   selector: 'mat-option',
+  exportAs: 'matOption',
   host: {
     'role': 'option',
     '[attr.tabindex]': '_getTabIndex()',

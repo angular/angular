@@ -18,6 +18,7 @@ import {Component, ChangeDetectionStrategy, Input, ViewEncapsulation} from '@ang
 @Component({
   moduleId: module.id,
   selector: 'mat-progress-bar',
+  exportAs: 'matProgressBar',
   host: {
     'role': 'progressbar',
     'aria-valuemin': '0',

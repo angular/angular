@@ -75,6 +75,7 @@ export const _MatRadioGroupMixinBase = mixinDisabled(MatRadioGroupBase);
  */
 @Directive({
   selector: 'mat-radio-group',
+  exportAs: 'matRadioGroup',
   providers: [MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR],
   host: {
     'role': 'radiogroup',
@@ -331,6 +332,7 @@ export const _MatRadioButtonMixinBase =
   inputs: ['color', 'disableRipple'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
+  exportAs: 'matRadioButton',
   host: {
     'class': 'mat-radio-button',
     '[class.mat-radio-checked]': 'checked',

@@ -60,6 +60,7 @@ export interface MatSelectionListOptionEvent {
 @Component({
   moduleId: module.id,
   selector: 'mat-list-option',
+  exportAs: 'matListOption',
   inputs: ['disableRipple'],
   host: {
     'role': 'option',
@@ -186,6 +187,7 @@ export class MatListOption extends _MatListOptionMixinBase
 @Component({
   moduleId: module.id,
   selector: 'mat-selection-list',
+  exportAs: 'matSelectionList',
   inputs: ['disabled', 'disableRipple'],
   host: {
     'role': 'listbox',

@@ -95,6 +95,7 @@ export class MatDrawerContent implements AfterContentInit {
 @Component({
   moduleId: module.id,
   selector: 'mat-drawer',
+  exportAs: 'matDrawer',
   template: '<ng-content></ng-content>',
   animations: [
     trigger('transform', [
@@ -354,6 +355,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
 @Component({
   moduleId: module.id,
   selector: 'mat-drawer-container',
+  exportAs: 'matDrawerContainer',
   templateUrl: 'drawer-container.html',
   styleUrls: ['drawer.css'],
   host: {

@@ -19,6 +19,7 @@ import {CanColor, mixinColor} from '@angular/material/core';
 
 @Directive({
   selector: 'mat-toolbar-row',
+  exportAs: 'matToolbarRow',
   host: {'class': 'mat-toolbar-row'},
 })
 export class MatToolbarRow {}
@@ -34,6 +35,7 @@ export const _MatToolbarMixinBase = mixinColor(MatToolbarBase);
 @Component({
   moduleId: module.id,
   selector: 'mat-toolbar',
+  exportAs: 'matToolbar',
   templateUrl: 'toolbar.html',
   styleUrls: ['toolbar.css'],
   inputs: ['color'],

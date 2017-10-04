@@ -49,6 +49,7 @@ export class TemplatePortalDirective extends TemplatePortal<any> {
  */
 @Directive({
   selector: '[cdkPortalHost], [portalHost]',
+  exportAs: 'cdkPortalHost',
   inputs: ['portal: cdkPortalHost']
 })
 export class PortalHostDirective extends BasePortalHost implements OnDestroy {
