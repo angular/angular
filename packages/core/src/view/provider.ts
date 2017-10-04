@@ -25,8 +25,6 @@ const TemplateRefTokenKey = tokenKey(TemplateRef);
 const ChangeDetectorRefTokenKey = tokenKey(ChangeDetectorRef);
 const InjectorRefTokenKey = tokenKey(Injector);
 
-const NOT_CREATED = new Object();
-
 export function directiveDef(
     checkIndex: number, flags: NodeFlags,
     matchedQueries: null | [string | number, QueryValueType][], childCount: number, ctor: any,
@@ -111,7 +109,7 @@ export function _def(
 }
 
 export function createProviderInstance(view: ViewData, def: NodeDef): any {
-  return def.flags & NodeFlags.LazyProvider ? NOT_CREATED : _createProviderInstance(view, def);
+  return _createProviderInstance(view, def);
 }
 
 export function createPipeInstance(view: ViewData, def: NodeDef): any {
@@ -378,9 +376,10 @@ export function resolveDep(
               (allowPrivateServices ? elDef.element !.allProviders :
                                       elDef.element !.publicProviders) ![tokenKey];
           if (providerDef) {
-            const providerData = asProviderData(view, providerDef.nodeIndex);
-            if (providerData.instance === NOT_CREATED) {
-              providerData.instance = _createProviderInstance(view, providerDef);
+            let providerData = asProviderData(view, providerDef.nodeIndex);
+            if (!providerData) {
+              providerData = {instance: _createProviderInstance(view, providerDef)};
+              view.nodes[providerDef.nodeIndex] = providerData as any;
             }
             return providerData.instance;
           }
@@ -487,8 +486,12 @@ function callElementProvidersLifecycles(view: ViewData, elDef: NodeDef, lifecycl
 }
 
 function callProviderLifecycles(view: ViewData, index: number, lifecycles: NodeFlags) {
-  const provider = asProviderData(view, index).instance;
-  if (provider === NOT_CREATED) {
+  const providerData = asProviderData(view, index);
+  if (!providerData) {
+    return;
+  }
+  const provider = providerData.instance;
+  if (!provider) {
     return;
   }
   Services.setCurrentNode(view, index);
