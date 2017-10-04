@@ -1,6 +1,6 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Component, ElementRef, HostBinding, Input, OnDestroy, Renderer2} from '@angular/core';
+import {Component, ElementRef, Input, OnDestroy, Renderer2} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {Subject} from 'rxjs/Subject';
@@ -18,6 +18,11 @@ export class MyTel {
   templateUrl: 'form-field-custom-control-example.html',
   styleUrls: ['form-field-custom-control-example.css'],
   providers: [{provide: MatFormFieldControl, useExisting: MyTelInput}],
+  host: {
+    '[class.floating]': 'shouldPlaceholderFloat',
+    '[id]': 'id',
+    '[attr.aria-describedby]': 'describedBy',
+  }
 })
 export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
   static nextId = 0;
@@ -39,14 +44,13 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
     return !n.area && !n.exchange && !n.subscriber;
   }
 
-  @HostBinding('class.floating')
   get shouldPlaceholderFloat() {
     return this.focused || !this.empty;
   }
 
-  @HostBinding() id = `my-tel-input-${MyTelInput.nextId++}`;
+  id = `my-tel-input-${MyTelInput.nextId++}`;
 
-  @HostBinding('attr.aria-describedby') describedBy = '';
+  describedBy = '';
 
   @Input()
   get placeholder() {
