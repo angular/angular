@@ -29,11 +29,7 @@
 # built files
 *.map
 _test-output
-protractor-helpers.js
-*/e2e-spec.js
 **/*.js
-**/ts/**/*.js
-**/js-es6*/**/*.js
 dist/
 
 
@@ -57,10 +53,10 @@ dist/
 **/app/**/*.ajs.js
 
 # aot
-*/aot/**/*
-!*/aot/bs-config.json
-!*/aot/index.html
+**/*.ngsummary.json
 !rollup-config.js
+aot-compiler/**/*.d.ts
+aot-compiler/**/*.factory.d.ts
 
 # i18n
 !i18n/src/systemjs-text-plugin.js
