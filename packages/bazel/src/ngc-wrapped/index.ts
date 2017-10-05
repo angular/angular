@@ -78,8 +78,9 @@ export function compile({allowNonHermeticReads, compilerOpts, tsHost, bazelOpts,
   expectedOuts: string[], gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
   let fileLoader: FileLoader;
+
   if (inputs) {
-    fileLoader = new CachedFileLoader(fileCache, ALLOW_NON_HERMETIC_READS);
+    fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
     for (const key of Object.keys(inputs)) {
@@ -141,10 +142,8 @@ export function compile({allowNonHermeticReads, compilerOpts, tsHost, bazelOpts,
         moduleName, containingFile, compilerOptions, generatedFileModuleResolverHost);
   }
 
-  // TODO(alexeagle): does this also work in third_party?
-  const allowNonHermeticRead = false;
   const bazelHost = new CompilerHost(
-      files, compilerOpts, bazelOpts, tsHost, fileLoader, ALLOW_NON_HERMETIC_READS,
+      files, compilerOpts, bazelOpts, tsHost, fileLoader, allowNonHermeticReads,
       generatedFileModuleResolver);
   const origBazelHostFileExist = bazelHost.fileExists;
   bazelHost.fileExists = (fileName: string) => {
@@ -179,6 +178,10 @@ export function compile({allowNonHermeticReads, compilerOpts, tsHost, bazelOpts,
             ],
           });
 
+  if (!gatherDiagnostics) {
+    gatherDiagnostics = (program) =>
+        gatherDiagnosticsForInputsOnly(compilerOpts, bazelOpts, program);
+  }
   const {diagnostics, emitResult, program} = ng.performCompilation(
       {rootNames: files, options: compilerOpts, host: ngHost, emitCallback, gatherDiagnostics});
   const tsickleEmitResult = emitResult as tsickle.EmitResult;
@@ -207,6 +210,36 @@ export function compile({allowNonHermeticReads, compilerOpts, tsHost, bazelOpts,
   }
 
   return {program, diagnostics};
+}
+
+function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolean {
+  return !NGC_GEN_FILES.test(sf.fileName) &&
+      (bazelOpts.compilationTargetSrc.indexOf(sf.fileName) !== -1);
+}
+
+function gatherDiagnosticsForInputsOnly(
+    options: ng.CompilerOptions, bazelOpts: BazelOptions,
+    ngProgram: ng.Program): (ng.Diagnostic | ts.Diagnostic)[] {
+  const tsProgram = ngProgram.getTsProgram();
+  const diagnostics: (ng.Diagnostic | ts.Diagnostic)[] = [];
+  // These checks mirror ts.getPreEmitDiagnostics, with the important
+  // exception of avoiding b/30708240, which is that if you call
+  // program.getDeclarationDiagnostics() it somehow corrupts the emit.
+  diagnostics.push(...tsProgram.getOptionsDiagnostics());
+  diagnostics.push(...tsProgram.getGlobalDiagnostics());
+  for (const sf of tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f))) {
+    // Note: We only get the diagnostics for individual files
+    // to e.g. not check libraries.
+    diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));
+    diagnostics.push(...tsProgram.getSemanticDiagnostics(sf));
+  }
+  if (!diagnostics.length) {
+    // only gather the angular diagnostics if we have no diagnostics
+    // in any other files.
+    diagnostics.push(...ngProgram.getNgStructuralDiagnostics());
+    diagnostics.push(...ngProgram.getNgSemanticDiagnostics());
+  }
+  return diagnostics;
 }
 
 if (require.main === module) {
