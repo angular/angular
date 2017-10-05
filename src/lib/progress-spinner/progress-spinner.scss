@@ -1,51 +1,54 @@
 @import '../core/style/variables';
 
 
-// Animation Durations
-$mat-progress-spinner-duration: 5250ms !default;
-$mat-progress-spinner-constant-rotate-duration: $mat-progress-spinner-duration * 0.55 !default;
-$mat-progress-spinner-sporadic-rotate-duration: $mat-progress-spinner-duration !default;
+// Animation config
+$mat-progress-spinner-stroke-rotate-fallback-duration: 10 * 1000ms !default;
+$mat-progress-spinner-stroke-rotate-fallback-ease: cubic-bezier(0.87, 0.03, 0.33, 1) !default;
 
-// Component sizing
-$mat-progress-spinner-stroke-width: 10px !default;
-// Height and weight of the viewport for mat-progress-spinner.
-$mat-progress-spinner-viewport-size: 100px !default;
-
+$_mat-progress-spinner-default-radius: 45px;
+$_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-default-radius * 2;
 
 .mat-progress-spinner {
   display: block;
-  // Height and width are provided for mat-progress-spinner to act as a default.
-  // The height and width are expected to be overwritten by application css.
-  height: $mat-progress-spinner-viewport-size;
-  width: $mat-progress-spinner-viewport-size;
-  overflow: hidden;
+  position: relative;
 
-  // SVG's viewBox is defined as 0 0 100 100, this means that all SVG children will placed
-  // based on a 100px by 100px box.  Additionally all SVG sizes and locations are in reference to
-  // this viewBox.
   svg {
-    height: 100%;
-    width: 100%;
+    position: absolute;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    top: 50%;
+    left: 50%;
     transform-origin: center;
+    overflow: visible;
   }
 
-
-  path {
+  circle {
     fill: transparent;
-
-    transition: stroke $swift-ease-in-duration $ease-in-out-curve-function;
+    transform-origin: center;
+    transition: stroke-dashoffset 225ms linear;
   }
 
+  &.mat-progress-spinner-indeterminate-animation[mode='indeterminate'] {
+    animation: mat-progress-spinner-linear-rotate $swift-ease-in-out-duration * 4
+        linear infinite;
 
-  &[mode='indeterminate'] svg {
-    animation-duration: $mat-progress-spinner-sporadic-rotate-duration,
-    $mat-progress-spinner-constant-rotate-duration;
-    animation-name: mat-progress-spinner-sporadic-rotate,
-                    mat-progress-spinner-linear-rotate;
-    animation-timing-function: $ease-in-out-curve-function,
-                               linear;
-    animation-iteration-count: infinite;
-    transition: none;
+    circle {
+      transition-property: stroke;
+      // Note: we multiply the duration by 8, because the animation is spread out in 8 stages.
+      animation-duration: $swift-ease-in-out-duration * 8;
+      animation-timing-function: $ease-in-out-curve-function;
+      animation-iteration-count: infinite;
+    }
+  }
+
+  &.mat-progress-spinner-indeterminate-fallback-animation[mode='indeterminate'] {
+    animation: mat-progress-spinner-stroke-rotate-fallback
+               $mat-progress-spinner-stroke-rotate-fallback-duration
+               $mat-progress-spinner-stroke-rotate-fallback-ease
+               infinite;
+
+    circle {
+      transition-property: stroke;
+    }
   }
 }
 
@@ -55,13 +58,47 @@ $mat-progress-spinner-viewport-size: 100px !default;
   0%       { transform: rotate(0deg); }
   100%     { transform: rotate(360deg); }
 }
-@keyframes mat-progress-spinner-sporadic-rotate {
-  12.5%    { transform: rotate( 135deg); }
-  25%      { transform: rotate( 270deg); }
-  37.5%    { transform: rotate( 405deg); }
-  50%      { transform: rotate( 540deg); }
-  62.5%    { transform: rotate( 675deg); }
-  75%      { transform: rotate( 810deg); }
-  87.5%    { transform: rotate( 945deg); }
-  100%     { transform: rotate(1080deg); }
+
+@at-root {
+  $start: (1 - 0.05) * $_mat-progress-spinner-default-circumference; // start the animation at 5%
+  $end: (1 - 0.8) * $_mat-progress-spinner-default-circumference; // end the animation at 80%
+  $fallback-iterations: 4;
+
+  @keyframes mat-progress-spinner-stroke-rotate-100 {
+    /*
+      stylelint-disable declaration-block-single-line-max-declarations,
+        declaration-block-semicolon-space-after
+    */
+    0%      { stroke-dashoffset: $start;  transform: rotate(0); }
+    12.5%   { stroke-dashoffset: $end;    transform: rotate(0); }
+    12.51%  { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(72.5deg); }
+    25%     { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(72.5deg); }
+
+    25.1%   { stroke-dashoffset: $start;  transform: rotate(270deg); }
+    37.5%   { stroke-dashoffset: $end;    transform: rotate(270deg); }
+    37.51%  { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(161.5deg); }
+    50%     { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(161.5deg); }
+
+    50.01%  { stroke-dashoffset: $start;  transform: rotate(180deg); }
+    62.5%   { stroke-dashoffset: $end;    transform: rotate(180deg); }
+    62.51%  { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(251.5deg); }
+    75%     { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(251.5deg); }
+
+    75.01%  { stroke-dashoffset: $start;  transform: rotate(90deg); }
+    87.5%   { stroke-dashoffset: $end;    transform: rotate(90deg); }
+    87.51%  { stroke-dashoffset: $end;    transform: rotateX(180deg) rotate(341.5deg); }
+    100%    { stroke-dashoffset: $start;  transform: rotateX(180deg) rotate(341.5deg); }
+    // stylelint-enable
+  }
+
+  // For IE11 and Edge, we fall back to simply rotating the spinner because
+  // animating stroke-dashoffset is not supported. The fallback uses multiple
+  // iterations to vary where the spin "lands".
+  @keyframes mat-progress-spinner-stroke-rotate-fallback {
+    @for $i from 0 through $fallback-iterations {
+      $percent: 100 / $fallback-iterations * $i;
+      $offset: 360 / $fallback-iterations;
+      #{$percent}% { transform: rotate(#{$i * (360 * 3 + $offset)}deg); }
+    }
+  }
 }

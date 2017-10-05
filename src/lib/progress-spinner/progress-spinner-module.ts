@@ -5,28 +5,23 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {NgModule} from '@angular/core';
+import {PlatformModule} from '@angular/cdk/platform';
 import {MatCommonModule} from '@angular/material/core';
-import {
-  MatProgressSpinner,
-  MatSpinner,
-  MatProgressSpinnerCssMatStyler,
-} from './progress-spinner';
-
+import {MatProgressSpinner, MatSpinner} from './progress-spinner';
 
 @NgModule({
-  imports: [MatCommonModule],
+  imports: [MatCommonModule, PlatformModule],
   exports: [
     MatProgressSpinner,
     MatSpinner,
-    MatCommonModule,
-    MatProgressSpinnerCssMatStyler
+    MatCommonModule
   ],
   declarations: [
     MatProgressSpinner,
-    MatSpinner,
-    MatProgressSpinnerCssMatStyler
+    MatSpinner
   ],
 })
-export class MatProgressSpinnerModule {}
+class MatProgressSpinnerModule {}
+
+export {MatProgressSpinnerModule};

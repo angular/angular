@@ -4,8 +4,21 @@
   element containing the SVG. `focusable="false"` prevents IE from allowing the user to
   tab into the SVG element.
 -->
-<svg viewBox="0 0 100 100"
-     preserveAspectRatio="xMidYMid meet"
-     focusable="false">
-  <path #path [style.strokeWidth]="strokeWidth"></path>
+
+<svg
+  [style.width.px]="_elementSize"
+  [style.height.px]="_elementSize"
+  [attr.viewBox]="_viewBox"
+  preserveAspectRatio="xMidYMid meet"
+  focusable="false">
+
+  <circle
+    cx="50%"
+    cy="50%"
+    [attr.r]="_circleRadius"
+    [style.animation-name]="'mat-progress-spinner-stroke-rotate-' + diameter"
+    [style.stroke-dashoffset.px]="_strokeDashOffset"
+    [style.stroke-dasharray.px]="_strokeCircumference"
+    [style.transform.rotate]="'360deg'"
+    [style.stroke-width.px]="strokeWidth"></circle>
 </svg>
