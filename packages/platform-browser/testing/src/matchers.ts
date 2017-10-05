@@ -114,11 +114,10 @@ export const expect: (actual: any) => NgMatchers = <any>_global.expect;
 _global.beforeEach(function() {
   jasmine.addMatchers({
     // Custom handler for Map as Jasmine does not support it yet
-    toEqual: function(
-        util: jasmine.MatchersUtil, customEqualityTesters: jasmine.CustomEqualityTester[]) {
+    toEqual: function(util) {
       return {
         compare: function(actual: any, expected: any) {
-          return {pass: util.equals(actual, expected, [compareMap, ...customEqualityTesters])};
+          return {pass: util.equals(actual, expected, [compareMap])};
         }
       };
 
