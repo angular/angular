@@ -17,7 +17,7 @@ var PROJECT_ROOT = path.join(__dirname, '../../');
 // tslint:disable:no-console
 function checkNodeModules(logOutput, purgeIfStale) {
   var yarnCheck = childProcess.spawnSync(
-      './node_modules/.bin/yarn check --integrity',
+      'yarn check --integrity',
       {shell: true, cwd: path.resolve(__dirname, '../..')});
 
   var nodeModulesOK = yarnCheck.status === 0;
