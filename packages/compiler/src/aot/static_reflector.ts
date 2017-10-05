@@ -446,7 +446,8 @@ export class StaticReflector implements CompileReflector {
         if (expression instanceof StaticSymbol) {
           // Stop simplification at builtin symbols or if we are in a reference context
           if (expression === self.injectionToken || expression === self.opaqueToken ||
-              self.conversionMap.has(expression) || (references > 0 && !expression.members.length)) {
+              self.conversionMap.has(expression) ||
+              (references > 0 && !expression.members.length)) {
             return expression;
           } else {
             const staticSymbol = expression;
