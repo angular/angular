@@ -34,10 +34,10 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/basic.ts:1</source>translate me</msg>
-  <msg id="3492007542396725315"><source>src/basic.ts:5</source><source>src/entry_components.ts:1</source>Welcome</msg>
   <msg id="126808141597411718"><source>node_modules/third_party/other_comp.d.ts:1,2</source>other-3rdP-component
 multi-lines</msg>
+  <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/basic.ts:1</source>translate me</msg>
+  <msg id="3492007542396725315"><source>src/basic.ts:5</source><source>src/entry_components.ts:1</source>Welcome</msg>
 </messagebundle>
 `;
 
@@ -45,6 +45,14 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="fr" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="b0a17f08a4bd742b2acf39780c257c2f519d33ed" datatype="html">
+        <source>other-3rdP-component
+multi-lines</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">node_modules/third_party/other_comp.d.ts</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
         <source>translate me</source>
         <context-group purpose="location">
@@ -65,14 +73,6 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
           <context context-type="linenumber">1</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="b0a17f08a4bd742b2acf39780c257c2f519d33ed" datatype="html">
-        <source>other-3rdP-component
-multi-lines</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">node_modules/third_party/other_comp.d.ts</context>
-          <context context-type="linenumber">1</context>
-        </context-group>
-      </trans-unit>
     </body>
   </file>
 </xliff>
@@ -81,6 +81,15 @@ multi-lines</source>
 const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
 <xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en">
   <file original="ng.template" id="ngi18n">
+    <unit id="126808141597411718">
+      <notes>
+        <note category="location">node_modules/third_party/other_comp.d.ts:1,2</note>
+      </notes>
+      <segment>
+        <source>other-3rdP-component
+multi-lines</source>
+      </segment>
+    </unit>
     <unit id="8136548302122759730">
       <notes>
         <note category="description">desc</note>
@@ -98,15 +107,6 @@ const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
       </notes>
       <segment>
         <source>Welcome</source>
-      </segment>
-    </unit>
-    <unit id="126808141597411718">
-      <notes>
-        <note category="location">node_modules/third_party/other_comp.d.ts:1,2</note>
-      </notes>
-      <segment>
-        <source>other-3rdP-component
-multi-lines</source>
       </segment>
     </unit>
   </file>
