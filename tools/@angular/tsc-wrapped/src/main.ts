@@ -111,7 +111,7 @@ export function main(
     }
 
     const tsickleCompilerHostOptions:
-        tsickle.Options = {googmodule: false, untyped: true, convertIndexImportShorthand: true};
+        tsickle.Options = {googmodule: false, untyped: true, convertIndexImportShorthand: false};
 
     const tsickleHost: tsickle.TsickleHost = {
       shouldSkipTsickleProcessing: (fileName) => /\.d\.ts$/.test(fileName),
