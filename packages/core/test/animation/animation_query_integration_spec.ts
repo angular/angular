@@ -3033,6 +3033,72 @@ export function main() {
         expect(p1.element.classList.contains('container')).toBeTruthy();
         expect(p2.element.classList.contains('item')).toBeTruthy();
       });
+
+      it('should scope :leave queries between sub animations', () => {
+        @Component({
+          selector: 'cmp',
+          animations: [
+            trigger(
+                'parent',
+                [
+                  transition(':leave', group([
+                               sequence([
+                                 style({opacity: 0}),
+                                 animate(1000, style({opacity: 1})),
+                               ]),
+                               query(':leave @child', animateChild()),
+                             ])),
+                ]),
+            trigger(
+                'child',
+                [
+                  transition(
+                      ':leave',
+                      [
+                        query(
+                            ':leave .item',
+                            [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
+                      ]),
+                ]),
+          ],
+          template: `
+               <div @parent *ngIf="exp1" class="container">
+                 <div *ngIf="exp2">
+                   <div @child>
+                     <div *ngIf="exp3">
+                       <div class="item"></div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             `
+        })
+        class Cmp {
+          public exp1: any;
+          public exp2: any;
+          public exp3: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        cmp.exp1 = true;
+        cmp.exp2 = true;
+        cmp.exp3 = true;
+        fixture.detectChanges();
+        resetLog();
+
+        cmp.exp1 = false;
+        fixture.detectChanges();
+
+        const players = getLog();
+        expect(players.length).toEqual(2);
+
+        const [p1, p2] = players;
+        expect(p1.element.classList.contains('container')).toBeTruthy();
+        expect(p2.element.classList.contains('item')).toBeTruthy();
+      });
     });
 
     describe('animation control flags', () => {
