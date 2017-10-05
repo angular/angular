@@ -68,6 +68,8 @@ task('serve:devapp', ['build:devapp'], sequenceTask([':serve:devapp', ':watch:de
 task('stage-deploy:devapp', ['build:devapp'], () => {
   copyFiles(join(projectDir, 'node_modules'), vendorGlob, join(outDir, 'node_modules'));
   copyFiles(bundlesDir, '*.+(js|map)', join(outDir, 'dist/bundles'));
+  copyFiles(cdkPackage.outputDir, '**/*.+(js|map)', join(outDir, 'dist/packages/cdk'));
+  copyFiles(materialPackage.outputDir, '**/*.+(js|map)', join(outDir, 'dist/packages/material'));
   copyFiles(materialPackage.outputDir, '**/prebuilt/*.+(css|map)',
       join(outDir, 'dist/packages/material'));
 });
