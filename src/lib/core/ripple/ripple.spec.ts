@@ -1,7 +1,6 @@
 import {TestBed, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
-import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 import {dispatchMouseEvent, dispatchTouchEvent} from '@angular/cdk/testing';
 import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
 import {
@@ -13,7 +12,6 @@ describe('MatRipple', () => {
   let fixture: ComponentFixture<any>;
   let rippleTarget: HTMLElement;
   let originalBodyMargin: string | null;
-  let viewportRuler: ViewportRuler;
   let platform: Platform;
 
   /** Extracts the numeric value of a pixel size string like '123px'.  */
@@ -24,7 +22,6 @@ describe('MatRipple', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [MatRippleModule],
-      providers: [VIEWPORT_RULER_PROVIDER],
       declarations: [
         BasicRippleContainer,
         RippleContainerWithInputBindings,
@@ -34,8 +31,7 @@ describe('MatRipple', () => {
     });
   });
 
-  beforeEach(inject([ViewportRuler, Platform], (ruler: ViewportRuler, p: Platform) => {
-    viewportRuler = ruler;
+  beforeEach(inject([Platform], (p: Platform) => {
     platform = p;
 
     // Set body margin to 0 during tests so it doesn't mess up position calculations.
@@ -239,9 +235,6 @@ describe('MatRipple', () => {
 
         // Mobile safari
         window.scrollTo(pageScrollLeft, pageScrollTop);
-        // Force an update of the cached viewport geometries because IE11 emits the
-        // scroll event later.
-        viewportRuler._cacheViewportGeometry();
       });
 
       afterEach(() => {
@@ -255,9 +248,6 @@ describe('MatRipple', () => {
 
         // Mobile safari
         window.scrollTo(0, 0);
-        // Force an update of the cached viewport geometries because IE11 emits the
-        // scroll event later.
-        viewportRuler._cacheViewportGeometry();
       });
 
       it('create ripple with correct position', () => {
