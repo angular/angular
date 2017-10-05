@@ -7,12 +7,12 @@
  */
 
 import {Injectable} from '@angular/core';
-import {FormGroupDirective, NgForm, NgControl} from '@angular/forms';
+import {FormGroupDirective, NgForm, FormControl} from '@angular/forms';
 
 /** Error state matcher that matches when a control is invalid and dirty. */
 @Injectable()
 export class ShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: NgControl | null, form: FormGroupDirective | NgForm | null): boolean {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     return !!(control && control.invalid && (control.dirty || (form && form.submitted)));
   }
 }
@@ -20,7 +20,7 @@ export class ShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
 /** Provider that defines how form controls behave with regards to displaying error messages. */
 @Injectable()
 export class ErrorStateMatcher {
-  isErrorState(control: NgControl | null, form: FormGroupDirective | NgForm | null): boolean {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     return !!(control && control.invalid && (control.touched || (form && form.submitted)));
   }
 }

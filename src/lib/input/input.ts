@@ -18,7 +18,7 @@ import {
   Self,
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {FormGroupDirective, NgControl, NgForm, FormControl} from '@angular/forms';
 import {Platform, getSupportedInputTypes} from '@angular/cdk/platform';
 import {getMatInputUnsupportedTypeError} from './input-errors';
 import {ErrorStateMatcher} from '@angular/material/core';
@@ -225,7 +225,8 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
     const oldState = this.errorState;
     const parent = this._parentFormGroup || this._parentForm;
     const matcher = this.errorStateMatcher || this._defaultErrorStateMatcher;
-    const newState = matcher.isErrorState(this.ngControl, parent);
+    const control = this.ngControl ? this.ngControl.control as FormControl : null;
+    const newState = matcher.isErrorState(control, parent);
 
     if (newState !== oldState) {
       this.errorState = newState;

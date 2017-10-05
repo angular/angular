@@ -127,7 +127,7 @@ returns a boolean. A result of `true` will display the error messages.
 
 ```ts
 class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: NgControl | null, form: FormGroupDirective | NgForm | null): boolean {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     // Error when invalid control is dirty, touched, or submitted
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted)));

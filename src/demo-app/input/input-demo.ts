@@ -1,5 +1,5 @@
 import {Component, ChangeDetectionStrategy} from '@angular/core';
-import {FormControl, NgControl, Validators} from '@angular/forms';
+import {FormControl, Validators} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material';
 
 
@@ -54,7 +54,7 @@ export class InputDemo {
   }
 
   customErrorStateMatcher: ErrorStateMatcher = {
-    isErrorState: (control: NgControl | null) => {
+    isErrorState: (control: FormControl | null) => {
       if (control) {
         const hasInteraction = control.dirty || control.touched;
         const isInvalid = control.invalid;

@@ -22,7 +22,7 @@ import {
   ViewEncapsulation,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import {NgControl, FormGroupDirective, NgForm} from '@angular/forms';
+import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
@@ -51,7 +51,7 @@ export class MatStep extends _MatStep implements ErrorStateMatcher {
   }
 
   /** Custom error state matcher that additionally checks for validity of interacted form. */
-  isErrorState(control: NgControl | null, form: FormGroupDirective | NgForm | null): boolean {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const originalErrorState = this._errorStateMatcher.isErrorState(control, form);
 
     // Custom error state checks for the validity of form that is not submitted or touched

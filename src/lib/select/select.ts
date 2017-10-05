@@ -45,7 +45,13 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormGroupDirective,
+  NgControl,
+  NgForm,
+  FormControl
+} from '@angular/forms';
 import {
   CanDisable,
   HasTabIndex,
@@ -687,8 +693,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   get errorState(): boolean {
     const parent = this._parentFormGroup || this._parentForm;
     const matcher = this.errorStateMatcher || this._defaultErrorStateMatcher;
+    const control = this.ngControl ? this.ngControl.control as FormControl : null;
 
-    return matcher.isErrorState(this.ngControl, parent);
+    return matcher.isErrorState(control, parent);
   }
 
   private _initializeSelection(): void {
