@@ -60,8 +60,6 @@ export function buildAnimationAst(
   return new AnimationAstBuilderVisitor(driver).build(metadata, errors);
 }
 
-const LEAVE_TOKEN = ':leave';
-const LEAVE_TOKEN_REGEX = new RegExp(LEAVE_TOKEN, 'g');
 const ROOT_SELECTOR = '';
 
 export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
@@ -476,8 +474,8 @@ function normalizeSelector(selector: string): [string, boolean] {
     selector = selector.replace(SELF_TOKEN_REGEX, '');
   }
 
-  selector = selector.replace(LEAVE_TOKEN_REGEX, LEAVE_SELECTOR)
-                 .replace(/@\*/g, NG_TRIGGER_SELECTOR)
+  // the :enter and :leave selectors are filled in at runtime during timeline building
+  selector = selector.replace(/@\*/g, NG_TRIGGER_SELECTOR)
                  .replace(/@\w+/g, match => NG_TRIGGER_SELECTOR + '-' + match.substr(1))
                  .replace(/:animating/g, NG_ANIMATING_SELECTOR);
 

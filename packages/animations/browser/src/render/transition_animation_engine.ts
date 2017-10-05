@@ -22,6 +22,8 @@ const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';
 const DISABLED_CLASSNAME = 'ng-animate-disabled';
 const DISABLED_SELECTOR = '.ng-animate-disabled';
+const STAR_CLASSNAME = 'ng-star-inserted';
+const STAR_SELECTOR = '.ng-star-inserted';
 
 const EMPTY_PLAYER_ARRAY: TransitionAnimationPlayer[] = [];
 const NULL_REMOVAL_STATE: ElementAnimationState = {
@@ -715,10 +717,11 @@ export class TransitionAnimationEngine {
   }
 
   private _buildInstruction(
-      entry: QueueInstruction, subTimelines: ElementInstructionMap, enterClassName: string) {
+      entry: QueueInstruction, subTimelines: ElementInstructionMap, enterClassName: string,
+      leaveClassName: string) {
     return entry.transition.build(
         this.driver, entry.element, entry.fromState.value, entry.toState.value, enterClassName,
-        entry.fromState.options, entry.toState.options, subTimelines);
+        leaveClassName, entry.fromState.options, entry.toState.options, subTimelines);
   }
 
   destroyInnerAnimations(containerElement: any) {
@@ -799,6 +802,13 @@ export class TransitionAnimationEngine {
       this.newHostElements.clear();
     }
 
+    if (this.totalAnimations && this.collectedEnterElements.length) {
+      for (let i = 0; i < this.collectedEnterElements.length; i++) {
+        const elm = this.collectedEnterElements[i];
+        addClass(elm, STAR_CLASSNAME);
+      }
+    }
+
     if (this._namespaceList.length &&
         (this.totalQueuedPlayers || this.collectedLeaveElements.length)) {
       const cleanupFns: Function[] = [];
@@ -863,8 +873,8 @@ export class TransitionAnimationEngine {
     });
 
     const bodyNode = getBodyNode();
-    const enterNodeMap =
-        buildRootMap(Array.from(this.statesByElement.keys()), this.collectedEnterElements);
+    const allTriggerElements = Array.from(this.statesByElement.keys());
+    const enterNodeMap = buildRootMap(allTriggerElements, this.collectedEnterElements);
 
     // this must occur before the instructions are built below such that
     // the :enter queries match the elements (since the timeline queries
@@ -878,18 +888,29 @@ export class TransitionAnimationEngine {
     });
 
     const allLeaveNodes: any[] = [];
+    const mergedLeaveNodes = new Set<any>();
     const leaveNodesWithoutAnimations = new Set<any>();
     for (let i = 0; i < this.collectedLeaveElements.length; i++) {
       const element = this.collectedLeaveElements[i];
       const details = element[REMOVAL_FLAG] as ElementAnimationState;
       if (details && details.setForRemoval) {
-        addClass(element, LEAVE_CLASSNAME);
         allLeaveNodes.push(element);
-        if (!details.hasAnimation) {
+        mergedLeaveNodes.add(element);
+        if (details.hasAnimation) {
+          this.driver.query(element, STAR_SELECTOR, true).forEach(elm => mergedLeaveNodes.add(elm));
+        } else {
           leaveNodesWithoutAnimations.add(element);
         }
       }
     }
+
+    const leaveNodeMapIds = new Map<any, string>();
+    const leaveNodeMap = buildRootMap(allTriggerElements, Array.from(mergedLeaveNodes));
+    leaveNodeMap.forEach((nodes, root) => {
+      const className = LEAVE_CLASSNAME + i++;
+      leaveNodeMapIds.set(root, className);
+      nodes.forEach(node => addClass(node, className));
+    });
 
     cleanupFns.push(() => {
       enterNodeMap.forEach((nodes, root) => {
@@ -897,10 +918,12 @@ export class TransitionAnimationEngine {
         nodes.forEach(node => removeClass(node, className));
       });
 
-      allLeaveNodes.forEach(element => {
-        removeClass(element, LEAVE_CLASSNAME);
-        this.processLeaveNode(element);
+      leaveNodeMap.forEach((nodes, root) => {
+        const className = leaveNodeMapIds.get(root) !;
+        nodes.forEach(node => removeClass(node, className));
       });
+
+      allLeaveNodes.forEach(element => { this.processLeaveNode(element); });
     });
 
     const allPlayers: TransitionAnimationPlayer[] = [];
@@ -917,8 +940,10 @@ export class TransitionAnimationEngine {
           return;
         }
 
+        const leaveClassName = leaveNodeMapIds.get(element) !;
         const enterClassName = enterNodeMapIds.get(element) !;
-        const instruction = this._buildInstruction(entry, subTimelines, enterClassName) !;
+        const instruction =
+            this._buildInstruction(entry, subTimelines, enterClassName, leaveClassName) !;
         if (instruction.errors && instruction.errors.length) {
           erroneousTransitions.push(instruction);
           return;
