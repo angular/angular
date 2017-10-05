@@ -11,7 +11,6 @@ import {Platform} from '@angular/cdk/platform';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {fromEvent} from 'rxjs/observable/fromEvent';
-import {merge} from 'rxjs/observable/merge';
 import {auditTime} from 'rxjs/operator/auditTime';
 import {Scrollable} from './scrollable';
 
@@ -87,10 +86,7 @@ export class ScrollDispatcher {
 
     if (!this._globalSubscription) {
       this._globalSubscription = this._ngZone.runOutsideAngular(() => {
-        return merge(
-          fromEvent(window.document, 'scroll'),
-          fromEvent(window, 'resize')
-        ).subscribe(() => this._notify());
+        return fromEvent(window.document, 'scroll').subscribe(() => this._notify());
       });
     }
 

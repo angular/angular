@@ -95,11 +95,15 @@ export class OverlayRef implements PortalHost {
     // pointer events therefore. Depends on the position strategy and the applied pane boundaries.
     this._togglePointerEvents(false);
 
+    if (this._config.positionStrategy && this._config.positionStrategy.detach) {
+      this._config.positionStrategy.detach();
+    }
+
     if (this._config.scrollStrategy) {
       this._config.scrollStrategy.disable();
     }
 
-    const detachmentResult  = this._portalHost.detach();
+    const detachmentResult = this._portalHost.detach();
 
     // Only emit after everything is detached.
     this._detachments.next();

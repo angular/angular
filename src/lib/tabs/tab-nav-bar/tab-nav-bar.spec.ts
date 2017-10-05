@@ -1,8 +1,7 @@
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {ViewportRuler} from '@angular/cdk/scrolling';
-import {dispatchFakeEvent, dispatchMouseEvent, FakeViewportRuler} from '@angular/cdk/testing';
+import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs/Subject';
 import {MatTabNav, MatTabsModule, MatTabLink} from '../index';
@@ -24,7 +23,6 @@ describe('MatTabNavBar', () => {
           value: dir,
           change: dirChange.asObservable()
         })},
-        {provide: ViewportRuler, useClass: FakeViewportRuler},
       ]
     });
 
@@ -173,7 +171,7 @@ describe('MatTabNavBar', () => {
       spyOn(inkBar, 'alignToElement');
 
       dispatchFakeEvent(window, 'resize');
-      tick(10);
+      tick(150);
       fixture.detectChanges();
 
       expect(inkBar.alignToElement).toHaveBeenCalled();

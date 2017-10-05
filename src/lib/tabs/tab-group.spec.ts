@@ -2,8 +2,7 @@ import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/t
 import {Component, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {By} from '@angular/platform-browser';
-import {ViewportRuler} from '@angular/cdk/scrolling';
-import {dispatchFakeEvent, FakeViewportRuler} from '@angular/cdk/testing';
+import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {Observable} from 'rxjs/Observable';
 import {MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
 
@@ -20,9 +19,6 @@ describe('MatTabGroup', () => {
         DisabledTabsTestApp,
         TabGroupWithSimpleApi,
       ],
-      providers: [
-        {provide: ViewportRuler, useClass: FakeViewportRuler},
-      ]
     });
 
     TestBed.compileComponents();

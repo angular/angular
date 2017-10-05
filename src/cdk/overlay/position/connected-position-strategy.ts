@@ -17,6 +17,7 @@ import {
   ScrollingVisibility,
 } from './connected-position';
 import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
 import {Observable} from 'rxjs/Observable';
 import {Scrollable} from '@angular/cdk/scrolling';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
@@ -35,6 +36,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   /** The overlay to which this strategy is attached. */
   private _overlayRef: OverlayRef;
 
+  /** Layout direction of the position strategy. */
   private _dir = 'ltr';
 
   /** The offset in pixels for the overlay connection point on the x-axis */
@@ -45,6 +47,9 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
   /** The Scrollable containers used to check scrollable view properties on position change. */
   private scrollables: Scrollable[] = [];
+
+  /** Subscription to viewport resize events. */
+  private _resizeSubscription = Subscription.EMPTY;
 
   /** Whether the we're dealing with an RTL context */
   get _isRtl() {
@@ -88,10 +93,19 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   attach(overlayRef: OverlayRef): void {
     this._overlayRef = overlayRef;
     this._pane = overlayRef.overlayElement;
+    this._resizeSubscription.unsubscribe();
+    this._resizeSubscription = this._viewportRuler.change().subscribe(() => this.apply());
   }
 
   /** Performs any cleanup after the element is destroyed. */
-  dispose() { }
+  dispose() {
+    this._resizeSubscription.unsubscribe();
+  }
+
+  /** @docs-private */
+  detach() {
+    this._resizeSubscription.unsubscribe();
+  }
 
   /**
    * Updates the position of the overlay element, using whichever preferred position relative
