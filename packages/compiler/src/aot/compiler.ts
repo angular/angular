@@ -204,8 +204,8 @@ export class AotCompiler {
       // and they also cause TypeScript to include these files into the program too,
       // which will make them part of the analyzedFiles.
       const externalReferences: StaticSymbol[] = [
-        ...ngModuleMeta.declaredDirectives.map(d => d.reference),
-        ...ngModuleMeta.declaredPipes.map(d => d.reference),
+        ...ngModuleMeta.transitiveModule.directives.map(d => d.reference),
+        ...ngModuleMeta.transitiveModule.pipes.map(d => d.reference),
         ...ngModuleMeta.importedModules.map(m => m.type.reference),
         ...ngModuleMeta.exportedModules.map(m => m.type.reference),
       ];
