@@ -63,17 +63,10 @@ export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
   },
   animations: [
     trigger('state', [
-      // Animation from top.
-      state('visible-top', style({transform: 'translateY(0%)'})),
-      state('hidden-top', style({transform: 'translateY(-100%)'})),
-      transition('visible-top => hidden-top', animate(HIDE_ANIMATION)),
-      transition('void => visible-top', animate(SHOW_ANIMATION)),
-      // Animation from bottom.
-      state('visible-bottom', style({transform: 'translateY(0%)'})),
-      state('hidden-bottom', style({transform: 'translateY(100%)'})),
-      transition('visible-bottom => hidden-bottom', animate(HIDE_ANIMATION)),
-      transition('void => visible-bottom',
-        animate(SHOW_ANIMATION)),
+      state('visible-top, visible-bottom', style({transform: 'translateY(0%)'})),
+      transition('visible-top => hidden-top, visible-bottom => hidden-bottom',
+        animate(HIDE_ANIMATION)),
+      transition('void => visible-top, void => visible-bottom', animate(SHOW_ANIMATION)),
     ])
   ],
 })

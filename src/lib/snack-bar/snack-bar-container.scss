@@ -15,14 +15,17 @@ $mat-snack-bar-spacing-margin: 24px !default;
   min-width: $mat-snack-bar-min-width;
   padding: $mat-snack-bar-padding;
   // Initial transformation is applied to start snack bar out of view, below its target position.
-  transform: translateY(100%);
+  // Note: it's preferred to use a series of transforms, instead of something like `calc()`, because
+  // IE won't animate transforms that contain a `calc`.
+  transform: translateY(100%) translateY($mat-snack-bar-spacing-margin);
 
-  /** 
+  /**
    * Removes margin of snack bars which are center positioned horizontally.  This
    * is done to align snack bars to the edge of the view vertically to match spec.
    */
   &.mat-snack-bar-center {
     margin: 0;
+    transform: translateY(100%);
   }
 
   /**
@@ -30,7 +33,11 @@ $mat-snack-bar-spacing-margin: 24px !default;
    * direction, set the translation to start the snack bar above the target position.
    */
   &.mat-snack-bar-top {
-    transform: translateY(-100%);
+    transform: translateY(-100%) translateY(#{-$mat-snack-bar-spacing-margin});
+
+    &.mat-snack-bar-center {
+      transform: translateY(-100%);
+    }
   }
 
   @include cdk-high-contrast {
