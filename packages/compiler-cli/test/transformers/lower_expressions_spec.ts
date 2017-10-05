@@ -99,7 +99,7 @@ describe('Expression lowering', () => {
           .toBeTruthy('did not find the data field');
     });
 
-    it('should throw a validation execption for invalid files', () => {
+    it('should throw a validation exception for invalid files', () => {
       const cache = new LowerMetadataCache({}, /* strict */ true);
       const sourceFile = ts.createSourceFile(
           'foo.ts', `

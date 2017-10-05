@@ -245,7 +245,7 @@ function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
   return false;
 }
 
-const LOWERABLE_FIELD_NAMES = new Set(['useValue', 'useFactory', 'data']);
+const LOWERABLE_FIELD_NAMES = new Set(['useValue', 'useFactory', 'path', 'data']);
 
 export class LowerMetadataCache implements RequestsMap {
   private collector: MetadataCollector;

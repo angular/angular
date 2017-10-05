@@ -732,7 +732,7 @@ describe('ngc transformer command-line', () => {
           }
 
           const routeLikeData = [{
-             route: '/home',
+             path: calculateString(),
              data: calculateString()
           }];
 
