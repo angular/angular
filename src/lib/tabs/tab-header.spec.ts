@@ -13,7 +13,7 @@ import {MatRippleModule} from '@angular/material/core';
 import {MatInkBar} from './ink-bar';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {Subject} from 'rxjs/Subject';
-import {VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
+import {VIEWPORT_RULER_PROVIDER, ScrollDispatchModule} from '@angular/cdk/scrolling';
 
 
 describe('MatTabHeader', () => {
@@ -25,7 +25,7 @@ describe('MatTabHeader', () => {
   beforeEach(async(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
-      imports: [CommonModule, PortalModule, MatRippleModule],
+      imports: [CommonModule, PortalModule, MatRippleModule, ScrollDispatchModule],
       declarations: [
         MatTabHeader,
         MatInkBar,
