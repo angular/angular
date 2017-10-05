@@ -270,6 +270,49 @@ describe('MatSelectionList', () => {
     });
   });
 
+  describe('with tabindex', () => {
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MatListModule],
+        declarations: [
+          SelectionListWithTabindexAttr,
+          SelectionListWithTabindexBinding,
+        ]
+      });
+
+      TestBed.compileComponents();
+    }));
+
+    it('should properly handle native tabindex attribute', () => {
+      const fixture = TestBed.createComponent(SelectionListWithTabindexAttr);
+      const selectionList = fixture.debugElement.query(By.directive(MatSelectionList));
+
+      expect(selectionList.componentInstance.tabIndex)
+        .toBe(5, 'Expected the selection-list tabindex to be set to the attribute value.');
+    });
+
+    it('should support changing the tabIndex through binding', () => {
+      const fixture = TestBed.createComponent(SelectionListWithTabindexBinding);
+      const selectionList = fixture.debugElement.query(By.directive(MatSelectionList));
+
+      expect(selectionList.componentInstance.tabIndex)
+        .toBe(0, 'Expected the tabIndex to be set to "0" by default.');
+
+      fixture.componentInstance.tabIndex = 3;
+      fixture.detectChanges();
+
+      expect(selectionList.componentInstance.tabIndex)
+        .toBe(3, 'Expected the tabIndex to updated through binding.');
+
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      expect(selectionList.componentInstance.tabIndex)
+        .toBe(-1, 'Expected the tabIndex to be set to "-1" if selection list is disabled.');
+    });
+  });
+
   describe('with single option', () => {
     let fixture: ComponentFixture<SelectionListWithOnlyOneOption>;
     let listOption: DebugElement;
@@ -522,4 +565,17 @@ class SelectionListWithSelectedOption {
     </mat-list-option>
   </mat-selection-list>`})
 class SelectionListWithOnlyOneOption {
+}
+
+@Component({
+  template: `<mat-selection-list tabindex="5"></mat-selection-list>`
+})
+class SelectionListWithTabindexAttr {}
+
+@Component({
+  template: `<mat-selection-list [tabIndex]="tabIndex" [disabled]="disabled"></mat-selection-list>`
+})
+class SelectionListWithTabindexBinding {
+  tabIndex: number;
+  disabled: boolean;
 }

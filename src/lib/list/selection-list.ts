@@ -12,6 +12,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 import {SPACE} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -32,16 +33,19 @@ import {
 import {
   CanDisable,
   CanDisableRipple,
+  HasTabIndex,
   MatLine,
   MatLineSetter,
   mixinDisabled,
   mixinDisableRipple,
+  mixinTabIndex,
 } from '@angular/material/core';
 
 
 /** @docs-private */
 export class MatSelectionListBase {}
-export const _MatSelectionListMixinBase = mixinDisableRipple(mixinDisabled(MatSelectionListBase));
+export const _MatSelectionListMixinBase =
+  mixinTabIndex(mixinDisableRipple(mixinDisabled(MatSelectionListBase)));
 
 /** @docs-private */
 export class MatListOptionBase {}
@@ -188,10 +192,10 @@ export class MatListOption extends _MatListOptionMixinBase
   moduleId: module.id,
   selector: 'mat-selection-list',
   exportAs: 'matSelectionList',
-  inputs: ['disabled', 'disableRipple'],
+  inputs: ['disabled', 'disableRipple', 'tabIndex'],
   host: {
     'role': 'listbox',
-    '[attr.tabindex]': '_tabIndex',
+    '[tabIndex]': 'tabIndex',
     'class': 'mat-selection-list',
     '(focus)': 'focus()',
     '(keydown)': '_keydown($event)',
@@ -202,11 +206,8 @@ export class MatListOption extends _MatListOptionMixinBase
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatSelectionList extends _MatSelectionListMixinBase
-    implements FocusableOption, CanDisable, CanDisableRipple, AfterContentInit {
-
-  /** Tab index for the selection-list. */
-  _tabIndex = 0;
+export class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption,
+    CanDisable, CanDisableRipple, HasTabIndex, AfterContentInit {
 
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MatListOption>;
@@ -217,16 +218,14 @@ export class MatSelectionList extends _MatSelectionListMixinBase
   /** The currently selected options. */
   selectedOptions: SelectionModel<MatListOption> = new SelectionModel<MatListOption>(true);
 
-  constructor(private _element: ElementRef) {
+  constructor(private _element: ElementRef, @Attribute('tabindex') tabIndex: string) {
     super();
+
+    this.tabIndex = parseInt(tabIndex) || 0;
   }
 
   ngAfterContentInit(): void {
     this._keyManager = new FocusKeyManager<MatListOption>(this.options).withWrap();
-
-    if (this.disabled) {
-      this._tabIndex = -1;
-    }
   }
 
   /** Focus the selection-list. */
