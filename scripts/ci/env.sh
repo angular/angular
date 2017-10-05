@@ -35,7 +35,7 @@ fi
 #######################
 
 setEnvVar NODE_VERSION 6.9.5
-setEnvVar YARN_VERSION 1.1.0
+setEnvVar YARN_VERSION 1.0.2
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
