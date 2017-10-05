@@ -49,6 +49,24 @@ describe('MatTabNavBar', () => {
       expect(fixture.componentInstance.activeIndex).toBe(2);
     });
 
+    it('should add the active class if active', () => {
+      let tabLink1 = fixture.debugElement.queryAll(By.css('a'))[0];
+      let tabLink2 = fixture.debugElement.queryAll(By.css('a'))[1];
+      const tabLinkElements = fixture.debugElement.queryAll(By.css('a'))
+        .map(tabLinkDebugEl => tabLinkDebugEl.nativeElement);
+
+      tabLink1.nativeElement.click();
+      fixture.detectChanges();
+      expect(tabLinkElements[0].classList.contains('mat-tab-label-active')).toBeTruthy();
+      expect(tabLinkElements[1].classList.contains('mat-tab-label-active')).toBeFalsy();
+
+      tabLink2.nativeElement.click();
+      fixture.detectChanges();
+      expect(tabLinkElements[0].classList.contains('mat-tab-label-active')).toBeFalsy();
+      expect(tabLinkElements[1].classList.contains('mat-tab-label-active')).toBeTruthy();
+
+    });
+
     it('should add the disabled class if disabled', () => {
       const tabLinkElements = fixture.debugElement.queryAll(By.css('a'))
         .map(tabLinkDebugEl => tabLinkDebugEl.nativeElement);

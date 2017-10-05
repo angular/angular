@@ -184,7 +184,8 @@ export const _MatTabLinkMixinBase = mixinDisabled(MatTabLinkBase);
     'class': 'mat-tab-link',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.tabindex]': 'tabIndex',
-    '[class.mat-tab-disabled]': 'disabled'
+    '[class.mat-tab-disabled]': 'disabled',
+    '[class.mat-tab-label-active]': 'active',
   }
 })
 export class MatTabLink extends _MatTabLinkMixinBase implements OnDestroy, CanDisable {
