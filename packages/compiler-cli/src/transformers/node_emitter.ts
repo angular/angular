@@ -36,9 +36,10 @@ export class TypeScriptNodeEmitter {
       ts.setEmitFlags(commentStmt, ts.EmitFlags.CustomPrologue);
       preambleStmts.push(commentStmt);
     }
-    const newSourceFile = ts.updateSourceFileNode(
-        sourceFile,
-        [...preambleStmts, ...converter.getReexports(), ...converter.getImports(), ...statements]);
+    const sourceStatments =
+        [...preambleStmts, ...converter.getReexports(), ...converter.getImports(), ...statements];
+    converter.updateSourceMap(sourceStatments);
+    const newSourceFile = ts.updateSourceFileNode(sourceFile, sourceStatments);
     return [newSourceFile, converter.getNodeMap()];
   }
 }
@@ -63,7 +64,6 @@ function createLiteral(value: any) {
  */
 class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private _nodeMap = new Map<ts.Node, Node>();
-  private _mapped = new Set<Node>();
   private _importsWithPrefixes = new Map<string, string>();
   private _reexports = new Map<string, {name: string, as: string}[]>();
   private _templateSources = new Map<ParseSourceFile, ts.SourceMapSource>();
@@ -92,17 +92,49 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   getNodeMap() { return this._nodeMap; }
 
+  updateSourceMap(statements: ts.Statement[]) {
+    let lastRangeStartNode: ts.Node|undefined = undefined;
+    let lastRangeEndNode: ts.Node|undefined = undefined;
+    let lastRange: ts.SourceMapRange|undefined = undefined;
+
+    const recordLastSourceRange = () => {
+      if (lastRange && lastRangeStartNode && lastRangeEndNode) {
+        if (lastRangeStartNode == lastRangeEndNode) {
+          ts.setSourceMapRange(lastRangeEndNode, lastRange);
+        } else {
+          ts.setSourceMapRange(lastRangeStartNode, lastRange);
+          // Only emit the pos for the first node emitted in the range.
+          ts.setEmitFlags(lastRangeStartNode, ts.EmitFlags.NoTrailingSourceMap);
+          ts.setSourceMapRange(lastRangeEndNode, lastRange);
+          // Only emit emit end for the last node emitted in the range.
+          ts.setEmitFlags(lastRangeEndNode, ts.EmitFlags.NoLeadingSourceMap);
+        }
+      }
+    };
+
+    const visitNode = (tsNode: ts.Node) => {
+      const ngNode = this._nodeMap.get(tsNode);
+      if (ngNode) {
+        const range = this.sourceRangeOf(ngNode);
+        if (range) {
+          if (!lastRange || range.source != lastRange.source || range.pos != lastRange.pos ||
+              range.end != lastRange.end) {
+            recordLastSourceRange();
+            lastRangeStartNode = tsNode;
+            lastRange = range;
+          }
+          lastRangeEndNode = tsNode;
+        }
+      }
+      ts.forEachChild(tsNode, visitNode);
+    };
+    statements.forEach(visitNode);
+    recordLastSourceRange();
+  }
+
   private record<T extends ts.Node>(ngNode: Node, tsNode: T|null): RecordedNode<T> {
     if (tsNode && !this._nodeMap.has(tsNode)) {
       this._nodeMap.set(tsNode, ngNode);
-      if (!this._mapped.has(ngNode)) {
-        this._mapped.add(ngNode);
-        const range = this.sourceRangeOf(ngNode);
-        if (range) {
-          ts.setSourceMapRange(tsNode, range);
-        }
-      }
-      ts.forEachChild(tsNode, child => this.record(ngNode, tsNode));
     }
     return tsNode as RecordedNode<T>;
   }
