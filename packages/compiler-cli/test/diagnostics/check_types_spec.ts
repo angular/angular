@@ -114,6 +114,11 @@ describe('ng type checker', () => {
        () => { a('{{maybePerson!.name}}'); });
     it('should accept a safe property access of a nullable person',
        () => { a('{{maybePerson?.name}}'); });
+
+    it('should accept using a library pipe', () => { a('{{1 | libPipe}}'); });
+    it('should accept using a library directive',
+       () => { a('<div libDir #libDir="libDir">{{libDir.name}}</div>'); });
+
     it('should accept a function call', () => { a('{{getName()}}'); });
     it('should reject an invalid method', () => {
       r('<div>{{getFame()}}</div>',
@@ -211,13 +216,37 @@ function appComponentSource(): string {
 const QUICKSTART = {
   'src/app.component.ts': appComponentSource(),
   'src/app.component.html': '<h1>Hello {{name}}</h1>',
+  'src/lib.ts': `
+    import {Pipe, Directive} from '@angular/core';
+
+    @Pipe({ name: 'libPipe' })
+    export class LibPipe {
+      transform(n: number): number { return n + 1; }
+    }
+
+    @Directive({
+      selector: '[libDir]',
+      exportAs: 'libDir'
+    })
+    export class LibDirective {
+      name: string;
+    }
+  `,
   'src/app.module.ts': `
     import { NgModule }      from '@angular/core';
     import { AppComponent, APipe, ADirective }  from './app.component';
+    import { LibDirective, LibPipe } from './lib';
+
+    @NgModule({
+      declarations: [ LibPipe, LibDirective ],
+      exports: [ LibPipe, LibDirective ],
+    })
+    export class LibModule { }
 
     @NgModule({
       declarations: [ AppComponent, APipe, ADirective ],
-      bootstrap:    [ AppComponent ]
+      bootstrap:    [ AppComponent ],
+      imports:      [ LibModule ]
     })
     export class AppModule { }
   `
