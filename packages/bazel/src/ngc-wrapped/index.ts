@@ -20,9 +20,13 @@ const NGC_GEN_FILES = /^(.*?)\.(ngfactory|ngsummary|ngstyle|shim\.ngstyle)(.*)$/
 // knows about them
 const NGC_ASSETS = /\.(css|html|ngsummary\.json)$/;
 
+const BAZEL_BIN = /\b(blaze|bazel)-out\b.*?\bbin\b/;
+
 // TODO(alexeagle): probably not needed, see
 // https://github.com/bazelbuild/rules_typescript/issues/28
 const ALLOW_NON_HERMETIC_READS = true;
+// Note: We compile the content of node_modules with plain ngc command line.
+const ALL_DEPS_COMPILED_WITH_BAZEL = false;
 
 export function main(args) {
   if (runAsWorker(args)) {
@@ -48,6 +52,7 @@ function runOneBuild(args: string[], inputs?: {[path: string]: string}): boolean
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
     allowNonHermeticReads: ALLOW_NON_HERMETIC_READS,
+    allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
     compilerOpts,
     tsHost,
     bazelOpts,
@@ -68,9 +73,10 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allowNonHermeticReads, compilerOpts, tsHost, bazelOpts, files, inputs,
-                         expectedOuts, gatherDiagnostics}: {
+export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true, compilerOpts,
+                         tsHost, bazelOpts, files, inputs, expectedOuts, gatherDiagnostics}: {
   allowNonHermeticReads: boolean,
+  allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
   bazelOpts: BazelOptions,
@@ -98,6 +104,10 @@ export function compile({allowNonHermeticReads, compilerOpts, tsHost, bazelOpts,
 
   if (!compilerOpts.rootDirs) {
     throw new Error('rootDirs is not set!');
+  }
+  const bazelBin = compilerOpts.rootDirs.find(rootDir => BAZEL_BIN.test(rootDir));
+  if (!bazelBin) {
+    throw new Error(`Couldn't find bazel bin in the rootDirs: ${compilerOpts.rootDirs}`);
   }
 
   const writtenExpectedOuts = [...expectedOuts];
@@ -159,6 +169,14 @@ export function compile({allowNonHermeticReads, compilerOpts, tsHost, bazelOpts,
       relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
       ngHost.fileNameToModuleName(fileName, referringSrcFileName);
+  if (allDepsCompiledWithBazel) {
+    // Note: The default implementation would work as well,
+    // but we can be faster as we know how `toSummaryFileName` works.
+    // Note: We can't do this if some deps have been compiled with the command line,
+    // as that has a different implementation of fromSummaryFileName / toSummaryFileName
+    ngHost.fromSummaryFileName = (fileName: string, referringLibFileName: string) =>
+        path.resolve(bazelBin, fileName) + '.d.ts';
+  }
 
   const emitCallback: ng.TsEmitCallback = ({
     program,
