@@ -2,6 +2,14 @@
 
 This guide describes **Angular Universal**, a technology that runs your Angular application on the server.
 
+<div class="alert is-important">
+
+This is a **preview guide**. 
+The Angular CLI is adding support for universal apps and
+we will realign this guide with the CLI as soon as possible.
+
+</div>
+
 A normal Angular application executes in the _browser_, rendering pages in the DOM in response to user actions.
 
 **Angular Universal** generates _static_ application pages on the _server_
@@ -18,23 +26,7 @@ Meanwhile, the browser downloads the full client version and switches to it auto
 [Download the finished sample code](generated/zips/universal/universal.zip),
 which runs in a [node express](https://expressjs.com/) server.
 
-Almost _any_ web server technology can serve a Universal app.
-See this advanced example written for
-[ASP.NET Core](https://github.com/MarkPieszak/aspnetcore-angular2-universal).
 </div>
-
-<div class="alert is-important">
-
-The build setup described in this guide is experimental and subject to change.
-
-</div>
-
-## Overview
-
-This overview explains the benefits of a Universal application and how it works. Then it describes the sample application that goes with this guide.
-
-Subsequent sections describe a sample Universal application derived from the Tour of Heroes tutorial
-and explain how to build and run that app.
 
 {@a why-do-it}
 
@@ -50,7 +42,7 @@ There are three main reasons to create a Universal version of your app.
 {@a web-crawlers}
 #### Facilitate web crawlers
 
-Google, Bing, Facebook, twitter and other social media sites rely on web crawlers to index your application content and make that content searchable on the web. 
+Google, Bing, Facebook, Twitter and other social media sites rely on web crawlers to index your application content and make that content searchable on the web. 
 
 These web crawlers may be unable to navigate and index your highly-interactive, Angular application as a human user could do.
 
@@ -75,10 +67,6 @@ people who otherwise would not be able to use the app at all.
 
 Displaying the first page quickly can be critical for user engagement. 
 
-Captive users of a line-of-business app may have to wait. 
-But a casual visitor will switch to a faster site if your app takes "too long" to show the first page.
-
-While [AOT](guide/aot-compiler) compilation speeds up application start times, it might not be fast enough for some of your audience, especially users on mobile devices with slow connections.
 [53% of mobile site visits are abandoned](https://www.doubleclickbygoogle.com/articles/mobile-speed-matters/) if pages take longer than 3 seconds to load.
 Your app may have to launch faster to engage these users before they decide to do something else.
 
@@ -86,18 +74,10 @@ With Angular Universal, you can generate landing pages for the app that look lik
 The pages are pure HTML, and can display even if JavaScript is disabled.
 The pages do not handle browser events, but they _do_ support navigation through the site using [routerLink](guide/router.html#router-link).
 
-Of course most Angular apps are highly interactive.
-The landing page looks real and is far more useful than a "loading" spinner.
-But it won't fool anyone for long.
-
 In practice, you'll serve a static version of the landing page to hold the user's attention.
 At the same time, you'll load the full Angular app behind it in the manner [explained below](#transition).
 The user perceives near-instant performance from the landing page
 and gets the full interactive experience after the full app loads.
-
-<div class="l-sub-section"> 
-Another tool called <a href="https://universal.angular.io/api/preboot/index.html">Preboot</a> can record browser events such as user keystrokes during the transition and play them back in the full Angular app once it is loaded.
-</div>
 
 {@a how-does-it-work}
 ### How it works
@@ -124,7 +104,7 @@ Finally, the server returns the rendered page to the client.
 
 ### Working around the browser APIs
 
-Because a Universal `platform-server` app doesn't execute in the browser, you may have to work around some of the APIs and capabilities that you otherwise take for granted on the client.
+Because a Universal `platform-server` app doesn't execute in the browser, you may have to work around some of the browser APIs and capabilities that are missing on the server.
 
 You won't be able reference browser-only native objects such as `window`, `document`, `navigator` or `location`.
 If you don't need them on the server-rendered page, side-step them with conditional logic.
@@ -136,11 +116,6 @@ If Angular doesn't provide it, you may be able to write your own abstraction tha
 Without mouse or keyboard events, a universal app can't rely on a user clicking a button to show a component. 
 A universal app should determine what to render based solely on the incoming client request.
 This is a good argument for making the app [routeable](guide/router).
-
-Http requests with _relative_ URLs don't work.
-You should convert them to _absolute_ URLs on the server which means you'll need to know the server origin.
-You can pass the server origin into your app with a [provider](guide/dependency-injection#injector-providers)    "universal/*"
- as you'll see in the [example below](#http-urls).
 
 Because the user of a server-rendered page can't do much more than click links,
 you should [swap in the real client app](#transition) as quickly as possible for a proper interactive experience.
@@ -224,27 +199,19 @@ npm install @angular/compiler-cli @angular/platform-server express --save
 npm install webpack @ngtools/webpack copy-webpack-plugin raw-loader @types/express --save-dev
 </code-example>
 
-### Modify the client app
-
-You'll have to modify the client application in a few small ways to enable server-side rendering and 
-to facilitate the transition from the Universal app to the client app.
-
 {@a transition}
 
-#### Enable transition to the client app
+### Modify the client app
 
-A Universal app can act as a dynamic "splash screen" that shows a view of your app while the real client app loads behind it.
-This gives the appearance of a near-instant application.
+A Universal app can act as a dynamic, content-rich "splash screen" that engages the user.
+It gives the appearance of a near-instant application.
 
 Meanwhile, the browser downloads the client app scripts in background.
-Once loaded, Angular transitions from the static server-rendered page to the dynamically rendered views of the live client app.
+Once loaded, Angular transitions from the static server-rendered page to the dynamically rendered views of the interactive client app.
 
-To make this work, the template for server-side rendering contains the `<script>` tags necessary to load the JavaScript and other asset files for the interactive client app.
+You must make a few changes to your application code to support both server-side rendering and the transition to the client app.
 
-As is often the case, a production version of the client `index.html` acts as the template for server-side rendering.
-You'll get to that [soon](#index-universal).
-
-Essential changes to the root `AppModule` are the immediate concern.
+#### The root `AppModule`
 
 Open file `src/app/app.module.ts` and find the `BrowserModule` import in the `NgModule` metadata.
 Replace that import with this one:
@@ -252,13 +219,7 @@ Replace that import with this one:
 <code-example path="universal/src/app/app.module.ts" region="browsermodule" title="src/app/app.module.ts (withServerTransition)">
 </code-example>
 
-<div class="l-sub-section">
-
-The `appId` can be any string. Keep it short.
-
-</div>
-
-Angular adds the `appId` to styles of the server-rendered pages, 
+Angular adds the `appId` value (which can be _any_ string) to the style-names of the server-rendered pages, 
 so that they can be identified and removed when the client app starts.
 
 You can get runtime information about the current platform and the `appId` by injection.
@@ -302,7 +263,7 @@ You will provide the `APP_BASE_HREF` in the universal version of the app (see ho
 so the `heroesUrl` becomes absolute.
 
 Do the same thing to the `HttpSearchService` constructor.
-You'll have to tweak the `http.get` call in the `search()` method as well.
+You'll have to adjust the `http.get` call in the `search()` method as well.
 Here's the revised class.
 
 <code-example path="universal/src/app/hero-search.service.ts" region="class" title="src/app/hero-search.service.ts (with injected origin)" linenums="false">
@@ -322,30 +283,11 @@ When you are done, shut down the server with `ctrl-C`.
 
 <div class="alert is-important">
 
-If you've been through this guide completely once before,
-the compiler may fail with the following error:
-
-<code-example format="." language="bash">
- error TS2307: Cannot find module '../../aot/src/universal/app-server.module.ngfactory'.
-</code-example>
-
-You must exclude the _server-side_ `/universal` folder files from _client app_ compilation.
-
-Open `tsconfig.json`, find the `"exclude"` node and add `"universal/*"` to the array. 
-The result might look something like this:
-
-```
-  "exclude": [
-    "node_modules/*",
-    "universal/*"
-  ]
-```
-
-Compile and run again with `npm start`.
+If you get a "Cannot find module" error, see the explanation and resolution [below](#cannot-find-module)
 
 </div>
 
-<br><hr>
+<hr>
  
 {@a server-code}
 
@@ -355,11 +297,11 @@ To run an Angular Universal application, you'll need a server that accepts clien
 
 Create a `universal/` folder as a sibling to the `app/` folder.
 
-Add to it the following three universal files:
+Add to it the following three universal parts:
 
- 1. The [app server module](#app-server-module)
- 2. The [Universal engine](#universal-engine)
- 3. The [web server](#web-server)
+ 1. the [app server module](#app-server-module)
+ 2. the [Universal engine](#universal-engine)
+ 3. the [web server](#web-server)
 
 {@a app-server-module}
 
@@ -376,8 +318,6 @@ Create an `app-server.module.ts` file in the `src/universal` directory with the 
 Notice that it imports first the client app's `AppModule` and then Angular Universal's `ServerModule`.
 
 This is also the place to register providers that are specific to running your app under Universal.
-But don't register `APP_BASE_HREF` here;
-register it in the [universal engine instead](#provide-origin).
 
 {@a universal-engine}
 
@@ -393,13 +333,6 @@ Create a `universal-engine.ts` file in the `src/universal` directory with the fo
 
 <code-example path="universal/src/universal/universal-engine.ts" title="src/universal/universal-engine.ts">
 </code-example>
-
-<div class="alert is-helpful">
-
-You can reuse this Universal template engine code in other applications.
-It knows nothing about the tutorial sample application.
-
-</div>
 
 {@a render-module-factory}
 
@@ -426,30 +359,13 @@ Universal should render the appropriate page for that route.
 {@a provide-origin}
 
 You supply `extraProviders` when your app needs information that can only be determined by the currently running server instance.
-The required information in this case is the running server's origin.
 
-As [discussed above](#http-urls), HTTP request URLs must be absolute. 
-Our solution is to calculate the running server's origin (see `getOrigin()`) and provide it under the `APP_BASE_HREF` token.
-
-#### Cached result
+The required information in this case is the running server's origin, provided under the `APP_BASE_HREF` token, so that the app can [calculate absolute HTTP URLs](#http-urls).
 
 The `renderModuleFactory` function returns a _promise_ that resolves to the rendered page.
+
 It's up to your engine to decide what to do with that page.
-
-There are many alternatives. 
-For example, the rendered output could be stored as static HTML files to be served later.
-This engine caches the rendered page in memory so that a given route is only rendered once.
-
-<div class="alert is-important">
-
-That's potentially simplistic.
-Too many different requests could bloat server memory.
-Volatile data on the page will get stale and could potentially mislead the user.
-You might want to invalidate old cached pages periodically.
-
-</div>
-
-Most importantly, the promise callback returns the rendered page to the [web server](#web-server), 
+_This engine's_ promise callback returns the rendered page to the [web server](#web-server), 
 which then forwards it to the client in the HTTP response.
 
 {@a web-server}
@@ -458,7 +374,6 @@ which then forwards it to the client in the HTTP response.
 
 A _Universal_ web server responds to application _page_ requests with static HTML rendered by the [Universal template engine](#universal-engine).
 
-It's the same as any other web server in all other respects.
 It receives and responds to HTTP requests from clients (usually browsers). 
 It serves static assets such as scripts, css, and images. 
 It may respond to data requests, perhaps directly or as a proxy to a separate data server.
@@ -468,14 +383,11 @@ The sample web server for _this_ guide is based on the popular [Express](https:/
 <div class="l-sub-section">
 
 _Any_ web server technology can serve a Universal app as long as it can call Universal's `renderModuleFactory`.
-
-For example, see [this ASP.NET Core server](https://github.com/MarkPieszak/aspnetcore-angular2-universal)
-
-Even if you've chosen a different server technology, the principles and decision points discussed below will apply to you.
+The principles and decision points discussed below apply to any web server technology that you chose.
 
 </div>
 
-Create the `server.ts` file in the `src/universal` directory and add the following code:
+Create a `server.ts` file in the `src/universal` directory and add the following code:
 
 <code-example path="universal/src/universal/server.ts" title="src/universal/server.ts">
 </code-example>
@@ -493,7 +405,7 @@ just as you would for a normal Angular application server.
 #### Import AppServerModule factory
 
 Most of this server code is re-usable across many applications. 
-One line, the import of the `AppServerModule`, couples it specifically to a single application.
+The import of the `AppServerModule` couples it specifically to a single application.
 
 <code-example path="universal/src/universal/server.ts" title="src/universal/server.ts"  region="import-app-server-factory">
 </code-example>
@@ -501,10 +413,7 @@ One line, the import of the `AppServerModule`, couples it specifically to a sing
 Your code editor may tell you that this import is incorrect.
 It refers to the source file for the `AppServerModule` factory which doesn't exist at design time.
 
-That file _will exist_, briefly, during compilation.
-The build process creates it in the `../aot` directory, bundles it with other `universal/` code, and erases it during post-build cleanup. It's never around when you're editing `server.ts`.
-
-All will be well as long as you arrange for the AOT compiler to generate this module factory file _before_ it compiles _this_ web server file.
+That file _will exist_, briefly, during compilation. But it's never physically in the file system when you're editing `server.ts` and you must tell the compiler to generate this module factory file _before_ it compiles `server.ts`.
 [Learn how below](#universal-typescript-configuration).
 
 #### Add the Universal template engine
@@ -769,9 +678,8 @@ Open the browser's development tools.
 In the console window you should see output like the following:
 
 <code-example format="." language="bash" linenums="false">
-building: /
+listening on port 3200...
 Running in the browser with appId=uni
-/favicon.ico
 /styles.css
 /shim.min.js
 /zone.min.js
@@ -779,12 +687,7 @@ Running in the browser with appId=uni
 Error: ENOENT: no such file or directory, stat '... dist/client.js' ...
 </code-example>
 
-The first line shows that the server received a request for '/' and passed it to the Universal engine, which then built the HTML page from your Angular application.
-
-Refresh the browser and the first line is `from cache: /` because your _universal template engine_ 
-found the previously rendered page for `/` in its cache.
-
-The remaining console log lines report requests for static files coming from the `<link>` and `<script>` tags in the `index-universal.html`.
+Most of the console log lines report requests for static files coming from the `<link>` and `<script>` tags in the `index-universal.html`.
 The `.js` files in particular are needed to run the client version of the app in the browser.
 Once they're loaded, Angular  _should_ replace the Universal-rendered page with the full client app.
 
@@ -919,3 +822,32 @@ It also explained some of the key reasons for doing so.
 
 Angular Universal can greatly improve the perceived startup performance of your app.
 The slower the network, the more advantageous it becomes to have Universal display the first page to the user.
+
+
+{@a cannot-find-module}
+
+#### Appendix: _Cannot find module_ error
+
+As you continue to develop the application locally,
+running the `npm start` command outside of universal, the compiler may fail with the following error:
+
+<code-example format="." language="bash">
+ error TS2307: Cannot find module '../../aot/src/universal/app-server.module.ngfactory'.
+</code-example>
+
+The likely cause is that you've been through these guide steps before and now have a `/universal` folder. 
+That folder holds server-side artifacts that are irrelevant to the client app and are confusing the compiler.
+
+You must exclude the _server-side_ `/universal` folder files from _client app_ compilation.
+
+Open `tsconfig.json`, find the `"exclude"` node and add `"universal/*"` to the array. 
+The result might look something like this:
+
+```
+  "exclude": [
+    "node_modules/*",
+    "universal/*"
+  ]
+```
+
+Compile and run again with `npm start`.

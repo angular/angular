@@ -23,7 +23,7 @@ server.engine('html', universalEngine({
   appModuleFactory: AppServerModuleNgFactory
 }));
 
-// engine should find templates (like index-universal.html) in 'dist/' by default
+// engine should find templates in 'dist/' by default
 server.set('views', 'dist');
 // #enddocregion universal-engine
 
