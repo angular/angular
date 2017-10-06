@@ -4,6 +4,9 @@ const argv = require('yargs').argv;
 const globby = require('globby');
 const xSpawn = require('cross-spawn');
 const treeKill = require('tree-kill');
+const shelljs = require('shelljs');
+
+shelljs.set('-e');
 
 const AIO_PATH = path.join(__dirname, '../../');
 const SHARED_PATH = path.join(__dirname, '/shared');
@@ -42,21 +45,18 @@ const IGNORED_EXAMPLES = [ // temporary ignores
  *    e.g. --shard=1/3 // the second of every three specs: 1, 4, 7, etc
  */
 function runE2e() {
-  let promise = Promise.resolve();
   if (argv.setup) {
     // Run setup.
-    console.log('runE2e: copy boilerplate');
-    const spawnInfo = spawnExt('yarn', ['boilerplate:add', argv.local ? '--local' : ''], { cwd: AIO_PATH });
-    promise = spawnInfo.promise
-      .then(() => {
-        console.log('runE2e: update webdriver');
-        return spawnExt('yarn', ['webdriver:update'], { cwd: SHARED_PATH }).promise;
-      });
+    console.log('runE2e: setup boilerplate');
+    const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
+    const addBoilerplateCommand = 'boilerplate:add';
+    shelljs.exec(`yarn ${installPackagesCommand}`, { cwd: AIO_PATH });
+    shelljs.exec(`yarn ${addBoilerplateCommand}`, { cwd: AIO_PATH });
   }
 
   const outputFile = path.join(AIO_PATH, './protractor-results.txt');
 
-  return promise
+  return Promise.resolve()
     .then(() => findAndRunE2eTests(argv.filter, outputFile, argv.shard))
     .then((status) => {
       reportStatus(status, outputFile);
