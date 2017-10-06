@@ -9,7 +9,6 @@
 import {
   AfterContentChecked,
   AfterContentInit,
-  AfterViewChecked,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -78,14 +77,11 @@ export const _MatTabGroupMixinBase = mixinColor(mixinDisableRipple(MatTabGroupBa
   },
 })
 export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentInit,
-    AfterContentChecked, AfterViewChecked, OnDestroy, CanColor, CanDisableRipple {
+    AfterContentChecked, OnDestroy, CanColor, CanDisableRipple {
 
   @ContentChildren(MatTab) _tabs: QueryList<MatTab>;
 
   @ViewChild('tabBodyWrapper') _tabBodyWrapper: ElementRef;
-
-  /** Whether this component has been initialized. */
-  private _isInitialized: boolean = false;
 
   /** The tab index that should be selected after the content has been checked. */
   private _indexToSelect: number | null = 0;
@@ -216,14 +212,6 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   ngOnDestroy() {
     this._tabsSubscription.unsubscribe();
     this._tabLabelSubscription.unsubscribe();
-  }
-
-  /**
-   * Waits one frame for the view to update, then updates the ink bar
-   * Note: This must be run outside of the zone or it will create an infinite change detection loop.
-   */
-  ngAfterViewChecked(): void {
-    this._isInitialized = true;
   }
 
   _focusChanged(index: number) {
