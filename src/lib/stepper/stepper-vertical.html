@@ -10,7 +10,7 @@
                    [icon]="_getIndicatorType(i)"
                    [label]="step.stepLabel || step.label"
                    [selected]="selectedIndex === i"
-                   [active]="step.completed || selectedIndex === i"
+                   [active]="step.completed || selectedIndex === i || !linear"
                    [optional]="step.optional">
   </mat-step-header>
 
