@@ -46,7 +46,6 @@ describe('MatDrawer', () => {
       tick();
       fixture.detectChanges();
 
-      expect(drawer.componentInstance._isAnimating).toBe(false);
       expect(testComponent.openCount).toBe(1);
       expect(testComponent.closeCount).toBe(0);
       expect(getComputedStyle(drawer.nativeElement).visibility).toBe('visible');
@@ -65,6 +64,27 @@ describe('MatDrawer', () => {
       expect(testComponent.closeCount).toBe(1);
       expect(getComputedStyle(drawer.nativeElement).visibility).toBe('hidden');
       expect(getComputedStyle(drawerBackdropElement.nativeElement).visibility).toBe('hidden');
+    }));
+
+    it('should be able to close while the open animation is running', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicTestApp);
+      fixture.detectChanges();
+
+      const testComponent: BasicTestApp = fixture.debugElement.componentInstance;
+      fixture.debugElement.query(By.css('.open')).nativeElement.click();
+      fixture.detectChanges();
+
+      expect(testComponent.openCount).toBe(0);
+      expect(testComponent.closeCount).toBe(0);
+
+      fixture.debugElement.query(By.css('.close')).nativeElement.click();
+      fixture.detectChanges();
+
+      tick();
+      fixture.detectChanges();
+
+      expect(testComponent.openCount).toBe(1);
+      expect(testComponent.closeCount).toBe(1);
     }));
 
     it('does not throw when created without a drawer', fakeAsync(() => {
