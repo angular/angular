@@ -9,6 +9,8 @@ For existing apps, follow these steps to begin using Angular Material.
 npm install --save @angular/material @angular/cdk
 ```
 
+#### Alternative: Snapshot Build
+
 A snapshot build with the latest changes from master is also available. Note that this snapshot
 build should not be considered stable and may break between releases.
 
