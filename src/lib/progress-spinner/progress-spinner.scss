@@ -14,9 +14,9 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
 
   svg {
     position: absolute;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    top: 50%;
-    left: 50%;
+    transform: rotate(-90deg);
+    top: 0;
+    left: 0;
     transform-origin: center;
     overflow: visible;
   }

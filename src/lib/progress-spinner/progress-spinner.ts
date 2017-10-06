@@ -165,6 +165,11 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
       return this._strokeCircumference * (100 - this._value) / 100;
     }
 
+    // In fallback mode set the circle to 80% and rotate it with CSS.
+    if (this._fallbackAnimation && this.mode === 'indeterminate') {
+      return this._strokeCircumference * 0.2;
+    }
+
     return null;
   }
 
