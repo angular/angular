@@ -419,6 +419,19 @@ describe('TypeScriptNodeEmitter', () => {
       return result;
     }
 
+    function mappingItemsOf(text: string): MappingItem[] {
+      // find the source map:
+      const sourceMapMatch = /sourceMappingURL\=data\:application\/json;base64,(.*)$/.exec(text);
+      const sourceMapBase64 = sourceMapMatch ![1];
+      const sourceMapBuffer = Buffer.from(sourceMapBase64, 'base64');
+      const sourceMapText = sourceMapBuffer.toString('utf8');
+      const sourceMap: RawSourceMap = JSON.parse(sourceMapText);
+      const consumer = new SourceMapConsumer(sourceMap);
+      const mappings: MappingItem[] = [];
+      consumer.eachMapping(mapping => { mappings.push(mapping); });
+      return mappings;
+    }
+
     it('should produce a source map that maps back to the source', () => {
       const statement = someVar.set(o.literal(1)).toDeclStmt();
       const text = '<my-comp> a = 1 </my-comp>';
@@ -430,16 +443,8 @@ describe('TypeScriptNodeEmitter', () => {
       statement.sourceSpan = new ParseSourceSpan(start, end);
 
       const result = emitStmt(statement);
+      const mappings = mappingItemsOf(result);
 
-      // find the source map:
-      const sourceMapMatch = /sourceMappingURL\=data\:application\/json;base64,(.*)$/.exec(result);
-      const sourceMapBase64 = sourceMapMatch ![1];
-      const sourceMapBuffer = Buffer.from(sourceMapBase64, 'base64');
-      const sourceMapText = sourceMapBuffer.toString('utf8');
-      const sourceMap: RawSourceMap = JSON.parse(sourceMapText);
-      const consumer = new SourceMapConsumer(sourceMap);
-      const mappings: MappingItem[] = [];
-      consumer.eachMapping(mapping => { mappings.push(mapping); });
       expect(mappings).toEqual([
         {
           source: sourceUrl,
@@ -459,8 +464,44 @@ describe('TypeScriptNodeEmitter', () => {
         }
       ]);
     });
+
+    it('should produce a mapping per range instead of a mapping per node', () => {
+      const text = '<my-comp> a = 1 </my-comp>';
+      const sourceName = '/some/file.html';
+      const sourceUrl = '../some/file.html';
+      const file = new ParseSourceFile(text, sourceName);
+      const start = new ParseLocation(file, 0, 0, 0);
+      const end = new ParseLocation(file, text.length, 0, text.length);
+      const stmt = (loc: number) => {
+        const start = new ParseLocation(file, loc, 0, loc);
+        const end = new ParseLocation(file, loc + 1, 0, loc + 1);
+        const span = new ParseSourceSpan(start, end);
+        return someVar
+            .set(new o.BinaryOperatorExpr(
+                o.BinaryOperator.Plus, o.literal(loc, null, span), o.literal(loc, null, span), null,
+                span))
+            .toDeclStmt();
+      };
+      const stmts = [1, 2, 3, 4, 5, 6].map(stmt);
+      const result = emitStmt(stmts);
+      const mappings = mappingItemsOf(result);
+
+      // The span is used in three different nodes but should only be emitted at most twice
+      // (once for the start and once for the end of a span).
+      const maxDup = Math.max(
+          ...Array.from(countsOfDuplicatesMap(mappings.map(m => m.originalColumn)).values()));
+      expect(maxDup <= 2).toBeTruthy('A redundant range was emitted');
+    });
   });
 });
+
+function countsOfDuplicatesMap<T>(a: T[]): Map<T, number> {
+  const result = new Map<T, number>();
+  for (const item of a) {
+    result.set(item, (result.get(item) || 0) + 1);
+  }
+  return result;
+}
 
 const FILES: Directory = {
   somePackage: {'someGenFile.ts': `export var a: number;`}
