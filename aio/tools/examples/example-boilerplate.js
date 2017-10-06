@@ -4,8 +4,6 @@ const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
 
-const ngPackagesInstaller = require('../ng-packages-installer');
-
 const SHARED_PATH = path.resolve(__dirname, 'shared');
 const SHARED_NODE_MODULES_PATH = path.resolve(SHARED_PATH, 'node_modules');
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
@@ -29,10 +27,6 @@ const BOILERPLATE_TEST_PATHS = [
   'karma.conf.js'
 ];
 
-const ANGULAR_TOOLS_PACKAGES_PATH = path.resolve(ANGULAR_DIST_PATH, 'tools', '@angular');
-const ANGULAR_TOOLS_PACKAGES = [
-  'tsc-wrapped'
-];
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
@@ -83,13 +77,9 @@ class ExampleBoilerPlate {
   }
 
   installNodeModules(basePath, useLocal) {
-    shelljs.exec('yarn', {cwd: basePath});
-
-    if (useLocal) {
-      ngPackagesInstaller.overwritePackages(basePath);
-    } else {
-      ngPackagesInstaller.restorePackages(basePath);
-    }
+    const tool = 'node tools/ng-packages-installer';
+    const command = useLocal ? 'overwrite' : 'restore';
+    shelljs.exec([tool, command, basePath, '--debug'].join(' '));
   }
 
   getFoldersContaining(basePath, filename, ignore) {
