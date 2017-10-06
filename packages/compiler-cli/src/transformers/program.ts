@@ -679,31 +679,37 @@ function getNgOptionDiagnostics(options: CompilerOptions): Diagnostic[] {
  * TODO(tbosch): talk to the TypeScript team to expose their logic for calculating the `rootDir`
  * if none was specified.
  *
+ * Note: This function works on normalized paths from typescript.
+ *
  * @param outDir
  * @param outSrcMappings
  */
 export function createSrcToOutPathMapper(
     outDir: string | undefined, sampleSrcFileName: string | undefined,
-    sampleOutFileName: string | undefined): (srcFileName: string) => string {
+    sampleOutFileName: string | undefined, host: {
+      dirname: typeof path.dirname,
+      resolve: typeof path.resolve,
+      relative: typeof path.relative
+    } = path): (srcFileName: string) => string {
   let srcToOutPath: (srcFileName: string) => string;
   if (outDir) {
     if (sampleSrcFileName == null || sampleOutFileName == null) {
       throw new Error(`Can't calculate the rootDir without a sample srcFileName / outFileName. `);
     }
-    const srcFileDir = path.dirname(sampleSrcFileName);
-    const outFileDir = path.dirname(sampleOutFileName);
+    const srcFileDir = host.dirname(sampleSrcFileName).replace(/\\/g, '/');
+    const outFileDir = host.dirname(sampleOutFileName).replace(/\\/g, '/');
     if (srcFileDir === outFileDir) {
       return (srcFileName) => srcFileName;
     }
-    const srcDirParts = srcFileDir.split(path.sep);
-    const outDirParts = outFileDir.split(path.sep);
+    const srcDirParts = srcFileDir.split('/');
+    const outDirParts = outFileDir.split('/');
     // calculate the common suffix
     let i = 0;
     while (i < Math.min(srcDirParts.length, outDirParts.length) &&
            srcDirParts[srcDirParts.length - 1 - i] === outDirParts[outDirParts.length - 1 - i])
       i++;
-    const rootDir = srcDirParts.slice(0, srcDirParts.length - i).join(path.sep);
-    srcToOutPath = (srcFileName) => path.resolve(outDir, path.relative(rootDir, srcFileName));
+    const rootDir = srcDirParts.slice(0, srcDirParts.length - i).join('/');
+    srcToOutPath = (srcFileName) => host.resolve(outDir, host.relative(rootDir, srcFileName));
   } else {
     srcToOutPath = (srcFileName) => srcFileName;
   }
