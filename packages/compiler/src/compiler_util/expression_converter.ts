@@ -10,6 +10,7 @@
 import * as cdAst from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
+import {syntaxError} from '../util';
 
 export class EventHandlerVars { static event = o.variable('$event'); }
 
@@ -47,7 +48,8 @@ export function convertActionBinding(
           };
         },
         createPipeConverter: (name: string) => {
-          throw new Error(`Illegal State: Actions are not allowed to contain pipes. Pipe: ${name}`);
+          throw syntaxError(
+              `Illegal State: Actions are not allowed to contain pipes. Pipe: ${name}`);
         }
       },
       action);
@@ -143,13 +145,13 @@ enum _Mode {
 
 function ensureStatementMode(mode: _Mode, ast: cdAst.AST) {
   if (mode !== _Mode.Statement) {
-    throw new Error(`Expected a statement, but saw ${ast}`);
+    throw syntaxError(`Expected a statement, but saw ${ast}`);
   }
 }
 
 function ensureExpressionMode(mode: _Mode, ast: cdAst.AST) {
   if (mode !== _Mode.Expression) {
-    throw new Error(`Expected an expression, but saw ${ast}`);
+    throw syntaxError(`Expected an expression, but saw ${ast}`);
   }
 }
 
@@ -240,7 +242,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         op = o.BinaryOperator.BiggerEquals;
         break;
       default:
-        throw new Error(`Unsupported operation ${ast.operation}`);
+        throw syntaxError(`Unsupported operation ${ast.operation}`);
     }
 
     return convertToStatementIfNeeded(
@@ -263,7 +265,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
-    throw new Error(
+    throw syntaxError(
         `Illegal state: Pipes should have been converted into functions. Pipe: ${ast.name}`);
   }
 
@@ -315,11 +317,11 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitLiteralArray(ast: cdAst.LiteralArray, mode: _Mode): any {
-    throw new Error(`Illegal State: literal arrays should have been converted into functions`);
+    throw syntaxError(`Illegal State: literal arrays should have been converted into functions`);
   }
 
   visitLiteralMap(ast: cdAst.LiteralMap, mode: _Mode): any {
-    throw new Error(`Illegal State: literal maps should have been converted into functions`);
+    throw syntaxError(`Illegal State: literal maps should have been converted into functions`);
   }
 
   visitLiteralPrimitive(ast: cdAst.LiteralPrimitive, mode: _Mode): any {
@@ -380,7 +382,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     if (receiver === this._implicitReceiver) {
       const varExpr = this._getLocal(ast.name);
       if (varExpr) {
-        throw new Error('Cannot assign to a reference or variable!');
+        throw syntaxError('Cannot assign to a reference or variable!');
       }
     }
     return convertToStatementIfNeeded(
@@ -398,7 +400,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   visitAll(asts: cdAst.AST[], mode: _Mode): any { return asts.map(ast => this._visit(ast, mode)); }
 
   visitQuote(ast: cdAst.Quote, mode: _Mode): any {
-    throw new Error(`Quotes are not supported for evaluation!
+    throw syntaxError(`Quotes are not supported for evaluation!
         Statement: ${ast.uninterpretedExpression} located at ${ast.location}`);
   }
 
@@ -576,7 +578,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   private releaseTemporary(temporary: o.ReadVarExpr) {
     this._currentTemporary--;
     if (temporary.name != temporaryName(this.bindingId, this._currentTemporary)) {
-      throw new Error(`Temporary ${temporary.name} released out of order`);
+      throw syntaxError(`Temporary ${temporary.name} released out of order`);
     }
   }
 }
