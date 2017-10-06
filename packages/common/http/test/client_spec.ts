@@ -45,9 +45,25 @@ export function main() {
         expect(req.request.headers.get('X-Option')).toEqual('true');
         req.flush({});
       });
-      it('with params', (done: DoneFn) => {
+      it('with string params only', (done: DoneFn) => {
         client.get('/test', {params: {'test': 'true'}}).subscribe(() => done());
         backend.expectOne('/test?test=true').flush({});
+      });
+      it('with numeric and string params', (done: DoneFn) => {
+        client
+            .get('/test', {
+              params: {'test-string': 'true', 'test-numeric': 12.3, 'test-array': [1, 2, 'abc']}
+            })
+            .subscribe(() => done());
+        backend
+            .expectOne(
+                '/test?' +
+                'test-string=true&' +
+                'test-numeric=12.3&' +
+                'test-array=1&' +
+                'test-array=2&' +
+                'test-array=abc')
+            .flush({});
       });
       it('for an arraybuffer', (done: DoneFn) => {
         const body = new ArrayBuffer(4);

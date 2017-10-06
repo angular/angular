@@ -247,7 +247,7 @@ Adding URL parameters works in the same way. To send a request with the `id` par
 ```javascript
 http
   .post('/api/items/add', body, {
-    params: new HttpParams().set('id', '3'),
+    params: {id: 3},
   })
   .subscribe();
 ```

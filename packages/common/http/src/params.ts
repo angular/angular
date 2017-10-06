@@ -82,7 +82,7 @@ export interface HttpParamsOptions {
   fromString?: string;
 
   /** Object map of the HTTP params. Mutally exclusive with `fromString`. */
-  fromObject?: {[param: string]: string | string[]};
+  fromObject?: {[param: string]: string | number | (string | number)[]};
 
   /** Encoding codec used to parse and serialize the params. */
   encoder?: HttpParameterCodec;
