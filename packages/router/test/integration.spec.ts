@@ -2790,6 +2790,40 @@ describe('Integration', () => {
          expect(paragraph.textContent).toEqual('false');
        }));
 
+    it('should not set active class when routerLink is null or []', fakeAsync(() => {
+         @Component({
+           selector: 'someCmp',
+           template: `<router-outlet></router-outlet>
+            <button id="home" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Button</button>
+            <button id="empty-array-button" routerLink="[]" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Button</button>
+            <a routerLink="null" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Link</a>`
+         })
+         class CmpWithUnreachableLinks {
+         }
+
+         TestBed.configureTestingModule({declarations: [CmpWithUnreachableLinks]});
+         const router: Router = TestBed.get(Router);
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+         const fixture = TestBed.createComponent(CmpWithUnreachableLinks);
+
+         advance(fixture);
+         const homeButton = fixture.nativeElement.querySelector('#home');
+         const anchor = fixture.nativeElement.querySelector('a');
+         const button = fixture.nativeElement.querySelector('#empty-array-button');
+
+         expect(homeButton.className).toEqual('');
+         expect(button.className).toEqual('');
+         expect(anchor.className).toEqual('');
+
+         router.navigateByUrl('/home');
+         expect(() => advance(fixture)).not.toThrow();
+         advance(fixture);
+
+         expect(homeButton.className).toEqual('active');
+         expect(button.className).not.toEqual('active');
+         expect(anchor.className).not.toEqual('active');
+       }));
   });
 
   describe('lazy loading', () => {
