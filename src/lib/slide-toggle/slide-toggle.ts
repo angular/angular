@@ -68,6 +68,7 @@ export const _MatSlideToggleMixinBase =
 @Component({
   moduleId: module.id,
   selector: 'mat-slide-toggle',
+  exportAs: 'matSlideToggle',
   host: {
     'class': 'mat-slide-toggle',
     '[id]': 'id',

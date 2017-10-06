@@ -46,6 +46,7 @@ const SORT_ANIMATION_TRANSITION =
 @Component({
   moduleId: module.id,
   selector: '[mat-sort-header]',
+  exportAs: 'matSortHeader',
   templateUrl: 'sort-header.html',
   styleUrls: ['sort-header.css'],
   host: {
