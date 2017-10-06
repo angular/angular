@@ -162,6 +162,14 @@ describe('NgPackagesInstaller', () => {
       expect(ngPackages['@angular/upgrade']).toBeDefined();
 
       expect(ngPackages['@angular/upgrade/static']).not.toBeDefined();
+
+      it('should not include packages that have been ignored', () => {
+        installer = new NgPackagesInstaller(rootDir, { ignorePackages: ['@angular/router'] });
+        const ngPackages = installer._getDistPackages();
+
+        expect(ngPackages['@angular/common']).toBeDefined();
+        expect(ngPackages['@angular/router']).toBeUndefined();
+      });
     });
   });
 
