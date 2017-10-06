@@ -11,6 +11,7 @@ import {CommonModule} from '@angular/common';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {PortalModule} from '@angular/cdk/portal';
 import {LIVE_ANNOUNCER_PROVIDER} from '@angular/cdk/a11y';
+import {LayoutModule} from '@angular/cdk/layout';
 import {MatCommonModule} from '@angular/material/core';
 import {MatSnackBar} from './snack-bar';
 import {MatSnackBarContainer} from './snack-bar-container';
@@ -23,6 +24,7 @@ import {SimpleSnackBar} from './simple-snack-bar';
     PortalModule,
     CommonModule,
     MatCommonModule,
+    LayoutModule,
   ],
   exports: [MatSnackBarContainer, MatCommonModule],
   declarations: [MatSnackBarContainer, SimpleSnackBar],
