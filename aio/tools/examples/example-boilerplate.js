@@ -50,17 +50,17 @@ const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 class ExampleBoilerPlate {
   /**
    * Add boilerplate files to all the examples
-   *
-   * @param useLocal if true then overwrite the Angular library files with locally built ones
    */
-  add(useLocal) {
-    // Install the shared `node_modules/` (if necessary overwrite Angular packages from npm with local ones).
-    this.installNodeModules(SHARED_PATH, useLocal);
-
+  add() {
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
     const exampleFolders = this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
     exampleFolders.forEach(exampleFolder => {
       const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
+
+      if (!fs.existsSync(SHARED_NODE_MODULES_PATH)) {
+        throw new Error(`The shared node_modules folder for the examples (${SHARED_NODE_MODULES_PATH}) is missing.\n` +
+        `Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?`);
+      }
 
       // Link the node modules - requires admin access (on Windows) because it adds symlinks
       const destinationNodeModules = path.resolve(exampleFolder, 'node_modules');
@@ -87,18 +87,10 @@ class ExampleBoilerPlate {
   main() {
     yargs
       .usage('$0 <cmd> [args]')
-      .command('add [--local]', 'add the boilerplate to each example',
-              { local: { describe: 'Use the locally built Angular libraries, rather than ones from  npm.' } },
-              argv => this.add(argv.local))
+      .command('add', 'add the boilerplate to each example', () => this.add())
       .command('remove', 'remove the boilerplate from each example', () => this.remove())
       .demandCommand(1, 'Please supply a command from the list above')
       .argv;
-  }
-
-  installNodeModules(basePath, useLocal) {
-    const tool = 'node tools/ng-packages-installer';
-    const command = useLocal ? 'overwrite' : 'restore';
-    shelljs.exec([tool, command, basePath, '--debug'].join(' '));
   }
 
   getFoldersContaining(basePath, filename, ignore) {
