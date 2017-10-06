@@ -147,7 +147,7 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
 
   /** Whether the datepicker-input is disabled. */
   @Input()
-  get disabled() { return this._disabled; }
+  get disabled() { return !!this._disabled; }
   set disabled(value: any) {
     const newValue = coerceBooleanProperty(value);
 
@@ -289,7 +289,7 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
 
   // Implemented as part of ControlValueAccessor
   setDisabledState(disabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', disabled);
+    this.disabled = disabled;
   }
 
   _onKeydown(event: KeyboardEvent) {

@@ -94,14 +94,30 @@
   </mat-form-field>
 </p>
 
-<h2>Input disabled, datepicker popup enabled</h2>
+<h2>Input disabled via FormControl</h2>
 <p>
   <mat-datepicker-toggle [for]="datePicker2"></mat-datepicker-toggle>
   <mat-form-field>
-    <input matInput disabled [matDatepicker]="datePicker2" [(ngModel)]="date" [min]="minDate"
+    <input matInput [matDatepicker]="datePicker2" [formControl]="dateCtrl" [min]="minDate"
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null"
+           placeholder="FormControl disabled">
+    <mat-datepicker #datePicker2 [touchUi]="touch" [startAt]="startAt"
+                    [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
+  </mat-form-field>
+
+  <button mat-button (click)="dateCtrl.disabled ? dateCtrl.enable() : dateCtrl.disable()">
+    {{dateCtrl.disabled ? 'Enable' : 'Disable'}} FormControl
+  </button>
+</p>
+
+<h2>Input disabled, datepicker popup enabled</h2>
+<p>
+  <mat-datepicker-toggle [for]="datePicker3"></mat-datepicker-toggle>
+  <mat-form-field>
+    <input matInput disabled [matDatepicker]="datePicker3" [(ngModel)]="date" [min]="minDate"
            [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null"
            placeholder="Input disabled, datepicker enabled">
-    <mat-datepicker #datePicker2 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
+    <mat-datepicker #datePicker3 [touchUi]="touch" [disabled]="false" [startAt]="startAt"
                    [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
 </p>

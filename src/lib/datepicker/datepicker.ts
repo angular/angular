@@ -149,7 +149,7 @@ export class MatDatepicker<D> implements OnDestroy {
   @Input()
   get disabled() {
     return this._disabled === undefined && this._datepickerInput ?
-        this._datepickerInput.disabled : this._disabled;
+        this._datepickerInput.disabled : !!this._disabled;
   }
   set disabled(value: any) {
     const newValue = coerceBooleanProperty(value);
