@@ -41,7 +41,7 @@ export class RepositionScrollStrategy implements ScrollStrategy {
     if (!this._scrollSubscription) {
       let throttle = this._config ? this._config.scrollThrottle : 0;
 
-      this._scrollSubscription = this._scrollDispatcher.scrolled(throttle, () => {
+      this._scrollSubscription = this._scrollDispatcher.scrolled(throttle).subscribe(() => {
         this._overlayRef.updatePosition();
       });
     }

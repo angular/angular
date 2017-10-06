@@ -21,11 +21,9 @@ describe('CloseScrollStrategy', () => {
     TestBed.configureTestingModule({
       imports: [OverlayModule, PortalModule, OverlayTestModule],
       providers: [
-        {provide: ScrollDispatcher, useFactory: () => {
-          return {scrolled: (_delay: number, callback: () => any) => {
-            return scrolledSubject.asObservable().subscribe(callback);
-          }};
-        }}
+        {provide: ScrollDispatcher, useFactory: () => ({
+          scrolled: () => scrolledSubject.asObservable()
+        })}
       ]
     });
 

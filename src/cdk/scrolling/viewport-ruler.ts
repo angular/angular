@@ -33,7 +33,7 @@ export class ViewportRuler implements OnDestroy {
   private _change: Observable<Event>;
 
   /** Subscriptions to streams that invalidate the cached viewport dimensions. */
-  private _invalidateCacheSubscriptions: Subscription[];
+  private _invalidateCacheSubscription = Subscription.EMPTY;
 
   constructor(platform: Platform, ngZone: NgZone, scrollDispatcher: ScrollDispatcher) {
     this._change = platform.isBrowser ? ngZone.runOutsideAngular(() => {
@@ -41,14 +41,12 @@ export class ViewportRuler implements OnDestroy {
     }) : observableOf();
 
     // Subscribe to scroll and resize events and update the document rectangle on changes.
-    this._invalidateCacheSubscriptions = [
-      scrollDispatcher.scrolled(0, () => this._cacheViewportGeometry()),
-      this.change().subscribe(() => this._cacheViewportGeometry())
-    ];
+    this._invalidateCacheSubscription = merge(scrollDispatcher.scrolled(0), this.change())
+      .subscribe(() => this._cacheViewportGeometry());
   }
 
   ngOnDestroy() {
-    this._invalidateCacheSubscriptions.forEach(subscription => subscription.unsubscribe());
+    this._invalidateCacheSubscription.unsubscribe();
   }
 
   /** Gets a ClientRect for the viewport's bounds. */

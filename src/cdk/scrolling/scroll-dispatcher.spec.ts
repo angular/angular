@@ -47,7 +47,7 @@ describe('Scroll Dispatcher', () => {
       // Listen for notifications from scroll service with a throttle of 100ms
       const throttleTime = 100;
       const serviceSpy = jasmine.createSpy('service scroll callback');
-      scroll.scrolled(throttleTime, serviceSpy);
+      scroll.scrolled(throttleTime).subscribe(serviceSpy);
 
       // Emit a scroll event from the scrolling element in our component.
       // This event should be picked up by the scrollable directive and notify.
@@ -70,7 +70,7 @@ describe('Scroll Dispatcher', () => {
       const spy = jasmine.createSpy('zone unstable callback');
       const subscription = fixture.ngZone!.onUnstable.subscribe(spy);
 
-      scroll.scrolled(0, () => {});
+      scroll.scrolled(0).subscribe(() => {});
       dispatchFakeEvent(document, 'scroll');
 
       expect(spy).not.toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('Scroll Dispatcher', () => {
 
     it('should be able to unsubscribe from the global scrollable', () => {
       const spy = jasmine.createSpy('global scroll callback');
-      const subscription = scroll.scrolled(0, spy);
+      const subscription = scroll.scrolled(0).subscribe(spy);
 
       dispatchFakeEvent(document, 'scroll');
       expect(spy).toHaveBeenCalledTimes(1);
@@ -132,7 +132,7 @@ describe('Scroll Dispatcher', () => {
     it('should lazily add global listeners as service subscriptions are added and removed', () => {
       expect(scroll._globalSubscription).toBeNull('Expected no global listeners on init.');
 
-      const subscription = scroll.scrolled(0, () => {});
+      const subscription = scroll.scrolled(0).subscribe(() => {});
 
       expect(scroll._globalSubscription).toBeTruthy(
           'Expected global listeners after a subscription has been added.');

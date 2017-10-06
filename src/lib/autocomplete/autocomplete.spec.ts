@@ -80,11 +80,9 @@ describe('MatAutocomplete', () => {
           return {getContainerElement: () => overlayContainerElement};
         }},
         {provide: Directionality, useFactory: () => ({value: dir})},
-        {provide: ScrollDispatcher, useFactory: () => {
-          return {scrolled: (_delay: number, callback: () => any) => {
-            return scrolledSubject.asObservable().subscribe(callback);
-          }};
-        }}
+        {provide: ScrollDispatcher, useFactory: () => ({
+          scrolled: () => scrolledSubject.asObservable()
+        })}
       ]
     });
 
