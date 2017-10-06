@@ -37,6 +37,7 @@ class NgPackagesInstaller {
   constructor(projectDir, options = {}) {
     this.debug = options.debug;
     this.force = options.force;
+    this.ignorePackages = options.ignorePackages || [];
     this.projectDir = path.resolve(projectDir);
     this.localMarkerPath = path.resolve(this.projectDir, LOCAL_MARKER_PATH);
 
@@ -145,9 +146,13 @@ class NgPackagesInstaller {
       .map(filePath => filePath.slice(ANGULAR_DIST_PACKAGES.length + 1))
       .filter(filePath => PACKAGE_JSON_REGEX.test(filePath))
       .forEach(packagePath => {
-        const packageConfig = require(path.resolve(ANGULAR_DIST_PACKAGES, packagePath));
         const packageName = `@angular/${packagePath.slice(0, -PACKAGE_JSON.length -1)}`;
-        packageConfigs[packageName] = packageConfig;
+        if (this.ignorePackages.indexOf(packageName) === -1) {
+          const packageConfig = require(path.resolve(ANGULAR_DIST_PACKAGES, packagePath));
+          packageConfigs[packageName] = packageConfig;
+        } else {
+          this._log('Ignoring package', packageName);
+        }
       });
     this._log('Found the following Angular distributables:', Object.keys(packageConfigs).map(key => `\n - ${key}`));
     return packageConfigs;
@@ -216,8 +221,9 @@ function main() {
 
     .option('debug', { describe: 'Print additional debug information.', default: false })
     .option('force', { describe: 'Force the command to execute even if not needed.', default: false })
+    .option('ignore-packages', { describe: 'List of Angular packages that should not be used in local mode.', default: [], array: true })
 
-    .command('overwrite <projectDir> [--force] [--debug]', 'Install dependencies from the locally built Angular distributables.', () => {}, argv => {
+    .command('overwrite <projectDir> [--force] [--debug] [--ignore-packages package1 package2]', 'Install dependencies from the locally built Angular distributables.', () => {}, argv => {
       const installer = new NgPackagesInstaller(argv.projectDir, argv);
       installer.installLocalDependencies();
     })
