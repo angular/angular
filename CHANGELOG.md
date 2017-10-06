@@ -1,3 +1,32 @@
+<a name="5.0.0-rc.1"></a>
+# [5.0.0-rc.1](https://github.com/angular/angular/compare/5.0.0-rc.0...5.0.0-rc.1) (2017-10-06)
+
+
+### Bug Fixes
+
+* **compiler:** always emit summaries for jit with ng_module bazel rule. ([1058b2a](https://github.com/angular/angular/commit/1058b2a))
+* don’t rely on `goog.DEBUG` but on `COMPILED` instead ([db74f44](https://github.com/angular/angular/commit/db74f44))
+* **compiler:** add typings for `COMPILED`. ([0038712](https://github.com/angular/angular/commit/0038712))
+* **compiler:** also count generated files to determine whether to use single file emit ([7c5ecb5](https://github.com/angular/angular/commit/7c5ecb5))
+* **compiler:** disallow references for select and index evaluation ([f3f4c3d](https://github.com/angular/angular/commit/f3f4c3d))
+* **compiler:** don’t use `ng://` in AOT source maps, and never point to the original source file ([01f7112](https://github.com/angular/angular/commit/01f7112)), closes [#19538](https://github.com/angular/angular/issues/19538)
+* **compiler:** only don’t emit already emitted files in incremental compilation ([caa5195](https://github.com/angular/angular/commit/caa5195))
+* **compiler:** properly work on windows ([696af79](https://github.com/angular/angular/commit/696af79)), closes [#19492](https://github.com/angular/angular/issues/19492)
+* **compiler:** set `emitSkipped` to false for incremental compilation ([c412913](https://github.com/angular/angular/commit/c412913))
+* **service-worker:** several misc fixes for corner cases ([f10f8db](https://github.com/angular/angular/commit/f10f8db))
+* **upgrade:** call `ngOnInit()` after `ngOnChanges()` (on components with inputs) ([eef7d8a](https://github.com/angular/angular/commit/eef7d8a)), closes [#18913](https://github.com/angular/angular/issues/18913)
+* **upgrade:** correctly run change detection when `propagateDigest` is false ([617b3d2](https://github.com/angular/angular/commit/617b3d2))
+* **upgrade:** ensure downgraded components are destroyed in the Angular zone ([4e6aa9c](https://github.com/angular/angular/commit/4e6aa9c))
+
+
+### Performance Improvements
+
+* **compiler:** don’t emit summaries for jit by default ([b086891](https://github.com/angular/angular/commit/b086891))
+* **compiler:** fix perf issue in loading aot summaries in jit compiler ([fbc9537](https://github.com/angular/angular/commit/fbc9537))
+* **compiler:** only emit changed files for incremental compilation ([745b59f](https://github.com/angular/angular/commit/745b59f))
+
+
+
 <a name="5.0.0-rc.0"></a>
 # [5.0.0-rc.0](https://github.com/angular/angular/compare/5.0.0-beta.7...5.0.0-rc.0) (2017-09-28)
 
