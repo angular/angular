@@ -16,7 +16,7 @@ module.exports = {
   },
   target: 'node',
   output: {
-    path: 'dist',
+    path: __dirname + '/dist',
     filename: 'server.js'
   },
   plugins: [
@@ -28,7 +28,6 @@ module.exports = {
     // copy assets to the output (/dist) folder
     new CopyWebpackPlugin([
       {from: 'src/index-universal.html'},
-      {from: 'src/favicon.ico'},
       {from: 'src/styles.css'},
       {from: 'node_modules/core-js/client/shim.min.js'},
       {from: 'node_modules/zone.js/dist/zone.min.js'},
