@@ -3,7 +3,6 @@ const fs = require('fs-extra');
 const glob = require('glob');
 const shelljs = require('shelljs');
 
-const ngPackagesInstaller = require('../ng-packages-installer');
 const exampleBoilerPlate = require('./example-boilerplate');
 
 describe('example-boilerplate tool', () => {
@@ -99,31 +98,22 @@ describe('example-boilerplate tool', () => {
   describe('installNodeModules', () => {
     beforeEach(() => {
       spyOn(shelljs, 'exec');
-      spyOn(ngPackagesInstaller, 'overwritePackages');
-      spyOn(ngPackagesInstaller, 'restorePackages');
-    });
-
-    it('should run `yarn` in the base path', () => {
-      exampleBoilerPlate.installNodeModules('some/base/path');
-      expect(shelljs.exec).toHaveBeenCalledWith('yarn', { cwd: 'some/base/path' });
     });
 
     it('should overwrite the Angular packages if `useLocal` is true', () => {
-      ngPackagesInstaller.overwritePackages.and.callFake(() => expect(shelljs.exec).toHaveBeenCalled());
-
       exampleBoilerPlate.installNodeModules('some/base/path', true);
-      expect(ngPackagesInstaller.overwritePackages).toHaveBeenCalledWith('some/base/path');
-      expect(ngPackagesInstaller.restorePackages).not.toHaveBeenCalled();
+      expect(shelljs.exec).toHaveBeenCalledWith('node tools/ng-packages-installer overwrite some/base/path --debug');
+      expect(shelljs.exec.calls.count()).toEqual(1);
     });
 
     it('should restore the Angular packages if `useLocal` is not true', () => {
       exampleBoilerPlate.installNodeModules('some/base/path1');
-      expect(ngPackagesInstaller.restorePackages).toHaveBeenCalledWith('some/base/path1');
+      expect(shelljs.exec).toHaveBeenCalledWith('node tools/ng-packages-installer restore some/base/path1 --debug');
 
       exampleBoilerPlate.installNodeModules('some/base/path2', false);
-      expect(ngPackagesInstaller.restorePackages).toHaveBeenCalledWith('some/base/path2');
+      expect(shelljs.exec).toHaveBeenCalledWith('node tools/ng-packages-installer restore some/base/path2 --debug');
 
-      expect(ngPackagesInstaller.overwritePackages).not.toHaveBeenCalled();
+      expect(shelljs.exec.calls.count()).toEqual(2);
     });
   });
 

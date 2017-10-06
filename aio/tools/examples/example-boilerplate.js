@@ -4,14 +4,11 @@ const path = require('canonical-path');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
 
-const ngPackagesInstaller = require('../ng-packages-installer');
-
 const SHARED_PATH = path.resolve(__dirname, 'shared');
 const SHARED_NODE_MODULES_PATH = path.resolve(SHARED_PATH, 'node_modules');
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
 const BOILERPLATE_COMMON_BASE_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'common');
 const EXAMPLES_BASE_PATH = path.resolve(__dirname, '../../content/examples');
-const TESTING_BASE_PATH = path.resolve(EXAMPLES_BASE_PATH, 'testing');
 
 const BOILERPLATE_PATHS = {
   cli: [
@@ -99,13 +96,9 @@ class ExampleBoilerPlate {
   }
 
   installNodeModules(basePath, useLocal) {
-    shelljs.exec('yarn', {cwd: basePath});
-
-    if (useLocal) {
-      ngPackagesInstaller.overwritePackages(basePath);
-    } else {
-      ngPackagesInstaller.restorePackages(basePath);
-    }
+    const tool = 'node tools/ng-packages-installer';
+    const command = useLocal ? 'overwrite' : 'restore';
+    shelljs.exec([tool, command, basePath, '--debug'].join(' '));
   }
 
   getFoldersContaining(basePath, filename, ignore) {
