@@ -7,7 +7,6 @@ const shelljs = require('shelljs');
 const yargs = require('yargs');
 
 const PACKAGE_JSON = 'package.json';
-const LOCKFILE = 'yarn.lock';
 const LOCAL_MARKER_PATH = 'node_modules/_local_.json';
 const PACKAGE_JSON_REGEX = /^[^/]+\/package\.json$/;
 
@@ -122,13 +121,14 @@ class NgPackagesInstaller {
       const sourcePackage = packages[key];
       if (sourcePackage) {
         // point the core Angular packages at the distributable folder
-        mergedDependencies[key] = `file:${ANGULAR_DIST_PACKAGES}/${key.replace('@angular/', '')}`;
+        mergedDependencies[key] = `file:${sourcePackage.parentDir}/${key.replace('@angular/', '')}`;
         this._log(`Overriding dependency with local package: ${key}: ${mergedDependencies[key]}`);
         // grab peer dependencies
-        Object.keys(sourcePackage.peerDependencies || {})
+        const sourcePackagePeerDeps = sourcePackage.config.peerDependencies || {};
+        Object.keys(sourcePackagePeerDeps)
           // ignore peerDependencies which are already core Angular packages
           .filter(key => !packages[key])
-          .forEach(key => peerDependencies[key] = sourcePackage.peerDependencies[key]);
+          .forEach(key => peerDependencies[key] = sourcePackagePeerDeps[key]);
       }
     });
     return [mergedDependencies, peerDependencies];
@@ -140,20 +140,25 @@ class NgPackagesInstaller {
    */
   _getDistPackages() {
     const packageConfigs = Object.create(null);
-    this._log(`Angular distributable directory: ${ANGULAR_DIST_PACKAGES}.`);
-    shelljs
-      .find(ANGULAR_DIST_PACKAGES)
-      .map(filePath => filePath.slice(ANGULAR_DIST_PACKAGES.length + 1))
-      .filter(filePath => PACKAGE_JSON_REGEX.test(filePath))
-      .forEach(packagePath => {
-        const packageName = `@angular/${packagePath.slice(0, -PACKAGE_JSON.length -1)}`;
-        if (this.ignorePackages.indexOf(packageName) === -1) {
-          const packageConfig = require(path.resolve(ANGULAR_DIST_PACKAGES, packagePath));
-          packageConfigs[packageName] = packageConfig;
-        } else {
-          this._log('Ignoring package', packageName);
-        }
-      });
+
+    [ANGULAR_DIST_PACKAGES].forEach(distDir => {
+      this._log(`Angular distributable directory: ${distDir}.`);
+      shelljs
+        .find(distDir)
+        .map(filePath => filePath.slice(distDir.length + 1))
+        .filter(filePath => PACKAGE_JSON_REGEX.test(filePath))
+        .forEach(packagePath => {
+          const packageName = `@angular/${packagePath.slice(0, -PACKAGE_JSON.length -1)}`;
+          if (this.ignorePackages.indexOf(packageName) === -1) {
+            const packageConfig = require(path.resolve(distDir, packagePath));
+            packageConfigs[packageName] = {parentDir: distDir, config: packageConfig};
+          } else {
+            this._log('Ignoring package', packageName);
+          }
+        });
+
+    });
+
     this._log('Found the following Angular distributables:', Object.keys(packageConfigs).map(key => `\n - ${key}`));
     return packageConfigs;
   }

@@ -41,12 +41,12 @@ if [[ ${CI_MODE:-} == "aio" ]]; then
 fi
 
 # Build the Angular packages then exit (no further build required)
-if [[ ${CI_MODE:-} == "aio_e2e" ]]; then
-  travisFoldStart "build.aio_e2e"
+if [[ ${CI_MODE:-} == "aio_e2e" || ${CI_MODE:-} == "aio_tools_test" ]]; then
+  travisFoldStart "build.$CI_MODE"
   (
     ./build.sh
   )
-  travisFoldEnd "build.aio_e2e"
+  travisFoldEnd "build.$CI_MODE"
   exit 0;
 fi
 

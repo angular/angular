@@ -43,7 +43,7 @@
     "docs-watch": "node tools/transforms/authors-package/watchr.js",
     "docs-lint": "eslint --ignore-path=\"tools/transforms/.eslintignore\" tools/transforms",
     "docs-test": "node tools/transforms/test.js",
-    "tools-test": "./scripts/deploy-to-firebase.test.sh && yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer.spec.js",
+    "tools-test": "./scripts/deploy-to-firebase.test.sh && yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer/index.spec.js",
     "serve-and-sync": "concurrently --kill-others \"yarn docs-watch\" \"yarn start\"",
     "boilerplate:add": "node ./tools/examples/example-boilerplate add",
     "boilerplate:remove": "node ./tools/examples/example-boilerplate remove",
