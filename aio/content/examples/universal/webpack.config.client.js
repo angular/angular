@@ -12,7 +12,7 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   output: {
-    path: 'dist',
+    path: __dirname + '/dist',
     filename: 'client.js'
   },
   plugins: [
