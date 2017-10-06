@@ -172,7 +172,7 @@ an additional step is required for those components to be affected by the theme'
 To do this, you can add the appropriate class to the global overlay container. For the example above,
 this would look like:
 ```ts
-import {OverlayContainer} from '@angular/material';
+import {OverlayContainer} from '@angular/cdk/overlay';
 
 @NgModule({
   // ...

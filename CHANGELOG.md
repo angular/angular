@@ -18,6 +18,10 @@
 
 ### Breaking Changes
 
+* All "md" prefixes have been removed. See the [deprecation notice in the beta.11 notes for more
+information](https://github.com/angular/material2/blob/master/CHANGELOG.md#deprecation-of-md-prefix).
+* All cdk re-exports in `@angular/material` have been removed. See the [the beta.10 notes for more
+information](https://github.com/angular/material2/blob/master/CHANGELOG.md#breaking-changes-2).
 * Previously the `ScrollDispatcher.scrolled` subscription would react both on scroll events and on window resize events. Now it only reacts to scroll events. To react to resize events, subscribe to the `ViewportRuler.change()` stream.
 * `UniqueSelectionDispatcher`, `UniqueSelectionDispatcherListener` and `UNIQUE_SELECTION_DISPATCHER_PROVIDER` are no longer
 available from @angular/material and instead must be imported from @angular/cdk/collections
