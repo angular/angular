@@ -18,25 +18,10 @@ describe('example-boilerplate tool', () => {
 
     beforeEach(() => {
       spyOn(fs, 'ensureSymlinkSync');
+      spyOn(fs, 'existsSync').and.returnValue(true);
       spyOn(exampleBoilerPlate, 'copyFile');
       spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
-      spyOn(exampleBoilerPlate, 'installNodeModules');
       spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValue({});
-    });
-
-    it('should install the npm dependencies into `sharedDir` (and pass the `useLocal` argument through)', () => {
-      exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(sharedDir, undefined);
-
-      exampleBoilerPlate.installNodeModules.calls.reset();
-
-      exampleBoilerPlate.add(true);
-      expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(sharedDir, true);
-
-      exampleBoilerPlate.installNodeModules.calls.reset();
-
-      exampleBoilerPlate.add(false);
-      expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(sharedDir, false);
     });
 
     it('should process all the example folders', () => {
@@ -51,6 +36,14 @@ describe('example-boilerplate tool', () => {
       expect(fs.ensureSymlinkSync).toHaveBeenCalledTimes(exampleFolders.length);
       expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(sharedNodeModulesDir, path.resolve('a/b/node_modules'));
       expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(sharedNodeModulesDir, path.resolve('c/d/node_modules'));
+    });
+
+    it('should error if the node_modules folder is missing', () => {
+      fs.existsSync.and.returnValue(false);
+      expect(() => exampleBoilerPlate.add()).toThrowError(
+        `The shared node_modules folder for the examples (${sharedNodeModulesDir}) is missing.\n` +
+        `Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?`);
+      expect(fs.ensureSymlinkSync).not.toHaveBeenCalled();
     });
 
     it('should copy all the source boilerplate files for systemjs', () => {
@@ -92,28 +85,6 @@ describe('example-boilerplate tool', () => {
       spyOn(shelljs, 'exec');
       exampleBoilerPlate.remove();
       expect(shelljs.exec).toHaveBeenCalledWith('git clean -xdfq', {cwd: path.resolve(__dirname, '../../content/examples') });
-    });
-  });
-
-  describe('installNodeModules', () => {
-    beforeEach(() => {
-      spyOn(shelljs, 'exec');
-    });
-
-    it('should overwrite the Angular packages if `useLocal` is true', () => {
-      exampleBoilerPlate.installNodeModules('some/base/path', true);
-      expect(shelljs.exec).toHaveBeenCalledWith('node tools/ng-packages-installer overwrite some/base/path --debug');
-      expect(shelljs.exec.calls.count()).toEqual(1);
-    });
-
-    it('should restore the Angular packages if `useLocal` is not true', () => {
-      exampleBoilerPlate.installNodeModules('some/base/path1');
-      expect(shelljs.exec).toHaveBeenCalledWith('node tools/ng-packages-installer restore some/base/path1 --debug');
-
-      exampleBoilerPlate.installNodeModules('some/base/path2', false);
-      expect(shelljs.exec).toHaveBeenCalledWith('node tools/ng-packages-installer restore some/base/path2 --debug');
-
-      expect(shelljs.exec.calls.count()).toEqual(2);
     });
   });
 
