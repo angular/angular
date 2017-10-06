@@ -56,7 +56,6 @@ class AngularCompilerProgram implements Program {
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
   private _programWithStubs: ts.Program|undefined;
-  private _semanticDiagnostics: {ts: ts.Diagnostic[], ng: Diagnostic[]}|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
 
   constructor(
@@ -148,12 +147,28 @@ class AngularCompilerProgram implements Program {
 
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
       ts.Diagnostic[] {
-    return this.semanticDiagnostics.ts;
+    if (sourceFile) {
+      return this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
+    }
+    let diags: ts.Diagnostic[] = [];
+    this.tsProgram.getSourceFiles().forEach(sf => {
+      if (!GENERATED_FILES.test(sf.fileName)) {
+        diags.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
+      }
+    });
+    return diags;
   }
 
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
       Diagnostic[] {
-    return this.semanticDiagnostics.ng;
+    let diags: ts.Diagnostic[] = [];
+    this.tsProgram.getSourceFiles().forEach(sf => {
+      if (GENERATED_FILES.test(sf.fileName) && !sf.isDeclarationFile) {
+        diags.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
+      }
+    });
+    const {ng} = translateDiagnostics(this.typeCheckHost, diags);
+    return ng;
   }
 
   loadNgStructureAsync(): Promise<void> {
@@ -359,11 +374,6 @@ class AngularCompilerProgram implements Program {
     return this._typeCheckHost !;
   }
 
-  private get semanticDiagnostics(): {ts: ts.Diagnostic[], ng: Diagnostic[]} {
-    return this._semanticDiagnostics ||
-        (this._semanticDiagnostics = this.generateSemanticDiagnostics());
-  }
-
   private calculateTransforms(
       genFiles: Map<string, GeneratedFile>,
       customTransformers?: CustomTransformers): ts.CustomTransformers {
@@ -544,10 +554,6 @@ class AngularCompilerProgram implements Program {
       });
     }
     return sourceFilesToEmit;
-  }
-
-  private generateSemanticDiagnostics(): {ts: ts.Diagnostic[], ng: Diagnostic[]} {
-    return translateDiagnostics(this.typeCheckHost, this.tsProgram.getSemanticDiagnostics());
   }
 
   private writeFile(
