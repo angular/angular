@@ -9,10 +9,10 @@ import {AUTO_STYLE, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnim
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
-import {ENTER_SELECTOR, LEAVE_SELECTOR, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, SUBSTITUTION_EXPR_START, copyObj, extractStyleParams, iteratorToArray, normalizeAnimationEntry, resolveTiming, validateStyleParams, visitDslNode} from '../util';
+import {ENTER_SELECTOR, LEAVE_SELECTOR, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, SUBSTITUTION_EXPR_START, copyObj, extractStyleParams, iteratorToArray, normalizeAnimationEntry, resolveTiming, validateStyleParams} from '../util';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
-import {AnimationDslVisitor} from './animation_dsl_visitor';
+import {AnimationDslVisitor, visitAnimationNode} from './animation_dsl_visitor';
 import {parseTransitionExpr} from './animation_transition_expr';
 
 const SELF_TOKEN = ':self';
@@ -56,7 +56,7 @@ const SELF_TOKEN_REGEX = new RegExp(`\s*${SELF_TOKEN}\s*,?`, 'g');
  */
 export function buildAnimationAst(
     driver: AnimationDriver, metadata: AnimationMetadata | AnimationMetadata[],
-    errors: any[]): Ast<AnimationMetadataType> {
+    errors: any[]): Ast {
   return new AnimationAstBuilderVisitor(driver).build(metadata, errors);
 }
 
@@ -69,12 +69,10 @@ const ROOT_SELECTOR = '';
 export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
   constructor(private _driver: AnimationDriver) {}
 
-  build(metadata: AnimationMetadata|AnimationMetadata[], errors: any[]):
-      Ast<AnimationMetadataType> {
+  build(metadata: AnimationMetadata|AnimationMetadata[], errors: any[]): Ast {
     const context = new AnimationAstBuilderContext(errors);
     this._resetContextStyleTimingState(context);
-    return <Ast<AnimationMetadataType>>visitDslNode(
-        this, normalizeAnimationEntry(metadata), context);
+    return visitAnimationNode(this, normalizeAnimationEntry(metadata), context) as Ast;
   }
 
   private _resetContextStyleTimingState(context: AnimationAstBuilderContext) {
@@ -110,12 +108,11 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
             'only state() and transition() definitions can sit inside of a trigger()');
       }
     });
-
-    return {
-      type: AnimationMetadataType.Trigger,
-      name: metadata.name, states, transitions, queryCount, depCount,
-      options: null
-    };
+    const ast = new TriggerAst(metadata.name, states, transitions);
+    ast.options = normalizeAnimationOptions(metadata.options);
+    ast.queryCount = queryCount;
+    ast.depCount = depCount;
+    return ast;
   }
 
   visitState(metadata: AnimationStateMetadata, context: AnimationAstBuilderContext): StateAst {
@@ -143,38 +140,31 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       }
     }
 
-    return {
-      type: AnimationMetadataType.State,
-      name: metadata.name,
-      style: styleAst,
-      options: astParams ? {params: astParams} : null
-    };
+    const stateAst = new StateAst(metadata.name, styleAst);
+    if (astParams) {
+      stateAst.options = {params: astParams};
+    }
+    return stateAst;
   }
 
   visitTransition(metadata: AnimationTransitionMetadata, context: AnimationAstBuilderContext):
       TransitionAst {
     context.queryCount = 0;
     context.depCount = 0;
-    const animation = visitDslNode(this, normalizeAnimationEntry(metadata.animation), context);
+    const entry = visitAnimationNode(this, normalizeAnimationEntry(metadata.animation), context);
     const matchers = parseTransitionExpr(metadata.expr, context.errors);
-
-    return {
-      type: AnimationMetadataType.Transition,
-      matchers,
-      animation,
-      queryCount: context.queryCount,
-      depCount: context.depCount,
-      options: normalizeAnimationOptions(metadata.options)
-    };
+    const ast = new TransitionAst(matchers, entry);
+    ast.options = normalizeAnimationOptions(metadata.options);
+    ast.queryCount = context.queryCount;
+    ast.depCount = context.depCount;
+    return ast;
   }
 
   visitSequence(metadata: AnimationSequenceMetadata, context: AnimationAstBuilderContext):
       SequenceAst {
-    return {
-      type: AnimationMetadataType.Sequence,
-      steps: metadata.steps.map(s => visitDslNode(this, s, context)),
-      options: normalizeAnimationOptions(metadata.options)
-    };
+    const ast = new SequenceAst(metadata.steps.map(s => visitAnimationNode(this, s, context)));
+    ast.options = normalizeAnimationOptions(metadata.options);
+    return ast;
   }
 
   visitGroup(metadata: AnimationGroupMetadata, context: AnimationAstBuilderContext): GroupAst {
@@ -182,17 +172,15 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     let furthestTime = 0;
     const steps = metadata.steps.map(step => {
       context.currentTime = currentTime;
-      const innerAst = visitDslNode(this, step, context);
+      const innerAst = visitAnimationNode(this, step, context);
       furthestTime = Math.max(furthestTime, context.currentTime);
       return innerAst;
     });
 
     context.currentTime = furthestTime;
-    return {
-      type: AnimationMetadataType.Group,
-      steps,
-      options: normalizeAnimationOptions(metadata.options)
-    };
+    const ast = new GroupAst(steps);
+    ast.options = normalizeAnimationOptions(metadata.options);
+    return ast;
   }
 
   visitAnimate(metadata: AnimationAnimateMetadata, context: AnimationAstBuilderContext):
@@ -200,10 +188,10 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     const timingAst = constructTimingAst(metadata.timings, context.errors);
     context.currentAnimateTimings = timingAst;
 
-    let styleAst: StyleAst|KeyframesAst;
+    let styles: StyleAst|KeyframesAst;
     let styleMetadata: AnimationMetadata = metadata.styles ? metadata.styles : style({});
     if (styleMetadata.type == AnimationMetadataType.Keyframes) {
-      styleAst = this.visitKeyframes(styleMetadata as AnimationKeyframesSequenceMetadata, context);
+      styles = this.visitKeyframes(styleMetadata as AnimationKeyframesSequenceMetadata, context);
     } else {
       let styleMetadata = metadata.styles as AnimationStyleMetadata;
       let isEmpty = false;
@@ -216,18 +204,13 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         styleMetadata = style(newStyleData);
       }
       context.currentTime += timingAst.duration + timingAst.delay;
-      const _styleAst = this.visitStyle(styleMetadata, context);
-      _styleAst.isEmptyStep = isEmpty;
-      styleAst = _styleAst;
+      const styleAst = this.visitStyle(styleMetadata, context);
+      styleAst.isEmptyStep = isEmpty;
+      styles = styleAst;
     }
 
     context.currentAnimateTimings = null;
-    return {
-      type: AnimationMetadataType.Animate,
-      timings: timingAst,
-      style: styleAst,
-      options: null
-    };
+    return new AnimateAst(timingAst, styles);
   }
 
   visitStyle(metadata: AnimationStyleMetadata, context: AnimationAstBuilderContext): StyleAst {
@@ -277,13 +260,9 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       }
     });
 
-    return {
-      type: AnimationMetadataType.Style,
-      styles,
-      easing: collectedEasing,
-      offset: metadata.offset, containsDynamicStyles,
-      options: null
-    };
+    const ast = new StyleAst(styles, collectedEasing, metadata.offset);
+    ast.containsDynamicStyles = containsDynamicStyles;
+    return ast;
   }
 
   private _validateStyleAst(ast: StyleAst, context: AnimationAstBuilderContext): void {
@@ -334,10 +313,9 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
 
   visitKeyframes(metadata: AnimationKeyframesSequenceMetadata, context: AnimationAstBuilderContext):
       KeyframesAst {
-    const ast: KeyframesAst = {type: AnimationMetadataType.Keyframes, styles: [], options: null};
     if (!context.currentAnimateTimings) {
       context.errors.push(`keyframes() must be placed inside of a call to animate()`);
-      return ast;
+      return new KeyframesAst([]);
     }
 
     const MAX_KEYFRAME_OFFSET = 1;
@@ -391,38 +369,33 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       currentAnimateTimings.duration = durationUpToThisFrame;
       this._validateStyleAst(kf, context);
       kf.offset = offset;
-
-      ast.styles.push(kf);
     });
 
-    return ast;
+    return new KeyframesAst(keyframes);
   }
 
   visitReference(metadata: AnimationReferenceMetadata, context: AnimationAstBuilderContext):
       ReferenceAst {
-    return {
-      type: AnimationMetadataType.Reference,
-      animation: visitDslNode(this, normalizeAnimationEntry(metadata.animation), context),
-      options: normalizeAnimationOptions(metadata.options)
-    };
+    const entry = visitAnimationNode(this, normalizeAnimationEntry(metadata.animation), context);
+    const ast = new ReferenceAst(entry);
+    ast.options = normalizeAnimationOptions(metadata.options);
+    return ast;
   }
 
   visitAnimateChild(metadata: AnimationAnimateChildMetadata, context: AnimationAstBuilderContext):
       AnimateChildAst {
     context.depCount++;
-    return {
-      type: AnimationMetadataType.AnimateChild,
-      options: normalizeAnimationOptions(metadata.options)
-    };
+    const ast = new AnimateChildAst();
+    ast.options = normalizeAnimationOptions(metadata.options);
+    return ast;
   }
 
   visitAnimateRef(metadata: AnimationAnimateRefMetadata, context: AnimationAstBuilderContext):
       AnimateRefAst {
-    return {
-      type: AnimationMetadataType.AnimateRef,
-      animation: this.visitReference(metadata.animation, context),
-      options: normalizeAnimationOptions(metadata.options)
-    };
+    const animation = this.visitReference(metadata.animation, context);
+    const ast = new AnimateRefAst(animation);
+    ast.options = normalizeAnimationOptions(metadata.options);
+    return ast;
   }
 
   visitQuery(metadata: AnimationQueryMetadata, context: AnimationAstBuilderContext): QueryAst {
@@ -436,18 +409,14 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
         parentSelector.length ? (parentSelector + ' ' + selector) : selector;
     getOrSetAsInMap(context.collectedStyles, context.currentQuerySelector, {});
 
-    const animation = visitDslNode(this, normalizeAnimationEntry(metadata.animation), context);
+    const entry = visitAnimationNode(this, normalizeAnimationEntry(metadata.animation), context);
     context.currentQuery = null;
     context.currentQuerySelector = parentSelector;
 
-    return {
-      type: AnimationMetadataType.Query,
-      selector,
-      limit: options.limit || 0,
-      optional: !!options.optional, includeSelf, animation,
-      originalSelector: metadata.selector,
-      options: normalizeAnimationOptions(metadata.options)
-    };
+    const ast = new QueryAst(selector, options.limit || 0, !!options.optional, includeSelf, entry);
+    ast.originalSelector = metadata.selector;
+    ast.options = normalizeAnimationOptions(metadata.options);
+    return ast;
   }
 
   visitStagger(metadata: AnimationStaggerMetadata, context: AnimationAstBuilderContext):
@@ -458,12 +427,9 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     const timings = metadata.timings === 'full' ?
         {duration: 0, delay: 0, easing: 'full'} :
         resolveTiming(metadata.timings, context.errors, true);
-
-    return {
-      type: AnimationMetadataType.Stagger,
-      animation: visitDslNode(this, normalizeAnimationEntry(metadata.animation), context), timings,
-      options: null
-    };
+    const animation =
+        visitAnimationNode(this, normalizeAnimationEntry(metadata.animation), context);
+    return new StaggerAst(timings, animation);
   }
 }
 
@@ -535,20 +501,17 @@ function constructTimingAst(value: string | number | AnimateTimings, errors: any
     timings = value as AnimateTimings;
   } else if (typeof value == 'number') {
     const duration = resolveTiming(value as number, errors).duration;
-    return makeTimingAst(duration as number, 0, '');
+    return new TimingAst(value as number, 0, '');
   }
 
   const strValue = value as string;
   const isDynamic = strValue.split(/\s+/).some(v => v.charAt(0) == '{' && v.charAt(1) == '{');
   if (isDynamic) {
-    const ast = makeTimingAst(0, 0, '') as any;
-    ast.dynamic = true;
-    ast.strValue = strValue;
-    return ast as DynamicTimingAst;
+    return new DynamicTimingAst(strValue);
   }
 
   timings = timings || resolveTiming(strValue, errors);
-  return makeTimingAst(timings.duration, timings.delay, timings.easing);
+  return new TimingAst(timings.duration, timings.delay, timings.easing);
 }
 
 function normalizeAnimationOptions(options: AnimationOptions | null): AnimationOptions {
@@ -561,8 +524,4 @@ function normalizeAnimationOptions(options: AnimationOptions | null): AnimationO
     options = {};
   }
   return options;
-}
-
-function makeTimingAst(duration: number, delay: number, easing: string | null): TimingAst {
-  return {duration, delay, easing};
 }
