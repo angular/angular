@@ -2309,133 +2309,6 @@ export function main() {
            expect(childCmp.childEvent.totalTime).toEqual(1000);
          }));
 
-      it('should emulate a leave animation on a sub component\'s inner elements when a parent leave animation occurs with animateChild',
-         () => {
-           @Component({
-             selector: 'ani-cmp',
-             template: `
-            <div @myAnimation *ngIf="exp" class="parent">
-              <child-cmp></child-cmp>
-            </div>
-          `,
-             animations: [
-               trigger(
-                   'myAnimation',
-                   [
-                     transition(
-                         ':leave',
-                         [
-                           query('@*', animateChild()),
-                         ]),
-                   ]),
-             ]
-           })
-           class ParentCmp {
-             public exp: boolean = true;
-           }
-
-           @Component({
-             selector: 'child-cmp',
-             template: `
-               <section>
-                 <div class="inner-div" @myChildAnimation></div>
-               </section>
-             `,
-             animations: [
-               trigger(
-                   'myChildAnimation',
-                   [
-                     transition(
-                         ':leave',
-                         [
-                           style({opacity: 0}),
-                           animate('1s', style({opacity: 1})),
-                         ]),
-                   ]),
-             ]
-           })
-           class ChildCmp {
-           }
-
-           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
-
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(ParentCmp);
-           const cmp = fixture.componentInstance;
-
-           cmp.exp = true;
-           fixture.detectChanges();
-
-           cmp.exp = false;
-           fixture.detectChanges();
-
-           let players = getLog();
-           expect(players.length).toEqual(1);
-           const [player] = players;
-
-           expect(player.element.classList.contains('inner-div')).toBeTruthy();
-           expect(player.keyframes).toEqual([
-             {opacity: '0', offset: 0},
-             {opacity: '1', offset: 1},
-           ]);
-         });
-
-      it('should not cause a removal of inner @trigger DOM nodes when a parent animation occurs',
-         fakeAsync(() => {
-           @Component({
-             selector: 'ani-cmp',
-             template: `
-            <div @parent *ngIf="exp" class="parent">
-              this <div @child>child</div>
-            </div>
-          `,
-             animations: [
-               trigger(
-                   'parent',
-                   [
-                     transition(
-                         ':leave',
-                         [
-                           style({opacity: 0}),
-                           animate('1s', style({opacity: 1})),
-                         ]),
-                   ]),
-               trigger(
-                   'child',
-                   [
-                     transition(
-                         '* => something',
-                         [
-                           style({opacity: 0}),
-                           animate('1s', style({opacity: 1})),
-                         ]),
-                   ]),
-             ]
-           })
-           class Cmp {
-             public exp: boolean = true;
-           }
-
-           TestBed.configureTestingModule({declarations: [Cmp]});
-
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-
-           cmp.exp = true;
-           fixture.detectChanges();
-           flushMicrotasks();
-
-           cmp.exp = false;
-           fixture.detectChanges();
-           flushMicrotasks();
-
-           const players = getLog();
-           expect(players.length).toEqual(1);
-
-           const element = players[0] !.element;
-           expect(element.innerText.trim()).toMatch(/this\s+child/mg);
-         }));
-
       it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
          () => {
            @Component({
@@ -2675,8 +2548,8 @@ export function main() {
            fixture.detectChanges();
            flushMicrotasks();
            expect(cmp.log).toEqual([
-             'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'c3-start', 'c3-done',
-             'p-done'
+             'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'p-done', 'c3-start',
+             'c3-done'
            ]);
          }));
 
