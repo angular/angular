@@ -50,29 +50,6 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('route');
      })));
 
-  it('should navigate to the current URL',
-     fakeAsync(inject([Router, Location], (router: Router) => {
-       router.resetConfig([
-         {path: '', component: SimpleCmp},
-         {path: 'simple', component: SimpleCmp},
-       ]);
-
-       const fixture = createRoot(router, RootCmp);
-       const events: Event[] = [];
-       router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
-
-       router.navigateByUrl('/simple');
-       tick();
-
-       router.navigateByUrl('/simple');
-       tick();
-
-       expectEvents(events, [
-         [NavigationStart, '/simple'], [NavigationEnd, '/simple'], [NavigationStart, '/simple'],
-         [NavigationEnd, '/simple']
-       ]);
-     })));
-
   describe('should execute navigations serially', () => {
     let log: any[] = [];
 
@@ -451,7 +428,7 @@ describe('Integration', () => {
        }]);
 
        const recordedEvents: any[] = [];
-       router.events.forEach(e => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
+       router.events.forEach(e => e instanceof RouterEvent && recordedEvents.push(e));
 
        router.navigateByUrl('/team/22/user/victor');
        advance(fixture);
@@ -465,8 +442,15 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 22 [ user fedor, right:  ]');
 
        expectEvents(recordedEvents, [
-         [NavigationStart, '/team/22/user/victor'], [NavigationEnd, '/team/22/user/victor'],
-         [NavigationStart, '/team/22/user/fedor'], [NavigationEnd, '/team/22/user/fedor']
+         [NavigationStart, '/team/22/user/victor'], [RoutesRecognized, '/team/22/user/victor'],
+         [GuardsCheckStart, '/team/22/user/victor'], [GuardsCheckEnd, '/team/22/user/victor'],
+         [ResolveStart, '/team/22/user/victor'], [ResolveEnd, '/team/22/user/victor'],
+         [NavigationEnd, '/team/22/user/victor'],
+
+         [NavigationStart, '/team/22/user/fedor'], [RoutesRecognized, '/team/22/user/fedor'],
+         [GuardsCheckStart, '/team/22/user/fedor'], [GuardsCheckEnd, '/team/22/user/fedor'],
+         [ResolveStart, '/team/22/user/fedor'], [ResolveEnd, '/team/22/user/fedor'],
+         [NavigationEnd, '/team/22/user/fedor']
        ]);
      })));
 
@@ -3505,30 +3489,34 @@ describe('Integration', () => {
            }]);
 
            const events: any[] = [];
-           router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
+           router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
            location.go('/include/user/kate(aux:excluded)');
            advance(fixture);
 
            expect(location.path()).toEqual('/include/user/kate(aux:excluded)');
-           expectEvents(
-               events,
-               [[NavigationStart, '/include/user/kate'], [NavigationEnd, '/include/user/kate']]);
+           expectEvents(events, [
+             [NavigationStart, '/include/user/kate'], [RoutesRecognized, '/include/user/kate'],
+             [GuardsCheckStart, '/include/user/kate'], [GuardsCheckEnd, '/include/user/kate'],
+             [ResolveStart, '/include/user/kate'], [ResolveEnd, '/include/user/kate'],
+             [NavigationEnd, '/include/user/kate']
+           ]);
            events.splice(0);
 
            location.go('/include/user/kate(aux:excluded2)');
            advance(fixture);
-           expectEvents(
-               events,
-               [[NavigationStart, '/include/user/kate'], [NavigationEnd, '/include/user/kate']]);
-           events.splice(0);
+           expectEvents(events, []);
 
            router.navigateByUrl('/include/simple');
            advance(fixture);
 
            expect(location.path()).toEqual('/include/simple(aux:excluded2)');
-           expectEvents(
-               events, [[NavigationStart, '/include/simple'], [NavigationEnd, '/include/simple']]);
+           expectEvents(events, [
+             [NavigationStart, '/include/simple'], [RoutesRecognized, '/include/simple'],
+             [GuardsCheckStart, '/include/simple'], [GuardsCheckEnd, '/include/simple'],
+             [ResolveStart, '/include/simple'], [ResolveEnd, '/include/simple'],
+             [NavigationEnd, '/include/simple']
+           ]);
          })));
     });
   });
@@ -3645,10 +3633,6 @@ function expectEvents(events: Event[], pairs: any[]) {
     expect((<any>events[i].constructor).name).toBe(pairs[i][0].name);
     expect((<any>events[i]).url).toBe(pairs[i][1]);
   }
-}
-
-function onlyNavigationStartAndEnd(e: Event): boolean {
-  return e instanceof NavigationStart || e instanceof NavigationEnd;
 }
 
 @Component(
