@@ -41,9 +41,7 @@ export class SpyLocation implements Location {
     return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
   }
 
-  simulateUrlPop(pathname: string) {
-    this._subject.emit({'url': pathname, 'pop': true, 'type': 'popstate'});
-  }
+  simulateUrlPop(pathname: string) { this._subject.emit({'url': pathname, 'pop': true}); }
 
   simulateHashChange(pathname: string) {
     // Because we don't prevent the native event, the browser will independently update the path
