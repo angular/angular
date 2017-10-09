@@ -159,6 +159,25 @@ export class TestBed implements Injector {
     return TestBed;
   }
 
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   *
+   * @deprecated as it makes all NgModules lazy. Introduced only for migrating off of it.
+   */
+  static deprecatedOverrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  static deprecatedOverrideProvider(token: any, provider: {useValue: any;}): void;
+  static deprecatedOverrideProvider(token: any, provider: {
+    useFactory?: Function,
+    useValue?: any,
+    deps?: any[],
+  }): typeof TestBed {
+    getTestBed().deprecatedOverrideProvider(token, provider as any);
+    return TestBed;
+  }
+
   static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
     return getTestBed().get(token, notFoundValue);
   }
@@ -394,11 +413,33 @@ export class TestBed implements Injector {
     deps: any[],
   }): void;
   overrideProvider(token: any, provider: {useValue: any;}): void;
-  overrideProvider(token: any, provider: {
-    useFactory?: Function,
-    useValue?: any,
-    deps?: any[],
-  }): void {
+  overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
+      void {
+    this.overrideProviderImpl(token, provider);
+  }
+
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   *
+   * @deprecated as it makes all NgModules lazy. Introduced only for migrating off of it.
+   */
+  deprecatedOverrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  deprecatedOverrideProvider(token: any, provider: {useValue: any;}): void;
+  deprecatedOverrideProvider(
+      token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}): void {
+    this.overrideProviderImpl(token, provider, /* deprecated */ true);
+  }
+
+  private overrideProviderImpl(
+      token: any, provider: {
+        useFactory?: Function,
+        useValue?: any,
+        deps?: any[],
+      },
+      deprecated = false): void {
     let flags: NodeFlags = 0;
     let value: any;
     if (provider.useFactory) {
