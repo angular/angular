@@ -63,10 +63,10 @@ export class MatChipListChange {
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.aria-invalid]': 'errorState',
     '[attr.aria-multiselectable]': 'multiple',
+    '[attr.role]': 'role',
     '[class.mat-chip-list-disabled]': 'disabled',
     '[class.mat-chip-list-invalid]': 'errorState',
     '[class.mat-chip-list-required]': 'required',
-    'role': 'listbox',
     '[attr.aria-orientation]': 'ariaOrientation',
     'class': 'mat-chip-list',
     '(focus)': 'focus()',
@@ -168,6 +168,10 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   /** The array of selected chips inside chip list. */
   get selected(): MatChip[] | MatChip {
     return this.multiple ? this._selectionModel.selected : this._selectionModel.selected[0];
+  }
+
+  get role(): string|null {
+    return this.empty ? null : 'listbox';
   }
 
   /** Whether the user should be allowed to select multiple chips. */

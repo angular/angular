@@ -68,6 +68,8 @@ describe('MatChipList', () => {
       beforeEach(async(() => {
         fixture = TestBed.createComponent(SelectedChipList);
         fixture.detectChanges();
+        chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
+        chipListNativeElement = chipListDebugElement.nativeElement;
       }));
 
       it('should not override chips selected', () => {
@@ -76,6 +78,17 @@ describe('MatChipList', () => {
         expect(instanceChips[0].selected).toBe(true, 'Expected first option to be selected.');
         expect(instanceChips[1].selected).toBe(false, 'Expected second option to be not selected.');
         expect(instanceChips[2].selected).toBe(true, 'Expected third option to be selected.');
+      });
+
+      it('should have role listbox', () => {
+        expect(chipListNativeElement.getAttribute('role')).toBe('listbox');
+      });
+
+      it('should not have role when empty', () => {
+        fixture.componentInstance.foods = [];
+        fixture.detectChanges();
+
+        expect(chipListNativeElement.getAttribute('role')).toBeNull('Expect no role attribute');
       });
     });
 
