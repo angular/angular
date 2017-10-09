@@ -44,6 +44,7 @@ import {
   Self,
   ViewChild,
   ViewEncapsulation,
+  DoCheck,
 } from '@angular/core';
 import {
   ControlValueAccessor,
@@ -188,7 +189,7 @@ export class MatSelectTrigger {}
   providers: [{provide: MatFormFieldControl, useExisting: MatSelect}],
 })
 export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, OnDestroy, OnInit,
-    ControlValueAccessor, CanDisable, HasTabIndex, MatFormFieldControl<any> {
+    DoCheck, ControlValueAccessor, CanDisable, HasTabIndex, MatFormFieldControl<any> {
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
@@ -458,6 +459,12 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     });
   }
 
+  ngDoCheck() {
+    if (this.ngControl) {
+      this._updateErrorState();
+    }
+  }
+
   ngOnDestroy() {
     this._dropSubscriptions();
     this._changeSubscription.unsubscribe();
@@ -690,13 +697,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   /** Whether the select is in an error state. */
-  get errorState(): boolean {
-    const parent = this._parentFormGroup || this._parentForm;
-    const matcher = this.errorStateMatcher || this._defaultErrorStateMatcher;
-    const control = this.ngControl ? this.ngControl.control as FormControl : null;
-
-    return matcher.isErrorState(control, parent);
-  }
+  errorState: boolean;
 
   private _initializeSelection(): void {
     // Defer setting the value in order to avoid the "Expression
@@ -1200,6 +1201,20 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     return this._triggerFontSize * SELECT_ITEM_HEIGHT_EM;
   }
 
+  /** Updates the select's error state. Only relevant when used with @angular/forms. */
+  private _updateErrorState() {
+    const oldState = this.errorState;
+    const parent = this._parentFormGroup || this._parentForm;
+    const matcher = this.errorStateMatcher || this._defaultErrorStateMatcher;
+    const control = this.ngControl ? this.ngControl.control as FormControl : null;
+    const newState = matcher.isErrorState(control, parent);
+
+    if (newState !== oldState) {
+      this.errorState = newState;
+      this.stateChanges.next();
+    }
+  }
+
   // Implemented as part of MatFormFieldControl.
   setDescribedByIds(ids: string[]) {
     this._ariaDescribedby = ids.join(' ');
@@ -1212,5 +1227,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   // Implemented as part of MatFormFieldControl.
-  get shouldPlaceholderFloat(): boolean { return this._panelOpen || !this.empty; }
+  get shouldPlaceholderFloat(): boolean {
+    return this._panelOpen || !this.empty;
+  }
 }

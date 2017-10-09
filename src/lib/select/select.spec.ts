@@ -2947,6 +2947,17 @@ describe('MatSelect', () => {
           .toBe('true', 'Expected aria-invalid to be set to true.');
     });
 
+    it('should render the error messages when the parent form is submitted', () => {
+      const debugEl = fixture.debugElement.nativeElement;
+
+      expect(debugEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error messages');
+
+      dispatchFakeEvent(fixture.debugElement.query(By.css('form')).nativeElement, 'submit');
+      fixture.detectChanges();
+
+      expect(debugEl.querySelectorAll('mat-error').length).toBe(1, 'Expected one error message');
+    });
+
     it('should be able to override the error matching behavior via an @Input', () => {
       fixture.destroy();
 
@@ -3652,6 +3663,8 @@ class InvalidSelectInForm {
           <mat-option value="steak-0">Steak</mat-option>
           <mat-option value="pizza-1">Pizza</mat-option>
         </mat-select>
+
+        <mat-error>This field is required</mat-error>
       </mat-form-field>
     </form>
   `
