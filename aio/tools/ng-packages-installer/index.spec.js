@@ -47,6 +47,7 @@ describe('NgPackagesInstaller', () => {
   });
 
   describe('installLocalDependencies()', () => {
+    const copyJsonObj = obj => JSON.parse(JSON.stringify(obj));
     let dummyNgPackages, dummyPackage, dummyPackageJson, expectedModifiedPackage, expectedModifiedPackageJson;
 
     beforeEach(() => {
@@ -54,12 +55,36 @@ describe('NgPackagesInstaller', () => {
 
       // These are the packages that are "found" in the dist directory
       dummyNgPackages = {
-        '@angular/core': { parentDir: packagesDir, config: { peerDependencies: { rxjs: '5.0.1' } } },
-        '@angular/common': { parentDir: packagesDir, config: { peerDependencies: { '@angular/core': '4.4.1' } } },
-        '@angular/compiler': { parentDir: packagesDir, config: { } },
-        '@angular/compiler-cli': { parentDir: toolsDir, config: { peerDependencies: { typescript: '^2.4.2', '@angular/compiler': '4.3.2' } } }
+        '@angular/core': {
+          parentDir: packagesDir,
+          packageJsonPath: `${packagesDir}/core/package.json`,
+          config: { peerDependencies: { rxjs: '5.0.1' } }
+        },
+        '@angular/common': {
+          parentDir: packagesDir,
+          packageJsonPath: `${packagesDir}/common/package.json`,
+          config: { peerDependencies: { '@angular/core': '4.4.4-1ab23cd4' } }
+        },
+        '@angular/compiler': {
+          parentDir: packagesDir,
+          packageJsonPath: `${packagesDir}/compiler/package.json`,
+          config: { peerDependencies: { '@angular/common': '4.4.4-1ab23cd4' } }
+        },
+        '@angular/compiler-cli': {
+          parentDir: toolsDir,
+          packageJsonPath: `${toolsDir}/compiler-cli/package.json`,
+          config: {
+            dependencies: { '@angular/tsc-wrapped': '4.4.4-1ab23cd4' },
+            peerDependencies: { typescript: '^2.4.2', '@angular/compiler': '4.4.4-1ab23cd4' }
+          }
+        },
+        '@angular/tsc-wrapped': {
+          parentDir: toolsDir,
+          packageJsonPath: `${toolsDir}/tsc-wrapped/package.json`,
+          config: { peerDependencies: { tsickle: '^1.4.0' } }
+        }
       };
-      spyOn(installer, '_getDistPackages').and.returnValue(dummyNgPackages);
+      spyOn(installer, '_getDistPackages').and.callFake(() => copyJsonObj(dummyNgPackages));
 
       // This is the package.json in the "test" folder
       dummyPackage = {
@@ -118,6 +143,30 @@ describe('NgPackagesInstaller', () => {
         expect(installer._getDistPackages).toHaveBeenCalled();
       });
 
+      it('should temporarily overwrite the package.json files of local Angular packages', () => {
+        const pkgJsonFor = pkgName => dummyNgPackages[`@angular/${pkgName}`].packageJsonPath;
+        const pkgConfigFor = pkgName => copyJsonObj(dummyNgPackages[`@angular/${pkgName}`].config);
+        const overwriteConfigFor = (pkgName, newProps) => Object.assign(pkgConfigFor(pkgName), newProps);
+
+        const allArgs = fs.writeFileSync.calls.allArgs();
+        const firstFiveArgs = allArgs.slice(0, 5);
+        const lastFiveArgs = allArgs.slice(-5);
+
+        expect(firstFiveArgs).toEqual([
+          [pkgJsonFor('core'), JSON.stringify(overwriteConfigFor('core', {private: true}))],
+          [pkgJsonFor('common'), JSON.stringify(overwriteConfigFor('common', {private: true}))],
+          [pkgJsonFor('compiler'), JSON.stringify(overwriteConfigFor('compiler', {private: true}))],
+          [pkgJsonFor('compiler-cli'), JSON.stringify(overwriteConfigFor('compiler-cli', {
+            private: true,
+            dependencies: { '@angular/tsc-wrapped': `file:${toolsDir}/tsc-wrapped` }
+          }))],
+          [pkgJsonFor('tsc-wrapped'), JSON.stringify(overwriteConfigFor('tsc-wrapped', {private: true}))],
+        ]);
+
+        expect(lastFiveArgs).toEqual(['core', 'common', 'compiler', 'compiler-cli', 'tsc-wrapped']
+            .map(pkgName => [pkgJsonFor(pkgName), JSON.stringify(pkgConfigFor(pkgName))]));
+      });
+
       it('should load the package.json', () => {
         expect(fs.readFileSync).toHaveBeenCalledWith(packageJsonPath);
       });
@@ -157,6 +206,7 @@ describe('NgPackagesInstaller', () => {
       const ngPackages = installer._getDistPackages();
       const expectedValue = jasmine.objectContaining({
         parentDir: jasmine.any(String),
+        packageJsonPath: jasmine.any(String),
         config: jasmine.any(Object),
       });
 
