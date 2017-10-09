@@ -144,10 +144,10 @@ describe('NgPackagesInstaller', () => {
   });
 
   describe('restoreNpmDependencies()', () => {
-    it('should run `yarn install --check-files` in the specified directory', () => {
+    it('should run `yarn install` in the specified directory, with the correct options', () => {
       spyOn(installer, '_installDeps');
       installer.restoreNpmDependencies();
-      expect(installer._installDeps).toHaveBeenCalledWith('--check-files');
+      expect(installer._installDeps).toHaveBeenCalledWith('--freeze-lockfile', '--check-files');
     });
   });
 
