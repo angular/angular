@@ -242,6 +242,19 @@ describe('Key managers', () => {
         expect(keyManager.activeItemIndex).toBe(0, 'Expected first item to become active.');
       });
 
+      it('should emit an event whenever the active item changes', () => {
+        const spy = jasmine.createSpy('change spy');
+        const subscription = keyManager.change.subscribe(spy);
+
+        keyManager.onKeydown(fakeKeyEvents.downArrow);
+        expect(spy).toHaveBeenCalledTimes(1);
+
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
+        expect(spy).toHaveBeenCalledTimes(2);
+
+        subscription.unsubscribe();
+      });
+
     });
 
     describe('programmatic focus', () => {

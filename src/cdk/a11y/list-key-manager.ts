@@ -42,6 +42,9 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    */
   tabOut: Subject<void> = new Subject<void>();
 
+  /** Stream that emits whenever the active item of the list manager changes. */
+  change = new Subject<number>();
+
   /**
    * Turns on wrapping mode, which ensures that the active item will wrap to
    * the other end of list when there are no more items in the given direction.
@@ -98,6 +101,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   setActiveItem(index: number): void {
     this._activeItemIndex = index;
     this._activeItem = this._items.toArray()[index];
+    this.change.next(index);
   }
 
   /**

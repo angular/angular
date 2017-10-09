@@ -18,7 +18,7 @@ import {
   ScrollStrategy,
   ViewportRuler,
 } from '@angular/cdk/overlay';
-import {filter, first, startWith} from '@angular/cdk/rxjs';
+import {filter, first, startWith, takeUntil, RxChain} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
   Attribute,
@@ -67,7 +67,6 @@ import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {Subject} from 'rxjs/Subject';
-import {Subscription} from 'rxjs/Subscription';
 import {fadeInContent, transformPanel} from './select-animations';
 import {
   getMatSelectDynamicMultipleError,
@@ -193,15 +192,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
-  /** Subscriptions to option events. */
-  private _optionSubscription = Subscription.EMPTY;
-
-  /** Subscription to changes in the option list. */
-  private _changeSubscription = Subscription.EMPTY;
-
-  /** Subscription to tab events while overlay is focused. */
-  private _tabSubscription = Subscription.EMPTY;
-
   /** Whether filling out the select is required in the form.  */
   private _required: boolean = false;
 
@@ -219,6 +209,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Unique id for this input. */
   private _uid = `mat-select-${nextUniqueId++}`;
+
+  /** Emits whenever the component is destroyed. */
+  private _destroy = new Subject<void>();
 
   /** The last measured value for the trigger's client bounding rect. */
   _triggerRect: ClientRect;
@@ -453,10 +446,13 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   ngAfterContentInit() {
     this._initKeyManager();
 
-    this._changeSubscription = startWith.call(this.options.changes, null).subscribe(() => {
-      this._resetOptions();
-      this._initializeSelection();
-    });
+    RxChain.from(this.options.changes)
+      .call(startWith, null)
+      .call(takeUntil, this._destroy)
+      .subscribe(() => {
+        this._resetOptions();
+        this._initializeSelection();
+      });
   }
 
   ngDoCheck() {
@@ -466,9 +462,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   ngOnDestroy() {
-    this._dropSubscriptions();
-    this._changeSubscription.unsubscribe();
-    this._tabSubscription.unsubscribe();
+    this._destroy.next();
+    this._destroy.complete();
   }
 
   /** Toggles the overlay panel open or closed. */
@@ -493,7 +488,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     this._changeDetectorRef.markForCheck();
 
     // Set the font size on the panel element once it exists.
-    first.call(this._ngZone.onStable).subscribe(() => {
+    first.call(this._ngZone.onStable.asObservable()).subscribe(() => {
       if (this._triggerFontSize && this.overlayDir.overlayRef &&
           this.overlayDir.overlayRef.overlayElement) {
         this.overlayDir.overlayRef.overlayElement.style.fontSize = `${this._triggerFontSize}px`;
@@ -621,13 +616,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       this._keyManager.activeItem._selectViaInteraction();
     } else {
       this._keyManager.onKeydown(event);
-
-      // TODO(crisbeto): get rid of the Promise.resolve when #6441 gets in.
-      Promise.resolve().then(() => {
-        if (this.panelOpen) {
-          this._scrollActiveOptionIntoView();
-        }
-      });
     }
   }
 
@@ -781,28 +769,32 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options).withTypeAhead();
-    this._tabSubscription = this._keyManager.tabOut.subscribe(() => this.close());
+
+    takeUntil.call(this._keyManager.tabOut, this._destroy)
+      .subscribe(() => this.close());
+
+    RxChain.from(this._keyManager.change)
+      .call(takeUntil, this._destroy)
+      .call(filter, () => this._panelOpen && !!this.panel)
+      .subscribe(() => this._scrollActiveOptionIntoView());
   }
 
   /** Drops current option subscriptions and IDs and resets from scratch. */
   private _resetOptions(): void {
-    this._dropSubscriptions();
-    this._listenToOptions();
-    this._setOptionIds();
-    this._setOptionMultiple();
-    this._setOptionDisableRipple();
-  }
-
-  /** Listens to user-generated selection events on each option. */
-  private _listenToOptions(): void {
-    this._optionSubscription = filter.call(this.optionSelectionChanges,
-      event => event.isUserInput).subscribe(event => {
+    RxChain.from(this.optionSelectionChanges)
+      .call(takeUntil, merge(this._destroy, this.options.changes))
+      .call(filter, event => event.isUserInput)
+      .subscribe(event => {
         this._onSelect(event.source);
 
         if (!this.multiple) {
           this.close();
         }
       });
+
+    this._setOptionIds();
+    this._setOptionMultiple();
+    this._setOptionDisableRipple();
   }
 
   /** Invoked when an option is clicked. */
@@ -846,11 +838,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       });
       this.stateChanges.next();
     }
-  }
-
-  /** Unsubscribes from all option subscriptions. */
-  private _dropSubscriptions(): void {
-    this._optionSubscription.unsubscribe();
   }
 
   /** Emits change event to set the model value. */

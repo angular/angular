@@ -3,7 +3,13 @@ import {DOWN_ARROW, END, ENTER, HOME, SPACE, TAB, UP_ARROW} from '@angular/cdk/k
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
-import {dispatchFakeEvent, dispatchKeyboardEvent, wrappedErrorMessage} from '@angular/cdk/testing';
+import {
+  dispatchFakeEvent,
+  dispatchEvent,
+  createKeyboardEvent,
+  dispatchKeyboardEvent,
+  wrappedErrorMessage,
+} from '@angular/cdk/testing';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -3158,6 +3164,47 @@ describe('MatSelect', () => {
       // <(option index + group labels) * height> - <panel height> = (9 + 3) * 48 - 256 = 320
       expect(panel.scrollTop).toBe(320, 'Expected scroll to be at the 9th option.');
     }));
+
+    it('should scroll top the top when pressing HOME', fakeAsync(() => {
+      for (let i = 0; i < 20; i++) {
+        dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
+        tick();
+        fixture.detectChanges();
+      }
+
+      expect(panel.scrollTop).toBeGreaterThan(0, 'Expected panel to be scrolled down.');
+
+      dispatchKeyboardEvent(host, 'keydown', HOME);
+      tick();
+      fixture.detectChanges();
+
+      expect(panel.scrollTop).toBe(0, 'Expected panel to be scrolled to the top');
+    }));
+
+    it('should scroll to the bottom of the panel when pressing END', fakeAsync(() => {
+      dispatchKeyboardEvent(host, 'keydown', END);
+      tick();
+      fixture.detectChanges();
+
+      // <option amount> * <option height> - <panel height> = 30 * 48 - 256 = 1184
+      expect(panel.scrollTop).toBe(1184, 'Expected panel to be scrolled to the bottom');
+    }));
+
+    it('should scroll to the active option when typing', fakeAsync(() => {
+      for (let i = 0; i < 15; i++) {
+        // Press the letter 'o' 15 times since all the options are named 'Option <index>'
+        dispatchEvent(host, createKeyboardEvent('keydown', 79, undefined, 'o'));
+        tick();
+        fixture.detectChanges();
+        tick(200);
+      }
+
+      tick(200);
+
+      // <option index * height> - <panel height> = 16 * 48 - 256 = 512
+      expect(panel.scrollTop).toBe(512, 'Expected scroll to be at the 16th option.');
+    }));
+
   });
 });
 
