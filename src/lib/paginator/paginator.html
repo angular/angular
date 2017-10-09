@@ -1,43 +1,47 @@
-<div class="mat-paginator-page-size">
-  <div class="mat-paginator-page-size-label">
-    {{_intl.itemsPerPageLabel}}
+<div class="mat-paginator-container">
+  <div class="mat-paginator-page-size">
+    <div class="mat-paginator-page-size-label">
+      {{_intl.itemsPerPageLabel}}
+    </div>
+
+    <mat-form-field
+      *ngIf="_displayedPageSizeOptions.length > 1"
+      class="mat-paginator-page-size-select">
+      <mat-select
+        [value]="pageSize"
+        [aria-label]="_intl.itemsPerPageLabel"
+        (change)="_changePageSize($event.value)">
+        <mat-option *ngFor="let pageSizeOption of _displayedPageSizeOptions" [value]="pageSizeOption">
+          {{pageSizeOption}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div *ngIf="_displayedPageSizeOptions.length <= 1">{{pageSize}}</div>
   </div>
 
-  <mat-form-field
-    *ngIf="_displayedPageSizeOptions.length > 1"
-    class="mat-paginator-page-size-select">
-    <mat-select
-      [value]="pageSize"
-      [aria-label]="_intl.itemsPerPageLabel"
-      (change)="_changePageSize($event.value)">
-      <mat-option *ngFor="let pageSizeOption of _displayedPageSizeOptions" [value]="pageSizeOption">
-        {{pageSizeOption}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div class="mat-paginator-range-actions">
+    <div class="mat-paginator-range-label">
+      {{_intl.getRangeLabel(pageIndex, pageSize, length)}}
+    </div>
 
-  <div *ngIf="_displayedPageSizeOptions.length <= 1">{{pageSize}}</div>
+    <button mat-icon-button type="button"
+            class="mat-paginator-navigation-previous"
+            (click)="previousPage()"
+            [attr.aria-label]="_intl.previousPageLabel"
+            [matTooltip]="_intl.previousPageLabel"
+            [matTooltipPosition]="'above'"
+            [disabled]="!hasPreviousPage()">
+      <div class="mat-paginator-increment"></div>
+    </button>
+    <button mat-icon-button type="button"
+            class="mat-paginator-navigation-next"
+            (click)="nextPage()"
+            [attr.aria-label]="_intl.nextPageLabel"
+            [matTooltip]="_intl.nextPageLabel"
+            [matTooltipPosition]="'above'"
+            [disabled]="!hasNextPage()">
+      <div class="mat-paginator-decrement"></div>
+    </button>
+  </div>
 </div>
-
-<div class="mat-paginator-range-label">
-  {{_intl.getRangeLabel(pageIndex, pageSize, length)}}
-</div>
-
-<button mat-icon-button type="button"
-        class="mat-paginator-navigation-previous"
-        (click)="previousPage()"
-        [attr.aria-label]="_intl.previousPageLabel"
-        [matTooltip]="_intl.previousPageLabel"
-        [matTooltipPosition]="'above'"
-        [disabled]="!hasPreviousPage()">
-  <div class="mat-paginator-increment"></div>
-</button>
-<button mat-icon-button type="button"
-        class="mat-paginator-navigation-next"
-        (click)="nextPage()"
-        [attr.aria-label]="_intl.nextPageLabel"
-        [matTooltip]="_intl.nextPageLabel"
-        [matTooltipPosition]="'above'"
-        [disabled]="!hasNextPage()">
-  <div class="mat-paginator-decrement"></div>
-</button>
