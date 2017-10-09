@@ -11,12 +11,17 @@
 }
 
 .mat-expansion-panel-content {
-  overflow: hidden;
+  .mat-expanded & {
+    overflow: visible;
+  }
+
+  &, &.ng-animating {
+    overflow: hidden;
+  }
 }
 
 .mat-expansion-panel-body {
-  margin: 0 24px 16px;
-  overflow: auto;
+  padding: 0 24px 16px;
 }
 
 .mat-expansion-panel-spacing {
