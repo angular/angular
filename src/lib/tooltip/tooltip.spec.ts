@@ -485,7 +485,21 @@ describe('MatTooltip', () => {
         dispatchKeyboardEvent(buttonElement, 'keydown', ESCAPE);
         fixture.detectChanges();
       }).not.toThrow();
+
+      tick(0);
     }));
+
+    it('should not show the tooltip on progammatic focus', fakeAsync(() => {
+      expect(tooltipDirective._tooltipInstance).toBeUndefined();
+
+      buttonElement.focus();
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      expect(overlayContainerElement.querySelector('.mat-tooltip')).toBeNull();
+    }));
+
 
   });
 

@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
-import {AriaDescriber} from '@angular/cdk/a11y';
+import {AriaDescriber, FocusMonitor} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
@@ -90,8 +89,6 @@ export const MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
   exportAs: 'matTooltip',
   host: {
     '(longpress)': 'show()',
-    '(focus)': 'show()',
-    '(blur)': 'hide(0)',
     '(keydown)': '_handleKeydown($event)',
     '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
   },
@@ -177,6 +174,7 @@ export class MatTooltip implements OnDestroy {
     private _ngZone: NgZone,
     private _platform: Platform,
     private _ariaDescriber: AriaDescriber,
+    private _focusMonitor: FocusMonitor,
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) private _scrollStrategy,
     @Optional() private _dir: Directionality) {
 
@@ -188,6 +186,15 @@ export class MatTooltip implements OnDestroy {
       this._leaveListener =
         renderer.listen(_elementRef.nativeElement, 'mouseleave', () => this.hide());
     }
+
+    _focusMonitor.monitor(_elementRef.nativeElement, renderer, false).subscribe(origin => {
+      // Note that the focus monitor runs outside the Angular zone.
+      if (!origin) {
+        _ngZone.run(() => this.hide(0));
+      } else if (origin !== 'program') {
+        _ngZone.run(() => this.show());
+      }
+    });
   }
 
   /**
@@ -197,6 +204,7 @@ export class MatTooltip implements OnDestroy {
     if (this._tooltipInstance) {
       this._disposeTooltip();
     }
+
     // Clean up the event listeners set in the constructor
     if (!this._platform.IOS) {
       this._enterListener();
@@ -204,6 +212,7 @@ export class MatTooltip implements OnDestroy {
     }
 
     this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this.message);
+    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
   }
 
   /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */
