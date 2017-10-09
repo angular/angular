@@ -1998,7 +1998,7 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@^0.21.3:
+dgeni-packages@^0.21.4:
   version "0.21.4"
   resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.21.4.tgz#c77a0730b52ac5dbab00f10fae47dd148374aeb4"
   dependencies:
