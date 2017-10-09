@@ -52,7 +52,7 @@ if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE}
   travisFoldStart "yarn-install.aio"
     (
       cd ${PROJECT_ROOT}/aio
-      yarn install
+      yarn install --frozen-lockfile --non-interactive
     )
   travisFoldEnd "yarn-install.aio"
 fi
