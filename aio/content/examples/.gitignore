@@ -2,6 +2,7 @@
 **/src/environments/environment.prod.ts
 **/src/environments/environment.ts
 **/src/assets/.gitkeep
+**/src/favicon.ico
 **/src/styles.css
 **/src/systemjs-angular-loader.js
 **/src/systemjs.config.js
@@ -71,6 +72,10 @@ aot-compiler/**/*.factory.d.ts
 
 # styleguide
 !styleguide/src/systemjs.custom.js
+
+# universal
+!universal/webpack.config.client.js
+!universal/webpack.config.universal.js
 
 # plunkers
 *plnkr.no-link.html

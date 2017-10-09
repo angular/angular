@@ -10,13 +10,13 @@
     "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
     "typeRoots": [
-      "../../node_modules/@types/"
+      "./node_modules/@types/"
     ]
   },
 
   "files": [
-    "src/uni/app.server.ts",
-    "src/uni/server-aot.ts"
+    "src/universal/app-server.module.ts",
+    "src/universal/server.ts"
   ],
 
   "angularCompilerOptions": {
