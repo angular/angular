@@ -10,4 +10,4 @@ echo "#################################"
 
 yarn install
 
-npm run test
+yarn test
