@@ -89,7 +89,7 @@ export class ScrollDispatcher {
         subscription.unsubscribe();
         this._scrolledCount--;
 
-        if (this._globalSubscription && !this.scrollableReferences.size && !this._scrolledCount) {
+        if (this._globalSubscription && !this._scrolledCount) {
           this._globalSubscription.unsubscribe();
           this._globalSubscription = null;
         }

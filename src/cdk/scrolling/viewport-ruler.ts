@@ -8,7 +8,6 @@
 
 import {Injectable, Optional, SkipSelf, NgZone, OnDestroy} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
-import {ScrollDispatcher} from './scroll-dispatcher';
 import {Observable} from 'rxjs/Observable';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {merge} from 'rxjs/observable/merge';
@@ -32,21 +31,19 @@ export class ViewportRuler implements OnDestroy {
   /** Stream of viewport change events. */
   private _change: Observable<Event>;
 
-  /** Subscriptions to streams that invalidate the cached viewport dimensions. */
-  private _invalidateCacheSubscription = Subscription.EMPTY;
+  /** Subscription to streams that invalidate the cached viewport dimensions. */
+  private _invalidateCache: Subscription;
 
-  constructor(platform: Platform, ngZone: NgZone, scrollDispatcher: ScrollDispatcher) {
+  constructor(platform: Platform, ngZone: NgZone) {
     this._change = platform.isBrowser ? ngZone.runOutsideAngular(() => {
       return merge<Event>(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange'));
     }) : observableOf();
 
-    // Subscribe to scroll and resize events and update the document rectangle on changes.
-    this._invalidateCacheSubscription = merge(scrollDispatcher.scrolled(0), this.change())
-      .subscribe(() => this._cacheViewportGeometry());
+    this._invalidateCache = this.change().subscribe(() => this._cacheViewportGeometry());
   }
 
   ngOnDestroy() {
-    this._invalidateCacheSubscription.unsubscribe();
+    this._invalidateCache.unsubscribe();
   }
 
   /** Gets a ClientRect for the viewport's bounds. */
@@ -123,15 +120,14 @@ export class ViewportRuler implements OnDestroy {
 /** @docs-private */
 export function VIEWPORT_RULER_PROVIDER_FACTORY(parentRuler: ViewportRuler,
                                                 platform: Platform,
-                                                ngZone: NgZone,
-                                                scrollDispatcher: ScrollDispatcher) {
-  return parentRuler || new ViewportRuler(platform, ngZone, scrollDispatcher);
+                                                ngZone: NgZone) {
+  return parentRuler || new ViewportRuler(platform, ngZone);
 }
 
 /** @docs-private */
 export const VIEWPORT_RULER_PROVIDER = {
   // If there is already a ViewportRuler available, use that. Otherwise, provide a new one.
   provide: ViewportRuler,
-  deps: [[new Optional(), new SkipSelf(), ViewportRuler], Platform, NgZone, ScrollDispatcher],
+  deps: [[new Optional(), new SkipSelf(), ViewportRuler], Platform, NgZone],
   useFactory: VIEWPORT_RULER_PROVIDER_FACTORY
 };

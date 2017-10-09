@@ -143,6 +143,26 @@ describe('Scroll Dispatcher', () => {
           'Expected global listeners to have been removed after the subscription has stopped.');
     });
 
+    it('should remove global listeners on unsubscribe, despite any other live scrollables', () => {
+      const fixture = TestBed.createComponent(NestedScrollingComponent);
+      fixture.detectChanges();
+
+      expect(scroll._globalSubscription).toBeNull('Expected no global listeners on init.');
+      expect(scroll.scrollableReferences.size).toBe(4, 'Expected multiple scrollables');
+
+      const subscription = scroll.scrolled(0).subscribe(() => {});
+
+      expect(scroll._globalSubscription).toBeTruthy(
+          'Expected global listeners after a subscription has been added.');
+
+      subscription.unsubscribe();
+
+      expect(scroll._globalSubscription).toBeNull(
+          'Expected global listeners to have been removed after the subscription has stopped.');
+      expect(scroll.scrollableReferences.size)
+          .toBe(4, 'Expected scrollable count to stay the same');
+    });
+
   });
 });
 
