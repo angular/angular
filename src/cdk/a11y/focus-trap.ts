@@ -145,6 +145,10 @@ export class FocusTrap {
    * @returns The boundary element.
    */
   private _getRegionBoundary(bound: 'start' | 'end'): HTMLElement | null {
+    if (!this._platform.isBrowser) {
+      return null;
+    }
+
     // Contains the deprecated version of selector, for temporary backwards comparability.
     let markers = this._element.querySelectorAll(`[cdk-focus-region-${bound}], ` +
                                                  `[cdk-focus-${bound}]`) as NodeListOf<HTMLElement>;
@@ -168,6 +172,10 @@ export class FocusTrap {
    * @returns Returns whether focus was moved successfuly.
    */
   focusInitialElement(): boolean {
+    if (!this._platform.isBrowser) {
+      return false;
+    }
+
     const redirectToElement = this._element.querySelector('[cdk-focus-initial]') as HTMLElement;
 
     if (redirectToElement) {
