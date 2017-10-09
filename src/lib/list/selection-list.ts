@@ -142,10 +142,6 @@ export class MatListOption extends _MatListOptionMixinBase
 
   ngAfterContentInit() {
     this._lineSetter = new MatLineSetter(this._lines, this._renderer, this._element);
-
-    if (this.selectionList.disabled) {
-      this.disabled = true;
-    }
   }
 
   ngOnDestroy(): void {
