@@ -6,15 +6,15 @@
   <div class="mat-tab-label" role="tab" matTabLabelWrapper mat-ripple
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
-       [tabIndex]="selectedIndex == i ? 0 : -1"
+       [attr.tabIndex]="_getTabIndex(tab, i)"
        [attr.aria-controls]="_getTabContentId(i)"
        [attr.aria-selected]="selectedIndex == i"
        [class.mat-tab-label-active]="selectedIndex == i"
        [disabled]="tab.disabled"
-       [matRippleDisabled]="disableRipple"
-       (click)="tabHeader.focusIndex = selectedIndex = i">
+       [matRippleDisabled]="tab.disabled || disableRipple"
+       (click)="_handleClick(tab, tabHeader, i)">
 
-    <!-- If there is a label template, use it. -->
+       <!-- If there is a label template, use it. -->
     <ng-template [ngIf]="tab.templateLabel">
       <ng-template [cdkPortalHost]="tab.templateLabel"></ng-template>
     </ng-template>

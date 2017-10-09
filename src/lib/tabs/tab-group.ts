@@ -26,6 +26,7 @@ import {
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Subscription} from 'rxjs/Subscription';
 import {MatTab} from './tab';
+import {MatTabHeader} from './tab-header';
 import {merge} from 'rxjs/observable/merge';
 import {
   CanColor,
@@ -277,5 +278,20 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
   _removeTabBodyWrapperHeight(): void {
     this._tabBodyWrapperHeight = this._tabBodyWrapper.nativeElement.clientHeight;
     this._renderer.setStyle(this._tabBodyWrapper.nativeElement, 'height', '');
+  }
+
+  /** Handle click events, setting new selected index if appropriate. */
+  _handleClick(tab: MatTab, tabHeader: MatTabHeader, idx: number) {
+    if (!tab.disabled) {
+      this.selectedIndex = tabHeader.focusIndex = idx;
+    }
+  }
+
+  /** Retrieves the tabindex for the tab. */
+  _getTabIndex(tab: MatTab, idx: number): number | null {
+    if (tab.disabled) {
+      return null;
+    }
+    return this.selectedIndex === idx ? 0 : -1;
   }
 }

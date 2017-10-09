@@ -119,7 +119,9 @@ describe('MatTabNavBar', () => {
       fixture.componentInstance.disabled = true;
       fixture.detectChanges();
 
-      expect(tabLinkElements.every(tabLink => tabLink.tabIndex === -1))
+      expect(tabLinkElements.every(tabLink => {
+        return tabLink.getAttribute('tabIndex') === null;
+      }))
         .toBe(true, 'Expected element to no longer be keyboard focusable if disabled.');
     });
 

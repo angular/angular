@@ -183,7 +183,7 @@ export const _MatTabLinkMixinBase = mixinDisabled(MatTabLinkBase);
   host: {
     'class': 'mat-tab-link',
     '[attr.aria-disabled]': 'disabled.toString()',
-    '[attr.tabindex]': 'tabIndex',
+    '[attr.tabIndex]': 'tabIndex',
     '[class.mat-tab-disabled]': 'disabled',
     '[class.mat-tab-label-active]': 'active',
   }
@@ -209,7 +209,7 @@ export class MatTabLink extends _MatTabLinkMixinBase implements OnDestroy, CanDi
   }
 
   /** Whether ripples should be disabled or not. */
-  get disableRipple(): boolean { return this._disableRipple; }
+  get disableRipple(): boolean { return this.disabled || this._disableRipple; }
   set disableRipple(value: boolean) {
     this._disableRipple = value;
     this._tabLinkRipple.disabled = this.disableRipple;
@@ -217,8 +217,8 @@ export class MatTabLink extends _MatTabLinkMixinBase implements OnDestroy, CanDi
   }
 
   /** @docs-private */
-  get tabIndex(): number {
-    return this.disabled ? -1 : 0;
+  get tabIndex(): number | null {
+    return this.disabled ? null : 0;
   }
 
   constructor(private _tabNavBar: MatTabNav,
