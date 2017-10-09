@@ -336,6 +336,69 @@ describe('MatDialog', () => {
     expect(overlayPane.style.height).toBe('100px');
   });
 
+  it('should should override the min-width of the overlay pane', () => {
+    dialog.open(PizzaMsg, {
+      minWidth: '500px'
+    });
+
+    viewContainerFixture.detectChanges();
+
+    let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+
+    expect(overlayPane.style.minWidth).toBe('500px');
+  });
+
+  it('should should override the max-width of the overlay pane', fakeAsync(() => {
+    let dialogRef = dialog.open(PizzaMsg);
+
+    viewContainerFixture.detectChanges();
+
+    let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+
+    expect(overlayPane.style.maxWidth).toBe('80vw',
+      'Expected dialog to set a default max-width on overlay pane');
+
+    dialogRef.close();
+
+    tick(500);
+    viewContainerFixture.detectChanges();
+    flushMicrotasks();
+
+    dialogRef = dialog.open(PizzaMsg, {
+      maxWidth: '100px'
+    });
+
+    viewContainerFixture.detectChanges();
+
+    overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+
+    expect(overlayPane.style.maxWidth).toBe('100px');
+  }));
+
+  it('should should override the min-height of the overlay pane', () => {
+    dialog.open(PizzaMsg, {
+      minHeight: '300px'
+    });
+
+    viewContainerFixture.detectChanges();
+
+    let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+
+    expect(overlayPane.style.minHeight).toBe('300px');
+  });
+
+  it('should should override the max-height of the overlay pane', () => {
+    dialog.open(PizzaMsg, {
+      maxHeight: '100px'
+    });
+
+    viewContainerFixture.detectChanges();
+
+    let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+
+    expect(overlayPane.style.maxHeight).toBe('100px');
+  });
+
   it('should should override the top offset of the overlay pane', () => {
     dialog.open(PizzaMsg, {
       position: {

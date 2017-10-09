@@ -190,7 +190,11 @@ export class MatDialog {
       scrollStrategy: this._scrollStrategy(),
       panelClass: dialogConfig.panelClass,
       hasBackdrop: dialogConfig.hasBackdrop,
-      direction: dialogConfig.direction
+      direction: dialogConfig.direction,
+      minWidth: dialogConfig.minWidth,
+      minHeight: dialogConfig.minHeight,
+      maxWidth: dialogConfig.maxWidth,
+      maxHeight: dialogConfig.maxHeight
     });
 
     if (dialogConfig.backdropClass) {

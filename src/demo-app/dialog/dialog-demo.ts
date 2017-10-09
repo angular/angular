@@ -1,7 +1,8 @@
 import {Component, Inject, ViewChild, TemplateRef} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 
+const defaultDialogConfig = new MatDialogConfig();
 
 @Component({
   moduleId: module.id,
@@ -21,6 +22,10 @@ export class DialogDemo {
     backdropClass: '',
     width: '',
     height: '',
+    minWidth: '',
+    minHeight: '',
+    maxWidth: defaultDialogConfig.maxWidth,
+    maxHeight: '',
     position: {
       top: '',
       bottom: '',

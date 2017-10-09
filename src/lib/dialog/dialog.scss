@@ -5,7 +5,6 @@
 
 $mat-dialog-padding: 24px !default;
 $mat-dialog-border-radius: 2px !default;
-$mat-dialog-max-width: 80vw !default;
 $mat-dialog-max-height: 65vh !default;
 $mat-dialog-button-margin: 8px !default;
 
@@ -17,7 +16,6 @@ $mat-dialog-button-margin: 8px !default;
   border-radius: $mat-dialog-border-radius;
   box-sizing: border-box;
   overflow: auto;
-  max-width: $mat-dialog-max-width;
   outline: 0;
 
   // The dialog container should completely fill its parent overlay element.
