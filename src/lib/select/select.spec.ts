@@ -105,6 +105,7 @@ describe('MatSelect', () => {
         SelectInsideFormGroup,
         NgModelCompareWithSelect,
         CustomErrorBehaviorSelect,
+        SingleSelectWithPreselectedArrayValues,
       ],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
@@ -1010,6 +1011,19 @@ describe('MatSelect', () => {
         });
       });
     }));
+
+    it('should be able to preselect an array value in single-selection mode', fakeAsync(() => {
+      const fixture = TestBed.createComponent(SingleSelectWithPreselectedArrayValues);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      const trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+
+      expect(trigger.textContent).toContain('Pizza');
+      expect(fixture.componentInstance.options.toArray()[1].selected).toBe(true);
+    }));
+
   });
 
   describe('misc forms', () => {
@@ -3871,4 +3885,29 @@ class CustomErrorBehaviorSelect {
     { value: 'pizza-1', viewValue: 'Pizza' },
   ];
   errorStateMatcher: ErrorStateMatcher;
+}
+
+
+@Component({
+  template: `
+    <mat-form-field>
+      <mat-select placeholder="Food" [(ngModel)]="selectedFoods">
+        <mat-option *ngFor="let food of foods"
+                    [value]="food.value">{{ food.viewValue }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  `
+})
+class SingleSelectWithPreselectedArrayValues {
+  foods: any[] = [
+    { value: ['steak-0', 'steak-1'], viewValue: 'Steak' },
+    { value: ['pizza-1', 'pizza-2'], viewValue: 'Pizza' },
+    { value: ['tacos-2', 'tacos-3'], viewValue: 'Tacos' },
+  ];
+
+  selectedFoods = this.foods[1].value;
+
+  @ViewChild(MatSelect) select: MatSelect;
+  @ViewChildren(MatOption) options: QueryList<MatOption>;
 }

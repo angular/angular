@@ -700,18 +700,17 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * found with the designated value, the select trigger is cleared.
    */
   private _setSelectionByValue(value: any | any[], isUserInput = false): void {
-    const isArray = Array.isArray(value);
+    if (this.multiple && value) {
+      if (!Array.isArray(value)) {
+        throw getMatSelectNonArrayValueError();
+      }
 
-    if (this.multiple && value && !isArray) {
-      throw getMatSelectNonArrayValueError();
-    }
-
-    this._clearSelection();
-
-    if (isArray) {
+      this._clearSelection();
       value.forEach((currentValue: any) => this._selectValue(currentValue, isUserInput));
       this._sortValues();
     } else {
+      this._clearSelection();
+
       const correspondingOption = this._selectValue(value, isUserInput);
 
       // Shift focus to the active item. Note that we shouldn't do this in multiple
@@ -844,10 +843,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _propagateChanges(fallbackValue?: any): void {
     let valueToEmit: any = null;
 
-    if (Array.isArray(this.selected)) {
-      valueToEmit = this.selected.map(option => option.value);
+    if (this.multiple) {
+      valueToEmit = (this.selected as MatOption[]).map(option => option.value);
     } else {
-      valueToEmit = this.selected ? this.selected.value : fallbackValue;
+      valueToEmit = this.selected ? (this.selected as MatOption).value : fallbackValue;
     }
 
     this._value = valueToEmit;
