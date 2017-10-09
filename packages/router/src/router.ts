@@ -580,9 +580,10 @@ export class Router {
   }
 
   private runNavigate(
-      url: UrlTree, rawUrl: UrlTree, skipLocationChange: boolean, replaceUrl: boolean, id: number,
-      precreatedState: RouterStateSnapshot|null): Promise<boolean> {
+      url: UrlTree, rawUrl: UrlTree, shouldPreventPushState: boolean, shouldReplaceUrl: boolean,
+      id: number, precreatedState: RouterStateSnapshot|null): Promise<boolean> {
     if (id !== this.navigationId) {
+      this.location.go(this.urlSerializer.serialize(this.currentUrlTree));
       (this.events as Subject<Event>)
           .next(new NavigationCancel(
               id, this.serializeUrl(url),
@@ -704,9 +705,9 @@ export class Router {
 
             (this as{routerState: RouterState}).routerState = state;
 
-            if (!skipLocationChange) {
+            if (!shouldPreventPushState) {
               const path = this.urlSerializer.serialize(this.rawUrlTree);
-              if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
+              if (this.location.isCurrentPathEqualTo(path) || shouldReplaceUrl) {
                 this.location.replaceState(path);
               } else {
                 this.location.go(path);
@@ -754,13 +755,14 @@ export class Router {
                 (this as{routerState: RouterState}).routerState = storedState;
                 this.currentUrlTree = storedUrl;
                 this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
-                this.resetUrlToCurrentUrlTree();
+                this.location.replaceState(this.serializeUrl(this.rawUrlTree));
               });
     });
   }
 
   private resetUrlToCurrentUrlTree(): void {
-    this.location.replaceState(this.urlSerializer.serialize(this.rawUrlTree));
+    const path = this.urlSerializer.serialize(this.rawUrlTree);
+    this.location.replaceState(path);
   }
 }
 
