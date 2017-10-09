@@ -43,12 +43,12 @@ declare let Zone: any;
  */
 export interface NavigationExtras {
   /**
-   * Enables relative navigation from the current ActivatedRoute.
-   *
-   * Configuration:
-   *
-   * ```
-   * [{
+  * Enables relative navigation from the current ActivatedRoute.
+  *
+  * Configuration:
+  *
+  * ```
+  * [{
   *   path: 'parent',
   *   component: ParentComponent,
   *   children: [{
@@ -59,92 +59,92 @@ export interface NavigationExtras {
   *     component: ChildComponent
   *   }]
   * }]
-   * ```
-   *
-   * Navigate to list route from child route:
-   *
-   * ```
-   *  @Component({...})
-   *  class ChildComponent {
+  * ```
+  *
+  * Navigate to list route from child route:
+  *
+  * ```
+  *  @Component({...})
+  *  class ChildComponent {
   *    constructor(private router: Router, private route: ActivatedRoute) {}
   *
   *    go() {
   *      this.router.navigate(['../list'], { relativeTo: this.route });
   *    }
   *  }
-   * ```
-   */
+  * ```
+  */
   relativeTo?: ActivatedRoute|null;
 
   /**
-   * Sets query parameters to the URL.
-   *
-   * ```
-   * // Navigate to /results?page=1
-   * this.router.navigate(['/results'], { queryParams: { page: 1 } });
-   * ```
-   */
+  * Sets query parameters to the URL.
+  *
+  * ```
+  * // Navigate to /results?page=1
+  * this.router.navigate(['/results'], { queryParams: { page: 1 } });
+  * ```
+  */
   queryParams?: Params|null;
 
   /**
-   * Sets the hash fragment for the URL.
-   *
-   * ```
-   * // Navigate to /results#top
-   * this.router.navigate(['/results'], { fragment: 'top' });
-   * ```
-   */
+  * Sets the hash fragment for the URL.
+  *
+  * ```
+  * // Navigate to /results#top
+  * this.router.navigate(['/results'], { fragment: 'top' });
+  * ```
+  */
   fragment?: string;
 
   /**
-   * Preserves the query parameters for the next navigation.
-   *
-   * deprecated, use `queryParamsHandling` instead
-   *
-   * ```
-   * // Preserve query params from /results?page=1 to /view?page=1
-   * this.router.navigate(['/view'], { preserveQueryParams: true });
-   * ```
-   *
-   * @deprecated since v4
-   */
+  * Preserves the query parameters for the next navigation.
+  *
+  * deprecated, use `queryParamsHandling` instead
+  *
+  * ```
+  * // Preserve query params from /results?page=1 to /view?page=1
+  * this.router.navigate(['/view'], { preserveQueryParams: true });
+  * ```
+  *
+  * @deprecated since v4
+  */
   preserveQueryParams?: boolean;
 
   /**
-   *  config strategy to handle the query parameters for the next navigation.
-   *
-   * ```
-   * // from /results?page=1 to /view?page=1&page=2
-   * this.router.navigate(['/view'], { queryParams: { page: 2 },  queryParamsHandling: "merge" });
-   * ```
-   */
+  *  config strategy to handle the query parameters for the next navigation.
+  *
+  * ```
+  * // from /results?page=1 to /view?page=1&page=2
+  * this.router.navigate(['/view'], { queryParams: { page: 2 },  queryParamsHandling: "merge" });
+  * ```
+  */
   queryParamsHandling?: QueryParamsHandling|null;
   /**
-   * Preserves the fragment for the next navigation
-   *
-   * ```
-   * // Preserve fragment from /results#top to /view#top
-   * this.router.navigate(['/view'], { preserveFragment: true });
-   * ```
-   */
+  * Preserves the fragment for the next navigation
+  *
+  * ```
+  * // Preserve fragment from /results#top to /view#top
+  * this.router.navigate(['/view'], { preserveFragment: true });
+  * ```
+  */
   preserveFragment?: boolean;
   /**
-   * Navigates without pushing a new state into history.
-   *
-   * ```
-   * // Navigate silently to /view
-   * this.router.navigate(['/view'], { skipLocationChange: true });
-   * ```
-   */
+  * Navigates without pushing a new state into history.
+  *
+  * ```
+  * // Navigate silently to /view
+  * this.router.navigate(['/view'], { skipLocationChange: true });
+  * ```
+  */
   skipLocationChange?: boolean;
   /**
-   * Navigates while replacing the current state in history.
-   *
-   * ```
-   * // Navigate to /view
-   * this.router.navigate(['/view'], { replaceUrl: true });
-   * ```
-   */
+  * Navigates while replacing the current state in history.
+  *
+  * ```
+  * // Navigate to /view
+  * this.router.navigate(['/view'], { replaceUrl: true });
+  * ```
+  */
   replaceUrl?: boolean;
 }
 
@@ -518,15 +518,8 @@ export class Router {
 
     // Because of a bug in IE and Edge, the location class fires two events (popstate and
     // hashchange) every single time. The second one should be ignored. Otherwise, the URL will
-    // flicker. Handles the case when a popstate was emitted first.
+    // flicker.
     if (lastNavigation && source == 'hashchange' && lastNavigation.source === 'popstate' &&
-        lastNavigation.rawUrl.toString() === rawUrl.toString()) {
-      return Promise.resolve(true);  // return value is not used
-    }
-    // Because of a bug in IE and Edge, the location class fires two events (popstate and
-    // hashchange) every single time. The second one should be ignored. Otherwise, the URL will
-    // flicker. Handles the case when a hashchange was emitted first.
-    if (lastNavigation && source == 'popstate' && lastNavigation.source === 'hashchange' &&
         lastNavigation.rawUrl.toString() === rawUrl.toString()) {
       return Promise.resolve(true);  // return value is not used
     }
@@ -552,7 +545,7 @@ export class Router {
     const url = this.urlHandlingStrategy.extract(rawUrl);
     const urlTransition = !this.navigated || url.toString() !== this.currentUrlTree.toString();
 
-    if (this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
+    if (urlTransition && this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
       (this.events as Subject<Event>).next(new NavigationStart(id, this.serializeUrl(url)));
       Promise.resolve()
           .then(
