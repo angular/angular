@@ -29,6 +29,7 @@ $mat-sort-header-arrow-transition: 225ms cubic-bezier(0.4, 0, 0.2, 1);
 .mat-sort-header-arrow {
   height: $mat-sort-header-arrow-container-size;
   width: $mat-sort-header-arrow-container-size;
+  min-width: $mat-sort-header-arrow-container-size;
   margin: 0 0 0 $mat-sort-header-arrow-margin;
   position: relative;
   display: flex;
