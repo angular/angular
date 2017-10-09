@@ -5,7 +5,7 @@
 [![Issue Stats](http://issuestats.com/github/angular/angular/badge/pr?style=flat)](http://issuestats.com/github/angular/angular)
 [![Issue Stats](http://issuestats.com/github/angular/angular/badge/issue?style=flat)](http://issuestats.com/github/angular/angular)
 [![npm version](https://badge.fury.io/js/%40angular%2Fcore.svg)](https://www.npmjs.com/@angular/core)
-
+[![codetally](https://img.shields.io/codetally/angular/angular.svg)](http://www.codetally.com/index.html#/angular/angular)
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/angular2-ci.svg)](https://saucelabs.com/u/angular2-ci)
 
