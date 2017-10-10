@@ -125,9 +125,7 @@ describe('MatSelect', () => {
           scrolled: () => scrolledSubject.asObservable()
         })}
       ]
-    });
-
-    TestBed.compileComponents();
+    }).compileComponents();
   }));
 
   beforeEach(inject([ViewportRuler], (_ruler: ViewportRuler) => {
@@ -1148,72 +1146,83 @@ describe('MatSelect', () => {
         formField.style.left = '20px';
       });
 
-      it('should align the first option with the trigger text if no option is selected', () => {
+      it('should align the first option with trigger text if no option is selected', async(() => {
         trigger.click();
         fixture.detectChanges();
 
         const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
-        // The panel should be scrolled to 0 because centering the option is not possible.
-        expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+        fixture.whenStable().then(() => {
+          // The panel should be scrolled to 0 because centering the option is not possible.
+          expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+          checkTriggerAlignedWithOption(0);
+        });
+      }));
 
-        checkTriggerAlignedWithOption(0);
-      });
+      it('should align a selected option too high to be centered with the trigger text',
+        async(() => {
+          // Select the second option, because it can't be scrolled any further downward
+          fixture.componentInstance.control.setValue('pizza-1');
+          fixture.detectChanges();
 
-      it('should align a selected option too high to be centered with the trigger text', () => {
-        // Select the second option, because it can't be scrolled any further downward
-        fixture.componentInstance.control.setValue('pizza-1');
-        fixture.detectChanges();
+          trigger.click();
+          fixture.detectChanges();
 
-        trigger.click();
-        fixture.detectChanges();
+          const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
-        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+          fixture.whenStable().then(() => {
+            // The panel should be scrolled to 0 because centering the option is not possible.
+            expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+            checkTriggerAlignedWithOption(1);
+          });
+        }));
 
-        // The panel should be scrolled to 0 because centering the option is not possible.
-        expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
-
-        checkTriggerAlignedWithOption(1);
-      });
-
-      it('should align a selected option in the middle with the trigger text', () => {
+      it('should align a selected option in the middle with the trigger text', async(() => {
         // Select the fifth option, which has enough space to scroll to the center
         fixture.componentInstance.control.setValue('chips-4');
         fixture.detectChanges();
 
-        trigger.click();
-        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          trigger.click();
+          fixture.detectChanges();
 
-        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+          const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
-        // The selected option should be scrolled to the center of the panel.
-        // This will be its original offset from the scrollTop - half the panel height + half the
-        // option height. 4 (index) * 48 (option height) = 192px offset from scrollTop
-        // 192 - 256/2 + 48/2 = 88px
-        expect(scrollContainer.scrollTop)
-            .toEqual(88, `Expected overlay panel to be scrolled to center the selected option.`);
+          fixture.whenStable().then(() => {
+            // The selected option should be scrolled to the center of the panel.
+            // This will be its original offset from the scrollTop - half the panel height + half
+            // the option height. 4 (index) * 48 (option height) = 192px offset from scrollTop
+            // 192 - 256/2 + 48/2 = 88px
+            expect(scrollContainer.scrollTop)
+              .toEqual(88, `Expected overlay panel to be scrolled to center the selected option.`);
 
-        checkTriggerAlignedWithOption(4);
-      });
+            checkTriggerAlignedWithOption(4);
+          });
+        });
+      }));
 
-      it('should align a selected option at the scroll max with the trigger text', () => {
+      it('should align a selected option at the scroll max with the trigger text', async(() => {
         // Select the last option in the list
         fixture.componentInstance.control.setValue('sushi-7');
         fixture.detectChanges();
 
-        trigger.click();
-        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          trigger.click();
+          fixture.detectChanges();
 
-        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+          const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
 
-        // The selected option should be scrolled to the max scroll position.
-        // This will be the height of the scrollContainer - the panel height.
-        // 8 options * 48px = 384 scrollContainer height, 384 - 256 = 128px max scroll
-        expect(scrollContainer.scrollTop)
-            .toEqual(128, `Expected overlay panel to be scrolled to its maximum position.`);
+          fixture.whenStable().then(() => {
+            // The selected option should be scrolled to the max scroll position.
+            // This will be the height of the scrollContainer - the panel height.
+            // 8 options * 48px = 384 scrollContainer height, 384 - 256 = 128px max scroll
+            expect(scrollContainer.scrollTop)
+                .toEqual(128, `Expected overlay panel to be scrolled to its maximum position.`);
 
-        checkTriggerAlignedWithOption(7);
-      });
+            checkTriggerAlignedWithOption(7);
+          });
+        });
+      }));
 
       it('should account for preceding label groups when aligning the option', async(() => {
         fixture.destroy();
@@ -1239,8 +1248,8 @@ describe('MatSelect', () => {
         fixture.whenStable().then(() => {
           // The selected option should be scrolled to the center of the panel.
           // This will be its original offset from the scrollTop - half the panel height + half the
-          // option height. 10 (option index + 3 group labels before it) * 48 (option height) =
-          // 480px. 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
+          // option height. 10 (option index + 3 group labels before it) * 48 (option height) = 480
+          // 480 (offset from scrollTop) - 256/2 + 48/2 = 376px
           expect(Math.floor(scrollContainer.scrollTop))
               .toBe(376, `Expected overlay panel to be scrolled to center the selected option.`);
 
@@ -1294,17 +1303,19 @@ describe('MatSelect', () => {
         fixture.componentInstance.control.setValue('chips-4');
         fixture.detectChanges();
 
-        trigger.click();
-        fixture.detectChanges();
-
-        const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
-
         fixture.whenStable().then(() => {
-          expect(Math.ceil(scrollContainer.scrollTop))
-              .toEqual(Math.ceil(idealScrollTop + 5),
-                  `Expected panel to adjust scroll position to fit in viewport.`);
+          trigger.click();
+          fixture.detectChanges();
 
-          checkTriggerAlignedWithOption(4);
+          const scrollContainer = document.querySelector('.cdk-overlay-pane .mat-select-panel')!;
+
+          fixture.whenStable().then(() => {
+            expect(Math.ceil(scrollContainer.scrollTop))
+                .toEqual(Math.ceil(idealScrollTop + 5),
+                    `Expected panel to adjust scroll position to fit in viewport.`);
+
+            checkTriggerAlignedWithOption(4);
+          });
         });
       }));
 
@@ -1376,7 +1387,7 @@ describe('MatSelect', () => {
         });
       }));
 
-      it('should fall back to "above" positioning if scroll adjustment will not help', () => {
+      it('should fall back to "above" positioning if scroll adjustment will not help', async(() => {
         // Push the select to a position with not enough space on the bottom to open
         formField.style.bottom = '56px';
         fixture.detectChanges();
@@ -1388,13 +1399,14 @@ describe('MatSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = document.querySelector('.cdk-overlay-pane')!;
-        const triggerBottom = trigger.getBoundingClientRect().bottom;
-        const overlayBottom = overlayPane.getBoundingClientRect().bottom;
-        const scrollContainer = overlayPane.querySelector('.mat-select-panel')!;
+        fixture.whenStable().then(() => {
+          const overlayPane = document.querySelector('.cdk-overlay-pane')!;
+          const triggerBottom = trigger.getBoundingClientRect().bottom;
+          const overlayBottom = overlayPane.getBoundingClientRect().bottom;
+          const scrollContainer = overlayPane.querySelector('.mat-select-panel')!;
 
-        // Expect no scroll to be attempted
-        expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
+          // Expect no scroll to be attempted
+          expect(scrollContainer.scrollTop).toEqual(0, `Expected panel not to be scrolled.`);
 
         const difference = Math.floor(overlayBottom) - Math.floor(triggerBottom);
 
@@ -1403,11 +1415,12 @@ describe('MatSelect', () => {
         expect(Math.abs(difference) < 2)
             .toEqual(true, `Expected trigger bottom to align with overlay bottom.`);
 
-        expect(fixture.componentInstance.select._transformOrigin)
-            .toContain(`bottom`, `Expected panel animation to originate at the bottom.`);
-      });
+          expect(fixture.componentInstance.select._transformOrigin)
+              .toContain(`bottom`, `Expected panel animation to originate at the bottom.`);
+        });
+      }));
 
-      it('should fall back to "below" positioning if scroll adjustment will not help', () => {
+      it('should fall back to "below" positioning if scroll adjustment won\'t help', async(() => {
         // Push the select to a position with not enough space on the top to open
         formField.style.top = '85px';
 
@@ -1415,23 +1428,27 @@ describe('MatSelect', () => {
         fixture.componentInstance.control.setValue('sushi-7');
         fixture.detectChanges();
 
-        trigger.click();
-        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          trigger.click();
+          fixture.detectChanges();
 
-        const overlayPane = document.querySelector('.cdk-overlay-pane')!;
-        const triggerTop = trigger.getBoundingClientRect().top;
-        const overlayTop = overlayPane.getBoundingClientRect().top;
-        const scrollContainer = overlayPane.querySelector('.mat-select-panel')!;
+          fixture.whenStable().then(() => {
+            const overlayPane = document.querySelector('.cdk-overlay-pane')!;
+            const triggerTop = trigger.getBoundingClientRect().top;
+            const overlayTop = overlayPane.getBoundingClientRect().top;
+            const scrollContainer = overlayPane.querySelector('.mat-select-panel')!;
 
-        // Expect scroll to remain at the max scroll position
-        expect(scrollContainer.scrollTop).toEqual(128, `Expected panel to be at max scroll.`);
+            // Expect scroll to remain at the max scroll position
+            expect(scrollContainer.scrollTop).toEqual(128, `Expected panel to be at max scroll.`);
 
-        expect(Math.floor(overlayTop))
-            .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
+            expect(Math.floor(overlayTop))
+                .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
 
-        expect(fixture.componentInstance.select._transformOrigin)
-            .toContain(`top`, `Expected panel animation to originate at the top.`);
-      });
+            expect(fixture.componentInstance.select._transformOrigin)
+                .toContain(`top`, `Expected panel animation to originate at the top.`);
+          });
+        });
+      }));
 
     });
 
@@ -1441,58 +1458,64 @@ describe('MatSelect', () => {
         formField.style.top = '200px';
       });
 
-      it('should stay within the viewport when overflowing on the left in ltr', fakeAsync(() => {
+      it('should stay within the viewport when overflowing on the left in ltr', async(() => {
         formField.style.left = '-100px';
         trigger.click();
-        tick(400);
         fixture.detectChanges();
 
-        const panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
+        fixture.whenStable().then(() => {
+          const panelLeft = document.querySelector('.mat-select-panel')!
+              .getBoundingClientRect().left;
 
-        expect(panelLeft).toBeGreaterThan(0,
-            `Expected select panel to be inside the viewport in ltr.`);
+          expect(panelLeft).toBeGreaterThan(0,
+              `Expected select panel to be inside the viewport in ltr.`);
+        });
       }));
 
-      it('should stay within the viewport when overflowing on the left in rtl', fakeAsync(() => {
+      it('should stay within the viewport when overflowing on the left in rtl', async(() => {
         dir.value = 'rtl';
         formField.style.left = '-100px';
         trigger.click();
-        tick(400);
         fixture.detectChanges();
 
-        const panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
+        fixture.whenStable().then(() => {
+          const panelLeft = document.querySelector('.mat-select-panel')!
+              .getBoundingClientRect().left;
 
-        expect(panelLeft).toBeGreaterThan(0,
-            `Expected select panel to be inside the viewport in rtl.`);
+          expect(panelLeft).toBeGreaterThan(0,
+              `Expected select panel to be inside the viewport in rtl.`);
+        });
       }));
 
-      it('should stay within the viewport when overflowing on the right in ltr', fakeAsync(() => {
+      it('should stay within the viewport when overflowing on the right in ltr', async(() => {
         formField.style.right = '-100px';
         trigger.click();
-        tick(400);
         fixture.detectChanges();
 
-        const viewportRect = viewportRuler.getViewportRect().right;
-        const panelRight = document.querySelector('.mat-select-panel')!
-            .getBoundingClientRect().right;
+        fixture.whenStable().then(() => {
+          const viewportRect = viewportRuler.getViewportRect().right;
+          const panelRight = document.querySelector('.mat-select-panel')!
+              .getBoundingClientRect().right;
 
-        expect(viewportRect - panelRight).toBeGreaterThan(0,
-            `Expected select panel to be inside the viewport in ltr.`);
+          expect(viewportRect - panelRight).toBeGreaterThan(0,
+              `Expected select panel to be inside the viewport in ltr.`);
+        });
       }));
 
-      it('should stay within the viewport when overflowing on the right in rtl', fakeAsync(() => {
+      it('should stay within the viewport when overflowing on the right in rtl', async(() => {
         dir.value = 'rtl';
         formField.style.right = '-100px';
         trigger.click();
-        tick(400);
         fixture.detectChanges();
 
-        const viewportRect = viewportRuler.getViewportRect().right;
-        const panelRight = document.querySelector('.mat-select-panel')!
-            .getBoundingClientRect().right;
+        fixture.whenStable().then(() => {
+          const viewportRect = viewportRuler.getViewportRect().right;
+          const panelRight = document.querySelector('.mat-select-panel')!
+              .getBoundingClientRect().right;
 
-        expect(viewportRect - panelRight).toBeGreaterThan(0,
-            `Expected select panel to be inside the viewport in rtl.`);
+          expect(viewportRect - panelRight).toBeGreaterThan(0,
+              `Expected select panel to be inside the viewport in rtl.`);
+        });
       }));
 
       it('should keep the position within the viewport on repeat openings', fakeAsync(() => {
@@ -1501,20 +1524,27 @@ describe('MatSelect', () => {
         fixture.detectChanges();
         tick(SELECT_OPEN_ANIMATION);
 
-        let panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
-        expect(panelLeft).toBeGreaterThan(0, `Expected select panel to be inside the viewport.`);
+        fixture.whenStable().then(() => {
+          let panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
 
-        fixture.componentInstance.select.close();
-        fixture.detectChanges();
-        tick(SELECT_CLOSE_ANIMATION);
+          expect(panelLeft).toBeGreaterThan(0, `Expected select panel to be inside the viewport.`);
 
-        trigger.click();
-        fixture.detectChanges();
-        tick(SELECT_OPEN_ANIMATION);
-        panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
+          fixture.componentInstance.select.close();
+          fixture.detectChanges();
 
-        expect(panelLeft).toBeGreaterThan(0,
-            `Expected select panel continue being inside the viewport.`);
+          fixture.whenStable().then(() => {
+            trigger.click();
+            fixture.detectChanges();
+
+            fixture.whenStable().then(() => {
+              panelLeft = document.querySelector('.mat-select-panel')!
+                .getBoundingClientRect().left;
+
+              expect(panelLeft).toBeGreaterThan(0,
+                  `Expected select panel continue being inside the viewport.`);
+            });
+          });
+        });
       }));
     });
 
@@ -1539,7 +1569,7 @@ describe('MatSelect', () => {
         formField.style.marginRight = '20px';
       });
 
-      it('should align the first option properly when scrolled', () => {
+      it('should align the first option properly when scrolled', async(() => {
         // Give the select enough space to open
         fixture.componentInstance.heightBelow = 400;
         fixture.detectChanges();
@@ -1547,13 +1577,24 @@ describe('MatSelect', () => {
         // Scroll the select into view
         setScrollTop(1700);
 
+        // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
+        // body causes karma's iframe for the test to stretch to fit that content once we attempt to
+        // scroll the page. Setting width / height / maxWidth / maxHeight on the iframe does not
+        // successfully constrain its size. As such, skip assertions in environments where the
+        // window size has changed since the start of the test.
+        if (window.innerHeight > startingWindowHeight) {
+          return;
+        }
+
         trigger.click();
         fixture.detectChanges();
 
-        checkTriggerAlignedWithOption(0);
-      });
+        fixture.whenStable().then(() => {
+          checkTriggerAlignedWithOption(0);
+        });
+      }));
 
-      it('should align a centered option properly when scrolled', () => {
+      it('should align a centered option properly when scrolled', async(() => {
         // Give the select enough space to open
         fixture.componentInstance.heightBelow = 400;
         fixture.detectChanges();
@@ -1561,32 +1602,50 @@ describe('MatSelect', () => {
         fixture.componentInstance.control.setValue('chips-4');
         fixture.detectChanges();
 
-        // Scroll the select into view
-        setScrollTop(1700);
+        fixture.whenStable().then(() => {
+          // Scroll the select into view
+          setScrollTop(1700);
 
-        trigger.click();
-        fixture.detectChanges();
+          // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
+          // body causes karma's iframe for the test to stretch to fit that content once we attempt
+          // to scroll the page. Setting width / height / maxWidth / maxHeight on the iframe does
+          // not successfully constrain its size. As such, skip assertions in environments where the
+          // window size has changed since the start of the test.
+          if (window.innerHeight > startingWindowHeight) {
+            return;
+          }
 
-        checkTriggerAlignedWithOption(4);
-      });
+          trigger.click();
+          fixture.detectChanges();
 
-      it('should align a centered option properly when scrolling while the panel is open', () => {
-        fixture.componentInstance.heightBelow = 400;
-        fixture.componentInstance.heightAbove = 400;
-        fixture.componentInstance.control.setValue('chips-4');
-        fixture.detectChanges();
+          fixture.whenStable().then(() => {
+            checkTriggerAlignedWithOption(4);
+          });
+        });
+      }));
 
-        trigger.click();
-        fixture.detectChanges();
+      it('should align a centered option properly when scrolling while the panel is open',
+        async(() => {
+          fixture.componentInstance.heightBelow = 400;
+          fixture.componentInstance.heightAbove = 400;
+          fixture.componentInstance.control.setValue('chips-4');
+          fixture.detectChanges();
 
-        setScrollTop(100);
-        scrolledSubject.next();
-        fixture.detectChanges();
+          fixture.whenStable().then(() => {
+            trigger.click();
+            fixture.detectChanges();
 
-        checkTriggerAlignedWithOption(4);
-      });
+            fixture.whenStable().then(() => {
+              setScrollTop(100);
+              scrolledSubject.next();
+              fixture.detectChanges();
 
-      it('should fall back to "above" positioning properly when scrolled', () => {
+              checkTriggerAlignedWithOption(4);
+            });
+          });
+        }));
+
+      it('should fall back to "above" positioning properly when scrolled', async(() => {
         // Give the select insufficient space to open below the trigger
         fixture.componentInstance.heightAbove = 0;
         fixture.componentInstance.heightBelow = 100;
@@ -1608,18 +1667,20 @@ describe('MatSelect', () => {
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
-        const triggerBottom = trigger.getBoundingClientRect().bottom;
-        const overlayBottom = overlayPane.getBoundingClientRect().bottom;
-        const difference = Math.floor(overlayBottom) - Math.floor(triggerBottom);
+        fixture.whenStable().then(() => {
+          const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+          const triggerBottom = trigger.getBoundingClientRect().bottom;
+          const overlayBottom = overlayPane.getBoundingClientRect().bottom;
+          const difference = Math.floor(overlayBottom) - Math.floor(triggerBottom);
 
-        // Check that the values are within a pixel of each other. This avoids sub-pixel
-        // deviations between OS and browser versions.
-        expect(Math.abs(difference) < 2)
-            .toEqual(true, `Expected trigger bottom to align with overlay bottom.`);
-      });
+          // Check that the values are within a pixel of each other. This avoids sub-pixel
+          // deviations between OS and browser versions.
+          expect(Math.abs(difference) < 2)
+              .toEqual(true, `Expected trigger bottom to align with overlay bottom.`);
+        });
+      }));
 
-      it('should fall back to "below" positioning properly when scrolled', () => {
+      it('should fall back to "below" positioning properly when scrolled', async(() => {
         // Give plenty of space for the select to open below the trigger
         fixture.componentInstance.heightBelow = 650;
         fixture.detectChanges();
@@ -1631,16 +1692,28 @@ describe('MatSelect', () => {
         // Scroll the select so that it has insufficient space to open above the trigger
         setScrollTop(1950);
 
+        // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
+        // body causes karma's iframe for the test to stretch to fit that content once we attempt to
+        // scroll the page. Setting width / height / maxWidth / maxHeight on the iframe does not
+        // successfully constrain its size. As such, skip assertions in environments where the
+        // window size has changed since the start of the test.
+        if (window.innerHeight > startingWindowHeight) {
+          return;
+        }
+
         trigger.click();
         fixture.detectChanges();
 
-        const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
-        const triggerTop = trigger.getBoundingClientRect().top;
-        const overlayTop = overlayPane.getBoundingClientRect().top;
+        fixture.whenStable().then(() => {
+          const overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
+          const triggerTop = trigger.getBoundingClientRect().top;
+          const overlayTop = overlayPane.getBoundingClientRect().top;
 
-        expect(Math.floor(overlayTop))
-            .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
-      });
+          expect(Math.floor(overlayTop))
+              .toEqual(Math.floor(triggerTop), `Expected trigger top to align with overlay top.`);
+        });
+      }));
+
     });
 
     describe('x-axis positioning', () => {
@@ -1649,38 +1722,39 @@ describe('MatSelect', () => {
         formField.style.left = '30px';
       });
 
-      it('should align the trigger and the selected option on the x-axis in ltr', fakeAsync(() => {
+      it('should align the trigger and the selected option on the x-axis in ltr', async(() => {
         trigger.click();
-        tick(400);
         fixture.detectChanges();
 
-        const triggerLeft = trigger.getBoundingClientRect().left;
-        const firstOptionLeft = document.querySelector('.cdk-overlay-pane mat-option')!
-            .getBoundingClientRect().left;
+        fixture.whenStable().then(() => {
+          const triggerLeft = trigger.getBoundingClientRect().left;
+          const firstOptionLeft = document.querySelector('.cdk-overlay-pane mat-option')!
+              .getBoundingClientRect().left;
 
-        // Each option is 32px wider than the trigger, so it must be adjusted 16px
-        // to ensure the text overlaps correctly.
-        expect(Math.floor(firstOptionLeft)).toEqual(Math.floor(triggerLeft - 16),
-            `Expected trigger to align with the selected option on the x-axis in LTR.`);
+          // Each option is 32px wider than the trigger, so it must be adjusted 16px
+          // to ensure the text overlaps correctly.
+          expect(Math.floor(firstOptionLeft)).toEqual(Math.floor(triggerLeft - 16),
+              `Expected trigger to align with the selected option on the x-axis in LTR.`);
+        });
       }));
 
-      it('should align the trigger and the selected option on the x-axis in rtl', fakeAsync(() => {
+      it('should align the trigger and the selected option on the x-axis in rtl', async(() => {
         dir.value = 'rtl';
         fixture.detectChanges();
 
         trigger.click();
-        tick(400);
         fixture.detectChanges();
+        fixture.whenStable().then(() => {
+          const triggerRight = trigger.getBoundingClientRect().right;
+          const firstOptionRight =
+              document.querySelector('.cdk-overlay-pane mat-option')!.getBoundingClientRect().right;
 
-        const triggerRight = trigger.getBoundingClientRect().right;
-        const firstOptionRight =
-            document.querySelector('.cdk-overlay-pane mat-option')!.getBoundingClientRect().right;
-
-        // Each option is 32px wider than the trigger, so it must be adjusted 16px
-        // to ensure the text overlaps correctly.
-        expect(Math.floor(firstOptionRight))
-            .toEqual(Math.floor(triggerRight + 16),
-                `Expected trigger to align with the selected option on the x-axis in RTL.`);
+          // Each option is 32px wider than the trigger, so it must be adjusted 16px
+          // to ensure the text overlaps correctly.
+          expect(Math.floor(firstOptionRight))
+              .toEqual(Math.floor(triggerRight + 16),
+                  `Expected trigger to align with the selected option on the x-axis in RTL.`);
+        });
       }));
     });
 
@@ -1714,20 +1788,21 @@ describe('MatSelect', () => {
         });
       }));
 
-      it('should adjust for the checkbox in rtl', fakeAsync(() => {
+      it('should adjust for the checkbox in rtl', async(() => {
         dir.value = 'rtl';
         trigger.click();
-        tick(400);
         multiFixture.detectChanges();
 
-        const triggerRight = trigger.getBoundingClientRect().right;
-        const firstOptionRight =
-            document.querySelector('.cdk-overlay-pane mat-option')!.getBoundingClientRect().right;
+        multiFixture.whenStable().then(() => {
+          const triggerRight = trigger.getBoundingClientRect().right;
+          const firstOptionRight =
+              document.querySelector('.cdk-overlay-pane mat-option')!.getBoundingClientRect().right;
 
-        // 44px accounts for the checkbox size, margin and the panel's padding.
-        expect(Math.floor(firstOptionRight))
+          // 44px accounts for the checkbox size, margin and the panel's padding.
+          expect(Math.floor(firstOptionRight))
             .toEqual(Math.floor(triggerRight + 44),
-                `Expected trigger label to align along x-axis, accounting for the checkbox.`);
+              `Expected trigger label to align along x-axis, accounting for the checkbox.`);
+        });
       }));
     });
 
@@ -1745,24 +1820,26 @@ describe('MatSelect', () => {
         formField.style.left = '60px';
       });
 
-      it('should adjust for the group padding in ltr', fakeAsync(() => {
+      it('should adjust for the group padding in ltr', async(() => {
         groupFixture.componentInstance.control.setValue('oddish-1');
         groupFixture.detectChanges();
 
         trigger.click();
         groupFixture.detectChanges();
 
-        const group = document.querySelector('.cdk-overlay-pane mat-optgroup')!;
-        const triggerLeft = trigger.getBoundingClientRect().left;
-        const selectedOptionLeft = group.querySelector('mat-option.mat-selected')!
-            .getBoundingClientRect().left;
+        groupFixture.whenStable().then(() => {
+          const group = document.querySelector('.cdk-overlay-pane mat-optgroup')!;
+          const triggerLeft = trigger.getBoundingClientRect().left;
+          const selectedOptionLeft = group.querySelector('mat-option.mat-selected')!
+              .getBoundingClientRect().left;
 
-        // 32px is the 16px default padding plus 16px of padding when an option is in a group.
-        expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 32),
-            `Expected trigger label to align along x-axis, accounting for the padding in ltr.`);
+          // 32px is the 16px default padding plus 16px of padding when an option is in a group.
+          expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 32),
+              `Expected trigger label to align along x-axis, accounting for the padding in ltr.`);
+        });
       }));
 
-      it('should adjust for the group padding in rtl', fakeAsync(() => {
+      it('should adjust for the group padding in rtl', async(() => {
         dir.value = 'rtl';
         groupFixture.componentInstance.control.setValue('oddish-1');
         groupFixture.detectChanges();
@@ -1770,30 +1847,34 @@ describe('MatSelect', () => {
         trigger.click();
         groupFixture.detectChanges();
 
-        const group = document.querySelector('.cdk-overlay-pane mat-optgroup')!;
-        const triggerRight = trigger.getBoundingClientRect().right;
-        const selectedOptionRight = group.querySelector('mat-option.mat-selected')!
-            .getBoundingClientRect().right;
+        groupFixture.whenStable().then(() => {
+          const group = document.querySelector('.cdk-overlay-pane mat-optgroup')!;
+          const triggerRight = trigger.getBoundingClientRect().right;
+          const selectedOptionRight = group.querySelector('mat-option.mat-selected')!
+              .getBoundingClientRect().right;
 
-        // 32px is the 16px default padding plus 16px of padding when an option is in a group.
-        expect(Math.floor(selectedOptionRight)).toEqual(Math.floor(triggerRight + 32),
-            `Expected trigger label to align along x-axis, accounting for the padding in rtl.`);
+          // 32px is the 16px default padding plus 16px of padding when an option is in a group.
+          expect(Math.floor(selectedOptionRight)).toEqual(Math.floor(triggerRight + 32),
+              `Expected trigger label to align along x-axis, accounting for the padding in rtl.`);
+        });
       }));
 
       it('should not adjust if all options are within a group, except the selected one',
-        fakeAsync(() => {
+        async(() => {
           groupFixture.componentInstance.control.setValue('mime-11');
           groupFixture.detectChanges();
 
           trigger.click();
           groupFixture.detectChanges();
 
-          const selected = document.querySelector('.cdk-overlay-pane mat-option.mat-selected')!;
-          const selectedOptionLeft = selected.getBoundingClientRect().left;
-          const triggerLeft = trigger.getBoundingClientRect().left;
+          fixture.whenStable().then(() => {
+            const selected = document.querySelector('.cdk-overlay-pane mat-option.mat-selected')!;
+            const selectedOptionLeft = selected.getBoundingClientRect().left;
+            const triggerLeft = trigger.getBoundingClientRect().left;
 
-          // 16px is the default option padding
-          expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 16));
+            // 16px is the default option padding
+            expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 16));
+          });
         }));
 
       it('should align the first option to the trigger, if nothing is selected', async(() => {

@@ -161,6 +161,11 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * allows one to re-align the panel without changing the orientation of the panel.
    */
   recalculateLastPosition(): void {
+    // If the overlay has never been positioned before, do nothing.
+    if (!this._lastConnectedPosition) {
+      return;
+    }
+
     const originRect = this._origin.getBoundingClientRect();
     const overlayRect = this._pane.getBoundingClientRect();
     const viewportRect = this._viewportRuler.getViewportRect();

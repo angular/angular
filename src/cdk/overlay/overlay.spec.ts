@@ -1,4 +1,4 @@
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {async, fakeAsync, tick, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {Component, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
 import {
   ComponentPortal,
@@ -107,7 +107,7 @@ describe('Overlay', () => {
     expect(overlayContainerElement.textContent).toBe('');
   });
 
-  it('should ensure that the most-recently-attached overlay is on top', () => {
+  it('should ensure that the most-recently-attached overlay is on top', (() => {
     let pizzaOverlayRef = overlay.create();
     let cakeOverlayRef = overlay.create();
 
@@ -130,7 +130,7 @@ describe('Overlay', () => {
         .toBeTruthy('Expected pizza to still be on the bottom.');
     expect(cakeOverlayRef.overlayElement.nextSibling)
         .toBeFalsy('Expected cake to still be on top.');
-  });
+  }));
 
   it('should set the direction', () => {
     const config = new OverlayConfig({direction: 'rtl'});
@@ -226,13 +226,15 @@ describe('Overlay', () => {
       config = new OverlayConfig();
     });
 
-    it('should apply the positioning strategy', () => {
+    it('should apply the positioning strategy', fakeAsync(() => {
       config.positionStrategy = new FakePositionStrategy();
 
       overlay.create(config).attach(componentPortal);
+      viewContainerFixture.detectChanges();
+      tick();
 
       expect(overlayContainerElement.querySelectorAll('.fake-positioned').length).toBe(1);
-    });
+    }));
   });
 
   describe('size', () => {
