@@ -324,7 +324,10 @@ class MockMessageEvent extends MockExtendableEvent {
 }
 
 class MockPushEvent extends MockExtendableEvent {
-  constructor(readonly data: Object) { super(); }
+  constructor(private _data: Object) { super(); }
+  data = {
+    json: () => this._data,
+  };
 }
 
 class MockInstallEvent extends MockExtendableEvent {}
