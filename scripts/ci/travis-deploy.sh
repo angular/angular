@@ -27,18 +27,25 @@ echo ""
 echo "Starting the deployment script. Running mode: ${DEPLOY_MODE}"
 echo ""
 
-if [[ "${DEPLOY_MODE}" == "build-artifacts" ]]; then
-  retryCall ${DEPLOY_RETRIES} ./scripts/deploy/publish-build-artifacts.sh
-fi
+# Deployment of the screenshot tool or dashboard should happen inside of a Cronjob.
+# For example, always deploying the screenshot functions on a per-commit base might cause problems
+# with the screenshot tests, because the functions can be non-responsive for a few seconds.
+if [[ "${TRAVIS_EVENT_TYPE}" == "cron" ]]; then
+  if [[ "${DEPLOY_MODE}" == "screenshot-tool" ]]; then
+    retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-screenshot-tool.sh
+  fi
 
-if [[ "${DEPLOY_MODE}" == "docs-content" ]]; then
-  retryCall ${DEPLOY_RETRIES} ./scripts/deploy/publish-docs-content.sh
-fi
+  if [[ "${DEPLOY_MODE}" == "dashboard" ]]; then
+    retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-dashboard.sh
+  fi
+# Deployment of the build artifacts and docs-content should only happen on a per-commit base.
+# The target is to provide build artifacts in the GitHub repository for every commit.
+else
+  if [[ "${DEPLOY_MODE}" == "build-artifacts" ]]; then
+    retryCall ${DEPLOY_RETRIES} ./scripts/deploy/publish-build-artifacts.sh
+  fi
 
-if [[ "${DEPLOY_MODE}" == "screenshot-tool" ]]; then
-  retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-screenshot-tool.sh
-fi
-
-if [[ "${DEPLOY_MODE}" == "dashboard" ]]; then
-  retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-dashboard.sh
+  if [[ "${DEPLOY_MODE}" == "docs-content" ]]; then
+    retryCall ${DEPLOY_RETRIES} ./scripts/deploy/publish-docs-content.sh
+  fi
 fi
