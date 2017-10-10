@@ -2171,8 +2171,7 @@ The optional `foo` route parameter is harmless and continues to be ignored.
 ### Adding animations to the routed component
 The heroes feature module is almost complete, but what is a feature without some smooth transitions?
 
-This section shows you how to add some [animations](guide/animations)
-to the `HeroDetailComponent`.
+This section shows you how to add some [animations](guide/animations) to the `HeroDetailComponent`.
 
 First import `BrowserAnimationsModule`:
 
@@ -2180,6 +2179,11 @@ First import `BrowserAnimationsModule`:
 
 </code-example>
 
+Next, add a `data` object to the routes for `HeroListComponent` and `HeroDetailComponent`. Transitions are based on `states` and you'll use the `animation` data from the route to provide a named animation `state` for the transitions.
+
+<code-example path="router/src/app/heroes/heroes-routing.module.2.ts" title="src/app/heroes/heroes-routing.module.ts (animation data)">
+
+</code-example>
 
 
 Create an `animations.ts` file in the root `src/app/` folder. The contents look like this:
@@ -2189,53 +2193,40 @@ Create an `animations.ts` file in the root `src/app/` folder. The contents look 
 </code-example>
 
 
-
 This file does the following:
 
 * Imports the animation symbols that build the animation triggers, control state, and manage transitions between states.
 
-* Exports a constant named `slideInDownAnimation` set to an animation trigger named *`routeAnimation`*;
-animated components will refer to this name.
+* Exports a constant named `slideInAnimation` set to an animation trigger named *`routeAnimation`*;
 
-* Specifies the _wildcard state_ , `*`, that matches any animation state that the route component is in.
+* Defines one *transition* when switching back and forth from the `heroes` and `hero` routes to ease the component in from the left of the screen as it enters the application view (`:enter`), the other to animate the component to the right as it leaves the application view (`:leave`).
 
-* Defines two *transitions*, one to ease the component in from the left of the screen as it enters the application view (`:enter`),
-the other to animate the component down as it leaves the application view (`:leave`).
+You could also create more transitions for other routes. This trigger is sufficient for the current milestone.
 
-You could create more triggers with different transitions for other route components. This trigger is sufficient for the current milestone.
+Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInDownAnimation` from `'./animations.ts`.
 
-
-Back in the `HeroDetailComponent`, import the `slideInDownAnimation` from `'./animations.ts`.
-Add the `HostBinding` decorator  to the imports from `@angular/core`; you'll need it in a moment.
-
-Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
-
-Then add three `@HostBinding` properties to the class to set the animation and styles for the route component's element.
-
-<code-example path="router/src/app/heroes/hero-detail.component.ts" linenums="false" title="src/app/heroes/hero-detail.component.ts (host bindings)" region="host-bindings">
+<code-example path="router/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (animation imports)" region="animation-imports">
 
 </code-example>
 
+In order to use the routable animations, you'll need to wrap the `RouterOutlet` inside an element. You'll
+use the `@routeAnimation` trigger and bind it to the element.
 
+For the `@routeAnimation` transitions to key off states, you'll need to provide it with the `data` from the `ActivatedRoute`. The `RouterOutlet` is exposed as an `outlet` template variable, so you bind a reference to the router outlet. A variable of `routerOutlet` is an ideal choice.
 
-The `'@routeAnimation'` passed to the first `@HostBinding` matches
-the name of the `slideInDownAnimation` _trigger_, `routeAnimation`.
-Set the `routeAnimation` property to `true` because you only care about the `:enter` and `:leave` states.
+Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
 
-The other two `@HostBinding` properties style the display and position of the component.
+<code-example path="router/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (router outlet)" region="template">
 
-The `HeroDetailComponent` will ease in from the left when routed to and will slide down when navigating away.
+</code-example>
 
+The `@routeAnimation` property is bound to the `getAnimationData` with the provided `routerOutlet` reference, so you'll need to define that function in the `AppComponent`. The `getAnimationData` function returns the animation property from the `data` provided through the `ActivatedRoute`. The `animation` property matches the `transition` names you used in the `slideDownAnimation` defined in `animations.ts`.
 
-<div class="alert is-helpful">
+<code-example path="router/src/app/app.component.2.ts" linenums="false" title="src/app/app.component.ts (router outlet)" region="function-binding">
 
+</code-example>
 
-
-Applying route animations to individual components works for a simple demo, but in a real life app,
-it is better to animate routes based on _route paths_.
-
-
-</div>
+When switching between the two routes, the `HeroDetailComponent` and `HeroListComponent` will ease in from the left when routed to and will slide to the right when navigating away.
 
 
 
@@ -2250,7 +2241,7 @@ You've learned how to do the following:
 * Navigate imperatively from one component to another.
 * Pass information along in route parameters and subscribe to them in the component.
 * Import the feature area NgModule into the `AppModule`.
-* Apply animations to the route component.
+* Applying routable animations based on the page.
 
 After these changes, the folder structure looks like this:
 
@@ -2355,7 +2346,7 @@ Here are the relevant files for this version of the sample application.
 
 <code-tabs>
 
-  <code-pane title="app.component.ts" path="router/src/app/app.component.1.ts">
+  <code-pane title="app.component.ts" path="router/src/app/app.component.2.ts">
 
   </code-pane>
 
@@ -2383,7 +2374,7 @@ Here are the relevant files for this version of the sample application.
 
   </code-pane>
 
-  <code-pane title="heroes-routing.module.ts" path="router/src/app/heroes/heroes-routing.module.1.ts">
+  <code-pane title="heroes-routing.module.ts" path="router/src/app/heroes/heroes-routing.module.2.ts">
 
   </code-pane>
 

@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable }                       from 'rxjs';
 import { switchMap }                        from 'rxjs/operators';
 
-import { slideInDownAnimation }   from '../animations';
 import { Crisis, CrisisService }  from './crisis.service';
 import { DialogService }          from '../dialog.service';
 
@@ -25,14 +24,9 @@ import { DialogService }          from '../dialog.service';
     </p>
   </div>
   `,
-  styles: ['input {width: 20em}'],
-  animations: [ slideInDownAnimation ]
+  styles: ['input {width: 20em}']
 })
 export class CrisisDetailComponent implements OnInit {
-  @HostBinding('@routeAnimation') routeAnimation = true;
-  @HostBinding('style.display')   display = 'block';
-  @HostBinding('style.position')  position = 'absolute';
-
   crisis: Crisis;
   editName: string;
 

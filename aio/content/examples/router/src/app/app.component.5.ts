@@ -12,7 +12,9 @@ import { Component } from '@angular/core';
       <a routerLink="/admin" routerLinkActive="active">Admin</a>
       <a [routerLink]="[{ outlets: { popup: ['compose'] } }]">Contact</a>
     </nav>
-    <router-outlet></router-outlet>
+    <div [@routeAnimation]="getAnimationData(routerOutlet)">
+      <router-outlet #routerOutlet="outlet"></router-outlet>
+    </div>
     <router-outlet name="popup"></router-outlet>
     `
   // #enddocregion template
