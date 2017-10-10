@@ -188,15 +188,26 @@ function compareScreenshotFile(fileName: string, database: Database, prNumber: s
 }
 
 /** Uploads golden screenshots to the Google Cloud Storage bucket for the screenshots. */
-function uploadGoldenScreenshots() {
+async function uploadGoldenScreenshots() {
   const bucket = openScreenshotsBucket();
+  const localScreenshots = getLocalScreenshotFiles(SCREENSHOT_DIR);
+  const storageGoldenFiles = (await bucket.getFiles({prefix: FIREBASE_STORAGE_GOLDENS}))[0];
 
-  return Promise.all(getLocalScreenshotFiles(SCREENSHOT_DIR).map(fileName => {
+  // Only delete golden images that are outdated to avoid collisions with other screenshot diffs.
+  // Deleting every golden screenshot may also work, but will likely cause flakiness if multiple
+  // screenshot tasks run.
+  const deleteOutdatedGoldenFiles = Promise.all(storageGoldenFiles
+    .filter((file: any) => !localScreenshots.includes(path.basename(file.name)))
+    .map((file: any) => file.delete()));
+
+  const uploadNewGoldenImages = Promise.all(localScreenshots.map(fileName => {
     const filePath = path.join(SCREENSHOT_DIR, fileName);
     const storageDestination = `${FIREBASE_STORAGE_GOLDENS}/${fileName}`;
 
     return bucket.upload(filePath, { destination: storageDestination });
   }));
+
+  await Promise.all([deleteOutdatedGoldenFiles, uploadNewGoldenImages]);
 }
 
 /**
