@@ -14,7 +14,9 @@ import { Component } from '@angular/core';
       // #enddocregion contact-link
     </nav>
     // #docregion outlets
-    <router-outlet></router-outlet>
+    <div [@routeAnimation]="getAnimationData(routerOutlet)">
+      <router-outlet #routerOutlet="outlet"></router-outlet>
+    </div>
     <router-outlet name="popup"></router-outlet>
     // #enddocregion outlets
     `
