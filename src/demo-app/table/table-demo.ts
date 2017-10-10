@@ -1,9 +1,10 @@
 import {Component, ViewChild} from '@angular/core';
 import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
-import {MatPaginator, MatSort} from '@angular/material';
+import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {DetailRow, PersonDetailDataSource} from './person-detail-data-source';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import {FormControl} from '@angular/forms';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 
@@ -27,24 +28,48 @@ const properties = ['id', 'name', 'progress', 'color'];
 export class TableDemo {
   dataSource: PersonDataSource | null;
   dataSourceWithDetails: PersonDetailDataSource | null;
+  matTableDataSource = new MatTableDataSource<UserData>();
   displayedColumns: UserProperties[] = [];
   trackByStrategy: TrackByStrategy = 'reference';
   changeReferences = false;
   highlights = new Set<string>();
   wasExpanded = new Set<UserData>();
 
+  filter = new FormControl();
+
   dynamicColumnDefs: any[] = [];
   dynamicColumnIds: string[] = [];
 
   expandedPerson: UserData;
 
-  @ViewChild(MatPaginator) _paginator: MatPaginator;
-
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
   isDetailRow = (row: DetailRow|UserData) => row.hasOwnProperty('detailRow');
 
-  constructor(public _peopleDatabase: PeopleDatabase) { }
+  @ViewChild('paginatorForDataSource') paginatorForDataSource: MatPaginator;
+  @ViewChild('sortForDataSource') sortForDataSource: MatSort;
+
+  constructor(public _peopleDatabase: PeopleDatabase) {
+    this.matTableDataSource.sortingDataAccessor = (data: UserData, property: string) => {
+      switch (property) {
+        case 'userId': return +data.id;
+        case 'userName': return data.name;
+        case 'progress': return +data.progress;
+        case 'color': return data.color;
+        default: return '';
+      }
+    };
+    this.matTableDataSource.filterTermAccessor = (data: UserData) => data.name;
+    this.filter.valueChanges.subscribe(filter => this.matTableDataSource!.filter = filter);
+  }
+
+  ngAfterViewInit() {
+    // Needs to be set up after the view is initialized since the data source will look at the sort
+    // and paginator's initial values to know what data should be rendered.
+    this.matTableDataSource!.paginator = this.paginatorForDataSource;
+    this.matTableDataSource!.sort = this.sortForDataSource;
+  }
 
   ngOnInit() {
     this.connect();
@@ -69,9 +94,10 @@ export class TableDemo {
   connect() {
     this.displayedColumns = ['userId', 'userName', 'progress', 'color'];
     this.dataSource = new PersonDataSource(this._peopleDatabase,
-        this._paginator, this.sort);
+        this.paginator, this.sort);
     this.dataSourceWithDetails = new PersonDetailDataSource(this.dataSource);
     this._peopleDatabase.initialize();
+    this.matTableDataSource!.data = this._peopleDatabase.data.slice();
   }
 
   disconnect() {

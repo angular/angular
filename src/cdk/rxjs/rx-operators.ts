@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Observable, ObservableInput} from 'rxjs/Observable';
+// Subscribable needs to be imported because combineLatest has or is using it, but it does not need
+// to be used in any of the explicit typings in this file.
+// tslint:disable-next-line:no-unused-variable
+import {Observable, ObservableInput, Subscribable} from 'rxjs/Observable';
 import {PartialObserver} from 'rxjs/Observer';
 import {Subscription} from 'rxjs/Subscription';
 import {IScheduler} from 'rxjs/Scheduler';
@@ -22,6 +25,7 @@ import {startWith as startWithOperator} from 'rxjs/operator/startWith';
 import {debounceTime as debounceTimeOperator} from 'rxjs/operator/debounceTime';
 import {auditTime as auditTimeOperator} from 'rxjs/operator/auditTime';
 import {takeUntil as takeUntilOperator} from 'rxjs/operator/takeUntil';
+import {combineLatest as combineLatestOperator} from 'rxjs/operator/combineLatest';
 import {delay as delayOperator} from 'rxjs/operator/delay';
 
 /**
@@ -38,16 +42,16 @@ import {delay as delayOperator} from 'rxjs/operator/delay';
  */
 export interface StrictRxChain<T> {
   call<R>(operator: mapOperatorType<T, R>,
-      project: (value: T, index: number) => R, thisArg?: any): StrictRxChain<R>;
+          project: (value: T, index: number) => R, thisArg?: any): StrictRxChain<R>;
 
   call<R>(operator: switchMapOperatorType<T, R>,
-      project: (value: T, index: number) => ObservableInput<R>): StrictRxChain<R>;
+          project: (value: T, index: number) => ObservableInput<R>): StrictRxChain<R>;
 
   call<R>(operator: catchOperatorType<T, R>,
-      selector: (err: any, caught: Observable<T>) => ObservableInput<R>): StrictRxChain<T | R>;
+          selector: (err: any, caught: Observable<T>) => ObservableInput<R>): StrictRxChain<T | R>;
 
   call(operator: filterOperatorType<T>,
-      predicate: (value: T, index: number) => boolean, thisArg?: any): StrictRxChain<T>;
+       predicate: (value: T, index: number) => boolean, thisArg?: any): StrictRxChain<T>;
 
   call(operator: shareOperatorType<T>): StrictRxChain<T>;
 
@@ -65,15 +69,18 @@ export interface StrictRxChain<T> {
   call(operator: startWithOperatorType<T>, ...args: any[]): StrictRxChain<T>;
 
   call(operator: debounceTimeOperatorType<T>, dueTime: number,
-      scheduler?: IScheduler): StrictRxChain<T>;
+       scheduler?: IScheduler): StrictRxChain<T>;
 
   call(operator: auditTimeOperatorType<T>, duration: number,
-      scheduler?: IScheduler): StrictRxChain<T>;
+       scheduler?: IScheduler): StrictRxChain<T>;
 
   call(operator: takeUntilOperatorType<T>, notifier: Observable<any>): StrictRxChain<T>;
 
+  call<T2>(operator: combineLatestOperatorType<T, T2>,
+           v2: ObservableInput<T2>): StrictRxChain<[T, T2]>;
+
   call(operator: delayOperatorType<T>, delay: number | Date, scheduler?: IScheduler):
-        StrictRxChain<T>;
+      StrictRxChain<T>;
 
   subscribe(fn: (t: T) => void): Subscription;
 
@@ -93,6 +100,7 @@ export class StartWithBrand { private _; }
 export class DebounceTimeBrand { private _; }
 export class AuditTimeBrand { private _; }
 export class TakeUntilBrand { private _; }
+export class CombineLatestBrand { private _; }
 export class DelayBrand { private _; }
 /* tslint:enable:no-unused-variable */
 
@@ -109,9 +117,10 @@ export type startWithOperatorType<T> = typeof startWithOperator & StartWithBrand
 export type debounceTimeOperatorType<T> = typeof debounceTimeOperator & DebounceTimeBrand;
 export type auditTimeOperatorType<T> = typeof auditTimeOperator & AuditTimeBrand;
 export type takeUntilOperatorType<T> = typeof takeUntilOperator & TakeUntilBrand;
+export type combineLatestOperatorType<T, R> = typeof combineLatestOperator & CombineLatestBrand;
 export type delayOperatorType<T> = typeof delayOperator & DelayBrand;
 
-// We add `Function` to the type intersection to make this nomically different from
+// We add `Function` to the type intersection to make this nominally different from
 // `finallyOperatorType` while still being structurally the same. Without this, TypeScript tries to
 // reduce `typeof _finallyOperator & FinallyBrand` to `finallyOperatorType<T>` and then fails
 // because `T` isn't known.
@@ -129,4 +138,6 @@ export const debounceTime =
     debounceTimeOperator as typeof debounceTimeOperator & DebounceTimeBrand & Function;
 export const auditTime = auditTimeOperator as typeof auditTimeOperator & AuditTimeBrand & Function;
 export const takeUntil = takeUntilOperator as typeof takeUntilOperator & TakeUntilBrand & Function;
+export const combineLatest =
+    combineLatestOperator as typeof combineLatestOperator & CombineLatestBrand & Function;
 export const delay = delayOperator as typeof delayOperator & DelayBrand & Function;

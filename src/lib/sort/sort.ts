@@ -29,7 +29,7 @@ export interface Sort {
 /** Container for MatSortables to manage the sort state and provide default sort parameters. */
 @Directive({
   selector: '[matSort]',
-  exportAs: 'matSort',
+  exportAs: 'matSort'
 })
 export class MatSort {
   /** Collection of all registered sortables that this directive manages. */

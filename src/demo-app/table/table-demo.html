@@ -59,24 +59,24 @@
   </div>
 
   <cdk-table #table matSort
-               [dataSource]="dataSource"
-               [trackBy]="userTrackBy">
+             [dataSource]="dataSource"
+             [trackBy]="userTrackBy">
 
     <!-- Column Definition: ID -->
     <ng-container cdkColumnDef="userId">
       <cdk-header-cell *cdkHeaderCellDef
                        mat-sort-header arrowPosition="before">
-          ID
-        </cdk-header-cell>
+        ID
+      </cdk-header-cell>
       <cdk-cell *cdkCellDef="let row"> {{row.id}} </cdk-cell>
     </ng-container>
 
     <!-- Column Definition: Progress -->
     <ng-container cdkColumnDef="progress">
       <cdk-header-cell *cdkHeaderCellDef
-                         mat-sort-header start="desc">
-          Progress
-        </cdk-header-cell>
+                       mat-sort-header start="desc">
+        Progress
+      </cdk-header-cell>
       <cdk-cell *cdkCellDef="let row">
         <div class="demo-progress-stat">{{row.progress}}%</div>
         <div class="demo-progress-indicator-container">
@@ -91,30 +91,30 @@
     <!-- Column Definition: Name -->
     <ng-container cdkColumnDef="userName">
       <cdk-header-cell *cdkHeaderCellDef mat-sort-header>
-          Name
-        </cdk-header-cell>
+        Name
+      </cdk-header-cell>
       <cdk-cell *cdkCellDef="let row"> {{row.name}} </cdk-cell>
     </ng-container>
 
     <!-- Column Definition: Color -->
     <ng-container cdkColumnDef="color">
       <cdk-header-cell *cdkHeaderCellDef
-                         mat-sort-header disableClear>
-          Color
-        </cdk-header-cell>
+                       mat-sort-header disableClear>
+        Color
+      </cdk-header-cell>
       <cdk-cell *cdkCellDef="let row" [style.color]="row.color"> {{row.color}} </cdk-cell>
     </ng-container>
 
     <cdk-header-row *cdkHeaderRowDef="displayedColumns"></cdk-header-row>
     <cdk-row *cdkRowDef="let row; columns: displayedColumns;
                            let first = first; let last = last; let even = even; let odd = odd"
-               [ngClass]="{
+             [ngClass]="{
                  'demo-row-highlight-first': highlights.has('first') && first,
                  'demo-row-highlight-last': highlights.has('last') && last,
                  'demo-row-highlight-even': highlights.has('even') && even,
                  'demo-row-highlight-odd': highlights.has('odd') && odd
                }">
-      </cdk-row>
+    </cdk-row>
   </cdk-table>
 </mat-card>
 
@@ -168,7 +168,7 @@
   <mat-paginator #paginator
                 [length]="_peopleDatabase.data.length"
                 [pageSize]="10"
-                [pageSizeOptions]="[5, 10, 25, 100]">
+                 [pageSizeOptions]="[5, 10, 25, 100]">
   </mat-paginator>
 </div>
 
@@ -200,13 +200,71 @@
 
     <mat-header-row *matHeaderRowDef="['userId', 'userName']"></mat-header-row>
     <mat-row *matRowDef="let row; columns: ['userId', 'userName'];"
-            matRipple
-            class="user-row"
-            [style.borderBottomColor]="expandedPerson == row ? 'transparent' : ''"
-            (click)="expandedPerson = row; wasExpanded.add(row)"></mat-row>
+             matRipple
+             class="user-row"
+             [style.borderBottomColor]="expandedPerson == row ? 'transparent' : ''"
+             (click)="expandedPerson = row; wasExpanded.add(row)"></mat-row>
     <mat-row *matRowDef="let row; columns: ['details']; when: isDetailRow"
-            [@detailExpand]="row.data == expandedPerson ? 'expanded' : 'collapsed'"
-            style="overflow: hidden">
+             [@detailExpand]="row.data == expandedPerson ? 'expanded' : 'collapsed'"
+             style="overflow: hidden">
     </mat-row>
   </mat-table>
 </mat-card>
+
+<h3>MatTable With MatTableDataSource Example</h3>
+
+<mat-form-field>
+  <input matInput [formControl]="filter">
+</mat-form-field>
+
+<div class="demo-table-container demo-mat-table-example mat-elevation-z4">
+
+  <table-header-demo (shiftColumns)="displayedColumns.push(displayedColumns.shift())"
+                     (toggleColorColumn)="toggleColorColumn()">
+  </table-header-demo>
+
+  <mat-table [dataSource]="matTableDataSource" [trackBy]="userTrackBy" matSort
+             #sortForDataSource="matSort">
+
+    <!-- Column Definition: ID -->
+    <ng-container cdkColumnDef="userId">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.id}} </mat-cell>
+    </ng-container>
+
+    <!-- Column Definition: Progress -->
+    <ng-container matColumnDef="progress">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Progress </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="demo-progress-stat">{{row.progress}}%</div>
+        <div class="demo-progress-indicator-container">
+          <div class="demo-progress-indicator"
+               [style.background]="row.progress > 50 ? 'green' : 'red'"
+               [style.opacity]="getOpacity(row.progress)"
+               [style.width.%]="row.progress"></div>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Column Definition: Name -->
+    <ng-container matColumnDef="userName">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+    </ng-container>
+
+    <!-- Column Definition: Color -->
+    <ng-container matColumnDef="color">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Color</mat-header-cell>
+      <mat-cell *matCellDef="let row" [style.color]="row.color"> {{row.color}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+  </mat-table>
+
+  <mat-paginator #paginatorForDataSource
+                 [length]="_peopleDatabase.data.length"
+                 [pageSizeOptions]="[10, 25, 100]">
+  </mat-paginator>
+</div>
