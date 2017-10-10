@@ -986,14 +986,30 @@ export class TransitionAnimationEngine {
     }
 
     const allPreviousPlayersMap = new Map<any, TransitionAnimationPlayer[]>();
-    let sortedParentElements: any[] = [];
+    // this map works to tell which element in the DOM tree is contained by
+    // which animation. Further down below this map will get populated once
+    // the players are built and in doing so it can efficiently figure out
+    // if a sub player is skipped due to a parent player having priority.
+    const animationElementMap = new Map<any, any>();
     queuedInstructions.forEach(entry => {
       const element = entry.element;
+      const instruction = entry.instruction;
+
       if (subTimelines.has(element)) {
-        sortedParentElements.unshift(element);
+        animationElementMap.set(element, element);
         this._beforeAnimationBuild(
             entry.player.namespaceId, entry.instruction, allPreviousPlayersMap);
       }
+
+      // whether skipped or blocked by the parent animation, the
+      // element needs to have the animating classname to be apart
+      // of it and to have the correct state-based styling once ready
+      addClass(element, NG_ANIMATING_CLASSNAME);
+      eraseStyles(element, instruction.fromStyles);
+      entry.player.onDestroy(() => {
+        removeClass(element, NG_ANIMATING_CLASSNAME);
+        setStyles(element, instruction.toStyles);
+      });
     });
 
     skippedPlayers.forEach(player => {
@@ -1041,8 +1057,10 @@ export class TransitionAnimationEngine {
 
     const rootPlayers: TransitionAnimationPlayer[] = [];
     const subPlayers: TransitionAnimationPlayer[] = [];
+    const NO_PARENT_ANIMATION_ELEMENT_DETECTED = {};
     queuedInstructions.forEach(entry => {
       const {element, player, instruction} = entry;
+
       // this means that it was never consumed by a parent animation which
       // means that it is independent and therefore should be set for animation
       if (subTimelines.has(element)) {
@@ -1051,33 +1069,41 @@ export class TransitionAnimationEngine {
           return;
         }
 
-        const innerPlayer = this._buildAnimation(
-            player.namespaceId, instruction, allPreviousPlayersMap, skippedPlayersMap, preStylesMap,
-            postStylesMap);
-        player.setRealPlayer(innerPlayer);
-
-        let parentHasPriority: any = null;
-        for (let i = 0; i < sortedParentElements.length; i++) {
-          const parent = sortedParentElements[i];
-          if (parent === element) break;
-          if (this.driver.containsElement(parent, element)) {
-            parentHasPriority = parent;
-            break;
+        // this will flow up the DOM and query the map to figure out
+        // if a parent animation has priority over it. In the situation
+        // that a parent is detected then it will cancel the loop. If
+        // nothing is detected, or it takes a few hops to find a parent,
+        // then it will fill in the missing nodes and signal them as having
+        // a detected parent (or a NO_PARENT value via a special constant).
+        let parentWithAnimation: any = NO_PARENT_ANIMATION_ELEMENT_DETECTED;
+        if (animationElementMap.size > 1) {
+          let elm = element;
+          const parentsToAdd: any[] = [];
+          while (elm = elm.parentNode) {
+            const detectedParent = animationElementMap.get(elm);
+            if (detectedParent) {
+              parentWithAnimation = detectedParent;
+              break;
+            }
+            parentsToAdd.push(elm);
           }
+          parentsToAdd.forEach(parent => animationElementMap.set(parent, parentWithAnimation));
         }
 
-        if (parentHasPriority) {
-          const parentPlayers = this.playersByElement.get(parentHasPriority);
+        // only build the animation if it is allowed by the parent
+        if (parentWithAnimation === NO_PARENT_ANIMATION_ELEMENT_DETECTED) {
+          const innerPlayer = this._buildAnimation(player.namespaceId, instruction, allPreviousPlayersMap, skippedPlayersMap, preStylesMap,
+            postStylesMap);
+          player.setRealPlayer(innerPlayer);
+          rootPlayers.push(player);
+        } else {
+          const parentPlayers = this.playersByElement.get(parentWithAnimation);
           if (parentPlayers && parentPlayers.length) {
             player.parentPlayer = optimizeGroupPlayer(parentPlayers);
           }
           skippedPlayers.push(player);
-        } else {
-          rootPlayers.push(player);
         }
       } else {
-        eraseStyles(element, instruction.fromStyles);
-        player.onDestroy(() => setStyles(element, instruction.toStyles));
         // there still might be a ancestor player animating this
         // element therefore we will still add it as a sub player
         // even if its animation may be disabled
@@ -1101,10 +1127,13 @@ export class TransitionAnimationEngine {
 
     // the reason why we don't actually play the animation is
     // because all that a skipped player is designed to do is to
-    // fire the start/done transition callback events
+    // fire the start/done transition callback events. In order to
+    // make these events match up to the animation we need to
+    // synchronize them alongside the parent player (if detected)
     skippedPlayers.forEach(player => {
-      if (player.parentPlayer) {
-        player.parentPlayer.onDestroy(() => player.destroy());
+      const parent = player.parentPlayer;
+      if (parent) {
+        player.syncPlayerEvents(parent);
       } else {
         player.destroy();
       }
@@ -1285,6 +1314,7 @@ export class TransitionAnimationEngine {
       const keyframes = normalizeKeyframes(
           this.driver, this._normalizer, element, timelineInstruction.keyframes, preStyles,
           postStyles);
+
       const player = this._buildPlayer(timelineInstruction, keyframes, previousPlayers);
 
       // this means that this particular player belongs to a sub trigger. It is
@@ -1307,8 +1337,9 @@ export class TransitionAnimationEngine {
       player.onDone(() => deleteOrUnsetInMap(this.playersByQueriedElement, player.element, player));
     });
 
-    allConsumedElements.forEach(element => addClass(element, NG_ANIMATING_CLASSNAME));
     const player = optimizeGroupPlayer(allNewPlayers);
+    allConsumedElements.forEach(element => addClass(element, NG_ANIMATING_CLASSNAME));
+
     player.onDestroy(() => {
       allConsumedElements.forEach(element => removeClass(element, NG_ANIMATING_CLASSNAME));
       setStyles(rootElement, instruction.toStyles);
@@ -1353,14 +1384,29 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
 
   setRealPlayer(player: AnimationPlayer) {
     if (this._containsRealPlayer) return;
-
     this._player = player;
+    this._containsRealPlayer = true;
+
     Object.keys(this._queuedCallbacks).forEach(phase => {
       this._queuedCallbacks[phase].forEach(
           callback => listenOnPlayer(player, phase, undefined, callback));
     });
     this._queuedCallbacks = {};
-    this._containsRealPlayer = true;
+  }
+
+  syncPlayerEvents(player: AnimationPlayer) {
+    if (this._containsRealPlayer) {
+      throw new Error('Cannot match against player when a real player has already been set');
+    }
+
+    // by playing and pausing the inner noop player we can ensure that it won't finish
+    // until it is signalled to finish by the player that is being matched.
+    player.onStart(() => {
+      this._player.play()
+      this._player.pause();
+    });
+    player.onDone(() => this.finish());
+    player.onDestroy(() => this.destroy());
   }
 
   getRealPlayer() { return this._player; }

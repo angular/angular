@@ -28,6 +28,26 @@ export function main() {
          expect(log).toEqual(['started', 'done']);
        }));
 
+    it('should not finish after the next microtask if paused', fakeAsync(() => {
+         const log: string[] = [];
+
+         const player = new NoopAnimationPlayer();
+         player.onStart(() => log.push('started'));
+         player.onDone(() => log.push('done'));
+         flushMicrotasks();
+
+         expect(log).toEqual([]);
+         player.play();
+         player.pause();
+         expect(log).toEqual(['started']);
+
+         flushMicrotasks();
+         expect(log).toEqual(['started']);
+
+         player.finish();
+         expect(log).toEqual(['started', 'done']);
+       }));
+
     it('should fire all callbacks when destroyed', () => {
       const log: string[] = [];
 
