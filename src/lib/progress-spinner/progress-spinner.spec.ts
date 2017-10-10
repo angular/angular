@@ -103,12 +103,15 @@ describe('MatProgressSpinner', () => {
   it('should allow a custom stroke width', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);
     const circleElement = fixture.nativeElement.querySelector('circle');
+    const svgElement = fixture.nativeElement.querySelector('svg');
 
     fixture.componentInstance.strokeWidth = 40;
     fixture.detectChanges();
 
     expect(parseInt(circleElement.style.strokeWidth))
       .toBe(40, 'Expected the custom stroke width to be applied to the circle element.');
+    expect(svgElement.getAttribute('viewBox'))
+      .toBe('0 0 130 130', 'Expected the viewBox to be adjusted based on the stroke width.');
   });
 
   it('should expand the host element if the stroke width is greater than the default', () => {
