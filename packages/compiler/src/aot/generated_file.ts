@@ -14,7 +14,7 @@ export class GeneratedFile {
   public stmts: Statement[]|null;
 
   constructor(
-      public srcFileUrl: string, public genFileUrl: string, sourceOrStmts: string|Statement[]) {
+      public srcFileName: string, public genFileName: string, sourceOrStmts: string|Statement[]) {
     if (typeof sourceOrStmts === 'string') {
       this.source = sourceOrStmts;
       this.stmts = null;
@@ -25,7 +25,7 @@ export class GeneratedFile {
   }
 
   isEquivalent(other: GeneratedFile): boolean {
-    if (this.genFileUrl !== other.genFileUrl) {
+    if (this.genFileName !== other.genFileName) {
       return false;
     }
     if (this.source) {
@@ -42,7 +42,7 @@ export class GeneratedFile {
 
 export function toTypeScript(file: GeneratedFile, preamble: string = ''): string {
   if (!file.stmts) {
-    throw new Error(`Illegal state: No stmts present on GeneratedFile ${file.genFileUrl}`);
+    throw new Error(`Illegal state: No stmts present on GeneratedFile ${file.genFileName}`);
   }
-  return new TypeScriptEmitter().emitStatements(file.genFileUrl, file.stmts, preamble);
+  return new TypeScriptEmitter().emitStatements(file.genFileName, file.stmts, preamble);
 }

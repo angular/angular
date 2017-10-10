@@ -27,6 +27,6 @@ describe('regressions', () => {
     const {genFiles} = compile(
         [rootDir, angularFiles], {postCompile: expectNoDiagnostics},
         {noUnusedLocals: true, noUnusedParameters: true});
-    expect(genFiles.find((f) => f.genFileUrl === '/app/app.module.ngfactory.ts')).toBeTruthy();
+    expect(genFiles.find((f) => f.genFileName === '/app/app.module.ngfactory.ts')).toBeTruthy();
   });
 });

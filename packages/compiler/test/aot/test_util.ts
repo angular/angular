@@ -658,10 +658,10 @@ export function compile(
   const genFiles = compiler.emitAllImpls(analyzedModules);
   genFiles.forEach((file) => {
     const source = file.source || toTypeScript(file);
-    if (isSource(file.genFileUrl)) {
-      host.addScript(file.genFileUrl, source);
+    if (isSource(file.genFileName)) {
+      host.addScript(file.genFileName, source);
     } else {
-      host.override(file.genFileUrl, source);
+      host.override(file.genFileName, source);
     }
   });
   const newProgram = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
@@ -671,7 +671,7 @@ export function compile(
   }
   let outDir: MockDirectory = {};
   if (emit) {
-    const dtsFilesWithGenFiles = new Set<string>(genFiles.map(gf => gf.srcFileUrl).filter(isDts));
+    const dtsFilesWithGenFiles = new Set<string>(genFiles.map(gf => gf.srcFileName).filter(isDts));
     outDir =
         arrayToMockDir(toMockFileArray([host.writtenFiles, host.overrides])
                            .filter((entry) => !isSource(entry.fileName))

@@ -8,11 +8,13 @@
 // TODO(tbosch): figure out why we need this as it breaks node code within ngc-wrapped
 /// <reference types="node" />
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
 import * as ts from 'typescript';
+
+import {emitWithCache, getCachedGeneratedFile} from './emit_cache';
 
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const NGC_GEN_FILES = /^(.*?)\.(ngfactory|ngsummary|ngstyle|shim\.ngstyle)(.*)$/;
@@ -74,23 +76,32 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
 }
 
 export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true, compilerOpts,
-                         tsHost, bazelOpts, files, inputs, expectedOuts, gatherDiagnostics}: {
+                         tsHost, bazelOpts, files, inputs, expectedOuts,
+                         gatherDiagnostics = defaultGatherDiagnostics}: {
   allowNonHermeticReads: boolean,
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
   bazelOpts: BazelOptions,
   files: string[],
-  expectedOuts: string[], gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics
+  expectedOuts: string[],
+  gatherDiagnostics?: (program: ng.Program, inputsToCheck: ts.SourceFile[],
+                       genFilesToCheck: ng.GeneratedFile[]) => ng.Diagnostics
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
   let fileLoader: FileLoader;
+  const oldFiles = new Map<string, ts.SourceFile>();
 
   if (inputs) {
     fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
     for (const key of Object.keys(inputs)) {
-      resolvedInputs[path.resolve(key)] = inputs[key];
+      const resolvedKey = path.resolve(key);
+      resolvedInputs[resolvedKey] = inputs[key];
+      const cachedSf = fileCache.getCache(resolvedKey);
+      if (cachedSf) {
+        oldFiles.set(resolvedKey, cachedSf);
+      }
     }
     fileCache.updateCache(resolvedInputs);
   } else {
@@ -178,40 +189,56 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
         path.resolve(bazelBin, fileName) + '.d.ts';
   }
 
-  const emitCallback: ng.TsEmitCallback = ({
-    program,
-    targetSourceFile,
-    writeFile,
-    cancellationToken,
-    emitOnlyDtsFiles,
-    customTransformers = {},
-  }) =>
-      tsickle.emitWithTsickle(
-          program, bazelHost, bazelHost, compilerOpts, targetSourceFile, writeFile,
-          cancellationToken, emitOnlyDtsFiles, {
-            beforeTs: customTransformers.before,
-            afterTs: [
-              ...(customTransformers.after || []),
-              fixUmdModuleDeclarations((sf: ts.SourceFile) => bazelHost.amdModuleName(sf)),
-            ],
-          });
+  const oldProgram = {
+    getSourceFile: (fileName: string) => { return oldFiles.get(fileName); },
+    getGeneratedFile: (srcFileName: string, genFileName: string) => {
+      const sf = oldFiles.get(srcFileName);
+      return sf ? getCachedGeneratedFile(sf, genFileName) : undefined;
+    },
+  };
+  const program =
+      ng.createProgram({rootNames: files, host: ngHost, options: compilerOpts, oldProgram});
+  let inputsChanged = files.some(fileName => program.hasChanged(fileName));
 
-  if (!gatherDiagnostics) {
-    gatherDiagnostics = (program) =>
-        gatherDiagnosticsForInputsOnly(compilerOpts, bazelOpts, program);
+  let genFilesToCheck: ng.GeneratedFile[];
+  let inputsToCheck: ts.SourceFile[];
+  if (inputsChanged) {
+    // if an input file changed, we need to type check all
+    // of our compilation sources as well as all generated files.
+    inputsToCheck = bazelOpts.compilationTargetSrc.map(
+        fileName => program.getTsProgram().getSourceFile(fileName));
+    genFilesToCheck = program.getGeneratedFiles().filter(gf => gf.genFileName.endsWith('.ts'));
+  } else {
+    // if no input file changed, only type check the changed generated files
+    // as these don't influence each other nor the type check of the input files.
+    inputsToCheck = [];
+    genFilesToCheck = program.getGeneratedFiles().filter(
+        gf => program.hasChanged(gf.genFileName) && gf.genFileName.endsWith('.ts'));
   }
-  const {diagnostics, emitResult, program} = ng.performCompilation(
-      {rootNames: files, options: compilerOpts, host: ngHost, emitCallback, gatherDiagnostics});
-  const tsickleEmitResult = emitResult as tsickle.EmitResult;
+
+  debug(
+      `TypeChecking ${inputsToCheck ? inputsToCheck.length : 'all'} inputs and ${genFilesToCheck ? genFilesToCheck.length : 'all'} generated files`);
+  const diagnostics = [...gatherDiagnostics(program !, inputsToCheck, genFilesToCheck)];
+  let emitResult: tsickle.EmitResult|undefined;
+  if (!diagnostics.length) {
+    const targetFileNames = [...bazelOpts.compilationTargetSrc];
+    for (const genFile of program.getGeneratedFiles()) {
+      if (genFile.genFileName.endsWith('.ts')) {
+        targetFileNames.push(genFile.genFileName);
+      }
+    }
+    emitResult = emitWithCache(program, inputsChanged, targetFileNames, compilerOpts, bazelHost);
+    diagnostics.push(...emitResult.diagnostics);
+  }
   let externs = '/** @externs */\n';
   if (diagnostics.length) {
     console.error(ng.formatDiagnostics(compilerOpts, diagnostics));
-  } else {
+  } else if (emitResult) {
     if (bazelOpts.tsickleGenerateExterns) {
-      externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs);
+      externs += tsickle.getGeneratedExterns(emitResult.externs);
     }
     if (bazelOpts.manifest) {
-      const manifest = constructManifest(tsickleEmitResult.modulesManifest, bazelHost);
+      const manifest = constructManifest(emitResult.modulesManifest, bazelHost);
       fs.writeFileSync(bazelOpts.manifest, manifest);
     }
   }
@@ -230,14 +257,9 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   return {program, diagnostics};
 }
 
-function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolean {
-  return !NGC_GEN_FILES.test(sf.fileName) &&
-      (bazelOpts.compilationTargetSrc.indexOf(sf.fileName) !== -1);
-}
-
-function gatherDiagnosticsForInputsOnly(
-    options: ng.CompilerOptions, bazelOpts: BazelOptions,
-    ngProgram: ng.Program): (ng.Diagnostic | ts.Diagnostic)[] {
+function defaultGatherDiagnostics(
+    ngProgram: ng.Program, inputsToCheck: ts.SourceFile[],
+    genFilesToCheck: ng.GeneratedFile[]): (ng.Diagnostic | ts.Diagnostic)[] {
   const tsProgram = ngProgram.getTsProgram();
   const diagnostics: (ng.Diagnostic | ts.Diagnostic)[] = [];
   // These checks mirror ts.getPreEmitDiagnostics, with the important
@@ -245,7 +267,7 @@ function gatherDiagnosticsForInputsOnly(
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.
   diagnostics.push(...tsProgram.getOptionsDiagnostics());
   diagnostics.push(...tsProgram.getGlobalDiagnostics());
-  for (const sf of tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f))) {
+  for (const sf of inputsToCheck) {
     // Note: We only get the diagnostics for individual files
     // to e.g. not check libraries.
     diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));
@@ -255,7 +277,9 @@ function gatherDiagnosticsForInputsOnly(
     // only gather the angular diagnostics if we have no diagnostics
     // in any other files.
     diagnostics.push(...ngProgram.getNgStructuralDiagnostics());
-    diagnostics.push(...ngProgram.getNgSemanticDiagnostics());
+    for (const genFile of genFilesToCheck) {
+      diagnostics.push(...ngProgram.getNgSemanticDiagnostics(genFile));
+    }
   }
   return diagnostics;
 }
