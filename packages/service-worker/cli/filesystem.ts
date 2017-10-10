@@ -21,12 +21,13 @@ export class NodeFilesystem implements Filesystem {
     const entries = fs.readdirSync(dir).map(
         (entry: string) => ({entry, stats: fs.statSync(path.join(dir, entry))}));
     const files = entries.filter((entry: any) => !entry.stats.isDirectory())
-                      .map((entry: any) => path.join(_path, entry.entry));
+                      .map((entry: any) => path.posix.join(_path, entry.entry));
 
     return entries.filter((entry: any) => entry.stats.isDirectory())
-        .map((entry: any) => path.join(_path, entry.entry))
+        .map((entry: any) => path.posix.join(_path, entry.entry))
         .reduce(
-            async(list: string[], subdir: string) => (await list).concat(await this.list(subdir)),
+            async(list: Promise<string[]>, subdir: string) =>
+                (await list).concat(await this.list(subdir)),
             Promise.resolve(files));
   }
 
@@ -46,5 +47,5 @@ export class NodeFilesystem implements Filesystem {
     fs.writeFileSync(file, contents);
   }
 
-  private canonical(_path: string): string { return path.join(this.base, _path); }
+  private canonical(_path: string): string { return path.posix.join(this.base, _path); }
 }
