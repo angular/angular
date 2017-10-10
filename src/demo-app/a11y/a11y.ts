@@ -1,5 +1,6 @@
-import {Component, ElementRef, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   moduleId: module.id,
@@ -16,8 +17,12 @@ export class AccessibilityHome {}
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class AccessibilityDemo {
+export class AccessibilityDemo implements OnDestroy {
   currentComponent: string = '';
+
+  fullscreen = false;
+
+  private _routerSubscription = Subscription.EMPTY;
 
   @ViewChild('maincontent') mainContent: ElementRef;
   @ViewChild('header') sectionHeader: ElementRef;
@@ -25,8 +30,8 @@ export class AccessibilityDemo {
   navItems = [
     {name: 'Home', route: '.'},
     {name: 'Autocomplete', route: 'autocomplete'},
-    {name: 'Button', route: 'button'},
     {name: 'Button toggle', route: 'button-toggle'},
+    {name: 'Button', route: 'button'},
     {name: 'Card', route: 'card'},
     {name: 'Checkbox', route: 'checkbox'},
     {name: 'Chips', route: 'chips'},
@@ -40,26 +45,39 @@ export class AccessibilityDemo {
     {name: 'Progress bar', route: 'progress-bar'},
     {name: 'Progress spinner', route: 'progress-spinner'},
     {name: 'Radio buttons', route: 'radio'},
-    {name: 'Slider', route: 'slider'},
-    {name: 'Slide toggle', route: 'slide-toggle'},
-    {name: 'Snack bar', route: 'snack-bar'},
     {name: 'Select', route: 'select'},
+    {name: 'Sidenav', route: 'sidenav'},
+    {name: 'Slide toggle', route: 'slide-toggle'},
+    {name: 'Slider', route: 'slider'},
+    {name: 'Snack bar', route: 'snack-bar'},
     {name: 'Tabs', route: 'tabs'},
     {name: 'Toolbar', route: 'toolbar'},
     {name: 'Tooltip', route: 'tooltip'},
   ];
 
   constructor(router: Router) {
-    router.events.subscribe(event => {
-      let nav = this.navItems.find(navItem => {
-        let fragments = (event as NavigationEnd).url.split('/');
-        return fragments[fragments.length - 1] === navItem.route;
-      });
-      this.currentComponent = nav ? nav.name : '';
+    this._routerSubscription = router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) {
+        let fragments = e.url.split('/');
+        let nav = this.navItems.find(navItem => {
+          return fragments[fragments.length - 1] === navItem.route;
+        });
+        this.currentComponent = nav ? nav.name : '';
+
+        let routerState = router.routerState.root;
+        while (routerState.children.length) {
+          routerState = routerState.children[0];
+        }
+        this.fullscreen = !!routerState.snapshot.data.fullscreen;
+      }
     });
   }
 
   skipNavigation() {
     (this.currentComponent ? this.sectionHeader : this.mainContent).nativeElement.focus();
+  }
+
+  ngOnDestroy() {
+    this._routerSubscription.unsubscribe();
   }
 }

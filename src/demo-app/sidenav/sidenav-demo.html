@@ -6,7 +6,7 @@
   <mat-toolbar *ngIf="showHeader && !coverHeader">Header</mat-toolbar>
   <mat-sidenav-container>
     <mat-sidenav #start (open)="myinput.focus()" [mode]="mode"
-                [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
+                 [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
       Start Side Sidenav
       <br>
       <button mat-button (click)="start.close()">Close</button>
@@ -21,7 +21,7 @@
     </mat-sidenav>
 
     <mat-sidenav #end position="end"
-                [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
+                 [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
       End Side Sidenav
       <br>
       <button mat-button (click)="end.close()">Close</button>

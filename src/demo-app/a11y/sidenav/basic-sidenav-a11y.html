@@ -1,0 +1,24 @@
+<mat-toolbar color="primary" role="header" aria-label="Basic sidenav app">
+  <button mat-icon-button aria-label="Navigation menu" (click)="snav.toggle()">
+    <mat-icon aria-hidden="true">menu</mat-icon>
+  </button>
+  <h1 class="a11y-demo-sidenav-app-name">Basic Sidenav App</h1>
+</mat-toolbar>
+
+<mat-sidenav-container class="a11y-demo-sidenav-container">
+  <mat-sidenav #snav mode="side" role="navigation">
+    <mat-nav-list>
+      <a mat-list-item routerLink="..">Home</a>
+      <a mat-list-item routerLink="../basic">Basic sidenav example</a>
+      <a mat-list-item routerLink="../mobile">Responsive sidenav example</a>
+      <a mat-list-item routerLink="../dual">Dual sidenavs example</a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content role="region">
+    <button mat-raised-button aria-label="Close basic sidenav example" color="primary"
+            class="a11y-demo-sidenav-close" routerLink="..">
+      Close example
+    </button>
+  </mat-sidenav-content>
+</mat-sidenav-container>
