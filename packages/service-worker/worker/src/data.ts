@@ -370,8 +370,7 @@ export class DataGroup {
     }
 
     // The request completed in time, so cache it inline with the response flow.
-    // Make sure to clone it so the real response can still be returned to the user.
-    await this.cacheResponse(req, res.clone(), lru);
+    await this.cacheResponse(req, res, lru);
     return res;
   }
 
@@ -409,7 +408,7 @@ export class DataGroup {
 
     // No response in the cache. No choice but to fall back on the full network fetch.
     res = await networkFetch;
-    await this.cacheResponse(req, res.clone(), lru, true);
+    await this.cacheResponse(req, res, lru, true);
     return res;
   }
 
@@ -517,8 +516,9 @@ export class DataGroup {
     // until enough other resources are requested that it falls off the end of the LRU chain.
     lru.accessed(req.url);
 
-    // Store the response in the cache.
-    await(await this.cache).put(req, res);
+    // Store the response in the cache (cloning because the browser will consume
+    // the body during the caching operation).
+    await(await this.cache).put(req, res.clone());
 
     // Store the age of the cache.
     const ageTable = await this.ageTable;
