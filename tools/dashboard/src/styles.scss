@@ -1,5 +1,26 @@
+$panel-loading-indicator-diameter: 50px;
+
 body, html {
   margin: 0;
   font-family: Roboto, Arial, sans-serif;
   min-height: 100vh;
+}
+
+.panel-loading-indicator {
+  position: absolute;
+
+  top: calc(50% - #{$panel-loading-indicator-diameter});
+  left: calc(50% - #{$panel-loading-indicator-diameter});
+
+  height: $panel-loading-indicator-diameter;
+  width: $panel-loading-indicator-diameter;
+}
+
+.dashboard-panel {
+  display: block;
+  position: relative;
+
+  height: 400px;
+  width: 100%;
+  max-width: 700px;
 }

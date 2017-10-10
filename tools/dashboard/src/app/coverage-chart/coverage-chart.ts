@@ -6,7 +6,10 @@ import {NgxChartResult} from '../ngx-definitions';
   selector: 'coverage-chart',
   templateUrl: './coverage-chart.html',
   styleUrls: ['./coverage-chart.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'class': 'dashboard-panel'
+  }
 })
 export class CoverageChart {
 

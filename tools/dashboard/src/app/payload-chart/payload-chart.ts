@@ -6,7 +6,10 @@ import {NgxChartItem, NgxChartResult} from '../ngx-definitions';
   selector: 'payload-chart',
   templateUrl: './payload-chart.html',
   styleUrls: ['./payload-chart.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    'class': 'dashboard-panel'
+  }
 })
 export class PayloadChart {
 
