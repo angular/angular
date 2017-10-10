@@ -13,7 +13,7 @@ import {NgModuleRef} from '../linker/ng_module_factory';
 import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
 import {splitDepsDsl, tokenKey} from './util';
 
-const NOT_CREATED = new Object();
+const UNDEFINED_VALUE = new Object();
 
 const InjectorRefTokenKey = tokenKey(Injector);
 const NgModuleRefTokenKey = tokenKey(NgModuleRef);
@@ -53,8 +53,9 @@ export function initNgModule(data: NgModuleData) {
   const providers = data._providers = new Array(def.providers.length);
   for (let i = 0; i < def.providers.length; i++) {
     const provDef = def.providers[i];
-    providers[i] = provDef.flags & NodeFlags.LazyProvider ? NOT_CREATED :
-                                                            _createProviderInstance(data, provDef);
+    if (!(provDef.flags & NodeFlags.LazyProvider)) {
+      providers[i] = _createProviderInstance(data, provDef);
+    }
   }
 }
 
@@ -78,27 +79,33 @@ export function resolveNgModuleDep(
   const providerDef = data._def.providersByKey[tokenKey];
   if (providerDef) {
     let providerInstance = data._providers[providerDef.index];
-    if (providerInstance === NOT_CREATED) {
+    if (providerInstance === undefined) {
       providerInstance = data._providers[providerDef.index] =
           _createProviderInstance(data, providerDef);
     }
-    return providerInstance;
+    return providerInstance === UNDEFINED_VALUE ? undefined : providerInstance;
   }
   return data._parent.get(depDef.token, notFoundValue);
 }
 
 
 function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModuleProviderDef): any {
+  let injectable: any;
   switch (providerDef.flags & NodeFlags.Types) {
     case NodeFlags.TypeClassProvider:
-      return _createClass(ngModule, providerDef.value, providerDef.deps);
+      injectable = _createClass(ngModule, providerDef.value, providerDef.deps);
+      break;
     case NodeFlags.TypeFactoryProvider:
-      return _callFactory(ngModule, providerDef.value, providerDef.deps);
+      injectable = _callFactory(ngModule, providerDef.value, providerDef.deps);
+      break;
     case NodeFlags.TypeUseExistingProvider:
-      return resolveNgModuleDep(ngModule, providerDef.deps[0]);
+      injectable = resolveNgModuleDep(ngModule, providerDef.deps[0]);
+      break;
     case NodeFlags.TypeValueProvider:
-      return providerDef.value;
+      injectable = providerDef.value;
+      break;
   }
+  return injectable === undefined ? UNDEFINED_VALUE : injectable;
 }
 
 function _createClass(ngModule: NgModuleData, ctor: any, deps: DepDef[]): any {
@@ -151,7 +158,7 @@ export function callNgModuleLifecycle(ngModule: NgModuleData, lifecycles: NodeFl
     const provDef = def.providers[i];
     if (provDef.flags & NodeFlags.OnDestroy) {
       const instance = ngModule._providers[i];
-      if (instance && instance !== NOT_CREATED) {
+      if (instance && instance !== UNDEFINED_VALUE) {
         instance.ngOnDestroy();
       }
     }

@@ -284,8 +284,11 @@ function createViewNodes(view: ViewData) {
       case NodeFlags.TypeFactoryProvider:
       case NodeFlags.TypeUseExistingProvider:
       case NodeFlags.TypeValueProvider: {
-        const instance = createProviderInstance(view, nodeDef);
-        nodeData = <ProviderData>{instance};
+        nodeData = nodes[i];
+        if (!nodeData && !(nodeDef.flags & NodeFlags.LazyProvider)) {
+          const instance = createProviderInstance(view, nodeDef);
+          nodeData = <ProviderData>{instance};
+        }
         break;
       }
       case NodeFlags.TypePipe: {
@@ -294,11 +297,14 @@ function createViewNodes(view: ViewData) {
         break;
       }
       case NodeFlags.TypeDirective: {
-        const instance = createDirectiveInstance(view, nodeDef);
-        nodeData = <ProviderData>{instance};
+        nodeData = nodes[i];
+        if (!nodeData) {
+          const instance = createDirectiveInstance(view, nodeDef);
+          nodeData = <ProviderData>{instance};
+        }
         if (nodeDef.flags & NodeFlags.Component) {
           const compView = asElementData(view, nodeDef.parent !.nodeIndex).componentView;
-          initView(compView, instance, instance);
+          initView(compView, nodeData.instance, nodeData.instance);
         }
         break;
       }
