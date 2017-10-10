@@ -224,7 +224,7 @@ export class Driver implements Debuggable, UpdateSource {
     }
 
     // Handle the push and keep the SW alive until it's handled.
-    msg.waitUntil(this.handlePush(msg.data));
+    msg.waitUntil(this.handlePush(msg.data.json()));
   }
 
   private async handleMessage(msg: MsgAny&{action: string}, from: Client): Promise<void> {
