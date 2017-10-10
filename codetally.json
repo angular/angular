@@ -1,0 +1,57 @@
+{
+"currency":"usd",
+"hourly_rates": [
+        {
+                "author_email":"chuckj@google.com",
+                "cost_per_hour":"35",
+                "description":"The hourly rate for Chuck"
+        },
+        {
+                "author_email":"tbosch1009@gmail.com",
+                "cost_per_hour":"33",
+                "description":"The hourly rate for TBosch"
+        },
+        {
+                "author_email":"alx+alxhub@alxandria.net",
+                "cost_per_hour":"13",
+                "description":"The hourly rate for Alx"
+        }
+],
+"charges": [	
+	{
+		"event":"commit",
+		"action":"removed",
+		"chargetype":"author",
+		"chargeref":"chuckj@google.com",
+		"description":"Author specific charge for Chuck when removes file(s) in a commit.",
+		"calculationtype":"normal",
+		"chargeamount":"15.45"
+	},
+	{
+                "event":"commit",
+                "action":"added",
+                "chargetype":"author",
+                "chargeref":"chuckj@google.com",
+                "description":"Author specific charge for Chuck when he adds file(s) in a commit.",
+                "calculationtype":"normal",
+                "chargeamount":"11.13"
+        },
+	{
+                "event":"commit",
+                "action":"modified",
+                "chargetype":"author",
+                "chargeref":"chuckj@google.com",
+                "description":"Author specific charge for Chuck when he modified file(s) in a commit",
+                "calculationtype":"normal",
+                "chargeamount":"21.42"
+        },
+	{
+		"event":"commit",
+		"action":"any",
+		"chargetype":"tax",
+		"description":"San Jose tax charge",
+		"calculationtype":"percent",
+		"chargeamount":"9.25"
+	}
+]
+}
