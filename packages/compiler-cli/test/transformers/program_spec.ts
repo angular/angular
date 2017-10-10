@@ -495,5 +495,17 @@ describe('ng program', () => {
       const mapper = createSrcToOutPathMapper('/out', '/tmp/a/x.ts', '/a/x.js');
       expect(mapper('/tmp/b/y.js')).toBe('/out/b/y.js');
     });
+
+    it('should work on windows with normalized paths', () => {
+      const mapper =
+          createSrcToOutPathMapper('c:/tmp/out', 'c:/tmp/a/x.ts', 'c:/tmp/out/a/x.js', path.win32);
+      expect(mapper('c:/tmp/b/y.js')).toBe('c:\\tmp\\out\\b\\y.js');
+    });
+
+    it('should work on windows with non-normalized paths', () => {
+      const mapper = createSrcToOutPathMapper(
+          'c:\\tmp\\out', 'c:\\tmp\\a\\x.ts', 'c:\\tmp\\out\\a\\x.js', path.win32);
+      expect(mapper('c:\\tmp\\b\\y.js')).toBe('c:\\tmp\\out\\b\\y.js');
+    });
   });
 });
