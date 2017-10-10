@@ -4998,7 +4998,7 @@ lighthouse-logger@^1.0.0:
   dependencies:
     debug "^2.6.8"
 
-lighthouse@^2.1.0:
+lighthouse@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/lighthouse/-/lighthouse-2.5.0.tgz#c38c3bb0cfc5645bd59ed2550531bdc59a6c8fdd"
   dependencies:
