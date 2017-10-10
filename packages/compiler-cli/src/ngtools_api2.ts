@@ -103,8 +103,7 @@ export interface Program {
   getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[];
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
       ts.Diagnostic[];
-  getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      Diagnostic[];
+  getNgSemanticDiagnostics(genFile?: any, cancellationToken?: ts.CancellationToken): Diagnostic[];
   loadNgStructureAsync(): Promise<void>;
   emit({emitFlags, cancellationToken, customTransformers, emitCallback}: {
     emitFlags?: EmitFlags,

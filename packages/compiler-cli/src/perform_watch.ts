@@ -40,7 +40,7 @@ export interface PerformWatchHost {
   reportDiagnostics(diagnostics: Diagnostics): void;
   readConfiguration(): ParsedConfiguration;
   createCompilerHost(options: api.CompilerOptions): api.CompilerHost;
-  createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined;
+  createEmitCallback(options: api.CompilerOptions): api.EmitCallback|undefined;
   onFileChange(
       options: api.CompilerOptions, listener: (event: FileChangeEvent, fileName: string) => void,
       ready: () => void): {close: () => void};
@@ -51,7 +51,7 @@ export interface PerformWatchHost {
 export function createPerformWatchHost(
     configFileName: string, reportDiagnostics: (diagnostics: Diagnostics) => void,
     existingOptions?: ts.CompilerOptions, createEmitCallback?: (options: api.CompilerOptions) =>
-                                              api.TsEmitCallback | undefined): PerformWatchHost {
+                                              api.EmitCallback | undefined): PerformWatchHost {
   return {
     reportDiagnostics: reportDiagnostics,
     createCompilerHost: options => createCompilerHost({options}),

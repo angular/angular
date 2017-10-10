@@ -9,6 +9,7 @@
 import {GeneratedFile} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {Program} from './api';
 import {TypeScriptNodeEmitter} from './node_emitter';
 import {GENERATED_FILES} from './util';
 
@@ -19,12 +20,12 @@ const PREAMBLE = `/**
 * tslint:disable
 */`;
 
-export function getAngularEmitterTransformFactory(generatedFiles: Map<string, GeneratedFile>): () =>
+export function getAngularEmitterTransformFactory(program: Program): () =>
     (sourceFile: ts.SourceFile) => ts.SourceFile {
   return function() {
     const emitter = new TypeScriptNodeEmitter();
     return function(sourceFile: ts.SourceFile): ts.SourceFile {
-      const g = generatedFiles.get(sourceFile.fileName);
+      const g = program.getGeneratedFile(sourceFile.fileName) as GeneratedFile;
       if (g && g.stmts) {
         const [newSourceFile] = emitter.updateSourceFile(sourceFile, g.stmts, PREAMBLE);
         return newSourceFile;
