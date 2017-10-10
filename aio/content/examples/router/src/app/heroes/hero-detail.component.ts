@@ -7,8 +7,6 @@ import { Component, OnInit, HostBinding } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { slideInDownAnimation } from '../animations';
-
 import { Hero, HeroService }  from './hero.service';
 
 @Component({
@@ -26,16 +24,9 @@ import { Hero, HeroService }  from './hero.service';
       <button (click)="gotoHeroes(hero)">Back</button>
     </p>
   </div>
-  `,
-  animations: [ slideInDownAnimation ]
+  `
 })
 export class HeroDetailComponent implements OnInit {
-// #docregion host-bindings
-  @HostBinding('@routeAnimation') routeAnimation = true;
-  @HostBinding('style.display')   display = 'block';
-  @HostBinding('style.position')  position = 'absolute';
-// #enddocregion host-bindings
-
   hero$: Observable<Hero>;
 
   // #docregion ctor
