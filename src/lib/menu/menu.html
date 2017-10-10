@@ -6,6 +6,7 @@
     (click)="close.emit('click')"
     [@transformMenu]="_panelAnimationState"
     (@transformMenu.done)="_onAnimationDone($event)"
+    tabindex="-1"
     role="menu">
     <div class="mat-menu-content" [@fadeInItems]="'showing'">
       <ng-content></ng-content>

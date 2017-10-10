@@ -33,6 +33,7 @@ import {
   dispatchEvent,
   createKeyboardEvent,
   createMouseEvent,
+  dispatchFakeEvent,
 } from '@angular/cdk/testing';
 
 
@@ -189,6 +190,23 @@ describe('MatMenu', () => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
     expect(fixture.componentInstance.items.last.getLabel()).toBe('Item with an icon');
+  });
+
+  it('should focus the menu panel root node when it was opened by mouse', () => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+
+    fixture.detectChanges();
+
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+    dispatchFakeEvent(triggerEl, 'mousedown');
+    triggerEl.click();
+    fixture.detectChanges();
+
+    const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+
+    expect(panel).toBeTruthy('Expected the panel to be rendered.');
+    expect(document.activeElement).toBe(panel, 'Expected the panel to be focused.');
   });
 
   describe('positions', () => {
@@ -811,20 +829,6 @@ describe('MatMenu', () => {
           .toBe(true, 'Expected focus to be back inside the root menu');
     });
 
-    it('should not shift focus to the sub-menu when it was opened by hover', () => {
-      compileTestComponent();
-      instance.rootTriggerEl.nativeElement.click();
-      fixture.detectChanges();
-
-      const levelOneTrigger = overlay.querySelector('#level-one-trigger')! as HTMLElement;
-
-      dispatchMouseEvent(levelOneTrigger, 'mouseenter');
-      fixture.detectChanges();
-
-      expect(overlay.querySelectorAll('.mat-menu-panel')[1].contains(document.activeElement))
-          .toBe(false, 'Expected focus to not be inside the nested menu');
-    });
-
     it('should position the sub-menu to the right edge of the trigger in ltr', () => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.style.position = 'fixed';
@@ -1179,6 +1183,7 @@ class CustomMenuPanel implements MatMenuPanel {
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
   @Output() close = new EventEmitter<void | 'click' | 'keydown'>();
   focusFirstItem = () => {};
+  resetActiveItem = () => {};
   setPositionClasses = () => {};
 }
 

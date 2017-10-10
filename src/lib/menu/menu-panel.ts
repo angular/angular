@@ -19,6 +19,7 @@ export interface MatMenuPanel {
   parentMenu?: MatMenuPanel | undefined;
   direction?: Direction;
   focusFirstItem: () => void;
+  resetActiveItem: () => void;
   setPositionClasses: (x: MenuPositionX, y: MenuPositionY) => void;
   setElevation?(depth: number): void;
 }

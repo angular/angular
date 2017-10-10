@@ -14,6 +14,7 @@ $mat-menu-submenu-indicator-size: 10px !default;
   @include mat-menu-positions();
   max-height: calc(100vh - #{$mat-menu-item-height});
   border-radius: $mat-menu-border-radius;
+  outline: 0;
 
   // Prevent the user from interacting while the panel is still animating.
   // This avoids issues where the user could accidentally open a sub-menu,

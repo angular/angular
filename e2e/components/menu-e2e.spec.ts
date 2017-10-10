@@ -97,9 +97,9 @@ describe('menu', () => {
       expectFocusOn(page.items(0));
     });
 
-    it('should not focus the first item when opened with mouse', () => {
+    it('should focus the panel when opened by mouse', () => {
       page.trigger().click();
-      expectFocusOn(page.trigger());
+      expectFocusOn(page.menu());
     });
 
     it('should focus subsequent items when down arrow is pressed', () => {
