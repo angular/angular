@@ -12,7 +12,7 @@ export class MockBody implements Body {
   constructor(public _body: string|null) {}
 
   async arrayBuffer(): Promise<ArrayBuffer> {
-    this.bodyUsed = true;
+    this.markBodyUsed();
     if (this._body !== null) {
       const buffer = new ArrayBuffer(this._body.length);
       const access = new Uint8Array(buffer);
@@ -28,7 +28,7 @@ export class MockBody implements Body {
   async blob(): Promise<Blob> { throw 'Not implemented'; }
 
   async json(): Promise<any> {
-    this.bodyUsed = true;
+    this.markBodyUsed();
     if (this._body !== null) {
       return JSON.parse(this._body);
     } else {
@@ -37,7 +37,7 @@ export class MockBody implements Body {
   }
 
   async text(): Promise<string> {
-    this.bodyUsed = true;
+    this.markBodyUsed();
     if (this._body !== null) {
       return this._body;
     } else {
@@ -46,6 +46,13 @@ export class MockBody implements Body {
   }
 
   async formData(): Promise<FormData> { throw 'Not implemented'; }
+
+  private markBodyUsed(): void {
+    if (this.bodyUsed === true) {
+      throw new Error('Cannot reuse body without cloning.');
+    }
+    this.bodyUsed = true;
+  }
 }
 
 export class MockHeaders implements Headers {
