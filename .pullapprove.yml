@@ -101,7 +101,6 @@ groups:
       - vicb
       - IgorMinar #fallback
 
-
   core:
     conditions:
       files:
@@ -255,7 +254,15 @@ groups:
       - IgorMinar #fallback
       - mhevery #fallback
 
-
+  service-worker:
+    conditions:
+      files:
+        - "packages/service-worker/*"
+    users:
+      - alxhub #primary
+      - gkalpak
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   benchpress:
     conditions:
