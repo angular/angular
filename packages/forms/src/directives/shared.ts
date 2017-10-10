@@ -213,3 +213,13 @@ export function removeDir<T>(list: T[], el: T): void {
   const index = list.indexOf(el);
   if (index > -1) list.splice(index, 1);
 }
+
+export function allowRemoveControl(valueAccessor: ControlValueAccessor | null): boolean {
+  if (!valueAccessor) {
+    return false;
+  } else if (valueAccessor.constructor === RadioControlValueAccessor) {
+    return (<RadioControlValueAccessor>valueAccessor).isLastControl();
+  } else {
+    return true;
+  }
+}

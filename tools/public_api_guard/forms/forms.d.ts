@@ -473,6 +473,7 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
     value: any;
     constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: RadioControlRegistry, _injector: Injector);
     fireUncheck(value: any): void;
+    isLastControl(): boolean;
     ngOnDestroy(): void;
     ngOnInit(): void;
     registerOnChange(fn: (_: any) => {}): void;

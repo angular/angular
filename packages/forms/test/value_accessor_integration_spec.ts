@@ -897,6 +897,23 @@ export function main() {
              expect(inputs[3].nativeElement.disabled).toBe(false);
            }));
 
+        it('should support removing single radio button', fakeAsync(() => {
+             const fixture = initTest(NgModelRadioForm);
+             fixture.componentInstance.food = 'chicken';
+             fixture.componentInstance.drink = 'sprite';
+
+             fixture.detectChanges();
+             tick();
+
+             const form = fixture.debugElement.children[0].injector.get(NgForm);
+             expect(form.value).toEqual({food: 'chicken', drink: 'sprite'});
+
+             const inputs = fixture.debugElement.queryAll(By.css('input'));
+             fixture.componentInstance.showRadio = false;
+             fixture.detectChanges();
+             tick();
+             expect(Object.keys(form.controls)).toEqual(['food', 'drink']);
+           }));
       });
 
     });
@@ -1292,7 +1309,7 @@ export class FormControlRadioButtons {
   selector: 'ng-model-radio-form',
   template: `
     <form>
-      <input type="radio" name="food" [(ngModel)]="food" value="chicken">
+      <input type="radio" name="food" [(ngModel)]="food" value="chicken" *ngIf="showRadio">
       <input type="radio" name="food"  [(ngModel)]="food" value="fish">
 
       <input type="radio" name="drink" [(ngModel)]="drink" value="cola">
@@ -1303,6 +1320,7 @@ export class FormControlRadioButtons {
 class NgModelRadioForm {
   food: string;
   drink: string;
+  showRadio: boolean = true;
 }
 
 @Directive({
