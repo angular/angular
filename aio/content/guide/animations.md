@@ -16,9 +16,7 @@ animation logic with the rest of your application code, for ease of control.
 Angular animations are built on top of the standard [Web Animations API](https://w3c.github.io/web-animations/)
 and run natively on [browsers that support it](http://caniuse.com/#feat=web-animation).
 
-For other browsers, a polyfill is required. Grab
-[`web-animations.min.js` from GitHub](https://github.com/web-animations/web-animations-js) and
-add it to your page.
+For other browsers, a polyfill is required. Uncomment the `web-animations-js` polyfill from the `polyfills.ts` file.
 
 </div>
 
