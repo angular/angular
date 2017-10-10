@@ -60,7 +60,7 @@
     "~~update-webdriver": "webdriver-manager update --standalone false --gecko false"
   },
   "engines": {
-    "node": ">=6.9.5 <7.0.0",
+    "node": ">=6.9.5",
     "yarn": ">=1.0.2 <2.0.0"
   },
   "private": true,
@@ -82,7 +82,7 @@
     "core-js": "^2.4.1",
     "jasmine": "^2.6.0",
     "ng-pwa-tools": "^0.0.10",
-    "rxjs": "^5.2.0",
+    "rxjs": "^5.4.2",
     "tslib": "^1.7.1",
     "web-animations-js": "^2.2.5",
     "zone.js": "^0.8.16"
