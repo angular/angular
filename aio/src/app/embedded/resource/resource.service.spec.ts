@@ -3,7 +3,7 @@ import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { ResourceService } from './resource.service';
-import { Category, SubCategory, Resource } from './resource.model';
+import { Category } from './resource.model';
 
 describe('ResourceService', () => {
 

@@ -1,5 +1,5 @@
 import { MdIconRegistry } from '@angular/material';
-import { CustomMdIconRegistry, SVG_ICONS, SvgIconInfo } from './custom-md-icon-registry';
+import { CustomMdIconRegistry, SvgIconInfo } from './custom-md-icon-registry';
 
 describe('CustomMdIconRegistry', () => {
   it('should get the SVG element for a preloaded icon from the cache', () => {
