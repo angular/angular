@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationOptions, AnimationPlayer, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {Ast} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
@@ -20,7 +20,7 @@ import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes,
 const EMPTY_INSTRUCTION_MAP = new ElementInstructionMap();
 
 export class TimelineAnimationEngine {
-  private _animations: {[id: string]: Ast} = {};
+  private _animations: {[id: string]: Ast<AnimationMetadataType>} = {};
   private _playersById: {[id: string]: AnimationPlayer} = {};
   public players: AnimationPlayer[] = [];
 
