@@ -1,16 +1,12 @@
 import { DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { SearchService, SearchResult, SearchResults } from '../search.service';
-import { SearchResultsComponent, SearchArea } from './search-results.component';
-import { MockSearchService } from 'testing/search.service';
+import { SearchResult } from 'app/search/interfaces';
+import { SearchResultsComponent } from './search-results.component';
 
 describe('SearchResultsComponent', () => {
   let component: SearchResultsComponent;
   let fixture: ComponentFixture<SearchResultsComponent>;
-  let searchResults: Subject<SearchResults>;
 
   /** Get all text from component element */
   function getText() { return fixture.debugElement.nativeElement.textContent; }
@@ -38,27 +34,26 @@ describe('SearchResultsComponent', () => {
     return l.title.toUpperCase() > r.title.toUpperCase() ? 1 : -1;
   }
 
+  function setSearchResults(query: string, results: SearchResult[]) {
+    component.searchResults = {query, results};
+    component.ngOnChanges({});
+    fixture.detectChanges();
+  }
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ SearchResultsComponent ],
-      providers: [
-        { provide: SearchService, useFactory: () => new MockSearchService() }
-      ]
+      declarations: [ SearchResultsComponent ]
     });
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchResultsComponent);
     component = fixture.componentInstance;
-    searchResults = TestBed.get(SearchService).searchResults;
     fixture.detectChanges();
   });
 
   it('should map the search results into groups based on their containing folder', () => {
-    const results = getTestResults(3);
-
-    searchResults.next({ query: '', results: results});
+    setSearchResults('', getTestResults(3));
     expect(component.searchAreas).toEqual([
       { name: 'api', priorityPages: [
         { path: 'api/d', title: 'API D', type: '', keywords: '', titleWords: '' }
@@ -71,10 +66,10 @@ describe('SearchResultsComponent', () => {
   });
 
   it('should special case results that are top level folders', () => {
-    searchResults.next({ query: '', results: [
+    setSearchResults('', [
       { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '' },
       { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '' },
-    ]});
+    ]);
     expect(component.searchAreas).toEqual([
       { name: 'tutorial', priorityPages: [
         { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '' },
@@ -85,21 +80,21 @@ describe('SearchResultsComponent', () => {
 
   it('should put first 5 results for each area into priorityPages', () => {
     const results = getTestResults();
-    searchResults.next({ query: '', results: results });
+    setSearchResults('', results);
     expect(component.searchAreas[0].priorityPages).toEqual(results.filter(p => p.path.startsWith('api')).slice(0, 5));
     expect(component.searchAreas[1].priorityPages).toEqual(results.filter(p => p.path.startsWith('guide')).slice(0, 5));
   });
 
   it('should put the nonPriorityPages into the pages array, sorted by title', () => {
     const results = getTestResults();
-    searchResults.next({ query: '', results: results });
+    setSearchResults('', results);
     expect(component.searchAreas[0].pages).toEqual([]);
     expect(component.searchAreas[1].pages).toEqual(results.filter(p => p.path.startsWith('guide')).slice(5).sort(compareTitle));
   });
 
   it('should put a total count in the header of each area of search results', () => {
     const results = getTestResults();
-    searchResults.next({ query: '', results: results });
+    setSearchResults('', results);
     fixture.detectChanges();
     const headers = fixture.debugElement.queryAll(By.css('h3'));
     expect(headers.length).toEqual(2);
@@ -112,7 +107,7 @@ describe('SearchResultsComponent', () => {
       { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
     ];
 
-    searchResults.next({ query: '', results: results });
+    setSearchResults('', results);
     expect(component.searchAreas).toEqual([
       { name: 'other', priorityPages: [
         { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
@@ -125,7 +120,7 @@ describe('SearchResultsComponent', () => {
       { path: 'news', title: undefined, type: 'marketing', keywords: '', titleWords: '' }
     ];
 
-    searchResults.next({ query: 'something', results: results });
+    setSearchResults('something', results);
     expect(component.searchAreas).toEqual([]);
   });
 
@@ -144,7 +139,7 @@ describe('SearchResultsComponent', () => {
 
       selected = null;
       searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' };
-      searchResults.next({ query: 'something', results: [searchResult] });
+      setSearchResults('something', [searchResult]);
 
       fixture.detectChanges();
       anchor = fixture.debugElement.query(By.css('a'));
@@ -179,10 +174,8 @@ describe('SearchResultsComponent', () => {
 
   describe('when no query results', () => {
     it('should display "not found" message', () => {
-      searchResults.next({ query: 'something', results: [] });
-      fixture.detectChanges();
+      setSearchResults('something', []);
       expect(getText()).toContain('No results');
     });
   });
-
 });
