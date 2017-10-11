@@ -76,15 +76,17 @@ class NgPackagesInstaller {
           // Prevent accidental publishing of the package, if something goes wrong.
           tmpConfig.private = true;
 
-          // Overwrite project dependencies to Angular packages with local files.
-          const deps = tmpConfig.dependencies || {};
-          Object.keys(deps).forEach(key2 => {
-            const pkg2 = packages[key2];
-            if (pkg2) {
-              // point the core Angular packages at the distributable folder
-              deps[key2] = `file:${pkg2.parentDir}/${key2.replace('@angular/', '')}`;
-              this._log(`Overriding dependency of local ${key} with local package: ${key2}: ${deps[key2]}`);
-            }
+          // Overwrite project dependencies/devDependencies to Angular packages with local files.
+          ['dependencies', 'devDependencies'].forEach(prop => {
+            const deps = tmpConfig[prop] || {};
+            Object.keys(deps).forEach(key2 => {
+              const pkg2 = packages[key2];
+              if (pkg2) {
+                // point the core Angular packages at the distributable folder
+                deps[key2] = `file:${pkg2.parentDir}/${key2.replace('@angular/', '')}`;
+                this._log(`Overriding dependency of local ${key} with local package: ${key2}: ${deps[key2]}`);
+              }
+            });
           });
 
           fs.writeFileSync(pkg.packageJsonPath, JSON.stringify(tmpConfig));
