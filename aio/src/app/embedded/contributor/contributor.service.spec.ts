@@ -3,7 +3,7 @@ import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
 import { ContributorService } from './contributor.service';
-import { Contributor, ContributorGroup } from './contributors.model';
+import { ContributorGroup } from './contributors.model';
 
 describe('ContributorService', () => {
 
