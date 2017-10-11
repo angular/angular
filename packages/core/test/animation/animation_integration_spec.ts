@@ -340,6 +340,42 @@ export function main() {
            expect(completed).toBe(true);
          }));
 
+      it('should always fire inner callbacks even if no animation is fired when a view is inserted',
+         fakeAsync(() => {
+           @Component({
+             selector: 'if-cmp',
+             template: `
+          <div *ngIf="exp">
+            <div @myAnimation (@myAnimation.start)="track($event)" (@myAnimation.done)="track($event)"></div>
+          </div>
+        `,
+             animations: [
+               trigger('myAnimation', []),
+             ]
+           })
+           class Cmp {
+             exp: any = false;
+             log: string[] = [];
+             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(cmp.log).toEqual([]);
+
+           cmp.exp = true;
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(cmp.log).toEqual(['myAnimation-start', 'myAnimation-done']);
+         }));
+
       it('should only turn a view removal as into `void` state transition', () => {
         @Component({
           selector: 'if-cmp',
