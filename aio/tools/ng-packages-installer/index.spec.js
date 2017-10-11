@@ -81,7 +81,10 @@ describe('NgPackagesInstaller', () => {
         '@angular/tsc-wrapped': {
           parentDir: toolsDir,
           packageJsonPath: `${toolsDir}/tsc-wrapped/package.json`,
-          config: { peerDependencies: { tsickle: '^1.4.0' } }
+          config: {
+            devDependencies: { '@angular/common': '4.4.4-1ab23cd4' },
+            peerDependencies: { tsickle: '^1.4.0' }
+          }
         }
       };
       spyOn(installer, '_getDistPackages').and.callFake(() => copyJsonObj(dummyNgPackages));
@@ -160,7 +163,10 @@ describe('NgPackagesInstaller', () => {
             private: true,
             dependencies: { '@angular/tsc-wrapped': `file:${toolsDir}/tsc-wrapped` }
           }))],
-          [pkgJsonFor('tsc-wrapped'), JSON.stringify(overwriteConfigFor('tsc-wrapped', {private: true}))],
+          [pkgJsonFor('tsc-wrapped'), JSON.stringify(overwriteConfigFor('tsc-wrapped', {
+            private: true,
+            devDependencies: { '@angular/common': `file:${packagesDir}/common` }
+          }))],
         ]);
 
         expect(lastFiveArgs).toEqual(['core', 'common', 'compiler', 'compiler-cli', 'tsc-wrapped']
@@ -201,7 +207,7 @@ describe('NgPackagesInstaller', () => {
     });
   });
 
-  describe('_getDistPackages', () => {
+  describe('_getDistPackages()', () => {
     it('should include top level Angular packages', () => {
       const ngPackages = installer._getDistPackages();
       const expectedValue = jasmine.objectContaining({
@@ -259,7 +265,7 @@ describe('NgPackagesInstaller', () => {
     });
   });
 
-  describe('_printWarning', () => {
+  describe('_printWarning()', () => {
     it('should mention the message passed in the warning', () => {
       installer._printWarning();
       expect(console.warn.calls.argsFor(0)[0]).toContain('is running against the local Angular build');
@@ -282,7 +288,7 @@ describe('NgPackagesInstaller', () => {
     });
   });
 
-  describe('_installDeps', () => {
+  describe('_installDeps()', () => {
     it('should run yarn install with the given options', () => {
       installer._installDeps('option-1', 'option-2');
       expect(shelljs.exec).toHaveBeenCalledWith('yarn install option-1 option-2', { cwd: absoluteRootDir });
