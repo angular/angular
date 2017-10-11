@@ -13,7 +13,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 
 import { LocationService } from 'app/shared/location.service';
-import { ApiItem, ApiSection, ApiService } from './api.service';
+import { ApiSection, ApiService } from './api.service';
 
 import { Option } from 'app/shared/select/select.component';
 

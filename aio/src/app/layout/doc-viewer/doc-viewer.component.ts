@@ -1,7 +1,7 @@
 import {
   Component, ComponentFactory, ComponentFactoryResolver, ComponentRef,
   DoCheck, ElementRef, EventEmitter, Injector, Input, OnDestroy,
-  Output, ViewEncapsulation
+  Output
 } from '@angular/core';
 
 import { EmbeddedComponents } from 'app/embedded/embedded.module';
