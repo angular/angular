@@ -2380,62 +2380,6 @@ export function main() {
            ]);
          });
 
-      it('should not cause a removal of inner @trigger DOM nodes when a parent animation occurs',
-         fakeAsync(() => {
-           @Component({
-             selector: 'ani-cmp',
-             template: `
-            <div @parent *ngIf="exp" class="parent">
-              this <div @child>child</div>
-            </div>
-          `,
-             animations: [
-               trigger(
-                   'parent',
-                   [
-                     transition(
-                         ':leave',
-                         [
-                           style({opacity: 0}),
-                           animate('1s', style({opacity: 1})),
-                         ]),
-                   ]),
-               trigger(
-                   'child',
-                   [
-                     transition(
-                         '* => something',
-                         [
-                           style({opacity: 0}),
-                           animate('1s', style({opacity: 1})),
-                         ]),
-                   ]),
-             ]
-           })
-           class Cmp {
-             public exp: boolean = true;
-           }
-
-           TestBed.configureTestingModule({declarations: [Cmp]});
-
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-
-           cmp.exp = true;
-           fixture.detectChanges();
-           flushMicrotasks();
-
-           cmp.exp = false;
-           fixture.detectChanges();
-           flushMicrotasks();
-
-           const players = getLog();
-           expect(players.length).toEqual(1);
-
-           const element = players[0] !.element;
-           expect(element.innerText.trim()).toMatch(/this\s+child/mg);
-         }));
-
       it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
          () => {
            @Component({
@@ -2675,8 +2619,8 @@ export function main() {
            fixture.detectChanges();
            flushMicrotasks();
            expect(cmp.log).toEqual([
-             'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'c3-start', 'c3-done',
-             'p-done'
+             'c1-start', 'c1-done', 'c2-start', 'c2-done', 'p-start', 'p-done', 'c3-start',
+             'c3-done'
            ]);
          }));
 
