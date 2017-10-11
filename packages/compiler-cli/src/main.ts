@@ -39,7 +39,7 @@ export function main(
   return reportErrorsAndExit(options, compileDiags, consoleError);
 }
 
-function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
+function createEmitCallback(options: api.CompilerOptions): api.EmitCallback|undefined {
   const transformDecorators = options.annotationsAs !== 'decorators';
   const transformTypesToClosure = options.annotateForClosureCompiler;
   if (!transformDecorators && !transformTypesToClosure) {
@@ -58,20 +58,30 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
 
   return ({
            program,
-           targetSourceFile,
+           targetSourceFiles,
            writeFile,
            cancellationToken,
            emitOnlyDtsFiles,
            customTransformers = {},
            host,
            options
-         }) =>
-             tsickle.emitWithTsickle(
-                 program, tsickleHost, host, options, targetSourceFile, writeFile,
-                 cancellationToken, emitOnlyDtsFiles, {
-                   beforeTs: customTransformers.before,
-                   afterTs: customTransformers.after,
-                 });
+         }) => {
+    if (targetSourceFiles) {
+      return tsickle.mergeEmitResults(targetSourceFiles.map(
+          targetSourceFile => tsickle.emitWithTsickle(
+              program, tsickleHost, host, options, targetSourceFile, writeFile, cancellationToken,
+              emitOnlyDtsFiles, {
+                beforeTs: customTransformers.before,
+                afterTs: customTransformers.after,
+              })));
+    }
+    return tsickle.emitWithTsickle(
+        program, tsickleHost, host, options, /*targetSourceFile*/ undefined, writeFile,
+        cancellationToken, emitOnlyDtsFiles, {
+          beforeTs: customTransformers.before,
+          afterTs: customTransformers.after,
+        });
+  };
 }
 
 export interface NgcParsedConfiguration extends ParsedConfiguration { watch?: boolean; }
