@@ -37,7 +37,7 @@ travisFoldEnd "install-yarn"
 
 # Install all npm dependencies according to yarn.lock
 travisFoldStart "yarn-install"
-  node tools/npm/check-node-modules --purge || yarn install
+  node tools/npm/check-node-modules --purge || yarn install --freeze-lockfile --non-interactive
 travisFoldEnd "yarn-install"
 
 
@@ -52,7 +52,7 @@ if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE}
   travisFoldStart "yarn-install.aio"
     (
       cd ${PROJECT_ROOT}/aio
-      yarn install
+      yarn install --frozen-lockfile --non-interactive
     )
   travisFoldEnd "yarn-install.aio"
 fi
