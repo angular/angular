@@ -1,3 +1,4 @@
+import {MediaMatcher} from '@angular/cdk/layout';
 import {ChangeDetectorRef, Component, OnDestroy, ViewEncapsulation} from '@angular/core';
 
 
@@ -11,14 +12,15 @@ import {ChangeDetectorRef, Component, OnDestroy, ViewEncapsulation} from '@angul
   preserveWhitespaces: false,
 })
 export class SidenavMobileAccessibilityDemo implements OnDestroy {
-  mobileQuery = matchMedia('(max-width: 600px)');
+  mobileQuery: MediaQueryList;
 
   filler = Array(20).fill(0);
 
   _mobileQueryListener: () => void;
 
-  constructor(changeDetectorRef: ChangeDetectorRef) {
+  constructor(changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+    this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this.mobileQuery.addListener(this._mobileQueryListener);
   }
 
