@@ -54,7 +54,7 @@
       // other libraries
       'rxjs':                      'npm:rxjs@5.0.1',
       'tslib':                     'npm:tslib/tslib.js',
-      'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js',
+      'angular-in-memory-web-api': 'npm:angular-in-memory-web-api@0.4/bundles/in-memory-web-api.umd.js',
       'ts':                        'npm:plugin-typescript@5.2.7/lib/plugin.js',
       'typescript':                'npm:typescript@2.3.2/lib/typescript.js',
 
