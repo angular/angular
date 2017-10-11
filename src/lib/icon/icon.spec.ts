@@ -1,4 +1,4 @@
-import {inject, async, TestBed} from '@angular/core/testing';
+import {inject, async, fakeAsync, tick, TestBed} from '@angular/core/testing';
 import {SafeResourceUrl, DomSanitizer} from '@angular/platform-browser';
 import {HttpModule, XHRBackend} from '@angular/http';
 import {MockBackend} from '@angular/http/testing';
@@ -126,7 +126,7 @@ describe('MatIcon', () => {
   });
 
   describe('Icons from URLs', () => {
-    it('should register icon URLs by name', () => {
+    it('should register icon URLs by name', fakeAsync(() => {
       iconRegistry.addSvgIcon('fluffy', trust('cat.svg'));
       iconRegistry.addSvgIcon('fido', trust('dog.svg'));
 
@@ -153,7 +153,14 @@ describe('MatIcon', () => {
       svgElement = verifyAndGetSingleSvgChild(matIconElement);
       verifyPathChildElement(svgElement, 'woof');
       expect(httpRequestUrls).toEqual(['dog.svg', 'cat.svg']);
-    });
+
+      // Assert that a registered icon can be looked-up by url.
+      iconRegistry.getSvgIconFromUrl(trust('cat.svg')).subscribe(element => {
+        verifyPathChildElement(element, 'meow');
+      });
+
+      tick();
+    }));
 
     it('should throw an error when using an untrusted icon url', () => {
       iconRegistry.addSvgIcon('fluffy', 'farm-set-1.svg');

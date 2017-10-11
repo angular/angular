@@ -201,7 +201,7 @@ export class MatIconRegistry {
       return observableOf(cloneSvg(cachedIcon));
     }
 
-    return RxChain.from(this._loadSvgIconFromConfig(new SvgIconConfig(url)))
+    return RxChain.from(this._loadSvgIconFromConfig(new SvgIconConfig(safeUrl)))
       .call(doOperator, svg => this._cachedIconsByUrl.set(url!, svg))
       .call(map, svg => cloneSvg(svg))
       .result();
