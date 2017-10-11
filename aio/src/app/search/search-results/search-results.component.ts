@@ -1,28 +1,20 @@
-import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
-
-import { SearchResult, SearchResults, SearchService } from '../search.service';
-
-export interface SearchArea {
-  name: string;
-  pages: SearchResult[];
-  priorityPages: SearchResult[];
-}
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { SearchResult, SearchResults, SearchArea } from 'app/search/interfaces';
 
 /**
- * A component to display the search results
+ * A component to display search results in groups
  */
 @Component({
   selector: 'aio-search-results',
   templateUrl: './search-results.component.html',
 })
-export class SearchResultsComponent implements OnInit, OnDestroy {
+export class SearchResultsComponent implements OnChanges {
 
-  private resultsSubscription: Subscription;
-  readonly defaultArea = 'other';
-  notFoundMessage = 'Searching ...';
-  readonly topLevelFolders = ['guide', 'tutorial'];
+  /**
+   * The results to display
+   */
+  @Input()
+  searchResults: SearchResults;
 
   /**
    * Emitted when the user selects a search result
@@ -30,20 +22,13 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   @Output()
   resultSelected = new EventEmitter<SearchResult>();
 
-  /**
-   * A mapping of the search results grouped into areas
-   */
+  readonly defaultArea = 'other';
+  notFoundMessage = 'Searching ...';
+  readonly topLevelFolders = ['guide', 'tutorial'];
   searchAreas: SearchArea[] = [];
 
-  constructor(private searchService: SearchService) {}
-
-  ngOnInit() {
-    this.resultsSubscription = this.searchService.searchResults
-        .subscribe(search => this.searchAreas = this.processSearchResults(search));
-  }
-
-  ngOnDestroy() {
-    this.resultsSubscription.unsubscribe();
+  ngOnChanges(changes: SimpleChanges) {
+    this.searchAreas = this.processSearchResults(this.searchResults);
   }
 
   onResultSelected(page: SearchResult, event: MouseEvent) {
@@ -55,6 +40,9 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
   // Map the search results into groups by area
   private processSearchResults(search: SearchResults) {
+    if (!search) {
+      return [];
+    }
     this.notFoundMessage = 'No results found.';
     const searchAreaMap = {};
     search.results.forEach(result => {
@@ -84,6 +72,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   }
 }
 
-function compareResults(l: {title: string}, r: {title: string}) {
+function compareResults(l: SearchResult, r: SearchResult) {
   return l.title.toUpperCase() > r.title.toUpperCase() ? 1 : -1;
 }
