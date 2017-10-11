@@ -659,7 +659,9 @@ export class TransitionAnimationEngine {
     // code does not contain any animation code in it, but it is
     // just being called so that the node is marked as being inserted
     if (namespaceId) {
-      this._fetchNamespace(namespaceId).insertNode(element, parent);
+      if (this._fetchNamespace(namespaceId)) {
+        this._fetchNamespace(namespaceId).insertNode(element, parent);
+      }
     }
 
     // only *directives and host elements are inserted before
