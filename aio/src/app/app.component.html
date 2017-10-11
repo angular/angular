@@ -4,7 +4,7 @@
   <mat-progress-bar mode="indeterminate" color="warn"></mat-progress-bar>
 </div>
 
-<mat-toolbar color="primary" class="app-toolbar" [class.transitioning]="isTransitioning">
+<mat-toolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
   <mat-toolbar-row class="notification-container">
     <aio-notification
       icon="insert_comment"
@@ -29,6 +29,7 @@
     <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
   </mat-toolbar-row>
 </mat-toolbar>
+
 <aio-search-results #searchResultsView *ngIf="showSearchResults" [searchResults]="searchResults | async" (resultSelected)="hideSearchResults()"></aio-search-results>
 
 <mat-sidenav-container class="sidenav-container" [class.starting]="isStarting" [class.has-floating-toc]="hasFloatingToc" role="main">
@@ -56,11 +57,11 @@
 
 </mat-sidenav-container>
 
-<div *ngIf="hasFloatingToc" class="toc-container" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
+<div *ngIf="hasFloatingToc" class="toc-container no-print" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
   <aio-toc></aio-toc>
 </div>
 
-<footer>
+<footer class="no-print">
   <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo" ></aio-footer>
 </footer>
 
