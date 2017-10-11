@@ -2,18 +2,18 @@ import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
 
-import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
-import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { ScrollService } from 'app/shared/scroll.service';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchResults } from 'app/search/interfaces';
 import { SearchService } from 'app/search/search.service';
 import { TocService } from 'app/shared/toc.service';
 
+import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 
@@ -89,10 +89,9 @@ export class AppComponent implements OnInit {
 
   // Search related properties
   showSearchResults = false;
-  @ViewChildren('searchBox, searchResults', { read: ElementRef })
+  searchResults: Observable<SearchResults>;
+  @ViewChildren('searchBox, searchResultsView', { read: ElementRef })
   searchElements: QueryList<ElementRef>;
-  @ViewChild(SearchResultsComponent)
-  searchResults: SearchResultsComponent;
   @ViewChild(SearchBoxComponent)
   searchBox: SearchBoxComponent;
 
@@ -332,7 +331,7 @@ export class AppComponent implements OnInit {
   }
 
   doSearch(query) {
-    this.searchService.search(query);
+    this.searchResults = this.searchService.search(query);
     this.showSearchResults = !!query;
   }
 
