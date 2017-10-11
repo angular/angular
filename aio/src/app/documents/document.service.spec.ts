@@ -1,10 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';

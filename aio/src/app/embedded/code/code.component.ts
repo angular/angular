@@ -1,11 +1,9 @@
-import { Component, ElementRef, ViewChild, OnChanges, OnDestroy, Input } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnChanges, Input } from '@angular/core';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
 import { MdSnackBar } from '@angular/material';
 
-const originalLabel = 'Copy Code';
-const copiedLabel = 'Copied!';
 const defaultLineNumsCount = 10; // by default, show linenums over this number
 
 /**
