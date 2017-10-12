@@ -147,6 +147,7 @@ function loadCustomElementsPolyfills() {
       return obj;
     };
 
+    Object.defineProperty(setPrototypeOf, '$$shimmed', {value: true});
     Object.setPrototypeOf = setPrototypeOf;
   }
 

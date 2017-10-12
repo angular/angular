@@ -12,6 +12,14 @@ export interface NgElement<T> extends HTMLElement {
 }
 
 /** @experimental */
+export interface NgElementConstructor<T, P> {
+    readonly is: string;
+    readonly observedAttributes: string[];
+    new (): NgElementWithProps<T, P>;
+    upgrade(host: HTMLElement): NgElementWithProps<T, P>;
+}
+
+/** @experimental */
 export declare type NgElementWithProps<T, P> = NgElement<T> & {
     [property in keyof
 
