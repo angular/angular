@@ -176,6 +176,11 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     return null;
   }
 
+  /** Stroke width of the circle in percent. */
+  get _circleStrokeWidth() {
+    return this.strokeWidth / this._elementSize * 100;
+  }
+
   /** Sets the diameter and adds diameter-specific styles if necessary. */
   private _setDiameterAndInitStyles(size: number): void {
     this._diameter = size;

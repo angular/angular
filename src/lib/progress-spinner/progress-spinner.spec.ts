@@ -108,8 +108,8 @@ describe('MatProgressSpinner', () => {
     fixture.componentInstance.strokeWidth = 40;
     fixture.detectChanges();
 
-    expect(parseInt(circleElement.style.strokeWidth))
-      .toBe(40, 'Expected the custom stroke width to be applied to the circle element.');
+    expect(parseInt(circleElement.style.strokeWidth)).toBe(30, 'Expected the custom stroke ' +
+      'width to be applied to the circle element as a percentage of the element size.');
     expect(svgElement.getAttribute('viewBox'))
       .toBe('0 0 130 130', 'Expected the viewBox to be adjusted based on the stroke width.');
   });
