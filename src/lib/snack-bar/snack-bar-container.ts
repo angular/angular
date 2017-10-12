@@ -33,15 +33,16 @@ import {
   PortalHostDirective,
 } from '@angular/cdk/portal';
 import {first} from '@angular/cdk/rxjs';
+import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MatSnackBarConfig} from './snack-bar-config';
 
 
-// TODO(jelbourn): we can't use constants from animation.ts here because you can't use
-// a text interpolation in anything that is analyzed statically with ngc (for AoT compile).
-export const SHOW_ANIMATION = '225ms cubic-bezier(0.4,0.0,1,1)';
-export const HIDE_ANIMATION = '195ms cubic-bezier(0.0,0.0,0.2,1)';
+export const SHOW_ANIMATION =
+    `${AnimationDurations.ENTERING} ${AnimationCurves.DECELERATION_CURVE}`;
+export const HIDE_ANIMATION =
+    `${AnimationDurations.EXITING} ${AnimationCurves.ACCELERATION_CURVE}`;
 
 /**
  * Internal component that wraps user-provided snack bar content.
