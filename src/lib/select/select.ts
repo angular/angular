@@ -1167,15 +1167,12 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       // however the key manager only supports up/down at the moment.
       this._keyManager.onKeydown(event);
 
-      // TODO(crisbeto): get rid of the Promise.resolve when #6441 gets in.
-      Promise.resolve().then(() => {
-        const currentActiveItem = this._keyManager.activeItem;
+      const currentActiveItem = this._keyManager.activeItem;
 
-        if (currentActiveItem && currentActiveItem !== prevActiveItem) {
-          this._clearSelection();
-          this._setSelectionByValue(currentActiveItem.value, true);
-        }
-      });
+      if (currentActiveItem && currentActiveItem !== prevActiveItem) {
+        this._clearSelection();
+        this._setSelectionByValue(currentActiveItem.value, true);
+      }
     }
   }
 

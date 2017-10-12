@@ -286,7 +286,6 @@ describe('MatSelect', () => {
 
       const event = dispatchKeyboardEvent(trigger, 'keydown', HOME);
       fixture.detectChanges();
-      tick();
 
       expect(fixture.componentInstance.select._keyManager.activeItemIndex).toBe(0);
       expect(event.defaultPrevented).toBe(true);
@@ -302,7 +301,6 @@ describe('MatSelect', () => {
 
       const event = dispatchKeyboardEvent(trigger, 'keydown', END);
       fixture.detectChanges();
-      tick();
 
       expect(fixture.componentInstance.select._keyManager.activeItemIndex).toBe(7);
       expect(event.defaultPrevented).toBe(true);
@@ -2037,17 +2035,13 @@ describe('MatSelect', () => {
         expect(formControl.value).toBeFalsy('Expected no initial value.');
 
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-        tick();
 
         expect(options[0].selected).toBe(true, 'Expected first option to be selected.');
         expect(formControl.value).toBe(options[0].value,
           'Expected value from first option to have been set on the model.');
 
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-        tick();
-
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-        tick();
 
         // Note that the third option is skipped, because it is disabled.
         expect(options[3].selected).toBe(true, 'Expected fourth option to be selected.');
@@ -2055,7 +2049,6 @@ describe('MatSelect', () => {
           'Expected value from fourth option to have been set on the model.');
 
         dispatchKeyboardEvent(select, 'keydown', UP_ARROW);
-        tick();
 
         expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
         expect(formControl.value).toBe(options[1].value,
@@ -2089,7 +2082,6 @@ describe('MatSelect', () => {
         expect(formControl.pristine).toBe(true, 'Expected form control to be clean.');
 
         dispatchKeyboardEvent(select, 'keydown', 16); // Press a random key.
-        tick();
 
         expect(formControl.value).toBeNull('Expected form control value to stay empty.');
         expect(formControl.pristine).toBe(true, 'Expected form control to stay clean.');
@@ -2101,10 +2093,8 @@ describe('MatSelect', () => {
 
           formControl.setValue('eggs-5');
           fixture.detectChanges();
-          tick();
 
           dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-          tick();
 
           expect(formControl.value).toBe('pasta-6');
           expect(fixture.componentInstance.options.toArray()[6].selected).toBe(true);
@@ -2141,7 +2131,6 @@ describe('MatSelect', () => {
         formControl.disable();
 
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-        tick();
 
         expect(formControl.value).toBe('eggs-5', 'Expected value to remain unchaged.');
       }));
@@ -2151,13 +2140,11 @@ describe('MatSelect', () => {
 
         fixture.componentInstance.options.forEach(() => {
           dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-          tick();
         });
 
         expect(lastOption.selected).toBe(true, 'Expected last option to be selected.');
 
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-        tick();
 
         expect(lastOption.selected).toBe(true, 'Expected last option to stay selected.');
       }));
@@ -2190,7 +2177,6 @@ describe('MatSelect', () => {
         const subscription = map.call(option.onSelectionChange, e => e.isUserInput).subscribe(spy);
 
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-        tick();
         expect(spy).toHaveBeenCalledWith(true);
 
         subscription.unsubscribe();
@@ -2269,14 +2255,12 @@ describe('MatSelect', () => {
 
         [1, 2, 3].forEach(() => {
           dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
-          tick();
           fixture.detectChanges();
         });
 
         expect(host.getAttribute('aria-activedescendant')).toBe(options[4].id);
 
         dispatchKeyboardEvent(host, 'keydown', UP_ARROW);
-        tick();
         fixture.detectChanges();
 
         expect(host.getAttribute('aria-activedescendant')).toBe(options[3].id);
@@ -2561,7 +2545,6 @@ describe('MatSelect', () => {
       fakeAsync(() => {
         const select = fixture.debugElement.query(By.css('mat-select')).nativeElement;
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
-        tick();
 
         expect(fixture.componentInstance.changeListener).toHaveBeenCalledTimes(1);
       }));
@@ -3155,18 +3138,14 @@ describe('MatSelect', () => {
         });
       }));
 
-    });
-
-    describe('when using a non-function comparator', () => {
-      beforeEach(() => {
+      it('should throw an error when using a non-function comparator', () => {
         instance.useNullComparator();
-      });
 
-      it('should throw an error', () => {
         expect(() => {
           fixture.detectChanges();
         }).toThrowError(wrappedErrorMessage(getMatSelectNonFunctionValueError()));
       });
+
     });
   });
 
@@ -3198,8 +3177,6 @@ describe('MatSelect', () => {
 
       [1, 2, 3].forEach(() => {
         dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
-        tick();
-        fixture.detectChanges();
       });
 
       expect(panel.scrollTop).toBe(initialScrollPosition, 'Expected scroll position not to change');
@@ -3208,8 +3185,6 @@ describe('MatSelect', () => {
     it('should scroll down to the active option', fakeAsync(() => {
       for (let i = 0; i < 15; i++) {
         dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
-        tick();
-        fixture.detectChanges();
       }
 
       // <option index * height> - <panel height> = 16 * 48 - 256 = 512
@@ -3220,14 +3195,10 @@ describe('MatSelect', () => {
       // Scroll to the bottom.
       for (let i = 0; i < fixture.componentInstance.foods.length; i++) {
         dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
-        tick();
-        fixture.detectChanges();
       }
 
       for (let i = 0; i < 20; i++) {
         dispatchKeyboardEvent(host, 'keydown', UP_ARROW);
-        tick();
-        fixture.detectChanges();
       }
 
       // <option index * height> = 9 * 48 = 432
@@ -3250,8 +3221,6 @@ describe('MatSelect', () => {
 
       for (let i = 0; i < 5; i++) {
         dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
-        tick();
-        groupFixture.detectChanges();
       }
 
       // Note that we press down 5 times, but it will skip
