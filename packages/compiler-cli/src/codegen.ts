@@ -58,8 +58,8 @@ export class CodeGenerator {
   private emit(analyzedModules: compiler.NgAnalyzedModules) {
     const generatedModules = this.compiler.emitAllImpls(analyzedModules);
     return generatedModules.map(generatedModule => {
-      const sourceFile = this.program.getSourceFile(generatedModule.srcFileName);
-      const emitPath = this.ngCompilerHost.calculateEmitPath(generatedModule.genFileName);
+      const sourceFile = this.program.getSourceFile(generatedModule.srcFileUrl);
+      const emitPath = this.ngCompilerHost.calculateEmitPath(generatedModule.genFileUrl);
       const source = generatedModule.source || compiler.toTypeScript(generatedModule, PREAMBLE);
       this.host.writeFile(emitPath, source, false, () => {}, [sourceFile]);
       return emitPath;
