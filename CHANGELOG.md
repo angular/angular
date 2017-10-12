@@ -1,3 +1,23 @@
+<a name="5.0.0-rc.2"></a>
+# [5.0.0-rc.2](https://github.com/angular/angular/compare/5.0.0-rc.1...5.0.0-rc.2) (2017-10-12)
+
+
+### Bug Fixes
+
+* **animations:** properly support boolean-based transitions and state changes ([#19279](https://github.com/angular/angular/issues/19279)) ([a8920eb](https://github.com/angular/angular/commit/a8920eb)), closes [#9396](https://github.com/angular/angular/issues/9396) [#12337](https://github.com/angular/angular/issues/12337)
+* **compiler:** correctly calculate the out path on windows ([#19601](https://github.com/angular/angular/issues/19601)) ([d30ce19](https://github.com/angular/angular/commit/d30ce19)), closes [#19543](https://github.com/angular/angular/issues/19543)
+* **compiler-cli:** produce smaller source maps for templates ([#19578](https://github.com/angular/angular/issues/19578)) ([f83989b](https://github.com/angular/angular/commit/f83989b))
+
+
+### Performance Improvements
+
+* **animations:** reduce size of bundle by removing AST classes ([#19539](https://github.com/angular/angular/issues/19539)) ([d5c9c5f](https://github.com/angular/angular/commit/d5c9c5f))
+* **compiler:** only type check input files when using bazel ([#19581](https://github.com/angular/angular/issues/19581)) ([0b06ea1](https://github.com/angular/angular/commit/0b06ea1))
+* **compiler:** skip type check and emit in bazel in some cases. ([#19646](https://github.com/angular/angular/issues/19646)) ([a22121d](https://github.com/angular/angular/commit/a22121d))
+* **compiler:** speed up loading of summaries for bazel. ([#19581](https://github.com/angular/angular/issues/19581)) ([81167d9](https://github.com/angular/angular/commit/81167d9))
+
+
+
 <a name="4.4.5"></a>
 ## [4.4.5](https://github.com/angular/angular/compare/4.4.4...4.4.5) (2017-10-12)
 
