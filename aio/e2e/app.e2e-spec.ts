@@ -100,4 +100,12 @@ describe('site App', function() {
       expect(page.getSearchResults().map(link => link.getText())).toContain('ControlValueAccessor');
     });
   });
+
+  describe('404 page', () => {
+    it('should search the index for words found in the url', () => {
+      page.navigateTo('http/router');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('Http');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('Router');
+    });
+  });
 });
