@@ -4,7 +4,7 @@ import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {MatListModule, MatListOption, MatSelectionList} from './index';
+import {MatListModule, MatListOption, MatSelectionList, MatListOptionChange} from './index';
 
 
 describe('MatSelectionList', () => {
@@ -483,8 +483,87 @@ describe('MatSelectionList', () => {
       expect(listItemContent.nativeElement.classList).toContain('mat-list-item-content-reverse');
     });
   });
-});
 
+
+  describe('with multiple values', () => {
+    let fixture: ComponentFixture<SelectionListWithMultipleValues>;
+    let listOption: DebugElement[];
+    let listItemEl: DebugElement;
+    let selectionList: DebugElement;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MatListModule],
+        declarations: [
+          SelectionListWithMultipleValues
+        ],
+      });
+
+      TestBed.compileComponents();
+    }));
+
+    beforeEach(async(() => {
+      fixture = TestBed.createComponent(SelectionListWithMultipleValues);
+      listOption = fixture.debugElement.queryAll(By.directive(MatListOption));
+      listItemEl = fixture.debugElement.query(By.css('.mat-list-item'));
+      selectionList = fixture.debugElement.query(By.directive(MatSelectionList));
+      fixture.detectChanges();
+    }));
+
+    it('should have a value for each item', () => {
+      expect(listOption[0].componentInstance.value).toBe(1);
+      expect(listOption[1].componentInstance.value).toBe('a');
+      expect(listOption[2].componentInstance.value).toBe(true);
+    });
+
+  });
+
+  describe('with option selected events', () => {
+    let fixture: ComponentFixture<SelectionListWithOptionEvents>;
+    let testComponent: SelectionListWithOptionEvents;
+    let listOption: DebugElement[];
+    let selectionList: DebugElement;
+
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MatListModule],
+        declarations: [
+          SelectionListWithOptionEvents
+        ],
+      });
+
+      TestBed.compileComponents();
+    }));
+
+    beforeEach(async(() => {
+      fixture = TestBed.createComponent(SelectionListWithOptionEvents);
+      testComponent = fixture.debugElement.componentInstance;
+      listOption = fixture.debugElement.queryAll(By.directive(MatListOption));
+      selectionList = fixture.debugElement.query(By.directive(MatSelectionList));
+      fixture.detectChanges();
+    }));
+
+    it('should trigger the selected and deselected events when clicked in succession.', () => {
+
+      let selected: boolean = false;
+
+      spyOn(testComponent, 'onOptionSelectionChange')
+        .and.callFake((event: MatListOptionChange) => {
+          selected = event.selected;
+        });
+
+      listOption[0].nativeElement.click();
+      expect(testComponent.onOptionSelectionChange).toHaveBeenCalledTimes(1);
+      expect(selected).toBe(true);
+
+      listOption[0].nativeElement.click();
+      expect(testComponent.onOptionSelectionChange).toHaveBeenCalledTimes(2);
+      expect(selected).toBe(false);
+    });
+
+  });
+
+});
 
 @Component({template: `
   <mat-selection-list id="selection-list-1">
@@ -507,17 +586,17 @@ class SelectionListWithListOptions {
 }
 
 @Component({template: `
-  <mat-selection-list id = "selection-list-2">
-    <mat-list-option checkboxPosition = "after">
+  <mat-selection-list id="selection-list-2">
+    <mat-list-option checkboxPosition="after">
       Inbox (disabled selection-option)
     </mat-list-option>
-    <mat-list-option id = "testSelect" checkboxPosition = "after">
+    <mat-list-option id="testSelect" checkboxPosition="after">
       Starred
     </mat-list-option>
-    <mat-list-option checkboxPosition = "after">
+    <mat-list-option checkboxPosition="after">
       Sent Mail
     </mat-list-option>
-    <mat-list-option checkboxPosition = "after">
+    <mat-list-option checkboxPosition="after">
       Drafts
     </mat-list-option>
   </mat-selection-list>`})
@@ -525,17 +604,17 @@ class SelectionListWithCheckboxPositionAfter {
 }
 
 @Component({template: `
-  <mat-selection-list id = "selection-list-3" [disabled] = true>
-    <mat-list-option checkboxPosition = "after">
+  <mat-selection-list id="selection-list-3" [disabled]=true>
+    <mat-list-option checkboxPosition="after">
       Inbox (disabled selection-option)
     </mat-list-option>
-    <mat-list-option id = "testSelect" checkboxPosition = "after">
+    <mat-list-option id="testSelect" checkboxPosition="after">
       Starred
     </mat-list-option>
-    <mat-list-option checkboxPosition = "after">
+    <mat-list-option checkboxPosition="after">
       Sent Mail
     </mat-list-option>
-    <mat-list-option checkboxPosition = "after">
+    <mat-list-option checkboxPosition="after">
       Drafts
     </mat-list-option>
   </mat-selection-list>`})
@@ -559,8 +638,8 @@ class SelectionListWithSelectedOption {
 }
 
 @Component({template: `
-  <mat-selection-list id = "selection-list-4">
-    <mat-list-option checkboxPosition = "after" class="test-focus" id="123">
+  <mat-selection-list id="selection-list-4">
+    <mat-list-option checkboxPosition="after" class="test-focus" id="123">
       Inbox
     </mat-list-option>
   </mat-selection-list>`})
@@ -578,4 +657,29 @@ class SelectionListWithTabindexAttr {}
 class SelectionListWithTabindexBinding {
   tabIndex: number;
   disabled: boolean;
+}
+
+@Component({template: `
+<mat-selection-list id="selection-list-5">
+  <mat-list-option [value]="1" checkboxPosition="after">
+    1
+  </mat-list-option>
+  <mat-list-option value="a" checkboxPosition="after">
+    a
+  </mat-list-option>
+  <mat-list-option [value]="true" checkboxPosition="after">
+    true
+  </mat-list-option>
+</mat-selection-list>`})
+class SelectionListWithMultipleValues {
+}
+
+@Component({template: `
+<mat-selection-list id="selection-list-6">
+  <mat-list-option (selectionChange)="onOptionSelectionChange($event)">
+    Inbox
+  </mat-list-option>
+</mat-selection-list>`})
+class SelectionListWithOptionEvents {
+  onOptionSelectionChange: (event?: MatListOptionChange) => void = () => {};
 }

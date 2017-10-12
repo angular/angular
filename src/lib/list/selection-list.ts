@@ -51,15 +51,18 @@ export const _MatSelectionListMixinBase =
 export class MatListOptionBase {}
 export const _MatListOptionMixinBase = mixinDisableRipple(MatListOptionBase);
 
-/** Event emitted by a selection-list whenever the state of an option is changed. */
-export interface MatSelectionListOptionEvent {
-  option: MatListOption;
+/** Change event object emitted by MatListOption */
+export class MatListOptionChange {
+  /** The source MatListOption of the event. */
+  source: MatListOption;
+  /** The new `selected` value of the option. */
+  selected: boolean;
 }
 
 /**
  * Component for list-options of selection-list. Each list-option can automatically
  * generate a checkbox and can put current item into the selectionModel of selection-list
- * if the current item is checked.
+ * if the current item is selected.
  */
 @Component({
   moduleId: module.id,
@@ -86,7 +89,6 @@ export interface MatSelectionListOptionEvent {
 export class MatListOption extends _MatListOptionMixinBase
     implements AfterContentInit, OnInit, OnDestroy, FocusableOption, CanDisableRipple {
   private _lineSetter: MatLineSetter;
-  private _selected: boolean = false;
   private _disabled: boolean = false;
 
   /** Whether the option has focus. */
@@ -97,34 +99,31 @@ export class MatListOption extends _MatListOptionMixinBase
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: 'before' | 'after' = 'after';
 
+  /** Whether the option is disabled. */
+  @Input()
+  get disabled(): boolean {
+    return (this.selectionList && this.selectionList.disabled) || this._disabled;
+  }
+  set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
+
   /** Value of the option */
   @Input() value: any;
 
-  /** Whether the option is disabled. */
-  @Input()
-  get disabled() { return (this.selectionList && this.selectionList.disabled) || this._disabled; }
-  set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
-
   /** Whether the option is selected. */
   @Input()
-  get selected() { return this._selected; }
+  get selected(): boolean { return this.selectionList.selectedOptions.isSelected(this); }
   set selected(value: boolean) {
     const isSelected = coerceBooleanProperty(value);
 
-    if (isSelected !== this._selected) {
-      const selectionModel = this.selectionList.selectedOptions;
-
-      this._selected = isSelected;
-      isSelected ? selectionModel.select(this) : selectionModel.deselect(this);
+    if (isSelected !== this.selected) {
+      this.selectionList.selectedOptions.toggle(this);
       this._changeDetector.markForCheck();
+      this.selectionChange.emit(this._createChangeEvent());
     }
   }
 
-  /** Emitted when the option is selected. */
-  @Output() selectChange = new EventEmitter<MatSelectionListOptionEvent>();
-
-  /** Emitted when the option is deselected. */
-  @Output() deselected = new EventEmitter<MatSelectionListOptionEvent>();
+  /** Emitted when the option is selected or deselected. */
+  @Output() selectionChange = new EventEmitter<MatListOptionChange>();
 
   constructor(private _renderer: Renderer2,
               private _element: ElementRef,
@@ -172,6 +171,16 @@ export class MatListOption extends _MatListOptionMixinBase
   _handleFocus() {
     this._hasFocus = true;
     this.selectionList._setFocusedOption(this);
+  }
+
+  /** Creates a selection event object from the specified option. */
+  private _createChangeEvent(option: MatListOption = this): MatListOptionChange {
+    const event = new MatListOptionChange();
+
+    event.source = option;
+    event.selected = option.selected;
+
+    return event;
   }
 
   /** Retrieves the DOM element of the component host. */
