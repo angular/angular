@@ -11,7 +11,6 @@ import * as ts from 'typescript';
 import {DEFAULT_ERROR_CODE, Diagnostic, SOURCE} from './api';
 
 export const GENERATED_FILES = /(.*?)\.(ngfactory|shim\.ngstyle|ngstyle|ngsummary)\.(js|d\.ts|ts)$/;
-export const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 
 export const enum StructureIsReused {Not = 0, SafeModules = 1, Completely = 2}
 
@@ -29,8 +28,4 @@ export function createMessageDiagnostic(messageText: string): ts.Diagnostic&Diag
     code: DEFAULT_ERROR_CODE,
     source: SOURCE,
   };
-}
-
-export function isGeneratedFile(fileName: string): boolean {
-  return GENERATED_FILES.test(fileName);
 }
