@@ -1,6 +1,7 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
 @import '../core/style/layout-common';
+@import '../core/style/vendor-prefixes';
 @import '../../cdk/a11y/a11y';
 
 $mat-drawer-content-z-index: 1;
@@ -79,6 +80,9 @@ $mat-drawer-over-drawer-z-index: 4;
 }
 
 .mat-drawer-content {
+  // `backface-visibility` prevents the element from repainting on scroll. This is the
+  // equivalent of using `translateZ(0)`, but it doesn't create a new stacking context.
+  @include backface-visibility(hidden);
   @include mat-drawer-stacking-context($mat-drawer-content-z-index);
 
   display: block;
