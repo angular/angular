@@ -18,6 +18,5 @@ export function getMatFormFieldDuplicatedHintError(align: string): Error {
 
 /** @docs-private */
 export function getMatFormFieldMissingControlError(): Error {
-  return Error('mat-form-field must contain a MatFormFieldControl. ' +
-      'Did you forget to add matInput to the native input or textarea element?');
+  return Error('mat-form-field must contain a MatFormFieldControl.');
 }
