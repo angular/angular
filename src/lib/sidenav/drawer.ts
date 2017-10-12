@@ -307,6 +307,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
       this._animationState = this._enableAnimations ? 'open' : 'open-instant';
     } else {
       this._animationState = 'void';
+      this._restoreFocus();
     }
 
     if (this._focusTrap) {
