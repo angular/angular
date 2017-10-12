@@ -13,8 +13,8 @@ import {Subscription} from 'rxjs/Subscription';
 import {Observable} from 'rxjs/Observable';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {of as observableOf} from 'rxjs/observable/of';
-import {auditTime} from 'rxjs/operator/auditTime';
-import {Scrollable} from './scrollable';
+import {auditTime, filter} from '@angular/cdk/rxjs';
+import {CdkScrollable} from './scrollable';
 
 
 /** Time in ms to throttle the scrolling events by default. */
@@ -29,7 +29,7 @@ export class ScrollDispatcher {
   constructor(private _ngZone: NgZone, private _platform: Platform) { }
 
   /** Subject for notifying that a registered scrollable reference element has been scrolled. */
-  private _scrolled: Subject<void> = new Subject<void>();
+  private _scrolled = new Subject<CdkScrollable|void>();
 
   /** Keeps track of the global `scroll` and `resize` subscriptions. */
   _globalSubscription: Subscription | null = null;
@@ -41,28 +41,30 @@ export class ScrollDispatcher {
    * Map of all the scrollable references that are registered with the service and their
    * scroll event subscriptions.
    */
-  scrollableReferences: Map<Scrollable, Subscription> = new Map();
+  scrollContainers: Map<CdkScrollable, Subscription> = new Map();
 
   /**
-   * Registers a Scrollable with the service and listens for its scrolled events. When the
-   * scrollable is scrolled, the service emits the event in its scrolled observable.
+   * Registers a scrollable instance with the service and listens for its scrolled events. When the
+   * scrollable is scrolled, the service emits the event to its scrolled observable.
    * @param scrollable Scrollable instance to be registered.
    */
-  register(scrollable: Scrollable): void {
-    const scrollSubscription = scrollable.elementScrolled().subscribe(() => this._scrolled.next());
-    this.scrollableReferences.set(scrollable, scrollSubscription);
+  register(scrollable: CdkScrollable): void {
+    const scrollSubscription = scrollable.elementScrolled()
+        .subscribe(() => this._scrolled.next(scrollable));
+
+    this.scrollContainers.set(scrollable, scrollSubscription);
   }
 
   /**
    * Deregisters a Scrollable reference and unsubscribes from its scroll event observable.
    * @param scrollable Scrollable instance to be deregistered.
    */
-  deregister(scrollable: Scrollable): void {
-    const scrollableReference = this.scrollableReferences.get(scrollable);
+  deregister(scrollable: CdkScrollable): void {
+    const scrollableReference = this.scrollContainers.get(scrollable);
 
     if (scrollableReference) {
       scrollableReference.unsubscribe();
-      this.scrollableReferences.delete(scrollable);
+      this.scrollContainers.delete(scrollable);
     }
   }
 
@@ -71,7 +73,7 @@ export class ScrollDispatcher {
    * references (or window, document, or body) fire a scrolled event. Can provide a time in ms
    * to override the default "throttle" time.
    */
-  scrolled(auditTimeInMs: number = DEFAULT_SCROLL_TIME): Observable<void> {
+  scrolled(auditTimeInMs: number = DEFAULT_SCROLL_TIME): Observable<CdkScrollable|void> {
     return this._platform.isBrowser ? Observable.create(observer => {
       if (!this._globalSubscription) {
         this._addGlobalListener();
@@ -97,12 +99,26 @@ export class ScrollDispatcher {
     }) : observableOf<void>();
   }
 
-  /** Returns all registered Scrollables that contain the provided element. */
-  getScrollContainers(elementRef: ElementRef): Scrollable[] {
-    const scrollingContainers: Scrollable[] = [];
+  /**
+   * Returns an observable that emits whenever any of the
+   * scrollable ancestors of an element are scrolled.
+   * @param elementRef Element whose ancestors to listen for.
+   * @param auditTimeInMs Time to throttle the scroll events.
+   */
+  ancestorScrolled(elementRef: ElementRef, auditTimeInMs?: number): Observable<CdkScrollable> {
+    const ancestors = this.getAncestorScrollContainers(elementRef);
 
-    this.scrollableReferences.forEach((_subscription: Subscription, scrollable: Scrollable) => {
-      if (this.scrollableContainsElement(scrollable, elementRef)) {
+    return filter.call(this.scrolled(auditTimeInMs), target => {
+      return !target || ancestors.indexOf(target) > -1;
+    });
+  }
+
+  /** Returns all registered Scrollables that contain the provided element. */
+  getAncestorScrollContainers(elementRef: ElementRef): CdkScrollable[] {
+    const scrollingContainers: CdkScrollable[] = [];
+
+    this.scrollContainers.forEach((_subscription: Subscription, scrollable: CdkScrollable) => {
+      if (this._scrollableContainsElement(scrollable, elementRef)) {
         scrollingContainers.push(scrollable);
       }
     });
@@ -111,7 +127,7 @@ export class ScrollDispatcher {
   }
 
   /** Returns true if the element is contained within the provided Scrollable. */
-  scrollableContainsElement(scrollable: Scrollable, elementRef: ElementRef): boolean {
+  private _scrollableContainsElement(scrollable: CdkScrollable, elementRef: ElementRef): boolean {
     let element = elementRef.nativeElement;
     let scrollableElement = scrollable.getElementRef().nativeElement;
 

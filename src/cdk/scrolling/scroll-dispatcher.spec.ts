@@ -1,6 +1,6 @@
 import {inject, TestBed, async, fakeAsync, ComponentFixture, tick} from '@angular/core/testing';
 import {NgModule, Component, ViewChild, ElementRef} from '@angular/core';
-import {Scrollable, ScrollDispatcher, ScrollDispatchModule} from './public-api';
+import {CdkScrollable, ScrollDispatcher, ScrollDispatchModule} from './public-api';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 
 describe('Scroll Dispatcher', () => {
@@ -26,15 +26,15 @@ describe('Scroll Dispatcher', () => {
 
     it('should be registered with the scrollable directive with the scroll service', () => {
       const componentScrollable = fixture.componentInstance.scrollable;
-      expect(scroll.scrollableReferences.has(componentScrollable)).toBe(true);
+      expect(scroll.scrollContainers.has(componentScrollable)).toBe(true);
     });
 
     it('should have the scrollable directive deregistered when the component is destroyed', () => {
       const componentScrollable = fixture.componentInstance.scrollable;
-      expect(scroll.scrollableReferences.has(componentScrollable)).toBe(true);
+      expect(scroll.scrollContainers.has(componentScrollable)).toBe(true);
 
       fixture.destroy();
-      expect(scroll.scrollableReferences.has(componentScrollable)).toBe(false);
+      expect(scroll.scrollContainers.has(componentScrollable)).toBe(false);
     });
 
     it('should notify through the directive and service that a scroll event occurred',
@@ -52,7 +52,7 @@ describe('Scroll Dispatcher', () => {
       // Emit a scroll event from the scrolling element in our component.
       // This event should be picked up by the scrollable directive and notify.
       // The notification should be picked up by the service.
-      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll');
+      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll', false);
 
       // The scrollable directive should have notified the service immediately.
       expect(directiveSpy).toHaveBeenCalled();
@@ -71,7 +71,7 @@ describe('Scroll Dispatcher', () => {
       const subscription = fixture.ngZone!.onUnstable.subscribe(spy);
 
       scroll.scrolled(0).subscribe(() => {});
-      dispatchFakeEvent(document, 'scroll');
+      dispatchFakeEvent(document, 'scroll', false);
 
       expect(spy).not.toHaveBeenCalled();
       subscription.unsubscribe();
@@ -81,7 +81,7 @@ describe('Scroll Dispatcher', () => {
       const spy = jasmine.createSpy('zone unstable callback');
       const subscription = fixture.ngZone!.onUnstable.subscribe(spy);
 
-      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll');
+      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll', false);
 
       expect(spy).not.toHaveBeenCalled();
       subscription.unsubscribe();
@@ -91,11 +91,11 @@ describe('Scroll Dispatcher', () => {
       const spy = jasmine.createSpy('global scroll callback');
       const subscription = scroll.scrolled(0).subscribe(spy);
 
-      dispatchFakeEvent(document, 'scroll');
+      dispatchFakeEvent(document, 'scroll', false);
       expect(spy).toHaveBeenCalledTimes(1);
 
       subscription.unsubscribe();
-      dispatchFakeEvent(document, 'scroll');
+      dispatchFakeEvent(document, 'scroll', false);
 
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -104,21 +104,47 @@ describe('Scroll Dispatcher', () => {
   describe('Nested scrollables', () => {
     let scroll: ScrollDispatcher;
     let fixture: ComponentFixture<NestedScrollingComponent>;
+    let element: ElementRef;
 
     beforeEach(inject([ScrollDispatcher], (s: ScrollDispatcher) => {
       scroll = s;
 
       fixture = TestBed.createComponent(NestedScrollingComponent);
       fixture.detectChanges();
+      element = fixture.componentInstance.interestingElement;
     }));
 
     it('should be able to identify the containing scrollables of an element', () => {
-      const interestingElement = fixture.componentInstance.interestingElement;
-      const scrollContainers = scroll.getScrollContainers(interestingElement);
+      const scrollContainers = scroll.getAncestorScrollContainers(element);
       const scrollableElementIds =
           scrollContainers.map(scrollable => scrollable.getElementRef().nativeElement.id);
 
       expect(scrollableElementIds).toEqual(['scrollable-1', 'scrollable-1a']);
+    });
+
+    it('should emit when one of the ancestor scrollable containers is scrolled', () => {
+      const spy = jasmine.createSpy('scroll spy');
+      const subscription = scroll.ancestorScrolled(element, 0).subscribe(spy);
+      const grandparent = fixture.debugElement.nativeElement.querySelector('#scrollable-1');
+
+      dispatchFakeEvent(grandparent, 'scroll', false);
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      dispatchFakeEvent(window.document, 'scroll', false);
+      expect(spy).toHaveBeenCalledTimes(2);
+
+      subscription.unsubscribe();
+    });
+
+    it('should not emit when a non-ancestor is scrolled', () => {
+      const spy = jasmine.createSpy('scroll spy');
+      const subscription = scroll.ancestorScrolled(element, 0).subscribe(spy);
+      const stranger = fixture.debugElement.nativeElement.querySelector('#scrollable-2');
+
+      dispatchFakeEvent(stranger, 'scroll', false);
+      expect(spy).not.toHaveBeenCalled();
+
+      subscription.unsubscribe();
     });
   });
 
@@ -172,7 +198,7 @@ describe('Scroll Dispatcher', () => {
   template: `<div #scrollingElement cdk-scrollable style="height: 9999px"></div>`
 })
 class ScrollingComponent {
-  @ViewChild(Scrollable) scrollable: Scrollable;
+  @ViewChild(CdkScrollable) scrollable: CdkScrollable;
   @ViewChild('scrollingElement') scrollingElement: ElementRef;
 }
 

@@ -4,7 +4,7 @@ import {ConnectedPositionStrategy} from './connected-position-strategy';
 import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 import {OverlayPositionBuilder} from './overlay-position-builder';
 import {ConnectedOverlayPositionChange} from './connected-position';
-import {Scrollable} from '@angular/cdk/scrolling';
+import {CdkScrollable} from '@angular/cdk/scrolling';
 import {Subscription} from 'rxjs/Subscription';
 import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import {OverlayRef} from '../overlay-ref';
@@ -567,7 +567,7 @@ describe('ConnectedPositionStrategy', () => {
           {overlayX: 'start', overlayY: 'top'});
 
       strategy.withScrollableContainers([
-          new Scrollable(new FakeElementRef(scrollable), null!, null!, null!)]);
+          new CdkScrollable(new FakeElementRef(scrollable), null!, null!, null!)]);
       strategy.attach(fakeOverlayRef(overlayElement));
       positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       onPositionChangeSubscription = strategy.onPositionChange.subscribe(positionChangeHandler);

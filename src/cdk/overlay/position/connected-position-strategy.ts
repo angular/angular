@@ -19,7 +19,7 @@ import {
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {Observable} from 'rxjs/Observable';
-import {Scrollable} from '@angular/cdk/scrolling';
+import {CdkScrollable} from '@angular/cdk/scrolling';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
 import {OverlayRef} from '../overlay-ref';
 
@@ -46,7 +46,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   private _offsetY: number = 0;
 
   /** The Scrollable containers used to check scrollable view properties on position change. */
-  private scrollables: Scrollable[] = [];
+  private scrollables: CdkScrollable[] = [];
 
   /** Subscription to viewport resize events. */
   private _resizeSubscription = Subscription.EMPTY;
@@ -181,7 +181,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * on reposition we can evaluate if it or the overlay has been clipped or outside view. Every
    * Scrollable must be an ancestor element of the strategy's origin element.
    */
-  withScrollableContainers(scrollables: Scrollable[]) {
+  withScrollableContainers(scrollables: CdkScrollable[]) {
     this.scrollables = scrollables;
   }
 

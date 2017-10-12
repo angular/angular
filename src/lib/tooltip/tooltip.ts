@@ -280,7 +280,11 @@ export class MatTooltip implements OnDestroy {
       .connectedTo(this._elementRef, origin.main, overlay.main)
       .withFallbackPosition(origin.fallback, overlay.fallback);
 
-    strategy.withScrollableContainers(this._scrollDispatcher.getScrollContainers(this._elementRef));
+    const scrollableAncestors = this._scrollDispatcher
+      .getAncestorScrollContainers(this._elementRef);
+
+    strategy.withScrollableContainers(scrollableAncestors);
+
     strategy.onPositionChange.subscribe(change => {
       if (this._tooltipInstance) {
         if (change.scrollableViewProperties.isOverlayClipped && this._tooltipInstance.isVisible()) {

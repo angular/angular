@@ -20,7 +20,7 @@ import {ScrollDispatcher} from './scroll-dispatcher';
 @Directive({
   selector: '[cdk-scrollable], [cdkScrollable]'
 })
-export class Scrollable implements OnInit, OnDestroy {
+export class CdkScrollable implements OnInit, OnDestroy {
   private _elementScrolled: Subject<Event> = new Subject();
   private _scrollListener: Function | null;
 
