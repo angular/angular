@@ -22,8 +22,8 @@ describe('compiler (unbundled Angular)', () => {
   describe('Quickstart', () => {
     it('should compile', () => {
       const {genFiles} = compile([QUICKSTART, angularFiles]);
-      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
-      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileName))).toBeDefined();
+      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileName))).toBeDefined();
     });
   });
 
@@ -54,7 +54,7 @@ describe('compiler (unbundled Angular)', () => {
     function compileApp(): GeneratedFile {
       const {genFiles} = compile([rootDir, angularFiles]);
       return genFiles.find(
-          genFile => genFile.srcFileUrl === componentPath && genFile.genFileUrl.endsWith('.ts'));
+          genFile => genFile.srcFileName === componentPath && genFile.genFileName.endsWith('.ts'));
     }
 
     function findLineAndColumn(
@@ -127,7 +127,7 @@ describe('compiler (unbundled Angular)', () => {
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
         const sourceMap = extractSourceMap(genSource) !;
-        expect(sourceMap.file).toEqual(genFile.genFileUrl);
+        expect(sourceMap.file).toEqual(genFile.genFileName);
 
         // Note: the generated file also contains code that is not mapped to
         // the template (e.g. import statements, ...)
@@ -322,7 +322,7 @@ describe('compiler (unbundled Angular)', () => {
     const genFilePreamble = '/* Hello world! */';
     const {genFiles} = compile([FILES, angularFiles]);
     const genFile =
-        genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
+        genFiles.find(gf => gf.srcFileName === '/app/app.ts' && gf.genFileName.endsWith('.ts'));
     const genSource = toTypeScript(genFile, genFilePreamble);
     expect(genSource.startsWith(genFilePreamble)).toBe(true);
   });
@@ -407,7 +407,7 @@ describe('compiler (unbundled Angular)', () => {
     };
     const result = compile([FILES, angularFiles]);
     const appModuleFactory =
-        result.genFiles.find(f => /my-component\.ngfactory/.test(f.genFileUrl));
+        result.genFiles.find(f => /my-component\.ngfactory/.test(f.genFileName));
     expect(appModuleFactory).toBeDefined();
     if (appModuleFactory) {
       expect(toTypeScript(appModuleFactory)).toContain('MyComponentNgFactory');
@@ -441,7 +441,7 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
       const {genFiles} = compile([FILES, angularFiles]);
-      const genFile = genFiles.find(genFile => genFile.srcFileUrl === '/app/app.ts');
+      const genFile = genFiles.find(genFile => genFile.srcFileName === '/app/app.ts');
       const genSource = toTypeScript(genFile);
       const createComponentFactoryCall = /ɵccf\([^)]*\)/m.exec(genSource) ![0].replace(/\s*/g, '');
       // selector
@@ -472,7 +472,7 @@ describe('compiler (unbundled Angular)', () => {
       };
       const {genFiles} = compile([FILES, angularFiles]);
       const genFile =
-          genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
+          genFiles.find(gf => gf.srcFileName === '/app/app.ts' && gf.genFileName.endsWith('.ts'));
       const genSource = toTypeScript(genFile);
       expect(genSource).not.toContain('check(');
 
@@ -510,7 +510,7 @@ describe('compiler (unbundled Angular)', () => {
       const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
       const {genFiles: appGenFiles} =
           compile([appInput, libOutDir, angularSummaryFiles], {useSummaries: true});
-      const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts');
+      const appNgFactory = appGenFiles.find((f) => f.genFileName === '/app/main.ngfactory.ts');
       expect(toTypeScript(appNgFactory)).not.toContain('AType');
     });
   });
@@ -555,7 +555,7 @@ describe('compiler (unbundled Angular)', () => {
           compile([libInput, getAngularSummaryFiles()], {useSummaries: true});
       const {genFiles} =
           compile([libOutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
-      return genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
+      return genFiles.find(gf => gf.srcFileName === '/app/main.ts');
     }
 
     it('should inherit ctor and lifecycle hooks from classes in other compilation units', () => {
@@ -592,7 +592,7 @@ describe('compiler (unbundled Angular)', () => {
           compile([libInput, getAngularSummaryFiles()], {useSummaries: true});
       const {genFiles} =
           compile([libOutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
-      const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
+      const mainNgFactory = genFiles.find(gf => gf.srcFileName === '/app/main.ts');
       const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
       expect(toTypeScript(mainNgFactory))
           .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam]`);
@@ -645,7 +645,7 @@ describe('compiler (unbundled Angular)', () => {
              compile([lib1OutDir, lib2Input, getAngularSummaryFiles()], {useSummaries: true});
          const {genFiles} =
              compile([lib2OutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
-         const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
+         const mainNgFactory = genFiles.find(gf => gf.srcFileName === '/app/main.ts');
          const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
          expect(toTypeScript(mainNgFactory))
              .toContain(`${flags},(null as any),0,i1.Extends,[i2.AParam_2]`);
@@ -803,8 +803,8 @@ describe('compiler (bundled Angular)', () => {
   describe('Quickstart', () => {
     it('should compile', () => {
       const {genFiles} = compile([QUICKSTART, angularFiles]);
-      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
-      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileName))).toBeDefined();
+      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileName))).toBeDefined();
     });
   });
 
