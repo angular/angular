@@ -11,6 +11,6 @@
 // Entry point
 if (require.main === module) {
   const args = process.argv.slice(2);
-  console.error('>>> not yet implemented!');
+  console.error('>>> now yet implemented!');
   process.exitCode = 1;
 }

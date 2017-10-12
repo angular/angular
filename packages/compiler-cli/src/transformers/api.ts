@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile as GeneratedFileImpl, ParseSourceSpan} from '@angular/compiler';
+import {GeneratedFile, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
 export const DEFAULT_ERROR_CODE = 100;
@@ -207,32 +207,18 @@ export interface CustomTransformers {
   afterTs?: ts.TransformerFactory<ts.SourceFile>[];
 }
 
-export interface EmitArguments {
+export interface TsEmitArguments {
   program: ts.Program;
   host: CompilerHost;
   options: CompilerOptions;
-  targetSourceFiles?: ts.SourceFile[];
+  targetSourceFile?: ts.SourceFile;
   writeFile?: ts.WriteFileCallback;
   cancellationToken?: ts.CancellationToken;
   emitOnlyDtsFiles?: boolean;
   customTransformers?: ts.CustomTransformers;
 }
 
-export interface EmitCallback { (args: EmitArguments): ts.EmitResult; }
-
-/**
- * Represents a generated file that has not yet been emitted.
- */
-export interface GeneratedFile {
-  /**
-   * The file name of the sourceFile from which this file was generated.
-   */
-  srcFileName: string;
-  /**
-   * The file name of the generated but not yet emitted file.
-   */
-  genFileName: string;
-}
+export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
 
 /**
  * @internal
@@ -296,7 +282,7 @@ export interface Program {
    *
    * Angular structural information is required to produce these diagnostics.
    */
-  getNgSemanticDiagnostics(genFile?: GeneratedFile, cancellationToken?: ts.CancellationToken):
+  getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
       Diagnostic[];
 
   /**
@@ -308,32 +294,15 @@ export interface Program {
   loadNgStructureAsync(): Promise<void>;
 
   /**
-   * Retrieves the GeneratedFile with the given fileName.
-   */
-  getGeneratedFile(genFileName: string): GeneratedFile|undefined;
-
-  /**
-   * Retriesves all GeneratedFiles.
-   */
-  getGeneratedFiles(): GeneratedFile[];
-
-  /**
-   * Calculates whether the given file has changed since the `oldProgram` that was passed
-   * to `createProgram`.
-   */
-  hasChanged(fileName: string): boolean;
-
-  /**
    * Emit the files requested by emitFlags implied by the program.
    *
    * Angular structural information is required to emit files.
    */
-  emit({targetFileNames, emitFlags, cancellationToken, customTransformers, emitCallback}?: {
-    targetFileNames?: string[],
+  emit({emitFlags, cancellationToken, customTransformers, emitCallback}?: {
     emitFlags?: EmitFlags,
     cancellationToken?: ts.CancellationToken,
     customTransformers?: CustomTransformers,
-    emitCallback?: EmitCallback
+    emitCallback?: TsEmitCallback
   }): ts.EmitResult;
 
   /**
@@ -348,25 +317,10 @@ export interface Program {
   /**
    * @internal
    */
-  getEmittedGeneratedFiles(): Map<string, GeneratedFileImpl>;
+  getEmittedGeneratedFiles(): Map<string, GeneratedFile>;
 
   /**
    * @internal
    */
   getEmittedSourceFiles(): Map<string, ts.SourceFile>;
-}
-
-export type OldProgram = Program | CachedFiles;
-
-export interface CachedFiles {
-  getSourceFile(fileName: string): ts.SourceFile|undefined;
-  getGeneratedFile(srcFileName: string, genFileName: string): GeneratedFile|undefined;
-}
-
-export interface CreateProgram {
-  ({rootNames, options, host, oldProgram}: {
-    rootNames: string[],
-    options: CompilerOptions,
-    host: CompilerHost, oldProgram?: OldProgram
-  }): Program;
 }

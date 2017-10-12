@@ -7,7 +7,6 @@ ts_library(
     name = "ngc_lib",
     srcs = [
         "index.ts",
-        "emit_cache.ts",
         "extract_i18n.ts",
     ],
     deps = [
