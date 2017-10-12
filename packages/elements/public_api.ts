@@ -11,6 +11,7 @@
  * @description
  * Entry point for all public APIs of the `elements` package.
  */
+export {NgElement, NgElementWithProps} from './src/ng-element';
 export {VERSION} from './src/version';
 
 // This file only reexports content of the `src` folder. Keep it that way.
