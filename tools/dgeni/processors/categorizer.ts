@@ -20,7 +20,6 @@ import {
   isService
 } from '../common/decorators';
 import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
-import {dgeniAccessorsParse} from '../common/dgeni-accessors-parse';
 import {sortCategorizedMembers} from '../common/sort-members';
 
 export interface CategorizedClassDoc extends ClassExportDoc {
@@ -119,7 +118,6 @@ export class Categorizer implements Processor {
    */
   private decoratePropertyDoc(propertyDoc: CategorizedPropertyMemberDoc) {
     decorateDeprecatedDoc(propertyDoc);
-    dgeniAccessorsParse(propertyDoc);
 
     propertyDoc.isDirectiveInput = isDirectiveInput(propertyDoc);
     propertyDoc.directiveInputAlias = getDirectiveInputAlias(propertyDoc);

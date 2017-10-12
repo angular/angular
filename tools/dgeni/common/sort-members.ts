@@ -2,7 +2,7 @@ import {CategorizedMethodMemberDoc, CategorizedPropertyMemberDoc} from '../proce
 import {isDirectiveInput, isDirectiveOutput} from './decorators';
 
 /** Combined type for a categorized method member document. */
-type CategorizedMemberDoc = CategorizedMethodMemberDoc | CategorizedPropertyMemberDoc;
+type CategorizedMemberDoc = CategorizedMethodMemberDoc & CategorizedPropertyMemberDoc;
 
 /** Sorts members by deprecated status, member decorator, and name. */
 export function sortCategorizedMembers(docA: CategorizedMemberDoc, docB: CategorizedMemberDoc) {
