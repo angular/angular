@@ -75,6 +75,7 @@ let nextUniqueId = 0;
     '[class.mat-form-field-invalid]': '_control.errorState',
     '[class.mat-form-field-can-float]': '_canPlaceholderFloat',
     '[class.mat-form-field-should-float]': '_control.shouldPlaceholderFloat || _shouldAlwaysFloat',
+    '[class.mat-form-field-disabled]': '_control.disabled',
     '[class.mat-focused]': '_control.focused',
     '[class.mat-primary]': 'color == "primary"',
     '[class.mat-accent]': 'color == "accent"',

@@ -78,7 +78,7 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
 }
 
 .mat-form-field-type-mat-select {
-  .mat-form-field-flex {
+  &:not(.mat-form-field-disabled) .mat-form-field-flex {
     cursor: pointer;
   }
 

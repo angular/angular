@@ -148,7 +148,7 @@ $mat-form-field-underline-height: 1px !default;
   // Prevents underline from disappearing at lower zoom levels.
   transform: perspective(1px);
 
-  &.mat-disabled {
+  .mat-form-field-disabled & {
     background-position: 0;
     background-color: transparent;
   }

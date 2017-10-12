@@ -423,19 +423,19 @@ describe('MatInput without forms', function () {
     const fixture = TestBed.createComponent(MatInputWithDisabled);
     fixture.detectChanges();
 
-    const underlineEl =
-        fixture.debugElement.query(By.css('.mat-form-field-underline')).nativeElement;
+    const formFieldEl =
+        fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
     const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
 
-    expect(underlineEl.classList.contains('mat-disabled'))
-        .toBe(false, `Expected underline not to start out disabled.`);
+    expect(formFieldEl.classList.contains('mat-form-field-disabled'))
+        .toBe(false, `Expected form field not to start out disabled.`);
     expect(inputEl.disabled).toBe(false);
 
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
 
-    expect(underlineEl.classList.contains('mat-disabled'))
-        .toBe(true, `Expected underline to look disabled after property is set.`);
+    expect(formFieldEl.classList.contains('mat-form-field-disabled'))
+        .toBe(true, `Expected form field to look disabled after property is set.`);
     expect(inputEl.disabled).toBe(true);
   }));
 
@@ -1010,19 +1010,19 @@ describe('MatInput with forms', () => {
     const fixture = TestBed.createComponent(MatInputWithFormControl);
     fixture.detectChanges();
 
-    const underlineEl =
-        fixture.debugElement.query(By.css('.mat-form-field-underline')).nativeElement;
+    const formFieldEl =
+        fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
     const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
 
-    expect(underlineEl.classList)
-      .not.toContain('mat-disabled', `Expected underline not to start out disabled.`);
+    expect(formFieldEl.classList)
+      .not.toContain('mat-form-field-disabled', `Expected form field not to start out disabled.`);
     expect(inputEl.disabled).toBe(false);
 
     fixture.componentInstance.formControl.disable();
     fixture.detectChanges();
 
-    expect(underlineEl.classList).toContain('mat-disabled',
-      `Expected underline to look disabled after disable() is called.`);
+    expect(formFieldEl.classList).toContain('mat-form-field-disabled',
+      `Expected form field to look disabled after disable() is called.`);
     expect(inputEl.disabled).toBe(true);
   });
 

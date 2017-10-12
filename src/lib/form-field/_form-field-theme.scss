@@ -55,10 +55,10 @@
 
   .mat-form-field-underline {
     background-color: $underline-color;
+  }
 
-    &.mat-disabled {
-      @include mat-control-disabled-underline($underline-color);
-    }
+  .mat-form-field-disabled .mat-form-field-underline {
+    @include mat-control-disabled-underline($underline-color);
   }
 
   .mat-form-field-ripple {
