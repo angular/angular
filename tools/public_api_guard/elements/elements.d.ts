@@ -24,4 +24,7 @@ export declare type NgElementWithProps<T, P> = NgElement<T> & {
     [property in keyof
 
 /** @experimental */
+export declare function registerAsCustomElements<T>(customElementComponents: Type<any>[], platformRef: PlatformRef, moduleFactory: NgModuleFactory<T>): Promise<NgModuleRef<T>>;
+
+/** @experimental */
 export declare const VERSION: Version;

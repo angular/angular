@@ -13,6 +13,7 @@
  */
 export {NgElement, NgElementWithProps} from './src/ng-element';
 export {NgElementConstructor} from './src/ng-element-constructor';
+export {registerAsCustomElements} from './src/register-as-custom-elements';
 export {VERSION} from './src/version';
 
 // This file only reexports content of the `src` folder. Keep it that way.
