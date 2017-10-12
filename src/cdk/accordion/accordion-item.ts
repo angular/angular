@@ -8,9 +8,9 @@
 
 import {
   Output,
+  Directive,
   EventEmitter,
   Input,
-  Injectable,
   OnDestroy,
   Optional,
   ChangeDetectorRef,
@@ -18,15 +18,18 @@ import {
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {CdkAccordion} from './accordion';
 
-/** Used to generate unique ID for each expansion panel. */
+/** Used to generate unique ID for each accordion item. */
 let nextId = 0;
 
 /**
- * An abstract class to be extended and decorated as a component.  Sets up all
+ * An basic directive expected to be extended and decorated as a component.  Sets up all
  * events and attributes needed to be managed by a CdkAccordion parent.
  */
-@Injectable()
-export class AccordionItem implements OnDestroy {
+@Directive({
+  selector: 'cdk-accordion-item',
+  exportAs: 'cdkAccordionItem',
+})
+export class CdkAccordionItem implements OnDestroy {
   /** Event emitted every time the AccordionItem is closed. */
   @Output() closed = new EventEmitter<void>();
   /** Event emitted every time the AccordionItem is opened. */
@@ -62,7 +65,7 @@ export class AccordionItem implements OnDestroy {
   }
   private _expanded: boolean;
 
-  /** Unregister function for _expansionDispatcher **/
+  /** Unregister function for _expansionDispatcher. */
   private _removeUniqueSelectionListener: () => void = () => {};
 
   constructor(@Optional() public accordion: CdkAccordion,

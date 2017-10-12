@@ -25,7 +25,7 @@
 </mat-form-field>
 <br>
 
-<h1>Accordion</h1>
+<h1>matAccordion</h1>
 <div>
   <p>Accordion Options</p>
   <div>
@@ -65,3 +65,38 @@
     </mat-action-row>
   </mat-expansion-panel>
 </mat-accordion>
+<!--
+<h1>CdkAccordion</h1>
+<div>
+  <p>Accordion Options</p>
+  <div>
+    <mat-slide-toggle [(ngModel)]="accordion1.multi">Allow Multi Expansion</mat-slide-toggle>
+  </div>
+</div>
+<cdk-accordion class="mat-expansion-demo-width" #accordion1="cdkAccordion">
+  <cdk-accordion-item #item1="cdkAccordionItem">
+    <p>
+      Item 1:
+      <button mat-button (click)="item1.expanded = true">Expand</button>
+      <button mat-button (click)="item1.expanded = false">Collapse</button>
+    </p>
+    <p *ngIf="item1.expanded">I only show if item 1 is expanded</p>
+  </cdk-accordion-item>
+  <cdk-accordion-item #item2="cdkAccordionItem">
+    <p>
+      Item 2:
+      <button mat-button (click)="item2.expanded = true">Expand</button>
+      <button mat-button (click)="item2.expanded = false">Collapse</button>
+    </p>
+    <p *ngIf="item2.expanded">I only show if item 2 is expanded</p>
+  </cdk-accordion-item>
+  <cdk-accordion-item #item3="cdkAccordionItem">
+    <p>
+      Item 3:
+      <button mat-button (click)="item3.expanded = true">Expand</button>
+      <button mat-button (click)="item3.expanded = false">Collapse</button>
+    </p>
+    <p *ngIf="item3.expanded">I only show if item 3 is expanded</p>
+  </cdk-accordion-item>
+</cdk-accordion>
+ -->

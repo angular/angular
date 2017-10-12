@@ -8,29 +8,25 @@
 
 import {Directive, Input} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {CdkAccordion} from '@angular/cdk/accordion';
+
+/** Workaround for https://github.com/angular/angular/issues/17849 */
+export const _CdkAccordion = CdkAccordion;
 
 /** MatAccordion's display modes. */
 export type MatAccordionDisplayMode = 'default' | 'flat';
 
-/** Unique ID counter */
-let nextId = 0;
-
 /**
- * Directive whose purpose is to manage the expanded state of CdkAccordionItem children.
+ * Directive for a Material Design Accordion.
  */
 @Directive({
-  selector: 'cdk-accordion, [cdk-accordion]',
-  exportAs: 'cdkAccordion',
+  selector: 'mat-accordion',
+  exportAs: 'matAccordion',
+  host: {
+    class: 'mat-accordion'
+  }
 })
-export class CdkAccordion {
-  /** A readonly id value to use for unique selection coordination. */
-  readonly id = `cdk-accordion-${nextId++}`;
-
-  /** Whether the accordion should allow multiple expanded accordion items simulateously. */
-  @Input() get multi(): boolean { return this._multi; }
-  set multi(multi: boolean) { this._multi = coerceBooleanProperty(multi); }
-  private  _multi: boolean = false;
-
+export class MatAccordion extends _CdkAccordion {
   /** Whether the expansion indicator should be hidden. */
   @Input() get hideToggle(): boolean { return this._hideToggle; }
   set hideToggle(show: boolean) { this._hideToggle = coerceBooleanProperty(show); }
@@ -46,15 +42,3 @@ export class CdkAccordion {
    */
   @Input() displayMode: MatAccordionDisplayMode = 'default';
 }
-
-/**
- * Directive for a Material Design Accordion.
- */
-@Directive({
-  selector: 'mat-accordion',
-  exportAs: 'matAccordion',
-  host: {
-    class: 'mat-accordion'
-  }
-})
-export class MatAccordion extends CdkAccordion {}

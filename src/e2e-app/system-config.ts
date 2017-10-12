@@ -28,6 +28,7 @@ System.config({
     '@angular/material': 'dist/bundles/material.umd.js',
     '@angular/cdk': 'dist/bundles/cdk.umd.js',
     '@angular/cdk/a11y': 'dist/bundles/cdk-a11y.umd.js',
+    '@angular/cdk/accordion': 'dist/bundles/cdk-accordion.umd.js',
     '@angular/cdk/bidi': 'dist/bundles/cdk-bidi.umd.js',
     '@angular/cdk/coercion': 'dist/bundles/cdk-coercion.umd.js',
     '@angular/cdk/collections': 'dist/bundles/cdk-collections.umd.js',

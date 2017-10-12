@@ -21,16 +21,25 @@ import {
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
+import {CdkAccordionItem} from '@angular/cdk/accordion';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs/Subject';
 import {MatAccordion} from './accordion';
-import {AccordionItem} from './accordion-item';
 
+/** Workaround for https://github.com/angular/angular/issues/17849 */
+export const _CdkAccordionItem = CdkAccordionItem;
 
 // Boilerplate for applying mixins to MatExpansionPanel.
 /** @docs-private */
-export class MatExpansionPanelBase extends AccordionItem {
+@Component({
+  template: '',
+  moduleId: module.id,
+  encapsulation: ViewEncapsulation.None,
+  preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MatExpansionPanelBase extends _CdkAccordionItem {
   constructor(accordion: MatAccordion,
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher) {
@@ -49,7 +58,7 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
  * <mat-expansion-panel> component.
  *
  * This component can be used as a single element to show expandable content, or as one of
- * multiple children of an element with the CdkAccordion directive attached.
+ * multiple children of an element with the MdAccordion directive attached.
  *
  * Please refer to README.md for examples on how to use it.
  */
@@ -69,7 +78,7 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
     '[class.mat-expansion-panel-spacing]': '_hasSpacing()',
   },
   providers: [
-    {provide: AccordionItem, useExisting: forwardRef(() => MatExpansionPanel)}
+    {provide: _MatExpansionPanelMixinBase, useExisting: forwardRef(() => MatExpansionPanel)}
   ],
   animations: [
     trigger('bodyExpansion', [
@@ -86,6 +95,9 @@ export class MatExpansionPanel extends _MatExpansionPanelMixinBase
 
   /** Stream that emits for changes in `@Input` properties. */
   _inputChanges = new Subject<SimpleChanges>();
+
+  /** Optionally defined accordion the expansion panel belongs to. */
+  accordion: MatAccordion;
 
   constructor(@Optional() @Host() accordion: MatAccordion,
               _changeDetectorRef: ChangeDetectorRef,

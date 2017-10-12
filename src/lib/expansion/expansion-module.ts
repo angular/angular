@@ -9,9 +9,14 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {UNIQUE_SELECTION_DISPATCHER_PROVIDER} from '@angular/cdk/collections';
+import {CdkAccordionModule} from '@angular/cdk/accordion';
 import {A11yModule} from '@angular/cdk/a11y';
-import {CdkAccordion, MatAccordion} from './accordion';
-import {MatExpansionPanel, MatExpansionPanelActionRow} from './expansion-panel';
+import {MatAccordion} from './accordion';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelActionRow,
+  MatExpansionPanelBase
+} from './expansion-panel';
 import {
   MatExpansionPanelDescription,
   MatExpansionPanelHeader,
@@ -20,9 +25,8 @@ import {
 
 
 @NgModule({
-  imports: [CommonModule, A11yModule],
+  imports: [CommonModule, A11yModule, CdkAccordionModule],
   exports: [
-    CdkAccordion,
     MatAccordion,
     MatExpansionPanel,
     MatExpansionPanelActionRow,
@@ -31,7 +35,7 @@ import {
     MatExpansionPanelDescription
   ],
   declarations: [
-    CdkAccordion,
+    MatExpansionPanelBase,
     MatAccordion,
     MatExpansionPanel,
     MatExpansionPanelActionRow,
