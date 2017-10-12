@@ -1,3 +1,21 @@
+<a name="4.4.5"></a>
+## [4.4.5](https://github.com/angular/angular/compare/4.4.4...4.4.5) (2017-10-12)
+
+
+### Bug Fixes
+
+* reformat files from previous cherry-picks ([ccc25ee](https://github.com/angular/angular/commit/ccc25ee))
+* **aio:** downgrade yarn to 1.0.2 temporarily ([#19600](https://github.com/angular/angular/issues/19600)) ([d45e3aa](https://github.com/angular/angular/commit/d45e3aa))
+* **aio:** fix SearchService to work with TypeScript 2.4 ([#19600](https://github.com/angular/angular/issues/19600)) ([cf4b4d5](https://github.com/angular/angular/commit/cf4b4d5))
+* **compiler:** `TestBed.overrideProvider` should keep imported `NgModule`s eager ([#19624](https://github.com/angular/angular/issues/19624)) ([734378c](https://github.com/angular/angular/commit/734378c))
+* **compiler:** correctly instantiate eager providers that are used via `Injector.get` ([#19558](https://github.com/angular/angular/issues/19558)) ([e292548](https://github.com/angular/angular/commit/e292548)), closes [#15501](https://github.com/angular/angular/issues/15501)
+* **compiler:** disallow references for select and index evaluation ([95f3b1d](https://github.com/angular/angular/commit/95f3b1d))
+* **core:** make dynamic & inline code checking behave the same ([#19189](https://github.com/angular/angular/issues/19189)) ([6c66031](https://github.com/angular/angular/commit/6c66031))
+* **platform-browser:** support customEqualityTesters when overriding Jasmine toEqual ([cc8ae32](https://github.com/angular/angular/commit/cc8ae32))
+* **tsc-wrapped:** don't rewrite imports when annotating for closure ([#19579](https://github.com/angular/angular/issues/19579)) ([c9f8718](https://github.com/angular/angular/commit/c9f8718))
+
+
+
 <a name="4.4.4"></a>
 ## [4.4.4](https://github.com/angular/angular/compare/4.4.3...4.4.4) (2017-09-28)
 
