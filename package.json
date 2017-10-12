@@ -84,6 +84,7 @@
     "rollup-plugin-node-resolve": "3.0.0",
     "selenium-webdriver": "3.5.0",
     "semver": "5.4.1",
+    "shelljs": "^0.7.8",
     "sorcery": "0.10.0",
     "source-map": "0.5.7",
     "source-map-support": "0.4.18",
