@@ -2309,6 +2309,77 @@ export function main() {
            expect(childCmp.childEvent.totalTime).toEqual(1000);
          }));
 
+      it('should emulate a leave animation on a sub component\'s inner elements when a parent leave animation occurs with animateChild',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
+            <div @myAnimation *ngIf="exp" class="parent">
+              <child-cmp></child-cmp>
+            </div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition(
+                         ':leave',
+                         [
+                           query('@*', animateChild()),
+                         ]),
+                   ]),
+             ]
+           })
+           class ParentCmp {
+             public exp: boolean = true;
+           }
+
+           @Component({
+             selector: 'child-cmp',
+             template: `
+               <section>
+                 <div class="inner-div" @myChildAnimation></div>
+               </section>
+             `,
+             animations: [
+               trigger(
+                   'myChildAnimation',
+                   [
+                     transition(
+                         ':leave',
+                         [
+                           style({opacity: 0}),
+                           animate('1s', style({opacity: 1})),
+                         ]),
+                   ]),
+             ]
+           })
+           class ChildCmp {
+           }
+
+           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(ParentCmp);
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = true;
+           fixture.detectChanges();
+
+           cmp.exp = false;
+           fixture.detectChanges();
+
+           let players = getLog();
+           expect(players.length).toEqual(1);
+           const [player] = players;
+
+           expect(player.element.classList.contains('inner-div')).toBeTruthy();
+           expect(player.keyframes).toEqual([
+             {opacity: '0', offset: 0},
+             {opacity: '1', offset: 1},
+           ]);
+         });
+
       it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
          () => {
            @Component({
