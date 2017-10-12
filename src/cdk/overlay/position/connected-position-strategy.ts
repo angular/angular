@@ -192,8 +192,12 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    */
   withFallbackPosition(
       originPos: OriginConnectionPosition,
-      overlayPos: OverlayConnectionPosition): this {
-    this._preferredPositions.push(new ConnectionPositionPair(originPos, overlayPos));
+      overlayPos: OverlayConnectionPosition,
+      offsetX?: number,
+      offsetY?: number): this {
+
+    const position = new ConnectionPositionPair(originPos, overlayPos, offsetX, offsetY);
+    this._preferredPositions.push(position);
     return this;
   }
 
@@ -296,9 +300,13 @@ export class ConnectedPositionStrategy implements PositionStrategy {
       overlayStartY = pos.overlayY == 'top' ? 0 : -overlayRect.height;
     }
 
+    // The (x, y) offsets of the overlay based on the current position.
+    let offsetX = typeof pos.offsetX === 'undefined' ? this._offsetX : pos.offsetX;
+    let offsetY = typeof pos.offsetY === 'undefined' ? this._offsetY : pos.offsetY;
+
     // The (x, y) coordinates of the overlay.
-    let x = originPoint.x + overlayStartX + this._offsetX;
-    let y = originPoint.y + overlayStartY + this._offsetY;
+    let x = originPoint.x + overlayStartX + offsetX;
+    let y = originPoint.y + overlayStartY + offsetY;
 
     // How much the overlay would overflow at this position, on each side.
     let leftOverflow = 0 - x;

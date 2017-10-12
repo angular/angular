@@ -354,9 +354,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
       // to the edges of the trigger, instead of overlapping it.
       overlayFallbackX = originX = this.menu.xPosition === 'before' ? 'start' : 'end';
       originFallbackX = overlayX = originX === 'end' ? 'start' : 'end';
-
-      // TODO(crisbeto): this should be a function, once the overlay supports it.
-      // Right now it will be wrong for the fallback positions.
       offsetY = overlayY === 'bottom' ? MENU_PANEL_TOP_PADDING : -MENU_PANEL_TOP_PADDING;
     } else if (!this.menu.overlapTrigger) {
       originY = overlayY === 'top' ? 'bottom' : 'top';
@@ -372,10 +369,12 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
             {overlayX: overlayFallbackX, overlayY})
         .withFallbackPosition(
             {originX, originY: originFallbackY},
-            {overlayX, overlayY: overlayFallbackY})
+            {overlayX, overlayY: overlayFallbackY},
+            undefined, -offsetY)
         .withFallbackPosition(
             {originX: originFallbackX, originY: originFallbackY},
-            {overlayX: overlayFallbackX, overlayY: overlayFallbackY});
+            {overlayX: overlayFallbackX, overlayY: overlayFallbackY},
+            undefined, -offsetY);
   }
 
   /** Cleans up the active subscriptions. */

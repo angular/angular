@@ -326,6 +326,28 @@ describe('ConnectedPositionStrategy', () => {
         expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
       });
 
+      it('should allow for the fallback positions to specify their own offsets', () => {
+        originElement.style.bottom = '0';
+        originRect = originElement.getBoundingClientRect();
+        strategy = positionBuilder
+          .connectedTo(
+            fakeElementRef,
+            {originX: 'start', originY: 'top'},
+            {overlayX: 'start', overlayY: 'top'})
+          .withFallbackPosition(
+            {originX: 'start', originY: 'top'},
+            {overlayX: 'start', overlayY: 'bottom'},
+            -100, -100);
+
+        strategy.withOffsetY(50).withOffsetY(50);
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
+
+        let overlayRect = overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.bottom)).toBe(Math.floor(originRect.top - 100));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left - 100));
+      });
+
     });
 
     it('should emit onPositionChange event when position changes', () => {
