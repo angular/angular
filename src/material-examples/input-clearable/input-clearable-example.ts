@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 /**
- * @title Input Clearable
+ * @title Input with a clear button
  */
 @Component({
   selector: 'input-clearable-example',

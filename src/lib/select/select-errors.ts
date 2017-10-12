@@ -22,7 +22,7 @@ export function getMatSelectDynamicMultipleError(): Error {
  * @docs-private
  */
 export function getMatSelectNonArrayValueError(): Error {
-  return Error('Cannot assign truthy non-array value to select in `multiple` mode.');
+  return Error('Value must be an array in multiple-selection mode.');
 }
 
 /**
@@ -31,5 +31,5 @@ export function getMatSelectNonArrayValueError(): Error {
  * actually takes two values and returns a boolean is not checked.
  */
 export function getMatSelectNonFunctionValueError(): Error {
-  return Error('Cannot assign a non-function value to `compareWith`.');
+  return Error('`compareWith` must be a function.');
 }

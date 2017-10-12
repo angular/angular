@@ -52,7 +52,9 @@ import {GridListDynamicExample} from './grid-list-dynamic/grid-list-dynamic-exam
 import {GridListOverviewExample} from './grid-list-overview/grid-list-overview-example';
 import {IconOverviewExample} from './icon-overview/icon-overview-example';
 import {IconSvgExample} from './icon-svg-example/icon-svg-example';
+import {InputAutosizeTextareaExample} from './input-autosize-textarea/input-autosize-textarea-example';
 import {InputClearableExample} from './input-clearable/input-clearable-example';
+import {InputErrorStateMatcherExample} from './input-error-state-matcher/input-error-state-matcher-example';
 import {InputErrorsExample} from './input-errors/input-errors-example';
 import {InputFormExample} from './input-form/input-form-example';
 import {InputHintExample} from './input-hint/input-hint-example';
@@ -72,8 +74,18 @@ import {ProgressSpinnerConfigurableExample} from './progress-spinner-configurabl
 import {ProgressSpinnerOverviewExample} from './progress-spinner-overview/progress-spinner-overview-example';
 import {RadioNgModelExample} from './radio-ng-model/radio-ng-model-example';
 import {RadioOverviewExample} from './radio-overview/radio-overview-example';
+import {SelectCustomTriggerExample} from './select-custom-trigger/select-custom-trigger-example';
+import {SelectDisabledExample} from './select-disabled/select-disabled-example';
+import {SelectErrorStateMatcherExample} from './select-error-state-matcher/select-error-state-matcher-example';
 import {SelectFormExample} from './select-form/select-form-example';
+import {SelectHintErrorExample} from './select-hint-error/select-hint-error-example';
+import {SelectMultipleExample} from './select-multiple/select-multiple-example';
+import {SelectNoRippleExample} from './select-no-ripple/select-no-ripple-example';
+import {SelectOptgroupExample} from './select-optgroup/select-optgroup-example';
 import {SelectOverviewExample} from './select-overview/select-overview-example';
+import {SelectPanelClassExample} from './select-panel-class/select-panel-class-example';
+import {SelectResetExample} from './select-reset/select-reset-example';
+import {SelectValueBindingExample} from './select-vlaue-binding/select-value-binding-example';
 import {SidenavFabExample} from './sidenav-fab/sidenav-fab-example';
 import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-example';
 import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
@@ -333,14 +345,26 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  'input-autosize-textarea': {
+    title: 'Auto-resizing textarea ',
+    component: InputAutosizeTextareaExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'input-clearable': {
-    title: 'Input Clearable',
+    title: 'Input with a clear button',
     component: InputClearableExample,
     additionalFiles: null,
     selectorName: null
   },
+  'input-error-state-matcher': {
+    title: 'Input with a custom ErrorStateMatcher ',
+    component: InputErrorStateMatcherExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'input-errors': {
-    title: 'Input Errors',
+    title: 'Input with error messages',
     component: InputErrorsExample,
     additionalFiles: null,
     selectorName: null
@@ -352,7 +376,7 @@ export const EXAMPLE_COMPONENTS = {
     selectorName: null
   },
   'input-hint': {
-    title: 'Input hints',
+    title: 'Input with hints',
     component: InputHintExample,
     additionalFiles: null,
     selectorName: null
@@ -364,7 +388,7 @@ export const EXAMPLE_COMPONENTS = {
     selectorName: null
   },
   'input-prefix-suffix': {
-    title: 'Input Prefixes and Suffixes',
+    title: 'Inputs with prefixes and suffixes',
     component: InputPrefixSuffixExample,
     additionalFiles: null,
     selectorName: null
@@ -453,15 +477,75 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  'select-custom-trigger': {
+    title: 'Select with custom trigger text ',
+    component: SelectCustomTriggerExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-disabled': {
+    title: 'Disabled select ',
+    component: SelectDisabledExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-error-state-matcher': {
+    title: 'Select with a custom ErrorStateMatcher ',
+    component: SelectErrorStateMatcherExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'select-form': {
     title: 'Select in a form',
     component: SelectFormExample,
     additionalFiles: null,
     selectorName: null
   },
+  'select-hint-error': {
+    title: 'Select with form field features ',
+    component: SelectHintErrorExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-multiple': {
+    title: 'Select with multiple selection ',
+    component: SelectMultipleExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-no-ripple': {
+    title: 'Select with cno option ripple ',
+    component: SelectNoRippleExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-optgroup': {
+    title: 'Select with option groups ',
+    component: SelectOptgroupExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'select-overview': {
     title: 'Basic select',
     component: SelectOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-panel-class': {
+    title: 'Select with custom panel styling',
+    component: SelectPanelClassExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-reset': {
+    title: 'Select with reset option ',
+    component: SelectResetExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'select-value-binding': {
+    title: 'Select with 2-way value binding ',
+    component: SelectValueBindingExample,
     additionalFiles: null,
     selectorName: null
   },
@@ -645,7 +729,9 @@ export const EXAMPLE_LIST = [
   GridListOverviewExample,
   IconOverviewExample,
   IconSvgExample,
+  InputAutosizeTextareaExample,
   InputClearableExample,
+  InputErrorStateMatcherExample,
   InputErrorsExample,
   InputFormExample,
   InputHintExample,
@@ -665,8 +751,18 @@ export const EXAMPLE_LIST = [
   ProgressSpinnerOverviewExample,
   RadioNgModelExample,
   RadioOverviewExample,
+  SelectCustomTriggerExample,
+  SelectDisabledExample,
+  SelectErrorStateMatcherExample,
   SelectFormExample,
+  SelectHintErrorExample,
+  SelectMultipleExample,
+  SelectNoRippleExample,
+  SelectOptgroupExample,
   SelectOverviewExample,
+  SelectPanelClassExample,
+  SelectResetExample,
+  SelectValueBindingExample,
   SidenavFabExample,
   SidenavOverviewExample,
   SlideToggleConfigurableExample,

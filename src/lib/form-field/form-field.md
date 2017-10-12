@@ -7,13 +7,14 @@ In this document, "form field" refers to the wrapper component `<mat-form-field>
 (e.g. the input, textarea, select, etc.)
 
 The following Angular Material components are designed to work inside a `<mat-form-field>`:
-* [&lt;input matInput&gt; &amp; &lt;textarea matInput&gt;](https://material.angular.io/components/input/overview)
-* [&lt;mat-select&gt;](https://material.angular.io/components/select/overview)
-* [&lt;mat-chip-list&gt;](https://material.angular.io/components/chips/overview)
+* [`<input matInput>` &amp; `<textarea matInput>`](https://material.angular.io/components/input/overview)
+* [`<mat-select>`](https://material.angular.io/components/select/overview)
+* [`<mat-chip-list>`](https://material.angular.io/components/chips/overview)
 
 <!-- example(form-field-overview) -->
 
 ### Floating placeholder
+
 The floating placeholder is a text label displayed on top of the form field control when
 the control does not contain any text. By default, when text is present the floating placeholder
 floats above the form field control.
@@ -46,6 +47,7 @@ setting can be either `always`, `never`, or `auto`.
 ```
 
 ### Hint labels
+
 Hint labels are additional descriptive text that appears below the form field's underline. A
 `<mat-form-field>` can have up to two hint labels; one start-aligned (left in an LTR language, right
 in RTL), and one end-aligned.
@@ -60,6 +62,7 @@ raise an error.
 <!-- example(form-field-hint) -->
 
 ### Error messages
+
 Error messages can be shown under the form field underline by adding `mat-error` elements inside the
 form field. Errors are hidden initially and will be displayed on invalid form fields after the user
 has interacted with the element or the parent form has been submitted. Since the errors occupy the
@@ -74,6 +77,7 @@ multiple errors is up to the user.
 <!-- example(form-field-error) -->
 
 ### Prefix & suffix
+
 Custom content can be included before and after the input tag, as a prefix or suffix. It will be
 included within the visual container that wraps the form control as per the Material specification.
 
@@ -83,12 +87,14 @@ the prefix. Similarly, adding `matSuffix` will designate it as the suffix.
 <!-- example(form-field-prefix-suffix) -->
 
 ### Custom form field controls
+
 In addition to the form field controls that Angular Material provides, it is possible to create
 custom form field controls that work with `<mat-form-field>` in the same way. For additional
 information on this see the guide on
 [Creating Custom mat-form-field Controls](https://material.angular.io/guide/creating-a-custom-form-field-control).
 
 ### Theming
+
 `<mat-form-field>` has a `color` property which can be set to `primary`, `accent`, or `warn`. This
 will set the color of the form field underline and floating placeholder based on the theme colors
 of your app.
@@ -105,24 +111,29 @@ mat-form-field.mat-form-field {
 <!-- example(form-field-theming) -->
 
 ### Accessibility
-If a floating placeholder is specified, it will be automatically used as the label for the form field
-control. If no floating placeholder is specified, the user should label the form field control
+
+If a floating placeholder is specified, it will be automatically used as the label for the form
+field control. If no floating placeholder is specified, the user should label the form field control
 themselves using `aria-label`, `aria-labelledby` or `<label for=...>`.
 
 Any errors and hints added to the form field are automatically added to the form field control's
 `aria-describedby` set.
 
 ### Troubleshooting
+
 #### Error: Placeholder attribute and child element were both specified
+
 This error occurs when you have specified two conflicting placeholders. Make sure that you haven't
 included both a `placeholder` property on your form field control and a `<mat-placeholder>`
 element.
 
 #### Error: A hint was already declared for align="..."
+
 This error occurs if you have added multiple hints for the same side. Keep in mind that the
 `hintLabel` property adds a hint to the start side.
 
 #### Error: mat-form-field must contain a MatFormFieldControl
+
 This error occurs when you have not added a form field control to your form field. If your form
 field contains a native `<input>` or `<textarea>` element, make sure you've added the `matInput`
 directive to it. Other components that can act as a form field control include `<mat-select>`,

@@ -18,7 +18,7 @@ import {
   ScrollStrategy,
   ViewportRuler,
 } from '@angular/cdk/overlay';
-import {filter, first, startWith, takeUntil, RxChain} from '@angular/cdk/rxjs';
+import {filter, first, RxChain, startWith, takeUntil} from '@angular/cdk/rxjs';
 import {
   AfterContentInit,
   Attribute,
@@ -28,6 +28,7 @@ import {
   ContentChild,
   ContentChildren,
   Directive,
+  DoCheck,
   ElementRef,
   EventEmitter,
   Inject,
@@ -35,6 +36,7 @@ import {
   Input,
   isDevMode,
   NgZone,
+  OnChanges,
   OnDestroy,
   OnInit,
   Optional,
@@ -42,26 +44,26 @@ import {
   QueryList,
   Renderer2,
   Self,
+  SimpleChanges,
   ViewChild,
   ViewEncapsulation,
-  DoCheck,
 } from '@angular/core';
 import {
   ControlValueAccessor,
+  FormControl,
   FormGroupDirective,
   NgControl,
-  NgForm,
-  FormControl
+  NgForm
 } from '@angular/forms';
 import {
   CanDisable,
+  ErrorStateMatcher,
   HasTabIndex,
   MatOptgroup,
   MatOption,
   MatOptionSelectionChange,
   mixinDisabled,
   mixinTabIndex,
-  ErrorStateMatcher,
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
@@ -187,8 +189,9 @@ export class MatSelectTrigger {}
   ],
   providers: [{provide: MatFormFieldControl, useExisting: MatSelect}],
 })
-export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, OnDestroy, OnInit,
-    DoCheck, ControlValueAccessor, CanDisable, HasTabIndex, MatFormFieldControl<any> {
+export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, OnChanges,
+    OnDestroy, OnInit, DoCheck, ControlValueAccessor, CanDisable, HasTabIndex,
+    MatFormFieldControl<any> {
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
@@ -458,6 +461,14 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   ngDoCheck() {
     if (this.ngControl) {
       this._updateErrorState();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // Updating the disabled state is handled by `mixinDisabled`, but we need to additionally let
+    // the parent form field know to run change detection when the disabled state changes.
+    if (changes.disabled) {
+      this.stateChanges.next();
     }
   }
 

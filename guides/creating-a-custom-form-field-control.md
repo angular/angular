@@ -70,6 +70,7 @@ class MyTelInput {
 ```
 
 ### Providing our component as a MatFormFieldControl
+
 The first step is to provide our new component as an implementation of the `MatFormFieldControl`
 interface that the `<mat-form-field>` knows how to work with. To do this, we will have our class
 implement `MatFormFieldControl`. Since this is a generic interface, we'll need to include a type
@@ -89,18 +90,19 @@ class MyTelInput implements MatFormFieldControl<MyTel> {
 
 This sets up our component so it can work with `<mat-form-field>`, but now we need to implement the
 various methods and properties declared by the interface we just implemented. To learn more about
-the `MatFormFieldControl` interface, see its
-[definition](https://github.com/angular/material2/blob/master/src/lib/form-field/form-field-control.ts).
-(Unfortunately generated API docs are not available yet, but we'll go through the methods and
-properties in this guide.) 
+the `MatFormFieldControl` interface, see the
+[form field API documentation](https://material.angular.io/components/form-field/api).
 
 ### Implementing the methods and properties of MatFormFieldControl
+
 #### `value`
+
 This property allows someone to set or get the value of our control. Its type should be the same
 type we used for the type parameter when we implemented `MatFormFieldControl`. Since our component 
 already has a value property, we don't need to do anything for this one.
 
 #### `stateChanges`
+
 Because the `<mat-form-field>` uses the `OnPush` change detection strategy, we need to let it know
 when something happens in the form field control that may require the form field to run change
 detection. We do this via the `stateChanges` property. So far the only thing the form field needs to
@@ -122,6 +124,7 @@ ngOnDestroy() {
 ```
 
 #### `id`
+
 This property should return the ID of an element in the component's template that we want the
 `<mat-form-field>` to associate all of its labels and hints with. In this case, we'll use the host
 element and just generate a unique ID for it.
@@ -133,6 +136,7 @@ static nextId = 0;
 ```
 
 #### `placeholder`
+
 This property allows us to tell the `<mat-form-field>` what to use as a placeholder. In this
 example, we'll do the same thing as `matInput` and `<mat-select>` and allow the user to specify it
 via an `@Input()`. Since the value of the placeholder may change over time, we need to make sure to
@@ -152,6 +156,7 @@ private _placeholder: string;
 ```
 
 #### `ngControl`
+
 This property allows the form field control to specify the `@angular/forms` control that is bound to
 this component. Since we haven't set up our component to act as a `ControlValueAccessor`, we'll just
 set this to `null` in our component. In any real component, you would probably want to implement
@@ -170,6 +175,7 @@ constructor(..., @Optional() @Self() public ngControl: NgControl) { ... }
 ```
 
 #### `focused`
+
 This property indicates whether or not the form field control should be considered to be in a
 focused state. When it is in a focused state, the form field is displayed with a solid color
 underline. For the purposes of our component, we want to consider it focused if any of the part
@@ -195,6 +201,7 @@ ngOnDestroy() {
 ```
 
 #### `empty`
+
 This property indicates whether the form field control is empty. For our control, we'll consider it
 empty if all of the parts are empty.
 
@@ -206,6 +213,7 @@ get empty() {
 ```
 
 #### `shouldPlaceholderFloat`
+
 This property is used to indicate whether the placeholder should be in the floating position. We'll
 use the same logic as `matInput` and float the placeholder when the input is focused or non-empty.
 Since the placeholder will be overlapping our control when when it's not floating, we should hide
@@ -228,6 +236,7 @@ span {
 ```
 
 #### `required`
+
 This property is used to indicate whether the input is required. `<mat-form-field>` uses this
 information to add a required indicator to the placeholder. Again, we'll want to make sure we run
 change detection if the required state changes.
@@ -245,6 +254,7 @@ private _required = false;
 ```
 
 #### `disabled`
+
 This property tells the form field when it should be in the disabled state. In addition to reporting
 the right state to the form field, we need to set the disabled state on the individual inputs that
 make up our component.
@@ -269,6 +279,7 @@ private _disabled = false;
 ```
 
 #### `errorState`
+
 This property indicates whether the associated `NgControl` is in an error state. Since we're not
 using an `NgControl` in this example, we don't need to do anything other than just set it to `false`.
 
@@ -277,6 +288,7 @@ errorState = false;
 ```
 
 #### `controlType`
+
 This property allows us to specify a unique string for the type of control in form field. The
 `<mat-form-field>` will add an additional class based on this type that can be used to easily apply
 special styles to a `<mat-form-field>` that contains a specific type of control. In this example
@@ -288,6 +300,7 @@ controlType = 'my-tel-input';
 ```
 
 #### `setAriaDescribedByIds(ids: string[])`
+
 This method is used by the `<mat-form-field>` to specify the IDs that should be used for the
 `aria-describedby` attribute of your component. The method has one parameter, the list of IDs, we
 just need to apply the given IDs to our host element.
@@ -301,6 +314,7 @@ setDescribedByIds(ids: string[]) {
 ```
 
 #### `onContainerClick(event: MouseEvent)`
+
 This method will be called when the form field is clicked on. It allows your component to hook in
 and handle that click however it wants. The method has one parameter, the `MouseEvent` for the
 click. In our case we'll just focus the first `<input>` if the user isn't about to click an
@@ -315,6 +329,7 @@ onContainerClick(event: MouseEvent) {
 ```
 
 ### Trying it out
+
 Now that we've fully implemented the interface, we're ready to try our component out! All we need to
 do is place it inside of a `<mat-form-field>`
 
