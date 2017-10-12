@@ -244,7 +244,7 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   }
 
   get shouldPlaceholderFloat(): boolean {
-    return this.empty;
+    return !this.empty || this.focused;
   }
 
   /** Whether this chip-list is disabled. */
