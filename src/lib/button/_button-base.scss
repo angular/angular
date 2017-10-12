@@ -51,7 +51,7 @@ $mat-mini-fab-padding: 8px !default;
     cursor: default;
   }
 
-  &.cdk-keyboard-focused {
+  &.cdk-keyboard-focused, &.cdk-program-focused {
     .mat-button-focus-overlay {
       opacity: 1;
     }

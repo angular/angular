@@ -38,10 +38,13 @@ $mat-button-toggle-border-radius: 2px !default;
 .mat-button-toggle {
   white-space: nowrap;
   position: relative;
-}
 
-.mat-button-toggle.cdk-keyboard-focused .mat-button-toggle-focus-overlay {
-  opacity: 1;
+  &.cdk-keyboard-focused,
+  &.cdk-program-focused {
+    .mat-button-toggle-focus-overlay {
+      opacity: 1;
+    }
+  }
 }
 
 .mat-button-toggle-label-content {

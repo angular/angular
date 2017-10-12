@@ -73,11 +73,12 @@
       <button mat-raised-button (click)="button1.focus()">Focus 1</button>
       <button mat-raised-button (click)="button2.focus()">Focus 2</button>
       <button mat-raised-button (click)="button3.focus()">Focus 3</button>
+      <button mat-raised-button (click)="button4.focus()">Focus 4</button>
     </div>
     <button mat-button #button1 [disabled]="isDisabled" (click)="clickCounter=clickCounter+1">off</button>
-    <button mat-button color="primary" [disabled]="isDisabled">off</button>
-    <a href="http://www.google.com" #button2 mat-button color="accent" [disabled]="isDisabled">off</a>
-    <button mat-raised-button #button3 color="primary" [disabled]="isDisabled">off</button>
+    <button mat-button #button2 color="primary" [disabled]="isDisabled">off</button>
+    <a href="http://www.google.com" #button3 mat-button color="accent" [disabled]="isDisabled">off</a>
+    <button mat-raised-button #button4 color="primary" [disabled]="isDisabled">off</button>
     <button mat-mini-fab [disabled]="isDisabled">
       <mat-icon>check</mat-icon>
     </button>

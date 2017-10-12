@@ -7,7 +7,7 @@
  */
 
 import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
-import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
+import {FocusTrap, FocusTrapFactory, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
@@ -172,6 +172,9 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
   /** Whether the drawer is opened. */
   private _opened: boolean = false;
 
+  /** How the sidenav was opened (keypress, mouse click etc.) */
+  private _openedVia: FocusOrigin | null;
+
   /** Emits whenever the drawer has started animating. */
   _animationStarted = new EventEmitter<AnimationEvent>();
 
@@ -230,6 +233,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
 
   constructor(private _elementRef: ElementRef,
               private _focusTrapFactory: FocusTrapFactory,
+              private _focusMonitor: FocusMonitor,
               @Optional() @Inject(DOCUMENT) private _doc: any) {
     this.openedChange.subscribe((opened: boolean) => {
       if (opened) {
@@ -251,16 +255,18 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
    * opened.
    */
   private _restoreFocus() {
-    let activeEl = this._doc && this._doc.activeElement;
+    const activeEl = this._doc && this._doc.activeElement;
+
     if (activeEl && this._elementRef.nativeElement.contains(activeEl)) {
       if (this._elementFocusedBeforeDrawerWasOpened instanceof HTMLElement) {
-        this._elementFocusedBeforeDrawerWasOpened.focus();
+        this._focusMonitor.focusVia(this._elementFocusedBeforeDrawerWasOpened, this._openedVia);
       } else {
         this._elementRef.nativeElement.blur();
       }
     }
 
     this._elementFocusedBeforeDrawerWasOpened = null;
+    this._openedVia = null;
   }
 
   ngAfterContentInit() {
@@ -285,10 +291,13 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
     this.toggle(coerceBooleanProperty(v));
   }
 
-
-  /** Open the drawer. */
-  open(): Promise<MatDrawerToggleResult> {
-    return this.toggle(true);
+  /**
+   * Open the drawer.
+   * @param openedVia Whether the drawer was opened by a key press, mouse click or programmatically.
+   * Used for focus management after the sidenav is closed.
+   */
+  open(openedVia?: FocusOrigin): Promise<MatDrawerToggleResult> {
+    return this.toggle(true, openedVia);
   }
 
   /** Close the drawer. */
@@ -299,12 +308,17 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
   /**
    * Toggle this drawer.
    * @param isOpen Whether the drawer should be open.
+   * @param openedVia Whether the drawer was opened by a key press, mouse click or programmatically.
+   * Used for focus management after the sidenav is closed.
    */
-  toggle(isOpen: boolean = !this.opened): Promise<MatDrawerToggleResult> {
+  toggle(isOpen: boolean = !this.opened, openedVia: FocusOrigin = 'program'):
+    Promise<MatDrawerToggleResult> {
+
     this._opened = isOpen;
 
     if (isOpen) {
       this._animationState = this._enableAnimations ? 'open' : 'open-instant';
+      this._openedVia = openedVia;
     } else {
       this._animationState = 'void';
       this._restoreFocus();

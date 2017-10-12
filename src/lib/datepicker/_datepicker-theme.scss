@@ -52,7 +52,8 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 
   :not(.mat-calendar-body-disabled):hover,
-  .cdk-keyboard-focused .mat-calendar-body-active {
+  .cdk-keyboard-focused .mat-calendar-body-active,
+  .cdk-program-focused .mat-calendar-body-active {
     & > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
       background-color: mat-color($background, hover);
     }
