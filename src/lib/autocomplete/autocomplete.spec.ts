@@ -543,12 +543,12 @@ describe('MatAutocomplete', () => {
     }));
 
     it('should disable input in view when disabled programmatically', () => {
-      const inputUnderline =
-          fixture.debugElement.query(By.css('.mat-form-field-underline')).nativeElement;
+      const formFieldElement =
+          fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
 
       expect(input.disabled)
           .toBe(false, `Expected input to start out enabled in view.`);
-      expect(inputUnderline.classList.contains('mat-disabled'))
+      expect(formFieldElement.classList.contains('mat-form-field-disabled'))
           .toBe(false, `Expected input underline to start out with normal styles.`);
 
       fixture.componentInstance.stateCtrl.disable();
@@ -556,7 +556,7 @@ describe('MatAutocomplete', () => {
 
       expect(input.disabled)
           .toBe(true, `Expected input to be disabled in view when disabled programmatically.`);
-      expect(inputUnderline.classList.contains('mat-disabled'))
+      expect(formFieldElement.classList.contains('mat-form-field-disabled'))
           .toBe(true, `Expected input underline to display disabled styles.`);
     });
 
