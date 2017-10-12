@@ -21,7 +21,7 @@ import { MockSearchService } from 'testing/search.service';
 import { NavigationNode } from 'app/navigation/navigation.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
 import { SelectComponent } from 'app/shared/select/select.component';
 import { TocComponent } from 'app/embedded/toc/toc.component';
