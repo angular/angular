@@ -114,8 +114,8 @@ export class MatDialog {
    * @param config Extra configuration options.
    * @returns Reference to the newly-opened dialog.
    */
-  open<T>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
-          config?: MatDialogConfig): MatDialogRef<T> {
+  open<T, D = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
+          config?: MatDialogConfig<D>): MatDialogRef<T> {
 
     const inProgressDialog = this.openDialogs.find(dialog => dialog._isAnimating());
 
