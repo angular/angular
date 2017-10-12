@@ -15,11 +15,10 @@ import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
 import {ModuleMetadata} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
-import {GENERATED_FILES} from './util';
+import {EXT, GENERATED_FILES} from './util';
 
 const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-)+|(@(\w|-)+\/(\w|-)+))/;
 const DTS = /\.d\.ts$/;
-const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 
 export function createCompilerHost(
     {options, tsHost = ts.createCompilerHost(options, true)}:
@@ -262,11 +261,12 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   updateGeneratedFile(genFile: GeneratedFile): ts.SourceFile {
     if (!genFile.stmts) {
       throw new Error(
-          `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileUrl}`);
+          `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileName}`);
     }
-    const oldGenFile = this.generatedSourceFiles.get(genFile.genFileUrl);
+    const oldGenFile = this.generatedSourceFiles.get(genFile.genFileName);
     if (!oldGenFile) {
-      throw new Error(`Illegal State: previous GeneratedFile not found for ${genFile.genFileUrl}.`);
+      throw new Error(
+          `Illegal State: previous GeneratedFile not found for ${genFile.genFileName}.`);
     }
     const newRefs = genFileExternalReferences(genFile);
     const oldRefs = oldGenFile.externalReferences;
@@ -276,7 +276,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     }
     if (!refsAreEqual) {
       throw new Error(
-          `Illegal State: external references changed in ${genFile.genFileUrl}.\nOld: ${Array.from(oldRefs)}.\nNew: ${Array.from(newRefs)}`);
+          `Illegal State: external references changed in ${genFile.genFileName}.\nOld: ${Array.from(oldRefs)}.\nNew: ${Array.from(newRefs)}`);
     }
     return this.addGeneratedFile(genFile, newRefs);
   }
@@ -284,14 +284,14 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   private addGeneratedFile(genFile: GeneratedFile, externalReferences: Set<string>): ts.SourceFile {
     if (!genFile.stmts) {
       throw new Error(
-          `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileUrl}`);
+          `Invalid Argument: Expected a GenerateFile with statements. ${genFile.genFileName}`);
     }
     const {sourceText, context} = this.emitter.emitStatementsAndContext(
-        genFile.genFileUrl, genFile.stmts, /* preamble */ '',
+        genFile.genFileName, genFile.stmts, /* preamble */ '',
         /* emitSourceMaps */ false);
     const sf = ts.createSourceFile(
-        genFile.genFileUrl, sourceText, this.options.target || ts.ScriptTarget.Latest);
-    this.generatedSourceFiles.set(genFile.genFileUrl, {
+        genFile.genFileName, sourceText, this.options.target || ts.ScriptTarget.Latest);
+    this.generatedSourceFiles.set(genFile.genFileName, {
       sourceFile: sf,
       emitCtx: context, externalReferences,
     });

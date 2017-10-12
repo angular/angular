@@ -58,7 +58,8 @@ describe('ng program', () => {
 
   function compile(
       oldProgram?: ng.Program, overrideOptions?: ng.CompilerOptions, rootNames?: string[],
-      host?: CompilerHost): {program: ng.Program, emitResult: ts.EmitResult} {
+      host?: CompilerHost,
+      targetFileNames?: string[]): {program: ng.Program, emitResult: ts.EmitResult} {
     const options = testSupport.createCompilerOptions(overrideOptions);
     if (!rootNames) {
       rootNames = [path.resolve(testSupport.basePath, 'src/index.ts')];
@@ -73,7 +74,7 @@ describe('ng program', () => {
       oldProgram,
     });
     expectNoDiagnosticsInProgram(options, program);
-    const emitResult = program.emit();
+    const emitResult = program.emit({targetFileNames});
     return {emitResult, program};
   }
 
@@ -468,6 +469,38 @@ describe('ng program', () => {
     testSupport.shouldExist('built/main.ngfactory.js');
     testSupport.shouldExist('built/main.ngfactory.d.ts');
     testSupport.shouldExist('built/main.ngsummary.json');
+    testSupport.shouldNotExist('built/node_modules/lib/index.js');
+    testSupport.shouldNotExist('built/node_modules/lib/index.d.ts');
+    testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.js');
+    testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.d.ts');
+    testSupport.shouldNotExist('built/node_modules/lib/index.ngsummary.json');
+  });
+
+  it('should only emit the given files', () => {
+    testSupport.writeFiles({
+      'src/main.ts': createModuleAndCompSource('main'),
+      'src/main2.ts': createModuleAndCompSource('main2'),
+      'src/index.ts': `
+          export * from './main';
+          export * from './main2';
+        `
+    });
+    compile(undefined, undefined, undefined, undefined, [
+      path.resolve(testSupport.basePath, 'src/index.ts'),
+      path.resolve(testSupport.basePath, 'src/index.ngfactory.ts'),
+      path.resolve(testSupport.basePath, 'src/main.ts'),
+      path.resolve(testSupport.basePath, 'src/main.ngfactory.ts')
+    ]);
+    testSupport.shouldExist('built/src/main.js');
+    testSupport.shouldExist('built/src/main.d.ts');
+    testSupport.shouldExist('built/src/main.ngfactory.js');
+    testSupport.shouldExist('built/src/main.ngfactory.d.ts');
+    testSupport.shouldExist('built/src/main.ngsummary.json');
+    testSupport.shouldNotExist('built/src/main2.js');
+    testSupport.shouldNotExist('built/src/main2.d.ts');
+    testSupport.shouldNotExist('built/src/main2.ngfactory.js');
+    testSupport.shouldNotExist('built/src/main2.ngfactory.d.ts');
+    testSupport.shouldNotExist('built/src/main2.ngsummary.json');
     testSupport.shouldNotExist('built/node_modules/lib/index.js');
     testSupport.shouldNotExist('built/node_modules/lib/index.d.ts');
     testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.js');
