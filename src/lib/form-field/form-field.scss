@@ -6,6 +6,10 @@
 $mat-form-field-hint-min-space: 1em !default;
 // The height of the underline.
 $mat-form-field-underline-height: 1px !default;
+// Infix stretches to fit the container, but naturally wants to be this wide. We set this in order
+// to have a a consistent natural size for the various types of controls that can go in a form
+// field.
+$mat-form-field-default-infix-width: 180px !default;
 
 
 .mat-form-field {
@@ -60,6 +64,7 @@ $mat-form-field-underline-height: 1px !default;
   position: relative;
   flex: auto;
   min-width: 0;
+  width: $mat-form-field-default-infix-width;
 }
 
 // Used to hide the placeholder overflow on IE, since IE doesn't take transform into account when
