@@ -652,7 +652,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    */
   _onFadeInDone(): void {
     this._panelDoneAnimating = this.panelOpen;
-    this.panel.nativeElement.focus();
     this._changeDetectorRef.markForCheck();
   }
 
