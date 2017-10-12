@@ -98,3 +98,18 @@ export function installMockScheduler(isSync?: boolean): AsyncMockScheduler|SyncM
 
   return mockScheduler;
 }
+
+export function patchEnv() {
+  // This helper function is defined in `test-main.js`. See there for more details.
+  (window as any).$$patchInnerHtmlProp();
+}
+
+export function restoreEnv() {
+  // This helper function is defined in `test-main.js`. See there for more details.
+  (window as any).$$restoreInnerHtmlProp();
+}
+
+export function supportsCustomElements() {
+  // The browser does not natively support custom elements and is not polyfillable.
+  return typeof customElements !== 'undefined';
+}
