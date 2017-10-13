@@ -1,6 +1,6 @@
 import { InjectionToken, Inject, Injectable } from '@angular/core';
 import { of } from 'rxjs/observable/of';
-import { MdIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -45,7 +45,7 @@ function createFakeHttp(http: HttpClient): any {
  * us to provide preloaded icon SVG sources.
  */
 @Injectable()
-export class CustomMdIconRegistry extends MdIconRegistry {
+export class CustomMdIconRegistry extends MatIconRegistry {
   private preloadedSvgElements: SvgIconMap = {};
 
   constructor(http: HttpClient, sanitizer: DomSanitizer, @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {

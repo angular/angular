@@ -1,6 +1,6 @@
 import { Component, DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MdSnackBarModule, MdSnackBar } from '@angular/material';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -42,7 +42,7 @@ describe('CodeComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ MdSnackBarModule, NoopAnimationsModule ],
+      imports: [ MatSnackBarModule, NoopAnimationsModule ],
       declarations: [ CodeComponent, HostComponent ],
       providers: [
         PrettyPrinter,
@@ -243,7 +243,7 @@ describe('CodeComponent', () => {
     });
 
     it('should display a message when copy succeeds', () => {
-      const snackBar: MdSnackBar = TestBed.get(MdSnackBar);
+      const snackBar: MatSnackBar = TestBed.get(MatSnackBar);
       const copierService: CopierService = TestBed.get(CopierService);
       spyOn(snackBar, 'open');
       spyOn(copierService, 'copyText').and.returnValue(true);
@@ -252,7 +252,7 @@ describe('CodeComponent', () => {
     });
 
     it('should display an error when copy fails', () => {
-      const snackBar: MdSnackBar = TestBed.get(MdSnackBar);
+      const snackBar: MatSnackBar = TestBed.get(MatSnackBar);
       const copierService: CopierService = TestBed.get(CopierService);
       spyOn(snackBar, 'open');
       spyOn(copierService, 'copyText').and.returnValue(false);
