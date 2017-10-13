@@ -1,4 +1,4 @@
-import { browser, element, by, promise } from 'protractor';
+import { element, by } from 'protractor';
 import { SitePage } from './app.po';
 
 describe('site App', function() {
@@ -41,20 +41,20 @@ describe('site App', function() {
 
   describe('scrolling to the top', () => {
     it('should scroll to the top when navigating to another page', () => {
-      page.navigateTo('guide/docs');
+      page.navigateTo('guide/security');
       page.scrollToBottom();
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
 
-      page.navigateTo('guide/api');
+      page.navigateTo('api');
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
     });
 
     it('should scroll to the top when navigating to the same page', () => {
-      page.navigateTo('guide/docs');
+      page.navigateTo('guide/security');
       page.scrollToBottom();
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
 
-      page.navigateTo('guide/docs');
+      page.navigateTo('guide/security');
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
     });
   });
@@ -98,6 +98,14 @@ describe('site App', function() {
       expect(page.getSearchResults().map(link => link.getText())).toContain('NgControl');
       page.enterSearch('accessor');
       expect(page.getSearchResults().map(link => link.getText())).toContain('ControlValueAccessor');
+    });
+  });
+
+  describe('404 page', () => {
+    it('should search the index for words found in the url', () => {
+      page.navigateTo('http/router');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('Http');
+      expect(page.getSearchResults().map(link => link.getText())).toContain('Router');
     });
   });
 });

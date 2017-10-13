@@ -1,12 +1,11 @@
 import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
-import { async, inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MdProgressBar, MdSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
@@ -22,9 +21,9 @@ import { MockSearchService } from 'testing/search.service';
 import { NavigationNode } from 'app/navigation/navigation.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
-import { SelectComponent, Option } from 'app/shared/select/select.component';
+import { SelectComponent } from 'app/shared/select/select.component';
 import { TocComponent } from 'app/embedded/toc/toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
@@ -1052,11 +1051,6 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
 
 class TestGaService {
   locationChanged = jasmine.createSpy('locationChanged');
-}
-
-class TestSearchService {
-  initWorker = jasmine.createSpy('initWorker');
-  loadIndex  = jasmine.createSpy('loadIndex');
 }
 
 class TestHttpClient {
