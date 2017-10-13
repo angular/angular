@@ -122,7 +122,7 @@ Eventually this app will fetch the list of heroes from a web service, but for no
 you can display mock heroes.
 
 ### Expose heroes
-Create a public property in `AppComponent` that exposes the heroes for binding.
+Create a public property in `AppComponent` (between the existing `title` and `hero` properties) that exposes the heroes for binding.
 
 
 
