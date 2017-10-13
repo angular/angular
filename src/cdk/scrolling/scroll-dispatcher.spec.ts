@@ -174,7 +174,7 @@ describe('Scroll Dispatcher', () => {
       fixture.detectChanges();
 
       expect(scroll._globalSubscription).toBeNull('Expected no global listeners on init.');
-      expect(scroll.scrollableReferences.size).toBe(4, 'Expected multiple scrollables');
+      expect(scroll.scrollContainers.size).toBe(4, 'Expected multiple scrollables');
 
       const subscription = scroll.scrolled(0).subscribe(() => {});
 
@@ -185,7 +185,7 @@ describe('Scroll Dispatcher', () => {
 
       expect(scroll._globalSubscription).toBeNull(
           'Expected global listeners to have been removed after the subscription has stopped.');
-      expect(scroll.scrollableReferences.size)
+      expect(scroll.scrollContainers.size)
           .toBe(4, 'Expected scrollable count to stay the same');
     });
 
