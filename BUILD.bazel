@@ -12,6 +12,7 @@ filegroup(
     # This won't scale in the general case.
     # TODO(alexeagle): figure out what to do
     srcs = glob(["/".join(["node_modules", pkg, "**", ext]) for pkg in [
+        "jasmine",
         "typescript",
         "zone.js",
         "rxjs",

@@ -42,6 +42,7 @@ jobs:
 
       - run: bazel run @yarn//:yarn
       - run: bazel build packages/...
+      - run: bazel test @angular//...
       - save_cache:
           key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:

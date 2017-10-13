@@ -1,14 +1,13 @@
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 
-licenses(["notice"])  # Apache 2.0
-
 ts_library(
     name = "ngc_lib",
     srcs = [
         "index.ts",
         "extract_i18n.ts",
     ],
+    module_name = "@angular/bazel",
     deps = [
         # BEGIN-INTERNAL
         # Only needed when compiling within the Angular repo.
@@ -18,6 +17,7 @@ ts_library(
         "@build_bazel_rules_typescript//internal/tsc_wrapped"
     ],
     tsconfig = ":tsconfig.json",
+    visibility = ["//test/ngc-wrapped:__subpackages__"],
 )
 
 nodejs_binary(
