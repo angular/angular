@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, StaticProvider, Type, ViewContainerRef} from '@angular/core';
-
+import {ComponentFactory, ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, KeyValueChanges, KeyValueDiffer, KeyValueDiffers, NgModuleFactory, NgModuleRef, OnChanges, OnDestroy, SimpleChanges, StaticProvider, Type, ViewContainerRef} from '@angular/core';
 
 /**
  * Instantiates a single {@link Component} type and inserts its Host View into current View.
@@ -74,13 +73,26 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
   @Input() ngComponentOutletContent!: any[][];
   // TODO(issue/24571): remove '!'.
   @Input() ngComponentOutletNgModuleFactory!: NgModuleFactory<any>;
+  @Input() ngComponentOutletInput: {[key: string]: any} = {};
+  @Input() ngComponentOutletOutput: {[key: string]: any} = {};
 
   private _componentRef: ComponentRef<any>|null = null;
   private _moduleRef: NgModuleRef<any>|null = null;
+  private _componentFactory: ComponentFactory<any>|null = null;
+  private _disposables: (() => void)[] = [];
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
   ngOnChanges(changes: SimpleChanges) {
+    if (this._hasOnlyBindingChange(changes)) {
+      this._updateBindings(changes);
+      return;
+    }
+
+    this._updateComponent(changes);
+  }
+
+  private _updateComponent(changes: SimpleChanges) {
     this._viewContainerRef.clear();
     this._componentRef = null;
 
@@ -101,16 +113,65 @@ export class NgComponentOutlet implements OnChanges, OnDestroy {
       const componentFactoryResolver = this._moduleRef ? this._moduleRef.componentFactoryResolver :
                                                          elInjector.get(ComponentFactoryResolver);
 
-      const componentFactory =
+      this._componentFactory =
           componentFactoryResolver.resolveComponentFactory(this.ngComponentOutlet);
 
       this._componentRef = this._viewContainerRef.createComponent(
-          componentFactory, this._viewContainerRef.length, elInjector,
+          this._componentFactory!, this._viewContainerRef.length, elInjector,
           this.ngComponentOutletContent);
+      this._updateInputs();
+      this._updateOutputs();
     }
+  }
+
+  private _hasOnlyBindingChange(changes: SimpleChanges) {
+    const bindings = new Set(['ngComponentOutletInput', 'ngComponentOutletOutput']);
+    return Object.keys(changes).every(change => bindings.has(change));
+  }
+
+  private _updateBindings(changes: SimpleChanges) {
+    if (!this.ngComponentOutlet) {
+      return;
+    }
+
+    if (changes['ngComponentOutletInput']) {
+      this._updateInputs();
+    }
+
+    if (changes['ngComponentOutletOutput']) {
+      this._updateOutputs();
+    }
+  }
+
+  private _updateInputs() {
+    if (!this.ngComponentOutletInput) {
+      return;
+    }
+
+    this._componentFactory!.inputs.forEach(({propName, templateName}) => {
+      const inputValue = this.ngComponentOutletInput[templateName];
+      if (inputValue !== undefined) {
+        this._componentRef!.instance[propName] = inputValue;
+      }
+    });
+  }
+
+  private _updateOutputs() {
+    if (!this.ngComponentOutletOutput) {
+      return;
+    }
+
+    this._componentFactory!.outputs.forEach(({propName, templateName}, index) => {
+      const eventHandler = this.ngComponentOutletOutput[templateName];
+      if (eventHandler !== undefined) {
+        const subscription = this._componentRef!.instance[propName].subscribe(eventHandler);
+        this._disposables[index] = subscription.unsubscribe.bind(subscription);
+      }
+    });
   }
 
   ngOnDestroy() {
     if (this._moduleRef) this._moduleRef.destroy();
+    if (this._disposables) this._disposables.forEach(disposable => disposable());
   }
 }

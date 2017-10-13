@@ -8,13 +8,14 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NO_ERRORS_SCHEMA, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {async, TestBed} from '@angular/core/testing';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Compiler, Component, ComponentRef, DoCheck, EventEmitter, Inject, InjectionToken, Injector, Input, NgModule, NgModuleFactory, NO_ERRORS_SCHEMA, OnChanges, OnInit, Optional, Output, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {Log} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('insert/remove', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [TestModule]});
+    TestBed.configureTestingModule({imports: [TestModule], providers: [Log]});
   });
 
   it('should do nothing if component is null', async(() => {
@@ -206,7 +207,164 @@ describe('insert/remove', () => {
 
        expect(fixture.nativeElement).toHaveText('bat');
      }));
+
+  describe('binding', () => {
+    let fixture: ComponentFixture<TestComponent>;
+
+    beforeEach(() => {
+      const template =
+          `<ng-template *ngComponentOutlet="currentComponent; input: inputs; output: outputs;"></ng-template>`;
+      TestBed.overrideComponent(TestComponent, {set: {template: template}});
+      fixture = TestBed.createComponent(TestComponent);
+    });
+
+    it('should bind inputs to the component according to its metadata', () => {
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('');
+
+      fixture.componentInstance.currentComponent = InjectedBindingComponent;
+      fixture.componentInstance
+          .inputs = {content: 'angular', shouldNotBeBound: 'mistake', alias: 'useDifferentName'};
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('angular');
+      expect(fixture.componentInstance.cmpRef!.instance['shouldNotBeBound']).toBeUndefined();
+      expect(fixture.componentInstance.cmpRef!.instance['innerRepresentation'])
+          .toBe('useDifferentName');
+    });
+
+    it('should trigger the change on the component, if the input object changes', () => {
+      fixture.detectChanges();
+      fixture.componentInstance.currentComponent = InjectedBindingComponent;
+      fixture.componentInstance.inputs = {content: 'angular'};
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('angular');
+
+      fixture.componentInstance.inputs = {content: 'changed'};
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('changed');
+
+      fixture.componentInstance.inputs = {content: 'changed again'};
+
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('changed again');
+    });
+
+    it('should not trigger the change on the component, if the reference of the input object does not change',
+       () => {
+         fixture.detectChanges();
+
+         const inputs = {content: 'angular'};
+         fixture.componentInstance.currentComponent = InjectedBindingComponent;
+         fixture.componentInstance.inputs = inputs;
+
+         fixture.detectChanges();
+         expect(fixture.nativeElement).toHaveText('angular');
+
+         inputs.content = 'changed';
+
+         fixture.detectChanges();
+         expect(fixture.nativeElement).toHaveText('angular');
+
+         inputs.content = 'changed again';
+
+         fixture.detectChanges();
+         expect(fixture.nativeElement).toHaveText('angular');
+       });
+
+    it('should not rebuild the component, if the input object changes', () => {
+      fixture.componentInstance.currentComponent = InjectedBindingComponent;
+      fixture.componentInstance.inputs = {content: 'angular'};
+
+      fixture.detectChanges();
+
+      const component = fixture.componentInstance.cmpRef;
+      fixture.componentInstance.inputs = {content: 'changed'};
+
+      fixture.detectChanges();
+      expect(fixture.componentInstance.cmpRef).toBe(component);
+
+      fixture.componentInstance.inputs = {content: 'changed again'};
+
+      fixture.detectChanges();
+      expect(fixture.componentInstance.cmpRef).toBe(component);
+    });
+
+    it('should invoke lifecycle hooks on the component', inject([Log], (log: Log) => {
+         const component = fixture.componentInstance;
+         const updateBindingFn = (component.ngComponentOutlet as any)._updateBindings;
+         spyOn(component.ngComponentOutlet as any, '_updateBindings')
+             .and.callFake((changes: any) => {
+               updateBindingFn.apply(component.ngComponentOutlet, [changes]);
+               component.cmpRef!.instance.ngOnChanges();  // manually trigger since
+                                                          // it's not triggered in
+                                                          // test. See #9866
+             });
+         const updateComponentFn = (component.ngComponentOutlet as any)._updateComponent;
+         spyOn(component.ngComponentOutlet as any, '_updateComponent')
+             .and.callFake((changes: any) => {
+               updateComponentFn.apply(component.ngComponentOutlet, [changes]);
+               component.cmpRef!.instance.ngOnChanges();  // manually trigger since
+                                                          // it's not triggered in
+                                                          // test. See #9866
+             });
+         const inputs = {content: 'angular'};
+         component.currentComponent = InjectedBindingComponent;
+         component.inputs = inputs;
+
+         fixture.detectChanges();
+
+         expect(log.result())
+             .toEqual(
+                 'ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; ' +
+                 'ngAfterViewInit; ngAfterViewChecked');
+
+         component.inputs = {content: 'changed'};
+         log.clear();
+
+         fixture.detectChanges();
+         expect(log.result())
+             .toEqual('ngOnChanges; ngDoCheck; ngAfterContentChecked; ngAfterViewChecked');
+
+         component.inputs = {content: 'changed again'};
+         log.clear();
+
+         fixture.detectChanges();
+         expect(log.result())
+             .toEqual('ngOnChanges; ngDoCheck; ngAfterContentChecked; ngAfterViewChecked');
+
+         log.clear();
+
+         fixture.detectChanges();
+         expect(log.result()).toEqual('ngDoCheck; ngAfterContentChecked; ngAfterViewChecked');
+       }));
+
+    it('should bind outputs to the component according to its metadata', () => {
+      const onCalledHandler = jasmine.createSpy('onCalled');
+      const onInnerChangedHandler = jasmine.createSpy('onCalled');
+      const outputs = {
+        onCalled: onCalledHandler,
+        shouldNotBeBound: 'throw',
+        aliasCall: onInnerChangedHandler
+      };
+      fixture.componentInstance.currentComponent = InjectedBindingComponent;
+      fixture.componentInstance.outputs = outputs;
+
+      fixture.detectChanges();
+
+      fixture.componentInstance.cmpRef!.instance.onCalled.emit(2);
+      expect(onCalledHandler).toHaveBeenCalledTimes(1);
+      expect(onCalledHandler).toHaveBeenCalledWith(2);
+      expect(fixture.componentInstance.cmpRef!.instance['shouldNotBeBound']).toBeUndefined();
+      fixture.componentInstance.cmpRef!.instance.onInnerChanged.emit(3);
+      expect(onInnerChangedHandler).toHaveBeenCalledTimes(1);
+      expect(onInnerChangedHandler).toHaveBeenCalledWith(3);
+    });
+  });
 });
+
 
 const TEST_TOKEN = new InjectionToken('TestToken');
 @Component({selector: 'injected-component', template: 'foo'})
@@ -217,6 +375,45 @@ class InjectedComponent {
 
 @Component({selector: 'injected-component-again', template: 'bar'})
 class InjectedComponentAgain {
+}
+
+@Component({selector: 'injected-binding-component', template: '{{content}}'})
+class InjectedBindingComponent implements OnChanges, OnInit, DoCheck, AfterContentInit,
+                                          AfterContentChecked, AfterViewInit, AfterViewChecked {
+  @Input() content!: string;
+  @Input('alias') innerRepresentation!: string;
+  @Output() onCalled = new EventEmitter<number>();
+  @Output('aliasCall') onInnerChanged = new EventEmitter<number>();
+
+  constructor(private _log: Log) {}
+
+  ngOnChanges(_: any) {
+    this._log.add('ngOnChanges');
+  }
+
+  ngOnInit() {
+    this._log.add('ngOnInit');
+  }
+
+  ngDoCheck() {
+    this._log.add('ngDoCheck');
+  }
+
+  ngAfterContentInit() {
+    this._log.add('ngAfterContentInit');
+  }
+
+  ngAfterContentChecked() {
+    this._log.add('ngAfterContentChecked');
+  }
+
+  ngAfterViewInit() {
+    this._log.add('ngAfterViewInit');
+  }
+
+  ngAfterViewChecked() {
+    this._log.add('ngAfterViewChecked');
+  }
 }
 
 const TEST_CMP_TEMPLATE =
@@ -231,6 +428,8 @@ class TestComponent {
   projectables!: any[][];
   // TODO(issue/24571): remove '!'.
   module!: NgModuleFactory<any>;
+  inputs: {[key: string]: any}|null = null;
+  outputs: {[key: string]: any}|null = null;
 
   get cmpRef(): ComponentRef<any>|null {
     return this.ngComponentOutlet['_componentRef'];
@@ -249,9 +448,10 @@ class TestComponent {
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [TestComponent, InjectedComponent, InjectedComponentAgain],
-  exports: [TestComponent, InjectedComponent, InjectedComponentAgain],
-  entryComponents: [InjectedComponent, InjectedComponentAgain]
+  declarations:
+      [TestComponent, InjectedComponent, InjectedComponentAgain, InjectedBindingComponent],
+  exports: [TestComponent, InjectedComponent, InjectedComponentAgain, InjectedBindingComponent],
+  entryComponents: [InjectedComponent, InjectedComponentAgain, InjectedBindingComponent]
 })
 export class TestModule {
 }
