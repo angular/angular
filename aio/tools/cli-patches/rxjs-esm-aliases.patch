@@ -1,0 +1,11 @@
+--- node_modules/@angular/cli/models/webpack-configs/common.js  2017-10-13 14:21:57.000000000 -0700
++++ node_modules/@angular/cli/models/webpack-configs/common.js  2017-10-13 14:31:30.000000000 -0700
+@@ -135,6 +135,7 @@
+             extensions: ['.ts', '.js'],
+             modules: ['node_modules', nodeModules],
+             symlinks: !buildOptions.preserveSymlinks
++           ,alias: require('rxjs/_esm5/path-mapping')(path.resolve(__dirname, '..', '..', '..', '..', '..', 'node_modules'))
+         },
+         resolveLoader: {
+             modules: [nodeModules, 'node_modules']
+
