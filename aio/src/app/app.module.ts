@@ -17,7 +17,7 @@ import {
   Platform
 } from '@angular/material';
 
-// Temporary fix for MdSidenavModule issue:
+// Temporary fix for MatSidenavModule issue:
 // crashes with "missing first" operator when SideNav.mode is "over"
 import 'rxjs/add/operator/first';
 
@@ -49,7 +49,7 @@ import { WindowToken, windowProvider } from 'app/shared/window';
 
 import { SharedModule } from 'app/shared/shared.module';
 
-// These are the hardcoded inline svg sources to be used by the `<md-icon>` component
+// These are the hardcoded inline svg sources to be used by the `<mat-icon>` component
 export const svgIconProviders = [
   {
     provide: SVG_ICONS,
