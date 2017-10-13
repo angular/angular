@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { MdSidenav } from '@angular/material';
+import { MatSidenav } from '@angular/material';
 
 import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
@@ -95,8 +95,8 @@ export class AppComponent implements OnInit {
   @ViewChild(SearchBoxComponent)
   searchBox: SearchBoxComponent;
 
-  @ViewChild(MdSidenav)
-  sidenav: MdSidenav;
+  @ViewChild(MatSidenav)
+  sidenav: MatSidenav;
 
   constructor(
     public deployment: Deployment,
@@ -291,7 +291,7 @@ export class AppComponent implements OnInit {
       const el = this.hostElement.nativeElement as Element;
       this.tocMaxHeightOffset =
           el.querySelector('footer').clientHeight +
-          el.querySelector('md-toolbar.app-toolbar').clientHeight +
+          el.querySelector('mat-toolbar.app-toolbar').clientHeight +
           24; //  fudge margin
     }
 
