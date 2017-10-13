@@ -40,7 +40,7 @@ export function main(args) {
 /** The one FileCache instance used in this process. */
 const fileCache = new FileCache<ts.SourceFile>(debug);
 
-function runOneBuild(args: string[], inputs?: {[path: string]: string}): boolean {
+export function runOneBuild(args: string[], inputs?: {[path: string]: string}): boolean {
   if (args[0] === '-p') args.shift();
   // Strip leading at-signs, used to indicate a params file
   const project = args[0].replace(/^@+/, '');
