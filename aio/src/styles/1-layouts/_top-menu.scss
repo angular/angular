@@ -57,7 +57,7 @@ aio-top-menu {
 }
 
 // HOME PAGE OVERRIDE: TOPNAV TOOLBAR HAMBURGER MENU
-aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
+aio-shell.page-home mat-toolbar.app-toolbar.mat-toolbar {
   background-color: transparent;
   transition: background-color .2s linear .3s;
 
@@ -67,7 +67,7 @@ aio-shell.page-home md-toolbar.app-toolbar.mat-toolbar {
 }
 
 // DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
-md-toolbar.mat-toolbar {
+mat-toolbar.mat-toolbar {
   position: fixed;
   top: 0;
   right: 0;
@@ -76,16 +76,16 @@ md-toolbar.mat-toolbar {
   padding: 0 16px 0 0;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
 
-  md-icon {
+  mat-icon {
     color: $white;
   }
 }
 
 // MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
-aio-shell.page-home md-toolbar.mat-toolbar,
-aio-shell.page-features md-toolbar.mat-toolbar,
-aio-shell.page-events md-toolbar.mat-toolbar,
-aio-shell.page-resources md-toolbar.mat-toolbar {
+aio-shell.page-home mat-toolbar.mat-toolbar,
+aio-shell.page-features mat-toolbar.mat-toolbar,
+aio-shell.page-events mat-toolbar.mat-toolbar,
+aio-shell.page-resources mat-toolbar.mat-toolbar {
   // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
   @media (min-width: 481px) {
     position: absolute;
@@ -99,9 +99,9 @@ aio-shell.page-resources md-toolbar.mat-toolbar {
 }
 
 // REMOVE BOX SHADOW ON CERTAIN MARKETING PAGES
-aio-shell.page-home md-toolbar.mat-toolbar,
-aio-shell.page-events md-toolbar.mat-toolbar,
-aio-shell.page-resources md-toolbar.mat-toolbar {
+aio-shell.page-home mat-toolbar.mat-toolbar,
+aio-shell.page-events mat-toolbar.mat-toolbar,
+aio-shell.page-resources mat-toolbar.mat-toolbar {
   box-shadow: none;
 }
 

@@ -1,4 +1,4 @@
-import { MdIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material';
 import { CustomMdIconRegistry, SvgIconInfo } from './custom-md-icon-registry';
 
 describe('CustomMdIconRegistry', () => {
@@ -24,15 +24,15 @@ describe('CustomMdIconRegistry', () => {
     const svgIcons: SvgIconInfo[] = [
       { name: 'test_icon', svgSource: svgSrc }
     ];
-    spyOn(MdIconRegistry.prototype, 'getNamedSvgIcon');
+    spyOn(MatIconRegistry.prototype, 'getNamedSvgIcon');
 
     const registry = new CustomMdIconRegistry(mockHttp, mockSanitizer, svgIcons);
 
     registry.getNamedSvgIcon('other_icon');
-    expect(MdIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', undefined);
+    expect(MatIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', undefined);
 
     registry.getNamedSvgIcon('other_icon', 'foo');
-    expect(MdIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', 'foo');
+    expect(MatIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', 'foo');
   });
 });
 
