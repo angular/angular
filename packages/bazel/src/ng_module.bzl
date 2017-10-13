@@ -115,7 +115,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_pa
   else:
     supports_workers = str(int(ctx.attr._supports_workers))
 
-  arguments = _EXTRA_NODE_OPTIONS_FLAGS
+  arguments = list(_EXTRA_NODE_OPTIONS_FLAGS)
   # One at-sign makes this a params-file, enabling the worker strategy.
   # Two at-signs escapes the argument so it's passed through to ngc
   # rather than the contents getting expanded.
