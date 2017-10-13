@@ -13,9 +13,13 @@ import {
   MatProgressBarModule,
   MatSidenavModule,
   MatTabsModule,
-  MatToolbarModule,
-  Platform
+  MatToolbarModule
 } from '@angular/material';
+
+import {
+  Platform
+} from '@angular/cdk/platform';
+
 
 // Temporary fix for MatSidenavModule issue:
 // crashes with "missing first" operator when SideNav.mode is "over"
