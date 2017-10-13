@@ -6,14 +6,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
 import {
-  MdButtonModule,
-  MdIconModule,
-  MdIconRegistry,
-  MdInputModule,
-  MdProgressBarModule,
-  MdSidenavModule,
-  MdTabsModule,
-  MdToolbarModule,
+  MatButtonModule,
+  MatIconModule,
+  MatIconRegistry,
+  MatInputModule,
+  MatProgressBarModule,
+  MatSidenavModule,
+  MatTabsModule,
+  MatToolbarModule,
   Platform
 } from '@angular/material';
 
@@ -77,13 +77,13 @@ export const svgIconProviders = [
     EmbeddedModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MdButtonModule,
-    MdIconModule,
-    MdInputModule,
-    MdProgressBarModule,
-    MdSidenavModule,
-    MdTabsModule,
-    MdToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
+    MatSidenavModule,
+    MatTabsModule,
+    MatToolbarModule,
     SwUpdatesModule,
     SharedModule
   ],
@@ -107,7 +107,7 @@ export const svgIconProviders = [
     Location,
     { provide: LocationStrategy, useClass: PathLocationStrategy },
     LocationService,
-    { provide: MdIconRegistry, useClass: CustomMdIconRegistry },
+    { provide: MatIconRegistry, useClass: CustomMdIconRegistry },
     NavigationService,
     Platform,
     ScrollService,
