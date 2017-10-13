@@ -88,7 +88,7 @@
     "zone.js": "^0.8.16"
   },
   "devDependencies": {
-    "@angular/cli": "^1.4.7",
+    "@angular/cli": "^1.5.0-rc.0",
     "@angular/compiler-cli": "^5.0.0-beta.3",
     "@types/jasmine": "^2.5.52",
     "@types/node": "~6.0.60",
@@ -136,7 +136,7 @@
     "tree-kill": "^1.1.0",
     "ts-node": "^3.3.0",
     "tslint": "~4.5.0",
-    "typescript": "2.3.2",
+    "typescript": "^2.5.3",
     "uglify-js": "^3.0.15",
     "unist-util-filter": "^0.2.1",
     "unist-util-source": "^1.0.1",
