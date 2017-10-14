@@ -2,6 +2,7 @@
 import { Component }       from '@angular/core';
 
 import { QuestionService } from './question.service';
+import { QuestionBase } from './question-base';
 
 @Component({
   selector: 'app-root',
@@ -14,9 +15,11 @@ import { QuestionService } from './question.service';
   providers:  [QuestionService]
 })
 export class AppComponent {
-  questions: any[];
+  questions: QuestionBase<any>[];
 
-  constructor(service: QuestionService) {
-    this.questions = service.getQuestions();
+  constructor(questionService: QuestionService) {
+    questionService
+      .getQuestions()
+      .subscribe(questions => this.questions = questions);
   }
 }
