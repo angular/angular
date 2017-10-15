@@ -400,6 +400,9 @@ export class Router {
     } else {
       q = preserveQueryParams ? this.currentUrlTree.queryParams : queryParams || null;
     }
+    if (q !== null) {
+      q = this.removeEmptyProps(q);
+    }
     return createUrlTree(a, this.currentUrlTree, commands, q !, f !);
   }
 
@@ -455,9 +458,6 @@ export class Router {
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
     validateCommands(commands);
-    if (typeof extras.queryParams === 'object' && extras.queryParams !== null) {
-      extras.queryParams = this.removeEmptyProps(extras.queryParams);
-    }
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
 
