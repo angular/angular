@@ -205,7 +205,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   const tsickleEmitResult = emitResult as tsickle.EmitResult;
   let externs = '/** @externs */\n';
   if (diagnostics.length) {
-    console.error(ng.formatDiagnostics(compilerOpts, diagnostics));
+    console.error(ng.formatDiagnostics(diagnostics));
   } else {
     if (bazelOpts.tsickleGenerateExterns) {
       externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs);

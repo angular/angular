@@ -131,6 +131,6 @@ export function createCompilerHost(
 
 // Wrapper for formatDiagnostics.
 export type Diagnostics = Array<ts.Diagnostic|Diagnostic>;
-export function formatDiagnostics(options: CompilerOptions, diags: Diagnostics): string {
-  return formatDiagnosticsOrig(options, diags);
+export function formatDiagnostics(diags: Diagnostics): string {
+  return formatDiagnosticsOrig(diags);
 }
