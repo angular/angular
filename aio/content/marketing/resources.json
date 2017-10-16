@@ -363,6 +363,12 @@
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
+          },
+          "essentialjs2": {
+            "desc": "Essential JS 2 for Angular is a collection modern TypeScript based true Angular Components. It has support for Ahead Of Time (AOT) compilation and Tree-Shaking. All the components are developed from the ground up to be lightweight, responsive, modular and touch friendly.",
+            "rev": true,
+            "title": "Essential JS 2",
+            "url": "https://www.syncfusion.com/products/essential-js2"
           }
         }
       }
