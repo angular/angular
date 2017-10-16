@@ -44,6 +44,7 @@ describe('ngc transformer command-line', () => {
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
     basePath = makeTempDir();
+    process.chdir(basePath);
     write = (fileName: string, content: string) => {
       const dir = path.dirname(fileName);
       if (dir != '.') {

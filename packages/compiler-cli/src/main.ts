@@ -28,15 +28,15 @@ export function main(
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
-    return reportErrorsAndExit(options, configErrors, consoleError);
+    return reportErrorsAndExit(configErrors, consoleError);
   }
   if (watch) {
     const result = watchMode(project, options, consoleError);
-    return reportErrorsAndExit({}, result.firstCompileResult, consoleError);
+    return reportErrorsAndExit(result.firstCompileResult, consoleError);
   }
   const {diagnostics: compileDiags} = performCompilation(
       {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
-  return reportErrorsAndExit(options, compileDiags, consoleError);
+  return reportErrorsAndExit(compileDiags, consoleError);
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
@@ -128,11 +128,10 @@ export function readCommandLineAndConfiguration(
 }
 
 function reportErrorsAndExit(
-    options: api.CompilerOptions, allDiagnostics: Diagnostics,
-    consoleError: (s: string) => void = console.error): number {
+    allDiagnostics: Diagnostics, consoleError: (s: string) => void = console.error): number {
   const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
   if (errorsAndWarnings.length) {
-    consoleError(formatDiagnostics(options, errorsAndWarnings));
+    consoleError(formatDiagnostics(errorsAndWarnings));
   }
   return exitCodeFromResult(allDiagnostics);
 }
@@ -140,7 +139,7 @@ function reportErrorsAndExit(
 export function watchMode(
     project: string, options: api.CompilerOptions, consoleError: (s: string) => void) {
   return performWatchCompilation(createPerformWatchHost(project, diagnostics => {
-    consoleError(formatDiagnostics(options, diagnostics));
+    consoleError(formatDiagnostics(diagnostics));
   }, options, options => createEmitCallback(options)));
 }
 
