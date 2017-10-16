@@ -124,7 +124,7 @@ downlevelES2015() {
       cp ${file} ${ts_file}
 
       echo "======           $TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap --importHelpers"
-      ($TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap --importHelpers) > /dev/null 2>&1 || true
+      ($TSC ${ts_file} --target es5 --module es2015 --noLib --sourceMap --importHelpers) 2>&1 || true
       mapSources "${BASH_REMATCH[1]}${2:-".es5.js"}"
       rm -f ${ts_file}
     fi
