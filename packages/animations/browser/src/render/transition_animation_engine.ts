@@ -986,11 +986,15 @@ export class TransitionAnimationEngine {
     }
 
     const allPreviousPlayersMap = new Map<any, TransitionAnimationPlayer[]>();
-    let sortedParentElements: any[] = [];
+    // this map works to tell which element in the DOM tree is contained by
+    // which animation. Further down below this map will get populated once
+    // the players are built and in doing so it can efficiently figure out
+    // if a sub player is skipped due to a parent player having priority.
+    const animationElementMap = new Map<any, any>();
     queuedInstructions.forEach(entry => {
       const element = entry.element;
       if (subTimelines.has(element)) {
-        sortedParentElements.unshift(element);
+        animationElementMap.set(element, element);
         this._beforeAnimationBuild(
             entry.player.namespaceId, entry.instruction, allPreviousPlayersMap);
       }
@@ -1041,6 +1045,7 @@ export class TransitionAnimationEngine {
 
     const rootPlayers: TransitionAnimationPlayer[] = [];
     const subPlayers: TransitionAnimationPlayer[] = [];
+    const NO_PARENT_ANIMATION_ELEMENT_DETECTED = {};
     queuedInstructions.forEach(entry => {
       const {element, player, instruction} = entry;
       // this means that it was never consumed by a parent animation which
@@ -1052,29 +1057,41 @@ export class TransitionAnimationEngine {
           return;
         }
 
+        // this will flow up the DOM and query the map to figure out
+        // if a parent animation has priority over it. In the situation
+        // that a parent is detected then it will cancel the loop. If
+        // nothing is detected, or it takes a few hops to find a parent,
+        // then it will fill in the missing nodes and signal them as having
+        // a detected parent (or a NO_PARENT value via a special constant).
+        let parentWithAnimation: any = NO_PARENT_ANIMATION_ELEMENT_DETECTED;
+        if (animationElementMap.size > 1) {
+          let elm = element;
+          const parentsToAdd: any[] = [];
+          while (elm = elm.parentNode) {
+            const detectedParent = animationElementMap.get(elm);
+            if (detectedParent) {
+              parentWithAnimation = detectedParent;
+              break;
+            }
+            parentsToAdd.push(elm);
+          }
+          parentsToAdd.forEach(parent => animationElementMap.set(parent, parentWithAnimation));
+        }
+
         const innerPlayer = this._buildAnimation(
             player.namespaceId, instruction, allPreviousPlayersMap, skippedPlayersMap, preStylesMap,
             postStylesMap);
+
         player.setRealPlayer(innerPlayer);
 
-        let parentHasPriority: any = null;
-        for (let i = 0; i < sortedParentElements.length; i++) {
-          const parent = sortedParentElements[i];
-          if (parent === element) break;
-          if (this.driver.containsElement(parent, element)) {
-            parentHasPriority = parent;
-            break;
-          }
-        }
-
-        if (parentHasPriority) {
-          const parentPlayers = this.playersByElement.get(parentHasPriority);
+        if (parentWithAnimation === NO_PARENT_ANIMATION_ELEMENT_DETECTED) {
+          rootPlayers.push(player);
+        } else {
+          const parentPlayers = this.playersByElement.get(parentWithAnimation);
           if (parentPlayers && parentPlayers.length) {
             player.parentPlayer = optimizeGroupPlayer(parentPlayers);
           }
           skippedPlayers.push(player);
-        } else {
-          rootPlayers.push(player);
         }
       } else {
         eraseStyles(element, instruction.fromStyles);
@@ -1105,7 +1122,7 @@ export class TransitionAnimationEngine {
     // fire the start/done transition callback events
     skippedPlayers.forEach(player => {
       if (player.parentPlayer) {
-        player.parentPlayer.onDestroy(() => player.destroy());
+        player.syncPlayerEvents(player.parentPlayer);
       } else {
         player.destroy();
       }
@@ -1366,6 +1383,15 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
 
   getRealPlayer() { return this._player; }
 
+  syncPlayerEvents(player: AnimationPlayer) {
+    const p = this._player as any;
+    if (p.triggerCallback) {
+      player.onStart(() => p.triggerCallback('start'));
+    }
+    player.onDone(() => this.finish());
+    player.onDestroy(() => this.destroy());
+  }
+
   private _queueEvent(name: string, callback: (event: any) => any): void {
     getOrSetAsInMap(this._queuedCallbacks, name, []).push(callback);
   }
@@ -1419,6 +1445,14 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
   getPosition(): number { return this.queued ? 0 : this._player.getPosition(); }
 
   get totalTime(): number { return this._player.totalTime; }
+
+  /* @internal */
+  triggerCallback(phaseName: string): void {
+    const p = this._player as any;
+    if (p.triggerCallback) {
+      p.triggerCallback(phaseName);
+    }
+  }
 }
 
 function deleteOrUnsetInMap(map: Map<any, any[]>| {[key: string]: any}, key: any, value: any) {

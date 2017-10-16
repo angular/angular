@@ -31,6 +31,8 @@ export interface AnimationPlayer {
   parentPlayer: AnimationPlayer|null;
   readonly totalTime: number;
   beforeDestroy?: () => any;
+  /* @internal */
+  triggerCallback?: (phaseName: string) => void;
 }
 
 /**
@@ -91,4 +93,11 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   reset(): void {}
   setPosition(p: number): void {}
   getPosition(): number { return 0; }
+
+  /* @internal */
+  triggerCallback(phaseName: string): void {
+    const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
+    methods.forEach(fn => fn());
+    methods.length = 0;
+  }
 }
