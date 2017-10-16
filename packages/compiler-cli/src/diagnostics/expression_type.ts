@@ -360,6 +360,8 @@ export class AstType implements AstVisitor {
     // The type of a method is the selected methods result type.
     const method = receiverType.members().get(ast.name);
     if (!method) return this.reportError(`Unknown method '${ast.name}'`, ast);
+    if (!method.public)
+      return this.reportError(`Member '${ast.name}' refers to a private method`, ast);
     if (!method.type) return this.reportError(`Could not find a type for '${ast.name}'`, ast);
     if (!method.type.callable) return this.reportError(`Member '${ast.name}' is not callable`, ast);
     const signature = method.type.selectSignature(ast.args.map(arg => this.getType(arg)));

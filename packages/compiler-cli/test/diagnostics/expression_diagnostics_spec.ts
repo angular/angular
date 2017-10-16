@@ -165,6 +165,10 @@ describe('expression diagnostics', () => {
   it('should accept a call to a method', () => accept('{{getPerson().name.first}}'));
   it('should reject a misspelled field of a method result',
      () => reject('{{getPerson().nume.first}}', 'Identifier \'nume\' is not defined'));
+  it('should reject a private event handler',
+     () => reject(
+         '<div (click)="private_action($event)">{{person.name.first}}</div>',
+         'Member \'private_action\' refers to a private method'));
   it('should reject calling a uncallable member',
      () => reject('{{person().name.first}}', 'Member \'person\' is not callable'));
   it('should accept an event handler',
@@ -229,6 +233,7 @@ const FILES: Directory = {
 
           getPerson(): Person { return this.person; }
           click() {}
+          private private_action() {}
         }
 
         @NgModule({
