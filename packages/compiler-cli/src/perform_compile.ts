@@ -23,13 +23,15 @@ export function filterErrorsAndWarnings(diagnostics: Diagnostics): Diagnostics {
   return diagnostics.filter(d => d.category !== ts.DiagnosticCategory.Message);
 }
 
-export function formatDiagnostics(options: api.CompilerOptions, diags: Diagnostics): string {
+const defaultFormatHost: ts.FormatDiagnosticsHost = {
+  getCurrentDirectory: () => ts.sys.getCurrentDirectory(),
+  getCanonicalFileName: fileName => fileName,
+  getNewLine: () => ts.sys.newLine
+};
+
+export function formatDiagnostics(
+    diags: Diagnostics, tsFormatHost: ts.FormatDiagnosticsHost = defaultFormatHost): string {
   if (diags && diags.length) {
-    const tsFormatHost: ts.FormatDiagnosticsHost = {
-      getCurrentDirectory: () => options.basePath || process.cwd(),
-      getCanonicalFileName: fileName => fileName,
-      getNewLine: () => ts.sys.newLine
-    };
     return diags
         .map(d => {
           if (api.isTsDiagnostic(d)) {
