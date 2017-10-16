@@ -40,5 +40,29 @@ export function main() {
       player.destroy();
       expect(log).toEqual(['started', 'done', 'destroy']);
     });
+
+    it('should fire start/done callbacks manually when called directly', fakeAsync(() => {
+         const log: string[] = [];
+
+         const player = new NoopAnimationPlayer();
+         player.onStart(() => log.push('started'));
+         player.onDone(() => log.push('done'));
+         flushMicrotasks();
+
+         player.triggerCallback('start');
+         expect(log).toEqual(['started']);
+
+         player.play();
+         expect(log).toEqual(['started']);
+
+         player.triggerCallback('done');
+         expect(log).toEqual(['started', 'done']);
+
+         player.finish();
+         expect(log).toEqual(['started', 'done']);
+
+         flushMicrotasks();
+         expect(log).toEqual(['started', 'done']);
+       }));
   });
 }

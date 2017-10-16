@@ -45,6 +45,26 @@ export function main() {
       const p = innerPlayer !;
       expect(p.log).toEqual(['play']);
     });
+
+    it('should fire start/done callbacks manually when called directly', () => {
+      const log: string[] = [];
+
+      const player = new WebAnimationsPlayer(element, [], {duration: 1000});
+      player.onStart(() => log.push('started'));
+      player.onDone(() => log.push('done'));
+
+      player.triggerCallback('start');
+      expect(log).toEqual(['started']);
+
+      player.play();
+      expect(log).toEqual(['started']);
+
+      player.triggerCallback('done');
+      expect(log).toEqual(['started', 'done']);
+
+      player.finish();
+      expect(log).toEqual(['started', 'done']);
+    });
   });
 }
 
