@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 
@@ -23,6 +24,7 @@ import {NgswCommChannel} from './low_level';
  *
  * @experimental
  */
+@Injectable()
 export class SwPush {
   readonly messages: Observable<object>;
   readonly subscription: Observable<PushSubscription|null>;

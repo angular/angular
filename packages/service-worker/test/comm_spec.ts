@@ -7,6 +7,7 @@
  */
 
 import 'rxjs/add/operator/toPromise';
+import {TestBed} from '@angular/core/testing';
 
 import {NgswCommChannel} from '../src/low_level';
 import {SwPush} from '../src/push';
@@ -41,7 +42,7 @@ export function main() {
         mock.setupSw();
       });
     });
-    describe('NgswPush', () => {
+    describe('SwPush', () => {
       let push: SwPush;
       let reg: MockServiceWorkerRegistration;
       beforeEach((done: DoneFn) => {
@@ -63,8 +64,17 @@ export function main() {
           },
         });
       });
+      it('is injectable', () => {
+        TestBed.configureTestingModule({
+          providers: [
+            SwPush,
+            {provide: NgswCommChannel, useValue: comm},
+          ]
+        });
+        expect(() => TestBed.get(SwPush)).not.toThrow();
+      });
     });
-    describe('NgswUpdate', () => {
+    describe('SwUpdate', () => {
       let update: SwUpdate;
       let reg: MockServiceWorkerRegistration;
       beforeEach((done: DoneFn) => {
@@ -131,6 +141,15 @@ export function main() {
             .catch(err => { expect(err.message).toEqual('Failed to activate'); })
             .then(() => done())
             .catch(err => done.fail(err));
+      });
+      it('is injectable', () => {
+        TestBed.configureTestingModule({
+          providers: [
+            SwUpdate,
+            {provide: NgswCommChannel, useValue: comm},
+          ]
+        });
+        expect(() => TestBed.get(SwUpdate)).not.toThrow();
       });
     });
   });
