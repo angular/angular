@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async, inject} from '@angular/core/testing';
 import {Directionality} from '@angular/cdk/bidi';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {ESCAPE} from '@angular/cdk/keycodes';
@@ -11,6 +11,7 @@ import {ConnectedOverlayPositionChange} from './position/connected-position';
 
 
 describe('Overlay directives', () => {
+  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ConnectedOverlayDirectiveTest>;
   let dir: {value: string};
@@ -20,12 +21,8 @@ describe('Overlay directives', () => {
       imports: [OverlayModule],
       declarations: [ConnectedOverlayDirectiveTest, ConnectedOverlayPropertyInitOrder],
       providers: [
-        {provide: OverlayContainer, useFactory: () => {
-          overlayContainerElement = document.createElement('div');
-          return {getContainerElement: () => overlayContainerElement};
-        }},
         {provide: Directionality, useFactory: () => {
-          return dir = { value: 'ltr' };
+          return dir = {value: 'ltr'};
         }}
       ],
     });
@@ -34,6 +31,15 @@ describe('Overlay directives', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ConnectedOverlayDirectiveTest);
     fixture.detectChanges();
+  });
+
+  beforeEach(inject([OverlayContainer], (oc: OverlayContainer) => {
+    overlayContainer = oc;
+    overlayContainerElement = oc.getContainerElement();
+  }));
+
+  afterEach(() => {
+    overlayContainer.ngOnDestroy();
   });
 
   /** Returns the current open overlay pane element. */

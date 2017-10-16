@@ -1,4 +1,3 @@
-import {fakeAsync, flushMicrotasks, inject} from '@angular/core/testing';
 import {GlobalPositionStrategy} from './global-position-strategy';
 import {OverlayRef} from '../overlay-ref';
 
@@ -19,10 +18,8 @@ describe('GlobalPositonStrategy', () => {
     strategy.dispose();
   });
 
-  it('should position the element to the (top, left) with an offset', fakeAsyncTest(() => {
+  it('should position the element to the (top, left) with an offset', () => {
     strategy.top('10px').left('40px').apply();
-
-    flushMicrotasks();
 
     let elementStyle = element.style;
     let parentStyle = (element.parentNode as HTMLElement).style;
@@ -34,12 +31,10 @@ describe('GlobalPositonStrategy', () => {
 
     expect(parentStyle.justifyContent).toBe('flex-start');
     expect(parentStyle.alignItems).toBe('flex-start');
-  }));
+  });
 
-  it('should position the element to the (bottom, right) with an offset', fakeAsyncTest(() => {
+  it('should position the element to the (bottom, right) with an offset', () => {
     strategy.bottom('70px').right('15em').apply();
-
-    flushMicrotasks();
 
     let elementStyle = element.style;
     let parentStyle = (element.parentNode as HTMLElement).style;
@@ -51,14 +46,11 @@ describe('GlobalPositonStrategy', () => {
 
     expect(parentStyle.justifyContent).toBe('flex-end');
     expect(parentStyle.alignItems).toBe('flex-end');
-  }));
+  });
 
-  it('should overwrite previously applied positioning', fakeAsyncTest(() => {
+  it('should overwrite previously applied positioning', () => {
     strategy.centerHorizontally().centerVertically().apply();
-    flushMicrotasks();
-
     strategy.top('10px').left('40%').apply();
-    flushMicrotasks();
 
     let elementStyle = element.style;
     let parentStyle = (element.parentNode as HTMLElement).style;
@@ -73,8 +65,6 @@ describe('GlobalPositonStrategy', () => {
 
     strategy.bottom('70px').right('15em').apply();
 
-    flushMicrotasks();
-
     expect(element.style.marginTop).toBe('');
     expect(element.style.marginLeft).toBe('');
     expect(element.style.marginBottom).toBe('70px');
@@ -82,23 +72,19 @@ describe('GlobalPositonStrategy', () => {
 
     expect(parentStyle.justifyContent).toBe('flex-end');
     expect(parentStyle.alignItems).toBe('flex-end');
-  }));
+  });
 
-  it('should center the element', fakeAsyncTest(() => {
+  it('should center the element', () => {
     strategy.centerHorizontally().centerVertically().apply();
-
-    flushMicrotasks();
 
     let parentStyle = (element.parentNode as HTMLElement).style;
 
     expect(parentStyle.justifyContent).toBe('center');
     expect(parentStyle.alignItems).toBe('center');
-  }));
+  });
 
-  it('should center the element with an offset', fakeAsyncTest(() => {
+  it('should center the element with an offset', () => {
     strategy.centerHorizontally('10px').centerVertically('15px').apply();
-
-    flushMicrotasks();
 
     let elementStyle = element.style;
     let parentStyle = (element.parentNode as HTMLElement).style;
@@ -108,74 +94,56 @@ describe('GlobalPositonStrategy', () => {
 
     expect(parentStyle.justifyContent).toBe('center');
     expect(parentStyle.alignItems).toBe('center');
-  }));
+  });
 
-  it('should make the element position: static', fakeAsyncTest(() => {
+  it('should make the element position: static', () => {
     strategy.apply();
-
-    flushMicrotasks();
 
     expect(element.style.position).toBe('static');
-  }));
+  });
 
-  it('should wrap the element in a `cdk-global-overlay-wrapper`', fakeAsyncTest(() => {
+  it('should wrap the element in a `cdk-global-overlay-wrapper`', () => {
     strategy.apply();
-
-    flushMicrotasks();
 
     let parent = element.parentNode as HTMLElement;
 
     expect(parent.classList.contains('cdk-global-overlay-wrapper')).toBe(true);
-  }));
+  });
 
 
-  it('should remove the parent wrapper from the DOM', fakeAsync(() => {
+  it('should remove the parent wrapper from the DOM', () => {
     strategy.apply();
-
-    flushMicrotasks();
 
     expect(document.body.contains(element.parentNode!)).toBe(true);
 
     strategy.dispose();
 
     expect(document.body.contains(element.parentNode!)).toBe(false);
-  }));
+  });
 
-  it('should set the element width', fakeAsync(() => {
+  it('should set the element width', () => {
     strategy.width('100px').apply();
 
-    flushMicrotasks();
-
     expect(element.style.width).toBe('100px');
-  }));
+  });
 
-  it('should set the element height', fakeAsync(() => {
+  it('should set the element height', () => {
     strategy.height('100px').apply();
 
-    flushMicrotasks();
-
     expect(element.style.height).toBe('100px');
-  }));
+  });
 
-  it('should reset the horizontal position and offset when the width is 100%', fakeAsync(() => {
+  it('should reset the horizontal position and offset when the width is 100%', () => {
     strategy.centerHorizontally().width('100%').apply();
-
-    flushMicrotasks();
 
     expect(element.style.marginLeft).toBe('0px');
     expect((element.parentNode as HTMLElement).style.justifyContent).toBe('flex-start');
-  }));
+  });
 
-  it('should reset the vertical position and offset when the height is 100%', fakeAsync(() => {
+  it('should reset the vertical position and offset when the height is 100%', () => {
     strategy.centerVertically().height('100%').apply();
-
-    flushMicrotasks();
 
     expect(element.style.marginTop).toBe('0px');
     expect((element.parentNode as HTMLElement).style.alignItems).toBe('flex-start');
-  }));
+  });
 });
-
-function fakeAsyncTest(fn: () => void) {
-  return inject([], fakeAsync(fn));
-}
