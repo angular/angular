@@ -25,7 +25,7 @@ They shape or reshape the DOM's _structure_, typically by adding, removing, or m
 elements.
 
 As with other directives, you apply a structural directive to a _host element_.
-The directive then does whatever it's supposed to do with that host element and its descendents.
+The directive then does whatever it's supposed to do with that host element and its descendants.
 
 Structural directives are easy to recognize.
 An asterisk (*) precedes the directive attribute name as in this example.
