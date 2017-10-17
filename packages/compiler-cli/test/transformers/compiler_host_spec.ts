@@ -252,10 +252,10 @@ describe('NgCompilerHost', () => {
     it('should clear old generated references if the original host cached them', () => {
       codeGenerator.findGeneratedFileNames.and.returnValue(['/tmp/src/index.ngfactory.ts']);
 
-      const ngHost = createNgHost();
       const sfText = `
           /// <reference path="main.ts"/>
       `;
+      const ngHost = createNgHost({files: {'tmp': {'src': {'index.ts': sfText}}}});
       const sf = ts.createSourceFile('/tmp/src/index.ts', sfText, ts.ScriptTarget.Latest);
       ngHost.getSourceFile = () => sf;
 
