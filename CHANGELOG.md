@@ -119,7 +119,7 @@
 
 ### BREAKING CHANGES
 
-* **compiler:** The method `ngGetConentSelectors()`, deprecated in Angular 4.0, has been removed.
+* **compiler:** The method `ngGetContentSelectors()`, deprecated in Angular 4.0, has been removed.
   Use `ComponentFactory.ngContentSelectors` instead.
 
 
