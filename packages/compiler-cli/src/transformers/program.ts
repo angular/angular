@@ -18,7 +18,8 @@ import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, D
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
-import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, tsStructureIsReused} from './util';
+import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, tsStructureIsReused} from './util';
+
 
 
 /**
@@ -538,7 +539,10 @@ class AngularCompilerProgram implements Program {
       if (!(emitFlags & EmitFlags.Codegen)) {
         return {genFiles: [], genDiags: []};
       }
-      let genFiles = this.compiler.emitAllImpls(this.analyzedModules);
+      // TODO(tbosch): allow generating files that are not in the rootDir
+      // See https://github.com/angular/angular/issues/19337
+      let genFiles = this.compiler.emitAllImpls(this.analyzedModules)
+                         .filter(genFile => isInRootDir(genFile.genFileUrl, this.options));
       if (this.oldProgramEmittedGeneratedFiles) {
         const oldProgramEmittedGeneratedFiles = this.oldProgramEmittedGeneratedFiles;
         genFiles = genFiles.filter(genFile => {
@@ -727,9 +731,10 @@ export function createSrcToOutPathMapper(
     if (srcFileDir === outFileDir) {
       return (srcFileName) => srcFileName;
     }
+    // calculate the common suffix, stopping
+    // at `outDir`.
     const srcDirParts = srcFileDir.split('/');
-    const outDirParts = outFileDir.split('/');
-    // calculate the common suffix
+    const outDirParts = path.relative(outDir, outFileDir).split('/');
     let i = 0;
     while (i < Math.min(srcDirParts.length, outDirParts.length) &&
            srcDirParts[srcDirParts.length - 1 - i] === outDirParts[outDirParts.length - 1 - i])
