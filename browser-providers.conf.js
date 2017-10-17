@@ -32,7 +32,7 @@ var CIconfiguration = {
   'Safari8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari10': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
-  'iOS7': {unitTest: {target: 'BS', required: true}, e2e: {target: null, required: true}},
+  'iOS7': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'iOS8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'iOS9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'iOS10': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
