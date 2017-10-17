@@ -50,7 +50,8 @@ env:
     - CI_MODE=e2e_2
     - CI_MODE=js
     - CI_MODE=saucelabs_required
-    - CI_MODE=browserstack_required
+    # deactivated, see #19768
+    # - CI_MODE=browserstack_required
     - CI_MODE=saucelabs_optional
     - CI_MODE=browserstack_optional
     - CI_MODE=aio_tools_test
