@@ -15,7 +15,7 @@ import {METADATA_VERSION, ModuleMetadata} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
 import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
-import {DTS, GENERATED_FILES} from './util';
+import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
 const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-)+|(@(\w|-)+\/(\w|-)+))/;
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
@@ -305,7 +305,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   shouldGenerateFile(fileName: string): {generate: boolean, baseFileName?: string} {
     // TODO(tbosch): allow generating files that are not in the rootDir
     // See https://github.com/angular/angular/issues/19337
-    if (this.options.rootDir && !pathStartsWithPrefix(this.options.rootDir, fileName)) {
+    if (!isInRootDir(fileName, this.options)) {
       return {generate: false};
     }
     const genMatch = GENERATED_FILES.exec(fileName);
@@ -339,7 +339,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     // TODO(tbosch): allow generating files that are not in the rootDir
     // See https://github.com/angular/angular/issues/19337
     return !GENERATED_FILES.test(fileName) && this.isSourceFile(fileName) &&
-        (!this.options.rootDir || pathStartsWithPrefix(this.options.rootDir, fileName));
+        isInRootDir(fileName, this.options);
   }
 
   getSourceFile(
@@ -571,22 +571,6 @@ function dotRelative(from: string, to: string): string {
 function getPackageName(filePath: string): string|null {
   const match = NODE_MODULES_PACKAGE_NAME.exec(filePath);
   return match ? match[1] : null;
-}
-
-export function relativeToRootDirs(filePath: string, rootDirs: string[]): string {
-  if (!filePath) return filePath;
-  for (const dir of rootDirs || []) {
-    const rel = pathStartsWithPrefix(dir, filePath);
-    if (rel) {
-      return rel;
-    }
-  }
-  return filePath;
-}
-
-function pathStartsWithPrefix(prefix: string, fullPath: string): string|null {
-  const rel = path.relative(prefix, fullPath);
-  return rel.startsWith('..') ? null : rel;
 }
 
 function stripNodeModulesPrefix(filePath: string): string {
