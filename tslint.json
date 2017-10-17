@@ -5,7 +5,7 @@
     "node_modules/tslint-eslint-rules/dist/rules"
   ],
   "rules": {
-    "file-header": [true, "Copyright Google Inc\\."],
+    "file-header": [true, "Copyright Google LLC"],
     "no-console": [true, "log"],
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
@@ -17,7 +17,7 @@
     "no-inner-declarations": [true, "function"]
   },
   "jsRules": {
-    "file-header": [true, "Copyright Google Inc\\."],
+    "file-header": [true, "Copyright Google LLC"],
     "no-console": [true, "log"],
     "no-duplicate-imports": true,
     "no-duplicate-variable": true,
