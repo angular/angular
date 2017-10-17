@@ -363,7 +363,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
         genFileNames = cachedGenFiles;
       } else {
         if (!this.options.noResolve && this.shouldGenerateFilesFor(fileName)) {
-          genFileNames = this.codeGenerator.findGeneratedFileNames(fileName);
+          genFileNames = this.codeGenerator.findGeneratedFileNames(fileName).filter(
+              fileName => this.shouldGenerateFile(fileName).generate);
         }
         this.generatedCodeFor.set(fileName, genFileNames);
       }

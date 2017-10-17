@@ -113,7 +113,7 @@ export class AotCompiler {
       compMeta.template !.styleUrls.forEach((styleUrl) => {
         const normalizedUrl = this._host.resourceNameToFileName(styleUrl, file.fileName);
         if (!normalizedUrl) {
-          throw new Error(`Couldn't resolve resource ${styleUrl} relative to ${file.fileName}`);
+          throw syntaxError(`Couldn't resolve resource ${styleUrl} relative to ${file.fileName}`);
         }
         const needsShim = (compMeta.template !.encapsulation ||
                            this._config.defaultEncapsulation) === ViewEncapsulation.Emulated;

@@ -1350,4 +1350,46 @@ describe('ngc transformer command-line', () => {
     it('should recompile when the css file changes',
        expectRecompile(() => { write('greet.css', `p.greeting { color: blue }`); }));
   });
+
+  describe('regressions', () => {
+    // #19765
+    it('should not report an error when the resolved .css file is in outside rootDir', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "outDir": "../dist",
+          "rootDir": ".",
+          "rootDirs": [
+            ".",
+            "../dist"
+          ]
+        },
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<p>hello</p>',
+          styleUrls: ['./test.component.css']
+        })
+        export class TestComponent {}
+      `);
+      write('dist/dummy.txt', '');  // Force dist to be created
+      write('dist/lib/test.component.css', `
+        p { color: blue }
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(0, 'Compile failed unexpectedly.\n  ' + messages.join('\n  '));
+    });
+  });
 });
