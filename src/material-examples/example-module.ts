@@ -85,7 +85,7 @@ import {SelectOptgroupExample} from './select-optgroup/select-optgroup-example';
 import {SelectOverviewExample} from './select-overview/select-overview-example';
 import {SelectPanelClassExample} from './select-panel-class/select-panel-class-example';
 import {SelectResetExample} from './select-reset/select-reset-example';
-import {SelectValueBindingExample} from './select-vlaue-binding/select-value-binding-example';
+import {SelectValueBindingExample} from './select-value-binding/select-value-binding-example';
 import {SidenavFabExample} from './sidenav-fab/sidenav-fab-example';
 import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-example';
 import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
