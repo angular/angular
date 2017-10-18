@@ -64,6 +64,7 @@ import {
   MatOptionSelectionChange,
   mixinDisabled,
   mixinTabIndex,
+  MAT_OPTION_PARENT_COMPONENT,
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
@@ -187,7 +188,10 @@ export class MatSelectTrigger {}
     transformPanel,
     fadeInContent
   ],
-  providers: [{provide: MatFormFieldControl, useExisting: MatSelect}],
+  providers: [
+    {provide: MatFormFieldControl, useExisting: MatSelect},
+    {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatSelect}
+  ],
 })
 export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, OnChanges,
     OnDestroy, OnInit, DoCheck, ControlValueAccessor, CanDisable, HasTabIndex,
@@ -371,7 +375,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   get disableRipple(): boolean { return this._disableRipple; }
   set disableRipple(value: boolean) {
     this._disableRipple = coerceBooleanProperty(value);
-    this._setOptionDisableRipple();
   }
   private _disableRipple: boolean = false;
 
@@ -804,8 +807,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       });
 
     this._setOptionIds();
-    this._setOptionMultiple();
-    this._setOptionDisableRipple();
   }
 
   /** Invoked when an option is clicked. */
@@ -871,25 +872,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Records option IDs to pass to the aria-owns property. */
   private _setOptionIds() {
     this._optionIds = this.options.map(option => option.id).join(' ');
-  }
-
-  /**
-   * Sets the `multiple` property on each option. The promise is necessary
-   * in order to avoid Angular errors when modifying the property after init.
-   */
-  private _setOptionMultiple() {
-    if (this.multiple) {
-      Promise.resolve(null).then(() => {
-        this.options.forEach(option => option.multiple = this.multiple);
-      });
-    }
-  }
-
-  /** Sets the `disableRipple` property on each option. */
-  private _setOptionDisableRipple() {
-    if (this.options) {
-      this.options.forEach(option => option.disableRipple = this.disableRipple);
-    }
   }
 
   /**

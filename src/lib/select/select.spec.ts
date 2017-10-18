@@ -248,19 +248,18 @@ describe('MatSelect', () => {
       expect(fixture.componentInstance.select.panelOpen).toBe(false);
     });
 
-    it('should set the width of the overlay if there is no placeholder', async(() => {
+    it('should set the width of the overlay if there is no placeholder', fakeAsync(() => {
       let noPlaceholder = TestBed.createComponent(BasicSelectNoPlaceholder);
 
       noPlaceholder.detectChanges();
       trigger = noPlaceholder.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
 
-      noPlaceholder.whenStable().then(() => {
-        trigger.click();
-        noPlaceholder.detectChanges();
+      trigger.click();
+      noPlaceholder.detectChanges();
+      tick(SELECT_OPEN_ANIMATION);
 
-        const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-        expect(parseInt(pane.style.minWidth as string)).toBeGreaterThan(0);
-      });
+      const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+      expect(parseInt(pane.style.minWidth as string)).toBeGreaterThan(0);
     }));
 
     it('should close the panel when tabbing out', fakeAsync(() => {
@@ -348,6 +347,22 @@ describe('MatSelect', () => {
       expect(options.every(option => option.disableRipple === true))
         .toBeTruthy('Expected all options to have disableRipple set to true.');
     });
+
+    it('should not show ripples if they were disabled', fakeAsync(() => {
+      fixture.componentInstance.disableRipple = true;
+      fixture.detectChanges();
+
+      trigger.click();
+      fixture.detectChanges();
+      tick(SELECT_OPEN_ANIMATION);
+
+      const option = overlayContainerElement.querySelector('mat-option')!;
+
+      dispatchFakeEvent(option, 'mousedown');
+      dispatchFakeEvent(option, 'mouseup');
+
+      expect(option.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    }));
   });
 
   describe('selection logic', () => {
@@ -548,7 +563,7 @@ describe('MatSelect', () => {
       expect(fixture.componentInstance.select.selected).toBeUndefined();
     });
 
-    it('should not select options inside a disabled group', async(() => {
+    it('should not select options inside a disabled group', () => {
       fixture.destroy();
 
       const groupFixture = TestBed.createComponent(SelectWithGroups);
@@ -565,7 +580,7 @@ describe('MatSelect', () => {
       expect(groupFixture.componentInstance.select.panelOpen).toBe(true);
       expect(options[0].classList).not.toContain('mat-selected');
       expect(groupFixture.componentInstance.select.selected).toBeUndefined();
-    }));
+    });
 
   });
 
@@ -1944,14 +1959,10 @@ describe('MatSelect', () => {
         expect(select.getAttribute('aria-labelledby')).toBe('myLabelId');
       });
 
-      it('should not have aria-labelledby in the DOM if it`s not specified', async(() => {
-
+      it('should not have aria-labelledby in the DOM if it`s not specified', () => {
         fixture.detectChanges();
-
-        fixture.whenStable().then(() => {
-          expect(select.hasAttribute('aria-labelledby')).toBeFalsy();
-        });
-      }));
+        expect(select.hasAttribute('aria-labelledby')).toBeFalsy();
+      });
 
       it('should set the tabindex of the select to 0 by default', () => {
         expect(select.getAttribute('tabindex')).toEqual('0');
@@ -2434,7 +2445,7 @@ describe('MatSelect', () => {
   });
 
   describe('special cases', () => {
-    it('should handle nesting in an ngIf', async(() => {
+    it('should handle nesting in an ngIf', fakeAsync(() => {
       const fixture = TestBed.createComponent(NgIfSelect);
       fixture.detectChanges();
 
@@ -2444,41 +2455,42 @@ describe('MatSelect', () => {
       const trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
       trigger.style.width = '300px';
 
-      fixture.whenStable().then(() => {
-        fixture.detectChanges();
-        const value = fixture.debugElement.query(By.css('.mat-select-value'));
-        expect(value.nativeElement.textContent)
-            .toContain('Pizza', `Expected trigger to be populated by the control's initial value.`);
+      fixture.detectChanges();
+      tick();
 
-        trigger.click();
-        fixture.detectChanges();
+      trigger.click();
+      fixture.detectChanges();
+      tick(SELECT_OPEN_ANIMATION);
 
-        const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
-        expect(pane.style.minWidth).toEqual('300px');
+      const value = fixture.debugElement.query(By.css('.mat-select-value'));
+      expect(value.nativeElement.textContent)
+          .toContain('Pizza', `Expected trigger to be populated by the control's initial value.`);
 
-        expect(fixture.componentInstance.select.panelOpen).toBe(true);
-        expect(overlayContainerElement.textContent).toContain('Steak');
-        expect(overlayContainerElement.textContent).toContain('Pizza');
-        expect(overlayContainerElement.textContent).toContain('Tacos');
-      });
+      const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+      expect(pane.style.minWidth).toEqual('300px');
+
+      expect(fixture.componentInstance.select.panelOpen).toBe(true);
+      expect(overlayContainerElement.textContent).toContain('Steak');
+      expect(overlayContainerElement.textContent).toContain('Pizza');
+      expect(overlayContainerElement.textContent).toContain('Tacos');
     }));
 
-    it('should not crash the browser when a sibling throws an error on init', async(() => {
+    it('should not crash the browser when a sibling throws an error on init', () => {
       // Note that this test can be considered successful if the error being thrown didn't
       // end up crashing the testing setup altogether.
       expect(() => {
         TestBed.createComponent(SelectWithErrorSibling).detectChanges();
       }).toThrowError(new RegExp('Oh no!', 'g'));
-    }));
+    });
 
-    it('should not throw when trying to access the selected value on init', async(() => {
+    it('should not throw when trying to access the selected value on init', () => {
       expect(() => {
         TestBed.createComponent(SelectEarlyAccessSibling).detectChanges();
       }).not.toThrow();
-    }));
+    });
 
     it('should not throw selection model-related errors in addition to the errors from ngModel',
-      async(() => {
+      () => {
         const fixture = TestBed.createComponent(InvalidSelectInForm);
 
         // The first change detection run will throw the "ngModel is missing a name" error.
@@ -2486,7 +2498,7 @@ describe('MatSelect', () => {
 
         // The second run shouldn't throw selection-model related errors.
         expect(() => fixture.detectChanges()).not.toThrow();
-      }));
+      });
 
     it('should not throw when the triggerValue is accessed when there is no selected value', () => {
       const fixture = TestBed.createComponent(BasicSelect);
@@ -2655,13 +2667,13 @@ describe('MatSelect', () => {
     let testInstance: MultiSelect;
     let trigger: HTMLElement;
 
-    beforeEach(async(() => {
+    beforeEach(() => {
       fixture = TestBed.createComponent(MultiSelect);
       testInstance = fixture.componentInstance;
       fixture.detectChanges();
 
       trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
-    }));
+    });
 
     it('should be able to select multiple values', () => {
       trigger.click();
@@ -2695,28 +2707,25 @@ describe('MatSelect', () => {
       expect(testInstance.control.value).toEqual([]);
     });
 
-    it('should update the label', async(() => {
+    it('should update the label', fakeAsync(() => {
       trigger.click();
       fixture.detectChanges();
+      tick(SELECT_OPEN_ANIMATION);
 
-      fixture.whenStable().then(() => {
-        const options = overlayContainerElement.querySelectorAll('mat-option') as
-            NodeListOf<HTMLElement>;
+      const options = overlayContainerElement.querySelectorAll('mat-option') as
+          NodeListOf<HTMLElement>;
 
-        options[0].click();
-        options[2].click();
-        options[5].click();
-        fixture.detectChanges();
+      options[0].click();
+      options[2].click();
+      options[5].click();
+      fixture.detectChanges();
 
-        expect(trigger.textContent).toContain('Steak, Tacos, Eggs');
+      expect(trigger.textContent).toContain('Steak, Tacos, Eggs');
 
-        options[2].click();
-        fixture.detectChanges();
+      options[2].click();
+      fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          expect(trigger.textContent).toContain('Steak, Eggs');
-        });
-      });
+      expect(trigger.textContent).toContain('Steak, Eggs');
     }));
 
     it('should be able to set the selected value by taking an array', () => {
@@ -2771,41 +2780,39 @@ describe('MatSelect', () => {
       expect(testInstance.select.panelOpen).toBe(true);
     });
 
-    it('should sort the selected options based on their order in the panel', async(() => {
+    it('should sort the selected options based on their order in the panel', fakeAsync(() => {
       trigger.click();
       fixture.detectChanges();
+      tick(SELECT_OPEN_ANIMATION);
 
-      fixture.whenStable().then(() => {
-        const options = overlayContainerElement.querySelectorAll('mat-option') as
-            NodeListOf<HTMLElement>;
+      const options = overlayContainerElement.querySelectorAll('mat-option') as
+          NodeListOf<HTMLElement>;
 
-        options[2].click();
-        options[0].click();
-        options[1].click();
-        fixture.detectChanges();
+      options[2].click();
+      options[0].click();
+      options[1].click();
+      fixture.detectChanges();
 
-        expect(trigger.textContent).toContain('Steak, Pizza, Tacos');
-        expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
-      });
+      expect(trigger.textContent).toContain('Steak, Pizza, Tacos');
+      expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
     }));
 
-    it('should sort the selected options in reverse in rtl', async(() => {
+    it('should sort the selected options in reverse in rtl', fakeAsync(() => {
       dir.value = 'rtl';
       trigger.click();
       fixture.detectChanges();
+      tick(SELECT_OPEN_ANIMATION);
 
-      fixture.whenStable().then(() => {
-        const options = overlayContainerElement.querySelectorAll('mat-option') as
-            NodeListOf<HTMLElement>;
+      const options = overlayContainerElement.querySelectorAll('mat-option') as
+          NodeListOf<HTMLElement>;
 
-        options[2].click();
-        options[0].click();
-        options[1].click();
-        fixture.detectChanges();
+      options[2].click();
+      options[0].click();
+      options[1].click();
+      fixture.detectChanges();
 
-        expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
-        expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
-      });
+      expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
+      expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
     }));
 
     it('should sort the values, that get set via the model, based on the panel order', () => {
@@ -2829,34 +2836,31 @@ describe('MatSelect', () => {
       expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
     });
 
-    it('should throw an exception when trying to set a non-array value', async(() => {
+    it('should throw an exception when trying to set a non-array value', () => {
       expect(() => {
         testInstance.control.setValue('not-an-array');
       }).toThrowError(wrappedErrorMessage(getMatSelectNonArrayValueError()));
-    }));
+    });
 
-    it('should throw an exception when trying to change multiple mode after init', async(() => {
+    it('should throw an exception when trying to change multiple mode after init', () => {
       expect(() => {
         testInstance.select.multiple = false;
       }).toThrowError(wrappedErrorMessage(getMatSelectDynamicMultipleError()));
-    }));
+    });
 
-    it('should pass the `multiple` value to all of the option instances', async(() => {
+    it('should pass the `multiple` value to all of the option instances', fakeAsync(() => {
       trigger.click();
       fixture.detectChanges();
+      tick(SELECT_OPEN_ANIMATION);
 
-      fixture.whenStable().then(() => {
-        expect(testInstance.options.toArray().every(option => option.multiple)).toBe(true,
-            'Expected `multiple` to have been added to initial set of options.');
+      expect(testInstance.options.toArray().every(option => !!option.multiple)).toBe(true,
+          'Expected `multiple` to have been added to initial set of options.');
 
-        testInstance.foods.push({ value: 'cake-8', viewValue: 'Cake' });
-        fixture.detectChanges();
+      testInstance.foods.push({ value: 'cake-8', viewValue: 'Cake' });
+      fixture.detectChanges();
 
-        fixture.whenStable().then(() => {
-          expect(testInstance.options.toArray().every(option => option.multiple)).toBe(true,
-              'Expected `multiple` to have been set on dynamically-added option.');
-        });
-      });
+      expect(testInstance.options.toArray().every(option => !!option.multiple)).toBe(true,
+          'Expected `multiple` to have been set on dynamically-added option.');
     }));
 
   });
@@ -2864,10 +2868,10 @@ describe('MatSelect', () => {
   describe('theming', () => {
     let fixture: ComponentFixture<BasicSelectWithTheming>;
 
-    beforeEach(async(() => {
+    beforeEach(() => {
       fixture = TestBed.createComponent(BasicSelectWithTheming);
       fixture.detectChanges();
-    }));
+    });
 
     it('should transfer the theme to the select panel', () => {
       fixture.componentInstance.theme = 'warn';
@@ -2887,7 +2891,7 @@ describe('MatSelect', () => {
     let formField: HTMLElement;
     let options: NodeListOf<HTMLElement>;
 
-    beforeEach(async(() => {
+    beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(ResetValuesSelect);
       fixture.detectChanges();
       trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
@@ -2895,12 +2899,12 @@ describe('MatSelect', () => {
 
       trigger.click();
       fixture.detectChanges();
+      tick(SELECT_OPEN_ANIMATION);
 
-      fixture.whenStable().then(() => {
-        options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-        options[0].click();
-        fixture.detectChanges();
-      });
+      options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
+      options[0].click();
+      fixture.detectChanges();
+      tick(SELECT_CLOSE_ANIMATION);
     }));
 
     it('should reset when an option with an undefined value is selected', fakeAsync(() => {

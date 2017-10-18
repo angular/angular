@@ -19,6 +19,8 @@ import {
   Output,
   QueryList,
   ViewEncapsulation,
+  InjectionToken,
+  Inject,
 } from '@angular/core';
 import {MatOptgroup} from './optgroup';
 
@@ -32,6 +34,22 @@ let _uniqueIdCounter = 0;
 export class MatOptionSelectionChange {
   constructor(public source: MatOption, public isUserInput = false) { }
 }
+
+/**
+ * Describes a parent component that manages a list of options.
+ * Contains properties that the options can inherit.
+ * @docs-private
+ */
+export interface MatOptionParentComponent {
+  disableRipple?: boolean;
+  multiple?: boolean;
+}
+
+/**
+ * Injection token used to provide the parent component to options.
+ */
+export const MAT_OPTION_PARENT_COMPONENT =
+    new InjectionToken<MatOptionParentComponent>('MAT_OPTION_PARENT_COMPONENT');
 
 /**
  * Single option inside of a `<mat-select>` element.
@@ -60,24 +78,13 @@ export class MatOptionSelectionChange {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatOption {
-  private _selected: boolean = false;
-  private _active: boolean = false;
-  private _multiple: boolean = false;
-  private _disableRipple: boolean = false;
-
-  /** Whether the option is disabled.  */
-  private _disabled: boolean = false;
-
-  private _id: string = `mat-option-${_uniqueIdCounter++}`;
+  private _selected = false;
+  private _active = false;
+  private _disabled = false;
+  private _id = `mat-option-${_uniqueIdCounter++}`;
 
   /** Whether the wrapping component is in multiple selection mode. */
-  get multiple() { return this._multiple; }
-  set multiple(value: boolean) {
-    if (value !== this._multiple) {
-      this._multiple = value;
-      this._changeDetectorRef.markForCheck();
-    }
-  }
+  get multiple() { return this._parent && this._parent.multiple; }
 
   /** The unique ID of the option. */
   get id(): string { return this._id; }
@@ -94,11 +101,7 @@ export class MatOption {
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
 
   /** Whether ripples for the option are disabled. */
-  get disableRipple() { return this._disableRipple; }
-  set disableRipple(value: boolean) {
-    this._disableRipple = value;
-    this._changeDetectorRef.markForCheck();
-  }
+  get disableRipple() { return this._parent && this._parent.disableRipple; }
 
   /** Event emitted when the option is selected or deselected. */
   @Output() onSelectionChange = new EventEmitter<MatOptionSelectionChange>();
@@ -106,6 +109,7 @@ export class MatOption {
   constructor(
     private _element: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
+    @Optional() @Inject(MAT_OPTION_PARENT_COMPONENT) private _parent: MatOptionParentComponent,
     @Optional() public readonly group: MatOptgroup) {}
 
   /**

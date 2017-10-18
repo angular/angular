@@ -328,6 +328,8 @@ describe('ConnectedPositionStrategy', () => {
 
       it('should allow for the fallback positions to specify their own offsets', () => {
         originElement.style.bottom = '0';
+        originElement.style.left = '50%';
+        originElement.style.position = 'fixed';
         originRect = originElement.getBoundingClientRect();
         strategy = positionBuilder
           .connectedTo(
