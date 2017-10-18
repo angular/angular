@@ -1,15 +1,16 @@
 // #docplaster
 // #docregion
+/* Angular Imports */
 import { NgModule }           from '@angular/core';
 import { BrowserModule }      from '@angular/platform-browser';
+import { FormsModule }        from '@angular/forms';
 
-/* App Root */
-import
+/* App Imports */
 // #enddocregion
-       { AppComponent }       from './app.component.1b';
+import { AppComponent }       from './app.component.1b';
 /*
 // #docregion
-       { AppComponent }       from './app.component';
+import { AppComponent }       from './app.component';
 // #enddocregion
 */
 // #docregion
@@ -18,25 +19,17 @@ import { TitleComponent }     from './title.component';
 import { UserService }        from './user.service';
 
 /* Contact Imports */
-import
 // #enddocregion
-       { ContactComponent }   from './contact/contact.component.3';
+import { ContactComponent } from './contact/contact.component.3';
 /*
 // #docregion
-       { ContactComponent }   from './contact/contact.component';
+import { ContactComponent } from './contact/contact.component';
 // #enddocregion
 */
 // #docregion
-import { ContactService }     from './contact/contact.service';
-import { AwesomePipe }        from './contact/awesome.pipe';
-
-// #docregion import-alias
-import {
-  HighlightDirective as ContactHighlightDirective
-} from './contact/highlight.directive';
-// #enddocregion import-alias
-
-import { FormsModule }        from '@angular/forms';
+import { AwesomePipe } from './contact/awesome.pipe';
+import { ContactService } from './contact/contact.service';
+import { ContactHighlightDirective } from './contact/contact-highlight.directive';
 
 @NgModule({
   imports: [ BrowserModule,  FormsModule ],

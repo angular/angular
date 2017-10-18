@@ -14,7 +14,7 @@
     "app/contact/contact.component.html",
     "app/contact/contact.component.3.ts",
     "app/contact/contact.service.ts",
-    "app/contact/highlight.directive.ts",
+    "app/contact/contact-highlight.directive.ts",
 
     "main.1b.ts",
     "styles.css",

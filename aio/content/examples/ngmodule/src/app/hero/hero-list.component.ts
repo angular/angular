@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component }  from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 import { Hero,
          HeroService } from './hero.service';
@@ -11,11 +12,9 @@ import { Hero,
     </div>
   `
 })
-export class HeroListComponent implements OnInit {
-  heroes: Promise<Hero[]>;
-  constructor(private heroService: HeroService) { }
-
-  ngOnInit() {
+export class HeroListComponent {
+  heroes: Observable<Hero[]>;
+  constructor(private heroService: HeroService) {
     this.heroes = this.heroService.getHeroes();
   }
 }

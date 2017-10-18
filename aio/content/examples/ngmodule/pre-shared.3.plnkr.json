@@ -19,7 +19,7 @@
     "app/contact/contact.component.3.ts",
     "app/contact/contact.module.3.ts",
     "app/contact/contact-routing.module.3.ts",
-    "app/contact/highlight.directive.ts",
+    "app/contact/contact-highlight.directive.ts",
 
     "app/crisis/*.ts",
 

@@ -2,18 +2,29 @@
 import { NgModule }             from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-export const routes: Routes = [
+import { ContactModule }    from './contact/contact.module';
+
+// #docregion routes
+const routes: Routes = [
   { path: '', redirectTo: 'contact', pathMatch: 'full'},
-// #docregion lazy-routes
+  // #docregion lazy-routes
   { path: 'crisis', loadChildren: 'app/crisis/crisis.module#CrisisModule' },
   { path: 'heroes', loadChildren: 'app/hero/hero.module#HeroModule' }
-// #enddocregion lazy-routes
+  // #enddocregion lazy-routes
 ];
+// #enddocregion routes
 
-// #docregion forRoot
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  // #docregion imports
+  imports: [
+    ContactModule,
+    // #docregion forRoot
+    RouterModule.forRoot(routes),
+    // #enddocregion forRoot
+  ],
+  // #enddocregion imports
+  // #docregion exports
   exports: [RouterModule]
+  // #enddocregion exports
 })
 export class AppRoutingModule {}
-// #enddocregion forRoot

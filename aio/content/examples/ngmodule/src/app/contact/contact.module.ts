@@ -8,7 +8,10 @@ import { ContactRoutingModule } from './contact-routing.module';
 
 // #docregion class
 @NgModule({
-  imports:      [ SharedModule, ContactRoutingModule ],
+  imports: [
+    SharedModule,
+    ContactRoutingModule
+  ],
   declarations: [ ContactComponent ],
   providers:    [ ContactService ]
 })
