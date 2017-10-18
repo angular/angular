@@ -1,3 +1,20 @@
+<a name="4.4.6"></a>
+## [4.4.6](https://github.com/angular/angular/compare/4.4.5...4.4.6) (2017-10-18)
+
+
+### Bug Fixes
+
+* **animations:** properly support boolean-based transitions and state changes ([#19672](https://github.com/angular/angular/issues/19672)) ([f983a6c](https://github.com/angular/angular/commit/f983a6c)), closes [#9396](https://github.com/angular/angular/issues/9396) [#12337](https://github.com/angular/angular/issues/12337)
+* **common:** attempt to JSON.parse errors for JSON responses ([#19773](https://github.com/angular/angular/issues/19773)) ([269f5ac](https://github.com/angular/angular/commit/269f5ac))
+* **router:** RouterLinkActive should update its state right after checking the children ([53a807a](https://github.com/angular/angular/commit/53a807a)), closes [#18983](https://github.com/angular/angular/issues/18983)
+
+
+### Performance Improvements
+
+* **animations:** reduce size of bundle by removing AST classes ([#19673](https://github.com/angular/angular/issues/19673)) ([76d2496](https://github.com/angular/angular/commit/76d2496))
+
+
+
 <a name="5.0.0-rc.2"></a>
 # [5.0.0-rc.2](https://github.com/angular/angular/compare/5.0.0-rc.1...5.0.0-rc.2) (2017-10-12)
 
