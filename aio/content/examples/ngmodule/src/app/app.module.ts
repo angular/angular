@@ -1,14 +1,14 @@
 // #docplaster
 // #docregion
 // #docregion v4
+/* Angular Imports */
 import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 
-/* App Root */
+/* App Imports */
 import { AppComponent }   from './app.component';
 
-/* Feature Modules */
-import { ContactModule }    from './contact/contact.module';
+/* Core Modules */
 import { CoreModule }       from './core/core.module';
 
 /* Routing Module */
@@ -18,7 +18,6 @@ import { AppRoutingModule } from './app-routing.module';
   // #docregion import-for-root
   imports: [
     BrowserModule,
-    ContactModule,
 // #enddocregion v4
 // #enddocregion import-for-root
 /*
