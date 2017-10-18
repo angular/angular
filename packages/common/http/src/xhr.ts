@@ -191,6 +191,14 @@ export class HttpXhrBackend implements HttpBackend {
             // The parse error contains the text of the body that failed to parse.
             body = { error, text: body } as HttpJsonParseError;
           }
+        } else if (!ok && req.responseType === 'json' && typeof body === 'string') {
+          try {
+            // Attempt to parse the body as JSON.
+            body = JSON.parse(body);
+          } catch (error) {
+            // Cannot be certain that the body was meant to be parsed as JSON.
+            // Leave the body as a string.
+          }
         }
 
         if (ok) {
