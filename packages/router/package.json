@@ -27,6 +27,6 @@
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "rxjs": "^5.0.1"
+    "rxjs": "^5.5.0"
   }
 }
