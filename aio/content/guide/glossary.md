@@ -176,7 +176,7 @@ the component in the role of "controller" or "view model".
 The practice of writing compound words or phrases such that each word is separated by a dash or hyphen (`-`).
 This form is also known as kebab-case.
 
-[Directive](guide/glossary#directive) selectors (like `my-app`) and
+[Component](guide/glossary#component) selectors (like `app-heroes`) and
 the root of filenames (such as `hero-list.component.ts`) are often
 spelled in dash-case.
 
@@ -316,7 +316,7 @@ When Angular finds a directive in an HTML template,
 it creates the matching directive class instance
 and gives the instance control over that portion of the browser DOM.
 
-You can invent custom HTML markup (for example, `<my-directive>`) to
+You can invent custom HTML markup (for example, `<app-heroes>`) to
 associate with your custom directives. You add this custom markup to HTML templates
 as if you were writing native HTML. In this way, directives become extensions of
 HTML itself.

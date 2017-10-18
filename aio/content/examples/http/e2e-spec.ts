@@ -49,9 +49,9 @@ describe('Server Communication', function () {
   describe('Wikipedia Demo', function () {
 
     it('should initialize the demo with empty result list', function () {
-      let myWikiComp = element(by.tagName('my-wiki'));
-      expect(myWikiComp).toBeDefined('<my-wiki> must exist');
-      let resultList = myWikiComp.all(by.tagName('li'));
+      let wikiComp = element(by.tagName('app-wiki'));
+      expect(wikiComp).toBeDefined('<app-wiki> must exist');
+      let resultList = wikiComp.all(by.tagName('li'));
       expect(resultList.count()).toBe(0, 'result list must be empty');
     });
 
@@ -74,16 +74,16 @@ describe('Server Communication', function () {
     });
 
     function testForRefreshedResult(keyPressed: string, done: () => void) {
-      testForResult('my-wiki', keyPressed, false, done);
+      testForResult('app-wiki', keyPressed, false, done);
     }
   });
 
   describe('Smarter Wikipedia Demo', function () {
 
     it('should initialize the demo with empty result list', function () {
-      let myWikiSmartComp = element(by.tagName('my-wiki-smart'));
-      expect(myWikiSmartComp).toBeDefined('<my-wiki-smart> must exist');
-      let resultList = myWikiSmartComp.all(by.tagName('li'));
+      let wikiSmartComp = element(by.tagName('app-wiki-smart'));
+      expect(wikiSmartComp).toBeDefined('<app-wiki-smart> must exist');
+      let resultList = wikiSmartComp.all(by.tagName('li'));
       expect(resultList.count()).toBe(0, 'result list must be empty');
     });
 
@@ -105,11 +105,11 @@ describe('Server Communication', function () {
 
 
     function testForNewResult(keyPressed: string, done: () => void) {
-      testForResult('my-wiki-smart', keyPressed, false, done);
+      testForResult('app-wiki-smart', keyPressed, false, done);
     }
 
     function testForStaleResult(keyPressed: string, done: () => void) {
-      testForResult('my-wiki-smart', keyPressed, true, done);
+      testForResult('app-wiki-smart', keyPressed, true, done);
     }
 
   });

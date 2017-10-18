@@ -233,7 +233,7 @@ One common task is adding an `Authorization` header to outgoing requests. Here's
 ```javascript
 http
   .post('/api/items/add', body, {
-    headers: new HttpHeaders().set('Authorization', 'my-auth-token'),
+    headers: new HttpHeaders().set('Authorization', 'app-auth-token'),
   })
   .subscribe();
 ```
@@ -553,8 +553,8 @@ If your backend service uses different names for the XSRF token cookie or header
 imports: [
   HttpClientModule,
   HttpClientXsrfModule.withConfig({
-    cookieName: 'My-Xsrf-Cookie',
-    headerName: 'My-Xsrf-Header',
+    cookieName: 'app-Xsrf-Cookie',
+    headerName: 'app-Xsrf-Header',
   }),
 ]
 ```

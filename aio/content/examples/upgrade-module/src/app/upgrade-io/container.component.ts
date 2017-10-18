@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Hero } from '../hero';
 
 @Component({
-  selector: 'my-container',
+  selector: 'app-container',
   template: `
     <h1>Tour of Heroes</h1>
     <hero-detail [hero]="hero"

@@ -457,7 +457,7 @@ Here's a `provider` example of the problem.
 let foo: number; // neither exported nor initialized
 
 @Component({
-  selector: 'my-component',
+  selector: 'app-component',
   template: ... ,
   providers: [
     { provide: Foo, useValue: foo }
@@ -488,7 +488,7 @@ Alternatively, you can fix it by exporting `foo` with the expectation that `foo`
 export let foo: number; // exported
 
 @Component({
-  selector: 'my-component',
+  selector: 'app-component',
   template: ... ,
   providers: [
     { provide: Foo, useValue: foo }
@@ -508,7 +508,7 @@ For example, it doesn't work for the `template` property.
 export let someTemplate: string; // exported but not initialized
 
 @Component({
-  selector: 'my-component',
+  selector: 'app-component',
   template: someTemplate
 })
 export class MyComponent {}
@@ -540,7 +540,7 @@ the exported `someTemplate` variable which is declared but _unassigned_.
 export let someTemplate: string;
 
 @Component({
-  selector: 'my-component',
+  selector: 'app-component',
   template: someTemplate
 })
 export class MyComponent {}
@@ -553,7 +553,7 @@ You'd also get this error if you imported `someTemplate` from some other module 
 import { someTemplate } from './config';
 
 @Component({
-  selector: 'my-component',
+  selector: 'app-component',
   template: someTemplate
 })
 export class MyComponent {}
@@ -571,7 +571,7 @@ To correct this error, provide the initial value of the variable in an initializ
 export let someTemplate = '<h1>Greetings from Angular</h1>';
 
 @Component({
-  selector: 'my-component',
+  selector: 'app-component',
   template: someTemplate
 })
 export class MyComponent {}

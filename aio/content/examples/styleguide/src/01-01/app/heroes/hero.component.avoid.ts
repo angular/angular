@@ -11,7 +11,7 @@ class Hero {
 }
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
       <h1>{{title}}</h1>
       <pre>{{heroes | json}}</pre>

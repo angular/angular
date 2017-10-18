@@ -152,7 +152,7 @@ If you do, this page can help you understand their purpose.
       The application host page.
       It loads a few essential scripts in a prescribed order.
       Then it boots the application, placing the root `AppComponent`
-      in the custom `<my-app>` body tag.
+      in the custom `<app-root>` body tag.
 
       The same `index.html` satisfies all documentation application samples.
     </td>

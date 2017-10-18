@@ -222,7 +222,7 @@ export class IoParentComponent {
 }
 
 @Component({
-  selector: 'my-if-comp',
+  selector: 'app-if-comp',
   template: `MyIf(<span *ngIf="showMore">More</span>)`
 })
 export class MyIfComponent {
@@ -230,7 +230,7 @@ export class MyIfComponent {
 }
 
 @Component({
-  selector: 'my-service-comp',
+  selector: 'app-service-comp',
   template: `injected value: {{fancyService.value}}`,
   providers: [FancyService]
 })
@@ -240,7 +240,7 @@ export class TestProvidersComponent {
 
 
 @Component({
-  selector: 'my-service-comp',
+  selector: 'app-service-comp',
   template: `injected value: {{fancyService.value}}`,
   viewProviders: [FancyService]
 })
@@ -287,7 +287,7 @@ export class NeedsContentComponent {
 
 ///////// MyIfChildComp ////////
 @Component({
-  selector: 'my-if-child-1',
+  selector: 'app-if-child-1',
 
   template: `
     <h4>MyIfChildComp</h4>
@@ -338,7 +338,7 @@ export class MyIfChildComponent implements OnInit, OnChanges, OnDestroy {
 ///////// MyIfParentComp ////////
 
 @Component({
-  selector: 'my-if-parent-comp',
+  selector: 'app-if-parent-comp',
   template: `
     <h3>MyIfParentComp</h3>
     <label>Parent value:
@@ -347,7 +347,7 @@ export class MyIfChildComponent implements OnInit, OnChanges, OnDestroy {
     <button (click)="clicked()">{{toggleLabel}} Child</button><br>
     <div *ngIf="showChild"
          style="margin: 4px; padding: 4px; background-color: aliceblue;">
-      <my-if-child-1  [(value)]="parentValue"></my-if-child-1>
+      <app-if-child-1  [(value)]="parentValue"></app-if-child-1>
     </div>
   `
 })
@@ -387,7 +387,7 @@ export class ShellComponent { }
   selector: 'bag-comp',
   template: `
     <h1>Specs Bag</h1>
-    <my-if-parent-comp></my-if-parent-comp>
+    <app-if-parent-comp></app-if-parent-comp>
     <hr>
     <h3>Input/Output Component</h3>
     <io-parent-comp></io-parent-comp>

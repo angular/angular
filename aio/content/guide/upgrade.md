@@ -545,7 +545,7 @@ of multiple words. In Angular, you would bind these attributes using camelCase:
 But when using them from AngularJS templates, you must use kebab-case:
 
 <code-example format="">
-  [my-hero]="hero"
+  [app-hero]="hero"
 </code-example>
 
 </div>
@@ -635,7 +635,7 @@ observing the following rules:
 
     <td>
 
-      `<my-component myAttribute="value">`
+      `<app-component myAttribute="value">`
 
     </td>
   </tr>
@@ -650,7 +650,7 @@ observing the following rules:
     </td>
     <td>
 
-      `<my-component (myOutput)="action()">`
+      `<app-component (myOutput)="action()">`
 
     </td>
   </tr>
@@ -665,7 +665,7 @@ observing the following rules:
     </td>
     <td>
 
-      `<my-component [myValue]="anExpression">`
+      `<app-component [myValue]="anExpression">`
 
     </td>
   </tr>
@@ -680,9 +680,9 @@ observing the following rules:
     </td>
     <td>
 
-      As a two-way binding: `<my-component [(myValue)]="anExpression">`.
+      As a two-way binding: `<app-component [(myValue)]="anExpression">`.
       Since most AngularJS two-way bindings actually only need a one-way binding
-      in practice, `<my-component [myValue]="anExpression">` is often enough.
+      in practice, `<app-component [myValue]="anExpression">` is often enough.
 
     </td>
   </tr>

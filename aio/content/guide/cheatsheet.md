@@ -85,8 +85,8 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>Binds text content to an interpolated string, for example, "Hello Seabiscuit".</p>
 </td>
 </tr><tr>
-<td><code>&lt;my-cmp <b>[(title)]</b>="name"&gt;</code></td>
-<td><p>Sets up two-way data binding. Equivalent to: <code>&lt;my-cmp [title]="name" (titleChange)="name=$event"&gt;</code></p>
+<td><code>&lt;app-cmp <b>[(title)]</b>="name"&gt;</code></td>
+<td><p>Sets up two-way data binding. Equivalent to: <code>&lt;app-cmp [title]="name" (titleChange)="name=$event"&gt;</code></p>
 </td>
 </tr><tr>
 <td><code>&lt;video <b>#movieplayer</b> ...&gt;<br>  &lt;button <b>(click)</b>="movieplayer.play()"&gt;<br>&lt;/video&gt;</code></td>
@@ -220,11 +220,11 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 <td><p>List of dependency injection providers scoped to this component's view.</p>
 </td>
 </tr><tr>
-<td><code><b>template:</b> 'Hello {{name}}'<br><b>templateUrl:</b> 'my-component.html'</code></td>
+<td><code><b>template:</b> 'Hello {{name}}'<br><b>templateUrl:</b> 'app-component.html'</code></td>
 <td><p>Inline template or external template URL of the component's view.</p>
 </td>
 </tr><tr>
-<td><code><b>styles:</b> ['.primary {color: red}']<br><b>styleUrls:</b> ['my-component.css']</code></td>
+<td><code><b>styles:</b> ['.primary {color: red}']<br><b>styleUrls:</b> ['app-component.css']</code></td>
 <td><p>List of inline CSS styles or external stylesheet URLs for styling the component’s view.</p>
 </td>
 </tr>
@@ -240,11 +240,11 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 <tr>
 <td><code><b>@Input()</b> myProperty;</code></td>
 <td><p>Declares an input property that you can update via property binding (example:
-<code>&lt;my-cmp [myProperty]="someExpression"&gt;</code>).</p>
+<code>&lt;app-cmp [myProperty]="someExpression"&gt;</code>).</p>
 </td>
 </tr><tr>
 <td><code><b>@Output()</b> myEvent = new EventEmitter();</code></td>
-<td><p>Declares an output property that fires events that you can subscribe to with an event binding (example: <code>&lt;my-cmp (myEvent)="doSomething()"&gt;</code>).</p>
+<td><p>Declares an output property that fires events that you can subscribe to with an event binding (example: <code>&lt;app-cmp (myEvent)="doSomething()"&gt;</code>).</p>
 </td>
 </tr><tr>
 <td><code><b>@HostBinding('class.valid')</b> isValid;</code></td>

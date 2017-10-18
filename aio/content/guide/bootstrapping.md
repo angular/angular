@@ -151,10 +151,10 @@ The _bootstrapping_ process sets up the execution environment,
 digs the _root_ `AppComponent` out of the module's `bootstrap` array,
 creates an instance of the component and inserts it within the element tag identified by the component's `selector`.
 
-The `AppComponent` selector &mdash; here and in most documentation samples &mdash; is `my-app`
-so Angular looks for a `<my-app>` tag in the `index.html` like this one ...
+The `AppComponent` selector &mdash; here and in most documentation samples &mdash; is `app-root`
+so Angular looks for a `<app-root>` tag in the `index.html` like this one ...
 
-<code-example path="setup/src/index.html" region="my-app" title="setup/src/index.html" linenums="false">
+<code-example path="setup/src/index.html" region="app-root" title="setup/src/index.html" linenums="false">
 
 </code-example>
 

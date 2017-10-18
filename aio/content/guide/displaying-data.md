@@ -92,7 +92,7 @@ the view, such as a keystroke, a timer completion, or a response to an HTTP requ
 Notice that you don't call **new** to create an instance of the `AppComponent` class.
 Angular is creating an instance for you. How?
 
-The CSS `selector` in the `@Component` decorator specifies an element named `<my-app>`.
+The CSS `selector` in the `@Component` decorator specifies an element named `<app-root>`.
 That element is a placeholder in the body of your `index.html` file:
 
 
@@ -102,9 +102,9 @@ That element is a placeholder in the body of your `index.html` file:
 
 
 
-When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angular looks for a `<my-app>`
+When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angular looks for a `<app-root>`
 in the `index.html`, finds it, instantiates an instance of `AppComponent`, and renders it
-inside the `<my-app>` tag.
+inside the `<app-root>` tag.
 
 Now run the app. It should display the title and hero name:
 

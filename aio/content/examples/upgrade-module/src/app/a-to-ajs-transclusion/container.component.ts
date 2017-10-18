@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Hero } from '../hero';
 
 @Component({
-  selector: 'my-container',
+  selector: 'app-container',
   template: `
     <hero-detail [hero]="hero">
       <!-- Everything here will get transcluded -->

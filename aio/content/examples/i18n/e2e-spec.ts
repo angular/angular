@@ -13,7 +13,7 @@ describe('i18n E2E Tests', () => {
   });
 
   it('should display the node texts without elements', function () {
-    expect(element(by.css('my-app')).getText()).toContain('No genero ningún elemento');
+    expect(element(by.css('app-root')).getText()).toContain('No genero ningún elemento');
   });
 
   it('should display the translated title attribute', function () {

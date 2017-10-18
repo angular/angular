@@ -5,7 +5,7 @@ import { Observable }       from 'rxjs/Observable';
 import { WikipediaService } from './wikipedia.service';
 
 @Component({
-  selector: 'my-wiki',
+  selector: 'app-wiki',
   template: `
     <h1>Wikipedia Demo</h1>
     <p>Search after each keystroke</p>

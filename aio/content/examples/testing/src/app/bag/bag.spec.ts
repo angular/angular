@@ -425,7 +425,7 @@ describe('TestBed Component Overrides:', () => {
   it('injected provider should not be same as component\'s provider', () => {
 
     // TestComponent is parent of TestProvidersComponent
-    @Component({ template: '<my-service-comp></my-service-comp>' })
+    @Component({ template: '<app-service-comp></app-service-comp>' })
     class TestComponent {}
 
     // 3 levels of FancyService provider: module, TestCompomponent, TestProvidersComponent

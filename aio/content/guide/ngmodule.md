@@ -142,7 +142,7 @@ The example `AppComponent` simply displays a data-bound title:
 
 Lastly, the `@NgModule.bootstrap` property identifies this `AppComponent` as the _bootstrap component_.
 When Angular launches the app, it places the HTML rendering of `AppComponent` in the DOM,
-inside the `<my-app>` element tags of the `index.html`.
+inside the `<app-root>` element tags of the `index.html`.
 
 
 {@a bootstrap}

@@ -370,9 +370,9 @@ If you want to include an ignored code file in your project and display it in a 
 The preferred way to un-ignore a file is to update the `content/examples/.gitignore` like this:
 
 <code-example title="content/examples/.gitignore">
-  # my-guide
-  !my-guide/src/something.js
-  !my-guide/more-javascript*.js
+  # app-guide
+  !app-guide/src/something.js
+  !app-guide/more-javascript*.js
 </code-example>
 
 </div>
