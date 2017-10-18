@@ -66,7 +66,9 @@ describe('site App', function() {
     });
   });
 
-  describe('google analytics', () => {
+  // TODO(https://github.com/angular/angular/issues/19785): Activate this again
+  // once it is no more flaky.
+  xdescribe('google analytics', () => {
     beforeEach(done => page.gaReady.then(done));
 
     it('should call ga', done => {
