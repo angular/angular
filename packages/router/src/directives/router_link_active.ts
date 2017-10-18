@@ -118,19 +118,21 @@ export class RouterLinkActive implements OnChanges,
 
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
-    Promise.resolve().then(() => {
-      const hasActiveLinks = this.hasActiveLinks();
-      if (this.isActive !== hasActiveLinks) {
-        (this as any).isActive = hasActiveLinks;
-        this.classes.forEach((c) => {
-          if (hasActiveLinks) {
-            this.renderer.addClass(this.element.nativeElement, c);
-          } else {
-            this.renderer.removeClass(this.element.nativeElement, c);
-          }
-        });
-      }
-    });
+    const hasActiveLinks = this.hasActiveLinks();
+
+    // react only when status has changed to prevent unnecessary dom updates
+    if (this.isActive !== hasActiveLinks) {
+      this.classes.forEach((c) => {
+        if (hasActiveLinks) {
+          this.renderer.addClass(this.element.nativeElement, c);
+        } else {
+          this.renderer.removeClass(this.element.nativeElement, c);
+        }
+      });
+      Promise.resolve(hasActiveLinks).then(active => (this as{
+                                                       isActive: boolean
+                                                     }).isActive = active);
+    }
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
