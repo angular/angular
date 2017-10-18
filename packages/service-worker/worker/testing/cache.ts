@@ -138,6 +138,11 @@ export class MockCache implements Cache {
   async put(request: RequestInfo, response: Response): Promise<void> {
     const url = (typeof request === 'string' ? request : request.url);
     this.cache.set(url, response.clone());
+
+    // Even though the body above is cloned, consume it here because the
+    // real cache consumes the body.
+    await response.text();
+
     return;
   }
 
