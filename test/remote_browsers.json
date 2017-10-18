@@ -11,6 +11,12 @@
       "--window-size=1024,768"
     ]
   },
+  "FirefoxHeadless": {
+    "base": "Firefox",
+    "flags": [
+      "-headless"
+    ]
+  },
   "SL_CHROME": {
     "base": "SauceLabs",
     "browserName": "chrome",

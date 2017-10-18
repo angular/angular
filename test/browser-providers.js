@@ -6,7 +6,7 @@
  */
 const browserConfig = {
   'ChromeHeadless_CI': { unitTest: {target: 'TC', required: true  }},
-  'Firefox':           { unitTest: {target: 'BS', required: true  }},
+  'FirefoxHeadless':   { unitTest: {target: 'TC', required: true  }},
   'ChromeBeta':        { unitTest: {target: null, required: false }},
   'FirefoxBeta':       { unitTest: {target: null, required: false }},
   'ChromeDev':         { unitTest: {target: null, required: true  }},

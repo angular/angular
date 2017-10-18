@@ -347,15 +347,12 @@ describe('MatSelectionList', () => {
     }));
 
     it('should be focused when focus on nativeElements', () => {
-      listOption.nativeElement.focus();
+      dispatchFakeEvent(listOption.nativeElement, 'focus');
       fixture.detectChanges();
 
-      expect(listItemEl.nativeElement).toBe(document.activeElement);
-      if (platform.SAFARI || platform.FIREFOX) {
-        expect(listItemEl.nativeElement.className).toContain('mat-list-item-focus');
-      }
+      expect(listItemEl.nativeElement.className).toContain('mat-list-item-focus');
 
-      listOption.nativeElement.blur();
+      dispatchFakeEvent(listOption.nativeElement, 'blur');
       fixture.detectChanges();
 
       expect(listItemEl.nativeElement.className).not.toContain('mat-list-item-focus');
