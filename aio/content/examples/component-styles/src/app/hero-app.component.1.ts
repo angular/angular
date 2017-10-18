@@ -8,7 +8,7 @@ import { Hero } from './hero';
     <h1>Tour of Heroes</h1>
     <app-hero-main [hero]="hero"></app-hero-main>
   `,
-  styles: ['h1 { font-weight: normal; }']
+  styleUrls: ['./hero-app.component.css']
 })
 export class HeroAppComponent {
 // #enddocregion

@@ -13,7 +13,7 @@ describe('Component Style Tests', function () {
     let externalH1 = element(by.css('body > h1'));
 
     // Note: sometimes webdriver returns the fontWeight as "normal",
-    // othertimes as "400", both of which are equal in CSS terms.
+    // other times as "400", both of which are equal in CSS terms.
     expect(componentH1.getCssValue('fontWeight')).toMatch(/normal|400/);
     expect(externalH1.getCssValue('fontWeight')).not.toMatch(/normal|400/);
   });
