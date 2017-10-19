@@ -53,6 +53,7 @@ describe('Integration', () => {
 
   describe('navigation', function() {
     it('should navigate to the current URL', fakeAsync(inject([Router], (router: Router) => {
+         router.onSameUrlNavigation = 'reload';
          router.resetConfig([
            {path: '', component: SimpleCmp},
            {path: 'simple', component: SimpleCmp},
@@ -3568,30 +3569,34 @@ describe('Integration', () => {
            }]);
 
            const events: any[] = [];
-           router.events.subscribe(e => onlyNavigationStartAndEnd(e) && events.push(e));
+           router.events.subscribe(e => e instanceof RouterEvent && events.push(e));
 
            location.go('/include/user/kate(aux:excluded)');
            advance(fixture);
 
            expect(location.path()).toEqual('/include/user/kate(aux:excluded)');
-           expectEvents(
-               events,
-               [[NavigationStart, '/include/user/kate'], [NavigationEnd, '/include/user/kate']]);
+           expectEvents(events, [
+             [NavigationStart, '/include/user/kate'], [RoutesRecognized, '/include/user/kate'],
+             [GuardsCheckStart, '/include/user/kate'], [GuardsCheckEnd, '/include/user/kate'],
+             [ResolveStart, '/include/user/kate'], [ResolveEnd, '/include/user/kate'],
+             [NavigationEnd, '/include/user/kate']
+           ]);
            events.splice(0);
 
            location.go('/include/user/kate(aux:excluded2)');
            advance(fixture);
-           expectEvents(
-               events,
-               [[NavigationStart, '/include/user/kate'], [NavigationEnd, '/include/user/kate']]);
-           events.splice(0);
+           expectEvents(events, []);
 
            router.navigateByUrl('/include/simple');
            advance(fixture);
 
            expect(location.path()).toEqual('/include/simple(aux:excluded2)');
-           expectEvents(
-               events, [[NavigationStart, '/include/simple'], [NavigationEnd, '/include/simple']]);
+           expectEvents(events, [
+             [NavigationStart, '/include/simple'], [RoutesRecognized, '/include/simple'],
+             [GuardsCheckStart, '/include/simple'], [GuardsCheckEnd, '/include/simple'],
+             [ResolveStart, '/include/simple'], [ResolveEnd, '/include/simple'],
+             [NavigationEnd, '/include/simple']
+           ]);
          })));
     });
   });

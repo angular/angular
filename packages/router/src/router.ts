@@ -242,6 +242,14 @@ export class Router {
   routeReuseStrategy: RouteReuseStrategy = new DefaultRouteReuseStrategy();
 
   /**
+   * Define what the router should do if it receives a navigation request to the current URL.
+   * By default, the router will ignore this navigation. However, this prevents features such
+   * as a "refresh" button. Use this option to configure the behavior when navigating to the
+   * current URL. Default is 'ignore'.
+   */
+  onSameUrlNavigation: 'reload'|'ignore' = 'ignore';
+
+  /**
    * Creates the router service.
    */
   // TODO: vsavkin make internal after the final is out.
@@ -552,7 +560,8 @@ export class Router {
     const url = this.urlHandlingStrategy.extract(rawUrl);
     const urlTransition = !this.navigated || url.toString() !== this.currentUrlTree.toString();
 
-    if (this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
+    if ((this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
+        this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
       (this.events as Subject<Event>).next(new NavigationStart(id, this.serializeUrl(url)));
       Promise.resolve()
           .then(
