@@ -36,6 +36,7 @@ fi
 
 setEnvVar NODE_VERSION 6.9.5
 setEnvVar YARN_VERSION 1.0.2
+setEnvVar CHROMIUM_VERSION 499098 # Chrome 62 linux stable, see https://www.chromium.org/developers/calendar
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
@@ -101,6 +102,7 @@ if [[ ${TRAVIS:-} ]]; then
   setEnvVar BROWSER_STACK_USERNAME angularteam1
   # not using use setEnvVar so that we don't print the key
   export BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
+  setEnvVar CHROME_BIN ${HOME}/.chrome/chromium/chrome-linux/chrome
   setEnvVar BROWSER_PROVIDER_READY_FILE /tmp/angular-build/browser-provider-tunnel-init.lock
 fi
 

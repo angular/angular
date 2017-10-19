@@ -19,6 +19,11 @@ const config = require('lighthouse/lighthouse-core/config/default.js');
 // Constants
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 
+// Specify the path to Chrome on Travis
+if (process.env.TRAVIS) {
+  process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
+}
+
 // Run
 _main(process.argv.slice(2));
 
