@@ -68,30 +68,33 @@ describe('site App', function() {
 
   // TODO(https://github.com/angular/angular/issues/19785): Activate this again
   // once it is no more flaky.
-  xdescribe('google analytics', () => {
-    beforeEach(done => page.gaReady.then(done));
-
-    it('should call ga', done => {
-      page.ga()
-        .then(calls => {
-          expect(calls.length).toBeGreaterThan(2, 'ga calls');
-          done();
-        });
-    });
+  describe('google analytics', () => {
 
     it('should call ga with initial URL', done => {
       let path: string;
-
+      page.navigateTo('api');
       page.locationPath()
         .then(p => path = p)
         .then(() => page.ga().then(calls => {
-          expect(calls.length).toBeGreaterThan(2, 'ga calls');
-          expect(calls[1]).toEqual(['set', 'page', path]);
+          // The last call (length-1) will be the `send` command
+          // The second to last call (length-2) will be the command to `set` the page url
+          expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
           done();
         }));
     });
 
-    // Todo: add test to confirm tracking URL when navigate.
+    it('should call ga with new URL on navigation', done => {
+      let path: string;
+      page.getLink('features').click();
+      page.locationPath()
+        .then(p => path = p)
+        .then(() => page.ga().then(calls => {
+          // The last call (length-1) will be the `send` command
+          // The second to last call (length-2) will be the command to `set` the page url
+          expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
+          done();
+        }));
+    });
   });
 
   describe('search', () => {
