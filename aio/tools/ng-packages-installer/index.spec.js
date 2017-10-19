@@ -203,7 +203,7 @@ describe('NgPackagesInstaller', () => {
     it('should run `yarn install` in the specified directory, with the correct options', () => {
       spyOn(installer, '_installDeps');
       installer.restoreNpmDependencies();
-      expect(installer._installDeps).toHaveBeenCalledWith('--freeze-lockfile', '--check-files');
+      expect(installer._installDeps).toHaveBeenCalledWith('--frozen-lockfile', '--check-files');
     });
   });
 
