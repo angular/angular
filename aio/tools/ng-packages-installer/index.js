@@ -129,7 +129,7 @@ class NgPackagesInstaller {
    * Yarn will also delete the local marker file for us.
    */
   restoreNpmDependencies() {
-    this._installDeps('--freeze-lockfile', '--check-files');
+    this._installDeps('--frozen-lockfile', '--check-files');
   }
 
   // Protected helpers

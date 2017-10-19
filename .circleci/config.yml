@@ -29,7 +29,7 @@ jobs:
       - restore_cache:
           key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-      - run: yarn install --freeze-lockfile --non-interactive
+      - run: yarn install --frozen-lockfile --non-interactive
       - run: ./node_modules/.bin/gulp lint
 
   build:
