@@ -72,11 +72,21 @@ if [[ ${TRAVIS} && (${CI_MODE} == "bazel" || ${CI_MODE} == "e2e_2") ]]; then
   travisFoldEnd "bazel-install"
 fi
 
-# Start xvfb for local Chrome testing
-if [[ ${TRAVIS} && (${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e") ]]; then
-  travisFoldStart "xvfb-start"
-    sh -e /etc/init.d/xvfb start
-  travisFoldEnd "xvfb-start"
+
+# Install Chromium
+if [[ ${TRAVIS} && ${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" ]]; then
+  travisFoldStart "install-chromium"
+    (
+      ${thisDir}/install-chromium.sh
+
+      # Start xvfb for local Chrome used for testing
+      if [[ ${TRAVIS} ]]; then
+        travisFoldStart "install-chromium.xvfb-start"
+          sh -e /etc/init.d/xvfb start
+        travisFoldEnd "install-chromium.xvfb-start"
+      fi
+    )
+  travisFoldEnd "install-chromium"
 fi
 
 
