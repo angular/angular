@@ -12,6 +12,13 @@
  * This API should be stable for NG 2. It can be removed in NG 4..., but should be replaced by
  * something else.
  */
+
+/**
+ *********************************************************************
+ * Changes to this file need to be approved by the Angular CLI team. *
+ *********************************************************************
+ */
+
 import {AotCompilerHost, StaticReflector, StaticSymbol, core} from '@angular/compiler';
 
 

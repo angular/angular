@@ -7,9 +7,12 @@
 #
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
+# brocco - Mike Brocchi
 # chuckjaz - Chuck Jazdzewski
+# filipesilva - Filipe Silva
 # Foxandxss - Jesús Rodríguez
 # gkalpak - George Kalpakas
+# hansl - Hans Larsen
 # IgorMinar - Igor Minar
 # jasonaden - Jason Aden
 # juleskremer - Jules Kremer
@@ -144,11 +147,23 @@ groups:
       - mhevery
       - IgorMinar #fallback
 
+  compiler-cli/ngtools:
+    conditions:
+      files:
+        - "packages/compiler-cli/src/ngtools*"
+    users:
+      - hansl
+      - filipesilva #fallback
+      - brocco #fallback
+
   compiler-cli:
     conditions:
       files:
-        - "packages/compiler-cli/*"
-        - "packages/bazel/*"
+        include:
+          - "packages/compiler-cli/*"
+          - "packages/bazel/*"
+        exclude:
+          - "packages/compiler-cli/src/ngtools*"   
     users:
       - alexeagle
       - chuckjaz

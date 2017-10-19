@@ -15,6 +15,12 @@
  * Once the ngc api is public and stable, this can be removed.
  */
 
+/**
+ *********************************************************************
+ * Changes to this file need to be approved by the Angular CLI team. *
+ *********************************************************************
+ */
+
 import {ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
 
