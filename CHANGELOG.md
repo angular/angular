@@ -1,3 +1,26 @@
+<a name="5.0.0-rc.3"></a>
+# [5.0.0-rc.3](https://github.com/angular/angular/compare/5.0.0-rc.2...5.0.0-rc.3) (2017-10-18)
+
+
+### Bug Fixes
+
+* **animations:** always fire inner trigger callbacks even if blocked by parent animations ([#19753](https://github.com/angular/angular/issues/19753)) ([5a9ed2d](https://github.com/angular/angular/commit/5a9ed2d)), closes [#19100](https://github.com/angular/angular/issues/19100)
+* **animations:** ensure animateChild() works with all inner leave animations ([#19006](https://github.com/angular/angular/issues/19006)) ([#19532](https://github.com/angular/angular/issues/19532)) ([#19693](https://github.com/angular/angular/issues/19693)) ([f42d317](https://github.com/angular/angular/commit/f42d317))
+* **animations:** ensure inner :leave animations do not remove node when skipped ([#19532](https://github.com/angular/angular/issues/19532)) ([#19693](https://github.com/angular/angular/issues/19693)) ([d035175](https://github.com/angular/angular/commit/d035175))
+* **bazel:** fix the output directory for extractor to be genfiles/ instead of bin/ ([#19716](https://github.com/angular/angular/issues/19716)) ([405ccc7](https://github.com/angular/angular/commit/405ccc7))
+* **common:** attempt to JSON.parse errors for JSON responses ([#19773](https://github.com/angular/angular/issues/19773)) ([04ab9f1](https://github.com/angular/angular/commit/04ab9f1))
+* **compiler:** generate correct imports for type check blocks ([#19582](https://github.com/angular/angular/issues/19582)) ([60bdcd6](https://github.com/angular/angular/commit/60bdcd6))
+* **compiler:** prepare for future Bazel semantics of += ([#19717](https://github.com/angular/angular/issues/19717)) ([836c889](https://github.com/angular/angular/commit/836c889))
+* **compiler-cli:** diagnostics file paths relative to cwd, not tsconfig ([#19748](https://github.com/angular/angular/issues/19748)) ([56774df](https://github.com/angular/angular/commit/56774df))
+* **compiler-cli:** do not add references to files outside of `rootDir` ([#19770](https://github.com/angular/angular/issues/19770)) ([25cbc98](https://github.com/angular/angular/commit/25cbc98))
+* **router:** RouterLinkActive should update its state right after checking the children ([#19449](https://github.com/angular/angular/issues/19449)) ([6f2939d](https://github.com/angular/angular/commit/6f2939d)), closes [#18983](https://github.com/angular/angular/issues/18983)
+* **service-worker:** add missing annotation for SwPush ([#19721](https://github.com/angular/angular/issues/19721)) ([15a8429](https://github.com/angular/angular/commit/15a8429))
+* **service-worker:** freshness strategy should clone response for cache ([#19764](https://github.com/angular/angular/issues/19764)) ([396c241](https://github.com/angular/angular/commit/396c241))
+* **service-worker:** PushEvent.data has to be decoded ([#19764](https://github.com/angular/angular/issues/19764)) ([3bcf0cf](https://github.com/angular/angular/commit/3bcf0cf))
+* **service-worker:** use posix path resolution for generation of ngsw.json ([#19527](https://github.com/angular/angular/issues/19527)) ([621f87b](https://github.com/angular/angular/commit/621f87b))
+
+
+
 <a name="4.4.6"></a>
 ## [4.4.6](https://github.com/angular/angular/compare/4.4.5...4.4.6) (2017-10-18)
 
