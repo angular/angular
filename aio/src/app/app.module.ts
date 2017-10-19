@@ -45,6 +45,7 @@ import { ScrollService } from 'app/shared/scroll.service';
 import { ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { SearchBoxComponent } from './search/search-box/search-box.component';
 import { TocService } from 'app/shared/toc.service';
+import { WindowToken, windowProvider } from 'app/shared/window';
 
 import { SharedModule } from 'app/shared/shared.module';
 
@@ -113,7 +114,8 @@ export const svgIconProviders = [
     ScrollSpyService,
     SearchService,
     svgIconProviders,
-    TocService
+    TocService,
+    { provide: WindowToken, useFactory: windowProvider },
   ],
   bootstrap: [AppComponent]
 })
