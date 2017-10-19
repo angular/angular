@@ -129,12 +129,15 @@ export class RouterModule {
    * Creates a module with all the router providers and directives. It also optionally sets up an
    * application listener to perform an initial navigation.
    *
-   * Options:
+   * Options (see {@link ExtraOptions}):
    * * `enableTracing` makes the router log all its internal events to the console.
    * * `useHash` enables the location strategy that uses the URL fragment instead of the history
    * API.
    * * `initialNavigation` disables the initial navigation.
    * * `errorHandler` provides a custom error handler.
+   * * `preloadingStrategy` configures a preloading strategy (see {@link PreloadAllModules}).
+   * * `onSameUrlNavigation` configures how the router handles navigation to the current URL. See
+   * {@link ExtraOptions} for more details.
    */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
     return {
@@ -267,6 +270,14 @@ export interface ExtraOptions {
    * Configures a preloading strategy. See {@link PreloadAllModules}.
    */
   preloadingStrategy?: any;
+
+  /**
+   * Define what the router should do if it receives a navigation request to the current URL.
+   * By default, the router will ignore this navigation. However, this prevents features such
+   * as a "refresh" button. Use this option to configure the behavior when navigating to the
+   * current URL. Default is 'ignore'.
+   */
+  onSameUrlNavigation?: 'reload'|'ignore';
 }
 
 export function setupRouter(
@@ -297,6 +308,10 @@ export function setupRouter(
       dom.log(e);
       dom.logGroupEnd();
     });
+  }
+
+  if (opts.onSameUrlNavigation) {
+    router.onSameUrlNavigation = opts.onSameUrlNavigation;
   }
 
   return router;
