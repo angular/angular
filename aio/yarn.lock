@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/build-optimizer@~0.0.18":
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.27.tgz#66369d4b0d3ce21dd1f918a948ff60579695f279"
+"@angular-devkit/build-optimizer@~0.0.28":
+  version "0.0.28"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.28.tgz#96db6361b9bd5e0609e07a391c96aaf888d71aa6"
   dependencies:
     loader-utils "^1.1.0"
     source-map "^0.5.6"
@@ -17,9 +17,9 @@
   dependencies:
     source-map "^0.5.6"
 
-"@angular-devkit/schematics@~0.0.25":
-  version "0.0.33"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-0.0.33.tgz#25c460bfde10a414bb6af65c89bea7a5cbff46ff"
+"@angular-devkit/schematics@~0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-0.0.34.tgz#c3ef61b0e49e585d9982f2828e9a67b3879a6b1b"
   dependencies:
     "@angular-devkit/core" "0.0.20"
     "@ngtools/json-schema" "^1.1.0"
@@ -38,15 +38,15 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/cli@^1.5.0-rc.0":
-  version "1.5.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0-rc.0.tgz#cb3097f8cd5945d87e0b3719a5e411a3311415f4"
+"@angular/cli@1.5.0-rc.1":
+  version "1.5.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0-rc.1.tgz#6aa9b69a65a63b2a11d2c83eb93103a078fe7b24"
   dependencies:
-    "@angular-devkit/build-optimizer" "~0.0.18"
-    "@angular-devkit/schematics" "~0.0.25"
+    "@angular-devkit/build-optimizer" "~0.0.28"
+    "@angular-devkit/schematics" "~0.0.34"
     "@ngtools/json-schema" "1.1.0"
-    "@ngtools/webpack" "1.8.0-rc.0"
-    "@schematics/angular" "~0.0.38"
+    "@ngtools/webpack" "1.8.0-rc.1"
+    "@schematics/angular" "~0.0.46"
     autoprefixer "^6.5.3"
     chalk "^2.0.1"
     circular-dependency-plugin "^3.0.0"
@@ -59,7 +59,7 @@
     ember-cli-string-utils "^1.0.0"
     exports-loader "^0.6.3"
     extract-text-webpack-plugin "3.0.0"
-    file-loader "^0.10.0"
+    file-loader "^1.1.5"
     fs-extra "^4.0.0"
     glob "^7.0.3"
     html-webpack-plugin "^2.29.0"
@@ -90,12 +90,13 @@
     stylus-loader "^3.0.1"
     typescript ">=2.0.0 <2.6.0"
     uglifyjs-webpack-plugin "1.0.0-beta.1"
-    url-loader "^0.6.0"
+    url-loader "^0.6.2"
     webpack "~3.7.1"
     webpack-concat-plugin "1.4.0"
     webpack-dev-middleware "~1.12.0"
     webpack-dev-server "~2.7.1"
     webpack-merge "^4.1.0"
+    webpack-sources "^1.0.0"
     webpack-subresource-integrity "^1.0.1"
     zone.js "^0.8.14"
   optionalDependencies:
@@ -183,9 +184,9 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"
 
-"@ngtools/webpack@1.8.0-rc.0":
-  version "1.8.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0-rc.0.tgz#b42dfc199511eed156b465f59eb78e4d06ab5b32"
+"@ngtools/webpack@1.8.0-rc.1":
+  version "1.8.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0-rc.1.tgz#5936cc5465c77837081d47b5de8abee0ef783a6c"
   dependencies:
     chalk "^2.0.1"
     enhanced-resolve "^3.1.0"
@@ -195,9 +196,9 @@
     source-map "^0.5.6"
     tree-kill "^1.0.0"
 
-"@schematics/angular@~0.0.38":
-  version "0.0.45"
-  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.0.45.tgz#830df863b9677c42d7220cfaf28741c06789f1e0"
+"@schematics/angular@~0.0.46":
+  version "0.0.46"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.0.46.tgz#a177dbed008860d455f586eccc82dbc34685b407"
 
 "@types/jasmine@^2.5.52":
   version "2.5.52"
@@ -2774,11 +2775,12 @@ file-entry-cache@^2.0.0:
     flat-cache "^1.2.1"
     object-assign "^4.0.1"
 
-file-loader@^0.10.0:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-0.10.1.tgz#815034119891fc6441fb5a64c11bc93c22ddd842"
+file-loader@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-1.1.5.tgz#91c25b6b6fbe56dae99f10a425fd64933b5c9daa"
   dependencies:
     loader-utils "^1.0.2"
+    schema-utils "^0.3.0"
 
 filename-regex@^2.0.0:
   version "2.0.1"
@@ -7878,7 +7880,7 @@ url-join@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-1.1.0.tgz#741c6c2f4596c4830d6718460920d0c92202dc78"
 
-url-loader@^0.6.0:
+url-loader@^0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/url-loader/-/url-loader-0.6.2.tgz#a007a7109620e9d988d14bce677a1decb9a993f7"
   dependencies:
@@ -8158,7 +8160,7 @@ webpack-merge@^4.1.0:
   dependencies:
     lodash "^4.17.4"
 
-webpack-sources@^1.0.1:
+webpack-sources@^1.0.0, webpack-sources@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-1.0.1.tgz#c7356436a4d13123be2e2426a05d1dad9cbe65cf"
   dependencies:
