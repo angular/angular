@@ -14,7 +14,7 @@
 * **compiler-cli:** diagnostics file paths relative to cwd, not tsconfig ([#19748](https://github.com/angular/angular/issues/19748)) ([56774df](https://github.com/angular/angular/commit/56774df))
 * **compiler-cli:** do not add references to files outside of `rootDir` ([#19770](https://github.com/angular/angular/issues/19770)) ([25cbc98](https://github.com/angular/angular/commit/25cbc98))
 * **router:** RouterLinkActive should update its state right after checking the children ([#19449](https://github.com/angular/angular/issues/19449)) ([6f2939d](https://github.com/angular/angular/commit/6f2939d)), closes [#18983](https://github.com/angular/angular/issues/18983)
-* **service-worker:** add missing annotation for SwPush ([#19721](https://github.com/angular/angular/issues/19721)) ([15a8429](https://github.com/angular/angular/commit/15a8429))
+* **service-worker:** add missing annotation for SwPush ([#19721](https://github.com/angular/angular/issues/19721)) ([15a8429b](https://github.com/angular/angular/commit/15a8429b))
 * **service-worker:** freshness strategy should clone response for cache ([#19764](https://github.com/angular/angular/issues/19764)) ([396c241](https://github.com/angular/angular/commit/396c241))
 * **service-worker:** PushEvent.data has to be decoded ([#19764](https://github.com/angular/angular/issues/19764)) ([3bcf0cf](https://github.com/angular/angular/commit/3bcf0cf))
 * **service-worker:** use posix path resolution for generation of ngsw.json ([#19527](https://github.com/angular/angular/issues/19527)) ([621f87b](https://github.com/angular/angular/commit/621f87b))
