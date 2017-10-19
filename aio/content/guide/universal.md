@@ -240,7 +240,7 @@ even when the Universal web server is capable of handling those requests.
 You'll have to change the services to make requests with absolute URLs when running on the server
 and with relative URLs when running in the browser.
 
-One solution is to provide the server's runtime origin under the Angular [`APP_BASE_REF` token](api/common/APP_BASE_HREF),
+One solution is to provide the server's runtime origin under the Angular [`APP_BASE_HREF` token](api/common/APP_BASE_HREF),
 inject it into the service, and prepend the origin to the request URL.
 
 Start by changing the `HeroService` constructor to take a second `origin` parameter that is optionally injected via the `APP_BASE_HREF` token.
