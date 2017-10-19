@@ -20,7 +20,11 @@ exports.config = {
 
   // Capabilities to be passed to the webdriver instance.
   capabilities: {
-    'browserName': 'chrome'
+    'browserName': 'chrome',
+    // For Travis
+    chromeOptions: {
+      binary: process.env.CHROME_BIN
+    }
   },
 
   // Framework to use. Jasmine is recommended.
