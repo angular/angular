@@ -98,6 +98,19 @@ export function main() {
       expect(events.length).toBe(2);
       const res = events[1] as any as HttpErrorResponse;
       expect(res.error !.data).toBe('some data');
+    it('handles a json error response for 4xx status', () => {
+      const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+      factory.mock.mockFlush(400, 'Bad Request', JSON.stringify({data: 'some data'}));
+      const res = events[1] as HttpResponse<{data: string}>;
+      expect(typeof res.body === 'object');
+      expect(res.body !.data).toBe('some data');
+    });
+    it('handles a json error response for 5xx status', () => {
+      const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+      factory.mock.mockFlush(500, 'Internal Server Error', JSON.stringify({data: 'some data'}));
+      const res = events[1] as HttpResponse<{data: string}>;
+      expect(typeof res.body === 'object');
+      expect(res.body !.data).toBe('some data');
     });
     it('handles a json string response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));

@@ -155,6 +155,8 @@ http
   );
 ```
 
+In case the request expected a `responseType = "json"` and the backend responded with a JSON body, `err.error` will be parsed to an object literal. This allows applications to transport a meaningful error description even for HTTP status codes in the 4xx/5xx range. The JSON error reponse body could be used to phrase an elaborated message, telling the user what exactly went wrong.
+
 #### `.retry()`
 
 One way to deal with errors is to simply retry the request. This strategy can be useful when the errors are transient and unlikely to repeat.
