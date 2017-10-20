@@ -652,7 +652,7 @@ export function compile(
   const tsSettings = {...settings, ...tsOptions};
   const program = ts.createProgram(host.scriptNames.slice(0), tsSettings, host);
   preCompile(program);
-  const {compiler, reflector} = createAotCompiler(aotHost, options);
+  const {compiler, reflector} = createAotCompiler(aotHost, options, (err) => { throw err; });
   const analyzedModules =
       compiler.analyzeModulesSync(program.getSourceFiles().map(sf => sf.fileName));
   const genFiles = compiler.emitAllImpls(analyzedModules);

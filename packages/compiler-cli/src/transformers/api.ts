@@ -229,6 +229,12 @@ export interface LibrarySummary {
   sourceFile?: ts.SourceFile;
 }
 
+export interface LazyRoute {
+  route: string;
+  module: {name: string, filePath: string};
+  referencedModule: {name: string, filePath: string};
+}
+
 export interface Program {
   /**
    * Retrieve the TypeScript program used to produce semantic diagnostics and emit the sources.
@@ -292,6 +298,14 @@ export interface Program {
    * will produce a diagnostic error message or, `getTsProgram()` or `emit` to throw.
    */
   loadNgStructureAsync(): Promise<void>;
+
+  /**
+   * Returns the lazy routes in the program.
+   * @param entryRoute A reference to an NgModule like `someModule#name`. If given,
+   *              will recursively analyze routes starting from this symbol only.
+   *              Otherwise will list all routes for all NgModules in the program/
+   */
+  listLazyRoutes(entryRoute?: string): LazyRoute[];
 
   /**
    * Emit the files requested by emitFlags implied by the program.

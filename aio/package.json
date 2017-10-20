@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "aio-use-local": "node tools/ng-packages-installer overwrite . --debug --ignore-packages @angular/service-worker",
-    "aio-use-npm": "node tools/ng-packages-installer restore .",
+    "aio-use-npm": "node tools/ng-packages-installer restore . && yarn upgrade @angular/cli@1.3.0",
     "aio-check-local": "node tools/ng-packages-installer check .",
     "ng": "yarn check-env && ng",
     "start": "yarn check-env && ng serve",
@@ -23,7 +23,7 @@
     "setup": "yarn aio-use-npm && yarn example-use-npm",
     "postsetup": "yarn boilerplate:add && yarn build-ie-polyfills && yarn generate-plunkers && yarn generate-zips && yarn docs",
     "presetup-local": "yarn presetup",
-    "setup-local": "yarn aio-use-local && yarn example-use-local",
+    "setup-local": "yarn aio-use-local && yarn upgrade @angular/cli@1.5.0-rc.2 && yarn example-use-local",
     "postsetup-local": "yarn postsetup",
     "pretest-pwa-score-localhost": "yarn build",
     "test-pwa-score-localhost": "concurrently --kill-others --success first \"http-server dist -p 4200 --silent\" \"yarn test-pwa-score http://localhost:4200 90\"",
