@@ -434,9 +434,13 @@ export abstract class AbstractControl {
     }
   }
 
-  /** @internal */
-  _updateTreeValidity(opts: {emitEvent?: boolean} = {emitEvent: true}) {
-    this._forEachChild((ctrl: AbstractControl) => ctrl._updateTreeValidity(opts));
+  /**
+   * Re-calculates the value and validation status of the entire controls tree.
+   *
+   * @experimental
+   */
+  updateTreeValidity(opts: {emitEvent?: boolean} = {emitEvent: true}): void {
+    this._forEachChild((ctrl: AbstractControl) => ctrl.updateTreeValidity(opts));
     this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
   }
 
