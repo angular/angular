@@ -1229,8 +1229,8 @@ describe('MatAutocomplete', () => {
 
     it('should fall back to above position if panel cannot fit below', async(() => {
       // Push the autocomplete trigger down so it won't have room to open "below"
-      inputReference.style.top = '600px';
-      inputReference.style.position = 'relative';
+      inputReference.style.bottom = '0';
+      inputReference.style.position = 'fixed';
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
@@ -1247,8 +1247,8 @@ describe('MatAutocomplete', () => {
 
     it('should align panel properly when filtering in "above" position', async(() => {
       // Push the autocomplete trigger down so it won't have room to open "below"
-      inputReference.style.top = '600px';
-      inputReference.style.position = 'relative';
+      inputReference.style.bottom = '0';
+      inputReference.style.position = 'fixed';
 
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
