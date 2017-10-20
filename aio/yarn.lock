@@ -38,15 +38,15 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/cli@1.5.0-rc.1":
-  version "1.5.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0-rc.1.tgz#6aa9b69a65a63b2a11d2c83eb93103a078fe7b24"
+"@angular/cli@1.5.0-rc.2":
+  version "1.5.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0-rc.2.tgz#8f060dd4d958495398f6a9d747da3566e0a0bad9"
   dependencies:
     "@angular-devkit/build-optimizer" "~0.0.28"
     "@angular-devkit/schematics" "~0.0.34"
     "@ngtools/json-schema" "1.1.0"
-    "@ngtools/webpack" "1.8.0-rc.1"
-    "@schematics/angular" "~0.0.46"
+    "@ngtools/webpack" "1.8.0-rc.2"
+    "@schematics/angular" "~0.0.48"
     autoprefixer "^6.5.3"
     chalk "^2.0.1"
     circular-dependency-plugin "^3.0.0"
@@ -184,9 +184,9 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"
 
-"@ngtools/webpack@1.8.0-rc.1":
-  version "1.8.0-rc.1"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0-rc.1.tgz#5936cc5465c77837081d47b5de8abee0ef783a6c"
+"@ngtools/webpack@1.8.0-rc.2":
+  version "1.8.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0-rc.2.tgz#b49498837d6d4abd5602b874a3d67be4e97857c5"
   dependencies:
     chalk "^2.0.1"
     enhanced-resolve "^3.1.0"
@@ -196,9 +196,11 @@
     source-map "^0.5.6"
     tree-kill "^1.0.0"
 
-"@schematics/angular@~0.0.46":
-  version "0.0.46"
-  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.0.46.tgz#a177dbed008860d455f586eccc82dbc34685b407"
+"@schematics/angular@~0.0.48":
+  version "0.0.48"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.0.48.tgz#6fa1bfb2676ba34c243811d2083173821d3cf07c"
+  dependencies:
+    "@angular-devkit/core" "0.0.20"
 
 "@types/jasmine@^2.5.52":
   version "2.5.52"
