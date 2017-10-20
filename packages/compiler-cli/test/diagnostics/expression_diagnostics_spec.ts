@@ -8,6 +8,7 @@
 
 import {StaticSymbol} from '@angular/compiler';
 import {CompilerHost} from '@angular/compiler-cli';
+import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
 import {getExpressionDiagnostics, getTemplateExpressionDiagnostics} from '../../src/diagnostics/expression_diagnostics';
@@ -21,7 +22,6 @@ describe('expression diagnostics', () => {
   let host: MockLanguageServiceHost;
   let service: ts.LanguageService;
   let context: DiagnosticContext;
-  let aotHost: CompilerHost;
   let type: StaticSymbol;
 
   beforeAll(() => {
@@ -33,8 +33,8 @@ describe('expression diagnostics', () => {
     const options: CompilerOptions = Object.create(host.getCompilationSettings());
     options.genDir = '/dist';
     options.basePath = '/src';
-    aotHost = new CompilerHost(program, options, host, {verboseInvalidExpression: true});
-    context = new DiagnosticContext(service, program, checker, aotHost);
+    const symbolResolverHost = new ReflectorHost(() => program, host, options);
+    context = new DiagnosticContext(service, program, checker, symbolResolverHost);
     type = context.getStaticSymbol('app/app.component.ts', 'AppComponent');
   });
 

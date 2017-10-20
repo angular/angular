@@ -28,15 +28,15 @@ export function main(
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
-    return reportErrorsAndExit(configErrors, consoleError);
+    return reportErrorsAndExit(configErrors, /*options*/ undefined, consoleError);
   }
   if (watch) {
     const result = watchMode(project, options, consoleError);
-    return reportErrorsAndExit(result.firstCompileResult, consoleError);
+    return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
   }
   const {diagnostics: compileDiags} = performCompilation(
       {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
-  return reportErrorsAndExit(compileDiags, consoleError);
+  return reportErrorsAndExit(compileDiags, options, consoleError);
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
@@ -128,10 +128,17 @@ export function readCommandLineAndConfiguration(
 }
 
 function reportErrorsAndExit(
-    allDiagnostics: Diagnostics, consoleError: (s: string) => void = console.error): number {
+    allDiagnostics: Diagnostics, options?: api.CompilerOptions,
+    consoleError: (s: string) => void = console.error): number {
   const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
   if (errorsAndWarnings.length) {
-    consoleError(formatDiagnostics(errorsAndWarnings));
+    let currentDir = options ? options.basePath : undefined;
+    const formatHost: ts.FormatDiagnosticsHost = {
+      getCurrentDirectory: () => currentDir || ts.sys.getCurrentDirectory(),
+      getCanonicalFileName: fileName => fileName,
+      getNewLine: () => ts.sys.newLine
+    };
+    consoleError(formatDiagnostics(errorsAndWarnings, formatHost));
   }
   return exitCodeFromResult(allDiagnostics);
 }

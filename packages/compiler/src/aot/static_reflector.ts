@@ -45,7 +45,7 @@ export class StaticReflector implements CompileReflector {
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private injectionToken: StaticSymbol;
   private opaqueToken: StaticSymbol;
-  private ROUTES: StaticSymbol;
+  ROUTES: StaticSymbol;
   private ANALYZE_FOR_ENTRY_COMPONENTS: StaticSymbol;
   private annotationForParentClassWithSummaryKind =
       new Map<CompileSummaryKind, MetadataFactory<any>[]>();
@@ -76,8 +76,9 @@ export class StaticReflector implements CompileReflector {
     return this.symbolResolver.getResourcePath(staticSymbol);
   }
 
-  resolveExternalReference(ref: o.ExternalReference): StaticSymbol {
-    const refSymbol = this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !);
+  resolveExternalReference(ref: o.ExternalReference, containingFile?: string): StaticSymbol {
+    const refSymbol =
+        this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !, containingFile);
     const declarationSymbol = this.findSymbolDeclaration(refSymbol);
     this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
     this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);

@@ -465,10 +465,6 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
     return '/tmp/' + modulePath + '.d.ts';
   }
 
-  fileNameToModuleName(filePath: string, containingFile: string) {
-    return filePath.replace(/(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/, '');
-  }
-
   getMetadataFor(moduleId: string): any { return this._getMetadataFor(moduleId); }
 
   private _getMetadataFor(filePath: string): any {
