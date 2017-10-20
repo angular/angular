@@ -39,13 +39,6 @@ export interface StaticSymbolResolverHost {
    * `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
   moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
-  /**
-   * Converts a file path to a module name that can be used as an `import.
-   * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
-   *
-   * See ImportResolver.
-   */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string;
 }
 
 const SUPPORTED_SCHEMA_VERSION = 4;
@@ -158,15 +151,6 @@ export class StaticSymbolResolver {
       resolvedSymbol = this.resolveSymbol(resolvedSymbol.metadata);
     }
     return (resolvedSymbol && resolvedSymbol.metadata && resolvedSymbol.metadata.arity) || null;
-  }
-
-  /**
-   * Converts a file path to a module name that can be used as an `import`.
-   */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string {
-    return this.summaryResolver.getKnownModuleName(importedFilePath) ||
-        this.knownFileNameToModuleNames.get(importedFilePath) ||
-        this.host.fileNameToModuleName(importedFilePath, containingFilePath);
   }
 
   getKnownModuleName(filePath: string): string|null {
@@ -498,9 +482,8 @@ export class StaticSymbolResolver {
     const filePath = this.resolveModule(module, containingFile);
     if (!filePath) {
       this.reportError(
-          new Error(`Could not resolve module ${module}${containingFile ? ` relative to $ {
-            containingFile
-          } `: ''}`));
+          new Error(`Could not resolve module ${module}${containingFile ? ' relative to ' +
+            containingFile : ''}`));
       return this.getStaticSymbol(`ERROR:${module}`, symbolName);
     }
     return this.getStaticSymbol(filePath, symbolName);

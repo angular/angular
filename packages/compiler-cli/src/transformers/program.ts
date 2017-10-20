@@ -14,11 +14,12 @@ import * as ts from 'typescript';
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {ModuleMetadata, createBundleIndexHost} from '../metadata/index';
 
-import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, EmitFlags, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
+import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, tsStructureIsReused} from './util';
+
 
 /**
  * Maximum number of files that are emitable via calling ts.Program.emit
@@ -50,8 +51,8 @@ class AngularCompilerProgram implements Program {
   private emittedSourceFiles: ts.SourceFile[]|undefined;
 
   // Lazily initialized fields
-  private _typeCheckHost: TypeCheckHost;
   private _compiler: AotCompiler;
+  private _hostAdapter: TsCompilerAotCompilerTypeCheckHostAdapter;
   private _tsProgram: ts.Program;
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
@@ -167,7 +168,7 @@ class AngularCompilerProgram implements Program {
         diags.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
       }
     });
-    const {ng} = translateDiagnostics(this.typeCheckHost, diags);
+    const {ng} = translateDiagnostics(this.hostAdapter, diags);
     return ng;
   }
 
@@ -175,16 +176,21 @@ class AngularCompilerProgram implements Program {
     if (this._analyzedModules) {
       throw new Error('Angular structure already loaded');
     }
-    const {tmpProgram, sourceFiles, hostAdapter, rootNames} = this._createProgramWithBasicStubs();
-    return this._compiler.loadFilesAsync(sourceFiles)
+    const {tmpProgram, sourceFiles, rootNames} = this._createProgramWithBasicStubs();
+    return this.compiler.loadFilesAsync(sourceFiles)
         .catch(this.catchAnalysisError.bind(this))
         .then(analyzedModules => {
           if (this._analyzedModules) {
             throw new Error('Angular structure loaded both synchronously and asynchronsly');
           }
-          this._updateProgramWithTypeCheckStubs(
-              tmpProgram, analyzedModules, hostAdapter, rootNames);
+          this._updateProgramWithTypeCheckStubs(tmpProgram, analyzedModules, rootNames);
         });
+  }
+
+  listLazyRoutes(route?: string): LazyRoute[] {
+    // Note: Don't analyzedModules if a route is given
+    // to be fast enough.
+    return this.compiler.listLazyRoutes(route, route ? undefined : this.analyzedModules);
   }
 
   emit(
@@ -341,9 +347,16 @@ class AngularCompilerProgram implements Program {
   // Private members
   private get compiler(): AotCompiler {
     if (!this._compiler) {
-      this.initSync();
+      this._createCompiler();
     }
     return this._compiler !;
+  }
+
+  private get hostAdapter(): TsCompilerAotCompilerTypeCheckHostAdapter {
+    if (!this._hostAdapter) {
+      this._createCompiler();
+    }
+    return this._hostAdapter !;
   }
 
   private get analyzedModules(): NgAnalyzedModules {
@@ -367,13 +380,6 @@ class AngularCompilerProgram implements Program {
     return this._tsProgram !;
   }
 
-  private get typeCheckHost(): TypeCheckHost {
-    if (!this._typeCheckHost) {
-      this.initSync();
-    }
-    return this._typeCheckHost !;
-  }
-
   private calculateTransforms(
       genFiles: Map<string, GeneratedFile>,
       customTransformers?: CustomTransformers): ts.CustomTransformers {
@@ -393,19 +399,41 @@ class AngularCompilerProgram implements Program {
     if (this._analyzedModules) {
       return;
     }
-    const {tmpProgram, sourceFiles, hostAdapter, rootNames} = this._createProgramWithBasicStubs();
+    const {tmpProgram, sourceFiles, rootNames} = this._createProgramWithBasicStubs();
     let analyzedModules: NgAnalyzedModules|null;
     try {
-      analyzedModules = this._compiler.loadFilesSync(sourceFiles);
+      analyzedModules = this.compiler.loadFilesSync(sourceFiles);
     } catch (e) {
       analyzedModules = this.catchAnalysisError(e);
     }
-    this._updateProgramWithTypeCheckStubs(tmpProgram, analyzedModules, hostAdapter, rootNames);
+    this._updateProgramWithTypeCheckStubs(tmpProgram, analyzedModules, rootNames);
+  }
+
+  private _createCompiler() {
+    const codegen: CodeGenerator = {
+      generateFile: (genFileName, baseFileName) =>
+                        this._compiler.emitBasicStub(genFileName, baseFileName),
+      findGeneratedFileNames: (fileName) => this._compiler.findGeneratedFileNames(fileName),
+    };
+
+    this._hostAdapter = new TsCompilerAotCompilerTypeCheckHostAdapter(
+        this.rootNames, this.options, this.host, this.metadataCache, codegen,
+        this.oldProgramLibrarySummaries);
+    const aotOptions = getAotCompilerOptions(this.options);
+    this._structuralDiagnostics = [];
+    const errorCollector = (err: any) => {
+      this._structuralDiagnostics !.push({
+        messageText: err.toString(),
+        category: ts.DiagnosticCategory.Error,
+        source: SOURCE,
+        code: DEFAULT_ERROR_CODE
+      });
+    };
+    this._compiler = createAotCompiler(this._hostAdapter, aotOptions, errorCollector).compiler;
   }
 
   private _createProgramWithBasicStubs(): {
     tmpProgram: ts.Program,
-    hostAdapter: TsCompilerAotCompilerTypeCheckHostAdapter,
     rootNames: string[],
     sourceFiles: string[],
   } {
@@ -418,58 +446,56 @@ class AngularCompilerProgram implements Program {
 
     const codegen: CodeGenerator = {
       generateFile: (genFileName, baseFileName) =>
-                        this._compiler.emitBasicStub(genFileName, baseFileName),
-      findGeneratedFileNames: (fileName) => this._compiler.findGeneratedFileNames(fileName),
+                        this.compiler.emitBasicStub(genFileName, baseFileName),
+      findGeneratedFileNames: (fileName) => this.compiler.findGeneratedFileNames(fileName),
     };
 
-    const hostAdapter = new TsCompilerAotCompilerTypeCheckHostAdapter(
-        this.rootNames, this.options, this.host, this.metadataCache, codegen,
-        this.oldProgramLibrarySummaries);
-    const aotOptions = getAotCompilerOptions(this.options);
-    this._compiler = createAotCompiler(hostAdapter, aotOptions).compiler;
-    this._typeCheckHost = hostAdapter;
-    this._structuralDiagnostics = [];
 
-    let rootNames =
-        this.rootNames.filter(fn => !GENERATED_FILES.test(fn) || !hostAdapter.isSourceFile(fn));
+    let rootNames = this.rootNames;
+    if (this.options.generateCodeForLibraries !== false) {
+      // if we should generateCodeForLibraries, enver include
+      // generated files in the program as otherwise we will
+      // ovewrite them and typescript will report the error
+      // TS5055: Cannot write file ... because it would overwrite input file.
+      rootNames = this.rootNames.filter(fn => !GENERATED_FILES.test(fn));
+    }
     if (this.options.noResolve) {
       this.rootNames.forEach(rootName => {
-        if (hostAdapter.shouldGenerateFilesFor(rootName)) {
-          rootNames.push(...this._compiler.findGeneratedFileNames(rootName));
+        if (this.hostAdapter.shouldGenerateFilesFor(rootName)) {
+          rootNames.push(...this.compiler.findGeneratedFileNames(rootName));
         }
       });
     }
 
-    const tmpProgram = ts.createProgram(rootNames, this.options, hostAdapter, oldTsProgram);
+    const tmpProgram = ts.createProgram(rootNames, this.options, this.hostAdapter, oldTsProgram);
     const sourceFiles: string[] = [];
     tmpProgram.getSourceFiles().forEach(sf => {
-      if (hostAdapter.isSourceFile(sf.fileName)) {
+      if (this.hostAdapter.isSourceFile(sf.fileName)) {
         sourceFiles.push(sf.fileName);
       }
     });
-    return {tmpProgram, sourceFiles, hostAdapter, rootNames};
+    return {tmpProgram, sourceFiles, rootNames};
   }
 
   private _updateProgramWithTypeCheckStubs(
-      tmpProgram: ts.Program, analyzedModules: NgAnalyzedModules|null,
-      hostAdapter: TsCompilerAotCompilerTypeCheckHostAdapter, rootNames: string[]) {
+      tmpProgram: ts.Program, analyzedModules: NgAnalyzedModules|null, rootNames: string[]) {
     this._analyzedModules = analyzedModules || emptyModules;
     if (analyzedModules) {
       tmpProgram.getSourceFiles().forEach(sf => {
         if (sf.fileName.endsWith('.ngfactory.ts')) {
-          const {generate, baseFileName} = hostAdapter.shouldGenerateFile(sf.fileName);
+          const {generate, baseFileName} = this.hostAdapter.shouldGenerateFile(sf.fileName);
           if (generate) {
             // Note: ! is ok as hostAdapter.shouldGenerateFile will always return a basefileName
             // for .ngfactory.ts files.
-            const genFile = this._compiler.emitTypeCheckStub(sf.fileName, baseFileName !);
+            const genFile = this.compiler.emitTypeCheckStub(sf.fileName, baseFileName !);
             if (genFile) {
-              hostAdapter.updateGeneratedFile(genFile);
+              this.hostAdapter.updateGeneratedFile(genFile);
             }
           }
         }
       });
     }
-    this._tsProgram = ts.createProgram(rootNames, this.options, hostAdapter, tmpProgram);
+    this._tsProgram = ts.createProgram(rootNames, this.options, this.hostAdapter, tmpProgram);
     // Note: the new ts program should be completely reusable by TypeScript as:
     // - we cache all the files in the hostAdapter
     // - new new stubs use the exactly same imports/exports as the old once (we assert that in

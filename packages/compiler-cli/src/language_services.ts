@@ -14,9 +14,10 @@ Angular modules and Typescript as this will indirectly add a dependency
 to the language service.
 
 */
-export {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter, NodeCompilerHostContext} from './compiler_host';
 export {DiagnosticTemplateInfo, ExpressionDiagnostic, getExpressionDiagnostics, getExpressionScope, getTemplateExpressionDiagnostics} from './diagnostics/expression_diagnostics';
 export {AstType, DiagnosticKind, ExpressionDiagnosticsContext, TypeDiagnostic} from './diagnostics/expression_type';
 export {BuiltinType, DeclarationKind, Definition, Location, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './diagnostics/symbols';
 export {getClassFromStaticSymbol, getClassMembers, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from './diagnostics/typescript_symbols';
+export {MetadataCollector, ModuleMetadata} from './metadata';
 export {CompilerOptions} from './transformers/api';
+export {MetadataReaderCache, MetadataReaderHost, createMetadataReaderCache, readMetadata} from './transformers/metadata_reader';
