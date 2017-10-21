@@ -1,0 +1,8 @@
+/**
+ * Don't show the caret for focused elements since those are causing the screenshot comparisons
+ * to be flaky. The `caret-color` CSS property is not supported in most of the browsers, but since
+ * the e2e tests run against Chrome we can use that property instead of a workaround using `color`.
+ */
+*:focus {
+  caret-color: transparent;
+}
