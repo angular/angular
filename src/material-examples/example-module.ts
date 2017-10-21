@@ -30,11 +30,17 @@ import {ChipsInputExample} from './chips-input/chips-input-example';
 import {ChipsOverviewExample} from './chips-overview/chips-overview-example';
 import {ChipsStackedExample} from './chips-stacked/chips-stacked-example';
 import {DatepickerApiExample} from './datepicker-api/datepicker-api-example';
+import {DatepickerDisabledExample} from './datepicker-disabled/datepicker-disabled-example';
+import {DatepickerEventsExample} from './datepicker-events/datepicker-events-example';
 import {DatepickerFilterExample} from './datepicker-filter/datepicker-filter-example';
+import {DatepickerFormatsExample} from './datepicker-formats/datepicker-formats-example';
+import {DatepickerLocaleExample} from './datepicker-locale/datepicker-locale-example';
 import {DatepickerMinMaxExample} from './datepicker-min-max/datepicker-min-max-example';
+import {DatepickerMomentExample} from './datepicker-moment/datepicker-moment-example';
 import {DatepickerOverviewExample} from './datepicker-overview/datepicker-overview-example';
 import {DatepickerStartViewExample} from './datepicker-start-view/datepicker-start-view-example';
 import {DatepickerTouchExample} from './datepicker-touch/datepicker-touch-example';
+import {DatepickerValueExample} from './datepicker-value/datepicker-value-example';
 import {DialogContentExampleDialog,DialogContentExample} from './dialog-content/dialog-content-example';
 import {DialogDataExampleDialog,DialogDataExample} from './dialog-data/dialog-data-example';
 import {DialogElementsExampleDialog,DialogElementsExample} from './dialog-elements/dialog-elements-example';
@@ -208,38 +214,74 @@ export const EXAMPLE_COMPONENTS = {
     selectorName: null
   },
   'datepicker-api': {
-    title: 'Datepicker API',
+    title: 'Datepicker open method ',
     component: DatepickerApiExample,
     additionalFiles: null,
     selectorName: null
   },
+  'datepicker-disabled': {
+    title: 'Disabled datepicker ',
+    component: DatepickerDisabledExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-events': {
+    title: 'Datepicker input and change events ',
+    component: DatepickerEventsExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'datepicker-filter': {
-    title: 'Datepicker Filter',
+    title: 'Datepicker with filter validation ',
     component: DatepickerFilterExample,
     additionalFiles: null,
     selectorName: null
   },
+  'datepicker-formats': {
+    title: 'Datepicker with custom formats ',
+    component: DatepickerFormatsExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-locale': {
+    title: 'Datepicker with different locale ',
+    component: DatepickerLocaleExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'datepicker-min-max': {
-    title: 'Datepicker Min Max',
+    title: 'Datepicker with min & max validation ',
     component: DatepickerMinMaxExample,
     additionalFiles: null,
     selectorName: null
   },
+  'datepicker-moment': {
+    title: 'Datepicker that uses Moment.js dates ',
+    component: DatepickerMomentExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'datepicker-overview': {
-    title: 'Basic datepicker',
+    title: 'Basic datepicker ',
     component: DatepickerOverviewExample,
     additionalFiles: null,
     selectorName: null
   },
   'datepicker-start-view': {
-    title: 'Datepicker start date',
+    title: 'Datepicker start date ',
     component: DatepickerStartViewExample,
     additionalFiles: null,
     selectorName: null
   },
   'datepicker-touch': {
-    title: 'Datepicker Touch',
+    title: 'Datepicker touch UI ',
     component: DatepickerTouchExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'datepicker-value': {
+    title: 'Datepicker selected value ',
+    component: DatepickerValueExample,
     additionalFiles: null,
     selectorName: null
   },
@@ -514,7 +556,7 @@ export const EXAMPLE_COMPONENTS = {
     selectorName: null
   },
   'select-no-ripple': {
-    title: 'Select with cno option ripple ',
+    title: 'Select with no option ripple ',
     component: SelectNoRippleExample,
     additionalFiles: null,
     selectorName: null
@@ -707,11 +749,17 @@ export const EXAMPLE_LIST = [
   ChipsOverviewExample,
   ChipsStackedExample,
   DatepickerApiExample,
+  DatepickerDisabledExample,
+  DatepickerEventsExample,
   DatepickerFilterExample,
+  DatepickerFormatsExample,
+  DatepickerLocaleExample,
   DatepickerMinMaxExample,
+  DatepickerMomentExample,
   DatepickerOverviewExample,
   DatepickerStartViewExample,
   DatepickerTouchExample,
+  DatepickerValueExample,
   DialogContentExampleDialog,DialogContentExample,
   DialogDataExampleDialog,DialogDataExample,
   DialogElementsExampleDialog,DialogElementsExample,

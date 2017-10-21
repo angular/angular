@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 
-/**
- * @title Datepicker Filter
- */
+/** @title Datepicker with filter validation */
 @Component({
   selector: 'datepicker-filter-example',
   templateUrl: 'datepicker-filter-example.html',

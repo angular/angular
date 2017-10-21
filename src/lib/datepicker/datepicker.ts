@@ -250,7 +250,7 @@ export class MatDatepicker<D> implements OnDestroy {
    */
   _registerInput(input: MatDatepickerInput<D>): void {
     if (this._datepickerInput) {
-      throw Error('An MatDatepicker can only be associated with a single input.');
+      throw Error('A MatDatepicker can only be associated with a single input.');
     }
     this._datepickerInput = input;
     this._inputSubscription =

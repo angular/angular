@@ -45,6 +45,7 @@ export const rollupGlobals = {
   // Some packages are not really needed for the UMD bundles, but for the missingRollupGlobals rule.
   '@angular/material-examples': 'ng.materialExamples',
   '@angular/material': 'ng.material',
+  '@angular/material-moment-adapter': 'ng.materialMomentAdapter',
   '@angular/cdk': 'ng.cdk',
 
   // Include secondary entry-points of the cdk and material packages

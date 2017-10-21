@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 
-/**
- * @title Datepicker Min Max
- */
+/** @title Datepicker with min & max validation */
 @Component({
   selector: 'datepicker-min-max-example',
   templateUrl: 'datepicker-min-max-example.html',

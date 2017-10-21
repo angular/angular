@@ -27,6 +27,7 @@
       "@angular/cdk/*": ["./cdk/*"],
       "@angular/material": ["./material"],
       "@angular/material/*": ["./material/*"],
+      "@angular/material-moment-adapter": ["./material-moment-adapter"],
       "@angular/material-examples": ["./material-examples"]
     }
   },
