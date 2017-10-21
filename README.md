@@ -30,17 +30,16 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22)
 label.
 
-High level stuff planned for Q3 2017 (July - September):
-* As many bug fixes as humanly possible
-* Additional features for data-table
-* Continued accessibility improvements
-* Nested menus
-* All components are OnPush
-* Improved documentation, guides, examples, and navigation on [material.angular.io][aio]
-* Improve library-wide API consistency
-* Stepper component
-* Sticky header helper
-* action-list and selection-list
+High level stuff planned for Q4 2017 (October - December):
+* RC and stable release
+* Research and prototyping for virtual-scroll
+* Research and exploration for data visualization
+* cdkTree and matTree
+* Expanded cdkTable features
+* cdk/svg
+* cdk/dialog
+* Switch build to bazel
+* Overlay positioning improvements
 
 
 #### Available features
