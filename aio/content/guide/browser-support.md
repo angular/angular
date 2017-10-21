@@ -187,54 +187,76 @@ Angular supports most recent browsers. This includes the following specific vers
 
 </table>
 
-
-
 <div class="l-sub-section">
-
-
 
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
 using <a href="https://saucelabs.com/">SauceLabs</a> and
 <a href="https://www.browserstack.com">Browserstack</a>.
 
-
 </div>
 
 
+## Polyfills
 
-## Polyfills #
 Angular is built on the latest standards of the web platform.
 Targeting such a wide range of browsers is challenging because they do not support all features of modern browsers.
 
-You can compensate by loading polyfill scripts ("polyfills") on the host web page (`index.html`)
-that implement missing features in JavaScript.
-
-<code-example path="quickstart/src/index.html" region="polyfills" title="quickstart/src/index.html" linenums="false">
-
-</code-example>
-
-
-
-A particular browser may require at least one polyfill to run _any_ Angular application.
-You may need additional polyfills for specific features.
-
-The tables below can help you determine which polyfills to load, depending on the browsers you target and the features you use.
-
+You compensate by loading polyfill scripts ("polyfills") for the browsers that you must support.
+The [table below](#polyfill-libs) identifies most of the polyfills you might need.
 
 <div class="alert is-important">
-
-
 
 The suggested polyfills are the ones that run full Angular applications.
 You may need additional polyfills to support features not covered by this list.
 Note that polyfills cannot magically transform an old, slow browser into a modern, fast one.
 
-
 </div>
 
+## Enabling polyfills
 
+[Angular CLI](https://github.com/angular/angular-cli/wiki) users enable polyfills through the `src/polyfills.ts` file that
+the CLI created with your project.
 
-### Mandatory polyfills ##
+This file incorporates the mandatory and many of the optional polyfills as JavaScript `import` statements.
+
+The npm packages for the _mandatory_ polyfills (such as `zone.js`) were installed automatically for you when you created your project and 
+their corresponding `import` statements are ready to go.
+You probably won't touch these.
+
+But if you need an optional polyfill, you'll have to install its npm package with `npm` or `yarn`.
+For example, [if you need the web animations polyfill](http://caniuse.com/#feat=web-animation),
+you could install it with either of the following commands:
+
+<code-example language="sh" class="code-shell">
+  npm install --save web-animations-js
+  yarn add web-animations-js
+</code-example>
+
+Then open the `polyfills.ts` file and un-comment the corresponding `import` statement
+as in the following example:
+
+<code-example title="src/polyfills.ts">
+  /**
+  * Required to support Web Animations `@angular/platform-browser/animations`.
+  * Needed for: All but Chrome, Firefox and Opera. http://caniuse.com/#feat=web-animation
+  **/
+  import 'web-animations-js';  // Run `npm install --save web-animations-js`.
+</code-example>
+
+If you can't find the polyfill you want in `polyfills.ts`, 
+add it yourself, following the same pattern:
+
+1. install the npm package
+1. `import` the file in `polyfills.ts`
+
+<div class="l-sub-section">
+
+Non-CLI users should follow the instructions [below](#non-cli).
+</div>
+
+{@a polyfill-libs}
+
+### Mandatory polyfills
 These are the polyfills required to run an Angular application on each supported browser:
 
 
@@ -259,7 +281,8 @@ These are the polyfills required to run an Angular application on each supported
     </td>
 
     <td>
-      None
+
+      [ES7/reflect](guide/browser-support#core-es7-reflect) (JIT only)
     </td>
 
   </tr>
@@ -296,8 +319,8 @@ These are the polyfills required to run an Angular application on each supported
 </table>
 
 
+### Optional browser features to polyfill
 
-### Optional browser features to polyfill ##
 Some features of Angular may require additional polyfills.
 
 For example, the animations library relies on the standard web animation API, which is only available in Chrome and Firefox today.
@@ -321,6 +344,27 @@ Here are the features which may require additional polyfills:
     <th style="width: 50%">
        Browsers (Desktop & Mobile)
     </th>
+
+  </tr>
+
+  <tr style="vertical-align: top">
+
+    <td>
+
+      [JIT compilation](guide/aot-compiler). 
+      Required to reflect for metadata.
+    </td>
+
+    <td>
+
+      [ES7/reflect](guide/browser-support#core-es7-reflect)
+    </td>
+
+    <td>
+      All current browsers.
+      Enabled by default.
+      Can remove If you always use AOT and only use Angular decorators.
+    </td>
 
   </tr>
 
@@ -424,6 +468,23 @@ Below are the polyfills which are used to test the framework itself. They are a 
     <th>
       Size*
     </th>
+
+  </tr>
+
+  <tr>
+
+    <td>
+
+      <a id='core-es7-reflect' href="https://github.com/zloirock/core-js/blob/master/es7/reflect.js">ES7/reflect</a>
+    </td>
+
+    <td>
+      MIT
+    </td>
+
+    <td>
+      0.5KB
+    </td>
 
   </tr>
 
@@ -545,3 +606,20 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
 \* Figures are for minified and gzipped code,
 computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.
+
+{@a non-cli}
+## Polyfills for non-CLI users
+
+If you aren't using the CLI, you should add your polyfill scripts directly to the host web page (`index.html`), perhaps like this.
+
+<code-example title="src/index.html">
+  &lt;!-- pre-zone polyfills -->
+  &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
+  &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
+
+  &lt;!-- zone.js required by Angular -->
+  &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
+
+  &lt;!-- application polyfills -->
+</code-example>
+
