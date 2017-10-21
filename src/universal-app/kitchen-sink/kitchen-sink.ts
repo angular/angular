@@ -5,7 +5,9 @@ import {Observable} from 'rxjs/Observable';
 import {
   MatAutocompleteModule,
   MatButtonModule,
+  MatButtonToggleModule,
   MatCardModule,
+  MatCheckboxModule,
   MatChipsModule,
   MatDatepickerModule,
   MatDialogModule,
@@ -68,10 +70,9 @@ export class KitchenSink {
     BrowserModule.withServerTransition({appId: 'kitchen-sink'}),
     MatAutocompleteModule,
     MatButtonModule,
-    // Button toggle and checkbox can't work due to https://github.com/angular/angular/issues/17050
-    // MatButtonToggleModule,
+    MatButtonToggleModule,
     MatCardModule,
-    // MatCheckboxModule,
+    MatCheckboxModule,
     MatChipsModule,
     MatDatepickerModule,
     MatDialogModule,
