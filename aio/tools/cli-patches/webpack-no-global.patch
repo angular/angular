@@ -1,0 +1,16 @@
+--- node_modules/@angular/cli/models/webpack-configs/browser.js   2017-10-20 22:11:38.000000000 -0700
++++ node_modules/@angular/cli/models/webpack-configs/browser.js   2017-10-20 22:11:47.000000000 -0700
+@@ -105,11 +105,11 @@
+             fs: 'empty',
+             // `global` should be kept true, removing it resulted in a
+             // massive size increase with Build Optimizer on AIO.
+-            global: true,
++            global: false,
+             crypto: 'empty',
+             tls: 'empty',
+             net: 'empty',
+-            process: true,
++            process: false,
+             module: false,
+             clearImmediate: false,
+             setImmediate: false
