@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/build-optimizer@~0.0.28":
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.28.tgz#96db6361b9bd5e0609e07a391c96aaf888d71aa6"
+"@angular-devkit/build-optimizer@0.0.29", "@angular-devkit/build-optimizer@~0.0.28":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.29.tgz#ce5b76016bb06978b3da39e601a269578bbb671a"
   dependencies:
     loader-utils "^1.1.0"
     source-map "^0.5.6"
