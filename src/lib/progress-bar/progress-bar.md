@@ -1,29 +1,42 @@
 `<mat-progress-bar>` is a horizontal progress-bar for indicating progress and activity.
 
-<!-- example(progress-bar-overview) -->
-
-
 ### Progress mode
-The progress-bar supports four modes.
+The progress-bar supports four modes: determinate, indeterminate, buffer and query.
 
-| Mode          | Description                                                                      |
-|---------------|----------------------------------------------------------------------------------|
-| determinate   | Standard progress bar, fills from 0% to 100%                                     |
-| indeterminate | Indicates that something is happening without conveying a discrete progress      |
-| buffer        | Dual-progress mode, typically showing both video download and playback progress  |
-| query         | Dual-stage mode, typically showing sending a request and downloading a response  |
+#### Determinate
+Operations where the percentage of the operation complete is known should use the 
+determinate indicator.
 
-The default mode is "determinate". In this mode, the progress is set via the `value` property, 
-which can be a whole number between 0 and 100.
+<!-- example(progress-bar-determinate) -->
+
+This is the default mode and the progress is represented by the `value` property.
+
+#### Indeterminate
+Operations where the user is asked to wait while something finishes and it’s 
+not necessary to indicate how long it will take should use the indeterminate indicator.
+
+<!-- example(progress-bar-indeterminate) -->
+
+In this mode the `value` property is ignored.
+
+#### Buffer
+Operations where the user wants to indicate some activity or loading from the server, 
+use the buffer indicator.
+
+<!-- example(progress-bar-buffer) -->
 
 In "buffer" mode, `value` determines the progress of the primary bar while the `bufferValue` is 
 used to show the additional buffering progress.
 
+#### Query
+For situations where the user wants to indicate pre-loading (until the loading can actually be made), 
+use the query indicator.
+
+<!-- example(progress-bar-query) -->
+
 In "query" mode, the progress-bar renders as an inverted "indeterminate" bar. Once the response 
-progress is available, the `mode` should be changed to determinate to convey the progress.  
-
-In both "indeterminate" and "query" modes, the `value` property is ignored.
-
+progress is available, the `mode` should be changed to determinate to convey the progress. In
+this mode the `value` property is ignored.
 
 ### Theming
 The color of a progress-bar can be changed by using the `color` property. By default, progress-bars
