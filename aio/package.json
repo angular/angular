@@ -145,5 +145,8 @@
     "vrsource-tslint-rules": "^4.0.1",
     "watchr": "^3.0.1",
     "yargs": "^7.0.2"
+  },
+  "resolutions": {
+    "@angular-devkit/build-optimizer": "0.0.29"
   }
 }
