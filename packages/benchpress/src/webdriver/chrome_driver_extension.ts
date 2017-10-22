@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, StaticProvider} from '@angular/core';
 
 import {Options} from '../common_options';
 import {WebDriverAdapter} from '../web_driver_adapter';
@@ -21,7 +21,10 @@ import {PerfLogEvent, PerfLogFeatures, WebDriverExtension} from '../web_driver_e
  */
 @Injectable()
 export class ChromeDriverExtension extends WebDriverExtension {
-  static PROVIDERS = [ChromeDriverExtension];
+  static PROVIDERS = <StaticProvider>[{
+    provide: ChromeDriverExtension,
+    deps: [WebDriverAdapter, Options.USER_AGENT]
+  }];
 
   private _majorChromeVersion: number;
   private _firstRun = true;

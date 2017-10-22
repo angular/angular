@@ -8,6 +8,5 @@ ts_library(
       "testing/**",
     ]),
     module_name = "@angular/compiler",
-    deps = ["//packages/core"],
     tsconfig = ":tsconfig-build.json",
 )

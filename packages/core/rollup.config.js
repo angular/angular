@@ -7,6 +7,7 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   'rxjs/Observable': 'Rx',
@@ -18,12 +19,13 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/core/@angular/core.es5.js',
+  entry: '../../dist/packages-dist/core/esm5/core.js',
   dest: '../../dist/packages-dist/core/bundles/core.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/core'},
   moduleName: 'ng.core',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

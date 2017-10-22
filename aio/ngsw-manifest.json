@@ -10,8 +10,8 @@
   },
   "static.ignore": [
     "\\.js\\.map$",
-    "^/assets/images/.*/unused/",
-    "^/generated/(?:docs/(?!api/api-list\\.json).*|images|live-examples|zips)/"
+    "^(?:/|\\\\)assets(?:/|\\\\)images(?:/|\\\\).*(?:/|\\\\)_unused(?:/|\\\\)",
+    "^(?:/|\\\\)generated(?:/|\\\\)(?:docs(?:/|\\\\)(?!api(?:/|\\\\)api-list\\.json).*|images(?:/|\\\\)(?!marketing(?:/|\\\\)).*|live-examples|zips)(?:/|\\\\)"
   ],
   "static.versioned": [
     "\\.[0-9a-z]{20}\\."

@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
-  template: '<hero-form></hero-form>'
+  selector: 'app-root',
+  template: '<app-hero-form></app-hero-form>'
 })
 export class AppComponent { }

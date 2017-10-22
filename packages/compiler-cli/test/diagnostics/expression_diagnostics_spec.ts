@@ -7,10 +7,11 @@
  */
 
 import {StaticSymbol} from '@angular/compiler';
-import {AngularCompilerOptions, CompilerHost} from '@angular/compiler-cli';
+import {CompilerHost} from '@angular/compiler-cli';
 import * as ts from 'typescript';
 
 import {getExpressionDiagnostics, getTemplateExpressionDiagnostics} from '../../src/diagnostics/expression_diagnostics';
+import {CompilerOptions} from '../../src/transformers/api';
 import {Directory} from '../mocks';
 
 import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticTemplateInfo} from './mocks';
@@ -29,7 +30,7 @@ describe('expression diagnostics', () => {
     service = ts.createLanguageService(host, registry);
     const program = service.getProgram();
     const checker = program.getTypeChecker();
-    const options: AngularCompilerOptions = Object.create(host.getCompilationSettings());
+    const options: CompilerOptions = Object.create(host.getCompilationSettings());
     options.genDir = '/dist';
     options.basePath = '/src';
     aotHost = new CompilerHost(program, options, host, {verboseInvalidExpression: true});

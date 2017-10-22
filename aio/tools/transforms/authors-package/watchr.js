@@ -23,11 +23,11 @@ function next(error) {
 let p = Promise.resolve();
 
 if (process.argv.indexOf('--watch-only') === -1) {
-  console.log('===================================================================');
+  console.log('================================================================');
   console.log('Running initial doc generation');
-  console.log('-------------------------------------------------------------------');
-  console.log('Skip the full doc-gen by running: `yarn docs-watch -- --watch-only`');
-  console.log('===================================================================');
+  console.log('----------------------------------------------------------------');
+  console.log('Skip the full doc-gen by running: `yarn docs-watch --watch-only`');
+  console.log('================================================================');
   const {Dgeni} = require('dgeni');
   var dgeni = new Dgeni([require('../angular.io-package')]);
   p = dgeni.generate();

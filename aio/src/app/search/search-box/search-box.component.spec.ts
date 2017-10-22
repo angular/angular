@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { SearchBoxComponent } from './search-box.component';
-import { MockSearchService } from 'testing/search.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectiveInjector} from '@angular/core';
+import {Injector} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, inject, it, xit} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
@@ -27,8 +27,10 @@ export function main() {
     let sampleResponse2: Response;
 
     beforeEach(() => {
-      const injector = ReflectiveInjector.resolveAndCreate(
-          [{provide: ResponseOptions, useClass: BaseResponseOptions}, MockBackend]);
+      const injector = Injector.create([
+        {provide: ResponseOptions, useClass: BaseResponseOptions, deps: []},
+        {provide: MockBackend, deps: []}
+      ]);
       backend = injector.get(MockBackend);
       const base = new BaseRequestOptions();
       sampleRequest1 =

@@ -4,7 +4,7 @@ import { NgForm }                      from '@angular/forms';
 import { Hero } from './hero';
 
 @Component({
-  selector: 'hero-form',
+  selector: 'app-hero-form',
   templateUrl: './hero-form.component.html',
   styles: [`
     button { margin: 6px 0; }

@@ -7,6 +7,7 @@
  */
 
 import resolve from 'rollup-plugin-node-resolve';
+import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -15,12 +16,13 @@ const globals = {
 };
 
 export default {
-  entry: '../../dist/packages-dist/common/@angular/common.es5.js',
+  entry: '../../dist/packages-dist/common/esm5/common.js',
   dest: '../../dist/packages-dist/common/bundles/common.umd.js',
   format: 'umd',
   exports: 'named',
   moduleName: 'ng.common',
-  plugins: [resolve()],
+  amd: {id: '@angular/common'},
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

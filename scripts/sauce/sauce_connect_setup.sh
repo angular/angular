@@ -22,7 +22,7 @@ CONNECT_URL="https://saucelabs.com/downloads/sc-${SAUCE_CONNECT_VERSION}-linux.t
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="sc-latest-linux.tar.gz"
 
-# logging disabled because it's seems to be overwhelming travis and causing flakes
+# logging disabled because it seems to be overwhelming travis and causing flakes
 # when we are cat-ing the log in print-logs.sh
 # CONNECT_LOG="$LOGS_DIR/sauce-connect"
 # CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"

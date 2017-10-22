@@ -56,7 +56,7 @@ describe('GithubApi', () => {
 
 
     it('should not pass data to \'request()\'', () => {
-      (api.get as Function)('foo', {}, {});
+      (api.get as any)('foo', {}, {});
 
       expect(apiRequestSpy).toHaveBeenCalled();
       expect(apiRequestSpy.calls.argsFor(0)[2]).toBeUndefined();
@@ -144,7 +144,7 @@ describe('GithubApi', () => {
 
 
   describe('getPaginated()', () => {
-    let deferreds: {resolve: Function, reject: Function}[];
+    let deferreds: {resolve: (v: any) => void, reject: (v: any) => void}[];
 
     beforeEach(() => {
       deferreds = [];
@@ -292,7 +292,7 @@ describe('GithubApi', () => {
 
 
     describe('onResponse', () => {
-      let promise: Promise<Object>;
+      let promise: Promise<object>;
       let respond: (statusCode: number) => IncomingMessage;
 
       beforeEach(() => {

@@ -11,15 +11,15 @@ import { CountdownTimerComponent }  from './countdown-timer.component';
 //// Local variable, #timer, version
 // #docregion lv
 @Component({
-  selector: 'countdown-parent-lv',
+  selector: 'app-countdown-parent-lv',
   template: `
   <h3>Countdown to Liftoff (via local variable)</h3>
   <button (click)="timer.start()">Start</button>
   <button (click)="timer.stop()">Stop</button>
   <div class="seconds">{{timer.seconds}}</div>
-  <countdown-timer #timer></countdown-timer>
+  <app-countdown-timer #timer></app-countdown-timer>
   `,
-  styleUrls: ['demo.css']
+  styleUrls: ['../assets/demo.css']
 })
 export class CountdownLocalVarParentComponent { }
 // #enddocregion lv
@@ -27,15 +27,15 @@ export class CountdownLocalVarParentComponent { }
 //// View Child version
 // #docregion vc
 @Component({
-  selector: 'countdown-parent-vc',
+  selector: 'app-countdown-parent-vc',
   template: `
   <h3>Countdown to Liftoff (via ViewChild)</h3>
   <button (click)="start()">Start</button>
   <button (click)="stop()">Stop</button>
   <div class="seconds">{{ seconds() }}</div>
-  <countdown-timer></countdown-timer>
+  <app-countdown-timer></app-countdown-timer>
   `,
-  styleUrls: ['demo.css']
+  styleUrls: ['../assets/demo.css']
 })
 export class CountdownViewChildParentComponent implements AfterViewInit {
 

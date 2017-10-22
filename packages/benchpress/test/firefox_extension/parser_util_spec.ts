@@ -17,7 +17,7 @@ function assertEventsEqual(actualEvents: any[], expectedEvents: any[]) {
       expect(actualEvent[key]).toEqual(expectedEvent[key]);
     }
   }
-};
+}
 
 export function main() {
   describe('convertPerfProfileToEvents', function() {
@@ -97,4 +97,4 @@ export function main() {
       assertEventsEqual(perfEvents, [{ph: 'X', ts: 1, name: 'script'}]);
     });
   });
-};
+}

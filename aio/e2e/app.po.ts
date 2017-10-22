@@ -1,4 +1,4 @@
-import { browser, element, by, promise, ElementFinder } from 'protractor';
+import { browser, element, by, promise, ElementFinder, ExpectedConditions } from 'protractor';
 
 const githubRegex = /https:\/\/github.com\/angular\/angular\//;
 
@@ -12,7 +12,6 @@ export class SitePage {
     .all(by.css('a'))
     .filter((a: ElementFinder) => a.getAttribute('href').then(href => githubRegex.test(href)))
     .first();
-  gaReady: promise.Promise<any>;
 
   static setWindowWidth(newWidth: number) {
     const win = browser.driver.manage().window();
@@ -25,11 +24,14 @@ export class SitePage {
                   .first();
   }
   getLink(path) { return element(by.css(`a[href="${path}"]`)); }
-  ga() { return browser.executeScript('return window["gaCalls"]') as promise.Promise<any[][]>; }
+  ga() { return browser.executeScript('return window["ga"].q') as promise.Promise<any[][]>; }
   locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
   navigateTo(pageUrl = '') {
-    return browser.get('/' + pageUrl).then(_ => this.replaceGa(_));
+    return browser.get('/' + pageUrl)
+      // We need to tell the index.html not to load the real analytics library
+      // See the GA snippet in index.html
+      .then(() => browser.driver.executeScript('sessionStorage.setItem("__e2e__", true);'));
   }
 
   getDocViewerText() {
@@ -50,30 +52,15 @@ export class SitePage {
     return browser.executeScript('window.scrollTo(0, document.body.scrollHeight)');
   }
 
-  /**
-   * Replace the ambient Google Analytics tracker with homebrew spy
-   * don't send commands to GA during e2e testing!
-   * @param _ - forward's anything passed in
-   */
-  private replaceGa(_: any) {
+  enterSearch(query: string) {
+    const input = element(by.css('.search-container input[type=search]'));
+    input.clear();
+    input.sendKeys(query);
+  }
 
-    this.gaReady = browser.driver.executeScript(() => {
-      // Give ga() a "ready" callback:
-      // https://developers.google.com/analytics/devguides/collection/analyticsjs/command-queue-reference
-      window['ga'](() => {
-        window['gaCalls'] = [];
-        window['ga'] = function() { window['gaCalls'].push(arguments); };
-      });
-
-    })
-    .then(() => {
-      // wait for GaService to start using window.ga after analytics lib loads.
-      const d =  promise.defer();
-      setTimeout(() => d.fulfill(), 1000); // GaService.initializeDelay
-      return d.promise;
-    });
-
-    return _;
+  getSearchResults() {
+    const results = element.all(by.css('.search-results li'));
+    browser.wait(ExpectedConditions.presenceOf(results.first()), 8000);
+    return results;
   }
 }
-

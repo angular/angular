@@ -249,7 +249,7 @@ export class Provider10Component implements OnInit {
 
 /////////////////
 @Component({
-  selector: 'my-providers',
+  selector: 'app-providers',
   template: `
   <h2>Provider variations</h2>
   <div id="p1"><provider-1></provider-1></div>

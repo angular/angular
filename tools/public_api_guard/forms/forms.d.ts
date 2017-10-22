@@ -14,6 +14,7 @@ export declare abstract class AbstractControl {
     readonly statusChanges: Observable<any>;
     readonly touched: boolean;
     readonly untouched: boolean;
+    readonly updateOn: FormHooks;
     readonly valid: boolean;
     validator: ValidatorFn | null;
     readonly value: any;
@@ -73,6 +74,7 @@ export declare abstract class AbstractControlDirective {
     readonly path: string[] | null;
     readonly pending: boolean | null;
     readonly pristine: boolean | null;
+    readonly status: string | null;
     readonly statusChanges: Observable<any> | null;
     readonly touched: boolean | null;
     readonly untouched: boolean | null;
@@ -144,9 +146,6 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
     constructor(_renderer: Renderer2, _elementRef: ElementRef, _compositionMode: boolean);
-    _compositionEnd(value: any): void;
-    _compositionStart(): void;
-    _handleInput(value: any): void;
     registerOnChange(fn: (_: any) => void): void;
     registerOnTouched(fn: () => void): void;
     setDisabledState(isDisabled: boolean): void;
@@ -175,7 +174,7 @@ export interface Form {
 export declare class FormArray extends AbstractControl {
     controls: AbstractControl[];
     readonly length: number;
-    constructor(controls: AbstractControl[], validator?: ValidatorFn | null, asyncValidator?: AsyncValidatorFn | null);
+    constructor(controls: AbstractControl[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     at(index: number): AbstractControl;
     getRawValue(): any[];
     insert(index: number, control: AbstractControl): void;
@@ -222,7 +221,7 @@ export declare class FormBuilder {
 
 /** @stable */
 export declare class FormControl extends AbstractControl {
-    constructor(formState?: any, validator?: ValidatorFn | ValidatorFn[] | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
+    constructor(formState?: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     patchValue(value: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -283,7 +282,7 @@ export declare class FormGroup extends AbstractControl {
     };
     constructor(controls: {
         [key: string]: AbstractControl;
-    }, validator?: ValidatorFn | null, asyncValidator?: AsyncValidatorFn | null);
+    }, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null);
     addControl(name: string, control: AbstractControl): void;
     contains(controlName: string): boolean;
     getRawValue(): any;
@@ -389,7 +388,7 @@ export declare class NgControlStatusGroup extends AbstractControlStatus {
 }
 
 /** @stable */
-export declare class NgForm extends ControlContainer implements Form {
+export declare class NgForm extends ControlContainer implements Form, AfterViewInit {
     readonly control: FormGroup;
     readonly controls: {
         [key: string]: AbstractControl;
@@ -397,6 +396,9 @@ export declare class NgForm extends ControlContainer implements Form {
     form: FormGroup;
     readonly formDirective: Form;
     ngSubmit: EventEmitter<{}>;
+    options: {
+        updateOn?: FormHooks;
+    };
     readonly path: string[];
     readonly submitted: boolean;
     constructor(validators: any[], asyncValidators: any[]);
@@ -404,6 +406,7 @@ export declare class NgForm extends ControlContainer implements Form {
     addFormGroup(dir: NgModelGroup): void;
     getControl(dir: NgModel): FormControl;
     getFormGroup(dir: NgModelGroup): FormGroup;
+    ngAfterViewInit(): void;
     onReset(): void;
     onSubmit($event: Event): boolean;
     removeControl(dir: NgModel): void;
@@ -426,6 +429,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     options: {
         name?: string;
         standalone?: boolean;
+        updateOn?: FormHooks;
     };
     readonly path: string[];
     update: EventEmitter<{}>;

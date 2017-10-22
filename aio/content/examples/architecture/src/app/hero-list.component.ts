@@ -5,7 +5,7 @@ import { HeroService }         from './hero.service';
 
 // #docregion metadata, providers
 @Component({
-  selector:    'hero-list',
+  selector:    'app-hero-list',
   templateUrl: './hero-list.component.html',
   providers:  [ HeroService ]
 })

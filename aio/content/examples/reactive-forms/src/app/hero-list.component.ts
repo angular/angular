@@ -7,7 +7,7 @@ import { Hero }        from './data-model';
 import { HeroService } from './hero.service';
 
 @Component({
-  selector: 'hero-list',
+  selector: 'app-hero-list',
   templateUrl: './hero-list.component.html'
 })
 export class HeroListComponent implements OnInit {

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationOptions, ɵStyleData} from '@angular/animations';
+import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {normalizeStyles} from '../util';
@@ -17,10 +17,10 @@ import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 import {ElementInstructionMap} from './element_instruction_map';
 
 export class Animation {
-  private _animationAst: Ast;
+  private _animationAst: Ast<AnimationMetadataType>;
   constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];
-    const ast = buildAnimationAst(input, errors);
+    const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
       const errorMessage = `animation validation failed:\n${errors.join("\n")}`;
       throw new Error(errorMessage);

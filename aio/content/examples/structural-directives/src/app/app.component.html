@@ -55,11 +55,6 @@
 </ng-template>
 <!-- #enddocregion ngif-template -->
 
-<p>template attribute</p>
-<!-- #docregion ngif-template-attr -->
-<div template="ngIf hero">{{hero.name}}</div>
-<!-- #enddocregion ngif-template-attr -->
-
 <hr>
 
 <h2 id="ng-container">&lt;ng-container&gt;</h2>
@@ -131,14 +126,7 @@
 </div>
 
 <!--#enddocregion inside-ngfor -->
-<p class="code">&lt;div template="ngFor let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd"&gt;</p>
-<!--#docregion inside-ngfor -->
-<div template="ngFor let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd">
-  ({{i}}) {{hero.name}}
-</div>
-
-<!--#enddocregion inside-ngfor -->
-<p class="code">&lt;template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById"&gt;</p>
+<p class="code">&lt;ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById"/&gt;</p>
 <!--#docregion inside-ngfor -->
 <ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
   <div [class.odd]="odd">({{i}}) {{hero.name}}</div>
@@ -162,44 +150,34 @@
 
 <!-- #docregion built-in , ngswitch -->
 <div [ngSwitch]="hero?.emotion">
-  <happy-hero    *ngSwitchCase="'happy'"    [hero]="hero"></happy-hero>
-  <sad-hero      *ngSwitchCase="'sad'"      [hero]="hero"></sad-hero>
-  <confused-hero *ngSwitchCase="'confused'" [hero]="hero"></confused-hero>
-  <unknown-hero  *ngSwitchDefault           [hero]="hero"></unknown-hero>
+  <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="hero"></app-happy-hero>
+  <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="hero"></app-sad-hero>
+  <app-confused-hero *ngSwitchCase="'app-confused'" [hero]="hero"></app-confused-hero>
+  <app-unknown-hero  *ngSwitchDefault           [hero]="hero"></app-unknown-hero>
 </div>
 <!-- #enddocregion built-in, ngswitch -->
-
-<h4>NgSwitch with <i>template</i> attribute</h4>
-<!-- #docregion ngswitch-template-attr -->
-<div [ngSwitch]="hero?.emotion">
-  <happy-hero    template="ngSwitchCase 'happy'"    [hero]="hero"></happy-hero>
-  <sad-hero      template="ngSwitchCase 'sad'"      [hero]="hero"></sad-hero>
-  <confused-hero template="ngSwitchCase 'confused'" [hero]="hero"></confused-hero>
-  <unknown-hero  template="ngSwitchDefault"         [hero]="hero"></unknown-hero>
-</div>
-<!-- #enddocregion ngswitch-template-attr -->
 
 <h4>NgSwitch with &lt;ng-template&gt;</h4>
 <!-- #docregion ngswitch-template -->
 <div [ngSwitch]="hero?.emotion">
   <ng-template [ngSwitchCase]="'happy'">
-    <happy-hero [hero]="hero"></happy-hero>
+    <app-happy-hero [hero]="hero"></app-happy-hero>
   </ng-template>
   <ng-template [ngSwitchCase]="'sad'">
-    <sad-hero [hero]="hero"></sad-hero>
+    <app-sad-hero [hero]="hero"></app-sad-hero>
   </ng-template>
   <ng-template [ngSwitchCase]="'confused'">
-    <confused-hero [hero]="hero"></confused-hero>
+    <app-confused-hero [hero]="hero"></app-confused-hero>
   </ng-template >
   <ng-template ngSwitchDefault>
-    <unknown-hero [hero]="hero"></unknown-hero>
+    <app-unknown-hero [hero]="hero"></app-unknown-hero>
   </ng-template>
 </div>
 <!-- #enddocregion ngswitch-template -->
 
 <hr>
 
-<h2>&lt;template&gt;</h2>
+<h2>&lt;ng-template&gt;</h2>
 <!-- #docregion template-tag -->
 <p>Hip!</p>
 <ng-template>
@@ -221,11 +199,11 @@
   </button>
 </p>
 <!-- #docregion myUnless-->
-<p *myUnless="condition" class="unless a">
+<p *appUnless="condition" class="unless a">
   (A) This paragraph is displayed because the condition is false.
 </p>
 
-<p *myUnless="!condition" class="unless b">
+<p *appUnless="!condition" class="unless b">
   (B) Although the condition is true,
   this paragraph is displayed because myUnless is set to false.
 </p>
@@ -235,16 +213,16 @@
 <h4>UnlessDirective with template</h4>
 
 <!-- #docregion myUnless-1 -->
-<p *myUnless="condition">Show this sentence unless the condition is true.</p>
+<p *appUnless="condition">Show this sentence unless the condition is true.</p>
 <!-- #enddocregion myUnless-1 -->
 
-<p template="myUnless condition" class="code unless">
-  (A) &lt;p template="myUnless condition" class="code unless"&gt;
+<p *appUnless="condition" class="code unless">
+  (A) &lt;p *myUnless="condition" class="code unless"&gt;
 </p>
 
-<ng-template [myUnless]="condition">
+<ng-template [appUnless]="condition">
   <p class="code unless">
-    (A) &lt;template [myUnless]="condition"&gt;
+    (A) &lt;ng-template [myUnless]="condition"&gt;
   </p>
 </ng-template>
 

@@ -7,7 +7,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
 
 @Component({
-  selector: 'hero-message',
+  selector: 'app-hero-message',
   template: `
     <h2>Async Hero Message and AsyncPipe</h2>
     <p>Message: {{ message$ | async }}</p>

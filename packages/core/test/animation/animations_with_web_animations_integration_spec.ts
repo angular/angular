@@ -5,16 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, query, state, style, transition, trigger} from '@angular/animations';
+import {animate, group, query, state, style, transition, trigger} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer, ɵsupportsWebAnimations} from '@angular/animations/browser';
+import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
 import {Component} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {TestBed} from '../../testing';
 
 export function main() {
   // these tests are only mean't to be run within the DOM (for now)
+  // Buggy in Chromium 39, see https://github.com/angular/angular/issues/15793
   if (typeof Element == 'undefined' || !ɵsupportsWebAnimations()) return;
 
   describe('animation integration tests using web animations', function() {
@@ -66,16 +69,18 @@ export function main() {
         {height: '0px', offset: 0}, {height: '100px', offset: 1}
       ]);
 
-      cmp.exp = false;
-      fixture.detectChanges();
-      engine.flush();
+      if (!browserDetection.isOldChrome) {
+        cmp.exp = false;
+        fixture.detectChanges();
+        engine.flush();
 
-      expect(engine.players.length).toEqual(1);
-      webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+        expect(engine.players.length).toEqual(1);
+        webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
 
-      expect(webPlayer.keyframes).toEqual([
-        {height: '100px', offset: 0}, {height: '0px', offset: 1}
-      ]);
+        expect(webPlayer.keyframes).toEqual([
+          {height: '100px', offset: 0}, {height: '0px', offset: 1}
+        ]);
+      }
     });
 
     it('should compute (!) animation styles for a container that is being inserted', () => {
@@ -123,7 +128,7 @@ export function main() {
         template: `
             <div [@myAnimation]="exp" #parent>
               <div *ngFor="let item of items" class="child" style="line-height:20px">
-                - {{ item }} 
+                - {{ item }}
               </div>
             </div>
           `,
@@ -172,6 +177,164 @@ export function main() {
         {height: '100px', offset: 0}, {height: '80px', offset: 1}
       ]);
     });
+
+    it('should treat * styles as ! when a removal animation is being rendered', () => {
+      @Component({
+        selector: 'ani-cmp',
+        styles: [`
+            .box {
+              width: 500px;
+              overflow:hidden;
+              background:orange;
+              line-height:300px;
+              font-size:100px;
+              text-align:center;
+            }
+          `],
+        template: `
+            <button (click)="toggle()">Open / Close</button>
+            <hr />
+            <div *ngIf="exp" @slide class="box">
+            ...
+            </div>
+          `,
+        animations: [trigger(
+            'slide',
+            [
+              state('void', style({height: '0px'})),
+              state('*', style({height: '*'})),
+              transition('* => *', animate('500ms')),
+            ])]
+      })
+      class Cmp {
+        exp = false;
+
+        toggle() { this.exp = !this.exp; }
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+
+      const engine = TestBed.get(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+
+      cmp.exp = true;
+      fixture.detectChanges();
+
+      let player = engine.players[0] !;
+      let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      expect(webPlayer.keyframes).toEqual([
+        {height: '0px', offset: 0},
+        {height: '300px', offset: 1},
+      ]);
+      player.finish();
+
+      cmp.exp = false;
+      fixture.detectChanges();
+
+      player = engine.players[0] !;
+      webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      expect(webPlayer.keyframes).toEqual([
+        {height: '300px', offset: 0},
+        {height: '0px', offset: 1},
+      ]);
+    });
+
+    it('should treat * styles as ! for queried items that are collected in a container that is being removed',
+       () => {
+         @Component({
+            selector: 'my-app',
+            styles: [`
+              .list .outer {
+                overflow:hidden;
+              }
+              .list .inner {
+                line-height:50px;
+              }
+            `],
+            template: `
+              <button (click)="empty()">Empty</button>
+              <button (click)="middle()">Middle</button>
+              <button (click)="full()">Full</button>
+              <hr />
+              <div [@list]="exp" class="list">
+                <div *ngFor="let item of items" class="outer">
+                  <div class="inner">
+                    {{ item }}
+                  </div>
+                </div>
+              </div>
+            `,
+            animations: [
+              trigger('list', [
+                transition(':enter', []),
+                transition('* => empty', [
+                  query(':leave', [
+                    animate(500, style({ height: '0px' }))
+                  ])
+                ]),
+                transition('* => full', [
+                  query(':enter', [
+                    style({ height: '0px' }),
+                    animate(500, style({ height: '*' }))
+                  ])
+                ]),
+              ])
+            ]
+        })
+        class Cmp {
+           items: any[] = [];
+
+           get exp() { return this.items.length ? 'full' : 'empty'; }
+
+           empty() { this.items = []; }
+
+           full() { this.items = [0, 1, 2, 3, 4]; }
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.get(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.empty();
+         fixture.detectChanges();
+         let player = engine.players[0] !as TransitionAnimationPlayer;
+         player.finish();
+
+         cmp.full();
+         fixture.detectChanges();
+
+         player = engine.players[0] !as TransitionAnimationPlayer;
+         let queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
+         expect(queriedPlayers.length).toEqual(5);
+
+         let i = 0;
+         for (i = 0; i < queriedPlayers.length; i++) {
+           let player = queriedPlayers[i] as ɵWebAnimationsPlayer;
+           expect(player.keyframes).toEqual([
+             {height: '0px', offset: 0},
+             {height: '50px', offset: 1},
+           ]);
+           player.finish();
+         }
+
+         cmp.empty();
+         fixture.detectChanges();
+
+         player = engine.players[0] !as TransitionAnimationPlayer;
+         queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
+         expect(queriedPlayers.length).toEqual(5);
+
+         for (i = 0; i < queriedPlayers.length; i++) {
+           let player = queriedPlayers[i] as ɵWebAnimationsPlayer;
+           expect(player.keyframes).toEqual([
+             {height: '50px', offset: 0},
+             {height: '0px', offset: 1},
+           ]);
+         }
+       });
 
     it('should compute intermediate styles properly when an animation is cancelled', () => {
       @Component({

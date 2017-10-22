@@ -20,7 +20,7 @@ source ${thisDir}/_travis-fold.sh
 
   # Run unit tests
   travisFoldStart "test.aio.unit"
-    yarn test -- --single-run
+    yarn test --single-run
   travisFoldEnd "test.aio.unit"
 
 
@@ -29,10 +29,12 @@ source ${thisDir}/_travis-fold.sh
     yarn e2e
   travisFoldEnd "test.aio.e2e"
 
+
   # Run PWA-score tests
   travisFoldStart "test.aio.pwaScore"
-    yarn test-pwa-score-local
+    yarn test-pwa-score-localhost
   travisFoldEnd "test.aio.pwaScore"
+
 
   # Run unit tests for aio/aio-builds-setup
   travisFoldStart "test.aio.aio-builds-setup"

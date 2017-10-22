@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost} from '@angular/compiler';
-import {HostListener, Inject, animate, group, keyframes, sequence, state, style, transition, trigger} from '@angular/core';
-import {CollectorOptions} from '@angular/tsc-wrapped';
+import {StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, core as compilerCore} from '@angular/compiler';
+import {CollectorOptions, METADATA_VERSION} from '@angular/compiler-cli';
 
 import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol_resolver_spec';
 
@@ -66,14 +65,6 @@ describe('StaticReflector', () => {
     expect(annotations.length).toEqual(1);
     const annotation = annotations[0];
     expect(annotation.selector).toEqual('my-hero-detail');
-    expect(annotation.animations).toEqual([trigger('myAnimation', [
-      state('state1', style({'background': 'white'})),
-      transition(
-          '* => *',
-          sequence([group([animate(
-              '1s 0.5s',
-              keyframes([style({'background': 'blue'}), style({'background': 'red'})]))])]))
-    ])]);
   });
 
   it('should get and empty annotation list for an unknown class', () => {
@@ -97,7 +88,8 @@ describe('StaticReflector', () => {
         reflector.findDeclaration('src/app/hero-detail.component', 'HeroDetailComponent');
     const props = reflector.propMetadata(HeroDetailComponent);
     expect(props['hero']).toBeTruthy();
-    expect(props['onMouseOver']).toEqual([new HostListener('mouseover', ['$event'])]);
+    expect(props['onMouseOver']).toEqual([compilerCore.createHostListener(
+        'mouseover', ['$event'])]);
   });
 
   it('should get an empty object from propMetadata for an unknown class', () => {
@@ -401,7 +393,7 @@ describe('StaticReflector', () => {
     const src = '/tmp/src/forward-ref.ts';
     const dep = reflector.getStaticSymbol(src, 'Dep');
     const props = reflector.parameters(reflector.getStaticSymbol(src, 'Forward'));
-    expect(props).toEqual([[dep, new Inject(dep)]]);
+    expect(props).toEqual([[dep, compilerCore.createInject(dep)]]);
   });
 
   it('should report an error for invalid function calls', () => {
@@ -460,6 +452,20 @@ describe('StaticReflector', () => {
         reflector.getStaticSymbol('/tmp/src/static-method-ref.ts', 'MethodReference'));
     expect(annotations.length).toBe(1);
     expect(annotations[0].providers[0].useValue.members[0]).toEqual('staticMethod');
+  });
+
+  it('should be able to get metadata for a class calling a macro function', () => {
+    const annotations = reflector.annotations(
+        reflector.getStaticSymbol('/tmp/src/call-macro-function.ts', 'MyComponent'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers.useValue).toBe(100);
+  });
+
+  it('should be able to get metadata for a class calling a nested macro function', () => {
+    const annotations = reflector.annotations(
+        reflector.getStaticSymbol('/tmp/src/call-macro-function.ts', 'MyComponentNested'));
+    expect(annotations.length).toBe(1);
+    expect(annotations[0].providers.useValue.useValue).toBe(100);
   });
 
   // #13605
@@ -586,7 +592,7 @@ describe('StaticReflector', () => {
 
     const someClass = reflector.getStaticSymbol(file, 'SomeClass');
     const parameters = reflector.parameters(someClass);
-    expect(parameters.toString()).toEqual('@Inject');
+    expect(compilerCore.createInject.isTypeOf(parameters[0][0])).toBe(true);
   });
 
   it('should reject a ctor parameter without a @Inject and a type exprssion', () => {
@@ -872,434 +878,424 @@ describe('StaticReflector', () => {
     });
   });
 
+  // Regression #18170
+  it('should continue to aggresively evaluate enum member accessors', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {intermediate} from './index';
+
+      @Component({
+        template: '<div></div>',
+        providers: [{provide: 'foo', useValue: [...intermediate]}]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/intermediate.ts'] = `
+      import {MyEnum} from './indirect';
+      export const intermediate = [{
+        data: {
+          c: [MyEnum.Value]
+        }
+      }];`;
+    data['/tmp/src/index.ts'] = `export * from './intermediate';`;
+    data['/tmp/src/indirect.ts'] = `export * from './consts';`;
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 3
+      }
+    `;
+    init(data);
+
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0]
+               .useValue)
+        .toEqual([{data: {c: [3]}}]);
+  });
+
+  // Regression #18170
+  it('should evaluate enums and statics that are 0', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {MyEnum, MyClass} from './consts';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: MyEnum.Value
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 0,
+      }
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 0}});
+  });
+
+  // Regression #18170
+  it('should agressively evaluate enums selects', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {E} from './indirect';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: E.Value,
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/indirect.ts'] = `
+      import {MyEnum} from './consts';
+
+      export const E = MyEnum;
+    `,
+    data['/tmp/src/consts.ts'] = `
+      export enum MyEnum {
+        Value = 1,
+      }
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 1}});
+  });
+
+  // Regression #18170
+  it('should agressively evaluate array indexes', () => {
+    const data = Object.create(DEFAULT_TEST_DATA);
+    const file = '/tmp/src/my_component.ts';
+    data[file] = `
+      import {Component} from '@angular/core';
+      import {provideRoutes} from './macro';
+      import {E} from './indirect';
+
+      @Component({
+        template: '<div></div>',
+        providers: [provideRoutes({
+          path: 'foo',
+          data: {
+            e: E[E[E[1]]],
+          }
+        })]
+      })
+      export class MyComponent { }
+    `;
+    data['/tmp/src/macro.ts'] = `
+      import {ANALYZE_FOR_ENTRY_COMPONENTS, ROUTES} from '@angular/core';
+
+      export interface Route {
+        path?: string;
+        data?: any;
+      }
+      export type Routes = Route[];
+      export function provideRoutes(routes: Routes): any {
+        return [
+          {provide: ANALYZE_FOR_ENTRY_COMPONENTS, multi: true, useValue: routes},
+          {provide: ROUTES, multi: true, useValue: routes},
+        ];
+      }
+    `;
+    data['/tmp/src/indirect.ts'] = `
+      import {A} from './consts';
+
+      export const E = A;
+    `,
+    data['/tmp/src/consts.ts'] = `
+      export const A = [0, 1];
+    `;
+    init(data);
+    expect(reflector.annotations(reflector.getStaticSymbol(file, 'MyComponent'))[0]
+               .providers[0][0]
+               .useValue)
+        .toEqual({path: 'foo', data: {e: 1}});
+  });
 });
 
 const DEFAULT_TEST_DATA: {[key: string]: any} = {
-      '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
-        '__symbolic': 'module',
-        'version': 3,
-        'metadata': {
-          'FORM_DIRECTIVES': [
-            {
-              '__symbolic': 'reference',
-              'name': 'NgFor',
-              'module': '@angular/common/src/directives/ng_for'
-            }
-          ]
-        }
-      }],
-      '/tmp/@angular/common/src/directives/ng_for.d.ts': {
-        '__symbolic': 'module',
-        'version': 3,
-        'metadata': {
-          'NgFor': {
-            '__symbolic': 'class',
-            'decorators': [
-              {
-                '__symbolic': 'call',
-                'expression': {
-                  '__symbolic': 'reference',
-                  'name': 'Directive',
-                  'module': '@angular/core'
-                },
-                'arguments': [
-                  {
-                    'selector': '[ngFor][ngForOf]',
-                    'inputs': ['ngForTrackBy', 'ngForOf', 'ngForTemplate']
-                  }
-                ]
+  '/tmp/@angular/common/src/forms-deprecated/directives.d.ts': [{
+    '__symbolic': 'module',
+    'version': METADATA_VERSION,
+    'metadata': {
+      'FORM_DIRECTIVES': [{
+        '__symbolic': 'reference',
+        'name': 'NgFor',
+        'module': '@angular/common/src/directives/ng_for'
+      }]
+    }
+  }],
+  '/tmp/@angular/common/src/directives/ng_for.d.ts': {
+    '__symbolic': 'module',
+    'version': METADATA_VERSION,
+    'metadata': {
+      'NgFor': {
+        '__symbolic': 'class',
+        'decorators': [{
+          '__symbolic': 'call',
+          'expression': {'__symbolic': 'reference', 'name': 'Directive', 'module': '@angular/core'},
+          'arguments': [{
+            'selector': '[ngFor][ngForOf]',
+            'inputs': ['ngForTrackBy', 'ngForOf', 'ngForTemplate']
+          }]
+        }],
+        'members': {
+          '__ctor__': [{
+            '__symbolic': 'constructor',
+            'parameters': [
+              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'ViewContainerRef'},
+              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'TemplateRef'},
+              {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'IterableDiffers'}, {
+                '__symbolic': 'reference',
+                'module': '@angular/core',
+                'name': 'ChangeDetectorRef'
               }
-            ],
-            'members': {
-              '__ctor__': [
-                {
-                  '__symbolic': 'constructor',
-                  'parameters': [
-                    {
-                      '__symbolic': 'reference',
-                      'module': '@angular/core',
-                      'name': 'ViewContainerRef'
-                    },
-                    {
-                      '__symbolic': 'reference',
-                      'module': '@angular/core',
-                      'name': 'TemplateRef'
-                    },
-                    {
-                      '__symbolic': 'reference',
-                      'module': '@angular/core',
-                      'name': 'IterableDiffers'
-                    },
-                    {
-                      '__symbolic': 'reference',
-                      'module': '@angular/core',
-                      'name': 'ChangeDetectorRef'
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      },
-      '/tmp/@angular/core/src/linker/view_container_ref.d.ts':
-          {version: 3, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
-      '/tmp/@angular/core/src/linker/template_ref.d.ts':
-          {version: 3, 'module': './template_ref', 'metadata': {'TemplateRef': {'__symbolic': 'class'}}},
-      '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts':
-          {version: 3, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
-      '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts':
-          {version: 3, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
-      '/tmp/src/app/hero-detail.component.d.ts': {
-        '__symbolic': 'module',
-        'version': 3,
-        'metadata': {
-          'HeroDetailComponent': {
-            '__symbolic': 'class',
-            'decorators': [
-              {
-                '__symbolic': 'call',
-                'expression': {
-                  '__symbolic': 'reference',
-                  'name': 'Component',
-                  'module': '@angular/core'
-                },
-                'arguments': [
-                  {
-                    'selector': 'my-hero-detail',
-                    'template':
-                        '\n  <div *ngIf="hero">\n    <h2>{{hero.name}} details!</h2>\n    <div><label>id: </label>{{hero.id}}</div>\n    <div>\n      <label>name: </label>\n      <input [(ngModel)]="hero.name" placeholder="name"/>\n    </div>\n  </div>\n',
-                    'animations': [{
-                      '__symbolic': 'call',
-                      'expression': {
-                        '__symbolic': 'reference',
-                        'name': 'trigger',
-                        'module': '@angular/core'
-                      },
-                      'arguments': [
-                        'myAnimation',
-                        [{ '__symbolic': 'call',
-                           'expression': {
-                             '__symbolic': 'reference',
-                             'name': 'state',
-                             'module': '@angular/core'
-                           },
-                           'arguments': [
-                             'state1',
-                              { '__symbolic': 'call',
-                                'expression': {
-                                  '__symbolic': 'reference',
-                                  'name': 'style',
-                                  'module': '@angular/core'
-                                },
-                                'arguments': [
-                                  { 'background':'white' }
-                                ]
-                              }
-                            ]
-                          }, {
-                            '__symbolic': 'call',
-                            'expression': {
-                              '__symbolic':'reference',
-                              'name':'transition',
-                              'module': '@angular/core'
-                            },
-                            'arguments': [
-                              '* => *',
-                              {
-                                '__symbolic':'call',
-                                'expression':{
-                                  '__symbolic':'reference',
-                                  'name':'sequence',
-                                  'module': '@angular/core'
-                                },
-                                'arguments':[[{ '__symbolic': 'call',
-                                  'expression': {
-                                    '__symbolic':'reference',
-                                    'name':'group',
-                                    'module': '@angular/core'
-                                  },
-                                  'arguments':[[{
-                                    '__symbolic': 'call',
-                                    'expression': {
-                                      '__symbolic':'reference',
-                                      'name':'animate',
-                                      'module': '@angular/core'
-                                    },
-                                    'arguments':[
-                                      '1s 0.5s',
-                                      { '__symbolic': 'call',
-                                        'expression': {
-                                          '__symbolic':'reference',
-                                          'name':'keyframes',
-                                          'module': '@angular/core'
-                                        },
-                                        'arguments':[[{ '__symbolic': 'call',
-                                          'expression': {
-                                            '__symbolic':'reference',
-                                            'name':'style',
-                                            'module': '@angular/core'
-                                          },
-                                          'arguments':[ { 'background': 'blue'} ]
-                                        }, {
-                                          '__symbolic': 'call',
-                                          'expression': {
-                                            '__symbolic':'reference',
-                                            'name':'style',
-                                            'module': '@angular/core'
-                                          },
-                                          'arguments':[ { 'background': 'red'} ]
-                                        }]]
-                                      }
-                                    ]
-                                  }]]
-                                }]]
-                              }
-                            ]
-                          }
-                        ]
-                    ]
-                  }]
-                }]
-              }],
-            'members': {
-              'hero': [
-                {
-                  '__symbolic': 'property',
-                  'decorators': [
-                    {
-                      '__symbolic': 'call',
-                      'expression': {
-                        '__symbolic': 'reference',
-                        'name': 'Input',
-                        'module': '@angular/core'
-                      }
-                    }
-                  ]
-                }
-              ],
-              'onMouseOver': [
-                    {
-                        '__symbolic': 'method',
-                        'decorators': [
-                            {
-                                '__symbolic': 'call',
-                                'expression': {
-                                    '__symbolic': 'reference',
-                                    'module': '@angular/core',
-                                    'name': 'HostListener'
-                                },
-                                'arguments': [
-                                    'mouseover',
-                                    [
-                                        '$event'
-                                    ]
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-          }
-        }
-      },
-      '/src/extern.d.ts': {'__symbolic': 'module', 'version': 3, metadata: {s: 's'}},
-      '/tmp/src/error-reporting.d.ts': {
-        __symbolic: 'module',
-        version: 3,
-        metadata: {
-          SomeClass: {
-            __symbolic: 'class',
-            decorators: [
-              {
-                __symbolic: 'call',
-                expression: {
-                  __symbolic: 'reference',
-                  name: 'Component',
-                  module: '@angular/core'
-                },
-                arguments: [
-                  {
-                    entryComponents: [
-                      {
-                        __symbolic: 'reference',
-                        module: 'src/error-references',
-                        name: 'Link1',
-                      }
-                    ]
-                  }
-                ]
-              }
-            ],
-          }
-        }
-      },
-      '/tmp/src/error-references.d.ts': {
-        __symbolic: 'module',
-        version: 3,
-        metadata: {
-          Link1: {
-            __symbolic: 'reference',
-            module: 'src/error-references',
-            name: 'Link2'
-          },
-          Link2: {
-            __symbolic: 'reference',
-            module: 'src/error-references',
-            name: 'ErrorSym'
-          },
-          ErrorSym: {
-            __symbolic: 'error',
-            message: 'A reasonable error message',
-            line: 12,
-            character: 33
-          }
-        }
-      },
-      '/tmp/src/function-declaration.d.ts': {
-        __symbolic: 'module',
-        version: 3,
-        metadata: {
-          one: {
-            __symbolic: 'function',
-            parameters: ['a'],
-            value: [
-              {__symbolic: 'reference', name: 'a'}
             ]
-          },
-          add: {
-            __symbolic: 'function',
-            parameters: ['a','b'],
-            value: {
-              __symbolic: 'binop',
-              operator: '+',
-              left: {__symbolic: 'reference', name: 'a'},
-              right: {
-                __symbolic: 'binop',
-                operator: '+',
-                left: {__symbolic: 'reference', name: 'b'},
-                right: {__symbolic: 'reference', name: 'oneLiteral'}
-              }
-            }
-          },
-          oneLiteral: 1
+          }]
         }
+      }
+    }
+  },
+  '/tmp/@angular/core/src/linker/view_container_ref.d.ts':
+      {version: METADATA_VERSION, 'metadata': {'ViewContainerRef': {'__symbolic': 'class'}}},
+  '/tmp/@angular/core/src/linker/template_ref.d.ts': {
+    version: METADATA_VERSION,
+    'module': './template_ref',
+    'metadata': {'TemplateRef': {'__symbolic': 'class'}}
+  },
+  '/tmp/@angular/core/src/change_detection/differs/iterable_differs.d.ts':
+      {version: METADATA_VERSION, 'metadata': {'IterableDiffers': {'__symbolic': 'class'}}},
+  '/tmp/@angular/core/src/change_detection/change_detector_ref.d.ts':
+      {version: METADATA_VERSION, 'metadata': {'ChangeDetectorRef': {'__symbolic': 'class'}}},
+  '/tmp/src/app/hero-detail.component.d.ts': {
+    '__symbolic': 'module',
+    'version': METADATA_VERSION,
+    'metadata': {
+      'HeroDetailComponent': {
+        '__symbolic': 'class',
+        'decorators': [{
+          '__symbolic': 'call',
+          'expression': {'__symbolic': 'reference', 'name': 'Component', 'module': '@angular/core'},
+          'arguments': [{
+            'selector': 'my-hero-detail',
+            'template':
+                '\n  <div *ngIf="hero">\n    <h2>{{hero.name}} details!</h2>\n    <div><label>id: </label>{{hero.id}}</div>\n    <div>\n      <label>name: </label>\n      <input [(ngModel)]="hero.name" placeholder="name"/>\n    </div>\n  </div>\n',
+          }]
+        }],
+        'members': {
+          'hero': [{
+            '__symbolic': 'property',
+            'decorators': [{
+              '__symbolic': 'call',
+              'expression':
+                  {'__symbolic': 'reference', 'name': 'Input', 'module': '@angular/core'}
+            }]
+          }],
+          'onMouseOver': [{
+            '__symbolic': 'method',
+            'decorators': [{
+              '__symbolic': 'call',
+              'expression':
+                  {'__symbolic': 'reference', 'module': '@angular/core', 'name': 'HostListener'},
+              'arguments': ['mouseover', ['$event']]
+            }]
+          }]
+        }
+      }
+    }
+  },
+  '/src/extern.d.ts': {'__symbolic': 'module', 'version': METADATA_VERSION, metadata: {s: 's'}},
+  '/tmp/src/error-reporting.d.ts': {
+    __symbolic: 'module',
+    version: METADATA_VERSION,
+    metadata: {
+      SomeClass: {
+        __symbolic: 'class',
+        decorators: [{
+          __symbolic: 'call',
+          expression: {__symbolic: 'reference', name: 'Component', module: '@angular/core'},
+          arguments: [{
+            entryComponents: [{
+              __symbolic: 'reference',
+              module: 'src/error-references',
+              name: 'Link1',
+            }]
+          }]
+        }],
+      }
+    }
+  },
+  '/tmp/src/error-references.d.ts': {
+    __symbolic: 'module',
+    version: METADATA_VERSION,
+    metadata: {
+      Link1: {__symbolic: 'reference', module: 'src/error-references', name: 'Link2'},
+      Link2: {__symbolic: 'reference', module: 'src/error-references', name: 'ErrorSym'},
+      ErrorSym:
+          {__symbolic: 'error', message: 'A reasonable error message', line: 12, character: 33}
+    }
+  },
+  '/tmp/src/function-declaration.d.ts': {
+    __symbolic: 'module',
+    version: METADATA_VERSION,
+    metadata: {
+      one: {
+        __symbolic: 'function',
+        parameters: ['a'],
+        value: [{__symbolic: 'reference', name: 'a'}]
       },
-      '/tmp/src/function-reference.ts': {
-        __symbolic: 'module',
-        version: 3,
-        metadata: {
-          one: {
-            __symbolic: 'call',
-            expression: {
-              __symbolic: 'reference',
-              module: './function-declaration',
-              name: 'one'
-            },
-            arguments: ['some-value']
-          },
-          three: {
-            __symbolic: 'call',
-            expression: {
-              __symbolic: 'reference',
-              module: './function-declaration',
-              name: 'add'
-            },
-            arguments: [1, 1]
-          },
-          recursion: {
-            __symbolic: 'call',
-            expression: {
-              __symbolic: 'reference',
-              module: './function-recursive',
-              name: 'recursive'
-            },
-            arguments: [1]
-          },
-          indirectRecursion: {
-            __symbolic: 'call',
-            expression: {
-              __symbolic: 'reference',
-              module: './function-recursive',
-              name: 'indirectRecursion1'
-            },
-            arguments: [1]
+      add: {
+        __symbolic: 'function',
+        parameters: ['a', 'b'],
+        value: {
+          __symbolic: 'binop',
+          operator: '+',
+          left: {__symbolic: 'reference', name: 'a'},
+          right: {
+            __symbolic: 'binop',
+            operator: '+',
+            left: {__symbolic: 'reference', name: 'b'},
+            right: {__symbolic: 'reference', name: 'oneLiteral'}
           }
         }
       },
-      '/tmp/src/function-recursive.d.ts': {
-        __symbolic: 'modules',
-        version: 3,
-        metadata: {
-          recursive: {
-            __symbolic: 'function',
-            parameters: ['a'],
-            value: {
-              __symbolic: 'call',
-              expression: {
-                __symbolic: 'reference',
-                module: './function-recursive',
-                name: 'recursive',
-              },
-              arguments: [
-                {
-                  __symbolic: 'reference',
-                  name: 'a'
-                }
-              ]
-            }
-          },
-          indirectRecursion1: {
-            __symbolic: 'function',
-            parameters: ['a'],
-            value: {
-              __symbolic: 'call',
-              expression: {
-                __symbolic: 'reference',
-                module: './function-recursive',
-                name: 'indirectRecursion2',
-              },
-              arguments: [
-                {
-                  __symbolic: 'reference',
-                  name: 'a'
-                }
-              ]
-            }
-          },
-          indirectRecursion2: {
-            __symbolic: 'function',
-            parameters: ['a'],
-            value: {
-              __symbolic: 'call',
-              expression: {
-                __symbolic: 'reference',
-                module: './function-recursive',
-                name: 'indirectRecursion1',
-              },
-              arguments: [
-                {
-                  __symbolic: 'reference',
-                  name: 'a'
-                }
-              ]
-            }
-          }
-        },
+      oneLiteral: 1
+    }
+  },
+  '/tmp/src/function-reference.ts': {
+    __symbolic: 'module',
+    version: METADATA_VERSION,
+    metadata: {
+      one: {
+        __symbolic: 'call',
+        expression: {__symbolic: 'reference', module: './function-declaration', name: 'one'},
+        arguments: ['some-value']
       },
-      '/tmp/src/spread.ts': {
-        __symbolic: 'module',
-        version: 3,
-        metadata: {
-          spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]
+      three: {
+        __symbolic: 'call',
+        expression: {__symbolic: 'reference', module: './function-declaration', name: 'add'},
+        arguments: [1, 1]
+      },
+      recursion: {
+        __symbolic: 'call',
+        expression: {__symbolic: 'reference', module: './function-recursive', name: 'recursive'},
+        arguments: [1]
+      },
+      indirectRecursion: {
+        __symbolic: 'call',
+        expression:
+            {__symbolic: 'reference', module: './function-recursive', name: 'indirectRecursion1'},
+        arguments: [1]
+      }
+    }
+  },
+  '/tmp/src/function-recursive.d.ts': {
+    __symbolic: 'modules',
+    version: METADATA_VERSION,
+    metadata: {
+      recursive: {
+        __symbolic: 'function',
+        parameters: ['a'],
+        value: {
+          __symbolic: 'call',
+          expression: {
+            __symbolic: 'reference',
+            module: './function-recursive',
+            name: 'recursive',
+          },
+          arguments: [{__symbolic: 'reference', name: 'a'}]
         }
       },
-      '/tmp/src/custom-decorator.ts': `
+      indirectRecursion1: {
+        __symbolic: 'function',
+        parameters: ['a'],
+        value: {
+          __symbolic: 'call',
+          expression: {
+            __symbolic: 'reference',
+            module: './function-recursive',
+            name: 'indirectRecursion2',
+          },
+          arguments: [{__symbolic: 'reference', name: 'a'}]
+        }
+      },
+      indirectRecursion2: {
+        __symbolic: 'function',
+        parameters: ['a'],
+        value: {
+          __symbolic: 'call',
+          expression: {
+            __symbolic: 'reference',
+            module: './function-recursive',
+            name: 'indirectRecursion1',
+          },
+          arguments: [{__symbolic: 'reference', name: 'a'}]
+        }
+      }
+    },
+  },
+  '/tmp/src/spread.ts': {
+    __symbolic: 'module',
+    version: METADATA_VERSION,
+    metadata: {spread: [0, {__symbolic: 'spread', expression: [1, 2, 3, 4]}, 5]}
+  },
+  '/tmp/src/custom-decorator.ts': `
         export function CustomDecorator(): any {
           return () => {};
         }
       `,
-      '/tmp/src/custom-decorator-reference.ts': `
+  '/tmp/src/custom-decorator-reference.ts': `
         import {CustomDecorator} from './custom-decorator';
 
         @CustomDecorator()
@@ -1307,7 +1303,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           @CustomDecorator() get foo(): string { return ''; }
         }
       `,
-      '/tmp/src/invalid-calll-definitions.ts': `
+  '/tmp/src/invalid-calll-definitions.ts': `
         export function someFunction(a: any) {
           if (Array.isArray(a)) {
             return a;
@@ -1315,7 +1311,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           return undefined;
         }
       `,
-      '/tmp/src/invalid-calls.ts': `
+  '/tmp/src/invalid-calls.ts': `
         import {someFunction} from './nvalid-calll-definitions.ts';
         import {Component} from '@angular/core';
         import {NgIf} from '@angular/common';
@@ -1333,7 +1329,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         })
         export class MyOtherComponent { }
       `,
-      '/tmp/src/static-method.ts': `
+  '/tmp/src/static-method.ts': `
         import {Component} from '@angular/core/src/metadata';
 
         @Component({
@@ -1360,7 +1356,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           }
         }
       `,
-      '/tmp/src/static-method-call.ts': `
+  '/tmp/src/static-method-call.ts': `
         import {Component} from '@angular/core';
         import {MyModule} from './static-method';
 
@@ -1384,7 +1380,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         })
         export class MyFactoryComponent { }
       `,
-      '/tmp/src/static-field.ts': `
+  '/tmp/src/static-field.ts': `
         import {Injectable} from '@angular/core';
 
         @Injectable()
@@ -1392,7 +1388,26 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           static VALUE = 'Some string';
         }
       `,
-      '/tmp/src/static-field-reference.ts': `
+  '/tmp/src/macro-function.ts': `
+        export function v(value: any) {
+          return { provide: 'a', useValue: value };
+        }
+      `,
+  '/tmp/src/call-macro-function.ts': `
+        import {Component} from '@angular/core';
+        import {v} from './macro-function';
+
+        @Component({
+          providers: v(100)
+        })
+        export class MyComponent { }
+
+        @Component({
+          providers: v(v(100))
+        })
+        export class MyComponentNested { }
+      `,
+  '/tmp/src/static-field-reference.ts': `
         import {Component} from '@angular/core';
         import {MyModule} from './static-field';
 
@@ -1401,12 +1416,12 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         })
         export class Foo { }
       `,
-      '/tmp/src/static-method-def.ts': `
+  '/tmp/src/static-method-def.ts': `
         export class ClassWithStatics {
           static staticMethod() {}
         }
       `,
-      '/tmp/src/static-method-ref.ts': `
+  '/tmp/src/static-method-ref.ts': `
         import {Component} from '@angular/core';
         import {ClassWithStatics} from './static-method-def';
 
@@ -1417,7 +1432,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
 
         }
       `,
-      '/tmp/src/invalid-metadata.ts': `
+  '/tmp/src/invalid-metadata.ts': `
         import {Component} from '@angular/core';
 
         @Component({
@@ -1425,7 +1440,7 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
         })
         export class InvalidMetadata {}
       `,
-      '/tmp/src/forward-ref.ts': `
+  '/tmp/src/forward-ref.ts': `
         import {forwardRef} from '@angular/core';
         import {Component} from '@angular/core';
         import {Inject} from '@angular/core';
@@ -1437,4 +1452,4 @@ const DEFAULT_TEST_DATA: {[key: string]: any} = {
           @Input f: Forward;
         }
       `
-    };
+};

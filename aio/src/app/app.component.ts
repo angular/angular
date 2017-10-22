@@ -2,17 +2,18 @@ import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { MdSidenav } from '@angular/material';
 
-import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
+import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
-import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { ScrollService } from 'app/shared/scroll.service';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { SearchResults } from 'app/search/interfaces';
 import { SearchService } from 'app/search/search.service';
 import { TocService } from 'app/shared/toc.service';
 
+import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 
@@ -76,8 +77,8 @@ export class AppComponent implements OnInit {
 
   get homeImageUrl() {
     return this.isSideBySide ?
-      'assets/images/logos/standard/logo-nav@2x.png' :
-      'assets/images/logos/standard/shield-large.svg';
+      'assets/images/logos/angular/logo-nav@2x.png' :
+      'assets/images/logos/angular/shield-large.svg';
   }
   get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
@@ -88,10 +89,9 @@ export class AppComponent implements OnInit {
 
   // Search related properties
   showSearchResults = false;
-  @ViewChildren('searchBox, searchResults', { read: ElementRef })
+  searchResults: Observable<SearchResults>;
+  @ViewChildren('searchBox, searchResultsView', { read: ElementRef })
   searchElements: QueryList<ElementRef>;
-  @ViewChild(SearchResultsComponent)
-  searchResults: SearchResultsComponent;
   @ViewChild(SearchBoxComponent)
   searchBox: SearchBoxComponent;
 
@@ -99,6 +99,7 @@ export class AppComponent implements OnInit {
   sidenav: MdSidenav;
 
   constructor(
+    public deployment: Deployment,
     private documentService: DocumentService,
     private hostElement: ElementRef,
     private locationService: LocationService,
@@ -127,6 +128,11 @@ export class AppComponent implements OnInit {
     });
 
     this.locationService.currentPath.subscribe(path => {
+      // Redirect to docs if we are in not in stable mode and are not hitting a docs page
+      // (i.e. we have arrived at a marketing page)
+      if (this.deployment.mode !== 'stable' && !/^(docs$|api|guide|tutorial)/.test(path)) {
+        this.locationService.replace('docs');
+      }
       if (path === this.currentPath) {
         // scroll only if on same page (most likely a change to the hash)
         this.autoScroll();
@@ -158,12 +164,24 @@ export class AppComponent implements OnInit {
 
     // Compute the version picker list from the current version and the versions in the navigation map
     combineLatest(
-      this.navigationService.versionInfo.map(versionInfo => ({ title: versionInfo.raw, url: null })),
-      this.navigationService.navigationViews.map(views => views['docVersions']),
-      (currentVersion, otherVersions) => [currentVersion, ...otherVersions])
-      .subscribe(versions => {
-        this.docVersions = versions;
-        this.currentDocVersion = this.docVersions[0];
+      this.navigationService.versionInfo,
+      this.navigationService.navigationViews.map(views => views['docVersions']))
+      .subscribe(([versionInfo, versions]) => {
+        // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
+        const computedVersions = [
+          { title: 'next', url: 'https://next.angular.io' },
+          { title: 'stable', url: 'https://angular.io' },
+        ];
+        if (this.deployment.mode === 'archive') {
+          computedVersions.push({ title: `v${versionInfo.major}`, url: null });
+        }
+        this.docVersions = [...computedVersions, ...versions];
+
+        // Find the current version - eithers title matches the current deployment mode
+        // or its title matches the major version of the current version info
+        this.currentDocVersion = this.docVersions.find(version =>
+          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`);
+        this.currentDocVersion.title += ` (v${versionInfo.raw})`;
       });
 
     this.navigationService.navigationViews.subscribe(views => {
@@ -256,12 +274,13 @@ export class AppComponent implements OnInit {
   }
 
   updateHostClasses() {
+    const mode = `mode-${this.deployment.mode}`;
     const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
     const viewClasses = Object.keys(this.currentNodes || {}).map(view => `view-${view}`).join(' ');
 
-    this.hostClasses = `${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
+    this.hostClasses = `${mode} ${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
   }
 
   // Dynamically change height of table of contents container
@@ -312,7 +331,7 @@ export class AppComponent implements OnInit {
   }
 
   doSearch(query) {
-    this.searchService.search(query);
+    this.searchResults = this.searchService.search(query);
     this.showSearchResults = !!query;
   }
 

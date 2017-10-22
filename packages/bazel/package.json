@@ -1,0 +1,19 @@
+{
+  "name": "@angular/bazel",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - bazel build rules",
+  "author": "angular",
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
+    "typescript": ">=2.4.2 <2.5"
+  },
+  "dependencies": {
+    "@bazel/typescript": "0.2.x",
+    "@types/node": "6.0.84"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  }
+}

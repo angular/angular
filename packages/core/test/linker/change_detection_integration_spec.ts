@@ -6,16 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementSchemaRegistry} from '@angular/compiler/src/schema/element_schema_registry';
-import {TEST_COMPILER_PROVIDERS} from '@angular/compiler/testing/src/test_bindings';
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
+import {DomElementSchemaRegistry, ElementSchemaRegistry, ResourceLoader, UrlResolver} from '@angular/compiler';
+import {MockResourceLoader, MockSchemaRegistry} from '@angular/compiler/testing';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, DebugElement, Directive, DoCheck, EventEmitter, HostBinding, Inject, Injectable, Input, OnChanges, OnDestroy, OnInit, Output, Pipe, PipeTransform, Provider, RenderComponentType, Renderer, RendererFactory2, RootRenderer, SimpleChange, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, WrappedValue} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {DomElementSchemaRegistry} from '../../../compiler/index';
-import {MockSchemaRegistry} from '../../../compiler/testing/index';
+export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
+  return new UrlResolver();
+}
+
+const TEST_COMPILER_PROVIDERS: Provider[] = [
+  {provide: ElementSchemaRegistry, useValue: new MockSchemaRegistry({}, {}, {}, [], [])},
+  {provide: ResourceLoader, useClass: MockResourceLoader, deps: []},
+  {provide: UrlResolver, useFactory: createUrlResolverWithoutPackagePrefix, deps: []}
+];
+
 
 export function main() {
   let elSchema: MockSchemaRegistry;
@@ -1353,7 +1361,7 @@ export function main() {
           tpl: TemplateRef<any>;
 
           @Input()
-          outerTpl: TemplateRef<any>
+          outerTpl: TemplateRef<any>;
 
           constructor(public cdRef: ChangeDetectorRef) {}
           log(id: string) { log.push(`inner-${id}`); }
@@ -1531,13 +1539,13 @@ class DirectiveLog {
 @Pipe({name: 'countingPipe'})
 class CountingPipe implements PipeTransform {
   state: number = 0;
-  transform(value: any) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state++}`; }
 }
 
 @Pipe({name: 'countingImpurePipe', pure: false})
 class CountingImpurePipe implements PipeTransform {
   state: number = 0;
-  transform(value: any) { return `${value} state:${this.state ++}`; }
+  transform(value: any) { return `${value} state:${this.state++}`; }
 }
 
 @Pipe({name: 'pipeWithOnDestroy'})

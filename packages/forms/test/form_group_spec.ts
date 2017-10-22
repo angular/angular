@@ -9,10 +9,15 @@
 import {EventEmitter} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, FormArray, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Validators} from '@angular/forms';
+import {of } from 'rxjs/observable/of';
 
 
 export function main() {
+  function simpleValidator(c: AbstractControl): ValidationErrors|null {
+    return c.get('one') !.value === 'correct' ? null : {'broken': true};
+  }
+
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void = undefined !;
@@ -35,6 +40,8 @@ export function main() {
     Promise.resolve(null).then(() => { e.emit({'async': true}); });
     return e;
   }
+
+  function otherObservableValidator() { return of ({'other': true}); }
 
   describe('FormGroup', () => {
     describe('value', () => {
@@ -101,26 +108,6 @@ export function main() {
 
         expect(g.value).toEqual({'one': '1'});
         expect(g.valid).toBe(true);
-      });
-    });
-
-    describe('errors', () => {
-      it('should run the validator when the value changes', () => {
-        const simpleValidator = (c: FormGroup) =>
-            c.controls['one'].value != 'correct' ? {'broken': true} : null;
-
-        const c = new FormControl(null);
-        const g = new FormGroup({'one': c}, simpleValidator);
-
-        c.setValue('correct');
-
-        expect(g.valid).toEqual(true);
-        expect(g.errors).toEqual(null);
-
-        c.setValue('incorrect');
-
-        expect(g.valid).toEqual(false);
-        expect(g.errors).toEqual({'broken': true});
       });
     });
 
@@ -629,7 +616,7 @@ export function main() {
       it('should return true when the component is enabled', () => {
         expect(group.contains('required')).toEqual(true);
 
-        group.enable('optional');
+        group.enable();
 
         expect(group.contains('optional')).toEqual(true);
       });
@@ -687,6 +674,66 @@ export function main() {
       });
     });
 
+    describe('validator', () => {
+
+      function containsValidator(c: AbstractControl): ValidationErrors|null {
+        return c.get('one') !.value && c.get('one') !.value.indexOf('c') !== -1 ? null :
+                                                                                  {'missing': true};
+      }
+
+      it('should run a single validator when the value changes', () => {
+        const c = new FormControl(null);
+        const g = new FormGroup({'one': c}, simpleValidator);
+
+        c.setValue('correct');
+
+        expect(g.valid).toEqual(true);
+        expect(g.errors).toEqual(null);
+
+        c.setValue('incorrect');
+
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({'broken': true});
+      });
+
+      it('should support multiple validators from array', () => {
+        const g = new FormGroup({one: new FormControl()}, [simpleValidator, containsValidator]);
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({missing: true, broken: true});
+
+        g.setValue({one: 'c'});
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({broken: true});
+
+        g.setValue({one: 'correct'});
+        expect(g.valid).toEqual(true);
+      });
+
+      it('should set single validator from options obj', () => {
+        const g = new FormGroup({one: new FormControl()}, {validators: simpleValidator});
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({broken: true});
+
+        g.setValue({one: 'correct'});
+        expect(g.valid).toEqual(true);
+      });
+
+      it('should set multiple validators from options obj', () => {
+        const g = new FormGroup(
+            {one: new FormControl()}, {validators: [simpleValidator, containsValidator]});
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({missing: true, broken: true});
+
+        g.setValue({one: 'c'});
+        expect(g.valid).toEqual(false);
+        expect(g.errors).toEqual({broken: true});
+
+        g.setValue({one: 'correct'});
+        expect(g.valid).toEqual(true);
+      });
+
+    });
+
     describe('asyncValidator', () => {
       it('should run the async validator', fakeAsync(() => {
            const c = new FormControl('value');
@@ -697,6 +744,38 @@ export function main() {
            tick(1);
 
            expect(g.errors).toEqual({'async': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set multiple async validators from array', fakeAsync(() => {
+           const g = new FormGroup(
+               {'one': new FormControl('value')}, null !,
+               [asyncValidator('expected'), otherObservableValidator]);
+           expect(g.pending).toEqual(true);
+
+           tick();
+           expect(g.errors).toEqual({'async': true, 'other': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set single async validator from options obj', fakeAsync(() => {
+           const g = new FormGroup(
+               {'one': new FormControl('value')}, {asyncValidators: asyncValidator('expected')});
+           expect(g.pending).toEqual(true);
+
+           tick();
+           expect(g.errors).toEqual({'async': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set multiple async validators from options obj', fakeAsync(() => {
+           const g = new FormGroup(
+               {'one': new FormControl('value')},
+               {asyncValidators: [asyncValidator('expected'), otherObservableValidator]});
+           expect(g.pending).toEqual(true);
+
+           tick();
+           expect(g.errors).toEqual({'async': true, 'other': true});
            expect(g.pending).toEqual(false);
          }));
 

@@ -7,12 +7,13 @@
  */
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-import {Metric, MultiMetric, ReflectiveInjector} from '../../index';
+
+import {Injector, Metric, MultiMetric} from '../../index';
 
 export function main() {
   function createMetric(ids: any[]) {
-    const m = ReflectiveInjector
-                  .resolveAndCreate([
+    const m = Injector
+                  .create([
                     ids.map(id => ({provide: id, useValue: new MockMetric(id)})),
                     MultiMetric.provideWith(ids)
                   ])

@@ -2,7 +2,7 @@
 <section class="annotations">
   <h2>Annotations</h2>
   {%- for decorator in doc.decorators %}
-    <code-example hideCopy="true" class="no-box api-heading">@{$ decorator.name $}{$ params.paramList(decorator.arguments) $}</code-example>
+    <code-example hideCopy="true" class="no-box api-heading">@{$ decorator.name $}({$ decorator.arguments $})</code-example>
     {% if not decorator.notYetDocumented %}{$ decorator.description | marked $}{% endif %}
   {% endfor %}
 </section>

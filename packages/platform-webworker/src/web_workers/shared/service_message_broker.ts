@@ -14,26 +14,22 @@ import {Serializer, SerializerTypes} from '../shared/serializer';
 /**
  * @experimental WebWorker support in Angular is currently experimental.
  */
-export abstract class ServiceMessageBrokerFactory {
-  /**
-   * Initializes the given channel and attaches a new {@link ServiceMessageBroker} to it.
-   */
-  abstract createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
-}
-
 @Injectable()
-export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
+export class ServiceMessageBrokerFactory {
   /** @internal */
   _serializer: Serializer;
 
+  /** @internal */
   constructor(private _messageBus: MessageBus, _serializer: Serializer) {
-    super();
     this._serializer = _serializer;
   }
 
+  /**
+   * Initializes the given channel and attaches a new {@link ServiceMessageBroker} to it.
+   */
   createMessageBroker(channel: string, runInZone: boolean = true): ServiceMessageBroker {
     this._messageBus.initChannel(channel, runInZone);
-    return new ServiceMessageBroker_(this._messageBus, this._serializer, channel);
+    return new ServiceMessageBroker(this._messageBus, this._serializer, channel);
   }
 }
 
@@ -45,25 +41,19 @@ export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
  *
  * @experimental WebWorker support in Angular is currently experimental.
  */
-export abstract class ServiceMessageBroker {
-  abstract registerMethod(
-      methodName: string, signature: Array<Type<any>|SerializerTypes>|null, method: Function,
-      returnType?: Type<any>|SerializerTypes): void;
-}
-
-export class ServiceMessageBroker_ extends ServiceMessageBroker {
+export class ServiceMessageBroker {
   private _sink: EventEmitter<any>;
   private _methods = new Map<string, Function>();
 
-  constructor(messageBus: MessageBus, private _serializer: Serializer, public channel: string) {
-    super();
+  /** @internal */
+  constructor(messageBus: MessageBus, private _serializer: Serializer, private channel: string) {
     this._sink = messageBus.to(channel);
     const source = messageBus.from(channel);
     source.subscribe({next: (message: any) => this._handleMessage(message)});
   }
 
   registerMethod(
-      methodName: string, signature: Array<Type<any>|SerializerTypes>,
+      methodName: string, signature: Array<Type<any>|SerializerTypes>|null,
       method: (..._: any[]) => Promise<any>| void, returnType?: Type<any>|SerializerTypes): void {
     this._methods.set(methodName, (message: ReceivedMessage) => {
       const serializedArgs = message.args;
@@ -71,7 +61,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
       const deserializedArgs = new Array(numArgs);
       for (let i = 0; i < numArgs; i++) {
         const serializedArg = serializedArgs[i];
-        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature[i]);
+        deserializedArgs[i] = this._serializer.deserialize(serializedArg, signature ![i]);
       }
 
       const promise = method(...deserializedArgs);

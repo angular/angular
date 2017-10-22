@@ -78,11 +78,11 @@
 
 <p>Template input variable expression context (let hero)</p>
 <!-- template hides the following; plenty of examples later -->
-<template>
+<ng-template>
   <!-- #docregion context-var -->
   <div *ngFor="let hero of heroes">{{hero.name}}</div>
   <!-- #enddocregion context-var -->
-</template>
+</ng-template>
 
 <p>Template reference variable expression context (#heroInput)</p>
 <div (keyup)="0" class="context">
@@ -134,7 +134,7 @@
 <!-- Public Domain terms of use: http://www.wpclipart.com/terms.html -->
 <!-- #docregion img+button -->
 <div class="special">Mental Model</div>
-<img src="images/hero.png">
+<img src="assets/images/hero.png">
 <button disabled>Save</button>
 <!-- #enddocregion img+button -->
 <br><br>
@@ -144,7 +144,7 @@
   <!-- Normal HTML -->
   <div class="special">Mental Model</div>
   <!-- Wow! A new element! -->
-  <hero-detail></hero-detail>
+  <app-hero-detail></app-hero-detail>
   <!-- #enddocregion hero-detail-1 -->
 </div>
 <br><br>
@@ -160,7 +160,7 @@
 <div>
   <!-- #docregion property-binding-syntax-1 -->
   <img [src]="heroImageUrl">
-  <hero-detail [hero]="currentHero"></hero-detail>
+  <app-hero-detail [hero]="currentHero"></app-hero-detail>
   <div [ngClass]="{'special': isSpecial}"></div>
   <!-- #enddocregion property-binding-syntax-1 -->
 </div>
@@ -168,7 +168,7 @@
 
 <!-- #docregion event-binding-syntax-1 -->
 <button (click)="onSave()">Save</button>
-<hero-detail (deleteRequest)="deleteHero()"></hero-detail>
+<app-hero-detail (deleteRequest)="deleteHero()"></app-hero-detail>
 <div (myClick)="clicked=$event" clickable>click me</div>
 <!-- #enddocregion event-binding-syntax-1 -->
 {{clicked}}
@@ -242,7 +242,7 @@ button</button>
 <div [ngClass]="classes">[ngClass] binding to the classes property</div>
 <!-- #enddocregion property-binding-3 -->
 <!-- #docregion property-binding-4 -->
-<hero-detail [hero]="currentHero"></hero-detail>
+<app-hero-detail [hero]="currentHero"></app-hero-detail>
 <!-- #enddocregion property-binding-4 -->
 <!-- #docregion property-binding-5 -->
 <img bind-src="heroImageUrl">
@@ -254,11 +254,11 @@ button</button>
 <!-- #enddocregion property-binding-6 -->
 <div *ngIf="false">
 <!-- #docregion property-binding-6 -->
-  <hero-detail hero="currentHero"></hero-detail>
+  <app-hero-detail hero="currentHero"></app-hero-detail>
 <!-- #enddocregion property-binding-6 -->
 </div>
 <!-- #docregion property-binding-7 -->
-<hero-detail prefix="You are my" [hero]="currentHero"></hero-detail>
+<app-hero-detail prefix="You are my" [hero]="currentHero"></app-hero-detail>
 <!-- #enddocregion property-binding-7 -->
 
 <!-- #docregion property-binding-vs-interpolation -->
@@ -385,14 +385,14 @@ button</button>
 
 <!-- binding to a nested component -->
 <!-- #docregion event-binding-to-component -->
-<hero-detail (deleteRequest)="deleteHero($event)" [hero]="currentHero"></hero-detail>
+<app-hero-detail (deleteRequest)="deleteHero($event)" [hero]="currentHero"></app-hero-detail>
 <!-- #enddocregion event-binding-to-component -->
 <br>
 
-<big-hero-detail
+<app-big-hero-detail
     (deleteRequest)="deleteHero($event)"
     [hero]="currentHero">
-</big-hero-detail>
+</app-big-hero-detail>
 
 <!-- #docregion event-binding-bubbling -->
 <div class="parent-div" (click)="onClickMe($event)" clickable>Click me
@@ -419,7 +419,7 @@ button</button>
 <hr><h2 id="two-way">Two-way Binding</h2>
 <div id="two-way-1">
   <!-- #docregion two-way-1 -->
-  <my-sizer [(size)]="fontSizePx"></my-sizer>
+  <app-sizer [(size)]="fontSizePx"></app-sizer>
   <div [style.font-size.px]="fontSizePx">Resizable Text</div>
   <!-- #enddocregion two-way-1 -->
   <label>FontSize (px): <input [(ngModel)]="fontSizePx"></label>
@@ -428,7 +428,7 @@ button</button>
 <div id="two-way-2">
   <h3>De-sugared two-way binding</h3>
   <!-- #docregion two-way-2 -->
-  <my-sizer [size]="fontSizePx" (sizeChange)="fontSizePx=$event"></my-sizer>
+  <app-sizer [size]="fontSizePx" (sizeChange)="fontSizePx=$event"></app-sizer>
   <!-- #enddocregion two-way-2 -->
 </div>
 
@@ -535,7 +535,7 @@ bindon-ngModel
 <hr><h2 id="ngIf">NgIf Binding</h2>
 
 <!-- #docregion NgIf-1 -->
-<hero-detail *ngIf="isActive"></hero-detail>
+<app-hero-detail *ngIf="isActive"></app-hero-detail>
 <!-- #enddocregion NgIf-1 -->
 
 <!-- #docregion NgIf-2 -->
@@ -550,7 +550,7 @@ bindon-ngModel
 <!-- Does not show because isActive is false! -->
 <div>Hero Detail removed from DOM (via template) because isActive is false</div>
 <ng-template [ngIf]="isActive">
-  <hero-detail></hero-detail>
+  <app-hero-detail></app-hero-detail>
 </ng-template>
 
 <!-- #docregion NgIf-3 -->
@@ -559,7 +559,7 @@ bindon-ngModel
 <div [class.hidden]="isSpecial">Hide with class</div>
 
 <!-- HeroDetail is in the DOM but hidden -->
-<hero-detail [class.hidden]="isSpecial"></hero-detail>
+<app-hero-detail [class.hidden]="isSpecial"></app-hero-detail>
 
 <div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>
 <div [style.display]="isSpecial ? 'none'  : 'block'">Hide with style</div>
@@ -580,7 +580,7 @@ bindon-ngModel
 <div class="box">
   <!-- *ngFor w/ hero-detail Component -->
   <!-- #docregion NgFor-2, NgFor-1-2 -->
-  <hero-detail *ngFor="let hero of heroes" [hero]="hero"></hero-detail>
+  <app-hero-detail *ngFor="let hero of heroes" [hero]="hero"></app-hero-detail>
   <!-- #enddocregion NgFor-2, NgFor-1-2 -->
 </div>
 
@@ -665,15 +665,15 @@ bindon-ngModel
 
 <!-- #docregion NgSwitch -->
 <div [ngSwitch]="currentHero.emotion">
-  <happy-hero    *ngSwitchCase="'happy'"    [hero]="currentHero"></happy-hero>
-  <sad-hero      *ngSwitchCase="'sad'"      [hero]="currentHero"></sad-hero>
-  <confused-hero *ngSwitchCase="'confused'" [hero]="currentHero"></confused-hero>
+  <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="currentHero"></app-happy-hero>
+  <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="currentHero"></app-sad-hero>
+  <app-confused-hero *ngSwitchCase="'confused'" [hero]="currentHero"></app-confused-hero>
 <!-- #enddocregion NgSwitch -->
   <!-- #docregion NgSwitch-div -->
   <div *ngSwitchCase="'confused'">Are you as confused as {{currentHero.name}}?</div>
   <!-- #enddocregion NgSwitch-div -->
 <!-- #docregion NgSwitch -->
-  <unknown-hero  *ngSwitchDefault           [hero]="currentHero"></unknown-hero>
+  <app-unknown-hero  *ngSwitchDefault           [hero]="currentHero"></app-unknown-hero>
 </div>
 <!-- #enddocregion NgSwitch -->
 
@@ -702,7 +702,7 @@ bindon-ngModel
 <button #btn disabled [innerHTML]="'disabled by attribute: '+btn.disabled"></button>
 
 <h4>Example Form</h4>
-<hero-form [hero]="currentHero"></hero-form>
+<app-hero-form [hero]="currentHero"></app-hero-form>
 
 <a class="to-toc" href="#toc">top</a>
 
@@ -715,8 +715,8 @@ bindon-ngModel
 <!-- #enddocregion io-1 -->
 
 <!-- #docregion io-2 -->
-<hero-detail [hero]="currentHero" (deleteRequest)="deleteHero($event)">
-</hero-detail>
+<app-hero-detail [hero]="currentHero" (deleteRequest)="deleteHero($event)">
+</app-hero-detail>
 <!-- #enddocregion io-2 -->
 
 <div (myClick)="clickMessage2=$event" clickable>myClick2</div>

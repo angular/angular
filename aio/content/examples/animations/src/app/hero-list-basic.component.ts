@@ -14,10 +14,10 @@ import {
 } from '@angular/animations';
 // #enddocregion imports
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-basic',
+  selector: 'app-hero-list-basic',
   // #enddocregion
   /* The click event calls hero.toggleState(), which
    * causes the state of that hero to switch from
@@ -66,5 +66,5 @@ import { Heroes } from './hero.service';
   // #enddocregion animationdef
 })
 export class HeroListBasicComponent {
-  @Input() heroes: Heroes;
+   @Input() heroes: Hero[];
 }

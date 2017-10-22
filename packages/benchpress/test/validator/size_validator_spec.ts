@@ -8,7 +8,7 @@
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-import {MeasureValues, ReflectiveInjector, SizeValidator} from '../../index';
+import {Injector, MeasureValues, SizeValidator} from '../../index';
 
 export function main() {
   describe('size validator', () => {
@@ -16,8 +16,8 @@ export function main() {
 
     function createValidator(size: number) {
       validator =
-          ReflectiveInjector
-              .resolveAndCreate(
+          Injector
+              .create(
                   [SizeValidator.PROVIDERS, {provide: SizeValidator.SAMPLE_SIZE, useValue: size}])
               .get(SizeValidator);
     }

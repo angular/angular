@@ -259,7 +259,7 @@ function expectEntries(locationMarker: string, info: ts.CompletionInfo, ...names
 function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
   for (const diagnostic of diagnostics) {
     let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-    if (diagnostic.start) {
+    if (diagnostic.file && diagnostic.start) {
       let {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
       console.error(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
     } else {

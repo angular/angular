@@ -7,7 +7,7 @@
  */
 
 import {AST, AstPath, AttrAst, Attribute, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, CssSelector, DirectiveAst, Element, ElementAst, EmbeddedTemplateAst, ImplicitReceiver, NAMED_ENTITIES, NgContentAst, Node as HtmlAst, NullTemplateVisitor, ParseSpan, PropertyRead, ReferenceAst, SelectorMatcher, TagContentType, TemplateAst, TemplateAstVisitor, Text, TextAst, VariableAst, findNode, getHtmlTagDefinition, splitNsName, templateVisitAll} from '@angular/compiler';
-import {DiagnosticTemplateInfo, getExpressionScope} from '@angular/compiler-cli';
+import {DiagnosticTemplateInfo, getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult, AttrInfo, SelectorInfo, TemplateInfo} from './common';
 import {getExpressionCompletions} from './expressions';

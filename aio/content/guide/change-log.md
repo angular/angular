@@ -120,8 +120,8 @@ The documentation for the version prior to v.2.2.0 has been removed.
 
 ## ES6  described in "TypeScript to JavaScript" (2016-11-14)
 
-The updated [TypeScript to JavaScript](guide/ts-to-js) guide
-now explains how to write apps in ES6/7
+The updated TypeScript to JavaScript guide (removed August 2017, PR #18694)
+explains how to write apps in ES6/7
 by translating the common idioms in the TypeScript documentation examples
 (and elsewhere on the web) to ES6/7 and ES5.
 

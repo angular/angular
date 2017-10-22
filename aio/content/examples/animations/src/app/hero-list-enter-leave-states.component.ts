@@ -10,10 +10,10 @@ import {
   transition
 } from '@angular/animations';
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-enter-leave-states',
+  selector: 'app-hero-list-enter-leave-states',
   // #docregion template
   template: `
     <ul>
@@ -59,5 +59,5 @@ import { Heroes } from './hero.service';
   // #enddocregion animationdef
 })
 export class HeroListEnterLeaveStatesComponent {
-  @Input() heroes: Heroes;
+   @Input() heroes: Hero[];
 }

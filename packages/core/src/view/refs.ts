@@ -88,7 +88,7 @@ class ComponentFactory_ extends ComponentFactory<any> {
       throw new Error('ngModule should be provided');
     }
     const viewDef = resolveDefinition(this.viewDefFactory);
-    const componentNodeIndex = viewDef.nodes[0].element !.componentProvider !.index;
+    const componentNodeIndex = viewDef.nodes[0].element !.componentProvider !.nodeIndex;
     const view = Services.createRootView(
         injector, projectableNodes || [], rootSelectorOrNode, viewDef, ngModule, EMPTY_CONTEXT);
     const component = asProviderData(view, componentNodeIndex).instance;
@@ -101,18 +101,21 @@ class ComponentFactory_ extends ComponentFactory<any> {
 }
 
 class ComponentRef_ extends ComponentRef<any> {
+  public readonly hostView: ViewRef;
+  public readonly instance: any;
+  public readonly changeDetectorRef: ChangeDetectorRef;
   private _elDef: NodeDef;
   constructor(private _view: ViewData, private _viewRef: ViewRef, private _component: any) {
     super();
     this._elDef = this._view.def.nodes[0];
+    this.hostView = _viewRef;
+    this.changeDetectorRef = _viewRef;
+    this.instance = _component;
   }
   get location(): ElementRef {
-    return new ElementRef(asElementData(this._view, this._elDef.index).renderElement);
+    return new ElementRef(asElementData(this._view, this._elDef.nodeIndex).renderElement);
   }
   get injector(): Injector { return new Injector_(this._view, this._elDef); }
-  get instance(): any { return this._component; };
-  get hostView(): ViewRef { return this._viewRef; };
-  get changeDetectorRef(): ChangeDetectorRef { return this._viewRef; };
   get componentType(): Type<any> { return <any>this._component.constructor; }
 
   destroy(): void { this._viewRef.destroy(); }
@@ -164,7 +167,7 @@ class ViewContainerRef_ implements ViewContainerData {
     return null;
   }
 
-  get length(): number { return this._embeddedViews.length; };
+  get length(): number { return this._embeddedViews.length; }
 
   createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number):
       EmbeddedViewRef<C> {
@@ -187,6 +190,9 @@ class ViewContainerRef_ implements ViewContainerData {
   }
 
   insert(viewRef: ViewRef, index?: number): ViewRef {
+    if (viewRef.destroyed) {
+      throw new Error('Cannot insert a destroyed View in a ViewContainer!');
+    }
     const viewRef_ = <ViewRef_>viewRef;
     const viewData = viewRef_._view;
     attachEmbeddedView(this._view, this._data, index, viewData);
@@ -195,6 +201,9 @@ class ViewContainerRef_ implements ViewContainerData {
   }
 
   move(viewRef: ViewRef_, currentIndex: number): ViewRef {
+    if (viewRef.destroyed) {
+      throw new Error('Cannot move a destroyed View in a ViewContainer!');
+    }
     const previousIndex = this._embeddedViews.indexOf(viewRef._view);
     moveEmbeddedView(this._data, previousIndex, currentIndex);
     return viewRef;
@@ -309,7 +318,7 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
   }
 
   get elementRef(): ElementRef {
-    return new ElementRef(asElementData(this._parentView, this._def.index).renderElement);
+    return new ElementRef(asElementData(this._parentView, this._def.nodeIndex).renderElement);
   }
 }
 
@@ -331,12 +340,12 @@ class Injector_ implements Injector {
 export function nodeValue(view: ViewData, index: number): any {
   const def = view.def.nodes[index];
   if (def.flags & NodeFlags.TypeElement) {
-    const elData = asElementData(view, def.index);
+    const elData = asElementData(view, def.nodeIndex);
     return def.element !.template ? elData.template : elData.renderElement;
   } else if (def.flags & NodeFlags.TypeText) {
-    return asTextData(view, def.index).renderText;
+    return asTextData(view, def.nodeIndex).renderText;
   } else if (def.flags & (NodeFlags.CatProvider | NodeFlags.TypePipe)) {
-    return asProviderData(view, def.index).instance;
+    return asProviderData(view, def.nodeIndex).instance;
   }
   throw new Error(`Illegal state: read nodeValue for node index ${index}`);
 }
@@ -466,7 +475,8 @@ export function createNgModuleRef(
 class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyListeners: (() => void)[] = [];
   private _destroyed: boolean = false;
-  public _providers: any[];
+  /** @internal */
+  _providers: any[];
 
   constructor(
       private _moduleType: Type<any>, public _parent: Injector,

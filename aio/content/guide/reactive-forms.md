@@ -1080,8 +1080,11 @@ To get access to the `FormArray` class, import it into `hero-detail.component.ts
 
 
 To _work_ with a `FormArray` you do the following:
+
 1. Define the items (`FormControls` or `FormGroups`) in the array.
+
 1. Initialize the array with items created from data in the _data model_.
+
 1. Add and remove items as the user requires.
 
 In this guide, you define a `FormArray` for `Hero.addresses` and
@@ -1131,7 +1134,7 @@ The reactive forms approach both emphasizes and facilitates this distinction.
 The default form displays a nameless hero with no addresses.
 
 You need a method to populate (or repopulate) the _secretLairs_ with actual hero addresses whenever
-the parent `HeroListComponent` sets the `HeroListComponent.hero` input property to a new `Hero`.
+the parent `HeroListComponent` sets the `HeroDetailComponent.hero` input property to a new `Hero`.
 
 The following `setAddresses` method replaces the _secretLairs_ `FormArray` with a new `FormArray`,
 initialized by an array of hero address `FormGroups`.

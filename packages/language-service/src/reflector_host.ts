@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AngularCompilerOptions, AotCompilerHost, CompilerHost, ModuleResolutionHostAdapter} from '@angular/compiler-cli';
+import {AotCompilerHost} from '@angular/compiler';
+import {CompilerHost, CompilerOptions, ModuleResolutionHostAdapter} from '@angular/compiler-cli/src/language_services';
 import * as ts from 'typescript';
 
 class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
@@ -36,7 +37,7 @@ class ReflectorModuleModuleResolutionHost implements ts.ModuleResolutionHost {
 export class ReflectorHost extends CompilerHost {
   constructor(
       private getProgram: () => ts.Program, serviceHost: ts.LanguageServiceHost,
-      options: AngularCompilerOptions) {
+      options: CompilerOptions) {
     super(
         // The ancestor value for program is overridden below so passing null here is safe.
         /* program */ null !, options,

@@ -13,7 +13,7 @@ import { HeroService } from './hero.service';
 // #docregion
 
 @Component({
-  selector: 'hero-list',
+  selector: 'app-hero-list',
   template: `
   <div *ngFor="let hero of heroes">
     {{hero.id}} - {{hero.name}}

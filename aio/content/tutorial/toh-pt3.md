@@ -443,7 +443,7 @@ Here are the code files discussed in this page.
 
 
 
-## The road you’ve travelled
+## Summary
 
 Here's what you achieved in this page:
 
@@ -457,7 +457,7 @@ Your app should look like this <live-example></live-example>.
 
 
 
-## The road ahead
+## Next step
 The Tour of Heroes app is more reusable with shared components,
 but its (mock) data is still hard coded within the `AppComponent`.
 That's not sustainable.

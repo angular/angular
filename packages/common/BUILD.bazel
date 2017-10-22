@@ -5,6 +5,7 @@ ts_library(
     name = "common",
     srcs = glob(["**/*.ts"], exclude=[
       "http/**",
+      "locales/**",
       "test/**",
       "testing/**",
     ]),

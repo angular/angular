@@ -12,8 +12,15 @@
  * This API should be stable for NG 2. It can be removed in NG 4..., but should be replaced by
  * something else.
  */
-import {AotCompilerHost, StaticReflector, StaticSymbol} from '@angular/compiler';
-import {NgModule} from '@angular/core';
+
+/**
+ *********************************************************************
+ * Changes to this file need to be approved by the Angular CLI team. *
+ *********************************************************************
+ */
+
+import {AotCompilerHost, StaticReflector, StaticSymbol, core} from '@angular/compiler';
+
 
 // We cannot depend directly to @angular/router.
 type Route = any;
@@ -168,8 +175,10 @@ function _extractLazyRoutesFromStaticModule(
 /**
  * Get the NgModule Metadata of a symbol.
  */
-function _getNgModuleMetadata(staticSymbol: StaticSymbol, reflector: StaticReflector): NgModule {
-  const ngModules = reflector.annotations(staticSymbol).filter((s: any) => s instanceof NgModule);
+function _getNgModuleMetadata(
+    staticSymbol: StaticSymbol, reflector: StaticReflector): core.NgModule {
+  const ngModules =
+      reflector.annotations(staticSymbol).filter((s: any) => core.createNgModule.isTypeOf(s));
   if (ngModules.length === 0) {
     throw new Error(`${staticSymbol.name} is not an NgModule`);
   }

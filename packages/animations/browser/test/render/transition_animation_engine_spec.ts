@@ -411,8 +411,10 @@ export function main() {
          () => {
            const engine = makeEngine();
            const trig = trigger('something', [
-             state('x', style({opacity: 0})), state('y', style({opacity: .5})),
-             state('z', style({opacity: 1})), transition('* => *', animate(1000))
+             state('x', style({opacity: 0})),
+             state('y', style({opacity: .5})),
+             state('z', style({opacity: 1})),
+             transition('* => *', animate(1000)),
            ]);
 
            registerTrigger(element, engine, trig);
@@ -428,7 +430,7 @@ export function main() {
 
            const player2 = engine.players[0];
 
-           expect(parseFloat(element.style.opacity)).toEqual(.5);
+           expect(parseFloat(element.style.opacity)).not.toEqual(.5);
 
            player2.finish();
            expect(parseFloat(element.style.opacity)).toEqual(1);
@@ -655,8 +657,9 @@ function registerTrigger(
     element: any, engine: TransitionAnimationEngine, metadata: AnimationTriggerMetadata,
     id: string = DEFAULT_NAMESPACE_ID) {
   const errors: any[] = [];
+  const driver = new MockAnimationDriver();
   const name = metadata.name;
-  const ast = buildAnimationAst(metadata as AnimationMetadata, errors) as TriggerAst;
+  const ast = buildAnimationAst(driver, metadata as AnimationMetadata, errors) as TriggerAst;
   if (errors.length) {
   }
   const trigger = buildTrigger(name, ast);

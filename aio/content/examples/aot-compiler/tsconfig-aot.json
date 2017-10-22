@@ -20,7 +20,8 @@
   ],
 
   "angularCompilerOptions": {
-   "genDir": "aot",
-   "skipMetadataEmit" : true
- }
+    "annotationsAs": "decorators",
+    "genDir": ".",
+    "skipMetadataEmit" : true
+  }
 }

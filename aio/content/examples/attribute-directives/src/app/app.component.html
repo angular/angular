@@ -8,11 +8,11 @@
   <input type="radio" name="colors" (click)="color='cyan'">Cyan
 </div>
 <!-- #docregion color -->
-<p [myHighlight]="color">Highlight me!</p>
+<p [appHighlight]="color">Highlight me!</p>
 <!-- #enddocregion color, v2 -->
 
 <!-- #docregion defaultColor -->
-<p [myHighlight]="color" defaultColor="violet">
+<p [appHighlight]="color" defaultColor="violet">
   Highlight me too!
 </p>
 <!-- #enddocregion defaultColor, -->
@@ -20,5 +20,5 @@
 <hr>
 <p><i>Mouse over the following lines to see fixed highlights</i></p>
 
-<p [myHighlight]="'yellow'">Highlighted in yellow</p>
-<p myHighlight="orange">Highlighted in orange</p>
+<p [appHighlight]="'yellow'">Highlighted in yellow</p>
+<p appHighlight="orange">Highlighted in orange</p>

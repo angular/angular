@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Provider, Renderer2, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
-export const SELECT_VALUE_ACCESSOR: Provider = {
+export const SELECT_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => SelectControlValueAccessor),
   multi: true
@@ -128,8 +129,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
-      this.value = valueString;
-      fn(this._getOptionValue(valueString));
+      this.value = this._getOptionValue(valueString);
+      fn(this.value);
     };
   }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }

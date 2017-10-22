@@ -10,6 +10,8 @@ import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, 
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {Subject} from 'rxjs/Subject';
+
 import {stringify} from '../../src/util';
 
 export function main() {
@@ -34,6 +36,7 @@ export function main() {
         NeedsViewChild,
         NeedsStaticContentAndViewChild,
         NeedsContentChild,
+        DirectiveNeedsContentChild,
         NeedsTpl,
         NeedsNamedTpl,
         TextDirective,
@@ -88,6 +91,20 @@ export function main() {
           ['setter', 'foo'], ['init', 'foo'], ['check', 'foo'], ['setter', null], ['check', null]
         ]);
       });
+
+      it('should contain the first content child when target is on <ng-template> with embedded view (issue #16568)',
+         () => {
+           const template =
+               '<div directive-needs-content-child><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></div>' +
+               '<needs-content-child #q><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></needs-content-child>';
+           const view = createTestCmp(MyComp0, template);
+           view.detectChanges();
+           const q: NeedsContentChild = view.debugElement.children[1].references !['q'];
+           expect(q.child.text).toEqual('foo');
+           const directive: DirectiveNeedsContentChild =
+               view.debugElement.children[0].injector.get(DirectiveNeedsContentChild);
+           expect(directive.child.text).toEqual('foo');
+         });
 
       it('should contain the first view child', () => {
         const template = '<needs-view-child #q></needs-view-child>';
@@ -333,16 +350,26 @@ export function main() {
            view.componentInstance.shouldShow = true;
            view.detectChanges();
 
+           let isQueryListCompleted = false;
+
            const q: NeedsQuery = view.debugElement.children[0].references !['q'];
+           const changes = <Subject<any>>q.query.changes;
            expect(q.query.length).toEqual(1);
+           expect(changes.closed).toBeFalsy();
+           changes.subscribe(() => {}, () => {}, () => { isQueryListCompleted = true; });
 
            view.componentInstance.shouldShow = false;
            view.detectChanges();
+           expect(changes.closed).toBeTruthy();
+           expect(isQueryListCompleted).toBeTruthy();
+
            view.componentInstance.shouldShow = true;
            view.detectChanges();
            const q2: NeedsQuery = view.debugElement.children[0].references !['q'];
 
            expect(q2.query.length).toEqual(1);
+           expect(changes.closed).toBeTruthy();
+           expect((<Subject<any>>q2.query.changes).closed).toBeFalsy();
          });
     });
 
@@ -648,6 +675,11 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   ngAfterContentInit() { this.logs.push(['init', this.child ? this.child.text : null]); }
 
   ngAfterContentChecked() { this.logs.push(['check', this.child ? this.child.text : null]); }
+}
+
+@Directive({selector: '[directive-needs-content-child]'})
+class DirectiveNeedsContentChild {
+  @ContentChild(TextDirective) child: TextDirective;
 }
 
 @Component({selector: 'needs-view-child', template: `<div *ngIf="shouldShow" text="foo"></div>`})
