@@ -9,6 +9,8 @@ const domino = require('domino');
 
 import {ɵBrowserDomAdapter as BrowserDomAdapter, ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/platform-browser';
 
+import {ɵCSSStyleDeclaration as CSSStyleDeclaration} from './css_style_declaration';
+
 function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in DominoAdapter: ' + methodName);
 }
@@ -194,7 +196,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   getHistory(): History { throw _notImplemented('getHistory'); }
   getLocation(): Location { throw _notImplemented('getLocation'); }
   getUserAgent(): string { return 'Fake user agent'; }
-
+  getComputedStyle(el: any): any { return new CSSStyleDeclaration(el); }
   supportsWebAnimation(): boolean { return false; }
   performanceNow(): number { return Date.now(); }
   getAnimationPrefix(): string { return ''; }
