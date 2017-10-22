@@ -571,7 +571,7 @@ export class TransitionAnimationEngine {
 
   createNamespace(namespaceId: string, hostElement: any) {
     const ns = new AnimationTransitionNamespace(namespaceId, hostElement, this);
-    if (hostElement.parentNode) {
+    if (this.bodyNode && this.driver.containsElement(this.bodyNode, hostElement)) {
       this._balanceNamespaceList(ns, hostElement);
     } else {
       // defer this later until flush during when the host element has
@@ -580,7 +580,7 @@ export class TransitionAnimationEngine {
       this.newHostElements.set(hostElement, ns);
 
       // given that this host element is apart of the animation code, it
-      // may or may not be inserted by a parent node that is an of an
+      // may or may not be inserted by a parent node that is of an
       // animation renderer type. If this happens then we can still have
       // access to this item when we query for :enter nodes. If the parent
       // is a renderer then the set data-structure will normalize the entry
