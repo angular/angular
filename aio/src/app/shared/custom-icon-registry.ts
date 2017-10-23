@@ -1,13 +1,13 @@
 import { InjectionToken, Inject, Injectable } from '@angular/core';
 import { of } from 'rxjs/observable/of';
-import { MdIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  * Use SVG_ICONS (and SvgIconInfo) as "multi" providers to provide the SVG source
- * code for the icons that you wish to have preloaded in the `CustomMdIconRegistry`
- * For compatibility with the MdIconComponent, please ensure that the SVG source has
+ * code for the icons that you wish to have preloaded in the `CustomMatIconRegistry`
+ * For compatibility with the MatIconComponent, please ensure that the SVG source has
  * the following attributes:
  *
  * * `xmlns="http://www.w3.org/2000/svg"`
@@ -28,7 +28,7 @@ interface SvgIconMap {
 }
 
 // <hack-alert>
-// @angular/material's `MdIconRegitry` currently (v2.0.0-beta.8) requires an instance of `Http`
+// @angular/material's `MatIconRegitry` currently (v2.0.0-beta.8) requires an instance of `Http`
 // (from @angular/http). It is only used to [get some text content][1], so we can create a wrapper
 // around `HttpClient` and pretend it is `Http`.
 // [1]: https://github.com/angular/material2/blob/2.0.0-beta.8/src/lib/icon/icon-registry.ts#L465-L466
@@ -41,11 +41,11 @@ function createFakeHttp(http: HttpClient): any {
 }
 
 /**
- * A custom replacement for Angular Material's `MdIconRegistry`, which allows
+ * A custom replacement for Angular Material's `MatIconRegistry`, which allows
  * us to provide preloaded icon SVG sources.
  */
 @Injectable()
-export class CustomMdIconRegistry extends MdIconRegistry {
+export class CustomMatIconRegistry extends MatIconRegistry {
   private preloadedSvgElements: SvgIconMap = {};
 
   constructor(http: HttpClient, sanitizer: DomSanitizer, @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {

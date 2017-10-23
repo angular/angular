@@ -1,30 +1,30 @@
 <div id="top-of-page"></div>
 
 <div *ngIf="isFetching" class="progress-bar-container">
-  <md-progress-bar mode="indeterminate" color="warn"></md-progress-bar>
+  <mat-progress-bar mode="indeterminate" color="warn"></mat-progress-bar>
 </div>
 
-<md-toolbar color="primary" class="app-toolbar">
-  <button class="hamburger" [class.starting]="isStarting" md-button
+<mat-toolbar color="primary" class="app-toolbar">
+  <button class="hamburger" [class.starting]="isStarting" mat-button
     (click)="sidenav.toggle()" title="Docs menu">
-    <md-icon [ngClass]="{'sidenav-open': !isSideBySide }" svgIcon="menu"></md-icon>
+    <mat-icon [ngClass]="{'sidenav-open': !isSideBySide }" svgIcon="menu"></mat-icon>
   </button>
   <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
   <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
-</md-toolbar>
+</mat-toolbar>
 <aio-search-results #searchResultsView *ngIf="showSearchResults" [searchResults]="searchResults | async" (resultSelected)="hideSearchResults()"></aio-search-results>
 
-<md-sidenav-container class="sidenav-container" [class.starting]="isStarting" [class.has-floating-toc]="hasFloatingToc" role="main">
+<mat-sidenav-container class="sidenav-container" [class.starting]="isStarting" [class.has-floating-toc]="hasFloatingToc" role="main">
 
-  <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
+  <mat-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
     <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="false"></aio-nav-menu>
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="isSideBySide"></aio-nav-menu>
 
     <div class="doc-version">
       <aio-select (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="currentDocVersion"></aio-select>
     </div>
-  </md-sidenav>
+  </mat-sidenav>
 
   <section class="sidenav-content" [id]="pageId" role="content">
     <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
@@ -32,7 +32,7 @@
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
   </section>
 
-</md-sidenav-container>
+</mat-sidenav-container>
 
 <div *ngIf="hasFloatingToc" class="toc-container" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
   <aio-toc></aio-toc>

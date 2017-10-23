@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, DebugElement, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MdTabGroup, MdTabsModule } from '@angular/material';
+import { MatTabGroup, MatTabsModule } from '@angular/material';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -50,7 +50,7 @@ describe('CodeTabsComponent', () => {
 
     beforeEach(() => {
       TestBed.configureTestingModule({
-        imports: [ MdTabsModule, NoopAnimationsModule ]
+        imports: [ MatTabsModule, NoopAnimationsModule ]
       });
     });
 
@@ -86,7 +86,7 @@ describe('CodeTabsComponent', () => {
 
     it('should disable ripple effect on tab labels', () => {
       createComponent();
-      const tabsGroupComponent = codeTabsDe.query(By.directive(MdTabGroup)).componentInstance;
+      const tabsGroupComponent = codeTabsDe.query(By.directive(MatTabGroup)).componentInstance;
 
       expect(tabsGroupComponent.disableRipple).toBe(true);
     });
