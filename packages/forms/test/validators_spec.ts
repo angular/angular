@@ -164,6 +164,18 @@ export function main() {
 
       it('should not error on valid email',
          () => expect(Validators.email(new FormControl('test@gmail.com'))).toBeNull());
+
+      it('should not accept zero as valid email',
+         () => expect(Validators.required(new FormControl(0))).toEqual({'email': true}));
+
+      it('should not error on empty email',
+         () => expect(Validators.email(new FormControl(''))).toBeNull());
+
+      it('should not error on null email',
+         () => expect(Validators.required(new FormControl(null))).toBeNull());
+
+      it('should not error on undefined email',
+         () => expect(Validators.required(new FormControl(undefined))).toBeNull());
     });
 
     describe('minLength', () => {
