@@ -19,6 +19,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "flatModuleOutFile": "service-worker.js",
-    "flatModuleId": "@angular/service-worker"
+    "flatModuleId": "@angular/service-worker",
+    "skipTemplateCodegen": true
   }
 }
