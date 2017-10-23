@@ -454,25 +454,33 @@ describe('ng program', () => {
   });
 
   it('should not emit generated files whose sources are outside of the rootDir', () => {
-    compileLib('lib');
     testSupport.writeFiles({
       'src/main.ts': createModuleAndCompSource('main'),
       'src/index.ts': `
           export * from './main';
-          export * from 'lib/index';
         `
     });
-    compile(undefined, {rootDir: path.resolve(testSupport.basePath, 'src')});
+    const options =
+        testSupport.createCompilerOptions({rootDir: path.resolve(testSupport.basePath, 'src')});
+    const host = ng.createCompilerHost({options});
+    const writtenFileNames: string[] = [];
+    const oldWriteFile = host.writeFile;
+    host.writeFile = (fileName, data, writeByteOrderMark) => {
+      writtenFileNames.push(fileName);
+      oldWriteFile(fileName, data, writeByteOrderMark);
+    };
+
+    compile(/*oldProgram*/ undefined, options, /*rootNames*/ undefined, host);
+
+    // no emit for files from node_modules as they are outside of rootDir
+    expect(writtenFileNames.some(f => /node_modules/.test(f))).toBe(false);
+
+    // emit all gen files for files under src/
     testSupport.shouldExist('built/main.js');
     testSupport.shouldExist('built/main.d.ts');
     testSupport.shouldExist('built/main.ngfactory.js');
     testSupport.shouldExist('built/main.ngfactory.d.ts');
     testSupport.shouldExist('built/main.ngsummary.json');
-    testSupport.shouldNotExist('built/node_modules/lib/index.js');
-    testSupport.shouldNotExist('built/node_modules/lib/index.d.ts');
-    testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.js');
-    testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.d.ts');
-    testSupport.shouldNotExist('built/node_modules/lib/index.ngsummary.json');
   });
 
   describe('createSrcToOutPathMapper', () => {
@@ -492,9 +500,16 @@ describe('ng program', () => {
     });
 
     it('should adjust the filename if the outDir is outside of the rootDir', () => {
-      const mapper = createSrcToOutPathMapper('/out', '/tmp/a/x.ts', '/a/x.js');
+      const mapper = createSrcToOutPathMapper('/out', '/tmp/a/x.ts', '/out/a/x.js');
       expect(mapper('/tmp/b/y.js')).toBe('/out/b/y.js');
     });
+
+    it('should adjust the filename if the common prefix of sampleSrc and sampleOut is outside of outDir',
+       () => {
+         const mapper =
+             createSrcToOutPathMapper('/dist/common', '/src/common/x.ts', '/dist/common/x.js');
+         expect(mapper('/src/common/y.js')).toBe('/dist/common/y.js');
+       });
 
     it('should work on windows with normalized paths', () => {
       const mapper =
