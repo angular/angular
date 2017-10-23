@@ -1,7 +1,7 @@
-import { MdIconRegistry } from '@angular/material';
-import { CustomMdIconRegistry, SvgIconInfo } from './custom-md-icon-registry';
+import { MatIconRegistry } from '@angular/material';
+import { CustomMatIconRegistry, SvgIconInfo } from './custom-icon-registry';
 
-describe('CustomMdIconRegistry', () => {
+describe('CustomMatIconRegistry', () => {
   it('should get the SVG element for a preloaded icon from the cache', () => {
     const mockHttp: any = {};
     const mockSanitizer: any = {};
@@ -10,13 +10,13 @@ describe('CustomMdIconRegistry', () => {
     const svgIcons: SvgIconInfo[] = [
       { name: 'test_icon', svgSource: svgSrc }
     ];
-    const registry = new CustomMdIconRegistry(mockHttp, mockSanitizer, svgIcons);
+    const registry = new CustomMatIconRegistry(mockHttp, mockSanitizer, svgIcons);
     let svgElement: SVGElement;
     registry.getNamedSvgIcon('test_icon').subscribe(el => svgElement = el);
     expect(svgElement).toEqual(createSvg(svgSrc));
   });
 
-  it('should call through to the MdIconRegistry if the icon name is not in the preloaded cache', () => {
+  it('should call through to the MatIconRegistry if the icon name is not in the preloaded cache', () => {
     const mockHttp: any = {};
     const mockSanitizer: any = {};
     const svgSrc = '<svg xmlns="http://www.w3.org/2000/svg" focusable="false" ' +
@@ -24,15 +24,15 @@ describe('CustomMdIconRegistry', () => {
     const svgIcons: SvgIconInfo[] = [
       { name: 'test_icon', svgSource: svgSrc }
     ];
-    spyOn(MdIconRegistry.prototype, 'getNamedSvgIcon');
+    spyOn(MatIconRegistry.prototype, 'getNamedSvgIcon');
 
-    const registry = new CustomMdIconRegistry(mockHttp, mockSanitizer, svgIcons);
+    const registry = new CustomMatIconRegistry(mockHttp, mockSanitizer, svgIcons);
 
     registry.getNamedSvgIcon('other_icon');
-    expect(MdIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', undefined);
+    expect(MatIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', undefined);
 
     registry.getNamedSvgIcon('other_icon', 'foo');
-    expect(MdIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', 'foo');
+    expect(MatIconRegistry.prototype.getNamedSvgIcon).toHaveBeenCalledWith('other_icon', 'foo');
   });
 });
 

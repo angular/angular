@@ -3,7 +3,7 @@ import { inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/cor
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { MdProgressBar, MdSidenav } from '@angular/material';
+import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
 import { of } from 'rxjs/observable/of';
@@ -51,7 +51,7 @@ describe('AppComponent', () => {
     docViewer = de.query(By.css('aio-doc-viewer')).nativeElement;
     hamburger = de.query(By.css('.hamburger')).nativeElement;
     locationService = de.injector.get(LocationService) as any as MockLocationService;
-    sidenav = de.query(By.css('md-sidenav')).nativeElement;
+    sidenav = de.query(By.css('mat-sidenav')).nativeElement;
     tocService = de.injector.get(TocService);
   };
 
@@ -376,7 +376,7 @@ describe('AppComponent', () => {
       });
 
       it('should set the css class of the host container based on the open/closed state of the side nav', () => {
-        const sideNav = fixture.debugElement.query(By.directive(MdSidenav));
+        const sideNav = fixture.debugElement.query(By.directive(MatSidenav));
 
         locationService.go('guide/pipes');
         fixture.detectChanges();
@@ -882,7 +882,7 @@ describe('AppComponent', () => {
 
     describe('initial rendering', () => {
       it('should initially add the starting class until the first document is rendered', fakeAsync(() => {
-        const getSidenavContainer = () => fixture.debugElement.query(By.css('md-sidenav-container'));
+        const getSidenavContainer = () => fixture.debugElement.query(By.css('mat-sidenav-container'));
 
         initializeTest();
 
@@ -909,7 +909,7 @@ describe('AppComponent', () => {
     describe('progress bar', () => {
       const SHOW_DELAY = 200;
       const HIDE_DELAY = 500;
-      const getProgressBar = () => fixture.debugElement.query(By.directive(MdProgressBar));
+      const getProgressBar = () => fixture.debugElement.query(By.directive(MatProgressBar));
       const initializeAndCompleteNavigation = () => {
         initializeTest();
         triggerDocRendered();
