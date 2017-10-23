@@ -18,6 +18,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "flatModuleOutFile": "config.js",
-    "flatModuleId": "@angular/service-worker/config"
+    "flatModuleId": "@angular/service-worker/config",
+    "skipTemplateCodegen": true
   }
 }
