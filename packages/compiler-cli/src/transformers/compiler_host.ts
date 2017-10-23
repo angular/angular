@@ -6,19 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EmitterVisitorContext, ExternalReference, GeneratedFile, ParseSourceSpan, TypeScriptEmitter, collectExternalReferences, syntaxError} from '@angular/compiler';
+import {AotCompilerHost, EmitterVisitorContext, ExternalReference, GeneratedFile, ParseSourceSpan, TypeScriptEmitter, collectExternalReferences, syntaxError} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {BaseAotCompilerHost} from '../compiler_host';
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
-import {ModuleMetadata} from '../metadata/index';
+import {METADATA_VERSION, ModuleMetadata} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
-import {GENERATED_FILES} from './util';
+import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
+import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
 const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-)+|(@(\w|-)+\/(\w|-)+))/;
-const DTS = /\.d\.ts$/;
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 
 export function createCompilerHost(
@@ -48,9 +47,12 @@ export interface CodeGenerator {
  * - AotCompilerHost for @angular/compiler
  * - TypeCheckHost for mapping ts errors to ng errors (via translateDiagnostics)
  */
-export class TsCompilerAotCompilerTypeCheckHostAdapter extends
-    BaseAotCompilerHost<CompilerHost> implements ts.CompilerHost,
+export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHost, AotCompilerHost,
     TypeCheckHost {
+  private metadataReaderCache = createMetadataReaderCache();
+  private flatModuleIndexCache = new Map<string, boolean>();
+  private flatModuleIndexNames = new Set<string>();
+  private flatModuleIndexRedirectNames = new Set<string>();
   private rootDirs: string[];
   private moduleResolutionCache: ts.ModuleResolutionCache;
   private originalSourceFiles = new Map<string, ts.SourceFile|undefined>();
@@ -58,6 +60,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   private generatedSourceFiles = new Map<string, GenSourceFile>();
   private generatedCodeFor = new Map<string, string[]>();
   private emitter = new TypeScriptEmitter();
+  private metadataReaderHost: MetadataReaderHost;
+
   getCancellationToken: () => ts.CancellationToken;
   getDefaultLibLocation: () => string;
   trace: (s: string) => void;
@@ -65,10 +69,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   directoryExists?: (directoryName: string) => boolean;
 
   constructor(
-      private rootFiles: string[], options: CompilerOptions, context: CompilerHost,
+      private rootFiles: string[], private options: CompilerOptions, private context: CompilerHost,
       private metadataProvider: MetadataProvider, private codeGenerator: CodeGenerator,
       private librarySummaries = new Map<string, LibrarySummary>()) {
-    super(options, context);
     this.moduleResolutionCache = ts.createModuleResolutionCache(
         this.context.getCurrentDirectory !(), this.context.getCanonicalFileName.bind(this.context));
     const basePath = this.options.basePath !;
@@ -103,6 +106,15 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     if (context.fromSummaryFileName) {
       this.fromSummaryFileName = context.fromSummaryFileName.bind(context);
     }
+    this.metadataReaderHost = {
+      cacheMetadata: () => true,
+      getSourceFileMetadata: (filePath) => {
+        const sf = this.getOriginalSourceFile(filePath);
+        return sf ? this.metadataProvider.getMetadata(sf) : undefined;
+      },
+      fileExists: (filePath) => this.originalFileExists(filePath),
+      readFile: (filePath) => this.context.readFile(filePath),
+    };
   }
 
   private resolveModuleName(moduleName: string, containingFile: string): ts.ResolvedModule
@@ -251,14 +263,6 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     return sf;
   }
 
-  getMetadataForSourceFile(filePath: string): ModuleMetadata|undefined {
-    const sf = this.getOriginalSourceFile(filePath);
-    if (!sf) {
-      return undefined;
-    }
-    return this.metadataProvider.getMetadata(sf);
-  }
-
   updateGeneratedFile(genFile: GeneratedFile): ts.SourceFile {
     if (!genFile.stmts) {
       throw new Error(
@@ -301,7 +305,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
   shouldGenerateFile(fileName: string): {generate: boolean, baseFileName?: string} {
     // TODO(tbosch): allow generating files that are not in the rootDir
     // See https://github.com/angular/angular/issues/19337
-    if (this.options.rootDir && !pathStartsWithPrefix(this.options.rootDir, fileName)) {
+    if (!isInRootDir(fileName, this.options)) {
       return {generate: false};
     }
     const genMatch = GENERATED_FILES.exec(fileName);
@@ -335,7 +339,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     // TODO(tbosch): allow generating files that are not in the rootDir
     // See https://github.com/angular/angular/issues/19337
     return !GENERATED_FILES.test(fileName) && this.isSourceFile(fileName) &&
-        (!this.options.rootDir || pathStartsWithPrefix(this.options.rootDir, fileName));
+        isInRootDir(fileName, this.options);
   }
 
   getSourceFile(
@@ -415,7 +419,10 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     if (summary) {
       return summary.text;
     }
-    return super.loadSummary(filePath);
+    if (this.originalFileExists(filePath)) {
+      return this.context.readFile(filePath);
+    }
+    return null;
   }
 
   isSourceFile(filePath: string): boolean {
@@ -424,7 +431,21 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     if (this.librarySummaries.has(filePath)) {
       return false;
     }
-    return super.isSourceFile(filePath);
+    if (GENERATED_FILES.test(filePath)) {
+      return false;
+    }
+    if (this.options.generateCodeForLibraries === false && DTS.test(filePath)) {
+      return false;
+    }
+    if (DTS.test(filePath)) {
+      // Check for a bundle index.
+      if (this.hasBundleIndex(filePath)) {
+        const normalFilePath = path.normalize(filePath);
+        return this.flatModuleIndexNames.has(normalFilePath) ||
+            this.flatModuleIndexRedirectNames.has(normalFilePath);
+      }
+    }
+    return true;
   }
 
   readFile(fileName: string) {
@@ -434,6 +455,76 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter extends
     }
     return this.context.readFile(fileName);
   }
+
+  getMetadataFor(filePath: string): ModuleMetadata[]|undefined {
+    return readMetadata(filePath, this.metadataReaderHost, this.metadataReaderCache);
+  }
+
+  loadResource(filePath: string): Promise<string>|string {
+    if (this.context.readResource) return this.context.readResource(filePath);
+    if (!this.originalFileExists(filePath)) {
+      throw syntaxError(`Error: Resource file not found: ${filePath}`);
+    }
+    return this.context.readFile(filePath);
+  }
+
+  private hasBundleIndex(filePath: string): boolean {
+    const checkBundleIndex = (directory: string): boolean => {
+      let result = this.flatModuleIndexCache.get(directory);
+      if (result == null) {
+        if (path.basename(directory) == 'node_module') {
+          // Don't look outside the node_modules this package is installed in.
+          result = false;
+        } else {
+          // A bundle index exists if the typings .d.ts file has a metadata.json that has an
+          // importAs.
+          try {
+            const packageFile = path.join(directory, 'package.json');
+            if (this.originalFileExists(packageFile)) {
+              // Once we see a package.json file, assume false until it we find the bundle index.
+              result = false;
+              const packageContent: any = JSON.parse(this.context.readFile(packageFile));
+              if (packageContent.typings) {
+                const typings = path.normalize(path.join(directory, packageContent.typings));
+                if (DTS.test(typings)) {
+                  const metadataFile = typings.replace(DTS, '.metadata.json');
+                  if (this.originalFileExists(metadataFile)) {
+                    const metadata = JSON.parse(this.context.readFile(metadataFile));
+                    if (metadata.flatModuleIndexRedirect) {
+                      this.flatModuleIndexRedirectNames.add(typings);
+                      // Note: don't set result = true,
+                      // as this would mark this folder
+                      // as having a bundleIndex too early without
+                      // filling the bundleIndexNames.
+                    } else if (metadata.importAs) {
+                      this.flatModuleIndexNames.add(typings);
+                      result = true;
+                    }
+                  }
+                }
+              }
+            } else {
+              const parent = path.dirname(directory);
+              if (parent != directory) {
+                // Try the parent directory.
+                result = checkBundleIndex(parent);
+              } else {
+                result = false;
+              }
+            }
+          } catch (e) {
+            // If we encounter any errors assume we this isn't a bundle index.
+            result = false;
+          }
+        }
+        this.flatModuleIndexCache.set(directory, result);
+      }
+      return result;
+    };
+
+    return checkBundleIndex(path.dirname(filePath));
+  }
+
   getDefaultLibFileName = (options: ts.CompilerOptions) =>
       this.context.getDefaultLibFileName(options)
   getCurrentDirectory = () => this.context.getCurrentDirectory();
@@ -480,22 +571,6 @@ function dotRelative(from: string, to: string): string {
 function getPackageName(filePath: string): string|null {
   const match = NODE_MODULES_PACKAGE_NAME.exec(filePath);
   return match ? match[1] : null;
-}
-
-export function relativeToRootDirs(filePath: string, rootDirs: string[]): string {
-  if (!filePath) return filePath;
-  for (const dir of rootDirs || []) {
-    const rel = pathStartsWithPrefix(dir, filePath);
-    if (rel) {
-      return rel;
-    }
-  }
-  return filePath;
-}
-
-function pathStartsWithPrefix(prefix: string, fullPath: string): string|null {
-  const rel = path.relative(prefix, fullPath);
-  return rel.startsWith('..') ? null : rel;
 }
 
 function stripNodeModulesPrefix(filePath: string): string {

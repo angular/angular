@@ -260,3 +260,8 @@ function makeMetadataFactory<T>(name: string, props?: (...args: any[]) => T): Me
   factory.ngMetadataName = name;
   return factory;
 }
+
+export interface Route {
+  children?: Route[];
+  loadChildren?: string|Type|any;
+}
