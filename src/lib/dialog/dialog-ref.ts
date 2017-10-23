@@ -44,7 +44,7 @@ export class MatDialogRef<T> {
   constructor(
     private _overlayRef: OverlayRef,
     private _containerInstance: MatDialogContainer,
-    public readonly id: string = `mat-dialog-${uniqueId++}`) {
+    readonly id: string = `mat-dialog-${uniqueId++}`) {
 
     // Emit when opening animation completes
     RxChain.from(_containerInstance._animationStateChanged)

@@ -110,7 +110,7 @@ export class MatOption {
     private _element: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(MAT_OPTION_PARENT_COMPONENT) private _parent: MatOptionParentComponent,
-    @Optional() public readonly group: MatOptgroup) {}
+    @Optional() readonly group: MatOptgroup) {}
 
   /**
    * Whether or not the option is currently active and ready to be selected.

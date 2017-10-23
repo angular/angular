@@ -58,7 +58,7 @@ export class BuildPackage {
   }
   private _secondaryEntryPoints: string[];
 
-  constructor(public readonly name: string, public readonly dependencies: BuildPackage[] = []) {
+  constructor(readonly name: string, readonly dependencies: BuildPackage[] = []) {
     this.sourceDir = join(packagesDir, name);
     this.outputDir = join(outputDir, 'packages', name);
     this.esm5OutputDir = join(outputDir, 'packages', name, 'esm5');
