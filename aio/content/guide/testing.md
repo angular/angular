@@ -233,11 +233,7 @@ for reasons explained [below](guide/testing#q-spec-file-location).
 
 Add the following code to `src/app/1st.spec.ts`.
 
-<code-example path="testing/src/app/1st.spec.ts" title="src/app/1st.spec.ts" linenums="false">
-
-</code-example>
-
-
+<code-example path="testing/src/app/1st.spec.ts" title="src/app/1st.spec.ts" linenums="false"></code-example>
 
 {@a run-karma}
 
@@ -379,9 +375,7 @@ The `BannerComponent` in `src/app/banner-inline.component.ts` is the simplest co
 a good place to start.
 It presents the application title at the top of the screen within an `<h1>` tag.
 
-<code-example path="testing/src/app/banner-inline.component.ts" title="src/app/banner-inline.component.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner-inline.component.ts" title="src/app/banner-inline.component.ts" linenums="false"></code-example>
 
 
 
@@ -395,9 +389,7 @@ for reasons explained in the [FAQ](guide/testing#faq) answer to
 
 Start with ES6 import statements to get access to symbols referenced in the spec.
 
-<code-example path="testing/src/app/banner-inline.component.spec.ts" region="imports" title="src/app/banner-inline.component.spec.ts (imports)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner-inline.component.spec.ts" region="imports" title="src/app/banner-inline.component.spec.ts (imports)" linenums="false"></code-example>
 
 
 
@@ -406,9 +398,7 @@ Start with ES6 import statements to get access to symbols referenced in the spec
 
 Here's the `describe` and the `beforeEach` that precedes the tests:
 
-<code-example path="testing/src/app/banner-inline.component.spec.ts" region="setup" title="src/app/banner-inline.component.spec.ts (beforeEach)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner-inline.component.spec.ts" region="setup" title="src/app/banner-inline.component.spec.ts (beforeEach)" linenums="false"></code-example>
 
 
 
@@ -528,9 +518,7 @@ The tests assert that `el` contains the expected title text.
 
 Jasmine runs the `beforeEach` function before each of these tests
 
-<code-example path="testing/src/app/banner-inline.component.spec.ts" region="tests" title="src/app/banner-inline.component.spec.ts (tests)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner-inline.component.spec.ts" region="tests" title="src/app/banner-inline.component.spec.ts (tests)" linenums="false"></code-example>
 
 
 
@@ -557,9 +545,7 @@ The `TestBed.createComponent` does _not_ trigger change detection.
 The fixture does not automatically push the component's `title` property value into the data bound element,
 a fact demonstrated in the following test:
 
-<code-example path="testing/src/app/banner-inline.component.spec.ts" region="test-w-o-detect-changes" title="src/app/banner-inline.component.spec.ts (no detectChanges)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner-inline.component.spec.ts" region="test-w-o-detect-changes" title="src/app/banner-inline.component.spec.ts (no detectChanges)" linenums="false"></code-example>
 
 
 
@@ -587,25 +573,19 @@ Some testers prefer that the Angular test environment run change detection autom
 That's possible by configuring the `TestBed` with the `ComponentFixtureAutoDetect` provider.
 First import it from the testing utility library:
 
-<code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="import-ComponentFixtureAutoDetect" title="src/app/banner.component.detect-changes.spec.ts (import)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="import-ComponentFixtureAutoDetect" title="src/app/banner.component.detect-changes.spec.ts (import)" linenums="false"></code-example>
 
 
 
 Then add it to the `providers` array of the testing module configuration:
 
-<code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="auto-detect" title="src/app/banner.component.detect-changes.spec.ts (AutoDetect)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="auto-detect" title="src/app/banner.component.detect-changes.spec.ts (AutoDetect)" linenums="false"></code-example>
 
 
 
 Here are three tests that illustrate how automatic change detection works.
 
-<code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="auto-detect-tests" title="src/app/banner.component.detect-changes.spec.ts (AutoDetect Tests)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="auto-detect-tests" title="src/app/banner.component.detect-changes.spec.ts (AutoDetect Tests)" linenums="false"></code-example>
 
 
 
@@ -642,9 +622,7 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 The application's actual `BannerComponent` behaves the same as the version above but is implemented differently.
 It has _external_ template and css files, specified in `templateUrl` and `styleUrls` properties.
 
-<code-example path="testing/src/app/banner.component.ts" title="src/app/banner.component.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner.component.ts" title="src/app/banner.component.ts" linenums="false"></code-example>
 
 
 
@@ -669,9 +647,7 @@ The logic in the `beforeEach` of the previous spec is split into two `beforeEach
 The first `beforeEach` handles asynchronous compilation.
 
 
-<code-example path="testing/src/app/banner.component.spec.ts" region="async-before-each" title="src/app/banner.component.spec.ts (first beforeEach)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner.component.spec.ts" region="async-before-each" title="src/app/banner.component.spec.ts (first beforeEach)" linenums="false"></code-example>
 
 
 
@@ -679,9 +655,7 @@ Notice the `async` function called as the argument to `beforeEach`.
 The `async` function is one of the Angular testing utilities and
 has to be imported.
 
-<code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="import-async" title="src/app/banner.component.detect-changes.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner.component.detect-changes.spec.ts" region="import-async" title="src/app/banner.component.detect-changes.spec.ts" linenums="false"></code-example>
 
 
 
@@ -752,9 +726,7 @@ nor any of the `override...` methods. The `TestBed` throws an error if you try.
 A _synchronous_ `beforeEach` containing the remaining setup steps follows the asynchronous `beforeEach`.
 
 
-<code-example path="testing/src/app/banner.component.spec.ts" region="sync-before-each" title="src/app/banner.component.spec.ts (second beforeEach)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/banner.component.spec.ts" region="sync-before-each" title="src/app/banner.component.spec.ts (second beforeEach)" linenums="false"></code-example>
 
 
 
@@ -813,18 +785,14 @@ Components often have service dependencies.
 The `WelcomeComponent` displays a welcome message to the logged in user.
 It knows who the user is based on a property of the injected `UserService`:
 
-<code-example path="testing/src/app/welcome.component.ts" title="src/app/welcome.component.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.ts" title="src/app/welcome.component.ts" linenums="false"></code-example>
 
 
 
 The `WelcomeComponent` has decision logic that interacts with the service, logic that makes this component worth testing.
 Here's the testing module configuration for the spec file, `src/app/welcome.component.spec.ts`:
 
-<code-example path="testing/src/app/welcome.component.spec.ts" region="config-test-module" title="src/app/welcome.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.spec.ts" region="config-test-module" title="src/app/welcome.component.spec.ts" linenums="false"></code-example>
 
 
 
@@ -852,9 +820,7 @@ It is far easier and safer to create and register a test double in place of the 
 This particular test suite supplies a minimal `UserService` stub that satisfies the needs of the `WelcomeComponent`
 and its tests:
 
-<code-example path="testing/src/app/welcome.component.spec.ts" region="user-service-stub" title="src/app/welcome.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.spec.ts" region="user-service-stub" title="src/app/welcome.component.spec.ts" linenums="false"></code-example>
 
 
 
@@ -872,9 +838,7 @@ The safest way to get the injected service, the way that **_always works_**,
 is to **get it from the injector of the _component-under-test_**.
 The component injector is a property of the fixture's `DebugElement`.
 
-<code-example path="testing/src/app/welcome.component.spec.ts" region="injected-service" title="WelcomeComponent's injector" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.spec.ts" region="injected-service" title="WelcomeComponent's injector" linenums="false"></code-example>
 
 
 
@@ -889,9 +853,7 @@ But it only works when Angular injects the component with the service instance i
 Fortunately, in this test suite, the _only_ provider of `UserService` is the root testing module,
 so it is safe to call `TestBed.get` as follows:
 
-<code-example path="testing/src/app/welcome.component.spec.ts" region="inject-from-testbed" title="TestBed injector" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.spec.ts" region="inject-from-testbed" title="TestBed injector" linenums="false"></code-example>
 
 
 
@@ -920,9 +882,7 @@ that's provided to the testing module in the body of your test.
 The `userService` instance injected into the component is a completely _different_ object,
 a clone of the provided `userServiceStub`.
 
-<code-example path="testing/src/app/welcome.component.spec.ts" region="stub-not-injected" title="src/app/welcome.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.spec.ts" region="stub-not-injected" title="src/app/welcome.component.spec.ts" linenums="false"></code-example>
 
 
 
@@ -932,17 +892,13 @@ a clone of the provided `userServiceStub`.
 ### Final setup and tests
 Here's the complete `beforeEach` using `TestBed.get`:
 
-<code-example path="testing/src/app/welcome.component.spec.ts" region="setup" title="src/app/welcome.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.spec.ts" region="setup" title="src/app/welcome.component.spec.ts" linenums="false"></code-example>
 
 
 
 And here are some tests:
 
-<code-example path="testing/src/app/welcome.component.spec.ts" region="tests" title="src/app/welcome.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.spec.ts" region="tests" title="src/app/welcome.component.spec.ts" linenums="false"></code-example>
 
 
 
@@ -982,9 +938,7 @@ The `TwainComponent` handles the display, delegating the server request to the `
 Both are in the `src/app/shared` folder because the author intends to display Twain quotes on other pages someday.
 Here is the `TwainComponent`.
 
-<code-example path="testing/src/app/shared/twain.component.ts" region="component" title="src/app/shared/twain.component.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/twain.component.ts" region="component" title="src/app/shared/twain.component.ts" linenums="false"></code-example>
 
 
 
@@ -994,9 +948,7 @@ It is sufficient to see within `ngOnInit` that `twainService.getQuote` returns a
 In general, tests should not make calls to remote servers.
 They should emulate such calls. The setup in this `src/app/shared/twain.component.spec.ts` shows one way to do that:
 
-<code-example path="testing/src/app/shared/twain.component.spec.ts" region="setup" title="src/app/shared/twain.component.spec.ts (setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/twain.component.spec.ts" region="setup" title="src/app/shared/twain.component.spec.ts (setup)" linenums="false"></code-example>
 
 
 
@@ -1009,9 +961,7 @@ This setup is similar to the [`welcome.component.spec` setup](guide/testing#welc
 But instead of creating a stubbed service object, it injects the _real_ service (see the testing module `providers`) and
 replaces the critical `getQuote` method with a Jasmine spy.
 
-<code-example path="testing/src/app/shared/twain.component.spec.ts" region="spy" title="src/app/shared/twain.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/twain.component.spec.ts" region="spy" title="src/app/shared/twain.component.spec.ts" linenums="false"></code-example>
 
 
 
@@ -1038,9 +988,7 @@ You can _stub and spy_ at the same time, as shown in [an example below](guide/te
 Here are the tests with commentary to follow:
 
 
-<code-example path="testing/src/app/shared/twain.component.spec.ts" region="tests" title="src/app/shared/twain.component.spec.ts (tests)">
-
-</code-example>
+<code-example path="testing/src/app/shared/twain.component.spec.ts" region="tests" title="src/app/shared/twain.component.spec.ts (tests)"></code-example>
 
 
 
@@ -1066,9 +1014,7 @@ value becomes available. The test must become _asynchronous_.
 
 Notice the `async` in the third test.
 
-<code-example path="testing/src/app/shared/twain.component.spec.ts" region="async-test" title="src/app/shared/twain.component.spec.ts (async test)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/twain.component.spec.ts" region="async-test" title="src/app/shared/twain.component.spec.ts (async test)" linenums="false"></code-example>
 
 
 
@@ -1123,9 +1069,7 @@ The `getQuote` helper method extracts the display element text and the expectati
 
 The fourth test verifies the same component behavior in a different way.
 
-<code-example path="testing/src/app/shared/twain.component.spec.ts" region="fake-async-test" title="src/app/shared/twain.component.spec.ts (fakeAsync test)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/twain.component.spec.ts" region="fake-async-test" title="src/app/shared/twain.component.spec.ts (fakeAsync test)" linenums="false"></code-example>
 
 
 
@@ -1185,9 +1129,7 @@ Now you are responsible for chaining promises, handling errors, and calling `don
 
 Here is a `done` version of the previous two tests:
 
-<code-example path="testing/src/app/shared/twain.component.spec.ts" region="done-test" title="src/app/shared/twain.component.spec.ts (done test)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/twain.component.spec.ts" region="done-test" title="src/app/shared/twain.component.spec.ts (done test)" linenums="false"></code-example>
 
 
 
@@ -1222,9 +1164,7 @@ Clicking that hero tells the `DashboardComponent` that the user has selected the
 
 The `DashboardHeroComponent` is embedded in the `DashboardComponent` template like this:
 
-<code-example path="testing/src/app/dashboard/dashboard.component.html" region="dashboard-hero" title="src/app/dashboard/dashboard.component.html (excerpt)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard.component.html" region="dashboard-hero" title="src/app/dashboard/dashboard.component.html (excerpt)" linenums="false"></code-example>
 
 
 
@@ -1233,9 +1173,7 @@ to the looping value and listens for the component's `selected` event.
 
 Here's the component's definition:
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.ts" region="component" title="src/app/dashboard/dashboard-hero.component.ts (component)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.ts" region="component" title="src/app/dashboard/dashboard-hero.component.ts (component)" linenums="false"></code-example>
 
 
 
@@ -1248,9 +1186,7 @@ You can use one of these approaches:
 
 A quick look at the `DashboardComponent` constructor discourages the first approach:
 
-<code-example path="testing/src/app/dashboard/dashboard.component.ts" region="ctor" title="src/app/dashboard/dashboard.component.ts (constructor)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard.component.ts" region="ctor" title="src/app/dashboard/dashboard.component.ts (constructor)" linenums="false"></code-example>
 
 
 
@@ -1280,9 +1216,7 @@ so, try the second and third options.
 
 Here's the spec file setup.
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="setup" title="src/app/dashboard/dashboard-hero.component.spec.ts (setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="setup" title="src/app/dashboard/dashboard-hero.component.spec.ts (setup)" linenums="false"></code-example>
 
 
 
@@ -1295,9 +1229,7 @@ the way the `DashboardComponent` would set it via the property binding in its re
 
 The first test follows:
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="name-test" title="src/app/dashboard/dashboard-hero.component.spec.ts (name test)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="name-test" title="src/app/dashboard/dashboard-hero.component.spec.ts (name test)" linenums="false"></code-example>
 
 
 
@@ -1305,9 +1237,7 @@ It verifies that the hero name is propagated to template with a binding.
 Because the template passes the hero name through the Angular `UpperCasePipe`,
 the test must match the element value with the uppercased name:
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.html" title="src/app/dashboard/dashboard-hero.component.html" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.html" title="src/app/dashboard/dashboard-hero.component.html" linenums="false"></code-example>
 
 
 
@@ -1330,9 +1260,7 @@ low cost and without resorting to much slower and more complicated end-to-end te
 The second test verifies click behavior. Clicking the hero should raise a `selected` event that the
 host component (`DashboardComponent` presumably) can hear:
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="click-test" title="src/app/dashboard/dashboard-hero.component.spec.ts (click test)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="click-test" title="src/app/dashboard/dashboard-hero.component.spec.ts (click test)" linenums="false"></code-example>
 
 
 
@@ -1357,9 +1285,7 @@ The second parameter is the event object passed to the handler.
 In this example, the test triggers a "click" event with a null event object.
 
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="trigger-event-handler" title="src/app/dashboard/dashboard-hero.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="trigger-event-handler" title="src/app/dashboard/dashboard-hero.component.spec.ts" linenums="false"></code-example>
 
 
 
@@ -1380,9 +1306,7 @@ Clicking a button, an anchor, or an arbitrary HTML element is a common test task
 
 Make that easy by encapsulating the _click-triggering_ process in a helper such as the `click` function below:
 
-<code-example path="testing/src/testing/index.ts" region="click-event" title="testing/index.ts (click helper)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/testing/index.ts" region="click-event" title="testing/index.ts (click helper)" linenums="false"></code-example>
 
 
 
@@ -1413,9 +1337,7 @@ If you like it, add it to your own collection of helpers.
 
 Here's the previous test, rewritten using this click helper.
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="click-test-2" title="src/app/dashboard/dashboard-hero.component.spec.ts (click test revised)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="click-test-2" title="src/app/dashboard/dashboard-hero.component.spec.ts (click test revised)" linenums="false"></code-example>
 
 
 
@@ -1434,9 +1356,7 @@ But does the `DashboardHeroComponent` work correctly when properly data-bound to
 Testing with the actual `DashboardComponent` host is doable but seems more trouble than its worth.
 It's easier to emulate the `DashboardComponent` host with a _test host_ like this one:
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host" title="src/app/dashboard/dashboard-hero.component.spec.ts (test host)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host" title="src/app/dashboard/dashboard-hero.component.spec.ts (test host)" linenums="false"></code-example>
 
 
 
@@ -1451,9 +1371,7 @@ in its `selectedHero` property. Later, the tests check that property to verify t
 
 The setup for the test-host tests is similar to the setup for the stand-alone tests:
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" title="src/app/dashboard/dashboard-hero.component.spec.ts (test host setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" title="src/app/dashboard/dashboard-hero.component.spec.ts (test host setup)" linenums="false"></code-example>
 
 
 
@@ -1471,9 +1389,7 @@ albeit at greater depth in the element tree than before.
 
 The tests themselves are almost identical to the stand-alone version:
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-tests" title="src/app/dashboard/dashboard-hero.component.spec.ts (test-host)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-tests" title="src/app/dashboard/dashboard-hero.component.spec.ts (test-host)" linenums="false"></code-example>
 
 
 
@@ -1492,9 +1408,7 @@ really does find its way up through the event binding to the host component.
 
 Testing the actual `DashboardComponent` seemed daunting because it injects the `Router`.
 
-<code-example path="testing/src/app/dashboard/dashboard.component.ts" region="ctor" title="src/app/dashboard/dashboard.component.ts (constructor)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard.component.ts" region="ctor" title="src/app/dashboard/dashboard.component.ts (constructor)" linenums="false"></code-example>
 
 
 
@@ -1503,9 +1417,7 @@ The `Router` has a complicated API and is entwined with other services and appli
 
 Fortunately, the `DashboardComponent` isn't doing much with the `Router`
 
-<code-example path="testing/src/app/dashboard/dashboard.component.ts" region="goto-detail" title="src/app/dashboard/dashboard.component.ts (goToDetail)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard.component.ts" region="goto-detail" title="src/app/dashboard/dashboard.component.ts (goToDetail)" linenums="false"></code-example>
 
 
 
@@ -1514,26 +1426,20 @@ As a rule you test the component, not the router,
 and care only if the component navigates with the right address under the given conditions.
 Stubbing the router with a test implementation is an easy option. This should do the trick:
 
-<code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="router-stub" title="src/app/dashboard/dashboard.component.spec.ts (Router Stub)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="router-stub" title="src/app/dashboard/dashboard.component.spec.ts (Router Stub)" linenums="false"></code-example>
 
 
 
 Now set up the testing module with the test stubs for the `Router` and `HeroService`, and
 create a test instance of the `DashboardComponent` for subsequent testing.
 
-<code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="compile-and-create-body" title="src/app/dashboard/dashboard.component.spec.ts (compile and create)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="compile-and-create-body" title="src/app/dashboard/dashboard.component.spec.ts (compile and create)" linenums="false"></code-example>
 
 
 
 The following test clicks the displayed hero and confirms (with the help of a spy) that `Router.navigateByUrl` is called with the expected url.
 
-<code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="navigate-test" title="src/app/dashboard/dashboard.component.spec.ts (navigate test)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="navigate-test" title="src/app/dashboard/dashboard.component.spec.ts (navigate test)" linenums="false"></code-example>
 
 
 
@@ -1544,9 +1450,7 @@ The following test clicks the displayed hero and confirms (with the help of a sp
 
 Notice the `inject` function in the second `it` argument.
 
-<code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="inject" title="src/app/dashboard/dashboard.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard.component.spec.ts" region="inject" title="src/app/dashboard/dashboard.component.spec.ts" linenums="false"></code-example>
 
 
 
@@ -1582,9 +1486,7 @@ That's fine for this test because the `Router` is, and must be, provided by the 
 
 If you need a service provided by the component's _own_ injector,  call `fixture.debugElement.injector.get` instead:
 
-<code-example path="testing/src/app/welcome.component.spec.ts" region="injected-service" title="Component's injector" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/welcome.component.spec.ts" region="injected-service" title="Component's injector" linenums="false"></code-example>
 
 
 
@@ -1629,17 +1531,13 @@ Angular injects the `ActivatedRoute` into the `HeroDetailComponent`,
 and the component extracts the `id` so it can fetch the corresponding hero via the `HeroDetailService`.
 Here's the `HeroDetailComponent` constructor:
 
-<code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" title="src/app/hero/hero-detail.component.ts (constructor)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" title="src/app/hero/hero-detail.component.ts (constructor)" linenums="false"></code-example>
 
 
 
 `HeroDetailComponent`  subscribes to `ActivatedRoute.params` changes in its `ngOnInit` method.
 
-<code-example path="testing/src/app/hero/hero-detail.component.ts" region="ng-on-init" title="src/app/hero/hero-detail.component.ts (ngOnInit)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.ts" region="ng-on-init" title="src/app/hero/hero-detail.component.ts (ngOnInit)" linenums="false"></code-example>
 
 
 
@@ -1680,9 +1578,7 @@ Consider placing such helpers in a `testing` folder sibling to the `app` folder.
 This sample keeps `ActivatedRouteStub` in `testing/router-stubs.ts`:
 
 
-<code-example path="testing/src/testing/router-stubs.ts" region="activated-route-stub" title="testing/router-stubs.ts (ActivatedRouteStub)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/testing/router-stubs.ts" region="activated-route-stub" title="testing/router-stubs.ts (ActivatedRouteStub)" linenums="false"></code-example>
 
 
 
@@ -1727,9 +1623,7 @@ The router stubs in this guide are meant to inspire you. Create your own stubs t
 ### Testing with the _Observable_ test double
 Here's a test demonstrating the component's behavior when the observed `id` refers to an existing hero:
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-good-id" title="src/app/hero/hero-detail.component.spec.ts (existing id)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-good-id" title="src/app/hero/hero-detail.component.spec.ts (existing id)" linenums="false"></code-example>
 
 
 
@@ -1748,9 +1642,7 @@ When the `id` cannot be found, the component should re-route to the `HeroListCom
 The test suite setup provided the same `RouterStub` [described above](guide/testing#routed-component) which spies on the router without actually navigating.
 This test supplies a "bad" id and expects the component to try to navigate.
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id" title="src/app/hero/hero-detail.component.spec.ts (bad id)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-bad-id" title="src/app/hero/hero-detail.component.spec.ts (bad id)" linenums="false"></code-example>
 
 
 
@@ -1762,9 +1654,7 @@ The component should do something reasonable when there is no `id`.
 In this implementation, the component should create and display a new hero.
 New heroes have `id=0` and a blank `name`. This test confirms that the component behaves as expected:
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-no-id" title="src/app/hero/hero-detail.component.spec.ts (no id)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-no-id" title="src/app/hero/hero-detail.component.spec.ts (no id)" linenums="false"></code-example>
 
 
 
@@ -1799,9 +1689,7 @@ The `HeroDetailComponent` is a simple view with a title, two hero fields, and tw
 
 But there's already plenty of template complexity.
 
-<code-example path="testing/src/app/hero/hero-detail.component.html" title="src/app/hero/hero-detail.component.html" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.html" title="src/app/hero/hero-detail.component.html" linenums="false"></code-example>
 
 
 
@@ -1817,9 +1705,7 @@ Even a small form such as this one can produce a mess of tortured conditional se
 Tame the madness with a `Page` class that simplifies access to component properties and encapsulates the logic that sets them.
 Here's the `Page` class for the `hero-detail.component.spec.ts`
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="page" title="src/app/hero/hero-detail.component.spec.ts (Page)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="page" title="src/app/hero/hero-detail.component.spec.ts (Page)" linenums="false"></code-example>
 
 
 
@@ -1828,9 +1714,7 @@ Now the important hooks for component manipulation and inspection are neatly org
 
 A `createComponent` method creates a `page` object and fills in the blanks once the `hero` arrives.
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="create-component" title="src/app/hero/hero-detail.component.spec.ts (createComponent)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="create-component" title="src/app/hero/hero-detail.component.spec.ts (createComponent)" linenums="false"></code-example>
 
 
 
@@ -1840,9 +1724,7 @@ There are no distractions: no waiting for promises to resolve and no searching t
 
 Here are a few more `HeroDetailComponent` tests to drive the point home.
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="selected-tests" title="src/app/hero/hero-detail.component.spec.ts (selected tests)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="selected-tests" title="src/app/hero/hero-detail.component.spec.ts (selected tests)" linenums="false"></code-example>
 
 
 
@@ -1856,9 +1738,7 @@ Here are a few more `HeroDetailComponent` tests to drive the point home.
 ## Setup with module imports
 Earlier component tests configured the testing module with a few `declarations` like this:
 
-<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="compile-components" title="src/app/dashboard/dashboard-hero.component.spec.ts (config)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="compile-components" title="src/app/dashboard/dashboard-hero.component.spec.ts (config)" linenums="false"></code-example>
 
 
 
@@ -1881,9 +1761,7 @@ In addition to the support it receives from the default testing module `CommonMo
 
 One approach is to configure the testing module from the individual pieces as in this example:
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-forms-module" title="src/app/hero/hero-detail.component.spec.ts (FormsModule setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-forms-module" title="src/app/hero/hero-detail.component.spec.ts (FormsModule setup)" linenums="false"></code-example>
 
 
 
@@ -1892,9 +1770,7 @@ a `SharedModule` to combine these and other frequently requested parts.
 The test configuration can use the `SharedModule` too as seen in this alternative setup:
 
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-shared-module" title="src/app/hero/hero-detail.component.spec.ts (SharedModule setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-shared-module" title="src/app/hero/hero-detail.component.spec.ts (SharedModule setup)" linenums="false"></code-example>
 
 
 
@@ -1910,9 +1786,7 @@ The `HeroDetailComponent` is part of the `HeroModule` [Feature Module](guide/ngm
 including the `SharedModule`.
 Try a test configuration that imports the `HeroModule` like this one:
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-hero-module" title="src/app/hero/hero-detail.component.spec.ts (HeroModule setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-hero-module" title="src/app/hero/hero-detail.component.spec.ts (HeroModule setup)" linenums="false"></code-example>
 
 
 
@@ -1952,9 +1826,7 @@ especially when the feature module is small and mostly self-contained, as featur
 
 The `HeroDetailComponent` provides its own `HeroDetailService`.
 
-<code-example path="testing/src/app/hero/hero-detail.component.ts" region="prototype" title="src/app/hero/hero-detail.component.ts (prototype)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.ts" region="prototype" title="src/app/hero/hero-detail.component.ts (prototype)" linenums="false"></code-example>
 
 
 
@@ -1979,9 +1851,7 @@ There might not be a remote server to call.
 Fortunately, the `HeroDetailService` delegates responsibility for remote data access to an injected `HeroService`.
 
 
-<code-example path="testing/src/app/hero/hero-detail.service.ts" region="prototype" title="src/app/hero/hero-detail.service.ts (prototype)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.service.ts" region="prototype" title="src/app/hero/hero-detail.service.ts (prototype)" linenums="false"></code-example>
 
 
 
@@ -2000,9 +1870,7 @@ The `TestBed.overrideComponent` method can replace the component's `providers` w
 as seen in the following setup variation:
 
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-override" title="src/app/hero/hero-detail.component.spec.ts (Override setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="setup-override" title="src/app/hero/hero-detail.component.spec.ts (Override setup)" linenums="false"></code-example>
 
 
 
@@ -2016,9 +1884,7 @@ Notice that `TestBed.configureTestingModule` no longer provides a (fake) `HeroSe
 
 Focus on the `overrideComponent` method.
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-component-method" title="src/app/hero/hero-detail.component.spec.ts (overrideComponent)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-component-method" title="src/app/hero/hero-detail.component.spec.ts (overrideComponent)" linenums="false"></code-example>
 
 
 
@@ -2069,9 +1935,7 @@ were called by spying on the service methods.
 Accordingly, the stub implements its methods as spies:
 
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="hds-spy" title="src/app/hero/hero-detail.component.spec.ts (HeroDetailServiceSpy)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="hds-spy" title="src/app/hero/hero-detail.component.spec.ts (HeroDetailServiceSpy)" linenums="false"></code-example>
 
 
 
@@ -2083,9 +1947,7 @@ Accordingly, the stub implements its methods as spies:
 Now the tests can control the component's hero directly by manipulating the spy-stub's `testHero`
 and confirm that service methods were called.
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-tests" title="src/app/hero/hero-detail.component.spec.ts (override tests)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-tests" title="src/app/hero/hero-detail.component.spec.ts (override tests)" linenums="false"></code-example>
 
 
 
@@ -2114,17 +1976,13 @@ It also displays a navigation bar with anchors and their `RouterLink` directives
 {@a app-component-html}
 
 
-<code-example path="testing/src/app/app.component.html" title="src/app/app.component.html" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/app.component.html" title="src/app/app.component.html" linenums="false"></code-example>
 
 
 
 The component class does nothing.
 
-<code-example path="testing/src/app/app.component.ts" title="src/app/app.component.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/app.component.ts" title="src/app/app.component.ts" linenums="false"></code-example>
 
 
 
@@ -2140,9 +1998,7 @@ See why this is worth doing [below](guide/testing#why-stubbed-routerlink-tests).
 The test setup should look familiar.
 
 
-<code-example path="testing/src/app/app.component.spec.ts" region="setup-stubs" title="src/app/app.component.spec.ts (Stub Setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/app.component.spec.ts" region="setup-stubs" title="src/app/app.component.spec.ts (Stub Setup)" linenums="false"></code-example>
 
 
 
@@ -2169,9 +2025,7 @@ and throws an error.
 The `RouterLinkStubDirective` contributes substantively to the test:
 
 
-<code-example path="testing/src/testing/router-stubs.ts" region="router-link" title="testing/router-stubs.ts (RouterLinkStubDirective)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/testing/router-stubs.ts" region="router-link" title="testing/router-stubs.ts (RouterLinkStubDirective)" linenums="false"></code-example>
 
 
 
@@ -2191,9 +2045,7 @@ Tests can inspect that property to confirm the expected _click-to-navigation_ be
 
 A little more setup triggers the initial data binding and gets references to the navigation links:
 
-<code-example path="testing/src/app/app.component.spec.ts" region="test-setup" title="src/app/app.component.spec.ts (test setup)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/app.component.spec.ts" region="test-setup" title="src/app/app.component.spec.ts (test setup)" linenums="false"></code-example>
 
 
 
@@ -2210,9 +2062,7 @@ Angular always adds attached directives to the component's injector.
 
 Here are some tests that leverage this setup:
 
-<code-example path="testing/src/app/app.component.spec.ts" region="tests" title="src/app/app.component.spec.ts (selected tests)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/app.component.spec.ts" region="tests" title="src/app/app.component.spec.ts (selected tests)" linenums="false"></code-example>
 
 
 
@@ -2336,26 +2186,20 @@ based on either a data bound color or a default color (lightgray).
 It also sets a custom property of the element (`customProperty`) to `true`
 for no reason other than to show that it can.
 
-<code-example path="testing/src/app/shared/highlight.directive.ts" title="src/app/shared/highlight.directive.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/highlight.directive.ts" title="src/app/shared/highlight.directive.ts" linenums="false"></code-example>
 
 
 
 It's used throughout the application, perhaps most simply in the `AboutComponent`:
 
-<code-example path="testing/src/app/about.component.ts" title="src/app/about.component.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/about.component.ts" title="src/app/about.component.ts" linenums="false"></code-example>
 
 
 
 Testing the specific use of the `HighlightDirective` within the `AboutComponent` requires only the
 techniques explored above (in particular the ["Shallow test"](guide/testing#shallow-component-test) approach).
 
-<code-example path="testing/src/app/about.component.spec.ts" region="tests" title="src/app/about.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/about.component.spec.ts" region="tests" title="src/app/about.component.spec.ts" linenums="false"></code-example>
 
 
 
@@ -2370,9 +2214,7 @@ do not inspire confidence in the directive's efficacy.
 A better solution is to create an artificial test component that demonstrates all ways to apply the directive.
 
 
-<code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="test-component" title="src/app/shared/highlight.directive.spec.ts (TestComponent)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="test-component" title="src/app/shared/highlight.directive.spec.ts (TestComponent)" linenums="false"></code-example>
 
 
 
@@ -2395,9 +2237,7 @@ The initial value is the word "cyan" which should be the background color of the
 
 Here are some tests of this component:
 
-<code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="selected-tests" title="src/app/shared/highlight.directive.spec.ts (selected tests)">
-
-</code-example>
+<code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="selected-tests" title="src/app/shared/highlight.directive.spec.ts (selected tests)"></code-example>
 
 
 
@@ -2477,9 +2317,7 @@ Here are some synchronous and asynchronous unit tests of the `FancyService`
 written without assistance from Angular testing utilities.
 
 
-<code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="FancyService" title="src/app/bag/bag.no-testbed.spec.ts">
-
-</code-example>
+<code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="FancyService" title="src/app/bag/bag.no-testbed.spec.ts"></code-example>
 
 
 
@@ -2523,9 +2361,7 @@ In many cases, it's easier to create and _inject_ dependencies by hand.
 
 The `DependentService` is a simple example:
 
-<code-example path="testing/src/app/bag/bag.ts" region="DependentService" title="src/app/bag/bag.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/bag/bag.ts" region="DependentService" title="src/app/bag/bag.ts" linenums="false"></code-example>
 
 
 
@@ -2533,9 +2369,7 @@ It delegates its only method, `getValue`, to the injected `FancyService`.
 
 Here are several ways to test it.
 
-<code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="DependentService" title="src/app/bag/bag.no-testbed.spec.ts">
-
-</code-example>
+<code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="DependentService" title="src/app/bag/bag.no-testbed.spec.ts"></code-example>
 
 
 
@@ -2566,9 +2400,7 @@ metadata and an interface.
 Consider a `TitleCasePipe` that capitalizes the first letter of each word.
 Here's a naive implementation with a regular expression.
 
-<code-example path="testing/src/app/shared/title-case.pipe.ts" title="src/app/shared/title-case.pipe.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/shared/title-case.pipe.ts" title="src/app/shared/title-case.pipe.ts" linenums="false"></code-example>
 
 
 
@@ -2576,9 +2408,7 @@ Anything that uses a regular expression is worth testing thoroughly.
 Use simple Jasmine to explore the expected cases and the edge cases.
 
 
-<code-example path="testing/src/app/shared/title-case.pipe.spec.ts" region="excerpt" title="src/app/shared/title-case.pipe.spec.ts">
-
-</code-example>
+<code-example path="testing/src/app/shared/title-case.pipe.spec.ts" region="excerpt" title="src/app/shared/title-case.pipe.spec.ts"></code-example>
 
 
 
@@ -2591,9 +2421,7 @@ They can't tell if the `TitleCasePipe` is working properly as applied in the app
 
 Consider adding component tests such as this one:
 
-<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" title="src/app/hero/hero-detail.component.spec.ts (pipe test)">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" title="src/app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
 
 
 
@@ -2607,18 +2435,14 @@ The Angular testing utilities are specifically designed to facilitate such tests
 
 Consider this `ButtonComp` component.
 
-<code-example path="testing/src/app/bag/bag.ts" region="ButtonComp" title="src/app/bag/bag.ts (ButtonComp)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/bag/bag.ts" region="ButtonComp" title="src/app/bag/bag.ts (ButtonComp)" linenums="false"></code-example>
 
 
 
 The following Angular test demonstrates that clicking a button in the template leads
 to an update of the on-screen message.
 
-<code-example path="testing/src/app/bag/bag.spec.ts" region="ButtonComp" title="src/app/bag/bag.spec.ts (ButtonComp)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/bag/bag.spec.ts" region="ButtonComp" title="src/app/bag/bag.spec.ts (ButtonComp)" linenums="false"></code-example>
 
 
 
@@ -2632,9 +2456,7 @@ exploring many more conditions with less effort.
 Here are a set of unit tests that verify the component's outputs in the face of a variety of
 component inputs.
 
-<code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="ButtonComp" title="src/app/bag/bag.no-testbed.spec.ts (ButtonComp)" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/bag/bag.no-testbed.spec.ts" region="ButtonComp" title="src/app/bag/bag.no-testbed.spec.ts (ButtonComp)" linenums="false"></code-example>
 
 
 
@@ -3044,9 +2866,8 @@ Here are the most important static methods, in order of likely utility.
       The `TestBed.get` method takes an optional second parameter,
       the object to return if Angular can't find the provider
       (`null` in this example):
-      <code-example path="testing/src/app/bag/bag.spec.ts" region="testbed-get" title="src/app/bag/bag.spec.ts" linenums="false">
 
-      </code-example>
+      <code-example path="testing/src/app/bag/bag.spec.ts" region="testbed-get" title="src/app/bag/bag.spec.ts" linenums="false"></code-example>
 
 
       After calling `get`, the `TestBed` configuration is frozen for the duration of the current spec.
@@ -3614,9 +3435,7 @@ predicate that filters the source element's subtree for matching `DebugElement`.
 The predicate is any method that takes a `DebugElement` and returns a _truthy_ value.
 The following example finds all `DebugElements` with a reference to a template local variable named "content":
 
-<code-example path="testing/src/app/bag/bag.spec.ts" region="custom-predicate" title="src/app/bag/bag.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/bag/bag.spec.ts" region="custom-predicate" title="src/app/bag/bag.spec.ts" linenums="false"></code-example>
 
 
 
@@ -3627,9 +3446,7 @@ The Angular `By` class has three static methods for common predicates:
 * `By.directive(directive)` - return elements that Angular matched to an instance of the directive class.
 
 
-<code-example path="testing/src/app/hero/hero-list.component.spec.ts" region="by" title="src/app/hero/hero-list.component.spec.ts" linenums="false">
-
-</code-example>
+<code-example path="testing/src/app/hero/hero-list.component.spec.ts" region="by" title="src/app/hero/hero-list.component.spec.ts" linenums="false"></code-example>
 
 <div class='l' class='hr'>
 
