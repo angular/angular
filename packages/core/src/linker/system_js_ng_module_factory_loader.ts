@@ -16,7 +16,7 @@ import {NgModuleFactoryLoader} from './ng_module_factory_loader';
 const _SEPARATOR = '#';
 
 const FACTORY_CLASS_SUFFIX = 'NgFactory';
-declare var System: any;
+declare var SystemJS: any;
 
 /**
  * Configuration for SystemJsNgModuleLoader.
@@ -64,7 +64,7 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
       exportName = 'default';
     }
 
-    return System.import(module)
+    return SystemJS.import(module)
         .then((module: any) => module[exportName])
         .then((type: any) => checkNotEmpty(type, module, exportName))
         .then((type: any) => this._compiler.compileModuleAsync(type));
@@ -78,7 +78,7 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
       factoryClassSuffix = '';
     }
 
-    return System.import(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
+    return SystemJS.import(this._config.factoryPathPrefix + module + this._config.factoryPathSuffix)
         .then((module: any) => module[exportName + factoryClassSuffix])
         .then((factory: any) => checkNotEmpty(factory, module, exportName));
   }

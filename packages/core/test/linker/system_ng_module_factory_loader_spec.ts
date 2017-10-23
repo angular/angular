@@ -24,14 +24,14 @@ export function main() {
   describe('SystemJsNgModuleLoader', () => {
     let oldSystem: any = null;
     beforeEach(() => {
-      oldSystem = global['System'];
-      global['System'] = mockSystem({
+      oldSystem = global['SystemJS'];
+      global['SystemJS'] = mockSystem({
         'test.ngfactory':
             {'default': 'test module factory', 'NamedNgFactory': 'test NamedNgFactory'},
         'prefixed/test/suffixed': {'NamedNgFactory': 'test module factory'}
       });
     });
-    afterEach(() => { global['System'] = oldSystem; });
+    afterEach(() => { global['SystemJS'] = oldSystem; });
 
     it('loads a default factory by appending the factory suffix', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
