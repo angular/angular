@@ -138,10 +138,12 @@ export class PackageBundler {
       let external = Object.keys(rollupGlobals);
       external.splice(external.indexOf('tslib'), 1);
 
-      // If each secondary entry-point is re-exported at the root, we want to exlclude those
-      // secondary entry-points from the rollup globals because we want the UMD for this package
-      // to include *all* of the sources for those entry-points.
-      if (this.buildPackage.exportsSecondaryEntryPointsAtRoot) {
+      // If each secondary entry-point is re-exported at the root, we want to exclude those
+      // secondary entry-points from the rollup globals because we want the UMD for the
+      // primary entry-point to include *all* of the sources for those entry-points.
+      if (this.buildPackage.exportsSecondaryEntryPointsAtRoot &&
+          config.moduleName === `ng.${this.buildPackage.name}`) {
+
         const importRegex = new RegExp(`@angular/${this.buildPackage.name}/.+`);
         external = external.filter(e => !importRegex.test(e));
 
