@@ -1,56 +1,58 @@
 // #docplaster
-// #docregion
+// #docregion auth, preload
 import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 import { FormsModule }    from '@angular/forms';
 // #docregion animations-module
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-// #enddocregion animations-module
+// #enddocregion auth, animations-module
 // #docregion inspect-config
 import { Router } from '@angular/router';
 
 // #enddocregion inspect-config
+// #docregion auth
 import { AppComponent }            from './app.component';
+import { PageNotFoundComponent }   from './page-not-found/page-not-found.component';
+import { ComposeMessageComponent } from './compose-message/compose-message.component';
+
 import { AppRoutingModule }        from './app-routing.module';
-
 import { HeroesModule }            from './heroes/heroes.module';
-import { ComposeMessageComponent } from './compose-message.component';
-import { LoginRoutingModule }      from './login-routing.module';
-import { LoginComponent }          from './login.component';
-import { PageNotFoundComponent }   from './not-found.component';
-
-import { DialogService }           from './dialog.service';
+import { AuthModule }              from './auth/auth.module';
 
 // #docregion animations-module
 @NgModule({
   imports: [
     // #enddocregion animations-module
     BrowserModule,
+    // #docregion animations-module
+    BrowserAnimationsModule,
+    // #enddocregion animations-module
     FormsModule,
     HeroesModule,
-    LoginRoutingModule,
+    AuthModule,
     AppRoutingModule,
     // #docregion animations-module
-    BrowserAnimationsModule
-    // #enddocregion animations-module
   ],
+  // #enddocregion animations-module
   declarations: [
     AppComponent,
     ComposeMessageComponent,
-    LoginComponent,
     PageNotFoundComponent
   ],
-  providers: [
-    DialogService
-  ],
   bootstrap: [ AppComponent ]
+// #docregion animations-module
 })
-// #docregion inspect-config
+// #enddocregion animations-module
 export class AppModule {
+// #enddocregion preload, auth
   // Diagnostic only: inspect router configuration
   constructor(router: Router) {
-    console.log('Routes: ', JSON.stringify(router.config, undefined, 2));
+    // Use a custom replacer to display function names in the route configs
+    // const replacer = (key, value) => (typeof value === 'function') ? value.name : value;
+
+    // console.log('Routes: ', JSON.stringify(router.config, replacer, 2));
   }
+// #docregion preload, auth
 }
-// #enddocregion inspect-config
+// #enddocregion preload, auth

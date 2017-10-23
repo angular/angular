@@ -2,8 +2,8 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { HeroListComponent }    from './hero-list.component';
-import { HeroDetailComponent }  from './hero-detail.component';
+import { HeroListComponent }    from './hero-list/hero-list.component';
+import { HeroDetailComponent }  from './hero-detail/hero-detail.component';
 
 const heroesRoutes: Routes = [
   { path: 'heroes',  component: HeroListComponent, data: { animation: 'heroes' } },
@@ -18,5 +18,5 @@ const heroesRoutes: Routes = [
     RouterModule
   ]
 })
-export class HeroRoutingModule { }
+export class HeroesRoutingModule { }
 // #enddocregion
