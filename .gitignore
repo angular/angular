@@ -34,3 +34,4 @@ node_modules
 npm-debug.log
 testem.log
 /.chrome
+/.git
