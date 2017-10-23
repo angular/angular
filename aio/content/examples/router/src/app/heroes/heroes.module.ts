@@ -5,13 +5,11 @@ import { NgModule }       from '@angular/core';
 import { CommonModule }   from '@angular/common';
 import { FormsModule }    from '@angular/forms';
 
-import { HeroListComponent }    from './hero-list.component';
-import { HeroDetailComponent }  from './hero-detail.component';
-
-import { HeroService } from './hero.service';
+import { HeroListComponent }    from './hero-list/hero-list.component';
+import { HeroDetailComponent }  from './hero-detail/hero-detail.component';
 
 // #enddocregion v1
-import { HeroRoutingModule } from './heroes-routing.module';
+import { HeroesRoutingModule } from './heroes-routing.module';
 
 // #docregion v1
 @NgModule({
@@ -19,14 +17,13 @@ import { HeroRoutingModule } from './heroes-routing.module';
     CommonModule,
     FormsModule,
 // #enddocregion v1
-    HeroRoutingModule
+    HeroesRoutingModule
 // #docregion v1
   ],
   declarations: [
     HeroListComponent,
     HeroDetailComponent
-  ],
-  providers: [ HeroService ]
+  ]
 })
 export class HeroesModule {}
 // #enddocregion v1
