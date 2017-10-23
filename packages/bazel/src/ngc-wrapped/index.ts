@@ -60,6 +60,9 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     inputs,
     expectedOuts
   });
+  if (diagnostics.length) {
+    console.error(ng.formatDiagnostics(diagnostics));
+  }
   return diagnostics.every(d => d.category !== ts.DiagnosticCategory.Error);
 }
 
@@ -204,9 +207,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
       {rootNames: files, options: compilerOpts, host: ngHost, emitCallback, gatherDiagnostics});
   const tsickleEmitResult = emitResult as tsickle.EmitResult;
   let externs = '/** @externs */\n';
-  if (diagnostics.length) {
-    console.error(ng.formatDiagnostics(diagnostics));
-  } else {
+  if (!diagnostics.length) {
     if (bazelOpts.tsickleGenerateExterns) {
       externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs);
     }
