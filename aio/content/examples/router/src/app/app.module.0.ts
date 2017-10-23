@@ -3,10 +3,10 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { HeroListComponent }      from './hero-list.component';
-import { CrisisListComponent }    from './crisis-list.component';
-import { PageNotFoundComponent }  from './not-found.component';
-import { PageNotFoundComponent as HeroDetailComponent } from './not-found.component';
+import { HeroListComponent }      from './hero-list/hero-list.component';
+import { CrisisListComponent }    from './crisis-list/crisis-list.component';
+import { PageNotFoundComponent }  from './page-not-found/page-not-found.component';
+import { PageNotFoundComponent as HeroDetailComponent } from './page-not-found/page-not-found.component';
 
 // #docregion
 const appRoutes: Routes = [
