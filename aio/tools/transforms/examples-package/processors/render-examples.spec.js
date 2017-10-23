@@ -34,10 +34,10 @@ describe('renderExamples processor', () => {
     describe(CODE_TAG, () => {
       it(`should ignore a <${CODE_TAG}> tags with no path attribute`, () => {
         const docs = [
-          { renderedContent: `Some text\n<${CODE_TAG}>Some code</${CODE_TAG}>\n<${CODE_TAG} class="anti-pattern" title="Bad Code">do not do this</${CODE_TAG}>` }
+          { renderedContent: `Some text\n<${CODE_TAG}>Some code</${CODE_TAG}>\n<${CODE_TAG} class="anti-pattern" title="Bad Code">do <strong>not</strong> do this</${CODE_TAG}>` }
         ];
         processor.$process(docs);
-        expect(docs[0].renderedContent).toEqual(`Some text\n<${CODE_TAG}>Some code</${CODE_TAG}>\n<${CODE_TAG} class="anti-pattern" title="Bad Code">do not do this</${CODE_TAG}>`);
+        expect(docs[0].renderedContent).toEqual(`Some text\n<${CODE_TAG}>Some code</${CODE_TAG}>\n<${CODE_TAG} class="anti-pattern" title="Bad Code">do <strong>not</strong> do this</${CODE_TAG}>`);
       });
 
       it(`should replace the content of the <${CODE_TAG}> tag with the whole contents from an example file if a path is provided`, () => {
@@ -87,6 +87,15 @@ describe('renderExamples processor', () => {
         ];
         processor.$process(docs);
         expect(docs[0].renderedContent).toEqual(`<${CODE_TAG} title="a &quot;quoted&quot; value" path="test/url">\nwhole file\n</${CODE_TAG}>`);
+      });
+
+      it('should throw an exception if the code-example tag is not closed correctly', () => {
+        const docs = [
+          { renderedContent: `<${CODE_TAG} path="test/url"></p></${CODE_TAG}>`}
+        ];
+        expect(() => processor.$process(docs)).toThrowError(
+          'Badly formed example: <' + CODE_TAG + ' path="test/url"></p> - closing tag does not match opening tag.\n' +
+          ' - Perhaps you forgot to put a blank line before the example?');
       });
     })
   );
