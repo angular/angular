@@ -8,20 +8,19 @@
 
 // This file contains all ambient imports needed to compile the modules/ source code
 
-/// <reference path="../node_modules/zone.js/dist/zone.js.d.ts" />
 /// <reference path="../node_modules/@types/hammerjs/index.d.ts" />
 /// <reference path="../node_modules/@types/jasmine/index.d.ts" />
 /// <reference path="../node_modules/@types/node/index.d.ts" />
-/// <reference path="../node_modules/@types/selenium-webdriver/index.d.ts" />
+/// <reference path="../node_modules/zone.js/dist/zone.js.d.ts" />
 /// <reference path="./es6-subset.d.ts" />
-/// <reference path="./system.d.ts" />
 /// <reference path="./goog.d.ts" />
+/// <reference path="./system.d.ts" />
 
 declare let isNode: boolean;
 declare let isBrowser: boolean;
 
 declare namespace jasmine {
-  interface Matchers {
+  interface Matchers<T> {
     toHaveProperties(obj: any): boolean;
   }
 }

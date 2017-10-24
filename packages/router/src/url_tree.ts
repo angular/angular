@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PRIMARY_OUTLET, ParamMap, convertToParamMap} from './shared';
+import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 import {forEach, shallowEqual} from './utils/collection';
 
 export function createEmptyUrlTree() {
@@ -23,8 +23,8 @@ export function containsTree(container: UrlTree, containee: UrlTree, exact: bool
       containsSegmentGroup(container.root, containee.root);
 }
 
-function equalQueryParams(
-    container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
+function equalQueryParams(container: Params, containee: Params): boolean {
+  // TODO: This does not handle array params correctly.
   return shallowEqual(container, containee);
 }
 
@@ -38,8 +38,8 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
   return true;
 }
 
-function containsQueryParams(
-    container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
+function containsQueryParams(container: Params, containee: Params): boolean {
+  // TODO: This does not handle array params correctly.
   return Object.keys(containee).length <= Object.keys(container).length &&
       Object.keys(containee).every(key => containee[key] === container[key]);
 }
@@ -112,7 +112,7 @@ export class UrlTree {
       /** The root segment group of the URL tree */
       public root: UrlSegmentGroup,
       /** The query params of the URL */
-      public queryParams: {[key: string]: string},
+      public queryParams: Params,
       /** The fragment of the URL */
       public fragment: string|null) {}
 
@@ -446,8 +446,8 @@ class UrlParser {
     return new UrlSegmentGroup([], this.parseChildren());
   }
 
-  parseQueryParams(): {[key: string]: any} {
-    const params: {[key: string]: any} = {};
+  parseQueryParams(): Params {
+    const params: Params = {};
     if (this.consumeOptional('?')) {
       do {
         this.parseQueryParam(params);
@@ -534,7 +534,7 @@ class UrlParser {
   }
 
   // Parse a single query parameter `name[=value]`
-  private parseQueryParam(params: {[key: string]: any}): void {
+  private parseQueryParam(params: Params): void {
     const key = matchQueryParams(this.remaining);
     if (!key) {
       return;

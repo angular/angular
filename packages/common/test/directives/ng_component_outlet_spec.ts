@@ -166,12 +166,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          fixture.componentInstance.currentComponent = Module2InjectedComponent;
          fixture.detectChanges();
 
-         const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'];
+         const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'] !;
          spyOn(moduleRef, 'destroy').and.callThrough();
 
-         expect(moduleRef !.destroy).not.toHaveBeenCalled();
+         expect(moduleRef.destroy).not.toHaveBeenCalled();
          fixture.destroy();
-         expect(moduleRef !.destroy).toHaveBeenCalled();
+         expect(moduleRef.destroy).toHaveBeenCalled();
        }));
 
     it('should not re-create moduleRef when it didn\'t actually change', async(() => {

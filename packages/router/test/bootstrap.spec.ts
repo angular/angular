@@ -210,7 +210,7 @@ describe('bootstrap', () => {
 
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
          const router = res.injector.get(Router);
-         spyOn(router, 'resetRootComponentType').and.callThrough();
+         spyOn(router as any, 'resetRootComponentType').and.callThrough();
 
          const appRef: ApplicationRef = res.injector.get(ApplicationRef);
          appRef.bootstrap(SecondRootCmp);
@@ -236,7 +236,7 @@ describe('bootstrap', () => {
 
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
          const router = res.injector.get(Router);
-         spyOn(router, 'resetRootComponentType').and.callThrough();
+         spyOn(router as any, 'resetRootComponentType').and.callThrough();
 
          const appRef: ApplicationRef = res.injector.get(ApplicationRef);
          appRef.components[0].onDestroy(() => {

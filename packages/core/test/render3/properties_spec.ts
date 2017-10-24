@@ -112,7 +112,7 @@ describe('elementProperty', () => {
 
     class OtherDir {
       // TODO(issue/24571): remove '!'.
-      id !: boolean;
+      id !: number;
       clickStream = new EventEmitter();
 
       static ngDirectiveDef = defineDirective({
@@ -138,7 +138,7 @@ describe('elementProperty', () => {
 
     class IdDir {
       // TODO(issue/24571): remove '!'.
-      idNumber !: number;
+      idNumber !: string;
 
       static ngDirectiveDef = defineDirective({
         type: IdDir,
@@ -347,15 +347,14 @@ describe('elementProperty', () => {
         }
       }
 
-      expect(renderToHtml(Template, {condition: true, id1: 'one', id2: 'two', id3: 'three'}, deps))
+      expect(renderToHtml(Template, {condition: true, id1: 'one', id2: 'two', id3: 3}, deps))
           .toEqual(`<button iddir="">Click me</button><button id="two">Click me too</button>`);
       expect(idDir !.idNumber).toEqual('one');
 
-      expect(
-          renderToHtml(Template, {condition: false, id1: 'four', id2: 'two', id3: 'three'}, deps))
+      expect(renderToHtml(Template, {condition: false, id1: 'four', id2: 'two', id3: 3}, deps))
           .toEqual(`<button iddir="">Click me</button><button otherdir="">Click me too</button>`);
       expect(idDir !.idNumber).toEqual('four');
-      expect(otherDir !.id).toEqual('three');
+      expect(otherDir !.id).toEqual(3);
     });
 
   });

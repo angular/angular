@@ -259,7 +259,7 @@ describe('NgOnChangesFeature', () => {
 
   it('correctly computes firstChange', () => {
     class MyDirective implements OnChanges {
-      public log: Array<string|SimpleChange> = [];
+      public log: Array<string|SimpleChange|undefined> = [];
       public valA: string = 'initValue';
       // TODO(issue/24571): remove '!'.
       public valB !: string;

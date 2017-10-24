@@ -1203,8 +1203,8 @@ describe('di', () => {
   describe('@Attribute', () => {
 
     it('should inject attribute', () => {
-      let exist: string|undefined = 'wrong';
-      let nonExist: string|undefined = 'wrong';
+      let exist = 'wrong' as string | undefined;
+      let nonExist = 'wrong' as string | undefined;
 
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -1221,8 +1221,8 @@ describe('di', () => {
 
     // https://stackblitz.com/edit/angular-8ytqkp?file=src%2Fapp%2Fapp.component.ts
     it('should not inject attributes representing bindings and outputs', () => {
-      let exist: string|undefined = 'wrong';
-      let nonExist: string|undefined = 'wrong';
+      let exist = 'wrong' as string | undefined;
+      let nonExist = 'wrong' as string | undefined;
 
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -1238,8 +1238,8 @@ describe('di', () => {
     });
 
     it('should not accidentally inject attributes representing bindings and outputs', () => {
-      let exist: string|undefined = 'wrong';
-      let nonExist: string|undefined = 'wrong';
+      let exist = 'wrong' as string | undefined;
+      let nonExist = 'wrong' as string | undefined;
 
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -1415,7 +1415,7 @@ describe('di', () => {
         // so that we have smaller HelloWorld.
         (parent.tNode as{parent: any}).parent = undefined;
 
-        const injector = getOrCreateNodeInjector();
+        const injector: any = getOrCreateNodeInjector();  // TODO: Review use of `any` here (#19904)
         expect(injector).not.toBe(null);
       } finally {
         leaveView(oldView);
