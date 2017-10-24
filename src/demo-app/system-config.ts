@@ -9,13 +9,14 @@ System.config({
   map: {
     'rxjs': 'node:rxjs',
     'main': 'main.js',
+    'tslib': 'node:tslib/tslib.js',
     'moment': 'node:moment/min/moment-with-locales.min.js',
 
     // Angular specific mappings.
     '@angular/core': 'node:@angular/core/bundles/core.umd.js',
     '@angular/common': 'node:@angular/common/bundles/common.umd.js',
+    '@angular/common/http': 'node:@angular/common/bundles/common-http.umd.js',
     '@angular/compiler': 'node:@angular/compiler/bundles/compiler.umd.js',
-    '@angular/http': 'node:@angular/http/bundles/http.umd.js',
     '@angular/forms': 'node:@angular/forms/bundles/forms.umd.js',
     '@angular/animations': 'node:@angular/animations/bundles/animations.umd.js',
     '@angular/router': 'node:@angular/router/bundles/router.umd.js',

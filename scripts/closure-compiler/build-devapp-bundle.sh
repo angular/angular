@@ -42,9 +42,9 @@ OPTS=(
   "--js_module_root=dist/releases/material-moment-adapter"
   "--js_module_root=node_modules/@angular/core"
   "--js_module_root=node_modules/@angular/common"
+  "--js_module_root=node_modules/@angular/common/http"
   "--js_module_root=node_modules/@angular/compiler"
   "--js_module_root=node_modules/@angular/forms"
-  "--js_module_root=node_modules/@angular/http"
   "--js_module_root=node_modules/@angular/router"
   "--js_module_root=node_modules/@angular/platform-browser"
   "--js_module_root=node_modules/@angular/platform-browser/animations"
@@ -65,9 +65,9 @@ OPTS=(
   # Include all Angular FESM bundles.
   node_modules/@angular/core/@angular/core.js
   node_modules/@angular/common/@angular/common.js
+  node_modules/@angular/common/@angular/common/http.js
   node_modules/@angular/compiler/@angular/compiler.js
   node_modules/@angular/forms/@angular/forms.js
-  node_modules/@angular/http/@angular/http.js
   node_modules/@angular/router/@angular/router.js
   node_modules/@angular/platform-browser/@angular/platform-browser.js
   node_modules/@angular/platform-browser/@angular/platform-browser/animations.js

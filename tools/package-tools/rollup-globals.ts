@@ -32,7 +32,7 @@ export const rollupGlobals = {
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
   '@angular/forms': 'ng.forms',
-  '@angular/http': 'ng.http',
+  '@angular/common/http': 'ng.common.http',
   '@angular/router': 'ng.router',
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/platform-server': 'ng.platformServer',
@@ -40,7 +40,7 @@ export const rollupGlobals = {
   '@angular/platform-browser/animations': 'ng.platformBrowser.animations',
   '@angular/core/testing': 'ng.core.testing',
   '@angular/common/testing': 'ng.common.testing',
-  '@angular/http/testing': 'ng.http.testing',
+  '@angular/common/http/testing': 'ng.common.http.testing',
 
   // Some packages are not really needed for the UMD bundles, but for the missingRollupGlobals rule.
   '@angular/material-examples': 'ng.materialExamples',

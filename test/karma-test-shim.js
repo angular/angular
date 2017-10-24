@@ -20,6 +20,7 @@ System.config({
   map: {
     'rxjs': 'node:rxjs',
     'main': 'main.js',
+    'tslib': 'node:tslib/tslib.js',
     'moment': 'node:moment/min/moment-with-locales.min.js',
 
     // Angular specific mappings.
@@ -27,10 +28,10 @@ System.config({
     '@angular/core/testing': 'node:@angular/core/bundles/core-testing.umd.js',
     '@angular/common': 'node:@angular/common/bundles/common.umd.js',
     '@angular/common/testing': 'node:@angular/common/bundles/common-testing.umd.js',
+    '@angular/common/http': 'node:@angular/common/bundles/common-http.umd.js',
+    '@angular/common/http/testing': 'node:@angular/common/bundles/common-http-testing.umd.js',
     '@angular/compiler': 'node:@angular/compiler/bundles/compiler.umd.js',
     '@angular/compiler/testing': 'node:@angular/compiler/bundles/compiler-testing.umd.js',
-    '@angular/http': 'node:@angular/http/bundles/http.umd.js',
-    '@angular/http/testing': 'node:@angular/http/bundles/http-testing.umd.js',
     '@angular/forms': 'node:@angular/forms/bundles/forms.umd.js',
     '@angular/forms/testing': 'node:@angular/forms/bundles/forms-testing.umd.js',
     '@angular/animations': 'node:@angular/animations/bundles/animations.umd.js',

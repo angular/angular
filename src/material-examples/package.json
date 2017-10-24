@@ -26,7 +26,6 @@
     "@angular/cdk": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-NG",
     "@angular/common": "0.0.0-NG",
-    "@angular/http": "0.0.0-NG",
     "@angular/material": "0.0.0-PLACEHOLDER",
     "@angular/material-moment-adapter": "0.0.0-PLACEHOLDER"
   },

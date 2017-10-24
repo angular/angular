@@ -1,6 +1,6 @@
 import {ApplicationRef, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpModule} from '@angular/http';
+import {HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ALL_ROUTES} from './demo-app/routes';
@@ -13,7 +13,7 @@ import {AccessibilityDemoModule} from './a11y/a11y-module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    HttpModule,
+    HttpClientModule,
     DemoModule,
     AccessibilityDemoModule,
     RouterModule.forRoot(ALL_ROUTES),

@@ -17,6 +17,7 @@ module.exports = (config) => {
     ],
     files: [
       {pattern: 'node_modules/core-js/client/core.js', included: true, watched: false},
+      {pattern: 'node_modules/tslib/tslib.js', included: true, watched: false},
       {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/zone.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/proxy.js', included: true, watched: false},

@@ -8,7 +8,7 @@
 
 import {catchOperator, doOperator, finallyOperator, map, RxChain, share} from '@angular/cdk/rxjs';
 import {Injectable, Optional, SecurityContext, SkipSelf} from '@angular/core';
-import {Http} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 import {forkJoin} from 'rxjs/observable/forkJoin';
@@ -32,8 +32,9 @@ export function getMatIconNameNotFoundError(iconName: string): Error {
  * @docs-private
  */
 export function getMatIconNoHttpProviderError(): Error {
-  return Error('Could not find Http provider for use with Angular Material icons. ' +
-               'Please include the HttpModule from @angular/http in your app imports.');
+  return Error('Could not find HttpClient provider for use with Angular Material icons. ' +
+               'Please include the HttpClientModule from @angular/common/http in your ' +
+               'app imports.');
 }
 
 
@@ -92,7 +93,7 @@ export class MatIconRegistry {
    */
   private _defaultFontSetClass = 'material-icons';
 
-  constructor(@Optional() private _http: Http, private _sanitizer: DomSanitizer) {}
+  constructor(@Optional() private _httpClient: HttpClient, private _sanitizer: DomSanitizer) {}
 
   /**
    * Registers an icon by URL in the default namespace.
@@ -442,7 +443,7 @@ export class MatIconRegistry {
    * cached, so future calls with the same URL may not cause another HTTP request.
    */
   private _fetchUrl(safeUrl: SafeResourceUrl): Observable<string> {
-    if (!this._http) {
+    if (!this._httpClient) {
       throw getMatIconNoHttpProviderError();
     }
 
@@ -463,8 +464,7 @@ export class MatIconRegistry {
 
     // TODO(jelbourn): for some reason, the `finally` operator "loses" the generic type on the
     // Observable. Figure out why and fix it.
-    const req = RxChain.from(this._http.get(url))
-      .call(map, response => response.text())
+    const req = RxChain.from(this._httpClient.get(url, { responseType: 'text' }))
       .call(finallyOperator, () => this._inProgressUrlFetches.delete(url))
       .call(share)
       .result();
@@ -476,15 +476,19 @@ export class MatIconRegistry {
 
 /** @docs-private */
 export function ICON_REGISTRY_PROVIDER_FACTORY(
-    parentRegistry: MatIconRegistry, http: Http, sanitizer: DomSanitizer) {
-  return parentRegistry || new MatIconRegistry(http, sanitizer);
+    parentRegistry: MatIconRegistry, httpClient: HttpClient, sanitizer: DomSanitizer) {
+  return parentRegistry || new MatIconRegistry(httpClient, sanitizer);
 }
 
 /** @docs-private */
 export const ICON_REGISTRY_PROVIDER = {
-  // If there is already an MatIconRegistry available, use that. Otherwise, provide a new one.
+  // If there is already an MdIconRegistry available, use that. Otherwise, provide a new one.
   provide: MatIconRegistry,
-  deps: [[new Optional(), new SkipSelf(), MatIconRegistry], [new Optional(), Http], DomSanitizer],
+  deps: [
+    [new Optional(), new SkipSelf(), MatIconRegistry],
+    [new Optional(), HttpClient],
+    DomSanitizer
+  ],
   useFactory: ICON_REGISTRY_PROVIDER_FACTORY
 };
 

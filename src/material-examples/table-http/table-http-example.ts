@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Http} from '@angular/http';
+import {HttpClient} from '@angular/common/http';
 import {DataSource} from '@angular/cdk/collections';
 import {MatPaginator, MatSort} from '@angular/material';
 import {Observable} from 'rxjs/Observable';
@@ -20,16 +20,16 @@ import 'rxjs/add/operator/switchMap';
 })
 export class TableHttpExample implements OnInit {
   displayedColumns = ['created_at', 'state', 'number', 'title'];
-  exampleDatabase: ExampleHttpDao | null;
+  exampleDatabase: ExampleHttpDataSource | null;
   dataSource: ExampleDataSource | null;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  constructor(private http: Http) {}
+  constructor(private _httpClient: HttpClient) {}
 
   ngOnInit() {
-    this.exampleDatabase = new ExampleHttpDao(this.http);
+    this.exampleDatabase = new ExampleHttpDataSource(this._httpClient);
     this.dataSource = new ExampleDataSource(
       this.exampleDatabase!, this.paginator, this.sort);
   }
@@ -48,16 +48,15 @@ export interface GithubIssue {
 }
 
 /** An example database that the data source uses to retrieve data for the table. */
-export class ExampleHttpDao {
-  constructor(private http: Http) {}
+export class ExampleHttpDataSource {
+  constructor(private _httpClient: HttpClient) {}
 
   getRepoIssues(sort: string, order: string, page: number): Observable<GithubApi> {
     const href = 'https://api.github.com/search/issues';
     const requestUrl =
       `${href}?q=repo:angular/material2&sort=${sort}&order=${order}&page=${page + 1}`;
 
-    return this.http.get(requestUrl)
-                    .map(response => response.json() as GithubApi);
+    return this._httpClient.get<GithubApi>(requestUrl);
   }
 }
 
@@ -74,7 +73,7 @@ export class ExampleDataSource extends DataSource<GithubIssue> {
   isLoadingResults = false;
   isRateLimitReached = false;
 
-  constructor(private exampleDatabase: ExampleHttpDao,
+  constructor(private exampleDatabase: ExampleHttpDataSource,
               private paginator: MatPaginator,
               private sort: MatSort) {
     super();
