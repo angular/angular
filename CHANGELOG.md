@@ -1,3 +1,13 @@
+<a name="5.0.0-rc.5"></a>
+# [5.0.0-rc.5](https://github.com/angular/angular/compare/5.0.0-rc.4...5.0.0-rc.5) (2017-10-24)
+
+
+### Bug Fixes
+
+* **compiler-cli:** report all diagnostic error messages ([#19886](https://github.com/angular/angular/issues/19886)) ([a82f863](https://github.com/angular/angular/commit/a82f863))
+
+
+
 <a name="5.0.0-rc.4"></a>
 # [5.0.0-rc.4](https://github.com/angular/angular/compare/5.0.0-rc.3...5.0.0-rc.4) (2017-10-24)
 
