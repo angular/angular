@@ -1,3 +1,15 @@
+<a name="5.0.0-rc.4"></a>
+# [5.0.0-rc.4](https://github.com/angular/angular/compare/5.0.0-rc.3...5.0.0-rc.4) (2017-10-24)
+
+
+### Bug Fixes
+
+* **bazel:** don't console.error from the compile helper ([#19879](https://github.com/angular/angular/issues/19879)) ([5da96c7](https://github.com/angular/angular/commit/5da96c7))
+* **compiler:** correctly calculate the outDir if it repeats a parts of the `rootDir`. ([#19836](https://github.com/angular/angular/issues/19836)) ([fc0b1d5](https://github.com/angular/angular/commit/fc0b1d5)), closes [#19718](https://github.com/angular/angular/issues/19718)
+* **service-worker:** include versionedFiles in the manifest hashTable ([#19837](https://github.com/angular/angular/issues/19837)) ([90d1423](https://github.com/angular/angular/commit/90d1423))
+
+
+
 <a name="5.0.0-rc.3"></a>
 # [5.0.0-rc.3](https://github.com/angular/angular/compare/5.0.0-rc.2...5.0.0-rc.3) (2017-10-18)
 
