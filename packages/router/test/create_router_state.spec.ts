@@ -14,6 +14,7 @@ import {ActivatedRoute, RouterState, RouterStateSnapshot, advanceActivatedRoute,
 import {PRIMARY_OUTLET} from '../src/shared';
 import {DefaultUrlSerializer, UrlSegmentGroup, UrlTree} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
+import {legacyRecognize} from './helpers';
 
 describe('create router state', () => {
   const reuseStrategy = new DefaultRouteReuseStrategy();
@@ -101,7 +102,7 @@ function advanceNode(node: TreeNode<ActivatedRoute>): void {
 
 function createState(config: Routes, url: string): RouterStateSnapshot {
   let res: RouterStateSnapshot = undefined !;
-  recognize(RootComponent, config, tree(url), url).forEach(s => res = s);
+  legacyRecognize(RootComponent, config, tree(url), url).forEach(s => res = s);
   return res;
 }
 

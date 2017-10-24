@@ -55,7 +55,6 @@ export class Tree<T> {
   pathFromRoot(t: T): T[] { return findPath(t, this._root).map(s => s.value); }
 }
 
-
 // DFS for the node matching the value
 function findNode<T>(value: T, node: TreeNode<T>): TreeNode<T>|null {
   if (value === node.value) return node;

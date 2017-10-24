@@ -136,7 +136,28 @@ export class UrlTree {
 export class UrlSegmentGroup {
   /** @internal */
   _sourceSegment: UrlSegmentGroup;
-  /** @internal */
+
+  /**
+   * The Recognize operation transforms a URL tree by splitting certain url segment groups into multiple ones.
+   * This is required to support empty-path routes and named outlets.
+   *
+   * The index shift represents a subset of the url segments of the source segment group.
+   *
+   *    root
+   *    /
+   * [a, b, c]
+   *    /
+   * [d, e]
+   *
+   *
+   *    root
+   *    /   \
+   * [a, b] [c]
+   *         |
+   *      [d, e]
+   *
+   * @internal
+   */
   _segmentIndexShift: number;
   /** The parent node in the url tree */
   parent: UrlSegmentGroup|null = null;

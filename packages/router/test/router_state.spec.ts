@@ -16,6 +16,8 @@ import {Params} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 import {Routes} from '../src/config';
+import {PRIMARY_OUTLET, UrlTree} from '@angular/router';
+import {DefaultUrlSerializer} from '@angular/router/src/url_tree';
 
 describe('RouterState & Snapshot', () => {
   describe('RouterStateSnapshot', () => {
@@ -201,7 +203,9 @@ describe('RouterState & Snapshot', () => {
   });
 
   describe('RouteSnapshot createActivatedRouteSnapshot', () => {
+    const serializer = new DefaultUrlSerializer();
     let snapshot: RouteSnapshot;
+    let emptyUrlTree: UrlTree;
 
     beforeEach(() => {
       snapshot = {
@@ -211,8 +215,10 @@ describe('RouterState & Snapshot', () => {
         fragment: '',
         data: {}, // Data,
         outlet: '',
-        configPath: [] // Path to config
+        configPath: [], // Path to config,
+        urlTreeAddress: {urlSegmentGroupPath: [], urlSegmentIndex: 0}
       };
+      emptyUrlTree = serializer.parse('/');
     });
 
     it('should set pass-through parameters from RouteSnapshot to ActivatedRouteSnapshot', () => {
@@ -224,7 +230,7 @@ describe('RouterState & Snapshot', () => {
         outlet: "primary"
       };
 
-      const converted = createActivatedRouteSnapshot({...snapshot, ...newSnapshot}, []);
+      const converted = createActivatedRouteSnapshot(emptyUrlTree, {...snapshot, ...newSnapshot}, []);
       expect(converted.params).toEqual(newSnapshot.params);
       expect(converted.queryParams).toEqual(newSnapshot.queryParams);
       expect(converted.fragment).toEqual(newSnapshot.fragment);
@@ -240,7 +246,7 @@ describe('RouterState & Snapshot', () => {
         ]
       };
 
-      const converted = createActivatedRouteSnapshot({...snapshot, ...newSnapshot}, []);
+      const converted = createActivatedRouteSnapshot(emptyUrlTree, {...snapshot, ...newSnapshot}, []);
       expect(converted.url).toEqual([
         new UrlSegment('a', {p1: '1'}),
         new UrlSegment('b', {p2: '2'})
@@ -267,22 +273,68 @@ describe('RouterState & Snapshot', () => {
           configPath: [0, 1, 0]
         };
 
-        const converted = createActivatedRouteSnapshot({...snapshot, ...newSnapshot}, routes);
+        const converted = createActivatedRouteSnapshot(emptyUrlTree, {...snapshot, ...newSnapshot}, routes);
         expect(converted.routeConfig !.path).toBe('grandchild1_0');
         expect(converted.routeConfig !.component).toBe(Cmp);
       });
 
+      it('should set component and routerConfig to null when configPath is empty', () => {
+        const newSnapshot = {
+          configPath: []
+        };
+
+        const converted = createActivatedRouteSnapshot(emptyUrlTree, {...snapshot, ...newSnapshot}, routes);
+        expect(converted.routeConfig).toBe(null);
+        expect(converted.component).toBe(null);
+      });
+
       it('should error when configPath goes out of bounds of routes', () => {
         // Test out of bounds
-        expect(() => createActivatedRouteSnapshot({...snapshot, configPath: [1]}, routes)).toThrow();
+        expect(() => createActivatedRouteSnapshot(emptyUrlTree, {...snapshot, configPath: [1]}, routes)).toThrow();
         // Test no children when asked for
-        expect(() => createActivatedRouteSnapshot({...snapshot, configPath: [0, 0, 0]}, routes)).toThrow();
+        expect(() => createActivatedRouteSnapshot(emptyUrlTree, {...snapshot, configPath: [0, 0, 0]}, routes)).toThrow();
+      });
+    });
+
+    describe('Setting UrlSegmentGroup', () => {
+      let urlTree: UrlTree;
+
+      beforeEach(() => {
+        urlTree = serializer.parse('/a(aux:b/c//right:e/f)');
+      });
+
+      it('should set _urlSegment and _lastPathIndex in the ActivatedRouteSnapshot (primary outlet)', () => {
+        const newSnapshot = {
+          urlTreeAddress: {
+            urlSegmentGroupPath: [PRIMARY_OUTLET],
+            urlSegmentIndex: 0
+          }
+        };
+
+        const converted = createActivatedRouteSnapshot(urlTree, {...snapshot, ...newSnapshot}, []);
+        expect(converted._urlSegment.segments).toEqual([new UrlSegment('a', {})]);
+        expect(converted._lastPathIndex).toEqual(0);
+      });
+
+      it('should set _urlSegment and _lastPathIndex in the ActivatedRouteSnapshot (secondary outlet)', () => {
+        const newSnapshot = {
+          urlTreeAddress: {
+            urlSegmentGroupPath: ['aux'],
+            urlSegmentIndex: 1
+          }
+        };
+
+        const converted = createActivatedRouteSnapshot(urlTree, {...snapshot, ...newSnapshot}, []);
+        expect(converted._urlSegment.segments).toEqual([new UrlSegment('b', {}), new UrlSegment('c', {})]);
+        expect(converted._lastPathIndex).toEqual(1);
       });
     });
   });
 
   describe('RouteSnapshot createRouterStateSnapshot', () => {
+    const serializer = new DefaultUrlSerializer();
     let snapshot: RouteSnapshot;
+    let urlTree: UrlTree;
 
     beforeEach(() => {
       snapshot = {
@@ -292,11 +344,15 @@ describe('RouterState & Snapshot', () => {
         fragment: '',
         data: {}, // Data,
         outlet: '',
-        configPath: [] // Path to config
+        configPath: [], // Path to config
+        urlTreeAddress: {urlSegmentGroupPath: [], urlSegmentIndex: 0}
       };
+      urlTree = serializer.parse('/');
     });
 
-    it('should work :)', () => {
+    class RootCmp {}
+
+    it('should work', () => {
       const root = {
         value: {...snapshot, url: [{path: 'parent', parameters: {}}]},
         children: [
@@ -307,8 +363,9 @@ describe('RouterState & Snapshot', () => {
         ]
       };
 
-      const rss = createRouterStateSnapshot('/parent/child', root, []);
+      const rss = createRouterStateSnapshot('/parent/child', urlTree, root, RootCmp, []);
       expect(rss.url).toBe('/parent/child');
+      expect(rss.root.component).toBe(RootCmp);
       expect(rss.root instanceof ActivatedRouteSnapshot).toBe(true);
       expect(rss.root.url[0].path).toBe('parent');
       expect(rss.root.firstChild!.url[0].path).toBe('child');

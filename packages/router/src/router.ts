@@ -33,6 +33,7 @@ import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_st
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {forEach} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
+import {createRouterStateSnapshot} from '@angular/router/src/router_state';
 
 declare let Zone: any;
 
@@ -612,8 +613,8 @@ export class Router {
           return map.call(
               recognize(
                   this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl)),
-              (snapshot: any) => {
-
+              (treeOfRouteSnapshot: any) => {
+                const snapshot = createRouterStateSnapshot(this.serializeUrl(appliedUrl), appliedUrl, treeOfRouteSnapshot, this.rootComponentType, this.config);
                 (this.events as Subject<Event>)
                     .next(new RoutesRecognized(
                         id, this.serializeUrl(url), this.serializeUrl(appliedUrl), snapshot));
