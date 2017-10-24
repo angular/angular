@@ -54,7 +54,7 @@ export function createAotUrlResolver(host: {
  */
 export function createAotCompiler(
     compilerHost: AotCompilerHost, options: AotCompilerOptions,
-    errorCollector: (error: any, type?: any) =>
+    errorCollector?: (error: any, type?: any) =>
         void): {compiler: AotCompiler, reflector: StaticReflector} {
   let translations: string = options.translations || '';
 

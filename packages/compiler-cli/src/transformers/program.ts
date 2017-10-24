@@ -422,14 +422,15 @@ class AngularCompilerProgram implements Program {
         this.oldProgramLibrarySummaries);
     const aotOptions = getAotCompilerOptions(this.options);
     this._structuralDiagnostics = [];
-    const errorCollector = (err: any) => {
-      this._structuralDiagnostics !.push({
-        messageText: err.toString(),
-        category: ts.DiagnosticCategory.Error,
-        source: SOURCE,
-        code: DEFAULT_ERROR_CODE
-      });
-    };
+    const errorCollector =
+        (this.options.collectAllErrors || this.options.fullTemplateTypeCheck) ? (err: any) => {
+          this._structuralDiagnostics !.push({
+            messageText: err.toString(),
+            category: ts.DiagnosticCategory.Error,
+            source: SOURCE,
+            code: DEFAULT_ERROR_CODE
+          });
+        } : undefined;
     this._compiler = createAotCompiler(this._hostAdapter, aotOptions, errorCollector).compiler;
   }
 
