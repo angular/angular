@@ -181,11 +181,13 @@ function createVariableStatementForDeclarations(declarations: Declaration[]): ts
       /* modifiers */ undefined, ts.createVariableDeclarationList(varDecls, ts.NodeFlags.Const));
 }
 
-export function getExpressionLoweringTransformFactory(requestsMap: RequestsMap):
-    (context: ts.TransformationContext) => (sourceFile: ts.SourceFile) => ts.SourceFile {
+export function getExpressionLoweringTransformFactory(
+    requestsMap: RequestsMap, program: ts.Program): (context: ts.TransformationContext) =>
+    (sourceFile: ts.SourceFile) => ts.SourceFile {
   // Return the factory
   return (context: ts.TransformationContext) => (sourceFile: ts.SourceFile): ts.SourceFile => {
-    const requests = requestsMap.getRequests(sourceFile);
+    // We need to use the original SourceFile for reading metadata, and not the transformed one.
+    const requests = requestsMap.getRequests(program.getSourceFile(sourceFile.fileName));
     if (requests && requests.size) {
       return transformSourceFile(sourceFile, requests, context);
     }

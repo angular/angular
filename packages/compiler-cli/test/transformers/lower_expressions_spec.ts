@@ -181,13 +181,15 @@ function convert(annotatedSource: string) {
       [fileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
   const moduleSourceFile = program.getSourceFile(fileName);
   const transformers: ts.CustomTransformers = {
-    before: [getExpressionLoweringTransformFactory({
-      getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
-        if (sourceFile.fileName == moduleSourceFile.fileName) {
-          return requests;
-        } else {return new Map();}
-      }
-    })]
+    before: [getExpressionLoweringTransformFactory(
+        {
+          getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
+            if (sourceFile.fileName == moduleSourceFile.fileName) {
+              return requests;
+            } else {return new Map();}
+          }
+        },
+        program)]
   };
   let result: string = '';
   const emitResult = program.emit(
