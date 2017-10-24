@@ -386,7 +386,7 @@ class AngularCompilerProgram implements Program {
       customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (!this.options.disableExpressionLowering) {
-      beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache));
+      beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache, this.tsProgram));
     }
     beforeTs.push(getAngularEmitterTransformFactory(genFiles));
     if (customTransformers && customTransformers.beforeTs) {
@@ -754,7 +754,7 @@ export function createSrcToOutPathMapper(
 export function i18nExtract(
     formatName: string | null, outFile: string | null, host: ts.CompilerHost,
     options: CompilerOptions, bundle: MessageBundle): string[] {
-  formatName = formatName || 'null';
+  formatName = formatName || 'xlf';
   // Checks the format and returns the extension
   const ext = i18nGetExtension(formatName);
   const content = i18nSerialize(bundle, formatName, options);
@@ -788,7 +788,7 @@ export function i18nSerialize(
 }
 
 export function i18nGetExtension(formatName: string): string {
-  const format = (formatName || 'xlf').toLowerCase();
+  const format = formatName.toLowerCase();
 
   switch (format) {
     case 'xmb':
