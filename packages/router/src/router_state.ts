@@ -346,14 +346,19 @@ export interface RouteSnapshot {
 
  */
 
-
-export interface RouterSnapshotTree {
-  snapshots: {[key: string]: {node: RouteSnapshot, children: string[]}};
-}
-
 // Tree of RouteSnapshot => RouterStateSnapshot
 
-export function convertRouteSnapshot(snapshot: RouteSnapshot, routes: Route[]): ActivatedRouteSnapshot {
+export function createRouterStateSnapshot(url: string, root: TreeNode<RouteSnapshot>, routes: Route[]): RouterStateSnapshot {
+  return new RouterStateSnapshot(url, createActivatedRouteSnapshotTreeNode(root, routes));
+}
+
+function createActivatedRouteSnapshotTreeNode(treeNode: TreeNode<RouteSnapshot>, routes: Route[]): TreeNode<ActivatedRouteSnapshot> {
+  const value = createActivatedRouteSnapshot(treeNode.value, routes);
+  const children = treeNode.children.map(c => createActivatedRouteSnapshotTreeNode(c, routes));
+  return {value, children};
+}
+
+export function createActivatedRouteSnapshot(snapshot: RouteSnapshot, routes: Route[]): ActivatedRouteSnapshot {
   let config = null;
   let component = null;
   if (snapshot.configPath.length || routes.length) {

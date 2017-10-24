@@ -8,7 +8,10 @@
 
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments, RouteSnapshot, convertRouteSnapshot} from '../src/router_state';
+import {
+  ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute,
+  equalParamsAndUrlSegments, RouteSnapshot, createActivatedRouteSnapshot, createRouterStateSnapshot
+} from '../src/router_state';
 import {Params} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
@@ -22,9 +25,9 @@ describe('RouterState & Snapshot', () => {
     let c: ActivatedRouteSnapshot;
 
     beforeEach(() => {
-      a = createActivatedRouteSnapshot('a');
-      b = createActivatedRouteSnapshot('b');
-      c = createActivatedRouteSnapshot('c');
+      a = createARS('a');
+      b = createARS('b');
+      c = createARS('c');
 
       const root = {value: a, children: [{value:b, children:[]}, {value:c, children: []}]};
 
@@ -64,9 +67,9 @@ describe('RouterState & Snapshot', () => {
     let c: ActivatedRoute;
 
     beforeEach(() => {
-      a = createActivatedRoute('a');
-      b = createActivatedRoute('b');
-      c = createActivatedRoute('c');
+      a = createAR('a');
+      b = createAR('b');
+      c = createAR('c');
 
       const root = {value: a, children: [{value: b, children: []}, {value: c, children: []}]};
 
@@ -170,7 +173,7 @@ describe('RouterState & Snapshot', () => {
 
     let route: ActivatedRoute;
 
-    beforeEach(() => { route = createActivatedRoute('a'); });
+    beforeEach(() => { route = createAR('a'); });
 
     function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
       const queryParams = {};
@@ -197,7 +200,7 @@ describe('RouterState & Snapshot', () => {
     });
   });
 
-  describe('RouteSnapshot', () => {
+  describe('RouteSnapshot createActivatedRouteSnapshot', () => {
     let snapshot: RouteSnapshot;
 
     beforeEach(() => {
@@ -221,7 +224,7 @@ describe('RouterState & Snapshot', () => {
         outlet: "primary"
       };
 
-      const converted = convertRouteSnapshot({...snapshot, ...newSnapshot}, []);
+      const converted = createActivatedRouteSnapshot({...snapshot, ...newSnapshot}, []);
       expect(converted.params).toEqual(newSnapshot.params);
       expect(converted.queryParams).toEqual(newSnapshot.queryParams);
       expect(converted.fragment).toEqual(newSnapshot.fragment);
@@ -237,7 +240,7 @@ describe('RouterState & Snapshot', () => {
         ]
       };
 
-      const converted = convertRouteSnapshot({...snapshot, ...newSnapshot}, []);
+      const converted = createActivatedRouteSnapshot({...snapshot, ...newSnapshot}, []);
       expect(converted.url).toEqual([
         new UrlSegment('a', {p1: '1'}),
         new UrlSegment('b', {p2: '2'})
@@ -264,28 +267,62 @@ describe('RouterState & Snapshot', () => {
           configPath: [0, 1, 0]
         };
 
-        const converted = convertRouteSnapshot({...snapshot, ...newSnapshot}, routes);
+        const converted = createActivatedRouteSnapshot({...snapshot, ...newSnapshot}, routes);
         expect(converted.routeConfig !.path).toBe('grandchild1_0');
         expect(converted.routeConfig !.component).toBe(Cmp);
       });
 
       it('should error when configPath goes out of bounds of routes', () => {
         // Test out of bounds
-        expect(() => convertRouteSnapshot({...snapshot, configPath: [1]}, routes)).toThrow();
+        expect(() => createActivatedRouteSnapshot({...snapshot, configPath: [1]}, routes)).toThrow();
         // Test no children when asked for
-        expect(() => convertRouteSnapshot({...snapshot, configPath: [0, 0, 0]}, routes)).toThrow();
+        expect(() => createActivatedRouteSnapshot({...snapshot, configPath: [0, 0, 0]}, routes)).toThrow();
       });
+    });
+  });
+
+  describe('RouteSnapshot createRouterStateSnapshot', () => {
+    let snapshot: RouteSnapshot;
+
+    beforeEach(() => {
+      snapshot = {
+        url: [], //UrlSegment[],
+        params: {}, // Params,
+        queryParams: {}, //Params,
+        fragment: '',
+        data: {}, // Data,
+        outlet: '',
+        configPath: [] // Path to config
+      };
+    });
+
+    it('should work :)', () => {
+      const root = {
+        value: {...snapshot, url: [{path: 'parent', parameters: {}}]},
+        children: [
+          {
+            value: {...snapshot, url: [{path: 'child', parameters: {}}]},
+            children: []
+          }
+        ]
+      };
+
+      const rss = createRouterStateSnapshot('/parent/child', root, []);
+      expect(rss.url).toBe('/parent/child');
+      expect(rss.root instanceof ActivatedRouteSnapshot).toBe(true);
+      expect(rss.root.url[0].path).toBe('parent');
+      expect(rss.root.firstChild!.url[0].path).toBe('child');
     });
   });
 });
 
-function createActivatedRouteSnapshot(cmp: string) {
+function createARS(cmp: string) {
   return new ActivatedRouteSnapshot(
       <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
       <any>null, -1, null !);
 }
 
-function createActivatedRoute(cmp: string) {
+function createAR(cmp: string) {
   return new ActivatedRoute(
       new BehaviorSubject([new UrlSegment('', {})]), new BehaviorSubject({}), <any>null, <any>null,
       new BehaviorSubject({}), <any>null, <any>cmp, <any>null);
