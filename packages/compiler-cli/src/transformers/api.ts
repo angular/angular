@@ -150,6 +150,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * in JIT mode. This is off by default.
    */
   enableSummariesForJit?: boolean;
+
+  /** @internal */
+  collectAllErrors?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {

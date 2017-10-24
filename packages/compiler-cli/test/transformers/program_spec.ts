@@ -578,8 +578,8 @@ describe('ng program', () => {
       });
     }
 
-    function createProgram(rootNames: string[]) {
-      const options = testSupport.createCompilerOptions();
+    function createProgram(rootNames: string[], overrideOptions: ng.CompilerOptions = {}) {
+      const options = testSupport.createCompilerOptions(overrideOptions);
       const host = ng.createCompilerHost({options});
       const program = ng.createProgram(
           {rootNames: rootNames.map(p => path.resolve(testSupport.basePath, p)), options, host});
@@ -821,7 +821,7 @@ describe('ng program', () => {
           export class ChildModule {}
         `,
       });
-      const program = createProgram(['src/main.ts']).program;
+      const program = createProgram(['src/main.ts'], {collectAllErrors: true}).program;
       expect(normalizeRoutes(program.listLazyRoutes('src/main#MainModule'))).toEqual([{
         module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
         referencedModule:

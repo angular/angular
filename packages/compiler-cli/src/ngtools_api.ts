@@ -89,7 +89,7 @@ export class NgTools_InternalApi_NG_2 {
     // as we only needed this to support Angular CLI 1.5.0 rc.*
     const ngProgram = createProgram({
       rootNames: options.program.getRootFileNames(),
-      options: options.angularCompilerOptions,
+      options: {...options.angularCompilerOptions, collectAllErrors: true},
       host: options.host
     });
     const lazyRoutes = ngProgram.listLazyRoutes(options.entryModule);
