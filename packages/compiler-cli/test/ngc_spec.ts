@@ -1424,11 +1424,8 @@ describe('ngc transformer command-line', () => {
       const messages: string[] = [];
       const exitCode =
           main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
-      expect(exitCode).toBe(1, 'Compile was expected to fail');
-      expect(messages).toEqual([
-        'Error: Error: Error encountered resolving symbol values statically. Tagged template expressions are not supported in metadata (position 3:27 in the original .ts file)\n' +
-        'Error: No template specified for component TestComponent\n'
-      ]);
+      expect(exitCode).toBe(2, 'Compile was expected to fail');
+      expect(messages[0]).toContain(['Tagged template expressions are not supported in metadata']);
     });
   });
 });
