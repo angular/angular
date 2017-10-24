@@ -11,7 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {CompilerHost, LazyRoute} from '../../src/transformers/api';
+import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
 import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
 import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support';
@@ -309,11 +309,35 @@ describe('ng program', () => {
     });
   });
 
-  it('should typecheck templates even if skipTemplateCodegen is set', () => {
+  it('should not typecheck templates if skipTemplateCodegen is set but fullTemplateTypeCheck is not',
+     () => {
+       testSupport.writeFiles({
+         'src/main.ts': `
+        import {NgModule} from '@angular/core';
+
+        @NgModule(() => {if (1==1) return null as any;})
+        export class SomeClassWithInvalidMetadata {}
+      `,
+       });
+       const options = testSupport.createCompilerOptions({skipTemplateCodegen: true});
+       const host = ng.createCompilerHost({options});
+       const program = ng.createProgram(
+           {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
+       expectNoDiagnosticsInProgram(options, program);
+       const emitResult = program.emit({emitFlags: EmitFlags.All});
+       expect(emitResult.diagnostics.length).toBe(0);
+
+       testSupport.shouldExist('built/src/main.metadata.json');
+     });
+
+  it('should typecheck templates if skipTemplateCodegen and fullTemplateTypeCheck is set', () => {
     testSupport.writeFiles({
       'src/main.ts': createModuleAndCompSource('main', `{{nonExistent}}`),
     });
-    const options = testSupport.createCompilerOptions({skipTemplateCodegen: true});
+    const options = testSupport.createCompilerOptions({
+      skipTemplateCodegen: true,
+      fullTemplateTypeCheck: true,
+    });
     const host = ng.createCompilerHost({options});
     const program = ng.createProgram(
         {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});

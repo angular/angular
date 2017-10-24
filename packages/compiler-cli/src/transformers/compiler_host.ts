@@ -426,6 +426,12 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   }
 
   isSourceFile(filePath: string): boolean {
+    // Don't generate any files nor typecheck them
+    // if skipTemplateCodegen is set and fullTemplateTypeCheck is not yet set,
+    // for backwards compatibility.
+    if (this.options.skipTemplateCodegen && !this.options.fullTemplateTypeCheck) {
+      return false;
+    }
     // If we have a summary from a previous compilation,
     // treat the file never as a source file.
     if (this.librarySummaries.has(filePath)) {
