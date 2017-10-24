@@ -104,7 +104,7 @@ describe('Router', () => {
         const childSnapshot =
             createActivatedRouteSnapshot({component: 'child', routeConfig: {path: 'child'}});
         const futureState = new RouterStateSnapshot(
-            'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
+            'url', {value: empty.root, children: [{value: childSnapshot, children: []}]});
 
         const p = new PreActivation(futureState, empty, TestBed, (evt) => { events.push(evt); });
         p.initialize(new ChildrenOutletContexts());
@@ -134,10 +134,10 @@ describe('Router', () => {
             {component: 'great-grandchild', routeConfig: {path: 'great-grandchild'}});
         const futureState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [
-                  new TreeNode(grandchildSnapshot, [new TreeNode(greatGrandchildSnapshot, [])])
-                ])]));
+            {value: empty.root, children: [{value: childSnapshot, children: [
+                  {value: grandchildSnapshot, children: [{value: greatGrandchildSnapshot, children: []}]}]}]});
+
+
 
         const p = new PreActivation(futureState, empty, TestBed, (evt) => { events.push(evt); });
         p.initialize(new ChildrenOutletContexts());
@@ -165,11 +165,21 @@ describe('Router', () => {
         const grandchildSnapshot = createActivatedRouteSnapshot(
             {component: 'grandchild', routeConfig: {path: 'grandchild'}});
         const currentState = new RouterStateSnapshot(
-            'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
+            'url', {value: empty.root, children:[{value: childSnapshot, children: []}]});
         const futureState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+            {
+              value:
+                empty.root,
+              children: [
+                {
+                  value: childSnapshot,
+                  children: [
+                    {value: grandchildSnapshot, children: []}
+                  ]
+                }
+              ]}
+            );
 
         const p =
             new PreActivation(futureState, currentState, TestBed, (evt) => { events.push(evt); });
@@ -205,19 +215,32 @@ describe('Router', () => {
             {component: 'great-greatgrandchild', routeConfig: {path: 'great-greatgrandchild'}});
         const currentState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
-        const futureState = new RouterStateSnapshot(
-            'url',
-            new TreeNode(
-                empty.root,
-                [new TreeNode(
-                    childSnapshot, [new TreeNode(grandchildSnapshot, [
-                      new TreeNode(
-                          greatGrandchildSnapshot, [new TreeNode(greatGreatGrandchildSnapshot, [])])
-                    ])])]));
+          {value:
+                empty.root, children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]});
 
-        const p =
+        const futureState = new RouterStateSnapshot(
+          'url',
+          {
+            value: empty.root,
+            children:
+              [
+                {
+                  value: childSnapshot,
+                  children: [
+                    {
+                      value: grandchildSnapshot,
+                      children:
+                        [
+                          {
+                            value: greatGrandchildSnapshot,
+                            children: [{
+                              value: greatGreatGrandchildSnapshot, children: []
+                            }]
+                          }]
+                    }]
+                }]}
+        );
+      const p =
             new PreActivation(futureState, currentState, TestBed, (evt) => { events.push(evt); });
         p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
@@ -254,8 +277,8 @@ describe('Router', () => {
 
         const futureState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+          {value:
+                empty.root, children: [{value: childSnapshot, children: [{value:grandchildSnapshot, children: []}]}]});
 
         checkGuards(futureState, empty, TestBed, (result) => {
           expect(result).toBe(true);
@@ -281,8 +304,7 @@ describe('Router', () => {
 
         const futureState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+          {value: empty.root, children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]});
 
         checkGuards(futureState, empty, TestBed, (result) => {
           expect(result).toBe(false);
@@ -308,8 +330,8 @@ describe('Router', () => {
 
         const futureState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+          {value:
+                empty.root, children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]})
 
         checkGuards(futureState, empty, TestBed, (result) => {
           expect(result).toBe(false);
@@ -338,12 +360,11 @@ describe('Router', () => {
             {component: 'grandchild', routeConfig: {canActivate: [CA_GRANDCHILD]}});
 
         const currentState = new RouterStateSnapshot(
-            'prev', new TreeNode(empty.root, [new TreeNode(prevSnapshot, [])]));
+            'prev', {value: empty.root, children: [{value: prevSnapshot, children: []}]});
 
         const futureState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+          {value: empty.root, children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]});
 
         checkGuards(futureState, currentState, TestBed, (result) => {
           expect(logger.logs).toEqual([CDA_CHILD, CA_CHILD, CAC_CHILD, CA_GRANDCHILD]);
@@ -369,11 +390,12 @@ describe('Router', () => {
             {component: 'grandchild', routeConfig: {canActivate: [CA_GRANDCHILD]}});
 
         const currentState = new RouterStateSnapshot(
-            'prev', new TreeNode(empty.root, [new TreeNode(prevSnapshot, [])]));
+            'prev', {value: empty.root, children: [{value: prevSnapshot, children: []}]});
+
         const futureState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+          {value:
+                empty.root, children: [{value: childSnapshot, children: [{value:grandchildSnapshot, children: []}]}]});
 
         checkGuards(futureState, currentState, TestBed, (result) => {
           expect(result).toBe(false);
@@ -401,15 +423,12 @@ describe('Router', () => {
             {component: 'grandchild', routeConfig: {canActivate: [CA_GRANDCHILD]}});
 
         const currentState = new RouterStateSnapshot(
-            'prev', new TreeNode(empty.root, [
-              new TreeNode(prevChildSnapshot, [new TreeNode(prevGrandchildSnapshot, [])])
-            ]));
+            'prev', {value:empty.root, children: [
+              {value: prevChildSnapshot, children: [{value: prevGrandchildSnapshot, children: []}]}]});
 
         const futureState = new RouterStateSnapshot(
             'url',
-            new TreeNode(
-                empty.root, [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
-
+          {value: empty.root, children: [{value: childSnapshot, children: [{value:grandchildSnapshot, children: []}]}]});
         checkGuards(futureState, currentState, TestBed, (result) => {
           expect(result).toBe(true);
           expect(logger.logs).toEqual([
@@ -435,7 +454,7 @@ describe('Router', () => {
          */
         const r = {data: 'resolver'};
         const n = createActivatedRouteSnapshot({component: 'a', resolve: r});
-        const s = new RouterStateSnapshot('url', new TreeNode(empty.root, [new TreeNode(n, [])]));
+        const s = new RouterStateSnapshot('url', {value: empty.root, children: [{value: n, children: []}]});
 
         checkResolveData(s, empty, inj, () => {
           expect(s.root.firstChild !.data).toEqual({data: 'resolver_value'});
@@ -457,7 +476,7 @@ describe('Router', () => {
         const child = createActivatedRouteSnapshot({component: 'b', resolve: childResolve});
 
         const s = new RouterStateSnapshot(
-            'url', new TreeNode(empty.root, [new TreeNode(parent, [new TreeNode(child, [])])]));
+            'url', {value: empty.root, children: [{value: parent, children: [{value: child, children: []}]}]});
 
         const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
 
@@ -478,13 +497,13 @@ describe('Router', () => {
         const r2 = {data: 'resolver2'};
 
         const n1 = createActivatedRouteSnapshot({component: 'a', resolve: r1});
-        const s1 = new RouterStateSnapshot('url', new TreeNode(empty.root, [new TreeNode(n1, [])]));
+        const s1 = new RouterStateSnapshot('url', {value: empty.root, children: [{value: n1, children: []}]});
         checkResolveData(s1, empty, inj, () => {});
 
         const n21 = createActivatedRouteSnapshot({component: 'a', resolve: r1});
         const n22 = createActivatedRouteSnapshot({component: 'b', resolve: r2});
         const s2 = new RouterStateSnapshot(
-            'url', new TreeNode(empty.root, [new TreeNode(n21, [new TreeNode(n22, [])])]));
+            'url', {value: empty.root, children: [{value:n21, children: [{value:n22, children:[]}]}]});
         checkResolveData(s2, s1, inj, () => {
           expect(s2.root.firstChild !.data).toEqual({data: 'resolver1_value'});
           expect(s2.root.firstChild !.firstChild !.data).toEqual({data: 'resolver2_value'});

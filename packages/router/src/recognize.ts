@@ -41,7 +41,7 @@ class Recognizer {
           [], Object.freeze({}), Object.freeze(this.urlTree.queryParams), this.urlTree.fragment !,
           {}, PRIMARY_OUTLET, this.rootComponentType, null, this.urlTree.root, -1, {});
 
-      const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
+      const rootNode = {value: root, children};
       const routeState = new RouterStateSnapshot(this.url, rootNode);
       this.inheritParamsAndData(routeState._root);
       return of (routeState);
@@ -115,7 +115,7 @@ class Recognizer {
           segments, params, Object.freeze(this.urlTree.queryParams), this.urlTree.fragment !,
           getData(route), outlet, route.component !, route, getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + segments.length, getResolve(route));
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
+      return [{value: snapshot, children: []}];
     }
 
     const {consumedSegments, parameters, lastChild} = match(rawSegment, route, segments);
@@ -134,15 +134,15 @@ class Recognizer {
 
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
       const children = this.processChildren(childConfig, segmentGroup);
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
+      return [{value: snapshot, children}];
     }
 
     if (childConfig.length === 0 && slicedSegments.length === 0) {
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
+      return [{value: snapshot, children: []}];
     }
 
     const children = this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET);
-    return [new TreeNode<ActivatedRouteSnapshot>(snapshot, children)];
+    return [{value: snapshot, children}];
   }
 }
 

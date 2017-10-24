@@ -69,7 +69,7 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>| nul
       emptyUrl, emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent,
       snapshot.root);
   activated.snapshot = snapshot.root;
-  return new RouterState(new TreeNode<ActivatedRoute>(activated, []), snapshot);
+  return new RouterState({value: activated, children: []}, snapshot);
 }
 
 export function createEmptyStateSnapshot(
@@ -81,7 +81,7 @@ export function createEmptyStateSnapshot(
   const activated = new ActivatedRouteSnapshot(
       [], emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent, null,
       urlTree.root, -1, {});
-  return new RouterStateSnapshot('', new TreeNode<ActivatedRouteSnapshot>(activated, []));
+  return new RouterStateSnapshot('', {value: activated, children:[]});
 }
 
 /**
@@ -319,6 +319,39 @@ export interface RouteSnapshot {
   outlet: string,
   configPath: number[]
 }
+
+// Tree<RouteSnapshot>
+
+// tree.toString()
+// Tree.fromString()
+
+/**
+
+ Option 1. Use existing tree:
+
+ new Tree<RouteSnapshot>(new TreeNode<RouteSnapshot>({url: ...}, children: ))
+
+ Option 2: Do not use existing tree
+
+ {
+  value: ({url: ...}),
+  children: [
+    {
+
+    }
+  ]
+ }
+
+ parent(tree, snapshot)
+
+ */
+
+
+export interface RouterSnapshotTree {
+  snapshots: {[key: string]: {node: RouteSnapshot, children: string[]}};
+}
+
+// Tree of RouteSnapshot => RouterStateSnapshot
 
 export function convertRouteSnapshot(snapshot: RouteSnapshot, routes: Route[]): ActivatedRouteSnapshot {
   let config = null;

@@ -27,7 +27,7 @@ function createNode(
     const value = prevState.value;
     value._futureSnapshot = curr.value;
     const children = createOrReuseChildren(routeReuseStrategy, curr, prevState);
-    return new TreeNode<ActivatedRoute>(value, children);
+    return {value, children};
 
     // retrieve an activated route that is used to be displayed, but is not currently displayed
   } else if (routeReuseStrategy.retrieve(curr.value)) {
@@ -39,7 +39,7 @@ function createNode(
   } else {
     const value = createActivatedRoute(curr.value);
     const children = curr.children.map(c => createNode(routeReuseStrategy, c));
-    return new TreeNode<ActivatedRoute>(value, children);
+    return {value, children};
   }
 }
 

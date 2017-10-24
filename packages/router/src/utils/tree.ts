@@ -83,10 +83,9 @@ function findPath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
   return [];
 }
 
-export class TreeNode<T> {
-  constructor(public value: T, public children: TreeNode<T>[]) {}
-
-  toString(): string { return `TreeNode(${this.value})`; }
+export interface TreeNode<T> {
+  value: T;
+  children: TreeNode<T>[];
 }
 
 // Return the list of T indexed by outlet name
