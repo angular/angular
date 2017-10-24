@@ -16,6 +16,7 @@ import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
+import { Routes } from "router";
 
 
 /**
@@ -306,6 +307,52 @@ export class ActivatedRouteSnapshot {
     const url = this.url.map(segment => segment.toString()).join('/');
     const matched = this.routeConfig ? this.routeConfig.path : '';
     return `Route(url:'${url}', path:'${matched}')`;
+  }
+}
+
+export interface RouteSnapshot {
+  url: {path: string, parameters: {[key: string]: string}}[],
+  params: Params,
+  queryParams: Params,
+  fragment: string,
+  data: Data,
+  outlet: string,
+  configPath: number[]
+}
+
+export function convertRouteSnapshot(snapshot: RouteSnapshot, routes: Route[]): ActivatedRouteSnapshot {
+  let config = null;
+  let component = null;
+  if (snapshot.configPath.length || routes.length) {
+    config = getConfig(snapshot.configPath, routes);
+    component = config.component || null;
+  }
+
+  const url = snapshot.url.map(segmentData => new UrlSegment(segmentData.path, segmentData.parameters));
+
+  return new ActivatedRouteSnapshot(
+    url,
+    snapshot.params,
+    snapshot.queryParams,
+    snapshot.fragment,
+    snapshot.data,
+    snapshot.outlet,
+    component,
+    config, null as any, 0, null as any
+  );
+}
+
+function getConfig(path: number[], routes: Route[]): Route {
+  const errMsg = `Cannot create ActivatedRouteSnapshot out of RouteConfig. The Router configuration may have changed through a call to Router.resetConfig().`;
+  const selectedRoute = routes[path[0]];
+
+  if (!selectedRoute) throw new Error(errMsg);
+
+  if (path.length > 1) {
+    if (!selectedRoute.children) throw new Error(errMsg);
+    return getConfig(path.slice(1), selectedRoute.children);
+  } else {
+    return selectedRoute;
   }
 }
 

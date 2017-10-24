@@ -8,10 +8,11 @@
 
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments} from '../src/router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments, RouteSnapshot, convertRouteSnapshot} from '../src/router_state';
 import {Params} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
+import {Routes} from '../src/config';
 
 describe('RouterState & Snapshot', () => {
   describe('RouterStateSnapshot', () => {
@@ -193,6 +194,87 @@ describe('RouterState & Snapshot', () => {
       route.data.forEach((data) => { hasSeenDataChange = true; });
       advanceActivatedRoute(route);
       expect(hasSeenDataChange).toEqual(true);
+    });
+  });
+
+  describe('RouteSnapshot', () => {
+    let snapshot: RouteSnapshot;
+
+    beforeEach(() => {
+      snapshot = {
+        url: [], //UrlSegment[],
+        params: {}, // Params,
+        queryParams: {}, //Params,
+        fragment: '',
+        data: {}, // Data,
+        outlet: '',
+        configPath: [] // Path to config
+      };
+    });
+
+    it('should set pass-through parameters from RouteSnapshot to ActivatedRouteSnapshot', () => {
+      const newSnapshot = {
+        params: { p: "1", q: "2" },
+        queryParams: { debug: "true" },
+        fragment: '/somewhere',
+        data: {one: 1},
+        outlet: "primary"
+      };
+
+      const converted = convertRouteSnapshot({...snapshot, ...newSnapshot}, []);
+      expect(converted.params).toEqual(newSnapshot.params);
+      expect(converted.queryParams).toEqual(newSnapshot.queryParams);
+      expect(converted.fragment).toEqual(newSnapshot.fragment);
+      expect(converted.data).toEqual(newSnapshot.data);
+      expect(converted.outlet).toEqual(newSnapshot.outlet);
+    });
+
+    it('should set url segments from RouteSnapshot to ActivatedRouteSnapshot', () => {
+      const newSnapshot = {
+        url: [
+          { path: 'a', parameters: {p1: '1'} },
+          { path: 'b', parameters: {p2: '2'} }
+        ]
+      };
+
+      const converted = convertRouteSnapshot({...snapshot, ...newSnapshot}, []);
+      expect(converted.url).toEqual([
+        new UrlSegment('a', {p1: '1'}),
+        new UrlSegment('b', {p2: '2'})
+      ]);
+    });
+
+    describe('Route Config', () => {
+      let routes: Routes;
+      class Cmp {}
+      beforeEach(() => {
+        routes = [{
+          path: 'parent',
+          children: [
+            {path: 'child0'},
+            {path: 'child1', children: [
+              {path: 'grandchild1_0', component: Cmp}
+            ]}
+          ]
+        }];
+      });
+
+      it('should set component in the ActivatedRouteSnapshot', () => {
+        const newSnapshot = {
+          configPath: [0, 1, 0]
+        };
+
+        const converted = convertRouteSnapshot({...snapshot, ...newSnapshot}, routes);
+        expect(converted.routeConfig !.path).toBe('grandchild1_0');
+        expect(converted.routeConfig !.component).toBe(Cmp);
+      });
+
+      it('should error when configPath goes out of bounds of routes', () => {
+        // Test out of bounds
+        expect(() => convertRouteSnapshot({...snapshot, configPath: [1]}, routes)).toThrow();
+        // Test no children when asked for
+        expect(() => convertRouteSnapshot({...snapshot, configPath: [0, 0, 0]}, routes)).toThrow();
+      });
     });
   });
 });
