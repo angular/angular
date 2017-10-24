@@ -37,7 +37,7 @@ describe('AppComponent', () => {
   let docViewer: HTMLElement;
   let hamburger: HTMLButtonElement;
   let locationService: MockLocationService;
-  let sidenav: HTMLElement;
+  let sidenav: MatSidenav;
   let tocService: TocService;
 
   const initializeTest = () => {
@@ -51,7 +51,7 @@ describe('AppComponent', () => {
     docViewer = de.query(By.css('aio-doc-viewer')).nativeElement;
     hamburger = de.query(By.css('.hamburger')).nativeElement;
     locationService = de.injector.get(LocationService) as any as MockLocationService;
-    sidenav = de.query(By.css('mat-sidenav')).nativeElement;
+    sidenav = de.query(By.directive(MatSidenav)).componentInstance;
     tocService = de.injector.get(TocService);
   };
 
@@ -155,19 +155,19 @@ describe('AppComponent', () => {
       it('should open when nav to a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-open/);
+        expect(sidenav.opened).toBe(true);
       });
 
       it('should open when nav to an api page', () => {
         locationService.go('api/a/b/c/d');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-open/);
+        expect(sidenav.opened).toBe(true);
       });
 
       it('should be closed when nav to a marketing page (features)', () => {
         locationService.go('features');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
       });
 
       describe('when manually closed', () => {
@@ -180,19 +180,19 @@ describe('AppComponent', () => {
         });
 
         it('should be closed', () => {
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+          expect(sidenav.opened).toBe(false);
         });
 
         it('should stay closed when nav from one guide page to another', () => {
           locationService.go('guide/bags');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+          expect(sidenav.opened).toBe(false);
         });
 
         it('should stay closed when nav from a guide page to api page', () => {
           locationService.go('api');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+          expect(sidenav.opened).toBe(false);
         });
 
         it('should reopen when nav to market page and back to guide page', () => {
@@ -200,7 +200,7 @@ describe('AppComponent', () => {
           fixture.detectChanges();
           locationService.go('guide/bags');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-open/);
+          expect(sidenav.opened).toBe(true);
         });
       });
     });
@@ -214,19 +214,19 @@ describe('AppComponent', () => {
       it('should be closed when nav to a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
       });
 
       it('should be closed when nav to an api page', () => {
         locationService.go('api/a/b/c/d');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
       });
 
       it('should be closed when nav to a marketing page (features)', () => {
         locationService.go('features');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
       });
 
       describe('when manually opened', () => {
@@ -239,32 +239,32 @@ describe('AppComponent', () => {
         });
 
         it('should be open', () => {
-          expect(sidenav.className).toMatch(/sidenav-open/);
+          expect(sidenav.opened).toBe(true);
         });
 
         it('should close when click in gray content area overlay', () => {
-          const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement;
+          const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement;
           sidenavBackdrop.click();
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
         });
 
         it('should close when nav to another guide page', () => {
           locationService.go('guide/bags');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
         });
 
         it('should close when nav to api page', () => {
           locationService.go('api');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
         });
 
         it('should close again when nav to market page', () => {
           locationService.go('features');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
         });
 
       });
@@ -376,19 +376,17 @@ describe('AppComponent', () => {
       });
 
       it('should set the css class of the host container based on the open/closed state of the side nav', () => {
-        const sideNav = fixture.debugElement.query(By.directive(MatSidenav));
-
         locationService.go('guide/pipes');
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
 
-        sideNav.componentInstance.opened = false;
-        sideNav.triggerEventHandler('close', {});
+        sidenav.close();
+        sidenav.onClose.next();
         fixture.detectChanges();
         checkHostClass('sidenav', 'closed');
 
-        sideNav.componentInstance.opened = true;
-        sideNav.triggerEventHandler('open', {});
+        sidenav.open();
+        sidenav.onOpen.next();
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
       });
