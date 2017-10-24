@@ -787,7 +787,7 @@ withEachNg1Version(() => {
                childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent) !;
            const lazyCmp = cmpFactory.create(componentInjector);
 
-           expect(lazyCmp.instance.module).toBe(childMod.injector);
+           expect(lazyCmp.instance.module.injector).toBe(childMod.injector);
          });
 
        }));

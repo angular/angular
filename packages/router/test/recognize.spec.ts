@@ -799,7 +799,7 @@ function checkActivatedRoute(
   } else {
     expect(actual.url.map(s => s.path).join('/')).toEqual(url);
     expect(actual.params).toEqual(params);
-    expect(actual.component).toBe(cmp);
+    expect(actual.component as any).toBe(cmp);
     expect(actual.outlet).toEqual(outlet);
   }
 }

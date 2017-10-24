@@ -373,8 +373,8 @@ describe('ng program', () => {
         {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
     program.loadNgStructureAsync().then(() => {
       program.emit();
-      const factory =
-          fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/main.ngfactory.js'));
+      const ngFactoryPath = path.resolve(testSupport.basePath, 'built/src/main.ngfactory.js');
+      const factory = fs.readFileSync(ngFactoryPath, 'utf8');
       expect(factory).toContain('Hello world!');
       done();
     });
@@ -677,8 +677,9 @@ describe('ng program', () => {
       program.listLazyRoutes();
       program.emit();
 
-      const lazyNgFactory =
-          fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/lazy/lazy.ngfactory.js'));
+      const ngFactoryPath = path.resolve(testSupport.basePath, 'built/src/lazy/lazy.ngfactory.js');
+      const lazyNgFactory = fs.readFileSync(ngFactoryPath, 'utf8');
+
       expect(lazyNgFactory).toContain('import * as i1 from "./lazy";');
     });
 
@@ -735,8 +736,10 @@ describe('ng program', () => {
       expect(normalizeRoutes(program.listLazyRoutes('src/main#MainModule'))).toEqual([
         {
           module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
-          referencedModule:
-              {name: undefined, filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          referencedModule: {
+            name: undefined as any as string,  // TODO: Review use of `any` here (#19904)
+            filePath: path.resolve(testSupport.basePath, 'src/child.ts')
+          },
           route: './child'
         },
       ]);

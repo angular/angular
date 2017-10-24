@@ -30,7 +30,7 @@ export interface TestSupport {
   writeFiles(...mockDirs: {[fileName: string]: string}[]): void;
   shouldExist(fileName: string): void;
   shouldNotExist(fileName: string): void;
-  runOneBuild(): void;
+  runOneBuild(): boolean;
 }
 
 export function setup(
