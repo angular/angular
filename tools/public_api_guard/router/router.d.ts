@@ -197,7 +197,9 @@ export interface NavigationExtras {
     fragment?: string;
     preserveFragment?: boolean;
     /** @deprecated */ preserveQueryParams?: boolean;
-    queryParams?: Params | null;
+    queryParams?: {
+        [name: string]: any | any[];
+    } | null;
     queryParamsHandling?: QueryParamsHandling | null;
     relativeTo?: ActivatedRoute | null;
     replaceUrl?: boolean;
@@ -233,7 +235,7 @@ export interface ParamMap {
 
 /** @stable */
 export declare type Params = {
-    [key: string]: any;
+    [key: string]: string | string[];
 };
 
 /** @experimental */
@@ -375,7 +377,7 @@ export declare class RouterLink {
     preserveFragment: boolean;
     /** @deprecated */ preserveQueryParams: boolean;
     queryParams: {
-        [k: string]: any;
+        [name: string]: any | any[];
     };
     queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
@@ -408,7 +410,7 @@ export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     preserveFragment: boolean;
     preserveQueryParams: boolean;
     queryParams: {
-        [k: string]: any;
+        [name: string]: any | any[];
     };
     queryParamsHandling: QueryParamsHandling;
     replaceUrl: boolean;
@@ -510,15 +512,11 @@ export declare type UrlMatchResult = {
 /** @stable */
 export declare class UrlSegment {
     readonly parameterMap: ParamMap;
-    parameters: {
-        [name: string]: string;
-    };
+    parameters: Params;
     path: string;
     constructor(
         path: string,
-        parameters: {
-        [name: string]: string;
-    });
+        parameters: Params);
     toString(): string;
 }
 
@@ -549,9 +547,7 @@ export declare abstract class UrlSerializer {
 export declare class UrlTree {
     fragment: string | null;
     readonly queryParamMap: ParamMap;
-    queryParams: {
-        [key: string]: string;
-    };
+    queryParams: Params;
     root: UrlSegmentGroup;
     toString(): string;
 }

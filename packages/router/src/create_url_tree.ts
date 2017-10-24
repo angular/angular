@@ -7,9 +7,9 @@
  */
 
 import {ActivatedRoute} from './router_state';
-import {PRIMARY_OUTLET, Params} from './shared';
+import {PRIMARY_OUTLET, Params, convertToParams, equalsParams} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
-import {forEach, last, shallowEqual} from './utils/collection';
+import {forEach, last} from './utils/collection';
 
 export function createUrlTree(
     route: ActivatedRoute, urlTree: UrlTree, commands: any[], queryParams: Params,
@@ -40,12 +40,7 @@ function isMatrixParams(command: any): boolean {
 function tree(
     oldSegmentGroup: UrlSegmentGroup, newSegmentGroup: UrlSegmentGroup, urlTree: UrlTree,
     queryParams: Params, fragment: string): UrlTree {
-  let qp: any = {};
-  if (queryParams) {
-    forEach(queryParams, (value: any, name: any) => {
-      qp[name] = Array.isArray(value) ? value.map((v: any) => `${v}`) : `${value}`;
-    });
-  }
+  let qp = convertToParams(queryParams);
 
   if (urlTree.root === oldSegmentGroup) {
     return new UrlTree(newSegmentGroup, qp, fragment);
@@ -173,8 +168,8 @@ function createPositionApplyingDoubleDots(
   return new Position(g, false, ci - dd);
 }
 
-function getPath(command: any): any {
-  if (typeof command === 'object' && command != null && command.outlets) {
+function getPath(command: any): string {
+  if (command && command.outlets) {
     return command.outlets[PRIMARY_OUTLET];
   }
   return `${command}`;
@@ -285,7 +280,7 @@ function createNewSegmentGroup(
     const curr = getPath(commands[i]);
     const next = (i < commands.length - 1) ? commands[i + 1] : null;
     if (curr && next && isMatrixParams(next)) {
-      paths.push(new UrlSegment(curr, stringify(next)));
+      paths.push(new UrlSegment(curr, convertToParams(next)));
       i += 2;
     } else {
       paths.push(new UrlSegment(curr, {}));
@@ -305,12 +300,6 @@ function createNewSegmentChildren(outlets: {[name: string]: any}): any {
   return children;
 }
 
-function stringify(params: {[key: string]: any}): {[key: string]: string} {
-  const res: {[key: string]: string} = {};
-  forEach(params, (v: any, k: string) => res[k] = `${v}`);
-  return res;
-}
-
-function compare(path: string, params: {[key: string]: any}, segment: UrlSegment): boolean {
-  return path == segment.path && shallowEqual(params, segment.parameters);
+function compare(path: string, params: Params, segment: UrlSegment): boolean {
+  return path == segment.path && equalsParams(params, segment.parameters);
 }

@@ -10,11 +10,9 @@ import {Type} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
-
 import {Data, ResolveData, Route} from './config';
-import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
+import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap, equalsParams} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
-import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
 
@@ -185,25 +183,25 @@ export type Inherited = {
 export function inheritedParamsDataResolve(route: ActivatedRouteSnapshot): Inherited {
   const pathToRoot = route.pathFromRoot;
 
-  let inhertingStartingFrom = pathToRoot.length - 1;
+  let inheritingStartingFrom = pathToRoot.length - 1;
 
-  while (inhertingStartingFrom >= 1) {
-    const current = pathToRoot[inhertingStartingFrom];
-    const parent = pathToRoot[inhertingStartingFrom - 1];
+  while (inheritingStartingFrom >= 1) {
+    const current = pathToRoot[inheritingStartingFrom];
+    const parent = pathToRoot[inheritingStartingFrom - 1];
     // current route is an empty path => inherits its parent's params and data
     if (current.routeConfig && current.routeConfig.path === '') {
-      inhertingStartingFrom--;
+      inheritingStartingFrom--;
 
       // parent is componentless => current route should inherit its params and data
     } else if (!parent.component) {
-      inhertingStartingFrom--;
+      inheritingStartingFrom--;
 
     } else {
       break;
     }
   }
 
-  return pathToRoot.slice(inhertingStartingFrom).reduce((res, curr) => {
+  return pathToRoot.slice(inheritingStartingFrom).reduce((res, curr) => {
     const params = {...res.params, ...curr.params};
     const data = {...res.data, ...curr.data};
     const resolve = {...res.resolve, ...curr._resolvedData};
@@ -366,19 +364,19 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
     const currentSnapshot = route.snapshot;
     const nextSnapshot = route._futureSnapshot;
     route.snapshot = nextSnapshot;
-    if (!shallowEqual(currentSnapshot.queryParams, nextSnapshot.queryParams)) {
+    if (!equalsParams(currentSnapshot.queryParams, nextSnapshot.queryParams)) {
       (<any>route.queryParams).next(nextSnapshot.queryParams);
     }
     if (currentSnapshot.fragment !== nextSnapshot.fragment) {
       (<any>route.fragment).next(nextSnapshot.fragment);
     }
-    if (!shallowEqual(currentSnapshot.params, nextSnapshot.params)) {
+    if (!equalsParams(currentSnapshot.params, nextSnapshot.params)) {
       (<any>route.params).next(nextSnapshot.params);
     }
-    if (!shallowEqualArrays(currentSnapshot.url, nextSnapshot.url)) {
+    if (!equalSegments(currentSnapshot.url, nextSnapshot.url)) {
       (<any>route.url).next(nextSnapshot.url);
     }
-    if (!shallowEqual(currentSnapshot.data, nextSnapshot.data)) {
+    if (!equalsParams(currentSnapshot.data, nextSnapshot.data)) {
       (<any>route.data).next(nextSnapshot.data);
     }
   } else {
@@ -389,12 +387,13 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
   }
 }
 
-
+// Recursively check that the active route hierarchy have the same path and parameter
 export function equalParamsAndUrlSegments(
     a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {
-  const equalUrlParams = shallowEqual(a.params, b.params) && equalSegments(a.url, b.url);
-  const parentsMismatch = !a.parent !== !b.parent;
-
-  return equalUrlParams && !parentsMismatch &&
-      (!a.parent || equalParamsAndUrlSegments(a.parent, b.parent !));
+  if (!equalsParams(a.params, b.params)) return false;
+  if (!equalSegments(a.url, b.url)) return false;
+  // could only be equal if both have a parent or both have no parent
+  if (!a.parent !== !b.parent) return false;
+  // walk up the routes
+  return a.parent ? equalParamsAndUrlSegments(a.parent, b.parent !) : true;
 }

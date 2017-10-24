@@ -6,26 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PRIMARY_OUTLET, ParamMap, convertToParamMap} from './shared';
-import {forEach, shallowEqual} from './utils/collection';
+import {PRIMARY_OUTLET, ParamMap, Params, containsParams, convertToParamMap, equalsParams} from './shared';
+import {forEach} from './utils/collection';
 
 export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
 }
 
-export function containsTree(container: UrlTree, containee: UrlTree, exact: boolean): boolean {
-  if (exact) {
-    return equalQueryParams(container.queryParams, containee.queryParams) &&
-        equalSegmentGroups(container.root, containee.root);
-  }
-
-  return containsQueryParams(container.queryParams, containee.queryParams) &&
-      containsSegmentGroup(container.root, containee.root);
-}
-
-function equalQueryParams(
-    container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
-  return shallowEqual(container, containee);
+export function equalsTree(a: UrlTree, b: UrlTree): boolean {
+  return equalsParams(a.queryParams, b.queryParams) && equalSegmentGroups(a.root, b.root);
 }
 
 function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -38,10 +27,9 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
   return true;
 }
 
-function containsQueryParams(
-    container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
-  return Object.keys(containee).length <= Object.keys(container).length &&
-      Object.keys(containee).every(key => containee[key] === container[key]);
+export function containsTree(container: UrlTree, containee: UrlTree): boolean {
+  return containsParams(container.queryParams, containee.queryParams) &&
+      containsSegmentGroup(container.root, containee.root);
 }
 
 function containsSegmentGroup(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
@@ -52,9 +40,7 @@ function containsSegmentGroupHelper(
     container: UrlSegmentGroup, containee: UrlSegmentGroup, containeePaths: UrlSegment[]): boolean {
   if (container.segments.length > containeePaths.length) {
     const current = container.segments.slice(0, containeePaths.length);
-    if (!equalPath(current, containeePaths)) return false;
-    if (containee.hasChildren()) return false;
-    return true;
+    return equalPath(current, containeePaths) && !containee.hasChildren();
 
   } else if (container.segments.length === containeePaths.length) {
     if (!equalPath(container.segments, containeePaths)) return false;
@@ -67,9 +53,9 @@ function containsSegmentGroupHelper(
   } else {
     const current = containeePaths.slice(0, container.segments.length);
     const next = containeePaths.slice(container.segments.length);
-    if (!equalPath(container.segments, current)) return false;
     if (!container.children[PRIMARY_OUTLET]) return false;
-    return containsSegmentGroupHelper(container.children[PRIMARY_OUTLET], containee, next);
+    return equalPath(container.segments, current) &&
+        containsSegmentGroupHelper(container.children[PRIMARY_OUTLET], containee, next);
   }
 }
 
@@ -111,7 +97,7 @@ export class UrlTree {
       /** The root segment group of the URL tree */
       public root: UrlSegmentGroup,
       /** The query params of the URL */
-      public queryParams: {[key: string]: string},
+      public queryParams: Params,
       /** The fragment of the URL */
       public fragment: string|null) {}
 
@@ -192,9 +178,8 @@ export class UrlSegment {
   constructor(
       /** The path part of a URL segment */
       public path: string,
-
       /** The matrix parameters associated with a segment */
-      public parameters: {[name: string]: string}) {}
+      public parameters: Params) {}
 
   get parameterMap() {
     if (!this._parameterMap) {
@@ -204,11 +189,16 @@ export class UrlSegment {
   }
 
   /** @docsNotRequired */
-  toString(): string { return serializePath(this); }
+  toString(): string {
+    const path = encode(this.path);
+    const strParams = paramsToStrings(this.parameters).join(';');
+
+    return strParams ? `${path};${strParams}` : path;
+  }
 }
 
 export function equalSegments(as: UrlSegment[], bs: UrlSegment[]): boolean {
-  return equalPath(as, bs) && as.every((a, i) => shallowEqual(a.parameters, bs[i].parameters));
+  return equalPath(as, bs) && as.every((a, i) => equalsParams(a.parameters, bs[i].parameters));
 }
 
 export function equalPath(as: UrlSegment[], bs: UrlSegment[]): boolean {
@@ -281,15 +271,14 @@ export class DefaultUrlSerializer implements UrlSerializer {
     const segment = `/${serializeSegment(tree.root, true)}`;
     const query = serializeQueryParams(tree.queryParams);
     const fragment = typeof tree.fragment === `string` ? `#${encodeURI(tree.fragment !)}` : '';
-
     return `${segment}${query}${fragment}`;
   }
 }
 
 const DEFAULT_SERIALIZER = new DefaultUrlSerializer();
 
-export function serializePaths(segment: UrlSegmentGroup): string {
-  return segment.segments.map(p => serializePath(p)).join('/');
+export function serializePaths(group: UrlSegmentGroup): string {
+  return group.segments.map(segment => segment.toString()).join('/');
 }
 
 function serializeSegment(segment: UrlSegmentGroup, root: boolean): string {
@@ -349,22 +338,23 @@ export function decode(s: string): string {
   return decodeURIComponent(s);
 }
 
-export function serializePath(path: UrlSegment): string {
-  return `${encode(path.path)}${serializeParams(path.parameters)}`;
-}
-
-function serializeParams(params: {[key: string]: string}): string {
-  return Object.keys(params).map(key => `;${encode(key)}=${encode(params[key])}`).join('');
-}
-
-function serializeQueryParams(params: {[key: string]: any}): string {
-  const strParams: string[] = Object.keys(params).map((name) => {
-    const value = params[name];
-    return Array.isArray(value) ? value.map(v => `${encode(name)}=${encode(v)}`).join('&') :
-                                  `${encode(name)}=${encode(value)}`;
+// Convert a `Params` object to `k=v` strings
+// The same key can appear multiple time when the value is an array.
+function paramsToStrings(params: Params): string[] {
+  const strParams: string[] = [];
+  forEach(params, (value: string | string[], name) => {
+    (Array.isArray(value) ? value : [value]).forEach(v => {
+      strParams.push(`${encode(name)}=${encode(v)}`);
+    });
   });
 
-  return strParams.length ? `?${strParams.join("&")}` : '';
+  return strParams;
+}
+
+// Return a query parameter string with a leading '?'
+function serializeQueryParams(params: Params): string {
+  const strParams = paramsToStrings(params).join(`&`);
+  return strParams.length ? `?${strParams}` : '';
 }
 
 const SEGMENT_RE = /^[^\/()?;=&#]+/;
@@ -464,15 +454,15 @@ class UrlParser {
     return new UrlSegment(decode(path), this.parseMatrixParams());
   }
 
-  private parseMatrixParams(): {[key: string]: any} {
-    const params: {[key: string]: any} = {};
+  private parseMatrixParams(): Params {
+    const params: Params = {};
     while (this.consumeOptional(';')) {
       this.parseParam(params);
     }
     return params;
   }
 
-  private parseParam(params: {[key: string]: any}): void {
+  private parseParam(params: Params): void {
     const key = matchSegments(this.remaining);
     if (!key) {
       return;

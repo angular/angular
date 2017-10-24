@@ -9,7 +9,7 @@
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, equalParamsAndUrlSegments} from '../src/router_state';
-import {Params} from '../src/shared';
+import {Params, convertToParams} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 
@@ -99,22 +99,26 @@ describe('RouterState & Snapshot', () => {
   });
 
   describe('equalParamsAndUrlSegments', () => {
-    function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
-      const snapshot = new ActivatedRouteSnapshot(
-          url, params, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null,
-          -1, null !);
+    function createSnapshot(
+        params: {[name: string]: any}, url: UrlSegment[]): ActivatedRouteSnapshot {
+      const n: any = null;
+      const snapshot =
+          new ActivatedRouteSnapshot(url, convertToParams(params), n, n, n, n, n, n, n, -1, null !);
       snapshot._routerState = new RouterStateSnapshot('', new TreeNode(snapshot, []));
       return snapshot;
     }
 
     function createSnapshotPairWithParent(
-        params: [Params, Params], parentParams: [Params, Params],
+        params: [{[name: string]: any}, {[name: string]: any}],
+        parentParams: [{[name: string]: any}, {[name: string]: any}],
         urls: [string, string]): [ActivatedRouteSnapshot, ActivatedRouteSnapshot] {
-      const snapshot1 = createSnapshot(params[0], []);
-      const snapshot2 = createSnapshot(params[1], []);
+      const snapshot1 = createSnapshot(convertToParams(params[0]), []);
+      const snapshot2 = createSnapshot(convertToParams(params[1]), []);
 
-      const snapshot1Parent = createSnapshot(parentParams[0], [new UrlSegment(urls[0], {})]);
-      const snapshot2Parent = createSnapshot(parentParams[1], [new UrlSegment(urls[1], {})]);
+      const snapshot1Parent =
+          createSnapshot(convertToParams(parentParams[0]), [new UrlSegment(urls[0], {})]);
+      const snapshot2Parent =
+          createSnapshot(convertToParams(parentParams[1]), [new UrlSegment(urls[1], {})]);
 
       snapshot1._routerState =
           new RouterStateSnapshot('', new TreeNode(snapshot1Parent, [new TreeNode(snapshot1, [])]));
@@ -171,13 +175,14 @@ describe('RouterState & Snapshot', () => {
 
     beforeEach(() => { route = createActivatedRoute('a'); });
 
-    function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
+    function createSnapshot(
+        params: {[name: string]: any}, url: UrlSegment[]): ActivatedRouteSnapshot {
       const queryParams = {};
       const fragment = '';
       const data = {};
+      const n: any = null;
       const snapshot = new ActivatedRouteSnapshot(
-          url, params, queryParams, fragment, data, <any>null, <any>null, <any>null, <any>null, -1,
-          null !);
+          url, convertToParams(params), queryParams, fragment, data, n, n, n, n, -1, null !);
       const state = new RouterStateSnapshot('', new TreeNode(snapshot, []));
       snapshot._routerState = state;
       return snapshot;
@@ -198,9 +203,8 @@ describe('RouterState & Snapshot', () => {
 });
 
 function createActivatedRouteSnapshot(cmp: string) {
-  return new ActivatedRouteSnapshot(
-      <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>cmp, <any>null,
-      <any>null, -1, null !);
+  const n: any = null;
+  return new ActivatedRouteSnapshot(n, n, n, n, n, n, <any>cmp, n, n, -1, null !);
 }
 
 function createActivatedRoute(cmp: string) {

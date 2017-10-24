@@ -9,7 +9,6 @@
 import {Route, UrlMatchResult} from './config';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
-
 /**
  * @whatItDoes Name of the primary outlet.
  *
@@ -18,12 +17,23 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
 export const PRIMARY_OUTLET = 'primary';
 
 /**
- * A collection of parameters.
+ * Matrix and Query parameters.
+ *
+ * `simple=a&multiple=b&multiple=c`
+ *
+ * will result in the following value
+ *
+ * ```
+ * {
+ *    'simple': 'a',
+ *    'multiple': ['b', 'c'],
+ * }
+ * ```
  *
  * @stable
  */
 export type Params = {
-  [key: string]: any
+  [key: string]: string | string[]
 };
 
 /**
@@ -95,6 +105,41 @@ export function convertToParamMap(params: Params): ParamMap {
   return new ParamsAsMap(params);
 }
 
+// Stringify the values
+export function convertToParams(params: {[name: string]: any | any[]}): Params {
+  let qp: Params = {};
+  if (params) {
+    Object.keys(params).forEach((name: string) => {
+      const value = params[name];
+      qp[name] = Array.isArray(value) ? value.map((v: any) => `${v}`) : `${value}`;
+    });
+  }
+  return qp;
+}
+
+export function equalsParams(a: Params, b: Params): boolean {
+  return (Object.keys(a).length === Object.keys(b).length) && containsParams(a, b);
+}
+
+// return whether b is contained in a
+export function containsParams(a: Params, b: Params): boolean {
+  const names = Object.keys(b);
+  if (names.length > Object.keys(a).length) return false;
+
+  return names.every((name) => {
+    if (!a.hasOwnProperty(name)) return false;
+    const aValue = a[name];
+    const aIsArray = Array.isArray(aValue);
+    const bValue = b[name];
+    const bIsArray = Array.isArray(bValue);
+    if (aIsArray !== bIsArray) return false;
+    return aIsArray ?
+        aValue.length === bValue.length &&
+            (<string[]>aValue).every(v => (<string[]>bValue).indexOf(v) > -1) :
+        aValue === bValue;
+  });
+}
+
 const NAVIGATION_CANCELING_ERROR = 'ngNavigationCancelingError';
 
 export function navigationCancelingError(message: string) {
@@ -123,6 +168,7 @@ export function defaultUrlMatcher(
     return null;
   }
 
+  // Positional parameters `path/to/:param`
   const posParams: {[key: string]: UrlSegment} = {};
 
   // Check each config part against the actual URL
