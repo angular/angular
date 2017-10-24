@@ -52,7 +52,7 @@
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
     "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
-    "postinstall": "node tools/cli-patches/patch.js && uglifyjs node_modules/lunr/lunr.js -c -m -o src/assets/js/lunr.min.js --source-map",
+    "postinstall": "uglifyjs node_modules/lunr/lunr.js -c -m -o src/assets/js/lunr.min.js --source-map",
     "build-ie-polyfills": "node node_modules/webpack/bin/webpack.js -p src/ie-polyfills.js src/generated/ie-polyfills.min.js",
     "~~check-env": "node scripts/check-environment",
     "~~build": "ng build --target=production --environment=stable -sm --build-optimizer",
