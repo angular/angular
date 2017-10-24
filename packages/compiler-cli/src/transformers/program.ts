@@ -510,21 +510,25 @@ class AngularCompilerProgram implements Program {
     if (isSyntaxError(e)) {
       const parserErrors = getParseErrors(e);
       if (parserErrors && parserErrors.length) {
-        this._structuralDiagnostics =
-            parserErrors.map<Diagnostic>(e => ({
-                                           messageText: e.contextualMessage(),
-                                           category: ts.DiagnosticCategory.Error,
-                                           span: e.span,
-                                           source: SOURCE,
-                                           code: DEFAULT_ERROR_CODE
-                                         }));
+        this._structuralDiagnostics = [
+          ...(this._structuralDiagnostics || []),
+          ...parserErrors.map<Diagnostic>(e => ({
+                                            messageText: e.contextualMessage(),
+                                            category: ts.DiagnosticCategory.Error,
+                                            span: e.span,
+                                            source: SOURCE,
+                                            code: DEFAULT_ERROR_CODE
+                                          }))
+        ];
       } else {
-        this._structuralDiagnostics = [{
-          messageText: e.message,
-          category: ts.DiagnosticCategory.Error,
-          source: SOURCE,
-          code: DEFAULT_ERROR_CODE
-        }];
+        this._structuralDiagnostics = [
+          ...(this._structuralDiagnostics || []), {
+            messageText: e.message,
+            category: ts.DiagnosticCategory.Error,
+            source: SOURCE,
+            code: DEFAULT_ERROR_CODE
+          }
+        ];
       }
       return null;
     }
