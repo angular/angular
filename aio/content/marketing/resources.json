@@ -627,6 +627,12 @@
             "rev": true,
             "title": "SFEIR School (French)",
             "url": "https://school.sfeir.com/project/sa200/"
+          },
+          "formationjs": {
+            "desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
+            "rev": true,
+            "title": "Formation JavaScript (French)",
+            "url": "https://formationjavascript.com/formation-angular-4/"
           }
         }
       }
