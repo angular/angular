@@ -533,9 +533,7 @@ export declare abstract class UrlSerializer {
 export declare class UrlTree {
     fragment: string | null;
     readonly queryParamMap: ParamMap;
-    queryParams: {
-        [key: string]: string;
-    };
+    queryParams: Params;
     root: UrlSegmentGroup;
     toString(): string;
 }

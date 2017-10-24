@@ -1415,7 +1415,7 @@ describe('di', () => {
         // so that we have smaller HelloWorld.
         (parent.tNode as{parent: any}).parent = undefined;
 
-        const injector = getOrCreateNodeInjector();
+        const injector: any = getOrCreateNodeInjector();  // TODO: Review use of `any` here (#19904)
         expect(injector).not.toBe(null);
       } finally {
         leaveView(oldView);

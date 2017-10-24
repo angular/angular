@@ -207,7 +207,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.detectChanges();
 
         emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
-        expect(emailInput).toBe(null);
+        expect(emailInput as any).toBe(null);  // TODO: Review use of `any` here (#19904)
       });
 
       it('should strip array controls that are not found', () => {
@@ -1393,7 +1393,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const values: string[] = [];
+          const values: any[] = [];
           const streams = merge(
               control.valueChanges, control.statusChanges, formGroup.valueChanges,
               formGroup.statusChanges);
@@ -1430,7 +1430,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const values: string[] = [];
+          const values: (string | {[key: string]: string})[] = [];
           const streams = merge(
               control.valueChanges, control.statusChanges, formGroup.valueChanges,
               formGroup.statusChanges);

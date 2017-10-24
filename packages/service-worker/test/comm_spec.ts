@@ -387,35 +387,35 @@ import {async_fit, async_it} from './async';
       });
       it('processes update availability notifications when sent', (done: DoneFn) => {
         update.available.subscribe(event => {
-          expect(event.current).toEqual({version: 'A'});
-          expect(event.available).toEqual({version: 'B'});
+          expect(event.current).toEqual({hash: 'A'});
+          expect(event.available).toEqual({hash: 'B'});
           expect(event.type).toEqual('UPDATE_AVAILABLE');
           done();
         });
         mock.sendMessage({
           type: 'UPDATE_AVAILABLE',
           current: {
-            version: 'A',
+            hash: 'A',
           },
           available: {
-            version: 'B',
+            hash: 'B',
           },
         });
       });
       it('processes update activation notifications when sent', (done: DoneFn) => {
         update.activated.subscribe(event => {
-          expect(event.previous).toEqual({version: 'A'});
-          expect(event.current).toEqual({version: 'B'});
+          expect(event.previous).toEqual({hash: 'A'});
+          expect(event.current).toEqual({hash: 'B'});
           expect(event.type).toEqual('UPDATE_ACTIVATED');
           done();
         });
         mock.sendMessage({
           type: 'UPDATE_ACTIVATED',
           previous: {
-            version: 'A',
+            hash: 'A',
           },
           current: {
-            version: 'B',
+            hash: 'B',
           },
         });
       });

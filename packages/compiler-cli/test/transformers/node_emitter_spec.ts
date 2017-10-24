@@ -502,7 +502,7 @@ describe('TypeScriptNodeEmitter', () => {
           generatedColumn: 0,
           originalLine: 1,
           originalColumn: 0,
-          name: null
+          name: null !  // TODO: Review use of `!` here (#19904)
         },
         {
           source: sourceUrl,
@@ -510,7 +510,7 @@ describe('TypeScriptNodeEmitter', () => {
           generatedColumn: 16,
           originalLine: 1,
           originalColumn: 26,
-          name: null
+          name: null !  // TODO: Review use of `!` here (#19904)
         }
       ]);
     });
