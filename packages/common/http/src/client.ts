@@ -352,12 +352,10 @@ export class HttpClient {
 
       // Figure out the headers.
       let headers: HttpHeaders|undefined = undefined;
-      if (!!options.headers !== undefined) {
-        if (options.headers instanceof HttpHeaders) {
-          headers = options.headers;
-        } else {
-          headers = new HttpHeaders(options.headers);
-        }
+      if (options.headers instanceof HttpHeaders) {
+        headers = options.headers;
+      } else {
+        headers = new HttpHeaders(options.headers);
       }
 
       // Sort out parameters.
