@@ -55,7 +55,7 @@ describe('addImageDimensions post-processor', () => {
       docType: 'a',
       renderedContent: '<img attr="value">'
     })]);
-    expect(log.warn).toHaveBeenCalled();
+    expect(log.warn).toHaveBeenCalledWith('Missing src in image tag `<img attr="value">` - doc (a) ');
   });
 
   it('should fail for images whose source cannot be loaded', () => {
@@ -69,7 +69,7 @@ describe('addImageDimensions post-processor', () => {
       renderedContent: '<img src="missing">'
     }];
     expect(() => processor.$process(docs)).toThrowError('Unable to load src in image tag `<img src="missing">` - doc (a) ');
-    expect(getImageDimensionsSpy).toHaveBeenCalled();
+    expect(getImageDimensionsSpy).toHaveBeenCalledWith('base/path', 'missing');
   });
 
   it('should ignore images with width or height attributes', () => {
