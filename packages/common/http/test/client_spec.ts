@@ -115,6 +115,26 @@ export function main() {
         expect(testReq.request.body).toBe(body);
         testReq.flush('hello world');
       });
+      it('with a json body of false', (done: DoneFn) => {
+        client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(false);
+        testReq.flush('hello world');
+      });
+      it('with a json body of 0', (done: DoneFn) => {
+        client.post('/test', 0, {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(0);
+        testReq.flush('hello world');
+      });
       it('with an arraybuffer', (done: DoneFn) => {
         const body = new ArrayBuffer(4);
         client.post('/test', body, {observe: 'response', responseType: 'text'}).subscribe(res => {

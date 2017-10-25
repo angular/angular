@@ -40,6 +40,10 @@ export function main() {
         expect(resp.ok).toBeTruthy();
         expect(resp.url).toBeNull();
       });
+      it('accepts a falsy body', () => {
+        expect(new HttpResponse({body: false}).body).toEqual(false);
+        expect(new HttpResponse({body: 0}).body).toEqual(0);
+      });
     });
     it('.ok is determined by status', () => {
       const good = new HttpResponse({status: 200});
