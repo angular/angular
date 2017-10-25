@@ -617,6 +617,34 @@ describe('ng program', () => {
       ]);
     });
 
+    it('should emit correctly after listing lazyRoutes', () => {
+      testSupport.writeFiles({
+        'src/main.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [RouterModule.forRoot([{loadChildren: './lazy/lazy#LazyModule'}])]
+          })
+          export class MainModule {}
+        `,
+        'src/lazy/lazy.ts': `
+          import {NgModule} from '@angular/core';
+
+          @NgModule()
+          export class ChildModule {}
+        `,
+      });
+      const {program, options} = createProgram(['src/main.ts', 'src/lazy/lazy.ts']);
+      expectNoDiagnosticsInProgram(options, program);
+      program.listLazyRoutes();
+      program.emit();
+
+      const lazyNgFactory =
+          fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/lazy/lazy.ngfactory.js'));
+      expect(lazyNgFactory).toContain('import * as i1 from "./lazy";');
+    });
+
     it('should list lazyRoutes given an entryRoute recursively', () => {
       writeSomeRoutes();
       const {program, options} = createProgram(['src/main.ts']);
