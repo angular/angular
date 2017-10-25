@@ -502,29 +502,69 @@ describe('ngc transformer command-line', () => {
       it('should add metadata as decorators', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
+          "compilerOptions": {
+            "emitDecoratorMetadata": true
+          },
           "angularCompilerOptions": {
             "annotationsAs": "decorators"
           },
           "files": ["mymodule.ts"]
         }`);
+        write('aclass.ts', `export class AClass {}`);
         write('mymodule.ts', `
-        import {NgModule, Component} from '@angular/core';
+          import {NgModule} from '@angular/core';
+          import {AClass} from './aclass';
 
-        @Component({template: ''})
-        export class MyComp {
-          fn(p: any) {}
-        }
-
-        @NgModule({declarations: [MyComp]})
-        export class MyModule {}
-      `);
+          @NgModule({declarations: []})
+          export class MyModule {
+            constructor(importedClass: AClass) {}
+          }
+        `);
 
         const exitCode = main(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
-        expect(mymoduleSource).toContain('MyComp = __decorate([');
+        expect(mymoduleSource).toContain('MyModule = __decorate([');
+        expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
+        expect(mymoduleSource).toContain(`__metadata("design:paramtypes", [AClass])`);
+      });
+
+      it('should add metadata as static fields', () => {
+        // Note: Don't specify emitDecoratorMetadata here on purpose,
+        // as regression test for https://github.com/angular/angular/issues/19916.
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "compilerOptions": {
+            "emitDecoratorMetadata": false
+          },
+          "angularCompilerOptions": {
+            "annotationsAs": "static fields"
+          },
+          "files": ["mymodule.ts"]
+        }`);
+        write('aclass.ts', `export class AClass {}`);
+        write('mymodule.ts', `
+          import {NgModule} from '@angular/core';
+          import {AClass} from './aclass';
+
+          @NgModule({declarations: []})
+          export class MyModule {
+            constructor(importedClass: AClass) {}
+          }
+        `);
+
+        const exitCode = main(['-p', basePath], errorSpy);
+        expect(exitCode).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).not.toContain('__decorate');
+        expect(mymoduleSource).toContain('args: [{ declarations: [] },] }');
+        expect(mymoduleSource).not.toContain(`__metadata`);
+        expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
+        expect(mymoduleSource).toContain(`{ type: AClass, }`);
       });
     });
 
