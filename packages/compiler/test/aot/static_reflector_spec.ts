@@ -1062,6 +1062,22 @@ describe('StaticReflector', () => {
                .useValue)
         .toEqual({path: 'foo', data: {e: 1}});
   });
+
+  describe('resolveExternalReference', () => {
+    it('should register modules names in the StaticSymbolResolver if no containingFile is given',
+       () => {
+         init({
+           '/tmp/root.ts': ``,
+           '/tmp/a.ts': `export const x = 1;`,
+         });
+         let symbol =
+             reflector.resolveExternalReference({moduleName: './a', name: 'x'}, '/tmp/root.ts');
+         expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBeFalsy();
+
+         symbol = reflector.resolveExternalReference({moduleName: 'a', name: 'x'});
+         expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBe('a');
+       });
+  });
 });
 
 const DEFAULT_TEST_DATA: {[key: string]: any} = {
