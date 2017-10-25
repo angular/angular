@@ -1,24 +1,46 @@
 # Architecture Overview
 
-Angular is a framework for building client applications in HTML and
+Angular is a platform and framework for building client applications in HTML and
 either JavaScript or a language like TypeScript that compiles to JavaScript.
+Angular is written in TypeScript, and includes a set of core and optional TypeScript libraries.
 
-The framework consists of several libraries, some of them core and some optional.
+### Modules
 
-You write Angular applications by composing HTML *templates* with Angularized markup,
-writing *component* classes to manage those templates, adding application logic in *services*,
-and boxing components and services in *modules*.
+Angular is modular. It defines a variation of the JavaScript Module, called the NgModule. An NgModule serves as a manifest for an application. It collects *components* and *services* that define functional units. Modules can import functionality from other modules, and allow their own functionality to be exported and used by other modules.
 
-Then you launch the app by *bootstrapping* the _root module_.
-Angular takes over, presenting your application content in a browser and
-responding to user interactions according to the instructions you've provided.
+Angular is itself an Angular application. Both core and optional functionality is implemented in Angular modules that you import. Every Angular application has an application root-module class. By convention, the class is called AppModule and resides in a file named app.module.ts. You launch your app by *bootstrapping* the root module.
 
-Of course, there is more to it than this.
-You'll learn the details in the pages that follow. For now, focus on the big picture.
+### Components and injectable services
+
+Every Angular application has at least one component, the *root component* that connects a component hierarchy with the containing module. Each component defines a class that contains application data and logic, and includes an HTML *template* that defines a view to be displayed in a target environment.
+
+For data or logic that is not associated with a specific view, or that you want to share across components,
+you create a service class. Services can be *injected* into client components as a dependency. Dependency injection lets you keep your component classes lean and efficient. They don't fetch data from the server, validate user input, or log directly to the console; they delegate such tasks to services.
+
+### Templates and two-way data binding
+
+A template combines HTML with Angular markup that can modify the HTML elements before they are displayed.
+Template *directives* provide *two-way data binding* between your application data and the document object model (DOM).
+
+* *Event binding* lets your app respond to user input in the target environment by updating your application data.
+* *Property binding* lets you interpolate values that are computed from your application data into the HTML.  
+
+Before a view is displayed, Angular evaluates the directives in the template to modify the HTML elements and the DOM according to your program data and logic.
+
+--------------------------
+
+Each of the big pieces introduced here is further explained below. The following diagram shows how these pieces are related. (There are a lot more features, of course - for now, focus on the big picture.)
 
 <figure>
   <img src="generated/images/guide/architecture/overview2.png" alt="overview">
 </figure>
+
+* The Dependency Injector provides services to a component.
+* Directives in the template associated with a component modify views using two-way data binding.
+* A *Decorator* associated with a component or directive adds metadata. Decorators are functions that modify JavaScript classes.
+  Angular has many decorators that attach metadata to classes so that it knows what those classes mean and how they should work.
+  <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">
+  Learn more about decorators on the web</a> .
 
 <div class="l-sub-section">
 
@@ -26,50 +48,32 @@ You'll learn the details in the pages that follow. For now, focus on the big pic
 
 </div>
 
-## Modules
+## Introduction to Modules
 
 <img src="generated/images/guide/architecture/module.png" alt="Component" class="left">
 
-
 Angular apps are modular and Angular has its own modularity system called _NgModules_.
-
-NgModules are a big deal.
-This page introduces modules; the [NgModules](guide/ngmodule) page covers them in depth.
 
 <br class="clear">
 
 Every Angular app has at least one NgModule class, [the _root module_](guide/bootstrapping "Bootstrapping"),
-conventionally named `AppModule`.
-
-While the _root module_ may be the only module in a small application, most apps have many more
-_feature modules_, each a cohesive block of code dedicated to an application domain,
+conventionally named `AppModule`. While a small application might have only one module, most apps have many more
+_feature modules_. Each module is expected to be a cohesive block of code dedicated to an application domain,
 a workflow, or a closely related set of capabilities.
 
-An NgModule, whether a _root_ or _feature_, is a class with an `@NgModule` decorator.
+An NgModule, whether a _root_ or _feature_, is a class with an `@NgModule` decorator. The decorator is a function that takes a single metadata object, whose properties describe the module. The most important properties are as follows.
 
-<div class="l-sub-section">
+* `declarations` - The _view classes_ that belong to this module.
+Angular has three kinds of view classes: [components](guide/architecture#components), [directives](guide/architecture#directives), and [pipes](guide/pipes).  
 
-  Decorators are functions that modify JavaScript classes.
-  Angular has many decorators that attach metadata to classes so that it knows
-  what those classes mean and how they should work.
-  <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">
-  Learn more</a> about decorators on the web.
+* `exports` -  The subset of declarations that should be visible and usable in the component [templates](guide/architecture#templates) of other modules.  
 
-</div>
+* `imports` - Other modules whose exported classes are needed by component templates declared in _this_ module.
 
-`NgModule` is a decorator function that takes a single metadata object whose properties describe the module.
-The most important properties are:
-* `declarations` - the _view classes_ that belong to this module.
-Angular has three kinds of view classes: [components](guide/architecture#components), [directives](guide/architecture#directives), and [pipes](guide/pipes).
-
-* `exports` - the subset of declarations that should be visible and usable in the component [templates](guide/architecture#templates) of other modules.
-
-* `imports` - other modules whose exported classes are needed by component templates declared in _this_ module.
-
-* `providers` - creators of [services](guide/architecture#services) that this module contributes to
+* `providers` - Creators of [services](guide/architecture#services) that this module contributes to
 the global collection of services; they become accessible in all parts of the app.
 
-* `bootstrap` - the main application view, called the _root component_,
+* `bootstrap` - The main application view, called the _root component_,
 that hosts all other app views. Only the _root module_ should set this `bootstrap` property.
 
 Here's a simple root module:
@@ -81,6 +85,8 @@ Here's a simple root module:
   The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root module has no reason to _export_ anything because other components don't need to _import_ the root module.
 
 </div>
+
+### bootstrapping
 
 Launch an application by _bootstrapping_ its root module.
 During development you're likely to bootstrap the `AppModule` in a `main.ts` file like this one.
