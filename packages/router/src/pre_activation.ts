@@ -18,16 +18,16 @@ import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
-import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
+import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers, Route} from './config';
 import {ActivationStart, ChildActivationStart, Event} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve, RouteSnapshot, getConfig, createRouterStateSnapshot} from './router_state';
 import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
-import {TreeNode, nodeChildrenAsMap} from './utils/tree';
+import {TreeNode, nodeChildrenAsMap, Tree, pathFromRoot, getPath, getNodeFromPath} from './utils/tree';
 
 class CanActivate {
-  constructor(public path: ActivatedRouteSnapshot[]) {}
-  get route(): ActivatedRouteSnapshot { return this.path[this.path.length - 1]; }
+  constructor(public path: RouteSnapshot[]) {}
+  get route(): RouteSnapshot { return this.path[this.path.length - 1]; }
 }
 
 class CanDeactivate {
@@ -42,13 +42,15 @@ export class PreActivation {
   private canDeactivateChecks: CanDeactivate[] = [];
 
   constructor(
-      private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
-      private moduleInjector: Injector, private forwardEvent?: (evt: Event) => void) {}
+      private futureRoot: TreeNode<RouteSnapshot>, private currRoot: TreeNode<RouteSnapshot>,
+      private legacySnapshots: {
+        curr: RouterStateSnapshot,
+        future: RouterStateSnapshot
+      }, private routes: Route[], private moduleInjector: Injector, private forwardEvent?: (evt: Event) => void) {}
 
+  // TODO (jasonaden): Get rid of initialize if we can. Do in constructor.
   initialize(parentContexts: ChildrenOutletContexts): void {
-    const futureRoot = this.future._root;
-    const currRoot = this.curr ? this.curr._root : null;
-    this.setupChildRouteGuards(futureRoot, currRoot, parentContexts, [futureRoot.value]);
+    this.setupChildRouteGuards(this.futureRoot, this.currRoot, parentContexts, [this.futureRoot.value]);
   }
 
   checkGuards(): Observable<boolean> {
@@ -62,11 +64,12 @@ export class PreActivation {
   }
 
   resolveData(): Observable<any> {
-    if (!this.isActivating()) return of (null);
-    const checks$ = from(this.canActivateChecks);
-    const runningChecks$ =
-        concatMap.call(checks$, (check: CanActivate) => this.runResolve(check.route));
-    return reduce.call(runningChecks$, (_: any, __: any) => _);
+    return of (null);
+    // if (!this.isActivating()) return of (null);
+    // const checks$ = from(this.canActivateChecks);
+    // const runningChecks$ =
+    //     concatMap.call(checks$, (check: CanActivate) => this.runResolve(check.route));
+    // return reduce.call(runningChecks$, (_: any, __: any) => _);
   }
 
   isDeactivating(): boolean { return this.canDeactivateChecks.length !== 0; }
@@ -79,8 +82,8 @@ export class PreActivation {
    * proper state to run `checkGuards()` method.
    */
   private setupChildRouteGuards(
-      futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>|null,
-      contexts: ChildrenOutletContexts|null, futurePath: ActivatedRouteSnapshot[]): void {
+      futureNode: TreeNode<RouteSnapshot>, currNode: TreeNode<RouteSnapshot>|null,
+      contexts: ChildrenOutletContexts|null, futurePath: RouteSnapshot[]): void {
     const prevChildren = nodeChildrenAsMap(currNode);
 
     // Process the children of the future route
@@ -92,7 +95,7 @@ export class PreActivation {
 
     // Process any children left from the current route (not active for the future route)
     forEach(
-        prevChildren, (v: TreeNode<ActivatedRouteSnapshot>, k: string) =>
+        prevChildren, (v: TreeNode<RouteSnapshot>, k: string) =>
                           this.deactivateRouteAndItsChildren(v, contexts !.getContext(k)));
   }
 
@@ -101,26 +104,29 @@ export class PreActivation {
    * proper state to run `checkGuards()` method.
    */
   private setupRouteGuards(
-      futureNode: TreeNode<ActivatedRouteSnapshot>, currNode: TreeNode<ActivatedRouteSnapshot>,
-      parentContexts: ChildrenOutletContexts|null, futurePath: ActivatedRouteSnapshot[]): void {
+      futureNode: TreeNode<RouteSnapshot>, currNode: TreeNode<RouteSnapshot>,
+      parentContexts: ChildrenOutletContexts|null, futurePath: RouteSnapshot[]): void {
     const future = futureNode.value;
     const curr = currNode ? currNode.value : null;
     const context = parentContexts ? parentContexts.getContext(futureNode.value.outlet) : null;
+    const currConfig = curr && getConfig(curr.configPath, this.routes);
+    const futureConfig = getConfig(future.configPath, this.routes)
 
     // reusing the node
-    if (curr && future.routeConfig === curr.routeConfig) {
+    if (curr && futureConfig === currConfig) {
       const shouldRunGuardsAndResolvers = this.shouldRunGuardsAndResolvers(
-          curr, future, future.routeConfig !.runGuardsAndResolvers);
+          curr, future, futureConfig !.runGuardsAndResolvers);
       if (shouldRunGuardsAndResolvers) {
         this.canActivateChecks.push(new CanActivate(futurePath));
       } else {
         // we need to set the data
         future.data = curr.data;
-        future._resolvedData = curr._resolvedData;
+        // TODO: Fix 
+        // future._resolvedData = curr._resolvedData;
       }
 
       // If we have a component, we need to go through an outlet.
-      if (future.component) {
+      if (futureConfig && futureConfig.component) {
         this.setupChildRouteGuards(
             futureNode, currNode, context ? context.children : null, futurePath);
 
@@ -131,7 +137,7 @@ export class PreActivation {
 
       if (shouldRunGuardsAndResolvers) {
         const outlet = context !.outlet !;
-        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
+        this.canDeactivateChecks.push(new CanDeactivate(outlet.component, getLegacySnapshot(this.currRoot, curr, this.legacySnapshots.curr._root)));
       }
     } else {
       if (curr) {
@@ -140,7 +146,7 @@ export class PreActivation {
 
       this.canActivateChecks.push(new CanActivate(futurePath));
       // If we have a component, we need to go through an outlet.
-      if (future.component) {
+      if (futureConfig && futureConfig.component) {
         this.setupChildRouteGuards(futureNode, null, context ? context.children : null, futurePath);
 
         // if we have a componentless route, we recurse but keep the same outlet map.
@@ -151,7 +157,7 @@ export class PreActivation {
   }
 
   private shouldRunGuardsAndResolvers(
-      curr: ActivatedRouteSnapshot, future: ActivatedRouteSnapshot,
+      curr: RouteSnapshot, future: RouteSnapshot,
       mode: RunGuardsAndResolvers|undefined): boolean {
     switch (mode) {
       case 'always':
@@ -168,12 +174,14 @@ export class PreActivation {
   }
 
   private deactivateRouteAndItsChildren(
-      route: TreeNode<ActivatedRouteSnapshot>, context: OutletContext|null): void {
+      route: TreeNode<RouteSnapshot>, context: OutletContext|null): void {
     const children = nodeChildrenAsMap(route);
     const r = route.value;
+    const rWrapped = getLegacySnapshot(this.currRoot, r, this.legacySnapshots.curr._root);
+    const config = getConfig(r.configPath, this.routes)
 
-    forEach(children, (node: TreeNode<ActivatedRouteSnapshot>, childName: string) => {
-      if (!r.component) {
+    forEach(children, (node: TreeNode<RouteSnapshot>, childName: string) => {
+      if (config && !config.component) {
         this.deactivateRouteAndItsChildren(node, context);
       } else if (context) {
         this.deactivateRouteAndItsChildren(node, context.children.getContext(childName));
@@ -182,12 +190,12 @@ export class PreActivation {
       }
     });
 
-    if (!r.component) {
-      this.canDeactivateChecks.push(new CanDeactivate(null, r));
+    if (config && !config.component) {
+      this.canDeactivateChecks.push(new CanDeactivate(null, rWrapped));
     } else if (context && context.outlet && context.outlet.isActivated) {
-      this.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, r));
+      this.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, rWrapped));
     } else {
-      this.canDeactivateChecks.push(new CanDeactivate(null, r));
+      this.canDeactivateChecks.push(new CanDeactivate(null, rWrapped));
     }
   }
 
@@ -202,10 +210,13 @@ export class PreActivation {
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ = concatMap.call(
         checks$,
-        (check: CanActivate) => andObservables(from([
-          this.fireChildActivationStart(check.route.parent), this.fireActivationStart(check.route),
-          this.runCanActivateChild(check.path), this.runCanActivate(check.route)
-        ])));
+        (check: CanActivate) => {
+          const legacySnapshot = getLegacySnapshot(this.futureRoot, check.route, this.legacySnapshots.future._root);
+          return andObservables(from([
+            this.fireChildActivationStart(legacySnapshot.parent), this.fireActivationStart(legacySnapshot),
+            this.runCanActivateChild(check.path), this.runCanActivate(legacySnapshot)
+          ]))
+        });
     return every.call(runningChecks$, (result: boolean) => result === true);
     // this.fireChildActivationStart(check.path),
   }
@@ -247,16 +258,16 @@ export class PreActivation {
       const guard = this.getToken(c, future);
       let observable: Observable<boolean>;
       if (guard.canActivate) {
-        observable = wrapIntoObservable(guard.canActivate(future, this.future));
+        observable = wrapIntoObservable(guard.canActivate(future, this.futureRoot));
       } else {
-        observable = wrapIntoObservable(guard(future, this.future));
+        observable = wrapIntoObservable(guard(future, this.futureRoot));
       }
       return first.call(observable);
     });
     return andObservables(obs);
   }
 
-  private runCanActivateChild(path: ActivatedRouteSnapshot[]): Observable<boolean> {
+  private runCanActivateChild(path: RouteSnapshot[]): Observable<boolean> {
     const future = path[path.length - 1];
 
     const canActivateChildGuards = path.slice(0, path.length - 1)
@@ -269,9 +280,9 @@ export class PreActivation {
         const guard = this.getToken(c, d.node);
         let observable: Observable<boolean>;
         if (guard.canActivateChild) {
-          observable = wrapIntoObservable(guard.canActivateChild(future, this.future));
+          observable = wrapIntoObservable(guard.canActivateChild(future, this.futureRoot));
         } else {
-          observable = wrapIntoObservable(guard(future, this.future));
+          observable = wrapIntoObservable(guard(future, this.futureRoot));
         }
         return first.call(observable);
       });
@@ -279,9 +290,9 @@ export class PreActivation {
     }));
   }
 
-  private extractCanActivateChild(p: ActivatedRouteSnapshot):
-      {node: ActivatedRouteSnapshot, guards: any[]}|null {
-    const canActivateChild = p.routeConfig ? p.routeConfig.canActivateChild : null;
+  private extractCanActivateChild(p: RouteSnapshot): {node: RouteSnapshot, guards: any[]}|null {
+    const pConfig = getConfig(p.configPath, this.routes);
+    const canActivateChild = pConfig ? pConfig.canActivateChild : null;
     if (!canActivateChild || canActivateChild.length === 0) return null;
     return {node: p, guards: canActivateChild};
   }
@@ -295,9 +306,9 @@ export class PreActivation {
       let observable: Observable<boolean>;
       if (guard.canDeactivate) {
         observable =
-            wrapIntoObservable(guard.canDeactivate(component, curr, this.curr, this.future));
+            wrapIntoObservable(guard.canDeactivate(component, curr, this.currRoot, this.futureRoot));
       } else {
-        observable = wrapIntoObservable(guard(component, curr, this.curr, this.future));
+        observable = wrapIntoObservable(guard(component, curr, this.currRoot, this.futureRoot));
       }
       return first.call(observable);
     });
@@ -308,7 +319,7 @@ export class PreActivation {
     const resolve = future._resolve;
     return map.call(this.resolveNode(resolve, future), (resolvedData: any): any => {
       future._resolvedData = resolvedData;
-      future.data = {...future.data, ...inheritedParamsDataResolve(future).resolve};
+      // future.data = {...future.data, ...inheritedParamsDataResolve(future).resolve};
       return null;
     });
   }
@@ -335,8 +346,8 @@ export class PreActivation {
 
   private getResolver(injectionToken: any, future: ActivatedRouteSnapshot): Observable<any> {
     const resolver = this.getToken(injectionToken, future);
-    return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.future)) :
-                              wrapIntoObservable(resolver(future, this.future));
+    return resolver.resolve ? wrapIntoObservable(resolver.resolve(future, this.futureRoot)) :
+                              wrapIntoObservable(resolver(future, this.futureRoot));
   }
 
   private getToken(token: any, snapshot: ActivatedRouteSnapshot): any {
@@ -356,4 +367,9 @@ function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConf
   }
 
   return null;
+}
+
+function getLegacySnapshot(root: TreeNode<RouteSnapshot>, node: RouteSnapshot, legacyRoot: TreeNode<ActivatedRouteSnapshot>): ActivatedRouteSnapshot {
+  const path = getPath(node, root);
+  return getNodeFromPath(path, legacyRoot).value;
 }

@@ -42,7 +42,7 @@ export class Tree<T> {
    * @internal
    */
   siblings(t: T): T[] {
-    const p = findPath(t, this._root);
+    const p = getNodePath(t, this._root);
     if (p.length < 2) return [];
 
     const c = p[p.length - 2].children.map(c => c.value);
@@ -52,7 +52,11 @@ export class Tree<T> {
   /**
    * @internal
    */
-  pathFromRoot(t: T): T[] { return findPath(t, this._root).map(s => s.value); }
+  pathFromRoot(t: T): T[] { return pathFromRoot(this._root, t); }
+}
+
+export function pathFromRoot<T>(root: TreeNode<T>, node: T): T[] {
+  return getNodePath(node, root).map(s => s.value);
 }
 
 // DFS for the node matching the value
@@ -68,11 +72,11 @@ function findNode<T>(value: T, node: TreeNode<T>): TreeNode<T>|null {
 }
 
 // Return the path to the node with the given value using DFS
-function findPath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
+function getNodePath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
   if (value === node.value) return [node];
 
   for (const child of node.children) {
-    const path = findPath(value, child);
+    const path = getNodePath(value, child);
     if (path.length) {
       path.unshift(node);
       return path;
@@ -80,6 +84,45 @@ function findPath<T>(value: T, node: TreeNode<T>): TreeNode<T>[] {
   }
 
   return [];
+}
+
+/**
+ * {
+ *   value: 'root',
+ *   children: [
+ *     {
+ *      value: 'child',
+ *      children: []
+ *     }
+ *   ]
+ * }
+ */
+export function getPath<T>(value: T, node: TreeNode<T>): number[] {
+  const path = getPathRecurse(value, node);
+  if (!path) throw new Error('boom3');
+  return path;
+
+  function getPathRecurse<T>(value: T, node: TreeNode<T>): number[]|null {
+    if (value === node.value) return [];
+
+    for (let i = 0 ; i < node.children.length ; i++) {
+      const path = getPathRecurse(value, node.children[i]);
+      if (path) {
+        return [i, ...path];
+      }
+    }
+
+    return null;
+  }
+}
+
+export function getNodeFromPath<T>(path: number[], node: TreeNode<T>): TreeNode<T> {
+  const newPath = path.slice(1);
+  if (!path.length) {
+    return node;
+  } else {
+    return getNodeFromPath(newPath, node.children[path[0]]);
+  }
 }
 
 export interface TreeNode<T> {

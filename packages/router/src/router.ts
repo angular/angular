@@ -638,10 +638,10 @@ export class Router {
           beforePreactivationDone$,
           ({appliedUrl, snapshot}: {appliedUrl: string, snapshot: RouterStateSnapshot}) => {
             const moduleInjector = this.ngModule.injector;
-            preActivation = new PreActivation(
-                snapshot, this.routerState.snapshot, moduleInjector,
-                (evt: Event) => this.triggerEvent(evt));
-            preActivation.initialize(this.rootContexts);
+            // preActivation = new PreActivation(
+            //     <any>snapshot, <any>this.routerState.snapshot, <any>this.config, <any>moduleInjector,
+            //     (evt: Event) => this.triggerEvent(evt));
+            // preActivation.initialize(this.rootContexts);
             return {appliedUrl, snapshot};
           });
 

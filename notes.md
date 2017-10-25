@@ -12,9 +12,15 @@
 * DONE Implement a function to convert a "tree node" of RouteSnapshot into RouterStateSnapshot
 * DONE Change recognize to construct a TreeNode<RouteSnapshot> and then convert it to RouterStateSnapshot in the router
 
-* Change Preactivation
-  * Inherit params, data, and resolve (somewhere)
 
+* Change Preactivation
+  * Fix type errors (mostly tests)
+  * Make guards pass locally
+  * Inherit resolve
+  * Make resolve pass locally
+  
+* Fix "boom" error message
+* eualParamsAndUrlSegments needs to have the logic to check all the way to the root
 MILESTONE:
   * All tests should pass
 

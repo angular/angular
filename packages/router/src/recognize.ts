@@ -12,7 +12,7 @@ import {Observer} from 'rxjs/Observer';
 import {of} from 'rxjs/observable/of';
 
 import {Data, ResolveData, Route, Routes} from './config';
-import {RouteSnapshot} from './router_state';
+import {RouteSnapshot, inheritedParamsDataResolve} from './router_state';
 import {defaultUrlMatcher, PRIMARY_OUTLET} from './shared';
 import {mapChildrenIntoArray, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {forEach, last} from './utils/collection';
@@ -49,6 +49,7 @@ class Recognizer {
       };
 
       const rootNode = {value: root, children};
+      this.inheritParamsAndData(rootNode, rootNode);
       return of (rootNode);
 
     } catch (e) {
@@ -57,15 +58,15 @@ class Recognizer {
     }
   }
 
-  // inheritParamsAndData(routeNode: TreeNode<RouteSnapshot>): void {
-  //   const route = routeNode.value;
-  //
-  //   // const i = inheritedParamsDataResolve(route);
-  //   // route.params = Object.freeze(i.params);
-  //   // route.data = Object.freeze(i.data);
-  //
-  //   routeNode.children.forEach(n => this.inheritParamsAndData(n));?
-  // }
+  inheritParamsAndData(root: TreeNode<RouteSnapshot>, routeNode: TreeNode<RouteSnapshot>): void {
+    const route = routeNode.value;
+  
+    const i = inheritedParamsDataResolve(root, route, this.config);
+    route.params = Object.freeze(i.params);
+    route.data = Object.freeze(i.data);
+  
+    routeNode.children.forEach(n => this.inheritParamsAndData(root, n));
+  }
 
   processSegmentGroup(config: Route[], segmentGroup: UrlSegmentGroup, outlet: string, configPath: number[]):
       TreeNode<RouteSnapshot>[] {

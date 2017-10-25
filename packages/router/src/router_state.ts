@@ -15,7 +15,7 @@ import {Data, ResolveData, Route} from './config';
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
-import {Tree, TreeNode} from './utils/tree';
+import {Tree, TreeNode, pathFromRoot} from './utils/tree';
 import { Routes } from "router";
 
 
@@ -73,7 +73,7 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>| nul
 }
 
 export function createEmptyStateSnapshot(
-    urlTree: UrlTree, rootComponent: Type<any>| null): RouterStateSnapshot {
+  urlTree: UrlTree, rootComponent: Type<any>| null): RouterStateSnapshot {
   const emptyParams = {};
   const emptyData = {};
   const emptyQueryParams = {};
@@ -81,7 +81,22 @@ export function createEmptyStateSnapshot(
   const activated = new ActivatedRouteSnapshot(
       [], emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent, null,
       urlTree.root, -1, {});
-  return new RouterStateSnapshot('', {value: activated, children:[]});
+return new RouterStateSnapshot('', {value: activated, children:[]});
+}
+export function createEmptyRouteSnapshotTree(): TreeNode<RouteSnapshot> {
+  return {
+    value: {
+      url: [], //UrlSegment[],
+      params: {}, // Params,
+      queryParams: {}, //Params,
+      fragment: '',
+      data: {}, // Data,
+      outlet: '',
+      configPath: [], // Path to config,
+      urlTreeAddress: {urlSegmentGroupPath: [], urlSegmentIndex: -1}
+    },
+    children: []
+  };
 }
 
 /**
@@ -175,11 +190,11 @@ export class ActivatedRoute {
   }
 }
 
+
 /** @internal */
 export type Inherited = {
   params: Params,
-  data: Data,
-  resolve: Data,
+  data: Data
 };
 
 /**
@@ -190,20 +205,24 @@ export type Inherited = {
  *
  * @internal
  */
-export function inheritedParamsDataResolve(route: ActivatedRouteSnapshot): Inherited {
-  const pathToRoot = route.pathFromRoot;
+export function inheritedParamsDataResolve(root: TreeNode<RouteSnapshot>, targetNode: RouteSnapshot, routes: Route[]): Inherited {
+  
+  const pathToNode = pathFromRoot(root, targetNode);
 
-  let inhertingStartingFrom = pathToRoot.length - 1;
+  let inhertingStartingFrom = pathToNode.length - 1;
 
   while (inhertingStartingFrom >= 1) {
-    const current = pathToRoot[inhertingStartingFrom];
-    const parent = pathToRoot[inhertingStartingFrom - 1];
+    const current = pathToNode[inhertingStartingFrom];
+    const parent = pathToNode[inhertingStartingFrom - 1];
+    const currentRouteConfig = getConfig(current.configPath, routes);
+    const parentRouteConfig = getConfig(parent.configPath, routes);
+
     // current route is an empty path => inherits its parent's params and data
-    if (current.routeConfig && current.routeConfig.path === '') {
+    if (currentRouteConfig && currentRouteConfig.path === '') {
       inhertingStartingFrom--;
 
       // parent is componentless => current route should inherit its params and data
-    } else if (!parent.component) {
+    } else if (parentRouteConfig && !parentRouteConfig.component) {
       inhertingStartingFrom--;
 
     } else {
@@ -211,12 +230,11 @@ export function inheritedParamsDataResolve(route: ActivatedRouteSnapshot): Inher
     }
   }
 
-  return pathToRoot.slice(inhertingStartingFrom).reduce((res, curr) => {
+  return pathToNode.slice(inhertingStartingFrom).reduce((res, curr) => {
     const params = {...res.params, ...curr.params};
     const data = {...res.data, ...curr.data};
-    const resolve = {...res.resolve, ...curr._resolvedData};
-    return {params, data, resolve};
-  }, <any>{params: {}, data: {}, resolve: {}});
+    return {params, data};
+  }, {params: {}, data: {}});
 }
 
 /**
@@ -375,7 +393,7 @@ export function createActivatedRouteSnapshot(urlTree: UrlTree, snapshot: RouteSn
   // check that not root
   if ((snapshot.configPath.length || routes.length) && (snapshot.configPath.length)) {
     config = getConfig(snapshot.configPath, routes);
-    component = config.component || null;
+    component = config && config.component || null;
   }
 
   let urlSegmentGroup = urlTree.root;
@@ -414,7 +432,9 @@ function getUrlSegmentGroup(path: string[], group: UrlSegmentGroup): UrlSegmentG
   }
 }
 
-function getConfig(path: number[], routes: Route[]): Route {
+export function getConfig(path: number[], routes: Route[]): Route|null {
+  if (!path.length) return null;
+
   const errMsg = `Cannot create ActivatedRouteSnapshot out of RouteConfig. The Router configuration may have changed through a call to Router.resetConfig().`;
   const selectedRoute = routes[path[0]];
 
@@ -510,10 +530,11 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
 
 
 export function equalParamsAndUrlSegments(
-    a: ActivatedRouteSnapshot, b: ActivatedRouteSnapshot): boolean {
-  const equalUrlParams = shallowEqual(a.params, b.params) && equalSegments(a.url, b.url);
-  const parentsMismatch = !a.parent !== !b.parent;
+    a: RouteSnapshot, b: RouteSnapshot): boolean {
+  const equalUrlParams = shallowEqual(a.params, b.params) && equalSegments(a.url as any, b.url as any);
+  return equalUrlParams;
+  // const parentsMismatch = !a.parent !== !b.parent;
 
-  return equalUrlParams && !parentsMismatch &&
-      (!a.parent || equalParamsAndUrlSegments(a.parent, b.parent !));
+  // return equalUrlParams && !parentsMismatch &&
+  //     (!a.parent || equalParamsAndUrlSegments(a.parent, b.parent !));
 }

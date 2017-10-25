@@ -16,8 +16,8 @@ import {Params} from '../src/shared';
 import {UrlSegment} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 import {Routes} from '../src/config';
-import {PRIMARY_OUTLET, UrlTree} from '@angular/router';
-import {DefaultUrlSerializer} from '@angular/router/src/url_tree';
+import {DefaultUrlSerializer, PRIMARY_OUTLET, UrlTree} from '@angular/router';
+import { createRouteSnapshot } from "./helpers";
 
 describe('RouterState & Snapshot', () => {
   describe('RouterStateSnapshot', () => {
@@ -105,29 +105,28 @@ describe('RouterState & Snapshot', () => {
   });
 
   describe('equalParamsAndUrlSegments', () => {
-    function createSnapshot(params: Params, url: UrlSegment[]): ActivatedRouteSnapshot {
-      const snapshot = new ActivatedRouteSnapshot(
-          url, params, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null, <any>null,
-          -1, null !);
-      snapshot._routerState = new RouterStateSnapshot('', {value: snapshot, children: []});
-      return snapshot;
+    function createSnapshot(params: Params, url: UrlSegment[]): RouteSnapshot {
+      return createRouteSnapshot({url, params});
     }
 
     function createSnapshotPairWithParent(
         params: [Params, Params], parentParams: [Params, Params],
-        urls: [string, string]): [ActivatedRouteSnapshot, ActivatedRouteSnapshot] {
+        urls: [string, string]): [RouteSnapshot, RouteSnapshot] {
       const snapshot1 = createSnapshot(params[0], []);
       const snapshot2 = createSnapshot(params[1], []);
 
-      const snapshot1Parent = createSnapshot(parentParams[0], [new UrlSegment(urls[0], {})]);
-      const snapshot2Parent = createSnapshot(parentParams[1], [new UrlSegment(urls[1], {})]);
+      throw new Error('We cannot represent parents');
 
-      snapshot1._routerState =
-          new RouterStateSnapshot('', {value: snapshot1Parent, children: [{value: snapshot1, children: []}]});
-      snapshot2._routerState =
-          new RouterStateSnapshot('', {value: snapshot2Parent, children: [{value: snapshot2, children: []}]});
+      // const snapshot1Parent = createSnapshot(parentParams[0], [new UrlSegment(urls[0], {})]);
+      // const snapshot2Parent = createSnapshot(parentParams[1], [new UrlSegment(urls[1], {})]);
 
-      return [snapshot1, snapshot2];
+      
+      // snapshot1._routerState =
+      //     new RouterStateSnapshot('', {value: snapshot1Parent, children: [{value: snapshot1, children: []}]});
+      // snapshot2._routerState =
+      //     new RouterStateSnapshot('', {value: snapshot2Parent, children: [{value: snapshot2, children: []}]});
+
+      // return [snapshot1, snapshot2];
     }
 
     it('should return false when params are different', () => {

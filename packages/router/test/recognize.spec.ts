@@ -17,7 +17,7 @@ import {map} from 'rxjs/operator/map';
 import {Type} from '@angular/core';
 import {legacyRecognize} from './helpers';
 
-fdescribe('recognize', () => {
+describe('recognize', () => {
   it('should work', () => {
     checkRecognize([{path: 'a', component: ComponentA}], 'a', (s: RouterStateSnapshot) => {
       checkActivatedRoute(s.root, '', {}, RootComponent);
@@ -207,7 +207,7 @@ fdescribe('recognize', () => {
           });
     });
 
-    xit('should merge componentless route\'s data', () => {
+    it('should merge componentless route\'s data', () => {
       checkRecognize(
           [{
             path: 'a',
@@ -275,7 +275,7 @@ fdescribe('recognize', () => {
             });
       });
 
-      xit('should inherit params', () => {
+      it('should inherit params', () => {
         checkRecognize(
             [{
               path: 'a',
