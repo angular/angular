@@ -207,6 +207,13 @@ describe('Evaluator', () => {
     expect(evaluator.evaluateNode(arrSpread.initializer !)).toEqual([0, 1, 2, 3, 4, 5]);
   });
 
+  it('should be able to fold an array spread with empty array', () => {
+    const expressions = program.getSourceFile('expressions.ts');
+    symbols.define('arr', []);
+    const arrSpread = findVar(expressions, 'arrSpread') !;
+    expect(evaluator.evaluateNode(arrSpread.initializer !)).toEqual([0, 5]);
+  });
+
   it('should be able to produce a spread expression', () => {
     const expressions = program.getSourceFile('expressions.ts');
     const arrSpreadRef = findVar(expressions, 'arrSpreadRef') !;
