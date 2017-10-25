@@ -171,7 +171,7 @@ export class HttpRequest<T> {
     // the body argument is to use a known no-body method like GET.
     if (mightHaveBody(this.method) || !!fourth) {
       // Body is the third argument, options are the fourth.
-      this.body = third as T || null;
+      this.body = (third !== undefined) ? third as T : null;
       options = fourth;
     } else {
       // No body required, options are the third argument. The body stays null.
