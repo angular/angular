@@ -1,3 +1,16 @@
+<a name="5.0.0-rc.6"></a>
+# [5.0.0-rc.6](https://github.com/angular/angular/compare/5.0.0-rc.5...5.0.0-rc.6) (2017-10-25)
+
+
+### Bug Fixes
+
+* **compiler:** automatically set `emitDecoratorMetadata` when `"annotationsAs": "static fields”` ([#19927](https://github.com/angular/angular/issues/19927)) ([ef08330](https://github.com/angular/angular/commit/ef08330)), closes [#19916](https://github.com/angular/angular/issues/19916)
+* **compiler:** don’t type check templates with `skipTemplateCodegen` ([#19909](https://github.com/angular/angular/issues/19909)) ([18bce59](https://github.com/angular/angular/commit/18bce59))
+* **compiler-cli:** only use error collector when needed. ([#19912](https://github.com/angular/angular/issues/19912)) ([9b26455](https://github.com/angular/angular/commit/9b26455))
+* **compiler-cli:** produce correct paths for windows output ([#19915](https://github.com/angular/angular/issues/19915)) ([6cc042e](https://github.com/angular/angular/commit/6cc042e))
+
+
+
 <a name="5.0.0-rc.5"></a>
 # [5.0.0-rc.5](https://github.com/angular/angular/compare/5.0.0-rc.4...5.0.0-rc.5) (2017-10-24)
 
