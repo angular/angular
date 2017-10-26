@@ -181,11 +181,18 @@ export class HttpXhrBackend implements HttpBackend {
         // Check whether the body needs to be parsed as JSON (in many cases the browser
         // will have done that already).
         if (req.responseType === 'json' && typeof body === 'string') {
-          // Attempt the parse. If it fails, a parse error should be delivered to the user.
+          // Save the original body, before attempting XSSI prefix stripping.
+          const originalBody = body;
           body = body.replace(XSSI_PREFIX, '');
           try {
+            // Attempt the parse. If it fails, a parse error should be delivered to the user.
             body = body !== '' ? JSON.parse(body) : null;
           } catch (error) {
+            // Since the JSON.parse failed, it's reasonable to assume this might not have been a
+            // JSON response. Restore the original body (including any XSSI prefix) to deliver
+            // a better error response.
+            body = originalBody;
+
             // If this was an error request to begin with, leave it as a string, it probably
             // just isn't JSON. Otherwise, deliver the parsing error to the user.
             if (ok) {
