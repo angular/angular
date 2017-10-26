@@ -43,7 +43,7 @@ export class SwPush {
 
     const workerDrivenSubscriptions = <Observable<PushSubscription|null>>(op_switchMap.call(
         this.pushManager, (pm: PushManager) => pm.getSubscription().then(sub => { return sub; })));
-    this.subscription = obs_merge.call(workerDrivenSubscriptions, this.subscriptionChanges);
+    this.subscription = obs_merge(workerDrivenSubscriptions, this.subscriptionChanges);
   }
 
   requestSubscription(options: {serverPublicKey: string}): Promise<PushSubscription> {
