@@ -889,4 +889,66 @@ describe('ng program', () => {
         .toContain(
             `src/main.html(1,1): error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
   });
+
+  describe('errors', () => {
+    const fileWithStructuralError = `
+      import {NgModule} from '@angular/core';
+
+      @NgModule(() => (1===1 ? null as any : null as any))
+      export class MyModule {}
+    `;
+    const fileWithGoodContent = `
+      import {NgModule} from '@angular/core';
+
+      @NgModule()
+      export class MyModule {}
+    `;
+
+    it('should not throw on structural errors but collect them', () => {
+      testSupport.write('src/index.ts', fileWithStructuralError);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram(
+          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+
+      const structuralErrors = program.getNgStructuralDiagnostics();
+      expect(structuralErrors.length).toBe(1);
+      expect(structuralErrors[0].messageText).toContain('Function calls are not supported.');
+    });
+
+    it('should not throw on structural errors but collect them (loadNgStructureAsync)', (done) => {
+      testSupport.write('src/index.ts', fileWithStructuralError);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram(
+          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+      program.loadNgStructureAsync().then(() => {
+        const structuralErrors = program.getNgStructuralDiagnostics();
+        expect(structuralErrors.length).toBe(1);
+        expect(structuralErrors[0].messageText).toContain('Function calls are not supported.');
+        done();
+      });
+    });
+
+    it('should be able to use a program with structural errors as oldProgram', () => {
+      testSupport.write('src/index.ts', fileWithStructuralError);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program1 = ng.createProgram(
+          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+      expect(program1.getNgStructuralDiagnostics().length).toBe(1);
+
+      testSupport.write('src/index.ts', fileWithGoodContent);
+      const program2 = ng.createProgram({
+        rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
+        options,
+        host,
+        oldProgram: program1
+      });
+      expectNoDiagnosticsInProgram(options, program2);
+    });
+  });
 });
