@@ -1464,8 +1464,40 @@ describe('ngc transformer command-line', () => {
       const messages: string[] = [];
       const exitCode =
           main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
-      expect(exitCode).toBe(2, 'Compile was expected to fail');
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
       expect(messages[0]).toContain(['Tagged template expressions are not supported in metadata']);
     });
+
+    it('should allow using 2 classes with the same name in declarations with noEmitOnError=true',
+       () => {
+         write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "noEmitOnError": true
+        },
+        "files": ["test-module.ts"]
+      }`);
+         function writeComp(fileName: string) {
+           write(fileName, `
+        import {Component} from '@angular/core';
+
+        @Component({selector: 'comp', template: ''})
+        export class TestComponent {}
+      `);
+         }
+         writeComp('src/comp1.ts');
+         writeComp('src/comp2.ts');
+         write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent as Comp1} from './comp1';
+        import {TestComponent as Comp2} from './comp2';
+
+        @NgModule({
+          declarations: [Comp1, Comp2],
+        })
+        export class MyModule {}
+      `);
+         expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
+       });
   });
 });

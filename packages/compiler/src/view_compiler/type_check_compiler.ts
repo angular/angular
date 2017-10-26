@@ -9,7 +9,7 @@
 import {AotCompilerOptions} from '../aot/compiler_options';
 import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbol} from '../aot/static_symbol';
-import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary, viewClassName} from '../compile_metadata';
+import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
 import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
@@ -33,7 +33,8 @@ export class TypeCheckCompiler {
    *   and also violate the point above.
    */
   compileComponent(
-      component: CompileDirectiveMetadata, template: TemplateAst[], usedPipes: CompilePipeSummary[],
+      componentId: string, component: CompileDirectiveMetadata, template: TemplateAst[],
+      usedPipes: CompilePipeSummary[],
       externalReferenceVars: Map<StaticSymbol, string>): o.Statement[] {
     const pipes = new Map<string, StaticSymbol>();
     usedPipes.forEach(p => pipes.set(p.name, p.type.reference));
@@ -48,7 +49,7 @@ export class TypeCheckCompiler {
     const visitor = viewBuilderFactory(null);
     visitor.visitAll([], template);
 
-    return visitor.build();
+    return visitor.build(componentId);
   }
 }
 
@@ -103,8 +104,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     templateVisitAll(this, astNodes);
   }
 
-  build(targetStatements: o.Statement[] = []): o.Statement[] {
-    this.children.forEach((child) => child.build(targetStatements));
+  build(componentId: string, targetStatements: o.Statement[] = []): o.Statement[] {
+    this.children.forEach((child) => child.build(componentId, targetStatements));
     const viewStmts: o.Statement[] =
         [o.variable(DYNAMIC_VAR_NAME).set(o.NULL_EXPR).toDeclStmt(o.DYNAMIC_TYPE)];
     let bindingCount = 0;
@@ -128,7 +129,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
           (stmt: o.Statement) => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
     });
 
-    const viewName = `_View_${this.component.name}_${this.embeddedViewIndex}`;
+    const viewName = `_View_${componentId}_${this.embeddedViewIndex}`;
     const viewFactory = new o.DeclareFunctionStmt(viewName, [], viewStmts);
     targetStatements.push(viewFactory);
     return targetStatements;

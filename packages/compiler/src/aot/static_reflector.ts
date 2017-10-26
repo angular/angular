@@ -80,8 +80,10 @@ export class StaticReflector implements CompileReflector {
     const refSymbol =
         this.symbolResolver.getSymbolByModule(ref.moduleName !, ref.name !, containingFile);
     const declarationSymbol = this.findSymbolDeclaration(refSymbol);
-    this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
-    this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);
+    if (!containingFile) {
+      this.symbolResolver.recordModuleNameForFileName(refSymbol.filePath, ref.moduleName !);
+      this.symbolResolver.recordImportAs(declarationSymbol, refSymbol);
+    }
     return declarationSymbol;
   }
 
@@ -750,7 +752,7 @@ class PopulatedScope extends BindingScope {
 }
 
 function positionalError(message: string, fileName: string, line: number, column: number): Error {
-  const result = new Error(message);
+  const result = syntaxError(message);
   (result as any).fileName = fileName;
   (result as any).line = line;
   (result as any).column = column;

@@ -193,6 +193,7 @@ export class AotCompiler {
 
   private _createNgFactoryStub(
       outputCtx: OutputContext, file: NgAnalyzedFile, emitFlags: StubEmitFlags) {
+    let componentId = 0;
     file.ngModules.forEach((ngModuleMeta, ngModuleIndex) => {
       // Note: the code below needs to executed for StubEmitFlags.Basic and StubEmitFlags.TypeCheck,
       // so we don't change the .ngfactory file too much when adding the typecheck block.
@@ -230,12 +231,14 @@ export class AotCompiler {
           if (!compMeta.isComponent) {
             return;
           }
+          componentId++;
           this._createTypeCheckBlock(
-              outputCtx, ngModuleMeta, this._metadataResolver.getHostComponentMetadata(compMeta),
-              [compMeta.type], externalReferenceVars);
-          this._createTypeCheckBlock(
-              outputCtx, ngModuleMeta, compMeta, ngModuleMeta.transitiveModule.directives,
+              outputCtx, `${compMeta.type.reference.name}_Host_${componentId}`, ngModuleMeta,
+              this._metadataResolver.getHostComponentMetadata(compMeta), [compMeta.type],
               externalReferenceVars);
+          this._createTypeCheckBlock(
+              outputCtx, `${compMeta.type.reference.name}_${componentId}`, ngModuleMeta, compMeta,
+              ngModuleMeta.transitiveModule.directives, externalReferenceVars);
         });
       }
     });
@@ -246,12 +249,13 @@ export class AotCompiler {
   }
 
   private _createTypeCheckBlock(
-      ctx: OutputContext, moduleMeta: CompileNgModuleMetadata, compMeta: CompileDirectiveMetadata,
-      directives: CompileIdentifierMetadata[], externalReferenceVars: Map<any, string>) {
+      ctx: OutputContext, componentId: string, moduleMeta: CompileNgModuleMetadata,
+      compMeta: CompileDirectiveMetadata, directives: CompileIdentifierMetadata[],
+      externalReferenceVars: Map<any, string>) {
     const {template: parsedTemplate, pipes: usedPipes} =
         this._parseTemplate(compMeta, moduleMeta, directives);
     ctx.statements.push(...this._typeCheckCompiler.compileComponent(
-        compMeta, parsedTemplate, usedPipes, externalReferenceVars));
+        componentId, compMeta, parsedTemplate, usedPipes, externalReferenceVars));
   }
 
   emitMessageBundle(analyzeResult: NgAnalyzedModules, locale: string|null): MessageBundle {

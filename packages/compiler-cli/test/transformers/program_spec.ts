@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
+import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
 import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
@@ -617,6 +618,34 @@ describe('ng program', () => {
       ]);
     });
 
+    it('should emit correctly after listing lazyRoutes', () => {
+      testSupport.writeFiles({
+        'src/main.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [RouterModule.forRoot([{loadChildren: './lazy/lazy#LazyModule'}])]
+          })
+          export class MainModule {}
+        `,
+        'src/lazy/lazy.ts': `
+          import {NgModule} from '@angular/core';
+
+          @NgModule()
+          export class ChildModule {}
+        `,
+      });
+      const {program, options} = createProgram(['src/main.ts', 'src/lazy/lazy.ts']);
+      expectNoDiagnosticsInProgram(options, program);
+      program.listLazyRoutes();
+      program.emit();
+
+      const lazyNgFactory =
+          fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/lazy/lazy.ngfactory.js'));
+      expect(lazyNgFactory).toContain('import * as i1 from "./lazy";');
+    });
+
     it('should list lazyRoutes given an entryRoute recursively', () => {
       writeSomeRoutes();
       const {program, options} = createProgram(['src/main.ts']);
@@ -828,6 +857,98 @@ describe('ng program', () => {
             {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
         route: './child#ChildModule'
       }]);
+    });
+  });
+
+  it('should report errors for ts and ng errors on emit with noEmitOnError=true', () => {
+    testSupport.writeFiles({
+      'src/main.ts': `
+        import {Component, NgModule} from '@angular/core';
+
+        // Ts error
+        let x: string = 1;
+
+        // Ng error
+        @Component({selector: 'comp', templateUrl: './main.html'})
+        export class MyComp {}
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+        `,
+      'src/main.html': '{{nonExistent}}'
+    });
+    const options = testSupport.createCompilerOptions({noEmitOnError: true});
+    const host = ng.createCompilerHost({options});
+    const program1 = ng.createProgram(
+        {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
+    const errorDiags =
+        program1.emit().diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
+    expect(formatDiagnostics(errorDiags))
+        .toContain(`src/main.ts(5,13): error TS2322: Type '1' is not assignable to type 'string'.`);
+    expect(formatDiagnostics(errorDiags))
+        .toContain(
+            `src/main.html(1,1): error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
+  });
+
+  describe('errors', () => {
+    const fileWithStructuralError = `
+      import {NgModule} from '@angular/core';
+
+      @NgModule(() => (1===1 ? null as any : null as any))
+      export class MyModule {}
+    `;
+    const fileWithGoodContent = `
+      import {NgModule} from '@angular/core';
+
+      @NgModule()
+      export class MyModule {}
+    `;
+
+    it('should not throw on structural errors but collect them', () => {
+      testSupport.write('src/index.ts', fileWithStructuralError);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram(
+          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+
+      const structuralErrors = program.getNgStructuralDiagnostics();
+      expect(structuralErrors.length).toBe(1);
+      expect(structuralErrors[0].messageText).toContain('Function calls are not supported.');
+    });
+
+    it('should not throw on structural errors but collect them (loadNgStructureAsync)', (done) => {
+      testSupport.write('src/index.ts', fileWithStructuralError);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram(
+          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+      program.loadNgStructureAsync().then(() => {
+        const structuralErrors = program.getNgStructuralDiagnostics();
+        expect(structuralErrors.length).toBe(1);
+        expect(structuralErrors[0].messageText).toContain('Function calls are not supported.');
+        done();
+      });
+    });
+
+    it('should be able to use a program with structural errors as oldProgram', () => {
+      testSupport.write('src/index.ts', fileWithStructuralError);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program1 = ng.createProgram(
+          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+      expect(program1.getNgStructuralDiagnostics().length).toBe(1);
+
+      testSupport.write('src/index.ts', fileWithGoodContent);
+      const program2 = ng.createProgram({
+        rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
+        options,
+        host,
+        oldProgram: program1
+      });
+      expectNoDiagnosticsInProgram(options, program2);
     });
   });
 });
