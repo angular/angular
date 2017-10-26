@@ -85,7 +85,7 @@ export function main() {
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
       scope.clients.add('default');
-      scope.clients.getMock('default') !.queue.subscribe(msg => { reg.sendMessage(msg); });
+      scope.clients.getMock('default') !.queue.subscribe(msg => { mock.sendMessage(msg); });
 
       mock.messages.subscribe(msg => { scope.handleMessage(msg, 'default'); });
 
