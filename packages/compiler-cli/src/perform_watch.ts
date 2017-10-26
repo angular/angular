@@ -129,6 +129,7 @@ export function performWatchCompilation(host: PerformWatchHost):
   return {close, ready: cb => readyPromise.then(cb), firstCompileResult};
 
   function cacheEntry(fileName: string): CacheEntry {
+    fileName = path.normalize(fileName);
     let entry = fileCache.get(fileName);
     if (!entry) {
       entry = {};
@@ -249,7 +250,7 @@ export function performWatchCompilation(host: PerformWatchHost):
     if (event === FileChangeEvent.CreateDeleteDir) {
       fileCache.clear();
     } else {
-      fileCache.delete(fileName);
+      fileCache.delete(path.normalize(fileName));
     }
 
     if (!ingoreFilesForWatch.has(path.normalize(fileName))) {
