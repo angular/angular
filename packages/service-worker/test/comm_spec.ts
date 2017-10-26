@@ -44,11 +44,9 @@ export function main() {
     });
     describe('SwPush', () => {
       let push: SwPush;
-      let reg: MockServiceWorkerRegistration;
-      beforeEach((done: DoneFn) => {
+      beforeEach(() => {
         push = new SwPush(comm);
         mock.setupSw();
-        mock.mockRegistration.then(r => reg = r).then(() => done());
       });
       it('receives push messages', (done: DoneFn) => {
         push.messages.subscribe(msg => {
@@ -57,7 +55,7 @@ export function main() {
           });
           done();
         });
-        reg.sendMessage({
+        mock.sendMessage({
           type: 'PUSH',
           data: {
             message: 'this was a push message',
@@ -76,11 +74,9 @@ export function main() {
     });
     describe('SwUpdate', () => {
       let update: SwUpdate;
-      let reg: MockServiceWorkerRegistration;
-      beforeEach((done: DoneFn) => {
+      beforeEach(() => {
         update = new SwUpdate(comm);
         mock.setupSw();
-        mock.mockRegistration.then(r => reg = r).then(() => done());
       });
       it('processes update availability notifications when sent', (done: DoneFn) => {
         update.available.subscribe(event => {
@@ -89,7 +85,7 @@ export function main() {
           expect(event.type).toEqual('UPDATE_AVAILABLE');
           done();
         });
-        reg.sendMessage({
+        mock.sendMessage({
           type: 'UPDATE_AVAILABLE',
           current: {
             version: 'A',
@@ -106,7 +102,7 @@ export function main() {
           expect(event.type).toEqual('UPDATE_ACTIVATED');
           done();
         });
-        reg.sendMessage({
+        mock.sendMessage({
           type: 'UPDATE_ACTIVATED',
           previous: {
             version: 'A',
@@ -119,7 +115,7 @@ export function main() {
       it('activates updates when requested', (done: DoneFn) => {
         mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
           expect(msg.action).toEqual('ACTIVATE_UPDATE');
-          reg.sendMessage({
+          mock.sendMessage({
             type: 'STATUS',
             nonce: msg.statusNonce,
             status: true,
@@ -130,7 +126,7 @@ export function main() {
       it('reports activation failure when requested', (done: DoneFn) => {
         mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
           expect(msg.action).toEqual('ACTIVATE_UPDATE');
-          reg.sendMessage({
+          mock.sendMessage({
             type: 'STATUS',
             nonce: msg.statusNonce,
             status: false,
