@@ -97,6 +97,9 @@ export class Generator {
 
 function globListToMatcher(globs: string[]): (file: string) => boolean {
   const patterns = globs.map(pattern => {
+    if (pattern.endsWith('/')) {
+      pattern = pattern + 'index.html';
+    }
     if (pattern.startsWith('!')) {
       return {
         positive: false,
