@@ -18,7 +18,7 @@ import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, D
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
-import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, tsStructureIsReused} from './util';
+import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused} from './util';
 
 
 
@@ -149,11 +149,9 @@ class AngularCompilerProgram implements Program {
 
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
       ts.Diagnostic[] {
-    if (sourceFile) {
-      return this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
-    }
+    const sourceFiles = sourceFile ? [sourceFile] : this.tsProgram.getSourceFiles();
     let diags: ts.Diagnostic[] = [];
-    this.tsProgram.getSourceFiles().forEach(sf => {
+    sourceFiles.forEach(sf => {
       if (!GENERATED_FILES.test(sf.fileName)) {
         diags.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
       }
@@ -300,6 +298,10 @@ class AngularCompilerProgram implements Program {
       }
     }
     this.emittedSourceFiles = emittedSourceFiles;
+    // translate the diagnostics in the emitResult as well.
+    const translatedEmitDiags = translateDiagnostics(this.hostAdapter, emitResult.diagnostics);
+    emitResult.diagnostics = translatedEmitDiags.ts.concat(
+        this.structuralDiagnostics.concat(translatedEmitDiags.ng).map(ngToTsDiagnostic));
 
     if (!outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
