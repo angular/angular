@@ -55,6 +55,13 @@ export class Tree<T> {
   pathFromRoot(t: T): T[] { return pathFromRoot(this._root, t); }
 }
 
+export function cloneTree<T>(t: TreeNode<T>, cloneValue: (t:T) => T): TreeNode<T> {
+  return {
+    value: cloneValue(t.value),
+    children: t.children.map(c => cloneTree(c, cloneValue))
+  };
+}
+
 export function pathFromRoot<T>(root: TreeNode<T>, node: T): T[] {
   return getNodePath(node, root).map(s => s.value);
 }

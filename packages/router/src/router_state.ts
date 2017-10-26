@@ -206,7 +206,7 @@ export type Inherited = {
  * @internal
  */
 export function inheritedParamsDataResolve(root: TreeNode<RouteSnapshot>, targetNode: RouteSnapshot, routes: Route[]): Inherited {
-  
+
   const pathToNode = pathFromRoot(root, targetNode);
 
   let inhertingStartingFrom = pathToNode.length - 1;
@@ -235,6 +235,44 @@ export function inheritedParamsDataResolve(root: TreeNode<RouteSnapshot>, target
     const data = {...res.data, ...curr.data};
     return {params, data};
   }, {params: {}, data: {}});
+}
+
+/**
+ * Inherits resolve for empty-path and componentless routes.
+ *
+ * Empty path routes inherit params, data, and resolve from their parent.
+ * And all routes inherit inherit params, data, and resolve from componentless parents.
+ *
+ * @internal
+ */
+export function inheritedResolve(targetNode: ActivatedRouteSnapshot): {[k:string]:any} {
+
+  const pathToNode = targetNode.pathFromRoot;
+
+  let inhertingStartingFrom = pathToNode.length - 1;
+
+  while (inhertingStartingFrom >= 1) {
+    const current = pathToNode[inhertingStartingFrom];
+    const parent = pathToNode[inhertingStartingFrom - 1];
+    const currentRouteConfig = current.routeConfig;
+    const parentRouteConfig = parent.routeConfig;
+
+    // current route is an empty path => inherits its parent's params and data
+    if (currentRouteConfig && currentRouteConfig.path === '') {
+      inhertingStartingFrom--;
+
+      // parent is componentless => current route should inherit its params and data
+    } else if (parentRouteConfig && !parentRouteConfig.component) {
+      inhertingStartingFrom--;
+
+    } else {
+      break;
+    }
+  }
+
+  return pathToNode.slice(inhertingStartingFrom).reduce((res, curr) => {
+    return {...res, ...curr._resolvedData};
+  }, {});
 }
 
 /**
