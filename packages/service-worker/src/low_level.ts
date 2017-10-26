@@ -106,8 +106,7 @@ export class NgswCommChannel {
       this.registration = <Observable<ServiceWorkerRegistration>>(
           op_switchMap.call(this.worker, () => serviceWorker.getRegistration()));
 
-      const rawEvents = <Observable<MessageEvent>>(op_switchMap.call(
-          this.registration, (reg: ServiceWorkerRegistration) => obs_fromEvent(reg, 'message')));
+      const rawEvents = obs_fromEvent(serviceWorker, 'message');
 
       const rawEventPayload =
           <Observable<Object>>(op_map.call(rawEvents, (event: MessageEvent) => event.data));

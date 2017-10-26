@@ -10,17 +10,26 @@ import {Subject} from 'rxjs/Subject';
 
 export class MockServiceWorkerContainer {
   private onControllerChange: Function[] = [];
+  private onMessage: Function[] = [];
   private registration: MockServiceWorkerRegistration|null = null;
   controller: MockServiceWorker|null = null;
 
   messages = new Subject();
 
-  addEventListener(event: 'controllerchange', handler: Function) {
-    this.onControllerChange.push(handler);
+  addEventListener(event: 'controllerchange'|'message', handler: Function) {
+    if (event === 'controllerchange') {
+      this.onControllerChange.push(handler);
+    } else if (event === 'message') {
+      this.onMessage.push(handler);
+    }
   }
 
   removeEventListener(event: 'controllerchange', handler: Function) {
-    this.onControllerChange = this.onControllerChange.filter(h => h !== handler);
+    if (event === 'controllerchange') {
+      this.onControllerChange = this.onControllerChange.filter(h => h !== handler);
+    } else if (event === 'message') {
+      this.onMessage = this.onMessage.filter(h => h !== handler);
+    }
   }
 
   async register(url: string): Promise<void> { return; }
@@ -36,6 +45,12 @@ export class MockServiceWorkerContainer {
   get mockRegistration(): Promise<MockServiceWorkerRegistration> {
     return Promise.resolve(this.registration !);
   }
+
+  sendMessage(value: Object): void {
+    this.onMessage.forEach(onMessage => onMessage({
+                             data: value,
+                           }));
+  }
 }
 
 export class MockServiceWorker {
@@ -44,21 +59,4 @@ export class MockServiceWorker {
   postMessage(value: Object) { this.mock.messages.next(value); }
 }
 
-export class MockServiceWorkerRegistration {
-  private onMessage: Function[] = [];
-  messages: Object[] = [];
-
-  constructor() {}
-
-  addEventListener(event: 'message', handler: Function) { this.onMessage.push(handler); }
-
-  removeEventListener(event: 'message', handler: Function) {
-    this.onMessage = this.onMessage.filter(h => h !== handler);
-  }
-
-  sendMessage(value: Object): void {
-    this.onMessage.forEach(onMessage => onMessage({
-                             data: value,
-                           }));
-  }
-}
+export class MockServiceWorkerRegistration {}
