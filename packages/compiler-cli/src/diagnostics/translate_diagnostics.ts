@@ -38,10 +38,10 @@ export function translateDiagnostics(host: TypeCheckHost, untranslatedDiagnostic
           source: SOURCE,
           code: DEFAULT_ERROR_CODE
         });
-        return;
       }
+    } else {
+      ts.push(diagnostic);
     }
-    ts.push(diagnostic);
   });
   return {ts, ng};
 }

@@ -11,6 +11,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
+import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
 import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
@@ -857,5 +858,35 @@ describe('ng program', () => {
         route: './child#ChildModule'
       }]);
     });
+  });
+
+  it('should report errors for ts and ng errors on emit with noEmitOnError=true', () => {
+    testSupport.writeFiles({
+      'src/main.ts': `
+        import {Component, NgModule} from '@angular/core';
+
+        // Ts error
+        let x: string = 1;
+
+        // Ng error
+        @Component({selector: 'comp', templateUrl: './main.html'})
+        export class MyComp {}
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+        `,
+      'src/main.html': '{{nonExistent}}'
+    });
+    const options = testSupport.createCompilerOptions({noEmitOnError: true});
+    const host = ng.createCompilerHost({options});
+    const program1 = ng.createProgram(
+        {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
+    const errorDiags =
+        program1.emit().diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
+    expect(formatDiagnostics(errorDiags))
+        .toContain(`src/main.ts(5,13): error TS2322: Type '1' is not assignable to type 'string'.`);
+    expect(formatDiagnostics(errorDiags))
+        .toContain(
+            `src/main.html(1,1): error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
   });
 });
