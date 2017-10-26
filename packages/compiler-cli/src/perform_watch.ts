@@ -191,6 +191,10 @@ export function performWatchCompilation(host: PerformWatchHost):
       };
     }
     ingoreFilesForWatch.clear();
+    const oldProgram = cachedProgram;
+    // We clear out the `cachedProgram` here as a
+    // program can only be used as `oldProgram` 1x
+    cachedProgram = undefined;
     const compileResult = performCompilation({
       rootNames: cachedOptions.rootNames,
       options: cachedOptions.options,
