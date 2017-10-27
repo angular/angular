@@ -75,9 +75,7 @@
       ["fit"],
       ["fdescribe"],
       ["xit"],
-      ["xdescribe"],
-      { "name": "HostBinding", "message": "Use `host` in the component definition instead." },
-      { "name": "HostListener", "message": "Use `host` in the component definition instead." }
+      ["xdescribe"]
     ],
     // Disallows importing the whole RxJS library. Submodules can be still imported.
     "import-blacklist": [true, "rxjs"],
@@ -87,6 +85,11 @@
     // Custom Rules
     "ts-loader": true,
     "no-exposed-todo": true,
+    "no-host-decorator-in-concrete": [
+      true,
+      "HostBinding",
+      "HostListener"
+    ],
     "validate-decorators": [true, {
       "Component": {
         "encapsulation": "\\.None$",
