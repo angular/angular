@@ -15,6 +15,7 @@ import {TestBed, async, getTestBed} from '@angular/core/testing';
 export function main() {
   describe('Jit Summaries', () => {
     let instances: Map<any, Base>;
+    let summaries: () => any[];
 
     class SomeDep {}
 
@@ -69,7 +70,7 @@ export function main() {
       TestBed.configureCompiler({providers: [{provide: ResourceLoader, useValue: resourceLoader}]});
       TestBed.configureTestingModule({imports: [SomeModule], providers: [SomeDep]});
 
-      TestBed.compileComponents().then(() => {
+      let summariesPromise = TestBed.compileComponents().then(() => {
         const metadataResolver = TestBed.get(CompileMetadataResolver) as CompileMetadataResolver;
         const summaries = [
           metadataResolver.getNgModuleSummary(SomeModule),
@@ -83,10 +84,12 @@ export function main() {
           metadataResolver.getInjectableSummary(SomeService)
         ];
         clearMetadata();
-        resetTestEnvironmentWithSummaries(() => summaries);
+        TestBed.resetTestingModule();
+        return () => summaries;
       });
 
       resourceLoader.flush();
+      return summariesPromise;
     }
 
     function setMetadata(resourceLoader: MockResourceLoader) {
@@ -123,12 +126,14 @@ export function main() {
 
     beforeEach(async(() => {
       instances = new Map<any, any>();
-      createSummaries();
+      createSummaries().then(s => summaries = s);
     }));
 
     afterEach(() => { resetTestEnvironmentWithSummaries(); });
 
     it('should use directive metadata from summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       @Component({template: '<div someDir></div>'})
       class TestComp {
       }
@@ -140,6 +145,8 @@ export function main() {
     });
 
     it('should use pipe metadata from summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       @Component({template: '{{1 | somePipe}}'})
       class TestComp {
       }
@@ -150,6 +157,8 @@ export function main() {
     });
 
     it('should use Service metadata from summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       TestBed.configureTestingModule({
         providers: [SomeService, SomeDep],
       });
@@ -158,6 +167,8 @@ export function main() {
     });
 
     it('should use NgModule metadata from summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       TestBed
           .configureTestingModule(
               {providers: [SomeDep], declarations: [TestComp3], imports: [SomeModule]})
@@ -170,12 +181,16 @@ export function main() {
     });
 
     it('should allow to create private components from imported NgModule summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       TestBed.configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
           .createComponent(SomePrivateComponent);
       expectInstanceCreated(SomePrivateComponent);
     });
 
     it('should throw when trying to mock a type with a summary', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       TestBed.resetTestingModule();
       expect(() => TestBed.overrideComponent(SomePrivateComponent, {add: {}}).compileComponents())
           .toThrowError(
@@ -189,6 +204,23 @@ export function main() {
       TestBed.resetTestingModule();
       expect(() => TestBed.overrideModule(SomeModule, {add: {}}).compileComponents())
           .toThrowError('SomeModule was AOT compiled, so its metadata cannot be changed.');
+    });
+
+    it('should allow to add summaries via configureTestingModule', () => {
+      resetTestEnvironmentWithSummaries();
+
+      @Component({template: '<div someDir></div>'})
+      class TestComp {
+      }
+
+      TestBed
+          .configureTestingModule({
+            providers: [SomeDep],
+            declarations: [TestComp, SomeDirective],
+            aotSummaries: summaries
+          })
+          .createComponent(TestComp);
+      expectInstanceCreated(SomeDirective);
     });
   });
 }
