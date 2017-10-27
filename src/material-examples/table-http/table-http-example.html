@@ -1,14 +1,14 @@
 <div class="example-container mat-elevation-z8">
   <div class="example-loading-shade"
-       *ngIf="dataSource.isLoadingResults || dataSource.isRateLimitReached">
-    <mat-spinner *ngIf="dataSource.isLoadingResults"></mat-spinner>
-    <div class="example-rate-limit-reached" *ngIf="dataSource.isRateLimitReached">
+       *ngIf="isLoadingResults || isRateLimitReached">
+    <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+    <div class="example-rate-limit-reached" *ngIf="isRateLimitReached">
       GitHub's API rate limit has been reached. It will be reset in one minute.
     </div>
   </div>
 
   <mat-table #table [dataSource]="dataSource" class="example-table"
-            matSort matSortActive="created_at" matSortDisableClear matSortDirection="asc">
+             matSort matSortActive="created" matSortDisableClear matSortDirection="asc">
 
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
@@ -32,10 +32,10 @@
     </ng-container>
 
     <!-- Created Column -->
-    <ng-container matColumnDef="created_at">
+    <ng-container matColumnDef="created">
       <mat-header-cell *matHeaderCellDef
-                      mat-sort-header
-                      disableClear="true">
+                       mat-sort-header
+                       disableClear="true">
         Created
       </mat-header-cell>
       <mat-cell *matCellDef="let row">{{ row.created_at | date }}</mat-cell>
@@ -45,7 +45,6 @@
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
   </mat-table>
 
-  <mat-paginator [length]="dataSource.resultsLength"
-                [pageSize]="30">
+  <mat-paginator [length]="resultsLength" [pageSize]="30">
   </mat-paginator>
 </div>

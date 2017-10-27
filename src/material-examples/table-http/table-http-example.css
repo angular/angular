@@ -20,23 +20,6 @@
   min-height: 300px;
 }
 
-.mat-column-title {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* Column Widths */
-.mat-column-number,
-.mat-column-state {
-  max-width: 64px;
-}
-
-.mat-column-created {
-  max-width: 124px;
-}
-
 .example-loading-shade {
   position: absolute;
   top: 0;
@@ -54,4 +37,14 @@
   color: #980000;
   max-width: 360px;
   text-align: center;
+}
+
+/* Column Widths */
+.mat-column-number,
+.mat-column-state {
+  max-width: 64px;
+}
+
+.mat-column-created {
+  max-width: 124px;
 }

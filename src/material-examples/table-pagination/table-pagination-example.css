@@ -1,16 +1,7 @@
-/* Structure */
 .example-container {
   display: flex;
   flex-direction: column;
   min-width: 300px;
-}
-
-.example-header {
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-  padding-left: 24px;
-  font-size: 20px;
 }
 
 .mat-table {
