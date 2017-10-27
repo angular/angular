@@ -9,11 +9,13 @@
       </th>
     </tr>
   </thead>
+  {%- if method.description -%}
   <tr class="docs-api-method-description-row">
     <td colspan="2" class="docs-api-method-description-cell">
       {$ method.description | marked | safe $}
     </td>
   </tr>
+  {%- endif -%}
 
   {%- if method.params.length -%}
   <thead>
