@@ -179,7 +179,13 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   function completionToEntry(c: Completion): ts.CompletionEntry {
-    return {kind: c.kind, name: c.name, sortText: c.sort, kindModifiers: ''};
+    return {
+      // TODO: remove any and fix type error.
+      kind: c.kind as any,
+      name: c.name,
+      sortText: c.sort,
+      kindModifiers: ''
+    };
   }
 
   function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
@@ -294,9 +300,10 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
                    fileName: loc.fileName,
                    textSpan: {start: loc.span.start, length: loc.span.end - loc.span.start},
                    name: '',
-                   kind: 'definition',
+                   // TODO: remove any and fix type error.
+                   kind: 'definition' as any,
                    containerName: loc.fileName,
-                   containerKind: 'file'
+                   containerKind: 'file' as any,
                  });
                }
              }

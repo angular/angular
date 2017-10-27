@@ -116,8 +116,8 @@ export class MetadataCollector {
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
       const result: ClassMetadata = {__symbolic: 'class'};
 
-      function getDecorators(decorators: ts.Decorator[] | undefined): MetadataSymbolicExpression[]|
-          undefined {
+      function getDecorators(decorators: ReadonlyArray<ts.Decorator>| undefined):
+          MetadataSymbolicExpression[]|undefined {
         if (decorators && decorators.length)
           return decorators.map(decorator => objFromDecorator(decorator));
         return undefined;
