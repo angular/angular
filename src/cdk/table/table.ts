@@ -117,6 +117,7 @@ export class CdkTable<T> implements CollectionViewer {
    * Accepts a function that takes two parameters, `index` and `item`.
    */
   @Input()
+  get trackBy(): TrackByFunction<T> { return this._trackByFn; }
   set trackBy(fn: TrackByFunction<T>) {
     if (isDevMode() &&
         fn != null && typeof fn !== 'function' &&
@@ -125,7 +126,6 @@ export class CdkTable<T> implements CollectionViewer {
     }
     this._trackByFn = fn;
   }
-  get trackBy(): TrackByFunction<T> { return this._trackByFn; }
   private _trackByFn: TrackByFunction<T>;
 
   /**

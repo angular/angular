@@ -23,11 +23,6 @@ import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal'
 /**
  * Directive version of a `TemplatePortal`. Because the directive *is* a TemplatePortal,
  * the directive instance itself can be attached to a host, enabling declarative use of portals.
- *
- * Usage:
- * <ng-template portal #greeting>
- *   <p> Hello {{name}} </p>
- * </ng-template>
  */
 @Directive({
   selector: '[cdk-portal], [cdkPortal], [portal]',
@@ -93,6 +88,7 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
    * Attach the given ComponentPortal to this PortalHost using the ComponentFactoryResolver.
    *
    * @param portal Portal to be attached to the portal host.
+   * @returns Reference to the created component.
    */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     portal.setAttachedHost(this);
@@ -118,6 +114,7 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   /**
    * Attach the given TemplatePortal to this PortlHost as an embedded View.
    * @param portal Portal to be attached.
+   * @returns Reference to the created embedded view.
    */
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
     portal.setAttachedHost(this);

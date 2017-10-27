@@ -84,27 +84,28 @@ export class CdkStep implements OnChanges {
   /** Label of the step. */
   @Input() label: string;
 
+  /** Whether the user can return to this step once it has been marked as complted. */
   @Input()
-  get editable() { return this._editable; }
-  set editable(value: any) {
+  get editable(): boolean { return this._editable; }
+  set editable(value: boolean) {
     this._editable = coerceBooleanProperty(value);
   }
   private _editable = true;
 
-  /** Whether the completion of step is optional or not. */
+  /** Whether the completion of step is optional. */
   @Input()
-  get optional() { return this._optional; }
-  set optional(value: any) {
+  get optional(): boolean { return this._optional; }
+  set optional(value: boolean) {
     this._optional = coerceBooleanProperty(value);
   }
   private _optional = false;
 
-  /** Return whether step is completed or not. */
+  /** Whether step is marked as completed. */
   @Input()
-  get completed() {
+  get completed(): boolean {
     return this._customCompleted == null ? this._defaultCompleted : this._customCompleted;
   }
-  set completed(value: any) {
+  set completed(value: boolean) {
     this._customCompleted = coerceBooleanProperty(value);
   }
   private _customCompleted: boolean | null = null;
@@ -140,8 +141,8 @@ export class CdkStepper {
 
   /** Whether the validity of previous steps should be checked or not. */
   @Input()
-  get linear() { return this._linear; }
-  set linear(value: any) { this._linear = coerceBooleanProperty(value); }
+  get linear(): boolean { return this._linear; }
+  set linear(value: boolean) { this._linear = coerceBooleanProperty(value); }
   private _linear = false;
 
   /** The index of the selected step. */

@@ -37,7 +37,7 @@ export abstract class BaseRowDef {
   /** Differ used to check if any changes were made to the columns. */
   protected _columnsDiffer: IterableDiffer<any>;
 
-  constructor(public template: TemplateRef<any>,
+  constructor(/** @docs-private */ public template: TemplateRef<any>,
               protected _differs: IterableDiffers) { }
 
   ngOnChanges(changes: SimpleChanges): void {

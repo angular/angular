@@ -38,7 +38,9 @@ let defaultConfig = new OverlayConfig();
  */
 @Injectable()
 export class Overlay {
-  constructor(public scrollStrategies: ScrollStrategyOptions,
+  constructor(
+              /** Scrolling strategies that can be used when creating an overlay. */
+              public scrollStrategies: ScrollStrategyOptions,
               private _overlayContainer: OverlayContainer,
               private _componentFactoryResolver: ComponentFactoryResolver,
               private _positionBuilder: OverlayPositionBuilder,
@@ -48,7 +50,7 @@ export class Overlay {
 
   /**
    * Creates an overlay.
-   * @param config Config to apply to the overlay.
+   * @param config Configuration applied to the overlay.
    * @returns Reference to the created overlay.
    */
   create(config: OverlayConfig = defaultConfig): OverlayRef {
@@ -58,8 +60,9 @@ export class Overlay {
   }
 
   /**
-   * Returns a position builder that can be used, via fluent API,
+   * Gets a position builder that can be used, via fluent API,
    * to construct and configure a position strategy.
+   * @returns An overlay position builder.
    */
   position(): OverlayPositionBuilder {
     return this._positionBuilder;

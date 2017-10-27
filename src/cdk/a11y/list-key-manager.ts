@@ -12,9 +12,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {UP_ARROW, DOWN_ARROW, TAB, A, Z, ZERO, NINE} from '@angular/cdk/keycodes';
 import {RxChain, debounceTime, filter, map, doOperator} from '@angular/cdk/rxjs';
 
-/**
- * This interface is for items that can be passed to a ListKeyManager.
- */
+/** This interface is for items that can be passed to a ListKeyManager. */
 export interface ListKeyManagerOption {
   disabled?: boolean;
   getLabel?(): string;

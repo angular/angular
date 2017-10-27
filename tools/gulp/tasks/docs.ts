@@ -59,9 +59,23 @@ const htmlMinifierOptions = {
   removeAttributeQuotes: false
 };
 
+const markdownOptions = {
+  // Add syntax highlight using highlight.js
+  highlight: (code: string, language: string): string => {
+    if (language) {
+      // highlight.js expects "typescript" written out, while Github supports "ts".
+      let lang = language.toLowerCase() === 'ts' ? 'typescript' : language;
+      return hljs.highlight(lang, code).value;
+    }
+
+    return code;
+  }
+};
+
 /** Generate all docs content. */
 task('docs', [
   'markdown-docs',
+  'markdown-docs-cdk',
   'highlight-examples',
   'api-docs',
   'minified-api-docs',
@@ -69,7 +83,7 @@ task('docs', [
   'plunker-example-assets',
 ]);
 
-/** Generates html files from the markdown overviews and guides. */
+/** Generates html files from the markdown overviews and guides for material. */
 task('markdown-docs', () => {
   // Extend the renderer for custom heading anchor rendering
   markdown.marked.Renderer.prototype.heading = (text: string, level: number): string => {
@@ -86,19 +100,21 @@ task('markdown-docs', () => {
     }
   };
 
-  return src(['src/lib/**/*.md', 'src/cdk/**/*.md', 'guides/*.md'])
-      .pipe(markdown({
-        // Add syntax highlight using highlight.js
-        highlight: (code: string, language: string): string => {
-          if (language) {
-            // highlight.js expects "typescript" written out, while Github supports "ts".
-            let lang = language.toLowerCase() === 'ts' ? 'typescript' : language;
-            return hljs.highlight(lang, code).value;
-          }
+  return src(['src/lib/**/*.md', 'guides/*.md'])
+      .pipe(rename({prefix: 'material-'}))
+      .pipe(markdown(markdownOptions))
+      .pipe(transform(transformMarkdownFiles))
+      .pipe(dom(createTagNameAliaser('docs-markdown')))
+      .pipe(dest('dist/docs/markdown'));
+});
 
-          return code;
-        }
-      }))
+// TODO(jelbourn): figure out how to avoid duplicating this task w/ material while still
+// disambiguating the output.
+/** Generates html files from the markdown overviews and guides for the cdk. */
+task('markdown-docs-cdk', () => {
+  return src(['src/cdk/**/*.md'])
+      .pipe(rename({prefix: 'cdk-'}))
+      .pipe(markdown(markdownOptions))
       .pipe(transform(transformMarkdownFiles))
       .pipe(dom(createTagNameAliaser('docs-markdown')))
       .pipe(dest('dist/docs/markdown'));

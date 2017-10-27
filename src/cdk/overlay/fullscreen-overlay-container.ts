@@ -10,13 +10,11 @@ import {Injectable} from '@angular/core';
 import {OverlayContainer} from './overlay-container';
 
 /**
- * The FullscreenOverlayContainer is the alternative to OverlayContainer
- * that supports correct displaying of overlay elements in Fullscreen mode
+ * Alternative to OverlayContainer that supports correct displaying of overlay elements in
+ * Fullscreen mode
  * https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullScreen
- * It should be provided in the root component that way:
- * providers: [
- *   {provide: OverlayContainer, useClass: FullscreenOverlayContainer}
- * ],
+ *
+ * Should be provided in the root component.
  */
 @Injectable()
 export class FullscreenOverlayContainer extends OverlayContainer {

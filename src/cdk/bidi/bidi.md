@@ -1,4 +1,7 @@
-### BidiModule
+The `bidi` package provides a common system for components to get and respond to change in the
+application's LTR/RTL layout direction. 
+
+### Directionality
  
 When including the CDK's `BidiModule`, components can inject `Directionality` to get the current
 text direction (RTL or LTR);
@@ -28,3 +31,8 @@ export class MyWidget implements OnDestroy {
 }  
 ```
 
+### The `Dir` directive
+The `BidiModule` also includes a directive that matches any elements with a `dir` attribute. This
+directive has the same API as Directionality and provides itself _as_ `Directionality`. By doing
+this, any component that injects `Directionality` will get the closest ancestor layout direction
+context.

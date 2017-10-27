@@ -29,6 +29,7 @@ export class RepositionScrollStrategy implements ScrollStrategy {
     private _scrollDispatcher: ScrollDispatcher,
     private _config?: RepositionScrollStrategyConfig) { }
 
+  /** Attaches this scroll strategy to an overlay. */
   attach(overlayRef: OverlayRef) {
     if (this._overlayRef) {
       throw getMatScrollStrategyAlreadyAttachedError();
@@ -37,6 +38,7 @@ export class RepositionScrollStrategy implements ScrollStrategy {
     this._overlayRef = overlayRef;
   }
 
+  /** Enables repositioning of the attached overlay on scroll. */
   enable() {
     if (!this._scrollSubscription) {
       let throttle = this._config ? this._config.scrollThrottle : 0;
@@ -47,6 +49,7 @@ export class RepositionScrollStrategy implements ScrollStrategy {
     }
   }
 
+  /** Disables repositioning of the attached overlay on scroll. */
   disable() {
     if (this._scrollSubscription) {
       this._scrollSubscription.unsubscribe();

@@ -18,7 +18,8 @@ import {Direction, Directionality} from './directionality';
 /**
  * Directive to listen for changes of direction of part of the DOM.
  *
- * Would provide itself in case a component looks for the Directionality service
+ * Provides itself as Directionality such that descendant directives only need to ever inject
+ * Directionality to get the closest direction.
  */
 @Directive({
   selector: '[dir]',
@@ -27,7 +28,6 @@ import {Direction, Directionality} from './directionality';
   exportAs: 'dir',
 })
 export class Dir implements Directionality {
-  /** Layout direction of the element. */
   _dir: Direction = 'ltr';
 
   /** Whether the `value` has been set to its initial value. */
@@ -38,10 +38,7 @@ export class Dir implements Directionality {
 
   /** @docs-private */
   @Input('dir')
-  get dir(): Direction {
-    return this._dir;
-  }
-
+  get dir(): Direction { return this._dir; }
   set dir(v: Direction) {
     let old = this._dir;
     this._dir = v;

@@ -9,11 +9,10 @@
 import {Injectable} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 
-/**
- * The InteractivityChecker leans heavily on the ally.js accessibility utilities.
- * Methods like `isTabbable` are only covering specific edge-cases for the browsers which are
- * supported.
- */
+
+// The InteractivityChecker leans heavily on the ally.js accessibility utilities.
+// Methods like `isTabbable` are only covering specific edge-cases for the browsers which are
+// supported.
 
 /**
  * Utility for checking the interactivity of an element, such as whether is is focusable or

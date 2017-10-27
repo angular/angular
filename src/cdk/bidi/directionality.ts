@@ -37,7 +37,10 @@ export const DIR_DOCUMENT = new InjectionToken<Document>('mat-dir-doc');
  */
 @Injectable()
 export class Directionality {
+  /** The current 'ltr' or 'rtl' value. */
   readonly value: Direction = 'ltr';
+
+  /** Stream that emits whenever the 'ltr' / 'rtl' state changes. */
   readonly change = new EventEmitter<void>();
 
   constructor(@Optional() @Inject(DIR_DOCUMENT) _document?: any) {

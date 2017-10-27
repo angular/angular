@@ -24,9 +24,7 @@ interface Query {
   mql: MediaQueryList;
 }
 
-/**
- * Utility for checking the matching state of @media queries.
- */
+/** Utility for checking the matching state of @media queries. */
 @Injectable()
 export class BreakpointObserver implements OnDestroy {
   /**  A map of all media queries currently being listened for. */
@@ -42,7 +40,11 @@ export class BreakpointObserver implements OnDestroy {
     this._destroySubject.complete();
   }
 
-  /** Whether the query currently is matched. */
+  /**
+   * Whether one or more media queries match the current viewport size.
+   * @param value One or more media queries to check.
+   * @returns Whether any of the media queries match.
+   */
   isMatched(value: string | string[]): boolean {
     let queries = coerceArray(value);
     return queries.some(mediaQuery => this._registerQuery(mediaQuery).mql.matches);
@@ -51,6 +53,7 @@ export class BreakpointObserver implements OnDestroy {
   /**
    * Gets an observable of results for the given queries that will emit new results for any changes
    * in matching of the given queries.
+   * @returns A stream of matches for the given queries.
    */
   observe(value: string | string[]): Observable<BreakpointState> {
     let queries = coerceArray(value);

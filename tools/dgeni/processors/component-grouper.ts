@@ -8,6 +8,15 @@ export class ComponentGroup {
   /** Name of the component group. */
   name: string;
 
+  /** Display name of the component group */
+  displayName: string;
+
+  /** Name of the package, either material or cdk */
+  packageName: string;
+
+  /** Display name of the package. */
+  packageDisplayName: string;
+
   /** Unique id for the component group. */
   id: string;
 
@@ -60,7 +69,17 @@ export class ComponentGrouper implements Processor {
 
       // All of the component documentation is under either `src/lib` or `src/cdk`.
       // We group the docs up by the directory immediately under that root.
-      const groupName = path.relative(basePath, filePath).split(path.sep)[1];
+      let packageName, packageDisplayName;
+      if (filePath.includes('cdk')) {
+        packageName = 'cdk';
+        packageDisplayName = 'CDK';
+      } else {
+        packageName = 'material';
+        packageDisplayName = 'Material';
+      }
+
+      const displayName = path.relative(basePath, filePath).split(path.sep)[1];
+      const groupName = packageName + '-' + displayName;
 
       // Get the group for this doc, or, if one does not exist, create it.
       let group;
@@ -70,6 +89,10 @@ export class ComponentGrouper implements Processor {
         group = new ComponentGroup(groupName);
         groups.set(groupName, group);
       }
+
+      group.packageName = packageName;
+      group.packageDisplayName = packageDisplayName;
+      group.displayName = displayName;
 
       // Put this doc into the appropriate list in this group.
       if (doc.isDirective) {

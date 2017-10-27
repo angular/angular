@@ -90,6 +90,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     return this._preferredPositions;
   }
 
+  /** Attach this position strategy to an overlay. */
   attach(overlayRef: OverlayRef): void {
     this._overlayRef = overlayRef;
     this._pane = overlayRef.overlayElement;
@@ -97,7 +98,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     this._resizeSubscription = this._viewportRuler.change().subscribe(() => this.apply());
   }
 
-  /** Performs any cleanup after the element is destroyed. */
+  /** Disposes all resources used by the position strategy. */
   dispose() {
     this._resizeSubscription.unsubscribe();
   }
@@ -156,7 +157,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   }
 
   /**
-   * This re-aligns the overlay element with the trigger in its last calculated position,
+   * Re-positions the overlay element with the trigger in its last calculated position,
    * even if a position higher in the "preferred positions" list would now fit. This
    * allows one to re-align the panel without changing the orientation of the panel.
    */

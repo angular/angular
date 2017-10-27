@@ -1,3 +1,5 @@
+The `portals` package provides a flexible system for rendering dynamic content into an application.
+
 ### Portals
 A `Portal `is a piece of UI that can be dynamically rendered to an open slot on the page.
 
@@ -30,7 +32,7 @@ Used to get a portal from an `<ng-template>`. `TemplatePortalDirectives` *is* a 
 
 Usage:
 ```html
-<ng-template cdk-portal>
+<ng-template cdkPortal>
   <p>The content of this template is captured by the portal.</p>
 </ng-template>
 

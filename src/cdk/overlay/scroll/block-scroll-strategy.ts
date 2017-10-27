@@ -19,8 +19,10 @@ export class BlockScrollStrategy implements ScrollStrategy {
 
   constructor(private _viewportRuler: ViewportRuler) { }
 
+  /** Attaches this scroll strategy to an overlay. */
   attach() { }
 
+  /** Blocks page-level scroll while the attached overlay is open. */
   enable() {
     if (this._canBeEnabled()) {
       const root = document.documentElement;
@@ -40,6 +42,7 @@ export class BlockScrollStrategy implements ScrollStrategy {
     }
   }
 
+  /** Unblocks page-level scroll while the attached overlay is open. */
   disable() {
     if (this._isEnabled) {
       this._isEnabled = false;

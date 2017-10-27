@@ -21,6 +21,7 @@ export class CloseScrollStrategy implements ScrollStrategy {
 
   constructor(private _scrollDispatcher: ScrollDispatcher) { }
 
+  /** Attaches this scroll strategy to an overlay. */
   attach(overlayRef: OverlayRef) {
     if (this._overlayRef) {
       throw getMatScrollStrategyAlreadyAttachedError();
@@ -29,6 +30,7 @@ export class CloseScrollStrategy implements ScrollStrategy {
     this._overlayRef = overlayRef;
   }
 
+  /** Enables the closing of the attached on scroll. */
   enable() {
     if (!this._scrollSubscription) {
       this._scrollSubscription = this._scrollDispatcher.scrolled(0).subscribe(() => {
@@ -41,6 +43,7 @@ export class CloseScrollStrategy implements ScrollStrategy {
     }
   }
 
+  /** Disables the closing the attached overlay on scroll. */
   disable() {
     if (this._scrollSubscription) {
       this._scrollSubscription.unsubscribe();

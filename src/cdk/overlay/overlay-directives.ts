@@ -79,7 +79,9 @@ export const MAT_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER = {
   exportAs: 'cdkOverlayOrigin',
 })
 export class OverlayOrigin {
-  constructor(public elementRef: ElementRef) { }
+  constructor(
+      /** Reference to the element on which the directive is applied. */
+      public elementRef: ElementRef) { }
 }
 
 

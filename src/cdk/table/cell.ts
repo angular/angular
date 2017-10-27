@@ -14,7 +14,7 @@ import {ContentChild, Directive, ElementRef, Input, Renderer2, TemplateRef} from
  */
 @Directive({selector: '[cdkCellDef]'})
 export class CdkCellDef {
-  constructor(public template: TemplateRef<any>) { }
+  constructor(/** @docs-private */ public template: TemplateRef<any>) { }
 }
 
 /**
@@ -23,7 +23,7 @@ export class CdkCellDef {
  */
 @Directive({selector: '[cdkHeaderCellDef]'})
 export class CdkHeaderCellDef {
-  constructor(public template: TemplateRef<any>) { }
+  constructor(/** @docs-private */ public template: TemplateRef<any>) { }
 }
 
 /**

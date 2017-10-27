@@ -12,7 +12,7 @@ import {ScrollStrategy} from './scroll/scroll-strategy';
 import {NoopScrollStrategy} from './scroll/noop-scroll-strategy';
 
 
-/** OverlayConfig captures the initial configuration used when opening an overlay. */
+/** Initial configuration used when creating an overlay. */
 export class OverlayConfig {
   /** Strategy with which to position the overlay. */
   positionStrategy?: PositionStrategy;
