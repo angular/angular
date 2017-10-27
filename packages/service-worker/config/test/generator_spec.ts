@@ -28,7 +28,7 @@ export function main() {
           name: 'test',
           resources: {
             files: [
-              '/**/*.html', '!/ignored/**',
+              '/**/*.html', '!/ignored/**', '/',
               //                '/*.html',
             ],
             versionedFiles: [
@@ -69,6 +69,7 @@ export function main() {
                  '/test/index.html',
                  '/test/foo/test.html',
                  '/test/test.txt',
+                 '/',
                ],
                'patterns': [
                  '\\/absolute\\/.*',
