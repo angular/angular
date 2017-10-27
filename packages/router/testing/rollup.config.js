@@ -6,18 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
-import sourcemaps from 'rollup-plugin-sourcemaps';
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
-const globals = {
-  '@angular/core': 'ng.core',
-  '@angular/common': 'ng.common',
-  '@angular/common/testing': 'ng.common.testing',
-  '@angular/platform-browser': 'ng.platformBrowser',
-  '@angular/router': 'ng.router'
-};
+const globals = require('../../rollup.config').globals('@angular/router/testing');
 
-export default {
+exports.default = {
   entry: '../../../dist/packages-dist/router/esm5/testing.js',
   dest: '../../../dist/packages-dist/router/bundles/router-testing.umd.js',
   format: 'umd',

@@ -6,21 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const globals = {
-  '@angular/core': 'ng.core',
-  '@angular/platform-browser': 'ng.platformBrowser',
-  '@angular/common': 'ng.common',
-  'rxjs/Observable': 'Rx',
-  'rxjs/Subject': 'Rx',
+const globals = require('../../rollup.config').globals('@angular/common/http');
 
-  'rxjs/observable/of': 'Rx.Observable.prototype',
-
-  'rxjs/operator/concatMap': 'Rx.Observable.prototype',
-  'rxjs/operator/filter': 'Rx.Observable.prototype',
-  'rxjs/operator/map': 'Rx.Observable.prototype',
-};
-
-export default {
+exports.default = {
   entry: '../../../dist/packages-dist/common/esm5/http.js',
   dest: '../../../dist/packages-dist/common/bundles/common-http.umd.js',
   format: 'umd',

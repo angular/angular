@@ -6,21 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
-import sourcemaps from 'rollup-plugin-sourcemaps';
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
-const globals = {
-  '@angular/core': 'ng.core',
-  '@angular/compiler': 'ng.compiler',
-  '@angular/platform-browser': 'ng.platformBrowser',
-  '@angular/http': 'ng.http',
-  'rxjs/Observable': 'Rx',
-  'rxjs/ReplaySubject': 'Rx',
-  'rxjs/Subject': 'Rx',
-  'rxjs/operator/take': 'Rx.Observable.prototype'
-};
+const globals = require('../../rollup.config').globals('@angular/http/testing');
 
-export default {
+exports.default = {
   entry: '../../../dist/packages-dist/http/esm5/testing.js',
   dest: '../../../dist/packages-dist/http/bundles/http-testing.umd.js',
   format: 'umd',
