@@ -72,6 +72,7 @@ High level stuff planned for Q4 2017 (October - December):
 | slider           |                                                        |   [Docs][16] |
 | snackbar / toast |                                                        |   [Docs][21] |
 | sort-header      |                                                        |   [Docs][30] |
+| stepper          |                                                        |   [Docs][33] |
 | tabs             |                                                        |   [Docs][13] |
 | textarea         |                                                        |   [Docs][5]  |
 | toolbar          |                                                        |   [Docs][7]  |
@@ -88,7 +89,6 @@ High level stuff planned for Q4 2017 (October - December):
 | Feature          | Status                              | Docs         | Issue          |
 |------------------|-------------------------------------|--------------|----------------|
 | tree             |      In-progress ([sneak peek][31]) |           -  |  [#3175][3175] |
-| stepper          |        In-progress, planned Q3 2017 |           -  |   [#508][0508] |
 | sticky-header    |        In-progress, planned Q3 2017 |           -  |   [#474][0474] |
 | virtual-repeat   |        Not started, planned Q4 2017 |           -  |   [#823][0823] |
 | fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
@@ -129,6 +129,7 @@ High level stuff planned for Q4 2017 (October - December):
 [30]: https://material.angular.io/components/component/sort
 [31]: https://tina-material-tree.firebaseapp.com/simple-tree
 [32]: https://material.angular.io/components/expansion/overview
+[33]: https://material.angular.io/components/stepper/overview
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
