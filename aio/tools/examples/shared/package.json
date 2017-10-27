@@ -28,7 +28,7 @@
     "angular-in-memory-web-api": "~0.4.6",
     "core-js": "^2.4.1",
     "express": "^4.14.1",
-    "rxjs": "^5.1.0",
+    "rxjs": "^5.5.0",
     "systemjs": "0.19.39",
     "web-animations-js": "^2.3.1",
     "zone.js": "^0.8.4"
