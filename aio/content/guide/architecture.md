@@ -429,7 +429,7 @@ Points to remember about dependency injection:
 
 <hr/>
 
-## Wrap up
+## What's next
 
 You've learned the basics about the eight main building blocks of an Angular application:
 
