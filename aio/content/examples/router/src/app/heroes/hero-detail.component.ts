@@ -1,10 +1,10 @@
 // #docplaster
 // #docregion
-// #docregion rxjs-operator-import
-import 'rxjs/add/operator/switchMap';
-// #enddocregion rxjs-operator-import
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+// #docregion rxjs-operator-import
+import { switchMap }  from 'rxjs/operators';
+// #enddocregion rxjs-operator-import
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 import { slideInDownAnimation } from '../animations';
@@ -48,9 +48,10 @@ export class HeroDetailComponent implements OnInit {
 
   // #docregion ngOnInit
   ngOnInit() {
-    this.hero$ = this.route.paramMap
-      .switchMap((params: ParamMap) =>
-        this.service.getHero(params.get('id')));
+    this.hero$ = this.route.paramMap.pipe(
+      switchMap((params: ParamMap) =>
+        this.service.getHero(params.get('id')))
+    );
   }
   // #enddocregion ngOnInit
 

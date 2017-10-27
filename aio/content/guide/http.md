@@ -155,25 +155,26 @@ http
   );
 ```
 
-#### `.retry()`
+#### _retry()_
 
 One way to deal with errors is to simply retry the request. This strategy can be useful when the errors are transient and unlikely to repeat.
 
-RxJS has a useful operator called `.retry()`, which automatically resubscribes to an Observable, thus reissuing the request, upon encountering an error.
+RxJS has a useful operator called `retry()`, which automatically resubscribes to an Observable, thus reissuing the request, upon encountering an error.
 
 First, import it:
 
 ```js
-import 'rxjs/add/operator/retry';
+import { retry } from 'rxjs/operators';
 ```
 
 Then, you can use it with HTTP Observables like this:
 
 ```javascript
 http
-  .get<ItemsResponse>('/api/items')
-  // Retry this request up to 3 times.
-  .retry(3)
+  .get<ItemsResponse>('/api/items').pipe(
+    // Retry this request up to 3 times.
+    retry(3)
+  )
   // Any errors after the 3rd retry will fall through to the app.
   .subscribe(...);
 ```
@@ -386,7 +387,7 @@ An interceptor that alters headers can be used for a number of different operati
 Because interceptors can process the request and response _together_, they can do things like log or time requests. Consider this interceptor which uses `console.log` to show how long each request takes:
 
 ```javascript
-import 'rxjs/add/operator/do';
+import { tap } from 'rxjs/operators';
 
 export class TimingInterceptor implements HttpInterceptor {
   constructor(private auth: AuthService) {}
@@ -394,17 +395,18 @@ export class TimingInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   	const started = Date.now();
     return next
-      .handle(req)
-      .do(event => {
-        if (event instanceof HttpResponse) {
-          const elapsed = Date.now() - started;
-          console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
-        }
-      });
+      .handle(req).pipe(
+        tap(event => {
+          if (event instanceof HttpResponse) {
+            const elapsed = Date.now() - started;
+            console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
+          }
+        })
+      );
   }
 }
 ```
-Notice the RxJS `do()` operator&mdash;it adds a side effect to an Observable without affecting the values on the stream. Here, it detects the `HttpResponse` event and logs the time the request took.
+Notice the RxJS `tap()` operator&mdash;it adds a side effect to an Observable without affecting the values on the stream. Here, it detects the `HttpResponse` event and logs the time the request took.
 
 #### Caching
 
@@ -427,6 +429,8 @@ abstract class HttpCache {
 An interceptor can apply this cache to outgoing requests.
 
 ```javascript
+import { of } from 'rxjs/observable/of'
+...
 @Injectable()
 export class CachingInterceptor implements HttpInterceptor {
   constructor(private cache: HttpCache) {}
@@ -443,18 +447,20 @@ export class CachingInterceptor implements HttpInterceptor {
     if (cachedResponse) {
       // A cached response exists. Serve it instead of forwarding
       // the request to the next handler.
-      return Observable.of(cachedResponse);
+      return of(cachedResponse);
     }
 
     // No cached response exists. Go to the network, and cache
     // the response when it arrives.
-    return next.handle(req).do(event => {
-      // Remember, there may be other events besides just the response.
-      if (event instanceof HttpResponse) {
-      	// Update the cache.
-      	this.cache.put(req, event);
-      }
-    });
+    return next.handle(req).pipe(
+      tap(event => {
+        // Remember, there may be other events besides just the response.
+        if (event instanceof HttpResponse) {
+          // Update the cache.
+          this.cache.put(req, event);
+        }
+      })
+    );
   }
 }
 ```
@@ -464,6 +470,10 @@ Obviously this example glosses over request matching, cache invalidation, etc., 
 To really demonstrate their flexibility, you can change the above example to return _two_ response events if the request exists in cache&mdash;the cached response first, and an updated network response later.
 
 ```javascript
+import { concat } from 'rxjs/observable/concat`
+import { empty } from 'rxjs/Observable/empty';
+import { of } from 'rxjs/observable/of`
+...
 intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   // Still skip non-GET requests.
   if (req.method !== 'GET') {
@@ -472,26 +482,29 @@ intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> 
 
   // This will be an Observable of the cached value if there is one,
   // or an empty Observable otherwise. It starts out empty.
-  let maybeCachedResponse: Observable<HttpEvent<any>> = Observable.empty();
+  let maybeCachedResponse = empty<HttpEvent<any>>();
 
   // Check the cache.
   const cachedResponse = this.cache.get(req);
   if (cachedResponse) {
-    maybeCachedResponse = Observable.of(cachedResponse);
+    maybeCachedResponse = of(cachedResponse);
   }
 
   // Create an Observable (but don't subscribe) that represents making
   // the network request and caching the value.
-  const networkResponse = next.handle(req).do(event => {
-    // Just like before, check for the HttpResponse event and cache it.
-    if (event instanceof HttpResponse) {
-      this.cache.put(req, event);
-    }
-  });
+  const networkResponse = next.handle(req)
+    .pipe(
+      tap(event => {
+        // Just like before, check for the HttpResponse event and cache it.
+        if (event instanceof HttpResponse) {
+          this.cache.put(req, event);
+        }
+      })
+    );
 
   // Now, combine the two and send the cached response first (if there is
   // one), and the network response second.
-  return Observable.concat(maybeCachedResponse, networkResponse);
+  return concat(maybeCachedResponse, networkResponse);
 }
 ```
 

@@ -2,8 +2,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Http }                from '@angular/http';
 
-import 'rxjs/add/operator/map';
-
 // #docregion pipe-metadata
 @Pipe({
   name: 'fetch',
@@ -20,9 +18,10 @@ export class FetchJsonPipe  implements PipeTransform {
     if (url !== this.cachedUrl) {
       this.cachedData = null;
       this.cachedUrl = url;
-      this.http.get(url)
-        .map( result => result.json() )
-        .subscribe( result => this.cachedData = result );
+
+      this.http.get(url).subscribe(result => {
+        this.cachedData = result.json();
+      });
     }
 
     return this.cachedData;
