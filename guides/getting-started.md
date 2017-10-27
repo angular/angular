@@ -28,6 +28,10 @@ install the `@angular/animations` module and include the `BrowserAnimationsModul
 npm install --save @angular/animations
 ```
 
+**Note:** `@angular/animations` uses the WebAnimation API that isn't supported by all browsers yet.
+If you want to support Material component animations in these browsers, you'll have to
+[include a polyfill](https://github.com/web-animations/web-animations-js).
+
 ```ts
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -54,7 +58,7 @@ export class PizzaPartyAppModule { }
 
 ### Step 3: Import the component modules
 
-Import the NgModule for each component you want to use: 
+Import the NgModule for each component you want to use:
 
 ```ts
 import {MatButtonModule, MatCheckboxModule} from '@angular/material';
@@ -67,7 +71,7 @@ import {MatButtonModule, MatCheckboxModule} from '@angular/material';
 export class PizzaPartyAppModule { }
 ```
 
-Alternatively, you can create a separate NgModule that imports all of the 
+Alternatively, you can create a separate NgModule that imports all of the
 Angular Material components that you will use in your application. You can then
 include this module wherever you'd like to use the components.
 
@@ -81,7 +85,7 @@ import {MatButtonModule, MatCheckboxModule} from '@angular/material';
 export class MyOwnCustomMaterialModule { }
 ```
 
-Whichever approach you use, be sure to import the Angular Material modules _after_ Angular's 
+Whichever approach you use, be sure to import the Angular Material modules _after_ Angular's
 `BrowserModule`, as the import order matters for NgModules.
 
 ### Step 4: Include a theme
@@ -122,7 +126,7 @@ import 'hammerjs';
 
 ### Step 6 (Optional): Add Material Icons
 
-If you want to use the `mat-icon` component with the official 
+If you want to use the `mat-icon` component with the official
 [Material Design Icons](https://material.io/icons/), load the icon font in your `index.html`.
 
 ```html
@@ -140,10 +144,10 @@ Note that `mat-icon` supports any font or svg icons; using Material Icons is one
 If your project is using SystemJS for module loading, you will need to add `@angular/material` and
 `@angular/cdk` to the SystemJS configuration.
 
-The `@angular/cdk` package is organized of multiple entry-points. 
+The `@angular/cdk` package is organized of multiple entry-points.
 Each of these entry-points must be registered individually with SystemJS.
 
-Here is a example configuration where `@angular/material`, `@angular/cdk/platform` and 
+Here is a example configuration where `@angular/material`, `@angular/cdk/platform` and
 `@angular/cdk/a11y` are used:
 
 
@@ -153,7 +157,7 @@ System.config({
   map: {
     // ...
     '@angular/material': 'npm:@angular/material/bundles/material.umd.js',
-    
+
     // CDK individual packages
     '@angular/cdk/platform': 'npm:@angular/cdk/bundles/cdk-platform.umd.js',
     '@angular/cdk/a11y': 'npm:@angular/cdk/bundles/cdk-a11y.umd.js',
