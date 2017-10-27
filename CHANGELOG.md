@@ -1,3 +1,19 @@
+<a name="5.0.0-rc.7"></a>
+# [5.0.0-rc.7](https://github.com/angular/angular/compare/5.0.0-rc.6...5.0.0-rc.7) (2017-10-27)
+
+
+### Bug Fixes
+
+* **compiler:** don’t store invalid state when using `listLazyRoutes` ([#19953](https://github.com/angular/angular/issues/19953)) ([4a23df3](https://github.com/angular/angular/commit/4a23df3))
+* **compiler:** make watch mode work on windows ([#19953](https://github.com/angular/angular/issues/19953)) ([f4d5729](https://github.com/angular/angular/commit/f4d5729)), closes [#19951](https://github.com/angular/angular/issues/19951)
+* **compiler:** recover from structural errors in watch mode ([#19953](https://github.com/angular/angular/issues/19953)) ([d343bf7](https://github.com/angular/angular/commit/d343bf7))
+* **compiler:** translate emit diagnostics with `noEmitOnError: true`. ([#19953](https://github.com/angular/angular/issues/19953)) ([9ce7f0e](https://github.com/angular/angular/commit/9ce7f0e)), closes [#19935](https://github.com/angular/angular/issues/19935)
+* **service-worker:** don't block initialization on registration ([#19936](https://github.com/angular/angular/issues/19936)) ([47caebf](https://github.com/angular/angular/commit/47caebf))
+* **service-worker:** fix improper call of Observable.merge ([#19962](https://github.com/angular/angular/issues/19962)) ([14016c7](https://github.com/angular/angular/commit/14016c7))
+* **service-worker:** listen for messages on the right event source ([#19954](https://github.com/angular/angular/issues/19954)) ([5cfd9c6](https://github.com/angular/angular/commit/5cfd9c6))
+
+
+
 <a name="5.0.0-rc.6"></a>
 # [5.0.0-rc.6](https://github.com/angular/angular/compare/5.0.0-rc.5...5.0.0-rc.6) (2017-10-25)
 
