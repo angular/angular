@@ -4,10 +4,10 @@
 import { async, ComponentFixture, fakeAsync, TestBed, tick,
 } from '@angular/core/testing';
 
+import { asyncData } from '../testing';
+
 import { RouterTestingModule } from '@angular/router/testing';
 import { SpyLocation }         from '@angular/common/testing';
-
-import { click }               from '../testing';
 
 // r - for relatively obscure router symbols
 import * as r                         from  '@angular/router';
@@ -17,11 +17,15 @@ import { By }                 from '@angular/platform-browser';
 import { DebugElement, Type } from '@angular/core';
 import { Location }           from '@angular/common';
 
+import { click }              from '../testing';
+
 import { AppModule }          from './app.module';
 import { AppComponent }       from './app.component';
-import { AboutComponent }     from './about.component';
+import { AboutComponent }     from './about/about.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { TwainService }       from './shared/twain.service';
+import { TwainService }       from './twain/twain.service';
+
+import { HeroService, TestHeroService } from './model/testing/test-hero.service';
 
 let comp:     AppComponent;
 let fixture:  ComponentFixture<AppComponent>;
@@ -31,15 +35,19 @@ let location: SpyLocation;
 
 describe('AppComponent & RouterTestingModule', () => {
 
-  beforeEach( async(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ AppModule, RouterTestingModule ]
+      imports: [ AppModule, RouterTestingModule ],
+      providers: [
+        { provide: HeroService, useClass: TestHeroService }
+      ]
     })
     .compileComponents();
   }));
 
   it('should navigate to "Dashboard" immediately', fakeAsync(() => {
     createComponent();
+    tick(); // wait for async data to arrive
     expect(location.path()).toEqual('/dashboard', 'after initialNavigation()');
     expectElementOf(DashboardComponent);
   }));
@@ -64,7 +72,7 @@ describe('AppComponent & RouterTestingModule', () => {
   }));
 
   // Can't navigate to lazy loaded modules with this technique
-  xit('should navigate to "Heroes" on click', fakeAsync(() => {
+  xit('should navigate to "Heroes" on click (not working yet)', fakeAsync(() => {
     createComponent();
     page.heroesLinkDe.nativeElement.click();
     advance();
@@ -84,9 +92,9 @@ import { HeroListComponent }      from './hero/hero-list.component';
 let loader: SpyNgModuleFactoryLoader;
 
 ///////// Can't get lazy loaded Heroes to work yet
-xdescribe('AppComponent & Lazy Loading', () => {
+xdescribe('AppComponent & Lazy Loading (not working yet)', () => {
 
-  beforeEach( async(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ AppModule, RouterTestingModule ]
     })
@@ -95,13 +103,10 @@ xdescribe('AppComponent & Lazy Loading', () => {
 
   beforeEach(fakeAsync(() => {
     createComponent();
-    loader   = TestBed.get(NgModuleFactoryLoader);
-    loader.stubbedModules = {expected: HeroModule};
+    loader = TestBed.get(NgModuleFactoryLoader);
+    loader.stubbedModules = { expected: HeroModule };
     router.resetConfig([{path: 'heroes', loadChildren: 'expected'}]);
   }));
-
-  it('dummy', () => expect(true).toBe(true) );
-
 
   it('should navigate to "Heroes" on click', async(() => {
     page.heroesLinkDe.nativeElement.click();
@@ -110,25 +115,24 @@ xdescribe('AppComponent & Lazy Loading', () => {
     expectElementOf(HeroListComponent);
   }));
 
-  xit('can navigate to "Heroes" w/ browser location URL change', fakeAsync(() => {
+  it('can navigate to "Heroes" w/ browser location URL change', fakeAsync(() => {
     location.go('/heroes');
     advance();
     expectPathToBe('/heroes');
     expectElementOf(HeroListComponent);
-
-    page.expectEvents([
-      [r.NavigationStart, '/heroes'], [r.RoutesRecognized, '/heroes'],
-      [r.NavigationEnd, '/heroes']
-    ]);
   }));
 });
 
 ////// Helpers /////////
 
-/** Wait a tick, then detect changes */
+/**
+ * Advance to the routed page
+ * Wait a tick, then detect changes, and tick again
+ */
 function advance(): void {
-  tick();
-  fixture.detectChanges();
+  tick(); // wait while navigating
+  fixture.detectChanges(); // update view
+  tick(); // wait for async data to arrive
 }
 
 function createComponent() {
@@ -140,8 +144,8 @@ function createComponent() {
   router = injector.get(Router);
   router.initialNavigation();
   spyOn(injector.get(TwainService), 'getQuote')
-    .and.returnValue(Promise.resolve('Test Quote')); // fakes it
-
+    // fake fast async observable
+    .and.returnValue(asyncData('Test Quote'));
   advance();
 
   page = new Page();
@@ -151,7 +155,6 @@ class Page {
   aboutLinkDe:     DebugElement;
   dashboardLinkDe: DebugElement;
   heroesLinkDe:    DebugElement;
-  recordedEvents:  any[]  =  [];
 
   // for debugging
   comp: AppComponent;
@@ -159,17 +162,7 @@ class Page {
   router: Router;
   fixture: ComponentFixture<AppComponent>;
 
-  expectEvents(pairs: any[]) {
-    const events = this.recordedEvents;
-    expect(events.length).toEqual(pairs.length, 'actual/expected events length mismatch');
-    for (let i = 0; i < events.length; ++i) {
-      expect((<any>events[i].constructor).name).toBe(pairs[i][0].name, 'unexpected event name');
-      expect((<any>events[i]).url).toBe(pairs[i][1], 'unexpected event url');
-    }
-  }
-
   constructor() {
-    router.events.subscribe(e => this.recordedEvents.push(e));
     const links = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
     this.aboutLinkDe     = links[2];
     this.dashboardLinkDe = links[0];
