@@ -100,7 +100,7 @@ task('markdown-docs', () => {
     }
   };
 
-  return src(['src/lib/**/*.md', 'guides/*.md'])
+  return src(['src/lib/**/!(README).md', 'guides/*.md'])
       .pipe(rename({prefix: 'material-'}))
       .pipe(markdown(markdownOptions))
       .pipe(transform(transformMarkdownFiles))
@@ -112,7 +112,7 @@ task('markdown-docs', () => {
 // disambiguating the output.
 /** Generates html files from the markdown overviews and guides for the cdk. */
 task('markdown-docs-cdk', () => {
-  return src(['src/cdk/**/*.md'])
+  return src(['src/cdk/**/!(README).md'])
       .pipe(rename({prefix: 'cdk-'}))
       .pipe(markdown(markdownOptions))
       .pipe(transform(transformMarkdownFiles))
