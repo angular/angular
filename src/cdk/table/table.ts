@@ -37,7 +37,8 @@ import {Subscription} from 'rxjs/Subscription';
 import {Subject} from 'rxjs/Subject';
 import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
 import {
-  getTableDuplicateColumnNameError, getTableMissingMatchingRowDefError,
+  getTableDuplicateColumnNameError,
+  getTableMissingMatchingRowDefError,
   getTableMultipleDefaultRowDefsError,
   getTableUnknownColumnError
 } from './table-errors';
@@ -67,6 +68,12 @@ export class HeaderRowPlaceholder {
 export const CDK_TABLE_TEMPLATE = `
   <ng-container headerRowPlaceholder></ng-container>
   <ng-container rowPlaceholder></ng-container>`;
+
+/**
+ * Class used to conveniently type the embedded view ref for rows with a context.
+ * @docs-private
+ */
+abstract class RowViewRef<T> extends EmbeddedViewRef<CdkCellOutletRowContext<T>> { }
 
 /**
  * A data table that connects with a data source to retrieve data of type `T` and renders
@@ -292,25 +299,36 @@ export class CdkTable<T> implements CollectionViewer {
     this._changeDetectorRef.markForCheck();
   }
 
-  /** Check for changes made in the data and render each change (row added/removed/moved). */
+  /**
+   * Check for changes made in the data and render each change (row added/removed/moved) and update
+   * row contexts.
+   */
   private _renderRowChanges() {
     const changes = this._dataDiffer.diff(this._data);
     if (!changes) { return; }
 
     const viewContainer = this._rowPlaceholder.viewContainer;
     changes.forEachOperation(
-        (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
-          if (item.previousIndex == null) {
-            this._insertRow(this._data[currentIndex], currentIndex);
+        (record: IterableChangeRecord<T>, adjustedPreviousIndex: number, currentIndex: number) => {
+          if (record.previousIndex == null) {
+            this._insertRow(record.item, currentIndex);
           } else if (currentIndex == null) {
             viewContainer.remove(adjustedPreviousIndex);
           } else {
-            const view = viewContainer.get(adjustedPreviousIndex);
+            const view = <RowViewRef<T>>viewContainer.get(adjustedPreviousIndex);
             viewContainer.move(view!, currentIndex);
           }
         });
 
-    this._updateRowContext();
+    // Update the meta context of a row's context data (index, count, first, last, ...)
+    this._updateRowIndexContext();
+
+    // Update rows that did not get added/removed/moved but may have had their identity changed,
+    // e.g. if trackBy matched data on some property but the actual data reference changed.
+    changes.forEachIdentityChange((record: IterableChangeRecord<T>) => {
+      const rowView = <RowViewRef<T>>viewContainer.get(record.currentIndex!);
+      rowView.context.$implicit = record.item;
+    });
   }
 
   /**
@@ -353,14 +371,13 @@ export class CdkTable<T> implements CollectionViewer {
   }
 
   /**
-   * Updates the context for each row to reflect any data changes that may have caused
-   * rows to be added, removed, or moved. The view container contains the same context
-   * that was provided to each of its cells.
+   * Updates the index-related context for each row to reflect any changes in the index of the rows,
+   * e.g. first/last/even/odd.
    */
-  private _updateRowContext() {
+  private _updateRowIndexContext() {
     const viewContainer = this._rowPlaceholder.viewContainer;
     for (let index = 0, count = viewContainer.length; index < count; index++) {
-      const viewRef = viewContainer.get(index) as EmbeddedViewRef<CdkCellOutletRowContext<T>>;
+      const viewRef = viewContainer.get(index) as RowViewRef<T>;
       viewRef.context.index = index;
       viewRef.context.count = count;
       viewRef.context.first = index === 0;
@@ -404,4 +421,3 @@ export class CdkTable<T> implements CollectionViewer {
     });
   }
 }
-
