@@ -25,7 +25,7 @@ import {SpyLocation} from '@angular/common/testing';
 import {Directionality} from '@angular/cdk/bidi';
 import {MatDialogContainer} from './dialog-container';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {ESCAPE} from '@angular/cdk/keycodes';
+import {A, ESCAPE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from './index';
 
@@ -203,7 +203,7 @@ describe('MatDialog', () => {
       viewContainerRef: testViewContainerRef
     });
 
-    dispatchKeyboardEvent(document, 'keydown', ESCAPE);
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     viewContainerFixture.detectChanges();
 
     viewContainerFixture.whenStable().then(() => {
@@ -275,6 +275,23 @@ describe('MatDialog', () => {
       backdrop.click();
       expect(spy).toHaveBeenCalledTimes(1);
     });
+  }));
+
+  it('should emit the keyboardEvent stream when key events target the overlay', async(() => {
+    const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
+
+    const spy = jasmine.createSpy('keyboardEvent spy');
+    dialogRef.keydownEvents().subscribe(spy);
+
+    viewContainerFixture.detectChanges();
+
+    let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+    let container = overlayContainerElement.querySelector('mat-dialog-container') as HTMLElement;
+    dispatchKeyboardEvent(document.body, 'keydown', A);
+    dispatchKeyboardEvent(document.body, 'keydown', A, backdrop);
+    dispatchKeyboardEvent(document.body, 'keydown', A, container);
+
+    expect(spy).toHaveBeenCalledTimes(3);
   }));
 
   it('should notify the observers if a dialog has been opened', () => {
@@ -665,7 +682,7 @@ describe('MatDialog', () => {
       });
 
       viewContainerFixture.detectChanges();
-      dispatchKeyboardEvent(document, 'keydown', ESCAPE);
+      dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
 
       expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeTruthy();
     });
@@ -986,7 +1003,7 @@ describe('MatDialog with a parent MatDialog', () => {
   it('should close the top dialog via the escape key', async(() => {
     childDialog.open(PizzaMsg);
 
-    dispatchKeyboardEvent(document, 'keydown', ESCAPE);
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     fixture.detectChanges();
 
     fixture.whenStable().then(() => {

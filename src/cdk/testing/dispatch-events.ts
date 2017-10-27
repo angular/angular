@@ -25,8 +25,9 @@ export function dispatchFakeEvent(node: Node | Window, type: string, canBubble?:
 }
 
 /** Shorthand to dispatch a keyboard event with a specified key code. */
-export function dispatchKeyboardEvent(node: Node, type: string, keyCode: number): KeyboardEvent {
-  return dispatchEvent(node, createKeyboardEvent(type, keyCode)) as KeyboardEvent;
+export function dispatchKeyboardEvent(node: Node, type: string, keyCode: number, target?: Element):
+    KeyboardEvent {
+  return dispatchEvent(node, createKeyboardEvent(type, keyCode, target)) as KeyboardEvent;
 }
 
 /** Shorthand to dispatch a mouse event on the specified coordinates. */

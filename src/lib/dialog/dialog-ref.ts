@@ -116,6 +116,13 @@ export class MatDialogRef<T> {
   }
 
   /**
+   * Gets an observable that emits when keydown events are targeted on the overlay.
+   */
+  keydownEvents(): Observable<KeyboardEvent> {
+    return this._overlayRef.keydownEvents();
+  }
+
+  /**
    * Updates the dialog's position.
    * @param position New dialog position.
    */

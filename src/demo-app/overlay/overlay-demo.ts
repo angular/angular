@@ -15,6 +15,8 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/do';
 
 
 @Component({
@@ -104,6 +106,26 @@ export class OverlayDemo {
     overlayRef.backdropClick().subscribe(() => overlayRef.detach());
   }
 
+  openKeyboardTracking() {
+    let config = new OverlayConfig();
+
+    config.positionStrategy = this.overlay.position()
+      .global()
+      .centerHorizontally()
+      .top(`${this.nextPosition}px`);
+
+    this.nextPosition += 30;
+
+    let overlayRef = this.overlay.create(config);
+    const componentRef = overlayRef
+        .attach(new ComponentPortal(KeyboardTrackingPanel, this.viewContainerRef));
+
+    overlayRef.keydownEvents()
+      .do(e => componentRef.instance.lastKeydown = e.key)
+      .filter(e => e.key === 'Escape')
+      .subscribe(() => overlayRef.detach());
+  }
+
 }
 
 /** Simple component to load into an overlay */
@@ -123,4 +145,13 @@ export class RotiniPanel {
 })
 export class SpagettiPanel {
   value: string = 'Omega';
+}
+
+/** Simple component to load into an overlay */
+@Component({
+  selector: 'keyboard-panel',
+  template: '<div class="demo-keyboard">Last Keydown: {{ lastKeydown }}</div>'
+})
+export class KeyboardTrackingPanel {
+  lastKeydown = '';
 }

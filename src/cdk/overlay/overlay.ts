@@ -17,6 +17,7 @@ import {DomPortalHost} from '@angular/cdk/portal';
 import {OverlayConfig} from './overlay-config';
 import {OverlayRef} from './overlay-ref';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
+import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {OverlayContainer} from './overlay-container';
 import {ScrollStrategyOptions} from './scroll/index';
 
@@ -44,6 +45,7 @@ export class Overlay {
               private _overlayContainer: OverlayContainer,
               private _componentFactoryResolver: ComponentFactoryResolver,
               private _positionBuilder: OverlayPositionBuilder,
+              private _keyboardDispatcher: OverlayKeyboardDispatcher,
               private _appRef: ApplicationRef,
               private _injector: Injector,
               private _ngZone: NgZone) { }
@@ -56,7 +58,7 @@ export class Overlay {
   create(config: OverlayConfig = defaultConfig): OverlayRef {
     const pane = this._createPaneElement();
     const portalHost = this._createPortalHost(pane);
-    return new OverlayRef(portalHost, pane, config, this._ngZone);
+    return new OverlayRef(portalHost, pane, config, this._ngZone, this._keyboardDispatcher);
   }
 
   /**
@@ -90,4 +92,5 @@ export class Overlay {
   private _createPortalHost(pane: HTMLElement): DomPortalHost {
     return new DomPortalHost(pane, this._componentFactoryResolver, this._appRef, this._injector);
   }
+
 }

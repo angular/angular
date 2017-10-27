@@ -18,11 +18,13 @@ import {
   OverlayOrigin,
 } from './overlay-directives';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
+import {OVERLAY_KEYBOARD_DISPATCHER_PROVIDER} from './keyboard/overlay-keyboard-dispatcher';
 import {ScrollStrategyOptions} from './scroll/scroll-strategy-options';
 
 export const OVERLAY_PROVIDERS: Provider[] = [
   Overlay,
   OverlayPositionBuilder,
+  OVERLAY_KEYBOARD_DISPATCHER_PROVIDER,
   VIEWPORT_RULER_PROVIDER,
   OVERLAY_CONTAINER_PROVIDER,
   MAT_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
