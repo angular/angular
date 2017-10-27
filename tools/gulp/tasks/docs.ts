@@ -91,7 +91,7 @@ task('markdown-docs', () => {
       const escapedText = text.toLowerCase().replace(/[^\w]+/g, '-');
       return `
         <h${level} id="${escapedText}" class="docs-header-link">
-          <div header-link="${escapedText}"></div>
+          <span header-link="${escapedText}"></span>
           ${text}
         </h${level}>
       `;

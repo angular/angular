@@ -1,4 +1,5 @@
-<h4 class="docs-api-h4 docs-api-class-name">
+<h4 id="{$ class.name $}" class="docs-header-link docs-api-h4 docs-api-class-name">
+  <span header-link="{$ class.name $}"></span>
   <code>{$ class.name $}</code>
 </h4>
 
@@ -16,7 +17,7 @@
 {%- endif -%}
 
 {%- if class.directiveExportAs -%}
-<span class="docs-api-h4 docs-api-class-export-label">Exported as:</span>
+<span class="docs-api-class-export-label">Exported as:</span>
 <span class="docs-api-class-export-name">{$ class.directiveExportAs $}</span>
 {%- endif -%}
 

@@ -31,7 +31,10 @@
   </p>
 
   {%- if doc.services.length -%}
-    <h3 class="docs-api-h3">Services</h3>
+    <h3 id="services" class="docs-header-link docs-api-h3">
+      <span header-link="services"></span>
+      Services
+    </h3>
     {% for service in doc.services %}
       {$ class(service) $}
     {% endfor %}
@@ -39,14 +42,20 @@
 
 
   {%- if doc.directives.length -%}
-    <h3 class="docs-api-h3">Directives</h3>
+    <h3 id="directives" class="docs-header-link docs-api-h3">
+      <span header-link="directives"></span>
+      Directives
+    </h3>
     {% for directive in doc.directives %}
       {$ class(directive) $}
     {% endfor %}
   {%- endif -%}
 
   {%- if doc.additionalClasses.length -%}
-    <h3 class="docs-api-h3">Additional classes</h3>
+    <h3 id="additional_classes" class="docs-header-link docs-api-h3">
+      <span header-link="additional_classes"></span>
+      Additional classes
+    </h3>
     {% for other in doc.additionalClasses %}
       {$ class(other) $}
     {% endfor %}
