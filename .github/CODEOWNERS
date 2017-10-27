@@ -35,7 +35,6 @@
 /src/lib/core/*                                    @jelbourn
 /src/lib/core/animation/**                         @jelbourn
 /src/lib/core/common-behaviors/**                  @jelbourn
-/src/lib/core/compatibility/**                     @jelbourn
 /src/lib/core/datetime/**                          @mmalerba
 /src/lib/core/error/**                             @crisbeto @mmalerba
 /src/lib/core/gestures/**                          @jelbourn
