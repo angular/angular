@@ -30,7 +30,6 @@ jobs:
     - env: "MODE=saucelabs_required"
     - env: "MODE=browserstack_required"
     - env: "MODE=travis_required"
-    - stage: Deploy
       env: "DEPLOY_MODE=build-artifacts"
     - env: "DEPLOY_MODE=docs-content"
     - env: "DEPLOY_MODE=screenshot-tool"
