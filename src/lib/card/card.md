@@ -40,7 +40,7 @@ This element can contain:
 * `<mat-card-subtitle>`
 * One of:
     * `<img mat-card-sm-image>`
-    * `<img mat-card-mat-image>`
+    * `<img mat-card-md-image>`
     * `<img mat-card-lg-image>`
 
 ### Accessibility
