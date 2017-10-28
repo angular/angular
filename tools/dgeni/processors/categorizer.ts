@@ -19,6 +19,7 @@ import {
   isProperty,
   isService
 } from '../common/decorators';
+import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
 import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
 import {sortCategorizedMembers} from '../common/sort-members';
 
@@ -31,6 +32,7 @@ export interface CategorizedClassDoc extends ClassExportDoc {
   isDeprecated: boolean;
   directiveExportAs?: string | null;
   directiveSelectors?: string[];
+  extendedDoc: ClassLikeExportDoc | null;
 }
 
 export interface CategorizedPropertyMemberDoc extends PropertyMemberDoc {
@@ -87,6 +89,11 @@ export class Categorizer implements Processor {
     // Sort members
     classDoc.methods.sort(sortCategorizedMembers);
     classDoc.properties.sort(sortCategorizedMembers);
+
+    // Classes can only extend a single class. This means that there can't be multiple extend
+    // clauses for the Dgeni document. To make the template syntax simpler and more readable,
+    // store the extended class in a variable.
+    classDoc.extendedDoc = classDoc.extendsClauses[0] ? classDoc.extendsClauses[0].doc! : null;
 
     // Categorize the current visited classDoc into its Angular type.
     if (isDirective(classDoc)) {

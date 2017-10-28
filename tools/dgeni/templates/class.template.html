@@ -1,6 +1,12 @@
 <h4 id="{$ class.name $}" class="docs-header-link docs-api-h4 docs-api-class-name">
   <span header-link="{$ class.name $}"></span>
   <code>{$ class.name $}</code>
+  {% if class.extendedDoc %}
+  <span class="docs-api-class-extends-clauses">
+    <span class="docs-api-class-extends-label">extends</span>
+    <span class="docs-api-class-extends-type">{$ class.extendedDoc.name $}</span>
+  </span>
+  {% endif %}
 </h4>
 
 {%- if class.description -%}
