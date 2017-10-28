@@ -35,8 +35,6 @@ import {
   MatToolbarModule,
   MatTooltipModule,
   MatStepperModule,
-  MatButtonToggleModule,
-  MatCheckboxModule,
 } from '@angular/material';
 import {
   CdkTableModule,
