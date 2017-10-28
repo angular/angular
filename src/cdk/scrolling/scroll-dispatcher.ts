@@ -11,9 +11,9 @@ import {Platform} from '@angular/cdk/platform';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {Observable} from 'rxjs/Observable';
-import {fromEvent} from 'rxjs/observable/fromEvent';
 import {of as observableOf} from 'rxjs/observable/of';
-import {auditTime, filter} from '@angular/cdk/rxjs';
+import {fromEvent} from 'rxjs/observable/fromEvent';
+import {auditTime, filter} from 'rxjs/operators';
 import {CdkScrollable} from './scrollable';
 
 
@@ -82,7 +82,7 @@ export class ScrollDispatcher {
       // In the case of a 0ms delay, use an observable without auditTime
       // since it does add a perceptible delay in processing overhead.
       const subscription = auditTimeInMs > 0 ?
-        auditTime.call(this._scrolled, auditTimeInMs).subscribe(observer) :
+        this._scrolled.pipe(auditTime(auditTimeInMs)).subscribe(observer) :
         this._scrolled.subscribe(observer);
 
       this._scrolledCount++;
@@ -105,12 +105,12 @@ export class ScrollDispatcher {
    * @param elementRef Element whose ancestors to listen for.
    * @param auditTimeInMs Time to throttle the scroll events.
    */
-  ancestorScrolled(elementRef: ElementRef, auditTimeInMs?: number): Observable<CdkScrollable> {
+  ancestorScrolled(elementRef: ElementRef, auditTimeInMs?: number): Observable<CdkScrollable|void> {
     const ancestors = this.getAncestorScrollContainers(elementRef);
 
-    return filter.call(this.scrolled(auditTimeInMs), target => {
+    return this.scrolled(auditTimeInMs).pipe(filter(target => {
       return !target || ancestors.indexOf(target) > -1;
-    });
+    }));
   }
 
   /** Returns all registered Scrollables that contain the provided element. */

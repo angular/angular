@@ -9,7 +9,7 @@
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {ENTER, SPACE} from '@angular/cdk/keycodes';
-import {filter} from '@angular/cdk/rxjs';
+import {filter} from 'rxjs/operators';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -96,7 +96,7 @@ export class MatExpansionPanelHeader implements OnDestroy {
     this._parentChangeSubscription = merge(
       panel.opened,
       panel.closed,
-      filter.call(panel._inputChanges, changes => !!(changes.hideToggle || changes.disabled))
+      panel._inputChanges.pipe(filter(changes => !!(changes.hideToggle || changes.disabled)))
     )
     .subscribe(() => this._changeDetectorRef.markForCheck());
 

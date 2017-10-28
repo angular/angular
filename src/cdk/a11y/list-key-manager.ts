@@ -10,7 +10,7 @@ import {QueryList} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {UP_ARROW, DOWN_ARROW, TAB, A, Z, ZERO, NINE} from '@angular/cdk/keycodes';
-import {RxChain, debounceTime, filter, map, doOperator} from '@angular/cdk/rxjs';
+import {debounceTime, filter, map, tap} from 'rxjs/operators';
 
 /** This interface is for items that can be passed to a ListKeyManager. */
 export interface ListKeyManagerOption {
@@ -66,28 +66,28 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
     // Debounce the presses of non-navigational keys, collect the ones that correspond to letters
     // and convert those letters back into a string. Afterwards find the first item that starts
     // with that string and select it.
-    this._typeaheadSubscription = RxChain.from(this._letterKeyStream)
-      .call(doOperator, keyCode => this._pressedLetters.push(keyCode))
-      .call(debounceTime, debounceInterval)
-      .call(filter, () => this._pressedLetters.length > 0)
-      .call(map, () => this._pressedLetters.join(''))
-      .subscribe(inputString => {
-        const items = this._items.toArray();
+    this._typeaheadSubscription = this._letterKeyStream.pipe(
+      tap(keyCode => this._pressedLetters.push(keyCode)),
+      debounceTime(debounceInterval),
+      filter(() => this._pressedLetters.length > 0),
+      map(() => this._pressedLetters.join(''))
+    ).subscribe(inputString => {
+      const items = this._items.toArray();
 
-        // Start at 1 because we want to start searching at the item immediately
-        // following the current active item.
-        for (let i = 1; i < items.length + 1; i++) {
-          const index = (this._activeItemIndex + i) % items.length;
-          const item = items[index];
+      // Start at 1 because we want to start searching at the item immediately
+      // following the current active item.
+      for (let i = 1; i < items.length + 1; i++) {
+        const index = (this._activeItemIndex + i) % items.length;
+        const item = items[index];
 
-          if (!item.disabled && item.getLabel!().toUpperCase().trim().indexOf(inputString) === 0) {
-            this.setActiveItem(index);
-            break;
-          }
+        if (!item.disabled && item.getLabel!().toUpperCase().trim().indexOf(inputString) === 0) {
+          this.setActiveItem(index);
+          break;
         }
+      }
 
-        this._pressedLetters = [];
-      });
+      this._pressedLetters = [];
+    });
 
     return this;
   }

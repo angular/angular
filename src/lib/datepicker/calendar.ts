@@ -36,7 +36,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
-import {first} from 'rxjs/operator/first';
+import {first} from 'rxjs/operators';
 import {Subscription} from 'rxjs/Subscription';
 import {coerceDateProperty} from './coerce-date-property';
 import {createMissingDateImplError} from './datepicker-errors';
@@ -253,7 +253,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   /** Focuses the active cell after the microtask queue is empty. */
   _focusActiveCell() {
     this._ngZone.runOutsideAngular(() => {
-      first.call(this._ngZone.onStable.asObservable()).subscribe(() => {
+      this._ngZone.onStable.asObservable().pipe(first()).subscribe(() => {
         this._elementRef.nativeElement.querySelector('.mat-calendar-body-active').focus();
       });
     });

@@ -10,7 +10,7 @@ import {AnimationEvent} from '@angular/animations';
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Direction} from '@angular/cdk/bidi';
 import {ESCAPE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {RxChain, startWith, switchMap, first} from '@angular/cdk/rxjs';
+import {startWith, switchMap, first} from 'rxjs/operators';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -163,16 +163,15 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
   /** Stream that emits whenever the hovered menu item changes. */
   hover(): Observable<MatMenuItem> {
     if (this.items) {
-      return RxChain.from(this.items.changes)
-        .call(startWith, this.items)
-        .call(switchMap, (items: MatMenuItem[]) => merge(...items.map(item => item.hover)))
-        .result();
+      return this.items.changes.pipe(
+        startWith(this.items),
+        switchMap(items => merge(...items.map(item => item.hover)))
+      );
     }
 
-    return RxChain.from(this._ngZone.onStable.asObservable())
-      .call(first)
-      .call(switchMap, () => this.hover())
-      .result();
+    return this._ngZone.onStable
+      .asObservable()
+      .pipe(first(), switchMap(() => this.hover()));
   }
 
   /** Handle a keyboard event from the menu, delegating to the appropriate action. */

@@ -12,7 +12,7 @@ import {OverlayConfig} from './overlay-config';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {first} from 'rxjs/operator/first';
+import {first} from 'rxjs/operators';
 
 
 /**
@@ -69,7 +69,7 @@ export class OverlayRef implements PortalHost {
     // Update the position once the zone is stable so that the overlay will be fully rendered
     // before attempting to position it, as the position may depend on the size of the rendered
     // content.
-    first.call(this._ngZone.onStable.asObservable()).subscribe(() => {
+    this._ngZone.onStable.asObservable().pipe(first()).subscribe(() => {
       this.updatePosition();
     });
 

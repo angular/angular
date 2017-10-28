@@ -11,7 +11,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {BACKSPACE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {startWith} from '@angular/cdk/rxjs';
+import {startWith} from 'rxjs/operators';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -335,7 +335,7 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
     });
 
     // When the list changes, re-subscribe
-    this._changeSubscription = startWith.call(this.chips.changes, null).subscribe(() => {
+    this._changeSubscription = this.chips.changes.pipe(startWith(null)).subscribe(() => {
       this._resetChips();
 
       // Reset chips selected/deselected status

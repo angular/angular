@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
 import {
@@ -18,7 +17,7 @@ import {
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {filter, first, RxChain, switchMap, doOperator, delay} from '@angular/cdk/rxjs';
+import {filter, first, switchMap, tap, delay} from 'rxjs/operators';
 import {
   ChangeDetectorRef,
   Directive,
@@ -216,19 +215,20 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       return observableOf(null);
     }
 
-    return RxChain.from(merge(
+    return merge(
       fromEvent(this._document, 'click'),
       fromEvent(this._document, 'touchend')
-    )).call(filter, (event: MouseEvent | TouchEvent) => {
+    )
+    .pipe(filter((event: MouseEvent | TouchEvent) => {
       const clickTarget = event.target as HTMLElement;
       const formField = this._formField ?
           this._formField._elementRef.nativeElement : null;
 
       return this._panelOpen &&
-             clickTarget !== this._element.nativeElement &&
-             (!formField || !formField.contains(clickTarget)) &&
-             (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
-    }).result();
+              clickTarget !== this._element.nativeElement &&
+              (!formField || !formField.contains(clickTarget)) &&
+              (!!this._overlayRef && !this._overlayRef.overlayElement.contains(clickTarget));
+    }));
   }
 
   /**
@@ -364,25 +364,27 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * stream every time the option list changes.
    */
   private _subscribeToClosingActions(): Subscription {
-    const firstStable = first.call(this._zone.onStable.asObservable());
-    const optionChanges = RxChain.from(this.autocomplete.options.changes)
-      .call(doOperator, () => this._positionStrategy.recalculateLastPosition())
+    const firstStable = this._zone.onStable.asObservable().pipe(first());
+    const optionChanges = this.autocomplete.options.changes.pipe(
+      tap(() => this._positionStrategy.recalculateLastPosition()),
       // Defer emitting to the stream until the next tick, because changing
       // bindings in here will cause "changed after checked" errors.
-      .call(delay, 0)
-      .result();
+      delay(0)
+    );
 
     // When the zone is stable initially, and when the option list changes...
-    return RxChain.from(merge(firstStable, optionChanges))
-      // create a new stream of panelClosingActions, replacing any previous streams
-      // that were created, and flatten it so our stream only emits closing events...
-      .call(switchMap, () => {
-        this._resetActiveItem();
-        this.autocomplete._setVisibility();
-        return this.panelClosingActions;
-      })
-      // when the first closing event occurs...
-      .call(first)
+    return merge(firstStable, optionChanges)
+      .pipe(
+        // create a new stream of panelClosingActions, replacing any previous streams
+        // that were created, and flatten it so our stream only emits closing events...
+        switchMap(() => {
+          this._resetActiveItem();
+          this.autocomplete._setVisibility();
+          return this.panelClosingActions;
+        }),
+        // when the first closing event occurs...
+        first()
+      )
       // set the value, close the panel, and complete.
       .subscribe(event => this._setValueAndClose(event));
   }

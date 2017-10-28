@@ -9,7 +9,7 @@ import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {MediaMatcher} from './media-matcher';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {RxChain, map, startWith, takeUntil} from '@angular/cdk/rxjs';
+import {map, startWith, takeUntil} from 'rxjs/operators';
 import {coerceArray} from '@angular/cdk/coercion';
 import {combineLatest} from 'rxjs/observable/combineLatest';
 import {fromEventPattern} from 'rxjs/observable/fromEventPattern';
@@ -75,7 +75,7 @@ export class BreakpointObserver implements OnDestroy {
 
     let mql: MediaQueryList = this.mediaMatcher.matchMedia(query);
     // Create callback for match changes and add it is as a listener.
-    let queryObservable = RxChain.from(fromEventPattern(
+    let queryObservable = fromEventPattern(
       // Listener callback methods are wrapped to be placed back in ngZone. Callbacks must be placed
       // back into the zone because matchMedia is only included in Zone.js by loading the
       // webapis-media-query.js file alongside the zone.js file.  Additionally, some browsers do not
@@ -86,11 +86,12 @@ export class BreakpointObserver implements OnDestroy {
       },
       (listener: MediaQueryListListener) => {
         mql.removeListener((e: MediaQueryList) => this.zone.run(() => listener(e)));
-      }))
-      .call(takeUntil, this._destroySubject)
-      .call(startWith, mql)
-      .call(map, (nextMql: MediaQueryList) => ({matches: nextMql.matches}))
-      .result();
+      })
+      .pipe(
+        takeUntil(this._destroySubject),
+        startWith(mql),
+        map((nextMql: MediaQueryList) => ({matches: nextMql.matches}))
+      );
 
     // Add the MediaQueryList to the set of queries.
     let output = {observable: queryObservable, mql: mql};

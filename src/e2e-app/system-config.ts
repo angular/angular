@@ -41,7 +41,6 @@ System.config({
     '@angular/cdk/overlay': 'dist/bundles/cdk-overlay.umd.js',
     '@angular/cdk/platform': 'dist/bundles/cdk-platform.umd.js',
     '@angular/cdk/portal': 'dist/bundles/cdk-portal.umd.js',
-    '@angular/cdk/rxjs': 'dist/bundles/cdk-rxjs.umd.js',
     '@angular/cdk/scrolling': 'dist/bundles/cdk-scrolling.umd.js',
     '@angular/cdk/stepper': 'dist/bundles/cdk-stepper.umd.js',
     '@angular/cdk/table': 'dist/bundles/cdk-table.umd.js',
@@ -82,7 +81,9 @@ System.config({
   },
   packages: {
     // Thirdparty barrels.
-    'rxjs': { main: 'index' },
+    'rxjs': {main: 'index'},
+    'rxjs/operators': {main: 'index'},
+
     // Set the default extension for the root package, because otherwise the demo-app can't
     // be built within the production mode. Due to missing file extensions.
     '.': {

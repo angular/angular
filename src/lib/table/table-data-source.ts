@@ -11,7 +11,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {Subscription} from 'rxjs/Subscription';
-import {combineLatest, map, RxChain, startWith} from '@angular/cdk/rxjs';
+import {combineLatest, map, startWith} from 'rxjs/operators';
 import {empty} from 'rxjs/observable/empty';
 
 /**
@@ -117,19 +117,23 @@ export class MatTableDataSource<T> implements DataSource<T> {
     const sortChange = this._sort ? this._sort.sortChange : empty();
     const pageChange = this._paginator ? this._paginator.page : empty();
 
-    if (this._renderChangesSubscription) { this._renderChangesSubscription.unsubscribe(); }
-    this._renderChangesSubscription = RxChain.from(this._data)
+    if (this._renderChangesSubscription) {
+      this._renderChangesSubscription.unsubscribe();
+    }
+
     // Watch for base data or filter changes to provide a filtered set of data.
-        .call(combineLatest, this._filter)
-        .call(map, ([data]) => this._filterData(data))
-        // Watch for filtered data or sort changes to provide an ordered set of data.
-        .call(combineLatest, startWith.call(sortChange, null))
-        .call(map, ([data]) => this._orderData(data))
-        // Watch for ordered data or page changes to provide a paged set of data.
-        .call(combineLatest, startWith.call(pageChange, null))
-        .call(map, ([data]) => this._pageData(data))
-        // Watched for paged data changes and send the result to the table to render.
-        .subscribe(data => this._renderData.next(data));
+    this._renderChangesSubscription = this._data.pipe(
+      combineLatest(this._filter),
+      map(([data]) => this._filterData(data)),
+      // Watch for filtered data or sort changes to provide an ordered set of data.
+      combineLatest(sortChange.pipe(startWith(null!))),
+      map(([data]) => this._orderData(data)),
+      // Watch for ordered data or page changes to provide a paged set of data.
+      combineLatest(pageChange.pipe(startWith(null!))),
+      map(([data]) => this._pageData(data))
+    )
+    // Watched for paged data changes and send the result to the table to render.
+    .subscribe(data => this._renderData.next(data));
   }
 
   /**

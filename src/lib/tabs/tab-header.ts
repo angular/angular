@@ -8,7 +8,7 @@
 
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
-import {startWith} from '@angular/cdk/rxjs';
+import {startWith} from 'rxjs/operators';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -189,7 +189,7 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     const dirChange = this._dir ? this._dir.change : observableOf(null);
     const resize = this._viewportRuler.change(150);
 
-    this._realignInkBar = startWith.call(merge(dirChange, resize), null).subscribe(() => {
+    this._realignInkBar = merge(dirChange, resize).pipe(startWith(null)).subscribe(() => {
       this._updatePagination();
       this._alignInkBarToSelectedTab();
     });

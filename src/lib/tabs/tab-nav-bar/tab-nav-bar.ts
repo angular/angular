@@ -5,11 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
-import {takeUntil} from '@angular/cdk/rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentInit,
@@ -133,7 +132,7 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
     this._ngZone.runOutsideAngular(() => {
       const dirChange = this._dir ? this._dir.change : observableOf(null);
 
-      return takeUntil.call(merge(dirChange, this._viewportRuler.change(10)), this._onDestroy)
+      return merge(dirChange, this._viewportRuler.change(10)).pipe(takeUntil(this._onDestroy))
           .subscribe(() => this._alignInkBar());
     });
 

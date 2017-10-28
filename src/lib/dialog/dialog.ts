@@ -15,7 +15,7 @@ import {
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
-import {RxChain, startWith, filter} from '@angular/cdk/rxjs';
+import {startWith, filter} from 'rxjs/operators';
 import {Location} from '@angular/common';
 import {
   ComponentRef,
@@ -89,7 +89,7 @@ export class MatDialog {
    */
   afterAllClosed: Observable<void> = defer<void>(() => this.openDialogs.length ?
       this._afterAllClosed :
-      startWith.call(this._afterAllClosed, undefined));
+      this._afterAllClosed.pipe(startWith(undefined)));
 
   constructor(
       private _overlay: Overlay,
@@ -242,9 +242,9 @@ export class MatDialog {
     }
 
     // Close when escape keydown event occurs
-    RxChain.from(overlayRef.keydownEvents())
-      .call(filter, event => event.keyCode === ESCAPE && !dialogRef.disableClose)
-      .subscribe(() => dialogRef.close());
+    overlayRef.keydownEvents().pipe(
+      filter(event => event.keyCode === ESCAPE && !dialogRef.disableClose)
+    ).subscribe(() => dialogRef.close());
 
     if (componentOrTemplateRef instanceof TemplateRef) {
       dialogContainer.attachTemplatePortal(

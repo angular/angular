@@ -6,7 +6,7 @@ import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Observable} from 'rxjs/Observable';
-import {map} from 'rxjs/operator/map';
+import {map} from 'rxjs/operators';
 import {MatTableModule} from '../table/index';
 import {
   MatSort,
@@ -249,7 +249,7 @@ class SimpleMatSortApp {
 
 class FakeDataSource extends DataSource<any> {
   connect(collectionViewer: CollectionViewer): Observable<any[]> {
-    return map.call(collectionViewer.viewChange, () => []);
+    return collectionViewer.viewChange.pipe(map(() => []));
   }
   disconnect() {}
 }

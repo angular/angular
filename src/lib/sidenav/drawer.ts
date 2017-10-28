@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
 import {FocusTrap, FocusTrapFactory, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
@@ -33,9 +32,9 @@ import {
 } from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {merge} from 'rxjs/observable/merge';
+import {filter, first, startWith, takeUntil, map} from 'rxjs/operators';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
-import {RxChain, filter, map, first, startWith, takeUntil} from '@angular/cdk/rxjs';
 
 
 /** Throws an exception when two MatDrawer are matching the same position. */
@@ -187,19 +186,13 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
   /** Event emitted when the drawer has been opened. */
   @Output('opened')
   get _openedStream(): Observable<void> {
-    return RxChain.from(this.openedChange)
-        .call(filter, o => o)
-        .call(map, () => {})
-        .result();
+    return this.openedChange.pipe(filter(o => o), map(() => {}));
   }
 
   /** Event emitted when the drawer has been closed. */
   @Output('closed')
   get _closedStream(): Observable<void> {
-    return RxChain.from(this.openedChange)
-        .call(filter, o => !o)
-        .call(map, () => {})
-        .result();
+    return this.openedChange.pipe(filter(o => !o), map(() => {}));
   }
 
   /**
@@ -296,12 +289,12 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
    * @param openedVia Whether the drawer was opened by a key press, mouse click or programmatically.
    * Used for focus management after the sidenav is closed.
    */
-  open(openedVia?: FocusOrigin): Promise<MatDrawerToggleResult> {
+  open(openedVia?: FocusOrigin): Promise<void> {
     return this.toggle(true, openedVia);
   }
 
   /** Close the drawer. */
-  close(): Promise<MatDrawerToggleResult> {
+  close(): Promise<void> {
     return this.toggle(false);
   }
 
@@ -312,7 +305,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
    * Used for focus management after the sidenav is closed.
    */
   toggle(isOpen: boolean = !this.opened, openedVia: FocusOrigin = 'program'):
-    Promise<MatDrawerToggleResult> {
+    Promise<void> {
 
     this._opened = isOpen;
 
@@ -331,7 +324,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
     // TODO(crisbeto): This promise is here for backwards-compatibility.
     // It should be removed next time we do breaking changes in the drawer.
     return new Promise(resolve => {
-      first.call(isOpen ? this.onOpen : this.onClose).subscribe(resolve);
+      (isOpen ? this.onOpen : this.onClose).pipe(first()).subscribe(resolve);
     });
   }
 
@@ -423,12 +416,12 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
-      takeUntil.call(_dir.change, this._destroyed).subscribe(() => this._validateDrawers());
+      _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => this._validateDrawers());
     }
   }
 
   ngAfterContentInit() {
-    startWith.call(this._drawers.changes, null).subscribe(() => {
+    this._drawers.changes.pipe(startWith(null)).subscribe(() => {
       this._validateDrawers();
 
       this._drawers.forEach((drawer: MatDrawer) => {
@@ -468,22 +461,23 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
    * is properly hidden.
    */
   private _watchDrawerToggle(drawer: MatDrawer): void {
-    RxChain.from(drawer._animationStarted)
-      .call(takeUntil, this._drawers.changes)
-      .call(filter, (event: AnimationEvent) => event.fromState !== event.toState)
-      .subscribe((event: AnimationEvent) => {
-        // Set the transition class on the container so that the animations occur. This should not
-        // be set initially because animations should only be triggered via a change in state.
-        if (event.toState !== 'open-instant') {
-          this._renderer.addClass(this._element.nativeElement, 'mat-drawer-transition');
-        }
+    drawer._animationStarted.pipe(
+      takeUntil(this._drawers.changes),
+      filter((event: AnimationEvent) => event.fromState !== event.toState)
+    )
+    .subscribe((event: AnimationEvent) => {
+      // Set the transition class on the container so that the animations occur. This should not
+      // be set initially because animations should only be triggered via a change in state.
+      if (event.toState !== 'open-instant') {
+        this._renderer.addClass(this._element.nativeElement, 'mat-drawer-transition');
+      }
 
-        this._updateContentMargins();
-        this._changeDetectorRef.markForCheck();
-      });
+      this._updateContentMargins();
+      this._changeDetectorRef.markForCheck();
+    });
 
     if (drawer.mode !== 'side') {
-      takeUntil.call(drawer.openedChange, this._drawers.changes).subscribe(() =>
+      drawer.openedChange.pipe(takeUntil(this._drawers.changes)).subscribe(() =>
           this._setContainerClass(drawer.opened));
     }
   }
@@ -498,8 +492,8 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
     }
     // NOTE: We need to wait for the microtask queue to be empty before validating,
     // since both drawers may be swapping positions at the same time.
-    takeUntil.call(drawer.onPositionChanged, this._drawers.changes).subscribe(() => {
-      first.call(this._ngZone.onMicrotaskEmpty.asObservable()).subscribe(() => {
+    drawer.onPositionChanged.pipe(takeUntil(this._drawers.changes)).subscribe(() => {
+      this._ngZone.onMicrotaskEmpty.asObservable().pipe(first()).subscribe(() => {
         this._validateDrawers();
       });
     });
@@ -508,7 +502,7 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   /** Subscribes to changes in drawer mode so we can run change detection. */
   private _watchDrawerMode(drawer: MatDrawer): void {
     if (drawer) {
-      takeUntil.call(drawer._modeChanged, merge(this._drawers.changes, this._destroyed))
+      drawer._modeChanged.pipe(takeUntil(merge(this._drawers.changes, this._destroyed)))
         .subscribe(() => {
           this._updateContentMargins();
           this._changeDetectorRef.markForCheck();

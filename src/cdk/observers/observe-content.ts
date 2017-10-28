@@ -19,7 +19,7 @@ import {
   NgZone,
 } from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {RxChain, debounceTime} from '@angular/cdk/rxjs';
+import {debounceTime} from 'rxjs/operators';
 
 /**
  * Factory that creates a new MutationObserver and allows us to stub it out in unit tests.
@@ -60,9 +60,8 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
   ngAfterContentInit() {
     if (this.debounce > 0) {
       this._ngZone.runOutsideAngular(() => {
-        RxChain.from(this._debouncer)
-          .call(debounceTime, this.debounce)
-          .subscribe((mutations: MutationRecord[]) => this.event.emit(mutations));
+        this._debouncer.pipe(debounceTime(this.debounce))
+            .subscribe((mutations: MutationRecord[]) => this.event.emit(mutations));
       });
     } else {
       this._debouncer.subscribe(mutations => this.event.emit(mutations));

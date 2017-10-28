@@ -9,7 +9,7 @@
 import {Injectable, Optional, SkipSelf, OnDestroy} from '@angular/core';
 import {OverlayRef} from '../overlay-ref';
 import {Subscription} from 'rxjs/Subscription';
-import {RxChain, filter} from '@angular/cdk/rxjs';
+import {filter} from 'rxjs/operators';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 
 /**
@@ -57,12 +57,12 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
   private _subscribeToKeydownEvents(): void {
     const bodyKeydownEvents = fromEvent<KeyboardEvent>(document.body, 'keydown');
 
-    this._keydownEventSubscription = RxChain.from(bodyKeydownEvents)
-      .call(filter, () => !!this._attachedOverlays.length)
-      .subscribe(event => {
-        // Dispatch keydown event to correct overlay reference
-        this._selectOverlayFromEvent(event)._keydownEvents.next(event);
-      });
+    this._keydownEventSubscription = bodyKeydownEvents.pipe(
+      filter(() => !!this._attachedOverlays.length)
+    ).subscribe(event => {
+      // Dispatch keydown event to correct overlay reference
+      this._selectOverlayFromEvent(event)._keydownEvents.next(event);
+    });
   }
 
   /** Select the appropriate overlay from a keydown event. */

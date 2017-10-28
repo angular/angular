@@ -1,7 +1,7 @@
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {map, RxChain, startWith} from '@angular/cdk/rxjs';
+import {map, startWith} from 'rxjs/operators';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,
@@ -1737,13 +1737,12 @@ class NgIfAutocomplete {
   @ViewChildren(MatOption) matOptions: QueryList<MatOption>;
 
   constructor() {
-    this.filteredOptions = RxChain.from(this.optionCtrl.valueChanges)
-      .call(startWith, null)
-      .call(map, (val: string) => {
+    this.filteredOptions = this.optionCtrl.valueChanges.pipe(
+      startWith(null),
+      map((val: string) => {
         return val ? this.options.filter(option => new RegExp(val, 'gi').test(option))
-                   : this.options.slice();
-      })
-      .result();
+                    : this.options.slice();
+      }));
   }
 }
 
@@ -1864,13 +1863,12 @@ class AutocompleteWithNativeInput {
   @ViewChildren(MatOption) matOptions: QueryList<MatOption>;
 
   constructor() {
-    this.filteredOptions = RxChain.from(this.optionCtrl.valueChanges)
-      .call(startWith, null)
-      .call(map, (val: string) => {
+    this.filteredOptions = this.optionCtrl.valueChanges.pipe(
+      startWith(null),
+      map((val: string) => {
         return val ? this.options.filter(option => new RegExp(val, 'gi').test(option))
-                   : this.options.slice();
-      })
-      .result();
+                    : this.options.slice();
+      }));
   }
 }
 

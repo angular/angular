@@ -3,10 +3,9 @@ import {Component, ViewChild} from '@angular/core';
 import {CdkTable} from './table';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
 import {combineLatest} from 'rxjs/observable/combineLatest';
 import {CdkTableModule} from './index';
-import {map} from 'rxjs/operator/map';
+import {map} from 'rxjs/operators';
 import {
   getTableDuplicateColumnNameError,
   getTableMissingMatchingRowDefError,
@@ -613,10 +612,10 @@ class FakeDataSource extends DataSource<TestData> {
     for (let i = 0; i < 3; i++) { this.addData(); }
   }
 
-  connect(collectionViewer: CollectionViewer): Observable<TestData[]> {
+  connect(collectionViewer: CollectionViewer) {
     this.isConnected = true;
     const streams = [this._dataChange, collectionViewer.viewChange];
-    return map.call(combineLatest(streams), ([data]) => data);
+    return combineLatest<TestData[]>(streams).pipe(map(([data]) => data));
   }
 
   disconnect() {

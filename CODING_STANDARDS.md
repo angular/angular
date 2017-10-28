@@ -127,9 +127,9 @@ class ConfigBuilder {
 ```
 
 #### RxJS
-When dealing with RxJS operators, import the operator functions directly (e.g.
-`import "rxjs/operator/map"`), as opposed to using the "patch" imports which pollute the user's
-global Observable object (e.g. `import "rxjs/add/operator/map"`):
+When dealing with RxJS operators, import the lettable operator (e.g.
+`import {map} from 'rxjs/operators'`), as opposed to using the "patch" imports which pollute the
+user's global Observable object (e.g. `import 'rxjs/add/operator/map'`):
 
 ```ts
 // NO
@@ -137,22 +137,9 @@ import 'rxjs/add/operator/map';
 someObservable.map(...).subscribe(...);
 
 // YES
-import {map} from 'rxjs/operator/map';
-map.call(someObservable, ...).subscribe(...);
+import {map} from 'rxjs/operators';
+someObservable.pipe(map(...)).subscribe(...);
 ```
-
-Note that this approach can be inflexible when dealing with long chains of operators. You can use
-the `RxChain` class to help with it:
-
-```ts
-// Before
-someObservable.filter(...).map(...).do(...);
-
-// After
-RxChain.from(someObservable).call(filter, ...).call(map, ...).call(do, ...).subscribe(...);
-```
-Note that not all operators are available via the `RxChain`. If the operator that you need isn't
-declared, you can add it to `/core/rxjs/rx-operators.ts`.
 
 #### Access modifiers
 * Omit the `public` keyword as it is the default behavior.

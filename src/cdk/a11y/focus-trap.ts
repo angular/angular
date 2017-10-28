@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
-import {first} from '@angular/cdk/rxjs';
+import {first} from 'rxjs/operators';
 import {InteractivityChecker} from './interactivity-checker';
 
 
@@ -283,7 +283,7 @@ export class FocusTrap {
     if (this._ngZone.isStable) {
       fn();
     } else {
-      first.call(this._ngZone.onStable.asObservable()).subscribe(fn);
+      this._ngZone.onStable.asObservable().pipe(first()).subscribe(fn);
     }
   }
 }

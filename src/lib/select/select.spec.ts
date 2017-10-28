@@ -40,7 +40,7 @@ import {
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {map} from 'rxjs/operator/map';
+import {map} from 'rxjs/operators';
 import {Subject} from 'rxjs/Subject';
 import {MatSelectModule} from './index';
 import {MatSelect} from './select';
@@ -2185,7 +2185,7 @@ describe('MatSelect', () => {
       it('should consider the selection a result of a user action when closed', fakeAsync(() => {
         const option = fixture.componentInstance.options.first;
         const spy = jasmine.createSpy('option selection spy');
-        const subscription = map.call(option.onSelectionChange, e => e.isUserInput).subscribe(spy);
+        const subscription = option.onSelectionChange.pipe(map(e => e.isUserInput)).subscribe(spy);
 
         dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
         expect(spy).toHaveBeenCalledWith(true);

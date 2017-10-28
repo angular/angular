@@ -63,7 +63,6 @@
 /src/cdk/overlay/**                                @jelbourn @crisbeto
 /src/cdk/platform/**                               @jelbourn @devversion
 /src/cdk/portal/**                                 @jelbourn
-/src/cdk/rxjs/**                                   @jelbourn
 /src/cdk/scrolling/**                              @andrewseguin @crisbeto
 /src/cdk/stepper/**                                @mmalerba
 /src/cdk/table/**                                  @andrewseguin

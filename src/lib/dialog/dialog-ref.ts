@@ -7,7 +7,7 @@
  */
 
 import {OverlayRef, GlobalPositionStrategy} from '@angular/cdk/overlay';
-import {filter, first, RxChain} from '@angular/cdk/rxjs';
+import {filter, first} from 'rxjs/operators';
 import {DialogPosition} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -47,24 +47,26 @@ export class MatDialogRef<T> {
     readonly id: string = `mat-dialog-${uniqueId++}`) {
 
     // Emit when opening animation completes
-    RxChain.from(_containerInstance._animationStateChanged)
-      .call(filter, event => event.phaseName === 'done' && event.toState === 'enter')
-      .call(first)
-      .subscribe(() => {
-        this._afterOpen.next();
-        this._afterOpen.complete();
-      });
+    _containerInstance._animationStateChanged.pipe(
+      filter(event => event.phaseName === 'done' && event.toState === 'enter'),
+      first()
+    )
+    .subscribe(() => {
+      this._afterOpen.next();
+      this._afterOpen.complete();
+    });
 
     // Dispose overlay when closing animation is complete
-    RxChain.from(_containerInstance._animationStateChanged)
-      .call(filter, event => event.phaseName === 'done' && event.toState === 'exit')
-      .call(first)
-      .subscribe(() => {
-        this._overlayRef.dispose();
-        this._afterClosed.next(this._result);
-        this._afterClosed.complete();
-        this.componentInstance = null!;
-      });
+    _containerInstance._animationStateChanged.pipe(
+      filter(event => event.phaseName === 'done' && event.toState === 'exit'),
+      first()
+    )
+    .subscribe(() => {
+      this._overlayRef.dispose();
+      this._afterClosed.next(this._result);
+      this._afterClosed.complete();
+      this.componentInstance = null!;
+    });
   }
 
   /**
@@ -75,14 +77,15 @@ export class MatDialogRef<T> {
     this._result = dialogResult;
 
     // Transition the backdrop in parallel to the dialog.
-    RxChain.from(this._containerInstance._animationStateChanged)
-      .call(filter, event => event.phaseName === 'start')
-      .call(first)
-      .subscribe(() => {
-        this._beforeClose.next(dialogResult);
-        this._beforeClose.complete();
-        this._overlayRef.detachBackdrop();
-      });
+    this._containerInstance._animationStateChanged.pipe(
+      filter(event => event.phaseName === 'start'),
+      first()
+    )
+    .subscribe(() => {
+      this._beforeClose.next(dialogResult);
+      this._beforeClose.complete();
+      this._overlayRef.detachBackdrop();
+    });
 
     this._containerInstance._startExitAnimation();
   }

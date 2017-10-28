@@ -31,7 +31,7 @@ import {
 } from '@angular/core';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {CdkCellOutlet, CdkCellOutletRowContext, CdkHeaderRowDef, CdkRowDef} from './row';
-import {takeUntil} from 'rxjs/operator/takeUntil';
+import {takeUntil} from 'rxjs/operators';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Subscription} from 'rxjs/Subscription';
 import {Subject} from 'rxjs/Subject';
@@ -272,7 +272,7 @@ export class CdkTable<T> implements CollectionViewer {
 
   /** Set up a subscription for the data provided by the data source. */
   private _observeRenderChanges() {
-    this._renderChangeSubscription = takeUntil.call(this.dataSource.connect(this), this._onDestroy)
+    this._renderChangeSubscription = this.dataSource.connect(this).pipe(takeUntil(this._onDestroy))
       .subscribe(data => {
         this._data = data;
         this._renderRowChanges();
