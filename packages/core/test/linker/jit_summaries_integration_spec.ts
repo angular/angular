@@ -11,6 +11,7 @@ import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
 import {Component, Directive, Injectable, NgModule, Pipe, Type} from '@angular/core';
 import {TestBed, async, getTestBed} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 export function main() {
   describe('Jit Summaries', () => {
@@ -221,6 +222,30 @@ export function main() {
           })
           .createComponent(TestComp);
       expectInstanceCreated(SomeDirective);
+    });
+
+    it('should allow to override a provider', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
+      const overwrittenValue = {};
+
+      TestBed.overrideProvider(SomeDep, {useFactory: () => overwrittenValue, deps: []});
+
+      const fixture = TestBed.configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
+                          .createComponent(SomePublicComponent);
+      expect(fixture.componentInstance.dep).toBe(overwrittenValue);
+    });
+
+    it('should allow to override a template', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
+      TestBed.overrideTemplateUsingTestingModule(SomePublicComponent, 'overwritten');
+
+      const fixture = TestBed.configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
+                          .createComponent(SomePublicComponent);
+      expectInstanceCreated(SomePublicComponent);
+
+      expect(fixture.nativeElement).toHaveText('overwritten');
     });
   });
 }
