@@ -1,3 +1,14 @@
+<a name="5.0.0-rc.8"></a>
+# [5.0.0-rc.8](https://github.com/angular/angular/compare/5.0.0-rc.7...5.0.0-rc.8) (2017-10-28)
+
+
+### Bug Fixes
+
+* **compiler-cli:** avoid producing source mappings for host views ([#19965](https://github.com/angular/angular/issues/19965)) ([2d508a3](https://github.com/angular/angular/commit/2d508a3))
+* **platform-server:** add missing packages to the UMD global rollup config ([4285b6c](https://github.com/angular/angular/commit/4285b6c))
+
+
+
 <a name="5.0.0-rc.7"></a>
 # [5.0.0-rc.7](https://github.com/angular/angular/compare/5.0.0-rc.6...5.0.0-rc.7) (2017-10-27)
 
