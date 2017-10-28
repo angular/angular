@@ -8,6 +8,7 @@
 
 import {Injector} from '../di';
 import {ErrorHandler} from '../error_handler';
+import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef} from '../linker/template_ref';
@@ -15,6 +16,7 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
 import {Sanitizer, SecurityContext} from '../security';
 import {Type} from '../type';
+
 
 // -------------------------------------
 // Defs
@@ -522,7 +524,8 @@ export interface Services {
       moduleType: Type<any>, parent: Injector, bootstrapComponents: Type<any>[],
       def: NgModuleDefinition): NgModuleRef<any>;
   overrideProvider(override: ProviderOverride): void;
-  clearProviderOverrides(): void;
+  overrideComponentView(compType: Type<any>, compFactory: ComponentFactory<any>): void;
+  clearOverrides(): void;
   checkAndUpdateView(view: ViewData): void;
   checkNoChangesView(view: ViewData): void;
   destroyView(view: ViewData): void;
@@ -547,7 +550,8 @@ export const Services: Services = {
   createComponentView: undefined !,
   createNgModuleRef: undefined !,
   overrideProvider: undefined !,
-  clearProviderOverrides: undefined !,
+  overrideComponentView: undefined !,
+  clearOverrides: undefined !,
   checkAndUpdateView: undefined !,
   checkNoChangesView: undefined !,
   destroyView: undefined !,
