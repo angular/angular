@@ -7,7 +7,7 @@
  */
 
 export {anchorDef, elementDef} from './element';
-export {clearProviderOverrides, createNgModuleFactory, overrideProvider} from './entrypoint';
+export {clearOverrides, createNgModuleFactory, overrideComponentView, overrideProvider} from './entrypoint';
 export {ngContentDef} from './ng_content';
 export {moduleDef, moduleProvideDef} from './ng_module';
 export {directiveDef, pipeDef, providerDef} from './provider';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, Type, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵclearProviderOverrides as clearProviderOverrides, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetComponentViewDefinitionFactory as getComponentViewDefinitionFactory, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -142,9 +142,23 @@ export class TestBed implements Injector {
     return TestBed;
   }
 
+  /**
+   * Overrides the template of the given component, compiling the template
+   * in the context of the TestingModule.
+   *
+   * Note: This works for JIT and AOTed components as well.
+   */
+  static overrideTemplateUsingTestingModule(component: Type<any>, template: string):
+      typeof TestBed {
+    getTestBed().overrideTemplateUsingTestingModule(component, template);
+    return TestBed;
+  }
+
 
   /**
    * Overwrites all providers for the given token with the given provider definition.
+   *
+   * Note: This works for JIT and AOTed components as well.
    */
   static overrideProvider(token: any, provider: {
     useFactory: Function,
@@ -208,6 +222,7 @@ export class TestBed implements Injector {
 
   private _testEnvAotSummaries: () => any[] = () => [];
   private _aotSummaries: Array<() => any[]> = [];
+  private _templateOverrides: Array<{component: Type<any>, templateOf: Type<any>}> = [];
 
   platform: PlatformRef = null !;
 
@@ -251,8 +266,9 @@ export class TestBed implements Injector {
   }
 
   resetTestingModule() {
-    clearProviderOverrides();
+    clearOverrides();
     this._aotSummaries = [];
+    this._templateOverrides = [];
     this._compiler = null !;
     this._moduleOverrides = [];
     this._componentOverrides = [];
@@ -333,6 +349,11 @@ export class TestBed implements Injector {
         }
       }
     }
+    for (const {component, templateOf} of this._templateOverrides) {
+      const compFactory = this._compiler.getComponentFactory(templateOf);
+      overrideComponentView(component, compFactory);
+    }
+
     const ngZone = new NgZone({enableLongStackTrace: true});
     const ngZoneInjector =
         Injector.create([{provide: NgZone, useValue: ngZone}], this.platform.injector);
@@ -345,7 +366,8 @@ export class TestBed implements Injector {
 
   private _createCompilerAndModule(): Type<any> {
     const providers = this._providers.concat([{provide: TestBed, useValue: this}]);
-    const declarations = this._declarations;
+    const declarations =
+        [...this._declarations, ...this._templateOverrides.map(entry => entry.templateOf)];
     const imports = [this.ngModule, this._imports];
     const schemas = this._schemas;
 
@@ -476,6 +498,16 @@ export class TestBed implements Injector {
       return [depFlags, depToken];
     });
     overrideProvider({token, flags, deps, value, deprecatedBehavior: deprecated});
+  }
+
+  overrideTemplateUsingTestingModule(component: Type<any>, template: string) {
+    this._assertNotInstantiated('overrideTemplateUsingTestingModule', 'override template');
+
+    @Component({selector: 'empty', template: template})
+    class OverrideComponent {
+    }
+
+    this._templateOverrides.push({component, templateOf: OverrideComponent});
   }
 
   createComponent<T>(component: Type<T>): ComponentFixture<T> {
