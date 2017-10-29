@@ -45,6 +45,15 @@ const BOILERPLATE_PATHS = {
   ]
 };
 
+// All paths in this tool are relative to the current boilerplate folder, i.e boilerplate/i18n
+// This maps the CLI files that exists in a parent folder
+const cliRelativePath = BOILERPLATE_PATHS.cli.map(file => `../cli/${file}`);
+
+BOILERPLATE_PATHS.i18n = [
+  ...cliRelativePath,
+  'package.json'
+];
+
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
