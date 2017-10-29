@@ -6,7 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 /**
  * Use SVG_ICONS (and SvgIconInfo) as "multi" providers to provide the SVG source
- * code for the icons that you wish to have preloaded in the `CustomMdIconRegistry`
+ * code for the icons that you wish to have preloaded in the `CustomIconRegistry`
  * For compatibility with the MdIconComponent, please ensure that the SVG source has
  * the following attributes:
  *
@@ -45,7 +45,7 @@ function createFakeHttp(http: HttpClient): any {
  * us to provide preloaded icon SVG sources.
  */
 @Injectable()
-export class CustomMdIconRegistry extends MatIconRegistry {
+export class CustomIconRegistry extends MatIconRegistry {
   private preloadedSvgElements: SvgIconMap = {};
 
   constructor(http: HttpClient, sanitizer: DomSanitizer, @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
