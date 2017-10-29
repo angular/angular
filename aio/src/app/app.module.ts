@@ -29,7 +29,7 @@ import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
-import { CustomMdIconRegistry, SVG_ICONS } from 'app/shared/custom-md-icon-registry';
+import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
 import { Deployment } from 'app/shared/deployment.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
@@ -111,7 +111,7 @@ export const svgIconProviders = [
     Location,
     { provide: LocationStrategy, useClass: PathLocationStrategy },
     LocationService,
-    { provide: MatIconRegistry, useClass: CustomMdIconRegistry },
+    { provide: MatIconRegistry, useClass: CustomIconRegistry },
     NavigationService,
     Platform,
     ScrollService,
