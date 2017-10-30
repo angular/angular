@@ -360,10 +360,7 @@ export class CdkTable<T> implements CollectionViewer {
     //   CdkCellOutlet was instantiated as a result  of `createEmbeddedView`.
     this._rowPlaceholder.viewContainer.createEmbeddedView(row.template, context, index);
 
-    // Insert empty cells if there is no data to improve rendering time.
-    const cells = rowData ? this._getCellTemplatesForRow(row) : [];
-
-    cells.forEach(cell => {
+    this._getCellTemplatesForRow(row).forEach(cell => {
       CdkCellOutlet.mostRecentCellOutlet._viewContainer.createEmbeddedView(cell.template, context);
     });
 

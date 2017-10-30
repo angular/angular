@@ -37,7 +37,8 @@ describe('CdkTable', () => {
         UndefinedColumnsCdkTableApp,
         WhenRowCdkTableApp,
         WhenRowWithoutDefaultCdkTableApp,
-        WhenRowMultipleDefaultsCdkTableApp
+        WhenRowMultipleDefaultsCdkTableApp,
+        BooleanRowCdkTableApp
       ],
     }).compileComponents();
   }));
@@ -104,6 +105,21 @@ describe('CdkTable', () => {
         });
       });
     });
+  });
+
+  it('should render cells even if row data is falsy', () => {
+    const booleanRowCdkTableAppFixture = TestBed.createComponent(BooleanRowCdkTableApp);
+    const booleanRowCdkTableElement =
+        booleanRowCdkTableAppFixture.nativeElement.querySelector('cdk-table');
+    booleanRowCdkTableAppFixture.detectChanges();
+
+    expectTableToMatchContent(booleanRowCdkTableElement, [
+      [''], // Header row
+      ['false'], // Data rows
+      ['true'],
+      ['false'],
+      ['true'],
+    ]);
   });
 
   it('should be able to apply class-friendly css class names for the column cells', () => {
@@ -636,6 +652,16 @@ class FakeDataSource extends DataSource<TestData> {
   }
 }
 
+class BooleanDataSource extends DataSource<boolean> {
+  _dataChange = new BehaviorSubject<boolean[]>([false, true, false, true]);
+
+  connect(): Observable<boolean[]> {
+    return this._dataChange;
+  }
+
+  disconnect() { }
+}
+
 @Component({
   template: `
     <cdk-table [dataSource]="dataSource">
@@ -666,6 +692,23 @@ class SimpleCdkTableApp {
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef></cdk-header-cell>
+        <cdk-cell *cdkCellDef="let data"> {{data}} </cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="['column_a']"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: ['column_a']"></cdk-row>
+    </cdk-table>
+  `
+})
+class BooleanRowCdkTableApp {
+  dataSource = new BooleanDataSource();
 }
 
 @Component({
