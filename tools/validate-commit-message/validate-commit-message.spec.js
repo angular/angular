@@ -70,11 +70,11 @@ describe('validate-commit-message.js', function() {
 
     it('should validate 100 characters length', function() {
       var msg =
-          'fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer... ';
+          'fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer and longer and longer and longer... ';
 
       expect(validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual([
-        'INVALID COMMIT MSG: "fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer... "\n => ERROR: The commit message is longer than 100 characters'
+        'INVALID COMMIT MSG: "fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer and longer and longer and longer... "\n => ERROR: The commit message is longer than 120 characters'
       ]);
     });
 
