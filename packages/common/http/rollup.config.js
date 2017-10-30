@@ -11,6 +11,7 @@ const globals = {
   '@angular/platform-browser': 'ng.platformBrowser',
   '@angular/common': 'ng.common',
   'rxjs/Observable': 'Rx',
+  'rxjs/Observer': 'Rx',
   'rxjs/Subject': 'Rx',
 
   'rxjs/observable/of': 'Rx.Observable.prototype',
