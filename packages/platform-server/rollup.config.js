@@ -11,6 +11,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const globals = {
   '@angular/animations': 'ng.animations',
+  '@angular/animations/browser': 'ng.animations.browser',
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
   '@angular/compiler': 'ng.compiler',
