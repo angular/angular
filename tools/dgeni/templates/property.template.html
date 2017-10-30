@@ -23,9 +23,8 @@
     {%- endif -%}   
 
     <p class="docs-api-property-name">
-      {$ property.name $}
+      <code>{$ property.name $}: {$ property.type $}</code>
     </p>
-    <code class="docs-api-property-type">{$ property.type $}</code>
   </td>
   <td class="docs-api-property-description">{$ property.description | marked | safe $}</td>
 </tr>
