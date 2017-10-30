@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
-import sourcemaps from 'rollup-plugin-sourcemaps';
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -16,7 +16,8 @@ const globals = {
   '@angular/upgrade/static': 'ng.upgrade.static'
 };
 
-export default {
+
+module.exports = {
   entry: '../../../dist/packages-dist/router/esm5/upgrade.js',
   dest: '../../../dist/packages-dist/router/bundles/router-upgrade.umd.js',
   format: 'umd',

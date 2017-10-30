@@ -20,7 +20,7 @@ const globals = {
   'rxjs/operator/map': 'Rx.Observable.prototype',
 };
 
-export default {
+module.exports = {
   entry: '../../../dist/packages-dist/common/esm5/http.js',
   dest: '../../../dist/packages-dist/common/bundles/common-http.umd.js',
   format: 'umd',

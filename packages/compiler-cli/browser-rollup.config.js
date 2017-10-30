@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import commonjs from 'rollup-plugin-commonjs';
-import * as path from 'path';
+const commonjs = require('rollup-plugin-commonjs');
+const path = require('path');
 
-import 'reflect-metadata';
+require('reflect-metadata');
 
 var m = /^\@angular\/((\w|\-)+)(\/(\w|\d|\/|\-)+)?$/;
 var location = normalize('../../dist/packages-dist') + '/';
@@ -49,7 +49,7 @@ function resolve(id, from) {
 // hack to get around issues with default exports
 var banner = `ts['default'] = ts['default'] || ts; fs['default'] = fs['default'] || fs;`;
 
-export default {
+module.exports = {
   entry: '../../dist/packages-dist/compiler-cli/src/ngc.js',
   dest: './browser-bundle.umd.js',
   format: 'umd',
