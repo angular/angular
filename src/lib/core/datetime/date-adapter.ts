@@ -245,7 +245,7 @@ export abstract class DateAdapter<D> {
       let firstValid = this.isValid(first);
       let secondValid = this.isValid(second);
       if (firstValid && secondValid) {
-        return !this.compareDate(first, second)
+        return !this.compareDate(first, second);
       }
       return firstValid == secondValid;
     }

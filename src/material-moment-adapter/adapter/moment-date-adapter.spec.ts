@@ -24,9 +24,9 @@ describe('MomentDateAdapter', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([DateAdapter], (d: MomentDateAdapter) => {
+  beforeEach(inject([DateAdapter], (dateAdapter: MomentDateAdapter) => {
     moment.locale('en');
-    adapter = d;
+    adapter = dateAdapter;
     adapter.setLocale('en');
 
     assertValidDate = (d: moment.Moment | null, valid: boolean) => {
@@ -34,7 +34,7 @@ describe('MomentDateAdapter', () => {
       expect(adapter.isValid(d!)).toBe(valid,
           `Expected ${d} to be ${valid ? 'valid' : 'invalid'},` +
           ` but was ${valid ? 'invalid' : 'valid'}`);
-    }
+    };
   }));
 
   it('should get year', () => {

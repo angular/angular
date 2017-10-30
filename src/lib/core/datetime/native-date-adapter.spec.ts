@@ -18,15 +18,15 @@ describe('NativeDateAdapter', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([DateAdapter], (d: NativeDateAdapter) => {
-    adapter = d;
+  beforeEach(inject([DateAdapter], (dateAdapter: NativeDateAdapter) => {
+    adapter = dateAdapter;
 
     assertValidDate = (d: Date | null, valid: boolean) => {
       expect(adapter.isDateInstance(d)).not.toBeNull(`Expected ${d} to be a date instance`);
       expect(adapter.isValid(d!)).toBe(valid,
           `Expected ${d} to be ${valid ? 'valid' : 'invalid'},` +
           ` but was ${valid ? 'invalid' : 'valid'}`);
-    }
+    };
   }));
 
   it('should get year', () => {
