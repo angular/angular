@@ -3,12 +3,13 @@ import { Component, OnInit } from '@angular/core';
 import { Observable }        from 'rxjs/Observable';
 import 'rxjs/add/operator/finally';
 
-import { Hero }        from './data-model';
-import { HeroService } from './hero.service';
+import { Hero }        from '../data-model';
+import { HeroService } from '../hero.service';
 
 @Component({
   selector: 'app-hero-list',
-  templateUrl: './hero-list.component.html'
+  templateUrl: './hero-list.component.html',
+  styleUrls: ['./hero-list.component.css']
 })
 export class HeroListComponent implements OnInit {
   heroes: Observable<Hero[]>;
