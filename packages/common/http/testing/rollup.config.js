@@ -15,8 +15,11 @@ const globals = {
   '@angular/common': 'ng.common',
   '@angular/common/http': 'ng.common.http',
   'rxjs/Observable': 'Rx',
+  'rxjs/Observer': 'Rx',
   'rxjs/ReplaySubject': 'Rx',
   'rxjs/Subject': 'Rx',
+
+  'rxjs/operator/startWith': 'Rx.Observable.prototype',
 };
 
 module.exports = {

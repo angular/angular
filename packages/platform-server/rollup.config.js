@@ -11,14 +11,19 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   '@angular/animations': 'ng.animations',
+  '@angular/animations/browser': 'ng.animations.browser',
   '@angular/core': 'ng.core',
   '@angular/common': 'ng.common',
+  '@angular/common/http': 'ng.common.http',
   '@angular/compiler': 'ng.compiler',
   '@angular/http': 'ng.http',
   '@angular/platform-browser': 'ng.platformBrowser',
+  '@angular/platform-browser/animations': 'ng.platformBrowser.animations',
   '@angular/platform-browser-dynamic': 'ng.platformBrowserDynamic',
   'rxjs/Observable': 'Rx',
+  'rxjs/Observer': 'Rx',
   'rxjs/Subject': 'Rx',
+  'rxjs/Subscription': 'Rx',
   'rxjs/operator/toPromise': 'Rx.Observable.prototype',
   'rxjs/operator/filter': 'Rx.Observable.prototype',
   'rxjs/operator/first': 'Rx.Observable.prototype'
