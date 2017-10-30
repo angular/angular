@@ -25,8 +25,8 @@ else
 fi
 
 # Check if tests can be skipped
-if [[ ${fileDiff} =~ ^(.*\.md\s*)*$ ]] && (is_e2e || is_unit); then
-  echo "Skipping e2e and unit tests since only markdown files changed"
+if [[ ${fileDiff} =~ ^(.*\.md\s*)*$ ]]; then
+  echo "Skipping tests since only markdown files changed."
   exit 0
 fi
 

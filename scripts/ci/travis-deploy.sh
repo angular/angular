@@ -33,19 +33,20 @@ echo ""
 if [[ "${TRAVIS_EVENT_TYPE}" == "cron" ]]; then
   if [[ "${DEPLOY_MODE}" == "screenshot-tool" ]]; then
     retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-screenshot-tool.sh
+  elif [[ "${DEPLOY_MODE}" == "dashboard" ]]; then
+    retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-dashboard.sh
+  else
+    echo "Docs content and build artifacts won't be published in Travis cronjobs."
   fi
 
-  if [[ "${DEPLOY_MODE}" == "dashboard" ]]; then
-    retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-dashboard.sh
-  fi
 # Deployment of the build artifacts and docs-content should only happen on a per-commit base.
 # The target is to provide build artifacts in the GitHub repository for every commit.
 else
   if [[ "${DEPLOY_MODE}" == "build-artifacts" ]]; then
     retryCall ${DEPLOY_RETRIES} ./scripts/deploy/publish-build-artifacts.sh
-  fi
-
-  if [[ "${DEPLOY_MODE}" == "docs-content" ]]; then
+  elif [[ "${DEPLOY_MODE}" == "docs-content" ]]; then
     retryCall ${DEPLOY_RETRIES} ./scripts/deploy/publish-docs-content.sh
+  else
+    echo "The dashboard and screenshot-tool will only be deployed in Travis cronjobs."
   fi
 fi
