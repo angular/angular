@@ -11,6 +11,9 @@ export class ComponentGroup {
   /** Display name of the component group */
   displayName: string;
 
+  /** Module import path for the component group. */
+  moduleImportPath: string;
+
   /** Name of the package, either material or cdk */
   packageName: string;
 
@@ -60,7 +63,7 @@ export class ComponentGrouper implements Processor {
 
   $process(docs: DocCollection) {
     // Map of group name to group instance.
-    const groups = new Map();
+    const groups = new Map<string, ComponentGroup>();
 
     docs.forEach(doc => {
       // Full path to the file for this doc.
@@ -79,20 +82,23 @@ export class ComponentGrouper implements Processor {
       }
 
       const displayName = path.relative(basePath, filePath).split(path.sep)[1];
+      const moduleImportPath = `@angular/${packageName}/${displayName}`;
       const groupName = packageName + '-' + displayName;
 
       // Get the group for this doc, or, if one does not exist, create it.
       let group;
       if (groups.has(groupName)) {
-        group = groups.get(groupName);
+        group = groups.get(groupName)!;
       } else {
         group = new ComponentGroup(groupName);
         groups.set(groupName, group);
       }
 
+      group.displayName = displayName;
+      group.moduleImportPath = moduleImportPath;
+
       group.packageName = packageName;
       group.packageDisplayName = packageDisplayName;
-      group.displayName = displayName;
 
       // Put this doc into the appropriate list in this group.
       if (doc.isDirective) {
