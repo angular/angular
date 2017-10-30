@@ -1,17 +1,15 @@
 /* tslint:disable:component-class-suffix */
-// #docregion imports
 import { Component }                          from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { states } from './data-model';
-// #enddocregion imports
+import { states } from '../data-model';
 
 @Component({
-  selector: 'app-hero-detail-4',
-  templateUrl: './hero-detail-4.component.html'
+  selector: 'app-hero-detail-5',
+  templateUrl: './hero-detail-5.component.html'
 })
-// #docregion v4
-export class HeroDetailComponent4 {
+// #docregion v5
+export class HeroDetailComponent5 {
   heroForm: FormGroup;
   states = states;
 
@@ -20,15 +18,18 @@ export class HeroDetailComponent4 {
   }
 
   createForm() {
-    this.heroForm = this.fb.group({
+    this.heroForm = this.fb.group({ // <-- the parent FormGroup
       name: ['', Validators.required ],
-      street: '',
-      city: '',
-      state: '',
-      zip: '',
+      address: this.fb.group({ // <-- the child FormGroup
+        street: '',
+        city: '',
+        state: '',
+        zip: ''
+      }),
       power: '',
       sidekick: ''
     });
   }
 }
-// #enddocregion v4
+// #enddocregion v5
+

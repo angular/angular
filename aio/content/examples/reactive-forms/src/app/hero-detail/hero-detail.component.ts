@@ -3,17 +3,16 @@
 import { Component, Input, OnChanges }       from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 
-import { Address, Hero, states } from './data-model';
+import { Address, Hero, states } from '../data-model';
 // #docregion import-service
-import { HeroService }           from './hero.service';
+import { HeroService }           from '../hero.service';
 // #enddocregion import-service
 
-// #docregion metadata
 @Component({
   selector: 'app-hero-detail',
-  templateUrl: './hero-detail.component.html'
+  templateUrl: './hero-detail.component.html',
+  styleUrls: ['./hero-detail.component.css']
 })
-// #enddocregion metadata
 export class HeroDetailComponent implements OnChanges {
   @Input() hero: Hero;
 
