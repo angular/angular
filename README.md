@@ -9,7 +9,7 @@ This is the home for the Angular team's Material Design components built for and
 [Documentation, demos, and guides][aio] |
 [Google group](https://groups.google.com/forum/#!forum/angular-material2) |
 [Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md) |
-[Plunker Template](https://goo.gl/DlHd6U) |
+[Plunker Template](https://goo.gl/uDmqyY) |
 [StackBlitz Template](https://goo.gl/wwnhMV)
 
 ### Getting started
