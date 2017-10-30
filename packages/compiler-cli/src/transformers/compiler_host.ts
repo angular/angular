@@ -192,7 +192,8 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     const containingFilePackageName = getPackageName(containingFile);
 
     let moduleName: string;
-    if (importedFilePackagName === containingFilePackageName) {
+    if (importedFilePackagName === containingFilePackageName ||
+        GENERATED_FILES.test(originalImportedFile)) {
       const rootedContainingFile = relativeToRootDirs(containingFile, this.rootDirs);
       const rootedImportedFile = relativeToRootDirs(importedFile, this.rootDirs);
 
