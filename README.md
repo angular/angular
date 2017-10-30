@@ -93,7 +93,7 @@ High level stuff planned for Q4 2017 (October - December):
 | virtual-repeat   |        Not started, planned Q4 2017 |           -  |   [#823][0823] |
 | fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
 | fab toolbar      |            Not started, not planned |           -  |              - |
-| bottom-sheet     |            Not started, not planned |           -  |              - |
+| bottom-sheet     |            Not started, not planned |           -  |  [#8113][8113] |
 | bottom-nav       |            Not started, not planned |           -  |   [#408][0408] |
 
  [0]: https://github.com/angular/flex-layout/wiki
@@ -152,6 +152,7 @@ High level stuff planned for Q4 2017 (October - December):
 [4191]: https://github.com/angular/material2/pull/4191
 [0995]: https://github.com/angular/material2/pull/995
 [0474]: https://github.com/angular/material2/pull/474
+[8113]: https://github.com/angular/material2/issues/8113
 
 [aio]: https://material.angular.io
 [getting-started]: https://material.angular.io/guide/getting-started
