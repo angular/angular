@@ -25,7 +25,7 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
     renderDocsProcessor.extraData.versionInfo = versionInfo;
   })
 
-  .config(function(checkAnchorLinksProcessor, linkInlineTagDef) {
+  .config(function(checkAnchorLinksProcessor, linkInlineTagDef, renderExamples) {
 
     // Fail the processing if there is an invalid link
     linkInlineTagDef.failOnBadLink = true;
@@ -48,6 +48,10 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
     });
     checkAnchorLinksProcessor.pathVariants = ['', '/', '.html', '/index.html', '#top-of-page'];
     checkAnchorLinksProcessor.errorOnUnmatchedLinks = true;
+
+    // Make sure we fail if the examples are not right
+    renderExamples.ignoreBrokenExamples = false;
+
   })
 
   .config(function(renderLinkInfo, postProcessHtml) {
