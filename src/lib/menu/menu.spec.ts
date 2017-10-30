@@ -559,7 +559,7 @@ describe('MatMenu', () => {
       const emitCallback = jasmine.createSpy('emit callback');
       const completeCallback = jasmine.createSpy('complete callback');
 
-      fixture.componentInstance.menu.close.subscribe(emitCallback, null, completeCallback);
+      fixture.componentInstance.menu.closed.subscribe(emitCallback, null, completeCallback);
       fixture.destroy();
 
       expect(emitCallback).toHaveBeenCalledWith(undefined);
@@ -625,7 +625,7 @@ describe('MatMenu', () => {
       fixture.detectChanges();
 
       const spy = jasmine.createSpy('hover spy');
-      const subscription = instance.rootMenu.hover().subscribe(spy);
+      const subscription = instance.rootMenu._hovered().subscribe(spy);
       const menuItems = overlay.querySelectorAll('[mat-menu-item]');
 
       dispatchMouseEvent(menuItems[0], 'mouseenter');
@@ -1112,7 +1112,7 @@ describe('MatMenu default overrides', () => {
 @Component({
   template: `
     <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
-    <mat-menu class="custom-one custom-two" #menu="matMenu" (close)="closeCallback($event)">
+    <mat-menu class="custom-one custom-two" #menu="matMenu" (closed)="closeCallback($event)">
       <button mat-menu-item> Item </button>
       <button mat-menu-item disabled> Disabled </button>
       <button mat-menu-item>

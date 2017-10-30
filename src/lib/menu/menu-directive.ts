@@ -142,7 +142,13 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
   }
 
   /** Event emitted when the menu is closed. */
-  @Output() close = new EventEmitter<void | 'click' | 'keydown'>();
+  @Output() closed = new EventEmitter<void | 'click' | 'keydown'>();
+
+  /**
+   * Event emitted when the menu is closed.
+   * @deprecated Switch to `closed` instead
+   */
+  @Output() close = this.closed;
 
   constructor(
     private _elementRef: ElementRef,
@@ -156,39 +162,39 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
 
   ngOnDestroy() {
     this._tabSubscription.unsubscribe();
-    this.close.emit();
-    this.close.complete();
+    this.closed.emit();
+    this.closed.complete();
   }
 
   /** Stream that emits whenever the hovered menu item changes. */
-  hover(): Observable<MatMenuItem> {
+  _hovered(): Observable<MatMenuItem> {
     if (this.items) {
       return this.items.changes.pipe(
         startWith(this.items),
-        switchMap(items => merge(...items.map(item => item.hover)))
+        switchMap(items => merge(...items.map(item => item._hovered)))
       );
     }
 
     return this._ngZone.onStable
       .asObservable()
-      .pipe(first(), switchMap(() => this.hover()));
+      .pipe(first(), switchMap(() => this._hovered()));
   }
 
   /** Handle a keyboard event from the menu, delegating to the appropriate action. */
   _handleKeydown(event: KeyboardEvent) {
     switch (event.keyCode) {
       case ESCAPE:
-        this.close.emit('keydown');
+        this.closed.emit('keydown');
         event.stopPropagation();
       break;
       case LEFT_ARROW:
         if (this.parentMenu && this.direction === 'ltr') {
-          this.close.emit('keydown');
+          this.closed.emit('keydown');
         }
       break;
       case RIGHT_ARROW:
         if (this.parentMenu && this.direction === 'rtl') {
-          this.close.emit('keydown');
+          this.closed.emit('keydown');
         }
       break;
       default:
