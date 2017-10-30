@@ -752,7 +752,7 @@ class PopulatedScope extends BindingScope {
 }
 
 function positionalError(message: string, fileName: string, line: number, column: number): Error {
-  const result = syntaxError(message);
+  const result = new Error(message);
   (result as any).fileName = fileName;
   (result as any).line = line;
   (result as any).column = column;
