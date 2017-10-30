@@ -3390,7 +3390,7 @@ class NgIfSelect {
   selector: 'select-with-change-event',
   template: `
     <mat-form-field>
-      <mat-select (change)="changeListener($event)">
+      <mat-select (selectionChange)="changeListener($event)">
         <mat-option *ngFor="let food of foods" [value]="food">{{ food }}</mat-option>
       </mat-select>
     </mat-form-field>
