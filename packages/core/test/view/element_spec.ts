@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ErrorHandler, SecurityContext, getDebugNode} from '@angular/core';
+import {ErrorHandler, NgZone, SecurityContext, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
 import {BindingFlags, NodeFlags, Services, ViewData, ViewDefinition, asElementData, elementDef} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
@@ -293,6 +293,25 @@ export function main() {
           const debugCtx = getDebugContext(err);
           expect(debugCtx.view).toBe(view);
           expect(debugCtx.nodeIndex).toBe(0);
+        });
+
+        it('should handle error outside the Angular Zone', () => {
+          let isInAngularZone = true;
+          const ngZone = TestBed.get(NgZone);
+          ngZone.run(() => {
+            const handleEvent =
+                () => { throw new Error('error for testing event error handling'); };
+            const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
+                0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],
+                handleEvent)]));
+
+            spyOn(view.root.errorHandler, 'handleError').and.callFake(() => {
+              isInAngularZone = NgZone.isInAngularZone();
+            });
+            rootNodes[0].click();
+          });
+
+          expect(isInAngularZone).toBe(false);
         });
       });
     }

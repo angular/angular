@@ -10,6 +10,7 @@ import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
+import {NgZone} from '../zone/ng_zone';
 
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
@@ -136,7 +137,13 @@ export function dispatchEvent(
     return Services.handleEvent(view, nodeIndex, eventName, event);
   } catch (e) {
     // Attention: Don't rethrow, as it would cancel Observable subscriptions!
-    view.root.errorHandler.handleError(e);
+    const ngZone: NgZone|null = view.root.injector.get(NgZone, null);
+    const handleError = () => view.root.errorHandler.handleError(e);
+    if (ngZone) {
+      ngZone.runOutsideAngular(handleError);
+    } else {
+      handleError();
+    }
   }
 }
 
