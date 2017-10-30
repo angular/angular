@@ -50,6 +50,7 @@ export class AccessibilityDemo implements OnDestroy {
     {name: 'Slide toggle', route: 'slide-toggle'},
     {name: 'Slider', route: 'slider'},
     {name: 'Snack bar', route: 'snack-bar'},
+    {name: 'Table', route: 'table'},
     {name: 'Tabs', route: 'tabs'},
     {name: 'Toolbar', route: 'toolbar'},
     {name: 'Tooltip', route: 'tooltip'},
