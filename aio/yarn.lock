@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@angular-devkit/build-optimizer@~0.0.28":
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.30.tgz#5d307d0a4699fde7d1d19705c1dd0a6e85f60117"
+"@angular-devkit/build-optimizer@~0.0.31":
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.0.31.tgz#511bc00e18c787a6cd4efe37b8cdb9f1bc6d4472"
   dependencies:
     loader-utils "^1.1.0"
     source-map "^0.5.6"
@@ -38,17 +38,17 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/cli@1.5.0-rc.3":
-  version "1.5.0-rc.3"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0-rc.3.tgz#26666c849332c23834c39611220753f36b3787ed"
+"@angular/cli@^1.5.0-rc.6":
+  version "1.5.0-rc.6"
+  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0-rc.6.tgz#e8b28404830645c0fa34202365fb90cffdfd1a09"
   dependencies:
-    "@angular-devkit/build-optimizer" "~0.0.28"
+    "@angular-devkit/build-optimizer" "~0.0.31"
     "@angular-devkit/schematics" "~0.0.34"
     "@ngtools/json-schema" "1.1.0"
-    "@ngtools/webpack" "1.8.0-rc.3"
+    "@ngtools/webpack" "1.8.0-rc.6"
     "@schematics/angular" "~0.0.48"
     autoprefixer "^6.5.3"
-    chalk "^2.0.1"
+    chalk "~2.2.0"
     circular-dependency-plugin "^3.0.0"
     common-tags "^1.3.1"
     copy-webpack-plugin "^4.1.1"
@@ -88,7 +88,6 @@
     style-loader "^0.13.1"
     stylus "^0.54.5"
     stylus-loader "^3.0.1"
-    typescript ">=2.0.0 <2.6.0"
     uglifyjs-webpack-plugin "1.0.0"
     url-loader "^0.6.2"
     webpack "~3.8.1"
@@ -255,11 +254,11 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"
 
-"@ngtools/webpack@1.8.0-rc.3":
-  version "1.8.0-rc.3"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0-rc.3.tgz#08d673b5b305a2ca18e71a35b3a8cf009e390a28"
+"@ngtools/webpack@1.8.0-rc.6":
+  version "1.8.0-rc.6"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0-rc.6.tgz#1a6772ad804f870222a37ba8e55b491659f4212b"
   dependencies:
-    chalk "^2.0.1"
+    chalk "~2.2.0"
     enhanced-resolve "^3.1.0"
     loader-utils "^1.0.2"
     magic-string "^0.22.3"
@@ -1285,6 +1284,14 @@ chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1, chalk@^1.1.3:
 chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.3.0.tgz#b5ea48efc9c1793dccc9b4767c93914d3f2d52ba"
+  dependencies:
+    ansi-styles "^3.1.0"
+    escape-string-regexp "^1.0.5"
+    supports-color "^4.0.0"
+
+chalk@~2.2.0:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.2.2.tgz#4403f5cf18f35c05f51fbdf152bf588f956cf7cb"
   dependencies:
     ansi-styles "^3.1.0"
     escape-string-regexp "^1.0.5"
@@ -8401,7 +8408,7 @@ typescript@2.4:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
 
-"typescript@>=2.0.0 <2.6.0", typescript@^2.3.3, typescript@^2.5.3:
+typescript@^2.3.3, typescript@^2.5.3:
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.3.tgz#df3dcdc38f3beb800d4bc322646b04a3f6ca7f0d"
 
