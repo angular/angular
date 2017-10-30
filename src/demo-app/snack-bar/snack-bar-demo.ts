@@ -34,7 +34,7 @@ export class SnackBarDemo {
     config.verticalPosition = this.verticalPosition;
     config.horizontalPosition = this.horizontalPosition;
     config.duration = this.setAutoHide ? this.autoHide : 0;
-    config.extraClasses = this.addExtraClass ? ['party'] : undefined;
+    config.panelClass = this.addExtraClass ? ['party'] : undefined;
     config.direction = this.dir.value;
     this.snackBar.open(this.message, this.action ? this.actionButtonLabel : undefined, config);
   }

@@ -104,10 +104,14 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
       throw Error('Attempting to attach snack bar content after content is already attached');
     }
 
-    if (this.snackBarConfig.extraClasses) {
+    if (this.snackBarConfig.panelClass || this.snackBarConfig.extraClasses) {
+      const classes = [
+        ...this._getCssClasses(this.snackBarConfig.panelClass),
+        ...this._getCssClasses(this.snackBarConfig.extraClasses)
+      ];
       // Not the most efficient way of adding classes, but the renderer doesn't allow us
       // to pass in an array or a space-separated list.
-      for (let cssClass of this.snackBarConfig.extraClasses) {
+      for (let cssClass of classes) {
         this._renderer.addClass(this._elementRef.nativeElement, cssClass);
       }
     }
@@ -177,5 +181,17 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
       this._onExit.next();
       this._onExit.complete();
     });
+  }
+
+  /** Convert the class list to a array of classes it can apply to the dom */
+  private _getCssClasses(classList: undefined | string | string[]) {
+    if (classList) {
+      if (Array.isArray(classList)) {
+        return classList;
+      } else {
+        return [classList];
+      }
+    }
+    return [];
   }
 }

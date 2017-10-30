@@ -35,7 +35,13 @@ export class MatSnackBarConfig {
   duration?: number = 0;
 
   /** Extra CSS classes to be added to the snack bar container. */
-  extraClasses?: string[];
+  panelClass?: string | string[];
+
+  /**
+   * Extra CSS classes to be added to the snack bar container.
+   * @deprecated Use `panelClass` instead.
+   */
+ extraClasses?: string | string[];
 
   /** Text layout direction for the snack bar. */
   direction?: Direction = 'ltr';

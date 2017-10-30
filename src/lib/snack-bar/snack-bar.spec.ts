@@ -363,7 +363,7 @@ describe('MatSnackBar', () => {
   }));
 
   it('should add extra classes to the container', () => {
-    snackBar.open(simpleMessage, simpleActionLabel, { extraClasses: ['one', 'two'] });
+    snackBar.open(simpleMessage, simpleActionLabel, { panelClass: ['one', 'two'] });
     viewContainerFixture.detectChanges();
 
     let containerClasses = overlayContainerElement.querySelector('snack-bar-container')!.classList;
