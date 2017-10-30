@@ -2,11 +2,12 @@
 // #docregion , v1, final
 import { Component } from '@angular/core';
 
-import { Hero }    from './hero';
+import { Hero }    from '../hero';
 
 @Component({
   selector: 'app-hero-form',
-  templateUrl: './hero-form.component.html'
+  templateUrl: './hero-form.component.html',
+  styleUrls: ['./hero-form.component.css']
 })
 export class HeroFormComponent {
 
