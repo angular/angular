@@ -194,12 +194,12 @@ export class CdkStepper {
 
   /** Returns a unique id for each step label element. */
   _getStepLabelId(i: number): string {
-    return `mat-step-label-${this._groupId}-${i}`;
+    return `cdk-step-label-${this._groupId}-${i}`;
   }
 
   /** Returns unique id for each step content element. */
   _getStepContentId(i: number): string {
-    return `mat-step-content-${this._groupId}-${i}`;
+    return `cdk-step-content-${this._groupId}-${i}`;
   }
 
   /** Marks the component to be change detected. */

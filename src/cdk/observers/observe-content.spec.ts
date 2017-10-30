@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {async, TestBed, ComponentFixture, fakeAsync, tick} from '@angular/core/testing';
-import {ObserversModule, MatMutationObserverFactory} from './observe-content';
+import {ObserversModule, MutationObserverFactory} from './observe-content';
 
 // TODO(elad): `ProxyZone` doesn't seem to capture the events raised by
 // `MutationObserver` and needs to be investigated
@@ -61,7 +61,7 @@ describe('Observe content', () => {
         imports: [ObserversModule],
         declarations: [ComponentWithDebouncedListener],
         providers: [{
-          provide: MatMutationObserverFactory,
+          provide: MutationObserverFactory,
           useValue: {
             create: function(callback: Function) {
               callbacks.push(callback);

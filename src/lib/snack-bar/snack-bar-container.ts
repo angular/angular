@@ -30,7 +30,7 @@ import {
 import {
   BasePortalOutlet,
   ComponentPortal,
-  PortalOutletDirective,
+  CdkPortalOutlet,
 } from '@angular/cdk/portal';
 import {first} from 'rxjs/operators';
 import {AnimationCurves, AnimationDurations} from '@angular/material/core';
@@ -76,7 +76,7 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
   private _destroyed = false;
 
   /** The portal outlet inside of this container into which the snack bar content will be loaded. */
-  @ViewChild(PortalOutletDirective) _portalOutlet: PortalOutletDirective;
+  @ViewChild(CdkPortalOutlet) _portalOutlet: CdkPortalOutlet;
 
   /** Subject for notifying that the snack bar has exited from view. */
   _onExit: Subject<any> = new Subject();

@@ -27,7 +27,7 @@ import {
   transition,
   AnimationEvent,
 } from '@angular/animations';
-import {TemplatePortal, PortalOutletDirective} from '@angular/cdk/portal';
+import {TemplatePortal, CdkPortalOutlet} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 
 
@@ -88,7 +88,7 @@ export type MatTabBodyOriginState = 'left' | 'right';
 })
 export class MatTabBody implements OnInit, AfterViewChecked {
   /** The portal outlet inside of this container into which the tab body content will be loaded. */
-  @ViewChild(PortalOutletDirective) _portalOutlet: PortalOutletDirective;
+  @ViewChild(CdkPortalOutlet) _portalOutlet: CdkPortalOutlet;
 
   /** Event emitted when the tab begins to animate towards the center as the active tab. */
   @Output() _onCentering: EventEmitter<number> = new EventEmitter<number>();

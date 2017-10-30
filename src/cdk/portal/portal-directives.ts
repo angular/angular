@@ -28,7 +28,7 @@ import {Portal, TemplatePortal, ComponentPortal, BasePortalOutlet} from './porta
   selector: '[cdk-portal], [cdkPortal], [portal]',
   exportAs: 'cdkPortal',
 })
-export class TemplatePortalDirective extends TemplatePortal<any> {
+export class CdkPortal extends TemplatePortal<any> {
   constructor(templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef) {
     super(templateRef, viewContainerRef);
   }
@@ -47,7 +47,7 @@ export class TemplatePortalDirective extends TemplatePortal<any> {
   exportAs: 'cdkPortalOutlet, cdkPortalHost',
   inputs: ['portal: cdkPortalOutlet']
 })
-export class PortalOutletDirective extends BasePortalOutlet implements OnDestroy {
+export class CdkPortalOutlet extends BasePortalOutlet implements OnDestroy {
   /** The attached portal. */
   private _portal: Portal<any> | null = null;
 
@@ -134,7 +134,7 @@ export class PortalOutletDirective extends BasePortalOutlet implements OnDestroy
 
 
 @NgModule({
-  exports: [TemplatePortalDirective, PortalOutletDirective],
-  declarations: [TemplatePortalDirective, PortalOutletDirective],
+  exports: [CdkPortal, CdkPortalOutlet],
+  declarations: [CdkPortal, CdkPortalOutlet],
 })
 export class PortalModule {}

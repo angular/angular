@@ -7,10 +7,10 @@
  */
 
 import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
-import {TemplatePortalDirective} from '@angular/cdk/portal';
+import {CdkPortal} from '@angular/cdk/portal';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatTabLabelBaseClass = TemplatePortalDirective;
+export const _MatTabLabelBaseClass = CdkPortal;
 
 /** Used to flag tab labels for use with the portal directive */
 @Directive({

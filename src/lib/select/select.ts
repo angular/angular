@@ -12,7 +12,7 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {DOWN_ARROW, END, ENTER, HOME, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
 import {
-  ConnectedOverlayDirective,
+  CdkConnectedOverlay,
   Overlay,
   RepositionScrollStrategy,
   ScrollStrategy,
@@ -300,7 +300,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   @ViewChild('panel') panel: ElementRef;
 
   /** Overlay pane containing the options. */
-  @ViewChild(ConnectedOverlayDirective) overlayDir: ConnectedOverlayDirective;
+  @ViewChild(CdkConnectedOverlay) overlayDir: CdkConnectedOverlay;
 
   /** All of the defined select options. */
   @ContentChildren(MatOption, { descendants: true }) options: QueryList<MatOption>;

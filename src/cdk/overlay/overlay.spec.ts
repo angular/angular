@@ -4,7 +4,7 @@ import {
   ComponentPortal,
   PortalModule,
   TemplatePortal,
-  TemplatePortalDirective
+  CdkPortal
 } from '@angular/cdk/portal';
 import {
   Overlay,
@@ -482,7 +482,7 @@ class PizzaMsg { }
 /** Test-bed component that contains a TempatePortal and an ElementRef. */
 @Component({template: `<ng-template cdk-portal>Cake</ng-template>`})
 class TestComponentWithTemplatePortals {
-  @ViewChild(TemplatePortalDirective) templatePortal: TemplatePortalDirective;
+  @ViewChild(CdkPortal) templatePortal: CdkPortal;
 
   constructor(public viewContainerRef: ViewContainerRef) { }
 }

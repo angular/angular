@@ -27,8 +27,8 @@ built upon.
 
 #### Portals in practice
 
-##### `TemplatePortalDirective`
-Used to get a portal from an `<ng-template>`. `TemplatePortalDirectives` *is* a `Portal`.
+##### `CdkPortal`
+Used to get a portal from an `<ng-template>`. `CdkPortal` *is* a `Portal`.
 
 Usage:
 ```html
@@ -45,7 +45,7 @@ Usage:
 ```
 
 A component can use `@ViewChild` or `@ViewChildren` to get a reference to a
-`TemplatePortalDirective`.
+`CdkPortal`.
 
 ##### `ComponentPortal`
 Used to create a portal from a component type. When a component is dynamically created using
@@ -57,8 +57,8 @@ this.userSettingsPortal = new ComponentPortal(UserSettingsComponent);
 ```
 
 
-##### `PortalOutletDirective`
-Used to add a portal outlet to a template. `PortalOutletDirective` *is* a `PortalOutlet`.
+##### `CdkPortalOutlet`
+Used to add a portal outlet to a template. `CdkPortalOutlet` *is* a `PortalOutlet`.
 
 Usage:
 ```html

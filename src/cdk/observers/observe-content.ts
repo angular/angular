@@ -26,7 +26,7 @@ import {debounceTime} from 'rxjs/operators';
  * @docs-private
  */
 @Injectable()
-export class MatMutationObserverFactory {
+export class MutationObserverFactory {
   create(callback: MutationCallback): MutationObserver | null {
     return typeof MutationObserver === 'undefined' ? null : new MutationObserver(callback);
   }
@@ -40,7 +40,7 @@ export class MatMutationObserverFactory {
   selector: '[cdkObserveContent]',
   exportAs: 'cdkObserveContent',
 })
-export class ObserveContent implements AfterContentInit, OnDestroy {
+export class CdkObserveContent implements AfterContentInit, OnDestroy {
   private _observer: MutationObserver | null;
 
   /** Event emitted for each change in the element's content. */
@@ -53,7 +53,7 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
   @Input() debounce: number;
 
   constructor(
-    private _mutationObserverFactory: MatMutationObserverFactory,
+    private _mutationObserverFactory: MutationObserverFactory,
     private _elementRef: ElementRef,
     private _ngZone: NgZone) { }
 
@@ -93,8 +93,8 @@ export class ObserveContent implements AfterContentInit, OnDestroy {
 
 
 @NgModule({
-  exports: [ObserveContent],
-  declarations: [ObserveContent],
-  providers: [MatMutationObserverFactory]
+  exports: [CdkObserveContent],
+  declarations: [CdkObserveContent],
+  providers: [MutationObserverFactory]
 })
 export class ObserversModule {}

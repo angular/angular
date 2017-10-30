@@ -24,7 +24,7 @@ import {DOCUMENT} from '@angular/platform-browser';
 import {
   BasePortalOutlet,
   ComponentPortal,
-  PortalOutletDirective,
+  CdkPortalOutlet,
   TemplatePortal
 } from '@angular/cdk/portal';
 import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
@@ -80,7 +80,7 @@ export function throwMatDialogContentAlreadyAttachedError() {
 })
 export class MatDialogContainer extends BasePortalOutlet {
   /** The portal outlet inside of this container into which the dialog content will be loaded. */
-  @ViewChild(PortalOutletDirective) _portalOutlet: PortalOutletDirective;
+  @ViewChild(CdkPortalOutlet) _portalOutlet: CdkPortalOutlet;
 
   /** The class that traps and manages focus within the dialog. */
   private _focusTrap: FocusTrap;

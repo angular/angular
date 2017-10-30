@@ -13,9 +13,9 @@ import {NgModule, Provider} from '@angular/core';
 import {Overlay} from './overlay';
 import {OVERLAY_CONTAINER_PROVIDER} from './overlay-container';
 import {
-  ConnectedOverlayDirective,
-  MAT_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
-  OverlayOrigin,
+  CdkConnectedOverlay,
+  CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
+  CdkOverlayOrigin,
 } from './overlay-directives';
 import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {OVERLAY_KEYBOARD_DISPATCHER_PROVIDER} from './keyboard/overlay-keyboard-dispatcher';
@@ -27,13 +27,13 @@ export const OVERLAY_PROVIDERS: Provider[] = [
   OVERLAY_KEYBOARD_DISPATCHER_PROVIDER,
   VIEWPORT_RULER_PROVIDER,
   OVERLAY_CONTAINER_PROVIDER,
-  MAT_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
+  CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER,
 ];
 
 @NgModule({
   imports: [BidiModule, PortalModule, ScrollDispatchModule],
-  exports: [ConnectedOverlayDirective, OverlayOrigin, ScrollDispatchModule],
-  declarations: [ConnectedOverlayDirective, OverlayOrigin],
+  exports: [CdkConnectedOverlay, CdkOverlayOrigin, ScrollDispatchModule],
+  declarations: [CdkConnectedOverlay, CdkOverlayOrigin],
   providers: [OVERLAY_PROVIDERS, ScrollStrategyOptions],
 })
 export class OverlayModule {}

@@ -1,6 +1,6 @@
 import {async, inject, TestBed} from '@angular/core/testing';
 import {Component, NgModule, ViewChild, ViewContainerRef} from '@angular/core';
-import {PortalModule, TemplatePortalDirective} from '@angular/cdk/portal';
+import {PortalModule, CdkPortal} from '@angular/cdk/portal';
 import {Overlay, OverlayContainer, OverlayModule} from './index';
 
 describe('OverlayContainer', () => {
@@ -68,7 +68,7 @@ describe('OverlayContainer', () => {
   providers: [Overlay],
 })
 class TestComponentWithTemplatePortals {
-  @ViewChild(TemplatePortalDirective) templatePortal: TemplatePortalDirective;
+  @ViewChild(CdkPortal) templatePortal: CdkPortal;
 
   constructor(public viewContainerRef: ViewContainerRef) { }
 }

@@ -1,11 +1,11 @@
-import {Overlay, OverlayOrigin, OverlayConfig} from '@angular/cdk/overlay';
+import {Overlay, CdkOverlayOrigin, OverlayConfig} from '@angular/cdk/overlay';
 import {
   ComponentPortal,
   // This import is only used to define a generic type. The current TypeScript version incorrectly
   // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
   // tslint:disable-next-line:no-unused-variable
   Portal,
-  TemplatePortalDirective
+  CdkPortal
 } from '@angular/cdk/portal';
 import {
   Component,
@@ -32,10 +32,10 @@ export class OverlayDemo {
   isMenuOpen: boolean = false;
   tortelliniFillings = ['cheese and spinach', 'mushroom and broccoli'];
 
-  @ViewChildren(TemplatePortalDirective) templatePortals: QueryList<Portal<any>>;
-  @ViewChild(OverlayOrigin) _overlayOrigin: OverlayOrigin;
-  @ViewChild('tortelliniOrigin') tortelliniOrigin: OverlayOrigin;
-  @ViewChild('tortelliniTemplate') tortelliniTemplate: TemplatePortalDirective;
+  @ViewChildren(CdkPortal) templatePortals: QueryList<Portal<any>>;
+  @ViewChild(CdkOverlayOrigin) _overlayOrigin: CdkOverlayOrigin;
+  @ViewChild('tortelliniOrigin') tortelliniOrigin: CdkOverlayOrigin;
+  @ViewChild('tortelliniTemplate') tortelliniTemplate: CdkPortal;
 
   constructor(public overlay: Overlay, public viewContainerRef: ViewContainerRef) { }
 

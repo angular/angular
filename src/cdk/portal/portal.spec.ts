@@ -13,7 +13,7 @@ import {
   TemplateRef
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {TemplatePortalDirective, PortalOutletDirective, PortalModule} from './portal-directives';
+import {CdkPortal, CdkPortalOutlet, PortalModule} from './portal-directives';
 import {Portal, ComponentPortal, TemplatePortal} from './portal';
 import {DomPortalOutlet} from './dom-portal-outlet';
 
@@ -28,7 +28,7 @@ describe('Portals', () => {
     TestBed.compileComponents();
   }));
 
-  describe('PortalOutletDirective', () => {
+  describe('CdkPortalOutlet', () => {
     let fixture: ComponentFixture<PortalTestApp>;
 
     beforeEach(() => {
@@ -480,8 +480,8 @@ class ArbitraryViewContainerRefComponent {
   `,
 })
 class PortalTestApp {
-  @ViewChildren(TemplatePortalDirective) portals: QueryList<TemplatePortalDirective>;
-  @ViewChild(PortalOutletDirective) portalOutlet: PortalOutletDirective;
+  @ViewChildren(CdkPortal) portals: QueryList<CdkPortal>;
+  @ViewChild(CdkPortalOutlet) portalOutlet: CdkPortalOutlet;
   @ViewChild('templateRef', { read: TemplateRef }) templateRef: TemplateRef<any>;
 
   selectedPortal: Portal<any>;
