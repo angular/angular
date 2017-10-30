@@ -96,14 +96,14 @@ You can control which elements are tab stops with the `tabindex` attribute
 
 <!-- example(dialog-content) -->
 
-### AOT Compilation
+### Configuring dialog content via `entryComponents`
 
-Due to the dynamic nature of the `MatDialog`, and its usage of `ViewContainerRef#createComponent()`
-to create the component on the fly, the AOT compiler will not know to create the proper
-`ComponentFactory` for your dialog component by default.
+Because `MatDialog` instantiates components at run-time, the Angular compiler needs extra
+information to create the necessary `ComponentFactory` for your dialog content component.
 
-You must include your dialog class in the list of `entryComponents` in your module definition so
-that the AOT compiler knows to create the `ComponentFactory` for it.
+For any component loaded into a dialog, you must include your component class in the list of
+`entryComponents` in your NgModule definition so that the Angular compiler knows to create
+the `ComponentFactory` for it.
 
 ```ts
 @NgModule({
