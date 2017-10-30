@@ -6,20 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MomentDateAdapter} from './moment-date-adapter';
-import {async, inject, TestBed} from '@angular/core/testing';
-import {MomentDateModule} from './index';
-import {DateAdapter, MAT_DATE_LOCALE} from '@angular/material';
 import {LOCALE_ID} from '@angular/core';
+import {async, inject, TestBed} from '@angular/core/testing';
+import {DateAdapter, DEC, FEB, JAN, MAR, MAT_DATE_LOCALE} from '@angular/material/core';
 import * as moment from 'moment';
-
-
-// Month constants for more readable tests.
-const JAN = 0, FEB = 1, MAR = 2, DEC = 11;
+import {MomentDateModule} from './index';
+import {MomentDateAdapter} from './moment-date-adapter';
 
 
 describe('MomentDateAdapter', () => {
   let adapter: MomentDateAdapter;
+  let assertValidDate: (d: moment.Moment | null, valid: boolean) => void;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -31,6 +28,13 @@ describe('MomentDateAdapter', () => {
     moment.locale('en');
     adapter = d;
     adapter.setLocale('en');
+
+    assertValidDate = (d: moment.Moment | null, valid: boolean) => {
+      expect(adapter.isDateInstance(d)).not.toBeNull(`Expected ${d} to be a date instance`);
+      expect(adapter.isValid(d!)).toBe(valid,
+          `Expected ${d} to be ${valid ? 'valid' : 'invalid'},` +
+          ` but was ${valid ? 'invalid' : 'valid'}`);
+    }
   }));
 
   it('should get year', () => {
@@ -309,12 +313,18 @@ describe('MomentDateAdapter', () => {
     expect(adapter.isDateInstance(d)).toBe(false);
   });
 
-  it('should create dates from valid ISO strings', () => {
-    expect(adapter.fromIso8601('1985-04-12T23:20:50.52Z')).not.toBeNull();
-    expect(adapter.fromIso8601('1996-12-19T16:39:57-08:00')).not.toBeNull();
-    expect(adapter.fromIso8601('1937-01-01T12:00:27.87+00:20')).not.toBeNull();
-    expect(adapter.fromIso8601('1990-13-31T23:59:00Z')).toBeNull();
-    expect(adapter.fromIso8601('1/1/2017')).toBeNull();
+  it('should create valid dates from valid ISO strings', () => {
+    assertValidDate(adapter.deserialize('1985-04-12T23:20:50.52Z'), true);
+    assertValidDate(adapter.deserialize('1996-12-19T16:39:57-08:00'), true);
+    assertValidDate(adapter.deserialize('1937-01-01T12:00:27.87+00:20'), true);
+    assertValidDate(adapter.deserialize('1990-13-31T23:59:00Z'), false);
+    assertValidDate(adapter.deserialize('1/1/2017'), false);
+    expect(adapter.deserialize('')).toBeNull();
+    expect(adapter.deserialize(null)).toBeNull();
+    assertValidDate(adapter.deserialize(new Date()), true);
+    assertValidDate(adapter.deserialize(new Date(NaN)), false);
+    assertValidDate(adapter.deserialize(moment()), true);
+    assertValidDate(adapter.deserialize(moment.invalid()), false);
   });
 
   it('setLocale should not modify global moment locale', () => {
@@ -354,6 +364,10 @@ describe('MomentDateAdapter', () => {
     adapter.isDateInstance(date);
     adapter.isValid(date);
     expect(date.locale()).toBe('en');
+  });
+
+  it('should create invalid date', () => {
+    assertValidDate(adapter.invalid(), false);
   });
 });
 

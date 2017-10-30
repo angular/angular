@@ -7,8 +7,9 @@
  */
 
 import {Inject, Injectable, Optional} from '@angular/core';
-import {DateAdapter, MAT_DATE_LOCALE} from './date-adapter';
 import {extendObject} from '../util/object-extend';
+import {DateAdapter, MAT_DATE_LOCALE} from './date-adapter';
+
 
 // TODO(mmalerba): Remove when we no longer support safari 9.
 /** Whether the browser supports the Intl API. */
@@ -219,16 +220,26 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     ].join('-');
   }
 
-  fromIso8601(iso8601String: string): Date | null {
-    // The `Date` constructor accepts formats other than ISO 8601, so we need to make sure the
-    // string is the right format first.
-    if (ISO_8601_REGEX.test(iso8601String)) {
-      let d = new Date(iso8601String);
-      if (this.isValid(d)) {
-        return d;
+  /**
+   * Returns the given value if given a valid Date or null. Deserializes valid ISO 8601 strings
+   * (https://www.ietf.org/rfc/rfc3339.txt) into valid Dates and empty string into null. Returns an
+   * invalid date for all other values.
+   */
+  deserialize(value: any): Date | null {
+    if (typeof value === 'string') {
+      if (!value) {
+        return null;
+      }
+      // The `Date` constructor accepts formats other than ISO 8601, so we need to make sure the
+      // string is the right format first.
+      if (ISO_8601_REGEX.test(value)) {
+        let date = new Date(value);
+        if (this.isValid(date)) {
+          return date;
+        }
       }
     }
-    return null;
+    return super.deserialize(value);
   }
 
   isDateInstance(obj: any) {
@@ -237,6 +248,10 @@ export class NativeDateAdapter extends DateAdapter<Date> {
 
   isValid(date: Date) {
     return !isNaN(date.getTime());
+  }
+
+  invalid(): Date {
+    return new Date(NaN);
   }
 
   /** Creates a date but allows the month and date to overflow. */

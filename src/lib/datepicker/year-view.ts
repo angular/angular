@@ -20,7 +20,6 @@ import {
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {MatCalendarCell} from './calendar-body';
-import {coerceDateProperty} from './coerce-date-property';
 import {createMissingDateImplError} from './datepicker-errors';
 
 
@@ -42,7 +41,8 @@ export class MatYearView<D> implements AfterContentInit {
   get activeDate(): D { return this._activeDate; }
   set activeDate(value: D) {
     let oldActiveDate = this._activeDate;
-    this._activeDate = coerceDateProperty(this._dateAdapter, value) || this._dateAdapter.today();
+    this._activeDate =
+        this._getValidDateOrNull(this._dateAdapter.deserialize(value)) || this._dateAdapter.today();
     if (this._dateAdapter.getYear(oldActiveDate) != this._dateAdapter.getYear(this._activeDate)) {
       this._init();
     }
@@ -53,7 +53,7 @@ export class MatYearView<D> implements AfterContentInit {
   @Input()
   get selected(): D | null { return this._selected; }
   set selected(value: D | null) {
-    this._selected = coerceDateProperty(this._dateAdapter, value);
+    this._selected = this._getValidDateOrNull(this._dateAdapter.deserialize(value));
     this._selectedMonth = this._getMonthInCurrentYear(this._selected);
   }
   private _selected: D | null;
@@ -154,5 +154,13 @@ export class MatYearView<D> implements AfterContentInit {
     }
 
     return false;
+  }
+
+  /**
+   * @param obj The object to check.
+   * @returns The given object if it is both a date instance and valid, otherwise null.
+   */
+  private _getValidDateOrNull(obj: any): D | null {
+    return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
   }
 }

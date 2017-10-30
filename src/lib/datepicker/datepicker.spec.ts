@@ -272,14 +272,10 @@ describe('MatDatepicker', () => {
         expect((ownedElement as Element).tagName.toLowerCase()).toBe('mat-calendar');
       });
 
-      it('should throw when given wrong data type', () => {
+      it('should not throw when given wrong data type', () => {
         testComponent.date = '1/1/2017' as any;
 
-        expect(() => fixture.detectChanges()).toThrowError(
-            'Datepicker: Value must be either a date object recognized by the DateAdapter or an ' +
-            'ISO 8601 string. Instead got: 1/1/2017');
-
-        testComponent.date = null;
+        expect(() => fixture.detectChanges()).not.toThrow();
       });
     });
 

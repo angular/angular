@@ -8,14 +8,14 @@
 
 import {Inject, Injectable, Optional} from '@angular/core';
 import {DateAdapter, MAT_DATE_LOCALE} from '@angular/material';
-
 // Depending on whether rollup is used, moment needs to be imported differently.
 // Since Moment.js doesn't have a default export, we normally need to import using the `* as`
 // syntax. However, rollup creates a synthetic default module and we thus need to import it using
 // the `default as` syntax.
 // TODO(mmalerba): See if we can clean this up at some point.
-import {default as _rollupMoment, Moment} from 'moment';
 import * as _moment from 'moment';
+import {default as _rollupMoment, Moment} from 'moment';
+
 const moment = _rollupMoment || _moment;
 
 
@@ -174,9 +174,26 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
     return this.clone(date).format();
   }
 
-  fromIso8601(iso8601String: string): Moment | null {
-    let d = moment(iso8601String, moment.ISO_8601).locale(this.locale);
-    return this.isValid(d) ? d : null;
+  /**
+   * Returns the given value if given a valid Moment or null. Deserializes valid ISO 8601 strings
+   * (https://www.ietf.org/rfc/rfc3339.txt) and valid Date objects into valid Moments and empty
+   * string into null. Returns an invalid date for all other values.
+   */
+  deserialize(value: any): Moment | null {
+    let date;
+    if (value instanceof Date) {
+      date = moment(value);
+    }
+    if (typeof value === 'string') {
+      if (!value) {
+        return null;
+      }
+      date = moment(value, moment.ISO_8601).locale(this.locale);
+    }
+    if (date && this.isValid(date)) {
+      return date;
+    }
+    return super.deserialize(value);
   }
 
   isDateInstance(obj: any): boolean {
@@ -185,5 +202,9 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
 
   isValid(date: Moment): boolean {
     return this.clone(date).isValid();
+  }
+
+  invalid(): Moment {
+    return moment.invalid();
   }
 }
