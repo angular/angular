@@ -3,7 +3,7 @@
 import { Component, Input, OnChanges }                   from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { Address, Hero, states } from './data-model';
+import { Address, Hero, states } from '../data-model';
 // #enddocregion imports
 
 @Component({
