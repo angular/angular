@@ -28,9 +28,9 @@ import {
   AnimationEvent,
 } from '@angular/animations';
 import {
-  BasePortalHost,
+  BasePortalOutlet,
   ComponentPortal,
-  PortalHostDirective,
+  PortalOutletDirective,
 } from '@angular/cdk/portal';
 import {first} from 'rxjs/operators';
 import {AnimationCurves, AnimationDurations} from '@angular/material/core';
@@ -71,12 +71,12 @@ export const HIDE_ANIMATION =
     ])
   ],
 })
-export class MatSnackBarContainer extends BasePortalHost implements OnDestroy {
+export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy {
   /** Whether the component has been destroyed. */
   private _destroyed = false;
 
-  /** The portal host inside of this container into which the snack bar content will be loaded. */
-  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
+  /** The portal outlet inside of this container into which the snack bar content will be loaded. */
+  @ViewChild(PortalOutletDirective) _portalOutlet: PortalOutletDirective;
 
   /** Subject for notifying that the snack bar has exited from view. */
   _onExit: Subject<any> = new Subject();
@@ -100,7 +100,7 @@ export class MatSnackBarContainer extends BasePortalHost implements OnDestroy {
 
   /** Attach a component portal as content to this snack bar container. */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
-    if (this._portalHost.hasAttached()) {
+    if (this._portalOutlet.hasAttached()) {
       throw Error('Attempting to attach snack bar content after content is already attached');
     }
 
@@ -120,7 +120,7 @@ export class MatSnackBarContainer extends BasePortalHost implements OnDestroy {
       this._renderer.addClass(this._elementRef.nativeElement, 'mat-snack-bar-top');
     }
 
-    return this._portalHost.attachComponentPortal(portal);
+    return this._portalOutlet.attachComponentPortal(portal);
   }
 
   /** Attach a template portal as content to this snack bar container. */

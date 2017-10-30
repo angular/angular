@@ -16,7 +16,7 @@
 
        <!-- If there is a label template, use it. -->
     <ng-template [ngIf]="tab.templateLabel">
-      <ng-template [cdkPortalHost]="tab.templateLabel"></ng-template>
+      <ng-template [cdkPortalOutlet]="tab.templateLabel"></ng-template>
     </ng-template>
 
     <!-- If there is not a label template, fall back to the text label. -->

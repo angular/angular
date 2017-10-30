@@ -17,7 +17,7 @@ import {
     OnDestroy,
     Input,
 } from '@angular/core';
-import {Portal, TemplatePortal, ComponentPortal, BasePortalHost} from './portal';
+import {Portal, TemplatePortal, ComponentPortal, BasePortalOutlet} from './portal';
 
 
 /**
@@ -36,18 +36,18 @@ export class TemplatePortalDirective extends TemplatePortal<any> {
 
 
 /**
- * Directive version of a PortalHost. Because the directive *is* a PortalHost, portals can be
+ * Directive version of a PortalOutlet. Because the directive *is* a PortalOutlet, portals can be
  * directly attached to it, enabling declarative use.
  *
  * Usage:
- * <ng-template [cdkPortalHost]="greeting"></ng-template>
+ * <ng-template [cdkPortalOutlet]="greeting"></ng-template>
  */
 @Directive({
-  selector: '[cdkPortalHost], [portalHost]',
-  exportAs: 'cdkPortalHost',
-  inputs: ['portal: cdkPortalHost']
+  selector: '[cdkPortalOutlet], [cdkPortalHost], [portalHost]',
+  exportAs: 'cdkPortalOutlet, cdkPortalHost',
+  inputs: ['portal: cdkPortalOutlet']
 })
-export class PortalHostDirective extends BasePortalHost implements OnDestroy {
+export class PortalOutletDirective extends BasePortalOutlet implements OnDestroy {
   /** The attached portal. */
   private _portal: Portal<any> | null = null;
 
@@ -62,7 +62,12 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   get _deprecatedPortal() { return this.portal; }
   set _deprecatedPortal(v) { this.portal = v; }
 
-  /** Portal associated with the Portal host. */
+  /** @deprecated */
+  @Input('cdkPortalHost')
+  get _deprecatedPortalHost() { return this.portal; }
+  set _deprecatedPortalHost(v) { this.portal = v; }
+
+  /** Portal associated with the Portal outlet. */
   get portal(): Portal<any> | null {
     return this._portal;
   }
@@ -85,16 +90,16 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
   }
 
   /**
-   * Attach the given ComponentPortal to this PortalHost using the ComponentFactoryResolver.
+   * Attach the given ComponentPortal to this PortalOutlet using the ComponentFactoryResolver.
    *
-   * @param portal Portal to be attached to the portal host.
+   * @param portal Portal to be attached to the portal outlet.
    * @returns Reference to the created component.
    */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
     portal.setAttachedHost(this);
 
     // If the portal specifies an origin, use that as the logical location of the component
-    // in the application tree. Otherwise use the location of this PortalHost.
+    // in the application tree. Otherwise use the location of this PortalOutlet.
     let viewContainerRef = portal.viewContainerRef != null ?
         portal.viewContainerRef :
         this._viewContainerRef;
@@ -129,7 +134,7 @@ export class PortalHostDirective extends BasePortalHost implements OnDestroy {
 
 
 @NgModule({
-  exports: [TemplatePortalDirective, PortalHostDirective],
-  declarations: [TemplatePortalDirective, PortalHostDirective],
+  exports: [TemplatePortalDirective, PortalOutletDirective],
+  declarations: [TemplatePortalDirective, PortalOutletDirective],
 })
 export class PortalModule {}

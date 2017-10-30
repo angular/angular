@@ -156,16 +156,16 @@ describe('MatTabBody', () => {
     it('should attach the content when centered and detach when not', fakeAsync(() => {
       fixture.componentInstance.position = 1;
       fixture.detectChanges();
-      expect(fixture.componentInstance.tabBody._portalHost.hasAttached()).toBe(false);
+      expect(fixture.componentInstance.tabBody._portalOutlet.hasAttached()).toBe(false);
 
       fixture.componentInstance.position = 0;
       fixture.detectChanges();
-      expect(fixture.componentInstance.tabBody._portalHost.hasAttached()).toBe(true);
+      expect(fixture.componentInstance.tabBody._portalOutlet.hasAttached()).toBe(true);
 
       fixture.componentInstance.position = 1;
       fixture.detectChanges();
       flushMicrotasks(); // Finish animation and let it detach in animation done handler
-      expect(fixture.componentInstance.tabBody._portalHost.hasAttached()).toBe(false);
+      expect(fixture.componentInstance.tabBody._portalOutlet.hasAttached()).toBe(false);
     }));
   });
 

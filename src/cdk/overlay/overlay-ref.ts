@@ -7,7 +7,7 @@
  */
 
 import {NgZone} from '@angular/core';
-import {PortalHost, Portal} from '@angular/cdk/portal';
+import {PortalOutlet, Portal} from '@angular/cdk/portal';
 import {OverlayConfig} from './overlay-config';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {Observable} from 'rxjs/Observable';
@@ -19,7 +19,7 @@ import {first} from 'rxjs/operators';
  * Reference to an overlay that has been created with the Overlay service.
  * Used to manipulate or dispose of said overlay.
  */
-export class OverlayRef implements PortalHost {
+export class OverlayRef implements PortalOutlet {
   private _backdropElement: HTMLElement | null = null;
   private _backdropClick: Subject<any> = new Subject();
   private _attachments = new Subject<void>();
@@ -29,7 +29,7 @@ export class OverlayRef implements PortalHost {
   _keydownEvents = new Subject<KeyboardEvent>();
 
   constructor(
-      private _portalHost: PortalHost,
+      private _portalOutlet: PortalOutlet,
       private _pane: HTMLElement,
       private _config: OverlayConfig,
       private _ngZone: NgZone,
@@ -51,7 +51,7 @@ export class OverlayRef implements PortalHost {
    * @returns The portal attachment result.
    */
   attach(portal: Portal<any>): any {
-    let attachResult = this._portalHost.attach(portal);
+    let attachResult = this._portalOutlet.attach(portal);
 
     if (this._config.positionStrategy) {
       this._config.positionStrategy.attach(this);
@@ -118,7 +118,7 @@ export class OverlayRef implements PortalHost {
       this._config.scrollStrategy.disable();
     }
 
-    const detachmentResult = this._portalHost.detach();
+    const detachmentResult = this._portalOutlet.detach();
 
     // Only emit after everything is detached.
     this._detachments.next();
@@ -142,7 +142,7 @@ export class OverlayRef implements PortalHost {
     }
 
     this.detachBackdrop();
-    this._portalHost.dispose();
+    this._portalOutlet.dispose();
     this._attachments.complete();
     this._backdropClick.complete();
     this._detachments.next();
@@ -153,7 +153,7 @@ export class OverlayRef implements PortalHost {
    * Checks whether the overlay has been attached.
    */
   hasAttached(): boolean {
-    return this._portalHost.hasAttached();
+    return this._portalOutlet.hasAttached();
   }
 
   /**

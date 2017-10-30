@@ -26,8 +26,8 @@ export function throwPortalAlreadyAttachedError() {
  * Throws an exception when attempting to attach a portal to an already-disposed host.
  * @docs-private
  */
-export function throwPortalHostAlreadyDisposedError() {
-  throw Error('This PortalHost has already been disposed');
+export function throwPortalOutletAlreadyDisposedError() {
+  throw Error('This PortalOutlet has already been disposed');
 }
 
 /**
@@ -35,16 +35,16 @@ export function throwPortalHostAlreadyDisposedError() {
  * @docs-private
  */
 export function throwUnknownPortalTypeError() {
-  throw Error('Attempting to attach an unknown Portal type. BasePortalHost accepts either ' +
-                  'a ComponentPortal or a TemplatePortal.');
+  throw Error('Attempting to attach an unknown Portal type. BasePortalOutlet accepts either ' +
+              'a ComponentPortal or a TemplatePortal.');
 }
 
 /**
  * Throws an exception when attempting to attach a portal to a null host.
  * @docs-private
  */
-export function throwNullPortalHostError() {
-  throw Error('Attempting to attach a portal to a null PortalHost');
+export function throwNullPortalOutletError() {
+  throw Error('Attempting to attach a portal to a null PortalOutlet');
 }
 
 /**

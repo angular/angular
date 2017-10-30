@@ -13,9 +13,9 @@ import {
   TemplateRef
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {TemplatePortalDirective, PortalHostDirective, PortalModule} from './portal-directives';
+import {TemplatePortalDirective, PortalOutletDirective, PortalModule} from './portal-directives';
 import {Portal, ComponentPortal, TemplatePortal} from './portal';
-import {DomPortalHost} from './dom-portal-host';
+import {DomPortalOutlet} from './dom-portal-outlet';
 
 
 describe('Portals', () => {
@@ -28,7 +28,7 @@ describe('Portals', () => {
     TestBed.compileComponents();
   }));
 
-  describe('PortalHostDirective', () => {
+  describe('PortalOutletDirective', () => {
     let fixture: ComponentFixture<PortalTestApp>;
 
     beforeEach(() => {
@@ -71,7 +71,7 @@ describe('Portals', () => {
       // using TemplatePortal.attach method to set context
       testAppComponent.selectedPortal = undefined;
       fixture.detectChanges();
-      templatePortal.attach(testAppComponent.portalHost, {$implicit: {status: 'rotten'}});
+      templatePortal.attach(testAppComponent.portalOutlet, {$implicit: {status: 'rotten'}});
       fixture.detectChanges();
       // Expect that the content of the attached portal is present and context given via the
       // attach method is projected
@@ -90,7 +90,7 @@ describe('Portals', () => {
       // context, the latter should take precedence:
       testAppComponent.selectedPortal = undefined;
       fixture.detectChanges();
-      templatePortal.attach(testAppComponent.portalHost, {$implicit: {status: 'rotten'}});
+      templatePortal.attach(testAppComponent.portalOutlet, {$implicit: {status: 'rotten'}});
       fixture.detectChanges();
       // Expect that the content of the attached portal is present and and context given via the
       // attach method is projected and get precedence over constructor context
@@ -223,32 +223,32 @@ describe('Portals', () => {
       testAppComponent.selectedPortal = new ComponentPortal(PizzaMsg);
 
       fixture.detectChanges();
-      expect(testAppComponent.portalHost.hasAttached()).toBe(true);
-      expect(testAppComponent.portalHost.portal).toBe(testAppComponent.selectedPortal);
+      expect(testAppComponent.portalOutlet.hasAttached()).toBe(true);
+      expect(testAppComponent.portalOutlet.portal).toBe(testAppComponent.selectedPortal);
 
       testAppComponent.selectedPortal = null;
       fixture.detectChanges();
 
-      expect(testAppComponent.portalHost.hasAttached()).toBe(false);
-      expect(testAppComponent.portalHost.portal).toBeNull();
+      expect(testAppComponent.portalOutlet.hasAttached()).toBe(false);
+      expect(testAppComponent.portalOutlet.portal).toBeNull();
     });
 
     it('should set the `portal` when attaching a component portal programmatically', () => {
       let testAppComponent = fixture.debugElement.componentInstance;
       let portal = new ComponentPortal(PizzaMsg);
 
-      testAppComponent.portalHost.attachComponentPortal(portal);
+      testAppComponent.portalOutlet.attachComponentPortal(portal);
 
-      expect(testAppComponent.portalHost.portal).toBe(portal);
+      expect(testAppComponent.portalOutlet.portal).toBe(portal);
     });
 
     it('should set the `portal` when attaching a template portal programmatically', () => {
       let testAppComponent = fixture.debugElement.componentInstance;
       fixture.detectChanges();
 
-      testAppComponent.portalHost.attachTemplatePortal(testAppComponent.cakePortal);
+      testAppComponent.portalOutlet.attachTemplatePortal(testAppComponent.cakePortal);
 
-      expect(testAppComponent.portalHost.portal).toBe(testAppComponent.cakePortal);
+      expect(testAppComponent.portalOutlet.portal).toBe(testAppComponent.cakePortal);
     });
 
     it('should clear the portal reference on destroy', () => {
@@ -257,21 +257,21 @@ describe('Portals', () => {
       testAppComponent.selectedPortal = new ComponentPortal(PizzaMsg);
       fixture.detectChanges();
 
-      expect(testAppComponent.portalHost.portal).toBeTruthy();
+      expect(testAppComponent.portalOutlet.portal).toBeTruthy();
 
       fixture.destroy();
 
-      expect(testAppComponent.portalHost.portal).toBeNull();
+      expect(testAppComponent.portalOutlet.portal).toBeNull();
     });
   });
 
-  describe('DomPortalHost', () => {
+  describe('DomPortalOutlet', () => {
     let componentFactoryResolver: ComponentFactoryResolver;
     let someViewContainerRef: ViewContainerRef;
     let someInjector: Injector;
     let someFixture: ComponentFixture<any>;
     let someDomElement: HTMLElement;
-    let host: DomPortalHost;
+    let host: DomPortalOutlet;
     let injector: Injector;
     let appRef: ApplicationRef;
 
@@ -284,7 +284,7 @@ describe('Portals', () => {
 
     beforeEach(() => {
       someDomElement = document.createElement('div');
-      host = new DomPortalHost(someDomElement, componentFactoryResolver, appRef, injector);
+      host = new DomPortalOutlet(someDomElement, componentFactoryResolver, appRef, injector);
 
       someFixture = TestBed.createComponent(ArbitraryViewContainerRefComponent);
       someViewContainerRef = someFixture.componentInstance.viewContainerRef;
@@ -397,17 +397,17 @@ describe('Portals', () => {
       expect(componentInstance instanceof PizzaMsg)
           .toBe(true, 'Expected a PizzaMsg component to be created');
       expect(someDomElement.textContent)
-          .toContain('Pizza', 'Expected the static string "Pizza" in the DomPortalHost.');
+          .toContain('Pizza', 'Expected the static string "Pizza" in the DomPortalOutlet.');
 
       componentInstance.snack = new Chocolate();
       someFixture.detectChanges();
       expect(someDomElement.textContent)
-          .toContain('Chocolate', 'Expected the bound string "Chocolate" in the DomPortalHost');
+          .toContain('Chocolate', 'Expected the bound string "Chocolate" in the DomPortalOutlet');
 
       host.detach();
 
       expect(someDomElement.innerHTML)
-          .toBe('', 'Expected the DomPortalHost to be empty after detach');
+          .toBe('', 'Expected the DomPortalOutlet to be empty after detach');
     });
 
     it('should call the dispose function even if the host has no attached content', () => {
@@ -457,12 +457,12 @@ class ArbitraryViewContainerRefComponent {
 }
 
 
-/** Test-bed component that contains a portal host and a couple of template portals. */
+/** Test-bed component that contains a portal outlet and a couple of template portals. */
 @Component({
   selector: 'portal-test',
   template: `
   <div class="portal-container">
-    <ng-template [cdkPortalHost]="selectedPortal"></ng-template>
+    <ng-template [cdkPortalOutlet]="selectedPortal"></ng-template>
   </div>
 
   <ng-template cdk-portal>Cake</ng-template>
@@ -481,7 +481,7 @@ class ArbitraryViewContainerRefComponent {
 })
 class PortalTestApp {
   @ViewChildren(TemplatePortalDirective) portals: QueryList<TemplatePortalDirective>;
-  @ViewChild(PortalHostDirective) portalHost: PortalHostDirective;
+  @ViewChild(PortalOutletDirective) portalOutlet: PortalOutletDirective;
   @ViewChild('templateRef', { read: TemplateRef }) templateRef: TemplateRef<any>;
 
   selectedPortal: Portal<any>;

@@ -27,7 +27,7 @@ import {
   transition,
   AnimationEvent,
 } from '@angular/animations';
-import {TemplatePortal, PortalHostDirective} from '@angular/cdk/portal';
+import {TemplatePortal, PortalOutletDirective} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 
 
@@ -87,8 +87,8 @@ export type MatTabBodyOriginState = 'left' | 'right';
   ]
 })
 export class MatTabBody implements OnInit, AfterViewChecked {
-  /** The portal host inside of this container into which the tab body content will be loaded. */
-  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
+  /** The portal outlet inside of this container into which the tab body content will be loaded. */
+  @ViewChild(PortalOutletDirective) _portalOutlet: PortalOutletDirective;
 
   /** Event emitted when the tab begins to animate towards the center as the active tab. */
   @Output() _onCentering: EventEmitter<number> = new EventEmitter<number>();
@@ -144,8 +144,8 @@ export class MatTabBody implements OnInit, AfterViewChecked {
    * content if it is not already attached.
    */
   ngAfterViewChecked() {
-    if (this._isCenterPosition(this._position) && !this._portalHost.hasAttached()) {
-      this._portalHost.attach(this._content);
+    if (this._isCenterPosition(this._position) && !this._portalOutlet.hasAttached()) {
+      this._portalOutlet.attach(this._content);
     }
   }
 
@@ -158,7 +158,7 @@ export class MatTabBody implements OnInit, AfterViewChecked {
   _onTranslateTabComplete(e: AnimationEvent) {
     // If the end state is that the tab is not centered, then detach the content.
     if (!this._isCenterPosition(e.toState) && !this._isCenterPosition(this._position)) {
-      this._portalHost.detach();
+      this._portalOutlet.detach();
     }
 
     // If the transition to the center is complete, emit an event.

@@ -22,9 +22,9 @@ import {
 import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
 import {DOCUMENT} from '@angular/platform-browser';
 import {
-  BasePortalHost,
+  BasePortalOutlet,
   ComponentPortal,
-  PortalHostDirective,
+  PortalOutletDirective,
   TemplatePortal
 } from '@angular/cdk/portal';
 import {FocusTrap, FocusTrapFactory} from '@angular/cdk/a11y';
@@ -33,7 +33,7 @@ import {MatDialogConfig} from './dialog-config';
 
 /**
  * Throws an exception for the case when a ComponentPortal is
- * attached to a DomPortalHost without an origin.
+ * attached to a DomPortalOutlet without an origin.
  * @docs-private
  */
 export function throwMatDialogContentAlreadyAttachedError() {
@@ -78,9 +78,9 @@ export function throwMatDialogContentAlreadyAttachedError() {
     '(@slideDialog.done)': '_onAnimationDone($event)',
   },
 })
-export class MatDialogContainer extends BasePortalHost {
-  /** The portal host inside of this container into which the dialog content will be loaded. */
-  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
+export class MatDialogContainer extends BasePortalOutlet {
+  /** The portal outlet inside of this container into which the dialog content will be loaded. */
+  @ViewChild(PortalOutletDirective) _portalOutlet: PortalOutletDirective;
 
   /** The class that traps and manages focus within the dialog. */
   private _focusTrap: FocusTrap;
@@ -117,12 +117,12 @@ export class MatDialogContainer extends BasePortalHost {
    * @param portal Portal to be attached as the dialog content.
    */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
-    if (this._portalHost.hasAttached()) {
+    if (this._portalOutlet.hasAttached()) {
       throwMatDialogContentAlreadyAttachedError();
     }
 
     this._savePreviouslyFocusedElement();
-    return this._portalHost.attachComponentPortal(portal);
+    return this._portalOutlet.attachComponentPortal(portal);
   }
 
   /**
@@ -130,12 +130,12 @@ export class MatDialogContainer extends BasePortalHost {
    * @param portal Portal to be attached as the dialog content.
    */
   attachTemplatePortal<C>(portal: TemplatePortal<C>): EmbeddedViewRef<C> {
-    if (this._portalHost.hasAttached()) {
+    if (this._portalOutlet.hasAttached()) {
       throwMatDialogContentAlreadyAttachedError();
     }
 
     this._savePreviouslyFocusedElement();
-    return this._portalHost.attachTemplatePortal(portal);
+    return this._portalOutlet.attachTemplatePortal(portal);
   }
 
   /** Moves the focus inside the focus trap. */

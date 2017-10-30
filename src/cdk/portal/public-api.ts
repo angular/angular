@@ -7,6 +7,10 @@
  */
 
 export * from './portal';
-export * from './dom-portal-host';
+export * from './dom-portal-outlet';
 export * from './portal-directives';
 export * from './portal-injector';
+
+export {DomPortalOutlet as DomPortalHost} from './dom-portal-outlet';
+export {PortalOutletDirective as PortalHostDirective} from './portal-directives';
+export {PortalOutlet as PortalHost, BasePortalOutlet as BasePortalHost} from './portal';

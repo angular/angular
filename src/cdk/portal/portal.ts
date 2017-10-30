@@ -15,11 +15,11 @@ import {
     Injector
 } from '@angular/core';
 import {
-    throwNullPortalHostError,
+    throwNullPortalOutletError,
     throwPortalAlreadyAttachedError,
     throwNoPortalAttachedError,
     throwNullPortalError,
-    throwPortalHostAlreadyDisposedError,
+    throwPortalOutletAlreadyDisposedError,
     throwUnknownPortalTypeError
 } from './portal-errors';
 
@@ -30,15 +30,15 @@ export interface ComponentType<T> {
 
 /**
  * A `Portal` is something that you want to render somewhere else.
- * It can be attach to / detached from a `PortalHost`.
+ * It can be attach to / detached from a `PortalOutlet`.
  */
 export abstract class Portal<T> {
-  private _attachedHost: PortalHost | null;
+  private _attachedHost: PortalOutlet | null;
 
   /** Attach this portal to a host. */
-  attach(host: PortalHost): T {
+  attach(host: PortalOutlet): T {
     if (host == null) {
-      throwNullPortalHostError();
+      throwNullPortalOutletError();
     }
 
     if (host.hasAttached()) {
@@ -67,10 +67,10 @@ export abstract class Portal<T> {
   }
 
   /**
-   * Sets the PortalHost reference without performing `attach()`. This is used directly by
-   * the PortalHost when it is performing an `attach()` or `detach()`.
+   * Sets the PortalOutlet reference without performing `attach()`. This is used directly by
+   * the PortalOutlet when it is performing an `attach()` or `detach()`.
    */
-  setAttachedHost(host: PortalHost | null) {
+  setAttachedHost(host: PortalOutlet | null) {
     this._attachedHost = host;
   }
 }
@@ -85,7 +85,7 @@ export class ComponentPortal<T> extends Portal<ComponentRef<T>> {
 
   /**
    * [Optional] Where the attached component should live in Angular's *logical* component tree.
-   * This is different from where the component *renders*, which is determined by the PortalHost.
+   * This is different from where the component *renders*, which is determined by the PortalOutlet.
    * The origin is necessary when the host is outside of the Angular application context.
    */
   viewContainerRef?: ViewContainerRef | null;
@@ -130,11 +130,11 @@ export class TemplatePortal<C> extends Portal<C> {
   }
 
   /**
-   * Attach the the portal to the provided `PortalHost`.
+   * Attach the the portal to the provided `PortalOutlet`.
    * When a context is provided it will override the `context` property of the `TemplatePortal`
    * instance.
    */
-  attach(host: PortalHost, context: C | undefined = this.context): C {
+  attach(host: PortalOutlet, context: C | undefined = this.context): C {
     this.context = context;
     return super.attach(host);
   }
@@ -147,9 +147,9 @@ export class TemplatePortal<C> extends Portal<C> {
 
 
 /**
- * A `PortalHost` is an space that can contain a single `Portal`.
+ * A `PortalOutlet` is an space that can contain a single `Portal`.
  */
-export interface PortalHost {
+export interface PortalOutlet {
   attach(portal: Portal<any>): any;
 
   detach(): any;
@@ -161,10 +161,10 @@ export interface PortalHost {
 
 
 /**
- * Partial implementation of PortalHost that handles attaching
+ * Partial implementation of PortalOutlet that handles attaching
  * ComponentPortal and TemplatePortal.
  */
-export abstract class BasePortalHost implements PortalHost {
+export abstract class BasePortalOutlet implements PortalOutlet {
   /** The portal currently attached to the host. */
   private _attachedPortal: Portal<any> | null;
 
@@ -190,7 +190,7 @@ export abstract class BasePortalHost implements PortalHost {
     }
 
     if (this._isDisposed) {
-      throwPortalHostAlreadyDisposedError();
+      throwPortalOutletAlreadyDisposedError();
     }
 
     if (portal instanceof ComponentPortal) {
