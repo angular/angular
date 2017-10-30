@@ -16,6 +16,7 @@ const globals = {
 
   'rxjs/BehaviorSubject': 'Rx',
   'rxjs/Observable': 'Rx',
+  'rxjs/Observer': 'Rx',
   'rxjs/Subject': 'Rx',
   'rxjs/Subscription': 'Rx',
   'rxjs/util/EmptyError': 'Rx',

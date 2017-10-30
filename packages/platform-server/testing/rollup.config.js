@@ -15,6 +15,7 @@ const globals = {
   '@angular/compiler': 'ng.compiler',
   '@angular/compiler/testing': 'ng.compiler.testing',
   '@angular/platform-browser': 'ng.platformBrowser',
+  '@angular/platform-browser/animations': 'ng.platformBrowser.animations',
   '@angular/platform-server': 'ng.platformServer',
   '@angular/platform-browser-dynamic/testing': 'ng.platformBrowserDynamic.testing'
 };
