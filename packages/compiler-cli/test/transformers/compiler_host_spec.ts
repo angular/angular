@@ -90,6 +90,14 @@ describe('NgCompilerHost', () => {
           .toBe('./a/child');
     });
 
+    it('should use a relative import when accessing generated files, even if crossing packages',
+       () => {
+         expect(host.fileNameToModuleName(
+                    '/tmp/node_modules/mod2/b.ngfactory.d.ts',
+                    '/tmp/node_modules/mod1/a.ngfactory.d.ts'))
+             .toBe('../mod2/b.ngfactory');
+       });
+
     it('should support multiple rootDirs when accessing a source file form a source file', () => {
       const hostWithMultipleRoots = createHost({
         options: {
