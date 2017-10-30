@@ -456,13 +456,13 @@ class AngularCompilerProgram implements Program {
     };
 
 
-    let rootNames = this.rootNames;
+    let rootNames = [...this.rootNames];
     if (this.options.generateCodeForLibraries !== false) {
       // if we should generateCodeForLibraries, never include
       // generated files in the program as otherwise we will
       // ovewrite them and typescript will report the error
       // TS5055: Cannot write file ... because it would overwrite input file.
-      rootNames = this.rootNames.filter(fn => !GENERATED_FILES.test(fn));
+      rootNames = rootNames.filter(fn => !GENERATED_FILES.test(fn));
     }
     if (this.options.noResolve) {
       this.rootNames.forEach(rootName => {
