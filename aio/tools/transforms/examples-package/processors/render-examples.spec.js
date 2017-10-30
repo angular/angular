@@ -2,7 +2,7 @@ var testPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
 
 describe('renderExamples processor', () => {
-  var injector, processor, exampleMap, collectExamples;
+  var injector, processor, exampleMap, collectExamples, log;
 
   beforeEach(function() {
     const dgeni = new Dgeni([testPackage('examples-package', true)]);
@@ -12,6 +12,7 @@ describe('renderExamples processor', () => {
     processor = injector.get('renderExamples');
     collectExamples = injector.get('collectExamples');
     exampleMap = injector.get('exampleMap');
+    log = injector.get('log');
 
     collectExamples.exampleFolders = ['examples'];
     exampleMap['examples'] = {
@@ -96,6 +97,25 @@ describe('renderExamples processor', () => {
         expect(() => processor.$process(docs)).toThrowError(
           'Badly formed example: <' + CODE_TAG + ' path="test/url"></p> - closing tag does not match opening tag.\n' +
           ' - Perhaps you forgot to put a blank line before the example?');
+      });
+
+      it('should not throw if `ignoreBrokenExamples` is set to true', () => {
+        processor.ignoreBrokenExamples = true;
+        const docs = [
+          { renderedContent: `<${CODE_TAG} path="test/url"></p></${CODE_TAG}>`},
+          { renderedContent: `<${CODE_TAG} path="test/url" region="missing"></${CODE_TAG}>`},
+          { renderedContent: `<${CODE_TAG} path="missing/url"></${CODE_TAG}>`}
+        ];
+        expect(() => processor.$process(docs)).not.toThrow();
+        expect(log.warn).toHaveBeenCalledWith(
+          'Badly formed example: <' + CODE_TAG + ' path="test/url"></p> - closing tag does not match opening tag.\n' +
+          ' - Perhaps you forgot to put a blank line before the example? - doc');
+        expect(log.warn).toHaveBeenCalledWith(
+          'Missing example region... relativePath: "test/url", region: "missing". - doc\n' +
+          'Regions available are: "", "region-1" - doc');
+        expect(log.warn).toHaveBeenCalledWith(
+          'Missing example file... relativePath: "missing/url". - doc\n' +
+          'Example files can be found in the following relative paths: "examples" - doc');
       });
     })
   );
