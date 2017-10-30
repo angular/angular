@@ -60,7 +60,7 @@ High level stuff planned for Q4 2017 (October - December):
 | icon             |                                                        |   [Docs][10] |
 | input            |                                                        |   [Docs][5]  |
 | list             |                   Selection and action list planned Q3 |   [Docs][8]  |
-| menu             |                                 Nested menu planned Q3 |   [Docs][17] |
+| menu             |                                                        |   [Docs][17] |
 | paginator        |                                                        |   [Docs][29] |
 | progress-bar     |                                                        |   [Docs][12] |
 | progress-spinner |                                                        |   [Docs][11] |
@@ -81,7 +81,7 @@ High level stuff planned for Q4 2017 (October - December):
 | theming          |                                                        |  [Guide][20] |
 | typography       |                                                        |  [Guide][27] |
 | layout           |                      See [angular/flex-layout][lay_rp] |  [Wiki][0]   |
-| cdk              |                    Launched, documentation in-progress |              |
+| cdk              |                                                        |   [Docs][34] |
 
 
 #### In progress, planned, and non-planned features
@@ -115,7 +115,7 @@ High level stuff planned for Q4 2017 (October - December):
 [16]: https://material.angular.io/components/component/slider
 [17]: https://material.angular.io/components/component/menu
 [18]: https://material.angular.io/components/component/tooltip
-[19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/README.md
+[19]: https://github.com/angular/material2/blob/master/src/lib/core/ripple/ripple.md
 [20]: https://material.angular.io/guide/theming
 [21]: https://material.angular.io/components/component/snack-bar
 [22]: https://material.angular.io/components/component/dialog
@@ -130,6 +130,7 @@ High level stuff planned for Q4 2017 (October - December):
 [31]: https://tina-material-tree.firebaseapp.com/simple-tree
 [32]: https://material.angular.io/components/expansion/overview
 [33]: https://material.angular.io/components/stepper/overview
+[34]: https://material.angular.io/cdk/categories
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
@@ -153,9 +154,8 @@ High level stuff planned for Q4 2017 (October - December):
 [0474]: https://github.com/angular/material2/pull/474
 
 [aio]: https://material.angular.io
-[getting-started]: https://github.com/angular/material2/blob/master/guides/getting-started.md
+[getting-started]: https://material.angular.io/guide/getting-started
 [lay_rp]:  https://github.com/angular/flex-layout
-[theming]: https://github.com/angular/material2/blob/master/guides/theming.md
 
 
 ## The goal of Angular Material
