@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
-import sourcemaps from 'rollup-plugin-sourcemaps';
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   '@angular/animations': 'ng.animations',
@@ -24,7 +24,7 @@ const globals = {
   'rxjs/operator/first': 'Rx.Observable.prototype'
 };
 
-export default {
+module.exports = {
   entry: '../../dist/packages-dist/platform-server/esm5/platform-server.js',
   dest: '../../dist/packages-dist/platform-server/bundles/platform-server.umd.js',
   format: 'umd',
