@@ -44,7 +44,7 @@ export class MatTableDataSource<T> implements DataSource<T> {
 
   /**
    * Filter term that should be used to filter out objects from the data array. To override how
-   * the filter matches data objects, provide a custom function on filterTermAccessor.
+   * data objects match to this filter string, provide a custom function for filterPredicate.
    */
   set filter(filter: string) { this._filter.next(filter); }
   get filter(): string { return this._filter.value; }
@@ -91,14 +91,24 @@ export class MatTableDataSource<T> implements DataSource<T> {
   }
 
   /**
-   * Transforms data objects into a filter term that will be used to check against the filter if
-   * a filter is set. By default, the function will iterate over the values of the data object
-   * and convert them to a lowercase string.
-   * @param data Data object to convert to a string that checked for containing the filter term.
+   * Checks if a data object matches the data source's filter string. By default, each data object
+   * is converted to a string of its properties and returns true if the filter has
+   * at least one occurrence in that string. By default, the filter string has its whitespace
+   * trimmed and the match is case-insensitive. May be overriden for a custom implementation of
+   * filter matching.
+   * @param data Data object used to check against the filter.
+   * @param filter Filter string that has been set on the data source.
+   * @returns Whether the filter matches against the data
    */
-  filterTermAccessor: ((data: T) => string) = (data: T): string => {
+  filterPredicate: ((data: T, filter: string) => boolean) = (data: T, filter: string): boolean => {
+    // Transform the data into a lowercase string of all property values.
     const accumulator = (currentTerm, key) => currentTerm + data[key];
-    return Object.keys(data).reduce(accumulator, '').toLowerCase();
+    const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
+
+    // Transform the filter by converting it to lowercase and removing whitespace.
+    const transformedFilter = filter.trim().toLowerCase();
+
+    return dataStr.indexOf(transformedFilter) != -1;
   }
 
   constructor(initialData: T[] = []) {
@@ -145,9 +155,8 @@ export class MatTableDataSource<T> implements DataSource<T> {
     // If there is a filter string, filter out data that does not contain it.
     // Each data object is converted to a string using the function defined by filterTermAccessor.
     // May be overriden for customization.
-    const filteredData = !this.filter ? data : data.filter(obj => {
-      return this.filterTermAccessor(obj).indexOf(this.filter) != -1;
-    });
+    const filteredData =
+        !this.filter ? data : data.filter(obj => this.filterPredicate(obj, this.filter));
 
     if (this.paginator) { this._updatePaginator(filteredData.length); }
 
