@@ -6,9 +6,9 @@ import { BrowserModule }       from '@angular/platform-browser';
 import { ReactiveFormsModule } from '@angular/forms';  // <-- #1 import module
 
 import { AppComponent }        from './app.component';
-import { HeroDetailComponent } from './hero-detail.component'; // <-- #1 import component
+import { HeroDetailComponent } from './hero-detail/hero-detail.component'; // <-- #1 import component
 // #enddocregion v1
-import { HeroListComponent }   from './hero-list.component';
+import { HeroListComponent }   from './hero-list/hero-list.component';
 
 import { HeroService }         from './hero.service'; //  <-- #1 import service
 // #docregion v1
@@ -20,7 +20,7 @@ import { HeroService }         from './hero.service'; //  <-- #1 import service
   ],
   declarations: [
     AppComponent,
-    HeroDetailComponent, // <-- #3 declare app component
+    HeroDetailComponent,
 // #enddocregion v1
     HeroListComponent
 // #docregion v1
