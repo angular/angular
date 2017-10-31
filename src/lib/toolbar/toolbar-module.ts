@@ -8,11 +8,11 @@
 
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
+import {PlatformModule} from '@angular/cdk/platform';
 import {MatToolbar, MatToolbarRow} from './toolbar';
 
-
 @NgModule({
-  imports: [MatCommonModule],
+  imports: [MatCommonModule, PlatformModule],
   exports: [MatToolbar, MatToolbarRow, MatCommonModule],
   declarations: [MatToolbar, MatToolbarRow],
 })

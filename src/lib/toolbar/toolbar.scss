@@ -4,39 +4,39 @@ $mat-toolbar-height-desktop: 64px !default;
 $mat-toolbar-height-mobile-portrait: 56px !default;
 $mat-toolbar-height-mobile-landscape: 48px !default;
 
-$mat-toolbar-padding: 16px !default;
+$mat-toolbar-row-padding: 16px !default;
 
 
 @mixin mat-toolbar-height($height) {
-  .mat-toolbar {
+  .mat-toolbar-multiple-rows {
     min-height: $height;
   }
-  .mat-toolbar-row {
+  .mat-toolbar-row, .mat-toolbar-single-row {
     height: $height;
   }
 }
 
-.mat-toolbar {
+.mat-toolbar-row, .mat-toolbar-single-row {
   display: flex;
   box-sizing: border-box;
+
+  padding: 0 $mat-toolbar-row-padding;
   width: 100%;
-  padding: 0 $mat-toolbar-padding;
+
+  // Flexbox Vertical Alignment
+  flex-direction: row;
+  align-items: center;
+
+  // Per Material specs a toolbar cannot have multiple lines inside of a single row.
+  // Disable text wrapping inside of the toolbar. Developers are still able to overwrite it.
+  white-space: nowrap;
+}
+
+.mat-toolbar-multiple-rows {
+  display: flex;
+  box-sizing: border-box;
   flex-direction: column;
-
-  .mat-toolbar-row {
-    display: flex;
-    box-sizing: border-box;
-
-    width: 100%;
-
-    // Flexbox Vertical Alignment
-    flex-direction: row;
-    align-items: center;
-
-    // Per Material specs a toolbar cannot have multiple lines inside of a single row.
-    // Disable text wrapping inside of the toolbar. Developers are still able to overwrite it.
-    white-space: nowrap;
-  }
+  width: 100%;
 }
 
 // Set the default height for the toolbar.

@@ -2,24 +2,37 @@
 
 <!-- example(toolbar-overview) -->
 
-### Multiple rows
-Toolbars can have multiple rows using `<mat-toolbar-row>` elements. Any content outside of an 
-`<mat-toolbar-row>` element are automatically placed inside of one at the beginning of the toolbar.
-Each toolbar row is a `display: flex` container.
+### Single row
+
+In the most situations, a toolbar will be placed at the top of your application and will only 
+have a single row that includes the title of your application.
 
 ```html
 <mat-toolbar>
-  <span>First Row</span>
+  <span>My Application</span>
+</mat-toolbar>
+```
+
+### Multiple rows
+
+The Material Design specifications describe that toolbars can also have multiple rows. Creating
+toolbars with multiple rows in Angular Material can be done by placing `<mat-toolbar-row>` elements
+inside of a `<mat-toolbar>`.
+
+```html
+<mat-toolbar>  
+  <mat-toolbar-row>
+    <span>First Row</span>
+  </mat-toolbar-row>
   
   <mat-toolbar-row>
     <span>Second Row</span>
   </mat-toolbar-row>
-  
-  <mat-toolbar-row>
-    <span>Third Row</span>
-  </mat-toolbar-row>
 </mat-toolbar>
 ```
+
+**Note**: Placing content outside of a `<mat-toolbar-row>` when multiple rows are specified is not
+supported.
 
 ### Positioning toolbar content
 The toolbar does not perform any positioning of its content. This gives the user full power to 
