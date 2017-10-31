@@ -24,7 +24,7 @@ import {
 } from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
 import {ComponentPortal} from '@angular/cdk/portal';
-import {first} from 'rxjs/operators';
+import {first} from 'rxjs/operators/first';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,

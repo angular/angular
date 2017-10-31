@@ -11,7 +11,7 @@ import {Platform} from '@angular/cdk/platform';
 import {Observable} from 'rxjs/Observable';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {merge} from 'rxjs/observable/merge';
-import {auditTime} from 'rxjs/operators';
+import {auditTime} from 'rxjs/operators/auditTime';
 import {Subscription} from 'rxjs/Subscription';
 import {of as observableOf} from 'rxjs/observable/of';
 

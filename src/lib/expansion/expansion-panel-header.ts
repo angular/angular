@@ -9,7 +9,7 @@
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {ENTER, SPACE} from '@angular/cdk/keycodes';
-import {filter} from 'rxjs/operators';
+import {filter} from 'rxjs/operators/filter';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,

@@ -1,7 +1,8 @@
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {map, startWith} from 'rxjs/operators';
+import {map} from 'rxjs/operators/map';
+import {startWith} from 'rxjs/operators/startWith';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,

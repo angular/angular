@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {first} from 'rxjs/operators';
+import {first} from 'rxjs/operators/first';
 import {
   Attribute,
   ChangeDetectionStrategy,

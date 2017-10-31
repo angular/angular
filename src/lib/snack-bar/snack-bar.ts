@@ -16,7 +16,8 @@ import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
 import {MatSnackBarContainer} from './snack-bar-container';
 import {MatSnackBarRef} from './snack-bar-ref';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
-import {takeUntil, first} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators/takeUntil';
+import {first} from 'rxjs/operators/first';
 
 
 /**

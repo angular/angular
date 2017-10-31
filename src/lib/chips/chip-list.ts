@@ -11,7 +11,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {BACKSPACE, LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
-import {startWith} from 'rxjs/operators';
+import {startWith} from 'rxjs/operators/startWith';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,

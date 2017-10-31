@@ -8,7 +8,8 @@
 
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {first, startWith} from 'rxjs/operators';
+import {first} from 'rxjs/operators/first';
+import {startWith} from 'rxjs/operators/startWith';
 import {
   AfterContentChecked,
   AfterContentInit,

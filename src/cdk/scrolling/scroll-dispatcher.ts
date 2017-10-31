@@ -13,7 +13,8 @@ import {Subscription} from 'rxjs/Subscription';
 import {Observable} from 'rxjs/Observable';
 import {of as observableOf} from 'rxjs/observable/of';
 import {fromEvent} from 'rxjs/observable/fromEvent';
-import {auditTime, filter} from 'rxjs/operators';
+import {auditTime} from 'rxjs/operators/auditTime';
+import {filter} from 'rxjs/operators/filter';
 import {CdkScrollable} from './scrollable';
 
 

@@ -8,7 +8,7 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
-import {takeUntil} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentInit,

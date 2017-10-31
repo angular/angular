@@ -18,7 +18,7 @@ import {
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal} from '@angular/cdk/portal';
-import {first} from 'rxjs/operators';
+import {first} from 'rxjs/operators/first';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,

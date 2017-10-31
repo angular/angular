@@ -12,7 +12,7 @@ import {OverlayConfig} from './overlay-config';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-import {first} from 'rxjs/operators';
+import {first} from 'rxjs/operators/first';
 
 
 /**

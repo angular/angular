@@ -19,7 +19,7 @@ import {
   NgZone,
 } from '@angular/core';
 import {Subject} from 'rxjs/Subject';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime} from 'rxjs/operators/debounceTime';
 
 /**
  * Factory that creates a new MutationObserver and allows us to stub it out in unit tests.

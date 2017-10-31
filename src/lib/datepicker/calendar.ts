@@ -36,7 +36,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
-import {first} from 'rxjs/operators';
+import {first} from 'rxjs/operators/first';
 import {Subscription} from 'rxjs/Subscription';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatDatepickerIntl} from './datepicker-intl';

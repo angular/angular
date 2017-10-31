@@ -20,7 +20,7 @@ import {
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {filter} from 'rxjs/operators';
+import {filter} from 'rxjs/operators/filter';
 import {
   AfterContentInit,
   Directive,

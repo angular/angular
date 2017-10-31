@@ -17,7 +17,11 @@ import {
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
-import {filter, first, switchMap, tap, delay} from 'rxjs/operators';
+import {filter} from 'rxjs/operators/filter';
+import {first} from 'rxjs/operators/first';
+import {switchMap} from 'rxjs/operators/switchMap';
+import {tap} from 'rxjs/operators/tap';
+import {delay} from 'rxjs/operators/delay';
 import {
   ChangeDetectorRef,
   Directive,

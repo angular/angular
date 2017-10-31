@@ -7,7 +7,8 @@
  */
 
 import {OverlayRef, GlobalPositionStrategy} from '@angular/cdk/overlay';
-import {filter, first} from 'rxjs/operators';
+import {filter} from 'rxjs/operators/filter';
+import {first} from 'rxjs/operators/first';
 import {DialogPosition} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';

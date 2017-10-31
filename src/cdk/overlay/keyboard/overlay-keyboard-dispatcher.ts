@@ -9,7 +9,7 @@
 import {Injectable, Optional, SkipSelf, OnDestroy} from '@angular/core';
 import {OverlayRef} from '../overlay-ref';
 import {Subscription} from 'rxjs/Subscription';
-import {filter} from 'rxjs/operators';
+import {filter} from 'rxjs/operators/filter';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 
 /**

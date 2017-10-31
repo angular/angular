@@ -15,7 +15,8 @@ import {
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
-import {startWith, filter} from 'rxjs/operators';
+import {filter} from 'rxjs/operators/filter';
+import {startWith} from 'rxjs/operators/startWith';
 import {Location} from '@angular/common';
 import {
   ComponentRef,

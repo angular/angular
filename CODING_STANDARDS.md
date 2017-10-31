@@ -128,7 +128,7 @@ class ConfigBuilder {
 
 #### RxJS
 When dealing with RxJS operators, import the lettable operator (e.g.
-`import {map} from 'rxjs/operators'`), as opposed to using the "patch" imports which pollute the
+`import {map} from 'rxjs/operators/map'`), as opposed to using the "patch" imports which pollute the
 user's global Observable object (e.g. `import 'rxjs/add/operator/map'`):
 
 ```ts
@@ -137,7 +137,7 @@ import 'rxjs/add/operator/map';
 someObservable.map(...).subscribe(...);
 
 // YES
-import {map} from 'rxjs/operators';
+import {map} from 'rxjs/operators/map';
 someObservable.pipe(map(...)).subscribe(...);
 ```
 

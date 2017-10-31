@@ -32,7 +32,7 @@ import {
   ComponentPortal,
   CdkPortalOutlet,
 } from '@angular/cdk/portal';
-import {first} from 'rxjs/operators';
+import {first} from 'rxjs/operators/first';
 import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';

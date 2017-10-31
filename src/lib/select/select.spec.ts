@@ -40,7 +40,7 @@ import {
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {map} from 'rxjs/operators';
+import {map} from 'rxjs/operators/map';
 import {Subject} from 'rxjs/Subject';
 import {MatSelectModule} from './index';
 import {MatSelect} from './select';

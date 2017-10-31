@@ -11,7 +11,9 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {Subscription} from 'rxjs/Subscription';
-import {combineLatest, map, startWith} from 'rxjs/operators';
+import {combineLatest} from 'rxjs/operators/combineLatest';
+import {map} from 'rxjs/operators/map';
+import {startWith} from 'rxjs/operators/startWith';
 import {empty} from 'rxjs/observable/empty';
 
 /**

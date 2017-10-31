@@ -18,7 +18,11 @@ import {
   ScrollStrategy,
   ViewportRuler,
 } from '@angular/cdk/overlay';
-import {filter, first, map, startWith, takeUntil} from 'rxjs/operators';
+import {filter} from 'rxjs/operators/filter';
+import {first} from 'rxjs/operators/first';
+import {map} from 'rxjs/operators/map';
+import {startWith} from 'rxjs/operators/startWith';
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {
   AfterContentInit,
   Attribute,
