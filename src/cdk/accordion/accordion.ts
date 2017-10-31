@@ -16,7 +16,7 @@ let nextId = 0;
  * Directive whose purpose is to manage the expanded state of CdkAccordionItem children.
  */
 @Directive({
-  selector: 'cdk-accordion, [cdk-accordion]',
+  selector: 'cdk-accordion, [cdkAccordion]',
   exportAs: 'cdkAccordion',
 })
 export class CdkAccordion {
