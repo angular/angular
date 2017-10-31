@@ -84,12 +84,12 @@ export class CdkHeaderRowDef extends BaseRowDef {
 })
 export class CdkRowDef<T> extends BaseRowDef {
   /**
-   * Function that should return true if this row template should be used for the provided row data
-   * and index. If left undefined, this row will be considered the default row template to use when
-   * no other when functions return true for the data.
+   * Function that should return true if this row template should be used for the provided index
+   * and row data. If left undefined, this row will be considered the default row template to use
+   * when no other when functions return true for the data.
    * For every row, there must be at least one when function that passes or an undefined to default.
    */
-  when: (rowData: T, index: number) => boolean;
+  when: (index: number, rowData: T) => boolean;
 
   // TODO(andrewseguin): Add an input for providing a switch function to determine
   //   if this template should be used.

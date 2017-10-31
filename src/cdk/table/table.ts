@@ -340,7 +340,7 @@ export class CdkTable<T> implements CollectionViewer {
   _getRowDef(data: T, i: number): CdkRowDef<T> {
     if (this._rowDefs.length == 1) { return this._rowDefs.first; }
 
-    let rowDef = this._rowDefs.find(def => def.when && def.when(data, i)) || this._defaultRowDef;
+    let rowDef = this._rowDefs.find(def => def.when && def.when(i, data)) || this._defaultRowDef;
     if (!rowDef) { throw getTableMissingMatchingRowDefError(); }
 
     return rowDef;

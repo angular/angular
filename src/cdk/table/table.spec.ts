@@ -750,8 +750,8 @@ class BooleanRowCdkTableApp {
 class WhenRowCdkTableApp {
   dataSource: FakeDataSource = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
-  isIndex1 = (_rowData: TestData, index: number) => index == 1;
-  hasC3 = (rowData: TestData) => rowData.c == 'c_3';
+  isIndex1 = (index: number, _rowData: TestData) => index == 1;
+  hasC3 = (_index: number, rowData: TestData) => rowData.c == 'c_3';
 
   constructor() { this.dataSource.addData(); }
 
@@ -795,8 +795,8 @@ class WhenRowCdkTableApp {
 class WhenRowWithoutDefaultCdkTableApp {
   dataSource: FakeDataSource = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
-  isIndex1 = (_rowData: TestData, index: number) => index == 1;
-  hasC3 = (rowData: TestData) => rowData.c == 'c_3';
+  isIndex1 = (index: number, _rowData: TestData) => index == 1;
+  hasC3 = (_index: number, rowData: TestData) => rowData.c == 'c_3';
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
 }
@@ -839,8 +839,7 @@ class WhenRowWithoutDefaultCdkTableApp {
 class WhenRowMultipleDefaultsCdkTableApp {
   dataSource: FakeDataSource = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
-  isIndex1 = (_rowData: TestData, index: number) => index == 1;
-  hasC3 = (rowData: TestData) => rowData.c == 'c_3';
+  hasC3 = (_index: number, rowData: TestData) => rowData.c == 'c_3';
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
 }

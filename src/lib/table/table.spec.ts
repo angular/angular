@@ -285,7 +285,7 @@ class FakeDataSource extends DataSource<TestData> {
 class MatTableApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
-  isFourthRow = (_rowData: TestData, i: number) => i == 3;
+  isFourthRow = (i: number, _rowData: TestData) => i == 3;
 
   @ViewChild(MatTable) table: MatTable<TestData>;
 }
@@ -311,7 +311,7 @@ class MatTableApp {
 })
 class MatTableWithWhenRowApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
-  isFourthRow = (_rowData: TestData, i: number) => i == 3;
+  isFourthRow = (i: number, _rowData: TestData) => i == 3;
 
   @ViewChild(MatTable) table: MatTable<TestData>;
 }

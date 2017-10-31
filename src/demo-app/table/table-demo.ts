@@ -45,7 +45,7 @@ export class TableDemo {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  isDetailRow = (row: DetailRow|UserData) => row.hasOwnProperty('detailRow');
+  isDetailRow = (_index: number, row: DetailRow|UserData) => row.hasOwnProperty('detailRow');
 
   @ViewChild('paginatorForDataSource') paginatorForDataSource: MatPaginator;
   @ViewChild('sortForDataSource') sortForDataSource: MatSort;
