@@ -1,3 +1,16 @@
+<a name="5.0.0-rc.9"></a>
+# [5.0.0-rc.9](https://github.com/angular/angular/compare/5.0.0-rc.8...5.0.0-rc.9) (2017-10-31)
+
+
+### Bug Fixes
+
+* **compiler:** always use relative paths to refer to generated code ([fd37f3f](https://github.com/angular/angular/commit/fd37f3f)), closes [#20031](https://github.com/angular/angular/issues/20031)
+* **compiler:** re-export less symbols in `.ngfactory.ts` files ([#19884](https://github.com/angular/angular/issues/19884)) ([e3a16ed](https://github.com/angular/angular/commit/e3a16ed)), closes [#19883](https://github.com/angular/angular/issues/19883)
+* **compiler:** report errors properly in G3 in certain conditions ([#20041](https://github.com/angular/angular/issues/20041)) ([de24d54](https://github.com/angular/angular/commit/de24d54))
+* **core** add missing globals from each rollup configuration ([#20028](https://github.com/angular/angular/issues/20028)) ([812786f](https://github.com/angular/angular/commit/812786f))
+
+
+
 <a name="5.0.0-rc.8"></a>
 # [5.0.0-rc.8](https://github.com/angular/angular/compare/5.0.0-rc.7...5.0.0-rc.8) (2017-10-28)
 
