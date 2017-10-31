@@ -34,6 +34,10 @@ const sourceFilePathBlacklist = [
   // exceptions but we simply ignore those files from this rule.
   /[/\\]packages[/\\]language-service[/\\]/,
 
+  // Compiler CLI is never part of a browser (there's a browser-rollup but it's managed
+  // separately.
+  /[/\\]packages[/\\]compiler-cli[/\\]/,
+
   // service-worker is a special package that has more than one rollup config. It confuses
   // this lint rule and we simply ignore those files.
   /[/\\]packages[/\\]service-worker[/\\]/,
@@ -61,11 +65,26 @@ function _pathShouldBeLinted(path: string) {
 }
 
 
+/**
+ *                  .--.         _________________
+ *  {\             / q {\      / globalGlobalMap /
+ *  { `\           \ (-(~`   <__________________/
+ * { '.{`\          \ \ )
+ * {'-{ ' \  .-""'-. \ \
+ * {._{'.' \/       '.) \
+ * {_.{.   {`            |
+ * {._{ ' {   ;'-=-.     |
+ *  {-.{.' {  ';-=-.`    /
+ *   {._.{.;    '-=-   .'
+ *    {_.-' `'.__  _,-'
+ *             |||`
+ *            .='==,
+ */
 interface RollupMatchInfo {
   filePath: string;
   globals: {[packageName: string]: string};
 }
-const rollupConfigMap = new Map<string, RollupMatchInfo>();
+const globalGlobalRollupMap = new Map<string, RollupMatchInfo>();
 
 
 export class Rule extends AbstractRule {
@@ -85,9 +104,9 @@ export class Rule extends AbstractRule {
     let match: RollupMatchInfo;
 
     while (p.startsWith(process.cwd())) {
-      if (rollupConfigMap.has(p)) {
+      if (globalGlobalRollupMap.has(p)) {
         // We already resolved for this directory, just return it.
-        match = rollupConfigMap.get(p);
+        match = globalGlobalRollupMap.get(p);
         break;
       }
 
@@ -95,12 +114,12 @@ export class Rule extends AbstractRule {
       const maybeRollupPath = allFiles.find(x => _isRollupPath(path.join(p, x)));
       if (maybeRollupPath) {
         const rollupFilePath = path.join(p, maybeRollupPath);
-        const rollupConfig = require(rollupFilePath).default;
+        const rollupConfig = require(rollupFilePath);
         match = {filePath: rollupFilePath, globals: rollupConfig && rollupConfig.globals};
 
         // Update all paths that we checked along the way.
-        checkedPaths.forEach(path => rollupConfigMap.set(path, match));
-        rollupConfigMap.set(rollupFilePath, match);
+        checkedPaths.forEach(path => globalGlobalRollupMap.set(path, match));
+        globalGlobalRollupMap.set(rollupFilePath, match);
         break;
       }
 
