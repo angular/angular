@@ -317,37 +317,96 @@ export function main() {
       expect(summaries[1].metadata).toBe('someString');
     });
 
-    it('should not create "importAs" names for reexported types in libraries', () => {
+    it('should not create "importAs" names for ctor arguments which are types of reexported classes in libraries',
+       () => {
+         init();
+         const externalSerialized = serializeSummaries(
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
+             [
+               {
+                 symbol: symbolCache.get('/tmp/external.ts', 'type'),
+                 metadata: {__symbolic: 'interface'}
+               },
+               {
+                 symbol: symbolCache.get('/tmp/external.ts', 'value'),
+                 metadata: {__symbolic: 'class'}
+               },
+               {
+                 symbol: symbolCache.get('/tmp/external.ts', 'reexportClass'),
+                 metadata: {
+                   __symbolic: 'class',
+                   'members': {
+                     '__ctor__': [{
+                       '__symbolic': 'constructor',
+                       'parameters': [
+                         symbolCache.get('/tmp/external.ts', 'type'),
+                         symbolCache.get('/tmp/external.ts', 'value'),
+                       ]
+                     }]
+                   }
+
+                 }
+               },
+             ],
+             []);
+         expect(externalSerialized.exportAs).toEqual([]);
+         init({
+           '/tmp/external.ngsummary.json': externalSerialized.json,
+         });
+         const serialized = serializeSummaries(
+             'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
+               symbol: symbolCache.get('/tmp/test.ts', 'mainClass'),
+               metadata: symbolCache.get('/tmp/external.d.ts', 'reexportClass'),
+             }],
+             []);
+         const importAs =
+             deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json)
+                 .importAs;
+         expect(importAs).toEqual([
+           {
+             symbol: symbolCache.get('/tmp/external.d.ts', 'reexportClass'),
+             importAs: symbolCache.get('/tmp/test.d.ts', 'mainClass'),
+           },
+           {
+             symbol: symbolCache.get('/tmp/external.d.ts', 'value'),
+             importAs: symbolCache.get('someFile.ngfactory.d.ts', 'value_3'),
+           }
+         ]);
+       });
+
+    it('should use existing reexports for "importAs" for symbols of libraries', () => {
       init();
       const externalSerialized = serializeSummaries(
           'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
           [
+            {symbol: symbolCache.get('/tmp/external.ts', 'value'), metadata: 'aValue'},
             {
-              symbol: symbolCache.get('/tmp/external.ts', 'type'),
-              metadata: {__symbolic: 'interface'}
-            },
-            {
-              symbol: symbolCache.get('/tmp/external.ts', 'reexportType'),
-              metadata: symbolCache.get('/tmp/external.ts', 'type')
+              symbol: symbolCache.get('/tmp/external.ts', 'reexportValue'),
+              metadata: symbolCache.get('/tmp/external.ts', 'value')
             },
           ],
           []);
+      expect(externalSerialized.exportAs).toEqual([]);
       init({
         '/tmp/external.ngsummary.json': externalSerialized.json,
       });
       const serialized = serializeSummaries(
           'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
-            symbol: symbolCache.get('/tmp/test.ts', 'mainType'),
-            metadata: symbolCache.get('/tmp/external.d.ts', 'reexportType'),
+            symbol: symbolCache.get('/tmp/test.ts', 'mainValue'),
+            metadata: symbolCache.get('/tmp/external.d.ts', 'reexportValue'),
           }],
           []);
+      expect(serialized.exportAs).toEqual([]);
       const importAs =
           deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json)
               .importAs;
-      expect(importAs).toEqual([]);
+      expect(importAs).toEqual([{
+        symbol: symbolCache.get('/tmp/external.d.ts', 'value'),
+        importAs: symbolCache.get('/tmp/test.d.ts', 'mainValue'),
+      }]);
     });
 
-    it('should create "importAs" names for non source symbols', () => {
+    it('should create reexports in the ngfactory for symbols of libraries', () => {
       init();
       const serialized = serializeSummaries(
           'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
@@ -366,9 +425,10 @@ export function main() {
       const deserialized =
           deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json);
       // Note: no entry for the symbol with members!
-      expect(deserialized.importAs).toEqual([
-        {symbol: symbolCache.get('/tmp/external.d.ts', 'lib'), importAs: 'lib_1'}
-      ]);
+      expect(deserialized.importAs).toEqual([{
+        symbol: symbolCache.get('/tmp/external.d.ts', 'lib'),
+        importAs: symbolCache.get('someFile.ngfactory.d.ts', 'lib_1')
+      }]);
     });
   });
 }
