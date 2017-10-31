@@ -664,16 +664,18 @@ export class CompileMetadataResolver {
   }
 
   private _getTypeDescriptor(type: Type): string {
-    if (this.isDirective(type)) {
-      return 'directive';
-    }
+    if (isValidType(type)) {
+      if (this.isDirective(type)) {
+        return 'directive';
+      }
 
-    if (this.isPipe(type)) {
-      return 'pipe';
-    }
+      if (this.isPipe(type)) {
+        return 'pipe';
+      }
 
-    if (this.isNgModule(type)) {
-      return 'module';
+      if (this.isNgModule(type)) {
+        return 'module';
+      }
     }
 
     if ((type as any).provide) {
