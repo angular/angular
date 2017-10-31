@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
+const resolve = require('rollup-plugin-node-resolve');
 
-export default {
+module.exports = {
   entry: '../../dist/all/@angular/service-worker/cli-custom/main.js',
   dest: '../../dist/packages-dist/service-worker/ngsw-config-tmp.js',
   format: 'iife',
