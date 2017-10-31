@@ -2,9 +2,9 @@
 
 Angular is a platform and framework for building client applications in HTML and
 either JavaScript or a language like TypeScript that compiles to JavaScript.
-Angular is itself written in TypeScript. It implements core and optional functionality as a set of TypeScript libraries that you import into your applications.
+Angular is itself written in TypeScript. It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
 
-The basic building blocks of an Angular application are _NgModules_, which collect _components_, and _services_ into functional sets. An Angular app is defined by a set of modules. An app always has at least a _root module_, and typically has many more _feature modules_.
+The basic building blocks of an Angular application are _NgModules_, which collect _components_ and _services_ into functional sets. An Angular app is defined by a set of modules. An app always has at least a _root module_, and typically has many more _feature modules_.
 
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
 * Services provide specific functionality not directly related to views, which can be *injected* into components as *dependencies*, making your code even more modular and efficient.
@@ -20,7 +20,7 @@ Angular is highly modular. It defines the `NgModule`, which differs from and com
 Every Angular application has at least one component, the *root component* that connects a component hierarchy with the containing module. Each component defines a class that contains application data and logic, and includes an HTML *template* that defines a view to be displayed in a target environment.
 
 For data or logic that is not associated with a specific view, or that you want to share across components,
-you create a service class. Services can be *injected* into client components as a dependency. Dependency injection lets you keep your component classes lean and efficient. They don't fetch data from the server, validate user input, or log directly to the console; they delegate such tasks to services.
+you create a service class. Services can be *injected* into client components as a dependency. *Dependency injection* (or DI) lets you keep your component classes lean and efficient. They don't fetch data from the server, validate user input, or log directly to the console; they delegate such tasks to services.
 
 **Templates, directives, and data binding**
 
@@ -34,7 +34,9 @@ Before a view is displayed, Angular evaluates the directives and resolves the bi
 
 **Decorators and metadata**
 
-Metadata tells Angular how to process a class. In TypeScript, you attach metadata by using a **decorator**. It is the metadata that makes a class into a component, for example, or into an injectable service or something else. The `@Component` decorator identifies the class immediately below it as a component class.
+Metadata tells Angular how to process a class. In JavaScript, you attach metadata by using a **decorator**. Decorators are functions that modify JavaScript classes. <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">Learn more about decorators on the web</a> .
+
+ Angular has many decorators that attach metadata to classes so that it knows what those classes mean and how they should work. It is the metadata that makes a class into a component, for example, or into an injectable service, or something else. For example, the `@Component` decorator identifies the class immediately below it as a component class. The `@Injectable` decorator identifies a class as a re-usable service class.
 
 <hr/>
 
@@ -45,8 +47,8 @@ Each of the big pieces introduced here is further explained below. The following
 </figure>
 
 * The dependency **Injector** provides services to a component.
-* Directives and binding markup in the template associated with a component modify views based on program data and logic.
-* A **Decorator** associated with a component or directive adds *metadata*. Decorators are functions that modify JavaScript classes. Angular has many decorators that attach metadata to classes so that it knows what those classes mean and how they should work. <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">Learn more about decorators on the web</a> .
+* Directives and binding markup in a component's template modify views based on program data and logic.
+* A **Decorator** associated with a component or directive adds *metadata*.
 
 Together, a component, template, and metadata define an Angular view.
 
@@ -62,7 +64,7 @@ Together, a component, template, and metadata define an Angular view.
 
 <img src="generated/images/guide/architecture/module.png" alt="Component" class="left">
 
-Angular apps are modular and Angular has its own modularity system called _NgModules_. An NgModule is a container for a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. It can contain components, services, and other code files whose scope is defined by the containing module. It can import functionality that is exported from other modules, and export selected functionality for use by other modules.
+Angular apps are modular and Angular has its own modularity system called _NgModules_. An NgModule is a container for a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. It can contain components, service providers, and other code files whose scope is defined by the containing module. It can import functionality that is exported from other modules, and export selected functionality for use by other modules.
 
  Every Angular app has at least one NgModule class, [the _root module_](guide/bootstrapping "Bootstrapping"), which is conventionally named `AppModule` and resides in a file named `app.module.ts`. You launch your app by *bootstrapping* the root module. While a small application might have only one module, most apps have many more _feature modules_.  
 
