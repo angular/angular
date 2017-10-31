@@ -78,6 +78,15 @@ describe('ng program', () => {
     return {emitResult, program};
   }
 
+  function resolveFiles(rootNames: string[]) {
+    const preOptions = testSupport.createCompilerOptions();
+    const preHost = ts.createCompilerHost(preOptions);
+    // don't resolve symlinks
+    preHost.realpath = (f) => f;
+    const preProgram = ts.createProgram(rootNames, preOptions, preHost);
+    return preProgram.getSourceFiles().map(sf => sf.fileName);
+  }
+
   describe('reuse of old program', () => {
     it('should reuse generated code for libraries from old programs', () => {
       compileLib('lib');
@@ -373,13 +382,7 @@ describe('ng program', () => {
     testSupport.writeFiles({
       'src/main.ts': createModuleAndCompSource('main'),
     });
-    const preOptions = testSupport.createCompilerOptions();
-    const preHost = ts.createCompilerHost(preOptions);
-    // don't resolve symlinks
-    preHost.realpath = (f) => f;
-    const preProgram =
-        ts.createProgram([path.resolve(testSupport.basePath, 'src/main.ts')], preOptions, preHost);
-    const allRootNames = preProgram.getSourceFiles().map(sf => sf.fileName);
+    const allRootNames = resolveFiles([path.resolve(testSupport.basePath, 'src/main.ts')]);
 
     // now do the actual test with noResolve
     const program = compile(undefined, {noResolve: true}, allRootNames);
@@ -932,23 +935,41 @@ describe('ng program', () => {
       });
     });
 
-    it('should be able to use a program with structural errors as oldProgram', () => {
-      testSupport.write('src/index.ts', fileWithStructuralError);
+    it('should be able report structural errors with noResolve:true and generateCodeForLibraries:false ' +
+           'even if getSourceFile throws for non existent files',
+       () => {
+         testSupport.write('src/index.ts', fileWithGoodContent);
 
-      const options = testSupport.createCompilerOptions();
-      const host = ng.createCompilerHost({options});
-      const program1 = ng.createProgram(
-          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
-      expect(program1.getNgStructuralDiagnostics().length).toBe(1);
+         // compile angular and produce .ngsummary.json / ngfactory.d.ts files
+         compile();
 
-      testSupport.write('src/index.ts', fileWithGoodContent);
-      const program2 = ng.createProgram({
-        rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
-        options,
-        host,
-        oldProgram: program1
-      });
-      expectNoDiagnosticsInProgram(options, program2);
-    });
+         testSupport.write('src/ok.ts', fileWithGoodContent);
+         testSupport.write('src/error.ts', fileWithStructuralError);
+
+         // Make sure the ok.ts file is before the error.ts file,
+         // so we added a .ngfactory.ts file for it.
+         const allRootNames = resolveFiles(
+             ['src/ok.ts', 'src/error.ts'].map(fn => path.resolve(testSupport.basePath, fn)));
+
+         const options = testSupport.createCompilerOptions({
+           noResolve: true,
+           generateCodeForLibraries: false,
+         });
+         const host = ng.createCompilerHost({options});
+         const originalGetSourceFile = host.getSourceFile;
+         host.getSourceFile =
+             (fileName: string, languageVersion: ts.ScriptTarget,
+              onError?: ((message: string) => void) | undefined): ts.SourceFile => {
+               // We should never try to load .ngfactory.ts files
+               if (fileName.match(/\.ngfactory\.ts$/)) {
+                 throw new Error(`Non existent ngfactory file: ` + fileName);
+               }
+               return originalGetSourceFile.call(host, fileName, languageVersion, onError);
+             };
+         const program = ng.createProgram({rootNames: allRootNames, options, host});
+         const structuralErrors = program.getNgStructuralDiagnostics();
+         expect(structuralErrors.length).toBe(1);
+         expect(structuralErrors[0].messageText).toContain('Function calls are not supported.');
+       });
   });
 });
