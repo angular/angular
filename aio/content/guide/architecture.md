@@ -4,16 +4,16 @@ Angular is a platform and framework for building client applications in HTML and
 either JavaScript or a language like TypeScript that compiles to JavaScript.
 Angular is itself written in TypeScript. It implements core and optional functionality as a set of TypeScript libraries that you import into your applications.
 
-The basic building blocks of an Angular application are _NgModules_, which collect _components_, and _services_ into functional sets. An Angular application is defined by a set of modules. An application always has at least a _root module_, and typically has many more _feature modules_.
+The basic building blocks of an Angular application are _NgModules_, which collect _components_, and _services_ into functional sets. An Angular app is defined by a set of modules. An app always has at least a _root module_, and typically has many more _feature modules_.
 
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
 * Services provide specific functionality not directly related to views, which can be *injected* into components as *dependencies*, making your code even more modular and efficient.
 
-Both components and services are simply classes, with *metadata* that controls how Angualar uses them. A component class is also associated with a *template* that defines its view. The template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
+Both components and services are simply classes, with *metadata* that controls how Angular uses them. A component class is also associated with a *template* that defines its view. The template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
 
 **Modules**
 
-Angular is modular. It defines the `NgModule`, which differs from and complements the JavaScript module. An NgModule declares and serves as a manifest for a block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. An NgModule collects *components*, *services*, and related code into functional units. NgModules can import functionality from other NgModules, and allow their own functionality to be exported and used by other NgModules.
+Angular is highly modular. It defines the `NgModule`, which differs from and complements the JavaScript module. An Angular module declares and serves as a manifest for a block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. An Angular module collects *components*, *services*, and related code into functional units. NgModules can import functionality from other NgModules, and allow their own functionality to be exported and used by other NgModules.
 
 **Components and injectable services**
 
@@ -30,7 +30,7 @@ Template *directives* provide program logic, and *binding markup* connects your 
 * *Event binding* lets your app respond to user input in the target environment by updating your application data.
 * *Property binding* lets you interpolate values that are computed from your application data into the HTML.  
 
-Before a view is displayed, Angular evaluates the directives in the template to modify the HTML elements and the DOM according to your program data and logic.
+Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the HTML elements and the DOM according to your program data and logic. Angular support *two-way data binding*, meaning that changes in the DOM, such as user choices, can also be reflected back into your program data.
 
 **Decorators and metadata**
 
@@ -170,7 +170,7 @@ Your app can take action at each moment in this lifecycle through optional [life
 
 The `@Component` decorator identifies the class immediately below it as a component class, and specifies its metadata. The metadata for a component tells Angular where to get the major building blocks it needs to create and present the component and its view.
 
-Any time you define a class, you must add metadata to it so that Angular knows how it is meant to be used. For example, the `@Injectable` decorator tell Angular that a class is meant to be used as an injectable service. `@Input`, and `@Output` are some other popular decorators.
+Any time you define a class, you must add metadata to it so that Angular knows how it is meant to be used. For example, the `@Injectable` decorator tell Angular that a class is meant to be used as an injectable service.
 
 <br class="clear">
 
@@ -225,10 +225,8 @@ Without a framework, you would be responsible for pushing data values into the H
 into actions and value updates. Writing such push/pull logic by hand is tedious, error-prone, and a nightmare to
 read as any experienced jQuery programmer can attest.
 
-Angular supports **data binding**, a mechanism for coordinating parts of a template with parts of a component.
-Add binding markup to the template HTML to tell Angular how to connect both sides.
-
-The following diagram shows the four forms of data binding syntax. Each form has a direction &mdash; to the DOM, from the DOM, or in both directions.
+Angular supports **two-way data binding**, a mechanism for coordinating parts of a template with parts of a component.
+Add binding markup to the template HTML to tell Angular how to connect both sides. The following diagram shows the four forms of data binding markup. Each form has a direction &mdash; to the DOM, from the DOM, or in both directions.
 
 <img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" class="left">
 
@@ -310,28 +308,23 @@ You can also write your own directives. Components such as `HeroListComponent` a
 
 <hr/>
 
-## Injectable Services
+## Services
 
 <img src="generated/images/guide/architecture/service.png" alt="Service" class="left">
 
-_Service_ is a broad category encompassing any value, function, or feature that your application needs.
-
-Almost anything can be a service.
-A service is typically a class with a narrow, well-defined purpose. It should do something specific and do it well.
+_Service_ is a broad category encompassing any value, function, or feature that an app needs. A service is typically a class with a narrow, well-defined purpose. It should do something specific and do it well.    
 <br class="clear">
 
-Examples include:
+Angular distinguishes components from services in order to increase modularity and reusability.
 
-* logging service
-* data service
-* message bus
-* tax calculator
-* application configuration
+* By separating a component's view-related functionality from other kinds of processing, you can make your component classes lean and efficient. Ideally, a component's job is to enable the user experience and nothing more.  It should present properties and methods for data binding, in order to mediate between the view (rendered by the template) and the application logic (which often includes some notion of a _model_).
 
-There is nothing specifically _Angular_ about services. Angular has no definition of a service.
-There is no service base class, and no place to register a service.
+* A component should not need to define things like how to fetch data from the server, validate user input, or log directly to the console. Instead, it can delegate such tasks to services. By defining that kind of processing task in an injectable service class, you make it available to any component. You can also make your app more adaptable by injecting different providers of the same kind of service, as appropriate in different circumstances.  
 
-Yet services are fundamental to any Angular application. Components are big consumers of services.
+Angular doesn't *enforce* these principles. Angular does help you *follow* these principles by making it easy to factor your
+application logic into services and make those services available to components through *dependency injection*.
+
+### Service examples
 
 Here's an example of a service class that logs to the browser console:
 
@@ -342,90 +335,54 @@ The `HeroService` depends on the `Logger` service and another `BackendService` t
 
 <code-example path="architecture/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (class)" region="class"></code-example>
 
-Services are everywhere.
-
-Component classes should be lean. They don't fetch data from the server,
-validate user input, or log directly to the console.
-They delegate such tasks to services.
-
-A component's job is to enable the user experience and nothing more. It mediates between the view (rendered by the template)
-and the application logic (which often includes some notion of a _model_).
-A good component presents properties and methods for data binding.
-It delegates everything nontrivial to services.
-
-Angular doesn't *enforce* these principles.
-It won't complain if you write a "kitchen sink" component with 3000 lines.
-
-Angular does help you *follow* these principles by making it easy to factor your
-application logic into services and make those services available to components through *dependency injection*.
-
 <hr/>
 
-### Dependency injection
+## Dependency injection
+
+Components consume services; that is, you can *inject* a service into a component, giving the component access to that service class. To define a class as a service in Angular, use the `@Injectable` decorator to provide the metadata that allows Angular to inject it into a component as a *dependency*. Most dependencies are services.
 
 <img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" class="left">
 
-_Dependency injection_ is a way to supply a new instance of a class
-with the fully-formed dependencies it requires. Most dependencies are services.
-Angular uses dependency injection to provide new components with the services they need.
-
 <br class="clear">
 
-Angular can tell which services a component needs by looking at the types of its constructor parameters.
-For example, the constructor of your `HeroListComponent` needs a `HeroService`:
+**Dependency injection** (often called DI) is wired into the Angular framework and used everywhere.
 
+* The *injector* is the main mechanism. You don't have to create an Angular injector. Angular creates an application-wide injector for you during the bootstrap process.
+
+* The injector maintains a *container* of service instances that it has already created, and reuses them if possible.
+
+* A *provider* is a recipe for creating a service -- typically the service class itself. For any service you need in your app, you must register a provider with the app's injector, so that the injector can use it to create new service instances.  
+
+Angular uses dependency injection to provide new components with the services they need.  When Angular creates a new instance of a component class, it determines which services that component needs by looking at the types of its constructor parameters.
+For example, the constructor of `HeroListComponent` needs a `HeroService`:
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 
-When Angular creates a component, it first asks an **injector** for
-the services that the component requires.
-
-An injector maintains a container of service instances that it has previously created.
-If a requested service instance is not in the container, the injector makes one and adds it to the container
-before returning the service to Angular.
-When all requested services have been resolved and returned,
+When Angular needs to create a component instance, it first checks if the injector already has any of the services that the component requires. If a requested service instance does not yet exist, the injector makes one using the registered provider, and adds it to the injector before returning the service to Angular. When all requested services have been resolved and returned,
 Angular can call the component's constructor with those services as arguments.
-This is *dependency injection*.
 
-The process of `HeroService` injection looks a bit like this:
+The process of `HeroService` injection looks something like this:
 
 <figure>
   <img src="generated/images/guide/architecture/injector-injects.png" alt="Service">
 </figure>
 
-If the injector doesn't have a `HeroService`, how does it know how to make one?
+### Providing services
 
-In brief, you must have previously registered a **provider** of the `HeroService` with the injector.
-A provider is something that can create or return a service, typically the service class itself.
+You must register a **provider** of any service you are going to use. You can register providers in modules or in components.
 
-You can register providers in modules or in components.
-
-In general, add providers to the [root module](guide/architecture#modules) so that
-the same instance of a service is available everywhere.
+* When you add providers to the [root module](guide/architecture#modules), the same instance of a service is available to all components in your app.
 
 <code-example path="architecture/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (module providers)" region="providers"></code-example>
 
-Alternatively, register at a component level in the `providers` property of the `@Component` metadata:
+* When you register a provider at the component level, you get a new instance of the
+service with each new instance of that component. At the component level, register a service provider in the `providers` property of the `@Component` metadata:
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
-
-Registering at a component level means you get a new instance of the
-service with each new instance of that component.
 
 <!-- We've vastly oversimplified dependency injection for this overview.
 The full story is in the [dependency injection](guide/dependency-injection) page. -->
 
-Points to remember about dependency injection:
-
-* Dependency injection is wired into the Angular framework and used everywhere.
-
-* The *injector* is the main mechanism.
-  * An injector maintains a *container* of service instances that it created.
-  * An injector can create a new service instance from a *provider*.
-
-* A *provider* is a recipe for creating a service.
-
-* Register *providers* with injectors.
 
 <hr/>
 
@@ -443,10 +400,7 @@ You've learned the basics about the eight main building blocks of an Angular app
 * [Dependency injection](guide/architecture#dependency-injection)
 
 That's a foundation for everything else in an Angular application, and it's more than enough to get going.
-But it doesn't include everything you need to know.
-
-Here is a brief, alphabetical list of other important Angular features and services.
-Most of them are covered in this documentation (or soon will be).
+But it doesn't include everything you need to know. Here is a brief, alphabetical list of other important Angular features and services. Most of them are covered in this documentation (or soon will be).
 
 > [**Animations**](guide/animations): Animate component behavior
 without deep knowledge of animation techniques or CSS with Angular's animation library.
