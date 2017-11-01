@@ -685,6 +685,9 @@ export interface PipeTransform {
 }
 
 /** @experimental */
+export declare const platform: PlatformRef;
+
+/** @experimental */
 export declare const PLATFORM_ID: InjectionToken<Object>;
 
 /** @experimental */
