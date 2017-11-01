@@ -290,7 +290,7 @@ If a library exports something that the application doesn't import, a tree shaki
 Tree shaking was popularized by
 <a href="http://rollupjs.org/" title="Rollup">Rollup</a>, a popular tool with an ecosystem of
 plugins for bundling, minification, and uglification.
-Learn more about tree shaking and dead code elmination in
+Learn more about tree shaking and dead code elimination in
 <a href="https://medium.com/@Rich_Harris/tree-shaking-versus-dead-code-elimination-d3765df85c80#.15ih9cyvl" title="Tree-shaking and Dead Code Elimination">
 this post</a> by rollup-creator, Rich Harris.
 
