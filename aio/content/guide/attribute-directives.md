@@ -171,7 +171,7 @@ element that hosts an attribute directive, the `<p>` in this case.
 
 <div class="l-sub-section">
 
-Of course you could reach into the DOM with standard JavaScript and and attach event listeners manually.
+Of course you could reach into the DOM with standard JavaScript and attach event listeners manually.
 There are at least three problems with _that_ approach:
 
 1. You have to write the listeners correctly.
