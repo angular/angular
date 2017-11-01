@@ -7,7 +7,7 @@
  */
 
 import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, getDebugContext} from '../errors';
-import {DebugContext} from './types';
+import {DebugContext, ViewState} from './types';
 
 export function expressionChangedAfterItHasBeenCheckedError(
     context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean,
