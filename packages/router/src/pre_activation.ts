@@ -17,6 +17,7 @@ import {last} from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
 import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
+import {_do} from 'rxjs/operator/do';
 
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers, Route} from './config';
 import {ActivationStart, ChildActivationStart, Event} from './events';
@@ -28,7 +29,7 @@ import {
 import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
 import {
   TreeNode, nodeChildrenAsMap, Tree, pathFromRoot, getPath, getNodeFromPath,
-  cloneTree
+  cloneTree, mapTreeAsync
 } from './utils/tree';
 
 class CanActivate {
@@ -69,16 +70,25 @@ export class PreActivation {
         (canDeactivate: boolean) => canDeactivate ? this.runCanActivateChecks() : of (false));
   }
 
+  /**
+   * This method asks resolvers to run, in the sequence of the canActivateChecks. Because we are dealing with a
+   * TreeNode<RouteSnapshot> data structure (this.futureRoot) and an array of CanActivate instances
+   * (this.canActivateChecks), we need to correlate the two data structures together. This is done in the
+   * runResolve method, which takes the current this.futureRoot and the current CanActivate.route (a RouteSnapshot).
+   * The runResolve method will map to a new TreeNode<RouteSnapshot>, which needs to be set into this.futureRoot
+   * before the next execution of runResolve. Therefore, this method uses concatMap on each CanActivate check,
+   * then an observable$.do call to cause the side effect of resetting this.futureRoot.
+   */
   resolveData(): Observable<TreeNode<RouteSnapshot>> {
-    // TODO: cloning doesn't work as === check is busted
-    // implement tree.map instead of cloning
-    const clonedRoot = cloneTree(this.futureRoot, v => ({...v, data: {...v.data}}));
-    if (!this.isActivating()) return of (clonedRoot);
-
+    if (!this.isActivating()) return of (this.futureRoot);
     const checks$ = from(this.canActivateChecks);
-    const runningChecks$ =
-        concatMap.call(checks$, (check: CanActivate) => this.runResolve(clonedRoot, check.route));
-    return map.call(reduce.call(runningChecks$, (_: any, __: any) => _), () => clonedRoot);
+    const runningChecks$ = concatMap.call(checks$, (check: CanActivate) => {
+      const tree$ = this.runResolve(this.futureRoot, check.route);
+      return _do.call(tree$, (tree: TreeNode<RouteSnapshot>) => {
+        this.futureRoot = tree
+      });
+    });
+    return reduce.call(runningChecks$, ((acc: any, tree: TreeNode<RouteSnapshot>) => this.futureRoot = tree));
   }
 
   isDeactivating(): boolean { return this.canDeactivateChecks.length !== 0; }
@@ -124,14 +134,16 @@ export class PreActivation {
     // reusing the node
     if (curr && futureConfig === currConfig) {
       const shouldRunGuardsAndResolvers = this.shouldRunGuardsAndResolvers(
-          curr, future, futureConfig !.runGuardsAndResolvers);
+        curr, future, futureConfig !.runGuardsAndResolvers);
       if (shouldRunGuardsAndResolvers) {
         this.canActivateChecks.push(new CanActivate(futurePath));
       } else {
         // we need to set the data
         future.data = curr.data;
-        // TODO: Fix
-        // future._resolvedData = curr._resolvedData;
+        const legacyNodeCurr = getLegacySnapshot(this.currRoot, curr, this.legacySnapshots.curr._root);
+        const legacyNodeFuture = getLegacySnapshot(this.futureRoot, future, this.legacySnapshots.future._root);
+        legacyNodeFuture.data =  legacyNodeCurr.data;
+        legacyNodeFuture._resolvedData =  legacyNodeCurr._resolvedData;
       }
 
       // If we have a component, we need to go through an outlet.
@@ -327,16 +339,19 @@ export class PreActivation {
     return every.call(canDeactivate$, (result: any) => result === true);
   }
 
-  private runResolve(root: TreeNode<RouteSnapshot>, node: RouteSnapshot): Observable<any> {
-    const config = getConfig(node.configPath, this.routes);
-    const resolve = config && config.resolve ? config.resolve : {};
-    const legacyNode = getLegacySnapshot(root, node, this.legacySnapshots.future._root);
+  private runResolve(root: TreeNode<RouteSnapshot>, snapshot: RouteSnapshot): Observable<TreeNode<RouteSnapshot>> {
+    return mapTreeAsync(root, currSnapshot => {
+      if (currSnapshot !== snapshot) return of (currSnapshot);
 
-    return map.call(this.resolveNode(resolve, root, node), (resolvedData: any): any => {
-      // local mutation (the object is created by PreActivation and mutated before return)
-      node.data = {...node.data, ...resolvedData};
-      legacyNode._resolvedData = resolvedData;
-      legacyNode.data = {...legacyNode.data, ...inheritedResolve(legacyNode)};
+      const config = getConfig(currSnapshot.configPath, this.routes);
+      const resolve = config && config.resolve ? config.resolve : {};
+      const legacyNode = getLegacySnapshot(root, currSnapshot, this.legacySnapshots.future._root);
+
+      return map.call(this.resolveNode(resolve, root, currSnapshot), (resolvedData: any): any => {
+        legacyNode._resolvedData = resolvedData;
+        legacyNode.data = {...legacyNode.data, ...inheritedResolve(legacyNode)};
+        return {...currSnapshot, data: {...snapshot.data, ...resolvedData}};
+      });
     });
   }
 

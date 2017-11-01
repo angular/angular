@@ -467,9 +467,9 @@ describe('Router', () => {
       });
     });
 
-    describe('resolve', () => {
+    fdescribe('resolve', () => {
 
-      fit('should resolve data', () => {
+      it('should resolve data', () => {
         /**
          * R  -->  R
          *          \
@@ -480,68 +480,104 @@ describe('Router', () => {
         const futureState = {value: empty.value, children: [{value: n, children: []}]};
 
         checkResolveData(futureState, empty, routes, inj, (root) => {
-          console.log('root', root);
           expect(root.children[0]!.value.data).toEqual({data: 'resolver_value'});
         });
       });
 
-      // it('should wait for the parent resolve to complete', () => {
-      //   /**
-      //    * R  -->  R
-      //    *          \
-      //    *           null (resolve: parentResolve)
-      //    *            \
-      //    *             b (resolve: childResolve)
-      //    */
-      //   const parentResolve = {data: 'resolver'};
-      //   const childResolve = {};
-      //
-      //   const parent = createActivatedRouteSnapshot({component: null !, resolve: parentResolve});
-      //   const child = createActivatedRouteSnapshot({component: 'b', resolve: childResolve});
-      //
-      //   const s = new RouterStateSnapshot(
-      //       'url', {value: empty.root, children: [{value: parent, children: [{value: child, children: []}]}]});
-      //
-      //   const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
-      //
-      //   checkResolveData(s, empty, inj, () => {
-      //     expect(s.root.firstChild !.firstChild !.data).toEqual({data: 'resolver_value'});
-      //   });
-      // });
+      it('should resolve parent and child separately, merging into RouterStateSnapshot', () => {
+        /**
+         * R  -->  R
+         *          \
+         *           a (resolve: {data: 'resolver'})
+         *            \
+         *             b (resolve: {childData: 'child'})
+         */
+        const routes = [{resolve: {data: 'resolver'}, children: [{resolve: {childData: 'child'}}]}];
+        const n = createRouteSnapshot({configPath: [0]});
+        const n2 = createRouteSnapshot({configPath: [0, 0]});
+        const futureState = {value: empty.value, children: [{value: n, children: [{value: n2, children: []}]}]};
 
-    //   it('should copy over data when creating a snapshot', () => {
-    //     /**
-    //      * R  -->  R         -->         R
-    //      *          \                     \
-    //      *           n1 (resolve: r1)      n21 (resolve: r1)
-    //      *                                  \
-    //      *                                   n22 (resolve: r2)
-    //      */
-    //     const r1 = {data: 'resolver1'};
-    //     const r2 = {data: 'resolver2'};
+        checkResolveData(futureState, empty, routes, inj, (root, legacySnapshot) => {
+          expect(legacySnapshot.root.firstChild!.firstChild!.data).toEqual({data: 'resolver_value', childData: 'child_value'});
+          expect(root.children[0]!.value.data).toEqual({data: 'resolver_value'});
+          expect(root.children[0]!.children[0]!.value.data).toEqual({childData: 'child_value'});
+        });
+      });
 
-    //     const n1 = createActivatedRouteSnapshot({component: 'a', resolve: r1});
-    //     const s1 = new RouterStateSnapshot('url', {value: empty.root, children: [{value: n1, children: []}]});
-    //     checkResolveData(s1, empty, inj, () => {});
+      it('should wait for the parent resolve to complete', () => {
+        /**
+         * R  -->  R
+         *          \
+         *           null (resolve: parentResolve)
+         *            \
+         *             b (resolve: childResolve)
+         */
+        const parentResolve = {data: 'resolver'};
+        const childResolve = {};
+        const routes = [{resolve: parentResolve, children: [{resolve: childResolve}]}];
 
-    //     const n21 = createActivatedRouteSnapshot({component: 'a', resolve: r1});
-    //     const n22 = createActivatedRouteSnapshot({component: 'b', resolve: r2});
-    //     const s2 = new RouterStateSnapshot(
-    //         'url', {value: empty.root, children: [{value:n21, children: [{value:n22, children:[]}]}]});
-    //     checkResolveData(s2, s1, inj, () => {
-    //       expect(s2.root.firstChild !.data).toEqual({data: 'resolver1_value'});
-    //       expect(s2.root.firstChild !.firstChild !.data).toEqual({data: 'resolver2_value'});
-    //     });
-    //   });
+        const parent = createRouteSnapshot({configPath: [0]});
+        const child = createRouteSnapshot({configPath: [0, 0]});
+        const futureState = {value: empty.value, children: [{
+          value: parent, children: [{
+            value: child, children: []
+          }]
+        }]};
+
+        // Make an async injector with Promise.resolve
+        const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
+
+        checkResolveData(futureState, empty, routes, inj, (root, legacySnapshot) => {
+          expect(legacySnapshot.root.firstChild!.firstChild!.data).toEqual({data: 'resolver_value'});
+          expect(root.children[0]!.value.data).toEqual({data: 'resolver_value'});
+          expect(root.children[0]!.children[0]!.value.data).toEqual({});
+        });
+      });
+
+      it('should copy over data when creating a snapshot', () => {
+        /**
+         * R  -->  R         -->         R
+         *          \                     \
+         *           n1 (resolve: r1)      n21 (resolve: r1)
+         *                                  \
+         *                                   n22 (resolve: r2)
+         */
+        const r1 = {data: 'resolver1'};
+        const r2 = {data: 'resolver2'};
+        const routes = [{resolve: r1, children: [{resolve: r2}]}];
+
+
+        const n1 = createRouteSnapshot({configPath: [0]});
+        const n21 = createRouteSnapshot({configPath: [0]});
+        const n22 = createRouteSnapshot({configPath: [0, 0]});
+
+        const currState = {value: empty.value, children: [{value: n1, children: []}]};
+        const futureState = {value: empty.value, children: [{value: n21, children: [{value: n22, children: []}]}]};
+
+        checkResolveData(currState, empty, routes, inj, (root, legacySnapshot) => {
+
+          expect(root.children[0]!.value.data).toEqual({data: 'resolver1_value'})
+
+          checkResolveData(futureState, root, routes, inj, (root, legacySnapshot) => {
+            expect(legacySnapshot.root.firstChild !.data).toEqual({data: 'resolver1_value'});
+            expect(legacySnapshot.root.firstChild !.firstChild !.data).toEqual({data: 'resolver2_value'});
+            // expect(root.children[0]!.value.data).toEqual({data: 'resolver1_value'});
+            // expect(root.children[0]!.children[0]!.value.data).toEqual({data: 'resolver2_value'});
+          });
+        });
+      });
     });
   });
 });
 
 function checkResolveData(future: TreeNode<RouteSnapshot>, curr: TreeNode<RouteSnapshot>, routes: Route[], injector: any,
-                          check: (t: TreeNode<RouteSnapshot>) => void): void {
+                          check: (t: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot) => void): void {
   const p = createPreactivation(future, curr, routes, injector);
   p.initialize(new ChildrenOutletContexts());
-  p.resolveData().subscribe(check, (e) => { throw e; });
+
+  p.resolveData().subscribe(
+    (t: TreeNode<RouteSnapshot>) => check(t, (p as any).legacySnapshots.future)
+    , (e) => { throw e; });
 }
 
 function checkGuards(

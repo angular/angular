@@ -1,3 +1,10 @@
+import { Observable } from "rxjs/Observable";
+import { map } from "rxjs/operators/map";
+import { mergeMap } from "rxjs/operators/mergeMap";
+import { pipe } from 'rxjs/util/pipe';
+import { of } from "rxjs/observable/of";
+import { forkJoin } from "rxjs/observable/forkJoin";
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -130,6 +137,25 @@ export function getNodeFromPath<T>(path: number[], node: TreeNode<T>): TreeNode<
   } else {
     return getNodeFromPath(newPath, node.children[path[0]]);
   }
+}
+
+export function mapTree<T>(root: TreeNode<T>, converter: (value: T, node: TreeNode<T>) => T): TreeNode<T> {
+  return {
+    value: converter(root.value, root),
+    children: root.children.map(child => mapTree(child, converter))
+  };
+}
+
+export function mapTreeAsync<T>(root: TreeNode<T>, converter: (value: T, node: TreeNode<T>) => Observable<T>): Observable<TreeNode<T>> {
+  const root$ = of(root);
+  return root$.pipe(
+    mergeMap(x => {
+      const mappedChildren = x.children.map(c => mapTreeAsync(c, converter));
+      const children$ = mappedChildren.length ? forkJoin(...mappedChildren) : of([]);
+      return forkJoin(converter(x.value, x), children$)
+        .pipe(map(([value, children]) => ({value, children})));
+    })
+  )
 }
 
 export interface TreeNode<T> {
