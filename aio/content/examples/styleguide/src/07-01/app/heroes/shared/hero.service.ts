@@ -11,7 +11,7 @@ export class HeroService {
 
   getHeroes() {
     return this.http.get('api/heroes')
-      .map((response: Response) => <Hero[]>response.json().data);
+      .map((response: Response) => <Hero[]>response.json());
   }
 }
 // #enddocregion example
