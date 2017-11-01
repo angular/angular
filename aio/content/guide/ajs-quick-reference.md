@@ -380,7 +380,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       ### ng-href
       <code-example hideCopy format="">
-        &lt;a ng-href="angularDocsUrl">Angular Docs&lt;/a>
+        &lt;a ng-href="{{ angularDocsUrl }}">Angular Docs&lt;/a>
       </code-example>
 
 
@@ -390,7 +390,7 @@ The following are some of the key AngularJS built-in directives and their equiva
 
       In AngularJS, the `ng-href` is often used to activate a route as part of navigation.
       <code-example hideCopy format="">
-        &lt;a ng-href="#movies">Movies&lt;/a>
+        &lt;a ng-href="#{{ moviesHash }}">Movies&lt;/a>
       </code-example>
 
 
