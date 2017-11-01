@@ -3,6 +3,8 @@
 import { Injectable } from '@angular/core';
 import { Http }       from '@angular/http';
 
+import { map } from 'rxjs/operators/map';
+
 import { Hero } from './hero.model';
 import { ExceptionService, SpinnerService, ToastService } from '../../core';
 // #enddocregion example
@@ -19,13 +21,15 @@ export class HeroService {
   ) { }
 
   getHero(id: number) {
-    return this.http.get(`api/heroes/${id}`)
-      .map(response => response.json().data as Hero);
+    return this.http.get(`api/heroes/${id}`).pipe(
+      map(response => response.json().data as Hero)
+    );
   }
 
   getHeroes() {
-    return this.http.get(`api/heroes`)
-      .map(response => response.json().data as Hero[]);
+    return this.http.get(`api/heroes`).pipe(
+      map(response => response.json().data as Hero[])
+    );
   }
 
 }

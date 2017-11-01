@@ -1,8 +1,6 @@
 // #docregion
 import { Injectable } from '@angular/core';
-
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
+import { of } from 'rxjs/observable/of';
 
 import { Hero } from './hero.model';
 
@@ -10,6 +8,6 @@ import { Hero } from './hero.model';
 export class HeroService {
   getHeroes() {
     let heroes: Hero[] = [];
-    return Observable.of(heroes);
+    return of(heroes);
   }
 }
