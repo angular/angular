@@ -1161,7 +1161,7 @@ export function main() {
            ctx.componentInstance.a = 1;
 
            expect(() => ctx.checkNoChanges())
-               .toThrowError(/Expression has changed after it was checked./g);
+               .toThrowError(/Expression 'someProp' has changed after it was checked./g);
          }));
 
       it('should warn when the view has been created in a cd hook', fakeAsync(() => {
