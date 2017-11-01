@@ -38,14 +38,14 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/cli@^1.5.0-rc.6":
-  version "1.5.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0-rc.6.tgz#e8b28404830645c0fa34202365fb90cffdfd1a09"
+"@angular/cli@^1.5.0-rc.8":
+  version "1.5.0-rc.8"
+  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0-rc.8.tgz#cec2212ccee381042241858e174e563f0928b5a9"
   dependencies:
     "@angular-devkit/build-optimizer" "~0.0.31"
     "@angular-devkit/schematics" "~0.0.34"
     "@ngtools/json-schema" "1.1.0"
-    "@ngtools/webpack" "1.8.0-rc.6"
+    "@ngtools/webpack" "1.8.0-rc.8"
     "@schematics/angular" "~0.0.48"
     autoprefixer "^6.5.3"
     chalk "~2.2.0"
@@ -254,9 +254,9 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"
 
-"@ngtools/webpack@1.8.0-rc.6":
-  version "1.8.0-rc.6"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0-rc.6.tgz#1a6772ad804f870222a37ba8e55b491659f4212b"
+"@ngtools/webpack@1.8.0-rc.8":
+  version "1.8.0-rc.8"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0-rc.8.tgz#97a92cf5321a62581d168fc26b6cd4b6572a77a7"
   dependencies:
     chalk "~2.2.0"
     enhanced-resolve "^3.1.0"
