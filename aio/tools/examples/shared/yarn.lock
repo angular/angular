@@ -182,6 +182,14 @@
     source-map "^0.5.6"
     tree-kill "^1.0.0"
 
+"@nguniversal/express-engine@^1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@nguniversal/express-engine/-/express-engine-1.0.0-beta.3.tgz#b06dd5ece6c6882db5e29ec4ed91f65792c63a4e"
+
+"@nguniversal/module-map-ngfactory-loader@^1.0.0-beta.3":
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@nguniversal/module-map-ngfactory-loader/-/module-map-ngfactory-loader-1.0.0-beta.3.tgz#50ab9e5f00e9815f2fa5a69dbfae5bda41b7bfa2"
+
 "@schematics/angular@~0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.1.0.tgz#cd6c445ead33144a532523d1ccac68c38a2b0050"
@@ -1059,7 +1067,7 @@ chalk@^1.1.1, chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
-chalk@^2.0.0, chalk@^2.1.0:
+chalk@^2.0.0, chalk@^2.1.0, chalk@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.3.0.tgz#b5ea48efc9c1793dccc9b4767c93914d3f2d52ba"
   dependencies:
@@ -2030,7 +2038,7 @@ engine.io@1.8.3:
     engine.io-parser "1.3.2"
     ws "1.1.2"
 
-enhanced-resolve@^3.1.0, enhanced-resolve@^3.4.0:
+enhanced-resolve@^3.0.0, enhanced-resolve@^3.1.0, enhanced-resolve@^3.4.0:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-3.4.1.tgz#0421e339fd71419b3da13d129b3979040230476e"
   dependencies:
@@ -5574,7 +5582,7 @@ selfsigned@^1.9.1:
   dependencies:
     node-forge "0.6.33"
 
-"semver@2 || 3 || 4 || 5", semver@^5.1.0, semver@^5.3.0:
+"semver@2 || 3 || 4 || 5", semver@^5.0.1, semver@^5.1.0, semver@^5.3.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
 
@@ -6282,6 +6290,15 @@ trim-newlines@^1.0.0:
 trim-right@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/trim-right/-/trim-right-1.0.1.tgz#cb2e1203067e0c8de1f614094b9fe45704ea6003"
+
+ts-loader@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-3.1.1.tgz#602d93c12029eaf8fa1ee478a90785d40c5f6658"
+  dependencies:
+    chalk "^2.3.0"
+    enhanced-resolve "^3.0.0"
+    loader-utils "^1.0.2"
+    semver "^5.0.1"
 
 ts-node@^3.3.0:
   version "3.3.0"
