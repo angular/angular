@@ -74,7 +74,8 @@ aot-compiler/**/*.factory.d.ts
 !styleguide/src/systemjs.custom.js
 
 # universal
-!universal/webpack.server.config.js
+!universal/webpack.config.client.js
+!universal/webpack.config.universal.js
 
 # plunkers
 *plnkr.no-link.html
