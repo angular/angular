@@ -72,7 +72,7 @@
 * compiler: the compiler option `enableLegacyTemplate` is now disabled by default as the `<template>` element has been deprecated since v4. Use `<ng-template>` instead. The option `enableLegacyTemplate` and the `<template>` element will both be removed in Angular v6.
 * core: `OpaqueToken` has been removed as it was deprecated since v4. Use `InjectionToken` instead.
 * `platformXXXX()` no longer accepts providers which depend on reflection.
-Specifically the method signature when from `Provider[]` to
+Specifically the method signature went from `Provider[]` to
 `StaticProvider[]`.
 
 Example:
