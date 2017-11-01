@@ -103,7 +103,8 @@ export function checkBindingNoChanges(
   if ((view.state & ViewState.BeforeFirstCheck) || !devModeEqual(oldValue, value)) {
     throw expressionChangedAfterItHasBeenCheckedError(
         Services.createDebugContext(view, def.nodeIndex), oldValue, value,
-        (view.state & ViewState.BeforeFirstCheck) !== 0, def.bindings[def.bindingIndex + bindingIdx].name);
+        (view.state & ViewState.BeforeFirstCheck) !== 0,
+        def.bindings[def.bindingIndex + bindingIdx].name);
   }
 }
 
