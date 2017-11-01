@@ -26,7 +26,7 @@ You'll pursue these ends in the following high-level steps:
 
 -->
 
-And you can also <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a>
+
 
 
 

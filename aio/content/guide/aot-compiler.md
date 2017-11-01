@@ -510,7 +510,6 @@ Rollup does the tree shaking as before.
   The general audience instructions for running the AOT build of the Tour of Heroes app are not ready.
 
   The following instructions presuppose that you have downloaded the
-  <a href="generated/zips/toh-pt6/toh-pt6.zip" target="_blank">Tour of Heroes' zip</a>
   and run `npm install` on it.
 
 </div>
