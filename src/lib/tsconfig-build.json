@@ -12,6 +12,10 @@
     "moduleResolution": "node",
     "outDir": "../../dist/packages/material",
     "rootDir": ".",
+    "rootDirs": [
+      ".",
+      "../../dist/packages/material"
+    ],
     "sourceMap": true,
     "inlineSources": true,
     "target": "es2015",
@@ -20,8 +24,8 @@
     "types": [],
     "baseUrl": ".",
     "paths": {
-      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"],
-      "@angular/material/*": ["../../dist/packages/material/*/public-api"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"],
+      "@angular/material/*": ["../../dist/packages/material/*"]
     }
   },
   "files": [

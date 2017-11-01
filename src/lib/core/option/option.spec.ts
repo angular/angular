@@ -61,6 +61,6 @@ describe('MatOption component', () => {
 @Component({
   template: `<mat-option [disabled]="disabled"></mat-option>`
 })
-export class OptionWithDisable {
+class OptionWithDisable {
   disabled: boolean;
 }

@@ -3487,7 +3487,7 @@ class SelectWithErrorSibling {
   selector: 'throws-error-on-init',
   template: ''
 })
-export class ThrowsErrorOnInit implements OnInit {
+class ThrowsErrorOnInit implements OnInit {
   ngOnInit() {
     throw Error('Oh no!');
   }

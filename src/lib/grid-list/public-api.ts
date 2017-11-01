@@ -8,5 +8,5 @@
 
 export * from './grid-list-module';
 export * from './grid-list';
-export {MatGridTile} from './grid-tile';
+export * from './grid-tile';
 

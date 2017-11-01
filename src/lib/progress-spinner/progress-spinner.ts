@@ -94,8 +94,11 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   /** Tracks diameters of existing instances to de-dupe generated styles (default d = 100) */
   private static diameters = new Set<number>([100]);
 
-  /** Used for storing all of the generated keyframe animations. */
-  private static styleTag: HTMLStyleElement;
+  /**
+   * Used for storing all of the generated keyframe animations.
+   * @dynamic
+   */
+  private static styleTag: HTMLStyleElement|null = null;
 
   /** The diameter of the progress spinner (will set width and height of svg). */
   @Input()
@@ -199,7 +202,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
       MatProgressSpinner.styleTag = styleTag;
     }
 
-    if (styleTag.sheet) {
+    if (styleTag && styleTag.sheet) {
       (styleTag.sheet as CSSStyleSheet).insertRule(this._getAnimationText());
     }
 

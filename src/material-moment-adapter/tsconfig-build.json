@@ -22,9 +22,9 @@
     "skipLibCheck": true,
     "types": [],
     "paths": {
-      "@angular/material/*": ["../../dist/packages/material/*/public-api"],
+      "@angular/material/*": ["../../dist/packages/material/*"],
       "@angular/material": ["../../dist/packages/material/public-api"],
-      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"]
     }
   },
   "files": [

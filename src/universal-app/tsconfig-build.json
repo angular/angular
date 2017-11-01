@@ -5,7 +5,8 @@
     "declaration": true,
     "stripInternal": false,
     "experimentalDecorators": true,
-    "noUnusedParameters": true,
+    // TODO(crisbeto): disabled due to https://github.com/angular/angular/issues/17131
+    "noUnusedParameters": false,
     "strictNullChecks": true,
     "module": "commonjs",
     "moduleResolution": "node",

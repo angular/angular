@@ -302,8 +302,8 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   selector: '[matChipRemove]',
   host: {
     'class': 'mat-chip-remove',
-    '(click)': '_handleClick($event)',
-  },
+    '(click)': '_handleClick()',
+  }
 })
 export class MatChipRemove {
   constructor(protected _parentChip: MatChip) {

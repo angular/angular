@@ -3,7 +3,7 @@ sudo: false
 dist: trusty
 
 node_js:
-  - '8'
+  - '7'
 
 addons:
   jwt:

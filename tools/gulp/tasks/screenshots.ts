@@ -36,7 +36,7 @@ const FIREBASE_STORAGE_GOLDENS = 'goldens';
 
 /** Task which upload screenshots generated from e2e test. */
 task('screenshots', () => {
-  const prNumber = process.env['TRAVIS_PULL_REQUEST'];
+  const prNumber = process.env['TRAVIS_PULL_REQUEST']!;
 
   if (isTravisMasterBuild()) {
     // Only update goldens for master build

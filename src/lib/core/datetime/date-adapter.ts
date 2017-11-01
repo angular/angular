@@ -237,7 +237,7 @@ export abstract class DateAdapter<D> {
    * Checks if two dates are equal.
    * @param first The first date to check.
    * @param second The second date to check.
-   * @returns {boolean} Whether the two dates are equal.
+   * @returns Whether the two dates are equal.
    *     Null dates are considered equal to other null dates.
    */
   sameDate(first: D | null, second: D | null): boolean {

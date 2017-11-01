@@ -41,7 +41,7 @@ task('payload', ['material:clean-build'], async () => {
         openFirebaseDashboardApp() :
         openFirebaseDashboardAppAsGuest();
     const database = firebaseApp.database();
-    const currentSha = process.env['TRAVIS_PULL_REQUEST_SHA'] || process.env['TRAVIS_COMMIT'];
+    const currentSha = process.env['TRAVIS_PULL_REQUEST_SHA']! || process.env['TRAVIS_COMMIT']!;
 
     // Upload the payload results and calculate the payload diff in parallel. Otherwise the
     // payload task will take much more time inside of Travis builds.
@@ -72,7 +72,7 @@ function getFilesize(filePath: string) {
  */
 async function calculatePayloadDiff(database: firebaseAdmin.database.Database, currentSha: string,
                                     currentPayload: any) {
-  const authToken = process.env['FIREBASE_ACCESS_TOKEN'];
+  const authToken = process.env['FIREBASE_ACCESS_TOKEN']!;
 
   if (!authToken) {
     console.error('Cannot calculate Payload diff because there is no "FIREBASE_ACCESS_TOKEN" ' +
@@ -157,7 +157,7 @@ async function getPayloadResults(database: firebaseAdmin.database.Database, comm
 /** Gets the SHA of the commit where the payload was uploaded before this Travis Job started. */
 function getCommitFromPreviousPayloadUpload(): string {
   if (isTravisMasterBuild()) {
-    const commitRange = process.env['TRAVIS_COMMIT_RANGE'];
+    const commitRange = process.env['TRAVIS_COMMIT_RANGE']!;
     // In some situations, Travis will include multiple commits in a single Travis Job. This means
     // that we can't just resolve the previous commit by using the parent commit of HEAD.
     // By resolving the amount of commits inside of the current Travis Job, we can figure out
@@ -171,7 +171,7 @@ function getCommitFromPreviousPayloadUpload(): string {
     // Travis applies the changes of Pull Requests in new branches. This means that resolving
     // the commit that previously ran on the target branch (mostly "master") can be done
     // by just loading the SHA of the most recent commit in the target branch.
-    return spawnSync('git', ['rev-parse', process.env['TRAVIS_BRANCH']]).stdout.toString().trim();
+    return spawnSync('git', ['rev-parse', process.env['TRAVIS_BRANCH']!]).stdout.toString().trim();
   }
 }
 

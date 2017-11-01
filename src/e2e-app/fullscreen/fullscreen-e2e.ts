@@ -8,12 +8,12 @@ import {MatDialog, MatDialogRef} from '@angular/material';
 })
 export class FullscreenE2E {
 
-  dialogRef: MatDialogRef<TestDialog> | null;
+  dialogRef: MatDialogRef<TestDialogFullScreen> | null;
 
   constructor (private _element: ElementRef, private _dialog: MatDialog) { }
 
   openDialog() {
-    this.dialogRef = this._dialog.open(TestDialog);
+    this.dialogRef = this._dialog.open(TestDialogFullScreen);
 
     this.dialogRef.componentInstance.openFullscreen.subscribe(() => this.openFullscreen());
     this.dialogRef.componentInstance.exitFullscreen.subscribe(() => this.exitFullscreen());
@@ -54,9 +54,9 @@ export class FullscreenE2E {
     <button (click)="dialogRef.close()" id="close">Close Dialog</button>
   `
 })
-export class TestDialog {
+export class TestDialogFullScreen {
   @Output() openFullscreen = new EventEmitter<void>();
   @Output() exitFullscreen = new EventEmitter<void>();
 
-  constructor(public dialogRef: MatDialogRef<TestDialog>) {}
+  constructor(public dialogRef: MatDialogRef<TestDialogFullScreen>) {}
 }

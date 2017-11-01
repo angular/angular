@@ -30,6 +30,9 @@ import {MatAccordion} from './accordion';
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _CdkAccordionItem = CdkAccordionItem;
 
+/** Time and timing curve for expansion panel animations. */
+export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,1)';
+
 // Boilerplate for applying mixins to MatExpansionPanel.
 /** @docs-private */
 @Component({
@@ -50,9 +53,6 @@ export const _MatExpansionPanelMixinBase = mixinDisabled(MatExpansionPanelBase);
 
 /** MatExpansionPanel's states. */
 export type MatExpansionPanelState = 'expanded' | 'collapsed';
-
-/** Time and timing curve for expansion panel animations. */
-export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,1)';
 
 /**
  * <mat-expansion-panel> component.

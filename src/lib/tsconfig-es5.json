@@ -13,6 +13,10 @@
     "moduleResolution": "node",
     "outDir": "../../dist/packages/material/esm5",
     "rootDir": ".",
+    "rootDirs": [
+      ".",
+      "../../dist/packages/material"
+    ],
     "sourceMap": true,
     "inlineSources": true,
     "target": "es5",
@@ -21,8 +25,8 @@
     "types": [],
     "baseUrl": ".",
     "paths": {
-      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"],
-      "@angular/material/*": ["../../dist/packages/material/*/public-api"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"],
+      "@angular/material/*": ["../../dist/packages/material/*"]
     }
   },
   "files": [

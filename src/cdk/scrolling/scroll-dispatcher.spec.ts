@@ -67,24 +67,15 @@ describe('Scroll Dispatcher', () => {
     }));
 
     it('should not execute the global events in the Angular zone', () => {
-      const spy = jasmine.createSpy('zone unstable callback');
-      const subscription = fixture.ngZone!.onUnstable.subscribe(spy);
-
       scroll.scrolled(0).subscribe(() => {});
       dispatchFakeEvent(document, 'scroll', false);
 
-      expect(spy).not.toHaveBeenCalled();
-      subscription.unsubscribe();
+      expect(fixture.ngZone!.isStable).toBe(true);
     });
 
     it('should not execute the scrollable events in the Angular zone', () => {
-      const spy = jasmine.createSpy('zone unstable callback');
-      const subscription = fixture.ngZone!.onUnstable.subscribe(spy);
-
-      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll', false);
-
-      expect(spy).not.toHaveBeenCalled();
-      subscription.unsubscribe();
+      dispatchFakeEvent(fixture.componentInstance.scrollingElement.nativeElement, 'scroll');
+      expect(fixture.ngZone!.isStable).toBe(true);
     });
 
     it('should be able to unsubscribe from the global scrollable', () => {

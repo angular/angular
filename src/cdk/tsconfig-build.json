@@ -20,7 +20,7 @@
     "skipLibCheck": true,
     "types": [],
     "paths": {
-      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"]
     }
   },
   "files": [

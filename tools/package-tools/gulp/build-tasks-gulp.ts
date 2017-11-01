@@ -45,7 +45,8 @@ export function createPackageBuildTasks(buildPackage: BuildPackage) {
     // Build all required packages before building.
     ...dependencyNames.map(pkgName => `${pkgName}:build`),
     // Build ESM and assets output.
-    [`${taskName}:build:esm`, `${taskName}:assets`],
+    `${taskName}:assets`,
+    `${taskName}:build:esm`,
     // Inline assets into ESM output.
     `${taskName}:assets:inline`,
     // Build bundles on top of inlined ESM output.
