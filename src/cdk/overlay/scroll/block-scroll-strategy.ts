@@ -45,11 +45,25 @@ export class BlockScrollStrategy implements ScrollStrategy {
   /** Unblocks page-level scroll while the attached overlay is open. */
   disable() {
     if (this._isEnabled) {
+      const html = document.documentElement;
+      const body = document.body;
+      const previousHtmlScrollBehavior = html.style['scrollBehavior'] || '';
+      const previousBodyScrollBehavior = body.style['scrollBehavior'] || '';
+
       this._isEnabled = false;
-      document.documentElement.style.left = this._previousHTMLStyles.left;
-      document.documentElement.style.top = this._previousHTMLStyles.top;
-      document.documentElement.classList.remove('cdk-global-scrollblock');
+
+      html.style.left = this._previousHTMLStyles.left;
+      html.style.top = this._previousHTMLStyles.top;
+      html.classList.remove('cdk-global-scrollblock');
+
+      // Disable user-defined smooth scrolling temporarily while we restore the scroll position.
+      // See https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-behavior
+      html.style['scrollBehavior'] = body.style['scrollBehavior'] = 'auto';
+
       window.scroll(this._previousScrollPosition.left, this._previousScrollPosition.top);
+
+      html.style['scrollBehavior'] = previousHtmlScrollBehavior;
+      body.style['scrollBehavior'] = previousBodyScrollBehavior;
     }
   }
 

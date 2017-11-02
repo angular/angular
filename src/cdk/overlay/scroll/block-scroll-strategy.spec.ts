@@ -136,6 +136,27 @@ describe('BlockScrollStrategy', () => {
     expect(document.documentElement.getBoundingClientRect().width).toBe(previousContentWidth);
   });
 
+  it('should not clobber user-defined scroll-behavior', skipIOS(() => {
+    const root = document.documentElement;
+    const body = document.body;
+
+    root.style['scrollBehavior'] = body.style['scrollBehavior'] = 'smooth';
+
+    // Get the value via the style declaration in order to
+    // handle browsers that don't support the property yet.
+    const initialRootValue = root.style['scrollBehavior'];
+    const initialBodyValue = root.style['scrollBehavior'];
+
+    overlayRef.attach(componentPortal);
+    overlayRef.detach();
+
+    expect(root.style['scrollBehavior']).toBe(initialRootValue);
+    expect(body.style['scrollBehavior']).toBe(initialBodyValue);
+
+    // Avoid bleeding styles into other tests.
+    root.style['scrollBehavior'] = body.style['scrollBehavior'] = '';
+  }));
+
   /**
    * Skips the specified test, if it is being executed on iOS. This is necessary, because
    * programmatic scrolling inside the Karma iframe doesn't work on iOS, which renders these
