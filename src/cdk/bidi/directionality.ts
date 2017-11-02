@@ -10,11 +10,9 @@ import {
   EventEmitter,
   Injectable,
   Optional,
-  SkipSelf,
   Inject,
   InjectionToken,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
 
 
 export type Direction = 'ltr' | 'rtl';
@@ -55,16 +53,3 @@ export class Directionality {
     }
   }
 }
-
-/** @docs-private */
-export function DIRECTIONALITY_PROVIDER_FACTORY(parentDirectionality, _document) {
-  return parentDirectionality || new Directionality(_document);
-}
-
-/** @docs-private */
-export const DIRECTIONALITY_PROVIDER = {
-  // If there is already a Directionality available, use that. Otherwise, provide a new one.
-  provide: Directionality,
-  deps: [[new Optional(), new SkipSelf(), Directionality], [new Optional(), DOCUMENT]],
-  useFactory: DIRECTIONALITY_PROVIDER_FACTORY
-};
