@@ -255,6 +255,18 @@ describe('Key managers', () => {
         subscription.unsubscribe();
       });
 
+      it('should not emit an event if the item did not change', () => {
+        const spy = jasmine.createSpy('change spy');
+        const subscription = keyManager.change.subscribe(spy);
+
+        keyManager.setActiveItem(2);
+        keyManager.setActiveItem(2);
+
+        expect(spy).toHaveBeenCalledTimes(1);
+
+        subscription.unsubscribe();
+      });
+
     });
 
     describe('programmatic focus', () => {

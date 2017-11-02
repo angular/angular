@@ -2066,6 +2066,27 @@ describe('MatSelect', () => {
           'Expected value from second option to have been set on the model.');
       }));
 
+      it('should be able to select options by typing on a closed select', fakeAsync(() => {
+        const formControl = fixture.componentInstance.control;
+        const options = fixture.componentInstance.options.toArray();
+
+        expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+        dispatchEvent(select, createKeyboardEvent('keydown', 80, undefined, 'p'));
+        tick(200);
+
+        expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
+        expect(formControl.value).toBe(options[1].value,
+          'Expected value from second option to have been set on the model.');
+
+        dispatchEvent(select, createKeyboardEvent('keydown', 69, undefined, 'e'));
+        tick(200);
+
+        expect(options[5].selected).toBe(true, 'Expected sixth option to be selected.');
+        expect(formControl.value).toBe(options[5].value,
+          'Expected value from sixth option to have been set on the model.');
+      }));
+
       it('should open the panel when pressing the arrow keys on a closed multiple select', () => {
         fixture.destroy();
 
@@ -2084,6 +2105,25 @@ describe('MatSelect', () => {
         expect(instance.select.panelOpen).toBe(true, 'Expected panel to be open.');
         expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
         expect(event.defaultPrevented).toBe(true, 'Expected default to be prevented.');
+      });
+
+      it('should do nothing when typing on a closed multi-select', () => {
+        fixture.destroy();
+
+        const multiFixture = TestBed.createComponent(MultiSelect);
+        const instance = multiFixture.componentInstance;
+
+        multiFixture.detectChanges();
+        select = multiFixture.debugElement.query(By.css('mat-select')).nativeElement;
+
+        const initialValue = instance.control.value;
+
+        expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
+
+        dispatchEvent(select, createKeyboardEvent('keydown', 80, undefined, 'p'));
+
+        expect(instance.select.panelOpen).toBe(false, 'Expected panel to stay closed.');
+        expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
       });
 
       it('should do nothing if the key manager did not change the active item', fakeAsync(() => {

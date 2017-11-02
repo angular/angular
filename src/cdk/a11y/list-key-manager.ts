@@ -100,9 +100,14 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * @param index The index of the item to be set as active.
    */
   setActiveItem(index: number): void {
+    const previousIndex = this._activeItemIndex;
+
     this._activeItemIndex = index;
     this._activeItem = this._items.toArray()[index];
-    this.change.next(index);
+
+    if (this._activeItemIndex !== previousIndex) {
+      this.change.next(index);
+    }
   }
 
   /**
