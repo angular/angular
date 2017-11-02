@@ -31,18 +31,31 @@ export class MatCommonModule {
   /** Whether we've done the global sanity checks (e.g. a theme is loaded, there is a doctype). */
   private _hasDoneGlobalChecks = false;
 
+  /** Whether we've already checked for HammerJs availability. */
+  private _hasCheckedHammer = false;
+
   /** Reference to the global `document` object. */
   private _document = typeof document === 'object' && document ? document : null;
 
-  constructor(@Optional() @Inject(MATERIAL_SANITY_CHECKS) sanityChecksEnabled: boolean) {
-    if (sanityChecksEnabled && !this._hasDoneGlobalChecks && isDevMode()) {
-      this._checkDoctype();
-      this._checkTheme();
+  constructor(@Optional() @Inject(MATERIAL_SANITY_CHECKS) private _sanityChecksEnabled: boolean) {
+    if (this._areChecksEnabled() && !this._hasDoneGlobalChecks) {
+      this._checkDoctypeIsDefined();
+      this._checkThemeIsPresent();
       this._hasDoneGlobalChecks = true;
     }
   }
 
-  private _checkDoctype(): void {
+  /** Whether any sanity checks are enabled */
+  private _areChecksEnabled(): boolean {
+    return this._sanityChecksEnabled && isDevMode() && !this._isTestEnv();
+  }
+
+  /** Whether the code is running in tests. */
+  private _isTestEnv() {
+    return window['__karma__'] || window['jasmine'];
+  }
+
+  private _checkDoctypeIsDefined(): void {
     if (this._document && !this._document.doctype) {
       console.warn(
         'Current document does not have a doctype. This may cause ' +
@@ -51,7 +64,7 @@ export class MatCommonModule {
     }
   }
 
-  private _checkTheme(): void {
+  private _checkThemeIsPresent(): void {
     if (this._document && typeof getComputedStyle === 'function') {
       const testElement = this._document.createElement('div');
 
@@ -73,5 +86,14 @@ export class MatCommonModule {
 
       this._document.body.removeChild(testElement);
     }
+  }
+
+  /** Checks whether HammerJS is available. */
+  _checkHammerIsAvailable(): void {
+    if (this._areChecksEnabled() && !this._hasCheckedHammer && !window['Hammer']) {
+      console.warn(
+        'Could not find HammerJS. Certain Angular Material components may not work correctly.');
+    }
+    this._hasCheckedHammer = true;
   }
 }
