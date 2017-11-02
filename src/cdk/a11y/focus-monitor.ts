@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Platform} from '@angular/cdk/platform';
+import {Platform, supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {
   Directive,
   ElementRef,
@@ -168,13 +168,16 @@ export class FocusMonitor {
     // When the touchstart event fires the focus event is not yet in the event queue. This means
     // we can't rely on the trick used above (setting timeout of 0ms). Instead we wait 650ms to
     // see if a focus happens.
-    document.addEventListener('touchstart', (event: Event) => {
+    document.addEventListener('touchstart', (event: TouchEvent) => {
       if (this._touchTimeout != null) {
         clearTimeout(this._touchTimeout);
       }
       this._lastTouchTarget = event.target;
       this._touchTimeout = setTimeout(() => this._lastTouchTarget = null, TOUCH_BUFFER_MS);
-    }, true);
+
+      // Note that we need to cast the event options to `any`, because at the time of writing
+      // (TypeScript 2.5), the built-in types don't support the `addEventListener` options param.
+    }, supportsPassiveEventListeners() ? ({passive: true, capture: true} as any) : true);
 
     // Make a note of when the window regains focus, so we can restore the origin info for the
     // focused element.

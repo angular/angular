@@ -80,7 +80,7 @@ describe('FocusMonitor', () => {
 
   it('should detect focus via touch', fakeAsync(() => {
     // Simulate focus via touch.
-    dispatchMouseEvent(buttonElement, 'touchstart');
+    dispatchFakeEvent(buttonElement, 'touchstart');
     buttonElement.focus();
     fixture.detectChanges();
     tick(TOUCH_BUFFER_MS);
@@ -262,7 +262,7 @@ describe('cdkMonitorFocus', () => {
 
     it('should detect focus via touch', fakeAsync(() => {
       // Simulate focus via touch.
-      dispatchMouseEvent(buttonElement, 'touchstart');
+      dispatchFakeEvent(buttonElement, 'touchstart');
       buttonElement.focus();
       fixture.detectChanges();
       tick(TOUCH_BUFFER_MS);

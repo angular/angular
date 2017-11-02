@@ -1,3 +1,7 @@
+.demo-focusable {
+  border: 2px solid transparent;
+}
+
 .demo-focusable.cdk-focused {
   border: 2px solid red;
 }
