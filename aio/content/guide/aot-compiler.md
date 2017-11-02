@@ -1,15 +1,8 @@
-# Ahead-of-Time Compilation
+# The Ahead-of-Time (AOT) Compiler
 
-This cookbook describes how to radically improve performance by compiling _ahead-of-time_ (AOT)
-during a build process.
+The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code.
 
-{@a overview}
-
-## Overview
-
-An Angular application consists largely of components and their HTML templates.
-Before the browser can render the application,
-the components and templates must be converted to executable JavaScript by the _Angular compiler_.
+This guide explains how to to build with the AOT compiler and how to write Angular metadata that AOT can compile.
 
 <div class="l-sub-section">
 
@@ -17,33 +10,46 @@ the components and templates must be converted to executable JavaScript by the _
 
 </div>
 
-You can compile the app in the browser, at runtime, as the application loads, using the **_just-in-time_ (JIT) compiler**.
-This is the standard development approach shown throughout the documentation.
-It's great but it has shortcomings.
+{@a overview}
 
-JIT compilation incurs a runtime performance penalty.
-Views take longer to render because of the in-browser compilation step.
-The application is bigger because it includes the Angular compiler
-and a lot of library code that the application won't actually need.
-Bigger apps take longer to transmit and are slower to load.
+## Angular compilation
 
-Compilation can uncover many component-template binding errors.
-JIT compilation discovers them at runtime, which is late in the process.
+An Angular application consists largely of components and their HTML templates.
+Before the browser can render the application,
+the components and templates must be converted to executable JavaScript by an _Angular compiler_.
 
-The **_ahead-of-time_ (AOT) compiler** can catch template errors early and improve performance
-by compiling at build time.
+Angular offers two ways to compile your application:
 
-{@a aot-jit}
+1. **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime
+1. **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
 
-## _Ahead-of-time_ (AOT) vs _just-in-time_ (JIT)
+JIT compilation is the default when you run the _build-only_ or the _build-and-serve-locally_ CLI commands:
 
-There is actually only one Angular compiler. The difference between AOT and JIT is a matter of timing and tooling.
-With AOT, the compiler runs once at build time using one set of libraries;
-with JIT it runs every time for every user at runtime using a different set of libraries.
+<code-example language="sh" class="code-shell">
+  ng build
+  ng serve
+</code-example>
+
+{@a compile}
+
+For AOT compilation, append the `--aot` flags to the _build-only_ or the _build-and-serve-locally_ CLI commands:
+
+<code-example language="sh" class="code-shell">
+  ng build --aot
+  ng serve --aot
+</code-example>
+
+<div class="l-sub-section">
+
+The `--prod` meta-flag compiles with AOT by default.
+
+See the [CLI documentation](https://github.com/angular/angular-cli/wiki) for details, especially the [`build` topic](https://github.com/angular/angular-cli/wiki/build).
+
+</div>
 
 {@a why-aot}
 
-## Why do AOT compilation?
+## Why compile with AOT?
 
 *Faster rendering*
 
@@ -60,7 +66,6 @@ eliminating separate ajax requests for those source files.
 There's no need to download the Angular compiler if the app is already compiled.
 The compiler is roughly half of Angular itself, so omitting it dramatically reduces the application payload.
 
-
 *Detect template errors earlier*
 
 The AOT compiler detects and reports template binding errors during the build step
@@ -72,517 +77,896 @@ AOT compiles HTML templates and components into JavaScript files long before the
 With no templates to read and no risky client-side HTML or JavaScript evaluation,
 there are fewer opportunities for injection attacks.
 
-{@a compile}
+## Angular Metadata and AOT
 
-## Compile with AOT
+The Angular **AOT compiler** extracts and interprets **metadata** about the parts of the application that Angular is supposed to manage.
 
-Preparing for offline compilation takes a few simple steps.
-Take the <a href='../guide/setup.html'>Setup</a> as a starting point.
-A few minor changes to the lone `app.component` lead to these two class and HTML files:
+Angular metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
 
-<code-tabs>
-  <code-pane title="src/app/app.component.html" path="aot-compiler/src/app/app.component.html">
-  </code-pane>
-  <code-pane title="src/app/app.component.ts" path="aot-compiler/src/app/app.component.ts">
-  </code-pane>
-</code-tabs>
+You specify the metadata with **decorators** such as `@Component()` and `@Input()`.
+You also specify metadata implicitly in the constructor declarations of these decorated classes.
 
-Install a few new npm dependencies with the following command:
+In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
 
-<code-example language="none" class="code-shell">
-  npm install @angular/compiler-cli @angular/platform-server --save
-</code-example>
+```typescript
+@Component({
+  selector: 'app-typical',
+  template: '<div>A typical component for {{data.name}}</div>'
+)}
+export class TypicalComponent {
+  @Input() data: TypicalData;
+  constructor(private someService: SomeService) { ... }
+}
+```
 
-You will run the `ngc` compiler provided in the `@angular/compiler-cli` npm package
-instead of the TypeScript compiler (`tsc`).
+The Angular compiler extracts the metadata _once_ and generates a _factory_ for `TypicalComponent`.
+When it needs to create a `TypicalComponent` instance, Angular calls the factory, which produces a new visual element, bound to a new instance of the component class with its injected dependency.
 
-`ngc` is a drop-in replacement for `tsc` and is configured much the same way.
+## Metadata restrictions
 
-`ngc` requires its own `tsconfig.json` with AOT-oriented settings.
-Copy the original `src/tsconfig.json` to a file called `tsconfig-aot.json` on the project root,
-then modify it as follows.
+You write metadata in a _subset_ of TypeScript that must conform to the following general constraints:
 
-<code-example path="aot-compiler/tsconfig-aot.json" title="tsconfig-aot.json" linenums="false">
-</code-example>
+1. Limit [expression syntax](#expression-syntax) to the supported subset of JavaScript.
+2. Only reference exported symbols after [code folding](#folding).
+3. Only call [functions supported](#supported-functions) by the compiler.
+4. Decorated and data-bound class members must be public.
 
-The `compilerOptions` section is unchanged except for one property.
-**Set the `module` to `es2015`**.
-This is important as explained later in the [Tree Shaking](guide/aot-compiler#tree-shaking) section.
+The next sections elaborate on these points.
 
-What's really new is the `ngc` section at the bottom called `angularCompilerOptions`.
-Its `genDir` property tells the compiler
-to store the compiled output files in a new `aot` folder.
+## How AOT works
 
-The `"skipMetadataEmit" : true` property prevents the compiler from generating metadata files with the compiled application.
-Metadata files are not necessary when targeting TypeScript files, so there is no reason to include them.
+It helps to think of the AOT compiler as having two phases: a code analysis phase in which it simply records a representation of the source; and a code generation phase in which the compiler's `StaticReflector` handles the interpretation as well as places restrictions on what it interprets.
 
-***Component-relative template URLS***
+## Phase 1: analysis
 
-The AOT compiler requires that `@Component` URLS for external templates and CSS files be _component-relative_.
-That means that the value of `@Component.templateUrl` is a URL value _relative_ to the component class file.
-For example, an `'app.component.html'` URL means that the template file is a sibling of its companion `app.component.ts` file.
+The TypeScript compiler does some of the analytic work of the first phase. It emits the `.d.ts` _type definition files_ with type information that the AOT compiler needs to generate application code.
 
-While JIT app URLs are more flexible, stick with _component-relative_ URLs for compatibility with AOT compilation.
+At the same time, the AOT **_collector_** analyzes the metadata recorded in the Angular decorators and outputs metadata information in **`.metadata.json`** files, one per `.d.ts` file.
 
-***Compiling the application***
-
-Initiate AOT compilation from the command line using the previously installed `ngc` compiler by executing:
-
-<code-example language="none" class="code-shell">
-  node_modules/.bin/ngc -p tsconfig-aot.json
-</code-example>
+You can think of `.metadata.json` as a diagram of the overall structure of a decorator's metadata, represented as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
 <div class="l-sub-section">
 
-  Windows users should surround the `ngc` command in double quotes:
-  <code-example format='.'>
-    "node_modules/.bin/ngc" -p tsconfig-aot.json
-  </code-example>
+Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/tsc-wrapped/src/schema.ts)
+describes the JSON format as a collection of TypeScript interfaces.
 
 </div>
 
-`ngc` expects the `-p` switch to point to a `tsconfig.json` file or a folder containing a `tsconfig.json` file.
+{@a expression-syntax}
+### Expression syntax
 
-After `ngc` completes, look for a collection of _NgFactory_ files in the `aot` folder.
-The `aot` folder is the directory specified as `genDir` in `tsconfig-aot.json`.
+The _collector_ only understands a subset of JavaScript.
+Define metadata objects with the following limited syntax:
 
-These factory files are essential to the compiled application.
-Each component factory creates an instance of the component at runtime by combining the original class file
-and a JavaScript representation of the component's template.
-Note that the original component class is still referenced internally by the generated factory.
+Syntax                             | Example
+-----------------------------------|-----------------------------------
+Literal object                     | `{cherry: true, apple: true, mincemeat: false}`
+Literal array                      | `['cherries', 'flour', 'sugar']`
+Spread in literal array            | `['apples', 'flour', ...the_rest]`
+Calls                              | `bake(ingredients)`
+New                                | `new Oven()`
+Property access                    | `pie.slice`
+Array index                        | `ingredients[0]`
+Identifier reference               | `Component`
+A template string                  | <code>&#96;pie is ${multiplier} times better than cake&#96;</code>
+Literal string                     | `'pi'`
+Literal number                     | `3.14153265`
+Literal boolean                    | `true`
+Literal null                       | `null`
+Supported prefix operator          | `!cake`
+Supported Binary operator          | `a + b`
+Conditional operator               | `a ? b : c`
+Parentheses                        | `(a + b)`
+
+If an expression uses unsupported syntax, the _collector_ writes an error node to the `.metadata.json` file. The compiler later reports the error if it needs that
+piece of metadata to generate the application code.
 
 <div class="l-sub-section">
 
-  The curious can open `aot/app.component.ngfactory.ts` to see the original Angular template syntax
-  compiled to TypeScript, its intermediate form.
+ If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in `tsconfig`.
 
-  JIT compilation generates these same _NgFactories_ in memory where they are largely invisible.
-  AOT compilation reveals them as separate, physical files.
+```
+  "angularCompilerOptions": {
+   ...
+   "strictMetadataEmit" : true
+ }
+ ```
 
-</div>
-
-<div class="alert is-important">
-
-  Do not edit the _NgFactories_! Re-compilation replaces these files and all edits will be lost.
-
-</div>
-
-{@a bootstrap}
-
-## Bootstrap
-
-The AOT approach changes application bootstrapping.
-
-Instead of bootstrapping `AppModule`, you bootstrap the application with the generated module factory, `AppModuleNgFactory`.
-
-Make a copy of `main.ts` and name it `main-jit.ts`.
-This is the JIT version; set it aside as you may need it [later](guide/aot-compiler#run-jit "Running with JIT").
-
-Open `main.ts` and convert it to AOT compilation.
-Switch from the `platformBrowserDynamic.bootstrap` used in JIT compilation to
-`platformBrowser().bootstrapModuleFactory` and pass in the AOT-generated `AppModuleNgFactory`.
-
-Here is AOT bootstrap in `main.ts` next to the original JIT version:
-
-<code-tabs>
-  <code-pane title="src/main.ts" path="aot-compiler/src/main.ts">
-  </code-pane>
-  <code-pane title="src/main-jit.ts" path="aot-compiler/src/main-jit.ts">
-  </code-pane>
-</code-tabs>
-
-Be sure to [recompile](guide/aot-compiler#compile) with `ngc`!
-
-{@a tree-shaking}
-
-## Tree shaking
-
-AOT compilation sets the stage for further optimization through a process called _tree shaking_.
-A tree shaker walks the dependency graph, top to bottom, and _shakes out_ unused code like
-dead leaves in a tree.
-
-Tree shaking can greatly reduce the downloaded size of the application
-by removing unused portions of both source and library code.
-In fact, most of the reduction in small apps comes from removing unreferenced Angular features.
-
-For example, this demo application doesn't use anything from the `@angular/forms` library.
-There is no reason to download forms-related Angular code and tree shaking ensures that you don't.
-
-Tree shaking and AOT compilation are separate steps.
-Tree shaking can only target JavaScript code.
-AOT compilation converts more of the application to JavaScript,
-which in turn makes more of the application "tree shakable".
-
-{@a rollup}
-
-### Rollup
-
-This cookbook illustrates a tree shaking utility called _Rollup_.
-
-Rollup statically analyzes the application by following the trail of `import` and `export` statements.
-It produces a final code _bundle_ that excludes code that is exported, but never imported.
-
-Rollup can only tree shake `ES2015` modules which have `import` and `export` statements.
-
-<div class="l-sub-section">
-
-  Recall that `tsconfig-aot.json` is configured to produce `ES2015` modules.
-  It's not important that the code itself be written with `ES2015` syntax such as `class` and `const`.
-  What matters is that the code uses ES `import` and `export` statements rather than `require` statements.
+Angular libraries have this option to ensure that all Angular `.metadata.json` files are clean and it is a best practice to do the same when building your own libraries.
 
 </div>
 
-In the terminal window, install the Rollup dependencies with this command:
+{@a function-expression}
+{@a arrow-functions}
+### No arrow functions
 
-<code-example language="none" class="code-shell">
-  npm install rollup rollup-plugin-node-resolve rollup-plugin-commonjs rollup-plugin-uglify --save-dev
-</code-example>
+The AOT compiler does not support [function expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/function)
+and [arrow functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), also called _lambda_ functions.
 
-Next, create a configuration file (`rollup-config.js`)
-in the project root directory to tell Rollup how to process the application.
-The cookbook configuration file looks like this.
+Consider the following component decorator:
 
-<code-example path="aot-compiler/rollup-config.js" title="rollup-config.js" linenums="false">
-</code-example>
+```ts
+@Component({
+  ...
+  providers: [{provide: server, useFactory: () => new Server()}]
+})
+```
 
-This config file tells Rollup that the app entry point is `src/app/main.js` .
-The `dest` attribute tells Rollup to create a bundle called `build.js` in the `dist` folder.
-It overrides the default `onwarn` method in order to skip annoying messages about the AOT compiler's use of the `this` keyword.
+The AOT _collector_ does not support the arrow function, `() => new Server()`, in a metadata expression.
+It generates an error node in place of the function.
 
-The next section covers the plugins in more depth.
+When the compiler later interprets this node, it reports an error that invites you to turn the arrow function into an _exported function_.
 
-{@a rollup-plugins}
+You can fix the error by converting to this:
 
-### Rollup Plugins
+```ts
+export function serverFactory() {
+  return new Server();
+}
 
-Optional plugins filter and transform the Rollup inputs and output.
+@Component({
+  ...
+  providers: [{provide: server, useFactory: serverFactory}]
+})
+```
 
-*RxJS*
+Beginning in version 5, the compiler automatically performs this rewritting while emitting the `.js` file.
 
-Rollup expects application source code to use `ES2015` modules.
-Not all external dependencies are published as `ES2015` modules.
-In fact, most are not. Many of them are published as _CommonJS_ modules.
+### Limited function calls
 
-The _RxJs_ Observable library is an essential Angular dependency published as an ES5 JavaScript _CommonJS_ module.
+The _collector_ can represent a function call or object creation with `new` as long as the syntax is valid. The _collector_ only cares about proper syntax.
 
-Luckily, there is a Rollup plugin that modifies _RxJs_
-to use the ES `import` and `export` statements that Rollup requires.
-Rollup then preserves the parts of `RxJS` referenced by the application
-in the final bundle. Using it is straigthforward. Add the following to
-the `plugins` array in `rollup-config.js`:
+But beware. The compiler may later refuse to generate a call to a _particular_ function or creation of a _particular_ object.
+The compiler only supports calls to a small set of functions and will use `new` for only a few designated classes. These functions and classes are in a table of [below](#supported-functions).
 
-<code-example path="aot-compiler/rollup-config.js" region="commonjs" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">
-</code-example>
 
-*Minification*
+### Folding
+{@a exported-symbols}
+The compiler can only resolve references to **_exported_** symbols.
+Fortunately, the _collector_ enables limited use of non-exported symbols through _folding_.
 
-Rollup tree shaking reduces code size considerably.  Minification makes it smaller still.
-This cookbook relies on the _uglify_ Rollup plugin to minify and mangle the code.
-Add the following to the `plugins` array:
+The _collector_ may be able to evaluate an expression during collection and record the result in the `.metadata.json` instead of the original expression.
 
-<code-example path="aot-compiler/rollup-config.js" region="uglify" title="rollup-config.js (CommonJs to ES2015 Plugin)" linenums="false">
-</code-example>
+For example, the _collector_ can evaluate the expression `1 + 2 + 3 + 4` and replace it with the result, `10`.
 
-<div class="l-sub-section">
+This process is called _folding_. An expression that can be reduced in this manner is _foldable_.
 
-  In a production setting, you would also enable gzip on the web server to compress
-  the code into an even smaller package going over the wire.
+{@a var-declaration}
+The collector can evaluate references to
+module-local `const` declarations and initialized `var` and `let` declarations, effectively removing them from the `.metadata.json` file.
+
+Consider the following component definition:
+
+```ts
+const template = '<div>{{hero.name}}</div>';
+
+@Component({
+  selector: 'app-hero',
+  template: template
+})
+export class HeroComponent {
+  @Input() hero: Hero;
+}
+```
+
+The compiler could not refer to the `template` constant because it isn't exported.
+
+But the _collector_ can _fold_ the `template` constant into the metadata definition by inlining its contents.
+The effect is the same as if you had written:
+
+```TypeScript
+@Component({
+  selector: 'app-hero',
+  template: '<div>{{hero.name}}</div>'
+})
+export class HeroComponent {
+  @Input() hero: Hero;
+}
+```
+
+There is no longer a reference to `template` and, therefore, nothing to trouble the compiler when it later interprets the _collector's_ output in `.metadata.json`.
+
+You can take this example a step further by including the `template` constant in another expression:
+
+```TypeScript
+const template = '<div>{{hero.name}}</div>';
+
+@Component({
+  selector: 'app-hero',
+  template: template + '<div>{{hero.title}}</div>'
+})
+export class HeroComponent {
+  @Input() hero: Hero;
+}
+```
+
+The _collector_ reduces this expression to its equivalent _folded_ string:
+
+`'<div>{{hero.name}}</div><div>{{hero.title}}</div>'`.
+
+#### Foldable syntax
+
+The following table describes which expressions the _collector_ can and cannot fold:
+
+Syntax                             | Foldable
+-----------------------------------|-----------------------------------
+Literal object                     | yes
+Literal array                      | yes
+Spread in literal array            | no
+Calls                              | no
+New                                | no
+Property access                    | yes, if target is foldable
+Array index                        | yes, if target and index are foldable
+Identifier reference               | yes, if it is a reference to a local
+A template with no substitutions   | yes
+A template with substitutions      | yes, if the substitutions are foldable
+Literal string                     | yes
+Literal number                     | yes
+Literal boolean                    | yes
+Literal null                       | yes
+Supported prefix operator          | yes, if operand is foldable
+Supported binary operator          | yes, if both left and right are foldable
+Conditional operator               | yes, if condition is foldable
+Parentheses                        | yes, if the expression is foldable
+
+If an expression is not foldable, the collector writes it to `.metadata.json` as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) for the compiler to resolve.
+
+
+## Phase 2: code generation
+
+The _collector_ makes no attempt to understand the metadata that it collects and outputs to `.metadata.json`. It represents the metadata as best it can and records errors when it detects a metadata syntax violation.
+
+It's the compiler's job to interpret the `.metadata.json` in the code generation phase.
+
+The compiler understands all syntax forms that the _collector_ supports, but it may reject _syntactically_ correct metadata if the _semantics_ violate compiler rules.
+
+The compiler can only reference _exported symbols_.
+
+Decorated component class members must be public. You cannot make an `@Input()` property private or internal.
+
+Data bound properties must also be public.
+
+```TypeScript
+// BAD CODE - title is private
+@Component({
+  selector: 'app-root',
+  template: '<h1>{{title}}</h1>'
+})
+export class AppComponent {
+  private title = 'My App'; // Bad
+}
+```
+
+{@a supported-functions}
+Most importantly, the compiler only generates code to create instances of certain classes, support certain decorators, and call certain functions from the following lists.
+
+
+### New instances
+
+The compiler only allows metadata that create instances of the class `InjectionToken` from `@angular/core`.
+
+### Annotations/Decorators
+
+The compiler only supports metadata for these Angular decorators.
+
+Decorator         | Module
+------------------|--------------
+`Attribute`       | `@angular/core`
+`Component`       | `@angular/core`
+`ContentChild`    | `@angular/core`
+`ContentChildren` | `@angular/core`
+`Directive`       | `@angular/core`
+`Host`            | `@angular/core`
+`HostBinding`     | `@angular/core`
+`HostListener`    | `@angular/core`
+`Inject`          | `@angular/core`
+`Injectable`      | `@angular/core`
+`Input`           | `@angular/core`
+`NgModule`        | `@angular/core`
+`Optional`        | `@angular/core`
+`Output`          | `@angular/core`
+`Pipe`            | `@angular/core`
+`Self`            | `@angular/core`
+`SkipSelf`        | `@angular/core`
+`ViewChild`       | `@angular/core`
+
+
+### Macro-functions and macro-static methods
+
+The compiler also supports _macros_ in the form of functions or static
+methods that return an expression.
+
+For example, consider the following function:
+
+```TypeScript
+export function wrapInArray<T>(value: T): T[] {
+  return [value];
+}
+```
+
+You can call the `wrapInArray` in a metadata definition because it returns the value of an expression that conforms to the compiler's restrictive JavaScript subset.
+
+You might use  `wrapInArray()` like this:
+
+```TypeScript
+@NgModule({
+  declarations: wrapInArray(TypicalComponent)
+})
+export class TypicalModule {}
+```
+
+The compiler treats this usage as if you had written:
+
+```TypeScript
+@NgModule({
+  declarations: [TypicalComponent]
+})
+export class TypicalModule {}
+```
+
+The collector is simplistic in its determination of what qualifies as a macro
+function; it can only contain a single `return` statement.
+
+The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
+Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
+for these methods to see how macros can simplify configuration of complex Angular modules.
+
+### Metadata rewriting
+
+The compiler treats object literals containing the fields `useClass`, `useValue`, `useFactory`, and `data` specially. The compiler converts the expression initializing one of these fields into an exported variable, which replaces the expression. This process of rewriting these expressions removes all the restrictions on what can be in them because
+the compiler doesn't need to know the expression's value&mdash;it just needs to be able to generate a reference to the value.
+
+
+
+You might write something like:
+
+```ts
+class TypicalServer {
+
+}
+
+@NgModule({
+  providers: [{provide: SERVER, useFactory: () => TypicalServer}]
+})
+export class TypicalModule {}
+```
+
+Without rewriting, this would be invalid because lambdas are not supported and `TypicalServer` is not exported.
+
+To allow this, the compiler automatically rewrites this to something like:
+
+```ts
+class TypicalServer {
+
+}
+
+export const ɵ0 = () => new TypicalServer();
+
+@NgModule({
+  providers: [{provide: SERVER, useFactory: ɵ0}]
+})
+export class TypicalModule {}
+```
+
+This allows the compiler to generate a reference to `ɵ0` in the
+factory without having to know what the value of `ɵ0` contains.
+
+The compiler does the rewriting during the emit of the `.js` file. This doesn't rewrite the `.d.ts` file, however, so TypeScript doesn't recognize it as being an export. Thus, it does not pollute the ES module's exported API.
+
+
+## Metadata Errors
+
+The following are metadata errors you may encounter, with explanations and suggested corrections.
+
+[Expression form not supported](#expression-form-not-supported)<br>
+[Reference to a local (non-exported) symbol](#reference-to-a-local-symbol)<br>
+[Only initialized variables and constants](#only-initialized-variables)<br>
+[Reference to a non-exported class](#reference-to-a-non-exported-class)<br>
+[Reference to a non-exported function](#reference-to-a-non-exported-function)<br>
+[Function calls are not supported](#function-calls-not-supported)<br>
+[Destructured variable or constant not supported](#destructured-variable-not-supported)<br>
+[Could not resolve type](#could-not-resolve-type)<br>
+[Name expected](#name-expected)<br>
+[Unsupported enum member name](#unsupported-enum-member-name)<br>
+[Tagged template expressions are not supported](#tagged-template-expressions-not-supported)<br>
+[Symbol reference expected](#symbol-reference-expected)<br>
+
+<hr>
+
+<h3 class="no-toc">Expression form not supported</h3>
+
+The compiler encountered an expression it didn't understand while evalutating Angular metadata.
+
+Language features outside of the compiler's [restricted expression syntax](#expression-syntax)
+can produce this error, as seen in the following example:
+
+```
+// ERROR
+export class Fooish { ... }
+...
+const prop = typeof Fooish; // typeof is not valid in metadata
+  ...
+  // bracket notation is not valid in metadata
+  { provide: 'token', useValue: { [prop]: 'value' } };
+  ...
+```
+
+You can use `typeof` and bracket notation in normal application code.
+You just can't use those features within expressions that define Angular metadata.
+
+Avoid this error by sticking to the compiler's [restricted expression syntax](#expression-syntax)
+when writing Angular metadata
+and be wary of new or unusual TypeScript features.
+
+<hr>
+
+{@a reference-to-a-local-symbol}
+<h3 class="no-toc">Reference to a local (non-exported) symbol</h3>
+
+<div class="alert is-helpful">
+
+_Reference to a local (non-exported) symbol 'symbol name'. Consider exporting the symbol._
 
 </div>
 
-{@a run-rollup}
+The compiler encountered a referenced to a locally defined symbol that either wasn't exported or wasn't initialized.
 
-### Run Rollup
+Here's a `provider` example of the problem.
 
-Execute the Rollup process with this command:
+```
+// ERROR
+let foo: number; // neither exported nor initialized
 
-<code-example language="none" class="code-shell">
-  node_modules/.bin/rollup -c rollup-config.js
-</code-example>
+@Component({
+  selector: 'my-component',
+  template: ... ,
+  providers: [
+    { provide: Foo, useValue: foo }
+  ]
+})
+export class MyComponent {}
+```
+The compiler generates the component factory, which includes the `useValue` provider code, in a separate module. _That_ factory module can't reach back to _this_ source module to access the local (non-exported) `foo` variable.
 
-<div class="l-sub-section">
+You could fix the problem by initializing `foo`.
 
-  Windows users should surround the `rollup` command in double quotes:
-  <code-example language="none" class="code-shell">
-    "node_modules/.bin/rollup"  -c rollup-config.js
-  </code-example>
+```
+let foo = 42; // initialized
+```
 
-</div>
+The compiler will [fold](#folding) the expression into the provider as if you had written this.
 
-{@a load}
+```
+  providers: [
+    { provide: Foo, useValue: 42 }
+  ]
+```
 
-## Load the bundle
+Alternatively, you can fix it by exporting `foo` with the expectation that `foo` will be assigned at runtime when you actually know its value.
 
-Loading the generated application bundle does not require a module loader like SystemJS.
-Remove the scripts that concern SystemJS.
-Instead, load the bundle file using a single `<script>` tag **_after_** the `</body>` tag:
+```
+// CORRECTED
+export let foo: number; // exported
 
-<code-example path="aot-compiler/src/index.html" region="bundle" title="index.html (load bundle)" linenums="false">
-</code-example>
+@Component({
+  selector: 'my-component',
+  template: ... ,
+  providers: [
+    { provide: Foo, useValue: foo }
+  ]
+})
+export class MyComponent {}
+```
 
-{@a serve}
+Adding `export` often works for variables referenced in metadata such as `providers` and `animations` because the compiler can generate _references_ to the exported variables in these expressions. It doesn't need the _values_ of those variables.
 
-## Serve the app
+Adding `export` doesn't work when the compiler needs the _actual value_
+in order to generate code.
+For example, it doesn't work for the `template` property.
 
-You'll need a web server to host the application.
-Use the same `lite-server` employed elsewhere in the documentation:
+```
+// ERROR
+export let someTemplate: string; // exported but not initialized
 
-<code-example language="none" class="code-shell">
-  npm run lite
-</code-example>
+@Component({
+  selector: 'my-component',
+  template: someTemplate
+})
+export class MyComponent {}
+```
 
-The server starts, launches a browser, and the app should appear.
+The compiler needs the value of the `template` property _right now_ to generate the component factory.
+The variable reference alone is insufficient.
+Prefixing the declaration with `export` merely produces a new error, "[`Only initialized variables and constants can be referenced`](#only-initialized-variables)".
 
-{@a source-code}
+<hr>
 
-## AOT QuickStart source code
+{@a only-initialized-variables}
+<h3 class="no-toc">Only initialized variables and constants</h3>
 
-Here's the pertinent source code:
+<div class="alert is-helpful">
 
-<code-tabs>
-  <code-pane title="src/app/app.component.html" path="aot-compiler/src/app/app.component.html">
-  </code-pane>
-  <code-pane title="src/app/app.component.ts" path="aot-compiler/src/app/app.component.ts">
-  </code-pane>
-  <code-pane title="src/main.ts" path="aot-compiler/src/main.ts">
-  </code-pane>
-  <code-pane title="src/index.html" path="aot-compiler/src/index.html">
-  </code-pane>
-  <code-pane title="tsconfig-aot.json" path="aot-compiler/tsconfig-aot.json">
-  </code-pane>
-  <code-pane title="rollup-config.js" path="aot-compiler/rollup-config.js">
-  </code-pane>
-</code-tabs>
-
-{@a workflow}
-
-## Workflow and convenience script
-
-You'll rebuild the AOT version of the application every time you make a change.
-Those _npm_ commands are long and difficult to remember.
-
-Add the following _npm_ convenience script to the `package.json` so you can compile and rollup in one command.
-
-<code-example language="json">
-  "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
-</code-example>
-
-Open a terminal window and try it.
-
-<code-example language="none" class="code-shell">
-  npm run build:aot
-</code-example>
-
-{@a run-jit}
-
-### Develop JIT along with AOT
-
-AOT compilation and rollup together take several seconds.
-You may be able to develop iteratively a little faster with SystemJS and JIT.
-The same source code can be built both ways. Here's one way to do that.
-
-* Make a copy of `index.html` and call it `index-jit.html`.
-* Delete the script at the bottom of `index-jit.html` that loads `bundle.js`
-* Restore the SystemJS scripts like this:
-
-<code-example path="aot-compiler/src/index-jit.html" region="jit" title="src/index-jit.html (SystemJS scripts)" linenums="false">
-</code-example>
-
-Notice the slight change to the `system.import` which now specifies `src/app/main-jit`.
-That's the JIT version of the bootstrap file that we preserved [above](guide/aot-compiler#bootstrap).
-
-Open a _different_ terminal window and enter `npm start`.
-
-<code-example language="none" class="code-shell">
-  npm start
-</code-example>
-
-That compiles the app with JIT and launches the server.
-The server loads `index.html` which is still the AOT version, which you can confirm in the browser console.
-Change the address bar to `index-jit.html` and it loads the JIT version.
-This is also evident in the browser console.
-
-Develop as usual.
-The server and TypeScript compiler are in "watch mode" so your changes are reflected immediately in the browser.
-
-To see those changes in AOT, switch to the original terminal and re-run `npm run build:aot`.
-When it finishes, go back to the browser and use the back button to
-return to the AOT version in the default `index.html`.
-
-Now you can develop JIT and AOT, side-by-side.
-
-{@a toh}
-
-## Tour of Heroes
-
-The sample above is a trivial variation of the QuickStart application.
-In this section you apply what you've learned about AOT compilation and tree shaking
-to an app with more substance, the [_Tour of Heroes_](tutorial/toh-pt6) application.
-
-{@a jit-dev-aot-prod}
-
-### JIT in development, AOT in production
-
-Today AOT compilation and tree shaking take more time than is practical for development. That will change soon.
-For now, it's best to JIT compile in development and switch to AOT compilation before deploying to production.
-
-Fortunately, the source code can be compiled either way without change _if_ you account for a few key differences.
-
-***index.html***
-
-The JIT and AOT apps require their own `index.html` files because they setup and launch so differently.
-
-Here they are for comparison:
-
-<code-tabs>
-  <code-pane title="aot/index.html (AOT)" path="toh-pt6/aot/index.html">
-  </code-pane>
-  <code-pane title="src/index.html (JIT)" path="toh-pt6/src/index.html">
-  </code-pane>
-</code-tabs>
-
-
-The JIT version relies on `SystemJS` to load individual modules.
-Its scripts appear in its `index.html`.
-
-The AOT version loads the entire application in a single script, `aot/dist/build.js`.
-It does not need `SystemJS`, so that script is absent from its `index.html`
-
-***main.ts***
-
-JIT and AOT applications boot in much the same way but require different Angular libraries to do so.
-The key differences, covered in the [Bootstrap](guide/aot-compiler#bootstrap) section above,
-are evident in these `main` files which can and should reside in the same folder:
-
-<code-tabs>
-  <code-pane title="main-aot.ts (AOT)" path="toh-pt6/src/main-aot.ts">
-  </code-pane>
-  <code-pane title="main.ts (JIT)" path="toh-pt6/src/main.ts">
-  </code-pane>
-</code-tabs>
-
-***TypeScript configuration***
-
-JIT-compiled applications transpile to `commonjs` modules.
-AOT-compiled applications transpile to _ES2015_/_ES6_ modules to facilitate tree shaking.
-AOT requires its own TypeScript configuration settings as well.
-
-You'll need separate TypeScript configuration files such as these:
-
-<code-tabs>
-  <code-pane title="tsconfig-aot.json (AOT)" path="toh-pt6/tsconfig-aot.json">
-  </code-pane>
-  <code-pane title="src/tsconfig.json (JIT)" path="toh-pt6/src/tsconfig.1.json">
-  </code-pane>
-</code-tabs>
-
-<div class="callout is-helpful">
-
-  <header>
-    `@types` and node modules
-  </header>
-
-  In the file structure of _this particular sample project_,
-  the `node_modules` folder happens to be two levels up from the project root.
-  Therefore, `"typeRoots"` must be set to `"../../node_modules/@types/"`.
-
-  In a more typical project, `node_modules` would be a sibling of `tsconfig-aot.json`
-  and `"typeRoots"` would be set to `"node_modules/@types/"`.
-  Edit your `tsconfig-aot.json` to fit your project's file structure.
+_Only initialized variables and constants can be referenced because the value of this variable is needed by the template compiler._
 
 </div>
 
-{@a shaking}
+The compiler found a reference to an exported variable or static field that wasn't initialized.
+It needs the value of that variable to generate code.
 
-### Tree shaking
+The following example tries to set the component's `template` property to the value of
+the exported `someTemplate` variable which is declared but _unassigned_.
 
-Rollup does the tree shaking as before.
+```
+// ERROR
+export let someTemplate: string;
 
-<code-example path="toh-pt6/rollup-config.js" title="rollup-config.js" linenums="false">
-</code-example>
+@Component({
+  selector: 'my-component',
+  template: someTemplate
+})
+export class MyComponent {}
+```
 
-{@a running-app}
+You'd also get this error if you imported `someTemplate` from some other module and neglected to initialize it there.
 
-### Running the application
+```
+// ERROR - not initialized there either
+import { someTemplate } from './config';
 
-<div class="alert is-important">
+@Component({
+  selector: 'my-component',
+  template: someTemplate
+})
+export class MyComponent {}
+```
 
-  The general audience instructions for running the AOT build of the Tour of Heroes app are not ready.
+The compiler cannot wait until runtime to get the template information.
+It must statically derive the value of the `someTemplate` variable from the source code
+so that it can generate the component factory, which includes
+instructions for building the element based on the template.
 
-  The following instructions presuppose that you have downloaded the
-  <a href="generated/zips/toh-pt6/toh-pt6.zip" target="_blank">Tour of Heroes' zip</a>
-  and run `npm install` on it.
+To correct this error, provide the initial value of the variable in an initializer clause _on the same line_.
+
+```
+// CORRECTED
+export let someTemplate = '<h1>Greetings from Angular</h1>';
+
+@Component({
+  selector: 'my-component',
+  template: someTemplate
+})
+export class MyComponent {}
+```
+
+<hr>
+
+<h3 class="no-toc">Reference to a non-exported class</h3>
+
+<div class="alert is-helpful">
+
+_Reference to a non-exported class <class name>. Consider exporting the class._
 
 </div>
 
-Run the JIT-compiled app with `npm start` as for all other JIT examples.
+Metadata referenced a class that wasn't exported.
 
-Compiling with AOT presupposes certain supporting files, most of them discussed above.
+For example, you may have defined a class and used it as an injection token in a providers array
+but neglected to export that class.
 
-<code-tabs>
-  <code-pane title="src/index.html" path="toh-pt6/src/index.html">
-  </code-pane>
-  <code-pane title="copy-dist-files.js" path="toh-pt6/copy-dist-files.js">
-  </code-pane>
-  <code-pane title="rollup-config.js" path="toh-pt6/rollup-config.js">
-  </code-pane>
-  <code-pane title="tsconfig-aot.json" path="toh-pt6/tsconfig-aot.json">
-  </code-pane>
-</code-tabs>
+```
+// ERROR
+abstract class MyStrategy { }
 
-With the following npm script in the `scripts` section of the `package.json`, you can easily serve
-the AOT-compiled application:
+  ...
+  providers: [
+    { provide: MyStrategy, useValue: ... }
+  ]
+  ...
+```
 
-<code-example language="json">
-  "serve:aot": "lite-server -c bs-config.aot.json",
-</code-example>
+Angular generates a class factory in a separate module and that
+factory [can only access exported classes](#exported-symbols).
+To correct this error, export the referenced class.
 
-Copy the AOT distribution files into the `/aot` folder with the node script:
+```
+// CORRECTED
+export abstract class MyStrategy { }
 
-<code-example language="none" class="code-shell">
-  node copy-dist-files
-</code-example>
+  ...
+  providers: [
+    { provide: MyStrategy, useValue: ... }
+  ]
+  ...
+```
+<hr>
 
-<div class="l-sub-section">
+<h3 class="no-toc">Reference to a non-exported function</h3>
 
-  You won't do that again until there are updates to `zone.js` or the `core-js` shim for old browsers.
+Metadata referenced a function that wasn't exported.
+
+For example, you may have set a providers `useFactory` property to a locally defined function that you neglected to export.
+
+```
+// ERROR
+function myStrategy() { ... }
+
+  ...
+  providers: [
+    { provide: MyStrategy, useFactory: myStrategy }
+  ]
+  ...
+```
+
+Angular generates a class factory in a separate module and that
+factory [can only access exported functions](#exported-symbols).
+To correct this error, export the function.
+
+```
+// CORRECTED
+export function myStrategy() { ... }
+
+  ...
+  providers: [
+    { provide: MyStrategy, useFactory: myStrategy }
+  ]
+  ...
+```
+<hr>
+
+{@a function-calls-not-supported}
+<h3 class="no-toc">Function calls are not supported</h3>
+
+<div class="alert is-helpful">
+
+_Function calls are not supported. Consider replacing the function or lambda with a reference to an exported function._
 
 </div>
 
-Now AOT-compile the app and launch:
+The compiler does not currently support [function expressions or lambda functions](#function-expression).
+For example, you cannot set a provider's `useFactory` to an anonymous function or arrow function like this.
 
-<code-example language="none" class="code-shell">
-  npm run build:aot && npm run serve:aot
+```
+// ERROR
+  ...
+  providers: [
+    { provide: MyStrategy, useFactory: function() { ... } },
+    { provide: OtherStrategy, useFactory: () => { ... } }
+  ]
+  ...
+```
+You also get this error if you call a function or method in a provider's `useValue`.
+```
+// ERROR
+import { calculateValue } from './utilities';
+
+  ...
+  providers: [
+    { provide: SomeValue, useValue: calculateValue() }
+  ]
+  ...
+```
+
+To correct this error, export a function from the module and refer to the function in a `useFactory` provider instead.
+
+<code-example linenums="false">
+// CORRECTED
+import { calculateValue } from './utilities';
+
+export function myStrategy() { ... }
+export function otherStrategy() { ... }
+export function someValueFactory() {
+  return calculateValue();
+}
+  ...
+  providers: [
+    { provide: MyStrategy, useFactory: myStrategy },
+    { provide: OtherStrategy, useFactory: otherStrategy },
+    { provide: SomeValue, useFactory: someValueFactory }
+  ]
+  ...
 </code-example>
 
-{@a inspect-bundle}
+<hr>
 
-### Inspect the Bundle
+{@a destructured-variable-not-supported}
+<h3 class="no-toc">Destructured variable or constant not supported</h3>
 
-It's fascinating to see what the generated JavaScript bundle looks like after Rollup.
-The code is minified, so you won't learn much from inspecting the bundle directly.
-But the <a href="https://github.com/danvk/source-map-explorer/blob/master/README.md">source-map-explorer</a>
-tool can be quite revealing.
+<div class="alert is-helpful">
 
-Install it:
+_Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring._
 
-<code-example language="none" class="code-shell">
-  npm install source-map-explorer --save-dev
+</div>
+
+The compiler does not support references to variables assigned by [destructuring](https://www.typescriptlang.org/docs/handbook/variable-declarations.html#destructuring).
+
+For example, you cannot write something like this:
+
+<code-example linenums="false">
+// ERROR
+import { configuration } from './configuration';
+
+// destructured assignment to foo and bar
+const {foo, bar} = configuration;
+  ...
+  providers: [
+    {provide: Foo, useValue: foo},
+    {provide: Bar, useValue: bar},
+  ]
+  ...
 </code-example>
 
-Run the following command to generate the map.
+To correct this error, refer to non-destructured values.
 
-<code-example language="none" class="code-shell">
-  node_modules/.bin/source-map-explorer aot/dist/build.js
+<code-example linenums="false">
+// CORRECTED
+import { configuration } from './configuration';
+  ...
+  providers: [
+    {provide: Foo, useValue: configuration.foo},
+    {provide: Bar, useValue: configuration.bar},
+  ]
+  ...
 </code-example>
 
-The `source-map-explorer` analyzes the source map generated with the bundle and draws a map of all dependencies,
-showing exactly which application and NgModules and classes are included in the bundle.
+<hr>
 
-Here's the map for _Tour of Heroes_.
+<h3 class="no-toc">Could not resolve type</h3>
 
-<a href="generated/images/guide/aot-compiler/toh-pt6-bundle.png" title="View larger image">
-  <figure>
-    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle">
-  </figure>
-</a>
+The compiler encountered a type and can't determine which module exports that type.
+
+This can happen if you refer to an ambient type.
+For example, the `Window` type is an ambiant type declared in the global `.d.ts` file.
+
+You'll get an error if you reference it in the component constructor,
+which the compiler must statically analyze.
+
+```
+// ERROR
+@Component({ })
+export class MyComponent {
+  constructor (private win: Window) { ... }
+}
+```
+TypeScript understands ambiant types so you don't import them.
+The Angular compiler does not understand a type that you neglect to export or import.
+
+In this case, the compiler doesn't understand how to inject something with the `Window` token.
+
+Do not refer to ambient types in metadata expressions.
+
+If you must inject an instance of an ambiant type,
+you can finesse the problem in four steps:
+
+1. Create an injection token for an instance of the ambiant type.
+1. Create a factory function that returns that instance.
+1. Add a `useFactory` provider with that factory function.
+1. Use `@Inject` to inject the instance.
+
+Here's an illustrative example.
+
+<code-example linenums="false">
+// CORRECTED
+import { Inject } from '@angular/core';
+
+export const WINDOW = new InjectionToken('Window');
+export function _window() { return window; }
+
+@Component({
+  ...
+  providers: [
+    { provide: WINDOW, useFactory: _window }
+  ]
+})
+export class MyComponent {
+  constructor (@Inject(WINDOW) private win: Window) { ... }
+}
+</code-example>
+
+The `Window` type in the constructor is no longer a problem for the compiler because it
+uses the `@Inject(WINDOW)` to generate the injection code.
+
+Angular does something similar with the `DOCUMENT` token so you can inject the browser's `document` object (or an abstraction of it, depending upon the platform in which the application runs).
+
+<code-example linenums="false">
+import { Inject }   from '@angular/core';
+import { DOCUMENT } from '@angular/platform-browser';
+
+@Component({ ... })
+export class MyComponent {
+  constructor (@Inject(DOCUMENT) private doc: Document) { ... }
+}
+</code-example>
+<hr>
+
+<h3 class="no-toc">Name expected</h3>
+
+The compiler expected a name in an expression it was evaluating.
+This can happen if you use a number as a property name as in the following example.
+
+```
+// ERROR
+provider: [{ provide: Foo, useValue: { 0: 'test' } }]
+```
+
+Change the name of the property to something non-numeric.
+
+```
+// CORRECTED
+provider: [{ provide: Foo, useValue: { '0': 'test' } }]
+```
+
+<hr>
+
+<h3 class="no-toc">Unsupported enum member name</h3>
+
+Angular couldn't determine the value of the [enum member](https://www.typescriptlang.org/docs/handbook/enums.html)
+that you referenced in metadata.
+
+The compiler can understand simple enum values but not complex values such as those derived from computed properties.
+
+<code-example linenums="false">
+// ERROR
+enum Colors {
+  Red = 1,
+  White,
+  Blue = "Blue".length // computed
+}
+
+  ...
+  providers: [
+    { provide: BaseColor,   useValue: Colors.White } // ok
+    { provide: DangerColor, useValue: Colors.Red }   // ok
+    { provide: StrongColor, useValue: Colors.Blue }  // bad
+  ]
+  ...
+</code-example>
+
+Avoid referring to enums with complicated initializers or computed properties.
+
+<hr>
+
+{@a tagged-template-expressions-not-supported}
+<h3 class="no-toc">Tagged template expressions are not supported</h3>
+
+<div class="alert is-helpful">
+
+_Tagged template expressions are not supported in metadata._
+
+</div>
+
+The compiler encountered a JavaScript ES2015 [tagged template expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals) such as,
+```
+// ERROR
+const expression = 'funky';
+const raw = String.raw`A tagged template ${expression} string`;
+ ...
+ template: '<div>' + raw + '</div>'
+ ...
+```
+[`String.raw()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/raw)
+is a _tag function_ native to JavaScript ES2015.
+
+The AOT compiler does not support tagged template expressions; avoid them in metadata expressions.
+
+<hr>
+
+<h3 class="no-toc">Symbol reference expected</h3>
+
+The compiler expected a reference to a symbol at the location specified in the error message.
+
+This error can occur if you use an expression in the `extends` clause of a class.
+
+<!--
+
+Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](https://github.com/angular/angular/pull/17712#discussion_r132025495).
+
+-->
+
+## Summary
+
+* What the AOT compiler does and why it is important.
+* Why metadata must be written in a subset of JavaScript.
+* What that subset is.
+* Other restrictions on metadata definition.
+* Macro-functions and macro-static methods.
+* Compiler errors related to metadata.
