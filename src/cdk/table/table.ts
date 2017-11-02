@@ -39,6 +39,7 @@ import {CdkCellDef, CdkColumnDef, CdkHeaderCellDef} from './cell';
 import {
   getTableDuplicateColumnNameError,
   getTableMissingMatchingRowDefError,
+  getTableMissingRowDefsError,
   getTableMultipleDefaultRowDefsError,
   getTableUnknownColumnError
 } from './table-errors';
@@ -182,6 +183,10 @@ export class CdkTable<T> implements CollectionViewer {
   }
 
   ngAfterContentInit() {
+    if (!this._headerDef && !this._rowDefs.length) {
+      throw getTableMissingRowDefsError();
+    }
+
     this._cacheColumnDefsByName();
     this._columnDefs.changes.subscribe(() => this._cacheColumnDefsByName());
     this._renderHeaderRow();

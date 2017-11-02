@@ -10,6 +10,7 @@ import {map} from 'rxjs/operators/map';
 import {
   getTableDuplicateColumnNameError,
   getTableMissingMatchingRowDefError,
+  getTableMissingRowDefsError,
   getTableMultipleDefaultRowDefsError,
   getTableUnknownColumnError
 } from './table-errors';
@@ -39,6 +40,7 @@ describe('CdkTable', () => {
         WhenRowCdkTableApp,
         WhenRowWithoutDefaultCdkTableApp,
         WhenRowMultipleDefaultsCdkTableApp,
+        MissingRowDefsCdkTableApp,
         BooleanRowCdkTableApp
       ],
     }).compileComponents();
@@ -156,6 +158,11 @@ describe('CdkTable', () => {
   it('should throw an error if a column definition is requested but not defined', () => {
     expect(() => TestBed.createComponent(MissingColumnDefCdkTableApp).detectChanges())
         .toThrowError(getTableUnknownColumnError('column_a').message);
+  });
+
+  it('should throw an error if the row definitions are missing', () => {
+    expect(() => TestBed.createComponent(MissingRowDefsCdkTableApp).detectChanges())
+        .toThrowError(getTableMissingRowDefsError().message);
   });
 
   it('should not throw an error if columns are undefined on initialization', () => {
@@ -995,6 +1002,20 @@ class DuplicateColumnDefNameCdkTableApp {
   `
 })
 class MissingColumnDefCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+    </cdk-table>
+  `
+})
+class MissingRowDefsCdkTableApp {
   dataSource: FakeDataSource = new FakeDataSource();
 }
 
