@@ -33,15 +33,16 @@ $mat-dense-list-icon-size: 20px;
   // Prevents the wrapper `mat-list-item-content` from collapsing due to it
   // being `inline` by default.
   display: block;
+  height: $base-height;
 
   .mat-list-item-content {
     display: flex;
     flex-direction: row;
     align-items: center;
     box-sizing: border-box;
-    height: $base-height;
     padding: 0 $mat-list-side-padding;
     position: relative;
+    height: inherit;
   }
 
   .mat-list-item-content-reverse {
@@ -61,22 +62,22 @@ $mat-dense-list-icon-size: 20px;
     pointer-events: none;
   }
 
-  &.mat-list-item-avatar .mat-list-item-content {
+  &.mat-list-item-avatar {
     height: $avatar-height;
   }
 
-  &.mat-2-line .mat-list-item-content {
+  &.mat-2-line {
     height: $two-line-height;
   }
 
 
-  &.mat-3-line .mat-list-item-content {
+  &.mat-3-line {
     height: $three-line-height;
   }
 
   // list items with more than 3 lines should expand to match
   // the height of its contained text
-  &.mat-multi-line .mat-list-item-content {
+  &.mat-multi-line {
     height: 100%;
     padding: 8px $mat-list-side-padding;
   }
