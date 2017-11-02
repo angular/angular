@@ -2,6 +2,9 @@
 
 cd `dirname $0`
 
-DESTDIR=./../../packages/core/src/animation
-rm ${DESTDIR}/dsl.ts
-mv ${DESTDIR}/dsl.ts.old ${DESTDIR}/dsl.ts
+CORE_SRC_ANIMATION_DIR=./../../packages/core/src/animation
+UPGRADE_STATIC_DIR=./../../packages/upgrade/static
+rm ${CORE_SRC_ANIMATION_DIR}/dsl.ts
+rm ${UPGRADE_STATIC_DIR}/src
+mv ${CORE_SRC_ANIMATION_DIR}/dsl.ts.old ${CORE_SRC_ANIMATION_DIR}/dsl.ts
+mv ${UPGRADE_STATIC_DIR}/src.old ${UPGRADE_STATIC_DIR}/src
