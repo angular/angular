@@ -37,12 +37,12 @@ describe('MatProgressSpinner', () => {
     expect(progressElement.componentInstance.mode).toBe('indeterminate');
   });
 
-  it('should define a default value of undefined for the value attribute', () => {
+  it('should define a default value of zero for the value attribute', () => {
     let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
 
     let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
-    expect(progressElement.componentInstance.value).toBeUndefined();
+    expect(progressElement.componentInstance.value).toBe(0);
   });
 
   it('should set the value to 0 when the mode is set to indeterminate', () => {
