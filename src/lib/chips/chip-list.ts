@@ -527,7 +527,6 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   private _isInputEmpty(element: HTMLElement): boolean {
     if (element && element.nodeName.toLowerCase() === 'input') {
       let input = element as HTMLInputElement;
-
       return !input.value;
     }
 
@@ -547,7 +546,14 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
       // Shift focus to the active item. Note that we shouldn't do this in multiple
       // mode, because we don't know what chip the user interacted with last.
       if (correspondingChip) {
-        this._keyManager.setActiveItem(this.chips.toArray().indexOf(correspondingChip));
+        const correspondingChipIndex = this.chips.toArray().indexOf(correspondingChip);
+
+        if (isUserInput) {
+          this._keyManager.setActiveItem(correspondingChipIndex);
+        } else {
+          this._keyManager.updateActiveItemIndex(correspondingChipIndex);
+        }
+
       }
     }
   }

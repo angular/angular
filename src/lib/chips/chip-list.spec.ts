@@ -577,6 +577,17 @@ describe('MatChipList', () => {
         expect(falsyFixture.componentInstance.chips.first.selected)
           .toBe(true, 'Expected first option to be selected');
       });
+
+      it('should not focus the active chip when the value is set programmatically', () => {
+        const chipArray = fixture.componentInstance.chips.toArray();
+
+        spyOn(chipArray[4], 'focus').and.callThrough();
+
+        fixture.componentInstance.control.setValue('chips-4');
+        fixture.detectChanges();
+
+        expect(chipArray[4].focus).not.toHaveBeenCalled();
+      });
     });
 
     describe('multiple selection', () => {
