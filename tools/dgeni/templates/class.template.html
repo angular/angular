@@ -10,7 +10,7 @@
 </h4>
 
 {%- if class.description -%}
-<p class="docs-api-class-description">{$ class.description | safe $}</p>
+<p class="docs-api-class-description">{$ class.description | marked | safe $}</p>
 {%- endif -%}
 
 {%- if class.directiveSelectors -%}
