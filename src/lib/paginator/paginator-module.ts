@@ -12,7 +12,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatPaginator} from './paginator';
-import {MatPaginatorIntl} from './paginator-intl';
+import {MAT_PAGINATOR_INTL_PROVIDER} from './paginator-intl';
 
 
 @NgModule({
@@ -24,6 +24,6 @@ import {MatPaginatorIntl} from './paginator-intl';
   ],
   exports: [MatPaginator],
   declarations: [MatPaginator],
-  providers: [MatPaginatorIntl],
+  providers: [MAT_PAGINATOR_INTL_PROVIDER],
 })
 export class MatPaginatorModule {}
