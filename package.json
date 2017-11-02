@@ -105,7 +105,6 @@
     "vrsource-tslint-rules": "5.1.1",
     "webpack": "1.12.9",
     "xhr2": "0.1.4",
-    "yargs": "9.0.1",
-    "yarn": "1.0.2"
+    "yargs": "9.0.1"
   }
 }
