@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, SkipSelf, Optional} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {SortDirection} from './sort-direction';
 
@@ -32,3 +32,16 @@ export class MatSortHeaderIntl {
     return `Sorted by ${id} ${direction == 'asc' ? 'ascending' : 'descending'}`;
   }
 }
+/** @docs-private */
+export function MAT_SORT_HEADER_INTL_PROVIDER_FACTORY(parentIntl: MatSortHeaderIntl) {
+  return parentIntl || new MatSortHeaderIntl();
+}
+
+/** @docs-private */
+export const MAT_SORT_HEADER_INTL_PROVIDER = {
+  // If there is already an MatSortHeaderIntl available, use that. Otherwise, provide a new one.
+  provide: MatSortHeaderIntl,
+  deps: [[new Optional(), new SkipSelf(), MatSortHeaderIntl]],
+  useFactory: MAT_SORT_HEADER_INTL_PROVIDER_FACTORY
+};
+
