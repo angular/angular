@@ -1,5 +1,5 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {ENTER} from '@angular/cdk/keycodes';
+import {ENTER, COMMA} from '@angular/cdk/keycodes';
 import {PlatformModule} from '@angular/cdk/platform';
 import {createKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
@@ -8,8 +8,6 @@ import {By} from '@angular/platform-browser';
 import {MatChipInput, MatChipInputEvent} from './chip-input';
 import {MatChipsModule} from './index';
 
-
-const COMMA = 188;
 
 describe('MatChipInput', () => {
   let fixture: ComponentFixture<any>;

@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 import {MatChipInputEvent} from '@angular/material';
-import {ENTER} from '@angular/cdk/keycodes';
-
-const COMMA = 188;
+import {ENTER, COMMA} from '@angular/cdk/keycodes';
 
 /**
  * @title Chips with input

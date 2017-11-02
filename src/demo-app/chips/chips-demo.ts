@@ -1,8 +1,6 @@
-import {ENTER} from '@angular/cdk/keycodes';
+import {ENTER, COMMA} from '@angular/cdk/keycodes';
 import {Component} from '@angular/core';
 import {MatChipInputEvent} from '@angular/material';
-
-const COMMA = 188;
 
 export interface Person {
   name: string;
