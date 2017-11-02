@@ -58,7 +58,7 @@
           <input placeholder="New Contributor..."
                  [matChipInputFor]="chipList1"
                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                 [matChipInputAddOnBlur]="false"
+                 [matChipInputAddOnBlur]="addOnBlur"
                  (matChipInputTokenEnd)="add($event)" />
         </mat-chip-list>
       </mat-form-field>
