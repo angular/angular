@@ -187,6 +187,21 @@ describe('MatTable', () => {
       ]);
     });
 
+    it('should by default correctly sort an empty string', () => {
+      // Activate column A sort
+      dataSource.data[0].a = ' ';
+      component.sort.sort(component.sortHeader);
+      fixture.detectChanges();
+
+      // Expect that empty string row comes before the other values
+      expectTableToMatchContent(tableElement, [
+        ['Column A\xa0Sorted by a ascending', 'Column B', 'Column C'],
+        ['', 'b_1', 'c_1'],
+        ['a_2', 'b_2', 'c_2'],
+        ['a_3', 'b_3', 'c_3'],
+      ]);
+    });
+
     it('should be able to page the table contents', fakeAsync(() => {
       // Add 100 rows, should only display first 5 since page length is 5
       for (let i = 0; i < 100; i++) {

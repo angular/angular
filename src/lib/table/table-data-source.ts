@@ -88,7 +88,14 @@ export class MatTableDataSource<T> implements DataSource<T> {
    * @param sortHeaderId The name of the column that represents the data.
    */
   sortingDataAccessor = (data: T, sortHeaderId: string): string|number => {
-    const value: number|string = data[sortHeaderId];
+    const value: any = data[sortHeaderId];
+
+    // If the value is a string and only whitespace, return the value.
+    // Otherwise +value will convert it to 0.
+    if (typeof value === 'string' && !value.trim()) {
+      return value;
+    }
+
     return isNaN(+value) ? value : +value;
   }
 
