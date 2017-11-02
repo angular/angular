@@ -124,7 +124,7 @@
     "lighthouse": "^2.5.0",
     "lodash": "^4.17.4",
     "lunr": "^2.1.0",
-    "protractor": "~5.1.0",
+    "protractor": "^5.2.0",
     "rehype": "^4.0.0",
     "rehype-autolink-headings": "^2.0.0",
     "rehype-slug": "^2.0.0",
