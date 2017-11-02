@@ -103,6 +103,10 @@ export class OverlayRef implements PortalOutlet {
    * @returns The portal detachment result.
    */
   detach(): any {
+    if (!this.hasAttached()) {
+      return;
+    }
+
     this.detachBackdrop();
 
     // When the overlay is detached, the pane element should disable pointer events.
@@ -133,6 +137,8 @@ export class OverlayRef implements PortalOutlet {
    * Cleans up the overlay from the DOM.
    */
   dispose(): void {
+    const isAttached = this.hasAttached();
+
     if (this._config.positionStrategy) {
       this._config.positionStrategy.dispose();
     }
@@ -145,7 +151,11 @@ export class OverlayRef implements PortalOutlet {
     this._portalOutlet.dispose();
     this._attachments.complete();
     this._backdropClick.complete();
-    this._detachments.next();
+
+    if (isAttached) {
+      this._detachments.next();
+    }
+
     this._detachments.complete();
   }
 

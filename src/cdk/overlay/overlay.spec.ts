@@ -177,6 +177,26 @@ describe('Overlay', () => {
     expect(spy).toHaveBeenCalled();
   });
 
+  it('should not emit to the detach stream if the overlay has not been attached', () => {
+    let overlayRef = overlay.create();
+    let spy = jasmine.createSpy('detachments spy');
+
+    overlayRef.detachments().subscribe(spy);
+    overlayRef.detach();
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('should not emit to the detach stream on dispose if the overlay was not attached', () => {
+    let overlayRef = overlay.create();
+    let spy = jasmine.createSpy('detachments spy');
+
+    overlayRef.detachments().subscribe(spy);
+    overlayRef.dispose();
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
   it('should emit the detachment event after the overlay is removed from the DOM', () => {
     let overlayRef = overlay.create();
 
