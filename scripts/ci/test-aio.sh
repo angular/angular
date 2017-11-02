@@ -18,6 +18,13 @@ source ${thisDir}/_travis-fold.sh
   travisFoldEnd "test.aio.lint"
 
 
+  # Run PWA-score tests
+  # (Run before unit and e2e tests, which destroy the `dist/` directory.)
+  travisFoldStart "test.aio.pwaScore"
+    yarn test-pwa-score-localhost
+  travisFoldEnd "test.aio.pwaScore"
+
+
   # Run unit tests
   travisFoldStart "test.aio.unit"
     yarn test --single-run
@@ -28,12 +35,6 @@ source ${thisDir}/_travis-fold.sh
   travisFoldStart "test.aio.e2e"
     yarn e2e
   travisFoldEnd "test.aio.e2e"
-
-
-  # Run PWA-score tests
-  travisFoldStart "test.aio.pwaScore"
-    yarn test-pwa-score-localhost
-  travisFoldEnd "test.aio.pwaScore"
 
 
   # Run unit tests for aio/aio-builds-setup
