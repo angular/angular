@@ -100,9 +100,6 @@ export class MatDialogContainer extends BasePortalOutlet {
   /** ID of the element that should be considered as the dialog's label. */
   _ariaLabelledBy: string | null = null;
 
-  /** Whether the container is currently mid-animation. */
-  _isAnimating = false;
-
   constructor(
     private _elementRef: ElementRef,
     private _focusTrapFactory: FocusTrapFactory,
@@ -147,13 +144,7 @@ export class MatDialogContainer extends BasePortalOutlet {
     // If were to attempt to focus immediately, then the content of the dialog would not yet be
     // ready in instances where change detection has to run first. To deal with this, we simply
     // wait for the microtask queue to be empty.
-    this._focusTrap.focusInitialElementWhenReady().then(hasMovedFocus => {
-      // If we didn't find any focusable elements inside the dialog, focus the
-      // container so the user can't tab into other elements behind it.
-      if (!hasMovedFocus) {
-        this._elementRef.nativeElement.focus();
-      }
-    });
+    this._focusTrap.focusInitialElementWhenReady();
   }
 
   /** Restores focus to the element that was focused before the dialog opened. */
@@ -174,6 +165,11 @@ export class MatDialogContainer extends BasePortalOutlet {
   private _savePreviouslyFocusedElement() {
     if (this._document) {
       this._elementFocusedBeforeDialogWasOpened = this._document.activeElement as HTMLElement;
+
+      // Move focus onto the dialog immediately in order to prevent the user from accidentally
+      // opening multiple dialogs at the same time. Needs to be async, because the element
+      // may not be focusable immediately.
+      Promise.resolve().then(() => this._elementRef.nativeElement.focus());
     }
   }
 
@@ -186,12 +182,10 @@ export class MatDialogContainer extends BasePortalOutlet {
     }
 
     this._animationStateChanged.emit(event);
-    this._isAnimating = false;
   }
 
   /** Callback, invoked when an animation on the host starts. */
   _onAnimationStart(event: AnimationEvent) {
-    this._isAnimating = true;
     this._animationStateChanged.emit(event);
   }
 
