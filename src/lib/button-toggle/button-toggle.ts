@@ -128,10 +128,17 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
   set value(newValue: any) {
     if (this._value != newValue) {
       this._value = newValue;
-
+      this.valueChange.emit(newValue);
       this._updateSelectedButtonToggleFromValue();
     }
   }
+
+  /**
+   * Event that emits whenever the value of the group changes.
+   * Used to facilitate two-way data binding.
+   * @docs-private
+   */
+  @Output() valueChange = new EventEmitter<any>();
 
   /** Whether the toggle group is selected. */
   @Input()
