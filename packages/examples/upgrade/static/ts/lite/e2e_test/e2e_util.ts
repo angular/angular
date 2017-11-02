@@ -11,8 +11,8 @@ import {ElementFinder, by} from 'protractor';
 declare global {
   namespace jasmine {
   interface Matchers {
-    toBeAHero(): void;
-    toHaveName(exectedName: string): void;
+    toBeAHero(): Promise<void>;
+    toHaveName(exectedName: string): Promise<void>;
   }
   }
 }
@@ -29,11 +29,11 @@ export function addCustomMatchers() {
                 actualNg1Hero !.element(by.css(selector)).getText();
             const result = {
               message: 'Expected undefined to be an `ng1Hero` ElementFinder.',
-              pass: actualNg1Hero &&
-                  Promise.all(['.title', 'h2', 'p'].map(getText))
+              pass: !!actualNg1Hero &&
+                  Promise.all(['.title', 'h2', 'p'].map(getText) as PromiseLike<string>[])
                       .then(([actualTitle, actualName, actualDescription]) => {
                         const pass = (actualTitle === 'Super Hero') && isTitleCased(actualName) &&
-                            actualDescription.length;
+                            (actualDescription.length > 0);
 
                         const actualHero =
                             `Hero(${actualTitle}, ${actualName}, ${actualDescription})`;
@@ -41,25 +41,24 @@ export function addCustomMatchers() {
                             `Expected ${actualHero}'${pass ? ' not' : ''} to be a real hero.`;
 
                         return pass;
-                      }) as any
+                      })
             };
             return result;
           }
         }),
-    toHaveName:
-        () => ({
+        toHaveName: () => ({
           compare(actualNg1Hero: ElementFinder | undefined, expectedName: string) {
             const result = {
               message: 'Expected undefined to be an `ng1Hero` ElementFinder.',
-              pass: actualNg1Hero && actualNg1Hero.element(by.css('h2')).getText().then(actualName => {
+              pass: !!actualNg1Hero && actualNg1Hero.element(by.css('h2')).getText().then(actualName => {
                 const pass = actualName === expectedName;
                 result.message =
                     `Expected Hero(${actualName})${pass ? ' not' : ''} to have name '${expectedName}'.`;
                 return pass;
-              }) as any
+              })
             };
             return result;
           }
-        })
-  });
+        }),
+  } as any);
 }

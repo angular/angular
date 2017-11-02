@@ -20,55 +20,48 @@ import {NgAdapterInjector} from './util';
 /**
  * <!-- TODO(gkalpak): Add link to guide. -->
  *
- * @whatItDoes
- *
- * *Part of the {@link upgrade/static upgrade/static} library for hybrid upgrade apps that support
- * AoT compilation.*
- *
- * Allows an Angular module to be bootstrapped "on-demand" (possibly lazily) from within a running
- * AngularJS application.
- *
- * @howToUse
- *
- * {@example upgrade/static/ts/lite/module.ts region="basic-how-to"}
- *
  * @description
  *
- * This is a helper function for creating an AngularJS module that can bootstrap an Angular module
- * when a {@link downgradeComponent downgraded component} needs to be instantiated.
+ * A helper function for creating an AngularJS module that can bootstrap an Angular module
+ * "on-demand" (possibly lazily) when a {@link downgradeComponent downgraded component} needs to be
+ * instantiated.
  *
- * This allows loading/bootstrapping the Angular part of a hybrid application lazily and not having
- * to pay the cost up-front. For example, you can have an AngularJS application that uses Angular
- * for specific routes and only instantiate the Angular modules if/when the user visits one of these
+ * *Part of the [upgrade/static](api?query=upgrade/static) library for hybrid upgrade apps that
+ * support AoT compilation.*
+ *
+ * It allows loading/bootstrapping the Angular part of a hybrid application lazily and not having to
+ * pay the cost up-front. For example, you can have an AngularJS application that uses Angular for
+ * specific routes and only instantiate the Angular modules if/when the user visits one of these
  * routes.
  *
  * The Angular module will be bootstrapped once (when requested for the first time) and the same
  * reference will be used from that point onwards.
  *
- * `downgradeModule()` requires either an {@link NgModuleFactory NgModuleFactory} or a function:
+ * `downgradeModule()` requires either an `NgModuleFactory` or a function:
  * - `NgModuleFactory`: If you pass an `NgModuleFactory`, it will be used to instantiate a module
- *   using {@link platformBrowser platformBrowser}'s {@link PlatformRef#bootstrapModuleFactory
- *   bootstrapModuleFactory()}.
+ *   using `platformBrowser`'s {@link PlatformRef#bootstrapModuleFactory bootstrapModuleFactory()}.
  * - `Function`: If you pass a function, it is expected to return a promise resolving to an
- *   {@link NgModuleRef NgModuleRef}. The function is called with an array of extra
- *   {@link StaticProvider Providers} that are expected to be available from the returned
- *   `NgModuleRef`'s {@link Injector Injector}.
+ *   `NgModuleRef`. The function is called with an array of extra {@link StaticProvider Providers}
+ *   that are expected to be available from the returned `NgModuleRef`'s `Injector`.
  *
- * `downgradeModule()` returns the name of the created AngularJS wrapper module. You can use it
- * to declare a dependency in your main AngularJS module.
+ * `downgradeModule()` returns the name of the created AngularJS wrapper module. You can use it to
+ * declare a dependency in your main AngularJS module.
+ *
+ * {@example upgrade/static/ts/lite/module.ts region="basic-how-to"}
+ *
+ * @usageNotes
+ *
+ * Apart from `UpgradeModule`, you can use the rest of the `upgrade/static` helpers as usual to
+ * build a hybrid application. Note that the Angular pieces (e.g. downgraded services) will not be
+ * available until the downgraded module has been bootstrapped, i.e. by instantiating a downgraded
+ * component.
  *
  * <div class="alert is-important">
  *
- *   You cannot use `downgradeModule()` and {@link UpgradeModule UpgradeModule} in the same hybrid
- *   application.<br />
+ *   You cannot use `downgradeModule()` and `UpgradeModule` in the same hybrid application.<br />
  *   Use one or the other.
  *
  * </div>
- *
- * Apart from `UpgradeModule`, you can use the rest of the {@link upgrade/static upgrade/static}
- * helpers as usual to build a hybrid application. Note that the Angular pieces (e.g. downgraded
- * services) will not be available until the downgraded module has been bootstrapped, i.e. by
- * instantiating a downgraded component.
  *
  * ### Differences with `UpgradeModule`
  *

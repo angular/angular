@@ -56,34 +56,34 @@ describe('upgrade/static (lite)', () => {
   beforeEach(loadPage);
   afterEach(verifyNoBrowserErrors);
 
-  it('should initially not render the heroes', () => { expectHeroes(false); });
+  it('should initially not render the heroes', () => expectHeroes(false));
 
   it('should toggle the heroes when clicking the "show/hide" button', () => {
-    showHideBtn.click()
-        .then(() => expectHeroes(true))
-        .then(() => showHideBtn.click())
-        .then(() => expectHeroes(false));
+    showHideBtn.click();
+    expectHeroes(true);
+
+    showHideBtn.click();
+    expectHeroes(false);
   });
 
   it('should add a new hero when clicking the "add" button', () => {
-    showHideBtn.click()
-        .then(() => ng2HeroesAddBtn.click())
-        .then(() => expectHeroes(true, 4, 'Added hero Kamala Khan'))
-        .then(() => expect(ng1Heroes.last()).toHaveName('Kamala Khan'));
+    showHideBtn.click();
+    ng2HeroesAddBtn.click();
+
+    expectHeroes(true, 4, 'Added hero Kamala Khan');
+    expect(ng1Heroes.last()).toHaveName('Kamala Khan');
   });
 
   it('should remove a hero when clicking its "remove" button', () => {
-    showHideBtn.click()
-        .then(() => {
-          const firstHero = ng1Heroes.first();
-          expect(firstHero).toHaveName('Superman');
+    showHideBtn.click();
 
-          const removeBtn = firstHero.element(by.buttonText('Remove'));
-          return removeBtn.click();
-        })
-        .then(() => {
-          expectHeroes(true, 2, 'Removed hero Superman');
-          expect(ng1Heroes.first()).not.toHaveName('Superman');
-        });
+    const firstHero = ng1Heroes.first();
+    expect(firstHero).toHaveName('Superman');
+
+    const removeBtn = firstHero.element(by.buttonText('Remove'));
+    removeBtn.click();
+
+    expectHeroes(true, 2, 'Removed hero Superman');
+    expect(ng1Heroes.first()).not.toHaveName('Superman');
   });
 });

@@ -158,8 +158,7 @@ ng1AppModule.component('exampleApp', {
   // (We don't need the `HeroesService` type for AngularJS DI - it just helps with TypeScript
   // compilation)
   controller: [
-    'heroesService',
-    function(heroesService: HeroesService) { this.heroesService = heroesService; }
+    'heroesService', function(heroesService: HeroesService) { this.heroesService = heroesService; }
   ],
   // This template makes use of the downgraded `ng2-heroes` component
   // Note that because its element is compiled by AngularJS we must use kebab-case attributes

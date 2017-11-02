@@ -78,11 +78,18 @@ class Ng2HeroesComponent {
   @Output() private addHero = new EventEmitter<Hero>();
   @Output() private removeHero = new EventEmitter<Hero>();
 
-  constructor(public heroesService: HeroesService) {}
+  constructor(
+      @Inject('$rootScope') private $rootScope: ng.IRootScopeService,
+      public heroesService: HeroesService) {}
 
   onAddHero() {
     const newHero = this.heroesService.addHero();
     this.addHero.emit(newHero);
+
+    // When a new instance of an "upgraded" component - such as `ng1Hero` - is created, we want to
+    // run a `$digest` to initialize its bindings. Here, the component will be created by `ngFor`
+    // asynchronously, thus we have to schedule the `$digest` to also happen asynchronously.
+    this.$rootScope.$applyAsync();
   }
 
   onRemoveHero(hero: Hero) {
@@ -211,24 +218,3 @@ myMainAngularJsModule.component('exampleApp', {
 
 // We bootstrap the Angular module as we would do in a normal Angular app.
 angular.bootstrap(document.body, [myMainAngularJsModule.name]);
-
-
-// TODO(gkalpak): Decide whether to address the issue in the example.
-//
-// When a new instance of an "upgraded" component - such as `ng1Hero` - is created, we want to run a
-// `$digest` to initialize its bindings. But we can't run it synchronously with the code that added
-// the new hero to the list, because (apparently) the component will be created lazily (possibly due
-// to `ngFor`).
-// As a work-around, we run a `$digest` on every "upgraded" component's `ngAfterViewInit` lifecycle
-// hook. Ideally, this should be part of `UpgradeComponent` itself.
-let $rootScope: ng.IRootScopeService;
-const getRootScope = () => {
-  if (!$rootScope) {
-    const $rootElement = angular.element(document.body);
-    const $injector = $rootElement.injector() as ng.auto.IInjectorService;
-    $rootScope = $injector.get<ng.IRootScopeService>('$rootScope');
-  }
-  return $rootScope;
-};
-(UpgradeComponent.prototype as any).ngAfterViewInit = () =>
-    getRootScope().$$phase || $rootScope.$digest();
