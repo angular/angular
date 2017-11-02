@@ -1,10 +1,14 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {PeopleDatabase, UserData} from './people-database';
 import {PersonDataSource} from './person-data-source';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {DetailRow, PersonDetailDataSource} from './person-detail-data-source';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {FormControl} from '@angular/forms';
+import {SelectionModel} from '@angular/cdk/collections';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/distinctUntilChanged';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/observable/fromEvent';
 
 export type UserProperties = 'userId' | 'userName' | 'progress' | 'color' | undefined;
 
@@ -35,7 +39,10 @@ export class TableDemo {
   highlights = new Set<string>();
   wasExpanded = new Set<UserData>();
 
-  filter = new FormControl();
+  matTableDataSourceColumns = ['select', 'userId', 'userName', 'progress', 'color'];
+  selection = new SelectionModel<UserData>(true, []);
+
+  @ViewChild('filter') filter: ElementRef;
 
   dynamicColumnDefs: any[] = [];
   dynamicColumnIds: string[] = [];
@@ -62,7 +69,6 @@ export class TableDemo {
     };
     this.matTableDataSource.filterPredicate =
         (data: UserData, filter: string) => data.name.indexOf(filter) != -1;
-    this.filter.valueChanges.subscribe(filter => this.matTableDataSource!.filter = filter);
   }
 
   ngAfterViewInit() {
@@ -74,6 +80,43 @@ export class TableDemo {
 
   ngOnInit() {
     this.connect();
+    Observable.fromEvent(this.filter.nativeElement, 'keyup')
+        .debounceTime(150)
+        .distinctUntilChanged()
+        .subscribe(() => {
+          this.paginatorForDataSource.pageIndex = 0;
+          this.matTableDataSource.filter = this.filter.nativeElement.value;
+        });
+  }
+
+  /** Whether all filtered rows are selected. */
+  isAllFilteredRowsSelected() {
+    return this.matTableDataSource.filteredData.every(data => this.selection.isSelected(data));
+  }
+
+  /** Whether the selection it totally matches the filtered rows. */
+  isMasterToggleChecked() {
+    return this.selection.hasValue() &&
+        this.isAllFilteredRowsSelected() &&
+        this.selection.selected.length >= this.matTableDataSource.filteredData.length;
+  }
+
+  /**
+   * Whether there is a selection that doesn't capture all the
+   * filtered rows there are no filtered rows displayed.
+   */
+  isMasterToggleIndeterminate() {
+    return this.selection.hasValue() &&
+        (!this.isAllFilteredRowsSelected() || !this.matTableDataSource.filteredData.length);
+  }
+
+  /** Selects all filtered rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    if (this.isMasterToggleChecked()) {
+      this.selection.clear();
+    } else {
+      this.matTableDataSource.filteredData.forEach(data => this.selection.select(data));
+    }
   }
 
   addDynamicColumnDef() {

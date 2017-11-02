@@ -73,7 +73,7 @@
   }
 }
 
-  /* Structure so that the table is contained on a card */
+/* Structure so that the table is contained on a card */
 .demo-table-container {
   max-height: 800px;
   display: flex;
@@ -98,6 +98,11 @@
   max-width: 160px;
 }
 
+.mat-column-select {
+  max-width: 48px;
+  overflow: inherit;
+}
+
 /* Progress bar styling */
 .cdk-column-progress {
   &.cdk-cell, &.mat-cell {
@@ -117,5 +122,22 @@
       border-radius: 8px;
       height: 8px;
     }
+  }
+}
+
+.example-selection-header {
+  height: 64px;
+  background: white;
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+}
+
+.mat-table-selectable {
+  .mat-row:hover {
+    background: #eeeeee;
+  }
+  .mat-row.selected {
+    background: #f5f5f5;
   }
 }
