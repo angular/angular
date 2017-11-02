@@ -149,13 +149,17 @@ export class CdkStepper {
   @Input()
   get selectedIndex() { return this._selectedIndex; }
   set selectedIndex(index: number) {
-    if (this._anyControlsInvalid(index)
-        || index < this._selectedIndex && !this._steps.toArray()[index].editable) {
-      // remove focus from clicked step header if the step is not able to be selected
-      this._stepHeader.toArray()[index].nativeElement.blur();
-    } else if (this._selectedIndex != index) {
-      this._emitStepperSelectionEvent(index);
-      this._focusIndex = this._selectedIndex;
+    if (this._steps) {
+      if (this._anyControlsInvalid(index) || index < this._selectedIndex &&
+          !this._steps.toArray()[index].editable) {
+        // remove focus from clicked step header if the step is not able to be selected
+        this._stepHeader.toArray()[index].nativeElement.blur();
+      } else if (this._selectedIndex != index) {
+        this._emitStepperSelectionEvent(index);
+        this._focusIndex = this._selectedIndex;
+      }
+    } else {
+      this._selectedIndex = this._focusIndex = index;
     }
   }
   private _selectedIndex: number = 0;
@@ -281,9 +285,12 @@ export class CdkStepper {
   }
 
   private _anyControlsInvalid(index: number): boolean {
-    this._steps.toArray()[this._selectedIndex].interacted = true;
+    const steps = this._steps.toArray();
+
+    steps[this._selectedIndex].interacted = true;
+
     if (this._linear && index >= 0) {
-      return this._steps.toArray().slice(0, index).some(step => step.stepControl.invalid);
+      return steps.slice(0, index).some(step => step.stepControl && step.stepControl.invalid);
     }
     return false;
   }

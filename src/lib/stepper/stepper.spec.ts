@@ -21,6 +21,7 @@ describe('MatHorizontalStepper', () => {
       imports: [MatStepperModule, NoopAnimationsModule, ReactiveFormsModule],
       declarations: [
         SimpleMatHorizontalStepperApp,
+        SimplePreselectedMatHorizontalStepperApp,
         LinearMatHorizontalStepperApp
       ],
       providers: [
@@ -167,6 +168,18 @@ describe('MatHorizontalStepper', () => {
 
     it('should be able to move to next step even when invalid if current step is optional', () => {
       assertOptionalStepValidity(testComponent, fixture);
+    });
+
+    it('should not throw when there is a pre-defined selectedIndex', () => {
+      fixture.destroy();
+
+      let preselectedFixture = TestBed.createComponent(SimplePreselectedMatHorizontalStepperApp);
+      let debugElement = preselectedFixture.debugElement;
+
+      expect(() => preselectedFixture.detectChanges()).not.toThrow();
+
+      let stepHeaders = debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
+      assertSelectionChangeOnHeaderClick(preselectedFixture, stepHeaders);
     });
   });
 });
@@ -861,4 +874,17 @@ class LinearMatVerticalStepperApp {
       threeCtrl: new FormControl('', Validators.pattern(VALID_REGEX))
     });
   }
+}
+
+@Component({
+  template: `
+    <mat-horizontal-stepper [linear]="true" [selectedIndex]="index">
+      <mat-step label="One"></mat-step>
+      <mat-step label="Two"></mat-step>
+      <mat-step label="Three"></mat-step>
+    </mat-horizontal-stepper>
+  `
+})
+class SimplePreselectedMatHorizontalStepperApp {
+  index = 0;
 }
