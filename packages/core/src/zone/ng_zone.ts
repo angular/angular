@@ -118,7 +118,7 @@ export class NgZone {
 
   constructor({enableLongStackTrace = false}) {
     if (typeof Zone == 'undefined') {
-      throw new Error('Angular requires Zone.js prolyfill.');
+      throw new Error(`In this configuration Angular requires Zone.js`);
     }
 
     Zone.assertZonePatched();
