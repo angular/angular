@@ -32,6 +32,11 @@
     box-shadow: none;
   }
 
+  // Remove IE's default clear icon.
+  &::-ms-clear {
+    display: none;
+  }
+
   // Note that we can't use something like visibility: hidden or
   // display: none, because IE ends up preventing the user from
   // focusing the input altogether.
