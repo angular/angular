@@ -1,4 +1,4 @@
-import { element, by } from 'protractor';
+import { browser, by, element } from 'protractor';
 import { SitePage } from './app.po';
 
 describe('site App', function() {
@@ -11,7 +11,7 @@ describe('site App', function() {
   });
 
   it('should show features text after clicking "Features"', () => {
-    page.getLink('features').click();
+    page.getTopMenuLink('features').click();
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
   });
 
@@ -21,7 +21,7 @@ describe('site App', function() {
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
 
     // navigate to a different page
-    page.getLink('features').click();
+    page.getTopMenuLink('features').click();
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
 
     // Show the menu
@@ -42,6 +42,8 @@ describe('site App', function() {
   describe('scrolling to the top', () => {
     it('should scroll to the top when navigating to another page', () => {
       page.navigateTo('guide/security');
+      browser.sleep(1000);  // Wait for initial async scroll-to-top after `onDocRendered`.
+
       page.scrollToBottom();
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
 
@@ -51,6 +53,8 @@ describe('site App', function() {
 
     it('should scroll to the top when navigating to the same page', () => {
       page.navigateTo('guide/security');
+      browser.sleep(1000);  // Wait for initial async scroll-to-top after `onDocRendered`.
+
       page.scrollToBottom();
       page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
 
@@ -85,7 +89,7 @@ describe('site App', function() {
 
     it('should call ga with new URL on navigation', done => {
       let path: string;
-      page.getLink('features').click();
+      page.getTopMenuLink('features').click();
       page.locationPath()
         .then(p => path = p)
         .then(() => page.ga().then(calls => {

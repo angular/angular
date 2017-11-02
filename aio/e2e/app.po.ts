@@ -23,7 +23,7 @@ export class SitePage {
                   .filter(element => element.getText().then(text => pattern.test(text)))
                   .first();
   }
-  getLink(path) { return element(by.css(`a[href="${path}"]`)); }
+  getTopMenuLink(path) { return element(by.css(`aio-top-menu a[href="${path}"]`)); }
   ga() { return browser.executeScript('return window["ga"].q') as promise.Promise<any[][]>; }
   locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
@@ -31,7 +31,7 @@ export class SitePage {
     return browser.get('/' + pageUrl)
       // We need to tell the index.html not to load the real analytics library
       // See the GA snippet in index.html
-      .then(() => browser.driver.executeScript('sessionStorage.setItem("__e2e__", true);'));
+      .then(() => browser.executeScript('sessionStorage.setItem("__e2e__", true);'));
   }
 
   getDocViewerText() {
