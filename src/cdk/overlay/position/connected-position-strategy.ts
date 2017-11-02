@@ -122,8 +122,8 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     const originRect = this._origin.getBoundingClientRect();
     const overlayRect = element.getBoundingClientRect();
 
-    // We use the viewport rect to determine whether a position would go off-screen.
-    const viewportRect = this._viewportRuler.getViewportRect();
+    // We use the viewport size to determine whether a position would go off-screen.
+    const viewportSize = this._viewportRuler.getViewportSize();
 
     // Fallback point if none of the fallbacks fit into the viewport.
     let fallbackPoint: OverlayPoint | undefined;
@@ -135,7 +135,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
       // Get the (x, y) point of connection on the origin, and then use that to get the
       // (top, left) coordinate for the overlay at `pos`.
       let originPoint = this._getOriginConnectionPoint(originRect, pos);
-      let overlayPoint = this._getOverlayPoint(originPoint, overlayRect, viewportRect, pos);
+      let overlayPoint = this._getOverlayPoint(originPoint, overlayRect, viewportSize, pos);
 
       // If the overlay in the calculated position fits on-screen, put it there and we're done.
       if (overlayPoint.fitsInViewport) {
@@ -169,11 +169,11 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
     const originRect = this._origin.getBoundingClientRect();
     const overlayRect = this._pane.getBoundingClientRect();
-    const viewportRect = this._viewportRuler.getViewportRect();
+    const viewportSize = this._viewportRuler.getViewportSize();
     const lastPosition = this._lastConnectedPosition || this._preferredPositions[0];
 
     let originPoint = this._getOriginConnectionPoint(originRect, lastPosition);
-    let overlayPoint = this._getOverlayPoint(originPoint, overlayRect, viewportRect, lastPosition);
+    let overlayPoint = this._getOverlayPoint(originPoint, overlayRect, viewportSize, lastPosition);
     this._setElementPosition(this._pane, overlayRect, overlayPoint, lastPosition);
   }
 
@@ -281,7 +281,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   private _getOverlayPoint(
       originPoint: Point,
       overlayRect: ClientRect,
-      viewportRect: ClientRect,
+      viewportSize: {width: number; height: number},
       pos: ConnectionPositionPair): OverlayPoint {
     // Calculate the (overlayStartX, overlayStartY), the start of the potential overlay position
     // relative to the origin point.
@@ -311,9 +311,9 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
     // How much the overlay would overflow at this position, on each side.
     let leftOverflow = 0 - x;
-    let rightOverflow = (x + overlayRect.width) - viewportRect.width;
+    let rightOverflow = (x + overlayRect.width) - viewportSize.width;
     let topOverflow = 0 - y;
-    let bottomOverflow = (y + overlayRect.height) - viewportRect.height;
+    let bottomOverflow = (y + overlayRect.height) - viewportSize.height;
 
     // Visible parts of the element on each axis.
     let visibleWidth = this._subtractOverflows(overlayRect.width, leftOverflow, rightOverflow);

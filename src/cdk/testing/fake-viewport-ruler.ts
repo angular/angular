@@ -14,6 +14,10 @@ export class FakeViewportRuler {
     };
   }
 
+  getViewportSize() {
+    return {width: 1014, height: 686};
+  }
+
   getViewportScrollPosition() {
     return {top: 0, left: 0};
   }

@@ -24,9 +24,8 @@ export const DEFAULT_RESIZE_TIME = 20;
  */
 @Injectable()
 export class ViewportRuler implements OnDestroy {
-
-  /** Cached document client rectangle. */
-  private _documentRect?: ClientRect;
+  /** Cached viewport dimensions. */
+  private _viewportSize: {width: number; height: number};
 
   /** Stream of viewport change events. */
   private _change: Observable<Event>;
@@ -39,21 +38,24 @@ export class ViewportRuler implements OnDestroy {
       return merge<Event>(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange'));
     }) : observableOf();
 
-    this._invalidateCache = this.change().subscribe(() => this._cacheViewportGeometry());
+    this._invalidateCache = this.change().subscribe(() => this._updateViewportSize());
   }
 
   ngOnDestroy() {
     this._invalidateCache.unsubscribe();
   }
 
-  /** Gets a ClientRect for the viewport's bounds. */
-  getViewportRect(documentRect: ClientRect | undefined = this._documentRect): ClientRect {
-    // Cache the document bounding rect so that we don't recompute it for multiple calls.
-    if (!documentRect) {
-      this._cacheViewportGeometry();
-      documentRect = this._documentRect;
+  /** Returns the viewport's width and height. */
+  getViewportSize(): Readonly<{width: number, height: number}> {
+    if (!this._viewportSize) {
+      this._updateViewportSize();
     }
 
+    return {width: this._viewportSize.width, height: this._viewportSize.height};
+  }
+
+  /** Gets a ClientRect for the viewport's bounds. */
+  getViewportRect(): ClientRect {
     // Use the document element's bounding rect rather than the window scroll properties
     // (e.g. pageYOffset, scrollY) due to in issue in Chrome and IE where window scroll
     // properties and client coordinates (boundingClientRect, clientX/Y, etc.) are in different
@@ -63,9 +65,8 @@ export class ViewportRuler implements OnDestroy {
     // We use the documentElement instead of the body because, by default (without a css reset)
     // browsers typically give the document body an 8px margin, which is not included in
     // getBoundingClientRect().
-    const scrollPosition = this.getViewportScrollPosition(documentRect);
-    const height = window.innerHeight;
-    const width = window.innerWidth;
+    const scrollPosition = this.getViewportScrollPosition();
+    const {width, height} = this.getViewportSize();
 
     return {
       top: scrollPosition.top,
@@ -77,27 +78,20 @@ export class ViewportRuler implements OnDestroy {
     };
   }
 
-  /**
-   * Gets the (top, left) scroll position of the viewport.
-   * @param documentRect
-   */
-  getViewportScrollPosition(documentRect: ClientRect | undefined = this._documentRect) {
-    // Cache the document bounding rect so that we don't recompute it for multiple calls.
-    if (!documentRect) {
-      this._cacheViewportGeometry();
-      documentRect = this._documentRect;
-    }
-
+  /** Gets the (top, left) scroll position of the viewport. */
+  getViewportScrollPosition() {
     // The top-left-corner of the viewport is determined by the scroll position of the document
     // body, normally just (scrollLeft, scrollTop). However, Chrome and Firefox disagree about
     // whether `document.body` or `document.documentElement` is the scrolled element, so reading
     // `scrollTop` and `scrollLeft` is inconsistent. However, using the bounding rect of
     // `document.documentElement` works consistently, where the `top` and `left` values will
     // equal negative the scroll position.
-    const top = -documentRect!.top || document.body.scrollTop || window.scrollY ||
+    const documentRect = document.documentElement.getBoundingClientRect();
+
+    const top = -documentRect.top || document.body.scrollTop || window.scrollY ||
                  document.documentElement.scrollTop || 0;
 
-    const left = -documentRect!.left || document.body.scrollLeft || window.scrollX ||
+    const left = -documentRect.left || document.body.scrollLeft || window.scrollX ||
                   document.documentElement.scrollLeft || 0;
 
     return {top, left};
@@ -111,9 +105,9 @@ export class ViewportRuler implements OnDestroy {
     return throttleTime > 0 ? this._change.pipe(auditTime(throttleTime)) : this._change;
   }
 
-  /** Caches the latest client rectangle of the document element. */
-  _cacheViewportGeometry() {
-    this._documentRect = document.documentElement.getBoundingClientRect();
+  /** Updates the cached viewport size. */
+  private _updateViewportSize() {
+    this._viewportSize = {width: window.innerWidth, height: window.innerHeight};
   }
 }
 

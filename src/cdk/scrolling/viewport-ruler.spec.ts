@@ -37,6 +37,12 @@ describe('ViewportRuler', () => {
     ruler.ngOnDestroy();
   });
 
+  it('should get the viewport size', () => {
+    let size = ruler.getViewportSize();
+    expect(size.width).toBe(window.innerWidth);
+    expect(size.height).toBe(window.innerHeight);
+  });
+
   it('should get the viewport bounds when the page is not scrolled', () => {
     let bounds = ruler.getViewportRect();
     expect(bounds.top).toBe(0);
@@ -49,8 +55,6 @@ describe('ViewportRuler', () => {
     document.body.appendChild(veryLargeElement);
 
     scrollTo(1500, 2000);
-    // Force an update of the cached viewport geometries because IE11 emits the scroll event later.
-    ruler._cacheViewportGeometry();
 
     let bounds = ruler.getViewportRect();
 
@@ -87,8 +91,6 @@ describe('ViewportRuler', () => {
     document.body.appendChild(veryLargeElement);
 
     scrollTo(1500, 2000);
-    // Force an update of the cached viewport geometries because IE11 emits the scroll event later.
-    ruler._cacheViewportGeometry();
 
     // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
     // body causes karma's iframe for the test to stretch to fit that content once we attempt to
