@@ -111,6 +111,12 @@
   .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron {
     border-color: mat-color($background-color, default-contrast, 0.4);
   }
+
+  // Set ripples color to be the contrast color of the new background. Otherwise the ripple
+  // color will be based on the app background color.
+  .mat-ripple-element {
+    background-color: mat-color($background-color, default-contrast, 0.12);
+  }
 }
 
 @mixin mat-tabs-typography($config) {
