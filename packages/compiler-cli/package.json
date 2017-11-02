@@ -11,11 +11,11 @@
   "dependencies": {
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
-    "tsickle": "^0.24.0",
+    "tsickle": "^0.25.5",
     "chokidar": "^1.4.2"
   },
   "peerDependencies": {
-    "typescript": ">=2.4.2 <2.5",
+    "typescript": ">=2.4.2 <2.6",
     "@angular/compiler": "0.0.0-PLACEHOLDER"
   },
   "repository": {

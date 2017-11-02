@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"@bazel/typescript@0.2.x":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.2.2.tgz#0a0d09924508c946de32e6acdb2b5cc1ee32c506"
+"@bazel/typescript@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.3.1.tgz#54367df8f30fa0fb25e41106eb7aa558534c36dd"
   dependencies:
     "@types/node" "7.0.18"
     "@types/source-map" "^0.5.1"
     protobufjs "5.0.0"
-    tsickle "0.24.x"
-    typescript "2.4.x"
+    tsickle "0.25.x"
+    typescript "2.5.x"
 
 "@google-cloud/common@^0.13.0":
   version "0.13.5"
@@ -7102,9 +7102,18 @@ ts-api-guardian@0.2.2:
     minimist "^1.2.0"
     typescript "2.0.10"
 
-tsickle@0.24.x:
-  version "0.24.1"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.24.1.tgz#039343b205bf517a333b0703978892f80a7d848e"
+tsickle@0.25.5:
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.25.5.tgz#2891d29f97c4aab1306e06378d8496d1765a4bfe"
+  dependencies:
+    minimist "^1.2.0"
+    mkdirp "^0.5.1"
+    source-map "^0.5.6"
+    source-map-support "^0.4.2"
+
+tsickle@0.25.x:
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.25.5.tgz#2891d29f97c4aab1306e06378d8496d1765a4bfe"
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
@@ -7199,9 +7208,9 @@ typescript@2.0.10:
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.0.10.tgz#ccdd4ed86fd5550a407101a0814012e1b3fac3dd"
 
-typescript@2.4.2, typescript@2.4.x:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
+typescript@2.5.x:
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.3.tgz#df3dcdc38f3beb800d4bc322646b04a3f6ca7f0d"
 
 uglify-js@1.2.6, uglify-js@~1.2.5:
   version "1.2.6"
