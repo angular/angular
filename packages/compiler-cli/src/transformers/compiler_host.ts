@@ -41,6 +41,13 @@ export interface CodeGenerator {
   findGeneratedFileNames(fileName: string): string[];
 }
 
+function assert<T>(condition: T | null | undefined) {
+  if (!condition) {
+    // TODO(chuckjaz): do the right thing
+  }
+  return condition !;
+}
+
 /**
  * Implements the following hosts based on an api.CompilerHost:
  * - ts.CompilerHost to be consumed by a ts.Program
@@ -113,7 +120,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         return sf ? this.metadataProvider.getMetadata(sf) : undefined;
       },
       fileExists: (filePath) => this.originalFileExists(filePath),
-      readFile: (filePath) => this.context.readFile(filePath),
+      readFile: (filePath) => assert(this.context.readFile(filePath)),
     };
   }
 
@@ -421,7 +428,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       return summary.text;
     }
     if (this.originalFileExists(filePath)) {
-      return this.context.readFile(filePath);
+      return assert(this.context.readFile(filePath));
     }
     return null;
   }
@@ -472,7 +479,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     if (!this.originalFileExists(filePath)) {
       throw syntaxError(`Error: Resource file not found: ${filePath}`);
     }
-    return this.context.readFile(filePath);
+    return assert(this.context.readFile(filePath));
   }
 
   private hasBundleIndex(filePath: string): boolean {
@@ -490,13 +497,13 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
             if (this.originalFileExists(packageFile)) {
               // Once we see a package.json file, assume false until it we find the bundle index.
               result = false;
-              const packageContent: any = JSON.parse(this.context.readFile(packageFile));
+              const packageContent: any = JSON.parse(assert(this.context.readFile(packageFile)));
               if (packageContent.typings) {
                 const typings = path.normalize(path.join(directory, packageContent.typings));
                 if (DTS.test(typings)) {
                   const metadataFile = typings.replace(DTS, '.metadata.json');
                   if (this.originalFileExists(metadataFile)) {
-                    const metadata = JSON.parse(this.context.readFile(metadataFile));
+                    const metadata = JSON.parse(assert(this.context.readFile(metadataFile)));
                     if (metadata.flatModuleIndexRedirect) {
                       this.flatModuleIndexRedirectNames.add(typings);
                       // Note: don't set result = true,
