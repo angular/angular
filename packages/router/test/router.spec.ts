@@ -57,7 +57,7 @@ describe('Router', () => {
        }));
   });
 
-  fdescribe('PreActivation', () => {
+  describe('PreActivation', () => {
     const serializer = new DefaultUrlSerializer();
     const inj = {get: (token: any) => () => `${token}_value`};
     let empty: TreeNode<RouteSnapshot>;
@@ -467,7 +467,7 @@ describe('Router', () => {
       });
     });
 
-    fdescribe('resolve', () => {
+    describe('resolve', () => {
 
       it('should resolve data', () => {
         /**
@@ -561,8 +561,8 @@ describe('Router', () => {
           checkResolveData(futureState, root, routes, inj, (root, legacySnapshot) => {
             expect(legacySnapshot.root.firstChild !.data).toEqual({data: 'resolver1_value'});
             expect(legacySnapshot.root.firstChild !.firstChild !.data).toEqual({data: 'resolver2_value'});
-            // expect(root.children[0]!.value.data).toEqual({data: 'resolver1_value'});
-            // expect(root.children[0]!.children[0]!.value.data).toEqual({data: 'resolver2_value'});
+            expect(root.children[0]!.value.data).toEqual({data: 'resolver1_value'});
+            expect(root.children[0]!.children[0]!.value.data).toEqual({data: 'resolver2_value'});
           });
         });
       });

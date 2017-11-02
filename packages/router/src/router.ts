@@ -27,13 +27,12 @@ import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
+import {createRouterStateSnapshot, ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, RouteSnapshot} from './router_state';
 import {Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {forEach} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
-import {createRouterStateSnapshot} from '@angular/router/src/router_state';
 
 declare let Zone: any;
 
@@ -603,7 +602,8 @@ export class Router {
     return new Promise((resolvePromise, rejectPromise) => {
       // create an observable of the url and route state snapshot
       // this operation do not result in any side effects
-      let urlAndSnapshot$: Observable<{appliedUrl: UrlTree, snapshot: RouterStateSnapshot}>;
+      // let urlAndSnapshot$: Observable<{appliedUrl: UrlTree, snapshot: RouterStateSnapshot}>;
+      let urlAndSnapshot$: Observable<{appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot}>;
       if (!precreatedState) {
         const moduleInjector = this.ngModule.injector;
         const redirectsApplied$ =
@@ -613,22 +613,23 @@ export class Router {
           return map.call(
               recognize(
                   this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl)),
-              (treeOfRouteSnapshot: any) => {
-                const snapshot = createRouterStateSnapshot(this.serializeUrl(appliedUrl), appliedUrl, treeOfRouteSnapshot, this.rootComponentType, this.config);
+              (treeOfRouteSnapshot: TreeNode<RouteSnapshot>) => {
+                const legacySnapshot = createRouterStateSnapshot(this.serializeUrl(appliedUrl), appliedUrl, treeOfRouteSnapshot, this.rootComponentType, this.config);
                 (this.events as Subject<Event>)
                     .next(new RoutesRecognized(
-                        id, this.serializeUrl(url), this.serializeUrl(appliedUrl), snapshot));
+                        id, this.serializeUrl(url), this.serializeUrl(appliedUrl), legacySnapshot));
 
-                return {appliedUrl, snapshot};
+                return {appliedUrl, root: treeOfRouteSnapshot, legacySnapshot};
               });
         });
       } else {
-        urlAndSnapshot$ = of ({appliedUrl: url, snapshot: precreatedState});
+        // urlAndSnapshot$ = of ({appliedUrl: url, snapshot: precreatedState});
+        throw "Precreated State";
       }
 
       const beforePreactivationDone$ = mergeMap.call(
-          urlAndSnapshot$, (p: {appliedUrl: string, snapshot: RouterStateSnapshot}) => {
-            return map.call(this.hooks.beforePreactivation(p.snapshot), () => p);
+          urlAndSnapshot$, (p: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot}) => {
+            return map.call(this.hooks.beforePreactivation(p.legacySnapshot), () => p);
           });
 
       // run preactivation: guards and data resolvers
@@ -636,41 +637,43 @@ export class Router {
 
       const preactivationSetup$ = map.call(
           beforePreactivationDone$,
-          ({appliedUrl, snapshot}: {appliedUrl: string, snapshot: RouterStateSnapshot}) => {
+          ({appliedUrl, root, legacySnapshot}: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot}) => {
             const moduleInjector = this.ngModule.injector;
+            preActivation = new PreActivation(root, root, {curr: this.routerState.snapshot, future: legacySnapshot },
+              this.config, moduleInjector, (evt: Event) => this.triggerEvent(evt))
             // preActivation = new PreActivation(
-            //     <any>snapshot, <any>this.routerState.snapshot, <any>this.config, <any>moduleInjector,
+            //     snapshot, this.routerState.snapshot, this.config, moduleInjector,
             //     (evt: Event) => this.triggerEvent(evt));
             // preActivation.initialize(this.rootContexts);
-            return {appliedUrl, snapshot};
+            return {appliedUrl, root, legacySnapshot};
           });
 
       const preactivationCheckGuards$ = mergeMap.call(
           preactivationSetup$,
-          ({appliedUrl, snapshot}: {appliedUrl: string, snapshot: RouterStateSnapshot}) => {
+          ({appliedUrl, root, legacySnapshot}: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot}) => {
             if (this.navigationId !== id) return of (false);
 
             this.triggerEvent(
-                new GuardsCheckStart(id, this.serializeUrl(url), appliedUrl, snapshot));
+                new GuardsCheckStart(id, this.serializeUrl(url), appliedUrl.toString(), legacySnapshot));
 
             return map.call(preActivation.checkGuards(), (shouldActivate: boolean) => {
               this.triggerEvent(new GuardsCheckEnd(
-                  id, this.serializeUrl(url), appliedUrl, snapshot, shouldActivate));
-              return {appliedUrl: appliedUrl, snapshot: snapshot, shouldActivate: shouldActivate};
+                  id, this.serializeUrl(url), appliedUrl.toString(), legacySnapshot, shouldActivate));
+              return {appliedUrl, root, legacySnapshot, shouldActivate: shouldActivate};
             });
           });
 
       const preactivationResolveData$ = mergeMap.call(
           preactivationCheckGuards$,
-          (p: {appliedUrl: string, snapshot: RouterStateSnapshot, shouldActivate: boolean}) => {
+          (p: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot, shouldActivate: boolean}) => {
             if (this.navigationId !== id) return of (false);
 
             if (p.shouldActivate && preActivation.isActivating()) {
               this.triggerEvent(
-                  new ResolveStart(id, this.serializeUrl(url), p.appliedUrl, p.snapshot));
+                  new ResolveStart(id, this.serializeUrl(url), p.appliedUrl.toString(), p.legacySnapshot));
               return map.call(preActivation.resolveData(), () => {
                 this.triggerEvent(
-                    new ResolveEnd(id, this.serializeUrl(url), p.appliedUrl, p.snapshot));
+                    new ResolveEnd(id, this.serializeUrl(url), p.appliedUrl.toString(), p.legacySnapshot));
                 return p;
               });
             } else {
@@ -678,17 +681,17 @@ export class Router {
             }
           });
 
-      const preactivationDone$ = mergeMap.call(preactivationResolveData$, (p: any) => {
-        return map.call(this.hooks.afterPreactivation(p.snapshot), () => p);
+      const preactivationDone$ = mergeMap.call(preactivationResolveData$, (p: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot, shouldActivate: boolean}) => {
+        return map.call(this.hooks.afterPreactivation(p.legacySnapshot), () => p);
       });
 
 
       // create router state
       // this operation has side effects => route state is being affected
       const routerState$ =
-          map.call(preactivationDone$, ({appliedUrl, snapshot, shouldActivate}: any) => {
+          map.call(preactivationDone$, ({appliedUrl, root, legacySnapshot, shouldActivate}: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot, shouldActivate: boolean}) => {
             if (shouldActivate) {
-              const state = createRouterState(this.routeReuseStrategy, snapshot, this.routerState);
+              const state = createRouterState(this.routeReuseStrategy, legacySnapshot, this.routerState);
               return {appliedUrl, state, shouldActivate};
             } else {
               return {appliedUrl, state: null, shouldActivate};
@@ -703,7 +706,7 @@ export class Router {
       const storedUrl = this.currentUrlTree;
 
       routerState$
-          .forEach(({appliedUrl, state, shouldActivate}: any) => {
+          .forEach(({appliedUrl, state, shouldActivate}: {appliedUrl: UrlTree, state: RouterState, shouldActivate: boolean}) => {
             if (!shouldActivate || id !== this.navigationId) {
               navigationIsSuccessful = false;
               return;

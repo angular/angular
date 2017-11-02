@@ -11,15 +11,15 @@
 * DONE Replace TreeNode with a POJO
 * DONE Implement a function to convert a "tree node" of RouteSnapshot into RouterStateSnapshot
 * DONE Change recognize to construct a TreeNode<RouteSnapshot> and then convert it to RouterStateSnapshot in the router
-* Change Preactivation
+* DONE Change Preactivation
   * DONE Fix type errors (mostly tests)
   * DONE Make guards pass locally
-  * Inherit resolve
-    * Needs something like a `map` function for a TreeNode. Need to inherit resolve data immutably for new data structures, but must mutate old data structures.
-  * Make resolve pass locally
-
+  * DONE Inherit resolve
+    * DONE Needs something like a `map` function for a TreeNode. Need to inherit resolve data immutably for new data structures, but must mutate old data structures.
+  * DONE Make resolve pass locally
+* Update Router to new TreeNode<RouteConfig>
 * Fix "boom" error message
-* eualParamsAndUrlSegments needs to have the logic to check all the way to the root
+* equalParamsAndUrlSegments needs to have the logic to check all the way to the root
 * _MILESTONE_: All tests should pass
 * Change Activation
 

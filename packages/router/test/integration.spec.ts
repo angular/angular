@@ -21,7 +21,7 @@ import {map} from 'rxjs/operator/map';
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
-describe('Integration', () => {
+fdescribe('Integration', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports:
