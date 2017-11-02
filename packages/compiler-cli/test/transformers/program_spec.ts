@@ -893,6 +893,19 @@ describe('ng program', () => {
             `src/main.html(1,1): error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
   });
 
+  it('should not report emit errors with noEmitOnError=false', () => {
+    testSupport.writeFiles({
+      'src/main.ts': `
+        @NgModule()
+      `
+    });
+    const options = testSupport.createCompilerOptions({noEmitOnError: false});
+    const host = ng.createCompilerHost({options});
+    const program1 = ng.createProgram(
+        {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
+    expect(program1.emit().diagnostics.length).toBe(0);
+  });
+
   describe('errors', () => {
     const fileWithStructuralError = `
       import {NgModule} from '@angular/core';
