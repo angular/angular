@@ -18,6 +18,8 @@ describe('MatRadio', () => {
         RadioGroupWithNgModel,
         RadioGroupWithFormControl,
         StandaloneRadioButtons,
+        InterleavedRadioGroup,
+        TranscludingWrapper
       ],
       providers: [
         {provide: ViewportRuler, useClass: FakeViewportRuler}
@@ -666,6 +668,28 @@ describe('MatRadio', () => {
       expect(document.activeElement).toBe(inputEl);
     });
   });
+
+  describe('group interspersed with other tags', () => {
+    let fixture: ComponentFixture<InterleavedRadioGroup>;
+    let groupDebugElement: DebugElement;
+    let groupInstance: MatRadioGroup;
+    let radioDebugElements: DebugElement[];
+    let radioInstances: MatRadioButton[];
+
+    beforeEach(async(() => {
+      fixture = TestBed.createComponent(InterleavedRadioGroup);
+      fixture.detectChanges();
+
+      groupDebugElement = fixture.debugElement.query(By.directive(MatRadioGroup));
+      groupInstance = groupDebugElement.injector.get<MatRadioGroup>(MatRadioGroup);
+      radioDebugElements = fixture.debugElement.queryAll(By.directive(MatRadioButton));
+      radioInstances = radioDebugElements.map(debugEl => debugEl.componentInstance);
+    }));
+
+    it('should initialize selection of radios based on model value', () => {
+      expect(groupInstance.selected).toBe(radioInstances[2]);
+    });
+  });
 });
 
 
@@ -760,3 +784,29 @@ class RadioGroupWithFormControl {
   template: `<mat-radio-button tabindex="-1"></mat-radio-button>`
 })
 class FocusableRadioButton {}
+
+@Component({
+  template: `
+  <mat-radio-group name="group" [(ngModel)]="modelValue">
+    <transcluding-wrapper *ngFor="let option of options">
+      <mat-radio-button [value]="option.value">{{option.label}}</mat-radio-button>
+    </transcluding-wrapper>
+  </mat-radio-group>
+  `
+})
+class InterleavedRadioGroup {
+  modelValue = 'strawberry';
+  options = [
+    {label: 'Vanilla', value: 'vanilla'},
+    {label: 'Chocolate', value: 'chocolate'},
+    {label: 'Strawberry', value: 'strawberry'},
+  ];
+}
+
+@Component({
+  selector: 'transcluding-wrapper',
+  template: `
+    <div><ng-content></ng-content></div>
+  `
+})
+class TranscludingWrapper {}

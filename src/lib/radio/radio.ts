@@ -128,7 +128,8 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
   @Output() change: EventEmitter<MatRadioChange> = new EventEmitter<MatRadioChange>();
 
   /** Child radio buttons. */
-  @ContentChildren(forwardRef(() => MatRadioButton)) _radios: QueryList<MatRadioButton>;
+  @ContentChildren(forwardRef(() => MatRadioButton), { descendants: true })
+  _radios: QueryList<MatRadioButton>;
 
   /** Name of the radio button group. All radio buttons inside this group will use this name. */
   @Input()
