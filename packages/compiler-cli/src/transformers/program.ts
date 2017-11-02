@@ -300,10 +300,16 @@ class AngularCompilerProgram implements Program {
       }
     }
     this.emittedSourceFiles = emittedSourceFiles;
-    // translate the diagnostics in the emitResult as well.
-    const translatedEmitDiags = translateDiagnostics(this.hostAdapter, emitResult.diagnostics);
-    emitResult.diagnostics = translatedEmitDiags.ts.concat(
-        this.structuralDiagnostics.concat(translatedEmitDiags.ng).map(ngToTsDiagnostic));
+
+    // Match behavior of tsc: only produce emit diagnostics if it would block
+    // emit. If noEmitOnError is false, the emit will happen in spite of any
+    // errors, so we should not report them.
+    if (this.options.noEmitOnError === true) {
+      // translate the diagnostics in the emitResult as well.
+      const translatedEmitDiags = translateDiagnostics(this.hostAdapter, emitResult.diagnostics);
+      emitResult.diagnostics = translatedEmitDiags.ts.concat(
+          this.structuralDiagnostics.concat(translatedEmitDiags.ng).map(ngToTsDiagnostic));
+    }
 
     if (!outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
