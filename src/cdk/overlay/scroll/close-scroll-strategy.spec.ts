@@ -1,5 +1,5 @@
 import {inject, TestBed, async} from '@angular/core/testing';
-import {NgModule, Component} from '@angular/core';
+import {NgModule, Component, NgZone} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
@@ -57,6 +57,17 @@ describe('CloseScrollStrategy', () => {
     scrolledSubject.next();
 
     expect(overlayRef.detach).not.toHaveBeenCalled();
+  });
+
+  it('should detach inside the NgZone', () => {
+    const spy = jasmine.createSpy('detachment spy');
+    const subscription = overlayRef.detachments().subscribe(() => spy(NgZone.isInAngularZone()));
+
+    overlayRef.attach(componentPortal);
+    scrolledSubject.next();
+
+    expect(spy).toHaveBeenCalledWith(true);
+    subscription.unsubscribe();
   });
 
 });

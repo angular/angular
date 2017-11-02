@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgZone} from '@angular/core';
 import {ScrollStrategy, getMatScrollStrategyAlreadyAttachedError} from './scroll-strategy';
 import {OverlayRef} from '../overlay-ref';
 import {Subscription} from 'rxjs/Subscription';
@@ -19,7 +20,7 @@ export class CloseScrollStrategy implements ScrollStrategy {
   private _scrollSubscription: Subscription|null = null;
   private _overlayRef: OverlayRef;
 
-  constructor(private _scrollDispatcher: ScrollDispatcher) { }
+  constructor(private _scrollDispatcher: ScrollDispatcher, private _ngZone: NgZone) { }
 
   /** Attaches this scroll strategy to an overlay. */
   attach(overlayRef: OverlayRef) {
@@ -34,11 +35,13 @@ export class CloseScrollStrategy implements ScrollStrategy {
   enable() {
     if (!this._scrollSubscription) {
       this._scrollSubscription = this._scrollDispatcher.scrolled(0).subscribe(() => {
-        if (this._overlayRef.hasAttached()) {
-          this._overlayRef.detach();
-        }
+        this._ngZone.run(() => {
+          this.disable();
 
-        this.disable();
+          if (this._overlayRef.hasAttached()) {
+            this._overlayRef.detach();
+          }
+        });
       });
     }
   }

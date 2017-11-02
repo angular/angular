@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {CloseScrollStrategy} from './close-scroll-strategy';
 import {NoopScrollStrategy} from './noop-scroll-strategy';
 import {BlockScrollStrategy} from './block-scroll-strategy';
@@ -28,13 +28,14 @@ import {
 export class ScrollStrategyOptions {
   constructor(
     private _scrollDispatcher: ScrollDispatcher,
-    private _viewportRuler: ViewportRuler) { }
+    private _viewportRuler: ViewportRuler,
+    private _ngZone: NgZone) { }
 
   /** Do nothing on scroll. */
   noop = () => new NoopScrollStrategy();
 
   /** Close the overlay as soon as the user scrolls. */
-  close = () => new CloseScrollStrategy(this._scrollDispatcher);
+  close = () => new CloseScrollStrategy(this._scrollDispatcher, this._ngZone);
 
   /** Block scrolling. */
   block = () => new BlockScrollStrategy(this._viewportRuler);
