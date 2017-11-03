@@ -1,0 +1,9 @@
+{
+  "description": "Attribute Directive",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2,3].*"
+  ],
+  "tags": ["attribute", "directive"]
+}

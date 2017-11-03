@@ -1,0 +1,9 @@
+{
+  "description": "Dependency Injection",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1].*"
+  ],
+  "tags":["cookbook"]
+}

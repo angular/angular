@@ -17,11 +17,11 @@ import { By }                 from '@angular/platform-browser';
 import { DebugElement, Type } from '@angular/core';
 import { Location }           from '@angular/common';
 
-import { AppModule }              from './app.module';
-import { AppComponent }           from './app.component';
-import { AboutComponent }         from './about.component';
-import { DashboardHeroComponent } from './dashboard/dashboard-hero.component';
-import { TwainService }           from './shared/twain.service';
+import { AppModule }          from './app.module';
+import { AppComponent }       from './app.component';
+import { AboutComponent }     from './about.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { TwainService }       from './shared/twain.service';
 
 let comp:     AppComponent;
 let fixture:  ComponentFixture<AppComponent>;
@@ -41,7 +41,7 @@ describe('AppComponent & RouterTestingModule', () => {
   it('should navigate to "Dashboard" immediately', fakeAsync(() => {
     createComponent();
     expect(location.path()).toEqual('/dashboard', 'after initialNavigation()');
-    expectElementOf(DashboardHeroComponent);
+    expectElementOf(DashboardComponent);
   }));
 
   it('should navigate to "About" on click', fakeAsync(() => {
@@ -52,17 +52,12 @@ describe('AppComponent & RouterTestingModule', () => {
     advance();
     expectPathToBe('/about');
     expectElementOf(AboutComponent);
-
-    page.expectEvents([
-      [r.NavigationStart, '/about'], [r.RoutesRecognized, '/about'],
-      [r.NavigationEnd, '/about']
-    ]);
   }));
 
   it('should navigate to "About" w/ browser location URL change', fakeAsync(() => {
     createComponent();
     location.simulateHashChange('/about');
-    // location.go('/about'); // also works ... except in plunker
+    // location.go('/about'); // also works ... except, perhaps, in Stackblitz
     advance();
     expectPathToBe('/about');
     expectElementOf(AboutComponent);
