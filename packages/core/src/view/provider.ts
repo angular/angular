@@ -83,7 +83,7 @@ export function _def(
   // i.e. also didn't unwrap it.
   value = resolveForwardRef(value);
 
-  const depDefs = splitDepsDsl(deps, token.name);
+  const depDefs = splitDepsDsl(deps);
 
   return {
     // will bet set by the view definition
