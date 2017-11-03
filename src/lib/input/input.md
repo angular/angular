@@ -59,7 +59,7 @@ must implement a single method `isErrorState` which takes the `FormControl` for 
 well as the parent form and returns a boolean indicating whether errors should be shown. (`true`
 indicating that they should be shown, and `false` indicating that they should not.)
 
-<!-- example(input-error-state-matcher-example) -->
+<!-- example(input-error-state-matcher) -->
 
 A global error state matcher can be specified by setting the `ErrorStateMatcher` provider. This
 applies to all inputs. For convenience, `ShowOnDirtyErrorStateMatcher` is available in order to
@@ -80,7 +80,7 @@ globally cause input errors to show when the input is dirty and invalid.
 native `<textarea>` elements. The min and max size of the textarea can be specified in rows, using
 the `matAutosizeMinRows` and `matAutosizeMaxRows` properties respectively.
 
-<!-- example(input-autosize-textarea-example) -->
+<!-- example(input-autosize-textarea) -->
 
 ### Accessibility
 
