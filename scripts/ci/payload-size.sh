@@ -81,15 +81,20 @@ uploadData() {
 
   echo The data for $name is:
   echo $payloadData
+  echo $payloadData > /tmp/current.log
+
+  readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
 
   if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
     readonly dbPath=/payload/$name/$safeBranchName/$TRAVIS_COMMIT
 
     # WARNING: FIREBASE_TOKEN should NOT be printed.
     set +x
     $PROJECT_ROOT/node_modules/.bin/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
   fi
+
+  curl "https://angular-payload-size.firebaseio.com/payload/${name}/${safeBranchName}.json?orderBy=\"timestamp\"&limitToLast=1" > /tmp/latest.log
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js
 }
 
 # Track payload size, $1 is the name in database, $2 is the file path
