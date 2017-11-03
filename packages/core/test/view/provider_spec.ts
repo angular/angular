@@ -147,8 +147,8 @@ export function main() {
 
           expect(() => createAndGetRootNodes(compViewDef(rootElNodes)))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
-                  '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
+                  'StaticInjectorError[Dep]: \n' +
+                  '  StaticInjectorError[Dep]: \n' +
                   '    NullInjectorError: No provider for Dep!');
 
           const nonRootElNodes = [
@@ -161,8 +161,8 @@ export function main() {
 
           expect(() => createAndGetRootNodes(compViewDef(nonRootElNodes)))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
-                  '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
+                  'StaticInjectorError[Dep]: \n' +
+                  '  StaticInjectorError[Dep]: \n' +
                   '    NullInjectorError: No provider for Dep!');
         });
 
@@ -186,8 +186,8 @@ export function main() {
                    directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])
                  ])))
               .toThrowError(
-                  'StaticInjectorError(DynamicTestModule)[nonExistingDep]: \n' +
-                  '  StaticInjectorError(Platform: core)[nonExistingDep]: \n' +
+                  'StaticInjectorError[nonExistingDep]: \n' +
+                  '  StaticInjectorError[nonExistingDep]: \n' +
                   '    NullInjectorError: No provider for nonExistingDep!');
         });
 
