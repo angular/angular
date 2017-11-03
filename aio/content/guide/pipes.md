@@ -16,7 +16,7 @@ In fact, you might like to apply them in your HTML templates as you do styles.
 
 Introducing Angular pipes, a way to write display-value transformations that you can declare in your HTML.
 
-You can run the <live-example></live-example> in Plunker and download the code from there.
+You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
 
 ## Using pipes

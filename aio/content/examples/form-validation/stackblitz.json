@@ -1,0 +1,7 @@
+{
+  "description": "Validation",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "description": "Angular Reactive Forms (final)",
+  "files":[
+    "src/styles.css",
+
+    "src/app/app.component.ts",
+    "src/app/app.module.ts",
+    "src/app/data-model.ts",
+    "src/app/hero.service.ts",
+    "src/app/hero-detail.component.html",
+    "src/app/hero-detail.component.ts",
+    "src/app/hero-list.component.html",
+    "src/app/hero-list.component.ts",
+
+    "src/main-final.ts",
+    "src/index-final.html"
+  ],
+  "main": "src/index-final.html",
+  "tags": ["reactive", "forms"]
+}

@@ -7,9 +7,7 @@
     { "name": "lint", "command": "ng lint" },
     { "name": "e2e", "command": "ng e2e" }
   ],
-  "dependencies": [
-    "web-animations-js"
-  ],
+  "dependencies": [],
   "devDependencies": [
     "@angular/cli",
     "@types/jasminewd2",
