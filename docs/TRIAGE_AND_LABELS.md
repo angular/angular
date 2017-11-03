@@ -128,10 +128,11 @@ The decision about the target must be done by the PR author and/or reviewer. Thi
 
 To communicate the target we use the following labels:
 
-* `PR target: master-only`
-* `PR target: patch-only`
-* `PR target: master & patch`
-* `PR target: TBD` - the target is yet to be determined
+* `PR target: master & patch`: the PR should me merged into the master branch and cherry-picked into the most recent patch branch. All PRs with fixes, docs and refactorings should use this target.
+* `PR target: master-only`: the PR should be merged only into the current master branch. All PRs with new features, API changes or high-risk changes should use this target.
+* `PR target: patch-only`: the PR should be merged only into the most recent patch branch (e.g. 5.0.x). This target is useful if a `master & patch` PR can't be cleanly cherry-picked into the stable branch and a new PR is needed.
+* `PR target: LTS`: the PR should be merged only into the active LTS branch(es). Only security and critical fixes are allowed in these branches. Always send a new PR targeting just the LTS branch and request review approval from IgorMinar@.
+* `PR target: TBD`: the target is yet to be determined.
 
 If a PR is missing the "PR target" label, or if the label is set to "TBD" when the PR is sent to the caretaker, the caretaker should reject the PR and request the appropriate target label to be applied before the PR is merged.
 
