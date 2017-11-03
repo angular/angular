@@ -100,22 +100,9 @@ If not, go back to the previous pages.
 </div>
 
 
-
-## Keep the app transpiling and running
-Enter the following command in the terminal window:
-
-
-<code-example language="sh" class="code-shell">
-  npm start
-
-</code-example>
-
-
-
-This command runs the TypeScript compiler in "watch mode", recompiling automatically when the code changes.
-The command simultaneously launches the app in a browser and refreshes the browser when the code changes.
-
-You can keep building the Tour of Heroes without pausing to recompile or refresh the browser.
+Keep the app transpiling and running while you build the Tour of Heroes
+by entering the `npm start` command in a terminal window
+[as you did before](tutorial/toh-pt1#keep-transpiling "Keep the app running").
 
 ## Creating a hero service
 The stakeholders want to show the heroes in various ways on different pages.
@@ -129,17 +116,14 @@ and you can't easily share the list of heroes with other components and views.
 In this page, you'll move the hero data acquisition business to a single service that provides the data and
 share that service with all components that need the data.
 
-### Create the HeroService
+### Create _HeroService_
+
 Create a file in the `app` folder called `hero.service.ts`.
 
 <div class="l-sub-section">
-
-
-
 The naming convention for service files is the service name in lowercase followed by `.service`.
 For a multi-word service name, use lower [dash-case](guide/glossary#dash-case).
 For example, the filename for `SpecialSuperHeroService` is `special-super-hero.service.ts`.
-
 </div>
 
 
@@ -234,7 +218,7 @@ Import the `HeroService` so that you can reference it in the code.
 
 
 ### Don't use *new* with the *HeroService*
-How should the `AppComponent` acquire a runtime concrete `HeroService` instance?
+How should the `AppComponent` acquire an instance of `HeroService`?
 
 You could create a new instance of the `HeroService` with `new` like this:
 
@@ -258,12 +242,12 @@ switching implementations for different scenarios, such as operating offline or 
 different mocked versions for testing, would be difficult.
 
 
-### Inject the *HeroService*
+### Inject *HeroService*
 
-Instead of using the *new* line, you'll add two lines.
+Instead of using the *new* operator, you'll add two lines.
 
- * Add a constructor that also defines a private property.
- * Add to the component's `providers` metadata.
+ * Add a constructor that also defines a private `HeroService` property.
+ * Add `HeroService` to the component's `providers` metadata.
 
 Add the constructor:
 
@@ -273,18 +257,14 @@ Add the constructor:
 
 
 
-The constructor itself does nothing. The parameter simultaneously
+The constructor itself does nothing except set the private property. The parameter simultaneously
 defines a private `heroService` property and identifies it as a `HeroService` injection site.
 
-Now Angular knows to supply an instance of the `HeroService` when it creates an `AppComponent`.
+Now Angular knows to supply a `HeroService` instance when it creates an `AppComponent`.
 
 
 <div class="l-sub-section">
-
-
-
 Read more about dependency injection in the [Dependency Injection](guide/dependency-injection) page.
-
 </div>
 
 
@@ -316,7 +296,8 @@ The `AppComponent`, as well as its child components, can use that service to get
 {@a child-component}
 
 
-### *getHeroes()* in the *AppComponent*
+### The *AppComponent.getHeroes()* method
+
 The service is in a `heroService` private variable.
 
 You could call the service and get the data in one line.
@@ -342,7 +323,7 @@ You don't really need a dedicated method to wrap one line.  Write it anyway:
  You might be tempted to call the `getHeroes()` method in a constructor, but
 a constructor should not contain complex logic,
 especially a constructor that calls a server, such as a data access method.
-The constructor is for simple initializations, like wiring constructor parameters to properties.
+A constructor is for simple initializations, like wiring constructor parameters to properties.
 
 To have Angular call `getHeroes()`, you can implement the Angular *ngOnInit lifecycle hook*.
 Angular offers interfaces for tapping into critical moments in the component lifecycle:
@@ -368,7 +349,7 @@ Here's the essential outline for the `OnInit` interface (don't copy this into yo
 
 
 
-Add the implementation for the `OnInit` interface to your export statement:
+Add `OnInit` to the list of interfaces implemented by `AppComponent`:
 
 <code-example format="nocode">
   export class AppComponent implements OnInit {}
@@ -376,7 +357,7 @@ Add the implementation for the `OnInit` interface to your export statement:
 
 
 
-Write an `ngOnInit` method with the initialization logic inside. Angular will call it
+Write an `ngOnInit()` method with the initialization logic inside. Angular will call it
 at the right time. In this case, initialize by calling `getHeroes()`.
 
 <code-example path="toh-pt4/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (ng-on-init)" region="ng-on-init">
@@ -440,9 +421,9 @@ by returning an *immediately resolved Promise* with the mock heroes as the resul
 
 ### Act on the Promise
 
-As a result of the change to `HeroService`, `this.heroes` is now set to a `Promise` rather than an array of heroes.
+As a result of the change to `HeroService`, the app component's `heroes` property is now a `Promise` rather than an array of heroes.
 
-<code-example path="toh-pt4/src/app/app.component.1.ts" region="getHeroes" title="src/app/app.component.ts (getHeroes - old)" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.1.ts" region="getHeroes" title="src/app/app.component.ts (synchronous getHeroes)" linenums="false">
 
 </code-example>
 
@@ -453,7 +434,7 @@ When the `Promise` resolves successfully, you'll have heroes to display.
 
 Pass the callback function as an argument to the Promise's `then()` method:
 
-<code-example path="toh-pt4/src/app/app.component.ts" region="get-heroes" title="src/app/app.component.ts (getHeroes - revised)" linenums="false">
+<code-example path="toh-pt4/src/app/app.component.ts" region="get-heroes" title="src/app/app.component.ts (revised async getHeroes)" linenums="false">
 
 </code-example>
 
@@ -480,7 +461,7 @@ responding to a name selection with a detail view.
 
 
 
-At the end of this page, [Appendix: take it slow](tutorial/toh-pt4#slow) describes what the app might be like with a poor connection.
+At the end of this page, [Appendix: Take it slow](tutorial/toh-pt4#slow) describes what the app might be like with a poor connection.
 
 </div>
 
