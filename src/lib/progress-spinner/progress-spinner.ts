@@ -203,7 +203,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     }
 
     if (styleTag && styleTag.sheet) {
-      (styleTag.sheet as CSSStyleSheet).insertRule(this._getAnimationText());
+      (styleTag.sheet as CSSStyleSheet).insertRule(this._getAnimationText(), 0);
     }
 
     MatProgressSpinner.diameters.add(this.diameter);
