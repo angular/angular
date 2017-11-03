@@ -463,6 +463,27 @@ Angular calls these hook methods in the following order:
 Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 
 
+## Lookup token
+
+A lookup token is a name that serves as a way to identify a provider. 
+For example, in the following constructor, `UserService` is 
+the lookup token:
+
+```javascript
+
+constructor(service: UserService) {
+  ...
+}
+
+```
+Any class that has the lookup token can use the providers in a given module. If 
+`AppModule` imports `FeatureModule` and `FeatureModule` resgisters `UserService` 
+then any class in `AppModule` can inject `UserService` because they have the lookup 
+token.
+
+Another example of a lookup token is when you inject a ________ using the 
+`@Inject()` syntax. For example....
+
 {@a M}
 
 ## Module
