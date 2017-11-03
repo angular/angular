@@ -7,10 +7,10 @@
  */
 
 import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
+import {SOURCE} from '../di/injector';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
-
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
 
@@ -209,7 +209,7 @@ export function splitMatchedQueriesDsl(
   return {matchedQueries, references, matchedQueryIds};
 }
 
-export function splitDepsDsl(deps: ([DepFlags, any] | any)[]): DepDef[] {
+export function splitDepsDsl(deps: ([DepFlags, any] | any)[], sourceName?: string): DepDef[] {
   return deps.map(value => {
     let token: any;
     let flags: DepFlags;
@@ -218,6 +218,9 @@ export function splitDepsDsl(deps: ([DepFlags, any] | any)[]): DepDef[] {
     } else {
       flags = DepFlags.None;
       token = value;
+    }
+    if (token && (typeof token === 'function' || typeof token === 'object') && sourceName) {
+      Object.defineProperty(token, SOURCE, {value: sourceName, configurable: true});
     }
     return {flags, token, tokenKey: tokenKey(token)};
   });
