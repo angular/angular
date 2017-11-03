@@ -8,12 +8,12 @@
 
 import {Type} from '../type';
 import {stringify} from '../util';
+
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
 
-export const SOURCE = '__source';
 const _THROW_IF_NOT_FOUND = new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
@@ -65,27 +65,14 @@ export abstract class Injector {
   abstract get(token: any, notFoundValue?: any): any;
 
   /**
-   * @deprecated from v5 use the new signature Injector.create(options)
-   */
-  static create(providers: StaticProvider[], parent?: Injector): Injector;
-
-  static create(options: {providers: StaticProvider[], parent?: Injector, name?: string}): Injector;
-
-  /**
    * Create a new Injector which is configure using `StaticProvider`s.
    *
    * ### Example
    *
    * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
    */
-  static create(
-      options: StaticProvider[]|{providers: StaticProvider[], parent?: Injector, name?: string},
-      parent?: Injector): Injector {
-    if (Array.isArray(options)) {
-      return new StaticInjector(options, parent);
-    } else {
-      return new StaticInjector(options.providers, options.parent, options.name || null);
-    }
+  static create(providers: StaticProvider[], parent?: Injector): Injector {
+    return new StaticInjector(providers, parent);
   }
 }
 
@@ -116,14 +103,11 @@ const NO_NEW_LINE = 'ɵ';
 
 export class StaticInjector implements Injector {
   readonly parent: Injector;
-  readonly source: string|null;
 
   private _records: Map<any, Record>;
 
-  constructor(
-      providers: StaticProvider[], parent: Injector = NULL_INJECTOR, source: string|null = null) {
+  constructor(providers: StaticProvider[], parent: Injector = NULL_INJECTOR) {
     this.parent = parent;
-    this.source = source;
     const records = this._records = new Map<any, Record>();
     records.set(
         Injector, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
@@ -138,10 +122,7 @@ export class StaticInjector implements Injector {
       return tryResolveToken(token, record, this._records, this.parent, notFoundValue);
     } catch (e) {
       const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
-      if (token[SOURCE]) {
-        tokenPath.unshift(token[SOURCE]);
-      }
-      e.message = formatError('\n' + e.message, tokenPath, this.source);
+      e.message = formatError('\n' + e.message, tokenPath);
       e[NG_TOKEN_PATH] = tokenPath;
       e[NG_TEMP_TOKEN_PATH] = null;
       throw e;
@@ -355,7 +336,7 @@ function computeDeps(provider: StaticProvider): DependencyRecord[] {
   return deps;
 }
 
-function formatError(text: string, obj: any, source: string | null = null): string {
+function formatError(text: string, obj: any): string {
   text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.substr(2) : text;
   let context = stringify(obj);
   if (obj instanceof Array) {
@@ -371,7 +352,7 @@ function formatError(text: string, obj: any, source: string | null = null): stri
     }
     context = `{${parts.join(', ')}}`;
   }
-  return `StaticInjectorError${source ? '(' + source + ')' : ''}[${context}]: ${text.replace(NEW_LINE, '\n  ')}`;
+  return `StaticInjectorError[${context}]: ${text.replace(NEW_LINE, '\n  ')}`;
 }
 
 function staticError(text: string, obj: any): Error {
