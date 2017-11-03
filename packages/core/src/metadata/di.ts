@@ -159,7 +159,7 @@ export interface ContentChildrenDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - the directive type or the name used for querying.
-   * * **descendants** - include only direct children or all descendants.
+   * * **descendants** - whether to include all descendants. Defaults to only direct children.
    * * **read** - read a different token from the queried elements.
    *
    * Let's look at an example:
