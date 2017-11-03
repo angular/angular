@@ -152,6 +152,42 @@ export function main() {
       expect(receivedEvents).toEqual([]);
     });
 
+    it('should support event.stopImmediatePropagation', () => {
+      const Zone = (window as any)['Zone'];
+
+      const element = el('<div><div></div></div>');
+      getDOM().appendChild(doc.body, element);
+      const dispatchedEvent = getDOM().createMouseEvent('click');
+      let receivedEvents: any[] /** TODO #9100 */ = [];
+      let receivedZones: any[] = [];
+      const handler1 = (e: any /** TODO #9100 */) => {
+        receivedEvents.push(e);
+        receivedZones.push(Zone.current.name);
+        e.stopImmediatePropagation();
+      };
+      const handler2 = (e: any /** TODO #9100 */) => {
+        receivedEvents.push(e);
+        receivedZones.push(Zone.current.name);
+      };
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
+
+      let remover1 = null;
+      let remover2 = null;
+      Zone.root.run(() => { remover1 = manager.addEventListener(element, 'click', handler1); });
+      Zone.root.fork({name: 'test'}).run(() => {
+        remover2 = manager.addEventListener(element, 'click', handler2);
+      });
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvents).toEqual([dispatchedEvent]);
+      expect(receivedZones).toEqual([Zone.root.name]);
+
+      receivedEvents = [];
+      remover1 && remover1();
+      remover2 && remover2();
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvents).toEqual([]);
+    });
+
     it('should handle event correctly when one handler remove itself ', () => {
       const Zone = (window as any)['Zone'];
 
