@@ -1,48 +1,51 @@
 # Triage Process and GitHub Labels for Angular
 
-This document describes how the Angular team uses labels and milestones
-to triage issues on github. The basic idea of the process is that
-caretaker only assigns a component and type (bug, feature) label. The
-owner of the component than is in full control of how the issues should
-be triaged further.
+This document describes how the Angular team uses labels and milestones to triage issues on github.
+The basic idea of the process is that caretaker only assigns a component (`comp: *`) label.
+The owner of the component is then responsible for the secondary / component-level triage.
 
-Once this process is implemented and in use, we will revisit it to see
-if further labeling is needed.
 
 ## Label Types
 
 ### Components
 
-A caretaker should be able to determine which component the issue
-belongs to. The components have a clear piece of source code associated
-with it within the `/packages/` folder of this repo.
+The caretaker should be able to determine which component the issue belongs to.
+The components have a clear piece of source code associated with it within the `/packages/` folder of this repo.
 
 * `comp: aio` - the angular.io application
 * `comp: animations`
-* `comp: bazel`
+* `comp: bazel` - @angular/bazel rules
 * `comp: benchpress`
 * `comp: common` - this includes core components / pipes
-* `comp: core, compiler` - because core, compiler, compiler-cli and
+* `comp: common/http` - this includes core components / pipes
+* `comp: core & compiler` - because core, compiler, compiler-cli and
   browser-platforms are very intertwined, we will be treating them as one
 * `comp: forms`
 * `comp: http`
 * `comp: i18n`
-* `comp: language service`
+* `comp: language-service`
+* `comp: metadata-extractor`
 * `comp: router`
+* `comp: server`
+* `comp: service-worker`
 * `comp: testing`
-* `comp: upgrade`
+* `comp: upgrade/dynamic`
+* `comp: upgrade/static`
 * `comp: web-worker`
 * `comp: zones`
 
-There are few components which are cross-cutting. They don't have
-a clear location in the source tree. We will treat them as a component
-even thought no specific source tree is associated with them.
+There are few components which are cross-cutting.
+They don't have a clear location in the source tree.
+We will treat them as a component even thought no specific source tree is associated with them.
 
-* `comp: build & ci` - all build and CI scripts
+* `comp: build & ci` - build and CI infrastructure for the angular/angular repo
 * `comp: docs` - documentation, including API docs, guides, tutorial
-* `comp: packaging`
+* `comp: packaging` - packaging format of @angular/* npm packages
 * `comp: performance`
 * `comp: security`
+
+Sometimes, especially in the case of cross-cutting issues or PRs, these PRs or issues belong to multiple components.
+In these cases, all applicable component labels should be used to triage the issue or PR.
 
 
 ### Type
@@ -56,27 +59,27 @@ What kind of problem is this?
 * `type: performance`
 * `type: refactor`
 
-## Caretaker Triage Process
 
-It is the caretaker's responsibility to assign `comp:  *` to each new
-issue as they come in. The reason why we limit the responsibility of the
-caretaker to this one label is that it is likely that without domain
-knowledge the caretaker could mislabel issues or lack knowledge of
-duplicate issues.
+## Caretaker Triage Process (Primary Triage)
+
+It is the caretaker's responsibility to assign `comp:  *` to each new issue as they come in.
+
+If it's obvious that the issue or PR is related to a release regression, the caretaker is also responsible for assigning the `severity(5): regression` label to make the issue or PR highly visible.
+
+The primary triage should be done on a daily basis so that the issues become available for secondary triage without much of delay.
+
+The reason why we limit the responsibility of the caretaker to this one label is that it is likely that without domain knowledge the caretaker could mislabel issues or lack knowledge of duplicate issues.
 
 
 ## Component's owner Triage Process
 
-At this point we are leaving each component owner to determine their own
-process for their component.
+The component owner is responsible for assigning one of the labels from each of these categories:
 
-It will be up to the component owner to determine the order in which the
-issues within the component will be resolved.
+- `type: *`
+- `frequency: *`
+- `severity: *`
 
-Several owners have adopted the issue categorization based on
-[user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html)
-used by AngularJS. In this system every issue is assigned frequency and
-severity based on which the total user pain score is calculated.
+We've adopted the issue categorization based on [user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html) used by AngularJS. In this system every issue is assigned frequency and severity based on which the total user pain score is calculated.
 
 Following is the definition of various frequency and severity levels:
 
@@ -98,43 +101,42 @@ These criteria are then used to calculate a "user pain" score as follows:
 
 `pain = severity × frequency`
 
+This score can then be used to estimate the impact of the issue which helps with prioritization.
 
-## Triaged vs Untrained PRs
 
-PRs should also be label with a `comp: *` so that it is clear which
-primary area the PR effects.
+## Triaging PRs
 
-Because of the cumulative pain associated with rebasing PRs, we triage PRs daily, and
-closing or reviewing PRs is a top priority ahead of other ongoing work.
+Triaging PRs is the same as triaging issues, except that PRs have additional label categories that should be used to signal their state.
 
-Every triaged PR must have a `pr_action` label assigned to it and an assignee:
+Every triaged PR must have a `pr_action` label assigned to it:
 
-* `PR action: review` - work is complete and comment is needed from the assignee.
-* `PR action: cleanup` - more work is needed from the current assignee.
-* `PR action: discuss` - discussion is needed, to be led by the current assignee.
+* `PR action: review` - work is complete and comment is needed from the reviewers.
+* `PR action: cleanup` - more work is needed from the author.
+* `PR action: discuss` - discussion is needed, to be led by the author.
 * `PR action: merge` - the PR is ready to be merged by the caretaker.
 
 In addition, PRs can have the following states:
 
 * `PR state: WIP` - PR is experimental or rapidly changing. Not ready for review or triage.
-* `PR state: blocked` - PR is blocked on an issue or other PR. Not ready for review or triage.
+* `PR state: blocked` - PR is blocked on an issue or other PR. Not ready for review or triage or merge.
 
 
 ## PR Target
 
-In our git workflow, we merge changes either to the `master` branch, the most recent patch branch (e.g. `4.3.x`), or to both.
+In our git workflow, we merge changes either to the `master` branch, the active patch branch (e.g. `5.0.x`), or to both.
 
-The decision about the target must be done by the PR author and/or reviewer. This decision is then honored when the PR is being merged.
+The decision about the target must be done by the PR author and/or reviewer.
+This decision is then honored when the PR is being merged by the caretaker.
 
 To communicate the target we use the following labels:
 
 * `PR target: master & patch`: the PR should me merged into the master branch and cherry-picked into the most recent patch branch. All PRs with fixes, docs and refactorings should use this target.
-* `PR target: master-only`: the PR should be merged only into the current master branch. All PRs with new features, API changes or high-risk changes should use this target.
+* `PR target: master-only`: the PR should be merged only into the `master` branch. All PRs with new features, API changes or high-risk changes should use this target.
 * `PR target: patch-only`: the PR should be merged only into the most recent patch branch (e.g. 5.0.x). This target is useful if a `master & patch` PR can't be cleanly cherry-picked into the stable branch and a new PR is needed.
-* `PR target: LTS`: the PR should be merged only into the active LTS branch(es). Only security and critical fixes are allowed in these branches. Always send a new PR targeting just the LTS branch and request review approval from IgorMinar@.
+* `PR target: LTS-only`: the PR should be merged only into the active LTS branch(es). Only security and critical fixes are allowed in these branches. Always send a new PR targeting just the LTS branch and request review approval from @IgorMinar.
 * `PR target: TBD`: the target is yet to be determined.
 
-If a PR is missing the "PR target" label, or if the label is set to "TBD" when the PR is sent to the caretaker, the caretaker should reject the PR and request the appropriate target label to be applied before the PR is merged.
+If a PR is missing the "PR target: *" label, or if the label is set to "TBD" when the PR is sent to the caretaker, the caretaker should reject the PR and request the appropriate target label to be applied before the PR is merged.
 
 
 ## PR Approvals
@@ -143,23 +145,17 @@ Before a PR can be merged it must be approved by the appropriate reviewer(s).
 
 To ensure that there right people review each change, we configured [PullApprove bot](https://about.pullapprove.com/) via (`.pullapprove.yaml`) to provide aggregate approval state via the GitHub PR Status API.
 
-Note that approved state does not mean a PR is ready to be merged. For example, a reviewer might
-approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small
-uncontroversial change.
+Note that approved state does not mean a PR is ready to be merged.
+For example, a reviewer might approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small uncontroversial change.
+Only the `PR action: merge` label means that the PR is ready for merging.
 
 
 ## Special Labels
 
-### action:design
-More active discussion is needed before the issue can be worked on further. Typically used for
-`type: feature` or `type: RFC/discussion/question`
+### `cla: yes`, `cla: no`
+Managed by googlebot.
+Indicates whether a PR has a CLA on file for its author(s).
+Only issues with `cla:yes` should be merged into master.
 
-[See all issues that need discussion](https://github.com/angular/angular/labels/action:%20Design)
-
-### cla: yes, cla: no
-Managed by googlebot. Indicates whether a PR has a CLA on file for its author(s). Only issues with
-`cla:yes` should be merged into master.
-
-### WORKS_AS_INTENDED
-
-Only used on closed issues, to indicate to the reporter why we closed it.
+### `aio: preview`
+Applying this label to a PR makes the angular.io preview available regardless of the author. [More info](../aio/aio-builds-setup/docs/overview--security-model.md)
