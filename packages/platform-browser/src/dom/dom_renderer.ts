@@ -84,6 +84,8 @@ export class DomRendererFactory2 implements RendererFactory2 {
       }
       case ViewEncapsulation.Native:
         return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
+      case ViewEncapsulation.ShadowDom:
+        return new ShadowDomRenderer1(this.eventManager, this.sharedStylesHost, element, type);
       default: {
         if (!this.rendererByCompId.has(type.id)) {
           const styles = flattenStyles(type.id, type.styles, []);
@@ -257,6 +259,41 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       private hostEl: any, private component: RendererType2) {
     super(eventManager);
     this.shadowRoot = (hostEl as any).createShadowRoot();
+    this.sharedStylesHost.addHost(this.shadowRoot);
+    const styles = flattenStyles(component.id, component.styles, []);
+    for (let i = 0; i < styles.length; i++) {
+      const styleEl = document.createElement('style');
+      styleEl.textContent = styles[i];
+      this.shadowRoot.appendChild(styleEl);
+    }
+  }
+
+  private nodeOrShadowRoot(node: any): any { return node === this.hostEl ? this.shadowRoot : node; }
+
+  destroy() { this.sharedStylesHost.removeHost(this.shadowRoot); }
+
+  appendChild(parent: any, newChild: any): void {
+    return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
+  }
+  insertBefore(parent: any, newChild: any, refChild: any): void {
+    return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
+  }
+  removeChild(parent: any, oldChild: any): void {
+    return super.removeChild(this.nodeOrShadowRoot(parent), oldChild);
+  }
+  parentNode(node: any): any {
+    return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
+  }
+}
+
+class ShadowDomRenderer1 extends DefaultDomRenderer2 {
+  private shadowRoot: any;
+
+  constructor(
+      eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
+      private hostEl: any, private component: RendererType2) {
+    super(eventManager);
+    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles, []);
     for (let i = 0; i < styles.length; i++) {

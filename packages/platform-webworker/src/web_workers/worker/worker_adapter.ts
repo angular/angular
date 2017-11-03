@@ -101,9 +101,11 @@ export class WorkerDomAdapter extends DomAdapter {
     throw 'not implemented';
   }
   createStyleElement(css: string, doc?: any): HTMLStyleElement { throw 'not implemented'; }
+  attachShadow(el: any): any { throw 'not implemented'; }
   createShadowRoot(el: any): any { throw 'not implemented'; }
   getShadowRoot(el: any): any { throw 'not implemented'; }
   getHost(el: any): any { throw 'not implemented'; }
+  assignedNodes(el: any): Node[] { throw 'not implemented'; }
   getDistributedNodes(el: any): Node[] { throw 'not implemented'; }
   clone(node: Node): Node { throw 'not implemented'; }
   getElementsByClassName(element: any, name: string): HTMLElement[] { throw 'not implemented'; }
@@ -147,7 +149,8 @@ export class WorkerDomAdapter extends DomAdapter {
   getEventKey(event: any): string { throw 'not implemented'; }
   resolveAndSetHref(element: any, baseUrl: string, href: string) { throw 'not implemented'; }
   supportsDOMEvents(): boolean { throw 'not implemented'; }
-  supportsNativeShadowDOM(): boolean { throw 'not implemented'; }
+  supportsNativeShadowDom(): boolean { throw 'not implemented'; }
+  supportsShadowDom(): boolean { throw 'not implemented'; }
   getGlobalEventTarget(doc: Document, target: string): any { throw 'not implemented'; }
   getHistory(): History { throw 'not implemented'; }
   getLocation(): Location { throw 'not implemented'; }

@@ -22,7 +22,7 @@ const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElemen
   selector: 'aio-doc-viewer',
   template: ''
   // TODO(robwormald): shadow DOM and emulated don't work here (?!)
-  // encapsulation: ViewEncapsulation.Native
+  // encapsulation: ViewEncapsulation.ShadowDom
 })
 export class DocViewerComponent implements DoCheck, OnDestroy {
 

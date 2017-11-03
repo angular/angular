@@ -49,7 +49,8 @@ export class DominoAdapter extends BrowserDomAdapter {
   logGroupEnd() {}
 
   supportsDOMEvents(): boolean { return false; }
-  supportsNativeShadowDOM(): boolean { return false; }
+  supportsNativeShadowDom(): boolean { return false; }
+  supportsShadowDom(): boolean { return false; }
 
   contains(nodeA: any, nodeB: any): boolean {
     let inner = nodeB;
@@ -71,6 +72,12 @@ export class DominoAdapter extends BrowserDomAdapter {
     return DominoAdapter.defaultDoc;
   }
 
+
+  attachShadow(el: any, doc: Document = document): DocumentFragment {
+    el.shadowRoot = doc.createDocumentFragment();
+    el.shadowRoot.parent = el;
+    return el.shadowRoot;
+  }
   createShadowRoot(el: any, doc: Document = document): DocumentFragment {
     el.shadowRoot = doc.createDocumentFragment();
     el.shadowRoot.parent = el;
@@ -201,6 +208,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   getTransitionEnd(): string { return 'transitionend'; }
   supportsAnimation(): boolean { return true; }
 
+  assignedNodes(el: any): Node[] { throw _notImplemented('assignedNodes'); }
   getDistributedNodes(el: any): Node[] { throw _notImplemented('getDistributedNodes'); }
 
   supportsCookies(): boolean { return false; }

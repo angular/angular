@@ -226,6 +226,23 @@ class NativeEncapsulationApp {
 class NativeExampleModule {
 }
 
+@Component({
+  selector: 'app',
+  template: 'ShadowDom works',
+  encapsulation: ViewEncapsulation.ShadowDom,
+  styles: [':host { color: red; }']
+})
+class ShadowDomEncapsulationApp {
+}
+
+@NgModule({
+  declarations: [ShadowDomEncapsulationApp],
+  imports: [BrowserModule.withServerTransition({appId: 'test'}), ServerModule],
+  bootstrap: [ShadowDomEncapsulationApp]
+})
+class ShadowDomExampleModule {
+}
+
 @Component({selector: 'my-child', template: 'Works!'})
 class MyChildComponent {
   @Input() public attr: boolean;
@@ -531,6 +548,14 @@ export function main() {
 
       it('should handle ViewEncapsulation.Native', async(() => {
            renderModule(NativeExampleModule, {document: doc}).then(output => {
+             expect(output).not.toBe('');
+             expect(output).toContain('color: red');
+             called = true;
+           });
+         }));
+
+      it('should handle ViewEncapsulation.ShadowDom', async(() => {
+           renderModule(ShadowDomExampleModule, {document: doc}).then(output => {
              expect(output).not.toBe('');
              expect(output).toContain('color: red');
              called = true;

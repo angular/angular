@@ -228,6 +228,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     this.appendChild(style, this.createTextNode(css, doc));
     return style;
   }
+  attachShadow(el: HTMLElement): DocumentFragment { return (<any>el).attachShadow({mode: 'open'}); }
   createShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).createShadowRoot(); }
   getShadowRoot(el: HTMLElement): DocumentFragment { return (<any>el).shadowRoot; }
   getHost(el: HTMLElement): HTMLElement { return (<any>el).host; }

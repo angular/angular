@@ -98,9 +98,11 @@ export abstract class DomAdapter {
   abstract createTextNode(text: string, doc?: any): Text;
   abstract createScriptTag(attrName: string, attrValue: string, doc?: any): HTMLElement;
   abstract createStyleElement(css: string, doc?: any): HTMLStyleElement;
+  abstract attachShadow(el: any): any;
   abstract createShadowRoot(el: any): any;
   abstract getShadowRoot(el: any): any;
   abstract getHost(el: any): any;
+  abstract assignedNodes(el: any): Node[];
   abstract getDistributedNodes(el: any): Node[];
   abstract clone /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
   abstract getElementsByClassName(element: any, name: string): HTMLElement[];
@@ -142,7 +144,8 @@ export abstract class DomAdapter {
   abstract getEventKey(event: any): string;
   abstract resolveAndSetHref(element: any, baseUrl: string, href: string): any;
   abstract supportsDOMEvents(): boolean;
-  abstract supportsNativeShadowDOM(): boolean;
+  abstract supportsNativeShadowDom(): boolean;
+  abstract supportsShadowDom(): boolean;
   abstract getGlobalEventTarget(doc: Document, target: string): any;
   abstract getHistory(): History;
   abstract getLocation(): Location;

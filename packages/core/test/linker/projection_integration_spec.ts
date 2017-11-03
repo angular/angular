@@ -367,13 +367,31 @@ export function main() {
       expect(main.nativeElement).toHaveText('TREE(0:TREE2(1:TREE(2:)))');
     });
 
-    if (getDOM().supportsNativeShadowDOM()) {
+    if (getDOM().supportsNativeShadowDom()) {
       it('should support native content projection and isolate styles per component', () => {
         TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
         TestBed.overrideComponent(MainComp, {
           set: {
             template: '<simple-native1><div>A</div></simple-native1>' +
                 '<simple-native2><div>B</div></simple-native2>'
+          }
+        });
+        const main = TestBed.createComponent(MainComp);
+
+        const childNodes = getDOM().childNodes(main.nativeElement);
+        expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
+        expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
+        main.destroy();
+      });
+    }
+
+    if (getDOM().supportsShadowDom()) {
+      it('should support native content projection and isolate styles per component', () => {
+        TestBed.configureTestingModule({declarations: [SimpleShadowDom1, SimpleShadowDom2]});
+        TestBed.overrideComponent(MainComp, {
+          set: {
+            template: '<simple-shadow-dom1><div>A</div></simple-shadow-dom1>' +
+                '<simple-shadow-dom2><div>B</div></simple-shadow-dom2>'
           }
         });
         const main = TestBed.createComponent(MainComp);
@@ -550,6 +568,23 @@ class SimpleNative1 {
   styles: ['div {color: blue}']
 })
 class SimpleNative2 {
+}
+@Component({
+  selector: 'simple-shadow-dom1',
+  template: 'SIMPLE1(<slot></slot>)',
+  encapsulation: ViewEncapsulation.ShadowDom,
+  styles: ['div {color: red}']
+})
+class SimpleShadowDom1 {
+}
+
+@Component({
+  selector: 'simple-shadow-dom2',
+  template: 'SIMPLE2(<slot></slot>)',
+  encapsulation: ViewEncapsulation.ShadowDom,
+  styles: ['div {color: blue}']
+})
+class SimpleShadowDom2 {
 }
 
 @Component({selector: 'empty', template: ''})
