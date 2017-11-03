@@ -32,5 +32,5 @@ Once a new fixture is created:
 
 1) Add the fixture base name (without the .json) to `FIXTURES` in 
    `scripts/env.sh`.
-2) Run `scripts/udpate_golden.sh` to produce the expected output files.
+2) Run `scripts/update_golden.sh` to produce the expected output files.
 3) Hand validate the expected output is reasonable.
