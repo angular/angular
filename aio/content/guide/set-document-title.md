@@ -7,16 +7,6 @@ This cookbook explains how to do it.
 
 See the <live-example name="set-document-title"></live-example>.
 
-<div class="l-sub-section">
-  <img src='generated/images/plunker/plunker-switch-to-editor-button.png'alt="pop out the window" class="right">
-  <img src='generated/images/plunker/plunker-separate-window-button.png' alt="pop out the window" class="right">
-
-  To see the browser title bar change in the live example,
-  open it again in the Plunker editor by clicking the icon in the upper right,
-  then pop out the preview window by clicking the blue 'X' button in the upper right corner.
-
-</div>
-
 ## The problem with *&lt;title&gt;*
 
 The obvious approach is to bind a property of the component to the HTML `<title>` like this:

@@ -1,0 +1,8 @@
+{
+  "description": "Content Security",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags": ["security"]
+}

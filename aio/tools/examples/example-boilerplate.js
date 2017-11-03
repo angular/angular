@@ -60,6 +60,11 @@ BOILERPLATE_PATHS.universal = [
   'package.json'
 ];
 
+BOILERPLATE_PATHS.testing = [
+  ...cliRelativePath,
+  '.angular-cli.json'
+];
+
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {

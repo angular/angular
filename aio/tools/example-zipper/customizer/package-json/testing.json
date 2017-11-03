@@ -1,0 +1,19 @@
+{
+  "scripts": [
+    { "name": "ng", "command": "ng" },
+    { "name": "build", "command": "ng build" },
+    { "name": "start", "command": "ng serve" },
+    { "name": "test", "command": "ng test" },
+    { "name": "lint", "command": "ng lint" },
+    { "name": "e2e", "command": "ng e2e" }
+  ],
+  "dependencies": [
+    "web-animations-js"
+  ],
+  "devDependencies": [
+    "@angular/cli",
+    "@types/jasminewd2",
+    "karma-coverage-istanbul-reporter",
+    "ts-node"
+  ]
+}

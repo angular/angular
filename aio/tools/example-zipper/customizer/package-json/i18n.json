@@ -9,9 +9,7 @@
     { "name": "e2e", "command": "ng e2e --aot --i18nFile=src/locale/messages.fr.xlf --i18nFormat=xlf --locale=fr" },
     { "name": "extract", "command": "ng xi18n --outputPath=src/locale" }
   ],
-  "dependencies": [
-    "web-animations-js"
-  ],
+  "dependencies": [],
   "devDependencies": [
     "@angular/cli",
     "@types/jasminewd2",

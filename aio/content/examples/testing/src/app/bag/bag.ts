@@ -235,7 +235,7 @@ export class MyIfComponent {
   providers: [FancyService]
 })
 export class TestProvidersComponent {
-  constructor(private fancyService: FancyService) {}
+  constructor(public fancyService: FancyService) {}
 }
 
 
@@ -245,7 +245,7 @@ export class TestProvidersComponent {
   viewProviders: [FancyService]
 })
 export class TestViewProvidersComponent {
-  constructor(private fancyService: FancyService) {}
+  constructor(public fancyService: FancyService) {}
 }
 
 @Component({
@@ -270,14 +270,6 @@ export class ExternalTemplateComponent implements OnInit {
   `
 })
 export class InnerCompWithExternalTemplateComponent { }
-
-@Component({
-  selector: 'bad-template-comp',
-  templateUrl: './non-existent.html'
-})
-export class BadTemplateUrlComponent { }
-
-
 
 @Component({selector: 'needs-content', template: '<ng-content></ng-content>'})
 export class NeedsContentComponent {

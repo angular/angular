@@ -450,7 +450,7 @@ describe('TestBed Component Overrides:', () => {
     tcProvider = fixture.debugElement.injector.get(FancyService);
     tpcProvider = fixture.debugElement.children[0].injector.get(FancyService) as FakeFancyService;
 
-    expect(testBedProvider).not.toBe(tcProvider, 'testBed/tc not same providers');
+    expect(testBedProvider).not.toBe(<any> tcProvider, 'testBed/tc not same providers');
     expect(testBedProvider).not.toBe(tpcProvider, 'testBed/tpc not same providers');
 
     expect(testBedProvider instanceof FancyService).toBe(true, 'testBedProvider is FancyService');
