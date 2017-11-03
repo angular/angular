@@ -34,6 +34,8 @@ const FALSE = 'FALSE';
 const ANGULAR = 'ANGULAR';
 const NATIVE_ADD_LISTENER = 'addEventListener';
 const NATIVE_REMOVE_LISTENER = 'removeEventListener';
+// use the same symbol string which is used in zone.js
+const stopSymbol = '__zone_symbol__propagationStopped';
 
 const blackListedEvents: string[] =
     (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('BLACK_LISTED_EVENTS')];
@@ -81,6 +83,9 @@ const globalListener = function(event: Event) {
     // itself or others
     const copiedTasks = taskDatas.slice();
     for (let i = 0; i < copiedTasks.length; i++) {
+      if ((event as any)[stopSymbol] === true) {
+        break;
+      }
       const taskData = copiedTasks[i];
       if (taskData.zone !== Zone.current) {
         // only use Zone.run when Zone.current not equals to stored zone
@@ -94,7 +99,29 @@ const globalListener = function(event: Event) {
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
-  constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) { super(doc); }
+  constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) {
+    super(doc);
+
+    this.patchEvent();
+  }
+
+  private patchEvent() {
+    if (!Event || !Event.prototype) {
+      return;
+    }
+    const symbol = '__zone_symbol__stopImmediatePropagation';
+    if ((Event.prototype as any)[symbol]) {
+      // already patched by zone.js
+      return;
+    }
+    (Event.prototype as any)[symbol] = Event.prototype.stopImmediatePropagation;
+    Event.prototype.stopImmediatePropagation = function() {
+      if (this) {
+        this[stopSymbol] = true;
+      }
+    };
+  }
+
 
   // This plugin should come last in the list of plugins, because it accepts all
   // events.
