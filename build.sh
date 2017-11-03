@@ -24,8 +24,7 @@ PACKAGES=(core
   compiler-cli
   language-service
   benchpress
-  service-worker
-  elements)
+  service-worker)
 
 TSC_PACKAGES=(compiler-cli
   language-service

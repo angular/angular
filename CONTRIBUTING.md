@@ -211,7 +211,6 @@ The following is the list of supported scopes:
 * **compiler**
 * **compiler-cli**
 * **core**
-* **elements**
 * **forms**
 * **http**
 * **language-service**
