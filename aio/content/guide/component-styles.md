@@ -9,8 +9,7 @@ with components, enabling a more modular design than regular stylesheets.
 
 This page describes how to load and apply these component styles.
 
-You can run the <live-example></live-example> in Plunker and download the code from there.
-
+You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
 ## Using component styles
 

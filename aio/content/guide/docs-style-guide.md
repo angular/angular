@@ -23,7 +23,7 @@ The [aio/README.md](https://github.com/angular/angular/blob/master/aio/README.md
 
 Here are a few essential commands for guide page authors.
 
-1. `yarn setup` &mdash; installs packages; builds docs, plunkers, and zips.
+1. `yarn setup` &mdash; installs packages; builds docs, stackblitz, and zips.
 
 1. `yarn docs-watch --watch-only` &mdash; watches for saved content changes and refreshes the browser. The (optional) `--watch-only` flag skips the initial docs rebuild.
 
@@ -549,7 +549,7 @@ Different file types have different comment syntax so adjust accordingly.
 ```
 
 The doc generation process erases these comments before displaying them in the doc viewer.
-It also strips them from plunkers and sample code downloads.
+It also strips them from stackblitz and sample code downloads.
 
 <div class="alert is-important">
 
@@ -711,24 +711,24 @@ app.component.2.ts
 
 You'll find many such files among the samples in the Angular documentation.
 
-Remember to exclude these files from plunkers by listing them in the `plnkr.json` as illustrated here.
+Remember to exclude these files from stackblitz by listing them in the `stackblitz.json` as illustrated here.
 
 <code-example
-  path="docs-style-guide/plnkr.json"
-  title="plnkr.json"></code-example>
+  path="docs-style-guide/stackblitz.json"
+  title="stackblitz.json"></code-example>
 
 {@a live-examples}
 ## Live examples
 
-By adding `<live-example>` to the page you generate links that run sample code in the Plunker live coding environment and download that code to the reader's file system.
+By adding `<live-example>` to the page you generate links that run sample code in the Stackblitz live coding environment and download that code to the reader's file system.
 
-Live examples (AKA "plunkers") are defined by one or more `plnkr.json` files in the root of a code sample folder. Each sample folder usually has a single unnamed definition file, the default `plnkr.json`.
+Live examples (AKA "stackblitz") are defined by one or more `stackblitz.json` files in the root of a code sample folder. Each sample folder usually has a single unnamed definition file, the default `stackblitz.json`.
 
 <div class="l-sub-section">
 
-You can create additional, named definition files in the form `name.plnkr.json`. See `content/examples/testing` for examples.
+You can create additional, named definition files in the form `name.stackblitz.json`. See `content/examples/testing` for examples.
 
-The schema for a `plnkr.json` hasn't been documented yet but looking at the `plnkr.json` files in the example folders should tell you most of what you need to know.
+The schema for a `stackblitz.json` hasn't been documented yet but looking at the `stackblitz.json` files in the example folders should tell you most of what you need to know.
 
 </div>
 
@@ -736,11 +736,11 @@ Adding `<live-example></live-example>` to the page generates the two default lin
 
 <live-example></live-example>
 
-1. a link to the plunker defined by the default `plnkr.json` file located in the code sample folder with the same name as the guide page.
+1. a link to the Stackblitz defined by the default `stackblitz.json` file located in the code sample folder with the same name as the guide page.
 
 2. a link that downloads that sample.
 
-Clicking the first link opens the code sample in a new browser tab in the "embedded plunker" style.
+Clicking the first link opens the code sample in a new browser tab in the "embedded Stackblitz" style.
 
 You can change the appearance and behavior of the live example with attributes and classes.
 
@@ -765,7 +765,7 @@ You can achieve the same effect by putting the label between the `<live-example>
 
 <h3 class="no-toc">Live example from another guide</h3>
 
-To link to a plunker in a folder whose name is not the same as the current guide page, set the `name` attribute to the name of that folder.
+To link to a Stackblitz in a folder whose name is not the same as the current guide page, set the `name` attribute to the name of that folder.
 
 <live-example name="router">Live Example from the Router guide</live-example>
 
@@ -773,29 +773,29 @@ To link to a plunker in a folder whose name is not the same as the current guide
 <live-example name="router">Live Example from the Router guide</live-example>
 ```
 
-<h3 class="no-toc">Live Example for named plunker</h3>
+<h3 class="no-toc">Live Example for named Stackblitz</h3>
 
-To link to a plunker defined by a named `plnkr.json` file, set the `plnkr` attribute. The following example links to the plunker defined by `second.plnkr.json` in the current guide's directory.
+To link to a Stackblitz defined by a named `stackblitz.json` file, set the `stackblitz` attribute. The following example links to the Stackblitz defined by `second.stackblitz.json` in the current guide's directory.
 
-<live-example plnkr="second"></live-example>
+<live-example stackblitz="second"></live-example>
 
 ```html
-<live-example plnkr="second"></live-example>
+<live-example stackblitz="second"></live-example>
 ```
 
 <h3 class="no-toc">Live Example without download</h3>
 
 To skip the download link, add the `noDownload` attribute.
 
-<live-example noDownload>Just the plunker</live-example>
+<live-example noDownload>Just the Stackblitz</live-example>
 
 ```html
-<live-example noDownload>Just the plunker</live-example>
+<live-example noDownload>Just the Stackblitz</live-example>
 ```
 
 <h3 class="no-toc">Live Example with download-only</h3>
 
-To skip the live plunker link and only link to the download, add the `downloadOnly` attribute.
+To skip the live Stackblitz link and only link to the download, add the `downloadOnly` attribute.
 
 <live-example downloadOnly>Download only</live-example>
 
@@ -805,21 +805,21 @@ To skip the live plunker link and only link to the download, add the `downloadOn
 
 <h3 class="no-toc">Embedded live example</h3>
 
-By default, a live example link opens a plunker in a separate browser tab.
-You can embed the plunker within the guide page itself by adding the `embedded` attribute.
+By default, a live example link opens a Stackblitz in a separate browser tab.
+You can embed the Stackblitz within the guide page itself by adding the `embedded` attribute.
 
-For performance reasons, the plunker does not start right away. The reader sees an image instead. Clicking the image starts the sometimes-slow process of launching the embedded plunker within an iframe on the page.
+For performance reasons, the Stackblitz does not start right away. The reader sees an image instead. Clicking the image starts the sometimes-slow process of launching the embedded Stackblitz within an iframe on the page.
 
-You usually replace the default plunker image with a custom image that better represents the sample.
+You usually replace the default Stackblitz image with a custom image that better represents the sample.
 Store that image in the `content/images` directory in a folder with a name matching the corresponding example folder.
 
-Here's an embedded live example for this guide. It has a custom image created from a snapshot of the running app, overlayed with `content/images/plunker/unused/click-to-run.png`.
+Here's an embedded live example for this guide. It has a custom image created from a snapshot of the running app, overlayed with `content/images/Stackblitz/unused/click-to-run.png`.
 
 ```html
-<live-example embedded img="guide/docs-style-guide/docs-style-guide-plunker.png"></live-example>
+<live-example embedded img="guide/docs-style-guide/docs-style-guide-Stackblitz.png"></live-example>
 ```
 
-<live-example embedded img="guide/docs-style-guide/docs-style-guide-plunker.png"></live-example>
+<live-example embedded img="guide/docs-style-guide/docs-style-guide-Stackblitz.png"></live-example>
 
 {@a anchors}
 

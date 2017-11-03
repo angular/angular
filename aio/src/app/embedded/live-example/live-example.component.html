@@ -1,10 +1,9 @@
 <span [ngSwitch]="mode">
   <span *ngSwitchCase="'disabled'">{{title}} <em>(not available on this device)</em></span>
   <span *ngSwitchCase="'embedded'">
-    <div *ngIf="showEmbedded" title="{{title}}">
-      <aio-embedded-plunker [src]="plnkr"></aio-embedded-plunker>
+    <div title="{{title}}">
+      <aio-embedded-stackblitz [src]="stackblitz"></aio-embedded-stackblitz>
     </div>
-    <img *ngIf="!showEmbedded" (click)="toggleEmbedded()" [src]="plnkrImg" alt="{{title}}">
     <p *ngIf="enableDownload">
       You can also <a [href]="zip" download title="Download example">download this example</a>.
     </p>
@@ -13,7 +12,7 @@
     <a [href]="zip" download title="{{title}}">{{title}}</a>
   </span>
   <span *ngSwitchDefault>
-    <a [href]="plnkr" target="_blank" title="{{title}}">{{title}}</a>
+    <a [href]="stackblitz" target="_blank" title="{{title}}">{{title}}</a>
     <span *ngIf="enableDownload">
       /  <a [href]="zip" download title="Download example">download example</a>
     </span>

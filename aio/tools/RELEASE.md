@@ -14,6 +14,11 @@ There, select all the packages that are updated on the new Angular release.
 
 **2)** Changes to the tsconfig.json? There is one to update at `/aio/tools/examples/shared/boilerplate/src/tsconfig.json`
 
-**3)** The file `/aio/tools/examples/shared/boilerplate/src/systemjs.config.web.js` contains the configuration for plunkers. It has some hardcoded versions that could be updated.
+**3)** The file `/aio/tools/examples/shared/boilerplate/src/systemjs.config.web.js` contains the configuration for plunkers. It has some hardcoded versions that could be updated. 
+
+>N.B.: Plunkers have been replaced by Stackblitz and (almost) all examples have be replaced by CLI/WebPack-based examples that do not use SystemJS.
+The upgrade examples may still rely on SystemJS.
 
 **4)** As in step 3, more hardcoded versions at `/aio/tools/plunker-builder/translator/rules/indexHtml.js`
+
+>Note the same caveat about migration from plunker to Stackblitz.

@@ -1,8 +1,0 @@
-{
-  "description": "Forms",
-  "basePath": "src/",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"
-  ]
-}
