@@ -134,7 +134,7 @@ export class PreActivation {
     // reusing the node
     if (curr && futureConfig === currConfig) {
       const shouldRunGuardsAndResolvers = this.shouldRunGuardsAndResolvers(
-        curr, future, futureConfig !.runGuardsAndResolvers);
+        curr, this.currRoot, future, this.futureRoot, futureConfig !.runGuardsAndResolvers);
       if (shouldRunGuardsAndResolvers) {
         this.canActivateChecks.push(new CanActivate(futurePath));
       } else {
@@ -178,19 +178,20 @@ export class PreActivation {
   }
 
   private shouldRunGuardsAndResolvers(
-      curr: RouteSnapshot, future: RouteSnapshot,
+      curr: RouteSnapshot, currRoot: TreeNode<RouteSnapshot>, future: RouteSnapshot,
+      futureRoot: TreeNode<RouteSnapshot>,
       mode: RunGuardsAndResolvers|undefined): boolean {
     switch (mode) {
       case 'always':
         return true;
 
       case 'paramsOrQueryParamsChange':
-        return !equalParamsAndUrlSegments(curr, future) ||
+        return !equalParamsAndUrlSegments(curr, future, currRoot, futureRoot) ||
             !shallowEqual(curr.queryParams, future.queryParams);
 
       case 'paramsChange':
       default:
-        return !equalParamsAndUrlSegments(curr, future);
+        return !equalParamsAndUrlSegments(curr, future, currRoot, futureRoot);
     }
   }
 
@@ -290,8 +291,7 @@ export class PreActivation {
   }
 
   private runCanActivateChild(path: RouteSnapshot[]): Observable<boolean> {
-    const future = path[path.length - 1];
-
+    const future = getLegacySnapshot(this.futureRoot, path[path.length - 1], this.legacySnapshots.future._root);
     const canActivateChildGuards = path.slice(0, path.length - 1)
                                        .reverse()
                                        .map(p => this.extractCanActivateChild(p))

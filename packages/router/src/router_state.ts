@@ -479,7 +479,15 @@ export function getConfig(path: number[], routes: Route[]): Route|null {
   if (!selectedRoute) throw new Error(errMsg);
 
   if (path.length > 1) {
-    if (!selectedRoute.children) throw new Error(errMsg);
+    if (!selectedRoute.children) {
+      if (selectedRoute.loadChildren) {
+        if (selectedRoute._loadedConfig !== undefined) {
+          return getConfig(path.slice(1), selectedRoute._loadedConfig.routes);
+        }
+        return null;
+      }
+      throw new Error(errMsg);
+    }
     return getConfig(path.slice(1), selectedRoute.children);
   } else {
     return selectedRoute;
@@ -568,11 +576,18 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
 
 
 export function equalParamsAndUrlSegments(
-    a: RouteSnapshot, b: RouteSnapshot): boolean {
+    a: RouteSnapshot, b: RouteSnapshot, aRoot?: TreeNode<RouteSnapshot>, bRoot?: TreeNode<RouteSnapshot>): boolean {
   const equalUrlParams = shallowEqual(a.params, b.params) && equalSegments(a.url as any, b.url as any);
-  return equalUrlParams;
-  // const parentsMismatch = !a.parent !== !b.parent;
 
-  // return equalUrlParams && !parentsMismatch &&
-  //     (!a.parent || equalParamsAndUrlSegments(a.parent, b.parent !));
+  if (aRoot && bRoot) {
+    const aPath = pathFromRoot(aRoot, a);
+    const bPath = pathFromRoot(bRoot, b);
+    const aParent = aPath[aPath.length - 2];
+    const bParent = bPath[bPath.length - 2];
+
+    return equalUrlParams &&
+        (!aParent || equalParamsAndUrlSegments(aParent, bParent !, aRoot, bRoot));
+  } else {
+    return equalUrlParams;
+  }
 }

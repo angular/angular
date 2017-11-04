@@ -27,7 +27,7 @@ import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
-import {createRouterStateSnapshot, ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, RouteSnapshot} from './router_state';
+import {createRouterStateSnapshot, ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, RouteSnapshot, createEmptyRouteSnapshotTree} from './router_state';
 import {Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
@@ -206,6 +206,7 @@ export class Router {
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
+  private currentRoot: TreeNode<RouteSnapshot> = createEmptyRouteSnapshotTree();
 
   public readonly events: Observable<Event> = new Subject<Event>();
   public readonly routerState: RouterState;
@@ -566,7 +567,7 @@ export class Router {
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
-                  url, rawUrl, !!extras.skipLocationChange, !!extras.replaceUrl, id, null))
+                  url, rawUrl, !!extras.skipLocationChange, !!extras.replaceUrl, id, null, null))
           .then(resolve, reject);
 
       // we cannot process the current URL, but we could process the previous one =>
@@ -578,7 +579,7 @@ export class Router {
       Promise.resolve()
           .then(
               (_) => this.runNavigate(
-                  url, rawUrl, false, false, id,
+                  url, rawUrl, false, false, id, createEmptyRouteSnapshotTree(),
                   createEmptyState(url, this.rootComponentType).snapshot))
           .then(resolve, reject);
 
@@ -590,7 +591,7 @@ export class Router {
 
   private runNavigate(
       url: UrlTree, rawUrl: UrlTree, skipLocationChange: boolean, replaceUrl: boolean, id: number,
-      precreatedState: RouterStateSnapshot|null): Promise<boolean> {
+      precreatedRoot: TreeNode<RouteSnapshot>|null, precreatedLegacySnapshot: RouterStateSnapshot|null): Promise<boolean> {
     if (id !== this.navigationId) {
       (this.events as Subject<Event>)
           .next(new NavigationCancel(
@@ -604,7 +605,7 @@ export class Router {
       // this operation do not result in any side effects
       // let urlAndSnapshot$: Observable<{appliedUrl: UrlTree, snapshot: RouterStateSnapshot}>;
       let urlAndSnapshot$: Observable<{appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot}>;
-      if (!precreatedState) {
+      if (!precreatedRoot || !precreatedLegacySnapshot) {
         const moduleInjector = this.ngModule.injector;
         const redirectsApplied$ =
             applyRedirects(moduleInjector, this.configLoader, this.urlSerializer, url, this.config);
@@ -623,8 +624,7 @@ export class Router {
               });
         });
       } else {
-        // urlAndSnapshot$ = of ({appliedUrl: url, snapshot: precreatedState});
-        throw "Precreated State";
+        urlAndSnapshot$ = of ({appliedUrl: url, root: precreatedRoot, legacySnapshot: precreatedLegacySnapshot});
       }
 
       const beforePreactivationDone$ = mergeMap.call(
@@ -639,12 +639,9 @@ export class Router {
           beforePreactivationDone$,
           ({appliedUrl, root, legacySnapshot}: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot}) => {
             const moduleInjector = this.ngModule.injector;
-            preActivation = new PreActivation(root, root, {curr: this.routerState.snapshot, future: legacySnapshot },
-              this.config, moduleInjector, (evt: Event) => this.triggerEvent(evt))
-            // preActivation = new PreActivation(
-            //     snapshot, this.routerState.snapshot, this.config, moduleInjector,
-            //     (evt: Event) => this.triggerEvent(evt));
-            // preActivation.initialize(this.rootContexts);
+            preActivation = new PreActivation(root, this.currentRoot, {curr: this.routerState.snapshot, future: legacySnapshot },
+              this.config, moduleInjector, (evt: Event) => this.triggerEvent(evt));
+            preActivation.initialize(this.rootContexts);
             return {appliedUrl, root, legacySnapshot};
           });
 
@@ -692,9 +689,9 @@ export class Router {
           map.call(preactivationDone$, ({appliedUrl, root, legacySnapshot, shouldActivate}: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot, shouldActivate: boolean}) => {
             if (shouldActivate) {
               const state = createRouterState(this.routeReuseStrategy, legacySnapshot, this.routerState);
-              return {appliedUrl, state, shouldActivate};
+              return {appliedUrl, root, state, shouldActivate};
             } else {
-              return {appliedUrl, state: null, shouldActivate};
+              return {appliedUrl, root, state: null, shouldActivate};
             }
           });
 
@@ -706,7 +703,7 @@ export class Router {
       const storedUrl = this.currentUrlTree;
 
       routerState$
-          .forEach(({appliedUrl, state, shouldActivate}: {appliedUrl: UrlTree, state: RouterState, shouldActivate: boolean}) => {
+          .forEach(({appliedUrl, root, state, shouldActivate}: {appliedUrl: UrlTree, root: TreeNode<RouteSnapshot>, state: RouterState, shouldActivate: boolean}) => {
             if (!shouldActivate || id !== this.navigationId) {
               navigationIsSuccessful = false;
               return;
@@ -729,6 +726,8 @@ export class Router {
             new ActivateRoutes(
                 this.routeReuseStrategy, state, storedState, (evt: Event) => this.triggerEvent(evt))
                 .activate(this.rootContexts);
+
+            this.currentRoot = root;
 
             navigationIsSuccessful = true;
           })

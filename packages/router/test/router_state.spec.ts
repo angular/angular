@@ -111,22 +111,15 @@ describe('RouterState & Snapshot', () => {
 
     function createSnapshotPairWithParent(
         params: [Params, Params], parentParams: [Params, Params],
-        urls: [string, string]): [RouteSnapshot, RouteSnapshot] {
+        urls: [string, string]): [RouteSnapshot, RouteSnapshot, TreeNode<RouteSnapshot>, TreeNode<RouteSnapshot>] {
       const snapshot1 = createSnapshot(params[0], []);
       const snapshot2 = createSnapshot(params[1], []);
 
-      throw new Error('We cannot represent parents');
+      const snapshot1Parent = createSnapshot(parentParams[0], [new UrlSegment(urls[0], {})]);
+      const snapshot2Parent = createSnapshot(parentParams[1], [new UrlSegment(urls[1], {})]);
 
-      // const snapshot1Parent = createSnapshot(parentParams[0], [new UrlSegment(urls[0], {})]);
-      // const snapshot2Parent = createSnapshot(parentParams[1], [new UrlSegment(urls[1], {})]);
-
-      
-      // snapshot1._routerState =
-      //     new RouterStateSnapshot('', {value: snapshot1Parent, children: [{value: snapshot1, children: []}]});
-      // snapshot2._routerState =
-      //     new RouterStateSnapshot('', {value: snapshot2Parent, children: [{value: snapshot2, children: []}]});
-
-      // return [snapshot1, snapshot2];
+      return [snapshot1, snapshot2, {value: snapshot1Parent, children: [{value: snapshot1, children: []}]},
+        {value: snapshot2Parent, children: [{value: snapshot2, children: []}]}];
     }
 
     it('should return false when params are different', () => {
@@ -149,24 +142,24 @@ describe('RouterState & Snapshot', () => {
     });
 
     it('should return false when upstream params are different', () => {
-      const [snapshot1, snapshot2] =
+      const [snapshot1, snapshot2, root1, root2] =
           createSnapshotPairWithParent([{a: 1}, {a: 1}], [{b: 1}, {c: 1}], ['a', 'a']);
 
-      expect(equalParamsAndUrlSegments(snapshot1, snapshot2)).toEqual(false);
+      expect(equalParamsAndUrlSegments(snapshot1, snapshot2, root1, root2)).toEqual(false);
     });
 
     it('should return false when upstream urls are different', () => {
-      const [snapshot1, snapshot2] =
+      const [snapshot1, snapshot2, root1, root2] =
           createSnapshotPairWithParent([{a: 1}, {a: 1}], [{b: 1}, {b: 1}], ['a', 'b']);
 
-      expect(equalParamsAndUrlSegments(snapshot1, snapshot2)).toEqual(false);
+      expect(equalParamsAndUrlSegments(snapshot1, snapshot2, root1, root2)).toEqual(false);
     });
 
     it('should return true when upstream urls and params are equal', () => {
-      const [snapshot1, snapshot2] =
+      const [snapshot1, snapshot2, root1, root2] =
           createSnapshotPairWithParent([{a: 1}, {a: 1}], [{b: 1}, {b: 1}], ['a', 'a']);
 
-      expect(equalParamsAndUrlSegments(snapshot1, snapshot2)).toEqual(true);
+      expect(equalParamsAndUrlSegments(snapshot1, snapshot2, root1, root2)).toEqual(true);
     });
   });
 
