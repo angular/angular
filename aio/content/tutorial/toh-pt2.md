@@ -122,9 +122,7 @@ Eventually this app will fetch the list of heroes from a web service, but for no
 you can display mock heroes.
 
 ### Expose heroes
-Create a public property in `AppComponent` that exposes the heroes for binding.
-
-
+Create a public property in `AppComponent` that exposes the heroes for binding. To make it easier to read your code, keep all public properties together. For this tutorial, define the `heroes` property between the existing `title` and `hero` properties.
 
 <code-example path="toh-pt2/src/app/app.component.1.html" region="hero-array-1" title="app.component.ts (hero array property)">
 
