@@ -11,9 +11,6 @@ const {packagesDir, outputDir} = buildConfig;
 /** Name of the tsconfig file that is responsible for building an ES2015 package. */
 const buildTsconfigName = 'tsconfig-build.json';
 
-/** Name of the tsconfig file that is responsible for building an ES5 package. */
-const es5TsconfigName = 'tsconfig-es5.json';
-
 /** Name of the tsconfig file that is responsible for building the tests. */
 const testsTsconfigName = 'tsconfig-tests.json';
 
@@ -98,8 +95,8 @@ export class BuildPackage {
   /** Compiles TS into both ES2015 and ES5, then updates exports. */
   private async _compileBothTargets(p = '') {
     return compileEntryPoint(this, buildTsconfigName, p)
-        .then(() => compileEntryPoint(this, es5TsconfigName, p))
-        .then(() => renamePrivateReExportsToBeUnique(this, p));
+      .then(() => compileEntryPoint(this, buildTsconfigName, p, this.esm5OutputDir))
+      .then(() => renamePrivateReExportsToBeUnique(this, p));
   }
 
   /** Compiles the TypeScript sources of a primary or secondary entry point. */
