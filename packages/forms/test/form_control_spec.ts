@@ -1141,5 +1141,29 @@ export function main() {
 
       });
     });
+
+    describe('initialValue', () => {
+      let c: FormControl;
+
+      beforeEach(() => c = new FormControl('initial value'));
+
+      it('should be the value passed into constructor',
+         () => { expect(c.initialValue).toEqual('initial value'); });
+
+      it('should not change when value changes via setValue', () => {
+        c.setValue('different value');
+        expect(c.initialValue).toEqual('initial value');
+      });
+
+      it('should not change when value changes via patchValue', () => {
+        c.patchValue('different value');
+        expect(c.initialValue).toEqual('initial value');
+      });
+
+      it('should change when control is reset', () => {
+        c.reset('new value');
+        expect(c.initialValue).toEqual('new value');
+      });
+    });
   });
 }

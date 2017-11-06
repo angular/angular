@@ -121,6 +121,7 @@ export abstract class AbstractControl {
   private _parent: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
   public readonly value: any;
+  public readonly initialValue: any;
 
   constructor(public validator: ValidatorFn|null, public asyncValidator: AsyncValidatorFn|null) {}
 
@@ -632,6 +633,9 @@ export abstract class AbstractControl {
       this._updateOn = (opts as AbstractControlOptions).updateOn !;
     }
   }
+
+  /** @internal */
+  _setInitialValue(value: any) { (this as{initialValue: any}).initialValue = value; }
 }
 
 /**
@@ -718,6 +722,7 @@ export class FormControl extends AbstractControl {
     this._applyFormState(formState);
     this._setUpdateStrategy(validatorOrOpts);
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this._setInitialValue(this.value);
     this._initObservables();
   }
 
@@ -801,6 +806,7 @@ export class FormControl extends AbstractControl {
     this.markAsPristine(options);
     this.markAsUntouched(options);
     this.setValue(this.value, options);
+    this._setInitialValue(this.value);
   }
 
   /**
@@ -951,6 +957,7 @@ export class FormGroup extends AbstractControl {
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this._setInitialValue(this.value);
   }
 
   /**
@@ -1107,6 +1114,7 @@ export class FormGroup extends AbstractControl {
       control.reset(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
     this.updateValueAndValidity(options);
+    this._setInitialValue(this.value);
     this._updatePristine(options);
     this._updateTouched(options);
   }
@@ -1288,6 +1296,7 @@ export class FormArray extends AbstractControl {
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this._setInitialValue(this.value);
   }
 
   /**
@@ -1442,6 +1451,7 @@ export class FormArray extends AbstractControl {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });
     this.updateValueAndValidity(options);
+    this._setInitialValue(this.value);
     this._updatePristine(options);
     this._updateTouched(options);
   }
