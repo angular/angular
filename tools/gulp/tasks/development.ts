@@ -19,7 +19,15 @@ const outDir = join(outputDir, 'packages', 'demo-app');
 
 /** Array of vendors that are required to serve the demo-app. */
 const appVendors = [
-  '@angular', 'systemjs', 'zone.js', 'rxjs', 'hammerjs', 'core-js', 'web-animations-js', 'moment',
+  '@angular',
+  'systemjs',
+  'zone.js',
+  'rxjs',
+  'hammerjs',
+  'core-js',
+  'web-animations-js',
+  'moment',
+  'tslib',
 ];
 
 /** Glob that matches all required vendors for the demo-app. */
