@@ -163,8 +163,8 @@ export class TestBed implements Injector {
   static overrideProvider(token: any, provider: {
     useFactory: Function,
     deps: any[],
-  }): void;
-  static overrideProvider(token: any, provider: {useValue: any;}): void;
+  }): typeof TestBed;
+  static overrideProvider(token: any, provider: {useValue: any;}): typeof TestBed;
   static overrideProvider(token: any, provider: {
     useFactory?: Function,
     useValue?: any,
@@ -503,7 +503,7 @@ export class TestBed implements Injector {
   overrideTemplateUsingTestingModule(component: Type<any>, template: string) {
     this._assertNotInstantiated('overrideTemplateUsingTestingModule', 'override template');
 
-    @Component({selector: 'empty', template: template})
+    @Component({selector: 'empty', template})
     class OverrideComponent {
     }
 

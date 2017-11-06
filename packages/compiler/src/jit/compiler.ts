@@ -91,7 +91,7 @@ export class JitCompiler {
       } else {
         const summary = entry as CompileTypeSummary;
         this._summaryResolver.addSummary(
-            {symbol: summary.type.reference, metadata: null, type: summary})
+            {symbol: summary.type.reference, metadata: null, type: summary});
       }
     }
   }
