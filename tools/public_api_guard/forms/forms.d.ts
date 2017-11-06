@@ -38,6 +38,7 @@ export declare abstract class AbstractControl {
     }): void;
     markAsPending(opts?: {
         onlySelf?: boolean;
+        emitEvent?: boolean;
     }): void;
     markAsPristine(opts?: {
         onlySelf?: boolean;

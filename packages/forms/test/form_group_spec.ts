@@ -1146,6 +1146,56 @@ import {of } from 'rxjs/observable/of';
 
     });
 
+    describe('pending', () => {
+      let c: FormControl;
+      let g: FormGroup;
+
+      beforeEach(() => {
+        c = new FormControl('value');
+        g = new FormGroup({'one': c});
+      });
+
+      it('should be false after creating a control', () => { expect(g.pending).toEqual(false); });
+
+      it('should be true after changing the value of the control', () => {
+        c.markAsPending();
+        expect(g.pending).toEqual(true);
+      });
+
+      it('should not update the parent when onlySelf = true', () => {
+        c.markAsPending({onlySelf: true});
+        expect(g.pending).toEqual(false);
+      });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          g.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after marking control as pending', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event when onlySelf = true', () => {
+          c.markAsPending({onlySelf: true});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should emit event when parent is markedAsPending', () => {
+          g.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+      });
+    });
 
   });
 })();
