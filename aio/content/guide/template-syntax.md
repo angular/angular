@@ -1188,7 +1188,7 @@ Adding an `ngClass` property binding to `currentClasses` sets the element's clas
 
 <div class="l-sub-section">
 
-It's up to you to call `setCurrentClassess()`, both initially and when the dependent properties change.
+It's up to you to call `setCurrentClasses()`, both initially and when the dependent properties change.
 
 </div>
 
@@ -1212,7 +1212,7 @@ Try binding `ngStyle` to a key:value control object.
 Each key of the object is a style name; its value is whatever is appropriate for that style.
 
 Consider a `setCurrentStyles` component method that sets a component property, `currentStyles`
-with an object that defines three styles, based on the state of three other component propertes:
+with an object that defines three styles, based on the state of three other component properties:
 
 <code-example path="template-syntax/src/app/app.component.ts" region="setStyles" title="src/app/app.component.ts" linenums="false">
 </code-example>
@@ -1410,7 +1410,7 @@ The `nullHero` will never be displayed.
 <div class="l-sub-section">
 
 See also the
-[_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe naviation operator (?.)")
+[_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)")
 described below.
 
 </div>
@@ -1472,7 +1472,7 @@ The `NgForOf` directive iterates over the `heroes` array returned by the parent 
 and sets `hero` to the current item from the array during each iteration.
 
 You reference the `hero` input variable within the `NgForOf` host element
-(and within its descendents) to access the hero's properties.
+(and within its descendants) to access the hero's properties.
 Here it is referenced first in an interpolation
 and then passed in a binding to the `hero` property of the `<hero-detail>` component.
 
@@ -1658,64 +1658,100 @@ This example declares the `fax` variable as `ref-fax` instead of `#fax`.
 
 {@a inputs-outputs}
 
-## Input and output properties ( <span class="syntax">@Input</span> and <span class="syntax">@Output</span> )
+## Input and Output properties
 
-So far, you've focused mainly on binding to component members within template expressions and statements
-that appear on the *right side of the binding declaration*.
-A member in that position is a data binding **source**.
+An _Input_ property is a _settable_ property annotated with an `@Input` decorator.
+Values flow _into_ the property when it is data bound with a [property binding](#property-binding)
 
-This section concentrates on binding to **targets**, which are directive
-properties on the *left side of the binding declaration*.
-These directive properties must be declared as **inputs** or **outputs**.
+An _Output_ property is an _observable_ property annotated with an `@Output` decorator.
+The property almost always returns an Angular [`EventEmitter`](api/core/EventEmitter).
+Values flow _out_ of the component as events bound with an [event binding](#event-binding).
+
+You can only bind to _another_ component or directive through its _Input_ and _Output_ properties.
 
 <div class="alert is-important">
 
-Remember: All **components** are **directives**.
+Remember that all **components** are **directives**.
 
+The following discussion refers to _components_ for brevity and 
+because this topic is mostly a concern for component authors. 
 </div>
 
-<div class="l-sub-section">
+<h3 class="no-toc">Discussion</h3>
 
-Note the important distinction between a data binding **target** and a data binding **source**.
-
-The *target* of a binding is to the *left* of the `=`.
-The *source* is on the *right* of the `=`.
-
-The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
-The *source* is either inside quotes (`" "`) or within an interpolation (`{{}}`).
-
-Every member of a **source** directive is automatically available for binding.
-You don't have to do anything special to access a directive member in a template expression or statement.
-
-You have *limited* access to members of a **target** directive.
-You can only bind to properties that are explicitly identified as *inputs* and *outputs*.
-
-</div>
-
-In the following snippet, `iconUrl` and `onSave` are data-bound members of the `AppComponent`
-and are referenced within quoted syntax to the _right_ of the equals&nbsp;(`=`).
+You are usually binding a template to its _own component class_.
+In such binding expressions, the component's property or method is to the _right_ of the (`=`).
 
 <code-example path="template-syntax/src/app/app.component.html" region="io-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-They are *neither inputs nor outputs* of the component. They are **sources** for their bindings.
-The targets are the native `<img>` and `<button>` elements.
+The `iconUrl` and `onSave` are members of the `AppComponent` class.
+They are _not_ decorated with `@Input()` or `@Output`.
+Angular does not object.
 
-Now look at a another snippet in which the `HeroDetailComponent`
-is the **target** of a binding on the _left_ of the equals&nbsp;(`=`).
+**You can always bind to a public property of a component in its own template.**
+It doesn't have to be an _Input_ or _Output_ property
+
+A component's class and template are closely coupled.
+They are both parts of the same thing.
+Together they _are_ the component.
+Exchanges between a component class and its template are internal implementation details.
+
+### Binding to a different component
+
+You can also bind to a property of a _different_ component.
+In such bindings, the _other_ component's property is to the _left_ of the (`=`).
+
+In the following example, the `AppComponent` template binds `AppComponent` class members to properties of the `HeroDetailComponent` whose selector is `'app-hero-detail'`.
 
 <code-example path="template-syntax/src/app/app.component.html" region="io-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-Both `HeroDetailComponent.hero` and `HeroDetailComponent.deleteRequest` are on the **left side** of binding declarations.
-`HeroDetailComponent.hero` is inside brackets; it is the target of a property binding.
-`HeroDetailComponent.deleteRequest` is inside parentheses; it is the target of an event binding.
+The Angular compiler _may_ reject these bindings with errors like this one:
 
-### Declaring input and output properties
+<code-example language="sh" class="code-shell">
+Uncaught Error: Template parse errors:
+Can't bind to 'hero' since it isn't a known property of 'app-hero-detail'
+</code-example>
 
-Target properties must be explicitly marked as inputs or outputs.
+You know that `HeroDetailComponent` has `hero` and `deleteRequest` properties.
+But the Angular compiler refuses to recognize them.
 
-In the `HeroDetailComponent`, such properties are marked as input or output properties using decorators.
+**The Angular compiler won't bind to properties of a different component
+unless they are Input or Output properties**.
+
+There's a good reason for this rule.
+
+It's OK for a component to bind to its _own_ properties.
+The component author is in complete control of those bindings.
+
+But other components shouldn't have that kind of unrestricted access.
+You'd have a hard time supporting your component if anyone could bind to any of its properties.
+Outside components should only be able to bind to the component's public binding API.
+
+Angular asks you to be _explicit_ about that API.
+It's up to _you_ to decide which properties are available for binding by
+external components.
+
+#### TypeScript _public_ doesn't matter
+
+You can't use the TypeScript _public_ and _private_ access modifiers to
+shape the component's public binding API.
+
+<div class="alert is-important">
+
+All data bound properties must be TypeScript _public_ properties.
+Angular never binds to a TypeScript _private_ property.
+
+</div>
+
+Angular requires some other way to identify properties that _outside_ components are allowed to bind to.
+That _other way_ is the `@Input()` and `@Output()` decorators.
+
+### Declaring Input and Output properties
+
+In the sample for this guide, the bindings to `HeroDetailComponent` do not fail
+because the data bound properties are annotated with `@Input()` and `@Output()` decorators.
 
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" title="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
@@ -1727,9 +1763,6 @@ of the directive metadata, as in this example:
 
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-2" title="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
-
-You can specify an input/output property either with a decorator or in a metadata array.
-Don't do both!
 
 </div>
 
@@ -1939,7 +1972,7 @@ For example, after you use [*ngIf](guide/template-syntax#ngIf) to check that `he
 When the Angular compiler turns your template into TypeScript code,
 it prevents TypeScript from reporting that `hero.name` might be null or undefined.
 
-Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe naviation operator (?.)"),
+Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)"),
 the **non-null assertion operator** does not guard against null or undefined.
 Rather it tells the TypeScript type checker to suspend strict null checks for a specific property expression.
 
