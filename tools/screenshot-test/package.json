@@ -10,27 +10,27 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^5.0.0",
-    "@angular/cdk": "angular/cdk-builds",
+    "@angular/cdk": "github:angular/cdk-builds#master",
     "@angular/common": "^5.0.0",
     "@angular/compiler": "^5.0.0",
     "@angular/compiler-cli": "^5.0.0",
     "@angular/core": "^5.0.0",
     "@angular/forms": "^5.0.0",
-    "@angular/material": "angular/material2-builds",
+    "@angular/material": "github:angular/material2-builds#master",
     "@angular/platform-browser": "^5.0.0",
     "@angular/platform-browser-dynamic": "^5.0.0",
     "@angular/router": "^5.0.0",
     "core-js": "^2.4.1",
     "firebase": "^3.7.6",
-    "rxjs": "^5.0.1",
+    "rxjs": "^5.5.0",
     "ts-helpers": "^1.1.1",
     "zone.js": "^0.8.12"
   },
   "devDependencies": {
-    "@angular/cli": "^1.0.0",
+    "@angular/cli": "^1.4.9",
     "@angular/compiler-cli": "^5.0.0",
     "@types/node": "^6.0.42",
     "ts-node": "1.2.1",
-    "typescript": "~2.2.1"
+    "typescript": "~2.4.2"
   }
 }
