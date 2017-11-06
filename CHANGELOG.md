@@ -61,7 +61,7 @@
    - `onOpen` -> `opened`
    - `onClose` -> `closed`
    - `change` -> `selectionChange`
- -  `mat-sidenav` / `mat-drawer`
+ - `mat-sidenav` / `mat-drawer`
    - `open` -> `opened`
    - `close` -> `closed`
  - `mat-menu`
