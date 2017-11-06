@@ -376,6 +376,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       if (compilerOptions && compilerOptions.baseUrl) {
         options.baseUrl = compilerOptions.baseUrl;
       }
+      if (compilerOptions && compilerOptions.paths) {
+        options.paths = compilerOptions.paths;
+      }
       result = this._reflectorHost =
           new ReflectorHost(() => this.tsService.getProgram(), this.host, options);
     }
