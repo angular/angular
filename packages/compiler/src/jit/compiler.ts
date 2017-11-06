@@ -42,6 +42,7 @@ export class JitCompiler {
   private _compiledDirectiveWrapperCache = new Map<Type, Type>();
   private _compiledNgModuleCache = new Map<Type, object>();
   private _sharedStylesheetCount = 0;
+  private _addedAotSummaries = new Set<() => any[]>();
 
   constructor(
       private _metadataResolver: CompileMetadataResolver, private _templateParser: TemplateParser,
@@ -74,10 +75,25 @@ export class JitCompiler {
 
   loadAotSummaries(summaries: () => any[]) {
     this.clearCache();
-    flattenSummaries(summaries).forEach((summary) => {
-      this._summaryResolver.addSummary(
-          {symbol: summary.type.reference, metadata: null, type: summary});
-    });
+    this._addAotSummaries(summaries);
+  }
+
+  private _addAotSummaries(fn: () => any[]) {
+    if (this._addedAotSummaries.has(fn)) {
+      return;
+    }
+    this._addedAotSummaries.add(fn);
+    const summaries = fn();
+    for (let i = 0; i < summaries.length; i++) {
+      const entry = summaries[i];
+      if (typeof entry === 'function') {
+        this._addAotSummaries(entry);
+      } else {
+        const summary = entry as CompileTypeSummary;
+        this._summaryResolver.addSummary(
+            {symbol: summary.type.reference, metadata: null, type: summary})
+      }
+    }
   }
 
   hasAotSummary(ref: Type) { return !!this._summaryResolver.resolveSummary(ref); }
@@ -200,6 +216,7 @@ export class JitCompiler {
   }
 
   clearCache(): void {
+    // Note: don't clear the _addedAotSummaries, as they don't change!
     this._metadataResolver.clearCache();
     this._compiledTemplateCache.clear();
     this._compiledHostTemplateCache.clear();
@@ -333,25 +350,6 @@ function assertComponent(meta: CompileDirectiveMetadata) {
     throw new Error(
         `Could not compile '${identifierName(meta.type)}' because it is not a component.`);
   }
-}
-
-function flattenSummaries(
-    fn: () => any[], out: CompileTypeSummary[] = [],
-    seen = new Set<() => any[]>()): CompileTypeSummary[] {
-  if (seen.has(fn)) {
-    return out;
-  }
-  seen.add(fn);
-  const summaries = fn();
-  for (let i = 0; i < summaries.length; i++) {
-    const entry = summaries[i];
-    if (typeof entry === 'function') {
-      flattenSummaries(entry, out, seen);
-    } else {
-      out.push(entry);
-    }
-  }
-  return out;
 }
 
 function createOutputContext(): OutputContext {

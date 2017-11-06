@@ -712,6 +712,60 @@ export function main() {
         });
       });
 
+      describe('overrideTemplateUsingTestingModule', () => {
+        it('should compile the template in the context of the testing module', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+            prop = 'some prop';
+          }
+
+          let testDir: TestDir|undefined;
+
+          @Directive({selector: '[test]'})
+          class TestDir {
+            constructor() { testDir = this; }
+
+            @Input('test')
+            test: string;
+          }
+
+          TestBed.overrideTemplateUsingTestingModule(
+              MyComponent, '<div [test]="prop">Hello world!</div>');
+
+          const fixture = TestBed.configureTestingModule({declarations: [MyComponent, TestDir]})
+                              .createComponent(MyComponent);
+          fixture.detectChanges();
+          expect(fixture.nativeElement).toHaveText('Hello world!');
+          expect(testDir).toBeAnInstanceOf(TestDir);
+          expect(testDir !.test).toBe('some prop');
+        });
+
+        it('should throw if the TestBed is already created', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+          }
+
+          TestBed.get(Injector);
+
+          expect(() => TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b'))
+              .toThrowError(
+                  /Cannot override template when the test module has already been instantiated/);
+        });
+
+        it('should reset overrides when the testing modules is resetted', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+          }
+
+          TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b');
+          TestBed.resetTestingModule();
+
+          const fixture = TestBed.configureTestingModule({declarations: [MyComponent]})
+                              .createComponent(MyComponent);
+          expect(fixture.nativeElement).toHaveText('a');
+        });
+      });
+
       describe('setting up the compiler', () => {
 
         describe('providers', () => {
