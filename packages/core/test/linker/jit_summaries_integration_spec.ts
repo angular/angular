@@ -229,10 +229,11 @@ export function main() {
 
       const overwrittenValue = {};
 
-      TestBed.overrideProvider(SomeDep, {useFactory: () => overwrittenValue, deps: []});
+      const fixture =
+          TestBed.overrideProvider(SomeDep, {useFactory: () => overwrittenValue, deps: []})
+              .configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
+              .createComponent(SomePublicComponent);
 
-      const fixture = TestBed.configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
-                          .createComponent(SomePublicComponent);
       expect(fixture.componentInstance.dep).toBe(overwrittenValue);
     });
 

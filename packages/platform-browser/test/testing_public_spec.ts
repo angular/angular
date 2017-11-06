@@ -752,15 +752,15 @@ export function main() {
                   /Cannot override template when the test module has already been instantiated/);
         });
 
-        it('should reset overrides when the testing modules is resetted', () => {
+        it('should reset overrides when the testing module is resetted', () => {
           @Component({selector: 'comp', template: 'a'})
           class MyComponent {
           }
 
           TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b');
-          TestBed.resetTestingModule();
 
-          const fixture = TestBed.configureTestingModule({declarations: [MyComponent]})
+          const fixture = TestBed.resetTestingModule()
+                              .configureTestingModule({declarations: [MyComponent]})
                               .createComponent(MyComponent);
           expect(fixture.nativeElement).toHaveText('a');
         });

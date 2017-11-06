@@ -118,10 +118,10 @@ export declare class TestBed implements Injector {
     static overrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
-    }): void;
+    }): typeof TestBed;
     static overrideProvider(token: any, provider: {
         useValue: any;
-    }): void;
+    }): typeof TestBed;
     static overrideTemplate(component: Type<any>, template: string): typeof TestBed;
     static overrideTemplateUsingTestingModule(component: Type<any>, template: string): typeof TestBed;
     /** @experimental */ static resetTestEnvironment(): void;
