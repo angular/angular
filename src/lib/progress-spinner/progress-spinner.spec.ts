@@ -1,7 +1,7 @@
 import {TestBed, async} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MatProgressSpinnerModule} from './index';
+import {MatProgressSpinnerModule, MatProgressSpinner} from './index';
 
 
 describe('MatProgressSpinner', () => {
@@ -80,6 +80,16 @@ describe('MatProgressSpinner', () => {
     expect(progressComponent.value).toBe(0);
   });
 
+  it('should default to a stroke width that is 10% of the diameter', () => {
+    const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
+    const spinner = fixture.debugElement.query(By.directive(MatProgressSpinner));
+
+    fixture.componentInstance.diameter = 67;
+    fixture.detectChanges();
+
+    expect(spinner.componentInstance.strokeWidth).toBe(6.7);
+  });
+
   it('should allow a custom diameter', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomDiameter);
     const spinner = fixture.debugElement.query(By.css('mat-progress-spinner')).nativeElement;
@@ -97,7 +107,7 @@ describe('MatProgressSpinner', () => {
     expect(parseInt(svgElement.style.height))
         .toBe(32, 'Expected the custom diameter to be applied to the svg element height.');
     expect(svgElement.getAttribute('viewBox'))
-        .toBe('0 0 32 32', 'Expected the custom diameter to be applied to the svg viewBox.');
+        .toBe('0 0 25.2 25.2', 'Expected the custom diameter to be applied to the svg viewBox.');
   });
 
   it('should allow a custom stroke width', () => {

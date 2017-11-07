@@ -21,6 +21,7 @@ import {
 import {CanColor, mixinColor} from '@angular/material/core';
 import {Platform} from '@angular/cdk/platform';
 import {DOCUMENT} from '@angular/common';
+import {coerceNumberProperty} from '@angular/cdk/coercion';
 
 /** Possible mode for a progress spinner. */
 export type ProgressSpinnerMode = 'determinate' | 'indeterminate';
@@ -87,6 +88,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   private readonly _baseSize = 100;
   private readonly _baseStrokeWidth = 10;
   private _fallbackAnimation = false;
+  private _strokeWidth: number;
 
   /** The width and height of the host element. Will grow with stroke width. **/
   _elementSize = this._baseSize;
@@ -112,7 +114,15 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   _diameter = this._baseSize;
 
   /** Stroke width of the progress spinner. */
-  @Input() strokeWidth: number = 10;
+  @Input()
+  get strokeWidth(): number {
+    return this._strokeWidth || this.diameter / 10;
+  }
+
+  set strokeWidth(value: number) {
+    this._strokeWidth = coerceNumberProperty(value);
+  }
+
 
   /** Mode of the progress circle */
   @Input() mode: ProgressSpinnerMode = 'determinate';
