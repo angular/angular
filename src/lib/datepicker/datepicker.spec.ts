@@ -60,6 +60,7 @@ describe('MatDatepicker', () => {
           MultiInputDatepicker,
           NoInputDatepicker,
           StandardDatepicker,
+          DatepickerWithEvents,
         ],
       });
 
@@ -906,6 +907,36 @@ describe('MatDatepicker', () => {
         });
       }));
     });
+
+    describe('with events', () => {
+      let fixture: ComponentFixture<DatepickerWithEvents>;
+      let testComponent: DatepickerWithEvents;
+
+      beforeEach(async(() => {
+        fixture = TestBed.createComponent(DatepickerWithEvents);
+        fixture.detectChanges();
+        testComponent = fixture.componentInstance;
+      }));
+
+      it('should dispatch an event when a datepicker is opened', () => {
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        expect(testComponent.openedSpy).toHaveBeenCalled();
+      });
+
+      it('should dispatch an event when a datepicker is closed', () => {
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        testComponent.datepicker.close();
+        fixture.detectChanges();
+
+        expect(testComponent.closedSpy).toHaveBeenCalled();
+      });
+
+    });
+
   });
 
   describe('with missing DateAdapter and MAT_DATE_FORMATS', () => {
@@ -1239,4 +1270,17 @@ class DatepickerWithISOStrings {
   startAt = new Date(2017, JUL, 1).toISOString();
   @ViewChild('d') datepicker: MatDatepicker<Date>;
   @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
+}
+
+@Component({
+  template: `
+    <input [(ngModel)]="selected" [matDatepicker]="d">
+    <mat-datepicker (opened)="openedSpy()" (closed)="closedSpy()" #d></mat-datepicker>
+  `,
+})
+class DatepickerWithEvents {
+  selected: Date | null = null;
+  openedSpy = jasmine.createSpy('opened spy');
+  closedSpy = jasmine.createSpy('closed spy');
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
 }

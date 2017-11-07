@@ -172,6 +172,12 @@ export class MatDatepicker<D> implements OnDestroy {
   /** Classes to be passed to the date picker panel. Supports the same syntax as `ngClass`. */
   @Input() panelClass: string | string[];
 
+  /** Emits when the datepicker has been opened. */
+  @Output('opened') openedStream: EventEmitter<void> = new EventEmitter<void>();
+
+  /** Emits when the datepicker has been closed. */
+  @Output('closed') closedStream: EventEmitter<void> = new EventEmitter<void>();
+
   /** Whether the calendar is open. */
   opened = false;
 
@@ -276,6 +282,7 @@ export class MatDatepicker<D> implements OnDestroy {
 
     this.touchUi ? this._openAsDialog() : this._openAsPopup();
     this.opened = true;
+    this.openedStream.emit();
   }
 
   /** Close the calendar. */
@@ -301,6 +308,7 @@ export class MatDatepicker<D> implements OnDestroy {
     }
 
     this.opened = false;
+    this.closedStream.emit();
   }
 
   /** Open the calendar as a dialog. */
