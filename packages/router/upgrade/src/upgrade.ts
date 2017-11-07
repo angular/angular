@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Location} from '@angular/common';
 import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
-
-
 
 /**
  * @description
@@ -68,11 +67,13 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule) {
   }
 
   const router: Router = ngUpgrade.injector.get(Router);
+  const location: Location = ngUpgrade.injector.get(Location);
   const url = document.createElement('a');
 
   ngUpgrade.$injector.get('$rootScope')
       .$on('$locationChangeStart', (_: any, next: string, __: string) => {
         url.href = next;
-        router.navigateByUrl(url.pathname + url.search + url.hash);
+        const path: string = location.normalize(url.pathname);
+        router.navigateByUrl(path + url.search + url.hash);
       });
 }
