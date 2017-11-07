@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Platform} from '@angular/cdk/platform';
 import {Inject, Injectable, Optional} from '@angular/core';
 import {extendObject} from '../util/object-extend';
 import {DateAdapter, MAT_DATE_LOCALE} from './date-adapter';
@@ -60,18 +61,21 @@ function range<T>(length: number, valueFunction: (index: number) => T): T[] {
 /** Adapts the native JS Date for use with cdk-based components that work with dates. */
 @Injectable()
 export class NativeDateAdapter extends DateAdapter<Date> {
-  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string) {
-    super();
-    super.setLocale(matDateLocale);
-  }
-
   /**
    * Whether to use `timeZone: 'utc'` with `Intl.DateTimeFormat` when formatting dates.
    * Without this `Intl.DateTimeFormat` sometimes chooses the wrong timeZone, which can throw off
    * the result. (e.g. in the en-US locale `new Date(1800, 7, 14).toLocaleDateString()`
    * will produce `'8/13/1800'`.
    */
-  useUtcForDisplay = true;
+  useUtcForDisplay: boolean;
+
+  constructor(@Optional() @Inject(MAT_DATE_LOCALE) matDateLocale: string, platform: Platform) {
+    super();
+    super.setLocale(matDateLocale);
+
+    // IE does its own time zone correction, so we disable this on IE.
+    this.useUtcForDisplay = !platform.TRIDENT;
+  }
 
   getYear(date: Date): number {
     return date.getFullYear();
