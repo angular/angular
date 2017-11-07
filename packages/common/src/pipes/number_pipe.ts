@@ -105,8 +105,8 @@ export class PercentPipe implements PipeTransform {
  * - `currencyCode` is the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code, such
  *    as `USD` for the US dollar and `EUR` for the euro.
  * - `display` indicates whether to show the currency symbol or the code.
- *   - `code`(default): use code (e.g. `USD`).
- *   - `symbol`: use symbol (e.g. `$`).
+ *   - `code`: use code (e.g. `USD`).
+ *   - `symbol`(default): use symbol (e.g. `$`).
  *   - `symbol-narrow`: some countries have two symbols for their currency, one regular and one
  *   narrow (e.g. the canadian dollar CAD has the symbol `CA$` and the symbol-narrow `$`).
  *   - boolean (deprecated from v5): `true` for symbol and false for `code`
