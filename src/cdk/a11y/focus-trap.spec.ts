@@ -1,7 +1,7 @@
 import {Platform} from '@angular/cdk/platform';
 import {Component, ViewChild} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {FocusTrap, FocusTrapDirective, FocusTrapFactory} from './focus-trap';
+import {FocusTrap, CdkTrapFocus, FocusTrapFactory} from './focus-trap';
 import {InteractivityChecker} from './interactivity-checker';
 
 
@@ -10,12 +10,13 @@ describe('FocusTrap', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        FocusTrapDirective,
+        CdkTrapFocus,
         FocusTrapWithBindings,
         SimpleFocusTrap,
         FocusTrapTargets,
         FocusTrapWithSvg,
         FocusTrapWithoutFocusableElements,
+        FocusTrapWithAutoCapture,
       ],
       providers: [InteractivityChecker, Platform, FocusTrapFactory]
     });
@@ -154,6 +155,27 @@ describe('FocusTrap', () => {
       expect(() => focusTrapInstance.focusLastTabbableElement()).not.toThrow();
     });
   });
+
+  describe('with autoCapture', () => {
+    it('should automatically capture and return focus on init / destroy', async(() => {
+      const fixture = TestBed.createComponent(FocusTrapWithAutoCapture);
+      fixture.detectChanges();
+
+      const buttonOutsideTrappedRegion = fixture.nativeElement.querySelector('button');
+      buttonOutsideTrappedRegion.focus();
+      expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
+
+      fixture.componentInstance.showTrappedRegion = true;
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        expect(document.activeElement.id).toBe('auto-capture-target');
+
+        fixture.destroy();
+        expect(document.activeElement).toBe(buttonOutsideTrappedRegion);
+      });
+    }));
+  });
 });
 
 
@@ -166,7 +188,21 @@ describe('FocusTrap', () => {
     `
 })
 class SimpleFocusTrap {
-  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+}
+
+@Component({
+  template: `
+    <button type="button">Toggle</button>
+    <div *ngIf="showTrappedRegion" cdkTrapFocus cdkTrapFocusAutoCapture>
+      <input id="auto-capture-target">
+      <button>SAVE</button>
+    </div>
+    `
+})
+class FocusTrapWithAutoCapture {
+  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
+  showTrappedRegion = false;
 }
 
 
@@ -179,7 +215,7 @@ class SimpleFocusTrap {
     `
 })
 class FocusTrapWithBindings {
-  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
   renderFocusTrap = true;
   _isFocusTrapEnabled = true;
 }
@@ -199,7 +235,7 @@ class FocusTrapWithBindings {
     `
 })
 class FocusTrapTargets {
-  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
 }
 
 
@@ -213,7 +249,7 @@ class FocusTrapTargets {
     `
 })
 class FocusTrapWithSvg {
-  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
 }
 
 @Component({
@@ -224,5 +260,5 @@ class FocusTrapWithSvg {
     `
 })
 class FocusTrapWithoutFocusableElements {
-  @ViewChild(FocusTrapDirective) focusTrapDirective: FocusTrapDirective;
+  @ViewChild(CdkTrapFocus) focusTrapDirective: CdkTrapFocus;
 }

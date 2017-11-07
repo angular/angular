@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {FocusTrapDeprecatedDirective, FocusTrapDirective, FocusTrapFactory} from './focus-trap';
+import {FocusTrapDeprecatedDirective, CdkTrapFocus, FocusTrapFactory} from './focus-trap';
 import {LIVE_ANNOUNCER_PROVIDER} from './live-announcer';
 import {InteractivityChecker} from './interactivity-checker';
 import {CommonModule} from '@angular/common';
@@ -17,8 +17,8 @@ import {CdkMonitorFocus, FOCUS_MONITOR_PROVIDER} from './focus-monitor';
 
 @NgModule({
   imports: [CommonModule, PlatformModule],
-  declarations: [FocusTrapDirective, FocusTrapDeprecatedDirective, CdkMonitorFocus],
-  exports: [FocusTrapDirective, FocusTrapDeprecatedDirective, CdkMonitorFocus],
+  declarations: [CdkTrapFocus, FocusTrapDeprecatedDirective, CdkMonitorFocus],
+  exports: [CdkTrapFocus, FocusTrapDeprecatedDirective, CdkMonitorFocus],
   providers: [
     InteractivityChecker,
     FocusTrapFactory,
