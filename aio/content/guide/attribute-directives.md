@@ -33,7 +33,7 @@ An attribute directive minimally requires building a controller class annotated 
 the attribute.
 The controller class implements the desired directive behavior.
 
-This page demonstrates building a simple _myHighlight_ attribute
+This page demonstrates building a simple _appHighlight_ attribute
 directive to set an element's background color
 when the user hovers over that element. You can apply it like this:
 
@@ -64,21 +64,21 @@ as an argument.
 the HTML in the template that is associated with the directive.
 The [CSS selector for an attribute](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors)
 is the attribute name in square brackets.
-Here, the directive's selector is `[myHighlight]`.
-Angular locates all elements in the template that have an attribute named `myHighlight`.
+Here, the directive's selector is `[appHighlight]`.
+Angular locates all elements in the template that have an attribute named `appHighlight`.
 
 <div class="l-sub-section">
 
 ### Why not call it "highlight"?
 
-Though *highlight* is a more concise name than *myHighlight* and would work,
+Though *highlight* is a more concise name than *appHighlight* and would work,
 a best practice is to prefix selector names to ensure
 they don't conflict with standard HTML attributes.
 This also reduces the risk of colliding with third-party directive names.
 
 Make sure you do **not** prefix the `highlight` directive name with **`ng`** because
 that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose.
-For a simple demo, the short prefix, `my`, helps distinguish your custom directive.
+For a simple demo, the short prefix, `app`, helps distinguish your custom directive.
 
 </div>
 
@@ -112,11 +112,11 @@ Now reference this template in the `AppComponent`:
 
 Next, add an `import` statement to fetch the `Highlight` directive and
 add that class to the `declarations` NgModule metadata. This way Angular
-recognizes the directive when it encounters `myHighlight` in the template.
+recognizes the directive when it encounters `appHighlight` in the template.
 
 <code-example path="attribute-directives/src/app/app.module.ts" title="src/app/app.module.ts"></code-example>
 
-Now when the app runs, the `myHighlight` directive highlights the paragraph text.
+Now when the app runs, the `appHighlight` directive highlights the paragraph text.
 
 <figure>
   <img src="generated/images/guide/attribute-directives/first-highlight.png" alt="First Highlight">
@@ -132,7 +132,7 @@ Open the console in the browser tools and look for an error like this:
 
 <code-example format="nocode">
   EXCEPTION: Template parse errors:
-    Can't bind to 'myHighlight' since it isn't a known property of 'p'.
+    Can't bind to 'appHighlight' since it isn't a known property of 'p'.
 </code-example>
 
 Angular detects that you're trying to bind to *something* but it can't find this directive
@@ -142,7 +142,7 @@ Angular knows it can apply the directive to components declared in this module.
 
 </div>
 
-To summarize, Angular found the `myHighlight` attribute on the `<p>` element.
+To summarize, Angular found the `appHighlight` attribute on the `<p>` element.
 It created an instance of the `HighlightDirective` class and
 injected a reference to the `<p>` element into the directive's constructor
 which sets the `<p>` element's background style to yellow.
@@ -151,7 +151,7 @@ which sets the `<p>` element's background style to yellow.
 
 ## Respond to user-initiated events
 
-Currently, `myHighlight` simply sets an element color.
+Currently, `appHighlight` simply sets an element color.
 The directive could be more dynamic.
 It could detect when the user mouses into or out of the element
 and respond by setting or clearing the highlight color.
@@ -232,16 +232,16 @@ That's good, but it would be nice to _simultaneously_ apply the directive and se
 
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (color)" region="color"></code-example>
 
-The `[myHighlight]` attribute binding both applies the highlighting directive to the `<p>` element
+The `[appHighlight]` attribute binding both applies the highlighting directive to the `<p>` element
 and sets the directive's highlight color with a property binding.
-You're re-using the directive's attribute selector (`[myHighlight]`) to do both jobs.
+You're re-using the directive's attribute selector (`[appHighlight]`) to do both jobs.
 That's a crisp, compact syntax.
 
-You'll have to rename the directive's `highlightColor` property to `myHighlight` because that's now the color property binding name.
+You'll have to rename the directive's `highlightColor` property to `appHighlight` because that's now the color property binding name.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (renamed to match directive selector)" region="color-2"></code-example>
 
-This is disagreeable. The word, `myHighlight`, is a terrible property name and it doesn't convey the property's intent.
+This is disagreeable. The word, `appHighlight`, is a terrible property name and it doesn't convey the property's intent.
 
 {@a input-alias}
 
@@ -254,7 +254,7 @@ Restore the original property name and specify the selector as the alias in the 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (color property with alias)" region="color"></code-example>
 
 _Inside_ the directive the property is known as `highlightColor`.
-_Outside_ the directive, where you bind to it, it's known as `myHighlight`.
+_Outside_ the directive, where you bind to it, it's known as `appHighlight`.
 
 You get the best of both worlds: the property name you want and the binding syntax you want:
 
@@ -308,7 +308,7 @@ then with the `defaultColor`, and falls back to "red" if both properties are und
 
 <code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (mouse-enter)" region="mouse-enter"></code-example>
 
-How do you bind to a second property when you're already binding to the `myHighlight` attribute name?
+How do you bind to a second property when you're already binding to the `appHighlight` attribute name?
 
 As with components, you can add as many directive property bindings as you need by stringing them along in the template.
 The developer should be able to write the following template HTML to both bind to the `AppComponent.color`
@@ -398,6 +398,6 @@ Now apply that reasoning to the following example:
   The template and its component trust each other.
   The `color` property doesn't require the `@Input` decorator.
 
-* The `myHighlight` property on the left refers to an _aliased_ property of the `HighlightDirective`,
+* The `appHighlight` property on the left refers to an _aliased_ property of the `HighlightDirective`,
   not a property of the template's component. There are trust issues.
   Therefore, the directive property must carry the `@Input` decorator.
