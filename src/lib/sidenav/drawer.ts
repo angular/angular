@@ -193,21 +193,39 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
     return this.openedChange.pipe(filter(o => o), map(() => {}));
   }
 
+  /** Event emitted when the drawer has started opening. */
+  @Output()
+  get openedStart(): Observable<void> {
+    return this._animationStarted.pipe(
+      filter(e => e.fromState !== e.toState && e.toState.indexOf('open') === 0),
+      map(() => {})
+    );
+  }
+
   /** Event emitted when the drawer has been closed. */
   @Output('closed')
   get _closedStream(): Observable<void> {
     return this.openedChange.pipe(filter(o => !o), map(() => {}));
   }
 
+  /** Event emitted when the drawer has started closing. */
+  @Output()
+  get closedStart(): Observable<void> {
+    return this._animationStarted.pipe(
+      filter(e => e.fromState !== e.toState && e.toState === 'void'),
+      map(() => {})
+    );
+  }
+
   /**
    * Event emitted when the drawer is fully opened.
-   * @deprecated Use `openedChange` instead.
+   * @deprecated Use `opened` instead.
    */
   @Output('open') onOpen = this._openedStream;
 
   /**
    * Event emitted when the drawer is fully closed.
-   * @deprecated Use `openedChange` instead.
+   * @deprecated Use `closed` instead.
    */
   @Output('close') onClose = this._closedStream;
 
@@ -327,8 +345,10 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
 
     // TODO(crisbeto): This promise is here for backwards-compatibility.
     // It should be removed next time we do breaking changes in the drawer.
-    return new Promise(resolve => {
-      (isOpen ? this.onOpen : this.onClose).pipe(first()).subscribe(resolve);
+    return new Promise<any>(resolve => {
+      this.openedChange.pipe(first()).subscribe(open => {
+        resolve(new MatDrawerToggleResult(open ? 'open' : 'close', true));
+      });
     });
   }
 

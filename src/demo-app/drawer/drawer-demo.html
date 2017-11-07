@@ -1,7 +1,7 @@
 <h2>Basic Use Case</h2>
 
 <mat-drawer-container class="demo-drawer-container">
-  <mat-drawer #start (open)="myinput.focus()" mode="side">
+  <mat-drawer #start (opened)="myinput.focus()" mode="side">
     Start Side Drawer
     <br>
     <button mat-button (click)="start.close()">Close</button>
