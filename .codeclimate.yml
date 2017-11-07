@@ -1,0 +1,4 @@
+engines:
+  structure:
+    enabled: true
+    channel: "typescript"
