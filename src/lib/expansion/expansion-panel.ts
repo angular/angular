@@ -72,6 +72,7 @@ export type MatExpansionPanelState = 'expanded' | 'collapsed';
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['disabled', 'expanded'],
+  outputs: ['opened', 'closed'],
   host: {
     'class': 'mat-expansion-panel',
     '[class.mat-expanded]': 'expanded',

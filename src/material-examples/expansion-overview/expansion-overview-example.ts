@@ -7,4 +7,6 @@ import {Component} from '@angular/core';
   selector: 'expansion-overview-example',
   templateUrl: 'expansion-overview-example.html',
 })
-export class ExpansionOverviewExample {}
+export class ExpansionOverviewExample {
+  panelOpenState: boolean = false;
+}
