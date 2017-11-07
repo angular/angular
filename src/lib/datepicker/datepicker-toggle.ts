@@ -32,6 +32,7 @@ import {MatDatepickerIntl} from './datepicker-intl';
   host: {
     'class': 'mat-datepicker-toggle',
   },
+  exportAs: 'matDatepickerToggle',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,

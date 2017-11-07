@@ -40,6 +40,7 @@ export class MatCalendarCell {
   host: {
     'class': 'mat-calendar-body',
   },
+  exportAs: 'matCalendarBody',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -84,6 +84,7 @@ export const MAT_DATEPICKER_SCROLL_STRATEGY_PROVIDER = {
     '[class.mat-datepicker-content-touch]': 'datepicker.touchUi',
     '(keydown)': '_handleKeydown($event)',
   },
+  exportAs: 'matDatepickerContent',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,

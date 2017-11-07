@@ -31,6 +31,7 @@ import {createMissingDateImplError} from './datepicker-errors';
   moduleId: module.id,
   selector: 'mat-year-view',
   templateUrl: 'year-view.html',
+  exportAs: 'matYearView',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -56,6 +56,7 @@ import {MatYearView} from './year-view';
   host: {
     'class': 'mat-calendar',
   },
+  exportAs: 'matCalendar',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
