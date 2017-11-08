@@ -150,6 +150,18 @@ export function main() {
         expect(s(':host.class:before {}', 'a', 'a-host')).toEqual('.class[a-host]:before {}');
         expect(s(':host(:not(p)):before {}', 'a', 'a-host')).toEqual('[a-host]:not(p):before {}');
       });
+
+      // see b/63672152
+      it('should handle unexpected selectors in the most reasonable way', () => {
+        expect(s('cmp:host {}', 'a', 'a-host')).toEqual('cmp[a-host] {}');
+        expect(s('cmp:host >>> {}', 'a', 'a-host')).toEqual('cmp[a-host] {}');
+        expect(s('cmp:host child {}', 'a', 'a-host')).toEqual('cmp[a-host] child[a] {}');
+        expect(s('cmp:host >>> child {}', 'a', 'a-host')).toEqual('cmp[a-host] child {}');
+        expect(s('cmp :host {}', 'a', 'a-host')).toEqual('cmp [a-host] {}');
+        expect(s('cmp :host >>> {}', 'a', 'a-host')).toEqual('cmp [a-host] {}');
+        expect(s('cmp :host child {}', 'a', 'a-host')).toEqual('cmp [a-host] child[a] {}');
+        expect(s('cmp :host >>> child {}', 'a', 'a-host')).toEqual('cmp [a-host] child {}');
+      });
     });
 
     describe((':host-context'), () => {
