@@ -354,6 +354,7 @@ export interface ViewData {
   state: ViewState;
   oldValues: any[];
   disposables: DisposableFn[]|null;
+  initIndex: number;
 }
 
 /**
@@ -369,8 +370,52 @@ export const enum ViewState {
   CheckProjectedViews = 1 << 6,
   Destroyed = 1 << 7,
 
+  // InitState Uses 3 bits
+  InitState_Mask = 7 << 8,
+  InitState_BeforeInit = 0 << 8,
+  InitState_CallingOnInit = 1 << 8,
+  InitState_CallingAfterContentInit = 2 << 8,
+  InitState_CallingAfterViewInit = 3 << 8,
+  InitState_AfterInit = 4 << 8,
+
   CatDetectChanges = Attached | ChecksEnabled,
-  CatInit = BeforeFirstCheck | CatDetectChanges
+  CatInit = BeforeFirstCheck | CatDetectChanges | InitState_BeforeInit
+}
+
+// Called before each cycle of a view's check to detect whether this is in the
+// initState for which we need to call ngOnInit, ngAfterContentInit or ngAfterViewInit
+// lifecycle methods. Returns true if this check cycle should call lifecycle
+// methods.
+export function shiftInitState(
+    view: ViewData, priorInitState: ViewState, newInitState: ViewState): boolean {
+  // Only update the InitState if we are currently in the prior state.
+  // For example, only move into CallingInit if we are in BeforeInit. Only
+  // move into CallingContentInit if we are in CallingInit. Normally this will
+  // always be true because of how checkCycle is called in checkAndUpdateView.
+  // However, if checkAndUpdateView is called recursively or if an exception is
+  // thrown while checkAndUpdateView is running, checkAndUpdateView starts over
+  // from the beginning. This ensures the state is monotonically increasing,
+  // terminating in the AfterInit state, which ensures the Init methods are called
+  // at least once and only once.
+  const state = view.state;
+  const initState = state & ViewState.InitState_Mask;
+  if (initState === priorInitState) {
+    view.state = (state & ~ViewState.InitState_Mask) | newInitState;
+    view.initIndex = -1;
+    return true;
+  }
+  return initState === newInitState;
+}
+
+// Returns true if the lifecycle init method should be called for the node with
+// the given init index.
+export function shouldCallLifecycleInitHook(
+    view: ViewData, initState: ViewState, index: number): boolean {
+  if ((view.state & ViewState.InitState_Mask) === initState && view.initIndex <= index) {
+    view.initIndex = index + 1;
+    return true;
+  }
+  return false;
 }
 
 export interface DisposableFn { (): void; }
