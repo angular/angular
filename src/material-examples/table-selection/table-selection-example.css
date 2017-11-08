@@ -11,5 +11,5 @@
 }
 
 .mat-column-select {
-  overflow: initial;
+  overflow: visible;
 }
