@@ -16,7 +16,7 @@ import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, equalSegments} from './url_tree';
 import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode, pathFromRoot} from './utils/tree';
-import { Routes } from "router";
+
 
 
 /**
@@ -73,7 +73,7 @@ export function createEmptyState(urlTree: UrlTree, rootComponent: Type<any>| nul
 }
 
 export function createEmptyStateSnapshot(
-  urlTree: UrlTree, rootComponent: Type<any>| null): RouterStateSnapshot {
+    urlTree: UrlTree, rootComponent: Type<any>| null): RouterStateSnapshot {
   const emptyParams = {};
   const emptyData = {};
   const emptyQueryParams = {};
@@ -81,22 +81,22 @@ export function createEmptyStateSnapshot(
   const activated = new ActivatedRouteSnapshot(
       [], emptyParams, emptyQueryParams, fragment, emptyData, PRIMARY_OUTLET, rootComponent, null,
       urlTree.root, -1, {});
-return new RouterStateSnapshot('', {value: activated, children:[]});
+  return new RouterStateSnapshot('', {value: activated, children: []});
 }
-export function createEmptyRouteSnapshotTree(): TreeNode<RouteSnapshot> {
-  return {
-    value: {
-      url: [], //UrlSegment[],
-      params: {}, // Params,
-      queryParams: {}, //Params,
-      fragment: '',
-      data: {}, // Data,
-      outlet: '',
-      configPath: [], // Path to config,
-      urlTreeAddress: {urlSegmentGroupPath: [], urlSegmentIndex: -1}
-    },
-    children: []
-  };
+
+
+
+export function createEmptyRouteSnapshotTree(opts: {
+  url?: {path: string, parameters: {[key: string]: string}}[],
+  params?: Params,
+  queryParams?: Params,
+  fragment?: string,
+  data?: Data,
+  outlet?: string,
+  configPath?: number[],
+  urlTreeAddress?: {urlSegmentGroupPath: string[], urlSegmentIndex: number}
+} = {}): TreeNode<RouteSnapshot> {
+  return {value: createRouteSnapshot(opts), children: []};
 }
 
 /**
@@ -205,8 +205,8 @@ export type Inherited = {
  *
  * @internal
  */
-export function inheritedParamsDataResolve(root: TreeNode<RouteSnapshot>, targetNode: RouteSnapshot, routes: Route[]): Inherited {
-
+export function inheritedParamsDataResolve(
+    root: TreeNode<RouteSnapshot>, targetNode: RouteSnapshot, routes: Route[]): Inherited {
   const pathToNode = pathFromRoot(root, targetNode);
 
   let inhertingStartingFrom = pathToNode.length - 1;
@@ -245,8 +245,7 @@ export function inheritedParamsDataResolve(root: TreeNode<RouteSnapshot>, target
  *
  * @internal
  */
-export function inheritedResolve(targetNode: ActivatedRouteSnapshot): {[k:string]:any} {
-
+export function inheritedResolve(targetNode: ActivatedRouteSnapshot): {[k: string]: any} {
   const pathToNode = targetNode.pathFromRoot;
 
   let inhertingStartingFrom = pathToNode.length - 1;
@@ -374,57 +373,57 @@ export class ActivatedRouteSnapshot {
 }
 
 export interface RouteSnapshot {
-  url: {path: string, parameters: {[key: string]: string}}[],
-  params: Params,
-  queryParams: Params,
-  fragment: string,
-  data: Data,
-  outlet: string,
-  configPath: number[],
-  urlTreeAddress: {urlSegmentGroupPath: string[], urlSegmentIndex: number} // remove ?
+  url: {path: string, parameters: {[key: string]: string}}[];
+  params: Params;
+  queryParams: Params;
+  fragment: string;
+  data: Data;
+  outlet: string;
+  configPath: number[];
+  urlTreeAddress: {urlSegmentGroupPath: string[]; urlSegmentIndex: number};
 }
 
-// Tree<RouteSnapshot>
+export function createRouteSnapshot(opts: {
+  url?: {path: string, parameters: {[key: string]: string}}[],
+  params?: Params,
+  queryParams?: Params,
+  fragment?: string,
+  data?: Data,
+  outlet?: string,
+  configPath?: number[],
+  urlTreeAddress?: {urlSegmentGroupPath: string[], urlSegmentIndex: number}
+} = {}): RouteSnapshot {
+  return {
+    url: opts.url || [],
+    params: opts.params || {},
+    queryParams: opts.queryParams || {},
+    fragment: opts.fragment || '',
+    data: opts.data || {},
+    outlet: opts.outlet || '',
+    configPath: opts.configPath || [],
+    urlTreeAddress: opts.urlTreeAddress || {urlSegmentGroupPath: [], urlSegmentIndex: -1}
+  };
+}
 
-// tree.toString()
-// Tree.fromString()
-
-/**
-
- Option 1. Use existing tree:
-
- new Tree<RouteSnapshot>(new TreeNode<RouteSnapshot>({url: ...}, children: ))
-
- Option 2: Do not use existing tree
-
- {
-  value: ({url: ...}),
-  children: [
-    {
-
-    }
-  ]
- }
-
- parent(tree, snapshot)
-
- */
-
-// Tree of RouteSnapshot => RouterStateSnapshot
-
-export function createRouterStateSnapshot(url: string, urlTree: UrlTree, root: TreeNode<RouteSnapshot>, rootComponentType: Type<any>|null, routes: Route[]): RouterStateSnapshot {
+export function createRouterStateSnapshot(
+    url: string, urlTree: UrlTree, root: TreeNode<RouteSnapshot>,
+    rootComponentType: Type<any>| null, routes: Route[]): RouterStateSnapshot {
   const activatedRouteRoot = createActivatedRouteSnapshotTreeNode(urlTree, root, routes);
   activatedRouteRoot.value.component = rootComponentType;
   return new RouterStateSnapshot(url, activatedRouteRoot);
 }
 
-function createActivatedRouteSnapshotTreeNode(urlTree: UrlTree, treeNode: TreeNode<RouteSnapshot>, routes: Route[]): TreeNode<ActivatedRouteSnapshot> {
+function createActivatedRouteSnapshotTreeNode(
+    urlTree: UrlTree, treeNode: TreeNode<RouteSnapshot>,
+    routes: Route[]): TreeNode<ActivatedRouteSnapshot> {
   const value = createActivatedRouteSnapshot(urlTree, treeNode.value, routes);
-  const children = treeNode.children.map(c => createActivatedRouteSnapshotTreeNode(urlTree, c, routes));
+  const children =
+      treeNode.children.map(c => createActivatedRouteSnapshotTreeNode(urlTree, c, routes));
   return {value, children};
 }
 
-export function createActivatedRouteSnapshot(urlTree: UrlTree, snapshot: RouteSnapshot, routes: Route[]): ActivatedRouteSnapshot {
+export function createActivatedRouteSnapshot(
+    urlTree: UrlTree, snapshot: RouteSnapshot, routes: Route[]): ActivatedRouteSnapshot {
   let config = null;
   let component = null;
 
@@ -435,25 +434,19 @@ export function createActivatedRouteSnapshot(urlTree: UrlTree, snapshot: RouteSn
   }
 
   let urlSegmentGroup = urlTree.root;
-  let lastPathIndex =  -1;
+  let lastPathIndex = -1;
   // not root
   if (snapshot.urlTreeAddress.urlSegmentGroupPath.length) {
     urlSegmentGroup = getUrlSegmentGroup(snapshot.urlTreeAddress.urlSegmentGroupPath, urlTree.root);
-    lastPathIndex =  snapshot.urlTreeAddress.urlSegmentIndex;
+    lastPathIndex = snapshot.urlTreeAddress.urlSegmentIndex;
   }
 
-  const url = snapshot.url.map(segmentData => new UrlSegment(segmentData.path, segmentData.parameters));
+  const url =
+      snapshot.url.map(segmentData => new UrlSegment(segmentData.path, segmentData.parameters));
 
   return new ActivatedRouteSnapshot(
-    url,
-    snapshot.params,
-    snapshot.queryParams,
-    snapshot.fragment,
-    snapshot.data,
-    snapshot.outlet,
-    component,
-    config, urlSegmentGroup, lastPathIndex, null as any
-  );
+      url, snapshot.params, snapshot.queryParams, snapshot.fragment, snapshot.data, snapshot.outlet,
+      component, config, urlSegmentGroup, lastPathIndex, (config && config.resolve) || {});
 }
 
 function getUrlSegmentGroup(path: string[], group: UrlSegmentGroup): UrlSegmentGroup {
@@ -461,7 +454,8 @@ function getUrlSegmentGroup(path: string[], group: UrlSegmentGroup): UrlSegmentG
     return group;
   }
   const selectedGroup = group.children[path[0]];
-  if (!selectedGroup) throw new Error(`boom | ${path.join(',')} | ${Object.keys(group.children).join(',')}`);
+  if (!selectedGroup)
+    throw new Error(`boom | ${path.join(',')} | ${Object.keys(group.children).join(',')}`);
   if (path.length > 1) {
     if (!selectedGroup.children) throw new Error('boom2');
     return getUrlSegmentGroup(path.slice(1), selectedGroup);
@@ -473,7 +467,8 @@ function getUrlSegmentGroup(path: string[], group: UrlSegmentGroup): UrlSegmentG
 export function getConfig(path: number[], routes: Route[]): Route|null {
   if (!path.length) return null;
 
-  const errMsg = `Cannot create ActivatedRouteSnapshot out of RouteConfig. The Router configuration may have changed through a call to Router.resetConfig().`;
+  const errMsg =
+      `Cannot create ActivatedRouteSnapshot out of RouteConfig. The Router configuration may have changed through a call to Router.resetConfig().`;
   const selectedRoute = routes[path[0]];
 
   if (!selectedRoute) throw new Error(errMsg);
@@ -576,8 +571,10 @@ export function advanceActivatedRoute(route: ActivatedRoute): void {
 
 
 export function equalParamsAndUrlSegments(
-    a: RouteSnapshot, b: RouteSnapshot, aRoot?: TreeNode<RouteSnapshot>, bRoot?: TreeNode<RouteSnapshot>): boolean {
-  const equalUrlParams = shallowEqual(a.params, b.params) && equalSegments(a.url as any, b.url as any);
+    a: RouteSnapshot, b: RouteSnapshot, aRoot?: TreeNode<RouteSnapshot>,
+    bRoot?: TreeNode<RouteSnapshot>): boolean {
+  const equalUrlParams =
+      shallowEqual(a.params, b.params) && equalSegments(a.url as any, b.url as any);
 
   if (aRoot && bRoot) {
     const aPath = pathFromRoot(aRoot, a);

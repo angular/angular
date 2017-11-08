@@ -8,19 +8,19 @@
 
 import {Location} from '@angular/common';
 import {TestBed, inject} from '@angular/core/testing';
+import {Type} from 'core';
 
 import {ResolveData, Route} from '../src/config';
 import {ChildActivationStart} from '../src/events';
 import {PreActivation} from '../src/pre_activation';
 import {Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, createEmptyStateSnapshot, RouteSnapshot, createEmptyRouteSnapshotTree, createRouterStateSnapshot} from '../src/router_state';
+import {ActivatedRouteSnapshot, RouteSnapshot, RouterStateSnapshot, createEmptyRouteSnapshotTree, createEmptyStateSnapshot, createRouterStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 import {RouterTestingModule} from '../testing/src/router_testing_module';
 
-import {Logger, createActivatedRouteSnapshot, provideTokenLogger, createRouteSnapshot} from './helpers';
-import { Type } from "core";
+import {Logger, createActivatedRouteSnapshot, createRouteSnapshot, provideTokenLogger} from './helpers';
 
 describe('Router', () => {
   describe('resetRootComponentType', () => {
@@ -104,7 +104,9 @@ describe('Router', () => {
         let result = false;
         const childSnapshot = createRouteSnapshot({configPath: [0]});
         const futureState = {value: empty.value, children: [{value: childSnapshot, children: []}]};
-        const p = createPreactivation(futureState, empty, [{path: 'child'}], TestBed, {forwardEvent: (evt) => { events.push(evt); }});
+        const p = createPreactivation(
+            futureState, empty, [{path: 'child'}], TestBed,
+            {forwardEvent: (evt) => { events.push(evt); }});
         p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
         expect(result).toBe(true);
@@ -128,22 +130,24 @@ describe('Router', () => {
         const grandchildSnapshot = createRouteSnapshot({configPath: [0, 0]});
         const greatGrandchildSnapshot = createRouteSnapshot({configPath: [0, 0, 0]});
 
-        const futureState = {value: empty.value, children: [{value: childSnapshot, children: [
-                  {value: grandchildSnapshot, children: [{value: greatGrandchildSnapshot, children: []}]}]}]};
+        const futureState = {
+          value: empty.value,
+          children: [{
+            value: childSnapshot,
+            children: [{
+              value: grandchildSnapshot,
+              children: [{value: greatGrandchildSnapshot, children: []}]
+            }]
+          }]
+        };
 
-        const routes = [
-          {path: 'child', children: [
-            {
-              path: 'grandchild',
-              children: [
-                {path: 'great-grandchild'}
-              ]
-            }
-            ]
-          }
-        ];
+        const routes = [{
+          path: 'child',
+          children: [{path: 'grandchild', children: [{path: 'great-grandchild'}]}]
+        }];
 
-        const p = createPreactivation(futureState, empty, routes, TestBed, {forwardEvent: (evt) => { events.push(evt); }});
+        const p = createPreactivation(
+            futureState, empty, routes, TestBed, {forwardEvent: (evt) => { events.push(evt); }});
         p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
@@ -166,28 +170,18 @@ describe('Router', () => {
         let result = false;
         const childSnapshot = createRouteSnapshot({configPath: [0]});
         const grandchildSnapshot = createRouteSnapshot({configPath: [0, 0]});
-        const currentState = {value: empty.value, children:[{value: childSnapshot, children: []}]};
+        const currentState = {value: empty.value, children: [{value: childSnapshot, children: []}]};
         const futureState = {
           value: empty.value,
-          children: [
-            {
-              value: childSnapshot,
-              children: [
-                {value: grandchildSnapshot, children: []}
-              ]
-            }
-          ]};
+          children:
+              [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]
+        };
 
-        const routes = [
-          {path: 'child', children: [
-              {
-                path: 'grandchild'
-              }
-            ]
-          }
-        ];
+        const routes = [{path: 'child', children: [{path: 'grandchild'}]}];
 
-        const p = createPreactivation(futureState, currentState, routes, TestBed, {forwardEvent: (evt) => { events.push(evt); }});
+        const p = createPreactivation(
+            futureState, currentState, routes, TestBed,
+            {forwardEvent: (evt) => { events.push(evt); }});
         p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
@@ -216,45 +210,36 @@ describe('Router', () => {
         const greatGrandchildSnapshot = createRouteSnapshot({configPath: [0, 0, 0]});
         const greatGreatGrandchildSnapshot = createRouteSnapshot({configPath: [0, 0, 0, 0]});
 
-        const routes = [
-          {path: 'child', children: [
-              {
-                path: 'grandchild',
-                children: [
-                  {path: 'great-grandchild', children: [
-                      {path: 'great-greatgrandchild'}
-                    ]}
-                ]
-              }
-            ]
-          }
-        ];
+        const routes = [{
+          path: 'child',
+          children: [{
+            path: 'grandchild',
+            children: [{path: 'great-grandchild', children: [{path: 'great-greatgrandchild'}]}]
+          }]
+        }];
 
-        const currentRoot = {value:
-                empty.value, children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]};
+        const currentRoot = {
+          value: empty.value,
+          children:
+              [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]
+        };
 
         const futureRoot = {
-            value: empty.value,
-            children:
-              [
-                {
-                  value: childSnapshot,
-                  children: [
-                    {
-                      value: grandchildSnapshot,
-                      children:
-                        [
-                          {
-                            value: greatGrandchildSnapshot,
-                            children: [{
-                              value: greatGreatGrandchildSnapshot, children: []
-                            }]
-                          }]
-                    }]
-                }
-              ]
-            };
-      const p = createPreactivation(futureRoot, currentRoot, routes, TestBed, {forwardEvent: (evt) => { events.push(evt); }});
+          value: empty.value,
+          children: [{
+            value: childSnapshot,
+            children: [{
+              value: grandchildSnapshot,
+              children: [{
+                value: greatGrandchildSnapshot,
+                children: [{value: greatGreatGrandchildSnapshot, children: []}]
+              }]
+            }]
+          }]
+        };
+        const p = createPreactivation(
+            futureRoot, currentRoot, routes, TestBed,
+            {forwardEvent: (evt) => { events.push(evt); }});
         p.initialize(new ChildrenOutletContexts());
         p.checkGuards().subscribe((x) => result = x, (e) => { throw e; });
 
@@ -279,19 +264,17 @@ describe('Router', () => {
 
         const childSnapshot = createRouteSnapshot({configPath: [0]});
         const grandchildSnapshot = createRouteSnapshot({configPath: [0, 0]});
-        const routes = [
-          {
-            canActivate: [CA_CHILD],
-            canActivateChild: [CAC_CHILD],
-            children: [
-              {canActivate: [CA_GRANDCHILD]}
-            ]
-          }
-        ]
+        const routes = [{
+          canActivate: [CA_CHILD],
+          canActivateChild: [CAC_CHILD],
+          children: [{canActivate: [CA_GRANDCHILD]}]
+        }];
 
         const futureState = {
           value: empty.value,
-          children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]};
+          children:
+              [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]
+        };
 
         checkGuards(futureState, empty, routes, TestBed, (result) => {
           expect(result).toBe(true);
@@ -313,12 +296,14 @@ describe('Router', () => {
         const routes = [{
           canActivate: [CA_CHILD_FALSE],
           canActivateChild: [CAC_CHILD],
-          children: [
-            {canActivate: [CA_GRANDCHILD]}
-          ]
+          children: [{canActivate: [CA_GRANDCHILD]}]
         }];
 
-        const futureState = {value: empty.value, children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]};
+        const futureState = {
+          value: empty.value,
+          children:
+              [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]
+        };
 
         checkGuards(futureState, empty, routes, TestBed, (result) => {
           expect(result).toBe(false);
@@ -340,12 +325,13 @@ describe('Router', () => {
         const routes = [{
           canActivate: [CA_CHILD],
           canActivateChild: [CAC_CHILD_FALSE],
-          children: [
-            {canActivate: [CA_GRANDCHILD]}
-          ]
+          children: [{canActivate: [CA_GRANDCHILD]}]
         }];
-        const futureState = {value:
-                empty.value, children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]};
+        const futureState = {
+          value: empty.value,
+          children:
+              [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]
+        };
 
         checkGuards(futureState, empty, routes, TestBed, (result) => {
           expect(result).toBe(false);
@@ -366,21 +352,21 @@ describe('Router', () => {
         const childSnapshot = createRouteSnapshot({configPath: [1]});
         const grandchildSnapshot = createRouteSnapshot({configPath: [1, 0]});
 
-        const routes = [{
-          canDeactivate: [CDA_CHILD],
-          children: []
-        },
-        {
-          canActivate: [CA_CHILD],
-          canActivateChild: [CAC_CHILD],
-          children: [{
-            canActivate: [CA_GRANDCHILD]
-          }]
-        }];
+        const routes = [
+          {canDeactivate: [CDA_CHILD], children: []}, {
+            canActivate: [CA_CHILD],
+            canActivateChild: [CAC_CHILD],
+            children: [{canActivate: [CA_GRANDCHILD]}]
+          }
+        ];
 
         const currentState = {value: empty.value, children: [{value: prevSnapshot, children: []}]};
 
-        const futureState = {value: empty.value, children: [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]};
+        const futureState = {
+          value: empty.value,
+          children:
+              [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]
+        };
 
         checkGuards(futureState, currentState, routes, TestBed, (result) => {
           expect(logger.logs).toEqual([CDA_CHILD, CA_CHILD, CAC_CHILD, CA_GRANDCHILD]);
@@ -399,20 +385,20 @@ describe('Router', () => {
         const prevSnapshot = createRouteSnapshot({configPath: [0]});
         const childSnapshot = createRouteSnapshot({configPath: [1]});
         const grandchildSnapshot = createRouteSnapshot({configPath: [1, 0]});
-        const routes = [{
-          canDeactivate: [CDA_CHILD_FALSE],
-          children: []
-        },
-        {
-          canActivate: [CA_CHILD],
-          canActivateChild: [CAC_CHILD],
-          children: [{
-            canActivate: [CA_GRANDCHILD]
-          }]
-        }];
+        const routes = [
+          {canDeactivate: [CDA_CHILD_FALSE], children: []}, {
+            canActivate: [CA_CHILD],
+            canActivateChild: [CAC_CHILD],
+            children: [{canActivate: [CA_GRANDCHILD]}]
+          }
+        ];
         const currentState = {value: empty.value, children: [{value: prevSnapshot, children: []}]};
 
-        const futureState = {value: empty.value, children: [{value: childSnapshot, children: [{value:grandchildSnapshot, children: []}]}]};
+        const futureState = {
+          value: empty.value,
+          children:
+              [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]
+        };
 
         checkGuards(futureState, currentState, routes, TestBed, (result) => {
           expect(result).toBe(false);
@@ -432,25 +418,27 @@ describe('Router', () => {
         const prevGrandchildSnapshot = createRouteSnapshot({configPath: [0, 0]});
         const childSnapshot = createRouteSnapshot({configPath: [1]});
         const grandchildSnapshot = createRouteSnapshot({configPath: [1, 0]});
-        const routes = [{
-          canDeactivate: [CDA_CHILD],
-          children: [{
-            canDeactivate: [CDA_GRANDCHILD],
-            children: []
-          }]
-        },
-        {
-          canActivate: [CA_CHILD],
-          canActivateChild: [CAC_CHILD],
-          children: [{
-            canActivate: [CA_GRANDCHILD]
-          }]
-        }];
+        const routes = [
+          {canDeactivate: [CDA_CHILD], children: [{canDeactivate: [CDA_GRANDCHILD], children: []}]},
+          {
+            canActivate: [CA_CHILD],
+            canActivateChild: [CAC_CHILD],
+            children: [{canActivate: [CA_GRANDCHILD]}]
+          }
+        ];
 
-        const currentState = {value: empty.value, children: [
-              {value: prevChildSnapshot, children: [{value: prevGrandchildSnapshot, children: []}]}]};
+        const currentState = {
+          value: empty.value,
+          children: [
+            {value: prevChildSnapshot, children: [{value: prevGrandchildSnapshot, children: []}]}
+          ]
+        };
 
-        const futureState = {value: empty.value, children: [{value: childSnapshot, children: [{value:grandchildSnapshot, children: []}]}]};
+        const futureState = {
+          value: empty.value,
+          children:
+              [{value: childSnapshot, children: [{value: grandchildSnapshot, children: []}]}]
+        };
 
         checkGuards(futureState, currentState, routes, TestBed, (result) => {
           expect(result).toBe(true);
@@ -480,7 +468,7 @@ describe('Router', () => {
         const futureState = {value: empty.value, children: [{value: n, children: []}]};
 
         checkResolveData(futureState, empty, routes, inj, (root) => {
-          expect(root.children[0]!.value.data).toEqual({data: 'resolver_value'});
+          expect(root.children[0] !.value.data).toEqual({data: 'resolver_value'});
         });
       });
 
@@ -495,12 +483,16 @@ describe('Router', () => {
         const routes = [{resolve: {data: 'resolver'}, children: [{resolve: {childData: 'child'}}]}];
         const n = createRouteSnapshot({configPath: [0]});
         const n2 = createRouteSnapshot({configPath: [0, 0]});
-        const futureState = {value: empty.value, children: [{value: n, children: [{value: n2, children: []}]}]};
+        const futureState = {
+          value: empty.value,
+          children: [{value: n, children: [{value: n2, children: []}]}]
+        };
 
         checkResolveData(futureState, empty, routes, inj, (root, legacySnapshot) => {
-          expect(legacySnapshot.root.firstChild!.firstChild!.data).toEqual({data: 'resolver_value', childData: 'child_value'});
-          expect(root.children[0]!.value.data).toEqual({data: 'resolver_value'});
-          expect(root.children[0]!.children[0]!.value.data).toEqual({childData: 'child_value'});
+          expect(legacySnapshot.root.firstChild !.firstChild !.data)
+              .toEqual({data: 'resolver_value', childData: 'child_value'});
+          expect(root.children[0] !.value.data).toEqual({data: 'resolver_value'});
+          expect(root.children[0] !.children[0] !.value.data).toEqual({childData: 'child_value'});
         });
       });
 
@@ -518,19 +510,20 @@ describe('Router', () => {
 
         const parent = createRouteSnapshot({configPath: [0]});
         const child = createRouteSnapshot({configPath: [0, 0]});
-        const futureState = {value: empty.value, children: [{
-          value: parent, children: [{
-            value: child, children: []
-          }]
-        }]};
+        const futureState = {
+          value: empty.value,
+          children: [{value: parent, children: [{value: child, children: []}]}]
+        };
 
         // Make an async injector with Promise.resolve
         const inj = {get: (token: any) => () => Promise.resolve(`${token}_value`)};
 
         checkResolveData(futureState, empty, routes, inj, (root, legacySnapshot) => {
-          expect(legacySnapshot.root.firstChild!.firstChild!.data).toEqual({data: 'resolver_value'});
-          expect(root.children[0]!.value.data).toEqual({data: 'resolver_value'});
-          expect(root.children[0]!.children[0]!.value.data).toEqual({});
+          expect(legacySnapshot.root.firstChild !.firstChild !.data).toEqual({
+            data: 'resolver_value'
+          });
+          expect(root.children[0] !.value.data).toEqual({data: 'resolver_value'});
+          expect(root.children[0] !.children[0] !.value.data).toEqual({});
         });
       });
 
@@ -552,17 +545,22 @@ describe('Router', () => {
         const n22 = createRouteSnapshot({configPath: [0, 0]});
 
         const currState = {value: empty.value, children: [{value: n1, children: []}]};
-        const futureState = {value: empty.value, children: [{value: n21, children: [{value: n22, children: []}]}]};
+        const futureState = {
+          value: empty.value,
+          children: [{value: n21, children: [{value: n22, children: []}]}]
+        };
 
         checkResolveData(currState, empty, routes, inj, (root, legacySnapshot) => {
 
-          expect(root.children[0]!.value.data).toEqual({data: 'resolver1_value'})
+          expect(root.children[0] !.value.data).toEqual({data: 'resolver1_value'});
 
           checkResolveData(futureState, root, routes, inj, (root, legacySnapshot) => {
             expect(legacySnapshot.root.firstChild !.data).toEqual({data: 'resolver1_value'});
-            expect(legacySnapshot.root.firstChild !.firstChild !.data).toEqual({data: 'resolver2_value'});
-            expect(root.children[0]!.value.data).toEqual({data: 'resolver1_value'});
-            expect(root.children[0]!.children[0]!.value.data).toEqual({data: 'resolver2_value'});
+            expect(legacySnapshot.root.firstChild !.firstChild !.data).toEqual({
+              data: 'resolver2_value'
+            });
+            expect(root.children[0] !.value.data).toEqual({data: 'resolver1_value'});
+            expect(root.children[0] !.children[0] !.value.data).toEqual({data: 'resolver2_value'});
           });
         });
       });
@@ -570,14 +568,15 @@ describe('Router', () => {
   });
 });
 
-function checkResolveData(future: TreeNode<RouteSnapshot>, curr: TreeNode<RouteSnapshot>, routes: Route[], injector: any,
-                          check: (t: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot) => void): void {
+function checkResolveData(
+    future: TreeNode<RouteSnapshot>, curr: TreeNode<RouteSnapshot>, routes: Route[], injector: any,
+    check: (t: TreeNode<RouteSnapshot>, legacySnapshot: RouterStateSnapshot) => void): void {
   const p = createPreactivation(future, curr, routes, injector);
   p.initialize(new ChildrenOutletContexts());
 
   p.resolveData().subscribe(
-    (t: TreeNode<RouteSnapshot>) => check(t, (p as any).legacySnapshots.future)
-    , (e) => { throw e; });
+      (t: TreeNode<RouteSnapshot>) => check(t, (p as any).legacySnapshots.future),
+      (e) => { throw e; });
 }
 
 function checkGuards(
@@ -588,12 +587,17 @@ function checkGuards(
   p.checkGuards().subscribe(check, (e) => { throw e; });
 }
 
-function createPreactivation(future: TreeNode<RouteSnapshot>, curr: TreeNode<RouteSnapshot>, routes: Route[], injector: any,
-  options: {url?: string, component?: Type<any>|null, forwardEvent?: (evt: any) => void} = {}) {
+function createPreactivation(
+    future: TreeNode<RouteSnapshot>, curr: TreeNode<RouteSnapshot>, routes: Route[], injector: any,
+    options: {url?: string, component?: Type<any>| null, forwardEvent?: (evt: any) => void} = {}) {
   options = {...{url: '/', component: null}, ...options};
   const serializer = new DefaultUrlSerializer();
-  const urlTree = serializer.parse(options.url!);
-  const currLegacy = createRouterStateSnapshot(options.url!, urlTree, curr, options.component!, routes);
-  const futureLegacy = createRouterStateSnapshot(options.url!, urlTree, future, options.component!, routes);
-  return new PreActivation(future, curr, {curr: currLegacy, future: futureLegacy}, routes, injector, options.forwardEvent);
-};
+  const urlTree = serializer.parse(options.url !);
+  const currLegacy =
+      createRouterStateSnapshot(options.url !, urlTree, curr, options.component !, routes);
+  const futureLegacy =
+      createRouterStateSnapshot(options.url !, urlTree, future, options.component !, routes);
+  return new PreActivation(
+      future, curr, {curr: currLegacy, future: futureLegacy}, routes, injector,
+      options.forwardEvent);
+}

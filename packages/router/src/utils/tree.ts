@@ -1,10 +1,3 @@
-import { Observable } from "rxjs/Observable";
-import { map } from "rxjs/operators/map";
-import { mergeMap } from "rxjs/operators/mergeMap";
-import { pipe } from 'rxjs/util/pipe';
-import { of } from "rxjs/observable/of";
-import { forkJoin } from "rxjs/observable/forkJoin";
-
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -12,6 +5,12 @@ import { forkJoin } from "rxjs/observable/forkJoin";
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {Observable} from 'rxjs/Observable';
+import {forkJoin} from 'rxjs/observable/forkJoin';
+import {of } from 'rxjs/observable/of';
+import {map} from 'rxjs/operator/map';
+import {mergeMap} from 'rxjs/operator/mergeMap';
 
 export class Tree<T> {
   /** @internal */
@@ -62,11 +61,8 @@ export class Tree<T> {
   pathFromRoot(t: T): T[] { return pathFromRoot(this._root, t); }
 }
 
-export function cloneTree<T>(t: TreeNode<T>, cloneValue: (t:T) => T): TreeNode<T> {
-  return {
-    value: cloneValue(t.value),
-    children: t.children.map(c => cloneTree(c, cloneValue))
-  };
+export function cloneTree<T>(t: TreeNode<T>, cloneValue: (t: T) => T): TreeNode<T> {
+  return {value: cloneValue(t.value), children: t.children.map(c => cloneTree(c, cloneValue))};
 }
 
 export function pathFromRoot<T>(root: TreeNode<T>, node: T): T[] {
@@ -119,7 +115,7 @@ export function getPath<T>(value: T, node: TreeNode<T>): number[] {
   function getPathRecurse<T>(value: T, node: TreeNode<T>): number[]|null {
     if (value === node.value) return [];
 
-    for (let i = 0 ; i < node.children.length ; i++) {
+    for (let i = 0; i < node.children.length; i++) {
       const path = getPathRecurse(value, node.children[i]);
       if (path) {
         return [i, ...path];
@@ -139,23 +135,33 @@ export function getNodeFromPath<T>(path: number[], node: TreeNode<T>): TreeNode<
   }
 }
 
-export function mapTree<T>(root: TreeNode<T>, converter: (value: T, node: TreeNode<T>) => T): TreeNode<T> {
+export function mapTree<T>(
+    root: TreeNode<T>, converter: (value: T, node: TreeNode<T>) => T): TreeNode<T> {
   return {
     value: converter(root.value, root),
     children: root.children.map(child => mapTree(child, converter))
   };
 }
 
-export function mapTreeAsync<T>(root: TreeNode<T>, converter: (value: T, node: TreeNode<T>) => Observable<T>): Observable<TreeNode<T>> {
-  const root$ = of(root);
-  return root$.pipe(
-    mergeMap(x => {
-      const mappedChildren = x.children.map(c => mapTreeAsync(c, converter));
-      const children$ = mappedChildren.length ? forkJoin(...mappedChildren) : of([]);
-      return forkJoin(converter(x.value, x), children$)
-        .pipe(map(([value, children]) => ({value, children})));
-    })
-  )
+export function mapTreeAsync<T>(
+    root: TreeNode<T>,
+    converter: (value: T, node: TreeNode<T>) => Observable<T>): Observable<TreeNode<T>> {
+  const root$ = of (root);
+  // LETTABLE OPERATOR VERSION
+  // return root$.pipe(mergeMap(x => {
+  //   const mappedChildren = x.children.map(c => mapTreeAsync(c, converter));
+  //   const children$ = mappedChildren.length ? forkJoin(...mappedChildren) : of ([]);
+  //   return forkJoin(converter(x.value, x), children$)
+  //       .pipe(map(([value, children]) => ({value, children})));
+  // }));
+  return mergeMap.call(root$, ((x: TreeNode<T>) => {
+                         const mappedChildren = x.children.map(c => mapTreeAsync(c, converter));
+                         const children$ =
+                             mappedChildren.length ? forkJoin(...mappedChildren) : of ([]);
+                         return map.call(
+                             forkJoin(converter(x.value, x), children$),
+                             ([value, children]: [T, [TreeNode<T>]]) => ({value, children}));
+                       }));
 }
 
 export interface TreeNode<T> {

@@ -37,7 +37,8 @@ const globals = {
   'rxjs/operator/catch': 'Rx.Observable.prototype',
   'rxjs/operator/last': 'Rx.Observable.prototype',
   'rxjs/operator/filter': 'Rx.Observable.prototype',
-  'rxjs/operator/concatMap': 'Rx.Observable.prototype'
+  'rxjs/operator/concatMap': 'Rx.Observable.prototype',
+  'rxjs/operator/do': 'Rx.Observable.prototype'
 };
 
 module.exports = {

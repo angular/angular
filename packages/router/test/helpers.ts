@@ -7,16 +7,16 @@
  */
 
 import {Type} from '@angular/core';
+import {Routes} from '@angular/router/src/config';
+import {recognize} from '@angular/router/src/recognize';
+import {RouteSnapshot, RouterStateSnapshot, createRouterStateSnapshot} from '@angular/router/src/router_state';
+import {Observable} from 'rxjs/Observable';
+import {map} from 'rxjs/operator/map';
 
 import {Data, ResolveData, Route} from '../src/config';
 import {ActivatedRouteSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from '../src/shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree} from '../src/url_tree';
-import {createRouterStateSnapshot, RouterStateSnapshot, RouteSnapshot} from '@angular/router/src/router_state';
-import {Routes} from '@angular/router/src/config';
-import {recognize} from '@angular/router/src/recognize';
-import {map} from 'rxjs/operator/map';
-import {Observable} from 'rxjs/Observable';
 
 export class Logger {
   logs: string[] = [];
@@ -65,13 +65,13 @@ export function createRouteSnapshot(args: {
   urlTreeAddress?: {urlSegmentGroupPath: string[], urlSegmentIndex: number}
 }): RouteSnapshot {
   const defaults = {
-    url: [], //UrlSegment[],
-    params: {}, // Params,
-    queryParams: {}, //Params,
+    url: [],          // UrlSegment[],
+    params: {},       // Params,
+    queryParams: {},  // Params,
     fragment: '',
-    data: {}, // Data,
+    data: {},  // Data,
     outlet: '',
-    configPath: [], // Path to config,
+    configPath: [],  // Path to config,
     urlTreeAddress: {urlSegmentGroupPath: [], urlSegmentIndex: 0}
   };
 
@@ -79,9 +79,10 @@ export function createRouteSnapshot(args: {
 }
 
 
-export function legacyRecognize(rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree,
-                                url: string): Observable<RouterStateSnapshot> {
-  return map.call(recognize(rootComponentType, config, urlTree, url), (root: any) =>
-    createRouterStateSnapshot(url, urlTree, root, rootComponentType, config)
-  );
+export function legacyRecognize(
+    rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree,
+    url: string): Observable<RouterStateSnapshot> {
+  return map.call(
+      recognize(rootComponentType, config, urlTree, url),
+      (root: any) => createRouterStateSnapshot(url, urlTree, root, rootComponentType, config));
 }

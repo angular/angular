@@ -9,12 +9,12 @@
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
-import {of} from 'rxjs/observable/of';
+import {of } from 'rxjs/observable/of';
 
 import {Data, ResolveData, Route, Routes} from './config';
-import {RouteSnapshot, inheritedParamsDataResolve} from './router_state';
-import {defaultUrlMatcher, PRIMARY_OUTLET} from './shared';
-import {mapChildrenIntoArray, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
+import {RouteSnapshot, createRouteSnapshot, inheritedParamsDataResolve} from './router_state';
+import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
+import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {forEach, last} from './utils/collection';
 import {TreeNode} from './utils/tree';
 
@@ -27,9 +27,7 @@ export function recognize(
 }
 
 class Recognizer {
-  constructor(
-      private config: Routes, private urlTree: UrlTree,
-      private url: string) {}
+  constructor(private config: Routes, private urlTree: UrlTree, private url: string) {}
 
   recognize(): Observable<TreeNode<RouteSnapshot>> {
     try {
@@ -37,16 +35,12 @@ class Recognizer {
 
       const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET, []);
 
-      const root: RouteSnapshot = {
-        url: [],
+      const root = createRouteSnapshot({
         params: Object.freeze({}),
         queryParams: Object.freeze(this.urlTree.queryParams),
         fragment: this.urlTree.fragment !,
-        data: {},
-        outlet: PRIMARY_OUTLET,
-        configPath: [],
-        urlTreeAddress: {urlSegmentGroupPath: [], urlSegmentIndex: -1}
-      };
+        outlet: PRIMARY_OUTLET
+      });
 
       const rootNode = {value: root, children};
       this.inheritParamsAndData(rootNode, rootNode);
@@ -60,16 +54,17 @@ class Recognizer {
 
   inheritParamsAndData(root: TreeNode<RouteSnapshot>, routeNode: TreeNode<RouteSnapshot>): void {
     const route = routeNode.value;
-  
+
     const i = inheritedParamsDataResolve(root, route, this.config);
     route.params = Object.freeze(i.params);
     route.data = Object.freeze(i.data);
-  
+
     routeNode.children.forEach(n => this.inheritParamsAndData(root, n));
   }
 
-  processSegmentGroup(config: Route[], segmentGroup: UrlSegmentGroup, outlet: string, configPath: number[]):
-      TreeNode<RouteSnapshot>[] {
+  processSegmentGroup(
+      config: Route[], segmentGroup: UrlSegmentGroup, outlet: string,
+      configPath: number[]): TreeNode<RouteSnapshot>[] {
     if (segmentGroup.segments.length === 0 && segmentGroup.hasChildren()) {
       return this.processChildren(config, segmentGroup, configPath);
     }
@@ -80,19 +75,21 @@ class Recognizer {
   processChildren(config: Route[], segmentGroup: UrlSegmentGroup, configPath: number[]):
       TreeNode<RouteSnapshot>[] {
     const children = mapChildrenIntoArray(
-        segmentGroup, (child, childOutlet) => this.processSegmentGroup(config, child, childOutlet, configPath));
+        segmentGroup,
+        (child, childOutlet) => this.processSegmentGroup(config, child, childOutlet, configPath));
     checkOutletNameUniqueness(children);
     sortActivatedRouteSnapshots(children);
     return children;
   }
 
   processSegment(
-      config: Route[], segmentGroup: UrlSegmentGroup, segments: UrlSegment[],
-      outlet: string, configPath: number[]): TreeNode<RouteSnapshot>[] {
+      config: Route[], segmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string,
+      configPath: number[]): TreeNode<RouteSnapshot>[] {
     for (let i = 0; i < config.length; ++i) {
       const r = config[i];
       try {
-        return this.processSegmentAgainstRoute(r, segmentGroup, segments, outlet, [...configPath, i]);
+        return this.processSegmentAgainstRoute(
+            r, segmentGroup, segments, outlet, [...configPath, i]);
       } catch (e) {
         if (!(e instanceof NoMatch)) throw e;
       }
@@ -110,8 +107,8 @@ class Recognizer {
   }
 
   processSegmentAgainstRoute(
-      route: Route, rawSegmentGroup: UrlSegmentGroup, segments: UrlSegment[],
-      outlet: string, configPath: number[]): TreeNode<RouteSnapshot>[] {
+      route: Route, rawSegmentGroup: UrlSegmentGroup, segments: UrlSegment[], outlet: string,
+      configPath: number[]): TreeNode<RouteSnapshot>[] {
     if (route.redirectTo) throw new NoMatch();
 
     if ((route.outlet || PRIMARY_OUTLET) !== outlet) throw new NoMatch();
@@ -121,13 +118,11 @@ class Recognizer {
       const urlSegmentIndex = getPathIndexShift(rawSegmentGroup) + segments.length;
       const params = segments.length > 0 ? last(segments) !.parameters : {};
       const snapshot = {
-        url: segments, // TODO: vsavkin covert it to POJO?
+        url: segments,
         params: Object.freeze(params),
         queryParams: Object.freeze(this.urlTree.queryParams),
         fragment: this.urlTree.fragment !,
-        data: getData(route),
-        outlet,
-        configPath,
+        data: getData(route), outlet, configPath,
         urlTreeAddress: {urlSegmentGroupPath, urlSegmentIndex}
       };
 
@@ -147,13 +142,11 @@ class Recognizer {
     const urlSegmentIndex = getPathIndexShift(rawSegmentGroup) + consumedSegments.length;
 
     const snapshot = {
-      url: consumedSegments, // TODO: vsavkin convert it to POJO?
+      url: consumedSegments,  // TODO: vsavkin convert it to POJO?
       params: Object.freeze(parameters),
       queryParams: Object.freeze(this.urlTree.queryParams),
       fragment: this.urlTree.fragment !,
-      data: getData(route),
-      outlet,
-      configPath,
+      data: getData(route), outlet, configPath,
       urlTreeAddress: {urlSegmentGroupPath, urlSegmentIndex}
     };
 
@@ -166,7 +159,8 @@ class Recognizer {
       return [{value: snapshot, children: []}];
     }
 
-    const children = this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET, configPath);
+    const children =
+        this.processSegment(childConfig, segmentGroup, slicedSegments, PRIMARY_OUTLET, configPath);
     return [{value: snapshot, children}];
   }
 }
@@ -174,7 +168,7 @@ class Recognizer {
 function getUrlSegmentGroupPath(g: UrlSegmentGroup): string[] {
   if (g.parent) {
     const p = getSourceSegmentGroup(g.parent);
-    for(let k in p.children) {
+    for (let k in p.children) {
       if (p.children[k] === g) {
         return [...getUrlSegmentGroupPath(p), k];
       }

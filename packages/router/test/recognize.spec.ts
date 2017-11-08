@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
+import {map} from 'rxjs/operator/map';
+
 import {Routes} from '../src/config';
 import {recognize} from '../src/recognize';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
-import {Observable} from 'rxjs/Observable';
-import {createRouterStateSnapshot} from '../src/router_state';
-import {map} from 'rxjs/operator/map';
-import {Type} from '@angular/core';
+
 import {legacyRecognize} from './helpers';
 
 describe('recognize', () => {
@@ -220,7 +221,7 @@ describe('recognize', () => {
           });
     });
 
-    xit('should set resolved data', () => {
+    it('should set resolved data', () => {
       checkRecognize(
           [{path: 'a', resolve: {one: 'some-token'}, component: ComponentA}], 'a',
           (s: RouterStateSnapshot) => {
@@ -565,7 +566,7 @@ describe('recognize', () => {
     });
   });
 
-  xdescribe('componentless routes', () => {
+  describe('componentless routes', () => {
     it('should work', () => {
       checkRecognize(
           [{
@@ -577,7 +578,7 @@ describe('recognize', () => {
           }],
           'p/11;pp=22/(a;pa=33//aux:b;pb=44)', (s: RouterStateSnapshot) => {
             const p = s.firstChild(s.root) !;
-            checkActivatedRoute(p, 'p/11', {id: '11', pp: '22'}, undefined !);
+            checkActivatedRoute(p, 'p/11', {id: '11', pp: '22'}, null !);
 
             const c = s.children(p);
             checkActivatedRoute(c[0], 'a', {id: '11', pp: '22', pa: '33'}, ComponentA);
@@ -600,10 +601,10 @@ describe('recognize', () => {
           }],
           'p/11/a/victor/b/c', (s: RouterStateSnapshot) => {
             const p = s.firstChild(s.root) !;
-            checkActivatedRoute(p, 'p/11', {id: '11'}, undefined !);
+            checkActivatedRoute(p, 'p/11', {id: '11'}, null !);
 
             const a = s.firstChild(p) !;
-            checkActivatedRoute(a, 'a/victor', {id: '11', name: 'victor'}, undefined !);
+            checkActivatedRoute(a, 'a/victor', {id: '11', name: 'victor'}, null !);
 
             const b = s.firstChild(a) !;
             checkActivatedRoute(b, 'b', {id: '11', name: 'victor'}, ComponentB);

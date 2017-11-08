@@ -138,7 +138,8 @@ export class UrlSegmentGroup {
   _sourceSegment: UrlSegmentGroup;
 
   /**
-   * The Recognize operation transforms a URL tree by splitting certain url segment groups into multiple ones.
+   * The Recognize operation transforms a URL tree by splitting certain url segment groups into
+   * multiple ones.
    * This is required to support empty-path routes and named outlets.
    *
    * The index shift represents a subset of the url segments of the source segment group.
@@ -206,6 +207,7 @@ export class UrlSegmentGroup {
  *
  * @stable
  */
+// TODO(jasonaden): This should likely be converted to a POJO to reduce complexity
 export class UrlSegment {
   /** @internal */
   _parameterMap: ParamMap;
