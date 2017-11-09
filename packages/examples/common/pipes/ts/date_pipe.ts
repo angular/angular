@@ -34,10 +34,10 @@ registerLocaleData(localeFr);
     <p>The full date/time in french is: {{today | date:'full':'':'fr'}}</p>
 
     <!--output '2015-06-15 05:03 PM GMT+9'-->
-    <p>The custom date is {{today | date:'yyyy-mm-dd HH:mm a z':'+0900'}}</p>
+    <p>The custom date is {{today | date:'yyyy-MM-dd HH:mm a z':'+0900'}}</p>
 
     <!--output '2015-06-15 09:03 AM GMT+9'-->
-    <p>The custom date with fixed timezone is {{fixedTimezone | date:'yyyy-mm-dd HH:mm a z':'+0900'}}</p>
+    <p>The custom date with fixed timezone is {{fixedTimezone | date:'yyyy-MM-dd HH:mm a z':'+0900'}}</p>
   </div>`
 })
 export class DatePipeComponent {
@@ -60,7 +60,7 @@ export class DatePipeComponent {
     <p>The time is {{today | date:'shortTime'}}</p>
 
     <!--output '2010-09-03 12:05 PM'-->
-    <p>The custom date is {{today | date:'yyyy-mm-dd HH:mm a'}}</p>
+    <p>The custom date is {{today | date:'yyyy-MM-dd HH:mm a'}}</p>
   </div>`
 })
 export class DeprecatedDatePipeComponent {
