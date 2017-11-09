@@ -120,12 +120,13 @@ export class ParseError {
 
   contextualMessage(): string {
     const ctx = this.span.start.getContext(100, 3);
-    return ctx ? ` ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")` : '';
+    return ctx ? `${this.msg} ("${ctx.before}[${ParseErrorLevel[this.level]} ->]${ctx.after}")` :
+                 this.msg;
   }
 
   toString(): string {
     const details = this.span.details ? `, ${this.span.details}` : '';
-    return `${this.msg}${this.contextualMessage()}: ${this.span.start}${details}`;
+    return `${this.contextualMessage()}: ${this.span.start}${details}`;
   }
 }
 
