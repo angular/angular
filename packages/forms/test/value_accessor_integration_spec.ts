@@ -897,6 +897,18 @@ export function main() {
              expect(inputs[3].nativeElement.disabled).toBe(false);
            }));
 
+        it('should disable all radio buttons when initially disabled', fakeAsync(() => {
+             const fixture = initTest(NgModelDynamicRadioForm);
+
+             fixture.detectChanges();
+             tick();
+
+             const inputs = fixture.debugElement.queryAll(By.css('input'));
+             expect(inputs[0].nativeElement.disabled).toBe(true, 'First radio should be disabled');
+             expect(inputs[1].nativeElement.disabled).toBe(true, 'Second radio should be disabled');
+             expect(inputs[2].nativeElement.disabled).toBe(true, 'Third radio should be disabled');
+           }));
+
       });
 
     });
@@ -1303,6 +1315,22 @@ export class FormControlRadioButtons {
 class NgModelRadioForm {
   food: string;
   drink: string;
+}
+
+@Component({
+  template: `
+    <form>
+      <div *ngFor="let c of cities">
+        <input type="radio" name="city" [value]="c.id" [(ngModel)]="selectedCity" [disabled]="selectionNotAllowed"/>
+        {{ c.name }}
+      </div>
+    </form>
+  `
+})
+class NgModelDynamicRadioForm {
+  selectionNotAllowed = true;
+  selectedCity: string;
+  cities: any[] = [{id: 0, 'name': 'SF'}, {id: 1, 'name': 'NYC'}, {id: 2, 'name': 'Buffalo'}];
 }
 
 @Directive({

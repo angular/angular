@@ -836,6 +836,9 @@ export class FormControl extends AbstractControl {
    * Register a listener for disabled events.
    */
   registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
+    if (this.disabled) {
+      fn(true);
+    }
     this._onDisabledChange.push(fn);
   }
 
