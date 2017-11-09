@@ -10,7 +10,7 @@ In this page, you'll take the first step in that direction by moving the hero de
 The `HeroesComponent` will only present the list of heroes.
 The `HeroDetailsComponent` will present details of a selected hero.
 
-## Make the _HeroDetailComponent_
+## Make the `HeroDetailComponent`
 
 Use the Angular CLI to generate a new component named `hero-detail`.
 
@@ -34,7 +34,7 @@ When you're done, the `HeroDetailComponent` template should look like this:
 
 </code-example>
 
-### Add the *@Input() hero* property
+### Add the `@Input()` hero property
 
 The `HeroDetailComponent` template binds to the component's `hero` property
 which is of type `Hero`.
@@ -67,7 +67,7 @@ That's the only change you should make to the `HeroDetailComponent` class.
 There are no more properties. There's no presentation logic. 
 This component simply receives a hero object through its `hero` property and displays it.
 
-## Show the _HeroDetailComponent_
+## Show the `HeroDetailComponent`
 
 The `HeroesComponent` is still a master/detail view. 
 
@@ -82,14 +82,14 @@ You won't change the `HeroesComponent` _class_ but you will change its _template
 
 {@a heroes-component-template}
 
-### Update the _HeroesComponent_ template
+### Update the `HeroesComponent` template
 
 The `HeroDetailComponent` selector is `'app-hero-detail'`.
 Add an `<app-hero-detail>` element near the bottom of the `HeroesComponent` template, where the hero detail view used to be.
 
 Bind the `HeroesComponent.selectedHero` to the element's `hero` property like this.
 
-<code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding" title="hero-detail.component.html (HeroDetail binding)">
+<code-example path="toh-pt3/src/app/heroes/heroes.component.html" region="hero-detail-binding" title="heroes.component.html (HeroDetail binding)">
 
 </code-example>
 
@@ -139,7 +139,7 @@ Here are the code files discussed on this page and your app should look like thi
   <code-pane title="src/app/hero-detail/hero-detail.component.html" path="toh-pt3/src/app/hero-detail/hero-detail.component.html">
   </code-pane>
 
-  <code-pane title="src/app/heroes/heroes-component.html" path="toh-pt3/src/app/heroes/heroes.component.html">
+  <code-pane title="src/app/heroes/heroes.component.html" path="toh-pt3/src/app/heroes/heroes.component.html">
   </code-pane>
 
 </code-tabs>
