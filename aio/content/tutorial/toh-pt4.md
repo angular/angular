@@ -44,7 +44,7 @@ the class with the `@Injectable()` decorator.
 
 The `@Injectable()` decorator tells Angular that this service _might_ itself
 have injected dependencies.
-It doesn't have dependencies now but [it will soon](#inject-message-service}.
+It doesn't have dependencies now but [it will soon](#inject-message-service).
 Whether it does or it doesn't, it's good practice to keep the decorator.
 
 <div class="l-sub-section">
