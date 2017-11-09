@@ -534,6 +534,12 @@
             "rev": true,
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
+          },
+          "angular-firebase": {
+            "desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
+            "rev": true,
+            "title": "AngularFirebase.com",
+            "url": "https://angularfirebase.com/"
           }
         }
       },
