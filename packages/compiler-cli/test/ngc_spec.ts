@@ -1468,6 +1468,36 @@ describe('ngc transformer command-line', () => {
       expect(messages[0]).toContain(['Tagged template expressions are not supported in metadata']);
     });
 
+    // Regression: #20076
+    it('should report template error messages', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '{{thing.?stuff}}'
+        })
+        export class TestComponent {
+          thing: string;
+        }
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain('Parser Error: Unexpected token');
+    });
+
     it('should allow using 2 classes with the same name in declarations with noEmitOnError=true',
        () => {
          write('src/tsconfig.json', `{
