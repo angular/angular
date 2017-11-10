@@ -365,23 +365,28 @@ export class MatIconRegistry {
    * returns it. Returns null if no matching element is found.
    */
   private _extractSvgIconFromSet(iconSet: SVGElement, iconName: string): SVGElement | null {
-    const iconNode = iconSet.querySelector('#' + iconName);
+    const iconSource = iconSet.querySelector('#' + iconName);
 
-    if (!iconNode) {
+    if (!iconSource) {
       return null;
     }
 
+    // Clone the element and remove the ID to prevent multiple elements from being added
+    // to the page with the same ID.
+    const iconElement = iconSource.cloneNode(true) as Element;
+    iconElement.id = '';
+
     // If the icon node is itself an <svg> node, clone and return it directly. If not, set it as
     // the content of a new <svg> node.
-    if (iconNode.tagName.toLowerCase() === 'svg') {
-      return this._setSvgAttributes(iconNode.cloneNode(true) as SVGElement);
+    if (iconElement.nodeName.toLowerCase() === 'svg') {
+      return this._setSvgAttributes(iconElement as SVGElement);
     }
 
     // If the node is a <symbol>, it won't be rendered so we have to convert it into <svg>. Note
     // that the same could be achieved by referring to it via <use href="#id">, however the <use>
     // tag is problematic on Firefox, because it needs to include the current page path.
-    if (iconNode.nodeName.toLowerCase() === 'symbol') {
-      return this._setSvgAttributes(this._toSvgElement(iconNode));
+    if (iconElement.nodeName.toLowerCase() === 'symbol') {
+      return this._setSvgAttributes(this._toSvgElement(iconElement));
     }
 
     // createElement('SVG') doesn't work as expected; the DOM ends up with
@@ -391,7 +396,7 @@ export class MatIconRegistry {
     // http://stackoverflow.com/questions/23003278/svg-innerhtml-in-firefox-can-not-display
     const svg = this._svgElementFromString('<svg></svg>');
     // Clone the node so we don't remove it from the parent icon set element.
-    svg.appendChild(iconNode.cloneNode(true));
+    svg.appendChild(iconElement);
 
     return this._setSvgAttributes(svg);
   }
@@ -400,8 +405,6 @@ export class MatIconRegistry {
    * Creates a DOM element from the given SVG string.
    */
   private _svgElementFromString(str: string): SVGElement {
-    // TODO: Is there a better way than innerHTML? Renderer doesn't appear to have a method for
-    // creating an element from an HTML string.
     const div = document.createElement('DIV');
     div.innerHTML = str;
     const svg = div.querySelector('svg') as SVGElement;

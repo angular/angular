@@ -17,6 +17,7 @@ function sortedClassNames(element: Element): string[] {
  * Verifies that an element contains a single <svg> child element, and returns that child.
  */
 function verifyAndGetSingleSvgChild(element: SVGElement): SVGElement {
+  expect(element.id).toBeFalsy();
   expect(element.childNodes.length).toBe(1);
   const svgChild = element.childNodes[0] as SVGElement;
   expect(svgChild.tagName.toLowerCase()).toBe('svg');
@@ -31,7 +32,9 @@ function verifyPathChildElement(element: Element, attributeValue: string): void 
   expect(element.childNodes.length).toBe(1);
   const pathElement = element.childNodes[0] as SVGPathElement;
   expect(pathElement.tagName.toLowerCase()).toBe('path');
-  expect(pathElement.getAttribute('id')).toBe(attributeValue);
+
+  // The testing data SVGs have the name attribute set for verification.
+  expect(pathElement.getAttribute('name')).toBe(attributeValue);
 }
 
 
@@ -190,7 +193,7 @@ describe('MatIcon', () => {
       svgChild = svgElement.childNodes[0];
       // The first <svg> child should be the <g id="pig"> element.
       expect(svgChild.tagName.toLowerCase()).toBe('g');
-      expect(svgChild.getAttribute('id')).toBe('pig');
+      expect(svgChild.getAttribute('name')).toBe('pig');
       verifyPathChildElement(svgChild, 'oink');
 
       // Change the icon, and the SVG element should be replaced.
@@ -200,7 +203,7 @@ describe('MatIcon', () => {
       svgChild = svgElement.childNodes[0];
       // The first <svg> child should be the <g id="cow"> element.
       expect(svgChild.tagName.toLowerCase()).toBe('g');
-      expect(svgChild.getAttribute('id')).toBe('cow');
+      expect(svgChild.getAttribute('name')).toBe('cow');
       verifyPathChildElement(svgChild, 'moo');
     });
 
@@ -224,7 +227,8 @@ describe('MatIcon', () => {
       svgChild = svgElement.childNodes[0];
       // The <svg> child should be the <g id="pig"> element.
       expect(svgChild.tagName.toLowerCase()).toBe('g');
-      expect(svgChild.getAttribute('id')).toBe('pig');
+      expect(svgChild.getAttribute('name')).toBe('pig');
+      expect(svgChild.getAttribute('id')).toBe('');
       expect(svgChild.childNodes.length).toBe(1);
       verifyPathChildElement(svgChild, 'oink');
 
@@ -237,7 +241,7 @@ describe('MatIcon', () => {
       svgChild = svgElement.childNodes[0];
       // The first <svg> child should be the <g id="cow"> element.
       expect(svgChild.tagName.toLowerCase()).toBe('g');
-      expect(svgChild.getAttribute('id')).toBe('cow');
+      expect(svgChild.getAttribute('name')).toBe('cow');
       expect(svgChild.childNodes.length).toBe(1);
       verifyPathChildElement(svgChild, 'moo moo');
     });
@@ -259,7 +263,7 @@ describe('MatIcon', () => {
       expect(svgElement.querySelector('symbol')).toBeFalsy();
       expect(svgElement.childNodes.length).toBe(1);
       expect(firstChild.nodeName.toLowerCase()).toBe('path');
-      expect((firstChild as HTMLElement).getAttribute('id')).toBe('quack');
+      expect((firstChild as HTMLElement).getAttribute('name')).toBe('quack');
     });
 
     it('should not wrap <svg> elements in icon sets in another svg tag', () => {
