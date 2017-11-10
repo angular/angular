@@ -14,11 +14,6 @@
 
 * **compiler:** introduce `TestBed.overrideTemplateUsingTestingModule` ([a460066](https://github.com/angular/angular/commit/a460066)), closes [#19815](https://github.com/angular/angular/issues/19815)
 
-### Reverts
-
-* feat(elements): implement `[@angular](https://github.com/angular)/elements` [#19469](https://github.com/angular/angular/issues/19469) ([#20152](https://github.com/angular/angular/issues/20152)) ([3997d97](https://github.com/angular/angular/commit/3997d97))
-
-
 
 <a name="5.0.1"></a>
 ## [5.0.1](https://github.com/angular/angular/compare/5.0.0...5.0.1) (2017-11-08)
