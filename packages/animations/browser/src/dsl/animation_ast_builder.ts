@@ -90,6 +90,11 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     let depCount = context.depCount = 0;
     const states: StateAst[] = [];
     const transitions: TransitionAst[] = [];
+    if (metadata.name.charAt(0) == '@') {
+      context.errors.push(
+          'animation triggers cannot be prefixed with an `@` sign (e.g. trigger(\'@foo\', [...]))');
+    }
+
     metadata.definitions.forEach(def => {
       this._resetContextStyleTimingState(context);
       if (def.type == AnimationMetadataType.State) {

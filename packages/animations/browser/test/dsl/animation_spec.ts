@@ -119,6 +119,14 @@ export function main() {
            expect(() => validateAndThrowAnimationSequence(steps)).not.toThrow();
          });
 
+      it('should not allow triggers to be defined with a prefixed `@` symbol', () => {
+        const steps = trigger('@foo', []);
+
+        expect(() => validateAndThrowAnimationSequence(steps))
+            .toThrowError(
+                /animation triggers cannot be prefixed with an `@` sign \(e\.g\. trigger\('@foo', \[...\]\)\)/);
+      });
+
       it('should throw an error if an animation time is invalid', () => {
         const steps = [animate('500xs', style({opacity: 1}))];
 
