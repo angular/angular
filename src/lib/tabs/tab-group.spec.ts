@@ -26,13 +26,20 @@ describe('MatTabGroup', () => {
 
   describe('basic behavior', () => {
     let fixture: ComponentFixture<SimpleTabsTestApp>;
+    let element: HTMLElement;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SimpleTabsTestApp);
+      element = fixture.nativeElement;
     });
 
     it('should default to the first tab', () => {
       checkSelectedIndex(1, fixture);
+    });
+
+    it('will properly load content on first change detection pass', () => {
+      fixture.detectChanges();
+      expect(element.querySelectorAll('.mat-tab-body')[1].querySelectorAll('span').length).toBe(3);
     });
 
     it('should change selected index on click', () => {
@@ -318,23 +325,26 @@ describe('MatTabGroup', () => {
           fixture.debugElement.query(By.directive(MatTabGroup)).componentInstance as MatTabGroup;
     });
 
-    it('should support a tab-group with the simple api', () => {
+    it('should support a tab-group with the simple api', async(() => {
       expect(getSelectedLabel(fixture).textContent).toMatch('Junk food');
       expect(getSelectedContent(fixture).textContent).toMatch('Pizza, fries');
 
       tabGroup.selectedIndex = 2;
       fixture.detectChanges();
+      // Use whenStable to wait for async observables and change detection to run in content.
+      fixture.whenStable().then(() => {
 
-      expect(getSelectedLabel(fixture).textContent).toMatch('Fruit');
-      expect(getSelectedContent(fixture).textContent).toMatch('Apples, grapes');
+        expect(getSelectedLabel(fixture).textContent).toMatch('Fruit');
+        expect(getSelectedContent(fixture).textContent).toMatch('Apples, grapes');
 
-      fixture.componentInstance.otherLabel = 'Chips';
-      fixture.componentInstance.otherContent = 'Salt, vinegar';
-      fixture.detectChanges();
+        fixture.componentInstance.otherLabel = 'Chips';
+        fixture.componentInstance.otherContent = 'Salt, vinegar';
+        fixture.detectChanges();
 
-      expect(getSelectedLabel(fixture).textContent).toMatch('Chips');
-      expect(getSelectedContent(fixture).textContent).toMatch('Salt, vinegar');
-    });
+        expect(getSelectedLabel(fixture).textContent).toMatch('Chips');
+        expect(getSelectedContent(fixture).textContent).toMatch('Salt, vinegar');
+      });
+    }));
 
     it('should support @ViewChild in the tab content', () => {
       expect(fixture.componentInstance.legumes).toBeTruthy();
@@ -415,7 +425,7 @@ describe('nested MatTabGroup with enabled animations', () => {
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>Tab Two</ng-template>
-        Tab two content
+        <span>Tab </span><span>two</span><span>content</span>
       </mat-tab>
       <mat-tab>
         <ng-template mat-tab-label>Tab Three</ng-template>

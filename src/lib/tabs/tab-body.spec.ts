@@ -2,10 +2,10 @@ import {Direction, Directionality} from '@angular/cdk/bidi';
 import {PortalModule, TemplatePortal} from '@angular/cdk/portal';
 import {CommonModule} from '@angular/common';
 import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatRippleModule} from '@angular/material/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatTabBody} from './tab-body';
+import {MatTabBody, MatTabBodyPortal} from './tab-body';
 
 
 describe('MatTabBody', () => {
@@ -17,6 +17,7 @@ describe('MatTabBody', () => {
       imports: [CommonModule, PortalModule, MatRippleModule, NoopAnimationsModule],
       declarations: [
         MatTabBody,
+        MatTabBodyPortal,
         SimpleTabBodyApp,
       ],
       providers: [
@@ -145,30 +146,6 @@ describe('MatTabBody', () => {
       expect(fixture.componentInstance.tabBody._position).toBe('left');
     });
   });
-
-  describe('on centered', () => {
-    let fixture: ComponentFixture<SimpleTabBodyApp>;
-
-    beforeEach(fakeAsync(() => {
-      fixture = TestBed.createComponent(SimpleTabBodyApp);
-    }));
-
-    it('should attach the content when centered and detach when not', fakeAsync(() => {
-      fixture.componentInstance.position = 1;
-      fixture.detectChanges();
-      expect(fixture.componentInstance.tabBody._portalOutlet.hasAttached()).toBe(false);
-
-      fixture.componentInstance.position = 0;
-      fixture.detectChanges();
-      expect(fixture.componentInstance.tabBody._portalOutlet.hasAttached()).toBe(true);
-
-      fixture.componentInstance.position = 1;
-      fixture.detectChanges();
-      flushMicrotasks(); // Finish animation and let it detach in animation done handler
-      expect(fixture.componentInstance.tabBody._portalOutlet.hasAttached()).toBe(false);
-    }));
-  });
-
 });
 
 
