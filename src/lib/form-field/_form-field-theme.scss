@@ -105,6 +105,19 @@
   width: 100% / $font-scale;
 }
 
+// This is a total duplicate of the mixin above with insignificant values added to the rules.
+// This exists because the mixin is used in two places. When Google's CSS Optimizer runs over this
+// css (after compiling from sass), it combines those two declarations into one. However, one of
+// those places uses `:-webkit-autofill`. When Firefox encounters this unknown pseuedo-class,
+// it ignores the entire rule. To work around this, we force one of the delcarations to be
+// technically different but still render the same by adding a tiny value to the transform / width.
+@mixin _mat-form-field-placeholder-float-nodedupe($font-scale, $infix-padding, $infix-margin-top) {
+  transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale) perspective(100px)
+             translateZ(0.002px);
+  -ms-transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale);
+  width: (100% / $font-scale) + 0.0001;
+}
+
 @mixin mat-form-field-typography($config) {
   // The unit-less line-height from the font config.
   $line-height: mat-line-height($config, input);
@@ -182,7 +195,7 @@
 
     .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-placeholder-wrapper
         .mat-form-field-placeholder {
-      @include _mat-form-field-placeholder-floating(
+      @include _mat-form-field-placeholder-float-nodedupe(
               $subscript-font-scale, $infix-padding, $infix-margin-top);
     }
   }
