@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterViewInit,
@@ -36,7 +37,6 @@ import {
   mixinTabIndex,
   RippleRef,
 } from '@angular/material/core';
-import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 
 
 // Increasing integer for generating unique ids for checkbox components.
@@ -209,7 +209,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
   ngAfterViewInit() {
     this._focusMonitor
-      .monitor(this._inputElement.nativeElement, this._renderer, false)
+      .monitor(this._inputElement.nativeElement, false)
       .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
   }
 

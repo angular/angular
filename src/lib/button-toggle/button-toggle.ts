@@ -6,30 +6,29 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusMonitor} from '@angular/cdk/a11y';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   Directive,
   ElementRef,
-  Renderer2,
   EventEmitter,
+  forwardRef,
   Input,
-  OnInit,
   OnDestroy,
+  OnInit,
   Optional,
   Output,
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  forwardRef,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
 } from '@angular/core';
-import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
-import {FocusMonitor} from '@angular/cdk/a11y';
-import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 
 /** Acceptable types for a button toggle. */
 export type ToggleType = 'checkbox' | 'radio';
@@ -386,7 +385,6 @@ export class MatButtonToggle implements OnInit, OnDestroy {
               @Optional() toggleGroupMultiple: MatButtonToggleGroupMultiple,
               private _changeDetectorRef: ChangeDetectorRef,
               private _buttonToggleDispatcher: UniqueSelectionDispatcher,
-              private _renderer: Renderer2,
               private _elementRef: ElementRef,
               private _focusMonitor: FocusMonitor) {
 
@@ -421,7 +419,7 @@ export class MatButtonToggle implements OnInit, OnDestroy {
     if (this.buttonToggleGroup && this._value == this.buttonToggleGroup.value) {
       this._checked = true;
     }
-    this._focusMonitor.monitor(this._elementRef.nativeElement, this._renderer, true);
+    this._focusMonitor.monitor(this._elementRef.nativeElement, true);
   }
 
   /** Focuses the button. */

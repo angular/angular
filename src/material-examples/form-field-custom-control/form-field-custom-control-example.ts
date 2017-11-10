@@ -1,6 +1,6 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Component, ElementRef, Input, OnDestroy, Renderer2} from '@angular/core';
+import {Component, ElementRef, Input, OnDestroy} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {Subject} from 'rxjs/Subject';
@@ -96,15 +96,14 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
     this.stateChanges.next();
   }
 
-  constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef,
-              renderer: Renderer2) {
+  constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef) {
     this.parts =  fb.group({
       'area': '',
       'exchange': '',
       'subscriber': '',
     });
 
-    fm.monitor(elRef.nativeElement, renderer, true).subscribe((origin) => {
+    fm.monitor(elRef.nativeElement, true).subscribe((origin) => {
       this.focused = !!origin;
       this.stateChanges.next();
     });

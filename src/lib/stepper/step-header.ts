@@ -9,18 +9,17 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {
-  Component,
-  Input,
-  ViewEncapsulation,
-  ChangeDetectorRef,
-  OnDestroy,
-  ElementRef,
-  Renderer2,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  ViewEncapsulation,
 } from '@angular/core';
+import {Subscription} from 'rxjs/Subscription';
 import {MatStepLabel} from './step-label';
 import {MatStepperIntl} from './stepper-intl';
-import {Subscription} from 'rxjs/Subscription';
 
 
 @Component({
@@ -78,12 +77,11 @@ export class MatStepHeader implements OnDestroy {
   private _optional: boolean;
 
   constructor(
-    public _intl: MatStepperIntl,
-    private _focusMonitor: FocusMonitor,
-    private _element: ElementRef,
-    renderer: Renderer2,
-    changeDetectorRef: ChangeDetectorRef) {
-    _focusMonitor.monitor(_element.nativeElement, renderer, true);
+      public _intl: MatStepperIntl,
+      private _focusMonitor: FocusMonitor,
+      private _element: ElementRef,
+      changeDetectorRef: ChangeDetectorRef) {
+    _focusMonitor.monitor(_element.nativeElement, true);
     this._intlSubscription = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());
   }
 

@@ -11,15 +11,15 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {
-  OriginConnectionPosition,
-  Overlay,
-  OverlayConnectionPosition,
-  OverlayRef,
-  OverlayConfig,
-  RepositionScrollStrategy,
-  ScrollStrategy,
   ConnectionPositionPair,
   HorizontalConnectionPos,
+  OriginConnectionPosition,
+  Overlay,
+  OverlayConfig,
+  OverlayConnectionPosition,
+  OverlayRef,
+  RepositionScrollStrategy,
+  ScrollStrategy,
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
@@ -187,7 +187,7 @@ export class MatTooltip implements OnDestroy {
         renderer.listen(_elementRef.nativeElement, 'mouseleave', () => this.hide());
     }
 
-    _focusMonitor.monitor(_elementRef.nativeElement, renderer, false).subscribe(origin => {
+    _focusMonitor.monitor(_elementRef.nativeElement, false).subscribe(origin => {
       // Note that the focus monitor runs outside the Angular zone.
       if (!origin) {
         _ngZone.run(() => this.hide(0));

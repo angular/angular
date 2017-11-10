@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {
@@ -42,7 +43,6 @@ import {
   mixinColor,
   mixinDisabled,
 } from '@angular/material/core';
-import {FocusOrigin, FocusMonitor} from '@angular/cdk/a11y';
 import {Subscription} from 'rxjs/Subscription';
 
 /**
@@ -424,7 +424,7 @@ export class MatSlider extends _MatSliderMixinBase
 
   ngOnInit() {
     this._focusMonitor
-        .monitor(this._elementRef.nativeElement, this._renderer, true)
+        .monitor(this._elementRef.nativeElement, true)
         .subscribe((origin: FocusOrigin) => {
           this._isActive = !!origin && origin !== 'keyboard';
           this._changeDetectorRef.detectChanges();

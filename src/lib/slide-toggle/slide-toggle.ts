@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {Platform} from '@angular/cdk/platform';
 import {
   AfterContentInit,
   Attribute,
@@ -22,8 +25,7 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {Platform} from '@angular/cdk/platform';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   applyCssTransform,
   CanColor,
@@ -38,8 +40,6 @@ import {
   mixinTabIndex,
   RippleRef,
 } from '@angular/material/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
@@ -153,8 +153,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   ngAfterContentInit() {
     this._slideRenderer = new SlideToggleRenderer(this._elementRef, this._platform);
 
-    this._focusMonitor
-      .monitor(this._inputElement.nativeElement, this._renderer, false)
+    this._focusMonitor.monitor(this._inputElement.nativeElement, false)
       .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
   }
 

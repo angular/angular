@@ -19,7 +19,6 @@ import {
   Host,
   Input,
   OnDestroy,
-  Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
 import {merge} from 'rxjs/observable/merge';
@@ -85,7 +84,6 @@ export class MatExpansionPanelHeader implements OnDestroy {
   private _parentChangeSubscription = Subscription.EMPTY;
 
   constructor(
-    renderer: Renderer2,
     @Host() public panel: MatExpansionPanel,
     private _element: ElementRef,
     private _focusMonitor: FocusMonitor,
@@ -100,7 +98,7 @@ export class MatExpansionPanelHeader implements OnDestroy {
     )
     .subscribe(() => this._changeDetectorRef.markForCheck());
 
-    _focusMonitor.monitor(_element.nativeElement, renderer, false);
+    _focusMonitor.monitor(_element.nativeElement, false);
   }
 
   /** Height of the header while the panel is expanded. */

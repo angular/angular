@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {
   AfterContentInit,
   AfterViewInit,
@@ -38,9 +41,6 @@ import {
   mixinDisableRipple,
   RippleRef,
 } from '@angular/material/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
-import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 
 // Increasing integer for generating unique ids for radio components.
 let nextUniqueId = 0;
@@ -538,8 +538,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   }
 
   ngAfterViewInit() {
-    this._focusMonitor
-      .monitor(this._inputElement.nativeElement, this._renderer, false)
+    this._focusMonitor.monitor(this._inputElement.nativeElement, false)
       .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
   }
 
