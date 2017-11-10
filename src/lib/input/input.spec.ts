@@ -238,6 +238,23 @@ describe('MatInput without forms', function () {
     expect(labelElement.getAttribute('aria-owns')).toBe(inputElement.id);
   });
 
+  it('should add aria-required reflecting the required state', () => {
+    const fixture = TestBed.createComponent(MatInputWithRequired);
+    fixture.detectChanges();
+
+    const inputElement: HTMLInputElement =
+        fixture.debugElement.query(By.css('input')).nativeElement;
+
+    expect(inputElement.getAttribute('aria-required'))
+        .toBe('false', 'Expected aria-required to reflect required state of false');
+
+    fixture.componentInstance.required = true;
+    fixture.detectChanges();
+
+    expect(inputElement.getAttribute('aria-required'))
+        .toBe('true', 'Expected aria-required to reflect required state of true');
+  });
+
   it('should not overwrite existing id', () => {
     let fixture = TestBed.createComponent(MatInputWithId);
     fixture.detectChanges();
