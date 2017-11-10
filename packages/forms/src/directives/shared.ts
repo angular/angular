@@ -122,6 +122,17 @@ export function setUpFormContainer(
   if (control == null) _throwError(dir, 'Cannot find control with');
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
+
+  // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
+  dir._validators.forEach((validator: Validator | ValidatorFn) => {
+    if ((<Validator>validator).registerOnValidatorChange)
+      (<Validator>validator).registerOnValidatorChange !(() => control.updateValueAndValidity());
+  });
+
+  dir._asyncValidators.forEach((validator: AsyncValidator | AsyncValidatorFn) => {
+    if ((<Validator>validator).registerOnValidatorChange)
+      (<Validator>validator).registerOnValidatorChange !(() => control.updateValueAndValidity());
+  });
 }
 
 function _noControlError(dir: NgControl) {

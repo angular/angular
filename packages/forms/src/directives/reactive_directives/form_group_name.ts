@@ -78,8 +78,8 @@ export class FormGroupName extends AbstractFormGroupDirective implements OnInit,
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
     this._parent = parent;
-    this._validators = validators;
-    this._asyncValidators = asyncValidators;
+    this._validators = validators || [];
+    this._asyncValidators = asyncValidators || [];
   }
 
   /** @internal */
@@ -162,8 +162,8 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
       @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
     this._parent = parent;
-    this._validators = validators;
-    this._asyncValidators = asyncValidators;
+    this._validators = validators || [];
+    this._asyncValidators = asyncValidators || [];
   }
 
   ngOnInit(): void {
