@@ -106,7 +106,9 @@ and inject into any class that asks for it.
 The `HeroService` is now ready to plug into the `HeroesComponent`.
 
 <div class="alert is-helpful">
+
   Learn more about _providers_ in the [NgModules](guide/ngmodule#providers) guide.
+
 </div>
 
 ## Update `HeroesComponent`
