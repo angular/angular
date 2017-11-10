@@ -7,7 +7,7 @@
  */
 import {AnimationPlayer} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, copyStyles} from '../../util';
+import {allowPreviousPlayerStylesMerge, copyStyles, eraseStyles, setStyles} from '../../util';
 
 import {DOMAnimation} from './dom_animation';
 
@@ -33,24 +33,18 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
       public options: {[key: string]: string | number},
-      private previousPlayers: WebAnimationsPlayer[] = []) {
+      private _startStyles?: {[key: string]: string | number},
+      private _endStyles?: {[key: string]: string | number},
+      previousPlayers?: WebAnimationsPlayer[]) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
 
-    if (allowPreviousPlayerStylesMerge(this._duration, this._delay)) {
+    if (previousPlayers && allowPreviousPlayerStylesMerge(this._duration, this._delay)) {
       previousPlayers.forEach(player => {
         let styles = player.currentSnapshot;
         Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
       });
-    }
-  }
-
-  private _onFinish() {
-    if (!this._finished) {
-      this._finished = true;
-      this._onDoneFns.forEach(fn => fn());
-      this._onDoneFns = [];
     }
   }
 
@@ -117,12 +111,20 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   play(): void {
     this._buildPlayer();
-    if (!this.hasStarted()) {
+    this._onStart();
+    this.domPlayer.play();
+  }
+
+  private _onStart() {
+    if (!this._started) {
+      if (this._startStyles) {
+        setStyles(this.element, this._startStyles);
+      }
+
+      this._started = true;
       this._onStartFns.forEach(fn => fn());
       this._onStartFns = [];
-      this._started = true;
     }
-    this.domPlayer.play();
   }
 
   pause(): void {
@@ -134,6 +136,20 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     this.init();
     this._onFinish();
     this.domPlayer.finish();
+  }
+
+  private _onFinish() {
+    if (!this._finished) {
+      if (this._startStyles) {
+        eraseStyles(this.element, this._startStyles);
+      }
+      if (this._endStyles) {
+        setStyles(this.element, this._endStyles);
+      }
+      this._finished = true;
+      this._onDoneFns.forEach(fn => fn());
+      this._onDoneFns = [];
+    }
   }
 
   reset(): void {
@@ -161,6 +177,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       this._destroyed = true;
       this._resetDomPlayerState();
       this._onFinish();
+      if (this._endStyles) {
+        eraseStyles(this.element, this._endStyles);
+      }
       this._onDestroyFns.forEach(fn => fn());
       this._onDestroyFns = [];
     }

@@ -41,12 +41,36 @@ export class WebAnimationsDriver implements AnimationDriver {
       playerOptions['easing'] = easing;
     }
 
+    const PROP_TO_INSPECT = 'display';
+    let startStyles: {[key: string]: string | number};
+    let endStyles: {[key: string]: string | number};
+    let displayValue: number|string|null;
+
+    if (duration) {
+      displayValue = findStyle(keyframes, PROP_TO_INSPECT);
+      if (displayValue) {
+        startStyles = {[PROP_TO_INSPECT]: displayValue};
+      }
+    }
+
+    displayValue = findStyle(keyframes, PROP_TO_INSPECT, true);
+    if (displayValue) {
+      endStyles = {[PROP_TO_INSPECT]: displayValue};
+    }
+
     const previousWebAnimationPlayers = <WebAnimationsPlayer[]>previousPlayers.filter(
-        player => { return player instanceof WebAnimationsPlayer; });
-    return new WebAnimationsPlayer(element, keyframes, playerOptions, previousWebAnimationPlayers);
+        player => player instanceof WebAnimationsPlayer);
+    return new WebAnimationsPlayer(
+        element, keyframes, playerOptions, startStyles !, endStyles !, previousWebAnimationPlayers);
   }
 }
 
 export function supportsWebAnimations() {
   return typeof Element !== 'undefined' && typeof(<any>Element).prototype['animate'] === 'function';
+}
+
+function findStyle(keyframes: ɵStyleData[], prop: string, last?: boolean): string|number|null {
+  const l = keyframes.length;
+  const value = l && keyframes[last ? l - 1 : 0];
+  return value && value.hasOwnProperty(prop) ? value[prop] : null;
 }

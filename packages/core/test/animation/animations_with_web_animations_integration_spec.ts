@@ -9,7 +9,7 @@ import {animate, group, query, state, style, transition, trigger} from '@angular
 import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer, ɵsupportsWebAnimations} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
@@ -176,6 +176,54 @@ export function main() {
       expect(webPlayer.keyframes).toEqual([
         {height: '100px', offset: 0}, {height: '80px', offset: 1}
       ]);
+    });
+
+    fit('should apply a `display` styling if provided at the start and end of an animation', () => {
+      @Component({
+        selector: 'ani-cmp',
+        template: `
+          <div #element [@myAnimation]="exp"></div>
+        `,
+        animations: [
+          trigger(
+              'myAnimation',
+              [
+                transition(
+                    '* => go',
+                    [
+                      style({display: 'table', opacity: 0}),
+                      animate('1s', style({opacity: 1, display: 'none'})),
+                    ]),
+              ]),
+        ],
+      })
+      class Cmp {
+        public exp: string;
+        @ViewChild('element') public element: any;
+      }
+
+      TestBed.configureTestingModule({declarations: [Cmp]});
+      const engine = TestBed.get(ɵAnimationEngine);
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
+
+      cmp.exp = 'go';
+      fixture.detectChanges();
+
+      const element = cmp.element.nativeElement;
+
+      const players = engine.players;
+      expect(players.length).toEqual(1);
+      const [p1] = players;
+
+      expect(p1.hasStarted()).toBeTruthy();
+      expect(element.style['display']).toEqual('table');
+
+      p1.finish();
+      expect(element.style['display']).toEqual('none');
+
+      p1.destroy();
+      expect(element.style['display']).toBeFalsy();
     });
 
     it('should treat * styles as ! when a removal animation is being rendered', () => {
