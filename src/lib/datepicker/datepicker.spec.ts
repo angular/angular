@@ -30,6 +30,8 @@ import {MatDatepickerIntl, MatDatepickerModule} from './index';
 
 
 describe('MatDatepicker', () => {
+  const SUPPORTS_INTL = typeof Intl != 'undefined';
+
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
     container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
   }));
@@ -82,6 +84,12 @@ describe('MatDatepicker', () => {
         testComponent.datepicker.close();
         fixture.detectChanges();
       }));
+
+      it('should initialize with correct value shown in input', () => {
+        if (SUPPORTS_INTL) {
+          expect(fixture.nativeElement.querySelector('input').value).toBe('1/1/2020');
+        }
+      });
 
       it('open non-touch should open popup', () => {
         expect(document.querySelector('.cdk-overlay-pane.mat-datepicker-popup')).toBeNull();

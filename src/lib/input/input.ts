@@ -6,24 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {getSupportedInputTypes, Platform} from '@angular/cdk/platform';
 import {
   Directive,
   DoCheck,
   ElementRef,
+  Inject,
   Input,
   OnChanges,
   OnDestroy,
   Optional,
   Renderer2,
-  Self,
+  Self
 } from '@angular/core';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {FormGroupDirective, NgControl, NgForm, FormControl} from '@angular/forms';
-import {Platform, getSupportedInputTypes} from '@angular/cdk/platform';
-import {getMatInputUnsupportedTypeError} from './input-errors';
+import {FormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
-import {Subject} from 'rxjs/Subject';
 import {MatFormFieldControl} from '@angular/material/form-field';
+import {Subject} from 'rxjs/Subject';
+import {getMatInputUnsupportedTypeError} from './input-errors';
+import {MAT_INPUT_VALUE_ACCESSOR} from './input-value-accessor';
 
 // Invalid input type. Using one of these will throw an MatInputUnsupportedTypeError.
 const MAT_INPUT_INVALID_TYPES = [
@@ -70,7 +72,7 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
   protected _required = false;
   protected _id: string;
   protected _uid = `mat-input-${nextUniqueId++}`;
-  protected _previousNativeValue = this.value;
+  protected _previousNativeValue: any;
   private _readonly = false;
 
   /** Whether the input is focused. */
@@ -129,10 +131,10 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
 
   /** The input element's value. */
   @Input()
-  get value() { return this._elementRef.nativeElement.value; }
-  set value(value: string) {
+  get value(): any { return this._inputValueAccessor.value; }
+  set value(value: any) {
     if (value !== this.value) {
-      this._elementRef.nativeElement.value = value;
+      this._inputValueAccessor.value = value;
       this.stateChanges.next();
     }
   }
@@ -157,7 +159,14 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
               @Optional() @Self() public ngControl: NgControl,
               @Optional() protected _parentForm: NgForm,
               @Optional() protected _parentFormGroup: FormGroupDirective,
-              private _defaultErrorStateMatcher: ErrorStateMatcher) {
+              private _defaultErrorStateMatcher: ErrorStateMatcher,
+              @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR)
+                  private _inputValueAccessor: {value: any}) {
+    // If no input value accessor was explicitly specified, use the element as the input value
+    // accessor.
+    this._inputValueAccessor = this._inputValueAccessor || this._elementRef.nativeElement;
+
+    this._previousNativeValue = this.value;
 
     // Force setter to be called in case id was not specified.
     this.id = this.id;

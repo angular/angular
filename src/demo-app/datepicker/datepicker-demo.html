@@ -121,3 +121,15 @@
                    [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
   </mat-form-field>
 </p>
+
+<h2>Datepicker with value property binding</h2>
+<p>
+  <mat-datepicker-toggle [for]="datePicker4"></mat-datepicker-toggle>
+  <mat-form-field>
+    <input matInput [matDatepicker]="datePicker4" [value]="date" [min]="minDate"
+           [max]="maxDate" [matDatepickerFilter]="filterOdd ? dateFilter : null"
+           placeholder="Value binding">
+    <mat-datepicker #datePicker4 [touchUi]="touch" [startAt]="startAt"
+                    [startView]="yearView ? 'year' : 'month'"></mat-datepicker>
+  </mat-form-field>
+</p>

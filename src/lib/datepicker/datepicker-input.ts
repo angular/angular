@@ -19,7 +19,7 @@ import {
   OnDestroy,
   Optional,
   Output,
-  Renderer2,
+  Renderer2
 } from '@angular/core';
 import {
   AbstractControl,
@@ -29,10 +29,11 @@ import {
   ValidationErrors,
   Validator,
   ValidatorFn,
-  Validators,
+  Validators
 } from '@angular/forms';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {MatFormField} from '@angular/material/form-field';
+import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
 import {Subscription} from 'rxjs/Subscription';
 import {MatDatepicker} from './datepicker';
 import {createMissingDateImplError} from './datepicker-errors';
@@ -70,7 +71,11 @@ export class MatDatepickerInputEvent<D> {
 /** Directive used to connect an input to a MatDatepicker. */
 @Directive({
   selector: 'input[matDatepicker]',
-  providers: [MAT_DATEPICKER_VALUE_ACCESSOR, MAT_DATEPICKER_VALIDATORS],
+  providers: [
+    MAT_DATEPICKER_VALUE_ACCESSOR,
+    MAT_DATEPICKER_VALIDATORS,
+    {provide: MAT_INPUT_VALUE_ACCESSOR, useExisting: MatDatepickerInput},
+  ],
   host: {
     '[attr.aria-haspopup]': 'true',
     '[attr.aria-owns]': '(_datepicker?.opened && _datepicker.id) || null',
