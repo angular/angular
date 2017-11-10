@@ -30,7 +30,7 @@ Using the Angular CLI, create a service called `hero`.
   ng generate service hero
 </code-example>
 
-The command generates skeleton `HeroService` class in `src/app.hero.service.ts`
+The command generates skeleton `HeroService` class in `src/app/hero.service.ts`
 The `HeroService` class should look like the below.
 
 <code-example path="toh-pt4/src/app/hero.service.1.ts" region="new"
