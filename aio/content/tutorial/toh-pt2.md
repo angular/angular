@@ -16,7 +16,7 @@ Define a `HEROES` constant as an array of ten heroes and export it.
 The file should look like this.
 
 <code-example path="toh-pt2/src/app/mock-heroes.ts" linenums="false"
-title="src/app/heroes/mock-heroes.ts">
+title="src/app/mock-heroes.ts">
 </code-example>
 
 ## Displaying heroes
