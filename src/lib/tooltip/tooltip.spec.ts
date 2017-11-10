@@ -113,6 +113,26 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._tooltipInstance).toBeNull();
     }));
 
+    it('should be able to re-open a tooltip if it was closed by detaching the overlay',
+      fakeAsync(() => {
+        tooltipDirective.show();
+        tick(0);
+        expect(tooltipDirective._isTooltipVisible()).toBe(true);
+        fixture.detectChanges();
+        tick(500);
+
+        tooltipDirective._overlayRef!.detach();
+        tick(0);
+        fixture.detectChanges();
+        expect(tooltipDirective._isTooltipVisible()).toBe(false);
+        flushMicrotasks();
+        expect(tooltipDirective._tooltipInstance).toBeNull();
+
+        tooltipDirective.show();
+        tick(0);
+        expect(tooltipDirective._isTooltipVisible()).toBe(true);
+      }));
+
     it('should show with delay', fakeAsync(() => {
       expect(tooltipDirective._tooltipInstance).toBeUndefined();
 

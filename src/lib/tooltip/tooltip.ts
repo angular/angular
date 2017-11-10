@@ -255,13 +255,13 @@ export class MatTooltip implements OnDestroy {
 
   /** Create the tooltip to display */
   private _createTooltip(): void {
-    let overlayRef = this._createOverlay();
-    let portal = new ComponentPortal(TooltipComponent, this._viewContainerRef);
+    const overlayRef = this._createOverlay();
+    const portal = new ComponentPortal(TooltipComponent, this._viewContainerRef);
 
     this._tooltipInstance = overlayRef.attach(portal).instance;
 
-    // Dispose the overlay when finished the shown tooltip.
-    this._tooltipInstance!.afterHidden().subscribe(() => {
+    // Dispose of the tooltip when the overlay is detached.
+    overlayRef.detachments().subscribe(() => {
       // Check first if the tooltip has already been removed through this components destroy.
       if (this._tooltipInstance) {
         this._disposeTooltip();
