@@ -2511,6 +2511,11 @@ describe('MatSelect', () => {
       expect(label.textContent).toContain('azziP',
           'Expected the displayed text to be "Pizza" in reverse.');
     }));
+
+    it('should not throw when attempting to open too early', () => {
+      const fixture = TestBed.createComponent(BasicSelect);
+      expect(() => fixture.componentInstance.select.open()).not.toThrow();
+    });
   });
 
   describe('change event', () => {

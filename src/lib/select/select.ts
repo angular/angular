@@ -515,7 +515,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Opens the overlay panel. */
   open(): void {
-    if (this.disabled || !this.options.length) {
+    if (this.disabled || !this.options || !this.options.length) {
       return;
     }
 
@@ -605,7 +605,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** The value displayed in the trigger. */
   get triggerValue(): string {
-    if (!this._selectionModel || this._selectionModel.isEmpty()) {
+    if (this.empty) {
       return '';
     }
 
@@ -912,10 +912,12 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * the first item instead.
    */
   private _highlightCorrectOption(): void {
-    if (this._selectionModel.isEmpty()) {
-      this._keyManager.setFirstItemActive();
-    } else {
-      this._keyManager.setActiveItem(this._getOptionIndex(this._selectionModel.selected[0])!);
+    if (this._keyManager) {
+      if (this.empty) {
+        this._keyManager.setFirstItemActive();
+      } else {
+        this._keyManager.setActiveItem(this._getOptionIndex(this._selectionModel.selected[0])!);
+      }
     }
   }
 
