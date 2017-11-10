@@ -79,6 +79,11 @@ export class MatSnackBarRef<T> {
   /** Cleans up the DOM after closing. */
   private _finishDismiss(): void {
     this._overlayRef.dispose();
+
+    if (!this._onAction.closed) {
+      this._onAction.complete();
+    }
+
     this._afterClosed.next();
     this._afterClosed.complete();
   }

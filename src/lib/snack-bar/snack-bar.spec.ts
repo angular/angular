@@ -128,22 +128,20 @@ describe('MatSnackBar', () => {
 
   it('should dismiss the snack bar and remove itself from the view', async(() => {
     let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
-    let dismissObservableCompleted = false;
+    let dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
 
     let snackBarRef = snackBar.open(simpleMessage, undefined, config);
     viewContainerFixture.detectChanges();
     expect(overlayContainerElement.childElementCount)
         .toBeGreaterThan(0, 'Expected overlay container element to have at least one child');
 
-    snackBarRef.afterDismissed().subscribe(undefined, undefined, () => {
-      dismissObservableCompleted = true;
-    });
+    snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
 
     snackBarRef.dismiss();
     viewContainerFixture.detectChanges();  // Run through animations for dismissal
 
     viewContainerFixture.whenStable().then(() => {
-      expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
+      expect(dismissCompleteSpy).toHaveBeenCalled();
       expect(overlayContainerElement.childElementCount)
           .toBe(0, 'Expected the overlay container element to have no child elements');
     });
@@ -204,7 +202,7 @@ describe('MatSnackBar', () => {
       state to visible on entry of new snack bar`, async(() => {
     let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
     let snackBarRef = snackBar.open(simpleMessage, undefined, config);
-    let dismissObservableCompleted = false;
+    let dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
 
     viewContainerFixture.detectChanges();
     expect(snackBarRef.containerInstance._animationState)
@@ -214,12 +212,10 @@ describe('MatSnackBar', () => {
     let snackBarRef2 = snackBar.open(simpleMessage, undefined, config2);
 
     viewContainerFixture.detectChanges();
-    snackBarRef.afterDismissed().subscribe(undefined, undefined, () => {
-      dismissObservableCompleted = true;
-    });
+    snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
 
     viewContainerFixture.whenStable().then(() => {
-      expect(dismissObservableCompleted).toBe(true);
+      expect(dismissCompleteSpy).toHaveBeenCalled();
       expect(snackBarRef.containerInstance._animationState)
           .toBe('hidden-bottom', `Expected the animation state would be 'hidden-bottom'.`);
       expect(snackBarRef2.containerInstance._animationState)
@@ -282,70 +278,75 @@ describe('MatSnackBar', () => {
 
   it('should dismiss the snackbar when the action is called, notifying of both action and dismiss',
      fakeAsync(() => {
-       let dismissObservableCompleted = false;
-       let actionObservableCompleted = false;
-       let snackBarRef = snackBar.open('Some content', 'Dismiss');
-       viewContainerFixture.detectChanges();
+      const dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
+      const actionCompleteSpy = jasmine.createSpy('action complete spy');
+      const snackBarRef = snackBar.open('Some content', 'Dismiss');
+      viewContainerFixture.detectChanges();
 
-       snackBarRef.afterDismissed().subscribe(undefined, undefined, () => {
-         dismissObservableCompleted = true;
-       });
-       snackBarRef.onAction().subscribe(undefined, undefined, () => {
-         actionObservableCompleted = true;
-      });
+      snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
+      snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
 
-      let actionButton =
+      const actionButton =
         overlayContainerElement.querySelector('.mat-simple-snackbar-action') as HTMLButtonElement;
       actionButton.click();
       viewContainerFixture.detectChanges();
       tick();
 
-      expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
-      expect(actionObservableCompleted).toBeTruthy('Expected the snack bar to notify of action');
+      expect(dismissCompleteSpy).toHaveBeenCalled();
+      expect(actionCompleteSpy).toHaveBeenCalled();
 
       tick(500);
     }));
 
   it('should allow manually closing with an action', fakeAsync(() => {
-    let dismissObservableCompleted = false;
-    let actionObservableCompleted = false;
-    let snackBarRef = snackBar.open('Some content');
+    const dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
+    const actionCompleteSpy = jasmine.createSpy('action complete spy');
+    const snackBarRef = snackBar.open('Some content');
     viewContainerFixture.detectChanges();
 
-    snackBarRef.afterDismissed().subscribe(undefined, undefined, () => {
-      dismissObservableCompleted = true;
-    });
-    snackBarRef.onAction().subscribe(undefined, undefined, () => {
-      actionObservableCompleted = true;
-    });
+    snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
+    snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
 
     snackBarRef.closeWithAction();
     viewContainerFixture.detectChanges();
     tick();
 
-    expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
-    expect(actionObservableCompleted).toBeTruthy('Expected the snack bar to notify of action');
+    expect(dismissCompleteSpy).toHaveBeenCalled();
+    expect(actionCompleteSpy).toHaveBeenCalled();
+
+    tick(500);
+  }));
+
+  it('should complete the onAction stream when not closing via an action', fakeAsync(() => {
+    const actionCompleteSpy = jasmine.createSpy('action complete spy');
+    const snackBarRef = snackBar.open('Some content');
+    viewContainerFixture.detectChanges();
+
+    snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
+    snackBarRef.dismiss();
+    viewContainerFixture.detectChanges();
+    tick();
+
+    expect(actionCompleteSpy).toHaveBeenCalled();
 
     tick(500);
   }));
 
   it('should dismiss automatically after a specified timeout', fakeAsync(() => {
-    let dismissObservableCompleted = false;
     let config = new MatSnackBarConfig();
     config.duration = 250;
     let snackBarRef = snackBar.open('content', 'test', config);
-    snackBarRef.afterDismissed().subscribe(() => {
-      dismissObservableCompleted = true;
-    });
+    let afterDismissSpy = jasmine.createSpy('after dismiss spy');
+    snackBarRef.afterDismissed().subscribe(afterDismissSpy);
 
     viewContainerFixture.detectChanges();
     tick();
-    expect(dismissObservableCompleted).toBeFalsy('Expected the snack bar not to be dismissed');
+    expect(afterDismissSpy).not.toHaveBeenCalled();
 
     tick(1000);
     viewContainerFixture.detectChanges();
     tick();
-    expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
+    expect(afterDismissSpy).toHaveBeenCalled();
   }));
 
   it('should clear the dismiss timeout when dismissed before timeout expiration', fakeAsync(() => {
@@ -411,24 +412,20 @@ describe('MatSnackBar', () => {
     });
 
     it('should allow manually closing with an action', fakeAsync(() => {
-      let dismissObservableCompleted = false;
-      let actionObservableCompleted = false;
+      const dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
+      const actionCompleteSpy = jasmine.createSpy('action complete spy');
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);
       viewContainerFixture.detectChanges();
 
-      snackBarRef.afterDismissed().subscribe(undefined, undefined, () => {
-        dismissObservableCompleted = true;
-      });
-      snackBarRef.onAction().subscribe(undefined, undefined, () => {
-        actionObservableCompleted = true;
-      });
+      snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
+      snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
 
       snackBarRef.closeWithAction();
       viewContainerFixture.detectChanges();
       tick();
 
-      expect(dismissObservableCompleted).toBeTruthy('Expected the snack bar to be dismissed');
-      expect(actionObservableCompleted).toBeTruthy('Expected the snack bar to notify of action');
+      expect(dismissCompleteSpy).toHaveBeenCalled();
+      expect(actionCompleteSpy).toHaveBeenCalled();
 
       tick(500);
     }));
