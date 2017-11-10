@@ -39,6 +39,7 @@ import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu
 import {MatMenuItem} from './menu-item';
 import {MatMenuPanel} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 
 /** Default `mat-menu` options that can be overridden. */
@@ -122,7 +123,14 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
   @ContentChildren(MatMenuItem) items: QueryList<MatMenuItem>;
 
   /** Whether the menu should overlap its trigger. */
-  @Input() overlapTrigger = this._defaultOptions.overlapTrigger;
+  @Input()
+  set overlapTrigger(value: boolean) {
+    this._overlapTrigger = coerceBooleanProperty(value);
+  }
+  get overlapTrigger(): boolean {
+    return this._overlapTrigger;
+  }
+  private _overlapTrigger: boolean = this._defaultOptions.overlapTrigger;
 
   /**
    * This method takes classes set on the host mat-menu element and applies them on the

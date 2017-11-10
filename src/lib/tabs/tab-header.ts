@@ -31,6 +31,7 @@ import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
 import {Subscription} from 'rxjs/Subscription';
+import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {MatInkBar} from './ink-bar';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {ViewportRuler} from '@angular/cdk/scrolling';
@@ -120,6 +121,7 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   @Input()
   get selectedIndex(): number { return this._selectedIndex; }
   set selectedIndex(value: number) {
+    value = coerceNumberProperty(value);
     this._selectedIndexChanged = this._selectedIndex != value;
     this._selectedIndex = value;
     this._focusIndex = value;

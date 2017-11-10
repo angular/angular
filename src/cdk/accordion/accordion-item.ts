@@ -17,6 +17,7 @@ import {
 } from '@angular/core';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {CdkAccordion} from './accordion';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /** Used to generate unique ID for each accordion item. */
 let nextId = 0;
@@ -41,8 +42,10 @@ export class CdkAccordionItem implements OnDestroy {
 
   /** Whether the AccordionItem is expanded. */
   @Input()
-  get expanded(): boolean { return this._expanded; }
-  set expanded(expanded: boolean) {
+  get expanded(): any { return this._expanded; }
+  set expanded(expanded: any) {
+    expanded = coerceBooleanProperty(expanded);
+
     // Only emit events and update the internal value if the value changes.
     if (this._expanded !== expanded) {
       this._expanded = expanded;

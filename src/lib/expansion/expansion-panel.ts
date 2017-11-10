@@ -26,6 +26,7 @@ import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs/Subject';
 import {MatAccordion} from './accordion';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _CdkAccordionItem = CdkAccordionItem;
@@ -91,8 +92,16 @@ export type MatExpansionPanelState = 'expanded' | 'collapsed';
 })
 export class MatExpansionPanel extends _MatExpansionPanelMixinBase
     implements CanDisable, OnChanges, OnDestroy {
+
   /** Whether the toggle indicator should be hidden. */
-  @Input() hideToggle: boolean = false;
+  @Input()
+  get hideToggle(): boolean {
+    return this._hideToggle;
+  }
+  set hideToggle(value: boolean) {
+    this._hideToggle = coerceBooleanProperty(value);
+  }
+  private _hideToggle = false;
 
   /** Stream that emits for changes in `@Input` properties. */
   _inputChanges = new Subject<SimpleChanges>();

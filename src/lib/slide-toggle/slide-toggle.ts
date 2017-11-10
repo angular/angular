@@ -124,7 +124,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   @Input()
   get checked(): boolean { return this._checked; }
   set checked(value) {
-    this._checked = !!value;
+    this._checked = coerceBooleanProperty(value);
     this._changeDetectorRef.markForCheck();
   }
   /** An event will be dispatched each time the slide-toggle changes its value. */

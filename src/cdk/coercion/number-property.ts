@@ -7,6 +7,8 @@
  */
 
 /** Coerces a data-bound value (typically a string) to a number. */
+export function coerceNumberProperty(value: any): number;
+export function coerceNumberProperty<D>(value: any, fallback: D): number | D;
 export function coerceNumberProperty(value: any, fallbackValue = 0) {
   // parseFloat(value) handles most of the cases we're interested in (it treats null, empty string,
   // and other non-number values as NaN, where Number just uses 0) but it considers the string
