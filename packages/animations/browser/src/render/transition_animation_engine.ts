@@ -1225,7 +1225,7 @@ export class TransitionAnimationEngine {
     const targetTriggerName: string|undefined =
         instruction.isRemovalTransition ? undefined : triggerName;
 
-    instruction.timelines.map(timelineInstruction => {
+    for (const timelineInstruction of instruction.timelines) {
       const element = timelineInstruction.element;
       const isQueriedElement = element !== rootElement;
       const players = getOrSetAsInMap(allPreviousPlayersMap, element, []);
@@ -1239,7 +1239,7 @@ export class TransitionAnimationEngine {
         player.destroy();
         players.push(player);
       });
-    });
+    }
 
     // this needs to be done so that the PRE/POST styles can be
     // computed properly without interfering with the previous animation
