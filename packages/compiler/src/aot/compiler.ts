@@ -709,15 +709,15 @@ export function analyzeFile(
         } else if (metadataResolver.isPipe(symbol)) {
           isNgSymbol = true;
           pipes.push(symbol);
-        } else if (metadataResolver.isInjectable(symbol)) {
-          isNgSymbol = true;
-          injectables.push(symbol);
-        } else {
+        } else if (metadataResolver.isNgModule(symbol)) {
           const ngModule = metadataResolver.getNgModuleMetadata(symbol, false);
           if (ngModule) {
             isNgSymbol = true;
             ngModules.push(ngModule);
           }
+        } else if (metadataResolver.isInjectable(symbol)) {
+          isNgSymbol = true;
+          injectables.push(symbol);
         }
       }
       if (!isNgSymbol) {
