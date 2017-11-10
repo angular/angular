@@ -99,6 +99,8 @@ export class URLSearchParams {
     return Array.isArray(storedParam) ? storedParam[0] : null;
   }
 
+  keys(): IterableIterator<string> { return this.paramsMap.keys(); }
+
   getAll(param: string): string[] { return this.paramsMap.get(param) || []; }
 
   set(param: string, val: string) {
