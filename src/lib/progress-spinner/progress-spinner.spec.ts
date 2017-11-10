@@ -17,6 +17,7 @@ describe('MatProgressSpinner', () => {
         ProgressSpinnerCustomStrokeWidth,
         ProgressSpinnerCustomDiameter,
         SpinnerWithColor,
+        ProgressSpinnerWithStringValues,
       ],
     }).compileComponents();
   }));
@@ -184,6 +185,24 @@ describe('MatProgressSpinner', () => {
     expect(fixture.nativeElement.querySelector('svg').getAttribute('focusable')).toBe('false');
   });
 
+  it('should handle the number inputs being passed in as strings', () => {
+    const fixture = TestBed.createComponent(ProgressSpinnerWithStringValues);
+    const spinner = fixture.debugElement.query(By.directive(MatProgressSpinner));
+    const svgElement = spinner.nativeElement.querySelector('svg');
+
+    fixture.detectChanges();
+
+    expect(spinner.componentInstance.diameter).toBe(37);
+    expect(spinner.componentInstance.strokeWidth).toBe(11);
+    expect(spinner.componentInstance.value).toBe(25);
+
+    expect(spinner.nativeElement.style.width).toBe('38px');
+    expect(spinner.nativeElement.style.height).toBe('38px');
+    expect(svgElement.style.width).toBe('38px');
+    expect(svgElement.style.height).toBe('38px');
+    expect(svgElement.getAttribute('viewBox')).toBe('0 0 38 38');
+  });
+
 });
 
 
@@ -211,3 +230,10 @@ class SpinnerWithColor { color: string = 'primary'; }
 
 @Component({template: `<mat-progress-spinner value="50" [color]="color"></mat-progress-spinner>`})
 class ProgressSpinnerWithColor { color: string = 'primary'; }
+
+@Component({
+  template: `
+    <mat-progress-spinner value="25" diameter="37" strokeWidth="11"></mat-progress-spinner>
+  `
+})
+class ProgressSpinnerWithStringValues { }
