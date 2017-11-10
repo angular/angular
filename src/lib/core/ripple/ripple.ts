@@ -100,7 +100,7 @@ export class MatRipple implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if ((changes['trigger'] || changes['_matRippleTrigger']) && this.trigger) {
+    if (changes['trigger'] && this.trigger) {
       this._rippleRenderer.setTriggerElement(this.trigger);
     }
 
