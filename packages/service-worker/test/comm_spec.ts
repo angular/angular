@@ -20,12 +20,12 @@ export function main() {
     let comm: NgswCommChannel;
     beforeEach(() => {
       mock = new MockServiceWorkerContainer();
-      comm = new NgswCommChannel(mock as any);
+      comm = new NgswCommChannel(mock as any, 'browser');
     });
     describe('NgswCommsChannel', () => {
       it('can access the registration when it comes before subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
-        const comm = new NgswCommChannel(mock as any);
+        const comm = new NgswCommChannel(mock as any, 'browser');
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
         mock.setupSw();
@@ -34,12 +34,17 @@ export function main() {
       });
       it('can access the registration when it comes after subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
-        const comm = new NgswCommChannel(mock as any);
+        const comm = new NgswCommChannel(mock as any, 'browser');
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
         comm.registration.subscribe(reg => { done(); });
 
         mock.setupSw();
+      });
+      it('is disabled for platform-server', () => {
+        const mock = new MockServiceWorkerContainer();
+        const comm = new NgswCommChannel(mock as any, 'server');
+        expect(comm.isEnabled).toEqual(false);
       });
     });
     describe('SwPush', () => {
@@ -72,7 +77,7 @@ export function main() {
         expect(() => TestBed.get(SwPush)).not.toThrow();
       });
       describe('with no SW', () => {
-        beforeEach(() => { comm = new NgswCommChannel(undefined); });
+        beforeEach(() => { comm = new NgswCommChannel(undefined, 'browser'); });
         it('can be instantiated', () => { push = new SwPush(comm); });
         it('does not crash on subscription to observables', () => {
           push = new SwPush(comm);
@@ -166,7 +171,7 @@ export function main() {
         expect(() => TestBed.get(SwUpdate)).not.toThrow();
       });
       describe('with no SW', () => {
-        beforeEach(() => { comm = new NgswCommChannel(undefined); });
+        beforeEach(() => { comm = new NgswCommChannel(undefined, 'browser'); });
         it('can be instantiated', () => { update = new SwUpdate(comm); });
         it('does not crash on subscription to observables', () => {
           update = new SwUpdate(comm);
