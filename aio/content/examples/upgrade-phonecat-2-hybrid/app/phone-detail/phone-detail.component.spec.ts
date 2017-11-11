@@ -3,7 +3,7 @@
 import { ActivatedRoute } from '@angular/router';
 
 // #enddocregion activatedroute
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 import { async, TestBed } from '@angular/core/testing';
 
