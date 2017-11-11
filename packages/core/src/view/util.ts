@@ -98,9 +98,10 @@ export function checkBindingNoChanges(
     view: ViewData, def: NodeDef, bindingIdx: number, value: any) {
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
   if ((view.state & ViewState.BeforeFirstCheck) || !devModeEqual(oldValue, value)) {
+    const bindingName = def.bindings[def.bindingIndex].name;
     throw expressionChangedAfterItHasBeenCheckedError(
-        Services.createDebugContext(view, def.nodeIndex), oldValue, value,
-        (view.state & ViewState.BeforeFirstCheck) !== 0);
+        Services.createDebugContext(view, def.nodeIndex), `${bindingName}: ${oldValue}`,
+        `${bindingName}: ${value}`, (view.state & ViewState.BeforeFirstCheck) !== 0);
   }
 }
 
