@@ -80,7 +80,7 @@ You must _provide_ the `HeroService` in the _dependency injection system_
 before Angular can _inject_ it into the `HeroesComponent`, 
 as you will do [below](#inject).
 
-There are several ways to provide_ the `HeroService`: 
+There are several ways to provide the `HeroService`: 
 in the `HeroesComponent`, in the `AppComponent`, in the `AppModule`.
 Each option has pros and cons. 
 
