@@ -708,6 +708,9 @@ export class FormControl extends AbstractControl {
   /** @internal */
   _pendingValue: any;
 
+  /** @internal */
+  _pendingChange: any;
+
   constructor(
       formState: any = null,
       validatorOrOpts?: ValidatorFn|ValidatorFn[]|AbstractControlOptions|null,
@@ -801,6 +804,7 @@ export class FormControl extends AbstractControl {
     this.markAsPristine(options);
     this.markAsUntouched(options);
     this.setValue(this.value, options);
+    this._pendingChange = false;
   }
 
   /**
@@ -847,10 +851,12 @@ export class FormControl extends AbstractControl {
   /** @internal */
   _syncPendingControls(): boolean {
     if (this.updateOn === 'submit') {
-      this.setValue(this._pendingValue, {onlySelf: true, emitModelToViewChange: false});
       if (this._pendingDirty) this.markAsDirty();
       if (this._pendingTouched) this.markAsTouched();
-      return true;
+      if (this._pendingChange) {
+        this.setValue(this._pendingValue, {onlySelf: true, emitModelToViewChange: false});
+        return true;
+      }
     }
     return false;
   }
