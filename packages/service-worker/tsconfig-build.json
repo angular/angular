@@ -5,7 +5,8 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"]
+      "@angular/core": ["../../dist/packages/core"],
+      "@angular/common": ["../../dist/packages/common"]
     },
     "outDir": "../../dist/packages/service-worker"
   },

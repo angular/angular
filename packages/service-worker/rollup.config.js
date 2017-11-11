@@ -11,6 +11,7 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   '@angular/core': 'ng.core',
+  '@angular/common': 'ng.common',
 
   'rxjs/BehaviorSubject': 'Rx',
   'rxjs/ConnectableObservable': 'Rx',
