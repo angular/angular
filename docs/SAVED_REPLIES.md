@@ -5,25 +5,25 @@ The following are canned responses that the Angular team should use to close iss
 Since GitHub currently doesn't allow us to have a repository-wide or organization-wide list of [saved replies](https://help.github.com/articles/working-with-saved-replies/), these replies need to be maintained by individual team members. Since the responses can be modified in the future, all responses are versioned to simplify the process of keeping the responses up to date.
 
 
-## Angular: Already Fixed (v1)
+## Angular: Already Fixed (v2)
 ```
 Thanks for reporting this issue. Luckily it has already been fixed in one of the recent releases. Please update to the most recent version to resolve the problem.
 
-If after upgrade the problem still exists in your application please open a new issue and provide a plunker reproducing the problem and describing the difference between the expected and current behavior. You can use this plunker template: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5?p=catalogue
+If after upgrade the problem still exists in your application please open a new issue and provide a StackBlitz reproducing the problem and describing the difference between the expected and current behavior. You can use this StackBlitz template: https://stackblitz.com/fork/angular-gitter
 ```
 
-## Angular: Don't Understand (v1)
+## Angular: Don't Understand (v2)
 ```
 I'm sorry but we don't understand the problem you are reporting.
 
-If the problem still exists please open a new issue and provide a plunker reproducing the problem and describing the difference between the expected and current behavior. You can use this plunker template: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5?p=catalogue
+If the problem still exists please open a new issue and provide a StackBlitz reproducing the problem and describing the difference between the expected and current behavior. You can use this StackBlitz template: https://stackblitz.com/fork/angular-gitter
 ```
 
-## Angular: Plunker Needed (v1)
+## Angular: StackBlitz Needed (v1)
 ```
-I'm sorry but reported issues require a plunker reproducing the problem.
+I'm sorry but reported issues require a StackBlitz reproducing the problem.
 
-If this issue persists, please create a plunker using this template and describe the difference between the expected and current behavior and create a new issue: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5?p=catalogue
+If this issue persists, please create a StackBlitz using this template and describe the difference between the expected and current behavior and create a new issue: https://stackblitz.com/fork/angular-gitter
 ```
 
 ## Angular: Duplicate (v1)
