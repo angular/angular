@@ -28,11 +28,11 @@ you already have projects running on your machine that use other versions of nod
 
 Both `npm` and `yarn` install packages identified in a [**package.json**](https://docs.npmjs.com/files/package.json) file.
 
-The CLI `ng new` command creates a default `packages.json` file for your project.
-This `packages.json` specifies _a starter set of packages_ that work well together and 
+The CLI `ng new` command creates a default `package.json` file for your project.
+This `package.json` specifies _a starter set of packages_ that work well together and 
 jointly support many common application scenarios.
 
-You will add packages to `packages.json` as your application evolves.
+You will add packages to `package.json` as your application evolves.
 You may even remove some.
 
 This guide focuses on the most important packages in the starter set.
