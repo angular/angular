@@ -108,7 +108,7 @@ export class AfterContentParentComponent {
   }
 
   reset() {
-    this.logs.length = 0;
+    this.logs = [];
     // quickly remove and reload AfterContentComponent which recreates it
     this.show = false;
     this.logger.tick_then(() => this.show = true);

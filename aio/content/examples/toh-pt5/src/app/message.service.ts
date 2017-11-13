@@ -9,6 +9,6 @@ export class MessageService {
   }
 
   clear() {
-    this.messages.length = 0;
+    this.messages = [];
   }
 }
