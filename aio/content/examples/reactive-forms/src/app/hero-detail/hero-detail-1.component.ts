@@ -1,8 +1,9 @@
 /* tslint:disable:component-class-suffix */
-// #docregion imports
-import { Component }              from '@angular/core';
-import { FormControl }            from '@angular/forms';
-// #enddocregion
+
+import { Component } from '@angular/core';
+// #docregion import
+import { FormControl } from '@angular/forms';
+// #enddocregion import
 
 @Component({
   selector: 'app-hero-detail-1',
