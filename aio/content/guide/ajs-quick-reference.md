@@ -212,8 +212,6 @@ The following are some of the key AngularJS built-in directives and their equiva
       To launch the app in code, explicitly bootstrap the application's root module (`AppModule`)
       in `main.ts`
       and the application's root component (`AppComponent`) in `app.module.ts`.
-
-      For more information see the [Setup](guide/setup) page.
     </td>
 
   </tr>
@@ -1254,13 +1252,12 @@ also encapsulate a style sheet within a specific component.
     <td>
 
 
-      ### Link tag
 
-      <code-example hideCopy path="ajs-quick-reference/src/index.html" region="style" linenums="false"></code-example>
+      ### Styles configuration
+      <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles" linenums="false">
 
-
-      In Angular, you can continue to use the link tag to define the styles for your application in the `index.html` file.
-      But now you can also encapsulate styles for your components.
+      With the Angular CLI, you can configure your global styles in the `.angular-cli.json` file.
+      You can rename the extension to `.scss` to use sass.
 
       ### StyleUrls
       In Angular, you can use the `styles` or `styleUrls` property of the `@Component` metadata to define
