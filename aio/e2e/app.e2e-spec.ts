@@ -7,15 +7,16 @@ describe('site App', function() {
   beforeEach(() => {
     SitePage.setWindowWidth(1050);   // Make the window wide enough to show the SideNav side-by-side.
     page = new SitePage();
-    page.navigateTo();
   });
 
   it('should show features text after clicking "Features"', () => {
+    page.navigateTo('');
     page.getTopMenuLink('features').click();
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
   });
 
   it('should set appropriate window titles', () => {
+    page.navigateTo('');
     expect(browser.getTitle()).toBe('Angular');
 
     page.getTopMenuLink('features').click();
@@ -25,9 +26,9 @@ describe('site App', function() {
     expect(browser.getTitle()).toBe('Angular');
   });
 
-  it('should show the tutorial index page at `/tutorial/` after jitterbugging through features', () => {
+  it('should show the tutorial index page at `/tutorial` after jitterbugging through features', () => {
     // check that we can navigate directly to the tutorial page
-    page.navigateTo('tutorial/');
+    page.navigateTo('tutorial');
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
 
     // navigate to a different page
@@ -52,24 +53,24 @@ describe('site App', function() {
   describe('scrolling to the top', () => {
     it('should scroll to the top when navigating to another page', () => {
       page.navigateTo('guide/security');
-      browser.sleep(1000);  // Wait for initial async scroll-to-top after `onDocRendered`.
 
       page.scrollToBottom();
-      page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
+      expect(page.getScrollTop()).toBeGreaterThan(0);
 
-      page.navigateTo('api');
-      page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
+      page.getNavItem(/api/i).click();
+      expect(page.locationPath()).toBe('/api');
+      expect(page.getScrollTop()).toBe(0);
     });
 
     it('should scroll to the top when navigating to the same page', () => {
       page.navigateTo('guide/security');
-      browser.sleep(1000);  // Wait for initial async scroll-to-top after `onDocRendered`.
 
       page.scrollToBottom();
-      page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
+      expect(page.getScrollTop()).toBeGreaterThan(0);
 
-      page.navigateTo('guide/security');
-      page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
+      page.getNavItem(/security/i).click();
+      expect(page.locationPath()).toBe('/guide/security');
+      expect(page.getScrollTop()).toBe(0);
     });
   });
 
@@ -87,42 +88,50 @@ describe('site App', function() {
       page.navigateTo('api');
       page.locationPath()
         .then(p => path = p)
-        .then(() => page.ga().then(calls => {
+        .then(() => page.ga())
+        .then(calls => {
           // The last call (length-1) will be the `send` command
           // The second to last call (length-2) will be the command to `set` the page url
           expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
           done();
-        }));
+        });
     });
 
     it('should call ga with new URL on navigation', done => {
       let path: string;
+      page.navigateTo('');
       page.getTopMenuLink('features').click();
       page.locationPath()
         .then(p => path = p)
-        .then(() => page.ga().then(calls => {
+        .then(() => page.ga())
+        .then(calls => {
           // The last call (length-1) will be the `send` command
           // The second to last call (length-2) will be the command to `set` the page url
           expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
           done();
-        }));
+        });
     });
   });
 
   describe('search', () => {
     it('should find pages when searching by a partial word in the title', () => {
+      page.navigateTo('');
+
       page.enterSearch('ngCont');
-      expect(page.getSearchResults().map(link => link.getText())).toContain('NgControl');
+      expect(page.getSearchResults()).toContain('NgControl');
+
       page.enterSearch('accessor');
-      expect(page.getSearchResults().map(link => link.getText())).toContain('ControlValueAccessor');
+      expect(page.getSearchResults()).toContain('ControlValueAccessor');
     });
   });
 
   describe('404 page', () => {
     it('should search the index for words found in the url', () => {
       page.navigateTo('http/router');
-      expect(page.getSearchResults().map(link => link.getText())).toContain('Http');
-      expect(page.getSearchResults().map(link => link.getText())).toContain('Router');
+      const results = page.getSearchResults();
+
+      expect(results).toContain('Http');
+      expect(results).toContain('Router');
     });
   });
 });

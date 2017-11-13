@@ -28,8 +28,8 @@ export class SitePage {
   ga() { return browser.executeScript('return window["ga"].q') as promise.Promise<any[][]>; }
   locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
-  navigateTo(pageUrl = '') {
-    return browser.get('/' + pageUrl);
+  navigateTo(pageUrl) {
+    return browser.get('/' + pageUrl).then(() => browser.waitForAngular());
   }
 
   getDocViewerText() {
@@ -59,6 +59,6 @@ export class SitePage {
   getSearchResults() {
     const results = element.all(by.css('.search-results li'));
     browser.wait(ExpectedConditions.presenceOf(results.first()), 8000);
-    return results;
+    return results.map(link => link.getText());
   }
 }
