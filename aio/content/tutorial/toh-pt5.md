@@ -600,7 +600,7 @@ Here are the code files discussed on this page and your app should look like thi
 ## Summary
 
 * You added the Angular router to navigate among different components.
-* You turned the `AppComponent` into a navigation shell with a links and a `<router-outlet>`.
+* You turned the `AppComponent` into a navigation shell with `<a>` links and a `<router-outlet>`.
 * You configured the router in an `AppRoutingModule` 
 * You defined simple routes, a redirect route, and a parameterized route.
 * You used the `routerLink` directive in anchor elements.
