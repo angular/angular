@@ -252,7 +252,7 @@ route to the `AppRoutingModule.Routes` array.
 
 This route redirects a URL that fully matches the empty path to the route whose path is `'/dashboard'`.
 
-After the browser refreshes, the router loads the `DashboardComponent
+After the browser refreshes, the router loads the `DashboardComponent`
 and the browser address bar shows the `/dashboard` URL.
 
 ### Add dashboard link to the shell
