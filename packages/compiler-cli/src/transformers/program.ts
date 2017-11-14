@@ -803,9 +803,16 @@ export function i18nSerialize(
     default:
       serializer = new Xliff();
   }
-  return bundle.write(
-      serializer, (sourcePath: string) =>
-                      options.basePath ? path.relative(options.basePath, sourcePath) : sourcePath);
+
+  return bundle.write(serializer, getPathNormalizer(options.basePath));
+}
+
+function getPathNormalizer(basePath?: string) {
+  // normalize sourcepaths by removing the base path and always using "/" as a separator
+  return (sourcePath: string) => {
+    sourcePath = basePath ? path.relative(basePath, sourcePath) : sourcePath;
+    return sourcePath.split(path.sep).join('/');
+  };
 }
 
 export function i18nGetExtension(formatName: string): string {
