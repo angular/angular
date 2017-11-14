@@ -3492,7 +3492,7 @@ It will be there when the `CrisisDetailComponent` ask for it.
 
 
 
-**Two critical points**
+**Three critical points**
 
 1. The router's `Resolve` interface is optional.
 The `CrisisDetailResolver` doesn't inherit from a base class.
