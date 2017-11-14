@@ -7,6 +7,7 @@
  */
 
 import {EventEmitter, Injectable} from '@angular/core';
+import {ISubscription} from 'rxjs/Subscription';
 
 import {LocationStrategy} from './location_strategy';
 
@@ -129,7 +130,7 @@ export class Location {
    */
   subscribe(
       onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
-      onReturn?: (() => void)|null): Object {
+      onReturn?: (() => void)|null): ISubscription {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 

@@ -8,6 +8,7 @@
 
 import {Location, LocationStrategy} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
+import {ISubscription} from 'rxjs/Subscription';
 
 
 /**
@@ -109,7 +110,7 @@ export class SpyLocation implements Location {
 
   subscribe(
       onNext: (value: any) => void, onThrow?: ((error: any) => void)|null,
-      onReturn?: (() => void)|null): Object {
+      onReturn?: (() => void)|null): ISubscription {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
