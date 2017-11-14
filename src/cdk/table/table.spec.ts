@@ -468,7 +468,7 @@ describe('CdkTable', () => {
     dynamicDataSourceFixture.detectChanges();
 
     // Expect that the component has no data source and the table element reflects empty data.
-    expect(component.dataSource).toBe(undefined);
+    expect(component.dataSource).toBeUndefined();
     expectTableToMatchContent(tableElement, [
       ['Column A']
     ]);
