@@ -25,6 +25,7 @@ import {
 import {Platform} from '@angular/cdk/platform';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {first} from 'rxjs/operators/first';
+import {merge} from 'rxjs/observable/merge';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,
@@ -261,7 +262,7 @@ export class MatTooltip implements OnDestroy {
     this._tooltipInstance = overlayRef.attach(portal).instance;
 
     // Dispose of the tooltip when the overlay is detached.
-    overlayRef.detachments().subscribe(() => {
+    merge(this._tooltipInstance!.afterHidden(), overlayRef.detachments()).subscribe(() => {
       // Check first if the tooltip has already been removed through this components destroy.
       if (this._tooltipInstance) {
         this._disposeTooltip();
