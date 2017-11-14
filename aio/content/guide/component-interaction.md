@@ -356,6 +356,7 @@ Use `setTimeout()` to wait one tick and then revise the `seconds()` method so
 that it takes future values from the timer component.
 
 <h3 class="no-toc">Test it</h3>
+
 Use [the same countdown timer tests](guide/component-interaction#countdown-tests) as before.
 
 [Back to top](guide/component-interaction#top)
