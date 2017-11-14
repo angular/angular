@@ -164,11 +164,19 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     }
     return origBazelHostFileExist.call(bazelHost, fileName);
   };
+  const origBazelHostShouldNameModule = bazelHost.shouldNameModule.bind(bazelHost);
+  bazelHost.shouldNameModule = (fileName: string) =>
+      origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
 
-  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) =>
-      relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
+    if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
+        ngHost.amdModuleName) {
+      return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
+    }
+    return relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+  };
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
       ngHost.fileNameToModuleName(fileName, referringSrcFileName);
   if (allDepsCompiledWithBazel) {
