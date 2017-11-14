@@ -223,7 +223,7 @@ describe('MatInput without forms', function () {
         fixture.debugElement.query(By.css('label')).nativeElement;
 
     expect(inputElement.id).toBeTruthy();
-    expect(inputElement.id).toEqual(labelElement.getAttribute('for'));
+    expect(inputElement.id).toEqual(labelElement.getAttribute('for')!);
   });
 
   it('should add aria-owns to the label for the associated control', () => {

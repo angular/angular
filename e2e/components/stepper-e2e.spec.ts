@@ -19,13 +19,13 @@ describe('stepper', () => {
       const previousButton = element.all(by.buttonText('Back'));
       const nextButton = element.all(by.buttonText('Next'));
 
-      expect(element(by.css('mat-step-header[aria-selected="true"]')).getText())
+      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('1\nFill out your name');
 
       screenshot('start');
       nextButton.get(0).click();
 
-      expect(element(by.css('mat-step-header[aria-selected="true"]')).getText())
+      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('2\nFill out your address');
 
       await browser.wait(ExpectedConditions.not(
@@ -34,7 +34,7 @@ describe('stepper', () => {
 
       previousButton.get(0).click();
 
-      expect(element(by.css('mat-step-header[aria-selected="true"]')).getText())
+      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('1\nFill out your name');
 
       await browser.wait(ExpectedConditions.not(
@@ -73,11 +73,11 @@ describe('stepper', () => {
       linearButton.click();
     });
 
-    it('should not move to next step when stepper button is clicked', () => {
+    it('should not move to next step when stepper button is clicked', async () => {
       let nextButton = element.all(by.buttonText('Next'));
       nextButton.get(0).click();
 
-      expect(element(by.css('mat-step-header[aria-selected="true"]')).getText())
+      expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('1\nFill out your name');
     });
   });

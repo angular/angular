@@ -203,7 +203,7 @@ describe('MatMenu', () => {
     triggerEl.click();
     fixture.detectChanges();
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel');
+    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
 
     expect(panel).toBeTruthy('Expected the panel to be rendered.');
     expect(document.activeElement).toBe(panel, 'Expected the panel to be focused.');

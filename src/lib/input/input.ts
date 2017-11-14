@@ -75,6 +75,7 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
   protected _uid = `mat-input-${nextUniqueId++}`;
   protected _previousNativeValue: any;
   private _readonly = false;
+  private _inputValueAccessor: {value: any};
 
   /** Whether the input is focused. */
   focused = false;
@@ -161,11 +162,10 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
               @Optional() protected _parentForm: NgForm,
               @Optional() protected _parentFormGroup: FormGroupDirective,
               private _defaultErrorStateMatcher: ErrorStateMatcher,
-              @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR)
-                  private _inputValueAccessor: {value: any}) {
+              @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR) inputValueAccessor: any) {
     // If no input value accessor was explicitly specified, use the element as the input value
     // accessor.
-    this._inputValueAccessor = this._inputValueAccessor || this._elementRef.nativeElement;
+    this._inputValueAccessor = inputValueAccessor || this._elementRef.nativeElement;
 
     this._previousNativeValue = this.value;
 

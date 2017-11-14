@@ -1032,7 +1032,7 @@ describe('MatSelect', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.customAccessor.select.ngControl)
-          .toBe(null, 'Expected mat-select NOT to inherit control from parent value accessor.');
+          .toBeFalsy('Expected mat-select NOT to inherit control from parent value accessor.');
       expect(fixture.componentInstance.customAccessor.writeValue).toHaveBeenCalled();
     }));
   });

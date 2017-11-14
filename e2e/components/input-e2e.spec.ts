@@ -12,20 +12,20 @@ describe('input', () => {
   describe('text input', () => {
     beforeEach(() => browser.get('/input'));
 
-    it('should update input value when user types', () => {
+    it('should update input value when user types', async () => {
       let input = element(by.id('text-input'));
       input.sendKeys('abc123');
-      expect(input.getAttribute('value')).toBe('abc123');
+      expect(await input.getAttribute('value')).toBe('abc123');
     });
   });
 
   describe('number input', () => {
     beforeEach(() => browser.get('/input'));
 
-    it('should update input value when user types', () => {
+    it('should update input value when user types', async () => {
       let input = element(by.id('number-input'));
       input.sendKeys('abc123');
-      expect(input.getAttribute('value')).toBe('123');
+      expect(await input.getAttribute('value')).toBe('123');
     });
 
     it('should increment when increment button clicked', async () => {
@@ -40,24 +40,24 @@ describe('input', () => {
           .click()
           .perform();
 
-      expect(input.getAttribute('value')).toBe('1');
+      expect(await input.getAttribute('value')).toBe('1');
 
       browser.actions()
           .mouseMove(input, {x: size.width - 5, y: size.height - 5})
           .click()
           .perform();
 
-      expect(input.getAttribute('value')).toBe('0');
+      expect(await input.getAttribute('value')).toBe('0');
     });
   });
 
   describe('textarea', () => {
     beforeEach(() => browser.get('/input'));
 
-    it('should update input value when user types', () => {
+    it('should update input value when user types', async () => {
       let input = element(by.id('text-area'));
       input.sendKeys('abc123');
-      expect(input.getAttribute('value')).toBe('abc123');
+      expect(await input.getAttribute('value')).toBe('abc123');
     });
   });
 

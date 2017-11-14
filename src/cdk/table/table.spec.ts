@@ -66,7 +66,7 @@ describe('CdkTable', () => {
     it('with a rendered header with the right number of header cells', () => {
       const header = getHeaderRow(tableElement);
 
-      expect(header).not.toBe(undefined);
+      expect(header).toBeTruthy();
       expect(header.classList).toContain('customHeaderRowClass');
       expect(getHeaderCells(tableElement).length).toBe(component.columnsToRender.length);
     });
@@ -488,7 +488,7 @@ describe('CdkTable', () => {
     ]);
 
     // Remove the data source and check to make sure the table is empty again.
-    component.dataSource = null;
+    component.dataSource = undefined;
     dynamicDataSourceFixture.detectChanges();
 
     // Expect that the old data source has been disconnected.
@@ -696,7 +696,7 @@ class BooleanDataSource extends DataSource<boolean> {
   `
 })
 class SimpleCdkTableApp {
-  dataSource: FakeDataSource | null = new FakeDataSource();
+  dataSource: FakeDataSource | undefined = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;

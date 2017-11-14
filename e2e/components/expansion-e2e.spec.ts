@@ -11,7 +11,7 @@ describe('expansion', () => {
   });
 
   it('should show two panels', async () => {
-    expect(element.all(by.css('.mat-expansion-panel')).count()).toBe(2);
+    expect(await element.all(by.css('.mat-expansion-panel')).count()).toBe(2);
     screenshot();
   });
 
@@ -19,11 +19,11 @@ describe('expansion', () => {
     const panelHeader = element.all(by.css('.mat-expansion-panel-header')).get(0);
     const panelContent = element.all(by.css('.mat-expansion-panel-content')).get(0);
 
-    expect(panelContent.isDisplayed()).toBe(false);
+    expect(await panelContent.isDisplayed()).toBe(false);
 
     panelHeader.click();
 
-    expect(panelContent.isDisplayed()).toBe(true);
+    expect(await panelContent.isDisplayed()).toBe(true);
   });
 
   it('should emit events for expanding and collapsing', async () => {

@@ -8,7 +8,7 @@ describe('button', () => {
 
     it('should prevent click handlers from executing when disabled', async () => {
       element(by.id('test-button')).click();
-      expect(element(by.id('click-counter')).getText()).toEqual('1');
+      expect(await element(by.id('click-counter')).getText()).toEqual('1');
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
@@ -16,7 +16,7 @@ describe('button', () => {
 
       element(by.id('disable-toggle')).click();
       element(by.id('test-button')).click();
-      expect(element(by.id('click-counter')).getText()).toEqual('1');
+      expect(await element(by.id('click-counter')).getText()).toEqual('1');
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
