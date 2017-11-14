@@ -1047,6 +1047,7 @@ export class TransitionAnimationEngine {
       // means that it is independent and therefore should be set for animation
       if (subTimelines.has(element)) {
         if (disabledElementsSet.has(element)) {
+          player.onDestroy(() => setStyles(element, instruction.toStyles));
           skippedPlayers.push(player);
           return;
         }
