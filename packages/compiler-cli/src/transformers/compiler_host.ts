@@ -303,6 +303,11 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         /* emitSourceMaps */ false);
     const sf = ts.createSourceFile(
         genFile.genFileUrl, sourceText, this.options.target || ts.ScriptTarget.Latest);
+    if ((this.options.module === ts.ModuleKind.AMD || this.options.module === ts.ModuleKind.UMD) &&
+        this.context.amdModuleName) {
+      const moduleName = this.context.amdModuleName(sf);
+      if (moduleName) sf.moduleName = moduleName;
+    }
     this.generatedSourceFiles.set(genFile.genFileUrl, {
       sourceFile: sf,
       emitCtx: context, externalReferences,

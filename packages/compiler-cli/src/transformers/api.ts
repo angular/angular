@@ -192,6 +192,13 @@ export interface CompilerHost extends ts.CompilerHost {
    * cause a diagnostics diagnostic error or an exception to be thrown.
    */
   readResource?(fileName: string): Promise<string>|string;
+  /**
+   * Produce an AMD module name for the source file. Used in Bazel.
+   *
+   * An AMD module can have an arbitrary name, so that it is require'd by name
+   * rather than by path. See http://requirejs.org/docs/whyamd.html#namedmodules
+   */
+  amdModuleName?(sf: ts.SourceFile): string|undefined;
 }
 
 export enum EmitFlags {
