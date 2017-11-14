@@ -100,7 +100,7 @@
     }, "src/+(lib|cdk)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
-      "src/+(lib|cdk)/**/!(*.spec).ts"
+      "src/+(lib|cdk|demo-app)/**/!(*.spec).ts"
     ],
     "no-rxjs-patch-imports": [
       true,

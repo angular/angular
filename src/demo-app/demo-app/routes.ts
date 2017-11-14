@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {Routes} from '@angular/router';
 import {AccessibilityDemo} from '../a11y/a11y';
 import {ACCESSIBILITY_DEMO_ROUTES} from '../a11y/routes';
