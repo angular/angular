@@ -1366,7 +1366,7 @@ describe('Integration', () => {
          @Component({
            selector: 'someRoot',
            template:
-               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{q: 456}" queryParamsHandling="merge">Link</a>`
+               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{removeMe: null, q: 456}" queryParamsHandling="merge">Link</a>`
          })
          class RootCmpWithLink {
          }
@@ -1378,7 +1378,7 @@ describe('Integration', () => {
 
          const native = fixture.nativeElement.querySelector('a');
 
-         router.navigateByUrl('/home?a=123');
+         router.navigateByUrl('/home?a=123&removeMe=123');
          advance(fixture);
          expect(native.getAttribute('href')).toEqual('/home?a=123&q=456');
        }));
