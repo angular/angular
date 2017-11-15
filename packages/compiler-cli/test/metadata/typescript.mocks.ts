@@ -102,6 +102,7 @@ export class MockNode implements ts.Node {
 
 export class MockIdentifier extends MockNode implements ts.Identifier {
   public text: string;
+  public escapedText: ts.__String;
   // tslint:disable
   public _primaryExpressionBrand: any;
   public _memberExpressionBrand: any;
@@ -137,12 +138,14 @@ export class MockVariableDeclaration extends MockNode implements ts.VariableDecl
 }
 
 export class MockSymbol implements ts.Symbol {
+  public escapedName: ts.__String;
   constructor(
       public name: string, private node: ts.Declaration = MockVariableDeclaration.of(name),
       public flags: ts.SymbolFlags = 0) {}
 
   getFlags(): ts.SymbolFlags { return this.flags; }
   getName(): string { return this.name; }
+  getEscapedName(): ts.__String { return this.escapedName; }
   getDeclarations(): ts.Declaration[] { return [this.node]; }
   getDocumentationComment(): ts.SymbolDisplayPart[] { return []; }
   // TODO(vicb): removed in TS 2.2

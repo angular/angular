@@ -17,7 +17,7 @@ export function main() {
                     ids.map(id => ({provide: id, useValue: new MockMetric(id)})),
                     MultiMetric.provideWith(ids)
                   ])
-                  .get(MultiMetric);
+                  .get<MultiMetric>(MultiMetric);
     return Promise.resolve(m);
   }
 

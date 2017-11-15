@@ -381,7 +381,7 @@ export class RouterInitializer {
     const opts = this.injector.get(ROUTER_CONFIGURATION);
     const preloader = this.injector.get(RouterPreloader);
     const router = this.injector.get(Router);
-    const ref = this.injector.get(ApplicationRef);
+    const ref = this.injector.get<ApplicationRef>(ApplicationRef);
 
     if (bootstrappedComponentRef !== ref.components[0]) {
       return;

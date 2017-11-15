@@ -98,7 +98,7 @@ export function main() {
 
     it('should resolve dependencies based on type information', () => {
       const injector = Injector.create([Engine.PROVIDER, Car.PROVIDER]);
-      const car = injector.get(Car);
+      const car = injector.get<Car>(Car);
 
       expect(car).toBeAnInstanceOf(Car);
       expect(car.engine).toBeAnInstanceOf(Engine);
@@ -138,7 +138,7 @@ export function main() {
       const injector = Injector.create(
           [Engine.PROVIDER, {provide: Car, useFactory: sportsCarFactory, deps: [Engine]}]);
 
-      const car = injector.get(Car);
+      const car = injector.get<Car>(Car);
       expect(car).toBeAnInstanceOf(SportsCar);
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
@@ -208,7 +208,7 @@ export function main() {
         {provide: Car, useFactory: (e: Engine) => new SportsCar(e), deps: [Engine]}
       ]);
 
-      const car = injector.get(Car);
+      const car = injector.get<Car>(Car);
       expect(car).toBeAnInstanceOf(SportsCar);
       expect(car.engine).toBeAnInstanceOf(Engine);
     });
@@ -216,7 +216,7 @@ export function main() {
     it('should support optional dependencies', () => {
       const injector = Injector.create([CarWithOptionalEngine.PROVIDER]);
 
-      const car = injector.get(CarWithOptionalEngine);
+      const car = injector.get<CarWithOptionalEngine>(CarWithOptionalEngine);
       expect(car.engine).toEqual(null);
     });
 
@@ -288,7 +288,7 @@ export function main() {
           Injector.create([CarWithDashboard.PROVIDER, Engine.PROVIDER, Dashboard.PROVIDER]);
       expect(() => injector.get(CarWithDashboard))
           .toThrowError(
-              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: 
+              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]:
   NullInjectorError: No provider for DashboardSoftware!`);
     });
 
@@ -364,7 +364,7 @@ export function main() {
          const parent = Injector.create([Car.PROVIDER, Engine.PROVIDER]);
          const child = Injector.create([TurboEngine.PROVIDER], parent);
 
-         const carFromChild = child.get(Car);
+         const carFromChild = child.get<Car>(Car);
          expect(carFromChild.engine).toBeAnInstanceOf(Engine);
        });
 
@@ -391,7 +391,7 @@ export function main() {
     it('should instantiate an object in the context of the injector', () => {
       const inj = Injector.create([Engine.PROVIDER]);
       const childInj = Injector.create([Car.PROVIDER], inj);
-      const car = childInj.get(Car);
+      const car = childInj.get<Car>(Car);
       expect(car).toBeAnInstanceOf(Car);
       expect(car.engine).toBe(inj.get(Engine));
     });
@@ -415,7 +415,7 @@ export function main() {
             parent);
 
         expect(() => child.get(Car))
-            .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]: 
+            .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]:
   NullInjectorError: No provider for Engine!`);
       });
     });
@@ -430,7 +430,7 @@ export function main() {
             ],
             parent);
 
-        expect(child.get(Car).engine).toBeAnInstanceOf(Engine);
+        expect(child.get<Car>(Car).engine).toBeAnInstanceOf(Engine);
       });
     });
   });

@@ -93,7 +93,7 @@ export declare const WORKER_APP_LOCATION_PROVIDERS: ({
 } | {
     provide: InjectionToken<Promise<any>>;
     useFactory: (platformLocation: WebWorkerPlatformLocation) => Promise<any>;
-    deps: typeof PlatformLocation[];
+    deps: (typeof PlatformLocation)[];
 })[];
 
 /** @experimental */
