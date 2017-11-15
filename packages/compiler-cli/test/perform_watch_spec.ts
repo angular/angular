@@ -143,7 +143,7 @@ describe('perform watch', () => {
 
       const errDiags = host.diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
       expect(errDiags.length).toBe(1);
-      expect(errDiags[0].messageText).toContain('Function calls are not supported.');
+      expect(errDiags[0].messageText).toContain('Function expressions are not supported');
     }
   });
 });

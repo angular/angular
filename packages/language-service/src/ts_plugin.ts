@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
-import {Completion, Diagnostic, LanguageService, LanguageServiceHost} from './types';
+import {Completion, Diagnostic, DiagnosticMessageChain, LanguageService, LanguageServiceHost} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
 const projectHostMap = new WeakMap<any, TypeScriptServiceHost>();
@@ -188,12 +188,30 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
     };
   }
 
+  function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
+      ts.DiagnosticMessageChain {
+    return {
+      messageText: chain.message,
+      category: ts.DiagnosticCategory.Error,
+      code: 0,
+      next: chain.next ? diagnosticChainToDiagnosticChain(chain.next) : undefined
+    };
+  }
+
+  function diagnosticMessageToDiagnosticMessageText(message: string | DiagnosticMessageChain):
+      string|ts.DiagnosticMessageChain {
+    if (typeof message === 'string') {
+      return message;
+    }
+    return diagnosticChainToDiagnosticChain(message);
+  }
+
   function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
     const result = {
       file,
       start: d.span.start,
       length: d.span.end - d.span.start,
-      messageText: d.message,
+      messageText: diagnosticMessageToDiagnosticMessageText(d.message),
       category: ts.DiagnosticCategory.Error,
       code: 0,
       source: 'ng'
