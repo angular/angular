@@ -48,7 +48,7 @@
     "@angular/router": "^5.0.0",
     "@angular/upgrade": "^5.0.1",
     "@bazel/ibazel": "0.0.1",
-    "@bazel/typescript": "^0.3.1",
+    "@bazel/typescript": "0.2.x",
     "@google-cloud/storage": "^1.1.1",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "^4.0.3",
@@ -123,7 +123,7 @@
     "tsconfig-paths": "^2.3.0",
     "tslint": "^5.8.0",
     "tsutils": "^2.6.0",
-    "typescript": "~2.5.3",
+    "typescript": "~2.4.2",
     "uglify-js": "^2.8.14",
     "web-animations-js": "^2.2.5"
   }
