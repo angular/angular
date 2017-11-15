@@ -1,0 +1,14 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+
+ng_module(
+  name = "a11y",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/cdk/a11y",
+  deps = [
+    "//src/cdk/coercion",
+    "//src/cdk/keycodes",
+    "//src/cdk/platform",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)

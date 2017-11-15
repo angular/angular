@@ -1,0 +1,11 @@
+package(default_visibility=["//visibility:public"])
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+
+
+ts_library(
+  name = "cdk",
+  srcs = glob(["*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/cdk",
+  deps = [],
+  tsconfig = ":tsconfig-build.json",
+)

@@ -8,6 +8,7 @@
     "url": "https://github.com/angular/material2.git"
   },
   "scripts": {
+    "postinstall": "ngc -p angular.tsconfig.json",
     "build": "gulp :publish:build-releases",
     "demo-app": "gulp serve:devapp",
     "test": "gulp test",
@@ -39,11 +40,15 @@
     "zone.js": "^0.8.12"
   },
   "devDependencies": {
+    "@angular/bazel": "^5.0.1",
     "@angular/compiler-cli": "^5.0.0",
     "@angular/http": "^5.0.0",
     "@angular/platform-browser-dynamic": "^5.0.0",
     "@angular/platform-server": "^5.0.0",
     "@angular/router": "^5.0.0",
+    "@angular/upgrade": "^5.0.1",
+    "@bazel/ibazel": "0.0.1",
+    "@bazel/typescript": "^0.3.1",
     "@google-cloud/storage": "^1.1.1",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "^4.0.3",

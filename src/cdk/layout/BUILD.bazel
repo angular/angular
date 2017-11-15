@@ -1,0 +1,13 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+
+ng_module(
+  name = "layout",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/cdk/layout",
+  deps = [
+    "//src/cdk/coercion",
+    "//src/cdk/platform",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)

@@ -1,0 +1,35 @@
+package(default_visibility = ["//visibility:public"])
+
+# TODO(jelbourn): figure out if these workarounds are still needed
+
+# This rule belongs in node_modules/BUILD
+# It's here as a workaround for
+# https://github.com/bazelbuild/bazel/issues/374#issuecomment-296217940
+filegroup(
+  name = "node_modules",
+  # Performance workaround: list individual files
+  # Reduces the number of files as inputs to nodejs_binary:
+  # bazel query "deps(:node_modules)" | wc -l
+  # This won't scale in the general case.
+  # TODO(alexeagle): figure out what to do
+  srcs = glob(["/".join(["node_modules", pkg, "**", ext]) for pkg in [
+    "@angular",
+    "jasmine",
+    "typescript",
+    "tslib",
+    "zone.js",
+    "rxjs",
+    "@types",
+    "tsickle",
+    "hammerjs",
+    "protobufjs",
+    "bytebuffer",
+    "reflect-metadata",
+    "minimist",
+    "moment",
+  ] for ext in [
+    "*.js",
+    "*.json",
+    "*.d.ts",
+  ]]),
+)

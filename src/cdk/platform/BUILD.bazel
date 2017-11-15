@@ -1,0 +1,10 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+
+ng_module(
+  name = "platform",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/cdk/platform",
+  deps = [],
+  tsconfig = ":tsconfig-build.json",
+)

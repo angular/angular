@@ -1,0 +1,11 @@
+package(default_visibility=["//visibility:public"])
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+
+# Note: this will need to ng_module if any Angular-specific stuff is added to coercion.
+ts_library(
+  name = "keycodes",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/cdk/keycodes",
+  deps = [],
+  tsconfig = ":tsconfig-build.json",
+)

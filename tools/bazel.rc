@@ -1,0 +1,48 @@
+###############################
+# Directory structure         #
+###############################
+
+# Don't create bazel-* symlinks in the WORKSPACE directory.
+# These require .gitignore and may scare users.
+# Also, it's a workaround for https://github.com/bazelbuild/rules_typescript/issues/12
+# which affects the common case of having `tsconfig.json` in the WORKSPACE directory.
+#
+# Instead, you should run `bazel info bazel-bin` to find out where the outputs went.
+build --symlink_prefix=/
+
+# Another good choice is to create a dist/ directory. Then you can use
+# build --symlink_prefix=dist/
+# to get folders like dist/bin
+# But be aware, this will still create a bazel-out symlink in your project directory.
+# You may still need to exclude that, eg. from the editor's search path.
+
+###############################
+# Output                      #
+###############################
+
+# A more useful default output mode for bazel query
+# Prints eg. "ng_module rule //foo:bar" rather than just "//foo:bar"
+query --output=label_kind
+
+# Don't print every dependency in :node_modules, for example
+query --noimplicit_deps
+
+# By default, failing tests don't print any output, it goes to the log file
+test --test_output=errors
+
+# Show which actions are run under workers,
+# and print all the actions running in parallel.
+# Helps to demonstrate that bazel uses all the cores on the machine.
+build --experimental_ui
+test --experimental_ui
+
+###############################
+# Typescript / Angular / Sass #
+###############################
+# Make TypeScript and Angular compilation fast, by keeping a few copies of the compiler
+# running as daemons, and cache SourceFile AST's to reduce parse time.
+build --strategy=TypeScriptCompile=worker --strategy=AngularTemplateCompile=worker
+
+# Workaround rules_sass still using old 'set' constructor
+# This is an error in bazel >= 0.6 unless this flag is set
+build --incompatible_disallow_set_constructor=false
