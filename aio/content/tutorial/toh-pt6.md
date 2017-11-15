@@ -191,7 +191,7 @@ give it a `catchError()` operator.
   region="getHeroes-2" >
 </code-example>
 
-The `catchError()` operator intercepts an **`Observable that failed**.
+The `catchError()` operator intercepts an **`Observable` that failed**.
 It passes the error an _error handler_ that can do what it wants with the error.
 
 The following `handleError()` method reports the error and then returns an
