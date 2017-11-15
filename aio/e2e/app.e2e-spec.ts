@@ -15,6 +15,16 @@ describe('site App', function() {
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
   });
 
+  it('should set appropriate window titles', () => {
+    expect(browser.getTitle()).toBe('Angular');
+
+    page.getTopMenuLink('features').click();
+    expect(browser.getTitle()).toBe('Angular - FEATURES & BENEFITS');
+
+    page.homeLink.click();
+    expect(browser.getTitle()).toBe('Angular');
+  });
+
   it('should show the tutorial index page at `/tutorial/` after jitterbugging through features', () => {
     // check that we can navigate directly to the tutorial page
     page.navigateTo('tutorial/');
