@@ -9,6 +9,7 @@
 import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
+import { LocationStrategy } from '@angular/common';
 
 
 
@@ -66,11 +67,12 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule) {
   }
 
   const router: Router = ngUpgrade.injector.get(Router);
+  const baseHref: string = ngUpgrade.injector.get(LocationStrategy).getBaseHref();
   const url = document.createElement('a');
 
   ngUpgrade.$injector.get('$rootScope')
       .$on('$locationChangeStart', (_: any, next: string, __: string) => {
         url.href = next;
-        router.navigateByUrl(url.pathname + url.search + url.hash);
+        router.navigateByUrl(url.pathname.replace(baseHref, '') + url.search + url.hash);
       });
 }
