@@ -30,6 +30,7 @@ jobs:
       - restore_cache:
           key: material2-{{ .Branch }}-{{ checksum "package-lock.json" }}
 
+      - run: bazel run @nodejs//:npm install
       - run: bazel build src/cdk/...
       - save_cache:
           key: material2-{{ .Branch }}-{{ checksum "package-lock.json" }}
