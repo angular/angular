@@ -165,6 +165,7 @@
 /src/universal-app/**                              @jelbourn
 
 # Tooling
+/.circleci/**                                      @jelbourn
 /scripts/**                                        @devversion @jelbourn
 /test/**                                           @devversion @jelbourn
 /tools/**                                          @devversion @jelbourn
