@@ -27,8 +27,8 @@ describe('tree benchmark perf', () => {
         runTreeBenchmark({
           id: 'createOnly',
           benchmark,
-          prepare: () => $(CreateBtn).click(),
-          work: () => $(DestroyBtn).click()
+          work: () => $(CreateBtn).click(),
+          prepare: () => $(DestroyBtn).click()
         }).then(done, done.fail);
       });
 
@@ -54,7 +54,7 @@ describe('tree benchmark perf', () => {
             id: 'detectChanges',
             benchmark,
             work: () => $(DetectChangesBtn).click(),
-            setup: () => $(DestroyBtn).click()
+            setup: () => $(CreateBtn).click()
           }).then(done, done.fail);
         });
       }

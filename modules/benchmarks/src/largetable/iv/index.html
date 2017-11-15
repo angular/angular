@@ -2,8 +2,8 @@
 <html>
 <body>
 
-  <h2>Params</h2>
-  <form>
+<h2>Params</h2>
+<form>
     Cols:
     <input type="number" name="cols" placeholder="cols" value="40">
     <br>
@@ -11,25 +11,22 @@
     <input type="number" name="rows" placeholder="rows" value="200">
     <br>
     <button>Apply</button>
-  </form>
+</form>
 
-  <h2>Ng2 Largetable Benchmark</h2>
-  <p>
+<h2>IV Largetable Benchmark</h2>
+<p>
     <button id="destroyDom">destroyDom</button>
     <button id="createDom">createDom</button>
     <button id="detectChanges">detectChanges</button>
     <button id="updateDomProfile">profile updateDom</button>
     <button id="createDomProfile">profile createDom</button>
-  </p>
+</p>
 
-  <div>
-    <largetable id="root">Loading...</largetable>
-  </div>
+<div>
+    <largetable id="root"></largetable>
+</div>
 
-  <script>
-    var mainUrl = window.location.search.split(/[?&]main=([^&]+)/)[1]
-      || '../../bootstrap_ng2.js';
-    document.write('<script src="' + mainUrl + '">\u003c/script>');
-  </script>
+<script type="text/javascript" src="largetable.js"></script>
+
 </body>
 </html>

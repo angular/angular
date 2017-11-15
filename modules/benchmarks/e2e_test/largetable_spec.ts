@@ -39,6 +39,20 @@ describe('largetable benchmark spec', () => {
     });
   });
 
+  it('should work for iv', () => {
+    testTableBenchmark({
+      url: 'all/benchmarks/src/largetable/iv/index.html',
+      ignoreBrowserSynchronization: true,
+    });
+  });
+
+  it('should work for ngiv', () => {
+    testTableBenchmark({
+      url: 'all/benchmarks/src/largetable/ngiv/index.html',
+      ignoreBrowserSynchronization: true,
+    });
+  });
+
   function testTableBenchmark(openConfig: {url: string, ignoreBrowserSynchronization?: boolean}) {
     openBrowser({
       url: openConfig.url,

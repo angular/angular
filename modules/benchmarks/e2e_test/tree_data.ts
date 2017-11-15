@@ -31,7 +31,7 @@ export const Benchmarks: Benchmark[] = [
     url: 'all/benchmarks/src/tree/ng2/index.html',
     buttons: CreateDestroyDetectChangesButtons,
   },
-  {
+  /*{
     id: `deepTree.ng2.next`,
     url: 'all/benchmarks/src/tree/ng2_next/index.html',
     buttons: CreateDestroyDetectChangesButtons,
@@ -77,5 +77,17 @@ export const Benchmarks: Benchmark[] = [
     id: `deepTree.ng1`,
     url: 'all/benchmarks/src/tree/ng1/index.html',
     buttons: CreateDestroyDetectChangesButtons,
+  },*/
+  {
+    id: `deepTree.iv`,
+    url: 'all/benchmarks/src/tree/iv/index.html',
+    buttons: CreateDestroyDetectChangesButtons,
+    ignoreBrowserSynchronization: true,
+  },
+  {
+    id: `deepTree.ngiv`,
+    url: 'all/benchmarks/src/tree/ngiv/index.html',
+    buttons: CreateDestroyDetectChangesButtons,
+    ignoreBrowserSynchronization: true,
   }
 ];

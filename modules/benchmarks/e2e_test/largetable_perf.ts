@@ -13,6 +13,7 @@ interface Worker {
   id: string;
   prepare?(): void;
   work(): void;
+  setup?(): void;
 }
 
 const CreateOnlyWorker: Worker = {
@@ -34,11 +35,17 @@ const UpdateWorker: Worker = {
   work: () => $('#createDom').click()
 };
 
+const DetectChangesWorker: Worker = {
+  id: 'detectChanges',
+  work: () => $('#detectChanges').click(),
+  setup: () => $('#createDom').click(),
+};
+
 describe('largetable benchmark perf', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
+  [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker, DetectChangesWorker].forEach((worker) => {
     describe(worker.id, () => {
       it('should run for ng2', (done) => {
         runTableBenchmark({
@@ -48,7 +55,7 @@ describe('largetable benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should run for ng2 with ngSwitch', (done) => {
+      /*it('should run for ng2 with ngSwitch', (done) => {
         runTableBenchmark({
           id: `largeTable.ng2_switch.${worker.id}`,
           url: 'all/benchmarks/src/largetable/ng2_switch/index.html',
@@ -72,6 +79,24 @@ describe('largetable benchmark perf', () => {
           ignoreBrowserSynchronization: true,
           worker: worker
         }).then(done, done.fail);
+      });*/
+
+      it('should run for iv', (done) => {
+        runTableBenchmark({
+          id: `largeTable.iv.${worker.id}`,
+          url: 'all/benchmarks/src/largetable/iv/index.html',
+          ignoreBrowserSynchronization: true,
+          worker: worker
+        }).then(done, done.fail);
+      });
+
+      it('should run for ngiv', (done) => {
+        runTableBenchmark({
+          id: `largeTable.ngiv.${worker.id}`,
+          url: 'all/benchmarks/src/largetable/ngiv/index.html',
+          ignoreBrowserSynchronization: true,
+          worker: worker
+        }).then(done, done.fail);
       });
     });
   });
@@ -84,7 +109,8 @@ describe('largetable benchmark perf', () => {
       ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
       params: [{name: 'cols', value: 40}, {name: 'rows', value: 200}],
       prepare: config.worker.prepare,
-      work: config.worker.work
+      work: config.worker.work,
+      setup: config.worker.setup
     });
   }
 });

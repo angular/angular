@@ -27,6 +27,12 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
     appRef.tick();
   }
 
+  function detectChanges() {
+    for (let i = 0; i < 10; i++) {
+      appRef.tick();
+    }
+  }
+
   function noop() {}
 
   const injector = moduleRef.injector;
@@ -35,6 +41,7 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
   table = appRef.components[0].instance;
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
+  bindAction('#detectChanges', detectChanges);
   bindAction('#updateDomProfile', profile(createDom, noop, 'update'));
   bindAction('#createDomProfile', profile(createDom, destroyDom, 'create'));
 }
