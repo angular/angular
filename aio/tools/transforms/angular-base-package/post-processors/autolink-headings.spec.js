@@ -14,20 +14,37 @@ describe('autolink-headings postprocessor', () => {
   });
 
   it('should add anchors to headings', () => {
-    const docs = [ {
-      docType: 'a',
-      renderedContent: `
-        <h1>Heading 1</h2>
-        <h2>Heading with <strong>bold</strong></h2>
-        <h3>Heading with encoded chars &#x26;</h3>
-    `
-    }];
+    const originalContent = `
+      <h1>Heading 1</h2>
+      <h2>Heading with <strong>bold</strong></h2>
+      <h3>Heading with encoded chars &#x26;</h3>
+    `;
+    const processedContent = `
+      <h1 id="heading-1"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-1"><i class="material-icons">link</i></a>Heading 1</h1>
+      <h2 id="heading-with-bold"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-with-bold"><i class="material-icons">link</i></a>Heading with <strong>bold</strong></h2>
+      <h3 id="heading-with-encoded-chars-"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-with-encoded-chars-"><i class="material-icons">link</i></a>Heading with encoded chars &#x26;</h3>
+    `;
+
+    const docs = [{docType: 'a', renderedContent: originalContent}];
     processor.$process(docs);
-    expect(docs[0].renderedContent).toEqual(`
-        <h1 id="heading-1"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-1"><i class="material-icons">link</i></a>Heading 1</h1>
-        <h2 id="heading-with-bold"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-with-bold"><i class="material-icons">link</i></a>Heading with <strong>bold</strong></h2>
-        <h3 id="heading-with-encoded-chars-"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-with-encoded-chars-"><i class="material-icons">link</i></a>Heading with encoded chars &#x26;</h3>
-    `);
+    expect(docs[0].renderedContent).toBe(processedContent);
+  });
+
+  it('should ignore headings with the `no-anchor` class', () => {
+    const originalContent = `
+      <h1 class="no-anchor">Heading 1</h2>
+      <h2 class="no-anchor">Heading with <strong>bold</strong></h2>
+      <h3 class="no-anchor">Heading with encoded chars &#x26;</h3>
+    `;
+    const processedContent = `
+      <h1 class="no-anchor" id="heading-1">Heading 1</h1>
+      <h2 class="no-anchor" id="heading-with-bold">Heading with <strong>bold</strong></h2>
+      <h3 class="no-anchor" id="heading-with-encoded-chars-">Heading with encoded chars &#x26;</h3>
+    `;
+
+    const docs = [{docType: 'a', renderedContent: originalContent}];
+    processor.$process(docs);
+    expect(docs[0].renderedContent).toBe(processedContent);
   });
 });
 
