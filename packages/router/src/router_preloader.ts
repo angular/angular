@@ -36,7 +36,7 @@ export abstract class PreloadingStrategy {
  * @howToUse
  *
  * ```
- * RouteModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
+ * RouterModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
  * ```
  *
  * @experimental

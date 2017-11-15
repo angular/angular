@@ -254,6 +254,9 @@ export declare const PRIMARY_OUTLET = "primary";
 export declare function provideRoutes(routes: Routes): any;
 
 /** @stable */
+export declare type QueryParamsHandling = 'merge' | 'preserve' | '';
+
+/** @stable */
 export interface Resolve<T> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<T> | Promise<T> | T;
 }
@@ -490,6 +493,12 @@ export declare class RoutesRecognized extends RouterEvent {
 
 /** @experimental */
 export declare type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+
+/** @experimental */
+export declare class Tree<T> {
+    readonly root: T;
+    constructor(root: TreeNode<T>);
+}
 
 /** @experimental */
 export declare abstract class UrlHandlingStrategy {

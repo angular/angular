@@ -7,7 +7,7 @@
  */
 
 
-export {Data, LoadChildren, LoadChildrenCallback, ResolveData, Route, Routes, RunGuardsAndResolvers, UrlMatchResult, UrlMatcher} from './config';
+export {Data, LoadChildren, LoadChildrenCallback, QueryParamsHandling, ResolveData, Route, Routes, RunGuardsAndResolvers, UrlMatchResult, UrlMatcher} from './config';
 export {RouterLink, RouterLinkWithHref} from './directives/router_link';
 export {RouterLinkActive} from './directives/router_link_active';
 export {RouterOutlet} from './directives/router_outlet';
@@ -23,6 +23,7 @@ export {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot
 export {PRIMARY_OUTLET, ParamMap, Params, convertToParamMap} from './shared';
 export {UrlHandlingStrategy} from './url_handling_strategy';
 export {DefaultUrlSerializer, UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
+export {Tree} from './utils/tree';
 export {VERSION} from './version';
 
 export * from './private_export';

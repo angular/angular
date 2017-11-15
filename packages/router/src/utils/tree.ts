@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * @experimental
+ */
 export class Tree<T> {
   /** @internal */
   _root: TreeNode<T>;
