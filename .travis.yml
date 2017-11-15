@@ -54,7 +54,6 @@ env:
     - CI_MODE=browserstack_optional
     - CI_MODE=aio_tools_test
     - CI_MODE=aio
-    - CI_MODE=aio_optional
     - CI_MODE=aio_e2e AIO_SHARD=0
     - CI_MODE=aio_e2e AIO_SHARD=1
     - CI_MODE=bazel
@@ -64,7 +63,6 @@ matrix:
   allow_failures:
     - env: "CI_MODE=saucelabs_optional"
     - env: "CI_MODE=browserstack_optional"
-    - env: "CI_MODE=aio_optional"
 
 before_install:
   # source the env.sh script so that the exported variables are available to other scripts later on
