@@ -68,7 +68,7 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
         start: null as any as number,
         length: null as any as number,
         messageText:
-            'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
+            'Angular compiler option "flatModuleOutFile" requires one and only one .ts file in the "files" field.',
         category: ts.DiagnosticCategory.Error,
         code: 0
       }]
