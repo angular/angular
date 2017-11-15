@@ -232,7 +232,7 @@ export function main() {
       const fixture =
           TestBed.overrideProvider(SomeDep, {useFactory: () => overwrittenValue, deps: []})
               .configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
-              .createComponent(SomePublicComponent);
+              .createComponent<SomePublicComponent>(SomePublicComponent);
 
       expect(fixture.componentInstance.dep).toBe(overwrittenValue);
     });

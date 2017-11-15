@@ -27,7 +27,7 @@ describe('metadata bundler', () => {
 
     const originalOne = './src/one';
     const originalTwo = './src/two/index';
-    expect(Object.keys(result.metadata.origins)
+    expect(Object.keys(result.metadata.origins !)
                .sort()
                .map(name => ({name, value: result.metadata.origins ![name]})))
         .toEqual([
