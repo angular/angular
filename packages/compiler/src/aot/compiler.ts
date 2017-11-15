@@ -206,11 +206,16 @@ export class AotCompiler {
       // and they also cause TypeScript to include these files into the program too,
       // which will make them part of the analyzedFiles.
       const externalReferences: StaticSymbol[] = [
+        // Add references that are available from all the modules and imports.
         ...ngModuleMeta.transitiveModule.directives.map(d => d.reference),
         ...ngModuleMeta.transitiveModule.pipes.map(d => d.reference),
         ...ngModuleMeta.importedModules.map(m => m.type.reference),
         ...ngModuleMeta.exportedModules.map(m => m.type.reference),
+
+        // Add references that might be inserted by the template compiler.
+        ...this._externalIdentifierReferences([Identifiers.TemplateRef, Identifiers.ElementRef]),
       ];
+
       const externalReferenceVars = new Map<any, string>();
       externalReferences.forEach((ref, typeIndex) => {
         if (this._host.isSourceFile(ref.filePath)) {
@@ -246,6 +251,17 @@ export class AotCompiler {
     if (outputCtx.statements.length === 0) {
       _createEmptyStub(outputCtx);
     }
+  }
+
+  private _externalIdentifierReferences(references: o.ExternalReference[]): StaticSymbol[] {
+    const result: StaticSymbol[] = [];
+    for (let reference of references) {
+      const token = createTokenForExternalReference(this._reflector, reference);
+      if (token.identifier) {
+        result.push(token.identifier.reference);
+      }
+    }
+    return result;
   }
 
   private _createTypeCheckBlock(
