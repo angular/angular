@@ -930,7 +930,7 @@ describe('ng program', () => {
 
       const structuralErrors = program.getNgStructuralDiagnostics();
       expect(structuralErrors.length).toBe(1);
-      expect(structuralErrors[0].messageText).toContain('Function calls are not supported.');
+      expect(structuralErrors[0].messageText).toContain('Function expressions are not supported');
     });
 
     it('should not throw on structural errors but collect them (loadNgStructureAsync)', (done) => {
@@ -943,7 +943,7 @@ describe('ng program', () => {
       program.loadNgStructureAsync().then(() => {
         const structuralErrors = program.getNgStructuralDiagnostics();
         expect(structuralErrors.length).toBe(1);
-        expect(structuralErrors[0].messageText).toContain('Function calls are not supported.');
+        expect(structuralErrors[0].messageText).toContain('Function expressions are not supported');
         done();
       });
     });
@@ -982,7 +982,8 @@ describe('ng program', () => {
          const program = ng.createProgram({rootNames: allRootNames, options, host});
          const structuralErrors = program.getNgStructuralDiagnostics();
          expect(structuralErrors.length).toBe(1);
-         expect(structuralErrors[0].messageText).toContain('Function calls are not supported.');
+         expect(structuralErrors[0].messageText)
+             .toContain('Function expressions are not supported');
        });
   });
 });

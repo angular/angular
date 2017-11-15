@@ -234,15 +234,25 @@ describe('StaticSymbolResolver', () => {
     });
     expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'a')).metadata)
         .toEqual(symbolCache.get('/test2.ts', 'b'));
-    expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'x')).metadata).toEqual([
-      symbolCache.get('/test2.ts', 'y')
-    ]);
+    expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'x')).metadata).toEqual([{
+      __symbolic: 'resolved',
+      symbol: symbolCache.get('/test2.ts', 'y'),
+      line: 3,
+      character: 24,
+      fileName: '/test.ts'
+    }]);
     expect(symbolResolver.resolveSymbol(symbolCache.get('/test.ts', 'simpleFn')).metadata).toEqual({
       __symbolic: 'function',
       parameters: ['fnArg'],
       value: [
-        symbolCache.get('/test.ts', 'a'), symbolCache.get('/test2.ts', 'y'),
-        Object({__symbolic: 'reference', name: 'fnArg'})
+        symbolCache.get('/test.ts', 'a'), {
+          __symbolic: 'resolved',
+          symbol: symbolCache.get('/test2.ts', 'y'),
+          line: 6,
+          character: 21,
+          fileName: '/test.ts'
+        },
+        {__symbolic: 'reference', name: 'fnArg'}
       ]
     });
   });

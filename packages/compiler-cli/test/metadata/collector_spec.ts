@@ -112,7 +112,13 @@ describe('Collector', () => {
           __symbolic: 'class',
           decorators: [{
             __symbolic: 'call',
-            expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+            expression: {
+              __symbolic: 'reference',
+              module: 'angular2/core',
+              name: 'Component',
+              line: 4,
+              character: 7
+            },
             arguments: [{
               selector: 'my-hero-detail',
               template: `
@@ -132,8 +138,13 @@ describe('Collector', () => {
               __symbolic: 'property',
               decorators: [{
                 __symbolic: 'call',
-                expression:
-                    {__symbolic: 'reference', module: 'angular2/core', name: 'Input'}
+                expression: {
+                  __symbolic: 'reference',
+                  module: 'angular2/core',
+                  name: 'Input',
+                  line: 18,
+                  character: 9
+                }
               }]
             }]
           }
@@ -153,7 +164,13 @@ describe('Collector', () => {
           __symbolic: 'class',
           decorators: [{
             __symbolic: 'call',
-            expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+            expression: {
+              __symbolic: 'reference',
+              module: 'angular2/core',
+              name: 'Component',
+              line: 9,
+              character: 7
+            },
             arguments: [{
               selector: 'my-app',
               template: `
@@ -172,20 +189,52 @@ describe('Collector', () => {
                   __symbolic: 'reference',
                   module: './hero-detail.component',
                   name: 'HeroDetailComponent',
+                  line: 22,
+                  character: 21
                 },
-                {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
+                {
+                  __symbolic: 'reference',
+                  module: 'angular2/common',
+                  name: 'NgFor',
+                  line: 22,
+                  character: 42
+                }
               ],
-              providers: [{__symbolic: 'reference', module: './hero.service', default: true}],
+              providers: [{
+                __symbolic: 'reference',
+                module: './hero.service',
+                default: true,
+                line: 23,
+                character: 20
+              }],
               pipes: [
-                {__symbolic: 'reference', module: 'angular2/common', name: 'LowerCasePipe'},
-                {__symbolic: 'reference', module: 'angular2/common', name: 'UpperCasePipe'}
+                {
+                  __symbolic: 'reference',
+                  module: 'angular2/common',
+                  name: 'LowerCasePipe',
+                  line: 24,
+                  character: 16
+                },
+                {
+                  __symbolic: 'reference',
+                  module: 'angular2/common',
+                  name: 'UpperCasePipe',
+                  line: 24,
+                  character: 38
+                }
               ]
             }]
           }],
           members: {
             __ctor__: [{
               __symbolic: 'constructor',
-              parameters: [{__symbolic: 'reference', module: './hero.service', default: true}]
+              parameters: [{
+                __symbolic: 'reference',
+                module: './hero.service',
+                default: true,
+                line: 31,
+                character: 42
+              }]
             }],
             onSelect: [{__symbolic: 'method'}],
             ngOnInit: [{__symbolic: 'method'}],
@@ -236,22 +285,23 @@ describe('Collector', () => {
   });
 
   it('should record annotations on set and get declarations', () => {
-    const propertyData = {
+    const propertyData = (line: number) => ({
       name: [{
         __symbolic: 'property',
         decorators: [{
           __symbolic: 'call',
-          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Input'},
+          expression:
+              {__symbolic: 'reference', module: 'angular2/core', name: 'Input', line, character: 9},
           arguments: ['firstName']
         }]
       }]
-    };
+    });
     const caseGetProp = <ClassMetadata>casesMetadata.metadata['GetProp'];
-    expect(caseGetProp.members).toEqual(propertyData);
+    expect(caseGetProp.members).toEqual(propertyData(11));
     const caseSetProp = <ClassMetadata>casesMetadata.metadata['SetProp'];
-    expect(caseSetProp.members).toEqual(propertyData);
+    expect(caseSetProp.members).toEqual(propertyData(19));
     const caseFullProp = <ClassMetadata>casesMetadata.metadata['FullProp'];
-    expect(caseFullProp.members).toEqual(propertyData);
+    expect(caseFullProp.members).toEqual(propertyData(27));
   });
 
   it('should record references to parameterized types', () => {
@@ -260,7 +310,13 @@ describe('Collector', () => {
       __symbolic: 'class',
       decorators: [{
         __symbolic: 'call',
-        expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Injectable'}
+        expression: {
+          __symbolic: 'reference',
+          module: 'angular2/core',
+          name: 'Injectable',
+          line: 40,
+          character: 7
+        }
       }],
       members: {
         __ctor__: [{
@@ -313,7 +369,7 @@ describe('Collector', () => {
     const ctor = <ConstructorMetadata>someClass.members !['__ctor__'][0];
     const parameters = ctor.parameters;
     expect(parameters).toEqual([
-      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
+      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor', line: 6, character: 29}
     ]);
   });
 
@@ -398,7 +454,7 @@ describe('Collector', () => {
     const ctor = <ConstructorMetadata>someClass.members !['__ctor__'][0];
     const parameters = ctor.parameters;
     expect(parameters).toEqual([
-      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor'}
+      {__symbolic: 'reference', module: 'angular2/common', name: 'NgFor', line: 6, character: 29}
     ]);
   });
 
@@ -427,7 +483,13 @@ describe('Collector', () => {
       B: 1,
       C: 30,
       D: 40,
-      E: {__symbolic: 'reference', module: './exported-consts', name: 'constValue'}
+      E: {
+        __symbolic: 'reference',
+        module: './exported-consts',
+        name: 'constValue',
+        line: 5,
+        character: 75
+      }
     });
   });
 
@@ -457,13 +519,25 @@ describe('Collector', () => {
     expect(classData).toBeDefined();
     expect(classData.decorators).toEqual([{
       __symbolic: 'call',
-      expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+      expression: {
+        __symbolic: 'reference',
+        module: 'angular2/core',
+        name: 'Component',
+        line: 4,
+        character: 5
+      },
       arguments: [{
         providers: {
           __symbolic: 'call',
           expression: {
             __symbolic: 'select',
-            expression: {__symbolic: 'reference', module: './static-method', name: 'MyModule'},
+            expression: {
+              __symbolic: 'reference',
+              module: './static-method',
+              name: 'MyModule',
+              line: 5,
+              character: 17
+            },
             member: 'with'
           },
           arguments: ['a']
@@ -489,13 +563,25 @@ describe('Collector', () => {
     expect(classData).toBeDefined();
     expect(classData.decorators).toEqual([{
       __symbolic: 'call',
-      expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+      expression: {
+        __symbolic: 'reference',
+        module: 'angular2/core',
+        name: 'Component',
+        line: 4,
+        character: 5
+      },
       arguments: [{
         providers: [{
           provide: 'a',
           useValue: {
             __symbolic: 'select',
-            expression: {__symbolic: 'reference', module: './static-field', name: 'MyModule'},
+            expression: {
+              __symbolic: 'reference',
+              module: './static-field',
+              name: 'MyModule',
+              line: 5,
+              character: 45
+            },
             member: 'VALUE'
           }
         }]
@@ -578,8 +664,20 @@ describe('Collector', () => {
     const metadata = collector.getMetadata(source) !;
     expect(metadata.metadata).toEqual({
       MyClass: Object({__symbolic: 'class'}),
-      OtherModule: {__symbolic: 'reference', module: './static-field-reference', name: 'Foo'},
-      MyOtherModule: {__symbolic: 'reference', module: './static-field', name: 'MyModule'}
+      OtherModule: {
+        __symbolic: 'reference',
+        module: './static-field-reference',
+        name: 'Foo',
+        line: 4,
+        character: 12
+      },
+      MyOtherModule: {
+        __symbolic: 'reference',
+        module: './static-field',
+        name: 'MyModule',
+        line: 4,
+        character: 25
+      }
     });
   });
 
@@ -598,7 +696,13 @@ describe('Collector', () => {
         __symbolic: 'class',
         decorators: [{
           __symbolic: 'call',
-          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+          expression: {
+            __symbolic: 'reference',
+            module: 'angular2/core',
+            name: 'Component',
+            line: 11,
+            character: 5
+          },
           arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
         }]
       }
@@ -620,7 +724,13 @@ describe('Collector', () => {
         __symbolic: 'class',
         decorators: [{
           __symbolic: 'call',
-          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Component'},
+          expression: {
+            __symbolic: 'reference',
+            module: 'angular2/core',
+            name: 'Component',
+            line: 11,
+            character: 5
+          },
           arguments: [{providers: [{__symbolic: 'reference', name: 'REQUIRED_VALIDATOR'}]}]
         }]
       }
@@ -653,7 +763,13 @@ describe('Collector', () => {
         __symbolic: 'constructor',
         parameterDecorators: [[{
           __symbolic: 'call',
-          expression: {__symbolic: 'reference', module: 'angular2/core', name: 'Inject'},
+          expression: {
+            __symbolic: 'reference',
+            module: 'angular2/core',
+            name: 'Inject',
+            line: 6,
+            character: 19
+          },
           arguments: ['a']
         }]],
         parameters: [{__symbolic: 'reference', name: 'any'}]
@@ -687,13 +803,20 @@ describe('Collector', () => {
           __symbolic: 'reference',
           module: './external',
           name: 'external',
+          line: 0,
+          character: 68,
         }
       });
     });
 
     it('should simplify a redundant template', () => {
-      e('`${external}`', 'import {external} from "./external";')
-          .toEqual({__symbolic: 'reference', module: './external', name: 'external'});
+      e('`${external}`', 'import {external} from "./external";').toEqual({
+        __symbolic: 'reference',
+        module: './external',
+        name: 'external',
+        line: 0,
+        character: 59
+      });
     });
 
     it('should be able to collect complex template with imported references', () => {
@@ -710,11 +833,18 @@ describe('Collector', () => {
               __symbolic: 'binop',
               operator: '+',
               left: 'foo:',
-              right: {__symbolic: 'reference', module: './external', name: 'foo'}
+              right: {
+                __symbolic: 'reference',
+                module: './external',
+                name: 'foo',
+                line: 0,
+                character: 63
+              }
             },
             right: ', bar:'
           },
-          right: {__symbolic: 'reference', module: './external', name: 'bar'}
+          right:
+              {__symbolic: 'reference', module: './external', name: 'bar', line: 0, character: 75}
         },
         right: ', end'
       });
@@ -741,11 +871,11 @@ describe('Collector', () => {
       __ctor__: [{
         __symbolic: 'constructor',
         parameters: [
-          {__symbolic: 'reference', module: './foo', name: 'Foo'},
-          {__symbolic: 'reference', module: './foo', name: 'Foo'},
-          {__symbolic: 'reference', module: './foo', name: 'Foo'},
-          {__symbolic: 'reference', module: './foo', name: 'Foo'},
-          {__symbolic: 'reference', module: './foo', name: 'Foo'}
+          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24},
+          {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24}
         ]
       }]
     });
@@ -825,7 +955,9 @@ describe('Collector', () => {
         extends: {
           __symbolic: 'reference',
           module: './class-inheritance-parent',
-          name: 'ParentClassFromOtherFile'
+          name: 'ParentClassFromOtherFile',
+          line: 9,
+          character: 45,
         }
       });
     });

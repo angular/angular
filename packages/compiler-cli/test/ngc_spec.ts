@@ -184,8 +184,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      expect(errorSpy.calls.mostRecent().args[0])
-          .toContain('Error at ' + path.join(basePath, 'mymodule.ts.MyComp.html'));
+      expect(errorSpy.calls.mostRecent().args[0]).toContain('mymodule.ts.MyComp.html');
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain(`Property 'unknownProp' does not exist on type 'MyComp'`);
 
@@ -215,8 +214,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      expect(errorSpy.calls.mostRecent().args[0])
-          .toContain('Error at ' + path.join(basePath, 'my.component.html(1,5):'));
+      expect(errorSpy.calls.mostRecent().args[0]).toContain('my.component.html(1,5):');
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain(`Property 'unknownProp' does not exist on type 'MyComp'`);
 
@@ -1565,5 +1563,50 @@ describe('ngc transformer command-line', () => {
       `);
          expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
        });
+  });
+
+  describe('formatted messages', () => {
+    it('should emit a formatted error message for a structural error', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/indirect2.ts', `
+        declare var f: any;
+
+        export const t2 = f\`<p>hello</p>\`;
+      `);
+      write('src/lib/indirect1.ts', `
+        import {t2} from './indirect2';
+        export const t1 = t2 + ' ';
+      `);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+        import {t1} from './indirect1';
+
+        @Component({
+          template: t1,
+          styleUrls: ['./test.component.css']
+        })
+        export class TestComponent {}
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
+      expect(messages[0])
+          .toEqual(`lib/test.component.ts(6,21): Error during template compile of 'TestComponent'
+  Tagged template expressions are not supported in metadata in 't1'
+    't1' references 't2' at lib/indirect1.ts(3,27)
+      't2' contains the error at lib/indirect2.ts(4,27).
+`);
+    });
   });
 });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedModules, ParseSourceSpan, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isSyntaxError} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedModules, ParseSourceSpan, Position, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -14,12 +14,11 @@ import * as ts from 'typescript';
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {ModuleMetadata, createBundleIndexHost} from '../metadata/index';
 
-import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
+import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback} from './api';
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused} from './util';
-
 
 
 /**
@@ -378,10 +377,12 @@ class AngularCompilerProgram implements Program {
   }
 
   private get structuralDiagnostics(): Diagnostic[] {
-    if (!this._structuralDiagnostics) {
+    let diagnostics = this._structuralDiagnostics;
+    if (!diagnostics) {
       this.initSync();
+      diagnostics = (this._structuralDiagnostics = this._structuralDiagnostics || []);
     }
-    return this._structuralDiagnostics !;
+    return diagnostics;
   }
 
   private get tsProgram(): ts.Program {
@@ -430,16 +431,9 @@ class AngularCompilerProgram implements Program {
         this.rootNames, this.options, this.host, this.metadataCache, codegen,
         this.oldProgramLibrarySummaries);
     const aotOptions = getAotCompilerOptions(this.options);
-    this._structuralDiagnostics = [];
-    const errorCollector =
-        (this.options.collectAllErrors || this.options.fullTemplateTypeCheck) ? (err: any) => {
-          this._structuralDiagnostics !.push({
-            messageText: err.toString(),
-            category: ts.DiagnosticCategory.Error,
-            source: SOURCE,
-            code: DEFAULT_ERROR_CODE
-          });
-        } : undefined;
+    const errorCollector = (this.options.collectAllErrors || this.options.fullTemplateTypeCheck) ?
+        (err: any) => this._addStructuralDiagnostics(err) :
+        undefined;
     this._compiler = createAotCompiler(this._hostAdapter, aotOptions, errorCollector).compiler;
   }
 
@@ -522,31 +516,24 @@ class AngularCompilerProgram implements Program {
     this._hostAdapter.isSourceFile = () => false;
     this._tsProgram = ts.createProgram(this.rootNames, this.options, this.hostAdapter);
     if (isSyntaxError(e)) {
-      const parserErrors = getParseErrors(e);
-      if (parserErrors && parserErrors.length) {
-        this._structuralDiagnostics = [
-          ...(this._structuralDiagnostics || []),
-          ...parserErrors.map<Diagnostic>(e => ({
-                                            messageText: e.contextualMessage(),
-                                            category: ts.DiagnosticCategory.Error,
-                                            span: e.span,
-                                            source: SOURCE,
-                                            code: DEFAULT_ERROR_CODE
-                                          }))
-        ];
-      } else {
-        this._structuralDiagnostics = [
-          ...(this._structuralDiagnostics || []), {
-            messageText: e.message,
-            category: ts.DiagnosticCategory.Error,
-            source: SOURCE,
-            code: DEFAULT_ERROR_CODE
-          }
-        ];
-      }
+      this._addStructuralDiagnostics(e);
       return;
     }
     throw e;
+  }
+
+  private _addStructuralDiagnostics(error: Error) {
+    const diagnostics = this._structuralDiagnostics || (this._structuralDiagnostics = []);
+    if (isSyntaxError(error)) {
+      diagnostics.push(...syntaxErrorToDiagnostics(error));
+    } else {
+      diagnostics.push({
+        messageText: error.toString(),
+        category: ts.DiagnosticCategory.Error,
+        source: SOURCE,
+        code: DEFAULT_ERROR_CODE
+      });
+    }
   }
 
   // Note: this returns a ts.Diagnostic so that we
@@ -842,4 +829,57 @@ function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
     emittedFiles.push(...er.emittedFiles);
   }
   return {diagnostics, emitSkipped, emittedFiles};
+}
+
+function diagnosticSourceOfSpan(span: ParseSourceSpan): ts.SourceFile {
+  // For diagnostics, TypeScript only uses the fileName and text properties.
+  // The redundant '()' are here is to avoid having clang-format breaking the line incorrectly.
+  return ({ fileName: span.start.file.url, text: span.start.file.content } as any);
+}
+
+function diagnosticSourceOfFileName(fileName: string, program: ts.Program): ts.SourceFile {
+  const sourceFile = program.getSourceFile(fileName);
+  if (sourceFile) return sourceFile;
+
+  // If we are reporting diagnostics for a source file that is not in the project then we need
+  // to fake a source file so the diagnostic formatting routines can emit the file name.
+  // The redundant '()' are here is to avoid having clang-format breaking the line incorrectly.
+  return ({ fileName, text: '' } as any);
+}
+
+
+function diagnosticChainFromFormattedDiagnosticChain(chain: FormattedMessageChain):
+    DiagnosticMessageChain {
+  return {
+    messageText: chain.message,
+    next: chain.next && diagnosticChainFromFormattedDiagnosticChain(chain.next),
+    position: chain.position
+  };
+}
+
+function syntaxErrorToDiagnostics(error: Error): Diagnostic[] {
+  const parserErrors = getParseErrors(error);
+  if (parserErrors && parserErrors.length) {
+    return parserErrors.map<Diagnostic>(e => ({
+                                          messageText: e.contextualMessage(),
+                                          file: diagnosticSourceOfSpan(e.span),
+                                          start: e.span.start.offset,
+                                          length: e.span.end.offset - e.span.start.offset,
+                                          category: ts.DiagnosticCategory.Error,
+                                          source: SOURCE,
+                                          code: DEFAULT_ERROR_CODE
+                                        }));
+  } else {
+    if (isFormattedError(error)) {
+      return [{
+        messageText: error.message,
+        chain: error.chain && diagnosticChainFromFormattedDiagnosticChain(error.chain),
+        category: ts.DiagnosticCategory.Error,
+        source: SOURCE,
+        code: DEFAULT_ERROR_CODE,
+        position: error.position
+      }];
+    }
+  }
+  return [];
 }
