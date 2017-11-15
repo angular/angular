@@ -50,8 +50,7 @@ travisFoldEnd "bower-install"
 if [[ ${TRAVIS} &&
   ${CI_MODE} == "aio" ||
   ${CI_MODE} == "aio_e2e" ||
-  ${CI_MODE} == "aio_tools_test" ||
-  ${CI_MODE} == "aio_optional"
+  ${CI_MODE} == "aio_tools_test"
 ]]; then
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
   travisFoldStart "yarn-install.aio"
@@ -84,8 +83,7 @@ if [[ ${TRAVIS} &&
   ${CI_MODE} == "e2e" ||
   ${CI_MODE} == "e2e_2" ||
   ${CI_MODE} == "aio" ||
-  ${CI_MODE} == "aio_e2e" ||
-  ${CI_MODE} == "aio_optional"
+  ${CI_MODE} == "aio_e2e"
 ]]; then
   travisFoldStart "install-chromium"
     (
