@@ -150,8 +150,13 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
   { provide: NgModuleResolver, deps: [CompileReflector]},
 ];
 
+/**
+ * @experimental
+ */
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];
+
+  /* @internal */
   constructor(defaultOptions: CompilerOptions[]) {
     const compilerOptions: CompilerOptions = {
       useJit: true,
