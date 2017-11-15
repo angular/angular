@@ -46,9 +46,6 @@ case ${CI_MODE} in
   aio_e2e)
     ${thisDir}/test-aio-e2e.sh
     ;;
-  aio_optional)
-    ${thisDir}/test-aio-optional.sh
-    ;;
   bazel)
     ${thisDir}/test-bazel.sh
     ;;
