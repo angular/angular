@@ -10,7 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {Diagnostic, Diagnostics, Span} from '../src/types';
+import {Diagnostic, DiagnosticMessageChain, Diagnostics, Span} from '../src/types';
 
 export type MockData = string | MockDirectory;
 
@@ -317,6 +317,25 @@ export function noDiagnostics(diagnostics: Diagnostics) {
   }
 }
 
+export function diagnosticMessageContains(
+    message: string | DiagnosticMessageChain, messageFragment: string): boolean {
+  if (typeof message == 'string') {
+    return message.indexOf(messageFragment) >= 0;
+  }
+  if (message.message.indexOf(messageFragment) >= 0) {
+    return true;
+  }
+  if (message.next) {
+    return diagnosticMessageContains(message.next, messageFragment);
+  }
+  return false;
+}
+
+export function findDiagnostic(diagnostics: Diagnostic[], messageFragment: string): Diagnostic|
+    undefined {
+  return diagnostics.find(d => diagnosticMessageContains(d.message, messageFragment));
+}
+
 export function includeDiagnostic(
     diagnostics: Diagnostics, message: string, text?: string, len?: string): void;
 export function includeDiagnostic(
@@ -324,14 +343,18 @@ export function includeDiagnostic(
 export function includeDiagnostic(diagnostics: Diagnostics, message: string, p1?: any, p2?: any) {
   expect(diagnostics).toBeDefined();
   if (diagnostics) {
-    const diagnostic = diagnostics.find(d => d.message.indexOf(message) >= 0) as Diagnostic;
-    expect(diagnostic).toBeDefined();
+    const diagnostic = findDiagnostic(diagnostics, message);
+    expect(diagnostic).toBeDefined(`no diagnostic contains '${message}`);
     if (diagnostic && p1 != null) {
       const at = typeof p1 === 'number' ? p1 : p2.indexOf(p1);
       const len = typeof p2 === 'number' ? p2 : p1.length;
-      expect(diagnostic.span.start).toEqual(at);
+      expect(diagnostic.span.start)
+          .toEqual(
+              at,
+              `expected message '${message}' was reported at ${diagnostic.span.start} but should be ${at}`);
       if (len != null) {
-        expect(diagnostic.span.end - diagnostic.span.start).toEqual(len);
+        expect(diagnostic.span.end - diagnostic.span.start)
+            .toEqual(len, `expected '${message}'s span length to be ${len}`);
       }
     }
   }

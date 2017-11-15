@@ -10,7 +10,7 @@ import {NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
 import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
-import {Declarations, Diagnostic, DiagnosticKind, Diagnostics, Span, TemplateSource} from './types';
+import {Declarations, Diagnostic, DiagnosticKind, DiagnosticMessageChain, Diagnostics, Span, TemplateSource} from './types';
 import {offsetSpan, spanOf} from './utils';
 
 export interface AstProvider {
@@ -56,7 +56,7 @@ export function getDeclarationDiagnostics(
 
   let directives: Set<StaticSymbol>|undefined = undefined;
   for (const declaration of declarations) {
-    const report = (message: string, span?: Span) => {
+    const report = (message: string | DiagnosticMessageChain, span?: Span) => {
       results.push(<Diagnostic>{
         kind: DiagnosticKind.Error,
         span: span || declaration.declarationSpan, message

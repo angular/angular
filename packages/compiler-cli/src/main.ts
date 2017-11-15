@@ -20,7 +20,6 @@ import {GENERATED_FILES} from './transformers/util';
 
 import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult, filterErrorsAndWarnings} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
-import {isSyntaxError} from '@angular/compiler';
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
