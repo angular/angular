@@ -87,6 +87,23 @@ describe('ng type checker', () => {
     addTests({fullTemplateTypeCheck: true});
   });
 
+  describe('regressions', () => {
+    // #19485
+    it('should accept if else (TemplateRef)', () => {
+      accept(
+          {
+            'src/app.component.html': `
+              <div class="text-center" *ngIf="!person; else e">
+                No person supplied.
+              </div>
+              <ng-template #e>
+                Welcome {{person.name}}!
+              <ng-template>`
+          },
+          {fullTemplateTypeCheck: true});
+    });
+  });
+
   function addTests(config: {fullTemplateTypeCheck: boolean}) {
     function a(template: string) { accept({'src/app.component.html': template}, config); }
 
@@ -234,6 +251,7 @@ const QUICKSTART = {
   `,
   'src/app.module.ts': `
     import { NgModule }      from '@angular/core';
+    import { CommonModule }  from '@angular/common';
     import { AppComponent, APipe, ADirective }  from './app.component';
     import { LibDirective, LibPipe } from './lib';
 
@@ -246,7 +264,7 @@ const QUICKSTART = {
     @NgModule({
       declarations: [ AppComponent, APipe, ADirective ],
       bootstrap:    [ AppComponent ],
-      imports:      [ LibModule ]
+      imports:      [ LibModule, CommonModule ]
     })
     export class AppModule { }
   `
