@@ -288,7 +288,7 @@ export function main() {
           Injector.create([CarWithDashboard.PROVIDER, Engine.PROVIDER, Dashboard.PROVIDER]);
       expect(() => injector.get(CarWithDashboard))
           .toThrowError(
-              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]:
+              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: 
   NullInjectorError: No provider for DashboardSoftware!`);
     });
 
@@ -415,7 +415,7 @@ export function main() {
             parent);
 
         expect(() => child.get(Car))
-            .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]:
+            .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]: 
   NullInjectorError: No provider for Engine!`);
       });
     });

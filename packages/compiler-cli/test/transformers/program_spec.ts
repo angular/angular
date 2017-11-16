@@ -325,7 +325,7 @@ describe('ng program', () => {
          'src/main.ts': `
         import {NgModule} from '@angular/core';
 
-        @NgModule(() => {if (1==1) return null as any;})
+        @NgModule((() => {if (1==1) return null as any;}) as any)
         export class SomeClassWithInvalidMetadata {}
       `,
        });
