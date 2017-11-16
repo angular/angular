@@ -119,7 +119,7 @@ describe('perform watch', () => {
     const errorFileContent = `
       import {NgModule} from '@angular/core';
 
-      @NgModule(() => (1===1 ? null as any : null as any))
+      @NgModule((() => (1===1 ? null as any : null as any)) as any)
       export class MyModule {}
     `;
     const indexTsPath = path.resolve(testSupport.basePath, 'src', 'index.ts');
