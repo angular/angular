@@ -1,3 +1,16 @@
+<a name="5.0.2"></a>
+## [5.0.2](https://github.com/angular/angular/compare/5.0.1...5.0.2) (2017-11-16)
+
+
+### Bug Fixes
+
+* **animations:** ensure final state() styles are applied within @.disabled animations ([#20267](https://github.com/angular/angular/issues/20267)) ([8b1a6b1](https://github.com/angular/angular/commit/8b1a6b1)), closes [#20266](https://github.com/angular/angular/issues/20266)
+* **compiler:** fix corner cases in shadow CSS ([5d1cd57](https://github.com/angular/angular/commit/5d1cd57))
+* **compiler:** recognize @NgModule with a redundant @Injectable ([#20320](https://github.com/angular/angular/issues/20320)) ([4cc6abb](https://github.com/angular/angular/commit/4cc6abb))
+* **compiler:** show explanatory text in template errors ([#20313](https://github.com/angular/angular/issues/20313)) ([424a323](https://github.com/angular/angular/commit/424a323))
+* **router:** 'merge' queryParamHandling strategy should be able to remove query params ([#19733](https://github.com/angular/angular/issues/19733)) ([b732fb9](https://github.com/angular/angular/commit/b732fb9)), closes [#18463](https://github.com/angular/angular/issues/18463) [#17202](https://github.com/angular/angular/issues/17202)
+
+
 <a name="5.1.0-beta.0"></a>
 # [5.1.0-beta.0](https://github.com/angular/angular/compare/5.0.0-rc.4...5.1.0-beta.0) (2017-11-08)
 
