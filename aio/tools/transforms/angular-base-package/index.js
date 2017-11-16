@@ -35,6 +35,7 @@ module.exports = new Package('angular-base', [
   .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
   .factory(require('./readers/json'))
   .factory(require('./services/copyFolder'))
+  .factory(require('./services/filterPipes'))
   .factory(require('./services/getImageDimensions'))
 
   .factory(require('./post-processors/add-image-dimensions'))
@@ -126,8 +127,9 @@ module.exports = new Package('angular-base', [
   })
 
 
-  .config(function(postProcessHtml, addImageDimensions, autoLinkCode) {
+  .config(function(postProcessHtml, addImageDimensions, autoLinkCode, filterPipes) {
     addImageDimensions.basePath = path.resolve(AIO_PATH, 'src');
+    autoLinkCode.customFilters = [filterPipes];
     postProcessHtml.plugins = [
       require('./post-processors/autolink-headings'),
       addImageDimensions,
