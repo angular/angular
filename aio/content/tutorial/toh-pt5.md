@@ -77,7 +77,7 @@ Then define an array of routes with a single `route` to that component.
 </code-example>
 
 Once you've finished setting up, the router will match that URL to `path: 'heroes'` 
-and display the `HeroesComponent`, .
+and display the `HeroesComponent`.
 
 ### _RouterModule.forRoot()_
 
