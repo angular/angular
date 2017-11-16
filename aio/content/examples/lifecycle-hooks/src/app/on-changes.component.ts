@@ -43,7 +43,7 @@ export class OnChangesComponent implements OnChanges {
   }
   // #enddocregion ng-on-changes
 
-  reset() { this.changeLog.length = 0; }
+  reset() { this.changeLog = []; }
 }
 
 /***************************************/
