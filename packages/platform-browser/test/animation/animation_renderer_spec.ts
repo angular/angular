@@ -281,7 +281,7 @@ export function main() {
       @Component({
         selector: 'my-cmp',
         template: `
-          <div [@myAnimation]="exp"></div> 
+          <div [@myAnimation]="exp"></div>
         `,
         animations: [trigger('myAnimation', [])]
       })

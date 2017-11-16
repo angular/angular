@@ -31,7 +31,8 @@ export class WebAnimationsDriver implements AnimationDriver {
 
   animate(
       element: any, keyframes: ɵStyleData[], duration: number, delay: number, easing: string,
-      previousPlayers: AnimationPlayer[] = []): WebAnimationsPlayer {
+      previousPlayers: AnimationPlayer[] = [],
+      debugFn?: (element: any, info: any) => void): WebAnimationsPlayer {
     const fill = delay == 0 ? 'both' : 'forwards';
     const playerOptions: {[key: string]: string | number} = {duration, delay, fill};
 
@@ -43,7 +44,8 @@ export class WebAnimationsDriver implements AnimationDriver {
 
     const previousWebAnimationPlayers = <WebAnimationsPlayer[]>previousPlayers.filter(
         player => { return player instanceof WebAnimationsPlayer; });
-    return new WebAnimationsPlayer(element, keyframes, playerOptions, previousWebAnimationPlayers);
+    return new WebAnimationsPlayer(
+        element, keyframes, playerOptions, previousWebAnimationPlayers, debugFn);
   }
 }
 

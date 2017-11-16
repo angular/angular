@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadataType, ɵStyleData} from '@angular/animations';
+import {AnimationDebugger, AnimationMetadataType, ɵStyleData} from '@angular/animations';
 
 import {copyStyles, interpolateParams} from '../util';
 
@@ -17,8 +17,9 @@ import {AnimationStateStyles, AnimationTransitionFactory} from './animation_tran
 /**
  * @experimental Animation support is experimental.
  */
-export function buildTrigger(name: string, ast: TriggerAst): AnimationTrigger {
-  return new AnimationTrigger(name, ast);
+export function buildTrigger(
+    name: string, ast: TriggerAst, debug: AnimationDebugger): AnimationTrigger {
+  return new AnimationTrigger(name, ast, debug);
 }
 
 /**
@@ -29,7 +30,7 @@ export class AnimationTrigger {
   public fallbackTransition: AnimationTransitionFactory;
   public states: {[stateName: string]: AnimationStateStyles} = {};
 
-  constructor(public name: string, public ast: TriggerAst) {
+  constructor(public name: string, public ast: TriggerAst, private _debug: AnimationDebugger) {
     ast.states.forEach(ast => {
       const defaultParams = (ast.options && ast.options.params) || {};
       this.states[ast.name] = new AnimationStateStyles(ast.style, defaultParams);
@@ -38,17 +39,26 @@ export class AnimationTrigger {
     balanceProperties(this.states, 'true', '1');
     balanceProperties(this.states, 'false', '0');
 
+    const debugValue = ast.options ? (ast.options as any).debug : undefined;
     ast.transitions.forEach(ast => {
-      this.transitionFactories.push(new AnimationTransitionFactory(name, ast, this.states));
+      this.transitionFactories.push(
+          new AnimationTransitionFactory(name, ast, this.states, this._debug, debugValue));
     });
 
-    this.fallbackTransition = createFallbackTransition(name, this.states);
+    this.fallbackTransition = createFallbackTransition(name, this.states, this._debug);
   }
 
   get containsQueries() { return this.ast.queryCount > 0; }
 
-  matchTransition(currentState: any, nextState: any): AnimationTransitionFactory|null {
+  matchTransition(element: any, currentState: any, nextState: any): AnimationTransitionFactory
+      |null {
     const entry = this.transitionFactories.find(f => f.match(currentState, nextState));
+    if (entry) {
+      const debugValue = entry.ast.options && (entry.ast.options as any).debug;
+      if (yesDebug(this._debug, debugValue)) {
+        this._debug.debug(element, 'transition', {transition: entry.ast.originalExpression});
+      }
+    }
     return entry || null;
   }
 
@@ -58,8 +68,8 @@ export class AnimationTrigger {
 }
 
 function createFallbackTransition(
-    triggerName: string,
-    states: {[stateName: string]: AnimationStateStyles}): AnimationTransitionFactory {
+    triggerName: string, states: {[stateName: string]: AnimationStateStyles},
+    debug: AnimationDebugger): AnimationTransitionFactory {
   const matchers = [(fromState: any, toState: any) => true];
   const animation: SequenceAst = {type: AnimationMetadataType.Sequence, steps: [], options: null};
   const transition: TransitionAst = {
@@ -70,7 +80,7 @@ function createFallbackTransition(
     queryCount: 0,
     depCount: 0
   };
-  return new AnimationTransitionFactory(triggerName, transition, states);
+  return new AnimationTransitionFactory(triggerName, transition, states, debug);
 }
 
 function balanceProperties(obj: {[key: string]: any}, key1: string, key2: string) {
@@ -81,4 +91,8 @@ function balanceProperties(obj: {[key: string]: any}, key1: string, key2: string
   } else if (obj.hasOwnProperty(key2)) {
     obj[key1] = obj[key2];
   }
+}
+
+function yesDebug(debug: AnimationDebugger, flagValue: any) {
+  return !debug.debugFlagRequired || flagValue;
 }

@@ -31,8 +31,13 @@ export class NoopAnimationDriver implements AnimationDriver {
 
   animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
-      easing: string, previousPlayers: any[] = []): AnimationPlayer {
-    return new NoopAnimationPlayer();
+      easing: string, previousPlayers: any[] = [],
+      debugFn?: (element: any, info: any) => void): AnimationPlayer {
+    const player = new NoopAnimationPlayer();
+    if (debugFn) {
+      player.onStart(() => debugFn(element, {keyframes, duration, delay, easing}));
+    }
+    return player;
   }
 }
 
@@ -54,5 +59,6 @@ export abstract class AnimationDriver {
 
   abstract animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
-      easing?: string|null, previousPlayers?: any[]): any;
+      easing?: string|null, previousPlayers?: any[],
+      debugFn?: (element: any, info: any) => void): any;
 }

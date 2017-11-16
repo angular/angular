@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPlayer, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationDebugger, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationPlayer, ɵStyleData} from '@angular/animations';
 
 import {Ast} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
@@ -24,7 +24,9 @@ export class TimelineAnimationEngine {
   private _playersById: {[id: string]: AnimationPlayer} = {};
   public players: AnimationPlayer[] = [];
 
-  constructor(private _driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
+  constructor(
+      private _driver: AnimationDriver, private _debug: AnimationDebugger,
+      private _normalizer: AnimationStyleNormalizer) {}
 
   register(id: string, metadata: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];
@@ -55,7 +57,8 @@ export class TimelineAnimationEngine {
 
     if (ast) {
       instructions = buildAnimationTimelines(
-          this._driver, element, ast, {}, {}, options, EMPTY_INSTRUCTION_MAP, errors);
+          this._driver, this._debug, element, ast, {}, {}, options, EMPTY_INSTRUCTION_MAP,
+          undefined, errors);
       instructions.forEach(inst => {
         const styles = getOrSetAsInMap(autoStylesMap, inst.element, {});
         inst.postStyleProps.forEach(prop => styles[prop] = null);

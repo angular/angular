@@ -102,7 +102,7 @@ export function main() {
       it('should null when no results are found', () => {
         const result = makeTrigger('name', [transition('a => b', animate(1111))]);
 
-        const trigger = result.matchTransition('b', 'a');
+        const trigger = result.matchTransition({}, 'b', 'a');
         expect(trigger).toBeFalsy();
       });
 
@@ -135,7 +135,7 @@ export function main() {
               'name',
               [transition(
                   'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
-                  buildParams({a: '100px', b: '200px'}))]);
+                  buildParams({a: '100px', b: '200px'}) as any)]);
 
           const trans = buildTransition(result, element, 'a', 'b') !;
           const keyframes = trans.timelines[0].keyframes;
@@ -147,7 +147,7 @@ export function main() {
               'name',
               [transition(
                   'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
-                  buildParams({a: '100px', b: '200px'}))]);
+                  buildParams({a: '100px', b: '200px'}) as any)]);
 
           const trans = buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'})) !;
 
@@ -225,7 +225,7 @@ function buildTransition(
     trigger: AnimationTrigger, element: any, fromState: any, toState: any,
     fromOptions?: AnimationOptions, toOptions?: AnimationOptions): AnimationTransitionInstruction|
     null {
-  const trans = trigger.matchTransition(fromState, toState) !;
+  const trans = trigger.matchTransition(element, fromState, toState) !;
   if (trans) {
     const driver = new MockAnimationDriver();
     return trans.build(driver, element, fromState, toState, fromOptions, toOptions) !;

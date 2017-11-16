@@ -7,6 +7,7 @@
  */
 import {AnimationEvent, AnimationMetadata, AnimationTriggerMetadata, NoopAnimationPlayer, animate, state, style, transition, trigger} from '@angular/animations';
 
+import {NoopAnimationDebugger} from '../../src/browser_animation_debugger';
 import {TriggerAst} from '../../src/dsl/animation_ast';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {buildTrigger} from '../../src/dsl/animation_trigger';
@@ -34,8 +35,9 @@ export function main() {
     afterEach(() => { document.body.removeChild(element); });
 
     function makeEngine(normalizer?: AnimationStyleNormalizer) {
-      const engine =
-          new TransitionAnimationEngine(driver, normalizer || new NoopAnimationStyleNormalizer());
+      const debug = new NoopAnimationDebugger();
+      const engine = new TransitionAnimationEngine(
+          driver, debug, normalizer || new NoopAnimationStyleNormalizer());
       engine.createNamespace(DEFAULT_NAMESPACE_ID, element);
       return engine;
     }
@@ -662,7 +664,8 @@ function registerTrigger(
   const ast = buildAnimationAst(driver, metadata as AnimationMetadata, errors) as TriggerAst;
   if (errors.length) {
   }
-  const trigger = buildTrigger(name, ast);
+  const debug = new NoopAnimationDebugger();
+  const trigger = buildTrigger(name, ast, debug);
   engine.register(id, element);
   engine.registerTrigger(id, name, trigger);
 }

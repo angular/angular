@@ -19,12 +19,13 @@ export interface AnimationTimelineInstruction extends AnimationEngineInstruction
   easing: string|null;
   stretchStartingKeyframe?: boolean;
   subTimeline: boolean;
+  debug?: any;
 }
 
 export function createTimelineInstruction(
     element: any, keyframes: ɵStyleData[], preStyleProps: string[], postStyleProps: string[],
-    duration: number, delay: number, easing: string | null = null,
-    subTimeline: boolean = false): AnimationTimelineInstruction {
+    duration: number, delay: number, easing: string | null = null, subTimeline: boolean = false,
+    debug?: any): AnimationTimelineInstruction {
   return {
     type: AnimationTransitionInstructionType.TimelineAnimation,
     element,
@@ -33,6 +34,6 @@ export function createTimelineInstruction(
     postStyleProps,
     duration,
     delay,
-    totalTime: duration + delay, easing, subTimeline
+    totalTime: duration + delay, easing, subTimeline, debug
   };
 }

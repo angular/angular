@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleData} from '@angular/animations';
+import {AnimationDebugger, AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {normalizeStyles} from '../util';
@@ -18,7 +18,9 @@ import {ElementInstructionMap} from './element_instruction_map';
 
 export class Animation {
   private _animationAst: Ast<AnimationMetadataType>;
-  constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
+  constructor(
+      private _driver: AnimationDriver, private _debug: AnimationDebugger,
+      input: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];
     const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
@@ -39,7 +41,8 @@ export class Animation {
     const errors: any = [];
     subInstructions = subInstructions || new ElementInstructionMap();
     const result = buildAnimationTimelines(
-        this._driver, element, this._animationAst, start, dest, options, subInstructions, errors);
+        this._driver, this._debug, element, this._animationAst, start, dest, options,
+        subInstructions, errors);
     if (errors.length) {
       const errorMessage = `animation building failed:\n${errors.join("\n")}`;
       throw new Error(errorMessage);
