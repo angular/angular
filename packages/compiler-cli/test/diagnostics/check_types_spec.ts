@@ -14,13 +14,16 @@ import * as ts from 'typescript';
 
 import {TestSupport, expectNoDiagnostics, setup} from '../test_support';
 
+type MockFiles = {
+  [fileName: string]: string
+};
+
 describe('ng type checker', () => {
   let errorSpy: jasmine.Spy&((s: string) => void);
   let testSupport: TestSupport;
 
   function compileAndCheck(
-      mockDirs: {[fileName: string]: string}[],
-      overrideOptions: ng.CompilerOptions = {}): ng.Diagnostics {
+      mockDirs: MockFiles[], overrideOptions: ng.CompilerOptions = {}): ng.Diagnostics {
     testSupport.writeFiles(...mockDirs);
     const fileNames: string[] = [];
     mockDirs.forEach((dir) => {
@@ -40,13 +43,12 @@ describe('ng type checker', () => {
     testSupport = setup();
   });
 
-  function accept(
-      files: {[fileName: string]: string} = {}, overrideOptions: ng.CompilerOptions = {}) {
+  function accept(files: MockFiles = {}, overrideOptions: ng.CompilerOptions = {}) {
     expectNoDiagnostics({}, compileAndCheck([QUICKSTART, files], overrideOptions));
   }
 
   function reject(
-      message: string | RegExp, location: RegExp, files: {[fileName: string]: string},
+      message: string | RegExp, location: RegExp, files: MockFiles,
       overrideOptions: ng.CompilerOptions = {}) {
     const diagnostics = compileAndCheck([QUICKSTART, files], overrideOptions);
     if (!diagnostics || !diagnostics.length) {
@@ -76,6 +78,41 @@ describe('ng type checker', () => {
       strict: true,
       noUnusedLocals: true,
       noUnusedParameters: true,
+    });
+  });
+
+  describe('regressions ', () => {
+    const a = (files: MockFiles, options: object = {}) => {
+      accept(files, {fullTemplateTypeCheck: true, ...options});
+    };
+
+    // #19905
+    it('should accept an event binding', () => {
+      a({
+        'src/app.component.ts': '',
+        'src/lib.ts': '',
+        'src/app.module.ts': `
+        import {NgModule, Component, Directive, HostListener} from '@angular/core';
+
+        @Component({
+          selector: 'comp',
+          template: '<div someDir></div>'
+        })
+        export class MainComp {}
+
+        @Directive({
+          selector: '[someDir]'
+        })
+        export class SomeDirective {
+          @HostListener('click', ['$event'])
+          onClick(event: any) {}
+        }
+
+        @NgModule({
+          declarations: [MainComp, SomeDirective],
+        })
+        export class MainModule {}`
+      });
     });
   });
 

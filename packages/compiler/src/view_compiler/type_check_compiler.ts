@@ -69,6 +69,19 @@ interface Expression {
 
 const DYNAMIC_VAR_NAME = '_any';
 
+class TypeCheckLocalResolver implements LocalResolver {
+  getLocal(name: string): o.Expression|null {
+    if (name === EventHandlerVars.event.name) {
+      // References to the event should not be type-checked.
+      // TODO(chuckj): determine a better type for the event.
+      return o.variable(DYNAMIC_VAR_NAME);
+    }
+    return null;
+  }
+}
+
+const defaultResolver = new TypeCheckLocalResolver();
+
 class ViewBuilder implements TemplateAstVisitor, LocalResolver {
   private refOutputVars = new Map<string, OutputVarType>();
   private variables: VariableAst[] = [];
@@ -112,7 +125,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     this.updates.forEach((expression) => {
       const {sourceSpan, context, value} = this.preprocessUpdateExpression(expression);
       const bindingId = `${bindingCount++}`;
-      const nameResolver = context === this.component ? this : null;
+      const nameResolver = context === this.component ? this : defaultResolver;
       const {stmts, currValExpr} = convertPropertyBinding(
           nameResolver, o.variable(this.getOutputVar(context)), value, bindingId);
       stmts.push(new o.ExpressionStatement(currValExpr));
@@ -122,7 +135,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
     this.actions.forEach(({sourceSpan, context, value}) => {
       const bindingId = `${bindingCount++}`;
-      const nameResolver = context === this.component ? this : null;
+      const nameResolver = context === this.component ? this : defaultResolver;
       const {stmts} = convertActionBinding(
           nameResolver, o.variable(this.getOutputVar(context)), value, bindingId);
       viewStmts.push(...stmts.map(
