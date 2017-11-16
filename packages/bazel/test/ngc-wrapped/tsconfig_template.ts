@@ -64,6 +64,10 @@ export function createTsConfig(options: TsConfigOptions) {
       'es5Mode': true,
       'manifest': createManifestPath(options),
       'compilationTargetSrc': options.compilationTargetSrc,
+      // Override this property from the real tsconfig we read
+      // Because we ask for :empty_tsconfig.json, we get the ES6 version which
+      // expects to write externs, yet that doesn't work under this fixture.
+      'tsickleExternsPath': '',
     },
     'files': options.files,
     'angularCompilerOptions': {
