@@ -9,7 +9,7 @@
 import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
-import {LocationStrategy} from '@angular/common';
+import { LocationStrategy } from '@angular/common';
 
 
 
