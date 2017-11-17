@@ -17,7 +17,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 import {NgControl} from './ng_control';
 import {NgForm} from './ng_form';
 import {NgModelGroup} from './ng_model_group';
-import {composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
+import {allowRemoveControl, composeAsyncValidators, composeValidators, controlPath, isPropertyUpdated, selectValueAccessor, setUpControl} from './shared';
 import {TemplateDrivenErrors} from './template_driven_errors';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
@@ -185,7 +185,10 @@ export class NgModel extends NgControl implements OnChanges,
                 }
               }
 
-              ngOnDestroy(): void { this.formDirective && this.formDirective.removeControl(this); }
+              ngOnDestroy(): void {
+                this.formDirective && allowRemoveControl(this.valueAccessor) &&
+                    this.formDirective.removeControl(this);
+              }
 
               get path(): string[] {
                 return this._parent ? controlPath(this.name, this._parent) : [this.name];

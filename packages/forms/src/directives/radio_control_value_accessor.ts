@@ -45,6 +45,16 @@ export class RadioControlRegistry {
     });
   }
 
+  isLastControl(accessor: RadioControlValueAccessor) {
+    for (let i = this._accessors.length - 1; i >= 0; --i) {
+      let c = this._accessors[i];
+      if (this._isSameGroup(c, accessor) && c[1] !== accessor) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private _isSameGroup(
       controlPair: [NgControl, RadioControlValueAccessor],
       accessor: RadioControlValueAccessor): boolean {
@@ -136,6 +146,8 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   setDisabledState(isDisabled: boolean): void {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
+
+  isLastControl(): boolean { return this._registry.isLastControl(this); }
 
   private _checkName(): void {
     if (this.name && this.formControlName && this.name !== this.formControlName) {
