@@ -82,6 +82,7 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
   dir.valueAccessor !.registerOnChange((newValue: any) => {
     control._pendingValue = newValue;
+    control._pendingChange = true;
     control._pendingDirty = true;
 
     if (control.updateOn === 'change') updateControl(control, dir);
@@ -92,7 +93,7 @@ function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
   dir.valueAccessor !.registerOnTouched(() => {
     control._pendingTouched = true;
 
-    if (control.updateOn === 'blur') updateControl(control, dir);
+    if (control.updateOn === 'blur' && control._pendingChange) updateControl(control, dir);
     if (control.updateOn !== 'submit') control.markAsTouched();
   });
 }
@@ -101,6 +102,7 @@ function updateControl(control: FormControl, dir: NgControl): void {
   dir.viewToModelUpdate(control._pendingValue);
   if (control._pendingDirty) control.markAsDirty();
   control.setValue(control._pendingValue, {emitModelToViewChange: false});
+  control._pendingChange = false;
 }
 
 function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
@@ -171,8 +173,9 @@ export function syncPendingControls(form: FormGroup, directives: NgControl[]): v
   form._syncPendingControls();
   directives.forEach(dir => {
     const control = dir.control as FormControl;
-    if (control.updateOn === 'submit') {
+    if (control.updateOn === 'submit' && control._pendingChange) {
       dir.viewToModelUpdate(control._pendingValue);
+      control._pendingChange = false;
     }
   });
 }
