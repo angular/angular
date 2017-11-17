@@ -46,7 +46,7 @@ describe('addSelectorsAsAliases processor', () => {
     expect(docs[3].aliases).toEqual([docs[3].name]);
     expect(docs[4].aliases).toEqual([docs[4].name, 'myPipe']);
     expect(docs[5].aliases).toEqual([docs[5].name, 'my-directive', 'myDirective', 'my-directive']);
-    expect(docs[6].aliases).toEqual([docs[6].name, '[ngModel]:not([formControlName]):not([formControl])']);
+    expect(docs[6].aliases).toEqual([docs[6].name, 'ngModel']);
     expect(docs[7].aliases).toEqual([docs[7].name, 'my-component']);
     expect(docs[8].aliases).toEqual([docs[8].name]);
     expect(docs[9].aliases).toEqual([docs[9].name]);

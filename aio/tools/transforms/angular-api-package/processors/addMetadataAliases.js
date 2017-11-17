@@ -1,3 +1,5 @@
+const  CssSelectorParser = require('css-selector-parser').CssSelectorParser;
+const cssParser = new CssSelectorParser();
 /**
  * @dgProcessor addMetadataAliases
  *
@@ -28,11 +30,13 @@ module.exports = function addMetadataAliasesProcessor() {
 };
 
 function extractSelectors(selectors) {
-  if (selectors) {
-    return stripQuotes(selectors).split(',').map(selector => selector.replace(/^\W*([\w-]+)\W*$/, '$1'));
-  } else {
-    return [];
-  }
+  const selectorAST = cssParser.parse(stripQuotes(selectors));
+  const rules = selectorAST.selectors ? selectorAST.selectors.map(ruleSet => ruleSet.rule) : [selectorAST.rule];
+  return rules.reduce((aliases, rule) => {
+    const tagAliases = rule.tagName? [rule.tagName] : [];
+    const attrRulesAliases = (rule.attrs || []).map(attr => attr.name);
+    return aliases.concat(tagAliases, attrRulesAliases);
+  }, []);
 }
 
 function stripQuotes(value) {
