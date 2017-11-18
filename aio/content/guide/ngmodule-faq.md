@@ -673,7 +673,7 @@ But `index.html` isn't a component template and the `AppComponent`
 selector doesn't match an element in any component template.
 
 Angular loads `AppComponent` dynamically because it's either listed _by type_ in `@NgModule.bootstrap`
-or boostrapped imperatively with the module's `ngDoBootstrap` method.
+or bootstrapped imperatively with the module's `ngDoBootstrap` method.
 
 Components in route definitions are also _entry components_.
 A route definition refers to a component by its _type_.

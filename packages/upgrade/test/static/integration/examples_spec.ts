@@ -52,7 +52,7 @@ export function main() {
            imports: [BrowserModule, UpgradeModule]
          })
          class Ng2Module {
-           ngDoBootstrap() { /* this is a placeholder to stop the boostrapper from complaining */
+           ngDoBootstrap() { /* this is a placeholder to stop the bootstrapper from complaining */
            }
          }
 
