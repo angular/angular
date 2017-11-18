@@ -6,18 +6,10 @@ set -u -e -o pipefail
 readonly thisDir=$(cd $(dirname $0); pwd)
 source ${thisDir}/_travis-fold.sh
 
-
-# Run unit tests for our tools/ directory
-travisFoldStart "test.unit.tools"
-  $(npm bin)/jasmine
-travisFoldEnd "test.unit.tools"
-
-
 # Run unit tests in node
 travisFoldStart "test.unit.node"
   node ./dist/tools/tsc-watch/ node runCmdsOnly
 travisFoldEnd "test.unit.node"
-
 
 # rebuild to revert files in @angular/compiler/test
 # TODO(tbosch): remove this and teach karma to serve the right files
