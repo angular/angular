@@ -43,7 +43,7 @@ module.exports = (gulp) => () => {
     console.log(result.stdout);
     console.log(result.stderr);
     console.log(
-      'Commit message guidelines: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines');
+        'Commit message guidelines: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines');
     process.exit(1);
   }
 };
