@@ -1,0 +1,3 @@
+{
+"aio":{"master":{"change":"application","gzip7":{"inline":925,"main":119519,"polyfills":11863},"gzip9":{"inline":925,"main":119301,"polyfills":11861},"uncompressed":{"inline":1533,"main":486493,"polyfills":37068}}}
+}

@@ -22,12 +22,9 @@ calculateSize() {
 # Write to global variable $failed
 # Read from global variables $size, $size7, $size9, $label, $limitUncompressed
 checkSize() {
-  for fileType in "uncompressed" "gzip7" "gzip9"; do
-    if [[ ${size[$fileType]} -gt ${payloadLimits[$name, $fileType, $label]} ]]; then
-      failed=true
-      echo "$fileType $label size is ${size[$fileType]} which is greater than ${payloadLimits[$name, $fileType, $label]}"
-    fi
-  done
+  name="$1"
+  limitFile="$2"
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $TRAVIS_BRANCH
 }
 
 # Write timestamp to global variable $payloadData
@@ -92,14 +89,12 @@ uploadData() {
     set +x
     $PROJECT_ROOT/node_modules/.bin/firebase database:update --data "$payloadData" --project $PROJECT_NAME --confirm --token "$ANGULAR_PAYLOAD_FIREBASE_TOKEN" $dbPath
   fi
-
-  curl "https://angular-payload-size.firebaseio.com/payload/${name}/${safeBranchName}.json?orderBy=\"timestamp\"&limitToLast=1" > /tmp/latest.log
-  node ${PROJECT_ROOT}/scripts/ci/payload-size.js
 }
 
 # Track payload size, $1 is the name in database, $2 is the file path
 # $3 is whether we check the payload size and fail the test if the size exceeds
 # limit, $4 is whether record the type of changes: true | false
+# $5 is the payload size limit file
 trackPayloadSize() {
   name="$1"
   path="$2"
@@ -111,9 +106,6 @@ trackPayloadSize() {
   for filename in $path; do
     declare -A size
     calculateSize
-    if [[ $checkSize = true ]]; then
-      checkSize
-    fi
   done
   addTimestamp
   if [[ $trackChange = true ]]; then
@@ -121,6 +113,9 @@ trackPayloadSize() {
   fi
   addMessage
   uploadData $name
+  if [[ $checkSize = true ]]; then
+    checkSize $name "$5"
+  fi
   if [[ $failed = true ]]; then
     echo exit 1
     exit 1
