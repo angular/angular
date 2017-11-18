@@ -36,10 +36,12 @@ module.exports = (gulp) => () => {
 
   console.log(`Examining commits between HEAD and ${baseBranch}`);
 
-  const results = shelljs.exec(`commitlint --from=${baseBranch} --to=HEAD`);
+  const result = shelljs.exec(`${bin} --from=${baseBranch} --to=HEAD`);
 
-  if (results.code) {
+  if (result.code) {
     console.log(result.code);
+    console.log(result.stdout);
+    console.log(result.stderr);
     console.log(
       'Commit message guidelines: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-guidelines');
     process.exit(1);
