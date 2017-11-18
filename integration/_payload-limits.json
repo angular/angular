@@ -1,0 +1,4 @@
+{
+"cli-hello-world":{"master":{"gzip7":{"inline":847,"main":42533,"polyfills":20207},"gzip9":{"inline":847,"main":42483,"polyfills":20204},"uncompressed":{"inline":1447,"main":154295,"polyfills":61254}}},
+"hello_world__closure":{"master":{"gzip7":{"bundle":32793},"gzip9":{"bundle":32758},"uncompressed":{"bundle":100661}}}
+}
