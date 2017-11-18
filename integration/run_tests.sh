@@ -4,9 +4,10 @@ set -e -o pipefail
 
 cd `dirname $0`
 
+readonly thisDir=$(cd $(dirname $0); pwd)
+
 # Track payload size functions
 source ../scripts/ci/payload-size.sh
-source ./_payload-limits.sh
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
 # Yarn will cache file://dist URIs and not update Angular code
@@ -48,7 +49,7 @@ for testDir in $(ls | grep -v node_modules) ; do
       if [[ $testDir == cli-hello-world ]]; then
         yarn build
       fi
-      trackPayloadSize "$testDir" "dist/*.js" true false
+      trackPayloadSize "$testDir" "dist/*.js" true false "${thisDir}/_payload-limits.json"
     fi
   )
 done
