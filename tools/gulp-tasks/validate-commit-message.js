@@ -49,8 +49,10 @@ module.exports = (gulp) => () => {
 };
 
 function resolveBin(pkg, name) {
+  const path = require('path');
   const resolvePkg = require('resolve-pkg');
   const readPkg = require('read-pkg');
-  const commitlintPkg = readPkg.sync(resolvePkg(pkg));
-  return commitlintPkg.bin[name];
+  const pkgPath = resolvePkg(pkg);
+  const commitlintPkg = readPkg.sync(pkgPath);
+  return path.join(pkgPath, commitlintPkg.bin[name]);
 }
