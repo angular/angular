@@ -225,17 +225,17 @@
 
         {
           "title": "NgModules",
-          "tooltip": "Learn how to use NgModules to make your apps efficient.",
+          "tooltip": "Modularize your app with NgModules.",
           "children": [
             {
               "url": "guide/ngmodule",
               "title": "NgModules",
-              "tooltip": "Define application modules with @NgModule."
+              "tooltip": "Define application modules with the NgModule."
             },
             {
               "url": "guide/ngmodule-faq",
               "title": "NgModule FAQs",
-              "tooltip": "Answers to frequently asked questions about @NgModule."
+              "tooltip": "Answers to frequently asked questions about NgModules."
             }
         ]},
 

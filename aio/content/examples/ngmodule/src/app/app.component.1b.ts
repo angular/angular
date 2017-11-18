@@ -5,11 +5,9 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   // #docregion template
   template: `
-    <app-title [subtitle]="subtitle"></app-title>
+    <app-title></app-title>
     <app-contact></app-contact>
   `
   // #enddocregion template
 })
-export class AppComponent {
-  subtitle = '(v1)';
-}
+export class AppComponent {}

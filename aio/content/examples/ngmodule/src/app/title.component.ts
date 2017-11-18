@@ -1,18 +1,17 @@
 // #docplaster
 // #docregion
 // #docregion v1
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 // #enddocregion v1
 import { UserService } from './user.service';
 // #docregion v1
 
 @Component({
   selector: 'app-title',
-  templateUrl: './title.component.html',
+  templateUrl: './title.component.html'
 })
 export class TitleComponent {
-  @Input() subtitle = '';
-  title = 'NgModules';
+  title = 'Angular Modules';
 // #enddocregion v1
   user = '';
 

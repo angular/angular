@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   // #docregion template
   template: `
-    <app-title [subtitle]="subtitle"></app-title>
+    <app-title></app-title>
     <nav>
       <a routerLink="contact" routerLinkActive="active">Contact</a>
       <a routerLink="crisis"  routerLinkActive="active">Crisis Center</a>
@@ -14,6 +14,4 @@ import { Component } from '@angular/core';
   `
   // #enddocregion template
 })
-export class AppComponent {
-  subtitle = '(v3)';
-}
+export class AppComponent {}
