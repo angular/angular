@@ -14,7 +14,7 @@ const globals = {
   'rxjs/Observer': 'Rx',
   'rxjs/Subject': 'Rx',
 
-  'rxjs/observable/of': 'Rx.Observable.prototype',
+  'rxjs/observable/of': 'Rx.Observable',
 
   'rxjs/operator/concatMap': 'Rx.Observable.prototype',
   'rxjs/operator/filter': 'Rx.Observable.prototype',
