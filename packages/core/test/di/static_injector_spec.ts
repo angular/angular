@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, Injector, Optional, ReflectiveKey, Self, SkipSelf, forwardRef} from '@angular/core';
-import {getOriginalError} from '@angular/core/src/errors';
+import {Inject, Injectable, InjectionToken, Injector, InjectorDefType, NgModule, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
+import {convertImports, convertStaticProviders} from '@angular/core/src/metadata/ng_module';
+import {ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {stringify} from '../../src/util';
@@ -94,6 +95,315 @@ function factoryFn(a: any){}
       const engine = injector.get(Engine);
 
       expect(engine).toBeAnInstanceOf(Engine);
+    });
+
+    it('should instantiate a class in module from symbol', () => {
+
+      class Foo {}
+
+      @NgModule({
+        imports: [],
+      })
+      class SalutationModule {
+      }
+
+      @Injectable(SalutationModule, {deps: [Foo]})
+      class Greeter {
+        constructor(foo: Foo) {}
+      }
+
+      @Injectable(SalutationModule, {deps: []})
+      class Toast {
+      }
+
+      @NgModule({imports: [SalutationModule]})
+      class MyAppModule {
+        constructor(toast: Toast) {}
+      }
+      const injector = Injector.create([SalutationModule as InjectorDefType<any>]);
+
+      const toast = injector.get<Toast>(Toast);
+      expect(toast).toBeAnInstanceOf(Toast);
+    });
+
+    // TODO(tinayuangao): change the public API to take `Type` so we can avoid casts once
+    // Microsoft/TypeScript#4881
+    //     is solved.
+    it('should instantiate a class with dependencies in module', () => {
+      @NgModule({
+        imports: [],
+      })
+      class SalutationModule {
+      }
+
+      @Injectable(SalutationModule, {deps: []})
+      class Foo {
+      }
+
+      @Injectable(SalutationModule, {deps: [Foo]})
+      class Greeter {
+        constructor(foo: Foo) {}
+      }
+
+      @Injectable(SalutationModule, {deps: []})
+      class Toast {
+      }
+
+      @NgModule({imports: [SalutationModule]})
+      class MyAppModule {
+        constructor(toast: Toast) {}
+      }
+      const injector = Injector.create([SalutationModule as InjectorDefType<any>]);
+
+      const greeter = injector.get<Greeter>(Greeter);
+      expect(greeter).toBeAnInstanceOf(Greeter);
+    });
+
+    it(`should parent providers override child module's providers`, () => {
+      class Foo {}
+
+      @NgModule({providers: [{provide: Foo, useValue: 'fooChild'}]})
+      class ModuleChild {
+      }
+
+      @NgModule({providers: [{provide: Foo, useValue: 'fooParent'}], imports: [ModuleChild]})
+      class ModuleParent {
+      }
+
+      const injector = Injector.create([ModuleParent as InjectorDefType<any>]);
+
+      expect(injector.get<Foo>(Foo)).toBe('fooParent');
+    });
+
+    it('should delegate to parent injector', () => {
+      class Foo {}
+
+      @NgModule({providers: [{provide: Foo, useValue: 'fooChild'}]})
+      class ModuleChild {
+      }
+
+      @NgModule({providers: [{provide: Foo, useValue: 'fooParent'}], imports: [ModuleChild]})
+      class ModuleParent {
+      }
+
+      const injector = Injector.create([ModuleParent as InjectorDefType<any>]);
+      const childInjector = Injector.create([], injector);
+
+      expect(childInjector.get<Foo>(Foo)).toBe('fooParent');
+    });
+
+    it('should instantiate a module eagerly', () => {
+      let moduleInstantiated: boolean = false;
+      class Foo {}
+
+      @NgModule({
+        imports: [],
+      })
+      class SalutationModule {
+        constructor() { moduleInstantiated = true; }
+      }
+
+      @Injectable(SalutationModule, {deps: [Foo]})
+      class Greeter {
+        constructor(foo: Foo) {}
+      }
+      const injector = Injector.create([SalutationModule as InjectorDefType<any>]);
+
+      expect(moduleInstantiated).toBeTruthy(`Module should be eagerly instantiated`);
+    });
+
+    it('should injectable provide 0 value works', () => {
+      @NgModule()
+      class SalutationModule {
+      }
+
+      @Injectable(SalutationModule, {useValue: 0})
+      class Greeting {
+      }
+
+      const injector = Injector.create([SalutationModule as InjectorDefType<any>]);
+
+      expect(injector.get<Greeting>(Greeting)).toBe(0, `Expect Greeting to be 0`);
+    });
+
+    it('should work with optional provide', () => {
+      @NgModule()
+      class SalutationModule {
+      }
+
+      @Injectable(SalutationModule)
+      class Greeting {
+      }
+
+      const injector = Injector.create([SalutationModule as InjectorDefType<any>]);
+
+      expect(injector.get<Greeting>(Greeting)).toBeAnInstanceOf(Greeting);
+    });
+
+    it('should work with optional provide and dependencies', () => {
+      @NgModule()
+      class SalutationModule {
+      }
+
+      @Injectable(SalutationModule, {useValue: 1})
+      class Foo {
+      }
+
+      @Injectable(SalutationModule)
+      class Greeting {
+        constructor(foo: Foo) { expect(foo).toBe(1); }
+      }
+
+      const injector = Injector.create([SalutationModule as InjectorDefType<any>]);
+
+      expect(injector.get<Greeting>(Greeting)).toBeAnInstanceOf(Greeting);
+    });
+
+    it('should class provider works', () => {
+      @NgModule()
+      class ShapeModule {
+      }
+
+      @Injectable(ShapeModule)
+      class Square {
+        name = 'square';
+      }
+
+      @Injectable(ShapeModule, {useClass: Square})
+      abstract class Shape {
+        name: string;
+      }
+
+      const injector = Injector.create([ShapeModule as InjectorDefType<any>]);
+
+      const shape: Shape = injector.get(Shape);
+      expect(shape.name).toEqual('square');
+      expect(shape instanceof Square).toBe(true);
+    });
+
+    it('should not instantiate Injectable from not our NgModule', () => {
+      @NgModule()
+      class ShapeModule {
+      }
+
+      @NgModule()
+      class SalutationModule {
+      }
+
+      @Injectable(SalutationModule, {deps: []})
+      class Greeting {
+      }
+
+      const foreignInjector = Injector.create([ShapeModule as InjectorDefType<any>]);
+
+      const e =
+          `StaticInjectorError[${stringify(Greeting)}]: \n  NullInjectorError: No provider for ${stringify(Greeting)}!`;
+      expect(() => foreignInjector.get<Greeting>(Greeting)).toThrowError(e);
+
+      const targetInjector = Injector.create([SalutationModule as InjectorDefType<any>]);
+      const greeting = targetInjector.get<Greeting>(Greeting);
+      expect(greeting).toBeAnInstanceOf(Greeting);
+    });
+
+    it('should convert static providers work', () => {
+      class Greeting {}
+      class Toast {}
+      class GreetingTimes {}
+      class ToastTimes {}
+      class Title {}
+
+      const valueProvider = {provide: GreetingTimes, useValue: 1};
+      const existingProvider = {provide: Greeting, useExisting: GreetingTimes};
+      const classProvider = {provide: Toast, useClass: Greeting};
+      const factoryProvider = {
+        provide: ToastTimes,
+        useFactory: (times: number) => times + 1,
+        deps: [GreetingTimes]
+      };
+      const typeProvider = Title;
+
+      const module = {
+        providers: [valueProvider, existingProvider, factoryProvider, classProvider, typeProvider]
+      };
+
+      const providers = convertStaticProviders(module.providers, new ReflectionCapabilities());
+
+      expect(providers.length).toBe(5);
+      expect(providers[0]).toBe(valueProvider, `Expect ValueProvider doesn't change`);
+      expect(providers[1]).toBe(existingProvider, `Expect ExistingProvider doesn't change`);
+      expect(providers[2]).toBe(factoryProvider, `Expect FactoryProvider doesn't change`);
+      expect((providers[3] as{deps: any}).deps)
+          .toBeTruthy('Expect convert ClassProvider to StaticClassProvider');
+      expect((providers[4] as{deps: any}).deps)
+          .toBeTruthy('Expect convert TypeProvider to ConstructorProvider');
+    });
+
+    it('should convert static providers recursively', () => {
+      class Greeting {}
+      class Toast {}
+      class GreetingTimes {}
+      class ToastTimes {}
+      class Title {}
+
+      const valueProvider = {provide: GreetingTimes, useValue: 1};
+      const existingProvider = {provide: Greeting, useExisting: GreetingTimes};
+      const classProvider = {provide: Toast, useClass: Greeting};
+      const factoryProvider = {
+        provide: ToastTimes,
+        useFactory: (times: number) => times + 1,
+        deps: [GreetingTimes]
+      };
+      const typeProvider = Title;
+
+      const module = {
+        providers:
+            [valueProvider, [existingProvider, [factoryProvider]], classProvider, typeProvider]
+      };
+
+      const providers = convertStaticProviders(module.providers, new ReflectionCapabilities());
+
+      expect(providers.length).toBe(5);
+      expect(providers[0]).toBe(valueProvider, `Expect ValueProvider doesn't change`);
+      expect(providers[1]).toBe(existingProvider, `Expect ExistingProvider doesn't change`);
+      expect(providers[2]).toBe(factoryProvider, `Expect FactoryProvider doesn't change`);
+      expect((providers[3] as{deps: any}).deps)
+          .toBeTruthy('Expect convert ClassProvider to StaticClassProvider');
+      expect((providers[4] as{deps: any}).deps)
+          .toBeTruthy('Expect convert TypeProvider to ConstructorProvider');
+    });
+
+    it('should convert imports correctly', () => {
+      class GreetingTimes {}
+
+      const valueProvider = {provide: GreetingTimes, useValue: 1};
+
+      @NgModule()
+      class GreetingModule {
+      }
+      @NgModule()
+      class ToastModule {
+      }
+      @NgModule()
+      class GreetingTimesModule {
+      }
+      @NgModule()
+      class ToastTimesModule {
+      }
+      @NgModule()
+      class TitleModule {
+      }
+
+      const moduleWithProviders = {ngModule: GreetingTimesModule, providers: [valueProvider]};
+
+      const module = {
+        imports:
+            [GreetingModule, [ToastModule, [moduleWithProviders]], ToastTimesModule, TitleModule]
+      };
+
+      const imports = convertImports(module.imports, new ReflectionCapabilities());
+
+      expect(imports.length).toBe(5);
+      imports.forEach(moduleImport => expect(moduleImport.ngInjectorDef).not.toBeUndefined());
     });
 
     it('should resolve dependencies based on type information', () => {
@@ -288,8 +598,8 @@ function factoryFn(a: any){}
           Injector.create([CarWithDashboard.PROVIDER, Engine.PROVIDER, Dashboard.PROVIDER]);
       expect(() => injector.get(CarWithDashboard))
           .toThrowError(
-              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: 
-  NullInjectorError: No provider for DashboardSoftware!`);
+              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: ` +
+              `\n  NullInjectorError: No provider for DashboardSoftware!`);
     });
 
     it('should throw when trying to instantiate a cyclic dependency', () => {
@@ -415,8 +725,9 @@ function factoryFn(a: any){}
             parent);
 
         expect(() => child.get(Car))
-            .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]: 
-  NullInjectorError: No provider for Engine!`);
+            .toThrowError(
+                `StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]: \n` +
+                `  NullInjectorError: No provider for Engine!`);
       });
     });
 

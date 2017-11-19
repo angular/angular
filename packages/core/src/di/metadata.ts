@@ -6,8 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectorDefType} from '../di/injector';
+import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, ResolvedProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../di/provider';
+import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
+import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
+import {getClosureSafeProperty} from '../util/property';
 
+const GET_PROPERTY_NAME = {} as any;
+const USE_VALUE = getClosureSafeProperty<ValueProvider>(
+    {provide: String, useValue: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
 
 /**
  * Type of the Inject decorator / constructor function.
@@ -106,6 +114,15 @@ export interface Optional {}
  */
 export const Optional: OptionalDecorator = makeParamDecorator('Optional');
 
+
+/**
+ * Injectable providers used in `@Injectable` decorator.
+ *
+ * @experimental
+ */
+export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
+    StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
+
 /**
  * Type of the Injectable decorator / constructor function.
  *
@@ -135,7 +152,9 @@ export interface InjectableDecorator {
    * @stable
    */
   (): any;
+  (moduleType: Type<any>, provider?: InjectableProvider): any;
   new (): Injectable;
+  new (moduleType: Type<any>, provider?: InjectableProvider): Injectable;
 }
 
 /**
@@ -143,7 +162,79 @@ export interface InjectableDecorator {
  *
  * @stable
  */
-export interface Injectable {}
+export interface Injectable {
+  moduleType: InjectorDefType<any>;
+  provider: ResolvedProvider;
+}
+
+/**
+ * Type of type with Injectable metadata.
+ *
+ * @experimental
+ */
+export interface InjectableType<T> extends Type<T> { ngInjectableDef?: Injectable; }
+
+function convertInjectableProviderToStatic(
+    type: Type<any>, provider?: InjectableProvider): ResolvedProvider {
+  if (!provider) {
+    const reflectionCapabilities = new ReflectionCapabilities();
+    const deps = reflectionCapabilities.parameters(type);
+    return <ConstructorProvider>{deps: deps, provide: type};
+  }
+
+  if (USE_VALUE in provider) {
+    const valueProvider = (provider as ValueSansProvider);
+    return <ValueProvider>{
+      useValue: valueProvider.useValue,
+      multi: valueProvider.multi,
+      provide: type
+    };
+  } else if ((provider as ExistingSansProvider).useExisting) {
+    const existingProvider = (provider as ExistingSansProvider);
+    return <ExistingProvider>{
+      useExisting: existingProvider.useExisting,
+      multi: existingProvider.multi,
+      provide: type
+    };
+  } else if ((provider as FactorySansProvider).useFactory) {
+    const factoryProvider = (provider as FactorySansProvider);
+    return <FactoryProvider>{
+      useFactory: factoryProvider.useFactory,
+      multi: factoryProvider.multi,
+      deps: factoryProvider.deps,
+      provide: type
+    };
+  } else if ((provider as StaticClassSansProvider | ClassSansProvider).useClass) {
+    const classProvider = (provider as StaticClassSansProvider | ClassSansProvider);
+    let deps = (provider as StaticClassSansProvider).deps;
+    if (!deps) {
+      const reflectionCapabilities = new ReflectionCapabilities();
+      deps = reflectionCapabilities.parameters(type);
+    }
+    return <StaticClassProvider>{
+      useClass: classProvider.useClass,
+      multi: classProvider.multi,
+      deps: deps,
+      provide: type
+    };
+  } else {
+    const constructorProvider = (provider as ConstructorSansProvider);
+    return <ConstructorProvider>{
+      multi: constructorProvider.multi,
+      deps: constructorProvider.deps,
+      provide: type
+    };
+  }
+}
+
+/**
+ * Define injectable
+ *
+ * @experimental
+ */
+export function defineInjectable(opts: Injectable): Injectable {
+  return opts;
+}
 
 /**
  * Injectable decorator and metadata.
@@ -151,7 +242,16 @@ export interface Injectable {}
  * @stable
  * @Annotation
  */
-export const Injectable: InjectableDecorator = makeDecorator('Injectable');
+export const Injectable: InjectableDecorator = makeDecorator(
+    'Injectable', undefined, undefined, undefined,
+    (injectableType: Type<any>, moduleType?: InjectorDefType<any>,
+     provider?: InjectableProvider) => {
+      if (moduleType) {
+        const staticProvider = convertInjectableProviderToStatic(injectableType, provider);
+        (injectableType as InjectableType<any>).ngInjectableDef =
+            defineInjectable(<Injectable>{moduleType: moduleType, provider: staticProvider});
+      }
+    });
 
 /**
  * Type of the Self decorator / constructor function.

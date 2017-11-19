@@ -164,9 +164,13 @@ export declare abstract class ChangeDetectorRef {
 }
 
 /** @stable */
-export interface ClassProvider {
-    multi?: boolean;
+export interface ClassProvider extends ClassSansProvider {
     provide: any;
+}
+
+/** @experimental */
+export interface ClassSansProvider {
+    multi?: boolean;
     useClass: Type<any>;
 }
 
@@ -243,6 +247,12 @@ export declare abstract class ComponentRef<C> {
     readonly abstract location: ElementRef;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): void;
+}
+
+/** @experimental */
+export interface ConstructorSansProvider {
+    deps: any[];
+    multi?: boolean;
 }
 
 /** @stable */
@@ -345,6 +355,12 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
 }
 
 /** @experimental */
+export declare function defineInjectable(opts: Injectable): Injectable;
+
+/** @experimental */
+export declare function defineInjector<T>(opts: InjectorDef<T>): InjectorDef<T>;
+
+/** @experimental */
 export declare function destroyPlatform(): void;
 
 /** @stable */
@@ -390,17 +406,25 @@ export declare class EventEmitter<T> extends Subject<T> {
 }
 
 /** @stable */
-export interface ExistingProvider {
-    multi?: boolean;
+export interface ExistingProvider extends ExistingSansProvider {
     provide: any;
+}
+
+/** @stable */
+export interface ExistingSansProvider {
+    multi?: boolean;
     useExisting: any;
 }
 
 /** @stable */
-export interface FactoryProvider {
+export interface FactoryProvider extends FactorySansProvider {
+    provide: any;
+}
+
+/** @experimental */
+export interface FactorySansProvider {
     deps?: any[];
     multi?: boolean;
-    provide: any;
     useFactory: Function;
 }
 
@@ -454,7 +478,17 @@ export declare const Injectable: InjectableDecorator;
 /** @stable */
 export interface InjectableDecorator {
     /** @stable */ (): any;
+    (moduleType: Type<any>, provider?: InjectableProvider): any;
     new (): Injectable;
+    new (moduleType: Type<any>, provider?: InjectableProvider): Injectable;
+}
+
+/** @experimental */
+export declare type InjectableProvider = ValueSansProvider | ExistingSansProvider | StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
+
+/** @experimental */
+export interface InjectableType<T> extends Type<T> {
+    ngInjectableDef?: Injectable;
 }
 
 /** @stable */
@@ -476,12 +510,25 @@ export declare abstract class Injector {
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
-    /** @deprecated */ static create(providers: StaticProvider[], parent?: Injector): Injector;
+    /** @deprecated */ static create(providers: (StaticProvider | InjectorDefType<any>)[], parent?: Injector): Injector;
     static create(options: {
-        providers: StaticProvider[];
+        providers: (StaticProvider | InjectorDefType<any>)[];
         parent?: Injector;
         name?: string;
     }): Injector;
+}
+
+/** @experimental */
+export interface InjectorDef<T> {
+    deps: any[];
+    imports: InjectorDefType<any>[];
+    providers: StaticProvider[];
+    type: InjectorDefType<T>;
+}
+
+/** @experimental */
+export interface InjectorDefType<T> extends Type<T> {
+    ngInjectorDef: InjectorDef<T>;
 }
 
 /** @stable */
@@ -849,6 +896,9 @@ export interface RendererType2 {
     styles: (string | any[])[];
 }
 
+/** @stable */
+export declare type ResolvedProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider;
+
 /** @experimental */
 export declare class ResolvedReflectiveFactory {
     dependencies: ReflectiveDependency[];
@@ -934,6 +984,13 @@ export interface SkipSelfDecorator {
 /** @deprecated */
 export declare function state(name: string, styles: AnimationStyleMetadata): AnimationStateMetadata;
 
+/** @experimental */
+export interface StaticClassSansProvider {
+    deps: any[];
+    multi?: boolean;
+    useClass: Type<any>;
+}
+
 /** @stable */
 export declare type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider | any[];
 
@@ -1016,9 +1073,13 @@ export interface TypeProvider extends Type<any> {
 }
 
 /** @stable */
-export interface ValueProvider {
-    multi?: boolean;
+export interface ValueProvider extends ValueSansProvider {
     provide: any;
+}
+
+/** @experimental */
+export interface ValueSansProvider {
+    multi?: boolean;
     useValue: any;
 }
 

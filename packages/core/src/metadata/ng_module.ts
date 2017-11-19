@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../di';
+import {InjectorDef, InjectorDefType, Provider, StaticProvider} from '../di';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, TypeProvider, ValueProvider} from '../di/provider';
+import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
@@ -190,5 +192,87 @@ export interface NgModule {
  * @stable
  * @Annotation
  */
-export const NgModule: NgModuleDecorator =
-    makeDecorator('NgModule', (ngModule: NgModule) => ngModule);
+export const NgModule: NgModuleDecorator = makeDecorator(
+    'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
+    (type: Type<any>, ngModule: NgModule) => {
+      if (!ngModule) {
+        // Make sure `@NgModule()` works
+        ngModule = {};
+      }
+      const reflectionCapabilities = new ReflectionCapabilities();
+      const deps = reflectionCapabilities.parameters(type);
+      const providers: StaticProvider[] =
+          convertStaticProviders(ngModule.providers, reflectionCapabilities);
+      const imports = convertImports(ngModule.imports, reflectionCapabilities);
+      (type as InjectorDefType<any>).ngInjectorDef = defineInjector({
+        type: type as InjectorDefType<any>,
+        deps: deps,
+        providers: providers,
+        imports: imports,
+      });
+    });
+
+/**
+ * Define injector
+ *
+ * @experimental
+ */
+export function defineInjector<T>(opts: InjectorDef<T>): InjectorDef<T> {
+  return opts;
+}
+
+export function convertStaticProviders(
+    moduleProviders: Provider[] | undefined,
+    reflectionCapabilities: ReflectionCapabilities): StaticProvider[] {
+  let providers: StaticProvider[] = [];
+  if (moduleProviders) {
+    moduleProviders.forEach(provider => {
+      if (!provider) {
+        // just ignore it
+      } else if ((provider as ValueProvider).useValue) {
+        providers.push(provider as ValueProvider);
+      } else if ((provider as FactoryProvider).useFactory) {
+        providers.push(provider as FactoryProvider);
+      } else if ((provider as ExistingProvider).useExisting) {
+        providers.push(provider as ExistingProvider);
+      } else if ((provider as ClassProvider).useClass) {
+        // Convert ClassProvider to StaticClassProvider
+        const providerDeps = reflectionCapabilities.parameters((provider as ClassProvider).provide);
+        providers.push({
+          provide: (provider as ClassProvider).provide,
+              useClass: (provider as ClassProvider).useClass, deps: providerDeps
+        } as StaticClassProvider);
+      } else if (provider instanceof Array) {
+        providers.push(...convertStaticProviders(provider, reflectionCapabilities));
+      } else {
+        // Is TypeProvider
+        const providerDeps = reflectionCapabilities.parameters(provider as TypeProvider);
+        providers.push({ provide: provider, deps: providerDeps } as ConstructorProvider);
+      }
+    });
+  }
+  return providers;
+}
+
+export function convertImports(
+    moduleImports: Array<Type<any>|ModuleWithProviders|any[]>| undefined,
+    reflectionCapabilities: ReflectionCapabilities): InjectorDefType<any>[] {
+  let imports: InjectorDefType<any>[] = [];
+  if (moduleImports) {
+    moduleImports.forEach(moduleImport => {
+      if (!moduleImport) {
+        // Just ignore it
+      } else if (moduleImport instanceof Array) {
+        imports.push(...convertImports(moduleImport, reflectionCapabilities));
+      } else if ((moduleImport as InjectorDefType<any>).ngInjectorDef) {
+        imports.push(moduleImport as InjectorDefType<any>);
+      } else if ((moduleImport as ModuleWithProviders).ngModule) {
+        const typeName = (moduleImport as ModuleWithProviders).ngModule;
+        if ((typeName as InjectorDefType<any>).ngInjectorDef) {
+          imports.push((moduleImport as ModuleWithProviders).ngModule as InjectorDefType<any>);
+        }
+      }
+    });
+  }
+  return imports;
+}

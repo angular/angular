@@ -8,14 +8,64 @@
 
 import {Type} from '../type';
 import {stringify} from '../util';
+import {getClosureSafeProperty} from '../util/property';
+
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {Inject, Optional, Self, SkipSelf} from './metadata';
-import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
+import {Inject, InjectableType, Optional, Self, SkipSelf} from './metadata';
+import {ConstructorProvider, ExistingProvider, FactoryProvider, ResolvedProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
 
 export const SOURCE = '__source';
 const _THROW_IF_NOT_FOUND = new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
+
+/**
+ * Static information needed to instantiate an `Injector` from
+ * `@NgModule` decorator.
+ * @experimental
+ */
+export interface InjectorDef<T> {
+  /**
+   * An Injector initialization class. This class will be eagerly
+   * instantiated when `Injector` is created from `InjectorDef`.
+   * It is the class which was decorated with the `@NgModule`
+   */
+  type: InjectorDefType<T>;
+
+  /**
+   * Static constructor dependencies for the `type` class.
+   */
+  deps: any[];
+
+  /**
+   * A set of providers extracted from the `@NgModule` definition.
+   */
+  providers: StaticProvider[];
+
+  /**
+   * A set of other `InjectorDefType`s which have been statically
+   * imported from `@NgModule.imports`
+   */
+  imports: InjectorDefType<any>[];
+}
+
+
+/**
+ * A subclass of `Type` which is annotated with `@NgModule`.
+ *
+ * A `@NgModule` decorator will transform the class into `InjectorDefType`.
+ *
+ * During AoT the `@NgModule` decorator is removed and replaced with
+ * static fields which turn the type into `InjectorDefType`.
+ *
+ * The `InjectorDefType` contains all of the information to build the
+ * injector at runtime.
+ *
+ * @experimental
+ */
+// see: https://github.com/Microsoft/TypeScript/issues/4881
+export interface InjectorDefType<T> extends Type<T> { ngInjectorDef: InjectorDef<T>; }
+
 
 class _NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
@@ -67,9 +117,13 @@ export abstract class Injector {
   /**
    * @deprecated from v5 use the new signature Injector.create(options)
    */
-  static create(providers: StaticProvider[], parent?: Injector): Injector;
+  static create(providers: (StaticProvider|InjectorDefType<any>)[], parent?: Injector): Injector;
 
-  static create(options: {providers: StaticProvider[], parent?: Injector, name?: string}): Injector;
+  static create(options: {
+    providers: (StaticProvider | InjectorDefType<any>)[],
+    parent?: Injector,
+    name?: string
+  }): Injector;
 
   /**
    * Create a new Injector which is configure using `StaticProvider`s.
@@ -79,7 +133,8 @@ export abstract class Injector {
    * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
    */
   static create(
-      options: StaticProvider[]|{providers: StaticProvider[], parent?: Injector, name?: string},
+      options: (StaticProvider|InjectorDefType<any>)[]|
+      {providers: (StaticProvider | InjectorDefType<any>)[], parent?: Injector, name?: string},
       parent?: Injector): Injector {
     if (Array.isArray(options)) {
       return new StaticInjector(options, parent);
@@ -100,8 +155,8 @@ const MULTI_PROVIDER_FN = function(): any[] {
   return Array.prototype.slice.call(arguments);
 };
 const GET_PROPERTY_NAME = {} as any;
-const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: GET_PROPERTY_NAME});
+const USE_VALUE = getClosureSafeProperty<ValueProvider>(
+    {provide: String, useValue: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
 const NG_TOKEN_PATH = 'ngTokenPath';
 const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
 const enum OptionFlags {
@@ -119,15 +174,20 @@ export class StaticInjector implements Injector {
   readonly source: string|null;
 
   private _records: Map<any, Record>;
+  private _moduleTypes: InjectorDefType<any>[] = [];
 
   constructor(
-      providers: StaticProvider[], parent: Injector = NULL_INJECTOR, source: string|null = null) {
+      providers: (StaticProvider|InjectorDefType<any>)[], parent: Injector = NULL_INJECTOR,
+      source: string|null = null) {
     this.parent = parent;
     this.source = source;
     const records = this._records = new Map<any, Record>();
     records.set(
         Injector, <Record>{token: Injector, fn: IDENT, deps: EMPTY, value: this, useNew: false});
-    recursivelyProcessProviders(records, providers);
+    recursivelyProcessProviders(records, providers, this._moduleTypes);
+
+    // Injector initialization classes instantiate eagerly
+    this._moduleTypes.forEach((token) => this.get(token));
   }
 
   get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T): T;
@@ -135,7 +195,8 @@ export class StaticInjector implements Injector {
   get(token: any, notFoundValue?: any): any {
     const record = this._records.get(token);
     try {
-      return tryResolveToken(token, record, this._records, this.parent, notFoundValue);
+      return tryResolveToken(
+          token, record, this._records, this.parent, notFoundValue, this._moduleTypes);
     } catch (e) {
       const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
       if (token[SOURCE]) {
@@ -155,9 +216,6 @@ export class StaticInjector implements Injector {
   }
 }
 
-type SupportedProvider =
-    ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider;
-
 interface Record {
   fn: Function;
   useNew: boolean;
@@ -170,9 +228,7 @@ interface DependencyRecord {
   options: number;
 }
 
-type TokenPath = Array<any>;
-
-function resolveProvider(provider: SupportedProvider): Record {
+function resolveProvider(provider: ResolvedProvider): Record {
   const deps = computeDeps(provider);
   let fn: Function = IDENT;
   let value: any = EMPTY;
@@ -203,23 +259,51 @@ function multiProviderMixError(token: any) {
   return staticError('Cannot mix multi providers and regular providers', token);
 }
 
-function recursivelyProcessProviders(records: Map<any, Record>, provider: StaticProvider) {
-  if (provider) {
-    provider = resolveForwardRef(provider);
-    if (provider instanceof Array) {
+function recursivelyProcessProviders(
+    records: Map<any, Record>, providerOrInjectorDefType: StaticProvider | InjectorDefType<any>,
+    moduleTypes: InjectorDefType<any>[]) {
+  if (providerOrInjectorDefType) {
+    providerOrInjectorDefType = resolveForwardRef(providerOrInjectorDefType);
+    if (providerOrInjectorDefType instanceof Array) {
       // if we have an array recurse into the array
-      for (let i = 0; i < provider.length; i++) {
-        recursivelyProcessProviders(records, provider[i]);
+      for (let i = 0; i < providerOrInjectorDefType.length; i++) {
+        recursivelyProcessProviders(records, providerOrInjectorDefType[i], moduleTypes);
       }
-    } else if (typeof provider === 'function') {
+    } else if (
+        typeof providerOrInjectorDefType === 'function' &&
+        providerOrInjectorDefType.ngInjectorDef) {
+      moduleTypes.push(providerOrInjectorDefType);
+
+      // For imports. Imports should be processed before providers.
+      if (providerOrInjectorDefType.ngInjectorDef.imports) {
+        providerOrInjectorDefType.ngInjectorDef.imports.forEach(
+            provider => { recursivelyProcessProviders(records, provider, moduleTypes); });
+      }
+
+      // For providers
+      if (providerOrInjectorDefType.ngInjectorDef.providers) {
+        providerOrInjectorDefType.ngInjectorDef.providers.forEach(
+            provider => { recursivelyProcessProviders(records, provider, moduleTypes); });
+      }
+
+      // For type and deps
+      const token = resolveForwardRef(providerOrInjectorDefType.ngInjectorDef.type);
+      records.set(token, <Record>{
+        token: providerOrInjectorDefType.ngInjectorDef.type,
+        deps: providerOrInjectorDefType.ngInjectorDef.deps,
+        useNew: true,
+        fn: providerOrInjectorDefType.ngInjectorDef.type,
+        value: EMPTY
+      });
+    } else if (typeof providerOrInjectorDefType === 'function') {
       // Functions were supported in ReflectiveInjector, but are not here. For safety give useful
       // error messages
-      throw staticError('Function/Class not supported', provider);
-    } else if (provider && typeof provider === 'object' && provider.provide) {
+      throw staticError('Function/Class not supported', providerOrInjectorDefType);
+    } else if (typeof providerOrInjectorDefType === 'object' && providerOrInjectorDefType.provide) {
       // At this point we have what looks like a provider: {provide: ?, ....}
-      let token = resolveForwardRef(provider.provide);
-      const resolvedProvider = resolveProvider(provider);
-      if (provider.multi === true) {
+      let token = resolveForwardRef(providerOrInjectorDefType.provide);
+      const resolvedProvider = resolveProvider(providerOrInjectorDefType);
+      if (providerOrInjectorDefType.multi === true) {
         // This is a multi provider.
         let multiProvider: Record|undefined = records.get(token);
         if (multiProvider) {
@@ -229,7 +313,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
         } else {
           // Create a placeholder factory which will look up the constituents of the multi provider.
           records.set(token, multiProvider = <Record>{
-            token: provider.provide,
+            token: providerOrInjectorDefType.provide,
             deps: [],
             useNew: false,
             fn: MULTI_PROVIDER_FN,
@@ -237,7 +321,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
           });
         }
         // Treat the provider as the token.
-        token = provider;
+        token = providerOrInjectorDefType;
         multiProvider.deps.push({token, options: OptionFlags.Default});
       }
       const record = records.get(token);
@@ -246,16 +330,16 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
       }
       records.set(token, resolvedProvider);
     } else {
-      throw staticError('Unexpected provider', provider);
+      throw staticError('Unexpected provider', providerOrInjectorDefType);
     }
   }
 }
 
 function tryResolveToken(
     token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
-    notFoundValue: any): any {
+    notFoundValue: any, moduleTypes: InjectorDefType<any>[]): any {
   try {
-    return resolveToken(token, record, records, parent, notFoundValue);
+    return resolveToken(token, record, records, parent, notFoundValue, moduleTypes);
   } catch (e) {
     // ensure that 'e' is of type Error.
     if (!(e instanceof Error)) {
@@ -273,7 +357,7 @@ function tryResolveToken(
 
 function resolveToken(
     token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
-    notFoundValue: any): any {
+    notFoundValue: any, moduleTypes: InjectorDefType<any>[]): any {
   let value;
   if (record) {
     // If we don't have a record, this implies that we don't own the provider hence don't know how
@@ -306,13 +390,34 @@ function resolveToken(
               // If we don't know how to resolve dependency and we should not check parent for it,
               // than pass in Null injector.
               !childRecord && !(options & OptionFlags.CheckParent) ? NULL_INJECTOR : parent,
-              options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND));
+              options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND,
+              // A list of all modules
+              moduleTypes));
         }
       }
       record.value = value = useNew ? new (fn as any)(...deps) : fn.apply(obj, deps);
     }
   } else {
+    const ngInjectableDef = (token as InjectableType<any>).ngInjectableDef;
+    if (ngInjectableDef) {
+      const provider = ngInjectableDef.provider;
+      const moduleType = ngInjectableDef.moduleType;
+      for (let i = 0; i < moduleTypes.length; ++i) {
+        if (moduleTypes[i] === moduleType) {
+          const resolvedProvider = resolveProvider(provider);
+          records.set(token, resolvedProvider);
+          value =
+              resolveToken(token, resolvedProvider, records, parent, notFoundValue, moduleTypes);
+          return value;
+        }
+      }
+    }
+
     value = parent.get(token, notFoundValue);
+    if (value !== notFoundValue) {
+      records.set(
+          token, <Record>{token: token, fn: IDENT, deps: EMPTY, value: value, useNew: false});
+    }
   }
   return value;
 }
@@ -376,13 +481,4 @@ function formatError(text: string, obj: any, source: string | null = null): stri
 
 function staticError(text: string, obj: any): Error {
   return new Error(formatError(text, obj));
-}
-
-function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
-  for (let key in objWithPropertyToExtract) {
-    if (objWithPropertyToExtract[key] === GET_PROPERTY_NAME) {
-      return key;
-    }
-  }
-  throw Error('!prop');
 }
