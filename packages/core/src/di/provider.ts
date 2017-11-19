@@ -8,6 +8,24 @@
 
 import {Type} from '../type';
 
+export interface ValueSanProvider {
+
+  /**
+   * The value to inject.
+   */
+  useValue: any;
+
+  /**
+   * If true, then injector returns an array of instances. This is useful to allow multiple
+   * providers spread across many files to provide configuration information to a common token.
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
+   */
+  multi?: boolean;
+}
+
 /**
  * @whatItDoes Configures the {@link Injector} to return a value for a token.
  * @howToUse
@@ -24,16 +42,27 @@ import {Type} from '../type';
  *
  * @stable
  */
-export interface ValueProvider {
+export interface ValueProvider extends ValueSanProvider {
   /**
    * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
    */
   provide: any;
 
+}
+
+export interface StaticClassSanProvider {
   /**
-   * The value to inject.
+   * An optional class to instantiate for the `token`. (If not provided `provide` is assumed to be a
+   * class to
+   * instantiate)
    */
-  useValue: any;
+  useClass: Type<any>;
+
+  /**
+   * A list of `token`s which need to be resolved by the injector. The list of values is then
+   * used as arguments to the `useClass` constructor.
+   */
+  deps: any[];
 
   /**
    * If true, then injector returns an array of instances. This is useful to allow multiple
@@ -68,19 +97,14 @@ export interface ValueProvider {
  *
  * @stable
  */
-export interface StaticClassProvider {
+export interface StaticClassProvider extends StaticClassSanProvider{
   /**
    * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
    */
   provide: any;
+}
 
-  /**
-   * An optional class to instantiate for the `token`. (If not provided `provide` is assumed to be a
-   * class to
-   * instantiate)
-   */
-  useClass: Type<any>;
-
+export interface ConstructorSanProvider {
   /**
    * A list of `token`s which need to be resolved by the injector. The list of values is then
    * used as arguments to the `useClass` constructor.
@@ -117,17 +141,19 @@ export interface StaticClassProvider {
  *
  * @stable
  */
-export interface ConstructorProvider {
+export interface ConstructorProvider extends ConstructorSanProvider {
   /**
    * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
    */
   provide: Type<any>;
 
+}
+
+export interface ExistingSanProvider {
   /**
-   * A list of `token`s which need to be resolved by the injector. The list of values is then
-   * used as arguments to the `useClass` constructor.
+   * Existing `token` to return. (equivalent to `injector.get(useExisting)`)
    */
-  deps: any[];
+  useExisting: any;
 
   /**
    * If true, then injector returns an array of instances. This is useful to allow multiple
@@ -156,16 +182,26 @@ export interface ConstructorProvider {
  *
  * @stable
  */
-export interface ExistingProvider {
+export interface ExistingProvider extends ExistingSanProvider {
   /**
    * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
    */
   provide: any;
 
+}
+
+export interface FactorySanProvider {
   /**
-   * Existing `token` to return. (equivalent to `injector.get(useExisting)`)
+   * A function to invoke to create a value for this `token`. The function is invoked with
+   * resolved values of `token`s in the `deps` field.
    */
-  useExisting: any;
+  useFactory: Function;
+
+  /**
+   * A list of `token`s which need to be resolved by the injector. The list of values is then
+   * used as arguments to the `useFactory` function.
+   */
+  deps?: any[];
 
   /**
    * If true, then injector returns an array of instances. This is useful to allow multiple
@@ -200,33 +236,12 @@ export interface ExistingProvider {
  *
  * @stable
  */
-export interface FactoryProvider {
+export interface FactoryProvider extends  FactorySanProvider{
   /**
    * An injection token. (Typically an instance of `Type` or `InjectionToken`, but can be `any`).
    */
   provide: any;
 
-  /**
-   * A function to invoke to create a value for this `token`. The function is invoked with
-   * resolved values of `token`s in the `deps` field.
-   */
-  useFactory: Function;
-
-  /**
-   * A list of `token`s which need to be resolved by the injector. The list of values is then
-   * used as arguments to the `useFactory` function.
-   */
-  deps?: any[];
-
-  /**
-   * If true, then injector returns an array of instances. This is useful to allow multiple
-   * providers spread across many files to provide configuration information to a common token.
-   *
-   * ### Example
-   *
-   * {@example core/di/ts/provider_spec.ts region='MultiProviderAspect'}
-   */
-  multi?: boolean;
 }
 
 /**
@@ -241,7 +256,7 @@ export interface FactoryProvider {
  * @stable
  */
 export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider |
-    ConstructorProvider | FactoryProvider | any[];
+  ConstructorProvider | FactoryProvider | any[];
 
 
 /**
@@ -326,3 +341,7 @@ export interface ClassProvider {
  */
 export type Provider =
     TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];
+
+export type InjectableProvider = ValueSanProvider | ExistingSanProvider | StaticClassSanProvider |
+  ConstructorSanProvider | FactorySanProvider | any[];
+
