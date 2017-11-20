@@ -26,7 +26,7 @@ import {
   MatMenuItem,
 } from './index';
 import {MENU_PANEL_TOP_PADDING} from './menu-trigger';
-import {extendObject} from '@angular/material/core';
+import {extendObject, MatRipple} from '@angular/material/core';
 import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
@@ -490,29 +490,43 @@ describe('MatMenu', () => {
   });
 
   describe('animations', () => {
-    it('should include the ripple on items by default', () => {
+    it('should enable ripples on items by default', () => {
       const fixture = TestBed.createComponent(SimpleMenu);
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openMenu();
+
       const item = fixture.debugElement.query(By.css('.mat-menu-item'));
-      const ripple = item.query(By.css('.mat-ripple'));
+      const ripple = item.query(By.css('.mat-ripple')).injector.get<MatRipple>(MatRipple);
 
-      expect(ripple).not.toBeNull();
+      expect(ripple.disabled).toBe(false);
     });
 
-    it('should remove the ripple on disabled items', () => {
+    it('should disable ripples on disabled items', () => {
       const fixture = TestBed.createComponent(SimpleMenu);
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openMenu();
-      const items = fixture.debugElement.queryAll(By.css('.mat-menu-item'));
 
-      // items[1] is disabled, so the ripple should not be present
-      const ripple = items[1].query(By.css('.mat-ripple'));
-      expect(ripple).toBeNull();
+      // The second menu item in the `SimpleMenu` component is disabled.
+      const items = fixture.debugElement.queryAll(By.css('.mat-menu-item'));
+      const ripple = items[1].query(By.css('.mat-ripple')).injector.get<MatRipple>(MatRipple);
+
+      expect(ripple.disabled).toBe(true);
     });
 
+    it('should disable ripples if disableRipple is set', () => {
+      const fixture = TestBed.createComponent(SimpleMenu);
+      fixture.detectChanges();
+
+      fixture.componentInstance.trigger.openMenu();
+
+      // The third menu item in the `SimpleMenu` component has ripples disabled.
+      const items = fixture.debugElement.queryAll(By.css('.mat-menu-item'));
+      const ripple = items[2].query(By.css('.mat-ripple')).injector.get<MatRipple>(MatRipple);
+
+      expect(ripple.disabled).toBe(true);
+    });
   });
 
   describe('close event', () => {
@@ -1115,7 +1129,7 @@ describe('MatMenu default overrides', () => {
     <mat-menu class="custom-one custom-two" #menu="matMenu" (closed)="closeCallback($event)">
       <button mat-menu-item> Item </button>
       <button mat-menu-item disabled> Disabled </button>
-      <button mat-menu-item>
+      <button mat-menu-item disableRipple>
         <fake-icon>unicorn</fake-icon>
         Item with an icon
       </button>

@@ -82,4 +82,10 @@ button.mat-menu-item {
 
 .mat-menu-ripple {
   @include mat-fill;
+
+  // Prevent any pointer events on the ripple container for a menu item. The ripple container is
+  // not the trigger element for the ripples and can be therefore disabled like that. Disabling
+  // the pointer events ensures that there is no `click` event that can bubble up and cause
+  // the menu panel to close.
+  pointer-events: none;
 }
