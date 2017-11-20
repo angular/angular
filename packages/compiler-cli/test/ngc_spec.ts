@@ -1807,4 +1807,42 @@ describe('ngc transformer command-line', () => {
 `);
     });
   });
+
+  describe('ivy', () => {
+    function emittedFile(name: string): string {
+      const outputName = path.resolve(outDir, name);
+      expect(fs.existsSync(outputName)).toBe(true);
+      return fs.readFileSync(outputName, {encoding: 'UTF-8'});
+    }
+
+    it('should emit the hello world example', () => {
+      write('tsconfig.json', `{
+        "extends": "./tsconfig-base.json",
+        "files": ["hello-world.ts"],
+        "angularCompilerOptions": {
+          "enableIvy": true
+        }
+      }`);
+
+      write('hello-world.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'hello-world',
+          template: 'Hello, world!'
+        })
+        export class HelloWorldComponent {
+
+        }
+
+        @NgModule({
+          declarations: [HelloWorldComponent]
+        })
+        export class HelloWorldModule {}
+      `);
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
+      expect(exitCode).toBe(0, 'Compile failed');
+      expect(emittedFile('hello-world.js')).toContain('ngComponentDef');
+    });
+  });
 });

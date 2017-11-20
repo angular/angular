@@ -8,6 +8,7 @@
 
 
 import {ParseSourceSpan} from '../parse_util';
+import {error} from '../util';
 
 //// Types
 export enum TypeModifier {
@@ -644,7 +645,8 @@ export const TYPED_NULL_EXPR = new LiteralExpr(null, INFERRED_TYPE, null);
 export enum StmtModifier {
   Final,
   Private,
-  Exported
+  Exported,
+  Static,
 }
 
 export abstract class Statement {
@@ -739,7 +741,9 @@ export class AbstractClassPart {
 }
 
 export class ClassField extends AbstractClassPart {
-  constructor(public name: string, type?: Type|null, modifiers: StmtModifier[]|null = null) {
+  constructor(
+      public name: string, type?: Type|null, modifiers: StmtModifier[]|null = null,
+      public initializer?: Expression) {
     super(type, modifiers);
   }
   isEquivalent(f: ClassField) { return this.name === f.name; }
@@ -1368,6 +1372,10 @@ export function fn(
     params: FnParam[], body: Statement[], type?: Type | null,
     sourceSpan?: ParseSourceSpan | null): FunctionExpr {
   return new FunctionExpr(params, body, type, sourceSpan);
+}
+
+export function ifStmt(condition: Expression, thenClause: Statement[], elseClause?: Statement[]) {
+  return new IfStmt(condition, thenClause, elseClause);
 }
 
 export function literal(
