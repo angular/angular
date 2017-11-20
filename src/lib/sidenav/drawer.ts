@@ -30,7 +30,7 @@ import {
   Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
+import {DOCUMENT} from '@angular/common';
 import {merge} from 'rxjs/observable/merge';
 import {filter} from 'rxjs/operators/filter';
 import {first} from 'rxjs/operators/first';

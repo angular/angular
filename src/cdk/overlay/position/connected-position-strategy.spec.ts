@@ -58,7 +58,7 @@ describe('ConnectedPositionStrategy', () => {
       overlayContainerElement.appendChild(overlayElement);
 
       fakeElementRef = new FakeElementRef(originElement);
-      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
     });
 
     afterEach(() => {
@@ -177,7 +177,7 @@ describe('ConnectedPositionStrategy', () => {
       });
 
       it('should reposition the overlay if it would go off the bottom of the screen', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler);
+        positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
 
         originElement.style.bottom = '25px';
         originElement.style.left = '200px';
@@ -200,7 +200,7 @@ describe('ConnectedPositionStrategy', () => {
       });
 
       it('should reposition the overlay if it would go off the right of the screen', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler);
+        positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
 
         originElement.style.top = '200px';
         originElement.style.right = '25px';
@@ -224,7 +224,7 @@ describe('ConnectedPositionStrategy', () => {
       });
 
       it('should recalculate and set the last position with recalculateLastPosition()', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler);
+        positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
 
         // Push the trigger down so the overlay doesn't have room to open on the bottom.
         originElement.style.bottom = '25px';
@@ -254,7 +254,7 @@ describe('ConnectedPositionStrategy', () => {
       });
 
       it('should default to the initial position, if no positions fit in the viewport', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler);
+        positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
 
         // Make the origin element taller than the viewport.
         originElement.style.height = '1000px';
@@ -353,7 +353,7 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should emit onPositionChange event when position changes', () => {
-      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
       originElement.style.top = '200px';
       originElement.style.right = '25px';
 
@@ -390,7 +390,7 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should emit the onPositionChange event even if none of the positions fit', () => {
-      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
       originElement.style.bottom = '25px';
       originElement.style.right = '25px';
 
@@ -414,7 +414,7 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should pick the fallback position that shows the largest area of the element', () => {
-      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
 
       originElement.style.top = '200px';
       originElement.style.right = '25px';
@@ -561,7 +561,7 @@ describe('ConnectedPositionStrategy', () => {
       scrollable.appendChild(originElement);
 
       // Create a strategy with knowledge of the scrollable container
-      let positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      let positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
       let fakeElementRef = new FakeElementRef(originElement);
       strategy = positionBuilder.connectedTo(
           fakeElementRef,
@@ -655,7 +655,7 @@ describe('ConnectedPositionStrategy', () => {
       overlayContainerElement.appendChild(overlayElement);
 
       fakeElementRef = new FakeElementRef(originElement);
-      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
     });
 
     afterEach(() => {

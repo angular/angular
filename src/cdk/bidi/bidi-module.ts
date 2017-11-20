@@ -7,7 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
+import {DOCUMENT} from '@angular/common';
 import {Dir} from './dir';
 import {DIR_DOCUMENT, Directionality} from './directionality';
 

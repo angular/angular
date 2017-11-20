@@ -80,7 +80,8 @@ export class ConnectedPositionStrategy implements PositionStrategy {
       originPos: OriginConnectionPosition,
       overlayPos: OverlayConnectionPosition,
       private _connectedTo: ElementRef,
-      private _viewportRuler: ViewportRuler) {
+      private _viewportRuler: ViewportRuler,
+      private _document: any) {
     this._origin = this._connectedTo.nativeElement;
     this.withFallbackPosition(originPos, overlayPos);
   }
@@ -359,7 +360,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     // from the bottom of the viewport rather than the top.
     let y = verticalStyleProperty === 'top' ?
         overlayPoint.y :
-        document.documentElement.clientHeight - (overlayPoint.y + overlayRect.height);
+        this._document.documentElement.clientHeight - (overlayPoint.y + overlayRect.height);
 
     // We want to set either `left` or `right` based on whether the overlay wants to appear "before"
     // or "after" the origin, which determines the direction in which the element will expand.
@@ -376,7 +377,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
     // from the right edge of the viewport rather than the left edge.
     let x = horizontalStyleProperty === 'left' ?
       overlayPoint.x :
-      document.documentElement.clientWidth - (overlayPoint.x + overlayRect.width);
+      this._document.documentElement.clientWidth - (overlayPoint.x + overlayRect.width);
 
 
     // Reset any existing styles. This is necessary in case the preferred position has

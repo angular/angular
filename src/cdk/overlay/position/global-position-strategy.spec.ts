@@ -8,7 +8,7 @@ describe('GlobalPositonStrategy', () => {
 
   beforeEach(() => {
     element = document.createElement('div');
-    strategy = new GlobalPositionStrategy();
+    strategy = new GlobalPositionStrategy(document);
     document.body.appendChild(element);
     strategy.attach({overlayElement: element} as OverlayRef);
   });

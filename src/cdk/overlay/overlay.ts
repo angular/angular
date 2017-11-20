@@ -12,6 +12,7 @@ import {
   ApplicationRef,
   Injector,
   NgZone,
+  Inject,
 } from '@angular/core';
 import {DomPortalOutlet} from '@angular/cdk/portal';
 import {OverlayConfig} from './overlay-config';
@@ -20,6 +21,7 @@ import {OverlayPositionBuilder} from './position/overlay-position-builder';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {OverlayContainer} from './overlay-container';
 import {ScrollStrategyOptions} from './scroll/index';
+import {DOCUMENT} from '@angular/common';
 
 
 /** Next overlay unique ID. */
@@ -48,7 +50,8 @@ export class Overlay {
               private _keyboardDispatcher: OverlayKeyboardDispatcher,
               private _appRef: ApplicationRef,
               private _injector: Injector,
-              private _ngZone: NgZone) { }
+              private _ngZone: NgZone,
+              @Inject(DOCUMENT) private _document: any) { }
 
   /**
    * Creates an overlay.
@@ -75,7 +78,7 @@ export class Overlay {
    * @returns Newly-created pane element
    */
   private _createPaneElement(): HTMLElement {
-    let pane = document.createElement('div');
+    const pane = this._document.createElement('div');
 
     pane.id = `cdk-overlay-${nextUniqueId++}`;
     pane.classList.add('cdk-overlay-pane');

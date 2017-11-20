@@ -39,7 +39,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MatOption, MatOptionSelectionChange} from '@angular/material/core';
 import {MatFormField} from '@angular/material/form-field';
-import {DOCUMENT} from '@angular/platform-browser';
+import {DOCUMENT} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {fromEvent} from 'rxjs/observable/fromEvent';

@@ -7,7 +7,7 @@
  */
 
 import {Component, Inject, ViewChild, TemplateRef} from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
+import {DOCUMENT} from '@angular/common';
 import {MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 
 const defaultDialogConfig = new MatDialogConfig();

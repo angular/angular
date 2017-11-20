@@ -20,7 +20,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
-import {DOCUMENT} from '@angular/platform-browser';
+import {DOCUMENT} from '@angular/common';
 import {
   BasePortalOutlet,
   ComponentPortal,

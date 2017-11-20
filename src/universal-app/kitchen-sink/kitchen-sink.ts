@@ -35,6 +35,7 @@ import {
   MatToolbarModule,
   MatTooltipModule,
   MatStepperModule,
+  MatSnackBar,
 } from '@angular/material';
 import {
   CdkTableModule,
@@ -55,12 +56,14 @@ export class KitchenSink {
 
   /** Data source for the CDK and Material table. */
   tableDataSource: DataSource<any> = {
-    connect: () => Observable.of([
-      { userId: 1 },
-      { userId: 2 }
-    ]),
+    connect: () => Observable.of([{userId: 1}, {userId: 2}]),
     disconnect: () => {}
   };
+
+  constructor(snackBar: MatSnackBar) {
+    // Open a snack bar to do a basic sanity check of the overlays.
+    snackBar.open('Hello there');
+  }
 
 }
 

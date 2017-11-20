@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Optional, SkipSelf, OnDestroy} from '@angular/core';
+import {Injectable, Inject, InjectionToken, Optional, SkipSelf, OnDestroy} from '@angular/core';
 import {OverlayRef} from '../overlay-ref';
 import {Subscription} from 'rxjs/Subscription';
 import {filter} from 'rxjs/operators/filter';
 import {fromEvent} from 'rxjs/observable/fromEvent';
+import {DOCUMENT} from '@angular/common';
 
 /**
  * Service for dispatching keyboard events that land on the body to appropriate overlay ref,
@@ -24,6 +25,8 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
   _attachedOverlays: OverlayRef[] = [];
 
   private _keydownEventSubscription: Subscription | null;
+
+  constructor(@Inject(DOCUMENT) private _document: any) {}
 
   ngOnDestroy() {
     if (this._keydownEventSubscription) {
@@ -55,7 +58,7 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
    * events to the appropriate overlay.
    */
   private _subscribeToKeydownEvents(): void {
-    const bodyKeydownEvents = fromEvent<KeyboardEvent>(document.body, 'keydown');
+    const bodyKeydownEvents = fromEvent<KeyboardEvent>(this._document.body, 'keydown');
 
     this._keydownEventSubscription = bodyKeydownEvents.pipe(
       filter(() => !!this._attachedOverlays.length)
@@ -81,8 +84,8 @@ export class OverlayKeyboardDispatcher implements OnDestroy {
 
 /** @docs-private */
 export function OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY(
-    dispatcher: OverlayKeyboardDispatcher) {
-  return dispatcher || new OverlayKeyboardDispatcher();
+    dispatcher: OverlayKeyboardDispatcher, _document: any) {
+  return dispatcher || new OverlayKeyboardDispatcher(_document);
 }
 
 /** @docs-private */
@@ -90,6 +93,12 @@ export const OVERLAY_KEYBOARD_DISPATCHER_PROVIDER = {
   // If there is already an OverlayKeyboardDispatcher available, use that.
   // Otherwise, provide a new one.
   provide: OverlayKeyboardDispatcher,
-  deps: [[new Optional(), new SkipSelf(), OverlayKeyboardDispatcher]],
+  deps: [
+    [new Optional(), new SkipSelf(), OverlayKeyboardDispatcher],
+
+    // Coerce to `InjectionToken` so that the `deps` match the "shape"
+    // of the type expected by Angular
+    DOCUMENT as InjectionToken<any>
+  ],
   useFactory: OVERLAY_KEYBOARD_DISPATCHER_PROVIDER_FACTORY
 };
