@@ -150,8 +150,6 @@ $mat-form-field-default-infix-width: 180px !default;
   position: absolute;
   height: $mat-form-field-underline-height;
   width: 100%;
-  // Prevents underline from disappearing at lower zoom levels.
-  transform: perspective(1px);
 
   .mat-form-field-disabled & {
     background-position: 0;
@@ -160,17 +158,17 @@ $mat-form-field-default-infix-width: 180px !default;
 
   .mat-form-field-ripple {
     position: absolute;
-    height: $mat-form-field-underline-height;
     top: 0;
     left: 0;
     width: 100%;
+    height: $mat-form-field-underline-height * 2;
     transform-origin: 50%;
     transform: scaleX(0.5);
     visibility: hidden;
     transition: background-color $swift-ease-in-duration $swift-ease-in-timing-function;
 
-    .mat-focused & {
-      height: $mat-form-field-underline-height * 2;
+    .mat-form-field-invalid:not(.mat-focused) & {
+      height: $mat-form-field-underline-height;
     }
 
     .mat-focused &,
