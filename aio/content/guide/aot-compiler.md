@@ -245,6 +245,16 @@ there are fewer opportunities for injection attacks.
   how `bazel` rules track file dependencies. It is not recommended to use this option outside of the `bazel`
   rules.
 
+  ### *enableIvy*
+
+  Tells the compiler to generate definitions using the Render3 style code generation. This option defaults to `false`.
+
+  Not all features are supported with this option enabled. It is only supported
+  for experimentation and testing of Render3 style code generation.
+
+  *Note*: Is it not recommended to use this option as it is not yet feature complete with the Render2 code generation.
+
+
 ## Angular Metadata and AOT
 
 The Angular **AOT compiler** extracts and interprets **metadata** about the parts of the application that Angular is supposed to manage.

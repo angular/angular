@@ -8,6 +8,7 @@
 
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileIdentifierMetadata, CompileNgModuleMetadata, CompileNgModuleSummary, CompilePipeMetadata, CompilePipeSummary, CompileProviderMetadata, CompileStylesheetMetadata, CompileSummaryKind, CompileTypeMetadata, CompileTypeSummary, componentFactoryName, flatten, identifierName, templateSourceUrl, tokenReference} from '../compile_metadata';
 import {CompilerConfig} from '../config';
+import {ConstantPool} from '../constant_pool';
 import {ViewEncapsulation} from '../core';
 import {MessageBundle} from '../i18n/message_bundle';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
@@ -18,11 +19,12 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
+import {compileComponent as compileIvyComponent} from '../render3/r3_view_compiler';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
 import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
-import {OutputContext, ValueVisitor, syntaxError, visitValue} from '../util';
+import {OutputContext, ValueVisitor, error, syntaxError, visitValue} from '../util';
 import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompileResult, ViewCompiler} from '../view_compiler/view_compiler';
 
@@ -30,6 +32,7 @@ import {AotCompilerHost} from './compiler_host';
 import {AotCompilerOptions} from './compiler_options';
 import {GeneratedFile} from './generated_file';
 import {LazyRoute, listLazyRoutes, parseLazyRoute} from './lazy_routes';
+import {PartialModule} from './partial_module';
 import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
@@ -304,6 +307,45 @@ export class AotCompiler {
     return messageBundle;
   }
 
+  emitAllPartialModules({ngModuleByPipeOrDirective, files}: NgAnalyzedModules): PartialModule[] {
+    // Using reduce like this is a select many pattern (where map is a select pattern)
+    return files.reduce<PartialModule[]>((r, file) => {
+      r.push(...this._emitPartialModule(
+          file.fileName, ngModuleByPipeOrDirective, file.directives, file.pipes, file.ngModules,
+          file.injectables));
+      return r;
+    }, []);
+  }
+
+  private _emitPartialModule(
+      fileName: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
+      directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: CompileNgModuleMetadata[],
+      injectables: StaticSymbol[]): PartialModule[] {
+    const classes: o.ClassStmt[] = [];
+
+    const context = this._createOutputContext(fileName);
+
+    // Process all components
+    directives.forEach(directiveType => {
+      const directiveMetadata = this._metadataResolver.getDirectiveMetadata(directiveType);
+      if (directiveMetadata.isComponent) {
+        const module = ngModuleByPipeOrDirective.get(directiveType) !;
+        module ||
+            error(
+                `Cannot determine the module for component '${identifierName(directiveMetadata.type)}'`);
+
+        const {template: parsedTemplate} =
+            this._parseTemplate(directiveMetadata, module, module.transitiveModule.directives);
+        compileIvyComponent(context, directiveMetadata, parsedTemplate, this._reflector);
+      }
+    });
+
+    if (context.statements) {
+      return [{fileName, statements: [...context.constantPool.statements, ...context.statements]}];
+    }
+    return [];
+  }
+
   emitAllImpls(analyzeResult: NgAnalyzedModules): GeneratedFile[] {
     const {ngModuleByPipeOrDirective, files} = analyzeResult;
     const sourceModules = files.map(
@@ -547,7 +589,7 @@ export class AotCompiler {
                   new o.ExternalReference(moduleName, name, null), allTypeParams));
         };
 
-    return {statements: [], genFilePath, importExpr};
+    return {statements: [], genFilePath, importExpr, constantPool: new ConstantPool()};
   }
 
   private _fileNameToModuleName(importedFilePath: string, containingFilePath: string): string {

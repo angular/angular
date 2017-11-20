@@ -1,3 +1,4 @@
+
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedModules, ParseSourceSpan, Position, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
+import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -18,7 +19,8 @@ import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, D
 import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
 import {LowerMetadataCache, getExpressionLoweringTransformFactory} from './lower_expressions';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
-import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused} from './util';
+import {getAngularClassTransformerFactory} from './r3_transform';
+import {GENERATED_FILES, StructureIsReused, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
 
 
 /**
@@ -65,9 +67,10 @@ class AngularCompilerProgram implements Program {
       private host: CompilerHost, oldProgram?: Program) {
     this.rootNames = [...rootNames];
     const [major, minor] = ts.version.split('.');
-    if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 4)) {
-      throw new Error('The Angular Compiler requires TypeScript >= 2.4.');
-    }
+
+    Number(major) > 2 || (Number(major) === 2 && Number(minor) >= 4) ||
+        userError('The Angular Compiler requires TypeScript >= 2.4.');
+
     this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
     if (oldProgram) {
       this.oldProgramLibrarySummaries = oldProgram.getLibrarySummaries();
@@ -79,8 +82,6 @@ class AngularCompilerProgram implements Program {
       const {host: bundleHost, indexName, errors} =
           createBundleIndexHost(options, this.rootNames, host);
       if (errors) {
-        // TODO(tbosch): once we move MetadataBundler from tsc_wrapped into compiler_cli,
-        // directly create ng.Diagnostic instead of using ts.Diagnostic here.
         this._optionsDiagnostics.push(...errors.map(e => ({
                                                       category: e.category,
                                                       messageText: e.messageText as string,
@@ -196,7 +197,55 @@ class AngularCompilerProgram implements Program {
     return this.compiler.listLazyRoutes(route, route ? undefined : this.analyzedModules);
   }
 
-  emit(
+  emit(parameters: {
+    emitFlags?: EmitFlags,
+    cancellationToken?: ts.CancellationToken,
+    customTransformers?: CustomTransformers,
+    emitCallback?: TsEmitCallback
+  } = {}): ts.EmitResult {
+    return this.options.enableIvy === true ? this._emitRender3(parameters) :
+                                             this._emitRender2(parameters);
+  }
+
+  private _emitRender3(
+      {emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
+       emitCallback = defaultEmitCallback}: {
+        emitFlags?: EmitFlags,
+        cancellationToken?: ts.CancellationToken,
+        customTransformers?: CustomTransformers,
+        emitCallback?: TsEmitCallback
+      } = {}): ts.EmitResult {
+    const emitStart = Date.now();
+    if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
+        0) {
+      return {emitSkipped: true, diagnostics: [], emittedFiles: []};
+    }
+    const modules = this.compiler.emitAllPartialModules(this.analyzedModules);
+
+    const writeTsFile: ts.WriteFileCallback =
+        (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
+          const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
+          let genFile: GeneratedFile|undefined;
+          this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
+        };
+
+    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
+
+    const tsCustomTansformers = this.calculateTransforms(
+        /* genFiles */ undefined, /* partialModules */ modules, customTransformers);
+
+    const emitResult = emitCallback({
+      program: this.tsProgram,
+      host: this.host,
+      options: this.options,
+      writeFile: writeTsFile, emitOnlyDtsFiles,
+      customTransformers: tsCustomTansformers
+    });
+
+    return emitResult;
+  }
+
+  private _emitRender2(
       {emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
        emitCallback = defaultEmitCallback}: {
         emitFlags?: EmitFlags,
@@ -244,7 +293,8 @@ class AngularCompilerProgram implements Program {
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
         };
-    const tsCustomTansformers = this.calculateTransforms(genFileByFileName, customTransformers);
+    const tsCustomTansformers = this.calculateTransforms(
+        genFileByFileName, /* partialModules */ undefined, customTransformers);
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
@@ -400,13 +450,18 @@ class AngularCompilerProgram implements Program {
   }
 
   private calculateTransforms(
-      genFiles: Map<string, GeneratedFile>,
+      genFiles: Map<string, GeneratedFile>|undefined, partialModules: PartialModule[]|undefined,
       customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: ts.TransformerFactory<ts.SourceFile>[] = [];
     if (!this.options.disableExpressionLowering) {
       beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache, this.tsProgram));
     }
-    beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
+    if (genFiles) {
+      beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
+    }
+    if (partialModules) {
+      beforeTs.push(getAngularClassTransformerFactory(partialModules));
+    }
     if (customTransformers && customTransformers.beforeTs) {
       beforeTs.push(...customTransformers.beforeTs);
     }

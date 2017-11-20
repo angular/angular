@@ -59,6 +59,7 @@ module.exports = function(config) {
       'dist/all/@angular/benchpress/**',
       'dist/all/@angular/compiler-cli/**',
       'dist/all/@angular/compiler/test/aot/**',
+      'dist/all/@angular/compiler/test/render3/**',
       'dist/all/@angular/examples/**/e2e_test/*',
       'dist/all/@angular/language-service/**',
       'dist/all/@angular/router/test/**',

@@ -216,8 +216,15 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       // comment out as a workaround for #10967
       ctx.print(null, `/*private*/ `);
     }
+    if (field.hasModifier(o.StmtModifier.Static)) {
+      ctx.print(null, 'static ');
+    }
     ctx.print(null, field.name);
     this._printColonType(field.type, ctx);
+    if (field.initializer) {
+      ctx.print(null, ' = ');
+      field.initializer.visitExpression(this, ctx);
+    }
     ctx.println(null, `;`);
   }
 
