@@ -14,6 +14,7 @@ describe('MatExpansionPanel', () => {
       ],
       declarations: [
         PanelWithContent,
+        PanelWithContentInNgIf,
         PanelWithCustomMargin
       ],
     });
@@ -138,6 +139,16 @@ describe('MatExpansionPanel', () => {
       expect(arrow.style.transform).toBe('rotate(180deg)', 'Expected 180 degree rotation.');
     }));
 
+    it('make sure accordion item runs ngOnDestroy when expansion panel is destroyed', () => {
+      let fixture = TestBed.createComponent(PanelWithContentInNgIf);
+      fixture.detectChanges();
+      let destroyedOk = false;
+      fixture.componentInstance.panel.destroyed.subscribe(() => destroyedOk = true);
+      fixture.componentInstance.expansionShown = false;
+      fixture.detectChanges();
+      expect(destroyedOk).toBe(true);
+    });
+
   describe('disabled state', () => {
     let fixture: ComponentFixture<PanelWithContent>;
     let panel: HTMLElement;
@@ -221,6 +232,18 @@ class PanelWithContent {
   @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;
 }
 
+@Component({
+  template: `
+  <div *ngIf="expansionShown">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>Panel Title</mat-expansion-panel-header>
+    </mat-expansion-panel>
+  </div>`
+})
+class PanelWithContentInNgIf {
+  expansionShown = true;
+  @ViewChild(MatExpansionPanel) panel: MatExpansionPanel;
+}
 
 @Component({
   styles: [
