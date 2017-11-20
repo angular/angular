@@ -16,6 +16,7 @@ at the top of the page (e.g. a hero header).
 * `body-2` - Bolder body text.
 * `caption` - Smaller body and hint text.
 * `button` - Buttons and anchors.
+* `input` - Form input fields.
 
 The typography levels are collected into a typography config which is used to generate the CSS.
 
