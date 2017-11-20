@@ -131,12 +131,10 @@ $mat-drawer-over-drawer-z-index: 4;
     }
   }
 
-  &.mat-drawer-opening, &.mat-drawer-opened {
-    &:not(.mat-drawer-side) {
-      // The elevation of z-16 is noted in the design specifications.
-      // See https://material.io/guidelines/patterns/navigation-drawer.html#
-      @include mat-elevation(16);
-    }
+  &:not(.mat-drawer-side) {
+    // The elevation of z-16 is noted in the design specifications.
+    // See https://material.io/guidelines/patterns/navigation-drawer.html#
+    @include mat-elevation(16);
   }
 }
 
