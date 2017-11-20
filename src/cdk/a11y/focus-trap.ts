@@ -14,11 +14,12 @@ import {
   OnDestroy,
   AfterContentInit,
   Injectable,
+  Inject,
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Platform} from '@angular/cdk/platform';
 import {first} from 'rxjs/operators/first';
 import {InteractivityChecker} from './interactivity-checker';
+import {DOCUMENT} from '@angular/common';
 
 
 /**
@@ -45,9 +46,9 @@ export class FocusTrap {
 
   constructor(
     private _element: HTMLElement,
-    private _platform: Platform,
     private _checker: InteractivityChecker,
     private _ngZone: NgZone,
+    private _document: Document,
     deferAnchors = false) {
 
     if (!deferAnchors) {
@@ -73,11 +74,6 @@ export class FocusTrap {
    * in the constructor, but can be deferred for cases like directives with `*ngIf`.
    */
   attachAnchors(): void {
-    // If we're not on the browser, there can be no focus to trap.
-    if (!this._platform.isBrowser) {
-      return;
-    }
-
     if (!this._startAnchor) {
       this._startAnchor = this._createAnchor();
     }
@@ -144,10 +140,6 @@ export class FocusTrap {
    * @returns The boundary element.
    */
   private _getRegionBoundary(bound: 'start' | 'end'): HTMLElement | null {
-    if (!this._platform.isBrowser) {
-      return null;
-    }
-
     // Contains the deprecated version of selector, for temporary backwards comparability.
     let markers = this._element.querySelectorAll(`[cdk-focus-region-${bound}], ` +
                                                  `[cdkFocusRegion${bound}], ` +
@@ -175,10 +167,6 @@ export class FocusTrap {
    * @returns Whether focus was moved successfuly.
    */
   focusInitialElement(): boolean {
-    if (!this._platform.isBrowser) {
-      return false;
-    }
-
     // Contains the deprecated version of selector, for temporary backwards comparability.
     const redirectToElement = this._element.querySelector(`[cdk-focus-initial], ` +
                                                           `[cdkFocusInitial]`) as HTMLElement;
@@ -271,7 +259,7 @@ export class FocusTrap {
 
   /** Creates an anchor element. */
   private _createAnchor(): HTMLElement {
-    let anchor = document.createElement('div');
+    const anchor = this._document.createElement('div');
     anchor.tabIndex = this._enabled ? 0 : -1;
     anchor.classList.add('cdk-visually-hidden');
     anchor.classList.add('cdk-focus-trap-anchor');
@@ -292,10 +280,15 @@ export class FocusTrap {
 /** Factory that allows easy instantiation of focus traps. */
 @Injectable()
 export class FocusTrapFactory {
+  private _document: Document;
+
   constructor(
       private _checker: InteractivityChecker,
-      private _platform: Platform,
-      private _ngZone: NgZone) { }
+      private _ngZone: NgZone,
+      @Inject(DOCUMENT) _document: any) {
+
+    this._document = _document;
+  }
 
   /**
    * Creates a focus-trapped region around the given element.
@@ -306,7 +299,7 @@ export class FocusTrapFactory {
    */
   create(element: HTMLElement, deferCaptureElements: boolean = false): FocusTrap {
     return new FocusTrap(
-        element, this._platform, this._checker, this._ngZone, deferCaptureElements);
+        element, this._checker, this._ngZone, this._document, deferCaptureElements);
   }
 }
 
@@ -349,6 +342,8 @@ export class FocusTrapDeprecatedDirective implements OnDestroy, AfterContentInit
   exportAs: 'cdkTrapFocus',
 })
 export class CdkTrapFocus implements OnDestroy, AfterContentInit {
+  private _document: Document;
+
   /** Underlying FocusTrap instance. */
   focusTrap: FocusTrap;
 
@@ -372,7 +367,9 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit {
   constructor(
       private _elementRef: ElementRef,
       private _focusTrapFactory: FocusTrapFactory,
-      private _platform: Platform) {
+      @Inject(DOCUMENT) _document: any) {
+
+    this._document = _document;
     this.focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement, true);
   }
 
@@ -390,8 +387,8 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit {
   ngAfterContentInit() {
     this.focusTrap.attachAnchors();
 
-    if (this.autoCapture && this._platform.isBrowser) {
-      this._previouslyFocusedElement = document.activeElement as HTMLElement;
+    if (this.autoCapture) {
+      this._previouslyFocusedElement = this._document.activeElement as HTMLElement;
       this.focusTrap.focusInitialElementWhenReady();
     }
   }
