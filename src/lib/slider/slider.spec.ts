@@ -39,6 +39,8 @@ describe('MatSlider without forms', () => {
         SliderWithValueGreaterThanMax,
         SliderWithChangeHandler,
         SliderWithDirAndInvert,
+        SliderWithTabIndexBinding,
+        SliderWithNativeTabindexAttr,
         VerticalSlider,
       ],
       providers: [
@@ -267,6 +269,10 @@ describe('MatSlider without forms', () => {
 
     it ('should leave thumb gap', () => {
       expect(trackFillElement.style.transform).toContain('translateX(-7px)');
+    });
+
+    it('should disable tabbing to the slider', () => {
+      expect(sliderNativeElement.tabIndex).toBe(-1);
     });
   });
 
@@ -1163,6 +1169,33 @@ describe('MatSlider without forms', () => {
       expect(sliderNativeElement.getAttribute('aria-orientation')).toEqual('vertical');
     });
   });
+
+  describe('tabindex', () => {
+
+    it('should allow setting the tabIndex through binding', () => {
+      const fixture = TestBed.createComponent(SliderWithTabIndexBinding);
+      fixture.detectChanges();
+
+      const slider = fixture.debugElement.query(By.directive(MatSlider)).componentInstance;
+
+      expect(slider.tabIndex).toBe(0, 'Expected the tabIndex to be set to 0 by default.');
+
+      fixture.componentInstance.tabIndex = 3;
+      fixture.detectChanges();
+
+      expect(slider.tabIndex).toBe(3, 'Expected the tabIndex to have been changed.');
+    });
+
+    it('should detect the native tabindex attribute', () => {
+      const fixture = TestBed.createComponent(SliderWithNativeTabindexAttr);
+      fixture.detectChanges();
+
+      const slider = fixture.debugElement.query(By.directive(MatSlider)).componentInstance;
+
+      expect(slider.tabIndex)
+        .toBe(5, 'Expected the tabIndex to be set to the value of the native attribute.');
+    });
+  });
 });
 
 describe('MatSlider with forms module', () => {
@@ -1463,6 +1496,22 @@ class SliderWithDirAndInvert {
 })
 class VerticalSlider {
   invert = false;
+}
+
+@Component({
+  template: `<mat-slider [tabIndex]="tabIndex"></mat-slider>`,
+  styles: [styles],
+})
+class SliderWithTabIndexBinding {
+  tabIndex: number;
+}
+
+@Component({
+  template: `<mat-slider tabindex="5"></mat-slider>`,
+  styles: [styles],
+})
+class SliderWithNativeTabindexAttr {
+  tabIndex: number;
 }
 
 /**

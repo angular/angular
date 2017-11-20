@@ -20,6 +20,7 @@ import {
   UP_ARROW,
 } from '@angular/cdk/keycodes';
 import {
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -40,8 +41,10 @@ import {
   CanColor,
   CanDisable,
   HammerInput,
+  HasTabIndex,
   mixinColor,
   mixinDisabled,
+  mixinTabIndex,
 } from '@angular/material/core';
 import {Subscription} from 'rxjs/Subscription';
 
@@ -85,7 +88,8 @@ export class MatSliderChange {
 export class MatSliderBase {
   constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
 }
-export const _MatSliderMixinBase = mixinColor(mixinDisabled(MatSliderBase), 'accent');
+export const _MatSliderMixinBase =
+  mixinTabIndex(mixinColor(mixinDisabled(MatSliderBase), 'accent'));
 
 /**
  * Allows users to select from a range of values by moving the slider thumb. It is similar in
@@ -108,7 +112,7 @@ export const _MatSliderMixinBase = mixinColor(mixinDisabled(MatSliderBase), 'acc
     '(slidestart)': '_onSlideStart($event)',
     'class': 'mat-slider',
     'role': 'slider',
-    'tabindex': '0',
+    '[tabIndex]': 'tabIndex',
     '[attr.aria-disabled]': 'disabled',
     '[attr.aria-valuemax]': 'max',
     '[attr.aria-valuemin]': 'min',
@@ -126,13 +130,13 @@ export const _MatSliderMixinBase = mixinColor(mixinDisabled(MatSliderBase), 'acc
   },
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
-  inputs: ['disabled', 'color'],
+  inputs: ['disabled', 'color', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatSlider extends _MatSliderMixinBase
-    implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit {
+    implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit, HasTabIndex {
   /** Whether the slider is inverted. */
   @Input()
   get invert() { return this._invert; }
@@ -418,8 +422,11 @@ export class MatSlider extends _MatSliderMixinBase
               elementRef: ElementRef,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
-              @Optional() private _dir: Directionality) {
+              @Optional() private _dir: Directionality,
+              @Attribute('tabindex') tabIndex: string) {
     super(renderer, elementRef);
+
+    this.tabIndex = parseInt(tabIndex) || 0;
   }
 
   ngOnInit() {
