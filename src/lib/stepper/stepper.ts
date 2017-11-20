@@ -9,6 +9,7 @@
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {CdkStep, CdkStepper} from '@angular/cdk/stepper';
 import {
+  AfterContentInit,
   Component,
   ContentChild,
   ContentChildren,
@@ -26,6 +27,7 @@ import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
+import {takeUntil} from 'rxjs/operators/takeUntil';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MatStep = CdkStep;
@@ -66,12 +68,17 @@ export class MatStep extends _MatStep implements ErrorStateMatcher {
 @Directive({
   selector: '[matStepper]'
 })
-export class MatStepper extends _MatStepper {
+export class MatStepper extends _MatStepper implements AfterContentInit {
   /** The list of step headers of the steps in the stepper. */
   @ViewChildren(MatStepHeader, {read: ElementRef}) _stepHeader: QueryList<ElementRef>;
 
   /** Steps that the stepper holds. */
   @ContentChildren(MatStep) _steps: QueryList<MatStep>;
+
+  ngAfterContentInit() {
+    // Mark the component for change detection whenever the content children query changes
+    this._steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => this._stateChanged());
+  }
 }
 
 @Component({

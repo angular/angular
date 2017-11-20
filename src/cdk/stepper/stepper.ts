@@ -28,12 +28,14 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   OnChanges,
+  OnDestroy
 } from '@angular/core';
 import {LEFT_ARROW, RIGHT_ARROW, ENTER, SPACE} from '@angular/cdk/keycodes';
 import {CdkStepLabel} from './step-label';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {AbstractControl} from '@angular/forms';
 import {Direction, Directionality} from '@angular/cdk/bidi';
+import {Subject} from 'rxjs/Subject';
 
 /** Used to generate unique ID for each stepper component. */
 let nextId = 0;
@@ -132,7 +134,10 @@ export class CdkStep implements OnChanges {
   selector: '[cdkStepper]',
   exportAs: 'cdkStepper',
 })
-export class CdkStepper {
+export class CdkStepper implements OnDestroy {
+  /** Emits when the component is destroyed. */
+  protected _destroyed = new Subject<void>();
+
   /** The list of step components that the stepper is holding. */
   @ContentChildren(CdkStep) _steps: QueryList<CdkStep>;
 
@@ -184,6 +189,11 @@ export class CdkStepper {
     @Optional() private _dir: Directionality,
     private _changeDetectorRef: ChangeDetectorRef) {
     this._groupId = nextId++;
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   /** Selects and focuses the next step in list. */
