@@ -40,7 +40,6 @@ import {
 } from '@angular/forms';
 import {
   ErrorStateMatcher,
-  extendObject,
   FloatPlaceholderType,
   MAT_PLACEHOLDER_GLOBAL_OPTIONS,
   MatOption,
@@ -3984,7 +3983,7 @@ class NgModelCompareWithSelect {
   compareByReference(f1: any, f2: any) { return f1 === f2; }
 
   setFoodByCopy(newValue: {value: string, viewValue: string}) {
-    this.selectedFood = extendObject({}, newValue);
+    this.selectedFood = {...{}, ...newValue};
   }
 }
 

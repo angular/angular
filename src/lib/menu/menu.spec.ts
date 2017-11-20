@@ -26,7 +26,7 @@ import {
   MatMenuItem,
 } from './index';
 import {MENU_PANEL_TOP_PADDING} from './menu-trigger';
-import {extendObject, MatRipple} from '@angular/material/core';
+import {MatRipple} from '@angular/material/core';
 import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
@@ -438,11 +438,11 @@ describe('MatMenu', () => {
      */
     class OverlapSubject<T extends TestableMenu> {
       readonly fixture: ComponentFixture<T>;
-      readonly trigger: any;
+      readonly trigger: HTMLElement;
 
       constructor(ctor: {new(): T; }, inputs: {[key: string]: any} = {}) {
         this.fixture = TestBed.createComponent(ctor);
-        extendObject(this.fixture.componentInstance, inputs);
+        Object.keys(inputs).forEach(key => this.fixture.componentInstance[key] = inputs[key]);
         this.fixture.detectChanges();
         this.trigger = this.fixture.componentInstance.triggerEl.nativeElement;
       }
@@ -451,11 +451,6 @@ describe('MatMenu', () => {
         this.fixture.componentInstance.trigger.openMenu();
         this.fixture.detectChanges();
       }
-
-      updateTriggerStyle(style: any) {
-        return extendObject(this.trigger.style, style);
-      }
-
 
       get overlayRect() {
         return this.overlayPane.getBoundingClientRect();
@@ -507,7 +502,8 @@ describe('MatMenu', () => {
       it('supports above position fall back', () => {
         // Push trigger to the bottom part of viewport, so it doesn't have space to open
         // in its default "below" position below the trigger.
-        subject.updateTriggerStyle({position: 'fixed', bottom: '0'});
+        subject.trigger.style.position = 'fixed';
+        subject.trigger.style.bottom = '0';
         subject.openMenu();
 
         // Since the menu is above the trigger, the overlay bottom should be the trigger top.
