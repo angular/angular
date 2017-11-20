@@ -28,11 +28,11 @@ $mat-datepicker-touch-max-height: 788px;
   @include mat-elevation(8);
 
   display: block;
-}
 
-.mat-calendar {
-  width: $mat-datepicker-non-touch-calendar-width;
-  height: $mat-datepicker-non-touch-calendar-height;
+  .mat-calendar {
+    width: $mat-datepicker-non-touch-calendar-width;
+    height: $mat-datepicker-non-touch-calendar-height;
+  }
 }
 
 .mat-datepicker-content-touch {
