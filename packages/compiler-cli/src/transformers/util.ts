@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {syntaxError} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -19,6 +20,14 @@ export const enum StructureIsReused {Not = 0, SafeModules = 1, Completely = 2}
 // Note: This is an internal property in TypeScript. Use it only for assertions and tests.
 export function tsStructureIsReused(program: ts.Program): StructureIsReused {
   return (program as any).structureIsReused;
+}
+
+export function error(msg: string): never {
+  throw new Error(`Internal error: ${msg}`);
+}
+
+export function userError(msg: string): never {
+  throw syntaxError(msg);
 }
 
 export function createMessageDiagnostic(messageText: string): ts.Diagnostic&Diagnostic {

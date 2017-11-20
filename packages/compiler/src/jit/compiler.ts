@@ -9,6 +9,7 @@
 import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileNgModuleMetadata, CompilePipeSummary, CompileProviderMetadata, CompileStylesheetMetadata, CompileTypeSummary, ProviderMeta, ProxyClass, identifierName, ngModuleJitUrl, sharedStylesheetJitUrl, templateJitUrl, templateSourceUrl} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
 import {CompilerConfig} from '../config';
+import {ConstantPool} from '../constant_pool';
 import {Type} from '../core';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {NgModuleCompiler} from '../ng_module_compiler';
@@ -355,5 +356,5 @@ function assertComponent(meta: CompileDirectiveMetadata) {
 function createOutputContext(): OutputContext {
   const importExpr = (symbol: any) =>
       ir.importExpr({name: identifierName(symbol), moduleName: null, runtime: symbol});
-  return {statements: [], genFilePath: '', importExpr};
+  return {statements: [], genFilePath: '', importExpr, constantPool: new ConstantPool()};
 }

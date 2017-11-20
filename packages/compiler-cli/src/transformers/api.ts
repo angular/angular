@@ -38,6 +38,8 @@ export function isNgDiagnostic(diagnostic: any): diagnostic is Diagnostic {
 }
 
 export interface CompilerOptions extends ts.CompilerOptions {
+  // NOTE: These comments and aio/content/guides/aot-compiler.md should be kept in sync.
+
   // Write statistics about compilation (e.g. total time, ...)
   // Note: this is the --diagnostics command line option from TS (which is @internal
   // on ts.CompilerOptions interface).
@@ -158,6 +160,17 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * in JIT mode. This is off by default.
    */
   enableSummariesForJit?: boolean;
+
+  /**
+   * Tells the compiler to generate definitions using the Render3 style code generation.
+   * This option defaults to `false`.
+   *
+   * Not all features are supported with this option enabled. It is only supported
+   * for experimentation and testing of Render3 style code generation.
+   *
+   * @experimental
+   */
+  enableIvy?: boolean;
 
   /** @internal */
   collectAllErrors?: boolean;
