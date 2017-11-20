@@ -441,7 +441,7 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should re-use the preferred position when re-applying while locked in', () => {
-      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
       strategy = positionBuilder.connectedTo(
           fakeElementRef,
           {originX: 'end', originY: 'center'},
