@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Optional, SkipSelf} from '@angular/core';
-import {Platform} from '@angular/cdk/platform';
+import {Injectable, Inject, InjectionToken, Optional, SkipSelf} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
 import {addAriaReferencedId, getAriaReferenceIds, removeAriaReferencedId} from './aria-reference';
 
 /**
@@ -45,7 +45,11 @@ let messagesContainer: HTMLElement | null = null;
  */
 @Injectable()
 export class AriaDescriber {
-  constructor(private _platform: Platform) { }
+  private _document: Document;
+
+  constructor(@Inject(DOCUMENT) _document: any) {
+    this._document = _document;
+  }
 
   /**
    * Adds to the host element an aria-describedby reference to a hidden element that contains
@@ -53,143 +57,146 @@ export class AriaDescriber {
    * message element.
    */
   describe(hostElement: Element, message: string) {
-    if (!this._platform.isBrowser || !message.trim()) { return; }
-
-    if (!messageRegistry.has(message)) {
-      createMessageElement(message);
+    if (!message.trim()) {
+      return;
     }
 
-    if (!isElementDescribedByMessage(hostElement, message)) {
-      addMessageReference(hostElement, message);
+    if (!messageRegistry.has(message)) {
+      this._createMessageElement(message);
+    }
+
+    if (!this._isElementDescribedByMessage(hostElement, message)) {
+      this._addMessageReference(hostElement, message);
     }
   }
 
   /** Removes the host element's aria-describedby reference to the message element. */
   removeDescription(hostElement: Element, message: string) {
-    if (!this._platform.isBrowser || !message.trim()) {
+    if (!message.trim()) {
       return;
     }
 
-    if (isElementDescribedByMessage(hostElement, message)) {
-      removeMessageReference(hostElement, message);
+    if (this._isElementDescribedByMessage(hostElement, message)) {
+      this._removeMessageReference(hostElement, message);
     }
 
     const registeredMessage = messageRegistry.get(message);
     if (registeredMessage && registeredMessage.referenceCount === 0) {
-      deleteMessageElement(message);
+      this._deleteMessageElement(message);
     }
 
     if (messagesContainer && messagesContainer.childNodes.length === 0) {
-      deleteMessagesContainer();
+      this._deleteMessagesContainer();
     }
   }
 
   /** Unregisters all created message elements and removes the message container. */
   ngOnDestroy() {
-    if (!this._platform.isBrowser) { return; }
+    const describedElements =
+        this._document.querySelectorAll(`[${CDK_DESCRIBEDBY_HOST_ATTRIBUTE}]`);
 
-    const describedElements = document.querySelectorAll(`[${CDK_DESCRIBEDBY_HOST_ATTRIBUTE}]`);
     for (let i = 0; i < describedElements.length; i++) {
-      removeCdkDescribedByReferenceIds(describedElements[i]);
+      this._removeCdkDescribedByReferenceIds(describedElements[i]);
       describedElements[i].removeAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE);
     }
 
     if (messagesContainer) {
-      deleteMessagesContainer();
+      this._deleteMessagesContainer();
     }
 
     messageRegistry.clear();
   }
-}
 
-/**
- * Creates a new element in the visually hidden message container element with the message
- * as its content and adds it to the message registry.
- */
-function createMessageElement(message: string) {
-  const messageElement = document.createElement('div');
-  messageElement.setAttribute('id', `${CDK_DESCRIBEDBY_ID_PREFIX}-${nextId++}`);
-  messageElement.appendChild(document.createTextNode(message)!);
+  /**
+   * Creates a new element in the visually hidden message container element with the message
+   * as its content and adds it to the message registry.
+   */
+  private _createMessageElement(message: string) {
+    const messageElement = this._document.createElement('div');
+    messageElement.setAttribute('id', `${CDK_DESCRIBEDBY_ID_PREFIX}-${nextId++}`);
+    messageElement.appendChild(this._document.createTextNode(message)!);
 
-  if (!messagesContainer) { createMessagesContainer(); }
-  messagesContainer!.appendChild(messageElement);
+    if (!messagesContainer) { this._createMessagesContainer(); }
+    messagesContainer!.appendChild(messageElement);
 
-  messageRegistry.set(message, {messageElement, referenceCount: 0});
-}
-
-/** Deletes the message element from the global messages container. */
-function deleteMessageElement(message: string) {
-  const registeredMessage = messageRegistry.get(message);
-  const messageElement = registeredMessage && registeredMessage.messageElement;
-  if (messagesContainer && messageElement) {
-    messagesContainer.removeChild(messageElement);
+    messageRegistry.set(message, {messageElement, referenceCount: 0});
   }
-  messageRegistry.delete(message);
-}
 
-/** Creates the global container for all aria-describedby messages. */
-function createMessagesContainer() {
-  messagesContainer = document.createElement('div');
+  /** Deletes the message element from the global messages container. */
+  private _deleteMessageElement(message: string) {
+    const registeredMessage = messageRegistry.get(message);
+    const messageElement = registeredMessage && registeredMessage.messageElement;
+    if (messagesContainer && messageElement) {
+      messagesContainer.removeChild(messageElement);
+    }
+    messageRegistry.delete(message);
+  }
 
-  messagesContainer.setAttribute('id', MESSAGES_CONTAINER_ID);
-  messagesContainer.setAttribute('aria-hidden', 'true');
-  messagesContainer.style.display = 'none';
-  document.body.appendChild(messagesContainer);
-}
+  /** Creates the global container for all aria-describedby messages. */
+  private _createMessagesContainer() {
+    messagesContainer = this._document.createElement('div');
 
-/** Deletes the global messages container. */
-function deleteMessagesContainer() {
-  document.body.removeChild(messagesContainer!);
-  messagesContainer = null;
-}
+    messagesContainer.setAttribute('id', MESSAGES_CONTAINER_ID);
+    messagesContainer.setAttribute('aria-hidden', 'true');
+    messagesContainer.style.display = 'none';
+    this._document.body.appendChild(messagesContainer);
+  }
 
-/** Removes all cdk-describedby messages that are hosted through the element. */
-function removeCdkDescribedByReferenceIds(element: Element) {
-  // Remove all aria-describedby reference IDs that are prefixed by CDK_DESCRIBEDBY_ID_PREFIX
-  const originalReferenceIds = getAriaReferenceIds(element, 'aria-describedby')
-      .filter(id => id.indexOf(CDK_DESCRIBEDBY_ID_PREFIX) != 0);
-  element.setAttribute('aria-describedby', originalReferenceIds.join(' '));
-}
+  /** Deletes the global messages container. */
+  private _deleteMessagesContainer() {
+    this._document.body.removeChild(messagesContainer!);
+    messagesContainer = null;
+  }
 
-/**
- * Adds a message reference to the element using aria-describedby and increments the registered
- * message's reference count.
- */
-function addMessageReference(element: Element, message: string) {
-  const registeredMessage = messageRegistry.get(message)!;
+  /** Removes all cdk-describedby messages that are hosted through the element. */
+  private _removeCdkDescribedByReferenceIds(element: Element) {
+    // Remove all aria-describedby reference IDs that are prefixed by CDK_DESCRIBEDBY_ID_PREFIX
+    const originalReferenceIds = getAriaReferenceIds(element, 'aria-describedby')
+        .filter(id => id.indexOf(CDK_DESCRIBEDBY_ID_PREFIX) != 0);
+    element.setAttribute('aria-describedby', originalReferenceIds.join(' '));
+  }
 
-  // Add the aria-describedby reference and set the describedby_host attribute to mark the element.
-  addAriaReferencedId(element, 'aria-describedby', registeredMessage.messageElement.id);
-  element.setAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE, '');
+  /**
+   * Adds a message reference to the element using aria-describedby and increments the registered
+   * message's reference count.
+   */
+  private _addMessageReference(element: Element, message: string) {
+    const registeredMessage = messageRegistry.get(message)!;
 
-  registeredMessage.referenceCount++;
-}
+    // Add the aria-describedby reference and set the
+    // describedby_host attribute to mark the element.
+    addAriaReferencedId(element, 'aria-describedby', registeredMessage.messageElement.id);
+    element.setAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE, '');
 
-/**
- * Removes a message reference from the element using aria-describedby and decrements the registered
- * message's reference count.
- */
-function removeMessageReference(element: Element, message: string) {
-  const registeredMessage = messageRegistry.get(message)!;
-  registeredMessage.referenceCount--;
+    registeredMessage.referenceCount++;
+  }
 
-  removeAriaReferencedId(element, 'aria-describedby', registeredMessage.messageElement.id);
-  element.removeAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE);
-}
+  /**
+   * Removes a message reference from the element using aria-describedby
+   * and decrements the registered message's reference count.
+   */
+  private _removeMessageReference(element: Element, message: string) {
+    const registeredMessage = messageRegistry.get(message)!;
+    registeredMessage.referenceCount--;
 
-/** Returns true if the element has been described by the provided message ID. */
-function isElementDescribedByMessage(element: Element, message: string): boolean {
-  const referenceIds = getAriaReferenceIds(element, 'aria-describedby');
-  const registeredMessage = messageRegistry.get(message);
-  const messageId = registeredMessage && registeredMessage.messageElement.id;
+    removeAriaReferencedId(element, 'aria-describedby', registeredMessage.messageElement.id);
+    element.removeAttribute(CDK_DESCRIBEDBY_HOST_ATTRIBUTE);
+  }
 
-  return !!messageId && referenceIds.indexOf(messageId) != -1;
+  /** Returns true if the element has been described by the provided message ID. */
+  private _isElementDescribedByMessage(element: Element, message: string): boolean {
+    const referenceIds = getAriaReferenceIds(element, 'aria-describedby');
+    const registeredMessage = messageRegistry.get(message);
+    const messageId = registeredMessage && registeredMessage.messageElement.id;
+
+    return !!messageId && referenceIds.indexOf(messageId) != -1;
+  }
+
 }
 
 /** @docs-private */
-export function ARIA_DESCRIBER_PROVIDER_FACTORY(
-    parentDispatcher: AriaDescriber, platform: Platform) {
-  return parentDispatcher || new AriaDescriber(platform);
+export function ARIA_DESCRIBER_PROVIDER_FACTORY(parentDispatcher: AriaDescriber, _document: any) {
+  return parentDispatcher || new AriaDescriber(_document);
 }
 
 /** @docs-private */
@@ -198,7 +205,7 @@ export const ARIA_DESCRIBER_PROVIDER = {
   provide: AriaDescriber,
   deps: [
     [new Optional(), new SkipSelf(), AriaDescriber],
-    Platform
+    DOCUMENT as InjectionToken<any>
   ],
   useFactory: ARIA_DESCRIBER_PROVIDER_FACTORY
 };
