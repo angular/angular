@@ -3,7 +3,7 @@ import {uglifyJsFile} from './minify-sources';
 import {buildConfig} from './build-config';
 import {BuildPackage} from './build-package';
 import {rollupRemoveLicensesPlugin} from './rollup-remove-licenses';
-import {rollupGlobals} from './rollup-globals';
+import {rollupGlobals, dashCaseToCamelCase} from './rollup-globals';
 
 // There are no type definitions available for these imports.
 const rollup = require('rollup');
@@ -51,7 +51,7 @@ export class PackageBundler {
     return this.bundleEntryPoint({
       entryFile,
       esm5EntryFile,
-      moduleName: `ng.${packageName}.${entryPoint}`,
+      moduleName: `ng.${packageName}.${dashCaseToCamelCase(entryPoint)}`,
       esm2015Dest: join(bundlesDir, `${packageName}`, `${entryPoint}.js`),
       esm5Dest: join(bundlesDir, `${packageName}`, `${entryPoint}.es5.js`),
       umdDest: join(bundlesDir, `${packageName}-${entryPoint}.umd.js`),

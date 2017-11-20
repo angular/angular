@@ -3,7 +3,8 @@ import {getSubdirectoryNames} from './secondary-entry-points';
 import {buildConfig} from './build-config';
 
 /** Method that converts dash-case strings to a camel-based string. */
-const dashCaseToCamelCase = (str: string) => str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+export const dashCaseToCamelCase =
+  (str: string) => str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 
 /** List of potential secondary entry-points for the cdk package. */
 const cdkSecondaryEntryPoints = getSubdirectoryNames(join(buildConfig.packagesDir, 'cdk'));
