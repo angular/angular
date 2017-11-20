@@ -6,17 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {
   BlockScrollStrategy,
   Overlay,
-  OverlayRef,
   OverlayConfig,
+  OverlayRef,
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
-import {filter} from 'rxjs/operators/filter';
-import {startWith} from 'rxjs/operators/startWith';
 import {Location} from '@angular/common';
 import {
   ComponentRef,
@@ -28,15 +27,15 @@ import {
   SkipSelf,
   TemplateRef,
 } from '@angular/core';
-import {extendObject} from '@angular/material/core';
-import {Directionality} from '@angular/cdk/bidi';
 import {Observable} from 'rxjs/Observable';
 import {defer} from 'rxjs/observable/defer';
+import {of as observableOf} from 'rxjs/observable/of';
+import {filter} from 'rxjs/operators/filter';
+import {startWith} from 'rxjs/operators/startWith';
 import {Subject} from 'rxjs/Subject';
 import {MatDialogConfig} from './dialog-config';
 import {MatDialogContainer} from './dialog-container';
 import {MatDialogRef} from './dialog-ref';
-import {of as observableOf} from 'rxjs/observable/of';
 
 
 export const MAT_DIALOG_DATA = new InjectionToken<any>('MatDialogData');
@@ -313,5 +312,5 @@ export class MatDialog {
  * @returns The new configuration object.
  */
 function _applyConfigDefaults(config?: MatDialogConfig): MatDialogConfig {
-  return extendObject(new MatDialogConfig(), config);
+  return {...new MatDialogConfig(), ...config};
 }

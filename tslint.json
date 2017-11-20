@@ -75,7 +75,8 @@
       ["fit"],
       ["fdescribe"],
       ["xit"],
-      ["xdescribe"]
+      ["xdescribe"],
+      {"name": "Object.assign", "message": "Use the spread operator instead."}
     ],
     // Disallows importing the whole RxJS library. Submodules can be still imported.
     "import-blacklist": [true, "rxjs", "rxjs/operators"],
