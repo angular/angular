@@ -22,7 +22,6 @@
 # petebacondarwin - Pete Bacon Darwin
 # pkozlowski-opensource - Pawel Kozlowski
 # robwormald - Rob Wormald
-# tbosch - Tobias Bosch
 # tinayuangao - Tina Gao
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
@@ -100,7 +99,6 @@ groups:
     users:
       - alexeagle
       - mhevery
-      - tbosch
       - vicb
       - IgorMinar #fallback
 
@@ -109,8 +107,7 @@ groups:
       files:
         - "packages/core/*"
     users:
-      - tbosch #primary
-      - chuckjaz
+      - chuckjaz #primary
       - mhevery
       - vicb
       - IgorMinar #fallback
@@ -132,7 +129,7 @@ groups:
         - "packages/compiler/src/i18n/*"
     users:
       - vicb #primary
-      - tbosch
+      - chuckjaz
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -141,9 +138,8 @@ groups:
       files:
         - "packages/compiler/*"
     users:
-      - tbosch #primary
+      - chuckjaz #primary
       - vicb
-      - chuckjaz
       - mhevery
       - IgorMinar #fallback
 
@@ -163,12 +159,11 @@ groups:
           - "packages/compiler-cli/*"
           - "packages/bazel/*"
         exclude:
-          - "packages/compiler-cli/src/ngtools*"   
+          - "packages/compiler-cli/src/ngtools*"
     users:
       - alexeagle
       - chuckjaz
       - vicb
-      - tbosch
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -212,7 +207,7 @@ groups:
         - "packages/language-service/*"
     users:
       - chuckjaz #primary
-      - tbosch #secondary
+      # needs secondary
       - vicb
       - IgorMinar #fallback
       - mhevery #fallback
@@ -242,8 +237,8 @@ groups:
       files:
         - "packages/platform-browser/*"
     users:
-      - tbosch #primary
-      - vicb #secondary
+      - vicb #primary
+      # needs secondary
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -253,9 +248,9 @@ groups:
         - "packages/platform-server/*"
     users:
       - vikerman #primary
+      # needs secondary
       - alxhub
       - vicb
-      - tbosch
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -265,7 +260,7 @@ groups:
         - "packages/platform-webworker/*"
     users:
       - vicb #primary
-      - tbosch #secondary
+      # needs secondary
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -284,7 +279,7 @@ groups:
       files:
         - "packages/benchpress/*"
     users:
-      - tbosch #primary
+      # needs primary
       # needs secondary
       - IgorMinar #fallback
       - mhevery #fallback
