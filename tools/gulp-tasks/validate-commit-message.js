@@ -10,7 +10,6 @@
 // tslint:disable:no-console
 module.exports = (gulp) => () => {
   const shelljs = require('shelljs');
-  const bin = resolveBin('@commitlint/cli', 'commitlint');
 
   let baseBranch = 'master';
   const currentVersion = require('semver').parse(require('../../package.json').version);
@@ -36,7 +35,7 @@ module.exports = (gulp) => () => {
 
   console.log(`Examining commits between HEAD and ${baseBranch}`);
 
-  const result = shelljs.exec(`${bin} --from=${baseBranch} --to=HEAD`);
+  const result = shelljs.exec(`yarn commitlint --from=${baseBranch} --to=HEAD`);
 
   if (result.code) {
     console.log(result.code);
@@ -47,12 +46,3 @@ module.exports = (gulp) => () => {
     process.exit(1);
   }
 };
-
-function resolveBin(pkg, name) {
-  const path = require('path');
-  const resolvePkg = require('resolve-pkg');
-  const readPkg = require('read-pkg');
-  const pkgPath = resolvePkg(pkg);
-  const commitlintPkg = readPkg.sync(pkgPath);
-  return path.join(pkgPath, commitlintPkg.bin[name]);
-}

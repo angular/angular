@@ -85,8 +85,6 @@
     "minimist": "1.2.0",
     "node-uuid": "1.4.8",
     "protractor": "5.1.2",
-    "read-pkg": "^3.0.0",
-    "resolve-pkg": "^1.0.0",
     "rewire": "2.5.2",
     "rollup": "0.47.4",
     "rollup-plugin-commonjs": "8.1.0",
