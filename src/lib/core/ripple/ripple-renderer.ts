@@ -85,7 +85,7 @@ export class RippleRenderer {
     }
 
     const radius = config.radius || distanceToFurthestCorner(x, y, containerRect);
-    const duration = RIPPLE_FADE_IN_DURATION * (1 / (config.speedFactor || 1));
+    const duration = RIPPLE_FADE_IN_DURATION / (config.speedFactor || 1);
     const offsetX = x - containerRect.left;
     const offsetY = y - containerRect.top;
 

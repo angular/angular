@@ -1,5 +1,5 @@
-import {CategorizedMethodMemberDoc, CategorizedPropertyMemberDoc} from '../processors/categorizer';
 import {isDirectiveInput, isDirectiveOutput} from './decorators';
+import {CategorizedMethodMemberDoc, CategorizedPropertyMemberDoc} from './dgeni-definitions';
 
 /** Combined type for a categorized method member document. */
 type CategorizedMemberDoc = CategorizedMethodMemberDoc & CategorizedPropertyMemberDoc;

@@ -1,10 +1,5 @@
-import {Processor, DocCollection} from 'dgeni';
-import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
-import {PropertyMemberDoc} from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
-import {
-  NormalizedMethodMemberDoc,
-  normalizeMethodParameters
-} from '../common/normalize-method-parameters';
+import {DocCollection, Processor} from 'dgeni';
+import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
 import {
   decorateDeprecatedDoc,
   getDirectiveInputAlias,
@@ -19,35 +14,15 @@ import {
   isProperty,
   isService
 } from '../common/decorators';
-import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
-import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
+import {
+  CategorizedClassDoc,
+  CategorizedClassLikeDoc,
+  CategorizedMethodMemberDoc,
+  CategorizedPropertyMemberDoc
+} from '../common/dgeni-definitions';
+import {normalizeMethodParameters} from '../common/normalize-method-parameters';
 import {sortCategorizedMembers} from '../common/sort-members';
 
-export interface CategorizedClassDoc extends ClassExportDoc {
-  methods: CategorizedMethodMemberDoc[];
-  properties: CategorizedPropertyMemberDoc[];
-  isDirective: boolean;
-  isService: boolean;
-  isNgModule: boolean;
-  isDeprecated: boolean;
-  directiveExportAs?: string | null;
-  directiveSelectors?: string[];
-  extendedDoc: ClassLikeExportDoc | null;
-}
-
-export interface CategorizedPropertyMemberDoc extends PropertyMemberDoc {
-  description: string;
-  isDeprecated: boolean;
-  isDirectiveInput: boolean;
-  isDirectiveOutput: boolean;
-  directiveInputAlias: string;
-  directiveOutputAlias: string;
-}
-
-export interface CategorizedMethodMemberDoc extends NormalizedMethodMemberDoc {
-  showReturns: boolean;
-  isDeprecated: boolean;
-}
 
 /**
  * Processor to add properties to docs objects.
@@ -62,34 +37,47 @@ export class Categorizer implements Processor {
   $runBefore = ['docs-processed'];
 
   $process(docs: DocCollection) {
-    docs.filter(doc => doc.docType === 'class').forEach(doc => this.decorateClassDoc(doc));
+    docs
+      .filter(doc => doc.docType === 'class' || doc.docType === 'interface')
+      .forEach(doc => this.decorateClassLikeDoc(doc));
   }
 
   /**
-   * Decorates all class docs inside of the dgeni pipeline.
-   * - Methods and properties of a class-doc will be extracted into separate variables.
-   * - Identifies directives, services or NgModules and marks them them in class-doc.
+   * Decorates all class and interface docs inside of the dgeni pipeline.
+   * - Members of a class and interface document will be extracted into separate variables.
    */
-  private decorateClassDoc(classDoc: CategorizedClassDoc) {
+  private decorateClassLikeDoc(classLikeDoc: CategorizedClassLikeDoc) {
     // Resolve all methods and properties from the classDoc.
-    classDoc.methods = classDoc.members
+    classLikeDoc.methods = classLikeDoc.members
       .filter(isMethod)
       .filter(filterDuplicateMembers) as CategorizedMethodMemberDoc[];
 
-    classDoc.properties = classDoc.members
+    classLikeDoc.properties = classLikeDoc.members
       .filter(isProperty)
       .filter(filterDuplicateMembers) as CategorizedPropertyMemberDoc[];
 
     // Call decorate hooks that can modify the method and property docs.
-    classDoc.methods.forEach(doc => this.decorateMethodDoc(doc));
-    classDoc.properties.forEach(doc => this.decoratePropertyDoc(doc));
+    classLikeDoc.methods.forEach(doc => this.decorateMethodDoc(doc));
+    classLikeDoc.properties.forEach(doc => this.decoratePropertyDoc(doc));
 
-    decorateDeprecatedDoc(classDoc);
+    decorateDeprecatedDoc(classLikeDoc);
 
     // Sort members
-    classDoc.methods.sort(sortCategorizedMembers);
-    classDoc.properties.sort(sortCategorizedMembers);
+    classLikeDoc.methods.sort(sortCategorizedMembers);
+    classLikeDoc.properties.sort(sortCategorizedMembers);
 
+    // Special decorations for real class documents that don't apply for interfaces.
+    if (classLikeDoc.docType === 'class') {
+      this.decorateClassDoc(classLikeDoc as CategorizedClassDoc);
+    }
+  }
+
+  /**
+   * Decorates all Dgeni class documents for a simpler use inside of the template.
+   * - Identifies directives, services or NgModules and marks them them inside of the doc.
+   * - Links the Dgeni document to the Dgeni document that the current class extends from.
+   */
+  private decorateClassDoc(classDoc: CategorizedClassDoc) {
     // Classes can only extend a single class. This means that there can't be multiple extend
     // clauses for the Dgeni document. To make the template syntax simpler and more readable,
     // store the extended class in a variable.

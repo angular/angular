@@ -1,0 +1,16 @@
+<h4 id="{$ interface.name $}" class="docs-header-link docs-api-h4 docs-api-interface-name">
+  <span header-link="{$ interface.name $}"></span>
+  <code>{$ interface.name $}</code>
+</h4>
+
+{%- if interface.description -%}
+<p class="docs-api-interface-description">{$ interface.description | marked | safe $}</p>
+{%- endif -%}
+
+{%- if interface.isDeprecated -%}
+<div class="docs-api-interface-deprecated-marker">Deprecated</div>
+{%- endif -%}
+
+{$ propertyList(interface.properties) $}
+
+{$ methodList(interface.methods) $}

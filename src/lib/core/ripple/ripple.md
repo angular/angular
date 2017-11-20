@@ -85,9 +85,4 @@ const globalRippleConfig: RippleGlobalOptions = {
 })
 ```
 
-All currently available global options are shown here:
-
-| Name            | Type    | Description                               |
-| --------------- | ------- | ----------------------------------------- |
-| disabled        | boolean | Whether ripples should show or not.       |
-| baseSpeedFactor | number  | Factor to adjust ripple speed.            |
+All available global options can be seen in the `RippleGlobalOptions` interface.
