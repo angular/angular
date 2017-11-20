@@ -273,9 +273,10 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   private _resetMenu(): void {
     this._setIsMenuOpen(false);
 
-    // Focus only needs to be reset to the host element if the menu was opened
-    // by the keyboard and manually shifted to the first menu item.
-    if (!this._openedByMouse) {
+    // We should reset focus if the user is navigating using a keyboard or
+    // if we have a top-level trigger which might cause focus to be lost
+    // when clicking on the backdrop.
+    if (!this._openedByMouse || !this.triggersSubmenu()) {
       this.focus();
     }
 

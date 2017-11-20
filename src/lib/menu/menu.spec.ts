@@ -104,6 +104,43 @@ describe('MatMenu', () => {
     expect(overlayContainerElement.textContent).toBe('');
   }));
 
+  it('should restore focus to the trigger when the menu was opened by keyboard', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+    // A click without a mousedown before it is considered a keyboard open.
+    triggerEl.click();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    expect(document.activeElement).toBe(triggerEl);
+  }));
+
+  it('should restore focus to the root trigger when the menu was opened by mouse', fakeAsync(() => {
+    const fixture = TestBed.createComponent(SimpleMenu);
+    fixture.detectChanges();
+
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+    dispatchFakeEvent(triggerEl, 'mousedown');
+    triggerEl.click();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    expect(document.activeElement).toBe(triggerEl);
+  }));
+
   it('should close the menu when pressing ESCAPE', fakeAsync(() => {
     const fixture = TestBed.createComponent(SimpleMenu);
     fixture.detectChanges();
@@ -1094,6 +1131,28 @@ describe('MatMenu', () => {
       dispatchMouseEvent(overlay.querySelector('.level-one-trigger')!, 'mouseenter');
       repeaterFixture.detectChanges();
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
+    }));
+
+    it('should not re-focus a child menu trigger when hovering another trigger', fakeAsync(() => {
+      compileTestComponent();
+
+      dispatchFakeEvent(instance.rootTriggerEl.nativeElement, 'mousedown');
+      instance.rootTriggerEl.nativeElement.click();
+      fixture.detectChanges();
+
+      const items = Array.from(overlay.querySelectorAll('.mat-menu-panel [mat-menu-item]'));
+      const levelOneTrigger = overlay.querySelector('#level-one-trigger')!;
+
+      dispatchMouseEvent(levelOneTrigger, 'mouseenter');
+      fixture.detectChanges();
+      expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
+
+      dispatchMouseEvent(items[items.indexOf(levelOneTrigger) + 1], 'mouseenter');
+      fixture.detectChanges();
+      tick(500);
+
+      expect(document.activeElement)
+          .not.toBe(levelOneTrigger, 'Expected focus not to be returned to the initial trigger.');
     }));
 
   });
