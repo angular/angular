@@ -7,7 +7,8 @@
   behaviors are stable and mature enough to exit beta. Please continue to file issues that
   help us eliminate more bugs from the forthcoming 5.0.0 release. Moving forward, the _major_
   version number of Angular Material and CDK will update alongside Angular itself.
-* A [moment.js](http://momentjs.com/) implementation of the `DateAdapter` for `MatDatepicker` is now available as `@angular/material-moment-adapter`
+* A [moment.js](http://momentjs.com/) implementation of the `DateAdapter` for `MatDatepicker` is
+  now available as `@angular/material-moment-adapter`
 * Based on Angular 5.0
 * More consistent naming conventions across the board
 * 60+ bug fixes
@@ -42,6 +43,15 @@
   - The `ScrollDispatcher.scrollableReferences` property has been renamed to `scrollContainers`.
   - The `ScrollDispatcher.scrollableContainsElement` method has been removed.
   - The `Scrollable` class has been renamed to `CdkScrollable` for consistency.
+  - Any uses of the `ScrollDispatcher.scrolled` method have to be refactored to subscribe to the
+    returned Observable, instead of passing in the `callback`. Example
+    ```ts
+    // Before
+    scrollDispatcher.scrolled(50, () => ...);
+    
+    // After
+    scrollDispatcher.scrolled(50).subscribe(() => ...);
+    ```
 * **unique-selection:** move UniqueSelectionDispatcher to `@angular/cdk/collections`
   (`UniqueSelectionDispatcher`, `UniqueSelectionDispatcherListener`, and
    `UNIQUE_SELECTION_DISPATCHER_PROVIDER`)
