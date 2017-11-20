@@ -4,8 +4,7 @@
     "declaration": false,
     "stripInternal": false,
     "experimentalDecorators": true,
-    // TODO(paul): Remove once Angular has been upgraded and supports noUnusedParameters in AOT.
-    "noUnusedParameters": false,
+    "noUnusedParameters": true,
     "strictNullChecks": true,
     "module": "commonjs",
     "moduleResolution": "node",

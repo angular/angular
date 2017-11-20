@@ -5,8 +5,7 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    // TODO(paul): Remove once Angular has been upgraded and supports noUnusedParameters in AOT.
-    "noUnusedParameters": false,
+    "noUnusedParameters": true,
     // Don't use strict nulls for the e2e-app because the material-examples are not
     // strict-null compliant.
     "strictNullChecks": false,
