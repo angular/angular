@@ -4,7 +4,7 @@ import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs/Subject';
-import {MatTabNav, MatTabsModule, MatTabLink} from '../index';
+import {MatTabLink, MatTabNav, MatTabsModule} from '../index';
 
 
 describe('MatTabNavBar', () => {
@@ -17,6 +17,8 @@ describe('MatTabNavBar', () => {
       declarations: [
         SimpleTabNavBarTestApp,
         TabLinkWithNgIf,
+        TabLinkWithTabIndexBinding,
+        TabLinkWithNativeTabindexAttr,
       ],
       providers: [
         {provide: Directionality, useFactory: () => ({
@@ -119,9 +121,7 @@ describe('MatTabNavBar', () => {
       fixture.componentInstance.disabled = true;
       fixture.detectChanges();
 
-      expect(tabLinkElements.every(tabLink => {
-        return tabLink.getAttribute('tabIndex') === null;
-      }))
+      expect(tabLinkElements.every(tabLink => tabLink.tabIndex === -1))
         .toBe(true, 'Expected element to no longer be keyboard focusable if disabled.');
     });
 
@@ -212,6 +212,30 @@ describe('MatTabNavBar', () => {
     expect(link.querySelector('.mat-ripple-element'))
       .toBeFalsy('Expected no ripple to be created when ripple target is destroyed.');
   });
+
+  it('should support the native tabindex attribute', () => {
+      const fixture = TestBed.createComponent(TabLinkWithNativeTabindexAttr);
+    fixture.detectChanges();
+
+    const tabLink = fixture.debugElement.query(By.directive(MatTabLink)).injector.get(MatTabLink);
+
+    expect(tabLink.tabIndex)
+      .toBe(5, 'Expected the tabIndex to be set from the native tabindex attribute.');
+  });
+
+  it('should support binding to the tabIndex', () => {
+    const fixture = TestBed.createComponent(TabLinkWithTabIndexBinding);
+    fixture.detectChanges();
+
+    const tabLink = fixture.debugElement.query(By.directive(MatTabLink)).injector.get(MatTabLink);
+
+    expect(tabLink.tabIndex).toBe(0, 'Expected the tabIndex to be set to 0 by default.');
+
+    fixture.componentInstance.tabIndex = 3;
+    fixture.detectChanges();
+
+    expect(tabLink.tabIndex).toBe(3, 'Expected the tabIndex to be have been set to 3.');
+  });
 });
 
 @Component({
@@ -249,3 +273,23 @@ class SimpleTabNavBarTestApp {
 class TabLinkWithNgIf {
   isDestroyed = false;
 }
+
+@Component({
+  template: `
+    <nav mat-tab-nav-bar>
+      <a mat-tab-link [tabIndex]="tabIndex">TabIndex Link</a>
+    </nav>
+  `
+})
+class TabLinkWithTabIndexBinding {
+  tabIndex = 0;
+}
+
+@Component({
+  template: `
+    <nav mat-tab-nav-bar>
+      <a mat-tab-link tabindex="5">Link</a>
+    </nav>
+  `
+})
+class TabLinkWithNativeTabindexAttr {}
