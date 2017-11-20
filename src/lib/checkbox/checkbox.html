@@ -13,6 +13,7 @@
            [indeterminate]="indeterminate"
            [attr.aria-label]="ariaLabel"
            [attr.aria-labelledby]="ariaLabelledby"
+           [attr.aria-checked]="_getAriaChecked()"
            (change)="_onInteractionEvent($event)"
            (click)="_onInputClick($event)">
     <div matRipple class="mat-checkbox-ripple"

@@ -303,6 +303,10 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     this._changeDetectorRef.markForCheck();
   }
 
+  _getAriaChecked(): 'true' | 'false' | 'mixed' {
+    return this.checked ? 'true' : (this.indeterminate ? 'mixed' : 'false');
+  }
+
   private _transitionCheckState(newState: TransitionCheckState) {
     let oldState = this._currentCheckState;
     let renderer = this._renderer;

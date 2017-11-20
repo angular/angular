@@ -87,6 +87,8 @@ describe('MatCheckbox', () => {
       expect(checkboxNativeElement.classList).not.toContain('mat-checkbox-checked');
       expect(inputElement.checked).toBe(false);
       expect(inputElement.indeterminate).toBe(false);
+      expect(inputElement.getAttribute('aria-checked'))
+          .toBe('false', 'Expect aria-checked to be false');
 
       testComponent.isIndeterminate = true;
       fixture.detectChanges();
@@ -94,6 +96,8 @@ describe('MatCheckbox', () => {
       expect(checkboxNativeElement.classList).toContain('mat-checkbox-indeterminate');
       expect(inputElement.checked).toBe(false);
       expect(inputElement.indeterminate).toBe(true);
+      expect(inputElement.getAttribute('aria-checked'))
+          .toBe('mixed', 'Expect aria checked to be mixed for indeterminate checkbox');
 
       testComponent.isIndeterminate = false;
       fixture.detectChanges();
@@ -133,6 +137,8 @@ describe('MatCheckbox', () => {
       expect(inputElement.indeterminate).toBe(true);
       expect(inputElement.checked).toBe(true);
       expect(testComponent.isIndeterminate).toBe(true);
+      expect(inputElement.getAttribute('aria-checked'))
+          .toBe('true', 'Expect aria checked to be true');
 
       inputElement.click();
       fixture.detectChanges();
