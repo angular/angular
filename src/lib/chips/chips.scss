@@ -97,4 +97,5 @@ $mat-chip-input-margin: 3px;
 input.mat-chip-input {
   width: $mat-chip-input-width;
   margin: $mat-chip-input-margin;
+  flex: 1 0 $mat-chip-input-width;
 }
