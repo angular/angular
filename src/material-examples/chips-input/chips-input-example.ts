@@ -30,7 +30,7 @@ export class ChipsInputExample {
     let input = event.input;
     let value = event.value;
 
-    // Add our person
+    // Add our fruit
     if ((value || '').trim()) {
       this.fruits.push({ name: value.trim() });
     }
