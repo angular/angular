@@ -45,6 +45,6 @@ export class ScrollStrategyOptions {
    * @param config Configuration to be used inside the scroll strategy.
    * Allows debouncing the reposition calls.
    */
-  reposition = (config?: RepositionScrollStrategyConfig) =>
-      new RepositionScrollStrategy(this._scrollDispatcher, config)
+  reposition = (config?: RepositionScrollStrategyConfig) => new RepositionScrollStrategy(
+      this._scrollDispatcher, this._viewportRuler, this._ngZone, config)
 }

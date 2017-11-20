@@ -14,6 +14,7 @@ import {
 
 describe('RepositionScrollStrategy', () => {
   let overlayRef: OverlayRef;
+  let overlay: Overlay;
   let componentPortal: ComponentPortal<PastaMsg>;
   let scrolledSubject = new Subject();
 
@@ -30,9 +31,8 @@ describe('RepositionScrollStrategy', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([Overlay], (overlay: Overlay) => {
-    let overlayConfig = new OverlayConfig({scrollStrategy: overlay.scrollStrategies.reposition()});
-    overlayRef = overlay.create(overlayConfig);
+  beforeEach(inject([Overlay], (o: Overlay) => {
+    overlay = o;
     componentPortal = new ComponentPortal(PastaMsg);
   }));
 
@@ -42,6 +42,11 @@ describe('RepositionScrollStrategy', () => {
   }));
 
   it('should update the overlay position when the page is scrolled', () => {
+    const overlayConfig = new OverlayConfig({
+      scrollStrategy: overlay.scrollStrategies.reposition()
+    });
+
+    overlayRef = overlay.create(overlayConfig);
     overlayRef.attach(componentPortal);
     spyOn(overlayRef, 'updatePosition');
 
@@ -53,6 +58,11 @@ describe('RepositionScrollStrategy', () => {
   });
 
   it('should not be updating the position after the overlay is detached', () => {
+    const overlayConfig = new OverlayConfig({
+      scrollStrategy: overlay.scrollStrategies.reposition()
+    });
+
+    overlayRef = overlay.create(overlayConfig);
     overlayRef.attach(componentPortal);
     spyOn(overlayRef, 'updatePosition');
 
@@ -63,6 +73,11 @@ describe('RepositionScrollStrategy', () => {
   });
 
   it('should not be updating the position after the overlay is destroyed', () => {
+    const overlayConfig = new OverlayConfig({
+      scrollStrategy: overlay.scrollStrategies.reposition()
+    });
+
+    overlayRef = overlay.create(overlayConfig);
     overlayRef.attach(componentPortal);
     spyOn(overlayRef, 'updatePosition');
 
@@ -70,6 +85,30 @@ describe('RepositionScrollStrategy', () => {
     scrolledSubject.next();
 
     expect(overlayRef.updatePosition).not.toHaveBeenCalled();
+  });
+
+  it('should be able to close the overlay once it is out of view', () => {
+    const overlayConfig = new OverlayConfig({
+      scrollStrategy: overlay.scrollStrategies.reposition({
+        autoClose: true
+      })
+    });
+
+    overlayRef = overlay.create(overlayConfig);
+    overlayRef.attach(componentPortal);
+    spyOn(overlayRef, 'updatePosition');
+    spyOn(overlayRef, 'detach');
+    spyOn(overlayRef.overlayElement, 'getBoundingClientRect').and.returnValue({
+      top: -1000,
+      bottom: -900,
+      left: 0,
+      right: 100,
+      width: 100,
+      height: 100
+    });
+
+    scrolledSubject.next();
+    expect(overlayRef.detach).toHaveBeenCalledTimes(1);
   });
 
 });
