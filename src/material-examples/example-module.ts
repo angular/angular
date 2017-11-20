@@ -112,6 +112,7 @@ import {TableFilteringExample} from './table-filtering/table-filtering-example';
 import {TableHttpExample} from './table-http/table-http-example';
 import {TableOverviewExample} from './table-overview/table-overview-example';
 import {TablePaginationExample} from './table-pagination/table-pagination-example';
+import {TableSelectionExample} from './table-selection/table-selection-example';
 import {TableSortingExample} from './table-sorting/table-sorting-example';
 import {TabsOverviewExample} from './tabs-overview/tabs-overview-example';
 import {TabsTemplateLabelExample} from './tabs-template-label/tabs-template-label-example';
@@ -715,6 +716,12 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  'table-selection': {
+    title: 'Table with selection',
+    component: TableSelectionExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'table-sorting': {
     title: 'Table with sorting',
     component: TableSortingExample,
@@ -859,6 +866,7 @@ export const EXAMPLE_LIST = [
   TableHttpExample,
   TableOverviewExample,
   TablePaginationExample,
+  TableSelectionExample,
   TableSortingExample,
   TabsOverviewExample,
   TabsTemplateLabelExample,
