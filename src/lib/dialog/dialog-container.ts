@@ -71,7 +71,8 @@ export function throwMatDialogContentAlreadyAttachedError() {
     'class': 'mat-dialog-container',
     'tabindex': '-1',
     '[attr.role]': '_config?.role',
-    '[attr.aria-labelledby]': '_ariaLabelledBy',
+    '[attr.aria-labelledby]': '_config?.ariaLabel ? null : _ariaLabelledBy',
+    '[attr.aria-label]': '_config?.ariaLabel',
     '[attr.aria-describedby]': '_config?.ariaDescribedBy || null',
     '[@slideDialog]': '_state',
     '(@slideDialog.start)': '_onAnimationStart($event)',
@@ -144,7 +145,9 @@ export class MatDialogContainer extends BasePortalOutlet {
     // If were to attempt to focus immediately, then the content of the dialog would not yet be
     // ready in instances where change detection has to run first. To deal with this, we simply
     // wait for the microtask queue to be empty.
-    this._focusTrap.focusInitialElementWhenReady();
+    if (this._config.autoFocus) {
+      this._focusTrap.focusInitialElementWhenReady();
+    }
   }
 
   /** Restores focus to the element that was focused before the dialog opened. */

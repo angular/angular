@@ -81,6 +81,11 @@ export class MatDialogConfig<D = any> {
   /** ID of the element that describes the dialog.  */
   ariaDescribedBy?: string | null = null;
 
+  /** Aria label to assign to the dialog element */
+  ariaLabel?: string | null = null;
+
+  /** Whether the dialog should focus the first focusable element on open. */
+  autoFocus?: boolean = true;
 
   // TODO(jelbourn): add configuration for lifecycle hooks, ARIA labelling.
 }

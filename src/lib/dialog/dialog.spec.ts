@@ -788,6 +788,18 @@ describe('MatDialog', () => {
           .toBe('INPUT', 'Expected first tabbable element (input) in the dialog to be focused.');
     }));
 
+    it('should allow disabling focus of the first tabbable element', fakeAsync(() => {
+      dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: false
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement.tagName).not.toBe('INPUT');
+    }));
+
     it('should re-focus trigger element when dialog closes', fakeAsync(() => {
       // Create a element that has focus before the dialog is opened.
       let button = document.createElement('button');
@@ -929,6 +941,32 @@ describe('MatDialog', () => {
       });
     }));
 
+  });
+
+  describe('aria-label', () => {
+    it('should be able to set a custom aria-label', () => {
+      dialog.open(PizzaMsg, {
+        ariaLabel: 'Hello there',
+        viewContainerRef: testViewContainerRef
+      });
+      viewContainerFixture.detectChanges();
+
+      const container = overlayContainerElement.querySelector('mat-dialog-container')!;
+      expect(container.getAttribute('aria-label')).toBe('Hello there');
+    });
+
+    it('should not set the aria-labelledby automatically if it has an aria-label', fakeAsync(() => {
+      dialog.open(ContentElementDialog, {
+        ariaLabel: 'Hello there',
+        viewContainerRef: testViewContainerRef
+      });
+      viewContainerFixture.detectChanges();
+      tick();
+      viewContainerFixture.detectChanges();
+
+      const container = overlayContainerElement.querySelector('mat-dialog-container')!;
+      expect(container.hasAttribute('aria-labelledby')).toBe(false);
+    }));
   });
 });
 
