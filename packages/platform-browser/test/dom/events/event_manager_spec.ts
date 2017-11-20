@@ -255,6 +255,46 @@ export function main() {
       expect(receivedEvents).toEqual([]);
     });
 
+    it('should be able to remove event listener which was added inside of ngZone', () => {
+      const Zone = (window as any)['Zone'];
+
+      const element = el('<div><div></div></div>');
+      getDOM().appendChild(doc.body, element);
+      const dispatchedEvent = getDOM().createMouseEvent('click');
+      let receivedEvents: any[] /** TODO #9100 */ = [];
+      let receivedZones: any[] = [];
+      const handler1 = (e: any /** TODO #9100 */) => {
+        receivedEvents.push(e);
+        receivedZones.push(Zone.current.name);
+      };
+      const handler2 = (e: any /** TODO #9100 */) => {
+        receivedEvents.push(e);
+        receivedZones.push(Zone.current.name);
+      };
+      const manager = new EventManager([domEventPlugin], new FakeNgZone());
+
+      let remover1 = null;
+      let remover2 = null;
+      // handler1 is added in root zone
+      Zone.root.run(() => { remover1 = manager.addEventListener(element, 'click', handler1); });
+      // handler2 is added in 'angular' zone
+      Zone.root.fork({name: 'fakeAngularZone', properties: {isAngularZone: true}}).run(() => {
+        remover2 = manager.addEventListener(element, 'click', handler2);
+      });
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
+      expect(receivedZones).toEqual([Zone.root.name, 'fakeAngularZone']);
+
+      receivedEvents = [];
+      remover1 && remover1();
+      remover2 && remover2();
+      getDOM().dispatchEvent(element, dispatchedEvent);
+      // handler1 and handler2 are added in different zone
+      // one is angular zone, the other is not
+      // should still be able to remove them correctly
+      expect(receivedEvents).toEqual([]);
+    });
+
     it('should run blackListedEvents handler outside of ngZone', () => {
       const Zone = (window as any)['Zone'];
       const element = el('<div><div></div></div>');

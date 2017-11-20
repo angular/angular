@@ -203,16 +203,26 @@ export class DomEventsPlugin extends EventManagerPlugin {
       // just call native removeEventListener
       return target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
     }
+    // fix issue 20532, should be able to remove
+    // listener which was added inside of ngZone
+    let found = false;
     for (let i = 0; i < taskDatas.length; i++) {
       // remove listener from taskDatas if the callback equals
       if (taskDatas[i].handler === callback) {
+        found = true;
         taskDatas.splice(i, 1);
         break;
       }
     }
-    if (taskDatas.length === 0) {
-      // all listeners are removed, we can remove the globalListener from target
-      underlyingRemove.apply(target, [eventName, globalListener, false]);
+    if (found) {
+      if (taskDatas.length === 0) {
+        // all listeners are removed, we can remove the globalListener from target
+        underlyingRemove.apply(target, [eventName, globalListener, false]);
+      }
+    } else {
+      // not found in taskDatas, the callback may be added inside of ngZone
+      // use native remove listener to remove the calback
+      target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
     }
   }
 }
