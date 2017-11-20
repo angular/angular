@@ -103,9 +103,9 @@
 
   <p>It's Jazz!</p>
 
-  <mat-input-container>
+  <mat-form-field>
     <input matInput placeholder="How much?" #howMuch>
-  </mat-input-container>
+  </mat-form-field>
 
   <p> {{ data.message }} </p>
   <button type="button" (click)="dialogRef.close(lastCloseResult = howMuch.value)">Close dialog</button>

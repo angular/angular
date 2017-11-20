@@ -55,14 +55,14 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <mat-card>
     <div>Option groups (currentGroupedState): {{ currentGroupedState }}</div>
 
-    <mat-input-container>
+    <mat-form-field>
       <input
         matInput
         placeholder="State"
         [matAutocomplete]="groupedAuto"
         [(ngModel)]="currentGroupedState"
         (ngModelChange)="filteredGroupedStates = filterStateGroups(currentGroupedState)">
-    </mat-input-container>
+    </mat-form-field>
   </mat-card>
 </div>
 

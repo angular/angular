@@ -1901,9 +1901,9 @@ class AutocompleteWithFormsAndNonfloatingPlaceholder {
 
 @Component({
   template: `
-    <mat-input-container>
+    <mat-form-field>
       <input matInput placeholder="State" [matAutocomplete]="auto" [(ngModel)]="selectedState">
-    </mat-input-container>
+    </mat-form-field>
 
     <mat-autocomplete #auto="matAutocomplete">
       <mat-optgroup *ngFor="let group of stateGroups" [label]="group.label">
@@ -1935,9 +1935,9 @@ class AutocompleteWithGroups {
 
 @Component({
   template: `
-    <mat-input-container>
+    <mat-form-field>
       <input matInput placeholder="State" [matAutocomplete]="auto" [(ngModel)]="selectedState">
-    </mat-input-container>
+    </mat-form-field>
 
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="optionSelected($event)">
       <mat-option *ngFor="let state of states" [value]="state">

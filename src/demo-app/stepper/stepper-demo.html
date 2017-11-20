@@ -5,15 +5,15 @@
   <mat-vertical-stepper formArrayName="formArray" [linear]="!isNonLinear">
     <mat-step formGroupName="0" [stepControl]="formArray?.get([0])">
       <ng-template matStepLabel>Fill out your name</ng-template>
-      <mat-input-container>
+      <mat-form-field>
         <input matInput placeholder="First Name" formControlName="firstNameFormCtrl" required>
         <mat-error>This field is required</mat-error>
-      </mat-input-container>
+      </mat-form-field>
 
-      <mat-input-container>
+      <mat-form-field>
         <input matInput placeholder="Last Name" formControlName="lastNameFormCtrl" required>
         <mat-error>This field is required</mat-error>
-      </mat-input-container>
+      </mat-form-field>
       <div>
         <button mat-button matStepperNext type="button">Next</button>
       </div>
@@ -23,10 +23,10 @@
       <ng-template matStepLabel>
         <div>Fill out your email address</div>
       </ng-template>
-      <mat-input-container>
+      <mat-form-field>
         <input matInput placeholder="Email address" formControlName="emailFormCtrl">
         <mat-error>The input is invalid.</mat-error>
-      </mat-input-container>
+      </mat-form-field>
       <div>
         <button mat-button matStepperPrevious type="button">Back</button>
         <button mat-button matStepperNext type="button">Next</button>
