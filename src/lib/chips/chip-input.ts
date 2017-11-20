@@ -29,6 +29,7 @@ export interface MatChipInputEvent {
     '(keydown)': '_keydown($event)',
     '(blur)': '_blur()',
     '(focus)': '_focus()',
+    '(input)': '_onInput()',
   }
 })
 export class MatChipInput {
@@ -68,7 +69,7 @@ export class MatChipInput {
 
   get empty(): boolean {
     let value: string | null = this._inputElement.value;
-    return value == null || value === '';
+    return (value == null || value === '');
   }
 
   /** The native input element to which this directive is attached. */
@@ -113,6 +114,11 @@ export class MatChipInput {
         event.preventDefault();
       }
     }
+  }
+
+  _onInput() {
+    // Let chip list know whenever the value changes.
+    this._chipList.stateChanges.next();
   }
 
   focus() { this._inputElement.focus(); }
