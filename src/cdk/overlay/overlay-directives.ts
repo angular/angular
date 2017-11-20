@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Direction, Directionality} from '@angular/cdk/bidi';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {ESCAPE} from '@angular/cdk/keycodes';
+import {TemplatePortal} from '@angular/cdk/portal';
 import {
   Directive,
   ElementRef,
@@ -22,23 +26,16 @@ import {
   TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
-import {Direction, Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {ESCAPE} from '@angular/cdk/keycodes';
-import {TemplatePortal} from '@angular/cdk/portal';
+import {Subscription} from 'rxjs/Subscription';
 import {Overlay} from './overlay';
-import {OverlayRef} from './overlay-ref';
 import {OverlayConfig} from './overlay-config';
+import {OverlayRef} from './overlay-ref';
 import {
-  // This import is only used to define a generic type. The current TypeScript version incorrectly
-  // considers such imports as unused (https://github.com/Microsoft/TypeScript/issues/14953)
-  // tslint:disable-next-line:no-unused-variable
   ConnectedOverlayPositionChange,
   ConnectionPositionPair,
 } from './position/connected-position';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {RepositionScrollStrategy, ScrollStrategy} from './scroll/index';
-import {Subscription} from 'rxjs/Subscription';
 
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
