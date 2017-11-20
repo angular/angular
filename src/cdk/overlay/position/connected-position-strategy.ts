@@ -68,8 +68,13 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   /** The last position to have been calculated as the best fit position. */
   private _lastConnectedPosition: ConnectionPositionPair;
 
-  _onPositionChange:
-      Subject<ConnectedOverlayPositionChange> = new Subject<ConnectedOverlayPositionChange>();
+  /** Whether the position strategy is applied currently. */
+  private _applied = false;
+
+  /** Whether the overlay position is locked. */
+  private _positionLocked = false;
+
+  private _onPositionChange = new Subject<ConnectedOverlayPositionChange>();
 
   /** Emits an event when the connection point changes. */
   get onPositionChange(): Observable<ConnectedOverlayPositionChange> {
@@ -101,11 +106,13 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
   /** Disposes all resources used by the position strategy. */
   dispose() {
+    this._applied = false;
     this._resizeSubscription.unsubscribe();
   }
 
   /** @docs-private */
   detach() {
+    this._applied = false;
     this._resizeSubscription.unsubscribe();
   }
 
@@ -113,10 +120,18 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    * Updates the position of the overlay element, using whichever preferred position relative
    * to the origin fits on-screen.
    * @docs-private
-   *
-   * @returns Resolves when the styles have been applied.
    */
   apply(): void {
+    // If the position has been applied already (e.g. when the overlay was opened) and the
+    // consumer opted into locking in the position, re-use the  old position, in order to
+    // prevent the overlay from jumping around.
+    if (this._applied && this._positionLocked && this._lastConnectedPosition) {
+      this.recalculateLastPosition();
+      return;
+    }
+
+    this._applied = true;
+
     // We need the bounding rects for the origin and the overlay to determine how to position
     // the overlay relative to the origin.
     const element = this._pane;
@@ -227,6 +242,17 @@ export class ConnectedPositionStrategy implements PositionStrategy {
    */
   withOffsetY(offset: number): this {
     this._offsetY = offset;
+    return this;
+  }
+
+  /**
+   * Sets whether the overlay's position should be locked in after it is positioned
+   * initially. When an overlay is locked in, it won't attempt to reposition itself
+   * when the position is re-applied (e.g. when the user scrolls away).
+   * @param isLocked Whether the overlay should locked in.
+   */
+  withLockedPosition(isLocked: boolean): this {
+    this._positionLocked = isLocked;
     return this;
   }
 

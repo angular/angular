@@ -440,6 +440,29 @@ describe('ConnectedPositionStrategy', () => {
       expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect.left));
     });
 
+    it('should re-use the preferred position when re-applying while locked in', () => {
+      positionBuilder = new OverlayPositionBuilder(viewportRuler);
+      strategy = positionBuilder.connectedTo(
+          fakeElementRef,
+          {originX: 'end', originY: 'center'},
+          {overlayX: 'start', overlayY: 'center'})
+          .withLockedPosition(true)
+          .withFallbackPosition(
+              {originX: 'start', originY: 'bottom'},
+              {overlayX: 'end', overlayY: 'top'});
+
+      const recalcSpy = spyOn(strategy, 'recalculateLastPosition');
+
+      strategy.attach(fakeOverlayRef(overlayElement));
+      strategy.apply();
+
+      expect(recalcSpy).not.toHaveBeenCalled();
+
+      strategy.apply();
+
+      expect(recalcSpy).toHaveBeenCalled();
+    });
+
     /**
      * Run all tests for connecting the overlay to the origin such that first preferred
      * position does not go off-screen. We do this because there are several cases where we
