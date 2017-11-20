@@ -62,8 +62,8 @@ export class MatDrawerToggleResult {
   template: '<ng-content></ng-content>',
   host: {
     'class': 'mat-drawer-content',
-    '[style.marginLeft.px]': '_margins.left',
-    '[style.marginRight.px]': '_margins.right',
+    '[style.margin-left.px]': '_margins.left',
+    '[style.margin-right.px]': '_margins.right',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
