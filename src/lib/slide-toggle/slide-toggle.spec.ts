@@ -475,6 +475,29 @@ describe('MatSlideToggle without forms', () => {
           .toBeFalsy('Expected the slide-toggle to not emit a change event.');
     }));
 
+    it('should ignore clicks on the label element while dragging', fakeAsync(() => {
+      expect(slideToggle.checked).toBe(false);
+
+      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
+      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
+        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
+      });
+      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
+
+      expect(slideToggle.checked).toBe(true);
+
+      // Fake a change event that has been fired after dragging through the click on pointer
+      // release (noticeable on IE11, Edge)
+      inputElement.checked = false;
+      dispatchFakeEvent(inputElement, 'change');
+
+      // Flush the timeout for the slide ending.
+      tick();
+
+      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
+      expect(slideToggle.checked).toBe(true);
+    }));
+
     it('should update the checked property of the input', fakeAsync(() => {
       expect(inputElement.checked).toBe(false);
 
