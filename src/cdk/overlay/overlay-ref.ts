@@ -151,6 +151,7 @@ export class OverlayRef implements PortalOutlet {
     this._portalOutlet.dispose();
     this._attachments.complete();
     this._backdropClick.complete();
+    this._keydownEvents.complete();
 
     if (isAttached) {
       this._detachments.next();

@@ -94,4 +94,15 @@ describe('OverlayKeyboardDispatcher', () => {
     expect(overlayTwoSpy).not.toHaveBeenCalled();
   });
 
+  it('should complete the keydown stream on dispose', () => {
+    const overlayRef = overlay.create();
+    const completeSpy = jasmine.createSpy('keydown complete spy');
+
+    overlayRef.keydownEvents().subscribe(undefined, undefined, completeSpy);
+
+    overlayRef.dispose();
+
+    expect(completeSpy).toHaveBeenCalled();
+  });
+
 });
