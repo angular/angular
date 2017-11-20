@@ -350,6 +350,19 @@ describe('MatTabGroup', () => {
       expect(fixture.componentInstance.legumes).toBeTruthy();
     });
 
+    it('should only have the active tab in the DOM', async(() => {
+      expect(fixture.nativeElement.textContent).toContain('Pizza, fries');
+      expect(fixture.nativeElement.textContent).not.toContain('Peanuts');
+
+      tabGroup.selectedIndex = 3;
+      fixture.detectChanges();
+      // Use whenStable to wait for async observables and change detection to run in content.
+      fixture.whenStable().then(() => {
+        expect(fixture.nativeElement.textContent).not.toContain('Pizza, fries');
+        expect(fixture.nativeElement.textContent).toContain('Peanuts');
+      });
+    }));
+
     it('should support setting the header position', () => {
       let tabGroupNode = fixture.debugElement.query(By.css('mat-tab-group')).nativeElement;
 
