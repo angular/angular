@@ -32,8 +32,8 @@
     box-shadow: none;
   }
 
-  // Remove IE's default clear icon.
-  &::-ms-clear {
+  // Remove IE's default clear and reveal icons.
+  &::-ms-clear, &::-ms-reveal {
     display: none;
   }
 
