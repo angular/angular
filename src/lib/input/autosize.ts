@@ -150,14 +150,21 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
       return;
     }
 
+    const placeholderText = textarea.placeholder;
+
     // Reset the textarea height to auto in order to shrink back to its default size.
     // Also temporarily force overflow:hidden, so scroll bars do not interfere with calculations.
+    // Long placeholders that are wider than the textarea width may lead to a bigger scrollHeight
+    // value. To ensure that the scrollHeight is not bigger than the content, the placeholders
+    // need to be removed temporarily.
     textarea.style.height = 'auto';
     textarea.style.overflow = 'hidden';
+    textarea.placeholder = '';
 
     // Use the scrollHeight to know how large the textarea *would* be if fit its entire value.
     textarea.style.height = `${textarea.scrollHeight}px`;
     textarea.style.overflow = '';
+    textarea.placeholder = placeholderText;
 
     this._previousValue = value;
   }

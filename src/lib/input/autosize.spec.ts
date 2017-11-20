@@ -28,7 +28,8 @@ describe('MatTextareaAutosize', () => {
         AutosizeTextareaInATab,
         AutosizeTextAreaWithContent,
         AutosizeTextAreaWithValue,
-        AutosizeTextareaWithNgModel
+        AutosizeTextareaWithNgModel,
+        AutosizeTextareaWithLongPlaceholder
       ],
     });
 
@@ -176,6 +177,27 @@ describe('MatTextareaAutosize', () => {
       .toBe(textarea.scrollHeight, 'Expected textarea height to match its scrollHeight');
   });
 
+  it('should not calculate wrong content height due to long placeholders', () => {
+    const fixtureWithPlaceholder = TestBed.createComponent(AutosizeTextareaWithLongPlaceholder);
+    fixtureWithPlaceholder.detectChanges();
+
+    textarea = fixtureWithPlaceholder.nativeElement.querySelector('textarea');
+    autosize = fixtureWithPlaceholder.debugElement.query(
+      By.directive(MatTextareaAutosize)).injector.get<MatTextareaAutosize>(MatTextareaAutosize);
+
+    triggerTextareaResize();
+
+    const heightWithLongPlaceholder = textarea.clientHeight;
+
+    fixtureWithPlaceholder.componentInstance.placeholder = 'Short';
+    fixtureWithPlaceholder.detectChanges();
+
+    triggerTextareaResize();
+
+    expect(textarea.clientHeight).toBe(heightWithLongPlaceholder,
+        'Expected the textarea height to be the same with a long placeholder.');
+  });
+
   it('should resize when an associated form control value changes', fakeAsync(() => {
     const fixtureWithForms = TestBed.createComponent(AutosizeTextareaWithNgModel);
     textarea = fixtureWithForms.nativeElement.querySelector('textarea');
@@ -227,8 +249,18 @@ describe('MatTextareaAutosize', () => {
     textarea = fixtureWithForms.nativeElement.querySelector('textarea');
     expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
   });
-});
 
+  /** Triggers a textarea resize to fit the content. */
+  function triggerTextareaResize() {
+    // To be able to trigger a new calculation of the height with a short placeholder, the
+    // textarea value needs to be changed.
+    textarea.value = '1';
+    autosize.resizeToFitContent();
+
+    textarea.value = '';
+    autosize.resizeToFitContent();
+  }
+});
 
 // Styles to reset padding and border to make measurement comparisons easier.
 const textareaStyleReset = `
@@ -267,6 +299,17 @@ class AutosizeTextAreaWithValue {
 })
 class AutosizeTextareaWithNgModel {
   model = '';
+}
+
+@Component({
+  template: `
+    <mat-form-field style="width: 100px">
+      <textarea matInput matTextareaAutosize [placeholder]="placeholder"></textarea>
+    </mat-form-field>`,
+  styles: [textareaStyleReset],
+})
+class AutosizeTextareaWithLongPlaceholder {
+  placeholder = 'Long Long Long Long Long Long Long Long Placeholder';
 }
 
 @Component({
