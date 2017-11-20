@@ -51,7 +51,7 @@
 }
 
 // The text and icon should be vertical aligned inside a button
-.mat-button, .mat-raised-button, .mat-icon-button {
+.mat-button, .mat-raised-button, .mat-icon-button, .mat-fab, .mat-mini-fab {
   color: currentColor;
   .mat-button-wrapper > * {
     vertical-align: middle;
