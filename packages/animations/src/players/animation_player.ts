@@ -62,8 +62,8 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   init(): void {}
   play(): void {
     if (!this.hasStarted()) {
-      this.triggerMicrotask();
       this._onStart();
+      this.triggerMicrotask();
     }
     this._started = true;
   }
