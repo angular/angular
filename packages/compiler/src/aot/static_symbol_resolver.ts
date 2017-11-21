@@ -481,7 +481,7 @@ export class StaticSymbolResolver {
       if (moduleMetadatas) {
         let maxVersion = -1;
         moduleMetadatas.forEach((md) => {
-          if (md['version'] > maxVersion) {
+          if (md && md['version'] > maxVersion) {
             maxVersion = md['version'];
             moduleMetadata = md;
           }
