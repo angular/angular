@@ -147,11 +147,19 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private ensureAnalyzedModules(): NgAnalyzedModules {
     let analyzedModules = this.analyzedModules;
     if (!analyzedModules) {
-      const analyzeHost = {isSourceFile(filePath: string) { return true; }};
-      const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
-
-      analyzedModules = this.analyzedModules =
-          analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
+      if (this.host.getScriptFileNames().length === 0) {
+        analyzedModules = {
+          files: [],
+          ngModuleByPipeOrDirective: new Map(),
+          ngModules: [],
+        };
+      } else {
+        const analyzeHost = {isSourceFile(filePath: string) { return true; }};
+        const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
+        analyzedModules =
+            analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
+      }
+      this.analyzedModules = analyzedModules;
     }
     return analyzedModules;
   }
@@ -358,7 +366,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!result) {
       if (!this.context) {
         // Make up a context by finding the first script and using that as the base dir.
-        this.context = this.host.getScriptFileNames()[0];
+        const scriptFileNames = this.host.getScriptFileNames();
+        if (0 === scriptFileNames.length) {
+          throw new Error('Internal error: no script file names found');
+        }
+        this.context = scriptFileNames[0];
       }
 
       // Use the file context's directory as the base directory.
