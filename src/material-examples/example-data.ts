@@ -19,7 +19,7 @@ export class ExampleData {
 
   constructor(example: string) {
     if (example && EXAMPLE_COMPONENTS[example]) {
-      this.examplePath = `/assets/plunker/examples/${example}/`;
+      this.examplePath = `/assets/stackblitz/examples/${example}/`;
       // TODO(tinayuangao): Do not hard-code extensions
       this.exampleFiles = ['html', 'ts', 'css']
         .map((extension) => `${example}-example.${extension}`);

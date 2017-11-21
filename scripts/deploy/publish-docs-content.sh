@@ -40,7 +40,7 @@ git clone $repoUrl $repoPath --depth 1
 rm -rf $repoPath/*
 
 # Create folders that will contain docs content files.  
-mkdir $repoPath/{overview,guides,api,examples,plunker,examples-package}
+mkdir $repoPath/{overview,guides,api,examples,stackblitz,examples-package}
 
 # Copy api files over to $repoPath/api
 cp -r $docsPath/api/* $repoPath/api
@@ -75,8 +75,8 @@ done
 # Copy highlighted examples into $repoPath
 cp -r $examplesSource/* $repoPath/examples
 
-# Copy example plunker assets
-cp -r $docsPath/plunker/* $repoPath/plunker
+# Copy example stackblitz assets
+cp -r $docsPath/stackblitz/* $repoPath/stackblitz
 
 # Copies assets over to the docs-content repository.
 cp LICENSE $repoPath/

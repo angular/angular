@@ -80,7 +80,7 @@ task('docs', [
   'api-docs',
   'minified-api-docs',
   'build-examples-module',
-  'plunker-example-assets',
+  'stackblitz-example-assets',
 ]);
 
 /** Generates html files from the markdown overviews and guides for material. */
@@ -151,10 +151,10 @@ task('minified-api-docs', ['api-docs'], () => {
     .pipe(dest('dist/docs/api/'));
 });
 
-/** Copies example sources to be used as plunker assets for the docs site. */
-task('plunker-example-assets', () => {
+/** Copies example sources to be used as stackblitz assets for the docs site. */
+task('stackblitz-example-assets', () => {
   src(path.join(packagesDir, 'material-examples', '**/*'))
-      .pipe(dest(path.join(DIST_DOCS, 'plunker', 'examples')));
+      .pipe(dest(path.join(DIST_DOCS, 'stackblitz', 'examples')));
 });
 
 /** Updates the markdown file's content to work inside of the docs app. */
