@@ -9,8 +9,7 @@
 import {DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
 import {UserData} from './people-database';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/operator/map';
+import {map} from 'rxjs/operators/map';
 import {PersonDataSource} from './person-data-source';
 
 export interface DetailRow {
@@ -24,7 +23,7 @@ export class PersonDetailDataSource extends DataSource<any> {
   }
 
   connect(): Observable<(UserData|DetailRow)[]> {
-    return this._personDataSource.connect().map(data => {
+    return this._personDataSource.connect().pipe(map(data => {
       const rows: (UserData|DetailRow)[] = [];
 
       // Interweave a detail data object for each row data object that will be used for displaying
@@ -32,7 +31,7 @@ export class PersonDetailDataSource extends DataSource<any> {
       data.forEach(person => rows.push(person, {detailRow: true, data: person}));
 
       return rows;
-    });
+    }));
   }
 
   disconnect() {

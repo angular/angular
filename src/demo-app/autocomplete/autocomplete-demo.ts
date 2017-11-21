@@ -8,8 +8,8 @@
 
 import {Component, ViewChild, ViewEncapsulation} from '@angular/core';
 import {FormControl, NgModel} from '@angular/forms';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/map';
+import {startWith} from 'rxjs/operators/startWith';
+import {map} from 'rxjs/operators/map';
 
 export interface State {
   code: string;
@@ -101,9 +101,11 @@ export class AutocompleteDemo {
     this.tdStates = this.states;
     this.stateCtrl = new FormControl({code: 'CA', name: 'California'});
     this.reactiveStates = this.stateCtrl.valueChanges
-        .startWith(this.stateCtrl.value)
-        .map(val => this.displayFn(val))
-        .map(name => this.filterStates(name));
+      .pipe(
+        startWith(this.stateCtrl.value),
+        map(val => this.displayFn(val)),
+        map(name => this.filterStates(name))
+      );
 
     this.filteredGroupedStates = this.groupedStates = this.states.reduce((groups, state) => {
       let group = groups.find(g => g.letter === state.name[0]);

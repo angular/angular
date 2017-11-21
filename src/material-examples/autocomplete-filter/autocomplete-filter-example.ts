@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/map';
+import {startWith} from 'rxjs/operators/startWith';
+import {map} from 'rxjs/operators/map';
 
 /**
  * @title Filter autocomplete
@@ -24,15 +24,17 @@ export class AutocompleteFilterExample {
 
   filteredOptions: Observable<string[]>;
 
-   ngOnInit() {
-      this.filteredOptions = this.myControl.valueChanges
-         .startWith('')
-         .map(val => this.filter(val));
-   }
+  ngOnInit() {
+    this.filteredOptions = this.myControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(val => this.filter(val))
+      );
+  }
 
-    filter(val: string): string[] {
-      return this.options.filter(option =>
-        option.toLowerCase().indexOf(val.toLowerCase()) === 0);
-   }
+  filter(val: string): string[] {
+    return this.options.filter(option =>
+      option.toLowerCase().indexOf(val.toLowerCase()) === 0);
+  }
 
 }

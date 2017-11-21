@@ -2,12 +2,12 @@ import {Component, AfterViewInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/switchMap';
+import {merge} from 'rxjs/observable/merge';
+import {of as observableOf} from 'rxjs/observable/of';
+import {catchError} from 'rxjs/operators/catchError';
+import {map} from 'rxjs/operators/map';
+import {startWith} from 'rxjs/operators/startWith';
+import {switchMap} from 'rxjs/operators/switchMap';
 
 /**
  * @title Table retrieving data through HTTP
@@ -37,28 +37,29 @@ export class TableHttpExample implements AfterViewInit {
     // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
 
-    Observable.merge(this.sort.sortChange, this.paginator.page)
-        .startWith(null)
-        .switchMap(() => {
+    merge(this.sort.sortChange, this.paginator.page)
+      .pipe(
+        startWith({}),
+        switchMap(() => {
           this.isLoadingResults = true;
           return this.exampleDatabase!.getRepoIssues(
-              this.sort.active, this.sort.direction, this.paginator.pageIndex);
-        })
-        .map(data => {
+            this.sort.active, this.sort.direction, this.paginator.pageIndex);
+        }),
+        map(data => {
           // Flip flag to show that loading has finished.
           this.isLoadingResults = false;
           this.isRateLimitReached = false;
           this.resultsLength = data.total_count;
 
           return data.items;
-        })
-        .catch(() => {
+        }),
+        catchError(() => {
           this.isLoadingResults = false;
           // Catch if the GitHub API has reached its rate limit. Return empty data.
           this.isRateLimitReached = true;
-          return Observable.of([]);
+          return observableOf([]);
         })
-        .subscribe(data => this.dataSource.data = data);
+      ).subscribe(data => this.dataSource.data = data);
   }
 }
 

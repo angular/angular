@@ -10,8 +10,8 @@ import {MatPaginator, MatSort} from '@angular/material';
 import {DataSource} from '@angular/cdk/collections';
 import {Observable} from 'rxjs/Observable';
 import {PeopleDatabase, UserData} from './people-database';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/operator/map';
+import {merge} from 'rxjs/observable/merge';
+import {map} from 'rxjs/operators/map';
 
 export class PersonDataSource extends DataSource<any> {
   constructor(private _peopleDatabase: PeopleDatabase,
@@ -26,13 +26,13 @@ export class PersonDataSource extends DataSource<any> {
       this._sort.sortChange,
       this._peopleDatabase.dataChange
     ];
-    return Observable.merge(...displayDataChanges).map(() => {
+    return merge(...displayDataChanges).pipe(map(() => {
       const data = this.getSortedData();
 
       // Grab the page's slice of data.
       const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
       return data.splice(startIndex, this._paginator.pageSize);
-    });
+    }));
   }
 
   disconnect() {

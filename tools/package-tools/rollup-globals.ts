@@ -86,16 +86,4 @@ export const rollupGlobals = {
   'rxjs/operators/share': 'Rx.Observable',
   'rxjs/operators/delay': 'Rx.Observable',
   'rxjs/operators/combineLatest': 'Rx.Observable',
-
-  'rxjs/add/observable/merge': 'Rx.Observable',
-  'rxjs/add/observable/fromEvent': 'Rx.Observable',
-  'rxjs/add/observable/of': 'Rx.Observable',
-  'rxjs/add/observable/interval': 'Rx.Observable',
-  'rxjs/add/operator/startWith': 'Rx.Observable.prototype',
-  'rxjs/add/operator/map': 'Rx.Observable.prototype',
-  'rxjs/add/operator/debounceTime': 'Rx.Observable.prototype',
-  'rxjs/add/operator/distinctUntilChanged': 'Rx.Observable.prototype',
-  'rxjs/add/operator/first': 'Rx.Observable.prototype',
-  'rxjs/add/operator/catch': 'Rx.Observable.prototype',
-  'rxjs/add/operator/switchMap': 'Rx.Observable.prototype'
 };

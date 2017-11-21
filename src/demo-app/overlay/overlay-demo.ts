@@ -16,8 +16,8 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/filter';
+import {filter} from 'rxjs/operators/filter';
+import {tap} from 'rxjs/operators/tap';
 
 
 @Component({
@@ -122,9 +122,10 @@ export class OverlayDemo {
         .attach(new ComponentPortal(KeyboardTrackingPanel, this.viewContainerRef));
 
     overlayRef.keydownEvents()
-      .do(e => componentRef.instance.lastKeydown = e.key)
-      .filter(e => e.key === 'Escape')
-      .subscribe(() => overlayRef.detach());
+      .pipe(
+        tap(e => componentRef.instance.lastKeydown = e.key),
+        filter(e => e.key === 'Escape')
+      ).subscribe(() => overlayRef.detach());
   }
 
 }

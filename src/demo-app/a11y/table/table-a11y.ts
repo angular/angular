@@ -11,6 +11,8 @@ import {DataSource} from '@angular/cdk/table';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {MatSort, MatPaginator} from '@angular/material';
+import {merge} from 'rxjs/observable/merge';
+import {map} from 'rxjs/operators/map';
 
 export interface UserData {
   name: string;
@@ -78,9 +80,7 @@ export class SortDataSource extends DataSource<UserData> {
       this._sort.sortChange,
     ];
 
-    return Observable.merge(...displayDataChanges).map(() => {
-      return this.getSortedData();
-    });
+    return merge(...displayDataChanges).pipe(map(() => this.getSortedData()));
   }
 
   disconnect() {}
@@ -111,11 +111,14 @@ export class PaginatedDataSource extends DataSource<UserData> {
       this._paginator.page,
     ];
 
-    return Observable.merge(...displayDataChanges).map(() => {
-      const data = [...exampleData];
-      const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
-      return data.splice(startIndex, this._paginator.pageSize);
-    });
+    return merge(...displayDataChanges)
+      .pipe(
+        map(() => {
+          const data = [...exampleData];
+          const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
+          return data.splice(startIndex, this._paginator.pageSize);
+        })
+      );
   }
 
   disconnect() {}

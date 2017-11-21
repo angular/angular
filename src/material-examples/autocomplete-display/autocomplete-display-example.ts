@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/map';
+import {startWith} from 'rxjs/operators/startWith';
+import {map} from 'rxjs/operators/map';
 
 export class User {
   constructor(public name: string) { }
@@ -30,9 +30,11 @@ export class AutocompleteDisplayExample {
 
   ngOnInit() {
     this.filteredOptions = this.myControl.valueChanges
-        .startWith(null)
-        .map(user => user && typeof user === 'object' ? user.name : user)
-        .map(name => name ? this.filter(name) : this.options.slice());
+      .pipe(
+        startWith({} as User),
+        map(user => user && typeof user === 'object' ? user.name : user),
+        map(name => name ? this.filter(name) : this.options.slice())
+      );
   }
 
   filter(name: string): User[] {

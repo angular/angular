@@ -2,8 +2,12 @@ import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 
 import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/map';
+import {startWith} from 'rxjs/operators/startWith';
+import {map} from 'rxjs/operators/map';
+
+export class State {
+  constructor(public name: string, public population: string, public flag: string) { }
+}
 
 /**
  * @title Autocomplete overview
@@ -17,7 +21,7 @@ export class AutocompleteOverviewExample {
   stateCtrl: FormControl;
   filteredStates: Observable<any[]>;
 
-  states: any[] = [
+  states: State[] = [
     {
       name: 'Arkansas',
       population: '2.978M',
@@ -47,8 +51,10 @@ export class AutocompleteOverviewExample {
   constructor() {
     this.stateCtrl = new FormControl();
     this.filteredStates = this.stateCtrl.valueChanges
-        .startWith(null)
-        .map(state => state ? this.filterStates(state) : this.states.slice());
+      .pipe(
+        startWith(''),
+        map(state => state ? this.filterStates(state) : this.states.slice())
+      );
   }
 
   filterStates(name: string) {
