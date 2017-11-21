@@ -148,6 +148,7 @@ export class OverlayRef implements PortalOutlet {
     }
 
     this.detachBackdrop();
+    this._keyboardDispatcher.remove(this);
     this._portalOutlet.dispose();
     this._attachments.complete();
     this._backdropClick.complete();

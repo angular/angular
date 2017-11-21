@@ -1,10 +1,13 @@
 import {TestBed, inject} from '@angular/core/testing';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {ESCAPE} from '@angular/cdk/keycodes';
+import {Component, NgModule} from '@angular/core';
 import {Overlay} from '../overlay';
 import {OverlayContainer} from '../overlay-container';
 import {OverlayModule} from '../index';
 import {OverlayKeyboardDispatcher} from './overlay-keyboard-dispatcher';
+import {ComponentPortal} from '@angular/cdk/portal';
+
 
 describe('OverlayKeyboardDispatcher', () => {
   let keyboardDispatcher: OverlayKeyboardDispatcher;
@@ -13,7 +16,7 @@ describe('OverlayKeyboardDispatcher', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule],
+      imports: [OverlayModule, TestComponentModule],
       providers: [
         {provide: OverlayContainer, useFactory: () => {
           overlayContainerElement = document.createElement('div');
@@ -105,4 +108,52 @@ describe('OverlayKeyboardDispatcher', () => {
     expect(completeSpy).toHaveBeenCalled();
   });
 
+  it('should stop emitting events to detached overlays', () => {
+    const instance = overlay.create();
+    const spy = jasmine.createSpy('keyboard event spy');
+
+    instance.attach(new ComponentPortal(TestComponent));
+    instance.keydownEvents().subscribe(spy);
+
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, instance.overlayElement);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    instance.detach();
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, instance.overlayElement);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
+  it('should stop emitting events to disposed overlays', () => {
+    const instance = overlay.create();
+    const spy = jasmine.createSpy('keyboard event spy');
+
+    instance.attach(new ComponentPortal(TestComponent));
+    instance.keydownEvents().subscribe(spy);
+
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, instance.overlayElement);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    instance.dispose();
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE, instance.overlayElement);
+
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
 });
+
+
+@Component({
+  template: 'Hello'
+})
+class TestComponent { }
+
+
+// Create a real (non-test) NgModule as a workaround for
+// https://github.com/angular/angular/issues/10760
+@NgModule({
+  exports: [TestComponent],
+  declarations: [TestComponent],
+  entryComponents: [TestComponent],
+})
+class TestComponentModule { }
