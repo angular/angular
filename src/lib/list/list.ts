@@ -16,7 +16,6 @@ import {
   ElementRef,
   Optional,
   QueryList,
-  Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
 import {CanDisableRipple, MatLine, MatLineSetter, mixinDisableRipple} from '@angular/material/core';
@@ -144,14 +143,13 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   @ContentChild(MatListAvatarCssMatStyler)
   set _hasAvatar(avatar: MatListAvatarCssMatStyler) {
     if (avatar != null) {
-      this._renderer.addClass(this._element.nativeElement, 'mat-list-item-avatar');
+      this._element.nativeElement.classList.add('mat-list-item-avatar');
     } else {
-      this._renderer.removeClass(this._element.nativeElement, 'mat-list-item-avatar');
+      this._element.nativeElement.classList.remove('mat-list-item-avatar');
     }
   }
 
-  constructor(private _renderer: Renderer2,
-              private _element: ElementRef,
+  constructor(private _element: ElementRef,
               @Optional() private _list: MatList,
               @Optional() navList: MatNavListCssMatStyler) {
     super();
@@ -159,7 +157,7 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   }
 
   ngAfterContentInit() {
-    this._lineSetter = new MatLineSetter(this._lines, this._renderer, this._element);
+    this._lineSetter = new MatLineSetter(this._lines, this._element);
   }
 
   /** Whether this list item should show a ripple effect when clicked.  */
@@ -168,11 +166,11 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   }
 
   _handleFocus() {
-    this._renderer.addClass(this._element.nativeElement, 'mat-list-item-focus');
+    this._element.nativeElement.classList.add('mat-list-item-focus');
   }
 
   _handleBlur() {
-    this._renderer.removeClass(this._element.nativeElement, 'mat-list-item-focus');
+    this._element.nativeElement.classList.remove('mat-list-item-focus');
   }
 
   /** Retrieves the DOM element of the component host. */

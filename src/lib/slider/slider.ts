@@ -32,7 +32,6 @@ import {
   OnInit,
   Optional,
   Output,
-  Renderer2,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -86,7 +85,7 @@ export class MatSliderChange {
 // Boilerplate for applying mixins to MatSlider.
 /** @docs-private */
 export class MatSliderBase {
-  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+  constructor(public _elementRef: ElementRef) {}
 }
 export const _MatSliderMixinBase =
   mixinTabIndex(mixinColor(mixinDisabled(MatSliderBase), 'accent'));
@@ -418,13 +417,12 @@ export class MatSlider extends _MatSliderMixinBase
     return (this._dir && this._dir.value == 'rtl') ? 'rtl' : 'ltr';
   }
 
-  constructor(renderer: Renderer2,
-              elementRef: ElementRef,
+  constructor(elementRef: ElementRef,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality,
               @Attribute('tabindex') tabIndex: string) {
-    super(renderer, elementRef);
+    super(elementRef);
 
     this.tabIndex = parseInt(tabIndex) || 0;
   }

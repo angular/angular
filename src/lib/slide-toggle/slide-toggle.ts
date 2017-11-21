@@ -21,7 +21,6 @@ import {
   Input,
   OnDestroy,
   Output,
-  Renderer2,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
@@ -59,7 +58,7 @@ export class MatSlideToggleChange {
 // Boilerplate for applying mixins to MatSlideToggle.
 /** @docs-private */
 export class MatSlideToggleBase {
-  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+  constructor(public _elementRef: ElementRef) {}
 }
 export const _MatSlideToggleMixinBase =
   mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase)), 'accent'));
@@ -140,20 +139,20 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   @ViewChild(MatRipple) _ripple: MatRipple;
 
   constructor(elementRef: ElementRef,
-              renderer: Renderer2,
               private _platform: Platform,
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string) {
-    super(renderer, elementRef);
 
+    super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
   }
 
   ngAfterContentInit() {
     this._slideRenderer = new SlideToggleRenderer(this._elementRef, this._platform);
 
-    this._focusMonitor.monitor(this._inputElement.nativeElement, false)
+    this._focusMonitor
+      .monitor(this._inputElement.nativeElement, false)
       .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
   }
 

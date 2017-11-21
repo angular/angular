@@ -46,7 +46,6 @@ import {
   Optional,
   Output,
   QueryList,
-  Renderer2,
   Self,
   SimpleChanges,
   ViewChild,
@@ -143,7 +142,7 @@ export class MatSelectChange {
 // Boilerplate for applying mixins to MatSelect.
 /** @docs-private */
 export class MatSelectBase {
-  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+  constructor(public _elementRef: ElementRef) {}
 }
 export const _MatSelectMixinBase = mixinTabIndex(mixinDisabled(MatSelectBase));
 
@@ -453,7 +452,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     private _changeDetectorRef: ChangeDetectorRef,
     private _ngZone: NgZone,
     private _defaultErrorStateMatcher: ErrorStateMatcher,
-    renderer: Renderer2,
     elementRef: ElementRef,
     @Optional() private _dir: Directionality,
     @Optional() private _parentForm: NgForm,
@@ -463,7 +461,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     @Attribute('tabindex') tabIndex: string,
     @Inject(MAT_SELECT_SCROLL_STRATEGY) private _scrollStrategyFactory) {
 
-    super(renderer, elementRef);
+    super(elementRef);
 
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;

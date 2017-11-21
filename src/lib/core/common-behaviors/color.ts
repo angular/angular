@@ -7,7 +7,7 @@
  */
 
 import {Constructor} from './constructor';
-import {ElementRef, Renderer2} from '@angular/core';
+import {ElementRef} from '@angular/core';
 
 /** @docs-private */
 export interface CanColor {
@@ -15,8 +15,7 @@ export interface CanColor {
 }
 
 /** @docs-private */
-export interface HasRenderer {
-  _renderer: Renderer2;
+export interface HasElementRef {
   _elementRef: ElementRef;
 }
 
@@ -24,8 +23,8 @@ export interface HasRenderer {
 export type ThemePalette = 'primary' | 'accent' | 'warn' | undefined;
 
 /** Mixin to augment a directive with a `color` property. */
-export function mixinColor<T extends Constructor<HasRenderer>>(base: T, defaultColor?: ThemePalette)
-    : Constructor<CanColor> & T {
+export function mixinColor<T extends Constructor<HasElementRef>>(base: T,
+    defaultColor?: ThemePalette): Constructor<CanColor> & T {
   return class extends base {
     private _color: ThemePalette;
 
@@ -35,10 +34,10 @@ export function mixinColor<T extends Constructor<HasRenderer>>(base: T, defaultC
 
       if (colorPalette !== this._color) {
         if (this._color) {
-          this._renderer.removeClass(this._elementRef.nativeElement, `mat-${this._color}`);
+          this._elementRef.nativeElement.classList.remove(`mat-${this._color}`);
         }
         if (colorPalette) {
-          this._renderer.addClass(this._elementRef.nativeElement, `mat-${colorPalette}`);
+          this._elementRef.nativeElement.classList.add(`mat-${colorPalette}`);
         }
 
         this._color = colorPalette;

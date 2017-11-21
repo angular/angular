@@ -1,5 +1,5 @@
 import {mixinColor} from './color';
-import {ElementRef, Renderer2} from '@angular/core';
+import {ElementRef} from '@angular/core';
 
 describe('MixinColor', () => {
 
@@ -71,12 +71,6 @@ describe('MixinColor', () => {
 
 class TestClass {
   testElement: HTMLElement = document.createElement('div');
-
-  /** Mock of a RendererV2 for the color mixin. */
-  _renderer: Renderer2 = {
-    addClass: (element: HTMLElement, className: string) => element.classList.add(className),
-    removeClass: (element: HTMLElement, className: string) => element.classList.remove(className)
-  } as any;
 
   /** Fake instance of an ElementRef. */
   _elementRef = new ElementRef(this.testElement);

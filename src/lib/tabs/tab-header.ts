@@ -23,7 +23,6 @@ import {
   Optional,
   Output,
   QueryList,
-  Renderer2,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -134,7 +133,6 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   @Output() indexFocused = new EventEmitter();
 
   constructor(private _elementRef: ElementRef,
-              private _renderer: Renderer2,
               private _changeDetectorRef: ChangeDetectorRef,
               private _viewportRuler: ViewportRuler,
               @Optional() private _dir: Directionality) {
@@ -305,8 +303,7 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     const scrollDistance = this.scrollDistance;
     const translateX = this._getLayoutDirection() === 'ltr' ? -scrollDistance : scrollDistance;
 
-    this._renderer.setStyle(this._tabList.nativeElement, 'transform',
-        `translate3d(${translateX}px, 0, 0)`);
+    this._tabList.nativeElement.style.transform = `translate3d(${translateX}px, 0, 0)`;
   }
 
   /** Sets the distance in pixels that the tab header should be transformed in the X-axis. */

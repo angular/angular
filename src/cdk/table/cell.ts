@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ContentChild, Directive, ElementRef, Input, Renderer2, TemplateRef} from '@angular/core';
+import {ContentChild, Directive, ElementRef, Input, TemplateRef} from '@angular/core';
 
 /**
  * Cell definition for a CDK table.
@@ -64,8 +64,8 @@ export class CdkColumnDef {
   },
 })
 export class CdkHeaderCell {
-  constructor(columnDef: CdkColumnDef, elementRef: ElementRef, renderer: Renderer2) {
-    renderer.addClass(elementRef.nativeElement, `cdk-column-${columnDef.cssClassFriendlyName}`);
+  constructor(columnDef: CdkColumnDef, elementRef: ElementRef) {
+    elementRef.nativeElement.classList.add(`cdk-column-${columnDef.cssClassFriendlyName}`);
   }
 }
 
@@ -78,7 +78,7 @@ export class CdkHeaderCell {
   },
 })
 export class CdkCell {
-  constructor(columnDef: CdkColumnDef, elementRef: ElementRef, renderer: Renderer2) {
-    renderer.addClass(elementRef.nativeElement, `cdk-column-${columnDef.cssClassFriendlyName}`);
+  constructor(columnDef: CdkColumnDef, elementRef: ElementRef) {
+    elementRef.nativeElement.classList.add(`cdk-column-${columnDef.cssClassFriendlyName}`);
   }
 }

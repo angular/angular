@@ -9,7 +9,6 @@
 import {
   NgModule,
   Directive,
-  Renderer2,
   ElementRef,
   QueryList,
 } from '@angular/core';
@@ -32,8 +31,7 @@ export class MatLine {}
  * @docs-private
  */
 export class MatLineSetter {
-  constructor(private _lines: QueryList<MatLine>, private _renderer: Renderer2,
-              private _element: ElementRef) {
+  constructor(private _lines: QueryList<MatLine>, private _element: ElementRef) {
     this._setLineClass(this._lines.length);
 
     this._lines.changes.subscribe(() => {
@@ -58,9 +56,9 @@ export class MatLineSetter {
 
   private _setClass(className: string, isAdd: boolean): void {
     if (isAdd) {
-      this._renderer.addClass(this._element.nativeElement, className);
+      this._element.nativeElement.classList.add(className);
     } else {
-      this._renderer.removeClass(this._element.nativeElement, className);
+      this._element.nativeElement.classList.remove(className);
     }
   }
 

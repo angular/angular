@@ -26,7 +26,6 @@ import {
   Optional,
   Output,
   QueryList,
-  Renderer2,
   Self,
   ViewEncapsulation,
 } from '@angular/core';
@@ -311,8 +310,7 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   /** The chip components contained within this chip list. */
   @ContentChildren(MatChip) chips: QueryList<MatChip>;
 
-  constructor(protected _renderer: Renderer2,
-              protected _elementRef: ElementRef,
+  constructor(protected _elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality,
               @Optional() private _parentForm: NgForm,
@@ -392,7 +390,7 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   // Implemented as part of ControlValueAccessor
   setDisabledState(disabled: boolean): void {
     this.disabled = disabled;
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', disabled);
+    this._elementRef.nativeElement.disabled = disabled;
     this.stateChanges.next();
   }
 

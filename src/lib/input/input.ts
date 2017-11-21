@@ -17,8 +17,7 @@ import {
   OnChanges,
   OnDestroy,
   Optional,
-  Renderer2,
-  Self
+  Self,
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
@@ -124,7 +123,7 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
     // input element. To ensure that bindings for `type` work, we need to sync the setter
     // with the native property. Textarea elements don't support the type property or attribute.
     if (!this._isTextarea() && getSupportedInputTypes().has(this._type)) {
-      this._renderer.setProperty(this._elementRef.nativeElement, 'type', this._type);
+      this._elementRef.nativeElement.type = this._type;
     }
   }
 
@@ -156,7 +155,6 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
   ].filter(t => getSupportedInputTypes().has(t));
 
   constructor(protected _elementRef: ElementRef,
-              protected _renderer: Renderer2,
               protected _platform: Platform,
               @Optional() @Self() public ngControl: NgControl,
               @Optional() protected _parentForm: NgForm,
@@ -176,7 +174,7 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
     // key. In order to get around this we need to "jiggle" the caret loose. Since this bug only
     // exists on iOS, we only bother to install the listener on iOS.
     if (_platform.IOS) {
-      _renderer.listen(_elementRef.nativeElement, 'keyup', (event: Event) => {
+      _elementRef.nativeElement.addEventListener('keyup', (event: Event) => {
         let el = event.target as HTMLInputElement;
         if (!el.value && !el.selectionStart && !el.selectionEnd) {
           // Note: Just setting `0, 0` doesn't fix the issue. Setting `1, 1` fixes it for the first

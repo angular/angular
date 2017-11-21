@@ -14,7 +14,6 @@ import {
   Input,
   ContentChildren,
   QueryList,
-  Renderer2,
   ElementRef,
   Optional,
   ChangeDetectionStrategy,
@@ -69,10 +68,7 @@ export class MatGridList implements OnInit, AfterContentChecked {
   /** Query list of tiles that are being rendered. */
   @ContentChildren(MatGridTile) _tiles: QueryList<MatGridTile>;
 
-  constructor(
-      private _renderer: Renderer2,
-      private _element: ElementRef,
-      @Optional() private _dir: Directionality) {}
+  constructor(private _element: ElementRef, @Optional() private _dir: Directionality) {}
 
   /** Amount of columns in the grid list. */
   @Input()
@@ -155,7 +151,7 @@ export class MatGridList implements OnInit, AfterContentChecked {
   /** Sets style on the main grid-list element, given the style name and value. */
   _setListStyle(style: [string, string | null] | null): void {
     if (style) {
-      this._renderer.setStyle(this._element.nativeElement, style[0], style[1]);
+      this._element.nativeElement.style[style[0]] = style[1];
     }
   }
 }

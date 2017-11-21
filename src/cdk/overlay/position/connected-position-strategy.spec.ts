@@ -592,7 +592,7 @@ describe('ConnectedPositionStrategy', () => {
           {overlayX: 'start', overlayY: 'top'});
 
       strategy.withScrollableContainers([
-          new CdkScrollable(new FakeElementRef(scrollable), null!, null!, null!)]);
+          new CdkScrollable(new FakeElementRef(scrollable), null!, null!)]);
       strategy.attach(fakeOverlayRef(overlayElement));
       positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       onPositionChangeSubscription = strategy.onPositionChange.subscribe(positionChangeHandler);

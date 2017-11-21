@@ -20,7 +20,6 @@ import {
   Input,
   OnDestroy,
   Output,
-  Renderer2,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -79,7 +78,7 @@ export class MatCheckboxChange {
 // Boilerplate for applying mixins to MatCheckbox.
 /** @docs-private */
 export class MatCheckboxBase {
-  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+  constructor(public _elementRef: ElementRef) {}
 }
 export const _MatCheckboxMixinBase =
   mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatCheckboxBase)), 'accent'));
@@ -197,13 +196,11 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   /** Reference to the focused state ripple. */
   private _focusRipple: RippleRef | null;
 
-  constructor(renderer: Renderer2,
-              elementRef: ElementRef,
+  constructor(elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
               @Attribute('tabindex') tabIndex: string) {
-    super(renderer, elementRef);
-
+    super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
   }
 
@@ -309,14 +306,13 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
   private _transitionCheckState(newState: TransitionCheckState) {
     let oldState = this._currentCheckState;
-    let renderer = this._renderer;
-    let elementRef = this._elementRef;
+    let element: HTMLElement = this._elementRef.nativeElement;
 
     if (oldState === newState) {
       return;
     }
     if (this._currentAnimationClass.length > 0) {
-      renderer.removeClass(elementRef.nativeElement, this._currentAnimationClass);
+      element.classList.remove(this._currentAnimationClass);
     }
 
     this._currentAnimationClass = this._getAnimationClassForCheckStateTransition(
@@ -324,7 +320,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     this._currentCheckState = newState;
 
     if (this._currentAnimationClass.length > 0) {
-      renderer.addClass(elementRef.nativeElement, this._currentAnimationClass);
+      element.classList.add(this._currentAnimationClass);
     }
   }
 

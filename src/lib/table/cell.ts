@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Input, Renderer2} from '@angular/core';
+import {Directive, ElementRef, Input} from '@angular/core';
 import {
   CdkCell,
   CdkCellDef,
@@ -65,10 +65,9 @@ export class MatColumnDef extends _MatColumnDef {
 })
 export class MatHeaderCell extends _MatHeaderCell {
   constructor(columnDef: CdkColumnDef,
-              elementRef: ElementRef,
-              renderer: Renderer2) {
-    super(columnDef, elementRef, renderer);
-    renderer.addClass(elementRef.nativeElement, `mat-column-${columnDef.cssClassFriendlyName}`);
+              elementRef: ElementRef) {
+    super(columnDef, elementRef);
+    elementRef.nativeElement.classList.add(`mat-column-${columnDef.cssClassFriendlyName}`);
   }
 }
 
@@ -82,9 +81,8 @@ export class MatHeaderCell extends _MatHeaderCell {
 })
 export class MatCell extends _MatCell {
   constructor(columnDef: CdkColumnDef,
-              elementRef: ElementRef,
-              renderer: Renderer2) {
-    super(columnDef, elementRef, renderer);
-    renderer.addClass(elementRef.nativeElement, `mat-column-${columnDef.cssClassFriendlyName}`);
+              elementRef: ElementRef) {
+    super(columnDef, elementRef);
+    elementRef.nativeElement.classList.add(`mat-column-${columnDef.cssClassFriendlyName}`);
   }
 }

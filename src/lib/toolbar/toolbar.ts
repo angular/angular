@@ -15,7 +15,6 @@ import {
   ElementRef,
   isDevMode,
   QueryList,
-  Renderer2,
   ViewEncapsulation
 } from '@angular/core';
 import {CanColor, mixinColor} from '@angular/material/core';
@@ -24,7 +23,7 @@ import {Platform} from '@angular/cdk/platform';
 // Boilerplate for applying mixins to MatToolbar.
 /** @docs-private */
 export class MatToolbarBase {
-  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+  constructor(public _elementRef: ElementRef) {}
 }
 export const _MatToolbarMixinBase = mixinColor(MatToolbarBase);
 
@@ -56,8 +55,8 @@ export class MatToolbar extends _MatToolbarMixinBase implements CanColor, AfterV
   /** Reference to all toolbar row elements that have been projected. */
   @ContentChildren(MatToolbarRow) _toolbarRows: QueryList<MatToolbarRow>;
 
-  constructor(renderer: Renderer2, elementRef: ElementRef, private _platform: Platform) {
-    super(renderer, elementRef);
+  constructor(elementRef: ElementRef, private _platform: Platform) {
+    super(elementRef);
   }
 
   ngAfterViewInit() {

@@ -39,7 +39,6 @@ import {
   NgZone,
   OnDestroy,
   Optional,
-  Renderer2,
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
@@ -163,11 +162,9 @@ export class MatTooltip implements OnDestroy {
     }
   }
 
-  private _enterListener: Function;
-  private _leaveListener: Function;
+  private _manualListeners = new Map<string, Function>();
 
   constructor(
-    renderer: Renderer2,
     private _overlay: Overlay,
     private _elementRef: ElementRef,
     private _scrollDispatcher: ScrollDispatcher,
@@ -182,10 +179,11 @@ export class MatTooltip implements OnDestroy {
     // The mouse events shouldn't be bound on iOS devices, because
     // they can prevent the first tap from firing its click event.
     if (!_platform.IOS) {
-      this._enterListener =
-        renderer.listen(_elementRef.nativeElement, 'mouseenter', () => this.show());
-      this._leaveListener =
-        renderer.listen(_elementRef.nativeElement, 'mouseleave', () => this.hide());
+      this._manualListeners.set('mouseenter', () => this.show());
+      this._manualListeners.set('mouseleave', () => this.hide());
+
+      this._manualListeners
+        .forEach((listener, event) => _elementRef.nativeElement.addEventListener(event, listener));
     }
 
     _focusMonitor.monitor(_elementRef.nativeElement, false).subscribe(origin => {
@@ -208,8 +206,11 @@ export class MatTooltip implements OnDestroy {
 
     // Clean up the event listeners set in the constructor
     if (!this._platform.IOS) {
-      this._enterListener();
-      this._leaveListener();
+      this._manualListeners.forEach((listener, event) => {
+        this._elementRef.nativeElement.removeEventListener(event, listener);
+      });
+
+      this._manualListeners.clear();
     }
 
     this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this.message);

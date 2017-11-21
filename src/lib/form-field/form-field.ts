@@ -23,7 +23,7 @@ import {
   Inject,
   Input,
   Optional,
-  QueryList, Renderer2,
+  QueryList,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -163,7 +163,6 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
 
   constructor(
       public _elementRef: ElementRef,
-      private _renderer: Renderer2,
       private _changeDetectorRef: ChangeDetectorRef,
       @Optional() @Inject(MAT_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
     this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
@@ -173,8 +172,8 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
   ngAfterContentInit() {
     this._validateControlChild();
     if (this._control.controlType) {
-      this._renderer.addClass(
-          this._elementRef.nativeElement, `mat-form-field-type-${this._control.controlType}`);
+      this._elementRef.nativeElement.classList
+          .add(`mat-form-field-type-${this._control.controlType}`);
     }
 
     // Subscribe to changes in the child control state in order to update the form field UI.

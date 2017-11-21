@@ -1,6 +1,6 @@
 import {TAB} from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
-import {Component, Renderer2} from '@angular/core';
+import {Component} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {FocusMonitor, FocusOrigin, TOUCH_BUFFER_MS} from './focus-monitor';
@@ -378,9 +378,7 @@ describe('cdkMonitorFocus', () => {
 @Component({
   template: `<button>focus me!</button>`
 })
-class PlainButton {
-  constructor(public renderer: Renderer2) {}
-}
+class PlainButton {}
 
 
 @Component({

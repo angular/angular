@@ -27,7 +27,6 @@ import {
   Optional,
   Output,
   QueryList,
-  Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
 import {
@@ -125,8 +124,7 @@ export class MatListOption extends _MatListOptionMixinBase
   /** Emitted when the option is selected or deselected. */
   @Output() selectionChange = new EventEmitter<MatListOptionChange>();
 
-  constructor(private _renderer: Renderer2,
-              private _element: ElementRef,
+  constructor(private _element: ElementRef,
               private _changeDetector: ChangeDetectorRef,
               @Optional() @Inject(forwardRef(() => MatSelectionList))
               public selectionList: MatSelectionList) {
@@ -140,7 +138,7 @@ export class MatListOption extends _MatListOptionMixinBase
   }
 
   ngAfterContentInit() {
-    this._lineSetter = new MatLineSetter(this._lines, this._renderer, this._element);
+    this._lineSetter = new MatLineSetter(this._lines, this._element);
   }
 
   ngOnDestroy(): void {

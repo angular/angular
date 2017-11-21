@@ -9,7 +9,6 @@
 import {
   Component,
   ViewEncapsulation,
-  Renderer2,
   ElementRef,
   Input,
   ContentChildren,
@@ -38,7 +37,7 @@ export class MatGridTile {
   _rowspan: number = 1;
   _colspan: number = 1;
 
-  constructor(private _renderer: Renderer2, private _element: ElementRef) {}
+  constructor(private _element: ElementRef) {}
 
   /** Amount of rows that the grid tile takes up. */
   @Input()
@@ -55,7 +54,7 @@ export class MatGridTile {
    * "Changed after checked" errors that would occur with HostBinding.
    */
   _setStyle(property: string, value: any): void {
-    this._renderer.setStyle(this._element.nativeElement, property, value);
+    this._element.nativeElement.style[property] = value;
   }
 }
 
@@ -75,10 +74,10 @@ export class MatGridTileText implements AfterContentInit {
   _lineSetter: MatLineSetter;
   @ContentChildren(MatLine) _lines: QueryList<MatLine>;
 
-  constructor(private _renderer: Renderer2, private _element: ElementRef) {}
+  constructor(private _element: ElementRef) {}
 
   ngAfterContentInit() {
-    this._lineSetter = new MatLineSetter(this._lines, this._renderer, this._element);
+    this._lineSetter = new MatLineSetter(this._lines, this._element);
   }
 }
 

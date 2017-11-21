@@ -21,7 +21,6 @@ import {
   OnDestroy,
   Optional,
   Output,
-  Renderer2,
   SimpleChanges,
   TemplateRef,
   ViewContainerRef,
@@ -36,6 +35,7 @@ import {
 } from './position/connected-position';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {RepositionScrollStrategy, ScrollStrategy} from './scroll/index';
+import {DOCUMENT} from '@angular/common';
 
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
@@ -97,7 +97,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _offsetX: number = 0;
   private _offsetY: number = 0;
   private _position: ConnectedPositionStrategy;
-  private _escapeListener = () => {};
 
   /** Origin for the connected overlay. */
   @Input('cdkConnectedOverlayOrigin') origin: CdkOverlayOrigin;
@@ -230,11 +229,11 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
   constructor(
       private _overlay: Overlay,
-      private _renderer: Renderer2,
       templateRef: TemplateRef<any>,
       viewContainerRef: ViewContainerRef,
       @Inject(CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY) private _scrollStrategy,
-      @Optional() private _dir: Directionality) {
+      @Optional() private _dir: Directionality,
+      @Optional() @Inject(DOCUMENT) private _document: any) {
     this._templatePortal = new TemplatePortal(templateRef, viewContainerRef);
   }
 
@@ -335,7 +334,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
     this._position.withDirection(this.dir);
     this._overlayRef.getConfig().direction = this.dir;
-    this._initEscapeListener();
+    this._document.addEventListener('keydown', this._escapeListener);
 
     if (!this._overlayRef.hasAttached()) {
       this._overlayRef.attach(this._templatePortal);
@@ -357,7 +356,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     }
 
     this._backdropSubscription.unsubscribe();
-    this._escapeListener();
+    this._document.removeEventListener('keydown', this._escapeListener);
   }
 
   /** Destroys the overlay created by this directive. */
@@ -368,15 +367,13 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
     this._backdropSubscription.unsubscribe();
     this._positionSubscription.unsubscribe();
-    this._escapeListener();
+    this._document.removeEventListener('keydown', this._escapeListener);
   }
 
-  /** Sets the event listener that closes the overlay when pressing Escape. */
-  private _initEscapeListener() {
-    this._escapeListener = this._renderer.listen('document', 'keydown', (event: KeyboardEvent) => {
-      if (event.keyCode === ESCAPE) {
-        this._detachOverlay();
-      }
-    });
+  /** Event listener that will close the overlay when the user presses escape. */
+  private _escapeListener = (event: KeyboardEvent) => {
+    if (event.keyCode === ESCAPE) {
+      this._detachOverlay();
+    }
   }
 }

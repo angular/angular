@@ -23,7 +23,6 @@ import {
   IterableDiffers,
   NgIterable,
   QueryList,
-  Renderer2,
   TrackByFunction,
   ViewChild,
   ViewContainerRef,
@@ -170,10 +169,10 @@ export class CdkTable<T> implements CollectionViewer {
   constructor(private readonly _differs: IterableDiffers,
               private readonly _changeDetectorRef: ChangeDetectorRef,
               elementRef: ElementRef,
-              renderer: Renderer2,
               @Attribute('role') role: string) {
+
     if (!role) {
-      renderer.setAttribute(elementRef.nativeElement, 'role', 'grid');
+      elementRef.nativeElement.setAttribute('role', 'grid');
     }
   }
 

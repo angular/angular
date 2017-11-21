@@ -15,7 +15,6 @@ import {
   Input,
   OnChanges,
   OnInit,
-  Renderer2,
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
@@ -26,7 +25,7 @@ import {MatIconRegistry} from './icon-registry';
 // Boilerplate for applying mixins to MatIcon.
 /** @docs-private */
 export class MatIconBase {
-  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+  constructor(public _elementRef: ElementRef) {}
 }
 export const _MatIconMixinBase = mixinColor(MatIconBase);
 
@@ -88,16 +87,15 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
   private _previousFontIconClass: string;
 
   constructor(
-      renderer: Renderer2,
       elementRef: ElementRef,
       private _iconRegistry: MatIconRegistry,
       @Attribute('aria-hidden') ariaHidden: string) {
-    super(renderer, elementRef);
+    super(elementRef);
 
     // If the user has not explicitly set aria-hidden, mark the icon as hidden, as this is
     // the right thing to do for the majority of icon use-cases.
     if (!ariaHidden) {
-      renderer.setAttribute(elementRef.nativeElement, 'aria-hidden', 'true');
+      elementRef.nativeElement.setAttribute('aria-hidden', 'true');
     }
   }
 
@@ -160,17 +158,17 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
 
   private _setSvgElement(svg: SVGElement) {
     this._clearSvgElement();
-    this._renderer.appendChild(this._elementRef.nativeElement, svg);
+    this._elementRef.nativeElement.appendChild(svg);
   }
 
   private _clearSvgElement() {
-    const layoutElement = this._elementRef.nativeElement;
+    const layoutElement: HTMLElement = this._elementRef.nativeElement;
     const childCount = layoutElement.childNodes.length;
 
     // Remove existing child nodes and add the new SVG element. Note that we can't
     // use innerHTML, because IE will throw if the element has a data binding.
     for (let i = 0; i < childCount; i++) {
-      this._renderer.removeChild(layoutElement, layoutElement.childNodes[i]);
+      layoutElement.removeChild(layoutElement.childNodes[i]);
     }
   }
 
@@ -179,27 +177,27 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
       return;
     }
 
-    const elem = this._elementRef.nativeElement;
+    const elem: HTMLElement = this._elementRef.nativeElement;
     const fontSetClass = this.fontSet ?
         this._iconRegistry.classNameForFontAlias(this.fontSet) :
         this._iconRegistry.getDefaultFontSetClass();
 
     if (fontSetClass != this._previousFontSetClass) {
       if (this._previousFontSetClass) {
-        this._renderer.removeClass(elem, this._previousFontSetClass);
+        elem.classList.remove(this._previousFontSetClass);
       }
       if (fontSetClass) {
-        this._renderer.addClass(elem, fontSetClass);
+        elem.classList.add(fontSetClass);
       }
       this._previousFontSetClass = fontSetClass;
     }
 
     if (this.fontIcon != this._previousFontIconClass) {
       if (this._previousFontIconClass) {
-        this._renderer.removeClass(elem, this._previousFontIconClass);
+        elem.classList.remove(this._previousFontIconClass);
       }
       if (this.fontIcon) {
-        this._renderer.addClass(elem, this.fontIcon);
+        elem.classList.add(this.fontIcon);
       }
       this._previousFontIconClass = this.fontIcon;
     }

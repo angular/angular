@@ -58,7 +58,7 @@ class MyTelInput {
     tel = tel || new MyTel('', '', '');
     this.parts.setValue({area: tel.area, exchange: tel.exchange, subscriber: tel.subscriber});
   }
-  
+
   constructor(fb: FormBuilder) {
     this.parts =  fb.group({
       'area': '',
@@ -98,7 +98,7 @@ the `MatFormFieldControl` interface, see the
 #### `value`
 
 This property allows someone to set or get the value of our control. Its type should be the same
-type we used for the type parameter when we implemented `MatFormFieldControl`. Since our component 
+type we used for the type parameter when we implemented `MatFormFieldControl`. Since our component
 already has a value property, we don't need to do anything for this one.
 
 #### `stateChanges`
@@ -185,10 +185,9 @@ need to remember to emit on the `stateChanges` stream so change detection can ha
 ```ts
 focused = false;
 
-constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef,
-            renderer: Renderer2) {
+constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef) {
   ...
-  fm.monitor(elRef.nativeElement, renderer, true).subscribe(origin => {
+  fm.monitor(elRef.nativeElement, true).subscribe(origin => {
     this.focused = !!origin;
     this.stateChanges.next();
   });
@@ -307,7 +306,7 @@ just need to apply the given IDs to our host element.
 
 ```ts
 @HostBinding('attr.aria-describedby') describedBy = '';
-  
+
 setDescribedByIds(ids: string[]) {
   this.describedBy = ids.join(' ');
 }

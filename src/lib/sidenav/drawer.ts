@@ -27,7 +27,6 @@ import {
   Optional,
   Output,
   QueryList,
-  Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
@@ -435,8 +434,7 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   _contentMargins = new Subject<{left: number, right: number}>();
 
   constructor(@Optional() private _dir: Directionality, private _element: ElementRef,
-              private _renderer: Renderer2, private _ngZone: NgZone,
-              private _changeDetectorRef: ChangeDetectorRef) {
+              private _ngZone: NgZone, private _changeDetectorRef: ChangeDetectorRef) {
     // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
     // properties to point to the proper start/end.
     if (_dir != null) {
@@ -493,7 +491,7 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
       // Set the transition class on the container so that the animations occur. This should not
       // be set initially because animations should only be triggered via a change in state.
       if (event.toState !== 'open-instant') {
-        this._renderer.addClass(this._element.nativeElement, 'mat-drawer-transition');
+        this._element.nativeElement.classList.add('mat-drawer-transition');
       }
 
       this._updateContentMargins();
@@ -537,9 +535,9 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   /** Toggles the 'mat-drawer-opened' class on the main 'mat-drawer-container' element. */
   private _setContainerClass(isAdd: boolean): void {
     if (isAdd) {
-      this._renderer.addClass(this._element.nativeElement, 'mat-drawer-opened');
+      this._element.nativeElement.classList.add('mat-drawer-opened');
     } else {
-      this._renderer.removeClass(this._element.nativeElement, 'mat-drawer-opened');
+      this._element.nativeElement.classList.remove('mat-drawer-opened');
     }
   }
 

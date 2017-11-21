@@ -17,7 +17,6 @@ import {
   Inject,
   OnDestroy,
   Optional,
-  Renderer2,
   Self,
   ViewEncapsulation,
 } from '@angular/core';
@@ -104,7 +103,7 @@ export class MatMiniFab {
 // Boilerplate for applying mixins to MatButton.
 /** @docs-private */
 export class MatButtonBase {
-  constructor(public _renderer: Renderer2, public _elementRef: ElementRef) {}
+  constructor(public _elementRef: ElementRef) {}
 }
 export const _MatButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(MatButtonBase)));
 
@@ -136,11 +135,10 @@ export class MatButton extends _MatButtonMixinBase
   /** Whether the button is icon button. */
   _isIconButton: boolean = this._hasHostAttributes('mat-icon-button');
 
-  constructor(renderer: Renderer2,
-              elementRef: ElementRef,
+  constructor(elementRef: ElementRef,
               private _platform: Platform,
               private _focusMonitor: FocusMonitor) {
-    super(renderer, elementRef);
+    super(elementRef);
     this._focusMonitor.monitor(this._elementRef.nativeElement, true);
   }
 
@@ -198,9 +196,8 @@ export class MatAnchor extends MatButton {
   constructor(
       platform: Platform,
       focusMonitor: FocusMonitor,
-      elementRef: ElementRef,
-      renderer: Renderer2) {
-    super(renderer, elementRef, platform, focusMonitor);
+      elementRef: ElementRef) {
+    super(elementRef, platform, focusMonitor);
   }
 
   _haltDisabledEvents(event: Event) {
