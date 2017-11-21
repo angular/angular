@@ -31,7 +31,7 @@ import {
   ComponentPortal,
   CdkPortalOutlet,
 } from '@angular/cdk/portal';
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -170,7 +170,7 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
    * errors where we end up removing an element which is in the middle of an animation.
    */
   private _completeExit() {
-    this._ngZone.onMicrotaskEmpty.asObservable().pipe(first()).subscribe(() => {
+    this._ngZone.onMicrotaskEmpty.asObservable().pipe(take(1)).subscribe(() => {
       this._onExit.next();
       this._onExit.complete();
     });

@@ -8,7 +8,7 @@
 
 import {OverlayRef, GlobalPositionStrategy} from '@angular/cdk/overlay';
 import {filter} from 'rxjs/operators/filter';
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {DialogPosition} from './dialog-config';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
@@ -50,7 +50,7 @@ export class MatDialogRef<T> {
     // Emit when opening animation completes
     _containerInstance._animationStateChanged.pipe(
       filter(event => event.phaseName === 'done' && event.toState === 'enter'),
-      first()
+      take(1)
     )
     .subscribe(() => {
       this._afterOpen.next();
@@ -60,7 +60,7 @@ export class MatDialogRef<T> {
     // Dispose overlay when closing animation is complete
     _containerInstance._animationStateChanged.pipe(
       filter(event => event.phaseName === 'done' && event.toState === 'exit'),
-      first()
+      take(1)
     )
     .subscribe(() => {
       this._overlayRef.dispose();
@@ -80,7 +80,7 @@ export class MatDialogRef<T> {
     // Transition the backdrop in parallel to the dialog.
     this._containerInstance._animationStateChanged.pipe(
       filter(event => event.phaseName === 'start'),
-      first()
+      take(1)
     )
     .subscribe(() => {
       this._beforeClose.next(dialogResult);

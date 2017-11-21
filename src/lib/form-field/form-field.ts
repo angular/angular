@@ -8,7 +8,7 @@
 
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {startWith} from 'rxjs/operators/startWith';
 import {
   AfterContentChecked,
@@ -236,7 +236,7 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
       this._showAlwaysAnimate = true;
       this._floatPlaceholder = 'always';
 
-      fromEvent(this._placeholder.nativeElement, 'transitionend').pipe(first()).subscribe(() => {
+      fromEvent(this._placeholder.nativeElement, 'transitionend').pipe(take(1)).subscribe(() => {
         this._showAlwaysAnimate = false;
       });
 

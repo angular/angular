@@ -24,7 +24,7 @@ import {
 } from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
 import {ComponentPortal} from '@angular/cdk/portal';
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {merge} from 'rxjs/observable/merge';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
@@ -389,7 +389,7 @@ export class MatTooltip implements OnDestroy {
       this._tooltipInstance.message = this.message;
       this._tooltipInstance._markForCheck();
 
-      this._ngZone.onMicrotaskEmpty.asObservable().pipe(first()).subscribe(() => {
+      this._ngZone.onMicrotaskEmpty.asObservable().pipe(take(1)).subscribe(() => {
         if (this._tooltipInstance) {
           this._overlayRef!.updatePosition();
         }

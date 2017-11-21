@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {
   Attribute,
   ChangeDetectionStrategy,
@@ -130,7 +130,7 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
       if (this.svgIcon) {
         const [namespace, iconName] = this._splitIconName(this.svgIcon);
 
-        this._iconRegistry.getNamedSvgIcon(iconName, namespace).pipe(first()).subscribe(
+        this._iconRegistry.getNamedSvgIcon(iconName, namespace).pipe(take(1)).subscribe(
           svg => this._setSvgElement(svg),
           (err: Error) => console.log(`Error retrieving icon: ${err.message}`)
         );

@@ -74,6 +74,7 @@ export const rollupGlobals = {
   'rxjs/operators/debounceTime': 'Rx.Observable',
   'rxjs/operators/takeUntil': 'Rx.Observable',
   'rxjs/operators/first': 'Rx.Observable',
+  'rxjs/operators/take': 'Rx.Observable',
   'rxjs/operators/filter': 'Rx.Observable',
   'rxjs/operators/map': 'Rx.Observable',
   'rxjs/operators/tap': 'Rx.Observable',

@@ -32,7 +32,7 @@ import {
 import {DOCUMENT} from '@angular/common';
 import {merge} from 'rxjs/observable/merge';
 import {filter} from 'rxjs/operators/filter';
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {startWith} from 'rxjs/operators/startWith';
 import {takeUntil} from 'rxjs/operators/takeUntil';
 import {map} from 'rxjs/operators/map';
@@ -345,7 +345,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
     // TODO(crisbeto): This promise is here for backwards-compatibility.
     // It should be removed next time we do breaking changes in the drawer.
     return new Promise<any>(resolve => {
-      this.openedChange.pipe(first()).subscribe(open => {
+      this.openedChange.pipe(take(1)).subscribe(open => {
         resolve(new MatDrawerToggleResult(open ? 'open' : 'close', true));
       });
     });
@@ -515,7 +515,7 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
     // NOTE: We need to wait for the microtask queue to be empty before validating,
     // since both drawers may be swapping positions at the same time.
     drawer.onPositionChanged.pipe(takeUntil(this._drawers.changes)).subscribe(() => {
-      this._ngZone.onMicrotaskEmpty.asObservable().pipe(first()).subscribe(() => {
+      this._ngZone.onMicrotaskEmpty.asObservable().pipe(take(1)).subscribe(() => {
         this._validateDrawers();
       });
     });

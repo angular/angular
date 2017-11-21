@@ -18,7 +18,7 @@ import {
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {filter} from 'rxjs/operators/filter';
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {switchMap} from 'rxjs/operators/switchMap';
 import {tap} from 'rxjs/operators/tap';
 import {delay} from 'rxjs/operators/delay';
@@ -368,7 +368,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * stream every time the option list changes.
    */
   private _subscribeToClosingActions(): Subscription {
-    const firstStable = this._zone.onStable.asObservable().pipe(first());
+    const firstStable = this._zone.onStable.asObservable().pipe(take(1));
     const optionChanges = this.autocomplete.options.changes.pipe(
       tap(() => this._positionStrategy.recalculateLastPosition()),
       // Defer emitting to the stream until the next tick, because changing
@@ -387,7 +387,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
           return this.panelClosingActions;
         }),
         // when the first closing event occurs...
-        first()
+        take(1)
       )
       // set the value, close the panel, and complete.
       .subscribe(event => this._setValueAndClose(event));

@@ -18,7 +18,7 @@ import {
   ScrollStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal} from '@angular/cdk/portal';
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -345,7 +345,7 @@ export class MatDatepicker<D> implements OnDestroy {
       componentRef.instance.datepicker = this;
 
       // Update the position once the calendar has rendered.
-      this._ngZone.onStable.asObservable().pipe(first()).subscribe(() => {
+      this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
         this._popupRef.updatePosition();
       });
     }

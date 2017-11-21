@@ -11,7 +11,7 @@ import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, PortalInjector} from '@angular/cdk/portal';
 import {ComponentRef, Injectable, Injector, Optional, SkipSelf} from '@angular/core';
-import {first} from 'rxjs/operators/first';
+import {take} from 'rxjs/operators/take';
 import {takeUntil} from 'rxjs/operators/takeUntil';
 import {SimpleSnackBar} from './simple-snack-bar';
 import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
@@ -152,7 +152,7 @@ export class MatSnackBar {
     // appropriate. This class is applied to the overlay element because the overlay must expand to
     // fill the width of the screen for full width snackbars.
     this._breakpointObserver.observe(Breakpoints.Handset).pipe(
-      takeUntil(overlayRef.detachments().pipe(first()))
+      takeUntil(overlayRef.detachments().pipe(take(1)))
     ).subscribe(state => {
       if (state.matches) {
         overlayRef.overlayElement.classList.add('mat-snack-bar-handset');
