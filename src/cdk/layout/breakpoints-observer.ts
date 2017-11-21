@@ -18,6 +18,7 @@ import {fromEventPattern} from 'rxjs/observable/fromEventPattern';
 
 /** The current state of a layout breakpoint. */
 export interface BreakpointState {
+  /** Whether the breakpoint is currently matching. */
   matches: boolean;
 }
 

@@ -14,7 +14,10 @@ import {ListKeyManager, ListKeyManagerOption} from './list-key-manager';
  * currently disabled.
  */
 export interface Highlightable extends ListKeyManagerOption {
+  /** Applies the styles for an active item to this item. */
   setActiveStyles(): void;
+
+  /** Applies the styles for an inactive item to this item. */
   setInactiveStyles(): void;
 }
 

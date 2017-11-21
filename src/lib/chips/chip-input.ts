@@ -12,8 +12,12 @@ import {Directive, ElementRef, EventEmitter, Input, Output} from '@angular/core'
 import {MatChipList} from './chip-list';
 
 
+/** Represents an input event on a `matChipInput`. */
 export interface MatChipInputEvent {
+  /** The native `<input>` element that the event is being fired for. */
   input: HTMLInputElement;
+
+  /** The value of the input. */
   value: string;
 }
 

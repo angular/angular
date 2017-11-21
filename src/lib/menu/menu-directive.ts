@@ -44,8 +44,13 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /** Default `mat-menu` options that can be overridden. */
 export interface MatMenuDefaultOptions {
+  /** The x-axis position of the menu. */
   xPosition: MenuPositionX;
+
+  /** The y-axis position of the menu. */
   yPosition: MenuPositionY;
+
+  /** Whether the menu should overlap the menu trigger. */
   overlapTrigger: boolean;
 }
 

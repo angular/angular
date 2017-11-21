@@ -14,6 +14,7 @@ import {ListKeyManager, ListKeyManagerOption} from './list-key-manager';
  * and be able to supply it's label.
  */
 export interface FocusableOption extends ListKeyManagerOption {
+  /** Focuses the `FocusableOption`. */
   focus(): void;
 }
 

@@ -22,6 +22,7 @@ import {Platform} from '@angular/cdk/platform';
 import {RippleConfig, RippleRenderer} from './ripple-renderer';
 import {RippleRef} from './ripple-ref';
 
+/** Configurable options for `matRipple`. */
 export interface RippleGlobalOptions {
   /**
    * Whether ripples should be disabled. Ripples can be still launched manually by using

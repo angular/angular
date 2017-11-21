@@ -22,7 +22,9 @@ import {CanColor, CanDisable, mixinColor, mixinDisabled} from '@angular/material
 import {Subject} from 'rxjs/Subject';
 
 
+/** Represents an event fired on an individual `mat-chip`. */
 export interface MatChipEvent {
+  /** The chip the event was fired on. */
   chip: MatChip;
 }
 

@@ -15,6 +15,11 @@ export const MAT_PLACEHOLDER_GLOBAL_OPTIONS =
 /** Type for the available floatPlaceholder values. */
 export type FloatPlaceholderType = 'always' | 'never' | 'auto';
 
+/** Configurable options for floating placeholders. */
 export interface PlaceholderOptions {
+  /**
+   * Whether the placeholder should float `always`, `never`, or `auto` (only when necessary).
+   * Default behavior is assumed to be `auto`.
+   */
   float?: FloatPlaceholderType;
 }
