@@ -96,8 +96,14 @@ import {SelectOverviewExample} from './select-overview/select-overview-example';
 import {SelectPanelClassExample} from './select-panel-class/select-panel-class-example';
 import {SelectResetExample} from './select-reset/select-reset-example';
 import {SelectValueBindingExample} from './select-value-binding/select-value-binding-example';
-import {SidenavFabExample} from './sidenav-fab/sidenav-fab-example';
+import {SidenavDisableCloseExample} from './sidenav-disable-close/sidenav-disable-close-example';
+import {SidenavDrawerOverviewExample} from './sidenav-drawer-overview/sidenav-drawer-overview-example';
+import {SidenavFixedExample} from './sidenav-fixed/sidenav-fixed-example';
+import {SidenavModeExample} from './sidenav-mode/sidenav-mode-example';
+import {SidenavOpenCloseExample} from './sidenav-open-close/sidenav-open-close-example';
 import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-example';
+import {SidenavPositionExample} from './sidenav-position/sidenav-position-example';
+import {SidenavResponsiveExample} from './sidenav-responsive/sidenav-responsive-example';
 import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
 import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
 import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
@@ -620,15 +626,51 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
-  'sidenav-fab': {
-    title: 'Sidenav with a FAB',
-    component: SidenavFabExample,
+  'sidenav-disable-close': {
+    title: 'Sidenav with custom escape and backdrop click behavior ',
+    component: SidenavDisableCloseExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sidenav-drawer-overview': {
+    title: 'Basic drawer ',
+    component: SidenavDrawerOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sidenav-fixed': {
+    title: 'Fixed sidenav ',
+    component: SidenavFixedExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sidenav-mode': {
+    title: 'Sidenav with configurable mode ',
+    component: SidenavModeExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sidenav-open-close': {
+    title: 'Sidenav open & close behavior ',
+    component: SidenavOpenCloseExample,
     additionalFiles: null,
     selectorName: null
   },
   'sidenav-overview': {
-    title: 'Basic sidenav',
+    title: 'Basic sidenav ',
     component: SidenavOverviewExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sidenav-position': {
+    title: 'Implicit main content with two sidenavs ',
+    component: SidenavPositionExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'sidenav-responsive': {
+    title: 'Responsive sidenav ',
+    component: SidenavResponsiveExample,
     additionalFiles: null,
     selectorName: null
   },
@@ -850,8 +892,14 @@ export const EXAMPLE_LIST = [
   SelectPanelClassExample,
   SelectResetExample,
   SelectValueBindingExample,
-  SidenavFabExample,
+  SidenavDisableCloseExample,
+  SidenavDrawerOverviewExample,
+  SidenavFixedExample,
+  SidenavModeExample,
+  SidenavOpenCloseExample,
   SidenavOverviewExample,
+  SidenavPositionExample,
+  SidenavResponsiveExample,
   SlideToggleConfigurableExample,
   SlideToggleFormsExample,
   SlideToggleOverviewExample,
