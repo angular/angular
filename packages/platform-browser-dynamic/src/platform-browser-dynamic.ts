@@ -15,6 +15,7 @@ import {CachedResourceLoader} from './resource_loader/resource_loader_cache';
 
 export * from './private_export';
 export {VERSION} from './version';
+export {JitCompilerFactory} from './compiler_factory';
 
 /**
  * @experimental
