@@ -534,6 +534,12 @@
             "rev": true,
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
+          },
+          "loiane-angulartraining": {
+            "desc": "Free Angular training in Portuguese.",
+            "rev": true,
+            "title": "Loiane Training (Português)",
+            "url": "http://loiane.training/"
           }
         }
       },
