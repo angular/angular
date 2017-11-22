@@ -175,6 +175,22 @@ describe('diagnostics', () => {
       });
     });
 
+    // Issue #19406
+    it('should allow empty template', () => {
+      const appComponent = `
+        import { Component } from '@angular/core';
+
+        @Component({
+          template : '',
+        })
+        export class AppComponent {}
+      `;
+      const fileName = '/app/app.component.ts';
+      mockHost.override(fileName, appComponent);
+      const diagnostics = ngService.getDiagnostics(fileName);
+      expect(diagnostics).toEqual([]);
+    });
+
     // Issue #15460
     it('should be able to find members defined on an ancestor type', () => {
       const app_component = `
