@@ -80,6 +80,38 @@ export function main() {
            flushMicrotasks();
            expect(cmp.status).toEqual('done');
          }));
+
+      it('should always run .start callbacks before .done callbacks even for noop animations',
+         fakeAsync(() => {
+           @Component({
+             selector: 'cmp',
+             template: `
+                <div [@myAnimation]="exp" (@myAnimation.start)="cb('start')" (@myAnimation.done)="cb('done')"></div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition('* => go', []),
+                   ]),
+             ]
+           })
+           class Cmp {
+             exp: any = false;
+             log: string[] = [];
+             cb(status: string) { this.log.push(status); }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'go';
+           fixture.detectChanges();
+           expect(cmp.log).toEqual([]);
+
+           flushMicrotasks();
+           expect(cmp.log).toEqual(['start', 'done']);
+         }));
     });
 
     describe('component fixture integration', () => {
