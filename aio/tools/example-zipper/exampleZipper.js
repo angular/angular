@@ -62,7 +62,7 @@ class ExampleZipper {
     let exampleZipName;
     const exampleType = this._getExampleType(path.join(sourceDirName, relativeDirName));
     if (relativeDirName.indexOf('/') !== -1) { // Special example
-      exampleZipName = relativeDirName.split('/')[0];
+      exampleZipName = relativeDirName.split('/').join('-');
     } else {
       exampleZipName = jsonFileName.replace(/(plnkr|zipper).json/, relativeDirName);
     }
