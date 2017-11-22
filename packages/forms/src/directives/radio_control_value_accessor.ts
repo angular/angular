@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2, SimpleChanges, forwardRef} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
@@ -107,6 +107,14 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   constructor(
       private _renderer: Renderer2, private _elementRef: ElementRef,
       private _registry: RadioControlRegistry, private _injector: Injector) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const nameChange = changes.formControlName;
+    if (nameChange && !this.name) {
+      this.name = nameChange.currentValue;
+      this._renderer.setProperty(this._elementRef.nativeElement, 'name', this.name);
+    }
+  }
 
   ngOnInit(): void {
     this._control = this._injector.get(NgControl);

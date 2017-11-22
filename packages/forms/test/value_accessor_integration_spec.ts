@@ -766,6 +766,20 @@ export function main() {
           expect(inputs[1].nativeElement.checked).toBe(true);
         });
 
+        it('should reflect formControl name to name attribute', () => {
+          const fixture = initTest(FormControlRadioButtons);
+          const foodCtrl = new FormControl('fish');
+          const drinkCtrl = new FormControl('sprite');
+          fixture.componentInstance.form = new FormGroup({'food': foodCtrl, 'drink': drinkCtrl});
+          fixture.detectChanges();
+
+          const inputs = fixture.debugElement.queryAll(By.css('input'));
+          expect(inputs[0].nativeElement.name).toEqual('food');
+          expect(inputs[1].nativeElement.name).toEqual('food');
+          expect(inputs[2].nativeElement.name).toEqual('drink');
+          expect(inputs[3].nativeElement.name).toEqual('drink');
+        });
+
       });
 
       describe('in template-driven forms', () => {
