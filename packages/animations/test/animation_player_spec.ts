@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {fakeAsync} from '@angular/core/testing';
-
 import {flushMicrotasks} from '../../core/testing/src/fake_async';
 import {NoopAnimationPlayer} from '../src/players/animation_player';
+import {scheduleMicroTask} from '../src/util';
 
 export function main() {
   describe('NoopAnimationPlayer', function() {
@@ -60,6 +60,21 @@ export function main() {
 
          player.finish();
          expect(log).toEqual(['started', 'done']);
+
+         flushMicrotasks();
+         expect(log).toEqual(['started', 'done']);
+       }));
+
+    it('should fire off start callbacks before triggering the finish callback', fakeAsync(() => {
+         const log: string[] = [];
+
+         const player = new NoopAnimationPlayer();
+         player.onStart(() => { scheduleMicroTask(() => log.push('started')); });
+         player.onDone(() => log.push('done'));
+         expect(log).toEqual([]);
+
+         player.play();
+         expect(log).toEqual([]);
 
          flushMicrotasks();
          expect(log).toEqual(['started', 'done']);
