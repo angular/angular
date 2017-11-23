@@ -573,37 +573,61 @@ describe('DocViewerComponent', () => {
       expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
     });
 
-    it('should return an observable', done => {
-      docViewer.swapViews().subscribe(done, done.fail);
-    });
+    [true, false].forEach(animationsEnabled => {
+      describe(`(animationsEnabled: ${animationsEnabled})`, () => {
+        beforeEach(() => DocViewerComponent.animationsEnabled = animationsEnabled);
+        afterEach(() => DocViewerComponent.animationsEnabled = true);
 
-    it('should swap the views', async () => {
-      await doSwapViews();
+        it('should return an observable', done => {
+          docViewer.swapViews().subscribe(done, done.fail);
+        });
 
-      expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
-      expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
-      expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
-      expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
+        it('should swap the views', async () => {
+          await doSwapViews();
 
-      await doSwapViews();
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+          expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
+          expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
 
-      expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
-      expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
-      expect(docViewer.currViewContainer).toBe(oldCurrViewContainer);
-      expect(docViewer.nextViewContainer).toBe(oldNextViewContainer);
-    });
+          await doSwapViews();
 
-    it('should empty the previous view', async () => {
-      await doSwapViews();
+          expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
+          expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
+          expect(docViewer.currViewContainer).toBe(oldCurrViewContainer);
+          expect(docViewer.nextViewContainer).toBe(oldNextViewContainer);
+        });
 
-      expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
-      expect(docViewer.nextViewContainer.innerHTML).toBe('');
+        it('should empty the previous view', async () => {
+          await doSwapViews();
 
-      docViewer.nextViewContainer.innerHTML = 'Next view 2';
-      await doSwapViews();
+          expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
+          expect(docViewer.nextViewContainer.innerHTML).toBe('');
 
-      expect(docViewer.currViewContainer.innerHTML).toBe('Next view 2');
-      expect(docViewer.nextViewContainer.innerHTML).toBe('');
+          docViewer.nextViewContainer.innerHTML = 'Next view 2';
+          await doSwapViews();
+
+          expect(docViewer.currViewContainer.innerHTML).toBe('Next view 2');
+          expect(docViewer.nextViewContainer.innerHTML).toBe('');
+        });
+
+        if (animationsEnabled) {
+          // Without animations, the views are swapped synchronously,
+          // so there is no need (or way) to abort.
+          it('should abort swapping if the returned observable is unsubscribed from', async () => {
+            docViewer.swapViews().subscribe().unsubscribe();
+            await doSwapViews();
+
+            // Since the first call was cancelled, only one swapping should have taken place.
+            expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+            expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+            expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
+            expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
+            expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
+            expect(docViewer.nextViewContainer.innerHTML).toBe('');
+          });
+        }
+      });
     });
   });
 });
