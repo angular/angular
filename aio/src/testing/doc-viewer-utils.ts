@@ -18,10 +18,13 @@ import { MockLogger } from 'testing/logger.service';
 
 export class TestDocViewerComponent extends DocViewerComponent {
   embeddedComponentRefs: ComponentRef<any>[];
+  currViewContainer: HTMLElement;
+  nextViewContainer: HTMLElement;
 
   addTitleAndToc(docId: string): void { return null as any; }
   destroyEmbeddedComponents(): void { return null as any; }
   render(doc: DocumentContents): Observable<void> { return null as any; }
+  swapViews(): Observable<void> { return null as any; }
 }
 
 
