@@ -17,6 +17,12 @@
   dependencies:
     source-map "^0.5.6"
 
+"@angular-devkit/core@0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-0.0.21.tgz#e2ba4ac0a4e1156f884c083b15eb1c26ddfb2ba8"
+  dependencies:
+    source-map "^0.5.6"
+
 "@angular-devkit/schematics@~0.0.34":
   version "0.0.34"
   resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-0.0.34.tgz#c3ef61b0e49e585d9982f2828e9a67b3879a6b1b"
@@ -38,15 +44,15 @@
   dependencies:
     tslib "^1.7.1"
 
-"@angular/cli@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.5.0.tgz#2abc3ff1648d54ad4a14f82f9d517f371370406c"
+"@angular/cli@^1.6.0-rc.0":
+  version "1.6.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.6.0-rc.0.tgz#e6bf974dcb2263e026d3d4ffa4480e4e78f9c7cf"
   dependencies:
     "@angular-devkit/build-optimizer" "~0.0.31"
     "@angular-devkit/schematics" "~0.0.34"
     "@ngtools/json-schema" "1.1.0"
-    "@ngtools/webpack" "1.8.0"
-    "@schematics/angular" "~0.1.0"
+    "@ngtools/webpack" "1.9.0-rc.0"
+    "@schematics/angular" "~0.1.5"
     autoprefixer "^6.5.3"
     chalk "~2.2.0"
     circular-dependency-plugin "^3.0.0"
@@ -70,13 +76,14 @@
     license-webpack-plugin "^1.0.0"
     lodash "^4.11.1"
     memory-fs "^0.4.1"
+    minimatch "^3.0.4"
     node-modules-path "^1.0.0"
     nopt "^4.0.1"
     opn "~5.1.0"
     portfinder "~1.0.12"
     postcss-custom-properties "^6.1.0"
-    postcss-loader "^1.3.3"
-    postcss-url "^5.1.2"
+    postcss-loader "^2.0.8"
+    postcss-url "^7.1.2"
     raw-loader "^0.5.1"
     resolve "^1.1.7"
     rxjs "^5.5.2"
@@ -254,9 +261,9 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@ngtools/json-schema/-/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"
 
-"@ngtools/webpack@1.8.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.8.0.tgz#443204e016aa3a287544eacadb4c95964ae6e2c4"
+"@ngtools/webpack@1.9.0-rc.0":
+  version "1.9.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-1.9.0-rc.0.tgz#632e91c0e888e20c717eabeef58107e24d4ed663"
   dependencies:
     chalk "~2.2.0"
     enhanced-resolve "^3.1.0"
@@ -266,11 +273,11 @@
     source-map "^0.5.6"
     tree-kill "^1.0.0"
 
-"@schematics/angular@~0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.1.0.tgz#cd6c445ead33144a532523d1ccac68c38a2b0050"
+"@schematics/angular@~0.1.5":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.1.7.tgz#2306aeec118ca185e180882eff54f5116de4ef05"
   dependencies:
-    "@angular-devkit/core" "0.0.20"
+    "@angular-devkit/core" "0.0.21"
 
 "@types/core-js@^0.9.41":
   version "0.9.43"
@@ -704,7 +711,7 @@ async-foreach@^0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/async-foreach/-/async-foreach-0.1.3.tgz#36121f845c0578172de419a97dbeb1d16ec34542"
 
-async@0.2.x, async@~0.2.6:
+async@0.2.x:
   version "0.2.10"
   resolved "https://registry.yarnpkg.com/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
 
@@ -1291,7 +1298,7 @@ chalk@^1.0.0, chalk@^1.1.0, chalk@^1.1.1, chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
-chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0:
+chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.3.0.tgz#b5ea48efc9c1793dccc9b4767c93914d3f2d52ba"
   dependencies:
@@ -2093,6 +2100,10 @@ csv-streamify@^3.0.4:
   dependencies:
     through2 "2.0.1"
 
+cuint@latest:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/cuint/-/cuint-0.2.2.tgz#408086d409550c2631155619e9fa7bcadc3b991b"
+
 currently-unhandled@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/currently-unhandled/-/currently-unhandled-0.4.1.tgz#988df33feab191ef799a61369dd76c17adf957ea"
@@ -2346,14 +2357,6 @@ diffie-hellman@^5.0.0:
     bn.js "^4.1.0"
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
-
-directory-encoder@^0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/directory-encoder/-/directory-encoder-0.7.2.tgz#59b4e2aa4f25422f6c63b527b462f5e2d0dd2c58"
-  dependencies:
-    fs-extra "^0.23.1"
-    handlebars "^1.3.0"
-    img-stats "^0.5.2"
 
 dns-equal@^1.0.0:
   version "1.0.0"
@@ -3674,14 +3677,6 @@ handle-thing@^1.2.5:
   version "1.2.5"
   resolved "https://registry.yarnpkg.com/handle-thing/-/handle-thing-1.2.5.tgz#fd7aad726bf1a5fd16dfc29b2f7a6601d27139c4"
 
-handlebars@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-1.3.0.tgz#9e9b130a93e389491322d975cf3ec1818c37ce34"
-  dependencies:
-    optimist "~0.3"
-  optionalDependencies:
-    uglify-js "~2.3"
-
 handlebars@^4.0.3:
   version "4.0.11"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.11.tgz#630a35dfe0294bc281edae6ffc5d329fc7982dcc"
@@ -4122,12 +4117,6 @@ image-size@^0.5.1, image-size@~0.5.0:
 image-ssim@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/image-ssim/-/image-ssim-0.2.0.tgz#83b42c7a2e6e4b85505477fe6917f5dbc56420e5"
-
-img-stats@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/img-stats/-/img-stats-0.5.2.tgz#c203496c42f2d9eb2e5ab8232fa756bab32c9e2b"
-  dependencies:
-    xmldom "^0.1.19"
 
 immediate@~3.0.5:
   version "3.0.6"
@@ -4674,7 +4663,7 @@ jpeg-js@0.1.2, jpeg-js@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/jpeg-js/-/jpeg-js-0.1.2.tgz#135b992c0575c985cfa0f494a3227ed238583ece"
 
-js-base64@^2.1.5, js-base64@^2.1.8, js-base64@^2.1.9:
+js-base64@^2.1.8, js-base64@^2.1.9:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.3.2.tgz#a79a923666372b580f8e27f51845c6f7e8fbfbaf"
 
@@ -5863,7 +5852,7 @@ object-assign@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-3.0.0.tgz#9bedd5ca0897949bca47e7ff408062d549f587f2"
 
-object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1.1:
+object-assign@^4.0.1, object-assign@^4.1.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
 
@@ -5936,12 +5925,6 @@ optimist@0.6.x, optimist@^0.6.1, optimist@~0.6.0, optimist@~0.6.1:
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
   dependencies:
     minimist "~0.0.1"
-    wordwrap "~0.0.2"
-
-optimist@~0.3, optimist@~0.3.5:
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.3.7.tgz#c90941ad59e4273328923074d2cf2e7cbc6ec0d9"
-  dependencies:
     wordwrap "~0.0.2"
 
 optionator@^0.8.1, optionator@^0.8.2:
@@ -6383,14 +6366,14 @@ postcss-load-plugins@^2.3.0:
     cosmiconfig "^2.1.1"
     object-assign "^4.1.0"
 
-postcss-loader@^1.3.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/postcss-loader/-/postcss-loader-1.3.3.tgz#a621ea1fa29062a83972a46f54486771301916eb"
+postcss-loader@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/postcss-loader/-/postcss-loader-2.0.8.tgz#8c67ddb029407dfafe684a406cfc16bad2ce0814"
   dependencies:
-    loader-utils "^1.0.2"
-    object-assign "^4.1.1"
-    postcss "^5.2.15"
+    loader-utils "^1.1.0"
+    postcss "^6.0.0"
     postcss-load-config "^1.2.0"
+    schema-utils "^0.3.0"
 
 postcss-merge-idents@^2.1.5:
   version "2.1.7"
@@ -6548,17 +6531,15 @@ postcss-unique-selectors@^2.0.2:
     postcss "^5.0.4"
     uniqs "^2.0.0"
 
-postcss-url@^5.1.2:
-  version "5.1.2"
-  resolved "https://registry.yarnpkg.com/postcss-url/-/postcss-url-5.1.2.tgz#98b3165be8d592471cb0caadde2c0d1f832f133e"
+postcss-url@^7.1.2:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/postcss-url/-/postcss-url-7.2.1.tgz#bf47ff1b5395538567cea19ef3241a70fb925f5c"
   dependencies:
-    directory-encoder "^0.7.2"
-    js-base64 "^2.1.5"
-    mime "^1.2.11"
-    minimatch "^3.0.0"
+    mime "^1.4.1"
+    minimatch "^3.0.4"
     mkdirp "^0.5.0"
-    path-is-absolute "^1.0.0"
-    postcss "^5.0.0"
+    postcss "^6.0.1"
+    xxhashjs "^0.2.1"
 
 postcss-value-parser@^3.0.1, postcss-value-parser@^3.0.2, postcss-value-parser@^3.1.1, postcss-value-parser@^3.1.2, postcss-value-parser@^3.2.3, postcss-value-parser@^3.3.0:
   version "3.3.0"
@@ -6572,7 +6553,7 @@ postcss-zindex@^2.0.1:
     postcss "^5.0.4"
     uniqs "^2.0.0"
 
-postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0.14, postcss@^5.0.16, postcss@^5.0.2, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.0.6, postcss@^5.0.8, postcss@^5.2.15, postcss@^5.2.16:
+postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.13, postcss@^5.0.14, postcss@^5.0.16, postcss@^5.0.2, postcss@^5.0.4, postcss@^5.0.5, postcss@^5.0.6, postcss@^5.0.8, postcss@^5.2.16:
   version "5.2.18"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-5.2.18.tgz#badfa1497d46244f6390f58b319830d9107853c5"
   dependencies:
@@ -6580,6 +6561,14 @@ postcss@^5.0.0, postcss@^5.0.10, postcss@^5.0.11, postcss@^5.0.12, postcss@^5.0.
     js-base64 "^2.1.9"
     source-map "^0.5.6"
     supports-color "^3.2.3"
+
+postcss@^6.0.0:
+  version "6.0.14"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-6.0.14.tgz#5534c72114739e75d0afcf017db853099f562885"
+  dependencies:
+    chalk "^2.3.0"
+    source-map "^0.6.1"
+    supports-color "^4.4.0"
 
 postcss@^6.0.1, postcss@^6.0.13:
   version "6.0.13"
@@ -7729,7 +7718,7 @@ source-map-support@^0.4.0, source-map-support@^0.4.1, source-map-support@^0.4.15
   dependencies:
     source-map "^0.5.6"
 
-source-map@0.1.x, source-map@~0.1.7:
+source-map@0.1.x:
   version "0.1.43"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.1.43.tgz#c24bc146ca517c1471f5dacbe2571b2b7f9e3346"
   dependencies:
@@ -8477,14 +8466,6 @@ uglify-js@^2.6, uglify-js@^2.8.29:
     yargs "~3.10.0"
   optionalDependencies:
     uglify-to-browserify "~1.0.0"
-
-uglify-js@~2.3:
-  version "2.3.6"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.3.6.tgz#fa0984770b428b7a9b2a8058f46355d14fef211a"
-  dependencies:
-    async "~0.2.6"
-    optimist "~0.3.5"
-    source-map "~0.1.7"
 
 uglify-to-browserify@~1.0.0:
   version "1.0.2"
@@ -9299,10 +9280,6 @@ xmlbuilder@>=1.0.0, xmlbuilder@~9.0.1:
   version "9.0.4"
   resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-9.0.4.tgz#519cb4ca686d005a8420d3496f3f0caeecca580f"
 
-xmldom@^0.1.19:
-  version "0.1.27"
-  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
-
 xmlhttprequest-ssl@1.5.3:
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.5.3.tgz#185a888c04eca46c3e4070d99f7b49de3528992d"
@@ -9310,6 +9287,12 @@ xmlhttprequest-ssl@1.5.3:
 xtend@^4.0.0, xtend@^4.0.1, xtend@~4.0.0, xtend@~4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.1.tgz#a5c6d532be656e23db820efb943a1f04998d63af"
+
+xxhashjs@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/xxhashjs/-/xxhashjs-0.2.1.tgz#9bbe9be896142976dfa34c061b2d068c43d30de0"
+  dependencies:
+    cuint latest
 
 y18n@^3.2.0, y18n@^3.2.1:
   version "3.2.1"
