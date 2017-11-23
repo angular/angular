@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
+import { timer } from 'rxjs/observable/timer';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/switchMap';
@@ -25,6 +26,8 @@ const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElemen
   // encapsulation: ViewEncapsulation.Native
 })
 export class DocViewerComponent implements DoCheck, OnDestroy {
+  // Enable/Disable view transition animations.
+  static animationsEnabled = true;
 
   private hostElement: HTMLElement;
 
@@ -138,9 +141,32 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
    *  components.)
    */
   protected swapViews(): Observable<void> {
-    // Placeholders for actual animations.
-    const animateLeave = (elem: HTMLElement) => this.void$;
-    const animateEnter = (elem: HTMLElement) => this.void$;
+    const raf$ = new Observable<void>(subscriber => {
+      const rafId = requestAnimationFrame(() => {
+        subscriber.next();
+        subscriber.complete();
+      });
+      return () => cancelAnimationFrame(rafId);
+    });
+
+    const animateProp =
+        (elem: HTMLElement, prop: string, from: string, to: string, duration = 333) => {
+          elem.style.transition = '';
+          return !DocViewerComponent.animationsEnabled
+              ? this.void$.do(() => elem.style[prop] = to)
+              : this.void$
+                    // In order to ensure that the `from` value will be applied immediately (i.e.
+                    // without transition) and that the `to` value will be affected by the
+                    // `transition` style, we need to ensure an animation frame has passed between
+                    // setting each style.
+                    .switchMap(() => raf$).do(() => elem.style[prop] = from)
+                    .switchMap(() => raf$).do(() => elem.style.transition = `all ${duration}ms ease-in-out`)
+                    .switchMap(() => raf$).do(() => elem.style[prop] = to)
+                    .switchMap(() => timer(duration)).switchMap(() => this.void$);
+        };
+
+    const animateLeave = (elem: HTMLElement) => animateProp(elem, 'opacity', '1', '0.25');
+    const animateEnter = (elem: HTMLElement) => animateProp(elem, 'opacity', '0.25', '1');
 
     let done$ = this.void$;
 
