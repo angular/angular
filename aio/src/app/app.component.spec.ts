@@ -56,12 +56,17 @@ describe('AppComponent', () => {
     tocService = de.injector.get(TocService);
   };
 
+
   describe('with proper DocViewer', () => {
 
     beforeEach(() => {
+      DocViewerComponent.animationsEnabled = false;
+
       createTestingModule('a/b');
       initializeTest();
     });
+
+    afterEach(() => DocViewerComponent.animationsEnabled = true);
 
     it('should create', () => {
       expect(component).toBeDefined();
@@ -408,7 +413,6 @@ describe('AppComponent', () => {
     });
 
     describe('currentDocument', () => {
-
       it('should display a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
