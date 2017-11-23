@@ -33,6 +33,8 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
   private docContents$ = new EventEmitter<DocumentContents>();
 
   protected embeddedComponentRefs: ComponentRef<any>[] = [];
+  protected currViewContainer: HTMLElement = document.createElement('div');
+  protected nextViewContainer: HTMLElement = document.createElement('div');
 
   @Input()
   set doc(newDoc: DocumentContents) {
@@ -57,6 +59,12 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     // Security: the initialDocViewerContent comes from the prerendered DOM and is considered to be secure
     this.hostElement.innerHTML = initialDocViewerContent;
 
+    if (this.hostElement.firstElementChild) {
+      this.currViewContainer = this.hostElement.firstElementChild as HTMLElement;
+    } else {
+      this.hostElement.appendChild(this.currViewContainer);
+    }
+
     this.onDestroy$.subscribe(() => this.destroyEmbeddedComponents());
     this.docContents$
         .do(() => this.destroyEmbeddedComponents())
@@ -79,7 +87,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
    */
   protected addTitleAndToc(docId: string): void {
     this.tocService.reset();
-    const titleEl = this.hostElement.querySelector('h1');
+    const titleEl = this.currViewContainer.querySelector('h1');
     let title = '';
 
     // Only create TOC for docs with an <h1> title
@@ -87,7 +95,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     if (titleEl) {
       title = (typeof titleEl.innerText === 'string') ? titleEl.innerText : titleEl.textContent;
       if (!/(no-toc|notoc)/i.test(titleEl.className)) {
-        this.tocService.genToc(this.hostElement, docId);
+        this.tocService.genToc(this.currViewContainer, docId);
         titleEl.insertAdjacentHTML('afterend', '<aio-toc class="embedded"></aio-toc>');
       }
     }
@@ -111,15 +119,48 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
         .do(() => {
           // Security: `doc.contents` is always authored by the documentation team
           //           and is considered to be safe.
-          this.hostElement.innerHTML = doc.contents || '';
-          this.addTitleAndToc(doc.id);
+          this.nextViewContainer.innerHTML = doc.contents || '';
         })
-        .switchMap(() => this.embedComponentsService.embedInto(this.hostElement))
+        .switchMap(() => this.embedComponentsService.embedInto(this.nextViewContainer))
         .do(componentRefs => this.embeddedComponentRefs = componentRefs)
-        .switchMap(() => this.void$)
+        .switchMap(() => this.swapViews())
+        .do(() => this.addTitleAndToc(doc.id))
         .catch(err => {
+          this.nextViewContainer.innerHTML = '';
           this.logger.error(`[DocViewer]: Error preparing document '${doc.id}'.`, err);
           return this.void$;
+        });
+  }
+
+  /**
+   * Swap the views, removing `currViewContainer` and inserting `nextViewContainer`.
+   * (At this point all content should be ready, including having loaded and instantiated embedded
+   *  components.)
+   */
+  protected swapViews(): Observable<void> {
+    // Placeholders for actual animations.
+    const animateLeave = (elem: HTMLElement) => this.void$;
+    const animateEnter = (elem: HTMLElement) => this.void$;
+
+    let done$ = this.void$;
+
+    if (this.currViewContainer.parentElement) {
+      done$ = done$
+          // Remove the current view from the viewer.
+          .switchMap(() => animateLeave(this.currViewContainer))
+          .do(() => this.currViewContainer.parentElement.removeChild(this.currViewContainer));
+    }
+
+    return done$
+        // Insert the next view into the viewer.
+        .do(() => this.hostElement.appendChild(this.nextViewContainer))
+        .switchMap(() => animateEnter(this.nextViewContainer))
+        // Update the view references and clean up unused nodes.
+        .do(() => {
+          const prevViewContainer = this.currViewContainer;
+          this.currViewContainer = this.nextViewContainer;
+          this.nextViewContainer = prevViewContainer;
+          this.nextViewContainer.innerHTML = '';  // Empty to release memory.
         });
   }
 }
