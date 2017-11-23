@@ -196,7 +196,7 @@ describe('DocViewerComponent', () => {
     const DOC_WITH_HIDDEN_H1_CONTENT = '<h1><i style="visibility: hidden">link</i>Features</h1>Some content';
 
     const tryDoc = (contents: string, docId = '') => {
-      docViewerEl.innerHTML = contents;
+      docViewer.currViewContainer.innerHTML = contents;
       docViewer.addTitleAndToc(docId);
     };
 
@@ -229,9 +229,10 @@ describe('DocViewerComponent', () => {
       });
 
       it('should fall back to `textContent` if `innerText` is not available', () => {
-        const querySelector_ = docViewerEl.querySelector;
-        spyOn(docViewerEl, 'querySelector').and.callFake((selector: string) => {
-          const elem = querySelector_.call(docViewerEl, selector);
+        const viewContainer = docViewer.currViewContainer;
+        const querySelector_ = viewContainer.querySelector;
+        spyOn(viewContainer, 'querySelector').and.callFake((selector: string) => {
+          const elem = querySelector_.call(viewContainer, selector);
           return Object.defineProperties(elem, {
             innerText: {value: undefined},
             textContent: {value: 'Text Content'},
@@ -244,9 +245,10 @@ describe('DocViewerComponent', () => {
       });
 
       it('should still use `innerText` if available but empty', () => {
-        const querySelector_ = docViewerEl.querySelector;
-        spyOn(docViewerEl, 'querySelector').and.callFake((selector: string) => {
-          const elem = querySelector_.call(docViewerEl, selector);
+        const viewContainer = docViewer.currViewContainer;
+        const querySelector_ = viewContainer.querySelector;
+        spyOn(viewContainer, 'querySelector').and.callFake((selector: string) => {
+          const elem = querySelector_.call(viewContainer, selector);
           return Object.defineProperties(elem, {
             innerText: { value: '' },
             textContent: { value: 'Text Content' }
@@ -273,7 +275,7 @@ describe('DocViewerComponent', () => {
         expect(tocEl).toBeTruthy();
         expect(tocEl.classList.contains('embedded')).toBe(true);
         expect(tocService.genToc).toHaveBeenCalledTimes(1);
-        expect(tocService.genToc).toHaveBeenCalledWith(docViewerEl, 'foo');
+        expect(tocService.genToc).toHaveBeenCalledWith(docViewer.currViewContainer, 'foo');
       });
 
       it('should have no ToC if there is a `.no-toc` `<h1>` heading', () => {
@@ -301,7 +303,7 @@ describe('DocViewerComponent', () => {
         tryDoc(DOC_WITH_H1, 'foo');
         expect(tocService.reset).toHaveBeenCalledTimes(1);
         expect(tocService.reset).toHaveBeenCalledBefore(tocService.genToc);
-        expect(tocService.genToc).toHaveBeenCalledWith(docViewerEl, 'foo');
+        expect(tocService.genToc).toHaveBeenCalledWith(docViewer.currViewContainer, 'foo');
 
         tocService.genToc.calls.reset();
         tryDoc(DOC_WITH_NO_TOC_H1, 'bar');
@@ -351,6 +353,7 @@ describe('DocViewerComponent', () => {
   describe('#render()', () => {
     let addTitleAndTocSpy: jasmine.Spy;
     let embedIntoSpy: jasmine.Spy;
+    let swapViewsSpy: jasmine.Spy;
 
     const doRender = (contents: string | null, id = 'foo') =>
       new Promise<void>((resolve, reject) =>
@@ -361,6 +364,7 @@ describe('DocViewerComponent', () => {
 
       addTitleAndTocSpy = spyOn(docViewer, 'addTitleAndToc');
       embedIntoSpy = embedComponentsService.embedInto.and.returnValue(of([]));
+      swapViewsSpy = spyOn(docViewer, 'swapViews').and.returnValue(of(undefined));
     });
 
     it('should return an `Observable`', () => {
@@ -368,40 +372,47 @@ describe('DocViewerComponent', () => {
     });
 
     describe('(contents, title, ToC)', () => {
+      beforeEach(() => swapViewsSpy.and.callThrough());
+
       it('should display the document contents', async () => {
         const contents = '<h1>Hello,</h1> <div>world!</div>';
         await doRender(contents);
 
-        expect(docViewerEl.innerHTML).toBe(contents);
+        expect(docViewerEl.innerHTML).toContain(contents);
+        expect(docViewerEl.textContent).toBe('Hello, world!');
       });
 
       it('should display nothing if the document has no contents', async () => {
-        docViewerEl.innerHTML = 'Test';
-        await doRender('');
-        expect(docViewerEl.innerHTML).toBe('');
+        docViewer.currViewContainer.innerHTML = 'Test';
+        expect(docViewerEl.textContent).toBe('Test');
 
-        docViewerEl.innerHTML = 'Test';
+        await doRender('');
+        expect(docViewerEl.textContent).toBe('');
+
+        docViewer.currViewContainer.innerHTML = 'Test';
+        expect(docViewerEl.textContent).toBe('Test');
+
         await doRender(null);
-        expect(docViewerEl.innerHTML).toBe('');
+        expect(docViewerEl.textContent).toBe('');
       });
 
       it('should set the title and ToC (after the content has been set)', async () => {
-        addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.innerHTML).toBe('Foo content'));
+        addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.textContent).toBe('Foo content'));
         await doRender('Foo content', 'foo');
         expect(addTitleAndTocSpy).toHaveBeenCalledTimes(1);
         expect(addTitleAndTocSpy).toHaveBeenCalledWith('foo');
 
-        addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.innerHTML).toBe('Bar content'));
+        addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.textContent).toBe('Bar content'));
         await doRender('Bar content', 'bar');
         expect(addTitleAndTocSpy).toHaveBeenCalledTimes(2);
         expect(addTitleAndTocSpy).toHaveBeenCalledWith('bar');
 
-        addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.innerHTML).toBe(''));
+        addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.textContent).toBe(''));
         await doRender('', 'baz');
         expect(addTitleAndTocSpy).toHaveBeenCalledTimes(3);
         expect(addTitleAndTocSpy).toHaveBeenCalledWith('baz');
 
-        addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.innerHTML).toBe('Qux content'));
+        addTitleAndTocSpy.and.callFake(() => expect(docViewerEl.textContent).toBe('Qux content'));
         await doRender('Qux content', 'qux');
         expect(addTitleAndTocSpy).toHaveBeenCalledTimes(4);
         expect(addTitleAndTocSpy).toHaveBeenCalledWith('qux');
@@ -412,7 +423,7 @@ describe('DocViewerComponent', () => {
       it('should embed components', async () => {
         await doRender('Some content');
         expect(embedIntoSpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).toHaveBeenCalledWith(docViewerEl);
+        expect(embedIntoSpy).toHaveBeenCalledWith(docViewer.nextViewContainer);
       });
 
       it('should attempt to embed components even if the document is empty', async () => {
@@ -420,8 +431,8 @@ describe('DocViewerComponent', () => {
         await doRender(null);
 
         expect(embedIntoSpy).toHaveBeenCalledTimes(2);
-        expect(embedIntoSpy.calls.argsFor(0)).toEqual([docViewerEl]);
-        expect(embedIntoSpy.calls.argsFor(1)).toEqual([docViewerEl]);
+        expect(embedIntoSpy.calls.argsFor(0)).toEqual([docViewer.nextViewContainer]);
+        expect(embedIntoSpy.calls.argsFor(1)).toEqual([docViewer.nextViewContainer]);
       });
 
       it('should store the embedded components', async () => {
@@ -450,36 +461,149 @@ describe('DocViewerComponent', () => {
       });
     });
 
-    describe('(on error) should log the error and recover', () => {
+    describe('(swapping views)', () => {
+      it('should swap the views after creating embedded components', async () => {
+        await doRender('<div></div>');
+
+        expect(swapViewsSpy).toHaveBeenCalledTimes(1);
+        expect(embedIntoSpy).toHaveBeenCalledBefore(swapViewsSpy);
+      });
+
+      it('should still swap the views if the document is empty', async () => {
+        await doRender('');
+        expect(swapViewsSpy).toHaveBeenCalledTimes(1);
+
+        await doRender(null);
+        expect(swapViewsSpy).toHaveBeenCalledTimes(2);
+      });
+
+      it('should unsubscribe from the previous "swap" observable when unsubscribed from', () => {
+        const obs = new ObservableWithSubscriptionSpies();
+        swapViewsSpy.and.returnValue(obs);
+
+        const renderObservable = docViewer.render({contents: 'Hello, world!', id: 'foo'});
+        const subscription = renderObservable.subscribe();
+
+        expect(obs.subscribeSpy).toHaveBeenCalledTimes(1);
+        expect(obs.unsubscribeSpies[0]).not.toHaveBeenCalled();
+
+        subscription.unsubscribe();
+
+        expect(obs.subscribeSpy).toHaveBeenCalledTimes(1);
+        expect(obs.unsubscribeSpies[0]).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('(on error) should clean up, log the error and recover', () => {
       let logger: MockLogger;
 
       beforeEach(() => logger = TestBed.get(Logger));
 
-      it('when `addTitleAndToc()` fails', async () => {
-        const error = Error('Typical `addTitleAndToc()` error');
-        addTitleAndTocSpy.and.callFake(() => { throw error; });
+      it('when `EmbedComponentsService.embedInto()` fails', async () => {
+        const error = Error('Typical `embedInto()` error');
+        embedIntoSpy.and.callFake(() => {
+          expect(docViewer.nextViewContainer.innerHTML).not.toBe('');
+          throw error;
+        });
 
         await doRender('Some content', 'foo');
 
-        expect(addTitleAndTocSpy).toHaveBeenCalledTimes(1);
-        expect(embedIntoSpy).not.toHaveBeenCalled();
+        expect(embedIntoSpy).toHaveBeenCalledTimes(1);
+        expect(swapViewsSpy).not.toHaveBeenCalled();
+        expect(addTitleAndTocSpy).not.toHaveBeenCalled();
+        expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
           ['[DocViewer]: Error preparing document \'foo\'.', error],
         ]);
       });
 
-      it('when `EmbedComponentsService#embedInto()` fails', async () => {
-        const error = Error('Typical `embedInto()` error');
-        embedIntoSpy.and.callFake(() => { throw error; });
+      it('when `swapViews()` fails', async () => {
+        const error = Error('Typical `swapViews()` error');
+        swapViewsSpy.and.callFake(() => {
+          expect(docViewer.nextViewContainer.innerHTML).not.toBe('');
+          throw error;
+        });
 
         await doRender('Some content', 'bar');
 
-        expect(addTitleAndTocSpy).toHaveBeenCalledTimes(1);
         expect(embedIntoSpy).toHaveBeenCalledTimes(1);
+        expect(swapViewsSpy).toHaveBeenCalledTimes(1);
+        expect(addTitleAndTocSpy).not.toHaveBeenCalled();
+        expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
           ['[DocViewer]: Error preparing document \'bar\'.', error],
         ]);
       });
+
+      it('when `addTitleAndTocSpy()` fails', async () => {
+        const error = Error('Typical `addTitleAndToc()` error');
+        addTitleAndTocSpy.and.callFake(() => {
+          expect(docViewer.nextViewContainer.innerHTML).not.toBe('');
+          throw error;
+        });
+
+        await doRender('Some content', 'baz');
+
+        expect(embedIntoSpy).toHaveBeenCalledTimes(1);
+        expect(swapViewsSpy).toHaveBeenCalledTimes(1);
+        expect(addTitleAndTocSpy).toHaveBeenCalledTimes(1);
+        expect(docViewer.nextViewContainer.innerHTML).toBe('');
+        expect(logger.output.error).toEqual([
+          ['[DocViewer]: Error preparing document \'baz\'.', error],
+        ]);
+      });
+    });
+  });
+
+  describe('#swapViews()', () => {
+    let oldCurrViewContainer: HTMLElement;
+    let oldNextViewContainer: HTMLElement;
+
+    const doSwapViews = () => new Promise<void>((resolve, reject) =>
+      docViewer.swapViews().subscribe(resolve, reject));
+
+    beforeEach(() => {
+      oldCurrViewContainer = docViewer.currViewContainer;
+      oldNextViewContainer = docViewer.nextViewContainer;
+
+      oldCurrViewContainer.innerHTML = 'Current view';
+      oldNextViewContainer.innerHTML = 'Next view';
+
+      expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
+      expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
+    });
+
+    it('should return an observable', done => {
+      docViewer.swapViews().subscribe(done, done.fail);
+    });
+
+    it('should swap the views', async () => {
+      await doSwapViews();
+
+      expect(docViewerEl.contains(oldCurrViewContainer)).toBe(false);
+      expect(docViewerEl.contains(oldNextViewContainer)).toBe(true);
+      expect(docViewer.currViewContainer).toBe(oldNextViewContainer);
+      expect(docViewer.nextViewContainer).toBe(oldCurrViewContainer);
+
+      await doSwapViews();
+
+      expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
+      expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
+      expect(docViewer.currViewContainer).toBe(oldCurrViewContainer);
+      expect(docViewer.nextViewContainer).toBe(oldNextViewContainer);
+    });
+
+    it('should empty the previous view', async () => {
+      await doSwapViews();
+
+      expect(docViewer.currViewContainer.innerHTML).toBe('Next view');
+      expect(docViewer.nextViewContainer.innerHTML).toBe('');
+
+      docViewer.nextViewContainer.innerHTML = 'Next view 2';
+      await doSwapViews();
+
+      expect(docViewer.currViewContainer.innerHTML).toBe('Next view 2');
+      expect(docViewer.nextViewContainer.innerHTML).toBe('');
     });
   });
 });
