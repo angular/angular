@@ -6,6 +6,7 @@ set -u -e -o pipefail
 readonly thisDir=$(cd $(dirname $0); pwd)
 source ${thisDir}/_travis-fold.sh
 
+
 # Run unit tests in node
 travisFoldStart "test.unit.node"
   node ./dist/tools/tsc-watch/ node runCmdsOnly
