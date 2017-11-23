@@ -12,6 +12,7 @@ travisFoldStart "test.unit.node"
   node ./dist/tools/tsc-watch/ node runCmdsOnly
 travisFoldEnd "test.unit.node"
 
+
 # rebuild to revert files in @angular/compiler/test
 # TODO(tbosch): remove this and teach karma to serve the right files
 travisFoldStart "test.unit.rebuildHack"
