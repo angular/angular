@@ -66,6 +66,15 @@ import {HttpParams} from '../src/params';
         const body = new HttpParams({fromString: 'a=1&b=2&c=3&d=4'});
         expect(body.keys()).toEqual(['a', 'b', 'c', 'd']);
       });
+
+      it('should not duplicate parameters after multiple reads', () => {
+        let body = new HttpParams();
+        body = body.append('a', 'b');
+        body.toString();
+        body = body.append('c', 'd');
+        body.toString();
+        expect(body.toString()).toEqual('a=b&c=d');
+      });
     });
   });
 }
