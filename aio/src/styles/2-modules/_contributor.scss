@@ -72,8 +72,8 @@ aio-contributor {
     [mat-button] {
       color: $white;
       font-size: 14px;
+      line-height: 14px;
       font-weight: 500;
-      margin: 8px;
       padding: 0;
 
       &:hover {
@@ -81,12 +81,7 @@ aio-contributor {
       }
 
       &.icon {
-        min-width: 20px;
-        width: 20px;
-
-        .fa-2x {
-          font-size: 20px;
-        }
+        width: 28px;
       }
     }
   }

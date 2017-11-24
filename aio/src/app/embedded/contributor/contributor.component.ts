@@ -18,11 +18,11 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
                     </a>
                     <a *ngIf="person.twitter" mat-button class="icon"
                         href="https://twitter.com/{{person.twitter}}" target="_blank" (click)="$event.stopPropagation()">
-                        <span class="fa fa-twitter fa-2x"></span>
+                        <img src="assets/images/logos/twitter.svg">
                     </a>
                     <a *ngIf="person.website" mat-button class="icon"
                         href="{{person.website}}" target="_blank" (click)="$event.stopPropagation()">
-                        <span class="fa fa-link fa-2x"></span>
+                        <mat-icon>link</mat-icon>
                     </a>
                 </div>
             </div>
