@@ -1,5 +1,7 @@
 # Angular documentation project (https://angular.io)
 
+DUMMY CHANGE - REVERT ME
+
 Everything in this folder is part of the documentation project. This includes
 
 * the web site for displaying the documentation
