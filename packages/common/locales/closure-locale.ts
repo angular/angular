@@ -4895,6 +4895,5 @@ switch (goog.LOCALE) {
 }
 
 if (l) {
-  l[0] = goog.LOCALE;
-  registerLocaleData(l);
+  registerLocaleData(l, goog.LOCALE);
 }
