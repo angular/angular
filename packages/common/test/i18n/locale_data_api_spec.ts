@@ -10,8 +10,8 @@ import localeCaESVALENCIA from '../../locales/ca-ES-VALENCIA';
 import localeEn from '../../locales/en';
 import localeFr from '../../locales/fr';
 import localeFrCA from '../../locales/fr-CA';
-import {findLocaleData} from '../../src/i18n/locale_data_api';
 import {registerLocaleData} from '../../src/i18n/locale_data';
+import {findLocaleData} from '../../src/i18n/locale_data_api';
 
 export function main() {
   describe('locale data api', () => {
@@ -20,6 +20,8 @@ export function main() {
       registerLocaleData(localeEn);
       registerLocaleData(localeFr);
       registerLocaleData(localeFrCA);
+      registerLocaleData(localeFr, 'fake-id');
+      registerLocaleData(localeFrCA, 'fake_Id2');
     });
 
     describe('findLocaleData', () => {
@@ -41,6 +43,12 @@ export function main() {
       it(`should find the LOCALE_DATA even if the locale id is badly formatted`, () => {
         expect(findLocaleData('ca-ES-VALENCIA')).toEqual(localeCaESVALENCIA);
         expect(findLocaleData('CA_es_Valencia')).toEqual(localeCaESVALENCIA);
+      });
+
+      it(`should find the LOCALE_DATA if the locale id was registered`, () => {
+        expect(findLocaleData('fake-id')).toEqual(localeFr);
+        expect(findLocaleData('fake_iD')).toEqual(localeFr);
+        expect(findLocaleData('fake-id2')).toEqual(localeFrCA);
       });
     });
   });

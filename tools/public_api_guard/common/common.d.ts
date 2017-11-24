@@ -422,7 +422,7 @@ export interface PopStateEvent {
 }
 
 /** @experimental */
-export declare function registerLocaleData(data: any, extraData?: any): void;
+export declare function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 /** @stable */
 export declare class SlicePipe implements PipeTransform {
