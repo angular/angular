@@ -298,7 +298,7 @@ export class AppComponent implements OnInit {
       const el = this.hostElement.nativeElement as Element;
       this.tocMaxHeightOffset =
           el.querySelector('footer').clientHeight +
-          el.querySelector('mat-toolbar.app-toolbar').clientHeight +
+          el.querySelector('.app-toolbar').clientHeight +
           24; //  fudge margin
     }
 
