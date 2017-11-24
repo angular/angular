@@ -13,10 +13,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { ROUTES } from '@angular/router';
 
-// Temporary fix for MatSidenavModule issue:
-// crashes with "missing first" operator when SideNav.mode is "over"
-import 'rxjs/add/operator/first';
-
 
 import { AppComponent } from 'app/app.component';
 import { EMBEDDED_COMPONENTS, EmbeddedComponentsMap } from 'app/embed-components/embed-components.service';

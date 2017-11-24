@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
+import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
@@ -381,20 +382,27 @@ describe('AppComponent', () => {
         checkHostClass('view', '');
       });
 
-      it('should set the css class of the host container based on the open/closed state of the side nav', () => {
+      it('should set the css class of the host container based on the open/closed state of the side nav', async () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
 
         sidenav.close();
-        sidenav.onClose.next();
+        await waitForEmit(sidenav.onClose);
         fixture.detectChanges();
         checkHostClass('sidenav', 'closed');
 
         sidenav.open();
-        sidenav.onOpen.next();
+        await waitForEmit(sidenav.onOpen);
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
+
+        function waitForEmit(emitter: Observable<void>): Promise<void> {
+          return new Promise(resolve => {
+            emitter.subscribe(resolve);
+            fixture.detectChanges();
+          });
+        }
       });
 
       it('should set the css class of the host container based on the initial deployment mode', () => {
