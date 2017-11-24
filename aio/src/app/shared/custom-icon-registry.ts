@@ -27,19 +27,6 @@ interface SvgIconMap {
   [iconName: string]: SVGElement;
 }
 
-// <hack-alert>
-// @angular/material's `MdIconRegitry` currently (v2.0.0-beta.8) requires an instance of `Http`
-// (from @angular/http). It is only used to [get some text content][1], so we can create a wrapper
-// around `HttpClient` and pretend it is `Http`.
-// [1]: https://github.com/angular/material2/blob/2.0.0-beta.8/src/lib/icon/icon-registry.ts#L465-L466
-// </hack-alert>
-function createFakeHttp(http: HttpClient): any {
-  return {
-    get: (url: string) => http.get(url, {responseType: 'text'})
-      .map(data => ({text: () => data}))
-  };
-}
-
 /**
  * A custom replacement for Angular Material's `MdIconRegistry`, which allows
  * us to provide preloaded icon SVG sources.
@@ -49,7 +36,7 @@ export class CustomIconRegistry extends MatIconRegistry {
   private preloadedSvgElements: SvgIconMap = {};
 
   constructor(http: HttpClient, sanitizer: DomSanitizer, @Inject(SVG_ICONS) svgIcons: SvgIconInfo[]) {
-    super(createFakeHttp(http), sanitizer);
+    super(http, sanitizer);
     this.loadSvgElements(svgIcons);
   }
 
