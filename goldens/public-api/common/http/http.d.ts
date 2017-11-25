@@ -14,6 +14,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -25,6 +28,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -38,6 +44,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -49,6 +58,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
@@ -62,6 +74,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
@@ -73,6 +88,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'text';
@@ -86,6 +104,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -97,6 +118,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -110,6 +134,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -121,6 +148,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -134,6 +164,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -146,6 +179,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -157,6 +193,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -170,6 +209,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -181,6 +223,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -194,6 +239,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -205,6 +253,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -218,6 +269,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -229,6 +283,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
@@ -242,6 +299,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
@@ -253,6 +313,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'text';
@@ -266,6 +329,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -277,6 +343,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -290,6 +359,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -301,6 +373,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -314,6 +389,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -326,6 +404,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -337,6 +418,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -350,6 +434,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -361,6 +448,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -374,6 +464,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -385,6 +478,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -410,6 +506,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -421,6 +520,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -434,6 +536,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -445,6 +550,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -458,6 +566,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -469,6 +580,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
@@ -482,6 +596,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
@@ -493,6 +610,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'text';
@@ -506,6 +626,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -517,6 +640,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -530,6 +656,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -541,6 +670,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -556,6 +688,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -567,6 +702,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -580,6 +718,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -591,6 +732,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
@@ -604,6 +748,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
@@ -615,6 +762,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'text';
@@ -628,6 +778,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -639,6 +792,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -652,6 +808,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -663,6 +822,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -676,6 +838,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -688,6 +853,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -699,6 +867,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -712,6 +883,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -723,6 +897,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -736,6 +913,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -747,6 +927,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -760,6 +943,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -771,6 +957,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
@@ -784,6 +973,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
@@ -795,6 +987,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'text';
@@ -808,6 +1003,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -819,6 +1017,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -832,6 +1033,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -843,6 +1047,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -856,6 +1063,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -868,6 +1078,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -879,6 +1092,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -892,6 +1108,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -903,6 +1122,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -916,6 +1138,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -927,6 +1152,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -940,6 +1168,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -951,6 +1182,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
@@ -964,6 +1198,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
@@ -975,6 +1212,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'text';
@@ -988,6 +1228,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -999,6 +1242,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -1012,6 +1258,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -1023,6 +1272,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -1036,6 +1288,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -1048,6 +1303,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -1059,6 +1317,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -1072,6 +1333,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -1083,6 +1347,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -1096,6 +1363,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -1107,6 +1377,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -1132,6 +1405,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -1143,6 +1419,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -1156,6 +1435,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -1167,6 +1449,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -1192,6 +1477,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -1203,6 +1491,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -1216,6 +1507,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -1227,6 +1521,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -1240,6 +1537,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -1252,6 +1552,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
@@ -1263,6 +1566,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType?: 'json';
@@ -1278,6 +1584,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -1290,6 +1599,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'blob';
@@ -1304,6 +1616,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
@@ -1317,6 +1632,9 @@ export declare class HttpClient {
             [param: string]: string | string[];
         };
         observe: 'events';
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
@@ -1330,6 +1648,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
@@ -1342,6 +1663,9 @@ export declare class HttpClient {
         observe: 'events';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'text';
@@ -1357,6 +1681,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<any>>;
@@ -1370,6 +1697,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpEvent<R>>;
@@ -1381,6 +1711,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'arraybuffer';
@@ -1395,6 +1728,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
@@ -1407,6 +1743,9 @@ export declare class HttpClient {
         observe: 'response';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         reportProgress?: boolean;
         responseType: 'text';
@@ -1422,6 +1761,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<Object>>;
@@ -1435,6 +1777,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'json';
         withCredentials?: boolean;
     }): Observable<HttpResponse<R>>;
@@ -1446,6 +1791,9 @@ export declare class HttpClient {
         observe?: 'body';
         params?: HttpParams | {
             [param: string]: string | string[];
+        };
+        metadata?: {
+            [key: string]: any;
         };
         responseType?: 'json';
         reportProgress?: boolean;
@@ -1460,6 +1808,9 @@ export declare class HttpClient {
         params?: HttpParams | {
             [param: string]: string | string[];
         };
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'json';
         reportProgress?: boolean;
         withCredentials?: boolean;
@@ -1473,6 +1824,9 @@ export declare class HttpClient {
             [param: string]: string | string[];
         };
         observe?: 'body' | 'events' | 'response';
+        metadata?: {
+            [key: string]: any;
+        };
         reportProgress?: boolean;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
@@ -1607,6 +1961,9 @@ export declare class HttpRequest<T> {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     });
@@ -1614,6 +1971,9 @@ export declare class HttpRequest<T> {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     });
@@ -1621,6 +1981,9 @@ export declare class HttpRequest<T> {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     });
@@ -1629,6 +1992,9 @@ export declare class HttpRequest<T> {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         body?: T | null;
@@ -1645,6 +2011,9 @@ export declare class HttpRequest<T> {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
+        metadata?: {
+            [key: string]: any;
+        };
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
         body?: V | null;
