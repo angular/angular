@@ -633,6 +633,10 @@
         {
           "title": "中文版",
           "url": "https://angular.cn/"
+        },
+        {
+          "title": "日本語版",
+          "url": "https://angular.jp/"
         }
       ]
     }
