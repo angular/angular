@@ -10,8 +10,12 @@ import localeCaESVALENCIA from '../../locales/ca-ES-VALENCIA';
 import localeEn from '../../locales/en';
 import localeFr from '../../locales/fr';
 import localeFrCA from '../../locales/fr-CA';
-import {findLocaleData} from '../../src/i18n/locale_data_api';
+import localeDeCh from '../../locales/de-CH';
+import localeDeChExtra from '../../locales/extra/de-CH';
+import localeIt from '../../locales/it';
+import localeItExtra from '../../locales/extra/it';
 import {registerLocaleData} from '../../src/i18n/locale_data';
+import {findLocaleData} from '../../src/i18n/locale_data_api';
 
 export function main() {
   describe('locale data api', () => {
@@ -20,6 +24,10 @@ export function main() {
       registerLocaleData(localeEn);
       registerLocaleData(localeFr);
       registerLocaleData(localeFrCA);
+      registerLocaleData(localeDeCh, undefined, localeDeChExtra);
+      registerLocaleData(localeIt, localeItExtra);
+      registerLocaleData(localeFr, 'fake-id');
+      registerLocaleData(localeFrCA, 'fake_Id2');
     });
 
     describe('findLocaleData', () => {
@@ -32,8 +40,11 @@ export function main() {
       it('should return english data if the locale is en-US',
          () => { expect(findLocaleData('en-US')).toEqual(localeEn); });
 
-      it('should return the exact LOCALE_DATA if it is available',
-         () => { expect(findLocaleData('fr-CA')).toEqual(localeFrCA); });
+      it('should return the exact LOCALE_DATA if it is available', () => {
+        expect(findLocaleData('fr-CA')).toEqual(localeFrCA);
+        expect(findLocaleData('de-CH')).toEqual(localeDeCh);
+        expect(findLocaleData('it')).toEqual(localeIt);
+      });
 
       it('should return the parent LOCALE_DATA if it exists and exact locale is not available',
          () => { expect(findLocaleData('fr-BE')).toEqual(localeFr); });
@@ -41,6 +52,12 @@ export function main() {
       it(`should find the LOCALE_DATA even if the locale id is badly formatted`, () => {
         expect(findLocaleData('ca-ES-VALENCIA')).toEqual(localeCaESVALENCIA);
         expect(findLocaleData('CA_es_Valencia')).toEqual(localeCaESVALENCIA);
+      });
+
+      it(`should find the LOCALE_DATA if the locale id was registered`, () => {
+        expect(findLocaleData('fake-id')).toEqual(localeFr);
+        expect(findLocaleData('fake_iD')).toEqual(localeFr);
+        expect(findLocaleData('fake-id2')).toEqual(localeFrCA);
       });
     });
   });
