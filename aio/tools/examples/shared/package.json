@@ -24,6 +24,7 @@
     "@angular/platform-browser-dynamic": "~5.0.0",
     "@angular/platform-server": "~5.0.0",
     "@angular/router": "~5.0.0",
+    "@angular/service-worker": "~5.0.0",
     "@angular/upgrade": "~5.0.0",
     "@nguniversal/express-engine": "^1.0.0-beta.3",
     "@nguniversal/module-map-ngfactory-loader": "^1.0.0-beta.3",
