@@ -20,9 +20,9 @@ describe('autolink-headings postprocessor', () => {
       <h3>Heading with encoded chars &#x26;</h3>
     `;
     const processedContent = `
-      <h1 id="heading-1"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-1"><i class="material-icons">link</i></a>Heading 1</h1>
-      <h2 id="heading-with-bold"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-with-bold"><i class="material-icons">link</i></a>Heading with <strong>bold</strong></h2>
-      <h3 id="heading-with-encoded-chars-"><a title="Link to this heading" class="header-link" aria-hidden="true" href="#heading-with-encoded-chars-"><i class="material-icons">link</i></a>Heading with encoded chars &#x26;</h3>
+      <h1 id="heading-1"><a title="Link to this heading" class="header-link" href="#heading-1"><aio-icon name="link"></aio-icon></a>Heading 1</h1>
+      <h2 id="heading-with-bold"><a title="Link to this heading" class="header-link" href="#heading-with-bold"><aio-icon name="link"></aio-icon></a>Heading with <strong>bold</strong></h2>
+      <h3 id="heading-with-encoded-chars-"><a title="Link to this heading" class="header-link" href="#heading-with-encoded-chars-"><aio-icon name="link"></aio-icon></a>Heading with encoded chars &#x26;</h3>
     `;
 
     const docs = [{docType: 'a', renderedContent: originalContent}];

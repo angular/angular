@@ -5,25 +5,30 @@
       display: none;
     }
 
-    .mat-icon, .material-icons {
+    mat-icon {
+      background: url(assets/images/icons/ic_link.svg);
       visibility: hidden;
       display: inline-block;
       color: $mediumgray;
       margin: 0 8px;
+      width: 24px;
+      height: 24px;
     }
 
-    &:hover {
-      .mat-icon, .material-icons {
-        visibility: visible;
-      }
+    &:hover mat-icon {
+      visibility: visible;
     }
 
-    a.header-link {
+    .header-link {
       text-decoration: none;
       padding-left: 8px;
       margin-left: -50px;
       display: inline-block;
       vertical-align: middle;
+
+      &:focus mat-icon {
+        visibility: visible;
+      }
     }
   }
 

@@ -56,13 +56,13 @@ describe('h1Checker postprocessor', () => {
     expect(doc.vFile.title).toEqual('Heading 1');
   });
 
-  it('should clean aria-hidden anchors from h1 text added to the vFile', () => {
+  it('should clean anchors from h1 text added to the vFile', () => {
     const doc = {
       docType: 'a',
       renderedContent:
         '<h1 class="no-toc" id="what-is-angular">' +
-          '<a title="Link to this heading" class="header-link" aria-hidden="true" href="docs#what-is-angular">' +
-            '<i class="material-icons">link</i>' +
+          '<a title="Link to this heading" class="header-link" href="docs#what-is-angular">' +
+            '<aio-icon name="link"></aio-icon>' +
           '</a>What is Angular?' +
         '</h1>'
     };
@@ -70,11 +70,11 @@ describe('h1Checker postprocessor', () => {
     expect(doc.vFile.title).toEqual('What is Angular?');
   });
 
-  it('should not break if the h1 is empty (except for an aria-hidden anchor)', () => {
+  it('should not break if the h1 is empty (except for an anchor)', () => {
     const doc = {
       docType: 'a',
       renderedContent: `
-        <h1><a aria-hidden="true"></a></h1>
+        <h1><a></a></h1>
       `
     };
     expect(() => processor.$process([doc])).not.toThrow();

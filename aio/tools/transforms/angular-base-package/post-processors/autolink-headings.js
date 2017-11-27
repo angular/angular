@@ -34,15 +34,13 @@ module.exports = [
   [link, {
     properties: {
       title: 'Link to this heading',
-      className: ['header-link'],
-      'aria-hidden': 'true'
+      className: ['header-link']
     },
     content: [
       {
         type: 'element',
-        tagName: 'i',
-        properties: {className: ['material-icons']},
-        children: [{ type: 'text', value: 'link' }]
+        tagName: 'aio-icon',
+        properties: { name:'link' }
       }
     ]
   }]
