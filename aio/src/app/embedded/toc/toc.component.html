@@ -23,9 +23,10 @@
   </ul>
 
   <button *ngIf="type === 'EmbeddedExpandable'" type="button" (click)="toggle()"
-    class="toc-more-items embedded material-icons" [class.collapsed]="isCollapsed"
+    class="toc-more-items embedded" [class.collapsed]="isCollapsed"
     title="Expand/collapse contents"
     aria-label="Expand/collapse contents"
     [attr.aria-pressed]="!isCollapsed">
+    <mat-icon [svgIcon]="isCollapsed ? 'more_horiz' : 'expand_less'"></mat-icon>
   </button>
 </div>

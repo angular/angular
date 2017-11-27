@@ -82,22 +82,11 @@ aio-toc {
     }
   }
 
-  button.toc-more-items::after {
-    content: 'expand_less';
-  }
-
-  button.toc-more-items.collapsed::after {
-    content: 'more_horiz';
-  }
-
-
-  .mat-icon.collapsed {
-    @include rotate(0deg);
-  }
-
-  .mat-icon:not(.collapsed) {
+  .mat-icon.rotating-icon {
     @include rotate(90deg);
-    // margin: 4px;
+    &.collapsed {
+      @include rotate(0deg);
+    }
   }
 
   ul.toc-list {
