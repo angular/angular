@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { ContributorService } from './contributor/contributor.service';
 import { CopierService } from 'app/shared/copier.service';
@@ -9,7 +10,7 @@ import { PrettyPrinter } from './code/pretty-printer.service';
 // It is not enough just to import them inside the AppModule
 
 // Reusable components (used inside embedded components)
-import { MatIconModule, MatSnackBarModule, MatTabsModule } from '@angular/material';
+import { MatIconRegistry, MatIconModule, MatSnackBarModule, MatTabsModule } from '@angular/material';
 import { CodeComponent } from './code/code.component';
 import { SharedModule } from 'app/shared/shared.module';
 
@@ -67,4 +68,9 @@ export class EmbeddedComponents {
   ],
   entryComponents: [ embeddedComponents ]
 })
-export class EmbeddedModule { }
+export class EmbeddedModule {
+  constructor(sanitizer: DomSanitizer, iconRegistry: MatIconRegistry) {
+    // Register icon URLs that are needed by embedded components
+    iconRegistry.addSvgIcon('search', sanitizer.bypassSecurityTrustResourceUrl('assets/images/icons/search.svg'));
+  }
+}

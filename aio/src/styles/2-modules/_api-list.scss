@@ -1,22 +1,6 @@
-/* API EDIT ICON */
-#api {
-  .api-filter .material-icons {
-    right: 48px;
-  }
-}
-
 /* API LIST STYLES */
 
 aio-api-list {
-    div.form-search i.material-icons {
-        width: 20px;
-        pointer-events: none;
-    }
-
-    .form-search input {
-        width: 182px;
-    }
-
     .api-list-container {
       display: flex;
       flex-direction: column;
@@ -72,6 +56,7 @@ aio-api-list {
     color: $blue-600;
     font-size: 16px;
     height: 32px;
+    width: 182px;
     line-height: 32px;
     outline: none;
     padding: 0 16px 0 32px;
@@ -101,13 +86,16 @@ aio-api-list {
     }
   }
 
-  .material-icons {
+  mat-icon {
     color: $blue-grey-100;
     font-size: 20px;
     left: 8px;
     position: absolute;
     top: 6px;
     z-index: $layer-1;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
   }
 }
 
