@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, ɵAnimationGroupPlayer as AnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationDebugger, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, ɵAnimationGroupPlayer as AnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {AnimationTransitionFactory} from '../dsl/animation_transition_factory';
@@ -51,6 +51,7 @@ export interface QueueInstruction {
   transition: AnimationTransitionFactory;
   player: TransitionAnimationPlayer;
   isFallbackTransition: boolean;
+  debugValue?: any;
 }
 
 export const REMOVAL_FLAG = '__ng_removed';
@@ -167,7 +168,7 @@ export class AnimationTransitionNamespace {
       return false;
     } else {
       this._triggers[name] = ast;
-      return true;
+      this._engine.debug.debug({}, 'build', {triggerName: name}) return true;
     }
   }
 
@@ -234,6 +235,13 @@ export class AnimationTransitionNamespace {
       return;
     }
 
+    const debugValue = trigger.ast.options && (trigger.ast.options as any).debug;
+    if (yesDebug(this._engine.debug, debugValue)) {
+      const debugData = {triggerName, fromState: fromState.value, toState: toState.value, player};
+
+      this._engine.debug.debug(element, 'start', debugData);
+    }
+
     const playersOnElement: TransitionAnimationPlayer[] =
         getOrSetAsInMap(this._engine.playersByElement, element, []);
     playersOnElement.forEach(player => {
@@ -246,7 +254,7 @@ export class AnimationTransitionNamespace {
       }
     });
 
-    let transition = trigger.matchTransition(fromState.value, toState.value);
+    let transition = trigger.matchTransition(element, fromState.value, toState.value);
     let isFallbackTransition = false;
     if (!transition) {
       if (!defaultToFallback) return;
@@ -255,8 +263,16 @@ export class AnimationTransitionNamespace {
     }
 
     this._engine.totalQueuedPlayers++;
-    this._queue.push(
-        {element, triggerName, transition, fromState, toState, player, isFallbackTransition});
+    this._queue.push({
+      element,
+      triggerName,
+      transition,
+      fromState,
+      toState,
+      player,
+      isFallbackTransition,
+      debugValue: transition.debugValue
+    });
 
     if (!isFallbackTransition) {
       addClass(element, QUEUED_CLASSNAME);
@@ -519,11 +535,18 @@ export class TransitionAnimationEngine {
 
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
+  private _debugFn: (element: any, data: {[key: string]: any}, debugFlagValue?: any) => void;
 
   /** @internal */
   _onRemovalComplete(element: any, context: any) { this.onRemovalComplete(element, context); }
 
-  constructor(public driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
+  constructor(
+      public driver: AnimationDriver, public debug: AnimationDebugger,
+      private _normalizer: AnimationStyleNormalizer) {
+    this._debugFn = (element: any, data: {[key: string]: any}, debugFlagValue?: any) => {
+      debug.debug(element, 'animate', data, debugFlagValue);
+    };
+  }
 
   get queuedPlayers(): TransitionAnimationPlayer[] {
     const players: TransitionAnimationPlayer[] = [];
@@ -907,6 +930,17 @@ export class TransitionAnimationEngine {
         if (!bodyNode || !this.driver.containsElement(bodyNode, element)) {
           player.destroy();
           return;
+        }
+
+        if (yesDebug(this.debug, entry.debugValue)) {
+          const debugData = {
+            triggerName: entry.triggerName,
+            fromState: entry.fromState.value,
+            toState: entry.toState.value,
+            totalTime: player.totalTime, player
+          };
+          this.debug.debug(element, 'start', debugData);
+          player.onDone(() => this.debug.debug(element, 'done', debugData));
         }
 
         const instruction = this._buildInstruction(entry, subTimelines) !;
@@ -1344,9 +1378,10 @@ export class TransitionAnimationEngine {
       instruction: AnimationTimelineInstruction, keyframes: ɵStyleData[],
       previousPlayers: AnimationPlayer[]): AnimationPlayer {
     if (keyframes.length > 0) {
+      const debugFn = yesDebug(this.debug, instruction.debug) ? this._debugFn : undefined;
       return this.driver.animate(
           instruction.element, keyframes, instruction.duration, instruction.delay,
-          instruction.easing, previousPlayers);
+          instruction.easing, previousPlayers, debugFn);
     }
 
     // special case for when an empty transition|definition is provided
@@ -1648,4 +1683,8 @@ function replacePostStylesAsPre(
 
   allPostStyleElements.delete(element);
   return true;
+}
+
+function yesDebug(debug: AnimationDebugger, flagValue: any) {
+  return !debug.debugFlagRequired || flagValue;
 }

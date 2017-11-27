@@ -33,7 +33,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
       public options: {[key: string]: string | number},
-      private previousPlayers: WebAnimationsPlayer[] = []) {
+      private previousPlayers: WebAnimationsPlayer[] = [],
+      private _debugFn?: (element: any, info: any) => void) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
@@ -106,6 +107,9 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   _triggerWebAnimation(element: any, keyframes: any[], options: any): DOMAnimation {
     // jscompiler doesn't seem to know animate is a native property because it's not fully
     // supported yet across common browsers (we polyfill it for Edge/Safari) [CL #143630929]
+    if (this._debugFn) {
+      this._debugFn(element, {keyframes, options, webAnimations: true});
+    }
     return element['animate'](keyframes, options) as DOMAnimation;
   }
 

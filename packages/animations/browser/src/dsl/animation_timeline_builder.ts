@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimateChildOptions, AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimateChildOptions, AnimateTimings, AnimationDebugger, AnimationMetadataType, AnimationOptions, AnimationQueryOptions, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {copyObj, copyStyles, interpolateParams, iteratorToArray, resolveTiming, resolveTimingValue, visitDslNode} from '../util';
@@ -101,20 +101,24 @@ const ONE_FRAME_IN_MILLISECONDS = 1;
  * the `AnimationValidatorVisitor` code.
  */
 export function buildAnimationTimelines(
-    driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
-    startingStyles: ɵStyleData = {}, finalStyles: ɵStyleData = {}, options: AnimationOptions,
-    subInstructions?: ElementInstructionMap, errors: any[] = []): AnimationTimelineInstruction[] {
+    driver: AnimationDriver, debug: AnimationDebugger, rootElement: any,
+    ast: Ast<AnimationMetadataType>, startingStyles: ɵStyleData = {}, finalStyles: ɵStyleData = {},
+    options: AnimationOptions, subInstructions?: ElementInstructionMap, debugValue?: any,
+    errors: any[] = []): AnimationTimelineInstruction[] {
   return new AnimationTimelineBuilderVisitor().buildKeyframes(
-      driver, rootElement, ast, startingStyles, finalStyles, options, subInstructions, errors);
+      driver, debug, rootElement, ast, startingStyles, finalStyles, options, subInstructions,
+      debugValue, errors);
 }
 
 export class AnimationTimelineBuilderVisitor implements AstVisitor {
   buildKeyframes(
-      driver: AnimationDriver, rootElement: any, ast: Ast<AnimationMetadataType>,
-      startingStyles: ɵStyleData, finalStyles: ɵStyleData, options: AnimationOptions,
-      subInstructions?: ElementInstructionMap, errors: any[] = []): AnimationTimelineInstruction[] {
+      driver: AnimationDriver, debug: AnimationDebugger, rootElement: any,
+      ast: Ast<AnimationMetadataType>, startingStyles: ɵStyleData, finalStyles: ɵStyleData,
+      options: AnimationOptions, subInstructions?: ElementInstructionMap, debugValue?: any,
+      errors: any[] = []): AnimationTimelineInstruction[] {
     subInstructions = subInstructions || new ElementInstructionMap();
-    const context = new AnimationTimelineContext(driver, rootElement, subInstructions, errors, []);
+    const context = new AnimationTimelineContext(
+        driver, debug, rootElement, subInstructions, errors, [], debugValue);
     context.options = options;
     context.currentTimeline.setStyles([startingStyles], null, context.errors, options);
 
@@ -444,10 +448,12 @@ export class AnimationTimelineContext {
   public currentStaggerTime: number = 0;
 
   constructor(
-      private _driver: AnimationDriver, public element: any,
+      private _driver: AnimationDriver, private _debug: AnimationDebugger, public element: any,
       public subInstructions: ElementInstructionMap, public errors: any[],
-      public timelines: TimelineBuilder[], initialTimeline?: TimelineBuilder) {
-    this.currentTimeline = initialTimeline || new TimelineBuilder(this._driver, element, 0);
+      public timelines: TimelineBuilder[], private _debugValue?: any,
+      initialTimeline?: TimelineBuilder) {
+    this.currentTimeline =
+        initialTimeline || new TimelineBuilder(this._driver, element, 0, undefined, _debugValue);
     timelines.push(this.currentTimeline);
   }
 
@@ -499,8 +505,8 @@ export class AnimationTimelineContext {
       AnimationTimelineContext {
     const target = element || this.element;
     const context = new AnimationTimelineContext(
-        this._driver, target, this.subInstructions, this.errors, this.timelines,
-        this.currentTimeline.fork(target, newTime || 0));
+        this._driver, this._debug, target, this.subInstructions, this.errors, this.timelines,
+        this._debugValue, this.currentTimeline.fork(target, newTime || 0));
     context.previousNode = this.previousNode;
     context.currentAnimateTimings = this.currentAnimateTimings;
 
@@ -568,6 +574,13 @@ export class AnimationTimelineContext {
       errors.push(
           `\`query("${originalSelector}")\` returned zero elements. (Use \`query("${originalSelector}", { optional: true })\` if you wish to allow this.)`);
     }
+
+    if (this._debugValue) {
+      this._debug.debug(
+          this.element, 'query', {selector: originalSelector, results, limit, optional});
+      // abstract debug(element: any, phase: string, data: any, debugFlagValue?: any): void;
+    }
+
     return results;
   }
 }
@@ -588,7 +601,7 @@ export class TimelineBuilder {
 
   constructor(
       private _driver: AnimationDriver, public element: any, public startTime: number,
-      private _elementTimelineStylesLookup?: Map<any, ɵStyleData>) {
+      private _elementTimelineStylesLookup?: Map<any, ɵStyleData>, public debugValue?: any) {
     if (!this._elementTimelineStylesLookup) {
       this._elementTimelineStylesLookup = new Map<any, ɵStyleData>();
     }
@@ -637,7 +650,8 @@ export class TimelineBuilder {
   fork(element: any, currentTime?: number): TimelineBuilder {
     this.applyStylesToKeyframe();
     return new TimelineBuilder(
-        this._driver, element, currentTime || this.currentTime, this._elementTimelineStylesLookup);
+        this._driver, element, currentTime || this.currentTime, this._elementTimelineStylesLookup,
+        this.debugValue);
   }
 
   private _loadKeyframe() {
@@ -793,7 +807,7 @@ export class TimelineBuilder {
 
     return createTimelineInstruction(
         this.element, finalKeyframes, preProps, postProps, this.duration, this.startTime,
-        this.easing, false);
+        this.easing, false, this.debugValue);
   }
 }
 
@@ -803,8 +817,9 @@ class SubTimelineBuilder extends TimelineBuilder {
   constructor(
       driver: AnimationDriver, public element: any, public keyframes: ɵStyleData[],
       public preStyleProps: string[], public postStyleProps: string[], timings: AnimateTimings,
-      private _stretchStartingKeyframe: boolean = false) {
+      private _stretchStartingKeyframe: boolean = false, debugValue?: any) {
     super(driver, element, timings.delay);
+    this.debugValue = debugValue;
     this.timings = {duration: timings.duration, delay: timings.delay, easing: timings.easing};
   }
 
@@ -862,7 +877,7 @@ class SubTimelineBuilder extends TimelineBuilder {
 
     return createTimelineInstruction(
         this.element, keyframes, this.preStyleProps, this.postStyleProps, duration, delay, easing,
-        true);
+        true, this.debugValue);
   }
 }
 

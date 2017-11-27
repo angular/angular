@@ -7,6 +7,7 @@
  */
 import {AnimationMetadata, animate, style} from '@angular/animations';
 
+import {NoopAnimationDebugger} from '../../src/browser_animation_debugger';
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
 import {TimelineAnimationEngine} from '../../src/render/timeline_animation_engine';
@@ -16,8 +17,9 @@ export function main() {
   const defaultDriver = new MockAnimationDriver();
 
   function makeEngine(driver?: AnimationDriver, normalizer?: AnimationStyleNormalizer) {
+    const debug = new NoopAnimationDebugger();
     return new TimelineAnimationEngine(
-        driver || defaultDriver, normalizer || new NoopAnimationStyleNormalizer());
+        driver || defaultDriver, debug, normalizer || new NoopAnimationStyleNormalizer());
   }
 
   // these tests are only mean't to be run within the DOM

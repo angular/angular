@@ -8,7 +8,7 @@
 import {AUTO_STYLE, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationAnimateRefMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationQueryMetadata, AnimationQueryOptions, AnimationReferenceMetadata, AnimationSequenceMetadata, AnimationStaggerMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, style, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {getOrSetAsInMap} from '../render/shared';
+import {copyAnimationEvent, getOrSetAsInMap} from '../render/shared';
 import {ENTER_SELECTOR, LEAVE_SELECTOR, NG_ANIMATING_SELECTOR, NG_TRIGGER_SELECTOR, SUBSTITUTION_EXPR_START, copyObj, extractStyleParams, iteratorToArray, normalizeAnimationEntry, resolveTiming, validateStyleParams, visitDslNode} from '../util';
 
 import {AnimateAst, AnimateChildAst, AnimateRefAst, Ast, DynamicTimingAst, GroupAst, KeyframesAst, QueryAst, ReferenceAst, SequenceAst, StaggerAst, StateAst, StyleAst, TimingAst, TransitionAst, TriggerAst} from './animation_ast';
@@ -119,7 +119,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     return {
       type: AnimationMetadataType.Trigger,
       name: metadata.name, states, transitions, queryCount, depCount,
-      options: null
+      options: normalizeAnimationOptions(metadata.options as any, true)
     };
   }
 
@@ -169,7 +169,7 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
       animation,
       queryCount: context.queryCount,
       depCount: context.depCount,
-      options: normalizeAnimationOptions(metadata.options)
+      options: normalizeAnimationOptions(metadata.options as any, true)
     };
   }
 
@@ -556,11 +556,16 @@ function constructTimingAst(value: string | number | AnimateTimings, errors: any
   return makeTimingAst(timings.duration, timings.delay, timings.easing);
 }
 
-function normalizeAnimationOptions(options: AnimationOptions | null): AnimationOptions {
+function normalizeAnimationOptions(
+    options: AnimationOptions | null, copyDebug?: boolean): AnimationOptions {
   if (options) {
+    const debugValue = (options as any).debug;
     options = copyObj(options);
-    if (options['params']) {
-      options['params'] = normalizeParams(options['params']) !;
+    if (options.params) {
+      options.params = normalizeParams(options.params) !;
+    }
+    if (copyDebug && debugValue) {
+      (options as any).debug = debugValue;
     }
   } else {
     options = {};

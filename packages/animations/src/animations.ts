@@ -12,6 +12,7 @@
  * Entry point for all animation APIs of the animation package.
  */
 export {AnimationBuilder, AnimationFactory} from './animation_builder';
+export {AnimationDebugger} from './animation_debugger';
 export {AnimationEvent} from './animation_event';
 export {AUTO_STYLE, AnimateChildOptions, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationAnimateRefMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationQueryMetadata, AnimationQueryOptions, AnimationReferenceMetadata, AnimationSequenceMetadata, AnimationStaggerMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, animate, animateChild, animation, group, keyframes, query, sequence, stagger, state, style, transition, trigger, useAnimation, ɵStyleData} from './animation_metadata';
 export {AnimationPlayer, NoopAnimationPlayer} from './players/animation_player';

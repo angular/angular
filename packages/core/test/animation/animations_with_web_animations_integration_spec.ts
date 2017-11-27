@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, group, query, state, style, transition, trigger} from '@angular/animations';
+import {AnimationDebugger, animate, group, query, state, style, transition, trigger} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer, ɵsupportsWebAnimations} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
+import {MockAnimationDebugger} from '@angular/animations/browser/testing';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
 import {Component} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -451,6 +452,115 @@ export function main() {
                .toBeLessThan(0.05);
          }
        });
+
+    describe('animation debugging', () => {
+      it('should call the provided debugger for a given trigger', () => {
+        @Component({
+          selector: 'anim-cmp',
+          animations: [trigger(
+              'myAnimation',
+              [transition(
+                  '* => go', [style({opacity: 0}), animate('1234ms', style({opacity: 1}))])],
+              {debug: true})],
+          template: `
+            <div class="my-elm" [@myAnimation]="exp"></div>
+          `,
+        })
+        class Cmp {
+          exp: any = false;
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Cmp],
+          providers: [{provide: AnimationDebugger, useClass: MockAnimationDebugger}],
+        });
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const debug = TestBed.get(AnimationDebugger);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        cmp.exp = 'go';
+        fixture.detectChanges();
+
+        const player = engine.players[0];
+        player.finish();
+
+        const events = debug.log;
+        expect(events.length).toEqual(3);
+        const [e1, e2, e3] = events;
+
+        const element = e1.element;
+        expect(element.classList.contains('my-elm'));
+
+        expect(e1.phase).toEqual('start');
+        expect(e2.phase).toEqual('animate');
+        expect(e3.phase).toEqual('done');
+
+        const {options, keyframes} = e2.data;
+        expect(options['duration']).toEqual(1234);
+        expect(keyframes).toEqual([{opacity: '0', offset: 0}, {opacity: '1', offset: 1}]);
+      });
+
+      it('should call the provided debugger for a given transition', () => {
+        @Component({
+          selector: 'anim-cmp',
+          animations: [trigger(
+              'myAnimation',
+              [
+                transition(
+                    '* => abc', [style({opacity: 0}), animate('1234ms', style({opacity: 1}))]),
+                transition(
+                    '* => def', [style({height: '*'}), animate('4567ms', style({height: '100px'}))],
+                    {debug: true})
+              ])],
+          template: `
+            <div class="my-elm" style="height:50px;" [@myAnimation]="exp"></div>
+          `,
+        })
+        class Cmp {
+          exp: any = false;
+        }
+
+        TestBed.configureTestingModule({
+          declarations: [Cmp],
+          providers: [{provide: AnimationDebugger, useClass: MockAnimationDebugger}],
+        });
+
+        const engine = TestBed.get(ɵAnimationEngine);
+        const debug = TestBed.get(AnimationDebugger);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        fixture.detectChanges();
+
+        cmp.exp = 'abc';
+        fixture.detectChanges();
+        expect(debug.log.length).toEqual(0);
+        let player = engine.players[0];
+        player.finish();
+
+        cmp.exp = 'def';
+        fixture.detectChanges();
+        player = engine.players[0];
+        player.finish();
+
+        const events = debug.log;
+        expect(events.length).toEqual(3);
+        const [e1, e2, e3] = events;
+
+        const element = e1.element;
+        expect(element.classList.contains('my-elm'));
+
+        expect(e1.phase).toEqual('start');
+        expect(e2.phase).toEqual('animate');
+        expect(e3.phase).toEqual('done');
+
+        const {options, keyframes} = e2.data;
+        expect(options['duration']).toEqual(4567);
+        expect(keyframes).toEqual([{height: '50px', offset: 0}, {height: '100px', offset: 1}]);
+      });
+    });
   });
 }
 

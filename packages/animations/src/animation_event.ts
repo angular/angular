@@ -44,4 +44,5 @@ export interface AnimationEvent {
   phaseName: string;
   element: any;
   triggerName: string;
+  transitionExpr?: string;
 }

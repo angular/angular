@@ -93,7 +93,7 @@ export interface AnimationMetadata { type: AnimationMetadataType; }
 export interface AnimationTriggerMetadata extends AnimationMetadata {
   name: string;
   definitions: AnimationMetadata[];
-  options: {params?: {[name: string]: any}}|null;
+  options: {debug?: any, params?: {[name: string]: any}}|null;
 }
 
 /**
@@ -105,7 +105,7 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
 export interface AnimationStateMetadata extends AnimationMetadata {
   name: string;
   styles: AnimationStyleMetadata;
-  options?: {params: {[name: string]: any}};
+  options?: {params?: {[name: string]: any}};
 }
 
 /**
@@ -117,7 +117,7 @@ export interface AnimationStateMetadata extends AnimationMetadata {
 export interface AnimationTransitionMetadata extends AnimationMetadata {
   expr: string;
   animation: AnimationMetadata|AnimationMetadata[];
-  options: AnimationOptions|null;
+  options?: {params?: {[name: string]: any}, debug?: any}|null;
 }
 
 /**
@@ -355,8 +355,10 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  *
  * @experimental Animation support is experimental.
  */
-export function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata {
-  return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
+export function trigger(
+    name: string, definitions: AnimationMetadata[],
+    options: {debug?: any} | null = null): AnimationTriggerMetadata {
+  return {type: AnimationMetadataType.Trigger, name, definitions, options};
 }
 
 /**
@@ -837,7 +839,8 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  */
 export function transition(
     stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[],
-    options: AnimationOptions | null = null): AnimationTransitionMetadata {
+    options: {params?: {[name: string]: any}, debug?: any} | null =
+        null): AnimationTransitionMetadata {
   return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps, options};
 }
 

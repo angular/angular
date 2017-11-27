@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationOptions, ɵStyleData} from '@angular/animations';
+import {AnimationDebugger, AnimationOptions, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
@@ -22,7 +22,8 @@ const EMPTY_OBJECT = {};
 export class AnimationTransitionFactory {
   constructor(
       private _triggerName: string, public ast: TransitionAst,
-      private _stateStyles: {[stateName: string]: AnimationStateStyles}) {}
+      private _stateStyles: {[stateName: string]: AnimationStateStyles},
+      private _debug: AnimationDebugger, private _debugValue?: any) {}
 
   match(currentState: any, nextState: any): boolean {
     return oneOrMoreTransitionsMatch(this.ast.matchers, currentState, nextState);
@@ -35,13 +36,18 @@ export class AnimationTransitionFactory {
     return stateStyler ? stateStyler.buildStyles(params, errors) : backupStyles;
   }
 
+  get debugValue() {
+    return this.ast.options && (this.ast.options as any).debug || this._debugValue || undefined;
+  }
+
   build(
       driver: AnimationDriver, element: any, currentState: any, nextState: any,
       currentOptions?: AnimationOptions, nextOptions?: AnimationOptions,
       subInstructions?: ElementInstructionMap): AnimationTransitionInstruction {
     const errors: any[] = [];
 
-    const transitionAnimationParams = this.ast.options && this.ast.options.params || EMPTY_OBJECT;
+    const ast = this.ast;
+    const transitionAnimationParams = ast.options && ast.options.params || EMPTY_OBJECT;
     const currentAnimationParams = currentOptions && currentOptions.params || EMPTY_OBJECT;
     const currentStateStyles = this.buildStyles(currentState, currentAnimationParams, errors);
     const nextAnimationParams = nextOptions && nextOptions.params || EMPTY_OBJECT;
@@ -54,14 +60,15 @@ export class AnimationTransitionFactory {
 
     const animationOptions = {params: {...transitionAnimationParams, ...nextAnimationParams}};
 
+    const transitionLevelDebugValue = this.debugValue;
     const timelines = buildAnimationTimelines(
-        driver, element, this.ast.animation, currentStateStyles, nextStateStyles, animationOptions,
-        subInstructions, errors);
+        driver, this._debug, element, ast.animation, currentStateStyles, nextStateStyles,
+        animationOptions, subInstructions, transitionLevelDebugValue, errors);
 
     if (errors.length) {
       return createTransitionInstruction(
           element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-          nextStateStyles, [], [], preStyleMap, postStyleMap, errors);
+          nextStateStyles, [], [], preStyleMap, postStyleMap, transitionLevelDebugValue, errors);
     }
 
     timelines.forEach(tl => {
@@ -80,7 +87,8 @@ export class AnimationTransitionFactory {
     const queriedElementsList = iteratorToArray(queriedElements.values());
     return createTransitionInstruction(
         element, this._triggerName, currentState, nextState, isRemoval, currentStateStyles,
-        nextStateStyles, timelines, queriedElementsList, preStyleMap, postStyleMap);
+        nextStateStyles, timelines, queriedElementsList, preStyleMap, postStyleMap,
+        transitionLevelDebugValue);
   }
 }
 

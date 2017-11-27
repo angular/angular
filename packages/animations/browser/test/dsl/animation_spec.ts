@@ -8,6 +8,7 @@
 import {AUTO_STYLE, AnimationMetadata, AnimationMetadataType, animate, animation, group, keyframes, query, sequence, state, style, transition, trigger, useAnimation, ɵStyleData} from '@angular/animations';
 import {AnimationOptions} from '@angular/core/src/animation/dsl';
 
+import {NoopAnimationDebugger} from '../../src/browser_animation_debugger';
 import {Animation} from '../../src/dsl/animation';
 import {buildAnimationAst} from '../../src/dsl/animation_ast_builder';
 import {AnimationTimelineInstruction} from '../../src/dsl/animation_timeline_instruction';
@@ -993,7 +994,8 @@ function invokeAnimationSequence(
     startingStyles: ɵStyleData[] = [], destinationStyles: ɵStyleData[] = [],
     subInstructions?: ElementInstructionMap): AnimationTimelineInstruction[] {
   const driver = new MockAnimationDriver();
-  return new Animation(driver, steps)
+  const debug = new NoopAnimationDebugger();
+  return new Animation(driver, debug, steps)
       .buildTimelines(element, startingStyles, destinationStyles, locals, subInstructions);
 }
 

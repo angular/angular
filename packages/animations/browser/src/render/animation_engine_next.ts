@@ -5,7 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
+import {AnimationDebugger, AnimationMetadata, AnimationPlayer, AnimationTriggerMetadata} from '@angular/animations';
+
+import {NoopAnimationDebugger} from '../browser_animation_debugger';
 import {TriggerAst} from '../dsl/animation_ast';
 import {buildAnimationAst} from '../dsl/animation_ast_builder';
 import {AnimationTrigger, buildTrigger} from '../dsl/animation_trigger';
@@ -25,9 +27,11 @@ export class AnimationEngine {
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
 
-  constructor(private _driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
-    this._transitionEngine = new TransitionAnimationEngine(_driver, normalizer);
-    this._timelineEngine = new TimelineAnimationEngine(_driver, normalizer);
+  constructor(
+      private _driver: AnimationDriver, private _debug: AnimationDebugger,
+      normalizer: AnimationStyleNormalizer) {
+    this._transitionEngine = new TransitionAnimationEngine(_driver, _debug, normalizer);
+    this._timelineEngine = new TimelineAnimationEngine(_driver, _debug, normalizer);
 
     this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
         this.onRemovalComplete(element, context);
@@ -46,7 +50,7 @@ export class AnimationEngine {
         throw new Error(
             `The animation trigger "${name}" has failed to build due to the following errors:\n - ${errors.join("\n - ")}`);
       }
-      trigger = buildTrigger(name, ast);
+      trigger = buildTrigger(name, ast, this._debug);
       this._triggerCache[cacheKey] = trigger;
     }
     this._transitionEngine.registerTrigger(namespaceId, name, trigger);

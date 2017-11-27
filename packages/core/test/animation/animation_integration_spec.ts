@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
+import {AUTO_STYLE, AnimationDebugger, AnimationEvent, AnimationOptions, animate, animateChild, group, keyframes, query, state, style, transition, trigger, ɵPRE_STYLE as PRE_STYLE} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵNoopAnimationDriver} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {ChangeDetectorRef, Component, HostBinding, HostListener, RendererFactory2, ViewChild} from '@angular/core';
@@ -1798,7 +1798,7 @@ export function main() {
               [transition(
                   'a => b',
                   [style({opacity: '{{ start }}'}), animate(1000, style({opacity: '{{ end }}'}))],
-                  buildParams({start: '0', end: '1'}))])]
+                  buildParams({start: '0', end: '1'}) as any)])]
         })
         class Cmp {
           public exp: any;
