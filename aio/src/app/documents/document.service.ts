@@ -20,7 +20,10 @@ export const CONTENT_URL_PREFIX = 'generated/';
 export const DOC_CONTENT_URL_PREFIX = CONTENT_URL_PREFIX + 'docs/';
 const FETCHING_ERROR_CONTENTS = `
   <div class="nf-container l-flex-wrap flex-center">
-    <div class="nf-icon material-icons">error_outline</div>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="nf-icon" aria-hidden="true">
+      <path d="M22 30h4v4h-4zm0-16h4v12h-4zm1.99-10C12.94 4 4 12.95 4 24s8.94 20 19.99 20S44 35.05 44
+      24 35.04 4 23.99 4zM24 40c-8.84 0-16-7.16-16-16S15.16 8 24 8s16 7.16 16 16-7.16 16-16 16z"/>
+    </svg>
     <div class="nf-response l-flex-wrap">
       <h1 class="no-toc">Request for document failed.</h1>
       <p>

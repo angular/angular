@@ -20,8 +20,9 @@
     }
 }
 
-.nf-icon.material-icons {
-    color: $blue;
-    font-size: 100px;
+.nf-icon {
+    fill: $blue;
+    width: 100px;
+    height: 100px;
     position: static;
 }
