@@ -21,10 +21,10 @@ export class TestDocViewerComponent extends DocViewerComponent {
   currViewContainer: HTMLElement;
   nextViewContainer: HTMLElement;
 
-  addTitleAndToc(docId: string): void { return null as any; }
   destroyEmbeddedComponents(): void { return null as any; }
+  prepareTitleAndToc(targetElem: HTMLElement, docId: string): () => void { return null as any; }
   render(doc: DocumentContents): Observable<void> { return null as any; }
-  swapViews(): Observable<void> { return null as any; }
+  swapViews(onInsertedCb?: () => void): Observable<void> { return null as any; }
 }
 
 
