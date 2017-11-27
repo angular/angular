@@ -21,6 +21,7 @@ import { ContributorListComponent } from './contributor/contributor-list.compone
 import { ContributorComponent } from './contributor/contributor.component';
 import { CurrentLocationComponent } from './current-location.component';
 import { FileNotFoundSearchComponent } from './search/file-not-found-search.component';
+import { IconComponent } from './icon/icon.component';
 import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example/live-example.component';
 import { ResourceListComponent } from './resource/resource-list.component';
 import { ResourceService } from './resource/resource.service';
@@ -31,8 +32,8 @@ import { TocComponent } from './toc/toc.component';
  */
 export const embeddedComponents: any[] = [
   ApiListComponent, CodeExampleComponent, CodeTabsComponent, ContributorListComponent,
-  CurrentLocationComponent, FileNotFoundSearchComponent, LiveExampleComponent, ResourceListComponent,
-  TocComponent
+  CurrentLocationComponent, FileNotFoundSearchComponent, IconComponent, LiveExampleComponent,
+  ResourceListComponent, TocComponent
 ];
 
 /** Injectable class w/ property returning components that can be embedded in docs */
