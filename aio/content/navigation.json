@@ -277,6 +277,38 @@
           "tooltip": "Discover the basics of screen navigation with the Angular Router."
         },
         {
+          "title": "Service Workers",
+          "tooltip": "Angular service workers: Controlling caching of application resources.",
+          "children": [
+            {
+              "url": "guide/service-worker-intro",
+              "title": "Introduction",
+              "tooltip": "Angular's implementation of service workers improves user experience with slow or unreliable network connectivity."
+            },
+            {
+              "url": "guide/service-worker-getstart",
+              "title": "Getting Started",
+              "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
+            },
+            {
+              "url": "guide/service-worker-comm",
+              "title": "Communication",
+              "tooltip": "Services that enable you to interact with an Angular service worker."
+            },
+            {
+              "url": "guide/service-worker-devops",
+              "title": "Service Workers in Production",
+              "tooltip": "Information about running applications with service workers, including application update management, debugging, and killing applications."
+            },
+            {
+              "url": "guide/service-worker-configref",
+              "title": "Reference: Configuration File",
+              "tooltip": "The ngsw-config.json configuration file controls service worker caching behavior."
+            }
+          ]
+        },
+
+        {
           "url": "guide/testing",
           "title": "Testing",
           "tooltip": "Techniques and practices for testing an Angular app."
