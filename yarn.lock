@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@bazel/typescript@0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.3.1.tgz#54367df8f30fa0fb25e41106eb7aa558534c36dd"
+"@bazel/typescript@0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.3.2.tgz#b4721b7f9e4c447a553555eab4a437f538a9496d"
   dependencies:
     "@types/node" "7.0.18"
     "@types/source-map" "^0.5.1"
@@ -7102,16 +7102,7 @@ ts-api-guardian@0.2.2:
     minimist "^1.2.0"
     typescript "2.0.10"
 
-tsickle@0.25.5:
-  version "0.25.5"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.25.5.tgz#2891d29f97c4aab1306e06378d8496d1765a4bfe"
-  dependencies:
-    minimist "^1.2.0"
-    mkdirp "^0.5.1"
-    source-map "^0.5.6"
-    source-map-support "^0.4.2"
-
-tsickle@0.25.x:
+tsickle@0.25.5, tsickle@0.25.x:
   version "0.25.5"
   resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.25.5.tgz#2891d29f97c4aab1306e06378d8496d1765a4bfe"
   dependencies:
