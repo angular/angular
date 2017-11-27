@@ -87,8 +87,9 @@ aio-code pre {
 .copy-button {
   display: inline-block;
   position: absolute;
-  top: -8px;
-  right: -32px;
+  padding: 0;
+  top: -16px;
+  right: -28px;
 
   color: $blue-grey-200;
   background-color: transparent;

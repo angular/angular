@@ -29,11 +29,11 @@ const defaultLineNumsCount = 10; // by default, show linenums over this number
   selector: 'aio-code',
   template: `
     <pre class="prettyprint lang-{{language}}">
-      <button *ngIf="!hideCopy" class="material-icons copy-button"
+      <button *ngIf="!hideCopy" class="copy-button"
         title="Copy code snippet"
         [attr.aria-label]="ariaLabel"
         (click)="doCopy()">
-        <span aria-hidden="true">content_copy</span>
+        <mat-icon svgIcon="content_copy"></mat-icon>
       </button>
       <code class="animated fadeIn" #codeContainer></code>
     </pre>

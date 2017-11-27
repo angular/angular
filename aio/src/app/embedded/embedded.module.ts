@@ -71,6 +71,7 @@ export class EmbeddedComponents {
 export class EmbeddedModule {
   constructor(sanitizer: DomSanitizer, iconRegistry: MatIconRegistry) {
     // Register icon URLs that are needed by embedded components
+    iconRegistry.addSvgIcon('content_copy', sanitizer.bypassSecurityTrustResourceUrl('assets/images/icons/ic_content_copy.svg'));
     iconRegistry.addSvgIcon('search', sanitizer.bypassSecurityTrustResourceUrl('assets/images/icons/search.svg'));
   }
 }
