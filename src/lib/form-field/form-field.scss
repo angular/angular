@@ -138,6 +138,18 @@ $mat-form-field-default-infix-width: 180px !default;
   }
 }
 
+// Server-side rendered matInput with focus or a placeholder attribute but placeholder not shown
+// (used as a pure CSS stand-in for mat-form-field-should-float).
+.mat-input-server:focus + .mat-form-field-placeholder-wrapper .mat-form-field-placeholder,
+.mat-input-server[placeholder]:not(:placeholder-shown) + .mat-form-field-placeholder-wrapper
+    .mat-form-field-placeholder {
+  display: none;
+
+  .mat-form-field-can-float & {
+    display: block;
+  }
+}
+
 // Disable the placeholder animation when the control is not empty (this prevents placeholder
 // animating up when the value is set programmatically).
 .mat-form-field-placeholder:not(.mat-form-field-empty) {

@@ -90,6 +90,12 @@
   }
 }
 
+// Used to make instances of the _mat-form-field-placeholder-floating mixin negligibly different,
+// and prevent Google's CSS Optimizer from collapsing the declarations. This is needed because some
+// of the selectors contain pseudo-classes not recognized in all browsers. If a browser encounters
+// an unknown pseudo-class it will discard the entire rule set.
+$dedupe: 0;
+
 // Applies a floating placeholder above the form field control itself.
 @mixin _mat-form-field-placeholder-floating($font-scale, $infix-padding, $infix-margin-top) {
   // We use perspective to fix the text blurriness as described here:
@@ -97,25 +103,14 @@
   // This results in a small jitter after the label floats on Firefox, which the
   // translateZ fixes.
   transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale) perspective(100px)
-             translateZ(0.001px);
+             translateZ(0.001px + $dedupe);
   // The tricks above used to smooth out the animation on chrome and firefox actually make things
   // worse on IE, so we don't include them in the IE version.
-  -ms-transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale);
+  -ms-transform: translateY(-$infix-margin-top - $infix-padding + $dedupe) scale($font-scale);
 
-  width: 100% / $font-scale;
-}
+  width: 100% / $font-scale + $dedupe;
 
-// This is a total duplicate of the mixin above with insignificant values added to the rules.
-// This exists because the mixin is used in two places. When Google's CSS Optimizer runs over this
-// css (after compiling from sass), it combines those two declarations into one. However, one of
-// those places uses `:-webkit-autofill`. When Firefox encounters this unknown pseuedo-class,
-// it ignores the entire rule. To work around this, we force one of the delcarations to be
-// technically different but still render the same by adding a tiny value to the transform / width.
-@mixin _mat-form-field-placeholder-float-nodedupe($font-scale, $infix-padding, $infix-margin-top) {
-  transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale) perspective(100px)
-             translateZ(0.002px);
-  -ms-transform: translateY(-$infix-margin-top - $infix-padding) scale($font-scale);
-  width: (100% / $font-scale) + 0.0001;
+  $dedupe: $dedupe + 0.00001 !global;
 }
 
 @mixin mat-form-field-typography($config) {
@@ -188,14 +183,23 @@
   }
 
   .mat-form-field-can-float {
-    &.mat-form-field-should-float .mat-form-field-placeholder {
+    &.mat-form-field-should-float .mat-form-field-placeholder,
+    .mat-input-server:focus + .mat-form-field-placeholder-wrapper .mat-form-field-placeholder {
       @include _mat-form-field-placeholder-floating(
-          $subscript-font-scale, $infix-padding, $infix-margin-top);
+              $subscript-font-scale, $infix-padding, $infix-margin-top);
     }
 
     .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-placeholder-wrapper
         .mat-form-field-placeholder {
-      @include _mat-form-field-placeholder-float-nodedupe(
+      @include _mat-form-field-placeholder-floating(
+              $subscript-font-scale, $infix-padding, $infix-margin-top);
+    }
+
+    // Server-side rendered matInput with a placeholder attribute but placeholder not shown
+    // (used as a pure CSS stand-in for mat-form-field-should-float).
+    .mat-input-server[placeholder]:not(:placeholder-shown) + .mat-form-field-placeholder-wrapper
+        .mat-form-field-placeholder {
+      @include _mat-form-field-placeholder-floating(
               $subscript-font-scale, $infix-padding, $infix-margin-top);
     }
   }

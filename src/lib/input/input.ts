@@ -26,6 +26,7 @@ import {Subject} from 'rxjs/Subject';
 import {getMatInputUnsupportedTypeError} from './input-errors';
 import {MAT_INPUT_VALUE_ACCESSOR} from './input-value-accessor';
 
+
 // Invalid input type. Using one of these will throw an MatInputUnsupportedTypeError.
 const MAT_INPUT_INVALID_TYPES = [
   'button',
@@ -49,6 +50,7 @@ let nextUniqueId = 0;
   exportAs: 'matInput',
   host: {
     'class': 'mat-input-element mat-form-field-autofill-control',
+    '[class.mat-input-server]': '_isServer',
     // Native input properties that are overwritten by Angular inputs need to be synced with
     // the native input element. Otherwise property bindings for those don't work.
     '[attr.id]': 'id',
@@ -84,6 +86,9 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
 
   /** The aria-describedby attribute on the input for improved a11y. */
   _ariaDescribedby: string;
+
+  /** Whether the component is being rendered on the server. */
+  _isServer = false;
 
   /**
    * Stream that emits whenever the state of the input changes such that the wrapping `MatFormField`
@@ -185,6 +190,8 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
         }
       });
     }
+
+    this._isServer = !this._platform.isBrowser;
   }
 
   ngOnChanges() {
