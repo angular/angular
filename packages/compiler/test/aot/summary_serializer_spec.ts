@@ -430,5 +430,41 @@ export function main() {
         importAs: symbolCache.get('someFile.ngfactory.d.ts', 'lib_1')
       }]);
     });
+
+    describe('with resolved symbols', () => {
+      it('should be able to serialize a call', () => {
+        init();
+        const serialized = serializeSummaries(
+            'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
+              symbol: symbolCache.get('/tmp/test.ts', 'main'),
+              metadata: {
+                __symbolic: 'call',
+                expression:
+                    {__symbolic: 'resolved', symbol: symbolCache.get('/tmp/test2.ts', 'ref')}
+              }
+            }],
+            []);
+        expect(serialized.json).not.toContain('error');
+      });
+
+      it('should be able to serialize a call to a method', () => {
+        init();
+        const serialized = serializeSummaries(
+            'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
+              symbol: symbolCache.get('/tmp/test.ts', 'main'),
+              metadata: {
+                __symbolic: 'call',
+                expression: {
+                  __symbolic: 'select',
+                  expression:
+                      {__symbolic: 'resolved', symbol: symbolCache.get('/tmp/test2.ts', 'ref')},
+                  name: 'foo'
+                }
+              }
+            }],
+            []);
+        expect(serialized.json).not.toContain('error');
+      });
+    });
   });
 }
