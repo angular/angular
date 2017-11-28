@@ -190,7 +190,7 @@ export declare class Location {
     path(includeHash?: boolean): string;
     prepareExternalUrl(url: string): string;
     replaceState(path: string, query?: string): void;
-    subscribe(onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void) | null, onReturn?: (() => void) | null): Object;
+    subscribe(onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void) | null, onReturn?: (() => void) | null): ISubscription;
     static joinWithSlash(start: string, end: string): string;
     static normalizeQueryParams(params: string): string;
     static stripTrailingSlash(url: string): string;
@@ -422,7 +422,7 @@ export interface PopStateEvent {
 }
 
 /** @experimental */
-export declare function registerLocaleData(data: any, extraData?: any): void;
+export declare function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 /** @stable */
 export declare class SlicePipe implements PipeTransform {

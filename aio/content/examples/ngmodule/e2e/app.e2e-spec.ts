@@ -15,7 +15,7 @@ describe('NgModule', function () {
 
     return {
       title: element.all(by.tagName('h1')).get(0),
-      subtitle: element.all(by.css('app-title p i')).get(0),
+      welcome: element.all(by.css('app-title p i')).get(0),
       contactButton: buttons.get(0),
       crisisButton: buttons.get(1),
       heroesButton: buttons.get(2)
@@ -67,7 +67,7 @@ describe('NgModule', function () {
 
       it('should welcome us', function () {
         const commons = getCommonsSectionStruct();
-        expect(commons.subtitle.getText()).toBe('Welcome, ' + (name ||  'Sherlock Holmes'));
+        expect(commons.welcome.getText()).toBe('Welcome, ' + (name ||  'Sherlock Holmes'));
       });
     };
   }

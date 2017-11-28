@@ -146,9 +146,9 @@ export class StaticSymbolResolver {
     if (isGeneratedFile(staticSymbol.filePath)) {
       return null;
     }
-    let resolvedSymbol = this.resolveSymbol(staticSymbol);
+    let resolvedSymbol = unwrapResolvedMetadata(this.resolveSymbol(staticSymbol));
     while (resolvedSymbol && resolvedSymbol.metadata instanceof StaticSymbol) {
-      resolvedSymbol = this.resolveSymbol(resolvedSymbol.metadata);
+      resolvedSymbol = unwrapResolvedMetadata(this.resolveSymbol(resolvedSymbol.metadata));
     }
     return (resolvedSymbol && resolvedSymbol.metadata && resolvedSymbol.metadata.arity) || null;
   }
@@ -204,7 +204,7 @@ export class StaticSymbolResolver {
     if (!baseResolvedSymbol) {
       return null;
     }
-    const baseMetadata = baseResolvedSymbol.metadata;
+    let baseMetadata = unwrapResolvedMetadata(baseResolvedSymbol.metadata);
     if (baseMetadata instanceof StaticSymbol) {
       return new ResolvedStaticSymbol(
           staticSymbol, this.getStaticSymbol(baseMetadata.filePath, baseMetadata.name, members));
@@ -374,6 +374,19 @@ export class StaticSymbolResolver {
       return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
     }
 
+    let _originalFileMemo: string|undefined;
+    const getOriginalName: () => string = () => {
+      if (!_originalFileMemo) {
+        // Guess what hte original file name is from the reference. If it has a `.d.ts` extension
+        // replace it with `.ts`. If it already has `.ts` just leave it in place. If it doesn't have
+        // .ts or .d.ts, append `.ts'. Also, if it is in `node_modules`, trim the `node_module`
+        // location as it is not important to finding the file.
+        _originalFileMemo =
+            topLevelPath.replace(/((\.ts)|(\.d\.ts)|)$/, '.ts').replace(/^.*node_modules[/\\]/, '');
+      }
+      return _originalFileMemo;
+    };
+
     const self = this;
 
     class ReferenceTransformer extends ValueTransformer {
@@ -397,10 +410,19 @@ export class StaticSymbolResolver {
             if (!filePath) {
               return {
                 __symbolic: 'error',
-                message: `Could not resolve ${module} relative to ${sourceSymbol.filePath}.`
+                message: `Could not resolve ${module} relative to ${sourceSymbol.filePath}.`,
+                line: map.line,
+                character: map.character,
+                fileName: getOriginalName()
               };
             }
-            return self.getStaticSymbol(filePath, name);
+            return {
+              __symbolic: 'resolved',
+              symbol: self.getStaticSymbol(filePath, name),
+              line: map.line,
+              character: map.character,
+              fileName: getOriginalName()
+            };
           } else if (functionParams.indexOf(name) >= 0) {
             // reference to a function parameter
             return {__symbolic: 'reference', name: name};
@@ -411,14 +433,17 @@ export class StaticSymbolResolver {
             // ambient value
             null;
           }
+        } else if (symbolic === 'error') {
+          return {...map, fileName: getOriginalName()};
         } else {
           return super.visitStringMap(map, functionParams);
         }
       }
     }
     const transformedMeta = visitValue(metadata, new ReferenceTransformer(), []);
-    if (transformedMeta instanceof StaticSymbol) {
-      return this.createExport(sourceSymbol, transformedMeta);
+    let unwrappedTransformedMeta = unwrapResolvedMetadata(transformedMeta);
+    if (unwrappedTransformedMeta instanceof StaticSymbol) {
+      return this.createExport(sourceSymbol, unwrappedTransformedMeta);
     }
     return new ResolvedStaticSymbol(sourceSymbol, transformedMeta);
   }
@@ -504,4 +529,11 @@ export class StaticSymbolResolver {
 // See https://github.com/Microsoft/TypeScript/blob/master/src/compiler/utilities.ts
 export function unescapeIdentifier(identifier: string): string {
   return identifier.startsWith('___') ? identifier.substr(1) : identifier;
+}
+
+export function unwrapResolvedMetadata(metadata: any): any {
+  if (metadata && metadata.__symbolic === 'resolved') {
+    return metadata.symbol;
+  }
+  return metadata;
 }

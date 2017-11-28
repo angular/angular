@@ -1,25 +1,36 @@
 // #docplaster
 // #docregion
+/* Angular Imports */
 import { NgModule }           from '@angular/core';
 import { BrowserModule }      from '@angular/platform-browser';
 
-/* App Root */
+/* App Imports */
+// #enddocregion
 import { AppComponent }       from './app.component.3';
+/*
+// #docregion
+import { AppComponent }       from './app.component';
+// #enddocregion
+*/
+// #docregion
 import { HighlightDirective } from './highlight.directive';
 import { TitleComponent }     from './title.component';
 import { UserService }        from './user.service';
 
-/* Feature Modules */
-import { ContactModule }      from './contact/contact.module.3';
-
 /* Routing Module */
+// #enddocregion
 import { AppRoutingModule }   from './app-routing.module.3';
+/*
+// #docregion
+import { AppRoutingModule }   from './app-routing.module';
+// #enddocregion
+*/
+// #docregion
 
 @NgModule({
 // #docregion imports
   imports:      [
     BrowserModule,
-    ContactModule,
     AppRoutingModule
   ],
 // #enddocregion imports

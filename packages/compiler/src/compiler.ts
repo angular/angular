@@ -35,6 +35,7 @@ export * from './aot/compiler';
 export * from './aot/generated_file';
 export * from './aot/compiler_options';
 export * from './aot/compiler_host';
+export * from './aot/formatted_error';
 export * from './aot/static_reflector';
 export * from './aot/static_symbol';
 export * from './aot/static_symbol_resolver';

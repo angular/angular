@@ -1,15 +1,15 @@
 // #docplaster
 // #docregion
+/* Angular Imports */
 import { NgModule }           from '@angular/core';
 import { BrowserModule }      from '@angular/platform-browser';
 
-/* App Root */
-import
+/* App Imports */
 // #enddocregion
-       { AppComponent }       from './app.component.2';
+import { AppComponent }       from './app.component.2';
 /*
 // #docregion
-       { AppComponent }       from './app.component';
+import { AppComponent }       from './app.component';
 // #enddocregion
 */
 // #docregion
@@ -18,12 +18,11 @@ import { TitleComponent }     from './title.component';
 import { UserService }        from './user.service';
 
 /* Contact Imports */
-import
 // #enddocregion
-       { ContactModule }      from './contact/contact.module.2';
+import { ContactModule }      from './contact/contact.module.2';
 /*
 // #docregion
-       { ContactModule }      from './contact/contact.module';
+import { ContactModule }      from './contact/contact.module';
 // #enddocregion
 */
 // #docregion

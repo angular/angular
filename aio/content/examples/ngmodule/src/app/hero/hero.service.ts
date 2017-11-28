@@ -1,4 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+
+import { Observable } from 'rxjs/Observable';
+import { of }         from 'rxjs/observable/of';
+import { delay }      from 'rxjs/operators';
 
 export class Hero {
   constructor(public id: number, public name: string) { }
@@ -15,18 +19,19 @@ const HEROES: Hero[] = [
 
 const FETCH_LATENCY = 500;
 
+/** Simulate a data service that retrieves heroes from a server */
 @Injectable()
-export class HeroService {
+export class HeroService implements OnDestroy {
 
-  getHeroes() {
-    return new Promise<Hero[]>(resolve => {
-      setTimeout(() => { resolve(HEROES); }, FETCH_LATENCY);
-    });
+  constructor() { console.log('HeroService instance created.'); }
+  ngOnDestroy() { console.log('HeroService instance destroyed.'); }
+
+  getHeroes(): Observable<Hero[]> {
+    return of(HEROES).pipe(delay(FETCH_LATENCY));
   }
 
-  getHero(id: number | string) {
-    return this.getHeroes()
-      .then(heroes => heroes.find(hero => hero.id === +id));
+  getHero(id: number | string): Observable<Hero> {
+    return of(HEROES.find(hero => hero.id === +id))
+      .pipe(delay(FETCH_LATENCY));
   }
-
 }

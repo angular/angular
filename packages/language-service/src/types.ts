@@ -81,7 +81,7 @@ export type TemplateSources = TemplateSource[] | undefined;
 /**
  * Error information found getting declaration information
  *
- * A host type; see `LanagueServiceHost`.
+ * A host type; see `LanguageServiceHost`.
  *
  * @experimental
  */
@@ -92,9 +92,10 @@ export interface DeclarationError {
   readonly span: Span;
 
   /**
-   * The message to display describing the error.
+   * The message to display describing the error or a chain
+   * of messages.
    */
-  readonly message: string;
+  readonly message: string|DiagnosticMessageChain;
 }
 
 /**
@@ -256,6 +257,28 @@ export enum DiagnosticKind {
 }
 
 /**
+ * A template diagnostics message chain. This is similar to the TypeScript
+ * DiagnosticMessageChain. The messages are intended to be formatted as separate
+ * sentence fragments and indented.
+ *
+ * For compatiblity previous implementation, the values are expected to override
+ * toString() to return a formatted message.
+ *
+ * @experimental
+ */
+export interface DiagnosticMessageChain {
+  /**
+   * The text of the diagnostic message to display.
+   */
+  message: string;
+
+  /**
+   * The next message in the chain.
+   */
+  next?: DiagnosticMessageChain;
+}
+
+/**
  * An template diagnostic message to display.
  *
  * @experimental
@@ -272,9 +295,9 @@ export interface Diagnostic {
   span: Span;
 
   /**
-   * The text of the diagnostic message to display.
+   * The text of the diagnostic message to display or a chain of messages.
    */
-  message: string;
+  message: string|DiagnosticMessageChain;
 }
 
 /**

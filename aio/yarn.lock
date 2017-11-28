@@ -2007,6 +2007,10 @@ css-select@^1.1.0:
     domutils "1.5.1"
     nth-check "~1.0.1"
 
+css-selector-parser@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/css-selector-parser/-/css-selector-parser-1.3.0.tgz#5f1ad43e2d8eefbfdc304fcd39a521664943e3eb"
+
 css-selector-tokenizer@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/css-selector-tokenizer/-/css-selector-tokenizer-0.7.0.tgz#e6988474ae8c953477bf5e7efecfceccd9cf4c86"
@@ -2283,9 +2287,9 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@0.22.0:
-  version "0.22.0"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.22.0.tgz#7ed07af9074f6547847256c1a65b488a5a17ad03"
+dgeni-packages@0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.22.1.tgz#c4587a765689c4c9d48ed661517ed2249403bfb2"
   dependencies:
     canonical-path "0.0.2"
     catharsis "^0.8.1"

@@ -1,22 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 import { Crisis,
-         CrisisService }     from './crisis.service';
+         CrisisService } from './crisis.service';
 
 @Component({
   template: `
     <h3 highlight>Crisis List</h3>
-    <div *ngFor='let crisis of crisises | async'>
+    <div *ngFor='let crisis of crises | async'>
       <a routerLink="{{'../' + crisis.id}}">{{crisis.id}} - {{crisis.name}}</a>
     </div>
   `
 })
-export class CrisisListComponent implements OnInit {
-  crisises: Promise<Crisis[]>;
+export class CrisisListComponent {
+  crises: Observable<Crisis[]>;
 
-  constructor(private crisisService: CrisisService) { }
-
-  ngOnInit() {
-    this.crisises = this.crisisService.getCrises();
+  constructor(private crisisService: CrisisService) {
+    this.crises = this.crisisService.getCrises();
   }
 }

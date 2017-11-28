@@ -143,8 +143,7 @@ switch (goog.LOCALE) {
 ${LOCALES.map(locale => generateCases(locale)).join('')}}
 
 if(l) {
-  l[0] = goog.LOCALE;
-  registerLocaleData(l);
+  registerLocaleData(l, goog.LOCALE);
 }
 `;
   // clang-format on

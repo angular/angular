@@ -149,12 +149,14 @@ describe('Evaluator', () => {
     const newExpression = program.getSourceFile('newExpression.ts');
     expect(evaluator.evaluateNode(findVarInitializer(newExpression, 'someValue'))).toEqual({
       __symbolic: 'new',
-      expression: {__symbolic: 'reference', name: 'Value', module: './classes'},
+      expression:
+          {__symbolic: 'reference', name: 'Value', module: './classes', line: 4, character: 33},
       arguments: ['name', 12]
     });
     expect(evaluator.evaluateNode(findVarInitializer(newExpression, 'complex'))).toEqual({
       __symbolic: 'new',
-      expression: {__symbolic: 'reference', name: 'Value', module: './classes'},
+      expression:
+          {__symbolic: 'reference', name: 'Value', module: './classes', line: 5, character: 42},
       arguments: ['name', 12]
     });
   });
@@ -173,8 +175,7 @@ describe('Evaluator', () => {
     const errors = program.getSourceFile('errors.ts');
     const fDecl = findVar(errors, 'f') !;
     expect(evaluator.evaluateNode(fDecl.initializer !))
-        .toEqual(
-            {__symbolic: 'error', message: 'Function call not supported', line: 1, character: 12});
+        .toEqual({__symbolic: 'error', message: 'Lambda not supported', line: 1, character: 12});
     const eDecl = findVar(errors, 'e') !;
     expect(evaluator.evaluateNode(eDecl.type !)).toEqual({
       __symbolic: 'error',
