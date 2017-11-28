@@ -8,7 +8,7 @@
 import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME, normalizeStyles} from '../util';
+import {ENTER_CLASSNAME, normalizeStyles} from '../util';
 
 import {Ast} from './animation_ast';
 import {buildAnimationAst} from './animation_ast_builder';
@@ -39,8 +39,8 @@ export class Animation {
     const errors: any = [];
     subInstructions = subInstructions || new ElementInstructionMap();
     const result = buildAnimationTimelines(
-        this._driver, element, this._animationAst, ENTER_CLASSNAME, LEAVE_CLASSNAME, start, dest,
-        options, subInstructions, errors);
+        this._driver, element, this._animationAst, ENTER_CLASSNAME, start, dest, options,
+        subInstructions, errors);
     if (errors.length) {
       const errorMessage = `animation building failed:\n${errors.join("\n")}`;
       throw new Error(errorMessage);

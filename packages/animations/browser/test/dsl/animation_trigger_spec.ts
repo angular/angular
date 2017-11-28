@@ -10,7 +10,7 @@ import {AnimationOptions, animate, state, style, transition} from '@angular/anim
 import {AnimationTransitionInstruction} from '@angular/animations/browser/src/dsl/animation_transition_instruction';
 import {AnimationTrigger} from '@angular/animations/browser/src/dsl/animation_trigger';
 
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../../src/util';
+import {ENTER_CLASSNAME} from '../../src/util';
 import {MockAnimationDriver} from '../../testing';
 import {makeTrigger} from '../shared';
 
@@ -230,8 +230,7 @@ function buildTransition(
   if (trans) {
     const driver = new MockAnimationDriver();
     return trans.build(
-        driver, element, fromState, toState, ENTER_CLASSNAME, LEAVE_CLASSNAME, fromOptions,
-        toOptions) !;
+        driver, element, fromState, toState, ENTER_CLASSNAME, fromOptions, toOptions) !;
   }
   return null;
 }
