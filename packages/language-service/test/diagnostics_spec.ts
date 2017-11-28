@@ -13,7 +13,7 @@ import {Diagnostics} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
-import {MockTypescriptHost, diagnosticMessageContains, findDiagnostic, includeDiagnostic, noDiagnostics} from './test_utils';
+import {MockTypescriptHost, includeDiagnostic, noDiagnostics} from './test_utils';
 
 describe('diagnostics', () => {
   let documentRegistry = ts.createDocumentRegistry();
@@ -123,8 +123,7 @@ describe('diagnostics', () => {
       addCode(code, (fileName, content) => {
         const diagnostics = ngService.getDiagnostics(fileName);
         includeDiagnostic(
-            diagnostics !, 'Function expressions are not supported in decorators', '() => \'foo\'',
-            content);
+            diagnostics !, 'Function calls are not supported.', '() => \'foo\'', content);
       });
     });
 
@@ -169,7 +168,8 @@ describe('diagnostics', () => {
       const code =
           ` @Component({template: '<p> Using an invalid pipe {{data | dat}} </p>'}) export class MyComponent { data = 'some data'; }`;
       addCode(code, fileName => {
-        const diagnostic = findDiagnostic(ngService.getDiagnostics(fileName) !, 'pipe') !;
+        const diagnostic =
+            ngService.getDiagnostics(fileName) !.filter(d => d.message.indexOf('pipe') > 0)[0];
         expect(diagnostic).not.toBeUndefined();
         expect(diagnostic.span.end - diagnostic.span.start).toBeLessThan(11);
       });
@@ -216,8 +216,8 @@ describe('diagnostics', () => {
       `,
           fileName => {
             const diagnostics = ngService.getDiagnostics(fileName) !;
-            const expected = findDiagnostic(diagnostics, 'Invalid providers for');
-            const notExpected = findDiagnostic(diagnostics, 'Cannot read property');
+            const expected = diagnostics.find(d => d.message.startsWith('Invalid providers for'));
+            const notExpected = diagnostics.find(d => d.message.startsWith('Cannot read property'));
             expect(expected).toBeDefined();
             expect(notExpected).toBeUndefined();
           });
@@ -355,12 +355,12 @@ describe('diagnostics', () => {
       expect(diagnostics.length).toBe(1);
       if (diagnostics.length > 1) {
         for (const diagnostic of diagnostics) {
-          if (diagnosticMessageContains(diagnostic.message, 'MyComponent')) continue;
+          if (diagnostic.message.indexOf('MyComponent') >= 0) continue;
           fail(`(${diagnostic.span.start}:${diagnostic.span.end}): ${diagnostic.message}`);
         }
         return;
       }
-      expect(diagnosticMessageContains(diagnostics[0].message, 'MyComponent')).toBeTruthy();
+      expect(diagnostics[0].message.indexOf('MyComponent') >= 0).toBeTruthy();
     }
   });
 });

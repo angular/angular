@@ -13,7 +13,6 @@ import * as o from '../output/output_ast';
 import {SummaryResolver} from '../summary_resolver';
 import {syntaxError} from '../util';
 
-import {FormattedMessageChain, formattedError} from './formatted_error';
 import {StaticSymbol} from './static_symbol';
 import {StaticSymbolResolver} from './static_symbol_resolver';
 
@@ -99,16 +98,11 @@ export class StaticReflector implements CompileReflector {
 
   findSymbolDeclaration(symbol: StaticSymbol): StaticSymbol {
     const resolvedSymbol = this.symbolResolver.resolveSymbol(symbol);
-    if (resolvedSymbol) {
-      let resolvedMetadata = resolvedSymbol.metadata;
-      if (resolvedMetadata && resolvedMetadata.__symbolic === 'resolved') {
-        resolvedMetadata = resolvedMetadata.symbol;
-      }
-      if (resolvedMetadata instanceof StaticSymbol) {
-        return this.findSymbolDeclaration(resolvedSymbol.metadata);
-      }
+    if (resolvedSymbol && resolvedSymbol.metadata instanceof StaticSymbol) {
+      return this.findSymbolDeclaration(resolvedSymbol.metadata);
+    } else {
+      return symbol;
     }
-    return symbol;
   }
 
   public annotations(type: StaticSymbol): any[] {
@@ -136,12 +130,9 @@ export class StaticReflector implements CompileReflector {
               (requiredType) => ownAnnotations.some(ann => requiredType.isTypeOf(ann)));
           if (!typeHasRequiredAnnotation) {
             this.reportError(
-                formatMetadataError(
-                    metadataError(
-                        `Class ${type.name} in ${type.filePath} extends from a ${CompileSummaryKind[summary.type.summaryKind!]} in another compilation unit without duplicating the decorator`,
-                        /* summary */ undefined,
-                        `Please add a ${requiredAnnotationTypes.map((type) => type.ngMetadataName).join(' or ')} decorator to the class`),
-                    type),
+                syntaxError(
+                    `Class ${type.name} in ${type.filePath} extends from a ${CompileSummaryKind[summary.type.summaryKind!]} in another compilation unit without duplicating the decorator. ` +
+                    `Please add a ${requiredAnnotationTypes.map((type) => type.ngMetadataName).join(' or ')} decorator to the class.`),
                 type);
           }
         }
@@ -343,6 +334,14 @@ export class StaticReflector implements CompileReflector {
     return this.symbolResolver.getStaticSymbol(declarationFile, name, members);
   }
 
+  private reportError(error: Error, context: StaticSymbol, path?: string) {
+    if (this.errorRecorder) {
+      this.errorRecorder(error, (context && context.filePath) || path);
+    } else {
+      throw error;
+    }
+  }
+
   /**
    * Simplify but discard any errors
    */
@@ -359,7 +358,6 @@ export class StaticReflector implements CompileReflector {
     const self = this;
     let scope = BindingScope.empty;
     const calling = new Map<StaticSymbol, boolean>();
-    const rootContext = context;
 
     function simplifyInContext(
         context: StaticSymbol, value: any, depth: number, references: number): any {
@@ -368,64 +366,17 @@ export class StaticReflector implements CompileReflector {
         return resolvedSymbol ? resolvedSymbol.metadata : null;
       }
 
-      function simplifyEagerly(value: any): any {
-        return simplifyInContext(context, value, depth, 0);
-      }
-
-      function simplifyLazily(value: any): any {
-        return simplifyInContext(context, value, depth, references + 1);
-      }
-
-      function simplifyNested(nestedContext: StaticSymbol, value: any): any {
-        if (nestedContext === context) {
-          // If the context hasn't changed let the exception propagate unmodified.
-          return simplifyInContext(nestedContext, value, depth + 1, references);
-        }
-        try {
-          return simplifyInContext(nestedContext, value, depth + 1, references);
-        } catch (e) {
-          if (isMetadataError(e)) {
-            // Propagate the message text up but add a message to the chain that explains how we got
-            // here.
-            // e.chain implies e.symbol
-            const summaryMsg = e.chain ? 'references \'' + e.symbol !.name + '\'' : errorSummary(e);
-            const summary = `'${nestedContext.name}' ${summaryMsg}`;
-            const chain = {message: summary, position: e.position, next: e.chain};
-            // TODO(chuckj): retrieve the position information indirectly from the collectors node
-            // map if the metadata is from a .ts file.
-            self.error(
-                {
-                  message: e.message,
-                  advise: e.advise,
-                  context: e.context, chain,
-                  symbol: nestedContext
-                },
-                context);
-          } else {
-            // It is probably an internal error.
-            throw e;
-          }
-        }
-      }
-
-      function simplifyCall(
-          functionSymbol: StaticSymbol, targetFunction: any, args: any[], targetExpression: any) {
+      function simplifyCall(functionSymbol: StaticSymbol, targetFunction: any, args: any[]) {
         if (targetFunction && targetFunction['__symbolic'] == 'function') {
           if (calling.get(functionSymbol)) {
-            self.error(
-                {
-                  message: 'Recursion is not supported',
-                  summary: `called '${functionSymbol.name}' recursively`,
-                  value: targetFunction
-                },
-                functionSymbol);
+            throw new Error('Recursion not supported');
           }
           try {
             const value = targetFunction['value'];
             if (value && (depth != 0 || value.__symbolic != 'error')) {
               const parameters: string[] = targetFunction['parameters'];
               const defaults: any[] = targetFunction.defaults;
-              args = args.map(arg => simplifyNested(context, arg))
+              args = args.map(arg => simplifyInContext(context, arg, depth + 1, references))
                          .map(arg => shouldIgnore(arg) ? undefined : arg);
               if (defaults && defaults.length > args.length) {
                 args.push(...defaults.slice(args.length).map((value: any) => simplify(value)));
@@ -439,7 +390,7 @@ export class StaticReflector implements CompileReflector {
               let result: any;
               try {
                 scope = functionScope.done();
-                result = simplifyNested(functionSymbol, value);
+                result = simplifyInContext(functionSymbol, value, depth + 1, references);
               } finally {
                 scope = oldScope;
               }
@@ -456,22 +407,8 @@ export class StaticReflector implements CompileReflector {
           // non-angular decorator, and we should just ignore it.
           return IGNORE;
         }
-        let position: Position|undefined = undefined;
-        if (targetExpression && targetExpression.__symbolic == 'resolved') {
-          const line = targetExpression.line;
-          const character = targetExpression.character;
-          const fileName = targetExpression.fileName;
-          if (fileName != null && line != null && character != null) {
-            position = {fileName, line, column: character};
-          }
-        }
-        self.error(
-            {
-              message: FUNCTION_CALL_NOT_SUPPORTED,
-              context: functionSymbol,
-              value: targetFunction, position
-            },
-            context);
+        return simplify(
+            {__symbolic: 'error', message: 'Function call not supported', context: functionSymbol});
       }
 
       function simplify(expression: any): any {
@@ -485,7 +422,7 @@ export class StaticReflector implements CompileReflector {
             if (item && item.__symbolic === 'spread') {
               // We call with references as 0 because we require the actual value and cannot
               // tolerate a reference here.
-              const spreadArray = simplifyEagerly(item.expression);
+              const spreadArray = simplifyInContext(context, item.expression, depth, 0);
               if (Array.isArray(spreadArray)) {
                 for (const spreadItem of spreadArray) {
                   result.push(spreadItem);
@@ -511,7 +448,7 @@ export class StaticReflector implements CompileReflector {
             const staticSymbol = expression;
             const declarationValue = resolveReferenceValue(staticSymbol);
             if (declarationValue != null) {
-              return simplifyNested(staticSymbol, declarationValue);
+              return simplifyInContext(staticSymbol, declarationValue, depth + 1, references);
             } else {
               return staticSymbol;
             }
@@ -588,8 +525,8 @@ export class StaticReflector implements CompileReflector {
                 }
                 return null;
               case 'index':
-                let indexTarget = simplifyEagerly(expression['expression']);
-                let index = simplifyEagerly(expression['index']);
+                let indexTarget = simplifyInContext(context, expression['expression'], depth, 0);
+                let index = simplifyInContext(context, expression['index'], depth, 0);
                 if (indexTarget && isPrimitive(index)) return indexTarget[index];
                 return null;
               case 'select':
@@ -602,41 +539,26 @@ export class StaticReflector implements CompileReflector {
                       self.getStaticSymbol(selectTarget.filePath, selectTarget.name, members);
                   const declarationValue = resolveReferenceValue(selectContext);
                   if (declarationValue != null) {
-                    return simplifyNested(selectContext, declarationValue);
+                    return simplifyInContext(
+                        selectContext, declarationValue, depth + 1, references);
                   } else {
                     return selectContext;
                   }
                 }
                 if (selectTarget && isPrimitive(member))
-                  return simplifyNested(selectContext, selectTarget[member]);
+                  return simplifyInContext(
+                      selectContext, selectTarget[member], depth + 1, references);
                 return null;
               case 'reference':
-                // Note: This only has to deal with variable references, as symbol references have
-                // been converted into 'resolved'
-                // in the StaticSymbolResolver.
+                // Note: This only has to deal with variable references,
+                // as symbol references have been converted into StaticSymbols already
+                // in the StaticSymbolResolver!
                 const name: string = expression['name'];
                 const localValue = scope.resolve(name);
                 if (localValue != BindingScope.missing) {
                   return localValue;
                 }
                 break;
-              case 'resolved':
-                try {
-                  return simplify(expression.symbol);
-                } catch (e) {
-                  // If an error is reported evaluating the symbol record the position of the
-                  // reference in the error so it can
-                  // be reported in the error message generated from the exception.
-                  if (isMetadataError(e) && expression.fileName != null &&
-                      expression.line != null && expression.character != null) {
-                    e.position = {
-                      fileName: expression.fileName,
-                      line: expression.line,
-                      column: expression.character
-                    };
-                  }
-                  throw e;
-                }
               case 'class':
                 return context;
               case 'function':
@@ -658,34 +580,29 @@ export class StaticReflector implements CompileReflector {
                   const argExpressions: any[] = expression['arguments'] || [];
                   let converter = self.conversionMap.get(staticSymbol);
                   if (converter) {
-                    const args = argExpressions.map(arg => simplifyNested(context, arg))
-                                     .map(arg => shouldIgnore(arg) ? undefined : arg);
+                    const args =
+                        argExpressions
+                            .map(arg => simplifyInContext(context, arg, depth + 1, references))
+                            .map(arg => shouldIgnore(arg) ? undefined : arg);
                     return converter(context, args);
                   } else {
                     // Determine if the function is one we can simplify.
                     const targetFunction = resolveReferenceValue(staticSymbol);
-                    return simplifyCall(
-                        staticSymbol, targetFunction, argExpressions, expression['expression']);
+                    return simplifyCall(staticSymbol, targetFunction, argExpressions);
                   }
                 }
                 return IGNORE;
               case 'error':
-                let message = expression.message;
-                if (expression['line'] != null) {
-                  self.error(
-                      {
-                        message,
-                        context: expression.context,
-                        value: expression,
-                        position: {
-                          fileName: expression['fileName'],
-                          line: expression['line'],
-                          column: expression['character']
-                        }
-                      },
+                let message = produceErrorMessage(expression);
+                if (expression['line']) {
+                  message =
+                      `${message} (position ${expression['line']+1}:${expression['character']+1} in the original .ts file)`;
+                  self.reportError(
+                      positionalError(
+                          message, context.filePath, expression['line'], expression['character']),
                       context);
                 } else {
-                  self.error({message, context: expression.context}, context);
+                  self.reportError(new Error(message), context);
                 }
                 return IGNORE;
               case 'ignore':
@@ -703,7 +620,7 @@ export class StaticReflector implements CompileReflector {
                   return simplify(value);
                 }
               }
-              return simplifyLazily(value);
+              return simplifyInContext(context, value, depth, references + 1);
             }
             return simplify(value);
           });
@@ -711,19 +628,29 @@ export class StaticReflector implements CompileReflector {
         return IGNORE;
       }
 
-      return simplify(value);
-    }
-
-    let result: any;
-    try {
-      result = simplifyInContext(context, value, 0, 0);
-    } catch (e) {
-      if (this.errorRecorder) {
-        this.reportError(e, context);
-      } else {
-        throw formatMetadataError(e, context);
+      try {
+        return simplify(value);
+      } catch (e) {
+        const members = context.members.length ? `.${context.members.join('.')}` : '';
+        const message =
+            `${e.message}, resolving symbol ${context.name}${members} in ${context.filePath}`;
+        if (e.fileName) {
+          throw positionalError(message, e.fileName, e.line, e.column);
+        }
+        throw syntaxError(message);
       }
     }
+
+    const recordedSimplifyInContext = (context: StaticSymbol, value: any) => {
+      try {
+        return simplifyInContext(context, value, 0, 0);
+      } catch (e) {
+        this.reportError(e, context);
+      }
+    };
+
+    const result = this.errorRecorder ? recordedSimplifyInContext(context, value) :
+                                        simplifyInContext(context, value, 0, 0);
     if (shouldIgnore(result)) {
       return undefined;
     }
@@ -735,166 +662,40 @@ export class StaticReflector implements CompileReflector {
     return resolvedSymbol && resolvedSymbol.metadata ? resolvedSymbol.metadata :
                                                        {__symbolic: 'class'};
   }
-
-  private reportError(error: Error, context: StaticSymbol, path?: string) {
-    if (this.errorRecorder) {
-      this.errorRecorder(
-          formatMetadataError(error, context), (context && context.filePath) || path);
-    } else {
-      throw error;
-    }
-  }
-
-  private error(
-      {message, summary, advise, position, context, value, symbol, chain}: {
-        message: string,
-        summary?: string,
-        advise?: string,
-        position?: Position,
-        context?: any,
-        value?: any,
-        symbol?: StaticSymbol,
-        chain?: MetadataMessageChain
-      },
-      reportingContext: StaticSymbol) {
-    this.reportError(
-        metadataError(message, summary, advise, position, symbol, context, chain),
-        reportingContext);
-  }
 }
 
-interface Position {
-  fileName: string;
-  line: number;
-  column: number;
-}
-
-interface MetadataMessageChain {
-  message: string;
-  summary?: string;
-  position?: Position;
-  context?: any;
-  symbol?: StaticSymbol;
-  next?: MetadataMessageChain;
-}
-
-type MetadataError = Error & {
-  position?: Position;
-  advise?: string;
-  summary?: string;
-  context?: any;
-  symbol?: StaticSymbol;
-  chain?: MetadataMessageChain;
-};
-
-const METADATA_ERROR = 'ngMetadataError';
-
-function metadataError(
-    message: string, summary?: string, advise?: string, position?: Position, symbol?: StaticSymbol,
-    context?: any, chain?: MetadataMessageChain): MetadataError {
-  const error = syntaxError(message) as MetadataError;
-  (error as any)[METADATA_ERROR] = true;
-  if (advise) error.advise = advise;
-  if (position) error.position = position;
-  if (summary) error.summary = summary;
-  if (context) error.context = context;
-  if (chain) error.chain = chain;
-  if (symbol) error.symbol = symbol;
-  return error;
-}
-
-function isMetadataError(error: Error): error is MetadataError {
-  return !!(error as any)[METADATA_ERROR];
-}
-
-const REFERENCE_TO_NONEXPORTED_CLASS = 'Reference to non-exported class';
-const VARIABLE_NOT_INITIALIZED = 'Variable not initialized';
-const DESTRUCTURE_NOT_SUPPORTED = 'Destructuring not supported';
-const COULD_NOT_RESOLVE_TYPE = 'Could not resolve type';
-const FUNCTION_CALL_NOT_SUPPORTED = 'Function call not supported';
-const REFERENCE_TO_LOCAL_SYMBOL = 'Reference to a local symbol';
-const LAMBDA_NOT_SUPPORTED = 'Lambda not supported';
-
-function expandedMessage(message: string, context: any): string {
-  switch (message) {
-    case REFERENCE_TO_NONEXPORTED_CLASS:
-      if (context && context.className) {
-        return `References to a non-exported class are not supported in decorators but ${context.className} was referenced.`;
-      }
-      break;
-    case VARIABLE_NOT_INITIALIZED:
-      return 'Only initialized variables and constants can be referenced in decorators because the value of this variable is needed by the template compiler';
-    case DESTRUCTURE_NOT_SUPPORTED:
-      return 'Referencing an exported destructured variable or constant is not supported in decorators and this value is needed by the template compiler';
-    case COULD_NOT_RESOLVE_TYPE:
-      if (context && context.typeName) {
-        return `Could not resolve type ${context.typeName}`;
-      }
-      break;
-    case FUNCTION_CALL_NOT_SUPPORTED:
-      if (context && context.name) {
-        return `Function calls are not supported in decorators but '${context.name}' was called`;
-      }
-      return 'Function calls are not supported in decorators';
-    case REFERENCE_TO_LOCAL_SYMBOL:
-      if (context && context.name) {
-        return `Reference to a local (non-exported) symbols are not supported in decorators but '${context.name}' was referenced`;
-      }
-      break;
-    case LAMBDA_NOT_SUPPORTED:
-      return `Function expressions are not supported in decorators`;
-  }
-  return message;
-}
-
-function messageAdvise(message: string, context: any): string|undefined {
-  switch (message) {
-    case REFERENCE_TO_NONEXPORTED_CLASS:
-      if (context && context.className) {
-        return `Consider exporting '${context.className}'`;
-      }
-      break;
-    case DESTRUCTURE_NOT_SUPPORTED:
-      return 'Consider simplifying to avoid destructuring';
-    case REFERENCE_TO_LOCAL_SYMBOL:
-      if (context && context.name) {
-        return `Consider exporting '${context.name}'`;
-      }
-      break;
-    case LAMBDA_NOT_SUPPORTED:
-      return `Consider changing the function expression into an exported function`;
-  }
-  return undefined;
-}
-
-function errorSummary(error: MetadataError): string {
-  if (error.summary) {
-    return error.summary;
-  }
+function expandedMessage(error: any): string {
   switch (error.message) {
-    case REFERENCE_TO_NONEXPORTED_CLASS:
+    case 'Reference to non-exported class':
       if (error.context && error.context.className) {
-        return `references non-exported class ${error.context.className}`;
+        return `Reference to a non-exported class ${error.context.className}. Consider exporting the class`;
       }
       break;
-    case VARIABLE_NOT_INITIALIZED:
-      return 'is not initialized';
-    case DESTRUCTURE_NOT_SUPPORTED:
-      return 'is a destructured variable';
-    case COULD_NOT_RESOLVE_TYPE:
-      return 'could not be resolved';
-    case FUNCTION_CALL_NOT_SUPPORTED:
-      if (error.context && error.context.name) {
-        return `calls '${error.context.name}'`;
+    case 'Variable not initialized':
+      return 'Only initialized variables and constants can be referenced because the value of this variable is needed by the template compiler';
+    case 'Destructuring not supported':
+      return 'Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring';
+    case 'Could not resolve type':
+      if (error.context && error.context.typeName) {
+        return `Could not resolve type ${error.context.typeName}`;
       }
-      return `calls a function`;
-    case REFERENCE_TO_LOCAL_SYMBOL:
+      break;
+    case 'Function call not supported':
+      let prefix =
+          error.context && error.context.name ? `Calling function '${error.context.name}', f` : 'F';
+      return prefix +
+          'unction calls are not supported. Consider replacing the function or lambda with a reference to an exported function';
+    case 'Reference to a local symbol':
       if (error.context && error.context.name) {
-        return `references local variable ${error.context.name}`;
+        return `Reference to a local (non-exported) symbol '${error.context.name}'. Consider exporting the symbol`;
       }
-      return `references a local variable`;
+      break;
   }
-  return 'contains the error';
+  return error.message;
+}
+
+function produceErrorMessage(error: any): string {
+  return `Error encountered resolving symbol values statically. ${expandedMessage(error)}`;
 }
 
 function mapStringMap(input: {[key: string]: any}, transform: (value: any, key: string) => any):
@@ -950,30 +751,10 @@ class PopulatedScope extends BindingScope {
   }
 }
 
-function formatMetadataMessageChain(
-    chain: MetadataMessageChain, advise: string | undefined): FormattedMessageChain {
-  const expanded = expandedMessage(chain.message, chain.context);
-  const nesting = chain.symbol ? ` in '${chain.symbol.name}'` : '';
-  const message = `${expanded}${nesting}`;
-  const position = chain.position;
-  const next: FormattedMessageChain|undefined = chain.next ?
-      formatMetadataMessageChain(chain.next, advise) :
-      advise ? {message: advise} : undefined;
-  return {message, position, next};
-}
-
-function formatMetadataError(e: Error, context: StaticSymbol): Error {
-  if (isMetadataError(e)) {
-    // Produce a formatted version of the and leaving enough information in the original error
-    // to recover the formatting information to eventually produce a diagnostic error message.
-    const position = e.position;
-    const chain: MetadataMessageChain = {
-      message: `Error during template compile of '${context.name}'`,
-      position: position,
-      next: {message: e.message, next: e.chain, context: e.context, symbol: e.symbol}
-    };
-    const advise = e.advise || messageAdvise(e.message, e.context);
-    return formattedError(formatMetadataMessageChain(chain, advise));
-  }
-  return e;
+function positionalError(message: string, fileName: string, line: number, column: number): Error {
+  const result = syntaxError(message);
+  (result as any).fileName = fileName;
+  (result as any).line = line;
+  (result as any).column = column;
+  return result;
 }
