@@ -625,7 +625,7 @@ that does the opposite of `NgIf`.
 `UnlessDirective` displays the content when the condition is ***false***.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (myUnless-1)" region="myUnless-1">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (appUnless-1)" region="appUnless-1">
 
 </code-example>
 
@@ -650,14 +650,14 @@ Here's how you might begin:
 
 
 
-The directive's _selector_ is typically the directive's **attribute name** in square brackets, `[myUnless]`.
+The directive's _selector_ is typically the directive's **attribute name** in square brackets, `[appUnless]`.
 The brackets define a CSS
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors" title="MDN: Attribute selectors">attribute selector</a>.
 
 The directive _attribute name_ should be spelled in _lowerCamelCase_ and begin with a prefix.
 Don't use `ng`. That prefix belongs to Angular.
 Pick something short that fits you or your company.
-In this example, the prefix is `my`.
+In this example, the prefix is `app`.
 
 
 The directive _class_ name ends in `Directive` per the [style guide](guide/styleguide#02-03 "Angular Style Guide").
@@ -685,10 +685,10 @@ You inject both in the directive constructor as private variables of the class.
 
 
 
-### The _myUnless_ property
+### The _appUnless_ property
 
-The directive consumer expects to bind a true/false condition to `[myUnless]`.
-That means the directive needs a `myUnless` property, decorated with `@Input`
+The directive consumer expects to bind a true/false condition to `[appUnless]`.
+That means the directive needs an `appUnless` property, decorated with `@Input`
 
 
 <div class="l-sub-section">
@@ -708,8 +708,8 @@ Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outp
 
 
 
-Angular sets the  `myUnless` property whenever the value of the condition changes.
-Because the `myUnless` property does work, it needs a setter.
+Angular sets the `appUnless` property whenever the value of the condition changes.
+Because the `appUnless` property does work, it needs a setter.
 
 * If the condition is falsy and the view hasn't been created previously,
 tell the _view container_ to create the _embedded view_ from the template.
@@ -717,7 +717,7 @@ tell the _view container_ to create the _embedded view_ from the template.
 * If the condition is truthy and the view is currently displayed,
 clear the container which also destroys the view.
 
-Nobody reads the `myUnless` property so it doesn't need a getter.
+Nobody reads the `appUnless` property so it doesn't need a getter.
 
 The completed directive code looks like this:
 
@@ -733,7 +733,7 @@ Add this directive to the `declarations` array of the AppModule.
 Then create some HTML to try it.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (myUnless)" region="myUnless">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (appUnless)" region="appUnless">
 
 </code-example>
 
