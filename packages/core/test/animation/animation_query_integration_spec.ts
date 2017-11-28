@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationPlayer, animate, animateChild, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
+import {AUTO_STYLE, AnimationPlayer, animate, animateChild, query, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {matchesElement} from '@angular/animations/browser/src/render/shared';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
@@ -2968,71 +2968,6 @@ export function main() {
              {offset: 0, width: '0px'}, {offset: .67, width: '0px'}, {offset: 1, width: '200px'}
            ]);
          });
-
-      it('should scope :enter queries between sub animations', () => {
-        @Component({
-          selector: 'cmp',
-          animations: [
-            trigger(
-                'parent',
-                [
-                  transition(':enter', group([
-                               sequence([
-                                 style({opacity: 0}),
-                                 animate(1000, style({opacity: 1})),
-                               ]),
-                               query(':enter @child', animateChild()),
-                             ])),
-                ]),
-            trigger(
-                'child',
-                [
-                  transition(
-                      ':enter',
-                      [
-                        query(
-                            ':enter .item',
-                            [style({opacity: 0}), animate(1000, style({opacity: 1}))]),
-                      ]),
-                ]),
-          ],
-          template: `
-               <div @parent *ngIf="exp1" class="container">
-                 <div *ngIf="exp2">
-                   <div @child>
-                     <div *ngIf="exp3">
-                       <div class="item"></div>
-                     </div>
-                   </div>
-                 </div>
-               </div>
-             `
-        })
-        class Cmp {
-          public exp1: any;
-          public exp2: any;
-          public exp3: any;
-        }
-
-        TestBed.configureTestingModule({declarations: [Cmp]});
-
-        const fixture = TestBed.createComponent(Cmp);
-        fixture.detectChanges();
-        resetLog();
-
-        const cmp = fixture.componentInstance;
-        cmp.exp1 = true;
-        cmp.exp2 = true;
-        cmp.exp3 = true;
-        fixture.detectChanges();
-
-        const players = getLog();
-        expect(players.length).toEqual(2);
-
-        const [p1, p2] = players;
-        expect(p1.element.classList.contains('container')).toBeTruthy();
-        expect(p2.element.classList.contains('item')).toBeTruthy();
-      });
     });
 
     describe('animation control flags', () => {

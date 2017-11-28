@@ -37,7 +37,7 @@ export class AnimationTransitionFactory {
 
   build(
       driver: AnimationDriver, element: any, currentState: any, nextState: any,
-      enterClassName: string, currentOptions?: AnimationOptions, nextOptions?: AnimationOptions,
+      currentOptions?: AnimationOptions, nextOptions?: AnimationOptions,
       subInstructions?: ElementInstructionMap): AnimationTransitionInstruction {
     const errors: any[] = [];
 
@@ -55,8 +55,8 @@ export class AnimationTransitionFactory {
     const animationOptions = {params: {...transitionAnimationParams, ...nextAnimationParams}};
 
     const timelines = buildAnimationTimelines(
-        driver, element, this.ast.animation, enterClassName, currentStateStyles, nextStateStyles,
-        animationOptions, subInstructions, errors);
+        driver, element, this.ast.animation, currentStateStyles, nextStateStyles, animationOptions,
+        subInstructions, errors);
 
     if (errors.length) {
       return createTransitionInstruction(
