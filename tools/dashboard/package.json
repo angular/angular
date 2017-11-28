@@ -20,7 +20,7 @@
     "@angular/platform-browser": "^5.0.0",
     "@angular/platform-browser-dynamic": "^5.0.0",
     "@angular/router": "^5.0.0",
-    "@swimlane/ngx-charts": "^6.0.0",
+    "@swimlane/ngx-charts": "^7.0.1",
     "angularfire2": "^5.0.0-rc.2",
     "core-js": "^2.4.1",
     "d3": "^4.9.1",
@@ -35,6 +35,6 @@
     "@types/jasmine": "2.5.45",
     "@types/node": "~6.0.60",
     "ts-node": "~3.0.4",
-    "typescript": "^2.4.1"
+    "typescript": "~2.4.2"
   }
 }

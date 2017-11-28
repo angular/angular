@@ -17,8 +17,8 @@ export class DashboardApp {
   coverage: Observable<CoverageResult[]>;
 
   constructor(database: AngularFireDatabase) {
-    this.payloads = database.list(`payloads`).valueChanges();
-    this.coverage = database.list(`coverage-reports`).valueChanges();
+    this.payloads = database.list<PayloadResult>('payloads').valueChanges();
+    this.coverage = database.list<CoverageResult>('coverage-reports').valueChanges();
   }
 }
 
