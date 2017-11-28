@@ -17,6 +17,12 @@ export const RIPPLE_FADE_IN_DURATION = 450;
 /** Fade-out duration for the ripples in milliseconds. This can't be modified by the speedFactor. */
 export const RIPPLE_FADE_OUT_DURATION = 400;
 
+/**
+ * Timeout for ignoring mouse events. Mouse events will be temporary ignored after touch
+ * events to avoid synthetic mouse events.
+ */
+const IGNORE_MOUSE_EVENTS_TIMEOUT = 800;
+
 export type RippleConfig = {
   color?: string;
   centered?: boolean;
@@ -40,14 +46,17 @@ export class RippleRenderer {
   /** Element which triggers the ripple elements on mouse events. */
   private _triggerElement: HTMLElement | null;
 
-  /** Whether the mouse is currently down or not. */
-  private _isMousedown: boolean = false;
+  /** Whether the pointer is currently down or not. */
+  private _isPointerDown = false;
 
   /** Events to be registered on the trigger element. */
   private _triggerEvents = new Map<string, any>();
 
   /** Set of currently active ripple references. */
   private _activeRipples = new Set<RippleRef>();
+
+  /** Time in milliseconds when the last touchstart event happened. */
+  private _lastTouchStartEvent: number;
 
   /** Ripple config for all ripples created by events. */
   rippleConfig: RippleConfig = {};
@@ -62,8 +71,11 @@ export class RippleRenderer {
 
       // Specify events which need to be registered on the trigger.
       this._triggerEvents.set('mousedown', this.onMousedown.bind(this));
-      this._triggerEvents.set('mouseup', this.onMouseup.bind(this));
-      this._triggerEvents.set('mouseleave', this.onMouseup.bind(this));
+      this._triggerEvents.set('mouseup', this.onPointerUp.bind(this));
+      this._triggerEvents.set('mouseleave', this.onPointerUp.bind(this));
+
+      this._triggerEvents.set('touchstart', this.onTouchStart.bind(this));
+      this._triggerEvents.set('touchend', this.onPointerUp.bind(this));
 
       // By default use the host element as trigger element.
       this.setTriggerElement(this._containerElement);
@@ -110,7 +122,7 @@ export class RippleRenderer {
     ripple.style.transform = 'scale(1)';
 
     // Exposed reference to the ripple that will be returned.
-    let rippleRef = new RippleRef(this, ripple, config);
+    const rippleRef = new RippleRef(this, ripple, config);
 
     rippleRef.state = RippleState.FADING_IN;
 
@@ -122,7 +134,7 @@ export class RippleRenderer {
     this.runTimeoutOutsideZone(() => {
       rippleRef.state = RippleState.VISIBLE;
 
-      if (!config.persistent && !this._isMousedown) {
+      if (!config.persistent && !this._isPointerDown) {
         rippleRef.fadeOut();
       }
     }, duration);
@@ -137,7 +149,7 @@ export class RippleRenderer {
       return;
     }
 
-    let rippleEl = rippleRef.element;
+    const rippleEl = rippleRef.element;
 
     rippleEl.style.transitionDuration = `${RIPPLE_FADE_OUT_DURATION}ms`;
     rippleEl.style.opacity = '0';
@@ -175,21 +187,37 @@ export class RippleRenderer {
     this._triggerElement = element;
   }
 
-  /** Function being called whenever the trigger is being pressed. */
+  /** Function being called whenever the trigger is being pressed using mouse. */
   private onMousedown(event: MouseEvent) {
-    if (!this.rippleDisabled) {
-      this._isMousedown = true;
+    const isSyntheticEvent = this._lastTouchStartEvent &&
+        Date.now() < this._lastTouchStartEvent + IGNORE_MOUSE_EVENTS_TIMEOUT;
+
+    if (!this.rippleDisabled && !isSyntheticEvent) {
+      this._isPointerDown = true;
       this.fadeInRipple(event.clientX, event.clientY, this.rippleConfig);
     }
   }
 
+  /** Function being called whenever the trigger is being pressed using touch. */
+  private onTouchStart(event: TouchEvent) {
+    if (!this.rippleDisabled) {
+      // Some browsers fire mouse events after a `touchstart` event. Those synthetic mouse
+      // events will launch a second ripple if we don't ignore mouse events for a specific
+      // time after a touchstart event.
+      this._lastTouchStartEvent = Date.now();
+      this._isPointerDown = true;
+
+      this.fadeInRipple(event.touches[0].clientX, event.touches[0].clientY, this.rippleConfig);
+    }
+  }
+
   /** Function being called whenever the trigger is being released. */
-  private onMouseup() {
-    if (!this._isMousedown) {
+  private onPointerUp() {
+    if (!this._isPointerDown) {
       return;
     }
 
-    this._isMousedown = false;
+    this._isPointerDown = false;
 
     // Fade-out all ripples that are completely visible and not persistent.
     this._activeRipples.forEach(ripple => {

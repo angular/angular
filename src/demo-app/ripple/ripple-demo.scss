@@ -1,3 +1,5 @@
+@import '../../lib/core/style/vendor-prefixes';
+
 .demo-ripple {
   button, a {
     margin: 8px;
@@ -14,6 +16,10 @@
     text-align: center;
     transition: all 200ms linear;
     width: 200px;
+
+    // Disable the blue overlay on touch. This makes it easier to see ripples fading in.
+    -webkit-tap-highlight-color: transparent;
+    @include user-select(none);
 
     &.demo-ripple-disabled {
       color: rgba(32, 32, 32, 0.4);
