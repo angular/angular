@@ -9,7 +9,7 @@
       //////////////////////////////////////////////////////////////////////////////////////////////
       // README:
       //   Redirects must also be handled by the ServiceWorker. If you add a redirect rule here,
-      //   make sure the routing RegExp in `ngsw-manifest.json` is updated accordingly.
+      //   make sure it is compatible with the configuration in `ngsw-config.json`.
       //////////////////////////////////////////////////////////////////////////////////////////////
 
       // A random bad indexed page that used `api/api`

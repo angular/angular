@@ -1,6 +1,7 @@
 import { loadLegacyUrls, loadLocalSitemapUrls, loadSWRoutes } from '../shared/helpers';
 
-describe('service-worker routes', () => {
+// NOTE: The new `@angular/service-worker` does not support configurable routes.
+xdescribe('service-worker routes', () => {
 
   loadLocalSitemapUrls().forEach(url => {
     it('should process URLs in the Sitemap', () => {
