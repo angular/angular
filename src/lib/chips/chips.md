@@ -43,8 +43,8 @@ An example of chip input placed outside the chip-list element.
 ```html
 <mat-form-field>
   <mat-chip-list #chipList>
-    <mat-chip>Chip 1<mat-chip>
-    <mat-chip>Chip 2<mat-chip>
+    <mat-chip>Chip 1</mat-chip>
+    <mat-chip>Chip 2</mat-chip>
   </mat-chip-list>
   <input matChipInputFor="chipList">
 </mat-form-field>
