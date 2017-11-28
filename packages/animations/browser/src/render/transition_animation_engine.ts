@@ -13,7 +13,7 @@ import {AnimationTransitionInstruction} from '../dsl/animation_transition_instru
 import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, iteratorToArray, setStyles} from '../util';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getBodyNode, getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
@@ -22,8 +22,6 @@ const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';
 const DISABLED_CLASSNAME = 'ng-animate-disabled';
 const DISABLED_SELECTOR = '.ng-animate-disabled';
-const STAR_CLASSNAME = 'ng-star-inserted';
-const STAR_SELECTOR = '.ng-star-inserted';
 
 const EMPTY_PLAYER_ARRAY: TransitionAnimationPlayer[] = [];
 const NULL_REMOVAL_STATE: ElementAnimationState = {
@@ -716,12 +714,10 @@ export class TransitionAnimationEngine {
     return () => {};
   }
 
-  private _buildInstruction(
-      entry: QueueInstruction, subTimelines: ElementInstructionMap, enterClassName: string,
-      leaveClassName: string) {
+  private _buildInstruction(entry: QueueInstruction, subTimelines: ElementInstructionMap) {
     return entry.transition.build(
-        this.driver, entry.element, entry.fromState.value, entry.toState.value, enterClassName,
-        leaveClassName, entry.fromState.options, entry.toState.options, subTimelines);
+        this.driver, entry.element, entry.fromState.value, entry.toState.value,
+        entry.fromState.options, entry.toState.options, subTimelines);
   }
 
   destroyInnerAnimations(containerElement: any) {
@@ -802,13 +798,6 @@ export class TransitionAnimationEngine {
       this.newHostElements.clear();
     }
 
-    if (this.totalAnimations && this.collectedEnterElements.length) {
-      for (let i = 0; i < this.collectedEnterElements.length; i++) {
-        const elm = this.collectedEnterElements[i];
-        addClass(elm, STAR_CLASSNAME);
-      }
-    }
-
     if (this._namespaceList.length &&
         (this.totalQueuedPlayers || this.collectedLeaveElements.length)) {
       const cleanupFns: Function[] = [];
@@ -873,57 +862,37 @@ export class TransitionAnimationEngine {
     });
 
     const bodyNode = getBodyNode();
-    const allTriggerElements = Array.from(this.statesByElement.keys());
-    const enterNodeMap = buildRootMap(allTriggerElements, this.collectedEnterElements);
+    const allEnterNodes: any[] = this.collectedEnterElements.length ?
+        this.collectedEnterElements.filter(createIsRootFilterFn(this.collectedEnterElements)) :
+        [];
 
     // this must occur before the instructions are built below such that
     // the :enter queries match the elements (since the timeline queries
     // are fired during instruction building).
-    const enterNodeMapIds = new Map<any, string>();
-    let i = 0;
-    enterNodeMap.forEach((nodes, root) => {
-      const className = ENTER_CLASSNAME + i++;
-      enterNodeMapIds.set(root, className);
-      nodes.forEach(node => addClass(node, className));
-    });
+    for (let i = 0; i < allEnterNodes.length; i++) {
+      addClass(allEnterNodes[i], ENTER_CLASSNAME);
+    }
 
     const allLeaveNodes: any[] = [];
-    const mergedLeaveNodes = new Set<any>();
     const leaveNodesWithoutAnimations = new Set<any>();
     for (let i = 0; i < this.collectedLeaveElements.length; i++) {
       const element = this.collectedLeaveElements[i];
       const details = element[REMOVAL_FLAG] as ElementAnimationState;
       if (details && details.setForRemoval) {
+        addClass(element, LEAVE_CLASSNAME);
         allLeaveNodes.push(element);
-        mergedLeaveNodes.add(element);
-        if (details.hasAnimation) {
-          this.driver.query(element, STAR_SELECTOR, true).forEach(elm => mergedLeaveNodes.add(elm));
-        } else {
+        if (!details.hasAnimation) {
           leaveNodesWithoutAnimations.add(element);
         }
       }
     }
 
-    const leaveNodeMapIds = new Map<any, string>();
-    const leaveNodeMap = buildRootMap(allTriggerElements, Array.from(mergedLeaveNodes));
-    leaveNodeMap.forEach((nodes, root) => {
-      const className = LEAVE_CLASSNAME + i++;
-      leaveNodeMapIds.set(root, className);
-      nodes.forEach(node => addClass(node, className));
-    });
-
     cleanupFns.push(() => {
-      enterNodeMap.forEach((nodes, root) => {
-        const className = enterNodeMapIds.get(root) !;
-        nodes.forEach(node => removeClass(node, className));
+      allEnterNodes.forEach(element => removeClass(element, ENTER_CLASSNAME));
+      allLeaveNodes.forEach(element => {
+        removeClass(element, LEAVE_CLASSNAME);
+        this.processLeaveNode(element);
       });
-
-      leaveNodeMap.forEach((nodes, root) => {
-        const className = leaveNodeMapIds.get(root) !;
-        nodes.forEach(node => removeClass(node, className));
-      });
-
-      allLeaveNodes.forEach(element => { this.processLeaveNode(element); });
     });
 
     const allPlayers: TransitionAnimationPlayer[] = [];
@@ -940,10 +909,7 @@ export class TransitionAnimationEngine {
           return;
         }
 
-        const leaveClassName = leaveNodeMapIds.get(element) !;
-        const enterClassName = enterNodeMapIds.get(element) !;
-        const instruction =
-            this._buildInstruction(entry, subTimelines, enterClassName, leaveClassName) !;
+        const instruction = this._buildInstruction(entry, subTimelines) !;
         if (instruction.errors && instruction.errors.length) {
           erroneousTransitions.push(instruction);
           return;
@@ -1007,6 +973,18 @@ export class TransitionAnimationEngine {
       this.reportError(errors);
     }
 
+    // these can only be detected here since we have a map of all the elements
+    // that have animations attached to them... We use a set here in the event
+    // multiple enter captures on the same element were caught in different
+    // renderer namespaces (e.g. when a @trigger was on a host binding that had *ngIf)
+    const enterNodesWithoutAnimations = new Set<any>();
+    for (let i = 0; i < allEnterNodes.length; i++) {
+      const element = allEnterNodes[i];
+      if (!subTimelines.has(element)) {
+        enterNodesWithoutAnimations.add(element);
+      }
+    }
+
     const allPreviousPlayersMap = new Map<any, TransitionAnimationPlayer[]>();
     // this map works to tell which element in the DOM tree is contained by
     // which animation. Further down below this map will get populated once
@@ -1044,9 +1022,8 @@ export class TransitionAnimationEngine {
     });
 
     // POST STAGE: fill the * styles
-    const postStylesMap = new Map<any, ɵStyleData>();
-    const allLeaveQueriedNodes = cloakAndComputeStyles(
-        postStylesMap, this.driver, leaveNodesWithoutAnimations, allPostStyleElements, AUTO_STYLE);
+    const [postStylesMap, allLeaveQueriedNodes] = cloakAndComputeStyles(
+        this.driver, leaveNodesWithoutAnimations, allPostStyleElements, AUTO_STYLE);
 
     allLeaveQueriedNodes.forEach(node => {
       if (replacePostStylesAsPre(node, allPreStyleElements, allPostStyleElements)) {
@@ -1055,11 +1032,10 @@ export class TransitionAnimationEngine {
     });
 
     // PRE STAGE: fill the ! styles
-    const preStylesMap = new Map<any, ɵStyleData>();
-    enterNodeMap.forEach((nodes, root) => {
-      cloakAndComputeStyles(
-          preStylesMap, this.driver, new Set(nodes), allPreStyleElements, PRE_STYLE);
-    });
+    const [preStylesMap] = allPreStyleElements.size ?
+        cloakAndComputeStyles(
+            this.driver, enterNodesWithoutAnimations, allPreStyleElements, PRE_STYLE) :
+        [new Map<any, ɵStyleData>()];
 
     replaceNodes.forEach(node => {
       const post = postStylesMap.get(node);
@@ -1529,11 +1505,12 @@ function cloakElement(element: any, value?: string) {
 }
 
 function cloakAndComputeStyles(
-    valuesMap: Map<any, ɵStyleData>, driver: AnimationDriver, elements: Set<any>,
-    elementPropsMap: Map<any, Set<string>>, defaultStyle: string): any[] {
+    driver: AnimationDriver, elements: Set<any>, elementPropsMap: Map<any, Set<string>>,
+    defaultStyle: string): [Map<any, ɵStyleData>, any[]] {
   const cloakVals: string[] = [];
   elements.forEach(element => cloakVals.push(cloakElement(element)));
 
+  const valuesMap = new Map<any, ɵStyleData>();
   const failedElements: any[] = [];
 
   elementPropsMap.forEach((props: Set<string>, element: any) => {
@@ -1555,57 +1532,39 @@ function cloakAndComputeStyles(
   // an index value for the closure (but instead just the value)
   let i = 0;
   elements.forEach(element => cloakElement(element, cloakVals[i++]));
-
-  return failedElements;
+  return [valuesMap, failedElements];
 }
 
 /*
 Since the Angular renderer code will return a collection of inserted
 nodes in all areas of a DOM tree, it's up to this algorithm to figure
-out which nodes are roots for each animation @trigger.
+out which nodes are roots.
 
-By placing each inserted node into a Set and traversing upwards, it
-is possible to find the @trigger elements and well any direct *star
-insertion nodes, if a @trigger root is found then the enter element
-is placed into the Map[@trigger] spot.
+By placing all nodes into a set and traversing upwards to the edge,
+the recursive code can figure out if a clean path from the DOM node
+to the edge container is clear. If no other node is detected in the
+set then it is a root element.
+
+This algorithm also keeps track of all nodes along the path so that
+if other sibling nodes are also tracked then the lookup process can
+skip a lot of steps in between and avoid traversing the entire tree
+multiple times to the edge.
  */
-function buildRootMap(roots: any[], nodes: any[]): Map<any, any[]> {
-  const rootMap = new Map<any, any[]>();
-  roots.forEach(root => rootMap.set(root, []));
-
-  if (nodes.length == 0) return rootMap;
-
-  const NULL_NODE = 1;
+function createIsRootFilterFn(nodes: any): (node: any) => boolean {
   const nodeSet = new Set(nodes);
-  const localRootMap = new Map<any, any>();
-
-  function getRoot(node: any): any {
-    if (!node) return NULL_NODE;
-
-    let root = localRootMap.get(node);
-    if (root) return root;
-
-    const parent = node.parentNode;
-    if (rootMap.has(parent)) {  // ngIf inside @trigger
-      root = parent;
-    } else if (nodeSet.has(parent)) {  // ngIf inside ngIf
-      root = NULL_NODE;
-    } else {  // recurse upwards
-      root = getRoot(parent);
+  const knownRootContainer = new Set();
+  let isRoot: (node: any) => boolean;
+  isRoot = node => {
+    if (!node) return true;
+    if (nodeSet.has(node.parentNode)) return false;
+    if (knownRootContainer.has(node.parentNode)) return true;
+    if (isRoot(node.parentNode)) {
+      knownRootContainer.add(node);
+      return true;
     }
-
-    localRootMap.set(node, root);
-    return root;
-  }
-
-  nodes.forEach(node => {
-    const root = getRoot(node);
-    if (root !== NULL_NODE) {
-      rootMap.get(root) !.push(node);
-    }
-  });
-
-  return rootMap;
+    return false;
+  };
+  return isRoot;
 }
 
 const CLASSES_CACHE_KEY = '$$classes';
