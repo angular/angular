@@ -80,8 +80,6 @@ describe('site App', function() {
     });
   });
 
-  // TODO(https://github.com/angular/angular/issues/19785): Activate this again
-  // once it is no more flaky.
   describe('google analytics', () => {
 
     it('should call ga with initial URL', done => {
