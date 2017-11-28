@@ -665,7 +665,7 @@ class DrawerDelayed {
 @Component({
   template: `
     <mat-drawer-container>
-      <mat-drawer *ngIf="renderDrawer" [mode]="mode"></mat-drawer>
+      <mat-drawer *ngIf="renderDrawer" [mode]="mode" style="width:100px"></mat-drawer>
     </mat-drawer-container>`,
 })
 class DrawerContainerStateChangesTestApp {
