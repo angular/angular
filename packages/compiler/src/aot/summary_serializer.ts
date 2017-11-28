@@ -11,7 +11,7 @@ import {Summary, SummaryResolver} from '../summary_resolver';
 import {OutputContext, ValueTransformer, ValueVisitor, visitValue} from '../util';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
-import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
+import {ResolvedStaticSymbol, StaticSymbolResolver, unwrapResolvedMetadata} from './static_symbol_resolver';
 import {isLoweredSymbol, ngfactoryFilePath, summaryForJitFileName, summaryForJitName} from './util';
 
 export function serializeSummaries(
@@ -453,10 +453,10 @@ function isCall(metadata: any): boolean {
 }
 
 function isFunctionCall(metadata: any): boolean {
-  return isCall(metadata) && metadata.expression instanceof StaticSymbol;
+  return isCall(metadata) && unwrapResolvedMetadata(metadata.expression) instanceof StaticSymbol;
 }
 
 function isMethodCallOnVariable(metadata: any): boolean {
   return isCall(metadata) && metadata.expression && metadata.expression.__symbolic === 'select' &&
-      metadata.expression.expression instanceof StaticSymbol;
+      unwrapResolvedMetadata(metadata.expression.expression) instanceof StaticSymbol;
 }
