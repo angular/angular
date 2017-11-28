@@ -105,8 +105,8 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
     const element: HTMLElement = this._elementRef.nativeElement;
 
     if (this.snackBarConfig.panelClass || this.snackBarConfig.extraClasses) {
-      element.classList.add(...this._getCssClasses(this.snackBarConfig.panelClass),
-                            ...this._getCssClasses(this.snackBarConfig.extraClasses));
+      this._setCssClasses(this.snackBarConfig.panelClass);
+      this._setCssClasses(this.snackBarConfig.extraClasses);
     }
 
     if (this.snackBarConfig.horizontalPosition === 'center') {
@@ -176,15 +176,19 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
     });
   }
 
-  /** Convert the class list to a array of classes it can apply to the dom */
-  private _getCssClasses(classList: undefined | string | string[]) {
-    if (classList) {
-      if (Array.isArray(classList)) {
-        return classList;
-      } else {
-        return [classList];
-      }
+  /** Applies the user-specified list of CSS classes to the element. */
+  private _setCssClasses(classList: undefined|string|string[]) {
+    if (!classList) {
+      return;
     }
-    return [];
+
+    const element = this._elementRef.nativeElement;
+
+    if (Array.isArray(classList)) {
+      // Note that we can't use a spread here, because IE doesn't support multiple arguments.
+      classList.forEach(cssClass => element.classList.add(cssClass));
+    } else {
+      element.classList.add(classList);
+    }
   }
 }
