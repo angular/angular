@@ -27,11 +27,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {
-  FloatPlaceholderType,
-  MAT_PLACEHOLDER_GLOBAL_OPTIONS,
-  PlaceholderOptions,
-} from '@angular/material/core';
+import {FloatLabelType, MAT_LABEL_GLOBAL_OPTIONS, LabelOptions} from '@angular/material/core';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {MatError} from './error';
 import {MatFormFieldControl} from './form-field-control';
@@ -42,6 +38,7 @@ import {
 } from './form-field-errors';
 import {MatHint} from './hint';
 import {MatPlaceholder} from './placeholder';
+import {MatLabel} from './label';
 import {MatPrefix} from './prefix';
 import {MatSuffix} from './suffix';
 
@@ -61,7 +58,7 @@ let nextUniqueId = 0;
   // aren't using MatInput.
   styleUrls: ['form-field.css', '../input/input.css'],
   animations: [
-    // TODO(mmalerba): Use angular animations for placeholder animation as well.
+    // TODO(mmalerba): Use angular animations for label animation as well.
     trigger('transitionMessages', [
       state('enter', style({ opacity: 1, transform: 'translateY(0%)' })),
       transition('void => enter', [
@@ -74,8 +71,9 @@ let nextUniqueId = 0;
     'class': 'mat-input-container mat-form-field',
     '[class.mat-input-invalid]': '_control.errorState',
     '[class.mat-form-field-invalid]': '_control.errorState',
-    '[class.mat-form-field-can-float]': '_canPlaceholderFloat',
-    '[class.mat-form-field-should-float]': '_control.shouldPlaceholderFloat || _shouldAlwaysFloat',
+    '[class.mat-form-field-can-float]': '_canLabelFloat',
+    '[class.mat-form-field-should-float]': '_shouldLabelFloat()',
+    '[class.mat-form-field-hide-placeholder]': '_hideControlPlaceholder()',
     '[class.mat-form-field-disabled]': '_control.disabled',
     '[class.mat-focused]': '_control.focused',
     '[class.mat-primary]': 'color == "primary"',
@@ -95,7 +93,7 @@ let nextUniqueId = 0;
 })
 
 export class MatFormField implements AfterViewInit, AfterContentInit, AfterContentChecked {
-  private _placeholderOptions: PlaceholderOptions;
+  private _labelOptions: LabelOptions;
 
   /** Color of the form field underline, based on the theme. */
   @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
@@ -113,16 +111,16 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
   }
   private _hideRequiredMarker: boolean;
 
-  /** Override for the logic that disables the placeholder animation in certain cases. */
+  /** Override for the logic that disables the label animation in certain cases. */
   private _showAlwaysAnimate = false;
 
   /** Whether the floating label should always float or not. */
   get _shouldAlwaysFloat() {
-    return this._floatPlaceholder === 'always' && !this._showAlwaysAnimate;
+    return this._floatLabel === 'always' && !this._showAlwaysAnimate;
   }
 
-  /** Whether the placeholder can float or not. */
-  get _canPlaceholderFloat() { return this._floatPlaceholder !== 'never'; }
+  /** Whether the label can float or not. */
+  get _canLabelFloat() { return this._floatLabel !== 'never'; }
 
   /** State of the mat-hint and mat-error animations. */
   _subscriptAnimationState: string = '';
@@ -139,23 +137,32 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
   // Unique id for the hint label.
   _hintLabelId: string = `mat-hint-${nextUniqueId++}`;
 
-  /** Whether the placeholder should always float, never float or float as the user types. */
+  /**
+   * Whether the placeholder should always float, never float or float as the user types.
+   * @deprecated Use floatLabel instead.
+   */
   @Input()
-  get floatPlaceholder() { return this._floatPlaceholder; }
-  set floatPlaceholder(value: FloatPlaceholderType) {
-    if (value !== this._floatPlaceholder) {
-      this._floatPlaceholder = value || this._placeholderOptions.float || 'auto';
+  get floatPlaceholder() { return this._floatLabel; }
+  set floatPlaceholder(value: FloatLabelType) { this.floatLabel = value; }
+
+  /** Whether the label should always float, never float or float as the user types. */
+  @Input()
+  get floatLabel() { return this._floatLabel; }
+  set floatLabel(value: FloatLabelType) {
+    if (value !== this._floatLabel) {
+      this._floatLabel = value || this._labelOptions.float || 'auto';
       this._changeDetectorRef.markForCheck();
     }
   }
-  private _floatPlaceholder: FloatPlaceholderType;
+  private _floatLabel: FloatLabelType;
 
   /** Reference to the form field's underline element. */
   @ViewChild('underline') underlineRef: ElementRef;
   @ViewChild('connectionContainer') _connectionContainerRef: ElementRef;
-  @ViewChild('placeholder') private _placeholder: ElementRef;
+  @ViewChild('label') private _label: ElementRef;
   @ContentChild(MatFormFieldControl) _control: MatFormFieldControl<any>;
   @ContentChild(MatPlaceholder) _placeholderChild: MatPlaceholder;
+  @ContentChild(MatLabel) _labelChild: MatLabel;
   @ContentChildren(MatError) _errorChildren: QueryList<MatError>;
   @ContentChildren(MatHint) _hintChildren: QueryList<MatHint>;
   @ContentChildren(MatPrefix) _prefixChildren: QueryList<MatPrefix>;
@@ -164,9 +171,9 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
   constructor(
       public _elementRef: ElementRef,
       private _changeDetectorRef: ChangeDetectorRef,
-      @Optional() @Inject(MAT_PLACEHOLDER_GLOBAL_OPTIONS) placeholderOptions: PlaceholderOptions) {
-    this._placeholderOptions = placeholderOptions ? placeholderOptions : {};
-    this.floatPlaceholder = this._placeholderOptions.float || 'auto';
+      @Optional() @Inject(MAT_LABEL_GLOBAL_OPTIONS) labelOptions: LabelOptions) {
+    this._labelOptions = labelOptions ? labelOptions : {};
+    this.floatLabel = this._labelOptions.float || 'auto';
   }
 
   ngAfterContentInit() {
@@ -219,9 +226,25 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
     return ngControl && (ngControl as any)[prop];
   }
 
-  /** Whether the form field has a placeholder. */
   _hasPlaceholder() {
     return !!(this._control.placeholder || this._placeholderChild);
+  }
+
+  _hasLabel() {
+    return !!this._labelChild;
+  }
+
+  _shouldLabelFloat() {
+    return this._canLabelFloat && (this._control.shouldLabelFloat ||
+        this._control.shouldPlaceholderFloat || this._shouldAlwaysFloat);
+  }
+
+  _hideControlPlaceholder() {
+    return !this._hasLabel() || !this._shouldLabelFloat();
+  }
+
+  _hasFloatingLabel() {
+    return this._hasLabel() || this._hasPlaceholder();
   }
 
   /** Determines whether to display hints or errors. */
@@ -231,12 +254,12 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
   }
 
   /** Animates the placeholder up and locks it in position. */
-  _animateAndLockPlaceholder(): void {
-    if (this._placeholder && this._canPlaceholderFloat) {
+  _animateAndLockLabel(): void {
+    if (this._hasFloatingLabel() && this._canLabelFloat) {
       this._showAlwaysAnimate = true;
-      this._floatPlaceholder = 'always';
+      this._floatLabel = 'always';
 
-      fromEvent(this._placeholder.nativeElement, 'transitionend').pipe(take(1)).subscribe(() => {
+      fromEvent(this._label.nativeElement, 'transitionend').pipe(take(1)).subscribe(() => {
         this._showAlwaysAnimate = false;
       });
 

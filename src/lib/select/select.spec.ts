@@ -40,8 +40,8 @@ import {
 } from '@angular/forms';
 import {
   ErrorStateMatcher,
-  FloatPlaceholderType,
-  MAT_PLACEHOLDER_GLOBAL_OPTIONS,
+  FloatLabelType,
+  MAT_LABEL_GLOBAL_OPTIONS,
   MatOption,
 } from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -803,9 +803,9 @@ describe('MatSelect', () => {
         formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
       }));
 
-      it('should not float placeholder if no option is selected', fakeAsync(() => {
+      it('should not float label if no option is selected', fakeAsync(() => {
         expect(formField.classList.contains('mat-form-field-should-float'))
-            .toBe(false, 'placeholder should not be floating');
+            .toBe(false, 'Label should not be floating');
       }));
 
       it('should focus the first option if no option is selected', fakeAsync(() => {
@@ -936,7 +936,7 @@ describe('MatSelect', () => {
         const value = fixture.debugElement.query(By.css('.mat-select-value')).nativeElement;
 
         expect(formField.classList.contains('mat-form-field-should-float'))
-            .toBe(true, 'placeholder should be floating');
+            .toBe(true, 'Label should be floating');
         expect(value.textContent).toContain('Steak');
       }));
 
@@ -1043,7 +1043,7 @@ describe('MatSelect', () => {
 
       it('should set the view value from the form', fakeAsync(() => {
         let value = fixture.debugElement.query(By.css('.mat-select-value'));
-        expect(value.nativeElement.textContent.trim()).toBe('');
+        expect(value.nativeElement.textContent.trim()).toBe('Food');
 
         fixture.componentInstance.control.setValue('pizza-1');
         fixture.detectChanges();
@@ -1088,7 +1088,7 @@ describe('MatSelect', () => {
 
         const value = fixture.debugElement.query(By.css('.mat-select-value'));
         expect(value.nativeElement.textContent.trim())
-            .toBe('', `Expected trigger to be cleared when option value is not found.`);
+            .toBe('Food', `Expected trigger to show the placeholder.`);
         expect(trigger.textContent)
             .not.toContain('Pizza', `Expected trigger is cleared when option value is not found.`);
 
@@ -1112,7 +1112,7 @@ describe('MatSelect', () => {
 
         const value = fixture.debugElement.query(By.css('.mat-select-value'));
         expect(value.nativeElement.textContent.trim())
-            .toBe('', `Expected trigger to be cleared when option value is not found.`);
+            .toBe('Food', `Expected trigger to show the placeholder.`);
         expect(trigger.textContent)
             .not.toContain('Pizza', `Expected trigger is cleared when option value is not found.`);
 
@@ -1188,17 +1188,17 @@ describe('MatSelect', () => {
                 .toEqual(false, `Expected control to stay pristine after programmatic change.`);
           }));
 
-      it('should set an asterisk after the placeholder if control is required', fakeAsync(() => {
+      it('should set an asterisk after the label if control is required', fakeAsync(() => {
         let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
         expect(requiredMarker)
-            .toBeNull(`Expected placeholder not to have an asterisk, as control was not required.`);
+            .toBeNull(`Expected label not to have an asterisk, as control was not required.`);
 
         fixture.componentInstance.isRequired = true;
         fixture.detectChanges();
 
         requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'));
         expect(requiredMarker)
-            .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
+            .not.toBeNull(`Expected label to have an asterisk, as control was required.`);
       }));
     });
 
@@ -1250,16 +1250,16 @@ describe('MatSelect', () => {
         formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
       }));
 
-      it('should float the placeholder when the panel is open and unselected', fakeAsync(() => {
+      it('should float the label when the panel is open and unselected', fakeAsync(() => {
         expect(formField.classList.contains('mat-form-field-should-float'))
-            .toBe(false, 'Expected placeholder to initially have a normal position.');
+            .toBe(false, 'Expected label to initially have a normal position.');
 
         fixture.componentInstance.select.open();
         fixture.detectChanges();
         flush();
 
         expect(formField.classList).toContain('mat-form-field-should-float',
-            'Expected placeholder to animate up to floating position.');
+            'Expected label to animate up to floating position.');
 
         fixture.componentInstance.select.close();
         fixture.detectChanges();
@@ -1611,45 +1611,45 @@ describe('MatSelect', () => {
       }));
   });
 
-  describe('with floatPlaceholder', () => {
-    beforeEach(async(() => configureMatSelectTestingModule([FloatPlaceholderSelect])));
+  describe('with floatLabel', () => {
+    beforeEach(async(() => configureMatSelectTestingModule([FloatLabelSelect])));
 
-    let fixture: ComponentFixture<FloatPlaceholderSelect>;
+    let fixture: ComponentFixture<FloatLabelSelect>;
     let formField: HTMLElement;
 
     beforeEach(fakeAsync(() => {
-      fixture = TestBed.createComponent(FloatPlaceholderSelect);
+      fixture = TestBed.createComponent(FloatLabelSelect);
       fixture.detectChanges();
       formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
     }));
 
-    it('should be able to disable the floating placeholder', fakeAsync(() => {
-      fixture.componentInstance.floatPlaceholder = 'never';
+    it('should be able to disable the floating label', fakeAsync(() => {
+      fixture.componentInstance.floatLabel = 'never';
       fixture.detectChanges();
 
       expect(formField.classList.contains('mat-form-field-can-float'))
-          .toBe(false, 'Floating placeholder should be disabled');
+          .toBe(false, 'Floating label should be disabled');
 
       fixture.componentInstance.control.setValue('pizza-1');
       fixture.detectChanges();
 
       expect(formField.classList.contains('mat-form-field-can-float'))
-          .toBe(false, 'Floating placeholder should be disabled');
+          .toBe(false, 'Floating label should be disabled');
     }));
 
-    it('should be able to always float the placeholder', fakeAsync(() => {
+    it('should be able to always float the label', fakeAsync(() => {
       expect(fixture.componentInstance.control.value).toBeFalsy();
 
-      fixture.componentInstance.floatPlaceholder = 'always';
+      fixture.componentInstance.floatLabel = 'always';
       fixture.detectChanges();
 
       expect(formField.classList.contains('mat-form-field-can-float'))
-          .toBe(true, 'Placeholder should be able to float');
+          .toBe(true, 'Label should be able to float');
       expect(formField.classList.contains('mat-form-field-should-float'))
-          .toBe(true, 'Placeholder should be floating');
+          .toBe(true, 'Label should be floating');
     }));
 
-    it ('should default to global floating placeholder type', fakeAsync(() => {
+    it ('should default to global floating label type', fakeAsync(() => {
       fixture.destroy();
 
       TestBed.resetTestingModule();
@@ -1662,20 +1662,20 @@ describe('MatSelect', () => {
           NoopAnimationsModule
         ],
         declarations: [
-          FloatPlaceholderSelect
+          FloatLabelSelect
         ],
-        providers: [{ provide: MAT_PLACEHOLDER_GLOBAL_OPTIONS, useValue: { float: 'always' } }]
+        providers: [{ provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: { float: 'always' } }]
       });
 
-      fixture = TestBed.createComponent(FloatPlaceholderSelect);
-      fixture.componentInstance.floatPlaceholder = null;
+      fixture = TestBed.createComponent(FloatLabelSelect);
+      fixture.componentInstance.floatLabel = null;
       fixture.detectChanges();
       formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
 
       expect(formField.classList.contains('mat-form-field-can-float'))
-          .toBe(true, 'Placeholder should be able to float');
+          .toBe(true, 'Label should be able to float');
       expect(formField.classList.contains('mat-form-field-should-float'))
-          .toBe(true, 'Placeholder should be floating');
+          .toBe(true, 'Label should be floating');
     }));
   });
 
@@ -2231,7 +2231,7 @@ describe('MatSelect', () => {
       expect(fixture.componentInstance.select.value).toBe('sandwich-2');
     }));
 
-    it('should reset the placeholder when a null value is set', fakeAsync(() => {
+    it('should reset the label when a null value is set', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectWithoutForms);
 
       fixture.detectChanges();
@@ -3610,9 +3610,9 @@ class BasicSelectOnPushPreselected {
 }
 
 @Component({
-  selector: 'floating-placeholder-select',
+  selector: 'floating-label-select',
   template: `
-    <mat-form-field [floatPlaceholder]="floatPlaceholder">
+    <mat-form-field [floatLabel]="floatLabel">
       <mat-select placeholder="Food I want to eat right now" [formControl]="control">
         <mat-option *ngFor="let food of foods" [value]="food.value">
           {{ food.viewValue }}
@@ -3621,8 +3621,8 @@ class BasicSelectOnPushPreselected {
     </mat-form-field>
     `,
 })
-class FloatPlaceholderSelect {
-  floatPlaceholder: FloatPlaceholderType | null = 'auto';
+class FloatLabelSelect {
+  floatLabel: FloatLabelType | null = 'auto';
   control = new FormControl();
   foods: any[] = [
     { value: 'steak-0', viewValue: 'Steak' },

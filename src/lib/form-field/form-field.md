@@ -13,35 +13,39 @@ The following Angular Material components are designed to work inside a `<mat-fo
 
 <!-- example(form-field-overview) -->
 
-### Floating placeholder
+### Floating label
 
-The floating placeholder is a text label displayed on top of the form field control when
-the control does not contain any text. By default, when text is present the floating placeholder
-floats above the form field control.
+The floating label is a text label displayed on top of the form field control when
+the control does not contain any text. By default, when text is present the floating label
+floats above the form field control. The label for a form field can be defined either through a
+`mat-label` element, by setting the `placeholder` attribute on the form control or using the
+`mat-placeholder` element. If there are multiple clashing values (e.g. a `placeholder` and a
+label) the `mat-label` will take precedence and the `placeholder` will be shown only when there is
+no value.
 
 Placeholder text can be specified using the `placeholder` property on the form field control, or
 by adding a `<mat-placeholder>` element inside the form field. Only one of these options should be
 used, specifying both will raise an error.
 
 If the form field control is marked with a `required` attribute, an asterisk will be appended to the
-placeholder to indicate the fact that it is a required field. If unwanted, this can be disabled by
+label to indicate the fact that it is a required field. If unwanted, this can be disabled by
 setting the `hideRequiredMarker` property on `<mat-form-field>`
 
-The `floatPlaceholder` property of `<mat-form-field>` can be used to change this default floating
-behavior. It can set to `never` to hide the placeholder instead of float it when text is present in
-the form field control. It can be set to `always` to float the placeholder even when no text is
+The `floatLabel` property of `<mat-form-field>` can be used to change this default floating
+behavior. It can set to `never` to hide the label instead of float it when text is present in
+the form field control. It can be set to `always` to float the label even when no text is
 present in the form field control. It can also be set to `auto` to restore the default behavior.
 
-<!-- example(form-field-placeholder) -->
+<!-- example(form-field-label) -->
 
-Global default placeholder options can be specified by setting providing a value for
-`MAT_PLACEHOLDER_GLOBAL_OPTIONS` in your application's root module. Like the property, the global
+Global default label options can be specified by setting providing a value for
+`MAT_LABEL_GLOBAL_OPTIONS` in your application's root module. Like the property, the global
 setting can be either `always`, `never`, or `auto`.
 
 ```ts
 @NgModule({
   providers: [
-    {provide: MAT_PLACEHOLDER_GLOBAL_OPTIONS, useValue: {float: 'always'}}
+    {provide: MAT_LABEL_GLOBAL_OPTIONS, useValue: {float: 'always'}}
   ]
 })
 ```
@@ -96,7 +100,7 @@ information on this see the guide on
 ### Theming
 
 `<mat-form-field>` has a `color` property which can be set to `primary`, `accent`, or `warn`. This
-will set the color of the form field underline and floating placeholder based on the theme colors
+will set the color of the form field underline and floating label based on the theme colors
 of your app.
 
 `<mat-form-field>` inherits its `font-size` from its parent element. This can be overridden to an
@@ -112,8 +116,8 @@ mat-form-field.mat-form-field {
 
 ### Accessibility
 
-If a floating placeholder is specified, it will be automatically used as the label for the form
-field control. If no floating placeholder is specified, the user should label the form field control
+If a floating label is specified, it will be automatically used as the label for the form
+field control. If no floating label is specified, the user should label the form field control
 themselves using `aria-label`, `aria-labelledby` or `<label for=...>`.
 
 Any errors and hints added to the form field are automatically added to the form field control's

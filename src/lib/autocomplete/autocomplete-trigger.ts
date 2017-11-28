@@ -123,8 +123,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** Strategy that is used to position the panel. */
   private _positionStrategy: ConnectedPositionStrategy;
 
-  /** Whether or not the placeholder state is being overridden. */
-  private _manuallyFloatingPlaceholder = false;
+  /** Whether or not the label state is being overridden. */
+  private _manuallyFloatingLabel = false;
 
   /** The subscription for closing actions (some are bound to document). */
   private _closingActionsSubscription: Subscription;
@@ -163,7 +163,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** Opens the autocomplete suggestion panel. */
   openPanel(): void {
     this._attachOverlay();
-    this._floatPlaceholder();
+    this._floatLabel();
   }
 
   /** Closes the autocomplete suggestion panel. */
@@ -173,14 +173,14 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._closingActionsSubscription.unsubscribe();
     }
 
-    this._resetPlaceholder();
+    this._resetLabel();
 
     if (this._panelOpen) {
       this.autocomplete._isOpen = this._panelOpen = false;
 
       // We need to trigger change detection manually, because
       // `fromEvent` doesn't seem to do it at the proper time.
-      // This ensures that the placeholder is reset when the
+      // This ensures that the label is reset when the
       // user clicks outside.
       this._changeDetectorRef.detectChanges();
     }
@@ -307,33 +307,33 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   _handleFocus(): void {
     if (!this._element.nativeElement.readOnly) {
       this._attachOverlay();
-      this._floatPlaceholder(true);
+      this._floatLabel(true);
     }
   }
 
   /**
-   * In "auto" mode, the placeholder will animate down as soon as focus is lost.
+   * In "auto" mode, the label will animate down as soon as focus is lost.
    * This causes the value to jump when selecting an option with the mouse.
-   * This method manually floats the placeholder until the panel can be closed.
-   * @param shouldAnimate Whether the placeholder should be animated when it is floated.
+   * This method manually floats the label until the panel can be closed.
+   * @param shouldAnimate Whether the label should be animated when it is floated.
    */
-  private _floatPlaceholder(shouldAnimate = false): void {
-    if (this._formField && this._formField.floatPlaceholder === 'auto') {
+  private _floatLabel(shouldAnimate = false): void {
+    if (this._formField && this._formField.floatLabel === 'auto') {
       if (shouldAnimate) {
-        this._formField._animateAndLockPlaceholder();
+        this._formField._animateAndLockLabel();
       } else {
-        this._formField.floatPlaceholder = 'always';
+        this._formField.floatLabel = 'always';
       }
 
-      this._manuallyFloatingPlaceholder = true;
+      this._manuallyFloatingLabel = true;
     }
   }
 
-  /** If the placeholder has been manually elevated, return it to its normal state. */
-  private _resetPlaceholder(): void  {
-    if (this._manuallyFloatingPlaceholder) {
-      this._formField.floatPlaceholder = 'auto';
-      this._manuallyFloatingPlaceholder = false;
+  /** If the label has been manually elevated, return it to its normal state. */
+  private _resetLabel(): void  {
+    if (this._manuallyFloatingLabel) {
+      this._formField.floatLabel = 'auto';
+      this._manuallyFloatingLabel = false;
     }
   }
 

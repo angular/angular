@@ -19,7 +19,7 @@ export class MyTel {
   styleUrls: ['form-field-custom-control-example.css'],
   providers: [{provide: MatFormFieldControl, useExisting: MyTelInput}],
   host: {
-    '[class.floating]': 'shouldPlaceholderFloat',
+    '[class.floating]': 'shouldLabelFloat',
     '[id]': 'id',
     '[attr.aria-describedby]': 'describedBy',
   }
@@ -44,7 +44,7 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
     return !n.area && !n.exchange && !n.subscriber;
   }
 
-  get shouldPlaceholderFloat() {
+  get shouldLabelFloat() {
     return this.focused || !this.empty;
   }
 

@@ -52,7 +52,7 @@ import {MyTelInput,FormFieldCustomControlExample} from './form-field-custom-cont
 import {FormFieldErrorExample} from './form-field-error/form-field-error-example';
 import {FormFieldHintExample} from './form-field-hint/form-field-hint-example';
 import {FormFieldOverviewExample} from './form-field-overview/form-field-overview-example';
-import {FormFieldPlaceholderExample} from './form-field-placeholder/form-field-placeholder-example';
+import {FormFieldLabelExample} from './form-field-label/form-field-label-example';
 import {FormFieldPrefixSuffixExample} from './form-field-prefix-suffix/form-field-prefix-suffix-example';
 import {FormFieldThemingExample} from './form-field-theming/form-field-theming-example';
 import {GridListDynamicExample} from './grid-list-dynamic/grid-list-dynamic-example';
@@ -362,9 +362,9 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
-  'form-field-placeholder': {
-    title: 'Form field with placeholder ',
-    component: FormFieldPlaceholderExample,
+  'form-field-label': {
+    title: 'Form field with label ',
+    component: FormFieldLabelExample,
     additionalFiles: null,
     selectorName: null
   },
@@ -848,7 +848,7 @@ export const EXAMPLE_LIST = [
   FormFieldErrorExample,
   FormFieldHintExample,
   FormFieldOverviewExample,
-  FormFieldPlaceholderExample,
+  FormFieldLabelExample,
   FormFieldPrefixSuffixExample,
   FormFieldThemingExample,
   GridListDynamicExample,

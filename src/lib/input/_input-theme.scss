@@ -2,6 +2,7 @@
 @import '../core/theming/theming';
 @import '../core/style/form-common';
 @import '../core/typography/typography-utils';
+@import '../core/style/vendor-prefixes';
 
 
 @mixin mat-input-theme($theme) {
@@ -10,6 +11,12 @@
 
   .mat-input-element:disabled {
     color: mat-color($foreground, secondary-text, if($is-dark-theme, 0.7, 0.42));
+  }
+
+  .mat-input-element {
+    @include input-placeholder {
+      color: _mat-control-placeholder-color($theme);
+    }
   }
 }
 

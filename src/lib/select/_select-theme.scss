@@ -58,6 +58,10 @@
   .mat-select.mat-select-disabled .mat-select-arrow {
     color: mat-color($warn);
   }
+
+  .mat-select-placeholder {
+    color: _mat-control-placeholder-color($theme);
+  }
 }
 
 @mixin mat-select-typography($config) {

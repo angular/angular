@@ -6,7 +6,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <mat-card>
     <mat-card-subtitle>ngModel</mat-card-subtitle>
 
-    <mat-form-field [floatPlaceholder]="floatPlaceholder" [color]="drinksTheme">
+    <mat-form-field [floatLabel]="floatLabel" [color]="drinksTheme">
       <mat-select placeholder="Drink" [(ngModel)]="currentDrink" [required]="drinksRequired"
         [disabled]="drinksDisabled" #drinkControl="ngModel">
         <mat-option>None</mat-option>
@@ -24,7 +24,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <p> Status: {{ drinkControl.control?.status }} </p>
     <p>
       <label for="floating-placeholder">Floating placeholder:</label>
-      <select [(ngModel)]="floatPlaceholder" id="floating-placeholder">
+      <select [(ngModel)]="floatLabel" id="floating-placeholder">
         <option value="auto">Auto</option>
         <option value="always">Always</option>
         <option value="never">Never</option>

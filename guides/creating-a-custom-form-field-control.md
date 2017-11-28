@@ -211,16 +211,16 @@ get empty() {
 }
 ```
 
-#### `shouldPlaceholderFloat`
+#### `shouldLabelFloat`
 
-This property is used to indicate whether the placeholder should be in the floating position. We'll
+This property is used to indicate whether the label should be in the floating position. We'll
 use the same logic as `matInput` and float the placeholder when the input is focused or non-empty.
 Since the placeholder will be overlapping our control when when it's not floating, we should hide
 the `–` characters when it's not floating.
 
 ```ts
 @HostBinding('class.floating')
-get shouldPlaceholderFloat() {
+get shouldLabelFloat() {
   return this.focused || !this.empty;
 }
 ```

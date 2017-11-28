@@ -6,7 +6,7 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     <div>Reactive value: {{ stateCtrl.value | json }}</div>
     <div>Reactive dirty: {{ stateCtrl.dirty }}</div>
 
-    <mat-form-field floatPlaceholder="never">
+    <mat-form-field floatLabel="never">
       <input matInput placeholder="State" [matAutocomplete]="reactiveAuto" [formControl]="stateCtrl">
       <mat-autocomplete #reactiveAuto="matAutocomplete" [displayWith]="displayFn">
         <mat-option *ngFor="let state of reactiveStates | async" [value]="state">

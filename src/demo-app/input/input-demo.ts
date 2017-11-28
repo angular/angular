@@ -29,6 +29,7 @@ export class InputDemo {
   hideRequiredMarker: boolean;
   ctrlDisabled = false;
   textareaNgModelValue: string;
+  placeholderTestControl = new FormControl('', Validators.required);
 
   name: string;
   errorMessageExample1: string;
@@ -73,4 +74,14 @@ export class InputDemo {
       return false;
     }
   };
+
+  togglePlaceholderTestValue() {
+    this.placeholderTestControl.setValue(this.placeholderTestControl.value === '' ? 'Value' : '');
+  }
+
+  togglePlaceholderTestTouched() {
+    this.placeholderTestControl.touched ?
+      this.placeholderTestControl.markAsUntouched() :
+      this.placeholderTestControl.markAsTouched();
+  }
 }

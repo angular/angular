@@ -384,9 +384,112 @@
     </button>
     <div>
       <mat-form-field>
-          <input matInput placeholder="delayed value" [formControl]="delayedFormControl">
+        <input matInput placeholder="delayed value" [formControl]="delayedFormControl">
       </mat-form-field>
     </div>
+  </mat-card-content>
+</mat-card>
+
+
+<mat-card class="demo-card demo-basic">
+  <mat-toolbar color="primary">Floating labels</mat-toolbar>
+
+  <mat-card-content>
+    <div>
+      <mat-form-field>
+        <input matInput [formControl]="placeholderTestControl">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput [formControl]="placeholderTestControl" placeholder="Only placeholder">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Only label</mat-label>
+        <input matInput [formControl]="placeholderTestControl">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Label and placeholder</mat-label>
+        <input matInput [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Always float</mat-label>
+        <input matInput [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="never">
+        <mat-label>Never float</mat-label>
+        <input matInput [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Label and placeholder element</mat-label>
+        <mat-placeholder>The placeholder element</mat-placeholder>
+        <input matInput [formControl]="placeholderTestControl">
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-form-field>
+        <mat-select [formControl]="placeholderTestControl">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-select [formControl]="placeholderTestControl" placeholder="Only placeholder">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Only label</mat-label>
+        <mat-select [formControl]="placeholderTestControl">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Label and placeholder</mat-label>
+        <mat-select [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Always float</mat-label>
+        <mat-select [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field floatLabel="never">
+        <mat-label>Never float</mat-label>
+        <mat-select [formControl]="placeholderTestControl" placeholder="This is the placeholder">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Label and placeholder element</mat-label>
+        <mat-placeholder>The placeholder element</mat-placeholder>
+        <mat-select [formControl]="placeholderTestControl">
+          <mat-option value="Value">Value</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="togglePlaceholderTestValue()">Toggle value</button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="togglePlaceholderTestTouched()">Toggle touched</button>
   </mat-card-content>
 </mat-card>
 

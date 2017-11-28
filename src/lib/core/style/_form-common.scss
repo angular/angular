@@ -1,3 +1,5 @@
+@import '../theming/theming';
+
 // Renders a gradient for showing the dashed line when the input is disabled.
 // Unlike using a border, a gradient allows us to adjust the spacing of the dotted line
 // to match the Material Design spec.
@@ -5,4 +7,13 @@
   background-image: linear-gradient(to right, $color 0%, $color 33%, transparent 0%);
   background-size: 4px 1px;
   background-repeat: repeat-x;
+}
+
+// Figures out the color of the placeholder for a form control.
+// Used primarily to prevent the various form controls from
+// becoming out of sync since these colors aren't in a pallette.
+@function _mat-control-placeholder-color($theme) {
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+  @return mat-color($foreground, secondary-text, if($is-dark-theme, 0.5, 0.42));
 }

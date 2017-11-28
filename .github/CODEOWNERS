@@ -41,6 +41,7 @@
 /src/lib/core/line/**                              @jelbourn
 /src/lib/core/option/**                            @kara @crisbeto
 /src/lib/core/placeholder/**                       @kara @mmalerba
+/src/lib/core/label/**                             @kara @mmalerba
 /src/lib/core/ripple/**                            @devversion
 /src/lib/core/selection/**                         @tinayuangao @jelbourn
 /src/lib/core/selection/pseudo*/**                 @crisbeto @jelbourn

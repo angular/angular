@@ -37,7 +37,13 @@ export abstract class MatFormFieldControl<T> {
   readonly empty: boolean;
 
   /** Whether the `MatFormField` label should try to float. */
-  readonly shouldPlaceholderFloat: boolean;
+  readonly shouldLabelFloat?: boolean;
+
+  /**
+   * Whether the `MatFormField` placeholder should try to float.
+   * @deprecated Use `shouldLabelFloat` instead.
+   */
+  readonly shouldPlaceholderFloat?: boolean;
 
   /** Whether the control is required. */
   readonly required: boolean;

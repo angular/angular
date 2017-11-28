@@ -63,7 +63,7 @@ describe('MatAutocomplete', () => {
         AutocompleteWithOnPushDelay,
         AutocompleteWithNativeInput,
         AutocompleteWithoutPanel,
-        AutocompleteWithFormsAndNonfloatingPlaceholder,
+        AutocompleteWithFormsAndNonfloatingLabel,
         AutocompleteWithGroups,
         AutocompleteWithSelectEvent,
       ],
@@ -284,8 +284,8 @@ describe('MatAutocomplete', () => {
 
     it('should keep the label floating until the panel closes', async(() => {
       fixture.componentInstance.trigger.openPanel();
-      expect(fixture.componentInstance.formField.floatPlaceholder)
-          .toEqual('always', 'Expected placeholder to float as soon as panel opens.');
+      expect(fixture.componentInstance.formField.floatLabel)
+          .toEqual('always', 'Expected label to float as soon as panel opens.');
 
       fixture.whenStable().then(() => {
         fixture.detectChanges();
@@ -295,8 +295,8 @@ describe('MatAutocomplete', () => {
         options[1].click();
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.formField.floatPlaceholder)
-            .toEqual('auto', 'Expected placeholder to return to auto state after panel closes.');
+        expect(fixture.componentInstance.formField.floatLabel)
+            .toEqual('auto', 'Expected label to return to auto state after panel closes.');
       });
     }));
 
@@ -312,13 +312,13 @@ describe('MatAutocomplete', () => {
           .toBe(false, `Expected panel state to stay closed.`);
     });
 
-   it('should not mess with placeholder placement if set to never', async(() => {
-      fixture.componentInstance.placeholder = 'never';
+   it('should not mess with label placement if set to never', async(() => {
+      fixture.componentInstance.floatLabel = 'never';
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openPanel();
-      expect(fixture.componentInstance.formField.floatPlaceholder)
-          .toEqual('never', 'Expected placeholder to stay static.');
+      expect(fixture.componentInstance.formField.floatLabel)
+          .toEqual('never', 'Expected label to stay static.');
 
       fixture.whenStable().then(() => {
         fixture.detectChanges();
@@ -328,18 +328,18 @@ describe('MatAutocomplete', () => {
         options[1].click();
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.formField.floatPlaceholder)
-            .toEqual('never', 'Expected placeholder to stay in static state after close.');
+        expect(fixture.componentInstance.formField.floatLabel)
+            .toEqual('never', 'Expected label to stay in static state after close.');
       });
     }));
 
-    it('should not mess with placeholder placement if set to always', async(() => {
-      fixture.componentInstance.placeholder = 'always';
+    it('should not mess with label placement if set to always', async(() => {
+      fixture.componentInstance.floatLabel = 'always';
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.openPanel();
-      expect(fixture.componentInstance.formField.floatPlaceholder)
-          .toEqual('always', 'Expected placeholder to stay elevated on open.');
+      expect(fixture.componentInstance.formField.floatLabel)
+          .toEqual('always', 'Expected label to stay elevated on open.');
 
       fixture.whenStable().then(() => {
         fixture.detectChanges();
@@ -349,8 +349,8 @@ describe('MatAutocomplete', () => {
         options[1].click();
         fixture.detectChanges();
 
-        expect(fixture.componentInstance.formField.floatPlaceholder)
-            .toEqual('always', 'Expected placeholder to stay elevated after close.');
+        expect(fixture.componentInstance.formField.floatLabel)
+            .toEqual('always', 'Expected label to stay elevated after close.');
       });
     }));
 
@@ -385,14 +385,14 @@ describe('MatAutocomplete', () => {
           .toContain('mat-autocomplete-visible', 'Expected panel to be visible.');
     }));
 
-    it('should animate the placeholder when the input is focused', () => {
+    it('should animate the label when the input is focused', () => {
       const inputContainer = fixture.componentInstance.formField;
 
-      spyOn(inputContainer, '_animateAndLockPlaceholder');
-      expect(inputContainer._animateAndLockPlaceholder).not.toHaveBeenCalled();
+      spyOn(inputContainer, '_animateAndLockLabel');
+      expect(inputContainer._animateAndLockLabel).not.toHaveBeenCalled();
 
       dispatchFakeEvent(fixture.debugElement.query(By.css('input')).nativeElement, 'focusin');
-      expect(inputContainer._animateAndLockPlaceholder).toHaveBeenCalled();
+      expect(inputContainer._animateAndLockLabel).toHaveBeenCalled();
     });
 
     it('should provide the open state of the panel', async(() => {
@@ -1500,19 +1500,19 @@ describe('MatAutocomplete', () => {
       }).not.toThrow();
     }));
 
-    it('should hide the placeholder with a preselected form control value ' +
-      'and a disabled floating placeholder', fakeAsync(() => {
-        const fixture = TestBed.createComponent(AutocompleteWithFormsAndNonfloatingPlaceholder);
+    it('should hide the label with a preselected form control value ' +
+      'and a disabled floating label', fakeAsync(() => {
+        const fixture = TestBed.createComponent(AutocompleteWithFormsAndNonfloatingLabel);
 
         fixture.detectChanges();
         tick();
         fixture.detectChanges();
 
         const input = fixture.nativeElement.querySelector('input');
-        const placeholder = fixture.nativeElement.querySelector('.mat-form-field-placeholder');
+        const label = fixture.nativeElement.querySelector('.mat-form-field-label');
 
         expect(input.value).toBe('California');
-        expect(placeholder.classList).not.toContain('mat-form-field-empty');
+        expect(label.classList).not.toContain('mat-form-field-empty');
       }));
 
     it('should transfer the mat-autocomplete classes to the panel element', fakeAsync(() => {
@@ -1659,7 +1659,7 @@ describe('MatAutocomplete', () => {
 
 @Component({
   template: `
-    <mat-form-field [floatPlaceholder]="placeholder" [style.width.px]="width">
+    <mat-form-field [floatLabel]="floatLabel" [style.width.px]="width">
       <input matInput placeholder="State" [matAutocomplete]="auto" [formControl]="stateCtrl">
     </mat-form-field>
 
@@ -1674,7 +1674,7 @@ class SimpleAutocomplete implements OnDestroy {
   stateCtrl = new FormControl();
   filteredStates: any[];
   valueSub: Subscription;
-  placeholder = 'auto';
+  floatLabel = 'auto';
   width: number;
 
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
@@ -1885,7 +1885,7 @@ class AutocompleteWithoutPanel {
 
 @Component({
   template: `
-    <mat-form-field floatPlaceholder="never">
+    <mat-form-field floatLabel="never">
       <input placeholder="State" matInput [matAutocomplete]="auto" [formControl]="formControl">
     </mat-form-field>
 
@@ -1894,7 +1894,7 @@ class AutocompleteWithoutPanel {
     </mat-autocomplete>
   `
 })
-class AutocompleteWithFormsAndNonfloatingPlaceholder {
+class AutocompleteWithFormsAndNonfloatingLabel {
   formControl = new FormControl('California');
 }
 

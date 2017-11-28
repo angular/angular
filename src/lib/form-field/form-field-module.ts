@@ -15,6 +15,7 @@ import {MatHint} from './hint';
 import {MatPlaceholder} from './placeholder';
 import {MatPrefix} from './prefix';
 import {MatSuffix} from './suffix';
+import {MatLabel} from './label';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import {MatSuffix} from './suffix';
     MatPlaceholder,
     MatPrefix,
     MatSuffix,
+    MatLabel,
   ],
   imports: [
     CommonModule,
@@ -37,6 +39,7 @@ import {MatSuffix} from './suffix';
     MatPlaceholder,
     MatPrefix,
     MatSuffix,
+    MatLabel,
   ],
 })
 export class MatFormFieldModule {}

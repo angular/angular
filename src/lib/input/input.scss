@@ -37,13 +37,26 @@
     display: none;
   }
 
-  // Note that we can't use something like visibility: hidden or
-  // display: none, because IE ends up preventing the user from
-  // focusing the input altogether.
   @include input-placeholder {
-    // Needs to be !important, because the placeholder will end up inheriting the
-    // input color in IE, if the consumer overrides it with a higher specificity.
-    color: transparent !important;
+    // Delay the transition until the label has animated about a third of the way through, in
+    // order to prevent the placeholder from overlapping for a split second.
+    transition: color $swift-ease-out-duration $swift-ease-out-duration / 3
+      $swift-ease-out-timing-function;
+  }
+
+  .mat-form-field-hide-placeholder & {
+    // Note that we can't use something like visibility: hidden or
+    // display: none, because IE ends up preventing the user from
+    // focusing the input altogether.
+    @include input-placeholder {
+      // Needs to be !important, because the placeholder will end up inheriting the
+      // input color in IE, if the consumer overrides it with a higher specificity.
+      color: transparent !important;
+
+      // Remove the transition to prevent the placeholder
+      // from overlapping when the label comes back down.
+      transition: none;
+    }
   }
 }
 

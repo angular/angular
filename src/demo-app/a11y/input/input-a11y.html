@@ -1,9 +1,9 @@
 <section>
   <h2>Basic input box (e.g. name field)</h2>
-  <mat-form-field floatPlaceholder="never">
+  <mat-form-field floatLabel="never">
     <input matInput placeholder="First name" [(ngModel)]="firstName">
   </mat-form-field>
-  <mat-form-field floatPlaceholder="never">
+  <mat-form-field floatLabel="never">
     <input matInput placeholder="Last name" [(ngModel)]="lastName">
   </mat-form-field>
 </section>
@@ -34,12 +34,12 @@
 
 <section>
   <h2>Input with prefix & suffix (e.g. currency converter)</h2>
-  <mat-form-field floatPlaceholder="always">
+  <mat-form-field floatLabel="always">
     <input matInput type="number" placeholder="USD" [(ngModel)]="usd">
     <span matPrefix>$</span>
   </mat-form-field>
   =
-  <mat-form-field floatPlaceholder="always">
+  <mat-form-field floatLabel="always">
     <input matInput type="number" placeholder="JPY" [(ngModel)]="jpy">
     <span matPrefix>‎¥‎</span>
   </mat-form-field>
