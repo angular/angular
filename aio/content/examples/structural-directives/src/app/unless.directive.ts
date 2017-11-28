@@ -8,7 +8,7 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
  * Add the template content to the DOM unless the condition is true.
 // #enddocregion no-docs
  *
- * If the expression assigned to `myUnless` evaluates to a truthy value
+ * If the expression assigned to `appUnless` evaluates to a truthy value
  * then the templated elements are removed removed from the DOM,
  * the templated elements are (re)inserted into the DOM.
  *
@@ -18,8 +18,8 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
  *
  * ### Syntax
  *
- * - `<div *myUnless="condition">...</div>`
- * - `<ng-template [myUnless]="condition"><div>...</div></ng-template>`
+ * - `<div *appUnless="condition">...</div>`
+ * - `<ng-template [appUnless]="condition"><div>...</div></ng-template>`
  *
 // #docregion no-docs
  */
