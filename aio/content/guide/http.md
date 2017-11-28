@@ -389,7 +389,7 @@ Because interceptors can process the request and response _together_, they can d
 import 'rxjs/add/operator/do';
 
 export class TimingInterceptor implements HttpInterceptor {
-  constructor(private auth: AuthService) {}
+  constructor() {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   	const started = Date.now();
