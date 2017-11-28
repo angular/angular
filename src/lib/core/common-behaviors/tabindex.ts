@@ -31,4 +31,3 @@ export function mixinTabIndex<T extends Constructor<CanDisable>>(base: T, defaul
     }
   };
 }
-

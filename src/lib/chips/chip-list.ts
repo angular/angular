@@ -18,6 +18,7 @@ import {
   ChangeDetectorRef,
   Component,
   ContentChildren,
+  DoCheck,
   ElementRef,
   EventEmitter,
   Input,
@@ -29,14 +30,30 @@ import {
   Self,
   ViewEncapsulation,
 } from '@angular/core';
-import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormGroupDirective,
+  NgControl,
+  NgForm
+} from '@angular/forms';
+import {ErrorStateMatcher, mixinErrorState, CanUpdateErrorState} from '@angular/material/core';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
-import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 import {MatChip, MatChipEvent, MatChipSelectionChange} from './chip';
 import {MatChipInput} from './chip-input';
+
+// Boilerplate for applying mixins to MatChipList.
+/** @docs-private */
+export class MatChipListBase {
+  constructor(public _defaultErrorStateMatcher: ErrorStateMatcher,
+              public _parentForm: NgForm,
+              public _parentFormGroup: FormGroupDirective,
+              public ngControl: NgControl) {}
+}
+export const _MatChipListMixinBase = mixinErrorState(MatChipListBase);
+
 
 // Increasing integer for generating unique ids for chip-list components.
 let nextUniqueId = 0;
@@ -78,15 +95,9 @@ export class MatChipListChange {
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MatChipList implements MatFormFieldControl<any>, ControlValueAccessor,
-    AfterContentInit, OnInit, OnDestroy {
+export class MatChipList extends _MatChipListMixinBase implements MatFormFieldControl<any>,
+    ControlValueAccessor, AfterContentInit, DoCheck, OnInit, OnDestroy, CanUpdateErrorState {
   readonly controlType = 'mat-chip-list';
-
-  /**
-   * Stream that emits whenever the state of the input changes such that the wrapping `MatFormField`
-   * needs to run change detection.
-   */
-  stateChanges = new Subject<void>();
 
   /** When a chip is destroyed, we track the index so we can focus the appropriate next chip. */
   protected _lastDestroyedIndex: number|null = null;
@@ -173,6 +184,9 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
     return this.empty ? null : 'listbox';
   }
 
+  /** An object used to control when error messages are shown. */
+  @Input() errorStateMatcher: ErrorStateMatcher;
+
   /** Whether the user should be allowed to select multiple chips. */
   @Input()
   get multiple(): boolean { return this._multiple; }
@@ -251,14 +265,6 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   get disabled() { return this.ngControl ? this.ngControl.disabled : this._disabled; }
   set disabled(value: any) { this._disabled = coerceBooleanProperty(value); }
 
-  /** Whether the chip list is in an error state. */
-  get errorState(): boolean {
-    const isInvalid = this.ngControl && this.ngControl.invalid;
-    const isTouched = this.ngControl && this.ngControl.touched;
-    const isSubmitted = (this._parentFormGroup && this._parentFormGroup.submitted) ||
-      (this._parentForm && this._parentForm.submitted);
-    return !!(isInvalid && (isTouched || isSubmitted));
-  }
 
   /** Orientation of the chip list. */
   @Input('aria-orientation') ariaOrientation: 'horizontal' | 'vertical' = 'horizontal';
@@ -313,9 +319,11 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   constructor(protected _elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality,
-              @Optional() private _parentForm: NgForm,
-              @Optional() private _parentFormGroup: FormGroupDirective,
+              @Optional() _parentForm: NgForm,
+              @Optional() _parentFormGroup: FormGroupDirective,
+              _defaultErrorStateMatcher: ErrorStateMatcher,
               @Optional() @Self() public ngControl: NgControl) {
+    super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
     }
@@ -350,6 +358,15 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
   ngOnInit() {
     this._selectionModel = new SelectionModel<MatChip>(this.multiple, undefined, false);
     this.stateChanges.next();
+  }
+
+  ngDoCheck() {
+    if (this.ngControl) {
+      // We need to re-evaluate this on every change detection cycle, because there are some
+      // error triggers that we can't subscribe to (e.g. parent form submissions). This means
+      // that whatever logic is in here has to be super lean or we risk destroying the performance.
+      this.updateErrorState();
+    }
   }
 
   ngOnDestroy(): void {
