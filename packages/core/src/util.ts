@@ -21,6 +21,8 @@ const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'unde
     self instanceof WorkerGlobalScope && self;
 const __global = typeof global !== 'undefined' && global;
 const _global: {[name: string]: any} = __window || __global || __self;
+
+const promise: Promise<any> = Promise.resolve(0);
 /**
  * Attention: whenever providing a new value, be sure to add an
  * entry into the corresponding `....externs.js` file,
@@ -52,7 +54,12 @@ export function getSymbolIterator(): string|symbol {
 }
 
 export function scheduleMicroTask(fn: Function) {
-  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
+  if (typeof Zone === 'undefined') {
+    // use promise to schedule microTask instead of use Zone
+    promise.then(() => { fn && fn.apply(null, null); });
+  } else {
+    Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
+  }
 }
 
 // JS has NaN !== NaN
