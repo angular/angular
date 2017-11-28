@@ -1,13 +1,15 @@
 import {ElementRef} from '@angular/core';
 import {TestBed, inject} from '@angular/core/testing';
-import {ConnectedPositionStrategy} from './connected-position-strategy';
-import {ViewportRuler, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 import {OverlayPositionBuilder} from './overlay-position-builder';
-import {ConnectedOverlayPositionChange} from './connected-position';
 import {CdkScrollable} from '@angular/cdk/scrolling';
 import {Subscription} from 'rxjs/Subscription';
-import {ScrollDispatchModule} from '@angular/cdk/scrolling';
-import {OverlayRef} from '../overlay-ref';
+import {
+  OverlayModule,
+  Overlay,
+  OverlayRef,
+  ConnectedPositionStrategy,
+  ConnectedOverlayPositionChange,
+} from '../index';
 
 
 // Default width and height of the overlay and origin panels throughout these tests.
@@ -19,17 +21,15 @@ const DEFAULT_WIDTH = 60;
 // for tests on CI (both SauceLabs and Browserstack).
 
 describe('ConnectedPositionStrategy', () => {
+  let positionBuilder: OverlayPositionBuilder;
 
-  let viewportRuler: ViewportRuler;
+  beforeEach(() => {
+    TestBed.configureTestingModule({imports: [OverlayModule]});
 
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [ScrollDispatchModule],
-    providers: [VIEWPORT_RULER_PROVIDER]
-  }));
-
-  beforeEach(inject([ViewportRuler], (_ruler: ViewportRuler) => {
-    viewportRuler = _ruler;
-  }));
+    inject([Overlay], (overlay: Overlay) => {
+      positionBuilder = overlay.position();
+    })();
+  });
 
   describe('with origin on document body', () => {
     const ORIGIN_HEIGHT = DEFAULT_HEIGHT;
@@ -42,7 +42,6 @@ describe('ConnectedPositionStrategy', () => {
     let overlayContainerElement: HTMLElement;
     let strategy: ConnectedPositionStrategy;
     let fakeElementRef: ElementRef;
-    let positionBuilder: OverlayPositionBuilder;
 
     let originRect: ClientRect | null;
     let originCenterX: number | null;
@@ -56,9 +55,7 @@ describe('ConnectedPositionStrategy', () => {
       document.body.appendChild(originElement);
       document.body.appendChild(overlayContainerElement);
       overlayContainerElement.appendChild(overlayElement);
-
-      fakeElementRef = new FakeElementRef(originElement);
-      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
+      fakeElementRef = new ElementRef(originElement);
     });
 
     afterEach(() => {
@@ -177,8 +174,6 @@ describe('ConnectedPositionStrategy', () => {
       });
 
       it('should reposition the overlay if it would go off the bottom of the screen', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
-
         originElement.style.bottom = '25px';
         originElement.style.left = '200px';
         originRect = originElement.getBoundingClientRect();
@@ -200,8 +195,6 @@ describe('ConnectedPositionStrategy', () => {
       });
 
       it('should reposition the overlay if it would go off the right of the screen', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
-
         originElement.style.top = '200px';
         originElement.style.right = '25px';
         originRect = originElement.getBoundingClientRect();
@@ -224,8 +217,6 @@ describe('ConnectedPositionStrategy', () => {
       });
 
       it('should recalculate and set the last position with recalculateLastPosition()', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
-
         // Push the trigger down so the overlay doesn't have room to open on the bottom.
         originElement.style.bottom = '25px';
         originRect = originElement.getBoundingClientRect();
@@ -254,8 +245,6 @@ describe('ConnectedPositionStrategy', () => {
       });
 
       it('should default to the initial position, if no positions fit in the viewport', () => {
-        positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
-
         // Make the origin element taller than the viewport.
         originElement.style.height = '1000px';
         originElement.style.top = '0';
@@ -353,7 +342,6 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should emit onPositionChange event when position changes', () => {
-      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
       originElement.style.top = '200px';
       originElement.style.right = '25px';
 
@@ -390,7 +378,6 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should emit the onPositionChange event even if none of the positions fit', () => {
-      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
       originElement.style.bottom = '25px';
       originElement.style.right = '25px';
 
@@ -414,8 +401,6 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should pick the fallback position that shows the largest area of the element', () => {
-      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
-
       originElement.style.top = '200px';
       originElement.style.right = '25px';
       originRect = originElement.getBoundingClientRect();
@@ -441,7 +426,6 @@ describe('ConnectedPositionStrategy', () => {
     });
 
     it('should re-use the preferred position when re-applying while locked in', () => {
-      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
       strategy = positionBuilder.connectedTo(
           fakeElementRef,
           {originX: 'end', originY: 'center'},
@@ -584,15 +568,14 @@ describe('ConnectedPositionStrategy', () => {
       scrollable.appendChild(originElement);
 
       // Create a strategy with knowledge of the scrollable container
-      let positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
-      let fakeElementRef = new FakeElementRef(originElement);
+      let fakeElementRef = new ElementRef(originElement);
       strategy = positionBuilder.connectedTo(
           fakeElementRef,
           {originX: 'start', originY: 'bottom'},
           {overlayX: 'start', overlayY: 'top'});
 
       strategy.withScrollableContainers([
-          new CdkScrollable(new FakeElementRef(scrollable), null!, null!)]);
+          new CdkScrollable(new ElementRef(scrollable), null!, null!)]);
       strategy.attach(fakeOverlayRef(overlayElement));
       positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       onPositionChangeSubscription = strategy.onPositionChange.subscribe(positionChangeHandler);
@@ -666,7 +649,6 @@ describe('ConnectedPositionStrategy', () => {
     let overlayContainerElement: HTMLElement;
     let strategy: ConnectedPositionStrategy;
     let fakeElementRef: ElementRef;
-    let positionBuilder: OverlayPositionBuilder;
 
     beforeEach(() => {
       // The origin and overlay elements need to be in the document body in order to have geometry.
@@ -676,9 +658,7 @@ describe('ConnectedPositionStrategy', () => {
       document.body.appendChild(originElement);
       document.body.appendChild(overlayContainerElement);
       overlayContainerElement.appendChild(overlayElement);
-
-      fakeElementRef = new FakeElementRef(originElement);
-      positionBuilder = new OverlayPositionBuilder(viewportRuler, document);
+      fakeElementRef = new ElementRef(originElement);
     });
 
     afterEach(() => {
@@ -807,12 +787,6 @@ function createOverflowContainerElement() {
   element.style.width = '300px';
   element.style.margin = '100px';
   return element;
-}
-
-
-/** Fake implementation of ElementRef that is just a simple container for nativeElement. */
-class FakeElementRef implements ElementRef {
-  constructor(public nativeElement: HTMLElement) { }
 }
 
 function fakeOverlayRef(overlayElement: HTMLElement) {

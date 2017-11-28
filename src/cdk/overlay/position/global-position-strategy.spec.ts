@@ -1,5 +1,5 @@
-import {GlobalPositionStrategy} from './global-position-strategy';
-import {OverlayRef} from '../overlay-ref';
+import {TestBed, inject} from '@angular/core/testing';
+import {OverlayModule, Overlay, OverlayRef, GlobalPositionStrategy} from '../index';
 
 
 describe('GlobalPositonStrategy', () => {
@@ -7,8 +7,13 @@ describe('GlobalPositonStrategy', () => {
   let strategy: GlobalPositionStrategy;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({imports: [OverlayModule]});
+
+    inject([Overlay], (overlay: Overlay) => {
+      strategy = overlay.position().global();
+    })();
+
     element = document.createElement('div');
-    strategy = new GlobalPositionStrategy(document);
     document.body.appendChild(element);
     strategy.attach({overlayElement: element} as OverlayRef);
   });
