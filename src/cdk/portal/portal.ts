@@ -181,6 +181,10 @@ export abstract class BasePortalOutlet implements PortalOutlet {
     return !!this._attachedPortal;
   }
 
+  attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;
+  attach<T>(portal: TemplatePortal<T>): EmbeddedViewRef<T>;
+  attach(portal: any): any;
+
   /** Attaches a portal. */
   attach(portal: Portal<any>): any {
     if (!portal) {

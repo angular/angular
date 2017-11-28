@@ -333,7 +333,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     }
 
     this._position.withDirection(this.dir);
-    this._overlayRef.getConfig().direction = this.dir;
+    this._overlayRef.setDirection(this.dir);
     this._document.addEventListener('keydown', this._escapeListener);
 
     if (!this._overlayRef.hasAttached()) {

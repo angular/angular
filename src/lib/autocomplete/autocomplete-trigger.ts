@@ -458,8 +458,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this._overlayRef = this._overlay.create(this._getOverlayConfig());
     } else {
       /** Update the panel width, in case the host width has changed */
-      this._overlayRef.getConfig().width = this._getHostWidth();
-      this._overlayRef.updateSize();
+      this._overlayRef.updateSize({width: this._getHostWidth()});
     }
 
     if (this._overlayRef && !this._overlayRef.hasAttached()) {
