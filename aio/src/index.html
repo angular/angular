@@ -20,9 +20,12 @@
   <link rel="apple-touch-icon" sizes="144x144" href="assets/images/favicons/apple-touch-icon-144x144.png">
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/images/favicons/apple-touch-icon-144x144.png">
 
-  <!-- NOTE: These need to be kept in sync with `ngsw-manifest.json`. -->
-  <link href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" media="none" onload="this.media='all';">
-  <!-- -->
+  <!-- See https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery -->
+  <noscript id="deferred-styles">
+    <!-- NOTE: These need to be kept in sync with `ngsw-manifest.json`. -->
+    <link href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet" media="none" onload="this.media='all';">
+    <!-- -->
+  </noscript>
 
   <link rel="manifest" href="pwa-manifest.json">
   <meta name="theme-color" content="#1976d2">
@@ -65,6 +68,17 @@
       xhr.open("GET", polyfillUrl, false);
       xhr.send();
     }
+
+    var loadDeferredStyles = function() {
+      var addStylesNode = document.getElementById("deferred-styles");
+      var replacement = document.createElement("div");
+      replacement.innerHTML = addStylesNode.textContent;
+      document.body.appendChild(replacement)
+      addStylesNode.parentElement.removeChild(addStylesNode);
+    };
+    var raf = requestAnimationFrame || mozRequestAnimationFrame || webkitRequestAnimationFrame || msRequestAnimationFrame;
+    if (raf) raf(function() { window.setTimeout(loadDeferredStyles, 0); });
+    else window.addEventListener('load', loadDeferredStyles);
   </script>
 </head>
 <body>
