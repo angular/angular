@@ -13,7 +13,7 @@
 /src/lib/grid-list/**                              @kara @jelbourn
 /src/lib/icon/**                                   @jelbourn
 /src/lib/input/**                                  @mmalerba
-/src/lib/list/**                                   @jelbourn @crisbeto
+/src/lib/list/**                                   @jelbourn @crisbeto @devversion
 /src/lib/menu/**                                   @kara @crisbeto
 /src/lib/paginator/**                              @andrewseguin
 /src/lib/progress-bar/**                           @jelbourn @crisbeto @josephperrott
@@ -34,7 +34,7 @@
 # Angular Material core
 /src/lib/core/*                                    @jelbourn
 /src/lib/core/animation/**                         @jelbourn
-/src/lib/core/common-behaviors/**                  @jelbourn
+/src/lib/core/common-behaviors/**                  @jelbourn @devversion
 /src/lib/core/datetime/**                          @mmalerba
 /src/lib/core/error/**                             @crisbeto @mmalerba
 /src/lib/core/gestures/**                          @jelbourn
@@ -96,7 +96,7 @@
 /src/demo-app/grid-list/**                         @kara @jelbourn
 /src/demo-app/icon/**                              @jelbourn
 /src/demo-app/input/**                             @mmalerba
-/src/demo-app/list/**                              @jelbourn @crisbeto
+/src/demo-app/list/**                              @jelbourn @crisbeto @devversion
 /src/demo-app/live-announcer/**                    @jelbourn
 /src/demo-app/menu/**                              @kara @crisbeto
 /src/demo-app/overlay/**                           @jelbourn @crisbeto
@@ -132,7 +132,7 @@
 /e2e/components/grid-list-e2e.spec.ts              @kara @jelbourn
 /e2e/components/icon-e2e.spec.ts                   @jelbourn
 /e2e/components/input-e2e.spec.ts                  @mmalerba
-/e2e/components/list-e2e.spec.ts                   @jelbourn @crisbeto
+/e2e/components/list-e2e.spec.ts                   @jelbourn @crisbeto @devversion
 /e2e/components/menu-e2e.spec.ts                   @kara @crisbeto
 /e2e/components/progress-bar-e2e.spec.ts           @jelbourn @crisbeto @josephperrott
 /e2e/components/progress-spinner-e2e.spec.ts       @jelbourn @crisbeto @josephperrott
