@@ -283,7 +283,7 @@ export function main() {
       });
       getDOM().dispatchEvent(element, dispatchedEvent);
       expect(receivedEvents).toEqual([dispatchedEvent, dispatchedEvent]);
-      expect(receivedZones).toEqual([Zone.root.name, 'fakeAngularZone']);
+      expect(receivedZones).toEqual([Zone.root.name, 'angular']);
 
       receivedEvents = [];
       remover1 && remover1();

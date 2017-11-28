@@ -154,37 +154,50 @@ export class DomEventsPlugin extends EventManagerPlugin {
     let callback: EventListener = handler as EventListener;
     // if zonejs is loaded and current zone is not ngZone
     // we keep Zone.current on target for later restoration.
-    if (zoneJsLoaded && (!NgZone.isInAngularZone() || isBlackListedEvent(eventName))) {
-      let symbolName = symbolNames[eventName];
-      if (!symbolName) {
-        symbolName = symbolNames[eventName] = __symbol__(ANGULAR + eventName + FALSE);
-      }
-      let taskDatas: TaskData[] = (element as any)[symbolName];
-      const globalListenerRegistered = taskDatas && taskDatas.length > 0;
-      if (!taskDatas) {
-        taskDatas = (element as any)[symbolName] = [];
-      }
+    if (zoneJsLoaded) {
+      if (!NgZone.isInAngularZone() || isBlackListedEvent(eventName)) {
+        let symbolName = symbolNames[eventName];
+        if (!symbolName) {
+          symbolName = symbolNames[eventName] = __symbol__(ANGULAR + eventName + FALSE);
+        }
+        let taskDatas: TaskData[] = (element as any)[symbolName];
+        const globalListenerRegistered = taskDatas && taskDatas.length > 0;
+        if (!taskDatas) {
+          taskDatas = (element as any)[symbolName] = [];
+        }
 
-      const zone = isBlackListedEvent(eventName) ? Zone.root : Zone.current;
-      if (taskDatas.length === 0) {
-        taskDatas.push({zone: zone, handler: callback});
-      } else {
-        let callbackRegistered = false;
-        for (let i = 0; i < taskDatas.length; i++) {
-          if (taskDatas[i].handler === callback) {
-            callbackRegistered = true;
-            break;
+        const zone = isBlackListedEvent(eventName) ? Zone.root : Zone.current;
+        if (taskDatas.length === 0) {
+          taskDatas.push({zone: zone, handler: callback});
+        } else {
+          let callbackRegistered = false;
+          for (let i = 0; i < taskDatas.length; i++) {
+            if (taskDatas[i].handler === callback) {
+              callbackRegistered = true;
+              break;
+            }
+          }
+          if (!callbackRegistered) {
+            taskDatas.push({zone: zone, handler: callback});
           }
         }
-        if (!callbackRegistered) {
-          taskDatas.push({zone: zone, handler: callback});
-        }
-      }
 
-      if (!globalListenerRegistered) {
-        element[ADD_EVENT_LISTENER](eventName, globalListener, false);
+        if (!globalListenerRegistered) {
+          element[ADD_EVENT_LISTENER](eventName, globalListener, false);
+        }
+      } else {
+        // if zone.js loaded and we are in angular zone, we don't need to
+        // use zone.js patched addEventListener
+        const wrappedCallback = function() {
+          return self.ngZone.run(callback, this, arguments as any);
+        };
+        zoneJsLoaded.apply(element, [eventName, wrappedCallback, false]);
+        // we just use the underlying removeEventListener
+        return () => element[REMOVE_EVENT_LISTENER].apply(
+                   element, [eventName, wrappedCallback, false]);
       }
     } else {
+      // use zone.js patched addEventListener or native addEventListener if zone.js not loaded
       element[NATIVE_ADD_LISTENER](eventName, callback, false);
     }
     return () => this.removeEventListener(element, eventName, callback);
@@ -196,6 +209,8 @@ export class DomEventsPlugin extends EventManagerPlugin {
     if (!underlyingRemove) {
       return target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
     }
+
+    // if zone.js loaded and wrappedCallback not exists, the callback was added in different zone
     let symbolName = symbolNames[eventName];
     let taskDatas: TaskData[] = symbolName && target[symbolName];
     if (!taskDatas) {
