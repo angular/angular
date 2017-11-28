@@ -191,6 +191,18 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._isTooltipVisible()).toBe(false);
     }));
 
+    it('should hide if the message is cleared while the tooltip is open', fakeAsync(() => {
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+
+      fixture.componentInstance.message = '';
+      fixture.detectChanges();
+      tick(0);
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+    }));
+
     it('should not show if hide is called before delay finishes', async(() => {
       assertTooltipInstance(tooltipDirective, false);
 

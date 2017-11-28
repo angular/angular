@@ -142,14 +142,20 @@ export class MatTooltip implements OnDestroy {
   private _message = '';
 
   /** The message to be displayed in the tooltip */
-  @Input('matTooltip') get message() { return this._message; }
+  @Input('matTooltip')
+  get message() { return this._message; }
   set message(value: string) {
     this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this._message);
 
     // If the message is not a string (e.g. number), convert it to a string and trim it.
     this._message = value != null ? `${value}`.trim() : '';
-    this._updateTooltipMessage();
-    this._ariaDescriber.describe(this._elementRef.nativeElement, this.message);
+
+    if (!this._message && this._isTooltipVisible()) {
+      this.hide(0);
+    } else {
+      this._updateTooltipMessage();
+      this._ariaDescriber.describe(this._elementRef.nativeElement, this.message);
+    }
   }
 
   /** Classes to be passed to the tooltip. Supports the same syntax as `ngClass`. */
