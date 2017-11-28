@@ -29,10 +29,7 @@ export class SitePage {
   locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
   navigateTo(pageUrl = '') {
-    return browser.get('/' + pageUrl)
-      // We need to tell the index.html not to load the real analytics library
-      // See the GA snippet in index.html
-      .then(() => browser.executeScript('sessionStorage.setItem("__e2e__", true);'));
+    return browser.get('/' + pageUrl);
   }
 
   getDocViewerText() {
