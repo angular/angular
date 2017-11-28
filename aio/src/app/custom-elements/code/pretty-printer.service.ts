@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { from as fromPromise, Observable } from 'rxjs';
 import { first, map, share } from 'rxjs/operators';
+import 'rxjs/add/operator/share';
 
 import { Logger } from 'app/shared/logger.service';
 

@@ -1,8 +1,7 @@
 import { ApplicationRef, ReflectiveInjector } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
-import { NgServiceWorker } from '@angular/service-worker';
+import { SwUpdate } from '@angular/service-worker';
 import { Subject } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 import { Logger } from 'app/shared/logger.service';
 import { SwUpdatesService } from './sw-updates.service';
@@ -11,7 +10,7 @@ describe('SwUpdatesService', () => {
   let injector: ReflectiveInjector;
   let appRef: MockApplicationRef;
   let service: SwUpdatesService;
-  let sw: MockNgServiceWorker;
+  let sw: MockSwUpdate;
   let checkInterval: number;
 
   // Helpers
@@ -24,13 +23,13 @@ describe('SwUpdatesService', () => {
     injector = ReflectiveInjector.resolveAndCreate([
       { provide: ApplicationRef, useClass: MockApplicationRef },
       { provide: Logger, useClass: MockLogger },
-      { provide: NgServiceWorker, useClass: MockNgServiceWorker },
+      { provide: SwUpdate, useClass: MockSwUpdate },
       SwUpdatesService
     ]);
 
     appRef = injector.get(ApplicationRef);
     service = injector.get(SwUpdatesService);
-    sw = injector.get(NgServiceWorker);
+    sw = injector.get(SwUpdate);
     checkInterval = (service as any).checkInterval;
   };
   const tearDown = () => service.ngOnDestroy();
@@ -59,8 +58,11 @@ describe('SwUpdatesService', () => {
     appRef.isStable.next(true);
     sw.checkForUpdate.calls.reset();
 
-    sw.$$checkForUpdateSubj.next(false);
     expect(sw.checkForUpdate).not.toHaveBeenCalled();
+
+    tick(checkInterval);
+    expect(sw.checkForUpdate).toHaveBeenCalled();
+    expect(sw.activateUpdate).not.toHaveBeenCalled();
 
     tick(checkInterval);
     expect(sw.checkForUpdate).toHaveBeenCalled();
@@ -70,33 +72,23 @@ describe('SwUpdatesService', () => {
   it('should activate new updates immediately', fakeAsync(run(() => {
     appRef.isStable.next(true);
     sw.checkForUpdate.calls.reset();
-
-    sw.$$checkForUpdateSubj.next(true);
     expect(sw.checkForUpdate).not.toHaveBeenCalled();
 
     tick(checkInterval);
-    expect(sw.checkForUpdate).not.toHaveBeenCalled();
+    expect(sw.checkForUpdate).toHaveBeenCalled();
+    sw.$$availableSubj.next({available: {hash: 'bar'}});
     expect(sw.activateUpdate).toHaveBeenCalled();
   })));
 
-  it('should not pass a specific version to `NgServiceWorker.activateUpdate()`', fakeAsync(run(() => {
     appRef.isStable.next(true);
-    sw.$$checkForUpdateSubj.next(true);
-    tick(checkInterval);
-
-    expect(sw.activateUpdate).toHaveBeenCalledWith(null);
-  })));
-
   it('should schedule a new check after activating the update', fakeAsync(run(() => {
     appRef.isStable.next(true);
     sw.checkForUpdate.calls.reset();
-    sw.$$checkForUpdateSubj.next(true);
 
     tick(checkInterval);
-    expect(sw.checkForUpdate).not.toHaveBeenCalled();
+    expect(sw.checkForUpdate).toHaveBeenCalled();
 
-    sw.$$activateUpdateSubj.next();
-    expect(sw.checkForUpdate).not.toHaveBeenCalled();
+    sw.checkForUpdate.calls.reset();
 
     tick(checkInterval);
     expect(sw.checkForUpdate).toHaveBeenCalled();
@@ -106,10 +98,10 @@ describe('SwUpdatesService', () => {
     const activatedVersions: (string|undefined)[] = [];
     service.updateActivated.subscribe(v => activatedVersions.push(v));
 
-    sw.$$updatesSubj.next({type: 'pending', version: 'foo'});
-    sw.$$updatesSubj.next({type: 'activation', version: 'bar'});
-    sw.$$updatesSubj.next({type: 'pending', version: 'baz'});
-    sw.$$updatesSubj.next({type: 'activation', version: 'qux'});
+    sw.$$availableSubj.next({available: {hash: 'foo'}});
+    sw.$$activatedSubj.next({current: {hash: 'bar'}});
+    sw.$$availableSubj.next({available: {hash: 'baz'}});
+    sw.$$activatedSubj.next({current: {hash: 'qux'}});
 
     expect(activatedVersions).toEqual(['bar', 'qux']);
   }));
@@ -120,7 +112,6 @@ describe('SwUpdatesService', () => {
       sw.checkForUpdate.calls.reset();
 
       service.ngOnDestroy();
-      sw.$$checkForUpdateSubj.next(false);
       tick(checkInterval);
 
       expect(sw.checkForUpdate).not.toHaveBeenCalled();
@@ -130,11 +121,12 @@ describe('SwUpdatesService', () => {
       appRef.isStable.next(true);
       sw.checkForUpdate.calls.reset();
 
-      sw.$$checkForUpdateSubj.next(true);
-      expect(sw.activateUpdate).toHaveBeenCalled();
+      tick(checkInterval);
+      sw.checkForUpdate.calls.reset();
+
+      sw.$$activatedSubj.next({current: {hash: 'baz'}});
 
       service.ngOnDestroy();
-      sw.$$activateUpdateSubj.next();
       tick(checkInterval);
 
       expect(sw.checkForUpdate).not.toHaveBeenCalled();
@@ -144,11 +136,11 @@ describe('SwUpdatesService', () => {
       const activatedVersions: (string|undefined)[] = [];
       service.updateActivated.subscribe(v => activatedVersions.push(v));
 
-      sw.$$updatesSubj.next({type: 'pending', version: 'foo'});
-      sw.$$updatesSubj.next({type: 'activation', version: 'bar'});
+      sw.$$availableSubj.next({available: {hash: 'bar'}});
+      sw.$$activatedSubj.next({current: {hash: 'bar'}});
       service.ngOnDestroy();
-      sw.$$updatesSubj.next({type: 'pending', version: 'baz'});
-      sw.$$updatesSubj.next({type: 'activation', version: 'qux'});
+      sw.$$availableSubj.next({available: {hash: 'baz'}});
+      sw.$$activatedSubj.next({current: {hash: 'baz'}});
 
       expect(activatedVersions).toEqual(['bar']);
     }));
@@ -164,16 +156,20 @@ class MockLogger {
   log = jasmine.createSpy('MockLogger.log');
 }
 
-class MockNgServiceWorker {
-  $$activateUpdateSubj = new Subject<boolean>();
-  $$checkForUpdateSubj = new Subject<boolean>();
-  $$updatesSubj = new Subject<{type: string, version: string}>();
+class MockSwUpdate {
+  $$availableSubj = new Subject<{available: {hash: string}}>();
+  $$activatedSubj = new Subject<{current: {hash: string}}>();
 
-  updates = this.$$updatesSubj.asObservable();
+  available = this.$$availableSubj.asObservable();
+  activated = this.$$activatedSubj.asObservable();
 
-  activateUpdate = jasmine.createSpy('MockNgServiceWorker.activateUpdate')
-                          .and.callFake(() => this.$$activateUpdateSubj.pipe(take(1)));
+  get isEnabled(): boolean {
+    return true;
+  }
 
-  checkForUpdate = jasmine.createSpy('MockNgServiceWorker.checkForUpdate')
-                          .and.callFake(() => this.$$checkForUpdateSubj.pipe(take(1)));
+  activateUpdate = jasmine.createSpy('MockSwUpdates.activateUpdate')
+                          .and.callFake(() => Promise.resolve());
+
+  checkForUpdate = jasmine.createSpy('MockSwUpdates.checkForUpdate')
+                          .and.callFake(() => Promise.resolve());
 }
