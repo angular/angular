@@ -48,16 +48,16 @@ if [[ ${TRAVIS:-} ]]; then
       setEnvVar KARMA_JS_BROWSERS ChromeNoSandbox
       ;;
     saucelabs_required)
-      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').sauceAliases.CI_REQUIRED.join(','))"`
+      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('${PROJECT_ROOT}/browser-providers.conf').sauceAliases.CI_REQUIRED.join(','))"`
       ;;
     browserstack_required)
-      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_REQUIRED.join(','))"`
+      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('${PROJECT_ROOT}/browser-providers.conf').browserstackAliases.CI_REQUIRED.join(','))"`
       ;;
     saucelabs_optional)
-      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').sauceAliases.CI_OPTIONAL.join(','))"`
+      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('${PROJECT_ROOT}/browser-providers.conf').sauceAliases.CI_OPTIONAL.join(','))"`
       ;;
     browserstack_optional)
-      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('/home/travis/build/angular/angular/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
+      setEnvVar KARMA_JS_BROWSERS `node -e "console.log(require('${PROJECT_ROOT}/browser-providers.conf').browserstackAliases.CI_OPTIONAL.join(','))"`
       ;;
     aio)
       # Determine the current stable branch.
