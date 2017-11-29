@@ -150,3 +150,12 @@ To add a divider, use `<mat-divider>`.
    </mat-list-item>
 </mat-list>
 ```
+
+### Accessibility
+By default, the list assumes that it will be used in a purely decorative fashion and thus sets no
+roles, ARIA attributes, or keyboard shortcuts. This is equivalent to having a sequence of <div>
+elements on the page. Any interactive content within the list should be given an appropriate
+accessibility treatment based on the specific workflow of your application.
+
+If the list is used to present a list of non-interactive content items, then the list element should
+be given `role="list"` and each list item should be given `role="listitem"`.

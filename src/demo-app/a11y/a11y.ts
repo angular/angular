@@ -49,6 +49,7 @@ export class AccessibilityDemo implements OnDestroy {
     {name: 'Grid list', route: 'grid-list'},
     {name: 'Icon', route: 'icon'},
     {name: 'Input', route: 'input'},
+    {name: 'List', route: 'list'},
     {name: 'Menu', route: 'menu'},
     {name: 'Progress bar', route: 'progress-bar'},
     {name: 'Progress spinner', route: 'progress-spinner'},

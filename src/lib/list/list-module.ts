@@ -17,13 +17,12 @@ import {
 import {
   MatDividerCssMatStyler,
   MatList,
+  MatNavList,
   MatListAvatarCssMatStyler,
-  MatListCssMatStyler,
   MatListDivider,
   MatListIconCssMatStyler,
   MatListItem,
   MatListSubheaderCssMatStyler,
-  MatNavListCssMatStyler,
 } from './list';
 import {MatListOption, MatSelectionList} from './selection-list';
 
@@ -32,14 +31,13 @@ import {MatListOption, MatSelectionList} from './selection-list';
   imports: [MatLineModule, MatRippleModule, MatCommonModule, MatPseudoCheckboxModule, CommonModule],
   exports: [
     MatList,
+    MatNavList,
     MatListItem,
     MatListDivider,
     MatListAvatarCssMatStyler,
     MatLineModule,
     MatCommonModule,
     MatListIconCssMatStyler,
-    MatListCssMatStyler,
-    MatNavListCssMatStyler,
     MatDividerCssMatStyler,
     MatListSubheaderCssMatStyler,
     MatPseudoCheckboxModule,
@@ -48,12 +46,11 @@ import {MatListOption, MatSelectionList} from './selection-list';
   ],
   declarations: [
     MatList,
+    MatNavList,
     MatListItem,
     MatListDivider,
     MatListAvatarCssMatStyler,
     MatListIconCssMatStyler,
-    MatListCssMatStyler,
-    MatNavListCssMatStyler,
     MatDividerCssMatStyler,
     MatListSubheaderCssMatStyler,
     MatSelectionList,
