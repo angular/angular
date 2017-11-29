@@ -12,7 +12,7 @@ import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
 import {Data, ResolveData, Route, Routes} from './config';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
+import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
 import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {forEach, last} from './utils/collection';
@@ -21,15 +21,17 @@ import {TreeNode} from './utils/tree';
 class NoMatch {}
 
 export function recognize(
-    rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree,
-    url: string): Observable<RouterStateSnapshot> {
-  return new Recognizer(rootComponentType, config, urlTree, url).recognize();
+    rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree, url: string,
+    paramsInheritanceStrategy: ParamsInheritanceStrategy =
+        'emptyOnly'): Observable<RouterStateSnapshot> {
+  return new Recognizer(rootComponentType, config, urlTree, url, paramsInheritanceStrategy)
+      .recognize();
 }
 
 class Recognizer {
   constructor(
       private rootComponentType: Type<any>|null, private config: Routes, private urlTree: UrlTree,
-      private url: string) {}
+      private url: string, private paramsInheritanceStrategy: ParamsInheritanceStrategy) {}
 
   recognize(): Observable<RouterStateSnapshot> {
     try {
@@ -55,7 +57,7 @@ class Recognizer {
   inheritParamsAndData(routeNode: TreeNode<ActivatedRouteSnapshot>): void {
     const route = routeNode.value;
 
-    const i = inheritedParamsDataResolve(route);
+    const i = inheritedParamsDataResolve(route, this.paramsInheritanceStrategy);
     route.params = Object.freeze(i.params);
     route.data = Object.freeze(i.data);
 

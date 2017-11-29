@@ -498,7 +498,7 @@ function checkResolveData(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any, check: any): void {
   const p = new PreActivation(future, curr, injector);
   p.initialize(new ChildrenOutletContexts());
-  p.resolveData().subscribe(check, (e) => { throw e; });
+  p.resolveData('emptyOnly').subscribe(check, (e) => { throw e; });
 }
 
 function checkGuards(

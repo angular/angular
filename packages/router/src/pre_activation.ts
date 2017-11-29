@@ -21,7 +21,7 @@ import {reduce} from 'rxjs/operator/reduce';
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
 import {ActivationStart, ChildActivationStart, Event} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
+import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
 import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
@@ -63,11 +63,11 @@ export class PreActivation {
         (canDeactivate: boolean) => canDeactivate ? this.runCanActivateChecks() : of (false));
   }
 
-  resolveData(): Observable<any> {
+  resolveData(paramsInheritanceStrategy: ParamsInheritanceStrategy): Observable<any> {
     if (!this.isActivating()) return of (null);
     const checks$ = from(this.canActivateChecks);
-    const runningChecks$ =
-        concatMap.call(checks$, (check: CanActivate) => this.runResolve(check.route));
+    const runningChecks$ = concatMap.call(
+        checks$, (check: CanActivate) => this.runResolve(check.route, paramsInheritanceStrategy));
     return reduce.call(runningChecks$, (_: any, __: any) => _);
   }
 
@@ -306,11 +306,14 @@ export class PreActivation {
     return every.call(canDeactivate$, (result: any) => result === true);
   }
 
-  private runResolve(future: ActivatedRouteSnapshot): Observable<any> {
+  private runResolve(
+      future: ActivatedRouteSnapshot,
+      paramsInheritanceStrategy: ParamsInheritanceStrategy): Observable<any> {
     const resolve = future._resolve;
     return map.call(this.resolveNode(resolve, future), (resolvedData: any): any => {
       future._resolvedData = resolvedData;
-      future.data = {...future.data, ...inheritedParamsDataResolve(future).resolve};
+      future.data = {...future.data,
+                     ...inheritedParamsDataResolve(future, paramsInheritanceStrategy).resolve};
       return null;
     });
   }
