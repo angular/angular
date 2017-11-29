@@ -61,7 +61,7 @@ class AngularCompilerProgram implements Program {
 
   constructor(
       private rootNames: string[], private options: CompilerOptions, private host: CompilerHost,
-      private oldProgram?: Program) {
+      oldProgram?: Program) {
     const [major, minor] = ts.version.split('.');
     if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 4)) {
       throw new Error('The Angular Compiler requires TypeScript >= 2.4.');
