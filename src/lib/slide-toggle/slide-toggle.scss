@@ -161,7 +161,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   left: $mat-slide-toggle-thumb-size / 2 - $mat-slide-toggle-ripple-radius;
   height: $mat-slide-toggle-ripple-radius * 2;
   width: $mat-slide-toggle-ripple-radius * 2;
-  border-radius: 50%;
   z-index: 1;
   pointer-events: none;
 }

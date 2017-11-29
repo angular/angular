@@ -9,7 +9,7 @@ $_mat-checkbox-mark-path-length: 22.910259;
 $_mat-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1);
 
 // The ripple size of the checkbox
-$_mat-checkbox-ripple-size: 15px;
+$_mat-checkbox-ripple-radius: 25px;
 
 // The amount of spacing between the checkbox and its label.
 $_mat-checkbox-item-spacing: $mat-toggle-padding;
@@ -413,11 +413,10 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 
 .mat-checkbox-ripple {
   position: absolute;
-  left: -$_mat-checkbox-ripple-size;
-  top: -$_mat-checkbox-ripple-size;
-  right: -$_mat-checkbox-ripple-size;
-  bottom: -$_mat-checkbox-ripple-size;
-  border-radius: 50%;
+  left: $mat-checkbox-size / 2 - $_mat-checkbox-ripple-radius;
+  top: $mat-checkbox-size / 2 - $_mat-checkbox-ripple-radius;
+  height: $_mat-checkbox-ripple-radius * 2;
+  width: $_mat_checkbox-ripple-radius * 2;
   z-index: 1;
   pointer-events: none;
 }

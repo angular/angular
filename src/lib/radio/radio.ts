@@ -38,6 +38,7 @@ import {
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
+  RippleConfig,
   RippleRef,
 } from '@angular/material/core';
 
@@ -482,6 +483,9 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   /** The child ripple instance. */
   @ViewChild(MatRipple) _ripple: MatRipple;
 
+  /** Ripple configuration for the mouse ripples and focus indicators. */
+  _rippleConfig: RippleConfig = {centered: true, radius: 23, speedFactor: 1.5};
+
   /** Reference to the current focus ripple. */
   private _focusRipple: RippleRef | null;
 
@@ -595,7 +599,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   /** Function is called whenever the focus changes for the input element. */
   private _onInputFocusChange(focusOrigin: FocusOrigin) {
     if (!this._focusRipple && focusOrigin === 'keyboard') {
-      this._focusRipple = this._ripple.launch(0, 0, {persistent: true, centered: true});
+      this._focusRipple = this._ripple.launch(0, 0, {persistent: true, ...this._rippleConfig});
     } else if (!focusOrigin) {
       if (this.radioGroup) {
         this.radioGroup._touch();

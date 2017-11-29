@@ -8,7 +8,10 @@
     <div mat-ripple class="mat-radio-ripple"
          [matRippleTrigger]="label"
          [matRippleDisabled]="_isRippleDisabled()"
-         [matRippleCentered]="true"></div>
+         [matRippleCentered]="_rippleConfig.centered"
+         [matRippleRadius]="_rippleConfig.radius"
+         [matRippleSpeedFactor]="_rippleConfig.speedFactor">
+    </div>
   </div>
 
   <input #input class="mat-radio-input cdk-visually-hidden" type="radio"

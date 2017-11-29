@@ -3,7 +3,7 @@
 
 
 $mat-radio-size: $mat-toggle-size !default;
-$mat-radio-ripple-size: $mat-radio-size * 0.75;
+$mat-radio-ripple-radius: 25px;
 
 // Top-level host container.
 .mat-radio-button {
@@ -101,11 +101,10 @@ $mat-radio-ripple-size: $mat-radio-size * 0.75;
 
 .mat-radio-ripple {
   position: absolute;
-  left: -$mat-radio-ripple-size;
-  top: -$mat-radio-ripple-size;
-  right: -$mat-radio-ripple-size;
-  bottom: -$mat-radio-ripple-size;
-  border-radius: 50%;
+  left: $mat-radio-size / 2 - $mat-radio-ripple-radius;
+  top: $mat-radio-size / 2 - $mat-radio-ripple-radius;
+  height: $mat-radio-ripple-radius * 2;
+  width: $mat-radio-ripple-radius * 2;
   z-index: 1;
   pointer-events: none;
 }
