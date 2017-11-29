@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ComponentLifecycle} from '../linker/component_lifecycle';
 import {Renderer2} from '../render/api';
 
 import {checkAndUpdateElementDynamic, checkAndUpdateElementInline, createElement, listenToElementOutputs} from './element';
@@ -198,14 +199,14 @@ export function createEmbeddedView(
     parent: ViewData, anchorDef: NodeDef, viewDef: ViewDefinition, context?: any): ViewData {
   // embedded views are seen as siblings to the anchor, so we need
   // to get the parent of the anchor and use it as parentIndex.
-  const view = createView(parent.root, parent.renderer, parent, anchorDef, viewDef);
+  const view = createView(parent.root, parent.renderer, parent, anchorDef, viewDef, null);
   initView(view, parent.component, context);
   createViewNodes(view);
   return view;
 }
 
 export function createRootView(root: RootData, def: ViewDefinition, context?: any): ViewData {
-  const view = createView(root, root.renderer, null, null, def);
+  const view = createView(root, root.renderer, null, null, def, null);
   initView(view, context, context);
   createViewNodes(view);
   return view;
@@ -220,24 +221,27 @@ export function createComponentView(
   } else {
     compRenderer = parentView.root.rendererFactory.createRenderer(hostElement, rendererType);
   }
+  const lifecycle = new ComponentLifecycle();
   return createView(
-      parentView.root, compRenderer, parentView, nodeDef.element !.componentProvider, viewDef);
+      parentView.root, compRenderer, parentView, nodeDef.element !.componentProvider, viewDef,
+      lifecycle);
 }
 
 function createView(
     root: RootData, renderer: Renderer2, parent: ViewData | null, parentNodeDef: NodeDef | null,
-    def: ViewDefinition): ViewData {
+    def: ViewDefinition, lifecycle: ComponentLifecycle | null): ViewData {
   const nodes: NodeData[] = new Array(def.nodes.length);
   const disposables = def.outputCount ? new Array(def.outputCount) : null;
   const view: ViewData = {
     def,
     parent,
+    lifecycle,
     viewContainerParent: null, parentNodeDef,
     context: null,
     component: null, nodes,
     state: ViewState.CatInit, root, renderer,
     oldValues: new Array(def.bindingCount), disposables,
-    initIndex: -1
+    initIndex: -1,
   };
   return view;
 }

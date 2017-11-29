@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, DebugElement, Directive, ElementRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, ComponentLifecycle, DebugElement, Directive, ElementRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -141,6 +141,22 @@ class DirectiveNeedsChangeDetectorRef {
 class PushComponentNeedsChangeDetectorRef {
   counter: number = 0;
   constructor(public changeDetectorRef: ChangeDetectorRef) {}
+}
+
+@Component({selector: '[needsComponentLifecycle]', template: ''})
+class ComponentNeedsComponentLifecycle {
+  initialized = false;
+  constructor(public lifecycle: ComponentLifecycle) {
+    this.lifecycle.onInit.subscribe(() => { this.initialized = true; });
+  }
+}
+
+@Directive({selector: '[needsComponentLifecycle]'})
+class DirectiveNeedsComponentLifecycle {
+  initialized = false;
+  constructor(public lifecycle: ComponentLifecycle) {
+    this.lifecycle.onInit.subscribe(() => { this.initialized = true; });
+  }
 }
 
 @Pipe({name: 'purePipe', pure: true})
@@ -866,6 +882,22 @@ export function main() {
         const el = createComponent('<div optionallyNeedsTemplateRef></div>');
         const instance = el.children[0].injector.get(OptionallyNeedsTemplateRef);
         expect(instance.templateRef).toBeNull();
+      });
+
+      it('should inject ComponentLifecycle in Component', () => {
+        TestBed.configureTestingModule({declarations: [ComponentNeedsComponentLifecycle]});
+        const el = createComponent('<div needsComponentLifecycle></div>');
+        const instance = el.children[0].injector.get(ComponentNeedsComponentLifecycle);
+        expect(instance.lifecycle).toBeDefined();
+        expect(instance.initialized).toBe(true);
+      });
+
+      it('should inject ComponentLifecycle in Directive', () => {
+        TestBed.configureTestingModule({declarations: [DirectiveNeedsComponentLifecycle]});
+        const el = createComponent('<div needsComponentLifecycle></div>');
+        const instance = el.children[0].injector.get(DirectiveNeedsComponentLifecycle);
+        expect(instance.lifecycle).toBeDefined();
+        expect(instance.initialized).toBe(true);
       });
     });
 

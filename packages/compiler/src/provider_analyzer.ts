@@ -243,7 +243,10 @@ export class ProviderElementContext {
                 this.viewContext.reflector.resolveExternalReference(
                     Identifiers.ChangeDetectorRef) ||
             tokenReference(dep.token) ===
-                this.viewContext.reflector.resolveExternalReference(Identifiers.TemplateRef)) {
+                this.viewContext.reflector.resolveExternalReference(Identifiers.TemplateRef) ||
+            tokenReference(dep.token) ===
+                this.viewContext.reflector.resolveExternalReference(
+                    Identifiers.ComponentLifecycle)) {
           return dep;
         }
         if (tokenReference(dep.token) ===
