@@ -365,8 +365,6 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     // Preventing bubbling for the second event will solve that issue.
     event.stopPropagation();
 
-    this._removeFocusRipple();
-
     if (!this.disabled) {
       // When user manually click on the checkbox, `indeterminate` is set to false.
       if (this._indeterminate) {
