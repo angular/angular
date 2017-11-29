@@ -35,6 +35,15 @@ export function ngswAppInitializer(
     const isStable = op_take.call(onStable, 1) as Observable<boolean>;
     const whenStable = op_toPromise.call(isStable) as Promise<boolean>;
 
+    // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+    // becomes active. This allows the SW to initialize itself even if there is no application
+    // traffic.
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (navigator.serviceWorker.controller !== null) {
+        navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
+      }
+    });
+
     // Don't return the Promise, as that will block the application until the SW is registered, and
     // cause a crash if the SW registration fails.
     whenStable.then(() => navigator.serviceWorker.register(script, {scope: options.scope}));
