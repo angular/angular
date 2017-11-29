@@ -28,7 +28,7 @@ describe('Api pages', function() {
 
   it('should show readonly properties as getters', () => {
     const page = new ApiPage('api/common/http/HttpRequest');
-    expect(page.getOverview('class').getText()).toContain('get body: T|null');
+    expect(page.getOverview('class').getText()).toContain('get body: T | null');
   });
 
   it('should not show parenthesis for getters', () => {
