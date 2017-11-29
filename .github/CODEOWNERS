@@ -72,6 +72,9 @@
 # Moment adapter package
 /src/material-moment-adapter/**                    @mmalerba
 
+# Material experimental package
+/src/material-experimental/**                      @jelbourn
+
 # Docs examples & guides
 /guides/**                                         @amcdnl @jelbourn
 /src/material-examples/**                          @amcdnl @jelbourn

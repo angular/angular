@@ -28,6 +28,7 @@ System.config({
       'node:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
 
     '@angular/material': 'dist/bundles/material.umd.js',
+    '@angular/material-experimental': 'dist/bundles/material-experimental.umd.js',
     '@angular/material-moment-adapter': 'dist/bundles/material-moment-adapter.umd.js',
     '@angular/cdk': 'dist/bundles/cdk.umd.js',
     '@angular/cdk/a11y': 'dist/bundles/cdk-a11y.umd.js',

@@ -3,6 +3,7 @@ import {join} from 'path';
 
 export const cdkPackage = new BuildPackage('cdk');
 export const materialPackage = new BuildPackage('material', [cdkPackage]);
+export const experimentalPackage = new BuildPackage('material-experimental', [materialPackage]);
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
 export const examplesPackage = new BuildPackage('material-examples', [momentAdapterPackage]);
 

@@ -35,8 +35,9 @@ task('e2e', sequenceTask(
 task('e2e-app:build', sequenceTask(
   'clean',
   [
-    'material:build-release',
     'cdk:build-release',
+    'material:build-release',
+    'material-experimental:build-release',
     'material-moment-adapter:build-release',
     'material-examples:build-release'
   ],
@@ -79,8 +80,9 @@ task('serve:e2eapp:watch', ['serve:e2eapp', 'material:watch', ':watch:e2eapp']);
 // As a workaround for https://github.com/angular/angular/issues/12249, we need to
 // copy the Material and CDK ESM output inside of the demo-app output.
 task('e2e-app:copy-release', () => {
-  copySync(join(releasesDir, 'material'), join(outDir, 'material'));
   copySync(join(releasesDir, 'cdk'), join(outDir, 'cdk'));
+  copySync(join(releasesDir, 'material'), join(outDir, 'material'));
+  copySync(join(releasesDir, 'material-experimental'), join(outDir, 'material-experimental'));
   copySync(join(releasesDir, 'material-examples'), join(outDir, 'material-examples'));
   copySync(join(releasesDir, 'material-moment-adapter'), join(outDir, 'material-moment-adapter'));
 });

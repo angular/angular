@@ -50,6 +50,7 @@ System.config({
     // Path mappings for local packages that can be imported inside of tests.
     // TODO(devversion): replace once the index.ts file for the Material package has been added.
     '@angular/material': 'dist/packages/material/public-api.js',
+    '@angular/material-experimental': 'dist/packages/material-experimental/index.js',
     '@angular/cdk': 'dist/packages/cdk/index.js',
     '@angular/cdk/a11y': 'dist/packages/cdk/a11y/index.js',
     '@angular/cdk/accordion': 'dist/packages/cdk/accordion/index.js',

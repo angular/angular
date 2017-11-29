@@ -1,0 +1,25 @@
+{
+  "name": "@angular/material-experimental",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Experimental components for Angular Material",
+  "main": "./bundles/material-experimental.umd.js",
+  "module": "./esm5/material-experimental.es5.js",
+  "es2015": "./esm2015/material-experimental.js",
+  "typings": "./material-experimental.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/material2.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/material2/issues"
+  },
+  "homepage": "https://github.com/angular/material2#readme",
+  "peerDependencies": {
+    "@angular/material": "0.0.0-PLACEHOLDER",
+    "@angular/core": "0.0.0-NG"
+  },
+  "dependencies": {
+    "tslib": "^1.7.1"
+  }
+}

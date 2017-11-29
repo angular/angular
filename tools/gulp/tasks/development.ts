@@ -4,7 +4,7 @@ import {join} from 'path';
 import {
   buildConfig, copyFiles, buildScssTask, sequenceTask, watchFiles
 } from 'material2-build-tools';
-import {cdkPackage, materialPackage, momentAdapterPackage} from '../packages';
+import {cdkPackage, experimentalPackage, materialPackage, momentAdapterPackage} from '../packages';
 
 // These imports don't have any typings provided.
 const firebaseTools = require('firebase-tools');
@@ -41,13 +41,15 @@ task(':watch:devapp', () => {
   watchFiles(join(appDir, '**/*.scss'), [':build:devapp:scss']);
   watchFiles(join(appDir, '**/*.html'), [':build:devapp:assets']);
 
-  // Custom watchers for the CDK, Material and Moment adapter package. This is necessary because
-  // we only want to build the package as a single entry-point (using the tests task).
+  // Custom watchers for all packages that are used inside of the demo-app. This is necessary
+  // because we only want to build the changed package (using the build-no-bundles task).
   watchFiles(join(cdkPackage.sourceDir, '**/*'), ['cdk:build-no-bundles']);
   watchFiles(join(materialPackage.sourceDir, '**/!(*.scss)'), ['material:build-no-bundles']);
   watchFiles(join(materialPackage.sourceDir, '**/*.scss'), [':build:devapp:material-with-styles']);
   watchFiles(join(momentAdapterPackage.sourceDir, '**/*'),
       ['material-moment-adapter:build-no-bundles']);
+  watchFiles(join(experimentalPackage.sourceDir, '**/*'),
+      ['material-experimental:build-no-bundles']);
 });
 
 /** Path to the demo-app tsconfig file. */
@@ -66,8 +68,11 @@ task(':build:devapp:material-with-styles', sequenceTask(
 ));
 
 task('build:devapp', sequenceTask(
-  ['material-moment-adapter:build-no-bundles', ':build:devapp:assets'],
-  [':build:devapp:scss', ':build:devapp:ts']
+  'cdk:build-no-bundles',
+  'material:build-no-bundles',
+  'material-experimental:build-no-bundles',
+  'material-moment-adapter:build-no-bundles',
+  [':build:devapp:assets', ':build:devapp:scss', ':build:devapp:ts']
 ));
 
 task('serve:devapp', ['build:devapp'], sequenceTask([':serve:devapp', ':watch:devapp']));
@@ -78,6 +83,8 @@ task('stage-deploy:devapp', ['build:devapp'], () => {
   copyFiles(bundlesDir, '*.+(js|map)', join(outDir, 'dist/bundles'));
   copyFiles(cdkPackage.outputDir, '**/*.+(js|map)', join(outDir, 'dist/packages/cdk'));
   copyFiles(materialPackage.outputDir, '**/*.+(js|map)', join(outDir, 'dist/packages/material'));
+  copyFiles(experimentalPackage.outputDir, '**/*.+(js|map)',
+      join(outDir, 'dist/packages/material-experimental'));
   copyFiles(materialPackage.outputDir, '**/prebuilt/*.+(css|map)',
       join(outDir, 'dist/packages/material'));
 });
