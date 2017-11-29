@@ -3,7 +3,7 @@
 The Tour of Heroes `HeroesComponent` is currently getting and displaying fake data.
 
 After the refactoring in this tutorial, `HeroesComponent` will be lean and focused on supporting the view.
-It will also be easier to unit-test with a mock services.
+It will also be easier to unit-test with a mock service.
 
 ## Why services
 
