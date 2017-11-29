@@ -13,7 +13,7 @@ const JIT_SUMMARY_NAME = /NgSummary$/;
 
 export function ngfactoryFilePath(filePath: string, forceSourceFile = false): string {
   const urlWithSuffix = splitTypescriptSuffix(filePath, forceSourceFile);
-  return `${urlWithSuffix[0]}.ngfactory${urlWithSuffix[1]}`;
+  return `${urlWithSuffix[0]}.ngfactory${normalizeGenFileSuffix(urlWithSuffix[1])}`;
 }
 
 export function stripGeneratedFileSuffix(filePath: string): string {
@@ -36,6 +36,10 @@ export function splitTypescriptSuffix(path: string, forceSourceFile = false): st
   }
 
   return [path, ''];
+}
+
+export function normalizeGenFileSuffix(srcFileSuffix: string): string {
+  return srcFileSuffix === '.tsx' ? '.ts' : srcFileSuffix;
 }
 
 export function summaryFileName(fileName: string): string {

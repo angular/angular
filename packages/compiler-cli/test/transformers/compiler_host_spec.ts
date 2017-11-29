@@ -285,6 +285,22 @@ describe('NgCompilerHost', () => {
       expect(sf.referencedFiles.length).toBe(1);
       expect(sf.referencedFiles[0].fileName).toBe('main.ts');
     });
+
+    it('should generate for tsx files', () => {
+      codeGenerator.findGeneratedFileNames.and.returnValue(['/tmp/src/index.ngfactory.ts']);
+      codeGenerator.generateFile.and.returnValue(aGeneratedFile);
+      const host = createHost({files: {'tmp': {'src': {'index.tsx': ``}}}});
+
+      const genSf = host.getSourceFile('/tmp/src/index.ngfactory.ts', ts.ScriptTarget.Latest);
+      expect(genSf.text).toBe(aGeneratedFileText);
+
+      const sf = host.getSourceFile('/tmp/src/index.tsx', ts.ScriptTarget.Latest);
+      expect(sf.referencedFiles[0].fileName).toBe('/tmp/src/index.ngfactory.ts');
+
+      // the codegen should have been cached
+      expect(codeGenerator.generateFile).toHaveBeenCalledTimes(1);
+      expect(codeGenerator.findGeneratedFileNames).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('updateSourceFile', () => {
