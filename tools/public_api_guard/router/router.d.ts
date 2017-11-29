@@ -127,6 +127,7 @@ export interface ExtraOptions {
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
     onSameUrlNavigation?: 'reload' | 'ignore';
+    paramsInheritanceStrategy?: 'emptyOnly' | 'always';
     preloadingStrategy?: any;
     useHash?: boolean;
 }
@@ -329,6 +330,7 @@ export declare class Router {
     readonly events: Observable<Event>;
     navigated: boolean;
     onSameUrlNavigation: 'reload' | 'ignore';
+    paramsInheritanceStrategy: 'emptyOnly' | 'always';
     routeReuseStrategy: RouteReuseStrategy;
     readonly routerState: RouterState;
     readonly url: string;

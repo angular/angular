@@ -18,6 +18,7 @@ import {shallowEqual, shallowEqualArrays} from './utils/collection';
 import {Tree, TreeNode} from './utils/tree';
 
 
+
 /**
  * @whatItDoes Represents the state of the router.
  *
@@ -175,35 +176,52 @@ export class ActivatedRoute {
 }
 
 /** @internal */
+export type ParamsInheritanceStrategy = 'emptyOnly' | 'always';
+
+/** @internal */
 export type Inherited = {
   params: Params,
   data: Data,
   resolve: Data,
 };
 
-/** @internal */
-export function inheritedParamsDataResolve(route: ActivatedRouteSnapshot): Inherited {
-  const pathToRoot = route.pathFromRoot;
+/**
+ * Returns the inherited params, data, and resolve for a given route.
+ * By default, this only inherits values up to the nearest path-less or component-less route.
+ * @internal
+ */
+export function inheritedParamsDataResolve(
+    route: ActivatedRouteSnapshot,
+    paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly'): Inherited {
+  const pathFromRoot = route.pathFromRoot;
 
-  let inhertingStartingFrom = pathToRoot.length - 1;
+  let inheritingStartingFrom = 0;
+  if (paramsInheritanceStrategy !== 'always') {
+    inheritingStartingFrom = pathFromRoot.length - 1;
 
-  while (inhertingStartingFrom >= 1) {
-    const current = pathToRoot[inhertingStartingFrom];
-    const parent = pathToRoot[inhertingStartingFrom - 1];
-    // current route is an empty path => inherits its parent's params and data
-    if (current.routeConfig && current.routeConfig.path === '') {
-      inhertingStartingFrom--;
+    while (inheritingStartingFrom >= 1) {
+      const current = pathFromRoot[inheritingStartingFrom];
+      const parent = pathFromRoot[inheritingStartingFrom - 1];
+      // current route is an empty path => inherits its parent's params and data
+      if (current.routeConfig && current.routeConfig.path === '') {
+        inheritingStartingFrom--;
 
-      // parent is componentless => current route should inherit its params and data
-    } else if (!parent.component) {
-      inhertingStartingFrom--;
+        // parent is componentless => current route should inherit its params and data
+      } else if (!parent.component) {
+        inheritingStartingFrom--;
 
-    } else {
-      break;
+      } else {
+        break;
+      }
     }
   }
 
-  return pathToRoot.slice(inhertingStartingFrom).reduce((res, curr) => {
+  return flattenInherited(pathFromRoot.slice(inheritingStartingFrom));
+}
+
+/** @internal */
+function flattenInherited(pathFromRoot: ActivatedRouteSnapshot[]): Inherited {
+  return pathFromRoot.reduce((res, curr) => {
     const params = {...res.params, ...curr.params};
     const data = {...res.data, ...curr.data};
     const resolve = {...res.resolve, ...curr._resolvedData};
@@ -352,7 +370,7 @@ function setRouterState<U, T extends{_routerState: U}>(state: U, node: TreeNode<
 }
 
 function serializeNode(node: TreeNode<ActivatedRouteSnapshot>): string {
-  const c = node.children.length > 0 ? ` { ${node.children.map(serializeNode).join(", ")} } ` : '';
+  const c = node.children.length > 0 ? ` { ${node.children.map(serializeNode).join(', ')} } ` : '';
   return `${node.value}${c}`;
 }
 
