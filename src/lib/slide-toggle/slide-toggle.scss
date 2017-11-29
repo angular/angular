@@ -48,6 +48,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   flex: 1;
   flex-direction: row;
   align-items: center;
+  height: inherit;
 
   cursor: pointer;
 }
