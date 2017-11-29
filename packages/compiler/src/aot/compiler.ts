@@ -34,7 +34,7 @@ import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
 import {createForJitStub, serializeSummaries} from './summary_serializer';
-import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
+import {ngfactoryFilePath, normalizeGenFileSuffix, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
 
 enum StubEmitFlags {
   Basic = 1 << 0,
@@ -103,7 +103,7 @@ export class AotCompiler {
         genFileNames.push(summaryForJitFileName(file.fileName, true));
       }
     }
-    const fileSuffix = splitTypescriptSuffix(file.fileName, true)[1];
+    const fileSuffix = normalizeGenFileSuffix(splitTypescriptSuffix(file.fileName, true)[1]);
     file.directives.forEach((dirSymbol) => {
       const compMeta =
           this._metadataResolver.getNonNormalizedDirectiveMetadata(dirSymbol) !.metadata;
@@ -317,7 +317,7 @@ export class AotCompiler {
       srcFileUrl: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: CompileNgModuleMetadata[],
       injectables: StaticSymbol[]): GeneratedFile[] {
-    const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
+    const fileSuffix = normalizeGenFileSuffix(splitTypescriptSuffix(srcFileUrl, true)[1]);
     const generatedFiles: GeneratedFile[] = [];
 
     const outputCtx = this._createOutputContext(ngfactoryFilePath(srcFileUrl, true));
