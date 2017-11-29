@@ -905,6 +905,14 @@ describe('compiler (bundled Angular)', () => {
       expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
       expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
     });
+
+    it('should support tsx', () => {
+      const tsOptions = {jsx: ts.JsxEmit.React};
+      const {genFiles} =
+          compile([QUICKSTART_TSX, angularFiles], /* options */ undefined, tsOptions);
+      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+    });
   });
 
   describe('Bundled library', () => {
@@ -973,6 +981,34 @@ const QUICKSTART: MockDirectory = {
         export function toString(value: any): string {
           return  '';
         }
+      `
+    }
+  }
+};
+
+const QUICKSTART_TSX: MockDirectory = {
+  quickstart: {
+    app: {
+      // #20555
+      'app.component.tsx': `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<h1>Hello {{name}}</h1>'
+        })
+        export class AppComponent {
+          name = 'Angular';
+        }
+      `,
+      'app.module.ts': `
+        import { NgModule }      from '@angular/core';
+        import { AppComponent }  from './app.component';
+
+        @NgModule({
+          declarations: [ AppComponent ],
+          bootstrap:    [ AppComponent ]
+        })
+        export class AppModule { }
       `
     }
   }

@@ -326,7 +326,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       return {generate: false};
     }
     const [, base, genSuffix, suffix] = genMatch;
-    if (suffix !== 'ts') {
+    if (suffix !== 'ts' && suffix !== 'tsx') {
       return {generate: false};
     }
     let baseFileName: string|undefined;
@@ -337,9 +337,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       }
     } else {
       // Note: on-the-fly generated files always have a `.ts` suffix,
-      // but the file from which we generated it can be a `.ts`/ `.d.ts`
+      // but the file from which we generated it can be a `.ts`/ `.tsx`/ `.d.ts`
       // (see options.generateCodeForLibraries).
-      baseFileName = [`${base}.ts`, `${base}.d.ts`].find(
+      baseFileName = [`${base}.ts`, `${base}.tsx`, `${base}.d.ts`].find(
           baseFileName => this.isSourceFile(baseFileName) && this.originalFileExists(baseFileName));
       if (!baseFileName) {
         return {generate: false};

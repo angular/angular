@@ -337,7 +337,7 @@ class AngularCompilerProgram implements Program {
           metadataJsonCount++;
           const metadata = this.metadataCache.getMetadata(sf);
           const metadataText = JSON.stringify([metadata]);
-          const outFileName = srcToOutPath(sf.fileName.replace(/\.ts$/, '.metadata.json'));
+          const outFileName = srcToOutPath(sf.fileName.replace(/\.tsx?$/, '.metadata.json'));
           this.writeFile(outFileName, metadataText, false, undefined, undefined, [sf]);
         }
       });

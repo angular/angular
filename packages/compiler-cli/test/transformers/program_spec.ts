@@ -391,6 +391,22 @@ describe('ng program', () => {
     testSupport.shouldExist('built/src/main.ngfactory.d.ts');
   });
 
+  it('should work with tsx files', () => {
+    // create a temporary ts program to get the list of all files from angular...
+    testSupport.writeFiles({
+      'src/main.tsx': createModuleAndCompSource('main'),
+    });
+    const allRootNames = resolveFiles([path.resolve(testSupport.basePath, 'src/main.tsx')]);
+
+    const program = compile(undefined, {jsx: ts.JsxEmit.React}, allRootNames);
+
+    testSupport.shouldExist('built/src/main.js');
+    testSupport.shouldExist('built/src/main.d.ts');
+    testSupport.shouldExist('built/src/main.ngfactory.js');
+    testSupport.shouldExist('built/src/main.ngfactory.d.ts');
+    testSupport.shouldExist('built/src/main.ngsummary.json');
+  });
+
   it('should emit also empty generated files depending on the options', () => {
     testSupport.writeFiles({
       'src/main.ts': `
