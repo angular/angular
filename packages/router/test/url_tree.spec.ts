@@ -41,6 +41,12 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, true)).toBe(true);
       });
 
+      it('should return true when matrixParams are the same', () => {
+        const t1 = serializer.parse('/one/two;id=123;param=test');
+        const t2 = serializer.parse('/one/two;id=123;param=test');
+        expect(containsTree(t1, t2, true)).toBe(true);
+      });
+
       it('should return false when queryParams are not the same', () => {
         const t1 = serializer.parse('/one/two?test=1&page=5');
         const t2 = serializer.parse('/one/two?test=1');
@@ -50,6 +56,24 @@ describe('UrlTree', () => {
       it('should return false when containee is missing queryParams', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two');
+        expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
+      it('should return false when matrixParams are not the same', () => {
+        const t1 = serializer.parse('/one/two;id=123');
+        const t2 = serializer.parse('/one/two;id=456');
+        expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
+      it('should return false when the container is missing matrixParams', () => {
+        const t1 = serializer.parse('/one/two');
+        const t2 = serializer.parse('/one/two;id=123');
+        expect(containsTree(t1, t2, true)).toBe(false);
+      });
+
+      it('should return false when the containee is missing matrixParams', () => {
+        const t1 = serializer.parse('/one/two;id=123;param=test');
+        const t2 = serializer.parse('/one/two;id=456');
         expect(containsTree(t1, t2, true)).toBe(false);
       });
 
@@ -121,8 +145,20 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, false)).toBe(true);
       });
 
+      it('should return true when container contains containees matrixParams', () => {
+        const t1 = serializer.parse('/one/two;test=1;u=5');
+        const t2 = serializer.parse('/one/two;u=5');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
       it('should return true when containee does not have queryParams', () => {
         const t1 = serializer.parse('/one/two?page=5');
+        const t2 = serializer.parse('/one/two');
+        expect(containsTree(t1, t2, false)).toBe(true);
+      });
+
+      it('should return true when containee does not have matrixParams', () => {
+        const t1 = serializer.parse('/one/two;page=5');
         const t2 = serializer.parse('/one/two');
         expect(containsTree(t1, t2, false)).toBe(true);
       });
@@ -133,15 +169,33 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, false)).toBe(false);
       });
 
+      it('should return false when containee has but container does not have matrixParams', () => {
+        const t1 = serializer.parse('/one/two');
+        const t2 = serializer.parse('/one/two;page=1');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
       it('should return false when containee has different queryParams', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two?test=1');
         expect(containsTree(t1, t2, false)).toBe(false);
       });
 
+      it('should return false when containee has different matrixParams', () => {
+        const t1 = serializer.parse('/one/two;page=5');
+        const t2 = serializer.parse('/one/two;test=1');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
       it('should return false when containee has more queryParams than container', () => {
         const t1 = serializer.parse('/one/two?page=5');
         const t2 = serializer.parse('/one/two?page=5&test=1');
+        expect(containsTree(t1, t2, false)).toBe(false);
+      });
+
+      it('should return false when containee has more matrixParams than container', () => {
+        const t1 = serializer.parse('/one/two;page=5');
+        const t2 = serializer.parse('/one/two;page=5;test=1');
         expect(containsTree(t1, t2, false)).toBe(false);
       });
     });

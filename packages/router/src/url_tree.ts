@@ -19,7 +19,7 @@ export function containsTree(container: UrlTree, containee: UrlTree, exact: bool
         equalSegmentGroups(container.root, containee.root);
   }
 
-  return containsQueryParams(container.queryParams, containee.queryParams) &&
+  return containsParams(container.queryParams, containee.queryParams) &&
       containsSegmentGroup(container.root, containee.root);
 }
 
@@ -29,7 +29,7 @@ function equalQueryParams(
 }
 
 function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGroup): boolean {
-  if (!equalPath(container.segments, containee.segments)) return false;
+  if (!equalSegments(container.segments, containee.segments)) return false;
   if (container.numberOfChildren !== containee.numberOfChildren) return false;
   for (const c in containee.children) {
     if (!container.children[c]) return false;
@@ -38,7 +38,7 @@ function equalSegmentGroups(container: UrlSegmentGroup, containee: UrlSegmentGro
   return true;
 }
 
-function containsQueryParams(
+function containsParams(
     container: {[k: string]: string}, containee: {[k: string]: string}): boolean {
   return Object.keys(containee).length <= Object.keys(container).length &&
       Object.keys(containee).every(key => containee[key] === container[key]);
@@ -52,12 +52,12 @@ function containsSegmentGroupHelper(
     container: UrlSegmentGroup, containee: UrlSegmentGroup, containeePaths: UrlSegment[]): boolean {
   if (container.segments.length > containeePaths.length) {
     const current = container.segments.slice(0, containeePaths.length);
-    if (!equalPath(current, containeePaths)) return false;
+    if (!containsSegments(current, containeePaths)) return false;
     if (containee.hasChildren()) return false;
     return true;
 
   } else if (container.segments.length === containeePaths.length) {
-    if (!equalPath(container.segments, containeePaths)) return false;
+    if (!containsSegments(container.segments, containeePaths)) return false;
     for (const c in containee.children) {
       if (!container.children[c]) return false;
       if (!containsSegmentGroup(container.children[c], containee.children[c])) return false;
@@ -67,10 +67,15 @@ function containsSegmentGroupHelper(
   } else {
     const current = containeePaths.slice(0, container.segments.length);
     const next = containeePaths.slice(container.segments.length);
-    if (!equalPath(container.segments, current)) return false;
+    if (!containsSegments(container.segments, current)) return false;
     if (!container.children[PRIMARY_OUTLET]) return false;
     return containsSegmentGroupHelper(container.children[PRIMARY_OUTLET], containee, next);
   }
+}
+
+function containsSegments(container: UrlSegment[], containee: UrlSegment[]): boolean {
+  return equalPath(container, containee) &&
+      containee.every((segment, i) => containsParams(container[i].parameters, segment.parameters));
 }
 
 /**
