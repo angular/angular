@@ -43,7 +43,8 @@ describe('MatTooltip', () => {
         BasicTooltipDemo,
         ScrollableTooltipDemo,
         OnPushTooltipDemo,
-        DynamicTooltipsDemo
+        DynamicTooltipsDemo,
+        TooltipOnTextFields
       ],
       providers: [
         {provide: Platform, useValue: {IOS: false, isBrowser: true}},
@@ -679,6 +680,25 @@ describe('MatTooltip', () => {
     }));
   });
 
+  describe('special cases', () => {
+    it('should clear the `user-select` when a tooltip is set on a text field in iOS', () => {
+      TestBed.overrideProvider(Platform, {
+        useValue: {IOS: true, isBrowser: true}
+      });
+
+      const fixture = TestBed.createComponent(TooltipOnTextFields);
+      const instance = fixture.componentInstance;
+
+      fixture.detectChanges();
+
+      expect(instance.input.nativeElement.style.userSelect).toBeFalsy();
+      expect(instance.input.nativeElement.style.webkitUserSelect).toBeFalsy();
+
+      expect(instance.textarea.nativeElement.style.userSelect).toBeFalsy();
+      expect(instance.textarea.nativeElement.style.webkitUserSelect).toBeFalsy();
+    });
+  });
+
 });
 
 @Component({
@@ -762,6 +782,24 @@ class DynamicTooltipsDemo {
   getButtons() {
     return this._elementRef.nativeElement.querySelectorAll('button');
   }
+}
+
+@Component({
+  template: `
+    <input
+      #input
+      style="user-select: none; -webkit-user-select: none"
+      matTooltip="Something">
+
+    <textarea
+      #textarea
+      style="user-select: none; -webkit-user-select: none"
+      matTooltip="Another thing"></textarea>
+  `,
+})
+class TooltipOnTextFields {
+  @ViewChild('input') input: ElementRef;
+  @ViewChild('textarea') textarea: ElementRef;
 }
 
 /** Asserts whether a tooltip directive has a tooltip instance. */
