@@ -58,6 +58,27 @@ describe('MatProgressSpinner', () => {
     expect(progressElement.componentInstance.value).toBe(0);
   });
 
+  it('should retain the value if it updates while indeterminate', () => {
+    let fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
+    let progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+
+    fixture.componentInstance.mode = 'determinate';
+    fixture.detectChanges();
+    expect(progressElement.componentInstance.value).toBe(50);
+
+    fixture.componentInstance.mode = 'indeterminate';
+    fixture.detectChanges();
+    expect(progressElement.componentInstance.value).toBe(0);
+
+    fixture.componentInstance.value = 75;
+    fixture.detectChanges();
+    expect(progressElement.componentInstance.value).toBe(0);
+
+    fixture.componentInstance.mode = 'determinate';
+    fixture.detectChanges();
+    expect(progressElement.componentInstance.value).toBe(75);
+  });
+
   it('should clamp the value of the progress between 0 and 100', () => {
     let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
@@ -222,8 +243,13 @@ class ProgressSpinnerCustomDiameter {
 @Component({template: '<mat-progress-spinner mode="indeterminate"></mat-progress-spinner>'})
 class IndeterminateProgressSpinner { }
 
-@Component({template: '<mat-progress-spinner value="50" [mode]="mode"></mat-progress-spinner>'})
-class ProgressSpinnerWithValueAndBoundMode { mode = 'indeterminate'; }
+@Component({
+  template: '<mat-progress-spinner [value]="value" [mode]="mode"></mat-progress-spinner>'
+})
+class ProgressSpinnerWithValueAndBoundMode {
+  mode = 'indeterminate';
+  value = 50;
+}
 
 @Component({template: `<mat-spinner [color]="color"></mat-spinner>`})
 class SpinnerWithColor { color: string = 'primary'; }

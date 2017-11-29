@@ -145,9 +145,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     return this.mode === 'determinate' ? this._value : 0;
   }
   set value(newValue: number) {
-    if (newValue != null && this.mode === 'determinate') {
-      this._value = Math.max(0, Math.min(100, coerceNumberProperty(newValue)));
-    }
+    this._value = Math.max(0, Math.min(100, coerceNumberProperty(newValue)));
   }
 
   constructor(public _elementRef: ElementRef,
