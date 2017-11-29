@@ -3794,6 +3794,19 @@ describe('Integration', () => {
   });
 });
 
+describe('Testing router options', () => {
+  describe('paramsInheritanceStrategy', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule(
+          {imports: [RouterTestingModule.withRoutes([], {paramsInheritanceStrategy: 'always'})]});
+    });
+
+    it('should configure the router', fakeAsync(inject([Router], (router: Router) => {
+         expect(router.paramsInheritanceStrategy).toEqual('always');
+       })));
+  });
+});
+
 function expectEvents(events: Event[], pairs: any[]) {
   expect(events.length).toEqual(pairs.length);
   for (let i = 0; i < events.length; ++i) {

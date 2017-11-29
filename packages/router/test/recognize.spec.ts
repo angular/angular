@@ -8,7 +8,7 @@
 
 import {Routes} from '../src/config';
 import {recognize} from '../src/recognize';
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from '../src/router_state';
+import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, inheritedParamsDataResolve} from '../src/router_state';
 import {PRIMARY_OUTLET, Params} from '../src/shared';
 import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 
@@ -201,7 +201,7 @@ describe('recognize', () => {
           });
     });
 
-    it('should merge componentless route\'s data', () => {
+    it('should inherit componentless route\'s data', () => {
       checkRecognize(
           [{
             path: 'a',
@@ -212,6 +212,34 @@ describe('recognize', () => {
             const r: ActivatedRouteSnapshot = s.firstChild(<any>s.firstChild(s.root)) !;
             expect(r.data).toEqual({one: 1, two: 2});
           });
+    });
+
+    it('should not inherit route\'s data if it has component', () => {
+      checkRecognize(
+          [{
+            path: 'a',
+            component: ComponentA,
+            data: {one: 1},
+            children: [{path: 'b', data: {two: 2}, component: ComponentB}]
+          }],
+          'a/b', (s: RouterStateSnapshot) => {
+            const r: ActivatedRouteSnapshot = s.firstChild(<any>s.firstChild(s.root)) !;
+            expect(r.data).toEqual({two: 2});
+          });
+    });
+
+    it('should inherit route\'s data if paramsInheritanceStrategy is \'always\'', () => {
+      checkRecognize(
+          [{
+            path: 'a',
+            component: ComponentA,
+            data: {one: 1},
+            children: [{path: 'b', data: {two: 2}, component: ComponentB}]
+          }],
+          'a/b', (s: RouterStateSnapshot) => {
+            const r: ActivatedRouteSnapshot = s.firstChild(<any>s.firstChild(s.root)) !;
+            expect(r.data).toEqual({one: 1, two: 2});
+          }, 'always');
     });
 
     it('should set resolved data', () => {
@@ -307,7 +335,7 @@ describe('recognize', () => {
             });
       });
 
-      it('should match (non-termianl) when both primary and secondary and primary has a child',
+      it('should match (non-terminal) when both primary and secondary and primary has a child',
          () => {
            const config = [{
              path: 'parent',
@@ -579,7 +607,7 @@ describe('recognize', () => {
           });
     });
 
-    it('should merge params until encounters a normal route', () => {
+    it('should inherit params until encounters a normal route', () => {
       checkRecognize(
           [{
             path: 'p/:id',
@@ -605,6 +633,25 @@ describe('recognize', () => {
             const c = s.firstChild(b) !;
             checkActivatedRoute(c, 'c', {}, ComponentC);
           });
+    });
+
+    it('should inherit all params if paramsInheritanceStrategy is \'always\'', () => {
+      checkRecognize(
+          [{
+            path: 'p/:id',
+            children: [{
+              path: 'a/:name',
+              children: [{
+                path: 'b',
+                component: ComponentB,
+                children: [{path: 'c', component: ComponentC}]
+              }]
+            }]
+          }],
+          'p/11/a/victor/b/c', (s: RouterStateSnapshot) => {
+            const c = s.firstChild(s.firstChild(s.firstChild(s.firstChild(s.root) !) !) !) !;
+            checkActivatedRoute(c, 'c', {id: '11', name: 'victor'}, ComponentC);
+          }, 'always');
     });
   });
 
@@ -722,8 +769,11 @@ describe('recognize', () => {
   });
 });
 
-function checkRecognize(config: Routes, url: string, callback: any): void {
-  recognize(RootComponent, config, tree(url), url).subscribe(callback, e => { throw e; });
+function checkRecognize(
+    config: Routes, url: string, callback: any,
+    paramsInheritanceStrategy?: ParamsInheritanceStrategy): void {
+  recognize(RootComponent, config, tree(url), url, paramsInheritanceStrategy)
+      .subscribe(callback, e => { throw e; });
 }
 
 function checkActivatedRoute(
