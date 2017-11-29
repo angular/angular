@@ -32,6 +32,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef} from './index
 
 describe('MatDialog', () => {
   let dialog: MatDialog;
+  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
 
   let testViewContainerRef: ViewContainerRef;
@@ -42,10 +43,6 @@ describe('MatDialog', () => {
     TestBed.configureTestingModule({
       imports: [MatDialogModule, DialogTestModule],
       providers: [
-        {provide: OverlayContainer, useFactory: () => {
-          overlayContainerElement = document.createElement('div');
-          return {getContainerElement: () => overlayContainerElement};
-        }},
         {provide: Location, useClass: SpyLocation}
       ],
     });
@@ -53,10 +50,17 @@ describe('MatDialog', () => {
     TestBed.compileComponents();
   }));
 
-  beforeEach(inject([MatDialog, Location], (d: MatDialog, l: Location) => {
-    dialog = d;
-    mockLocation = l as SpyLocation;
-  }));
+  beforeEach(inject([MatDialog, Location, OverlayContainer],
+    (d: MatDialog, l: Location, oc: OverlayContainer) => {
+      dialog = d;
+      mockLocation = l as SpyLocation;
+      overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
+    }));
+
+  afterEach(() => {
+    overlayContainer.ngOnDestroy();
+  });
 
   beforeEach(() => {
     viewContainerFixture = TestBed.createComponent(ComponentWithChildViewContainer);
@@ -181,6 +185,9 @@ describe('MatDialog', () => {
   it('should close a dialog and get back a result before it is closed', fakeAsync(() => {
     const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
+    flush();
+    viewContainerFixture.detectChanges();
+
     // beforeClose should emit before dialog container is destroyed
     const beforeCloseHandler = jasmine.createSpy('beforeClose callback').and.callFake(() => {
       expect(overlayContainerElement.querySelector('mat-dialog-container'))
@@ -188,11 +195,11 @@ describe('MatDialog', () => {
     });
 
     dialogRef.beforeClose().subscribe(beforeCloseHandler);
-    dialogRef.close('Bulbasaurus');
+    dialogRef.close('Bulbasaur');
     viewContainerFixture.detectChanges();
     flush();
 
-    expect(beforeCloseHandler).toHaveBeenCalledWith('Bulbasaurus');
+    expect(beforeCloseHandler).toHaveBeenCalledWith('Bulbasaur');
     expect(overlayContainerElement.querySelector('mat-dialog-container')).toBeNull();
   }));
 

@@ -3,6 +3,7 @@ import {
   ComponentFixture,
   fakeAsync,
   flushMicrotasks,
+  inject,
   TestBed,
   tick
 } from '@angular/core/testing';
@@ -33,6 +34,7 @@ import {
 const initialTooltipMessage = 'initial tooltip message';
 
 describe('MatTooltip', () => {
+  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let dir: {value: Direction};
 
@@ -48,11 +50,6 @@ describe('MatTooltip', () => {
       ],
       providers: [
         {provide: Platform, useValue: {IOS: false, isBrowser: true}},
-        {provide: OverlayContainer, useFactory: () => {
-          overlayContainerElement = document.createElement('div');
-          document.body.appendChild(overlayContainerElement);
-          return {getContainerElement: () => overlayContainerElement};
-        }},
         {provide: Directionality, useFactory: () => {
           return dir = {value: 'ltr'};
         }}
@@ -60,10 +57,15 @@ describe('MatTooltip', () => {
     });
 
     TestBed.compileComponents();
+
+    inject([OverlayContainer], (oc: OverlayContainer) => {
+      overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
+    })();
   }));
 
   afterEach(() => {
-    document.body.removeChild(overlayContainerElement);
+    overlayContainer.ngOnDestroy();
   });
 
   describe('basic usage', () => {

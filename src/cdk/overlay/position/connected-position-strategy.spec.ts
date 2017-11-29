@@ -3,10 +3,12 @@ import {TestBed, inject} from '@angular/core/testing';
 import {OverlayPositionBuilder} from './overlay-position-builder';
 import {CdkScrollable} from '@angular/cdk/scrolling';
 import {Subscription} from 'rxjs/Subscription';
+import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import {
   OverlayModule,
   Overlay,
   OverlayRef,
+  OverlayContainer,
   ConnectedPositionStrategy,
   ConnectedOverlayPositionChange,
 } from '../index';
@@ -22,13 +24,21 @@ const DEFAULT_WIDTH = 60;
 
 describe('ConnectedPositionStrategy', () => {
   let positionBuilder: OverlayPositionBuilder;
+  let overlayContainer: OverlayContainer;
+  let overlayContainerElement: HTMLElement;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({imports: [OverlayModule]});
+    TestBed.configureTestingModule({imports: [ScrollDispatchModule, OverlayModule]});
 
-    inject([Overlay], (overlay: Overlay) => {
+    inject([Overlay, OverlayContainer], (overlay: Overlay, oc: OverlayContainer) => {
       positionBuilder = overlay.position();
+      overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
     })();
+  });
+
+  afterEach(() => {
+    overlayContainer.ngOnDestroy();
   });
 
   describe('with origin on document body', () => {
@@ -39,7 +49,6 @@ describe('ConnectedPositionStrategy', () => {
 
     let originElement: HTMLElement;
     let overlayElement: HTMLElement;
-    let overlayContainerElement: HTMLElement;
     let strategy: ConnectedPositionStrategy;
     let fakeElementRef: ElementRef;
 
@@ -50,17 +59,14 @@ describe('ConnectedPositionStrategy', () => {
     beforeEach(() => {
       // The origin and overlay elements need to be in the document body in order to have geometry.
       originElement = createPositionedBlockElement();
-      overlayContainerElement = createOverlayContainer();
       overlayElement = createPositionedBlockElement();
       document.body.appendChild(originElement);
-      document.body.appendChild(overlayContainerElement);
       overlayContainerElement.appendChild(overlayElement);
       fakeElementRef = new ElementRef(originElement);
     });
 
     afterEach(() => {
       document.body.removeChild(originElement);
-      document.body.removeChild(overlayContainerElement);
 
       // Reset the origin geometry after each test so we don't accidently keep state between tests.
       originRect = null;
@@ -543,7 +549,6 @@ describe('ConnectedPositionStrategy', () => {
 
   describe('onPositionChange with scrollable view properties', () => {
     let overlayElement: HTMLElement;
-    let overlayContainerElement: HTMLElement;
     let strategy: ConnectedPositionStrategy;
 
     let scrollable: HTMLDivElement;
@@ -553,9 +558,7 @@ describe('ConnectedPositionStrategy', () => {
 
     beforeEach(() => {
       // Set up the overlay
-      overlayContainerElement = createOverlayContainer();
       overlayElement = createPositionedBlockElement();
-      document.body.appendChild(overlayContainerElement);
       overlayContainerElement.appendChild(overlayElement);
 
       // Set up the origin
@@ -584,7 +587,6 @@ describe('ConnectedPositionStrategy', () => {
     afterEach(() => {
       onPositionChangeSubscription.unsubscribe();
       document.body.removeChild(scrollable);
-      document.body.removeChild(overlayContainerElement);
     });
 
     it('should not have origin or overlay clipped or out of view without scroll', () => {
@@ -646,24 +648,20 @@ describe('ConnectedPositionStrategy', () => {
   describe('positioning properties', () => {
     let originElement: HTMLElement;
     let overlayElement: HTMLElement;
-    let overlayContainerElement: HTMLElement;
     let strategy: ConnectedPositionStrategy;
     let fakeElementRef: ElementRef;
 
     beforeEach(() => {
       // The origin and overlay elements need to be in the document body in order to have geometry.
       originElement = createPositionedBlockElement();
-      overlayContainerElement = createOverlayContainer();
       overlayElement = createPositionedBlockElement();
       document.body.appendChild(originElement);
-      document.body.appendChild(overlayContainerElement);
       overlayContainerElement.appendChild(overlayElement);
       fakeElementRef = new ElementRef(originElement);
     });
 
     afterEach(() => {
       document.body.removeChild(originElement);
-      document.body.removeChild(overlayContainerElement);
     });
 
     describe('in ltr', () => {
@@ -768,13 +766,6 @@ function createBlockElement() {
   element.style.height = `${DEFAULT_HEIGHT}px`;
   element.style.backgroundColor = 'rebeccapurple';
   element.style.zIndex = '100';
-  return element;
-}
-
-/** Creates the wrapper for all of the overlays. */
-function createOverlayContainer() {
-  let element = document.createElement('div');
-  element.classList.add('cdk-overlay-container');
   return element;
 }
 

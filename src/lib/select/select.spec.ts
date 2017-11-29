@@ -64,6 +64,7 @@ const platform = new Platform();
 
 
 describe('MatSelect', () => {
+  let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let dir: {value: 'ltr'|'rtl'};
   let scrolledSubject = new Subject();
@@ -71,20 +72,6 @@ describe('MatSelect', () => {
 
   // Providers used for all mat-select tests
   const commonProviders = [
-    {
-      provide: OverlayContainer, useFactory: () => {
-        overlayContainerElement = document.createElement('div') as HTMLElement;
-        overlayContainerElement.classList.add('cdk-overlay-container');
-
-        document.body.appendChild(overlayContainerElement);
-
-        // remove body padding to keep consistent cross-browser
-        document.body.style.padding = '0';
-        document.body.style.margin = '0';
-
-        return {getContainerElement: () => overlayContainerElement};
-      },
-    },
     {provide: Directionality, useFactory: () => dir = {value: 'ltr'}},
     {
       provide: ScrollDispatcher, useFactory: () => ({
@@ -114,10 +101,15 @@ describe('MatSelect', () => {
       declarations: declarations,
       providers: commonProviders,
     }).compileComponents();
+
+    inject([OverlayContainer], (oc: OverlayContainer) => {
+      overlayContainer = oc;
+      overlayContainerElement = oc.getContainerElement();
+    })();
   }
 
   afterEach(() => {
-    document.body.removeChild(overlayContainerElement);
+    overlayContainer.ngOnDestroy();
   });
 
   describe('core', () => {

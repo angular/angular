@@ -22,23 +22,19 @@ describe('Overlay', () => {
   let componentPortal: ComponentPortal<PizzaMsg>;
   let templatePortal: TemplatePortal<any>;
   let overlayContainerElement: HTMLElement;
+  let overlayContainer: OverlayContainer;
   let viewContainerFixture: ComponentFixture<TestComponentWithTemplatePortals>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [OverlayModule, PortalModule, OverlayTestModule],
-      providers: [{
-        provide: OverlayContainer,
-        useFactory: () => {
-          overlayContainerElement = document.createElement('div');
-          return {getContainerElement: () => overlayContainerElement};
-        }
-      }]
+      imports: [OverlayModule, PortalModule, OverlayTestModule]
     }).compileComponents();
   }));
 
-  beforeEach(inject([Overlay], (o: Overlay) => {
+  beforeEach(inject([Overlay, OverlayContainer], (o: Overlay, oc: OverlayContainer) => {
     overlay = o;
+    overlayContainer = oc;
+    overlayContainerElement = oc.getContainerElement();
 
     let fixture = TestBed.createComponent(TestComponentWithTemplatePortals);
     fixture.detectChanges();
@@ -46,6 +42,10 @@ describe('Overlay', () => {
     componentPortal = new ComponentPortal(PizzaMsg, fixture.componentInstance.viewContainerRef);
     viewContainerFixture = fixture;
   }));
+
+  afterEach(() => {
+    overlayContainer.ngOnDestroy();
+  });
 
   it('should load a component into an overlay', () => {
     let overlayRef = overlay.create();
