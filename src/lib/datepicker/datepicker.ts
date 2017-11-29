@@ -186,7 +186,10 @@ export class MatDatepicker<D> implements OnDestroy {
   @Output('closed') closedStream: EventEmitter<void> = new EventEmitter<void>();
 
   /** Whether the calendar is open. */
-  opened = false;
+  @Input()
+  get opened(): boolean { return this._opened; }
+  set opened(shouldOpen: boolean) { shouldOpen ? this.open() : this.close(); }
+  private _opened = false;
 
   /** The id for the datepicker calendar. */
   id = `mat-datepicker-${datepickerUid++}`;
@@ -277,7 +280,7 @@ export class MatDatepicker<D> implements OnDestroy {
 
   /** Open the calendar. */
   open(): void {
-    if (this.opened || this.disabled) {
+    if (this._opened || this.disabled) {
       return;
     }
     if (!this._datepickerInput) {
@@ -288,13 +291,13 @@ export class MatDatepicker<D> implements OnDestroy {
     }
 
     this.touchUi ? this._openAsDialog() : this._openAsPopup();
-    this.opened = true;
+    this._opened = true;
     this.openedStream.emit();
   }
 
   /** Close the calendar. */
   close(): void {
-    if (!this.opened) {
+    if (!this._opened) {
       return;
     }
     if (this._popupRef && this._popupRef.hasAttached()) {
@@ -314,7 +317,7 @@ export class MatDatepicker<D> implements OnDestroy {
       this._focusedElementBeforeOpen = null;
     }
 
-    this.opened = false;
+    this._opened = false;
     this.closedStream.emit();
   }
 
