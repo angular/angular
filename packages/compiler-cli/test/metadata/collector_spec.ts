@@ -45,6 +45,7 @@ describe('Collector', () => {
       're-exports.ts',
       're-exports-2.ts',
       'export-as.d.ts',
+      'named-module.d.ts',
       'static-field-reference.ts',
       'static-method.ts',
       'static-method-call.ts',
@@ -99,6 +100,12 @@ describe('Collector', () => {
       version: METADATA_VERSION,
       metadata: {Hero: {__symbolic: 'interface'}}
     });
+  });
+
+  it('should preserve module names from TypeScript sources', () => {
+    const sourceFile = program.getSourceFile('named-module.d.ts');
+    const metadata = collector.getMetadata(sourceFile);
+    expect(metadata !['importAs']).toEqual('some-named-module');
   });
 
   it('should be able to collect a simple component\'s metadata', () => {
@@ -1516,6 +1523,10 @@ const FILES: Directory = {
      declare function someFunction(): void;
      export { someFunction as SomeFunction };
  `,
+  'named-module.d.ts': `
+    /// <amd-module name="some-named-module" />
+    export type SomeType = 'a';
+  `,
   'local-symbol-ref.ts': `
     import {Component, Validators} from 'angular2/core';
 
