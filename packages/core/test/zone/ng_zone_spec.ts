@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="jasmine" />
+
 import {EventEmitter, NgZone} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/src/testing_internal';

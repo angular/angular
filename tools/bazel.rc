@@ -7,6 +7,9 @@
 build --strategy=TypeScriptCompile=worker
 build --strategy=AngularTemplateCompile=worker
 
+# Enable debugging tests with --config=debug
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
+
 ###############################
 # Filesystem interactions     #
 ###############################
@@ -17,7 +20,7 @@ build --strategy=AngularTemplateCompile=worker
 # which affects the common case of having `tsconfig.json` in the WORKSPACE directory.
 #
 # Instead, you should run `bazel info bazel-bin` to find out where the outputs went.
-build --symlink_prefix=/
+build --symlink_prefix=dist/
 
 # Performance: avoid stat'ing input files
 build --watchfs

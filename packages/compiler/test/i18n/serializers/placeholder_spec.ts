@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PlaceholderRegistry} from '../../../src/i18n/serializers/placeholder';
+import {PlaceholderRegistryInternalForTesting as PlaceholderRegistry} from '../../../src/i18n/serializers/placeholder';
 
 export function main(): void {
   describe('PlaceholderRegistry', () => {
