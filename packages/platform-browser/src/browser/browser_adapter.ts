@@ -18,6 +18,7 @@ const _attrToPropMap = {
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex',
+  'novalidate: 'noValidate'
 };
 
 const DOM_KEY_LOCATION_NUMPAD = 3;
