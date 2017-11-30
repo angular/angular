@@ -3348,6 +3348,52 @@ export function main() {
       expect(() => { TestBed.createComponent(Cmp); }).not.toThrowError();
     });
 
+    it('should continue to clean up DOM-related animation artificats even if a compiler-level error is thrown midway',
+       () => {
+         @Component({
+           selector: 'if-cmp',
+           animations: [
+             trigger(
+                 'foo',
+                 [
+                   transition('* => something', []),
+                 ]),
+           ],
+           template: `
+          value = {{ foo[bar] }}
+          <div #contents>
+            <div *ngIf="exp">1</div>
+            <div *ngIf="exp" @foo>2</div>
+            <div *ngIf="exp" [@foo]="'123'">3</div>
+          </div>
+        `,
+         })
+         class Cmp {
+           exp: any = false;
+
+           @ViewChild('contents') public contents: any;
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.get(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+
+         const runCD = () => fixture.detectChanges();
+         const cmp = fixture.componentInstance;
+
+         cmp.exp = true;
+         expect(runCD).toThrow();
+
+         const contents = cmp.contents.nativeElement;
+         expect(contents.innerText.replace(/\s+/gm, '')).toEqual('123');
+
+         cmp.exp = false;
+         expect(runCD).toThrow();
+
+         expect(contents.innerText.trim()).toEqual('');
+       });
+
     describe('errors for not using the animation module', () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
