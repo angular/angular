@@ -550,6 +550,7 @@ export class MetadataCollector {
         __symbolic: 'module',
         version: this.options.version || METADATA_VERSION, metadata
       };
+      if (sourceFile.moduleName) result.importAs = sourceFile.moduleName;
       if (exports) result.exports = exports;
       return result;
     }
