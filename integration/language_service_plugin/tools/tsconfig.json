@@ -13,6 +13,7 @@
     },
     "files": [
         "typescript_host.ts", 
-        "typescript_validator.ts"
+        "typescript_validator.ts",
+        "load_test.ts"
     ]
 }

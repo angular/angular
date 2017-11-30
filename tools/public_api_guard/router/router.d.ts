@@ -39,6 +39,22 @@ export declare class ActivatedRouteSnapshot {
     toString(): string;
 }
 
+/** @experimental */
+export declare class ActivationEnd {
+    snapshot: ActivatedRouteSnapshot;
+    constructor(
+        snapshot: ActivatedRouteSnapshot);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class ActivationStart {
+    snapshot: ActivatedRouteSnapshot;
+    constructor(
+        snapshot: ActivatedRouteSnapshot);
+    toString(): string;
+}
+
 /** @stable */
 export interface CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean;
@@ -60,12 +76,18 @@ export interface CanLoad {
 }
 
 /** @experimental */
-export declare class ChildActivationEnd extends RouteEvent {
+export declare class ChildActivationEnd {
+    snapshot: ActivatedRouteSnapshot;
+    constructor(
+        snapshot: ActivatedRouteSnapshot);
     toString(): string;
 }
 
 /** @experimental */
-export declare class ChildActivationStart extends RouteEvent {
+export declare class ChildActivationStart {
+    snapshot: ActivatedRouteSnapshot;
+    constructor(
+        snapshot: ActivatedRouteSnapshot);
     toString(): string;
 }
 
@@ -97,13 +119,14 @@ export declare class DefaultUrlSerializer implements UrlSerializer {
 export declare type DetachedRouteHandle = {};
 
 /** @stable */
-export declare type Event = RouterEvent | RouteEvent;
+export declare type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart | ChildActivationEnd | ActivationStart | ActivationEnd;
 
 /** @stable */
 export interface ExtraOptions {
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
+    onSameUrlNavigation?: 'reload' | 'ignore';
     preloadingStrategy?: any;
     useHash?: boolean;
 }
@@ -284,20 +307,19 @@ export interface Route {
 }
 
 /** @experimental */
-export declare class RouteConfigLoadEnd extends RouteEvent {
-    toString(): string;
-}
-
-/** @experimental */
-export declare class RouteConfigLoadStart extends RouteEvent {
-    toString(): string;
-}
-
-/** @experimental */
-export declare class RouteEvent {
+export declare class RouteConfigLoadEnd {
     route: Route;
     constructor(
         route: Route);
+    toString(): string;
+}
+
+/** @experimental */
+export declare class RouteConfigLoadStart {
+    route: Route;
+    constructor(
+        route: Route);
+    toString(): string;
 }
 
 /** @stable */
@@ -306,6 +328,7 @@ export declare class Router {
     errorHandler: ErrorHandler;
     readonly events: Observable<Event>;
     navigated: boolean;
+    onSameUrlNavigation: 'reload' | 'ignore';
     routeReuseStrategy: RouteReuseStrategy;
     readonly routerState: RouterState;
     readonly url: string;
@@ -337,6 +360,15 @@ export declare abstract class RouteReuseStrategy {
     abstract shouldDetach(route: ActivatedRouteSnapshot): boolean;
     abstract shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
     abstract store(route: ActivatedRouteSnapshot, handle: DetachedRouteHandle | null): void;
+}
+
+/** @experimental */
+export declare class RouterEvent {
+    id: number;
+    url: string;
+    constructor(
+        id: number,
+        url: string);
 }
 
 /** @stable */
@@ -409,8 +441,6 @@ export declare class RouterOutlet implements OnDestroy, OnInit {
     readonly component: Object;
     deactivateEvents: EventEmitter<any>;
     readonly isActivated: boolean;
-    /** @deprecated */ readonly locationFactoryResolver: ComponentFactoryResolver;
-    /** @deprecated */ readonly locationInjector: Injector;
     constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string, changeDetector: ChangeDetectorRef);
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;

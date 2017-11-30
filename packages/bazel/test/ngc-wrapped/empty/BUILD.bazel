@@ -1,0 +1,10 @@
+load("@angular//:index.bzl", "ng_module")
+
+package(default_visibility=["//test:__subpackages__"])
+
+ng_module(
+    name = "empty",
+    srcs = ["empty.ts"],
+    deps = ["@//packages/core"],
+    tsconfig = ":tsconfig.json",
+)

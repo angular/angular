@@ -7,7 +7,7 @@ import { LoggerService }    from './logger.service';
 
 // #docregion component
 @Component({
-  selector: 'hero-contact',
+  selector: 'app-hero-contact',
   template: `
   <div>Phone #: {{phoneNumber}}
   <span *ngIf="hasLogger">!!!</span></div>`

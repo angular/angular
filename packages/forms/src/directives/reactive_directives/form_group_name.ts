@@ -40,7 +40,7 @@ export const formGroupNameProvider: any = {
  * controls into their own nested object.
  *
  * **Access the group**: You can access the associated {@link FormGroup} using the
- * {@link AbstractControl#get} method. Ex: `this.form.get('name')`.
+ * {@link AbstractControl#get get} method. Ex: `this.form.get('name')`.
  *
  * You can also access individual controls within the group using dot syntax.
  * Ex: `this.form.get('name.first')`
@@ -50,11 +50,11 @@ export const formGroupNameProvider: any = {
  *
  * **Set the value**: You can set an initial value for each child control when instantiating
  * the {@link FormGroup}, or you can set it programmatically later using
- * {@link AbstractControl#setValue} or {@link AbstractControl#patchValue}.
+ * {@link AbstractControl#setValue setValue} or {@link AbstractControl#patchValue patchValue}.
  *
  * **Listen to value**: If you want to listen to changes in the value of the group, you can
- * subscribe to the {@link AbstractControl#valueChanges} event.  You can also listen to
- * {@link AbstractControl#statusChanges} to be notified when the validation status is
+ * subscribe to the {@link AbstractControl#valueChanges valueChanges} event.  You can also listen to
+ * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
  * re-calculated.
  *
  * ### Example
@@ -111,7 +111,7 @@ export const formArrayNameProvider: any = {
  * form controls dynamically.
  *
  * **Access the array**: You can access the associated {@link FormArray} using the
- * {@link AbstractControl#get} method on the parent {@link FormGroup}.
+ * {@link AbstractControl#get get} method on the parent {@link FormGroup}.
  * Ex: `this.form.get('cities')`.
  *
  * **Get the value**: the `value` property is always synced and available on the
@@ -119,17 +119,17 @@ export const formArrayNameProvider: any = {
  *
  * **Set the value**: You can set an initial value for each child control when instantiating
  * the {@link FormArray}, or you can set the value programmatically later using the
- * {@link FormArray}'s {@link AbstractControl#setValue} or {@link AbstractControl#patchValue}
- * methods.
+ * {@link FormArray}'s {@link AbstractControl#setValue setValue} or
+ * {@link AbstractControl#patchValue patchValue} methods.
  *
  * **Listen to value**: If you want to listen to changes in the value of the array, you can
- * subscribe to the {@link FormArray}'s {@link AbstractControl#valueChanges} event.  You can also
- * listen to its {@link AbstractControl#statusChanges} event to be notified when the validation
- * status is re-calculated.
+ * subscribe to the {@link FormArray}'s {@link AbstractControl#valueChanges valueChanges} event.
+ * You can also listen to its {@link AbstractControl#statusChanges statusChanges} event to be
+ * notified when the validation status is re-calculated.
  *
- * **Add new controls**: You can add new controls to the {@link FormArray} dynamically by
- * calling its {@link FormArray#push} method.
- *  Ex: `this.form.get('cities').push(new FormControl());`
+ * **Add new controls**: You can add new controls to the {@link FormArray} dynamically by calling
+ * its {@link FormArray#push push} method.
+ * Ex: `this.form.get('cities').push(new FormControl());`
  *
  * ### Example
  *

@@ -1,9 +1,9 @@
 <!--#docregion binding  -->
 <li>{{hero.name}}</li>
-<hero-detail [hero]="selectedHero"></hero-detail>
+<app-hero-detail [hero]="selectedHero"></app-hero-detail>
 <li (click)="selectHero(hero)"></li>
 <!--#enddocregion binding -->
 
 <!--#docregion structural  -->
 <li *ngFor="let hero of heroes"></li>
-<hero-detail *ngIf="selectedHero"></hero-detail>
+<app-hero-detail *ngIf="selectedHero"></app-hero-detail>

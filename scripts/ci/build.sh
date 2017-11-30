@@ -32,7 +32,7 @@ if [[ ${CI_MODE:-} == "aio" ]]; then
        ([[ $TRAVIS_BRANCH == "master" ]] || [[ $TRAVIS_BRANCH == $STABLE_BRANCH ]]) &&
        [[ $TRAVIS_PULL_REQUEST != "false" ]]; then
       travisFoldStart "deploy.aio.pr-preview"
-        yarn deploy-preview -- --skip-build
+        yarn deploy-preview --skip-build
       travisFoldEnd "deploy.aio.pr-preview"
     fi
   )
@@ -40,26 +40,25 @@ if [[ ${CI_MODE:-} == "aio" ]]; then
   exit 0;
 fi
 
+# Build the Angular packages then exit (no further build required)
+if [[ ${CI_MODE:-} == "aio_e2e" || ${CI_MODE:-} == "aio_tools_test" ]]; then
+  travisFoldStart "build.$CI_MODE"
+  (
+    ./build.sh
+  )
+  travisFoldEnd "build.$CI_MODE"
+  exit 0;
+fi
+
 travisFoldStart "tsc tools"
   $(npm bin)/tsc -p tools
-  $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig-build.json
-  cp packages/tsc-wrapped/package.json dist/packages-dist/tsc-wrapped
-  $(npm bin)/tsc -p packages/tsc-wrapped/tsconfig.json
-  cp packages/tsc-wrapped/package.json dist/all/@angular/tsc-wrapped
+  $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
+  $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json
 travisFoldEnd "tsc tools"
 
 
 travisFoldStart "tsc all"
-  node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p packages
-  node --max-old-space-size=3000 dist/packages-dist/tsc-wrapped/src/main -p modules
+  node dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
+  $(npm bin)/tsc -p packages
+  $(npm bin)/tsc -p modules
 travisFoldEnd "tsc all"
-
-
-# TODO(i): what are these compilations here for?
-travisFoldStart "tsc a bunch of useless stuff"
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/core/tsconfig-build.json
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/common/tsconfig-build.json
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/platform-browser/tsconfig-build.json
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/router/tsconfig-build.json
-  node dist/packages-dist/tsc-wrapped/src/main -p packages/forms/tsconfig-build.json
-travisFoldEnd "tsc a bunch of useless stuff"

@@ -5,7 +5,7 @@ import { HeroCacheService }         from './hero-cache.service';
 
 // #docregion component
 @Component({
-  selector: 'hero-bio',
+  selector: 'app-hero-bio',
   // #docregion template
   template: `
     <h4>{{hero.name}}</h4>

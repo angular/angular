@@ -8,7 +8,7 @@
   "dependencies": {
     "@angular/core": "^2.0.0-rc.7",
     "reflect-metadata": "^0.1.2",
-    "rxjs": "^5.0.1",
+    "rxjs": "^5.5.0",
     "jpm": "1.1.4",
     "firefox-profile": "0.4.0",
     "selenium-webdriver": "^2.53.3"

@@ -30,7 +30,7 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
  *
  * {@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}
  *
- * @experimental
+ * @stable
  */
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet implements OnChanges {
@@ -41,12 +41,6 @@ export class NgTemplateOutlet implements OnChanges {
   @Input() public ngTemplateOutlet: TemplateRef<any>;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
-
-  /**
-   * @deprecated v4.0.0 - Renamed to ngTemplateOutletContext.
-   */
-  @Input()
-  set ngOutletContext(context: Object) { this.ngTemplateOutletContext = context; }
 
   ngOnChanges(changes: SimpleChanges) {
     const recreateView = this._shouldRecreateView(changes);
@@ -72,7 +66,7 @@ export class NgTemplateOutlet implements OnChanges {
    * - templateRef has changed
    * - context has changes
    *
-   * To mark context object as changed when the corresponding object
+   * We mark context object as changed when the corresponding object
    * shape changes (new properties are added or existing properties are removed).
    * In other words we consider context with the same properties as "the same" even
    * if object reference changes (see https://github.com/angular/angular/issues/13407).

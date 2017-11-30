@@ -6,11 +6,49 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {registerLocaleData} from '@angular/common';
 import {Component} from '@angular/core';
+// we need to import data for the french locale
+import localeFr from './locale-fr';
+
+// registering french data
+registerLocaleData(localeFr);
 
 // #docregion NumberPipe
 @Component({
   selector: 'number-pipe',
+  template: `<div>
+    <!--output '2.718'-->
+    <p>e (no formatting): {{e | number}}</p>
+    
+    <!--output '002.71828'-->
+    <p>e (3.1-5): {{e | number:'3.1-5'}}</p>
+
+    <!--output '0,002.71828'-->
+    <p>e (3.5-5): {{e | number:'4.5-5'}}</p>
+    
+    <!--output '0 002,71828'-->
+    <p>e (french): {{e | number:'4.5-5':'fr'}}</p>
+
+    <!--output '3.14'-->
+    <p>pi (no formatting): {{e | number}}</p>
+    
+    <!--output '003.14'-->
+    <p>pi (3.1-5): {{e | number:'3.1-5'}}</p>
+
+    <!--output '003.14000'-->
+    <p>pi (3.5-5): {{e | number:'3.5-5'}}</p>
+  </div>`
+})
+export class NumberPipeComponent {
+  pi: number = 3.14;
+  e: number = 2.718281828459045;
+}
+// #enddocregion
+
+// #docregion DeprecatedNumberPipe
+@Component({
+  selector: 'deprecated-number-pipe',
   template: `<div>
     <p>e (no formatting): {{e}}</p>
     <p>e (3.1-5): {{e | number:'3.1-5'}}</p>
@@ -18,36 +56,8 @@ import {Component} from '@angular/core';
     <p>pi (3.5-5): {{pi | number:'3.5-5'}}</p>
   </div>`
 })
-export class NumberPipeComponent {
+export class DeprecatedNumberPipeComponent {
   pi: number = 3.141592;
   e: number = 2.718281828459045;
-}
-// #enddocregion
-
-// #docregion PercentPipe
-@Component({
-  selector: 'percent-pipe',
-  template: `<div>
-    <p>A: {{a | percent}}</p>
-    <p>B: {{b | percent:'4.3-5'}}</p>
-  </div>`
-})
-export class PercentPipeComponent {
-  a: number = 0.259;
-  b: number = 1.3495;
-}
-// #enddocregion
-
-// #docregion CurrencyPipe
-@Component({
-  selector: 'currency-pipe',
-  template: `<div>
-    <p>A: {{a | currency:'USD':false}}</p>
-    <p>B: {{b | currency:'USD':true:'4.2-2'}}</p>
-  </div>`
-})
-export class CurrencyPipeComponent {
-  a: number = 0.259;
-  b: number = 1.3495;
 }
 // #enddocregion

@@ -51,6 +51,14 @@ export function main() {
       expect(styleWithImports.styleUrls).not.toContain('http://ng.io/3.css');
     });
 
+    it('should keep /*# sourceURL... */ and /*# sourceMappingURL... */ comments', () => {
+      const css =
+          `/*regular comment*/\n/*# sourceURL=.... */\n/*# sourceMappingURL=... *//*#sourceMappingURL=... */`;
+      const styleWithSourceMaps = extractStyleUrls(urlResolver, 'http://ng.io', css);
+      expect(styleWithSourceMaps.style.trim())
+          .toEqual('/*# sourceURL=.... */\n/*# sourceMappingURL=... *//*#sourceMappingURL=... */');
+    });
+
     it('should extract "@import url()" urls', () => {
       const css = `
       @import url('3.css');

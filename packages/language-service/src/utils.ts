@@ -7,7 +7,7 @@
  */
 
 import {AstPath, CompileDirectiveSummary, CompileTypeMetadata, CssSelector, DirectiveAst, ElementAst, EmbeddedTemplateAst, HtmlAstPath, Node as HtmlNode, ParseSourceSpan, RecursiveTemplateAstVisitor, RecursiveVisitor, TemplateAst, TemplateAstPath, identifierName, templateVisitAll, visitAll} from '@angular/compiler';
-import {DiagnosticTemplateInfo} from '@angular/compiler-cli';
+import {DiagnosticTemplateInfo} from '@angular/compiler-cli/src/language_services';
 import * as ts from 'typescript';
 
 import {SelectorInfo, TemplateInfo} from './common';

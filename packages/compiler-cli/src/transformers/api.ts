@@ -6,24 +6,46 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParseSourceSpan} from '@angular/compiler';
+import {GeneratedFile, ParseSourceSpan, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-export enum DiagnosticCategory {
-  Warning = 0,
-  Error = 1,
-  Message = 2,
+export const DEFAULT_ERROR_CODE = 100;
+export const UNKNOWN_ERROR_CODE = 500;
+export const SOURCE = 'angular' as 'angular';
+
+export interface DiagnosticMessageChain {
+  messageText: string;
+  position?: Position;
+  next?: DiagnosticMessageChain;
 }
 
 export interface Diagnostic {
-  message: string;
+  messageText: string;
   span?: ParseSourceSpan;
-  category: DiagnosticCategory;
+  position?: Position;
+  chain?: DiagnosticMessageChain;
+  category: ts.DiagnosticCategory;
+  code: number;
+  source: 'angular';
+}
+
+export function isTsDiagnostic(diagnostic: any): diagnostic is ts.Diagnostic {
+  return diagnostic != null && diagnostic.source !== 'angular';
+}
+
+export function isNgDiagnostic(diagnostic: any): diagnostic is Diagnostic {
+  return diagnostic != null && diagnostic.source === 'angular';
 }
 
 export interface CompilerOptions extends ts.CompilerOptions {
+  // Write statistics about compilation (e.g. total time, ...)
+  // Note: this is the --diagnostics command line option from TS (which is @internal
+  // on ts.CompilerOptions interface).
+  diagnostics?: boolean;
+
   // Absolute path to a directory where generated file structure is written.
   // If unspecified, generated files will be written alongside sources.
+  // @deprecated - no effect
   genDir?: string;
 
   // Path to the directory containing the tsconfig.json file.
@@ -37,6 +59,14 @@ export interface CompilerOptions extends ts.CompilerOptions {
 
   // Don't produce .ngfactory.ts or .ngstyle.ts files
   skipTemplateCodegen?: boolean;
+
+  // Always report errors when the type of a parameter supplied whose injection type cannot
+  // be determined. When this value option is not provided or is `false`, constructor
+  // parameters of classes marked with `@Injectable` whose type cannot be resolved will
+  // produce a warning. With this option `true`, they produce an error. When this option is
+  // not provided is treated as if it were `false`. In Angular 6.0, if this option is not
+  // provided, it will be treated as `true`.
+  strictInjectionParameters?: boolean;
 
   // Whether to generate a flat module index of the given name and the corresponding
   // flat module metadata. This option is intended to be used when creating flat
@@ -72,6 +102,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // Default is true.
   generateCodeForLibraries?: boolean;
 
+  // Whether to enable all type checks for templates.
+  // This will be true be default in Angular 6.
+  fullTemplateTypeCheck?: boolean;
+
   // Insert JSDoc type annotations needed by Closure Compiler
   annotateForClosureCompiler?: boolean;
 
@@ -89,44 +123,90 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // Print extra information while running the compiler
   trace?: boolean;
 
-  // Whether to enable support for <template> and the template attribute (true by default)
+  // Whether to enable support for <template> and the template attribute (false by default)
   enableLegacyTemplate?: boolean;
 
   // Whether to enable lowering expressions lambdas and expressions in a reference value
   // position.
   disableExpressionLowering?: boolean;
+
+  // Locale of the application
+  i18nOutLocale?: string;
+  // Export format (xlf, xlf2 or xmb)
+  i18nOutFormat?: string;
+  // Path to the extracted message file
+  i18nOutFile?: string;
+
+  // Import format if different from `i18nFormat`
+  i18nInFormat?: string;
+  // Locale of the imported translations
+  i18nInLocale?: string;
+  // Path to the translation file
+  i18nInFile?: string;
+  // How to handle missing messages
+  i18nInMissingTranslations?: 'error'|'warning'|'ignore';
+
+  // Whether to remove blank text nodes from compiled templates. It is `true` by default
+  // in Angular 5 and will be re-visited in Angular 6.
+  preserveWhitespaces?: boolean;
+
+  /** generate all possible generated files  */
+  allowEmptyCodegenFiles?: boolean;
+
+  /**
+   * Whether to generate .ngsummary.ts files that allow to use AOTed artifacts
+   * in JIT mode. This is off by default.
+   */
+  enableSummariesForJit?: boolean;
+
+  /** @internal */
+  collectAllErrors?: boolean;
 }
 
-export interface ModuleFilenameResolver {
+export interface CompilerHost extends ts.CompilerHost {
   /**
    * Converts a module name that is used in an `import` to a file path.
    * I.e. `path/to/containingFile.ts` containing `import {...} from 'module-name'`.
    */
-  moduleNameToFileName(moduleName: string, containingFile?: string): string|null;
-
+  moduleNameToFileName?(moduleName: string, containingFile: string): string|null;
   /**
-   * Converts a file path to a module name that can be used as an `import.
+   * Converts a file path to a module name that can be used as an `import ...`
    * I.e. `path/to/importedFile.ts` should be imported by `path/to/containingFile.ts`.
-   *
-   * See ImportResolver.
    */
-  fileNameToModuleName(importedFilePath: string, containingFilePath: string): string|null;
-
-  getNgCanonicalFileName(fileName: string): string;
-
-  assumeFileExists(fileName: string): void;
-}
-
-export interface CompilerHost extends ts.CompilerHost, ModuleFilenameResolver {
+  fileNameToModuleName?(importedFilePath: string, containingFilePath: string): string;
+  /**
+   * Converts a file path for a resource that is used in a source file or another resource
+   * into a filepath.
+   */
+  resourceNameToFileName?(resourceName: string, containingFilePath: string): string|null;
+  /**
+   * Converts a file name into a representation that should be stored in a summary file.
+   * This has to include changing the suffix as well.
+   * E.g.
+   * `some_file.ts` -> `some_file.d.ts`
+   *
+   * @param referringSrcFileName the soure file that refers to fileName
+   */
+  toSummaryFileName?(fileName: string, referringSrcFileName: string): string;
+  /**
+   * Converts a fileName that was processed by `toSummaryFileName` back into a real fileName
+   * given the fileName of the library that is referrig to it.
+   */
+  fromSummaryFileName?(fileName: string, referringLibFileName: string): string;
   /**
    * Load a referenced resource either statically or asynchronously. If the host returns a
    * `Promise<string>` it is assumed the user of the corresponding `Program` will call
    * `loadNgStructureAsync()`. Returing  `Promise<string>` outside `loadNgStructureAsync()` will
    * cause a diagnostics diagnostic error or an exception to be thrown.
-   *
-   * If `loadResource()` is not provided, `readFile()` will be called to load the resource.
    */
   readResource?(fileName: string): Promise<string>|string;
+  /**
+   * Produce an AMD module name for the source file. Used in Bazel.
+   *
+   * An AMD module can have an arbitrary name, so that it is require'd by name
+   * rather than by path. See http://requirejs.org/docs/whyamd.html#namedmodules
+   */
+  amdModuleName?(sf: ts.SourceFile): string|undefined;
 }
 
 export enum EmitFlags {
@@ -134,17 +214,44 @@ export enum EmitFlags {
   JS = 1 << 1,
   Metadata = 1 << 2,
   I18nBundle = 1 << 3,
-  Summary = 1 << 4,
+  Codegen = 1 << 4,
 
-  Default = DTS | JS,
-  All = DTS | JS | Metadata | I18nBundle | Summary
+  Default = DTS | JS | Codegen,
+  All = DTS | JS | Metadata | I18nBundle | Codegen,
 }
 
-// TODO(chuckj): Support CustomTransformers once we require TypeScript 2.3+
-// export interface CustomTransformers {
-//   beforeTs?: ts.TransformerFactory<ts.SourceFile>[];
-//   afterTs?: ts.TransformerFactory<ts.SourceFile>[];
-// }
+export interface CustomTransformers {
+  beforeTs?: ts.TransformerFactory<ts.SourceFile>[];
+  afterTs?: ts.TransformerFactory<ts.SourceFile>[];
+}
+
+export interface TsEmitArguments {
+  program: ts.Program;
+  host: CompilerHost;
+  options: CompilerOptions;
+  targetSourceFile?: ts.SourceFile;
+  writeFile?: ts.WriteFileCallback;
+  cancellationToken?: ts.CancellationToken;
+  emitOnlyDtsFiles?: boolean;
+  customTransformers?: ts.CustomTransformers;
+}
+
+export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
+
+/**
+ * @internal
+ */
+export interface LibrarySummary {
+  fileName: string;
+  text: string;
+  sourceFile?: ts.SourceFile;
+}
+
+export interface LazyRoute {
+  route: string;
+  module: {name: string, filePath: string};
+  referencedModule: {name: string, filePath: string};
+}
 
 export interface Program {
   /**
@@ -155,7 +262,7 @@ export interface Program {
   getTsProgram(): ts.Program;
 
   /**
-   * Retreive options diagnostics for the TypeScript options used to create the program. This is
+   * Retrieve options diagnostics for the TypeScript options used to create the program. This is
    * faster than calling `getTsProgram().getOptionsDiagnostics()` since it does not need to
    * collect Angular structural information to produce the errors.
    */
@@ -167,7 +274,7 @@ export interface Program {
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[];
 
   /**
-   * Retrive the syntax diagnostics from TypeScript. This is faster than calling
+   * Retrieve the syntax diagnostics from TypeScript. This is faster than calling
    * `getTsProgram().getSyntacticDiagnostics()` since it does not need to collect Angular structural
    * information to produce the errors.
    */
@@ -188,7 +295,7 @@ export interface Program {
   getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[];
 
   /**
-   * Retreive the semantic diagnostics from TypeScript. This is equivilent to calling
+   * Retrieve the semantic diagnostics from TypeScript. This is equivilent to calling
    * `getTsProgram().getSemanticDiagnostics()` directly and is included for completeness.
    */
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
@@ -211,21 +318,41 @@ export interface Program {
   loadNgStructureAsync(): Promise<void>;
 
   /**
-   * Retrieve the lazy route references in the program.
-   *
-   * Angular structural information is required to produce these routes.
+   * Returns the lazy routes in the program.
+   * @param entryRoute A reference to an NgModule like `someModule#name`. If given,
+   *              will recursively analyze routes starting from this symbol only.
+   *              Otherwise will list all routes for all NgModules in the program/
    */
-  getLazyRoutes(cancellationToken?: ts.CancellationToken): {[route: string]: string};
+  listLazyRoutes(entryRoute?: string): LazyRoute[];
 
   /**
    * Emit the files requested by emitFlags implied by the program.
    *
    * Angular structural information is required to emit files.
    */
-  emit({// transformers,
-        emitFlags, cancellationToken}: {
-    emitFlags: EmitFlags,
-    // transformers?: CustomTransformers, // See TODO above
+  emit({emitFlags, cancellationToken, customTransformers, emitCallback}?: {
+    emitFlags?: EmitFlags,
     cancellationToken?: ts.CancellationToken,
-  }): void;
+    customTransformers?: CustomTransformers,
+    emitCallback?: TsEmitCallback
+  }): ts.EmitResult;
+
+  /**
+   * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted
+   * in this program or previous programs with paths that emulate the fact that these libraries
+   * have been compiled before with no outDir.
+   *
+   * @internal
+   */
+  getLibrarySummaries(): Map<string, LibrarySummary>;
+
+  /**
+   * @internal
+   */
+  getEmittedGeneratedFiles(): Map<string, GeneratedFile>;
+
+  /**
+   * @internal
+   */
+  getEmittedSourceFiles(): Map<string, ts.SourceFile>;
 }

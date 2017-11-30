@@ -8,6 +8,6 @@ echo "#################################"
 echo "Running platform-server end to end tests"
 echo "#################################"
 
-npm install
+yarn install
 
 npm run test

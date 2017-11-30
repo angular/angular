@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -14,17 +15,19 @@ const globals = {
   '@angular/compiler': 'ng.compiler',
   '@angular/compiler/testing': 'ng.compiler.testing',
   '@angular/platform-browser': 'ng.platformBrowser',
+  '@angular/platform-browser/animations': 'ng.platformBrowser.animations',
   '@angular/platform-server': 'ng.platformServer',
   '@angular/platform-browser-dynamic/testing': 'ng.platformBrowserDynamic.testing'
 };
 
-export default {
-  entry: '../../../dist/packages-dist/platform-server/@angular/platform-server/testing.es5.js',
+module.exports = {
+  entry: '../../../dist/packages-dist/platform-server/esm5/testing.js',
   dest: '../../../dist/packages-dist/platform-server/bundles/platform-server-testing.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-server/testing'},
   moduleName: 'ng.platformServer.testing',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

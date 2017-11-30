@@ -2,11 +2,11 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
   <h1>Security</h1>
-  <inner-html-binding></inner-html-binding>
-  <bypass-security></bypass-security>
+  <app-inner-html-binding></app-inner-html-binding>
+  <app-bypass-security></app-bypass-security>
   `
 })
 export class AppComponent {

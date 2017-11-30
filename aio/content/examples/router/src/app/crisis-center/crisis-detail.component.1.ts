@@ -1,8 +1,9 @@
 // #docplaster
 // #docregion
 import 'rxjs/add/operator/switchMap';
-import { Component, OnInit, HostBinding } from '@angular/core';
+import { Component, OnInit, HostBinding }   from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
+import { Observable }                       from 'rxjs/Observable';
 
 import { slideInDownAnimation }   from '../animations';
 import { Crisis, CrisisService }  from './crisis.service';
@@ -45,7 +46,8 @@ export class CrisisDetailComponent implements OnInit {
   // #docregion ngOnInit
   ngOnInit() {
     this.route.paramMap
-      .switchMap((params: ParamMap) => this.service.getCrisis(params.get('id')))
+      .switchMap((params: ParamMap) =>
+        this.service.getCrisis(params.get('id')))
       .subscribe((crisis: Crisis) => {
         if (crisis) {
           this.editName = crisis.name;
@@ -66,13 +68,13 @@ export class CrisisDetailComponent implements OnInit {
     this.gotoCrises();
   }
 
-  canDeactivate(): Promise<boolean> | boolean {
+  canDeactivate(): Observable<boolean> | boolean {
     // Allow synchronous navigation (`true`) if no crisis or the crisis is unchanged
     if (!this.crisis || this.crisis.name === this.editName) {
       return true;
     }
     // Otherwise ask the user with the dialog service and return its
-    // promise which resolves to true or false when the user decides
+    // observable which resolves to true or false when the user decides
     return this.dialogService.confirm('Discard changes?');
   }
 

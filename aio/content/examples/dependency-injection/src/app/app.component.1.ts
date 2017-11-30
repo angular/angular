@@ -1,14 +1,12 @@
-// Early versions
-
 // #docregion
-import { Component }         from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
     <h1>{{title}}</h1>
-    <my-car></my-car>
-    <my-heroes></my-heroes>
+    <app-car></app-car>
+    <app-heroes></app-heroes>
   `
 })
 

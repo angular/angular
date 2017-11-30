@@ -11,7 +11,7 @@
 anchor_1: &job_defaults
   working_directory: ~/ng
   docker:
-    - image: angular/ngcontainer
+    - image: angular/ngcontainer:0.0.2
 
 # After checkout, rebase on top of master.
 # Similar to travis behavior, but not quite the same.
@@ -27,10 +27,9 @@ jobs:
       - checkout:
           <<: *post_checkout
       - restore_cache:
-          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-      - run: npm install
-      - run: npm run postinstall
+      - run: yarn install --frozen-lockfile --non-interactive
       - run: ./node_modules/.bin/gulp lint
 
   build:
@@ -39,12 +38,13 @@ jobs:
       - checkout:
           <<: *post_checkout
       - restore_cache:
-          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-      - run: bazel run @build_bazel_rules_typescript_node//:bin/npm install
+      - run: bazel run @yarn//:yarn
       - run: bazel build packages/...
+      - run: bazel test @angular//...
       - save_cache:
-          key: angular-{{ .Branch }}-{{ checksum "npm-shrinkwrap.json" }}
+          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - "node_modules"
 

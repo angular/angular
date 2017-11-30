@@ -22,10 +22,10 @@ System.config({
     'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
     '@angular': 'dist/all/@angular',
     'rxjs': 'node_modules/rxjs',
-    'parse5': 'dist/all/@angular/empty.js',
+    'domino': 'dist/all/@angular/empty.js',
     'url': 'dist/all/@angular/empty.js',
     'xhr2': 'dist/all/@angular/empty.js',
-    '@angular/platform-server/src/parse5_adapter': 'dist/all/empty.js',
+    '@angular/platform-server/src/domino_adapter': 'dist/all/empty.js',
     'angular2/*': 'dist/all/angular2/*.js',
     'angular2/src/alt_router/router_testing_providers':
         'dist/all/angular2/src/alt_router/router_testing_providers.js'

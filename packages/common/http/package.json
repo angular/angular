@@ -1,7 +1,7 @@
 {
   "name": "@angular/common/http",
-  "typings": "../http.d.ts",
+  "typings": "./http.d.ts",
   "main": "../bundles/common-http.umd.js",
-  "module": "../@angular/common/http.es5.js",
-  "es2015": "../@angular/common/http.js"
+  "module": "../esm5/http.js",
+  "es2015": "../esm2015/http.js"
 }

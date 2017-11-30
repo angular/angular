@@ -166,6 +166,21 @@ if (typeof Element != 'undefined') {
   };
 }
 
+let _CACHED_BODY: {style: any}|null = null;
+export function validateStyleProperty(prop: string): boolean {
+  if (!_CACHED_BODY) {
+    _CACHED_BODY = getBodyNode() || {};
+  }
+  return _CACHED_BODY !.style ? prop in _CACHED_BODY !.style : true;
+}
+
+export function getBodyNode(): any|null {
+  if (typeof document != 'undefined') {
+    return document.body;
+  }
+  return null;
+}
+
 export const matchesElement = _matches;
 export const containsElement = _contains;
 export const invokeQuery = _query;

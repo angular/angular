@@ -126,7 +126,7 @@ http
     err => {
       console.log('Something went wrong!');
     }
-  });
+  );
 ```
 
 #### Getting error details
@@ -141,7 +141,7 @@ In both cases, you can look at the `HttpErrorResponse` to figure out what happen
 http
   .get<ItemsResponse>('/api/items')
   .subscribe(
-  	data => {...},
+    data => {...},
     (err: HttpErrorResponse) => {
       if (err.error instanceof Error) {
         // A client-side or network error occurred. Handle it accordingly.
@@ -152,7 +152,7 @@ http
         console.log(`Backend returned code ${err.status}, body was: ${err.error}`);
       }
     }
-  });
+  );
 ```
 
 #### `.retry()`

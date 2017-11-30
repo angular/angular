@@ -10,7 +10,7 @@ import {Injector, NgModule, NgZone, Testability} from '@angular/core';
 
 import * as angular from '../common/angular1';
 import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_MODULE_NAME} from '../common/constants';
-import {controllerKey} from '../common/util';
+import {LazyModuleRef, controllerKey} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
@@ -166,7 +166,10 @@ export class UpgradeModule {
 
             .factory(
                 LAZY_MODULE_REF,
-                [INJECTOR_KEY, (injector: Injector) => ({injector, needsNgZone: false})])
+                [
+                  INJECTOR_KEY,
+                  (injector: Injector) => ({ injector, needsNgZone: false } as LazyModuleRef)
+                ])
 
             .config([
               $PROVIDE, $INJECTOR,

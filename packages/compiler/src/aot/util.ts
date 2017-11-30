@@ -8,7 +8,6 @@
 
 const STRIP_SRC_FILE_SUFFIXES = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const GENERATED_FILE = /\.ngfactory\.|\.ngsummary\./;
-const GENERATED_MODULE = /\.ngfactory$|\.ngsummary$/;
 const JIT_SUMMARY_FILE = /\.ngsummary\./;
 const JIT_SUMMARY_NAME = /NgSummary$/;
 
@@ -59,4 +58,14 @@ export function summaryForJitName(symbolName: string): string {
 
 export function stripSummaryForJitNameSuffix(symbolName: string): string {
   return symbolName.replace(JIT_SUMMARY_NAME, '');
+}
+
+const LOWERED_SYMBOL = /\u0275\d+/;
+
+export function isLoweredSymbol(name: string) {
+  return LOWERED_SYMBOL.test(name);
+}
+
+export function createLoweredSymbol(id: number): string {
+  return `\u0275${id}`;
 }

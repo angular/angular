@@ -64,7 +64,7 @@ describe('ngLink', function () {
 
     it('should allow params in routerLink directive', function () {
       setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
-      registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: \'lol\'}]">{{twoLinkCmp.number}}</a></div>', function () {this.number = 'two'});
+      registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: \'lol\'}]">{{twoLinkCmp.number}}</a></div>', function () {this.number = 'two';});
       configureRouter([
         { path: '/a', component: 'twoLinkCmp' },
         { path: '/b/:param', component: 'twoCmp', name: 'Two' }
@@ -78,7 +78,7 @@ describe('ngLink', function () {
 
     it('should update the href of links with bound params', function () {
       setup({baseHref: baseHref, html5Mode: html5Mode, hashPrefix: hashPrefix});
-      registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: $ctrl.number}]">{{$ctrl.number}}</a></div>', function () {this.number = 43});
+      registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: $ctrl.number}]">{{$ctrl.number}}</a></div>', function () {this.number = 43;});
       configureRouter([
         { path: '/a', component: 'twoLinkCmp' },
         { path: '/b/:param', component: 'twoCmp', name: 'Two' }
@@ -184,8 +184,8 @@ describe('ngLink', function () {
       $locationProvider.hashPrefix(config.hashPrefix);
     });
     registerComponent('userCmp', '<div>hello {{$ctrl.$routeParams.name}}</div>', function () {});
-    registerComponent('oneCmp', '<div>{{$ctrl.number}}</div>', function () {this.number = 'one'});
-    registerComponent('twoCmp', '<div><a ng-link="[\'/Two\']">{{$ctrl.number}}</a></div>', function () {this.number = 'two'});
+    registerComponent('oneCmp', '<div>{{$ctrl.number}}</div>', function () {this.number = 'one';});
+    registerComponent('twoCmp', '<div><a ng-link="[\'/Two\']">{{$ctrl.number}}</a></div>', function () {this.number = 'two';});
   }
 
   function configureRouter(routeConfig) {

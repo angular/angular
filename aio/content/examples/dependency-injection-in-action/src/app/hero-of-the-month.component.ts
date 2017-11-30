@@ -24,7 +24,7 @@ const someHero = new Hero(42, 'Magma', 'Had a great month!', '555-555-5555');
 
 // #docregion hero-of-the-month
 @Component({
-  selector: 'hero-of-the-month',
+  selector: 'app-hero-of-the-month',
   templateUrl: './hero-of-the-month.component.html',
   providers: [
     // #docregion use-value

@@ -233,8 +233,8 @@ export function inheritedParamsDataResolve(route: ActivatedRouteSnapshot): Inher
  * @stable
  */
 export class ActivatedRouteSnapshot {
-  /** @internal **/
-  _routeConfig: Route|null;
+  /** The configuration used to match this route **/
+  public readonly routeConfig: Route|null;
   /** @internal **/
   _urlSegment: UrlSegmentGroup;
   /** @internal */
@@ -267,14 +267,11 @@ export class ActivatedRouteSnapshot {
       /** The component of the route */
       public component: Type<any>|string|null, routeConfig: Route|null, urlSegment: UrlSegmentGroup,
       lastPathIndex: number, resolve: ResolveData) {
-    this._routeConfig = routeConfig;
+    this.routeConfig = routeConfig;
     this._urlSegment = urlSegment;
     this._lastPathIndex = lastPathIndex;
     this._resolve = resolve;
   }
-
-  /** The configuration used to match this route */
-  get routeConfig(): Route|null { return this._routeConfig; }
 
   /** The root of the router state */
   get root(): ActivatedRouteSnapshot { return this._routerState.root; }
@@ -307,7 +304,7 @@ export class ActivatedRouteSnapshot {
 
   toString(): string {
     const url = this.url.map(segment => segment.toString()).join('/');
-    const matched = this._routeConfig ? this._routeConfig.path : '';
+    const matched = this.routeConfig ? this.routeConfig.path : '';
     return `Route(url:'${url}', path:'${matched}')`;
   }
 }

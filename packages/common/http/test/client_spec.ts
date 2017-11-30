@@ -39,6 +39,16 @@ export function main() {
         });
         backend.expectOne('/test').flush('hello world');
       });
+      it('with headers', (done: DoneFn) => {
+        client.get('/test', {headers: {'X-Option': 'true'}}).subscribe(() => done());
+        const req = backend.expectOne('/test');
+        expect(req.request.headers.get('X-Option')).toEqual('true');
+        req.flush({});
+      });
+      it('with params', (done: DoneFn) => {
+        client.get('/test', {params: {'test': 'true'}}).subscribe(() => done());
+        backend.expectOne('/test?test=true').flush({});
+      });
       it('for an arraybuffer', (done: DoneFn) => {
         const body = new ArrayBuffer(4);
         client.get('/test', {responseType: 'arraybuffer'}).subscribe(res => {
@@ -69,6 +79,7 @@ export function main() {
       it('that returns a stream of events', (done: DoneFn) => {
         client.get('/test', {observe: 'events'}).toArray().toPromise().then(events => {
           expect(events.length).toBe(2);
+          let x = HttpResponse;
           expect(events[0].type).toBe(HttpEventType.Sent);
           expect(events[1].type).toBe(HttpEventType.Response);
           expect(events[1] instanceof HttpResponse).toBeTruthy();
@@ -102,6 +113,26 @@ export function main() {
         });
         const testReq = backend.expectOne('/test');
         expect(testReq.request.body).toBe(body);
+        testReq.flush('hello world');
+      });
+      it('with a json body of false', (done: DoneFn) => {
+        client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(false);
+        testReq.flush('hello world');
+      });
+      it('with a json body of 0', (done: DoneFn) => {
+        client.post('/test', 0, {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(0);
         testReq.flush('hello world');
       });
       it('with an arraybuffer', (done: DoneFn) => {

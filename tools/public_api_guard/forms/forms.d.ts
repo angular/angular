@@ -14,6 +14,7 @@ export declare abstract class AbstractControl {
     readonly statusChanges: Observable<any>;
     readonly touched: boolean;
     readonly untouched: boolean;
+    readonly updateOn: FormHooks;
     readonly valid: boolean;
     validator: ValidatorFn | null;
     readonly value: any;
@@ -73,6 +74,7 @@ export declare abstract class AbstractControlDirective {
     readonly path: string[] | null;
     readonly pending: boolean | null;
     readonly pristine: boolean | null;
+    readonly status: string | null;
     readonly statusChanges: Observable<any> | null;
     readonly touched: boolean | null;
     readonly untouched: boolean | null;
@@ -386,7 +388,7 @@ export declare class NgControlStatusGroup extends AbstractControlStatus {
 }
 
 /** @stable */
-export declare class NgForm extends ControlContainer implements Form {
+export declare class NgForm extends ControlContainer implements Form, AfterViewInit {
     readonly control: FormGroup;
     readonly controls: {
         [key: string]: AbstractControl;
@@ -394,6 +396,9 @@ export declare class NgForm extends ControlContainer implements Form {
     form: FormGroup;
     readonly formDirective: Form;
     ngSubmit: EventEmitter<{}>;
+    options: {
+        updateOn?: FormHooks;
+    };
     readonly path: string[];
     readonly submitted: boolean;
     constructor(validators: any[], asyncValidators: any[]);
@@ -401,6 +406,7 @@ export declare class NgForm extends ControlContainer implements Form {
     addFormGroup(dir: NgModelGroup): void;
     getControl(dir: NgModel): FormControl;
     getFormGroup(dir: NgModelGroup): FormGroup;
+    ngAfterViewInit(): void;
     onReset(): void;
     onSubmit($event: Event): boolean;
     removeControl(dir: NgModel): void;
@@ -423,6 +429,7 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     options: {
         name?: string;
         standalone?: boolean;
+        updateOn?: FormHooks;
     };
     readonly path: string[];
     update: EventEmitter<{}>;

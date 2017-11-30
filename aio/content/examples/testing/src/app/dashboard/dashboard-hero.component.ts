@@ -1,7 +1,7 @@
 // #docregion
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { Hero } from '../model';
+import { Hero } from '../model/hero';
 
 // #docregion component
 @Component({

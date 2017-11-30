@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {JitReflector} from '@angular/compiler';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {ɵstringify as stringify} from '@angular/core';
 import {Pipe} from '@angular/core/src/metadata';
+import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 @Pipe({name: 'somePipe', pure: true})
 class SomePipe {

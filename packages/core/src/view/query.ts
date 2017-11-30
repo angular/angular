@@ -22,13 +22,14 @@ export function queryDef(
 
   return {
     // will bet set by the view definition
-    index: -1,
+    nodeIndex: -1,
     parent: null,
     renderParent: null,
     bindingIndex: -1,
     outputIndex: -1,
     // regular values
-    flags,
+    // TODO(vicb): check
+    checkIndex: -1, flags,
     childFlags: 0,
     directChildFlags: 0,
     childMatchedQueries: 0,
@@ -58,7 +59,7 @@ export function dirtyParentQueries(view: ViewData) {
     let tplDef = view.parentNodeDef !;
     view = view.parent;
     // content queries
-    const end = tplDef.index + tplDef.childCount;
+    const end = tplDef.nodeIndex + tplDef.childCount;
     for (let i = 0; i <= end; i++) {
       const nodeDef = view.def.nodes[i];
       if ((nodeDef.flags & NodeFlags.TypeContentQuery) &&
@@ -66,7 +67,7 @@ export function dirtyParentQueries(view: ViewData) {
           (nodeDef.query !.filterId & queryIds) === nodeDef.query !.filterId) {
         asQueryList(view, i).setDirty();
       }
-      if ((nodeDef.flags & NodeFlags.TypeElement && i + nodeDef.childCount < tplDef.index) ||
+      if ((nodeDef.flags & NodeFlags.TypeElement && i + nodeDef.childCount < tplDef.nodeIndex) ||
           !(nodeDef.childFlags & NodeFlags.TypeContentQuery) ||
           !(nodeDef.childFlags & NodeFlags.DynamicQuery)) {
         // skip elements that don't contain the template element or no query.
@@ -89,7 +90,7 @@ export function dirtyParentQueries(view: ViewData) {
 }
 
 export function checkAndUpdateQuery(view: ViewData, nodeDef: NodeDef) {
-  const queryList = asQueryList(view, nodeDef.index);
+  const queryList = asQueryList(view, nodeDef.nodeIndex);
   if (!queryList.dirty) {
     return;
   }
@@ -98,8 +99,9 @@ export function checkAndUpdateQuery(view: ViewData, nodeDef: NodeDef) {
   if (nodeDef.flags & NodeFlags.TypeContentQuery) {
     const elementDef = nodeDef.parent !.parent !;
     newValues = calcQueryValues(
-        view, elementDef.index, elementDef.index + elementDef.childCount, nodeDef.query !, []);
-    directiveInstance = asProviderData(view, nodeDef.parent !.index).instance;
+        view, elementDef.nodeIndex, elementDef.nodeIndex + elementDef.childCount, nodeDef.query !,
+        []);
+    directiveInstance = asProviderData(view, nodeDef.parent !.nodeIndex).instance;
   } else if (nodeDef.flags & NodeFlags.TypeViewQuery) {
     newValues = calcQueryValues(view, 0, view.def.nodes.length - 1, nodeDef.query !, []);
     directiveInstance = view.component;
@@ -138,8 +140,13 @@ function calcQueryValues(
     if (nodeDef.flags & NodeFlags.TypeElement && nodeDef.element !.template &&
         (nodeDef.element !.template !.nodeMatchedQueries & queryDef.filterId) ===
             queryDef.filterId) {
-      // check embedded views that were attached at the place of their template.
       const elementData = asElementData(view, i);
+      // check embedded views that were attached at the place of their template,
+      // but process child nodes first if some match the query (see issue #16568)
+      if ((nodeDef.childMatchedQueries & queryDef.filterId) === queryDef.filterId) {
+        calcQueryValues(view, i + 1, i + nodeDef.childCount, queryDef, values);
+        i += nodeDef.childCount;
+      }
       if (nodeDef.flags & NodeFlags.EmbeddedViews) {
         const embeddedViews = elementData.viewContainer !._embeddedViews;
         for (let k = 0; k < embeddedViews.length; k++) {
@@ -170,24 +177,17 @@ export function getQueryValue(
     view: ViewData, nodeDef: NodeDef, queryValueType: QueryValueType): any {
   if (queryValueType != null) {
     // a match
-    let value: any;
     switch (queryValueType) {
       case QueryValueType.RenderElement:
-        value = asElementData(view, nodeDef.index).renderElement;
-        break;
+        return asElementData(view, nodeDef.nodeIndex).renderElement;
       case QueryValueType.ElementRef:
-        value = new ElementRef(asElementData(view, nodeDef.index).renderElement);
-        break;
+        return new ElementRef(asElementData(view, nodeDef.nodeIndex).renderElement);
       case QueryValueType.TemplateRef:
-        value = asElementData(view, nodeDef.index).template;
-        break;
+        return asElementData(view, nodeDef.nodeIndex).template;
       case QueryValueType.ViewContainerRef:
-        value = asElementData(view, nodeDef.index).viewContainer;
-        break;
+        return asElementData(view, nodeDef.nodeIndex).viewContainer;
       case QueryValueType.Provider:
-        value = asProviderData(view, nodeDef.index).instance;
-        break;
+        return asProviderData(view, nodeDef.nodeIndex).instance;
     }
-    return value;
   }
 }

@@ -1,18 +1,26 @@
-const path = require('path');
+const path = require('canonical-path');
 const fs = require('fs-extra');
 const argv = require('yargs').argv;
 const globby = require('globby');
 const xSpawn = require('cross-spawn');
 const treeKill = require('tree-kill');
+const shelljs = require('shelljs');
+
+shelljs.set('-e');
 
 const AIO_PATH = path.join(__dirname, '../../');
 const SHARED_PATH = path.join(__dirname, '/shared');
 const EXAMPLES_PATH = path.join(AIO_PATH, './content/examples/');
 const PROTRACTOR_CONFIG_FILENAME = path.join(__dirname, './shared/protractor.config.js');
-const SPEC_FILENAME = 'e2e-spec.ts';
+const SJS_SPEC_FILENAME = 'e2e-spec.ts';
+const CLI_SPEC_FILENAME = 'e2e/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
-const IGNORED_EXAMPLES = [
-  'ts-to-js/'
+const IGNORED_EXAMPLES = [ // temporary ignores
+  'quickstart',
+  'http',
+  'setup',
+  'webpack',
+  'upgrade-p'
 ];
 
 /**
@@ -35,21 +43,18 @@ const IGNORED_EXAMPLES = [
  *    e.g. --shard=1/3 // the second of every three specs: 1, 4, 7, etc
  */
 function runE2e() {
-  let promise = Promise.resolve();
   if (argv.setup) {
     // Run setup.
-    console.log('runE2e: copy boilerplate');
-    const spawnInfo = spawnExt('yarn', ['boilerplate:add', argv.local ? '-- --local': ''], { cwd: AIO_PATH });
-    promise = spawnInfo.promise
-      .then(() => {
-        console.log('runE2e: update webdriver');
-        return spawnExt('yarn', ['webdriver:update'], { cwd: SHARED_PATH }).promise;
-      });
-  };
+    console.log('runE2e: setup boilerplate');
+    const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
+    const addBoilerplateCommand = 'boilerplate:add';
+    shelljs.exec(`yarn ${installPackagesCommand}`, { cwd: AIO_PATH });
+    shelljs.exec(`yarn ${addBoilerplateCommand}`, { cwd: AIO_PATH });
+  }
 
   const outputFile = path.join(AIO_PATH, './protractor-results.txt');
 
-  return promise
+  return Promise.resolve()
     .then(() => findAndRunE2eTests(argv.filter, outputFile, argv.shard))
     .then((status) => {
       reportStatus(status, outputFile);
@@ -78,19 +83,34 @@ function findAndRunE2eTests(filter, outputFile, shard) {
 
   // Run the tests sequentially.
   const status = { passed: [], failed: [] };
-  return getE2eSpecPaths(EXAMPLES_PATH, filter)
-    .then(e2eSpecPaths => e2eSpecPaths
-      .filter((paths, index) => index % shardDivider === shardModulo)
-      .reduce((promise, specPath) => {
-      return promise.then(() => {
-        const examplePath = path.dirname(specPath);
-        return runE2eTests(examplePath, outputFile).then((ok) => {
-          const arr = ok ? status.passed : status.failed;
-          arr.push(examplePath);
-        });
+  return getE2eSpecs(EXAMPLES_PATH, filter)
+    .then(e2eSpecPaths => {
+      Object.keys(e2eSpecPaths).forEach(key => {
+        const value = e2eSpecPaths[key];
+        e2eSpecPaths[key] = value.filter((p, index) => index % shardDivider === shardModulo);
       });
-    }, Promise.resolve()))
-    .then(function () {
+
+      return e2eSpecPaths.systemjs.reduce((promise, specPath) => {
+        return promise.then(() => {
+          const examplePath = path.dirname(specPath);
+          return runE2eTestsSystemJS(examplePath, outputFile).then(ok => {
+            const arr = ok ? status.passed : status.failed;
+            arr.push(examplePath);
+          });
+        });
+      }, Promise.resolve())
+      .then(() => {
+        return e2eSpecPaths.cli.reduce((promise, specPath) => {
+          return promise.then(() => {
+            return runE2eTestsCLI(specPath, outputFile).then(ok => {
+              const arr = ok ? status.passed : status.failed;
+              arr.push(specPath);
+            });
+          });
+        }, Promise.resolve());
+      });
+    })
+    .then(() => {
       const stopTime = new Date().getTime();
       status.elapsedTime = (stopTime - startTime) / 1000;
       return status;
@@ -100,14 +120,14 @@ function findAndRunE2eTests(filter, outputFile, shard) {
 // Start the example in appDir; then run protractor with the specified
 // fileName; then shut down the example.
 // All protractor output is appended to the outputFile.
-function runE2eTests(appDir, outputFile) {
-
+// SystemJS version
+function runE2eTestsSystemJS(appDir, outputFile) {
   const config = loadExampleConfig(appDir);
 
   const appBuildSpawnInfo = spawnExt('yarn', [config.build], { cwd: appDir });
-  const appRunSpawnInfo = spawnExt('yarn', [config.run, '--', '-s'], { cwd: appDir }, true);
+  const appRunSpawnInfo = spawnExt('yarn', [config.run, '-s'], { cwd: appDir }, true);
 
-  let run = runProtractor(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
+  let run = runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
 
   if (fs.existsSync(appDir + '/aot/index.html')) {
     run = run.then((ok) => ok && runProtractorAoT(appDir, outputFile));
@@ -115,8 +135,8 @@ function runE2eTests(appDir, outputFile) {
   return run;
 }
 
-function runProtractor(prepPromise, appDir, appRunSpawnInfo, outputFile) {
-  const specFilename = path.resolve(`${appDir}/${SPEC_FILENAME}`);
+function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile) {
+  const specFilename = path.resolve(`${appDir}/${SJS_SPEC_FILENAME}`);
   return prepPromise
     .catch(function () {
       const emsg = `Application at ${appDir} failed to transpile.\n\n`;
@@ -124,12 +144,12 @@ function runProtractor(prepPromise, appDir, appRunSpawnInfo, outputFile) {
       fs.appendFileSync(outputFile, emsg);
       return Promise.reject(emsg);
     })
-    .then(function (data) {
+    .then(function () {
       let transpileError = false;
 
       // Start protractor.
 
-      const spawnInfo = spawnExt('yarn', ['protractor', '--',
+      const spawnInfo = spawnExt('yarn', ['protractor',
         PROTRACTOR_CONFIG_FILENAME,
         `--specs=${specFilename}`,
         '--params.appDir=' + appDir,
@@ -139,26 +159,26 @@ function runProtractor(prepPromise, appDir, appRunSpawnInfo, outputFile) {
       spawnInfo.proc.stderr.on('data', function (data) {
         transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
       });
-      return spawnInfo.promise.catch(function (err) {
+      return spawnInfo.promise.catch(function () {
         if (transpileError) {
           const emsg = `${specFilename} failed to transpile.\n\n`;
           console.log(emsg);
           fs.appendFileSync(outputFile, emsg);
         }
-        return Promise.reject(emsg);
+        return Promise.reject();
       });
     })
     .then(
-    function () { return finish(true); },
-    function () { return finish(false); }
-    )
+    function () { return finish(appRunSpawnInfo.proc.pid, true); },
+    function () { return finish(appRunSpawnInfo.proc.pid, false); }
+    );
+}
 
-  function finish(ok) {
-    // Ugh... proc.kill does not work properly on windows with child processes.
-    // appRun.proc.kill();
-    treeKill(appRunSpawnInfo.proc.pid);
-    return ok;
-  }
+function finish(spawnProcId, ok) {
+  // Ugh... proc.kill does not work properly on windows with child processes.
+  // appRun.proc.kill();
+  treeKill(spawnProcId);
+  return ok;
 }
 
 // Run e2e tests over the AOT build for projects that examples it.
@@ -172,7 +192,26 @@ function runProtractorAoT(appDir, outputFile) {
     promise = promise.then(() => spawnExt('node', [copyFileCmd], { cwd: appDir }).promise);
   }
   const aotRunSpawnInfo = spawnExt('yarn', ['serve:aot'], { cwd: appDir }, true);
-  return runProtractor(promise, appDir, aotRunSpawnInfo, outputFile);
+  return runProtractorSystemJS(promise, appDir, aotRunSpawnInfo, outputFile);
+}
+
+// Start the example in appDir; then run protractor with the specified
+// fileName; then shut down the example.
+// All protractor output is appended to the outputFile.
+// CLI version
+function runE2eTestsCLI(appDir, outputFile) {
+  // --preserve-symlinks is needed due the symlinked node_modules in each example
+  const e2eSpawn = spawnExt('yarn', ['e2e', '--preserve-symlinks'], { cwd: appDir });
+  return e2eSpawn.promise.then(
+    function () {
+      fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
+      return finish(e2eSpawn.proc.pid, true);
+    },
+    function () {
+      fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
+      return finish(e2eSpawn.proc.pid, false);
+    }
+  );
 }
 
 // Report final status.
@@ -201,7 +240,7 @@ function reportStatus(status, outputFile) {
 function spawnExt(command, args, options, ignoreClose = false) {
   let proc;
   const promise = new Promise((resolve, reject) => {
-    let descr = command + " " + args.join(' ');
+    let descr = command + ' ' + args.join(' ');
     console.log('running: ' + descr);
     try {
       proc = xSpawn.spawn(command, args, options);
@@ -231,18 +270,34 @@ function spawnExt(command, args, options, ignoreClose = false) {
   return { proc, promise };
 }
 
+function getE2eSpecs(basePath, filter) {
+  let specs = {};
+
+  return getE2eSpecsFor(basePath, SJS_SPEC_FILENAME, filter).then(sjsPaths => {
+    specs.systemjs = sjsPaths;
+  }).then(() => {
+    return getE2eSpecsFor(basePath, CLI_SPEC_FILENAME, filter).then(cliPaths => {
+      return cliPaths.map(p => {
+        return p.replace(`${CLI_SPEC_FILENAME}`, '');
+      });
+    });
+  }).then(cliPaths => {
+    specs.cli = cliPaths;
+  }).then(() => specs);
+}
+
 // Find all e2e specs in a given example folder.
-function getE2eSpecPaths(basePath, filter) {
+function getE2eSpecsFor(basePath, specFile, filter) {
   // Only get spec file at the example root.
-  const e2eSpecGlob = `${filter ? `*${filter}*` : '*'}/${SPEC_FILENAME}`;
+  const e2eSpecGlob = `${filter ? `*${filter}*` : '*'}/${specFile}`;
   return globby(e2eSpecGlob, { cwd: basePath, nodir: true })
     .then(paths => paths
-      .filter(file => IGNORED_EXAMPLES.some(ignored => !file.startsWith(ignored)))
+      .filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
       .map(file => path.join(basePath, file))
     );
 }
 
-// Load configuration for an example.
+// Load configuration for an example. Used for SystemJS
 function loadExampleConfig(exampleFolder) {
   // Default config.
   let config = {

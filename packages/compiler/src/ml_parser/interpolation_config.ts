@@ -18,7 +18,7 @@ export class InterpolationConfig {
     return new InterpolationConfig(markers[0], markers[1]);
   }
 
-  constructor(public start: string, public end: string){};
+  constructor(public start: string, public end: string) {}
 }
 
 export const DEFAULT_INTERPOLATION_CONFIG: InterpolationConfig =

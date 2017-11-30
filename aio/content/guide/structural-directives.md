@@ -25,7 +25,7 @@ They shape or reshape the DOM's _structure_, typically by adding, removing, or m
 elements.
 
 As with other directives, you apply a structural directive to a _host element_.
-The directive then does whatever it's supposed to do with that host element and its descendents.
+The directive then does whatever it's supposed to do with that host element and its descendants.
 
 Structural directives are easy to recognize.
 An asterisk (*) precedes the directive attribute name as in this example.
@@ -208,17 +208,7 @@ Here is `*ngIf` displaying the hero's name if `hero` exists.
 
 
 The asterisk is "syntactic sugar" for something a bit more complicated.
-Internally, Angular desugars it in two stages.
-First, it translates the `*ngIf="..."` into a template _attribute_, `template="ngIf ..."`,&nbsp; like this.
-
-
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template-attr)" region="ngif-template-attr">
-
-</code-example>
-
-
-
-Then it translates the template _attribute_ into a `<ng-template>` _element_, wrapped around the host element, like this.
+Internally, Angular translates the `*ngIf` _attribute_ into a `<ng-template>` _element_, wrapped around the host element, like this.
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template)" region="ngif-template">
@@ -230,8 +220,7 @@ Then it translates the template _attribute_ into a `<ng-template>` _element_, wr
 * The `*ngIf` directive moved to the `<ng-template>` element where it became a property binding,`[ngIf]`.
 * The rest of the `<div>`, including its class attribute, moved inside the `<ng-template>` element.
 
-None of these forms are actually rendered.
-Only the finished product ends up in the DOM.
+The first form is not actually rendered, only the finished product ends up in the DOM.
 
 
 <figure>
@@ -252,10 +241,9 @@ The [`NgFor`](guide/structural-directives#ngFor) and [`NgSwitch...`](guide/struc
 
 ## Inside _*ngFor_
 
-Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax through
-template _attribute_ to `<ng-template>` _element_.
+Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax to `<ng-template>` _element_.
 
-Here's a full-featured application of `NgFor`, written all three ways:
+Here's a full-featured application of `NgFor`, written both ways:
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
@@ -297,7 +285,7 @@ that you reference within the template. The input variables in this example are 
 The parser translates `let hero`, `let i`, and `let odd` into variables named,
 `let-hero`, `let-i`, and `let-odd`.
 
-* The microsyntax parser takes `of` and `trackby`, title-cases them (`of` -> `Of`, `trackBy` -> `TrackBy`),
+* The microsyntax parser takes `of` and `trackBy`, title-cases them (`of` -> `Of`, `trackBy` -> `TrackBy`),
 and prefixes them with the directive's attribute name (`ngFor`), yielding the names `ngForOf` and `ngForTrackBy`.
 Those are the names of two `NgFor` _input properties_ .
 That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.
@@ -313,13 +301,16 @@ It's intended source is implicit.
 Angular sets `let-hero` to the value of the context's `$implicit` property
 which `NgFor` has initialized with the hero for the current iteration.
 
-* The [API guide](api/common/NgFor "API: NgFor")
+* The [API guide](api/common/NgForOf "API: NgFor")
 describes additional `NgFor` directive properties and context properties.
+
+* `NgFor` is implemented by the `NgForOf` directive. Read more about additional `NgForOf` directive properties and context properties [NgForOf API reference](api/common/NgForOf).
+
 
 These microsyntax mechanisms are available to you when you write your own structural directives.
 Studying the
 [source code for `NgIf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_if.ts "Source: NgIf")
-and [`NgFor`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgFor")
+and [`NgForOf`](https://github.com/angular/angular/blob/master/packages/common/src/directives/ng_for_of.ts "Source: NgForOf")
 is a great way to learn more.
 
 
@@ -415,16 +406,7 @@ The `<unknown-hero>` is the host element for the `*ngSwitchDefault`.
 
 
 As with other structural directives, the `NgSwitchCase` and `NgSwitchDefault`
-can be desugared into the template _attribute_ form.
-
-
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template-attr)" region="ngswitch-template-attr">
-
-</code-example>
-
-
-
-That, in turn, can be desugared into the `<ng-template>` element form.
+can be desugared into the `<ng-template>` element form.
 
 
 <code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
@@ -438,7 +420,7 @@ That, in turn, can be desugared into the `<ng-template>` element form.
 
 ## Prefer the asterisk (*) syntax.
 
-The asterisk (*) syntax is more clear than the other desugared forms.
+The asterisk (*) syntax is more clear than the desugared form.
 Use [&lt;ng-container&gt;](guide/structural-directives#ng-container) when there's no single element
 to host the directive.
 

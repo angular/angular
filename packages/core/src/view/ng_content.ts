@@ -9,15 +9,16 @@
 import {NodeDef, NodeFlags, ViewData} from './types';
 import {RenderNodeAction, getParentRenderElement, visitProjectedRenderNodes} from './util';
 
-export function ngContentDef(ngContentIndex: number, index: number): NodeDef {
+export function ngContentDef(ngContentIndex: null | number, index: number): NodeDef {
   return {
     // will bet set by the view definition
-    index: -1,
+    nodeIndex: -1,
     parent: null,
     renderParent: null,
     bindingIndex: -1,
     outputIndex: -1,
     // regular values
+    checkIndex: -1,
     flags: NodeFlags.TypeNgContent,
     childFlags: 0,
     directChildFlags: 0,

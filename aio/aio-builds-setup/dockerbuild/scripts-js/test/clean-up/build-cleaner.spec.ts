@@ -39,8 +39,8 @@ describe('BuildCleaner', () => {
     let cleanerGetExistingBuildNumbersSpy: jasmine.Spy;
     let cleanerGetOpenPrNumbersSpy: jasmine.Spy;
     let cleanerRemoveUnnecessaryBuildsSpy: jasmine.Spy;
-    let existingBuildsDeferred: {resolve: Function, reject: Function};
-    let openPrsDeferred: {resolve: Function, reject: Function};
+    let existingBuildsDeferred: {resolve: (v?: any) => void, reject: (e?: any) => void};
+    let openPrsDeferred: {resolve: (v?: any) => void, reject: (e?: any) => void};
     let promise: Promise<void>;
 
     beforeEach(() => {
@@ -195,7 +195,7 @@ describe('BuildCleaner', () => {
 
 
   describe('getOpenPrNumbers()', () => {
-    let prDeferred: {resolve: Function, reject: Function};
+    let prDeferred: {resolve: (v: any) => void, reject: (v: any) => void};
     let promise: Promise<number[]>;
 
     beforeEach(() => {
@@ -277,7 +277,10 @@ describe('BuildCleaner', () => {
 
     it('should catch errors and log them', () => {
       const consoleErrorSpy = spyOn(console, 'error');
-      shellRmSpy.and.callFake(() => { throw 'Test'; });
+      shellRmSpy.and.callFake(() => {
+        // tslint:disable-next-line: no-string-throw
+        throw 'Test';
+      });
 
       (cleaner as any).removeDir('/foo/bar');
 

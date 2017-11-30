@@ -4,7 +4,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router }   from '@angular/router';
 import 'rxjs/add/operator/map';
 
-import { Hero }              from '../model';
+import { Hero }              from '../model/hero';
 import { HeroDetailService } from './hero-detail.service';
 
 // #docregion prototype

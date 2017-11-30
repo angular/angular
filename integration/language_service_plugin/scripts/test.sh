@@ -9,6 +9,11 @@ source scripts/env.sh
 HOST="node tools/typescript_host.js"
 VALIDATE="node tools/typescript_validator.js"
 
+# Ensure the languages service can load correctly in node before typescript loads it.
+# This verifies its dependencies and emits any exceptions, both of which are  only  
+# emitted to the typescript logs (not the validated output).
+node tools/load_test.js
+
 for TYPESCRIPT in ${TYPESCRIPTS[@]}
 do
   SERVER="node typescripts/$TYPESCRIPT/node_modules/typescript/lib/tsserver.js"

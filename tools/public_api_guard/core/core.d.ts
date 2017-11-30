@@ -125,15 +125,15 @@ export declare class ApplicationModule {
 }
 
 /** @stable */
-export declare abstract class ApplicationRef {
-    readonly abstract componentTypes: Type<any>[];
-    readonly abstract components: ComponentRef<any>[];
-    readonly abstract isStable: Observable<boolean>;
-    readonly abstract viewCount: number;
-    abstract attachView(view: ViewRef): void;
-    abstract bootstrap<C>(componentFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
-    abstract detachView(view: ViewRef): void;
-    abstract tick(): void;
+export declare class ApplicationRef {
+    readonly componentTypes: Type<any>[];
+    readonly components: ComponentRef<any>[];
+    readonly isStable: Observable<boolean>;
+    readonly viewCount: number;
+    attachView(viewRef: ViewRef): void;
+    bootstrap<C>(componentOrFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
+    detachView(viewRef: ViewRef): void;
+    tick(): void;
 }
 
 /** @experimental */
@@ -164,17 +164,6 @@ export declare abstract class ChangeDetectorRef {
 }
 
 /** @stable */
-export declare function Class(clsDef: ClassDefinition): Type<any>;
-
-/** @stable */
-export declare type ClassDefinition = {
-    extends?: Type<any>;
-    constructor: Function | any[];
-} & {
-    [x: string]: Type<any> | Function | any[];
-};
-
-/** @stable */
 export interface ClassProvider {
     multi?: boolean;
     provide: any;
@@ -193,7 +182,6 @@ export declare class Compiler {
     compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
-    /** @deprecated */ getNgContentSelectors(component: Type<any>): string[];
 }
 
 /** @experimental */
@@ -206,12 +194,12 @@ export declare abstract class CompilerFactory {
 
 /** @experimental */
 export declare type CompilerOptions = {
-    /** @deprecated */ useDebug?: boolean;
     useJit?: boolean;
     defaultEncapsulation?: ViewEncapsulation;
     providers?: StaticProvider[];
     missingTranslation?: MissingTranslationStrategy;
     enableLegacyTemplate?: boolean;
+    preserveWhitespaces?: boolean;
 };
 
 /** @stable */
@@ -335,7 +323,6 @@ export declare class DebugNode {
     readonly references: {
         [key: string]: any;
     };
-    /** @deprecated */ readonly source: string;
     constructor(nativeNode: any, parent: DebugNode | null, _debugContext: DebugContext);
 }
 
@@ -355,7 +342,6 @@ export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, Iter
     forEachPreviousItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     forEachRemovedItem(fn: (record: IterableChangeRecord_<V>) => void): void;
     onDestroy(): void;
-    toString(): string;
 }
 
 /** @experimental */
@@ -392,8 +378,6 @@ export declare function enableProdMode(): void;
 
 /** @stable */
 export declare class ErrorHandler {
-    constructor(
-        deprecatedParameter?: boolean);
     handleError(error: any): void;
 }
 
@@ -480,8 +464,9 @@ export interface InjectDecorator {
 }
 
 /** @stable */
-export declare class InjectionToken<T> extends OpaqueToken {
-    constructor(desc: string);
+export declare class InjectionToken<T> {
+    protected _desc: string;
+    constructor(_desc: string);
     toString(): string;
 }
 
@@ -514,7 +499,7 @@ export interface IterableChanges<V> {
     forEachIdentityChange(fn: (record: IterableChangeRecord<V>) => void): void;
     forEachItem(fn: (record: IterableChangeRecord<V>) => void): void;
     forEachMovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
-    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number, currentIndex: number) => void): void;
+    forEachOperation(fn: (record: IterableChangeRecord<V>, previousIndex: number | null, currentIndex: number | null) => void): void;
     forEachPreviousItem(fn: (record: IterableChangeRecord<V>) => void): void;
     forEachRemovedItem(fn: (record: IterableChangeRecord<V>) => void): void;
 }
@@ -527,7 +512,6 @@ export interface IterableDiffer<V> {
 /** @stable */
 export interface IterableDifferFactory {
     create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
-    /** @deprecated */ create<V>(_cdr?: ChangeDetectorRef | TrackByFunction<V>, trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
     supports(objects: any): boolean;
 }
 
@@ -570,7 +554,6 @@ export interface KeyValueDiffer<K, V> {
 /** @stable */
 export interface KeyValueDifferFactory {
     create<K, V>(): KeyValueDiffer<K, V>;
-    /** @deprecated */ create<K, V>(_cdr?: ChangeDetectorRef): KeyValueDiffer<K, V>;
     supports(objects: any): boolean;
 }
 
@@ -678,13 +661,6 @@ export interface OnInit {
     ngOnInit(): void;
 }
 
-/** @deprecated */
-export declare class OpaqueToken {
-    protected _desc: string;
-    constructor(_desc: string);
-    toString(): string;
-}
-
 /** @stable */
 export declare const Optional: OptionalDecorator;
 
@@ -718,13 +694,13 @@ export declare const PLATFORM_INITIALIZER: InjectionToken<(() => void)[]>;
 export declare const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
 
 /** @stable */
-export declare abstract class PlatformRef {
-    readonly abstract destroyed: boolean;
-    readonly abstract injector: Injector;
-    /** @stable */ abstract bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: CompilerOptions | CompilerOptions[]): Promise<NgModuleRef<M>>;
-    /** @experimental */ abstract bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>): Promise<NgModuleRef<M>>;
-    abstract destroy(): void;
-    abstract onDestroy(callback: () => void): void;
+export declare class PlatformRef {
+    readonly destroyed: boolean;
+    readonly injector: Injector;
+    /** @stable */ bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & BootstrapOptions) | Array<CompilerOptions & BootstrapOptions>): Promise<NgModuleRef<M>>;
+    /** @experimental */ bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
+    destroy(): void;
+    onDestroy(callback: () => void): void;
 }
 
 /** @experimental */
@@ -746,6 +722,7 @@ export declare class QueryList<T> {
     readonly first: T;
     readonly last: T;
     readonly length: number;
+    destroy(): void;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
     find(fn: (item: T, index: number, array: T[]) => boolean): T | undefined;
     forEach(fn: (item: T, index: number, array: T[]) => void): void;
@@ -759,7 +736,7 @@ export declare class QueryList<T> {
     toString(): string;
 }
 
-/** @stable */
+/** @deprecated */
 export declare abstract class ReflectiveInjector implements Injector {
     readonly abstract parent: Injector | null;
     abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
@@ -984,7 +961,6 @@ export declare abstract class TemplateRef<C> {
 export declare class Testability implements PublicTestability {
     constructor(_ngZone: NgZone);
     decreasePendingRequestCount(): number;
-    /** @deprecated */ findBindings(using: any, provider: string, exactMatch: boolean): any[];
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
     getPendingRequestCount(): number;
     increasePendingRequestCount(): number;
@@ -1000,11 +976,8 @@ export declare class TestabilityRegistry {
     getAllTestabilities(): Testability[];
     getTestability(elem: any): Testability | null;
     registerApplication(token: any, testability: Testability): void;
-}
-
-/** @deprecated */
-export interface TrackByFn {
-    (index: number, item: any): any;
+    unregisterAllApplications(): void;
+    unregisterApplication(token: any): void;
 }
 
 /** @stable */
@@ -1029,10 +1002,8 @@ export declare const Type: FunctionConstructor;
 
 /** @stable */
 export interface TypeDecorator {
-    annotations: any[];
     (target: Object, propertyKey?: string | symbol, parameterIndex?: number): void;
     <T extends Type<any>>(type: T): T;
-    Class(obj: ClassDefinition): Type<any>;
 }
 
 /** @stable */

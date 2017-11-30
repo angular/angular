@@ -6,19 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
-import {isNumeric} from '@angular/common/src/pipes/number_pipe';
+import localeEn from '../../locales/en';
+import localeEsUS from '../../locales/es-US';
+import localeFr from '../../locales/fr';
+import {registerLocaleData, CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 export function main() {
   describe('Number pipes', () => {
+    beforeAll(() => {
+      registerLocaleData(localeEn);
+      registerLocaleData(localeEsUS);
+      registerLocaleData(localeFr);
+    });
+
+    function isNumeric(value: any): boolean { return !isNaN(value - parseFloat(value)); }
+
     describe('DecimalPipe', () => {
-      let pipe: DecimalPipe;
-
-      beforeEach(() => { pipe = new DecimalPipe('en-US'); });
-
       describe('transform', () => {
+        let pipe: DecimalPipe;
+        beforeEach(() => { pipe = new DecimalPipe('en-US'); });
+
         it('should return correct value for numbers', () => {
           expect(pipe.transform(12345)).toEqual('12,345');
           expect(pipe.transform(123, '.2')).toEqual('123.00');
@@ -26,6 +34,8 @@ export function main() {
           expect(pipe.transform(1.1, '3.4-5')).toEqual('001.1000');
           expect(pipe.transform(1.123456, '3.4-5')).toEqual('001.12346');
           expect(pipe.transform(1.1234)).toEqual('1.123');
+          expect(pipe.transform(1.123456, '.2')).toEqual('1.123');
+          expect(pipe.transform(1.123456, '.4')).toEqual('1.1235');
         });
 
         it('should support strings', () => {
@@ -38,8 +48,22 @@ export function main() {
         });
 
         it('should not support other objects', () => {
-          expect(() => pipe.transform(new Object())).toThrowError();
-          expect(() => pipe.transform('123abc')).toThrowError();
+          expect(() => pipe.transform({}))
+              .toThrowError(
+                  `InvalidPipeArgument: '[object Object] is not a number' for pipe 'DecimalPipe'`);
+          expect(() => pipe.transform('123abc'))
+              .toThrowError(`InvalidPipeArgument: '123abc is not a number' for pipe 'DecimalPipe'`);
+        });
+
+        it('should throw if minFractionDigits is explicitly higher than maxFractionDigits', () => {
+          expect(() => pipe.transform('1.1', '3.4-2')).toThrowError(/is higher than the maximum/);
+        });
+      });
+
+      describe('transform with custom locales', () => {
+        it('should return the correct format for es-US', () => {
+          const pipe = new DecimalPipe('es-US');
+          expect(pipe.transform('9999999.99', '1.2-2')).toEqual('9,999,999.99');
         });
       });
     });
@@ -51,12 +75,17 @@ export function main() {
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
-          expect(normalize(pipe.transform(1.23) !)).toEqual('123%');
-          expect(normalize(pipe.transform(1.2, '.2') !)).toEqual('120.00%');
+          expect(pipe.transform(1.23)).toEqual('123%');
+          expect(pipe.transform(1.2, '.2')).toEqual('120.00%');
+          expect(pipe.transform(1.2, '4.2')).toEqual('0,120.00%');
+          expect(pipe.transform(1.2, '4.2', 'fr')).toEqual('0 120,00 %');
         });
 
-        it('should not support other objects',
-           () => { expect(() => pipe.transform(new Object())).toThrowError(); });
+        it('should not support other objects', () => {
+          expect(() => pipe.transform({}))
+              .toThrowError(
+                  `InvalidPipeArgument: '[object Object] is not a number' for pipe 'PercentPipe'`);
+        });
       });
     });
 
@@ -67,18 +96,30 @@ export function main() {
 
       describe('transform', () => {
         it('should return correct value for numbers', () => {
-          // In old Chrome, default formatiing for USD is different
-          if (browserDetection.isOldChrome) {
-            expect(normalize(pipe.transform(123) !)).toEqual('USD123');
-          } else {
-            expect(normalize(pipe.transform(123) !)).toEqual('USD123.00');
-          }
-          expect(normalize(pipe.transform(12, 'EUR', false, '.1') !)).toEqual('EUR12.0');
-          expect(normalize(pipe.transform(5.1234, 'USD', false, '.0-3') !)).toEqual('USD5.123');
+          expect(pipe.transform(123)).toEqual('$123.00');
+          expect(pipe.transform(12, 'EUR', 'code', '.1')).toEqual('EUR12.0');
+          expect(pipe.transform(5.1234, 'USD', 'code', '.0-3')).toEqual('USD5.123');
+          expect(pipe.transform(5.1234, 'USD', 'code')).toEqual('USD5.12');
+          expect(pipe.transform(5.1234, 'USD', 'symbol')).toEqual('$5.12');
+          expect(pipe.transform(5.1234, 'CAD', 'symbol')).toEqual('CA$5.12');
+          expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow')).toEqual('$5.12');
+          expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2')).toEqual('$00,005.12');
+          expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2', 'fr'))
+              .toEqual('00 005,12 $');
         });
 
-        it('should not support other objects',
-           () => { expect(() => pipe.transform(new Object())).toThrowError(); });
+        it('should not support other objects', () => {
+          expect(() => pipe.transform({}))
+              .toThrowError(
+                  `InvalidPipeArgument: '[object Object] is not a number' for pipe 'CurrencyPipe'`);
+        });
+
+        it('should warn if you are using the v4 signature', () => {
+          const warnSpy = spyOn(console, 'warn');
+          pipe.transform(123, 'USD', true);
+          expect(warnSpy).toHaveBeenCalledWith(
+              `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
+        });
       });
     });
 
@@ -102,9 +143,4 @@ export function main() {
          () => { expect(isNumeric('2a')).toBe(false); });
     });
   });
-}
-
-// Between the symbol and the number, Edge adds a no breaking space and IE11 adds a standard space
-function normalize(s: string): string {
-  return s.replace(/\u00A0| /g, '');
 }

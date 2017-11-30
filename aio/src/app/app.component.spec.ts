@@ -1,12 +1,11 @@
 import { NO_ERRORS_SCHEMA, DebugElement } from '@angular/core';
-import { async, inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { inject, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { APP_BASE_HREF } from '@angular/common';
-import { Http } from '@angular/http';
-import { MdProgressBar, MdSidenav } from '@angular/material';
+import { HttpClient } from '@angular/common/http';
+import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { of } from 'rxjs/observable/of';
 
 import { AppComponent } from './app.component';
@@ -22,9 +21,9 @@ import { MockSearchService } from 'testing/search.service';
 import { NavigationNode } from 'app/navigation/navigation.service';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResultsComponent } from 'app/search/search-results/search-results.component';
+import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
-import { SelectComponent, Option } from 'app/shared/select/select.component';
+import { SelectComponent } from 'app/shared/select/select.component';
 import { TocComponent } from 'app/embedded/toc/toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
@@ -38,7 +37,7 @@ describe('AppComponent', () => {
   let docViewer: HTMLElement;
   let hamburger: HTMLButtonElement;
   let locationService: MockLocationService;
-  let sidenav: HTMLElement;
+  let sidenav: MatSidenav;
   let tocService: TocService;
 
   const initializeTest = () => {
@@ -52,7 +51,7 @@ describe('AppComponent', () => {
     docViewer = de.query(By.css('aio-doc-viewer')).nativeElement;
     hamburger = de.query(By.css('.hamburger')).nativeElement;
     locationService = de.injector.get(LocationService) as any as MockLocationService;
-    sidenav = de.query(By.css('md-sidenav')).nativeElement;
+    sidenav = de.query(By.directive(MatSidenav)).componentInstance;
     tocService = de.injector.get(TocService);
   };
 
@@ -156,19 +155,19 @@ describe('AppComponent', () => {
       it('should open when nav to a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-open/);
+        expect(sidenav.opened).toBe(true);
       });
 
       it('should open when nav to an api page', () => {
         locationService.go('api/a/b/c/d');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-open/);
+        expect(sidenav.opened).toBe(true);
       });
 
       it('should be closed when nav to a marketing page (features)', () => {
         locationService.go('features');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
       });
 
       describe('when manually closed', () => {
@@ -181,19 +180,19 @@ describe('AppComponent', () => {
         });
 
         it('should be closed', () => {
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+          expect(sidenav.opened).toBe(false);
         });
 
         it('should stay closed when nav from one guide page to another', () => {
           locationService.go('guide/bags');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+          expect(sidenav.opened).toBe(false);
         });
 
         it('should stay closed when nav from a guide page to api page', () => {
           locationService.go('api');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+          expect(sidenav.opened).toBe(false);
         });
 
         it('should reopen when nav to market page and back to guide page', () => {
@@ -201,7 +200,7 @@ describe('AppComponent', () => {
           fixture.detectChanges();
           locationService.go('guide/bags');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-open/);
+          expect(sidenav.opened).toBe(true);
         });
       });
     });
@@ -215,19 +214,19 @@ describe('AppComponent', () => {
       it('should be closed when nav to a guide page (guide/pipes)', () => {
         locationService.go('guide/pipes');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
       });
 
       it('should be closed when nav to an api page', () => {
         locationService.go('api/a/b/c/d');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
       });
 
       it('should be closed when nav to a marketing page (features)', () => {
         locationService.go('features');
         fixture.detectChanges();
-        expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
       });
 
       describe('when manually opened', () => {
@@ -240,32 +239,32 @@ describe('AppComponent', () => {
         });
 
         it('should be open', () => {
-          expect(sidenav.className).toMatch(/sidenav-open/);
+          expect(sidenav.opened).toBe(true);
         });
 
         it('should close when click in gray content area overlay', () => {
-          const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-sidenav-backdrop')).nativeElement;
+          const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement;
           sidenavBackdrop.click();
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
         });
 
         it('should close when nav to another guide page', () => {
           locationService.go('guide/bags');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
         });
 
         it('should close when nav to api page', () => {
           locationService.go('api');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
         });
 
         it('should close again when nav to market page', () => {
           locationService.go('features');
           fixture.detectChanges();
-          expect(sidenav.className).toMatch(/sidenav-clos/);
+        expect(sidenav.opened).toBe(false);
         });
 
       });
@@ -310,13 +309,11 @@ describe('AppComponent', () => {
         expect(locationService.go).toHaveBeenCalledWith(versionWithUrl.url);
       });
 
-      // The current docs version should not have an href
-      // This may change when we perfect our docs versioning approach
       it('should not navigate when change to a version without a url', () => {
         setupSelectorForTesting();
-        const versionWithoutUrlIndex = component.docVersions.findIndex(v => !v.url);
-        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex];
-        selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex});
+        const versionWithoutUrlIndex = component.docVersions.length;
+        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo', url: null };
+        selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex });
         expect(locationService.go).not.toHaveBeenCalled();
       });
     });
@@ -379,19 +376,17 @@ describe('AppComponent', () => {
       });
 
       it('should set the css class of the host container based on the open/closed state of the side nav', () => {
-        const sideNav = fixture.debugElement.query(By.directive(MdSidenav));
-
         locationService.go('guide/pipes');
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
 
-        sideNav.componentInstance.opened = false;
-        sideNav.triggerEventHandler('close', {});
+        sidenav.close();
+        sidenav.onClose.next();
         fixture.detectChanges();
         checkHostClass('sidenav', 'closed');
 
-        sideNav.componentInstance.opened = true;
-        sideNav.triggerEventHandler('open', {});
+        sidenav.open();
+        sidenav.onOpen.next();
         fixture.detectChanges();
         checkHostClass('sidenav', 'open');
       });
@@ -650,7 +645,7 @@ describe('AppComponent', () => {
     describe('footer', () => {
       it('should have version number', () => {
         const versionEl: HTMLElement = fixture.debugElement.query(By.css('aio-footer')).nativeElement;
-        expect(versionEl.textContent).toContain(TestHttp.versionInfo.full);
+        expect(versionEl.textContent).toContain(TestHttpClient.versionInfo.full);
       });
     });
 
@@ -794,6 +789,10 @@ describe('AppComponent', () => {
         createTestingModule('api', 'archive');
         initializeTest();
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api/core/getPlatform', 'archive');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
       it('should redirect to `docs` if deployment mode is `next` and not at a docs page', () => {
@@ -822,6 +821,10 @@ describe('AppComponent', () => {
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('api', 'next');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api/core/getPlatform', 'next');
         initializeTest();
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
@@ -854,6 +857,10 @@ describe('AppComponent', () => {
         createTestingModule('api', 'stable');
         initializeTest();
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
+
+        createTestingModule('api/core/getPlatform', 'stable');
+        initializeTest();
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
     });
   });
@@ -873,7 +880,7 @@ describe('AppComponent', () => {
 
     describe('initial rendering', () => {
       it('should initially add the starting class until the first document is rendered', fakeAsync(() => {
-        const getSidenavContainer = () => fixture.debugElement.query(By.css('md-sidenav-container'));
+        const getSidenavContainer = () => fixture.debugElement.query(By.css('mat-sidenav-container'));
 
         initializeTest();
 
@@ -900,7 +907,7 @@ describe('AppComponent', () => {
     describe('progress bar', () => {
       const SHOW_DELAY = 200;
       const HIDE_DELAY = 500;
-      const getProgressBar = () => fixture.debugElement.query(By.directive(MdProgressBar));
+      const getProgressBar = () => fixture.debugElement.query(By.directive(MatProgressBar));
       const initializeAndCompleteNavigation = () => {
         initializeTest();
         triggerDocRendered();
@@ -1027,7 +1034,7 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
       { provide: GaService, useClass: TestGaService },
-      { provide: Http, useClass: TestHttp },
+      { provide: HttpClient, useClass: TestHttpClient },
       { provide: LocationService, useFactory: () => mockLocationService },
       { provide: Logger, useClass: MockLogger },
       { provide: SearchService, useClass: MockSearchService },
@@ -1044,12 +1051,7 @@ class TestGaService {
   locationChanged = jasmine.createSpy('locationChanged');
 }
 
-class TestSearchService {
-  initWorker = jasmine.createSpy('initWorker');
-  loadIndex  = jasmine.createSpy('loadIndex');
-}
-
-class TestHttp {
+class TestHttpClient {
 
   static versionInfo = {
     raw: '4.0.0-rc.6',
@@ -1105,9 +1107,9 @@ class TestHttp {
         "tooltip": "Details of the Angular classes and values."
       }
     ],
-    "docVersions": TestHttp.docVersions,
+    "docVersions": TestHttpClient.docVersions,
 
-    "__versionInfo": TestHttp.versionInfo,
+    "__versionInfo": TestHttpClient.versionInfo,
   };
 
   get(url: string) {
@@ -1123,6 +1125,6 @@ class TestHttp {
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };
     }
-    return of({ json: () => data });
+    return of(data);
   }
 }

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {sourceUrl} from '../compile_metadata';
-import {Statement} from '../output/output_ast';
+import {Statement, areAllEquivalent} from '../output/output_ast';
 import {TypeScriptEmitter} from '../output/ts_emitter';
 
 export class GeneratedFile {
@@ -24,12 +23,26 @@ export class GeneratedFile {
       this.stmts = sourceOrStmts;
     }
   }
+
+  isEquivalent(other: GeneratedFile): boolean {
+    if (this.genFileUrl !== other.genFileUrl) {
+      return false;
+    }
+    if (this.source) {
+      return this.source === other.source;
+    }
+    if (other.stmts == null) {
+      return false;
+    }
+    // Note: the constructor guarantees that if this.source is not filled,
+    // then this.stmts is.
+    return areAllEquivalent(this.stmts !, other.stmts !);
+  }
 }
 
 export function toTypeScript(file: GeneratedFile, preamble: string = ''): string {
   if (!file.stmts) {
     throw new Error(`Illegal state: No stmts present on GeneratedFile ${file.genFileUrl}`);
   }
-  return new TypeScriptEmitter().emitStatements(
-      sourceUrl(file.srcFileUrl), file.genFileUrl, file.stmts, preamble);
+  return new TypeScriptEmitter().emitStatements(file.genFileUrl, file.stmts, preamble);
 }

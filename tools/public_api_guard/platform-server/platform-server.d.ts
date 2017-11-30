@@ -1,4 +1,7 @@
 /** @experimental */
+export declare const BEFORE_APP_SERIALIZED: InjectionToken<(() => void)[]>;
+
+/** @experimental */
 export declare const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 /** @experimental */
@@ -36,6 +39,10 @@ export declare function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>
 
 /** @experimental */
 export declare class ServerModule {
+}
+
+/** @experimental */
+export declare class ServerTransferStateModule {
 }
 
 /** @stable */

@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {EventEmitter, NgZone} from '@angular/core';
 import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {scheduleMicroTask} from '../../src/util';
+import {NoopNgZone} from '../../src/zone/ng_zone';
 
 const needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
 const resultTimer = 1000;
@@ -168,6 +169,25 @@ export function main() {
              });
            });
          }), testTimeout);
+    });
+  });
+
+  describe('NoopNgZone', () => {
+    const ngZone = new NoopNgZone();
+
+    it('should run', () => {
+      let runs = false;
+      ngZone.run(() => {
+        ngZone.runGuarded(() => { ngZone.runOutsideAngular(() => { runs = true; }); });
+      });
+      expect(runs).toBe(true);
+    });
+
+    it('should have EventEmitter instances', () => {
+      expect(ngZone.onError instanceof EventEmitter).toBe(true);
+      expect(ngZone.onStable instanceof EventEmitter).toBe(true);
+      expect(ngZone.onUnstable instanceof EventEmitter).toBe(true);
+      expect(ngZone.onMicrotaskEmpty instanceof EventEmitter).toBe(true);
     });
   });
 }
@@ -647,9 +667,9 @@ function commonTests() {
     it('should call onUnstable and onMicrotaskEmpty before and after each turn, respectively',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          let aResolve: (result: string | null) => void;
-         let aPromise: Promise<string>;
+         let aPromise: Promise<string|null>;
          let bResolve: (result: string | null) => void;
-         let bPromise: Promise<string>;
+         let bPromise: Promise<string|null>;
 
          runNgZoneNoLog(() => {
            macroTask(() => {

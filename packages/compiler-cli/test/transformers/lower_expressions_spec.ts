@@ -8,27 +8,141 @@
 
 import * as ts from 'typescript';
 
-import {LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
+import {ModuleMetadata} from '../../src/metadata/index';
+import {LowerMetadataCache, LoweringRequest, RequestLocationMap, getExpressionLoweringTransformFactory} from '../../src/transformers/lower_expressions';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
 
 describe('Expression lowering', () => {
-  it('should be able to lower a simple expression', () => {
-    expect(convert('const a = 1 +◊b: 2◊;')).toBe('const b = 2; const a = 1 + b; export { b };');
+  describe('transform', () => {
+    it('should be able to lower a simple expression', () => {
+      expect(convert('const a = 1 +◊b: 2◊;')).toBe('const b = 2; const a = 1 + b; export { b };');
+    });
+
+    it('should be able to lower an expression in a decorator', () => {
+      expect(convert(`
+          import {Component} from '@angular/core';
+
+          @Component({
+            provider: [{provide: 'someToken', useFactory:◊l: () => null◊}]
+          })
+          class MyClass {}
+      `)).toContain('const l = () => null; exports.l = l;');
+    });
+
+    it('should be able to export a variable if the whole value is lowered', () => {
+      expect(convert('/*a*/ const a =◊b: () => null◊;'))
+          .toBe('/*a*/ const a = () => null; const b = a; export { b };');
+    });
   });
 
-  it('should be able to lower an expression in a decorator', () => {
-    expect(convert(`
+  describe('collector', () => {
+    it('should request a lowering for useValue', () => {
+      const collected = collect(`
         import {Component} from '@angular/core';
-        
+
+        enum SomeEnum {
+          OK,
+          NotOK
+        }
+
         @Component({
-          provider: [{provide: 'someToken', useFactory:◊l: () => null◊}]
+          provider: [{provide: 'someToken', useValue:◊enum: SomeEnum.OK◊}]
         })
-        class MyClass {}
-    `)).toContain('const l = () => null; exports.l = l;');
+        export class MyClass {}
+      `);
+      expect(collected.requests.has(collected.annotations[0].start))
+          .toBeTruthy('did not find the useValue');
+    });
+
+    it('should not request a lowering for useValue with a reference to a static property', () => {
+      const collected = collect(`
+        import {Component} from '@angular/core';
+
+        @Component({
+          provider: [{provide: 'someToken', useValue:◊value: MyClass.someMethod◊}]
+        })
+        export class MyClass {
+          static someMethod() {}
+        }
+      `);
+      expect(collected.requests.size).toBe(0);
+    });
+
+    it('should request a lowering for useFactory', () => {
+      const collected = collect(`
+        import {Component} from '@angular/core';
+
+        @Component({
+          provider: [{provide: 'someToken', useFactory:◊lambda: () => null◊}]
+        })
+        export class MyClass {}
+      `);
+      expect(collected.requests.has(collected.annotations[0].start))
+          .toBeTruthy('did not find the useFactory');
+    });
+
+    it('should request a lowering for data', () => {
+      const collected = collect(`
+        import {Component} from '@angular/core';
+
+        enum SomeEnum {
+          OK,
+          NotOK
+        }
+
+        @Component({
+          provider: [{provide: 'someToken', data:◊enum: SomeEnum.OK◊}]
+        })
+        export class MyClass {}
+      `);
+      expect(collected.requests.has(collected.annotations[0].start))
+          .toBeTruthy('did not find the data field');
+    });
+
+    it('should throw a validation execption for invalid files', () => {
+      const cache = new LowerMetadataCache({}, /* strict */ true);
+      const sourceFile = ts.createSourceFile(
+          'foo.ts', `
+        import {Injectable} from '@angular/core';
+
+        class SomeLocalClass {}
+        @Injectable()
+        export class SomeClass {
+          constructor(a: SomeLocalClass) {}
+        }
+      `,
+          ts.ScriptTarget.Latest, true);
+      expect(() => cache.getMetadata(sourceFile)).toThrow();
+    });
+
+    it('should not report validation errors on a .d.ts file', () => {
+      const cache = new LowerMetadataCache({}, /* strict */ true);
+      const dtsFile = ts.createSourceFile(
+          'foo.d.ts', `
+        import {Injectable} from '@angular/core';
+
+        class SomeLocalClass {}
+        @Injectable()
+        export class SomeClass {
+          constructor(a: SomeLocalClass) {}
+        }
+      `,
+          ts.ScriptTarget.Latest, true);
+      expect(() => cache.getMetadata(dtsFile)).not.toThrow();
+    });
   });
 });
 
-function convert(annotatedSource: string) {
+// Helpers
+
+interface Annotation {
+  start: number;
+  length: number;
+  name: string;
+}
+
+function getAnnotations(annotatedSource: string):
+    {unannotatedSource: string, annotations: Annotation[]} {
   const annotations: {start: number, length: number, name: string}[] = [];
   let adjustment = 0;
   const unannotatedSource = annotatedSource.replace(
@@ -38,6 +152,13 @@ function convert(annotatedSource: string) {
         adjustment -= text.length - source.length;
         return source;
       });
+  return {unannotatedSource, annotations};
+}
+
+// Transform helpers
+
+function convert(annotatedSource: string) {
+  const {annotations, unannotatedSource} = getAnnotations(annotatedSource);
 
   const baseFileName = 'someFile';
   const moduleName = '/' + baseFileName;
@@ -60,13 +181,15 @@ function convert(annotatedSource: string) {
       [fileName], {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017}, host);
   const moduleSourceFile = program.getSourceFile(fileName);
   const transformers: ts.CustomTransformers = {
-    before: [getExpressionLoweringTransformFactory({
-      getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
-        if (sourceFile.fileName == moduleSourceFile.fileName) {
-          return requests;
-        } else {return new Map();}
-      }
-    })]
+    before: [getExpressionLoweringTransformFactory(
+        {
+          getRequests(sourceFile: ts.SourceFile): RequestLocationMap{
+            if (sourceFile.fileName == moduleSourceFile.fileName) {
+              return requests;
+            } else {return new Map();}
+          }
+        },
+        program)]
   };
   let result: string = '';
   const emitResult = program.emit(
@@ -76,7 +199,7 @@ function convert(annotatedSource: string) {
         }
       }, undefined, undefined, transformers);
   return normalizeResult(result);
-};
+}
 
 function findNode(node: ts.Node, start: number, length: number): ts.Node|undefined {
   function find(node: ts.Node): ts.Node|undefined {
@@ -102,4 +225,17 @@ function normalizeResult(result: string): string {
       .replace(/ +/g, ' ')
       .replace(/^ /g, '')
       .replace(/ $/g, '');
+}
+
+// Collector helpers
+
+function collect(annotatedSource: string) {
+  const {annotations, unannotatedSource} = getAnnotations(annotatedSource);
+  const cache = new LowerMetadataCache({});
+  const sourceFile = ts.createSourceFile(
+      'someName.ts', unannotatedSource, ts.ScriptTarget.Latest, /* setParentNodes */ true);
+  return {
+    metadata: cache.getMetadata(sourceFile),
+    requests: cache.getRequests(sourceFile), annotations
+  };
 }

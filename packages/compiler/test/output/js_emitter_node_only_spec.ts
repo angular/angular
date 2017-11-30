@@ -16,7 +16,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler
 import {extractSourceMap, originalPositionFor} from './source_map_util';
 
 const someGenFilePath = 'somePackage/someGenFile';
-const someSourceFilePath = 'somePackage/someSourceFile';
 
 export function main() {
   describe('JavaScriptEmitter', () => {
@@ -27,7 +26,7 @@ export function main() {
 
     function emitSourceMap(stmt: o.Statement | o.Statement[], preamble?: string): SourceMap {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
-      const source = emitter.emitStatements(someSourceFilePath, someGenFilePath, stmts, preamble);
+      const source = emitter.emitStatements(someGenFilePath, stmts, preamble);
       return extractSourceMap(source) !;
     }
 
@@ -40,7 +39,7 @@ export function main() {
         const someVar = o.variable('someVar', null, sourceSpan);
         const sm = emitSourceMap(someVar.toStmt(), '/* MyPreamble \n */');
 
-        expect(sm.sources).toEqual([someSourceFilePath, 'in.js']);
+        expect(sm.sources).toEqual([someGenFilePath, 'in.js']);
         expect(sm.sourcesContent).toEqual([' ', ';;;var']);
         expect(originalPositionFor(sm, {line: 3, column: 0}))
             .toEqual({line: 1, column: 3, source: 'in.js'});

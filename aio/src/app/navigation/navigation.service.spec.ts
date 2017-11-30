@@ -1,44 +1,37 @@
-import { ReflectiveInjector } from '@angular/core';
-import { Http, ConnectionBackend, RequestOptions, BaseRequestOptions, Response, ResponseOptions } from '@angular/http';
-import { MockBackend } from '@angular/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { Injector } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+
 import { CurrentNodes, NavigationService, NavigationViews, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 
 describe('NavigationService', () => {
 
-  let injector: ReflectiveInjector;
-  let backend: MockBackend;
+  let injector: Injector;
   let navService: NavigationService;
-
-  function createResponse(body: any) {
-    return new Response(new ResponseOptions({ body: JSON.stringify(body) }));
-  }
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
+    injector = TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
         NavigationService,
-        { provide: LocationService, useFactory: () => new MockLocationService('a') },
-        { provide: ConnectionBackend, useClass: MockBackend },
-        { provide: RequestOptions, useClass: BaseRequestOptions },
-        Http
-    ]);
-  });
+        { provide: LocationService, useFactory: () => new MockLocationService('a') }
+      ]
+    });
 
-  beforeEach(() => {
-    backend = injector.get(ConnectionBackend);
     navService = injector.get(NavigationService);
+    httpMock = injector.get(HttpTestingController);
   });
 
-  it('should be creatable', () => {
-    expect(navService).toBeTruthy();
-  });
+  afterEach(() => httpMock.verify());
 
   describe('navigationViews', () => {
 
     it('should make a single connection to the server', () => {
-      expect(backend.connectionsArray.length).toEqual(1);
-      expect(backend.connectionsArray[0].request.url).toEqual('generated/navigation.json');
+      const req = httpMock.expectOne({});
+      expect(req.request.url).toBe('generated/navigation.json');
     });
 
     it('should expose the server response', () => {
@@ -46,7 +39,7 @@ describe('NavigationService', () => {
       navService.navigationViews.subscribe(views => viewsEvents.push(views));
 
       expect(viewsEvents).toEqual([]);
-      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [ { url: 'a' }] }));
+      httpMock.expectOne({}).flush({ TopBar: [ { url: 'a' }] });
       expect(viewsEvents).toEqual([{ TopBar: [ { url: 'a' }] }]);
     });
 
@@ -54,6 +47,9 @@ describe('NavigationService', () => {
       let completed = false;
       navService.navigationViews.subscribe(null, null, () => completed = true);
       expect(true).toBe(true, 'observable completed');
+
+      // Stop `$httpMock.verify()` from complaining.
+      httpMock.expectOne({});
     });
 
     it('should return the same object to all subscribers', () => {
@@ -63,16 +59,16 @@ describe('NavigationService', () => {
       let views2: NavigationViews;
       navService.navigationViews.subscribe(views => views2 = views);
 
-      backend.connectionsArray[0].mockRespond(createResponse({ TopBar: [{ url: 'a' }] }));
-
-      // modify the response so we can check that future subscriptions do not trigger another request
-      backend.connectionsArray[0].response.next(createResponse({ TopBar: [{ url: 'error 1' }] }));
+      httpMock.expectOne({}).flush({ TopBar: [{ url: 'a' }] });
 
       let views3: NavigationViews;
       navService.navigationViews.subscribe(views => views3 = views);
 
       expect(views2).toBe(views1);
       expect(views3).toBe(views1);
+
+      // Verfy that subsequent subscriptions did not trigger another request.
+      httpMock.expectNone({});
     });
 
     it('should do WHAT(?) if the request fails');
@@ -90,7 +86,7 @@ describe('NavigationService', () => {
 
     beforeEach(() => {
       navService.navigationViews.subscribe(views => view = views['sideNav']);
-      backend.connectionsArray[0].mockRespond(createResponse({sideNav}));
+      httpMock.expectOne({}).flush({sideNav});
     });
 
     it('should have the supplied tooltip', () => {
@@ -135,9 +131,9 @@ describe('NavigationService', () => {
     };
 
     beforeEach(() => {
-      locationService = injector.get(LocationService);
+      locationService = injector.get(LocationService) as any as MockLocationService;
       navService.currentNodes.subscribe(selected => currentNodes = selected);
-      backend.connectionsArray[0].mockRespond(createResponse(navJson));
+      httpMock.expectOne({}).flush(navJson);
     });
 
     it('should list the side navigation node that matches the current location, and all its ancestors', () => {
@@ -231,9 +227,9 @@ describe('NavigationService', () => {
 
     beforeEach(() => {
       navService.versionInfo.subscribe(info => versionInfo = info);
-      backend.connectionsArray[0].mockRespond(createResponse({
+      httpMock.expectOne({}).flush({
         __versionInfo: expectedVersionInfo
-      }));
+      });
     });
 
     it('should extract the version info', () => {
@@ -261,7 +257,7 @@ describe('NavigationService', () => {
     });
 
     it('should extract the docVersions', () => {
-      backend.connectionsArray[0].mockRespond(createResponse({ docVersions }));
+      httpMock.expectOne({}).flush({ docVersions });
       expect(actualDocVersions).toEqual(expectedDocVersions);
     });
   });

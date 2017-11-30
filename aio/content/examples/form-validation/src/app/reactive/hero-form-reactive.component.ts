@@ -6,7 +6,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { forbiddenNameValidator } from '../shared/forbidden-name.directive';
 
 @Component({
-  selector: 'hero-form-reactive',
+  selector: 'app-hero-form-reactive',
   templateUrl: './hero-form-reactive.component.html'
 })
 export class HeroFormReactiveComponent implements OnInit {

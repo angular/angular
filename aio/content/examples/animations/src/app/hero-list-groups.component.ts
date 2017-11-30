@@ -11,10 +11,10 @@ import {
   group
 } from '@angular/animations';
 
-import { Heroes } from './hero.service';
+import { Hero } from './hero.service';
 
 @Component({
-  selector: 'hero-list-groups',
+  selector: 'app-hero-list-groups',
   template: `
     <ul>
       <li *ngFor="let hero of heroes"
@@ -76,5 +76,5 @@ import { Heroes } from './hero.service';
   // #enddocregion animationdef
 })
 export class HeroListGroupsComponent {
-  @Input() heroes: Heroes;
+   @Input() heroes: Hero[];
 }

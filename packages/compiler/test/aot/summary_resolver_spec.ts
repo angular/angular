@@ -35,7 +35,8 @@ export function main() {
       const symbolResolver = new StaticSymbolResolver(
           new MockStaticSymbolResolverHost({}), symbolCache, mockSummaryResolver);
       return serializeSummaries(
-                 createMockOutputContext(), mockSummaryResolver, symbolResolver, symbols, [])
+                 'someFile.ts', createMockOutputContext(), mockSummaryResolver, symbolResolver,
+                 symbols, [])
           .json;
     }
 
@@ -105,9 +106,11 @@ export class MockAotSummaryResolverHost implements AotSummaryResolverHost {
     return './' + path.basename(fileName).replace(EXT, '');
   }
 
-  getOutputFileName(sourceFileName: string): string {
+  toSummaryFileName(sourceFileName: string): string {
     return sourceFileName.replace(EXT, '') + '.d.ts';
   }
+
+  fromSummaryFileName(filePath: string): string { return filePath; }
 
   isSourceFile(filePath: string) { return !filePath.endsWith('.d.ts'); }
 

@@ -39,4 +39,4 @@ export default {
       rollupNG2(),
       nodeResolve({ jsnext: true, main: true }),
     ]
-}
+};

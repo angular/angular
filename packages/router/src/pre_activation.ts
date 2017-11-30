@@ -19,7 +19,7 @@ import {mergeMap} from 'rxjs/operator/mergeMap';
 import {reduce} from 'rxjs/operator/reduce';
 
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
-import {ChildActivationStart, RouteEvent} from './events';
+import {ActivationStart, ChildActivationStart, Event} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
 import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
@@ -43,9 +43,9 @@ export class PreActivation {
 
   constructor(
       private future: RouterStateSnapshot, private curr: RouterStateSnapshot,
-      private moduleInjector: Injector, private forwardEvent?: (evt: RouteEvent) => void) {}
+      private moduleInjector: Injector, private forwardEvent?: (evt: Event) => void) {}
 
-  initalize(parentContexts: ChildrenOutletContexts): void {
+  initialize(parentContexts: ChildrenOutletContexts): void {
     const futureRoot = this.future._root;
     const currRoot = this.curr ? this.curr._root : null;
     this.setupChildRouteGuards(futureRoot, currRoot, parentContexts, [futureRoot.value]);
@@ -108,9 +108,9 @@ export class PreActivation {
     const context = parentContexts ? parentContexts.getContext(futureNode.value.outlet) : null;
 
     // reusing the node
-    if (curr && future._routeConfig === curr._routeConfig) {
+    if (curr && future.routeConfig === curr.routeConfig) {
       const shouldRunGuardsAndResolvers = this.shouldRunGuardsAndResolvers(
-          curr, future, future._routeConfig !.runGuardsAndResolvers);
+          curr, future, future.routeConfig !.runGuardsAndResolvers);
       if (shouldRunGuardsAndResolvers) {
         this.canActivateChecks.push(new CanActivate(futurePath));
       } else {
@@ -201,12 +201,28 @@ export class PreActivation {
   private runCanActivateChecks(): Observable<boolean> {
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ = concatMap.call(
-        checks$, (check: CanActivate) => andObservables(from([
-                   this.fireChildActivationStart(check.path), this.runCanActivateChild(check.path),
-                   this.runCanActivate(check.route)
-                 ])));
+        checks$,
+        (check: CanActivate) => andObservables(from([
+          this.fireChildActivationStart(check.route.parent), this.fireActivationStart(check.route),
+          this.runCanActivateChild(check.path), this.runCanActivate(check.route)
+        ])));
     return every.call(runningChecks$, (result: boolean) => result === true);
     // this.fireChildActivationStart(check.path),
+  }
+
+  /**
+   * This should fire off `ActivationStart` events for each route being activated at this
+   * level.
+   * In other words, if you're activating `a` and `b` below, `path` will contain the
+   * `ActivatedRouteSnapshot`s for both and we will fire `ActivationStart` for both. Always
+   * return
+   * `true` so checks continue to run.
+   */
+  private fireActivationStart(snapshot: ActivatedRouteSnapshot|null): Observable<boolean> {
+    if (snapshot !== null && this.forwardEvent) {
+      this.forwardEvent(new ActivationStart(snapshot));
+    }
+    return of (true);
   }
 
   /**
@@ -217,19 +233,15 @@ export class PreActivation {
    * return
    * `true` so checks continue to run.
    */
-  private fireChildActivationStart(path: ActivatedRouteSnapshot[]): Observable<boolean> {
-    if (!this.forwardEvent) return of (true);
-    const childActivations = path.slice(0, path.length - 1).reverse().filter(_ => _ !== null);
-
-    return andObservables(map.call(from(childActivations), (snapshot: ActivatedRouteSnapshot) => {
-      if (this.forwardEvent && snapshot._routeConfig) {
-        this.forwardEvent(new ChildActivationStart(snapshot._routeConfig));
-      }
-      return of (true);
-    }));
+  private fireChildActivationStart(snapshot: ActivatedRouteSnapshot|null): Observable<boolean> {
+    if (snapshot !== null && this.forwardEvent) {
+      this.forwardEvent(new ChildActivationStart(snapshot));
+    }
+    return of (true);
   }
+
   private runCanActivate(future: ActivatedRouteSnapshot): Observable<boolean> {
-    const canActivate = future._routeConfig ? future._routeConfig.canActivate : null;
+    const canActivate = future.routeConfig ? future.routeConfig.canActivate : null;
     if (!canActivate || canActivate.length === 0) return of (true);
     const obs = map.call(from(canActivate), (c: any) => {
       const guard = this.getToken(c, future);
@@ -269,14 +281,14 @@ export class PreActivation {
 
   private extractCanActivateChild(p: ActivatedRouteSnapshot):
       {node: ActivatedRouteSnapshot, guards: any[]}|null {
-    const canActivateChild = p._routeConfig ? p._routeConfig.canActivateChild : null;
+    const canActivateChild = p.routeConfig ? p.routeConfig.canActivateChild : null;
     if (!canActivateChild || canActivateChild.length === 0) return null;
     return {node: p, guards: canActivateChild};
   }
 
   private runCanDeactivate(component: Object|null, curr: ActivatedRouteSnapshot):
       Observable<boolean> {
-    const canDeactivate = curr && curr._routeConfig ? curr._routeConfig.canDeactivate : null;
+    const canDeactivate = curr && curr.routeConfig ? curr.routeConfig.canDeactivate : null;
     if (!canDeactivate || canDeactivate.length === 0) return of (true);
     const canDeactivate$ = mergeMap.call(from(canDeactivate), (c: any) => {
       const guard = this.getToken(c, curr);
@@ -339,7 +351,7 @@ function closestLoadedConfig(snapshot: ActivatedRouteSnapshot): LoadedRouterConf
   if (!snapshot) return null;
 
   for (let s = snapshot.parent; s; s = s.parent) {
-    const route = s._routeConfig;
+    const route = s.routeConfig;
     if (route && route._loadedConfig) return route._loadedConfig;
   }
 

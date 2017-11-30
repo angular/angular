@@ -73,6 +73,7 @@ var specFiles: any =
         .concat(glob.sync('@angular/platform-browser/test/security/**/*_spec.js', {cwd: distAll}))
         .concat(['/@angular/platform-browser/test/browser/meta_spec.js'])
         .concat(['/@angular/platform-browser/test/browser/title_spec.js'])
+        .concat(['/@angular/platform-browser/test/browser/transfer_state_spec.js'])
         .reduce((specFiles: string[], paths: string[]) => specFiles.concat(paths), <string[]>[]);
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
@@ -83,7 +84,7 @@ jrunner.onComplete(function(passed: boolean) { process.exit(passed ? 0 : 1); });
 jrunner.projectBaseDir = path.resolve(__dirname, '../../');
 jrunner.specDir = '';
 require('./test-cjs-main.js');
-distAllRequire('@angular/platform-server/src/parse5_adapter.js').Parse5DomAdapter.makeCurrent();
+distAllRequire('@angular/platform-server/src/domino_adapter.js').DominoAdapter.makeCurrent();
 specFiles.forEach((file: string) => {
   const r = distAllRequire(file);
   if (r.main) {

@@ -7,7 +7,7 @@
  */
 
 import {AST, ASTWithSource, AstPath as AstPathBase, NullAstVisitor, visitAstChildren} from '@angular/compiler';
-import {AstType} from '@angular/compiler-cli';
+import {AstType} from '@angular/compiler-cli/src/language_services';
 
 import {BuiltinType, Span, Symbol, SymbolQuery, SymbolTable} from './types';
 import {inSpan} from './utils';

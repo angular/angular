@@ -1,3 +1,4 @@
+/* eslint jasmine/prefer-toHaveBeenCalledWith:0 */
 const fs = require('fs');
 const {resolve} = require('canonical-path');
 const {generateDocs} = require('./index.js');

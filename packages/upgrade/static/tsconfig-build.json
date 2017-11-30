@@ -1,20 +1,27 @@
 {
-  "extends": "../tsconfig-build",
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
-    "target": "es5",
+    "baseUrl": ".",
+    "rootDir": "../",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/common": ["../../dist/packages/common"],
-      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
-      "@angular/platform-browser-dynamic": ["../../dist/packages/platform-browser-dynamic"]
-    }
+      "@angular/core": ["../../../dist/packages/core"],
+      "@angular/common": ["../../../dist/packages/common"],
+      "@angular/platform-browser": ["../../../dist/packages/platform-browser"],
+      "@angular/platform-browser-dynamic": ["../../../dist/packages/platform-browser-dynamic"]
+    },
+    "outDir": "../../../dist/packages/upgrade"
   },
+
   "files": [
     "public_api.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
+
   "angularCompilerOptions": {
-    "flatModuleOutFile": "index.js",
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "static.js",
     "flatModuleId": "@angular/upgrade/static"
   }
 }

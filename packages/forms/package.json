@@ -3,8 +3,8 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - directives and services for creating forms",
   "main": "./bundles/forms.umd.js",
-  "module": "./@angular/forms.es5.js",
-  "es2015": "./@angular/forms.js",
+  "module": "./esm5/forms.js",
+  "es2015": "./esm2015/forms.js",
   "typings": "./forms.d.ts",
   "author": "angular",
   "license": "MIT",
@@ -12,6 +12,7 @@
     "tslib": "^1.7.1"
   },
   "peerDependencies": {
+    "rxjs": "^5.5.0",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER"

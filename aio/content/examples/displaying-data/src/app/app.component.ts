@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
 import { Hero } from './hero';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
   <h1>{{title}}</h1>
   <h2>My favorite hero is: {{myHero.name}}</h2>

@@ -6,7 +6,7 @@ import { AdItem }      from './ad-item';
 import { AdComponent } from './ad.component';
 
 @Component({
-  selector: 'add-banner',
+  selector: 'app-add-banner',
   // #docregion ad-host
   template: `
               <div class="ad-banner">

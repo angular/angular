@@ -7,6 +7,7 @@ export declare class MockAnimationDriver implements AnimationDriver {
     containsElement(elm1: any, elm2: any): boolean;
     matchesElement(element: any, selector: string): boolean;
     query(element: any, selector: string, multi: boolean): any[];
+    validateStyleProperty(prop: string): boolean;
     static log: AnimationPlayer[];
 }
 

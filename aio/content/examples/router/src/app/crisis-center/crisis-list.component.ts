@@ -1,20 +1,19 @@
 // #docregion
 import 'rxjs/add/operator/switchMap';
-import { Component, OnInit }      from '@angular/core';
-import { ActivatedRoute, Router, ParamMap } from '@angular/router';
-
-import { Observable }            from 'rxjs/Observable';
+import { Component, OnInit }        from '@angular/core';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { Crisis, CrisisService } from './crisis.service';
+import { Observable }            from 'rxjs/Observable';
 
 @Component({
   template: `
     <ul class="items">
-      <li *ngFor="let crisis of crises | async"
-        (click)="onSelect(crisis)"
-        [class.selected]="isSelected(crisis)">
-          <span class="badge">{{ crisis.id }}</span>
-          {{ crisis.name }}
+      <li *ngFor="let crisis of crises$ | async"
+        [class.selected]="crisis.id === selectedId">
+        <a [routerLink]="[crisis.id]">
+          <span class="badge">{{ crisis.id }}</span>{{ crisis.name }}
+        </a>
       </li>
     </ul>
 
@@ -22,35 +21,21 @@ import { Crisis, CrisisService } from './crisis.service';
   `
 })
 export class CrisisListComponent implements OnInit {
-  crises: Observable<Crisis[]>;
+  crises$: Observable<Crisis[]>;
   selectedId: number;
 
   // #docregion ctor
   constructor(
     private service: CrisisService,
-    private route: ActivatedRoute,
-    private router: Router
+    private route: ActivatedRoute
   ) {}
   // #enddocregion ctor
 
-  isSelected(crisis: Crisis) {
-    return crisis.id === this.selectedId;
-  }
-
   ngOnInit() {
-    this.crises = this.route.paramMap
+    this.crises$ = this.route.paramMap
       .switchMap((params: ParamMap) => {
         this.selectedId = +params.get('id');
         return this.service.getCrises();
       });
   }
-
-  // #docregion onSelect
-  onSelect(crisis: Crisis) {
-    this.selectedId = crisis.id;
-
-    // Navigate with relative link
-    this.router.navigate([crisis.id], { relativeTo: this.route });
-  }
-  // #enddocregion onSelect
 }

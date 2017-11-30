@@ -342,6 +342,22 @@ export function main() {
         expect(created).toBe(true);
       });
 
+      it('should provide undefined', () => {
+        let factoryCounter = 0;
+
+        const el = createComponent('', [{
+                                     provide: 'token',
+                                     useFactory: () => {
+                                       factoryCounter++;
+                                       return undefined;
+                                     }
+                                   }]);
+
+        expect(el.injector.get('token')).toBeUndefined();
+        expect(el.injector.get('token')).toBeUndefined();
+        expect(factoryCounter).toBe(1);
+      });
+
       describe('injecting lazy providers into an eager provider via Injector.get', () => {
 
         it('should inject providers that were declared before it', () => {
@@ -386,6 +402,52 @@ export function main() {
           const ctx =
               TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
           expect(ctx.debugElement.injector.get('eager')).toBe('eagerValue: lazyValue');
+        });
+      });
+
+      describe('injecting eager providers into an eager provider via Injector.get', () => {
+        it('should inject providers that were declared before it', () => {
+          @Component({
+            template: '',
+            providers: [
+              {provide: 'eager1', useFactory: () => 'v1'},
+              {
+                provide: 'eager2',
+                useFactory: (i: Injector) => `v2: ${i.get('eager1')}`,
+                deps: [Injector]
+              },
+            ]
+          })
+          class MyComp {
+            // Component is eager, which makes all of its deps eager
+            constructor(@Inject('eager1') eager1: any, @Inject('eager2') eager2: any) {}
+          }
+
+          const ctx =
+              TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+          expect(ctx.debugElement.injector.get('eager2')).toBe('v2: v1');
+        });
+
+        it('should inject providers that were declared after it', () => {
+          @Component({
+            template: '',
+            providers: [
+              {
+                provide: 'eager1',
+                useFactory: (i: Injector) => `v1: ${i.get('eager2')}`,
+                deps: [Injector]
+              },
+              {provide: 'eager2', useFactory: () => 'v2'},
+            ]
+          })
+          class MyComp {
+            // Component is eager, which makes all of its deps eager
+            constructor(@Inject('eager1') eager1: any, @Inject('eager2') eager2: any) {}
+          }
+
+          const ctx =
+              TestBed.configureTestingModule({declarations: [MyComp]}).createComponent(MyComp);
+          expect(ctx.debugElement.injector.get('eager1')).toBe('v1: v2');
         });
       });
 

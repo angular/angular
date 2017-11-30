@@ -1,23 +1,17 @@
 {
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es2015",
-    "lib": ["es6", "dom"],
-    "noImplicitAny": true,
-    "sourceMap": true,
     "baseUrl": ".",
-    "outDir": "../../dist/packages/benchpress",
+    "rootDir": ".",
+    "sourceRoot": ".",
     "paths": {
       "@angular/core": ["../../dist/packages/core"]
     },
-    "experimentalDecorators": true,
-    "rootDir": ".",
-    "sourceRoot": ".",
-    "declaration": true,
-    "skipLibCheck": true,
-    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
-    "types": []
+    "outDir": "../../dist/packages/benchpress"
   },
+
   "files": [
     "index.ts",
     "../../node_modules/@types/node/index.d.ts",

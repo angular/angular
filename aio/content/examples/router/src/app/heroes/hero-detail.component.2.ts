@@ -2,13 +2,14 @@
 // #docregion
 import { Component, OnInit }      from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Observable }             from 'rxjs/Observable';
 
 import { Hero, HeroService } from './hero.service';
 
 @Component({
   template: `
   <h2>HEROES</h2>
-  <div *ngIf="hero">
+  <div *ngIf="hero$ | async as hero">
     <h3>"{{ hero.name }}"</h3>
     <div>
       <label>Id: </label>{{ hero.id }}</div>
@@ -23,7 +24,7 @@ import { Hero, HeroService } from './hero.service';
   `
 })
 export class HeroDetailComponent implements OnInit  {
-  hero: Hero;
+  hero$: Observable<Hero>;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,8 +36,7 @@ export class HeroDetailComponent implements OnInit  {
   ngOnInit() {
     let id = this.route.snapshot.paramMap.get('id');
 
-    this.service.getHero(id)
-      .then((hero: Hero) => this.hero = hero);
+    this.hero$ = this.service.getHero(id);
   }
   // #enddocregion snapshot
 

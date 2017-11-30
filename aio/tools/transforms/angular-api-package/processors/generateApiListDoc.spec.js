@@ -113,7 +113,6 @@ describe('generateApiListDoc processor', () => {
     ]);
   });
 
-
   it('should convert security to a boolean securityRisk', () => {
     const processor = processorFactory();
     const docs = [
@@ -128,7 +127,6 @@ describe('generateApiListDoc processor', () => {
       { docType: 'class', title: 'BbbBbb', name: 'bbbbbb', path: 'bbb', stability: '', securityRisk: false },
     ]);
   });
-
 
   it('should convert stability tags to the stable string property', () => {
     const processor = processorFactory();
@@ -146,6 +144,25 @@ describe('generateApiListDoc processor', () => {
       { docType: 'class', title: 'BbbBbb', name: 'bbbbbb', path: 'bbb', stability: 'experimental', securityRisk: false },
       { docType: 'class', title: 'CccCcc', name: 'cccccc', path: 'ccc', stability: 'deprecated', securityRisk: false },
       { docType: 'class', title: 'DddDdd', name: 'dddddd', path: 'ddd', stability: '', securityRisk: false },
+    ]);
+  });
+
+  it('should sort items in each group alphabetically', () => {
+    const processor = processorFactory();
+    const docs = [
+      { docType: 'module', id: '@angular/common/index', exports: [
+        { docType: 'class', name: 'DddDdd', path: 'uuu' },
+        { docType: 'class', name: 'BbbBbb', path: 'vvv' },
+        { docType: 'class', name: 'AaaAaa', path: 'xxx' },
+        { docType: 'class', name: 'CccCcc', path: 'yyy' },
+      ]}
+    ];
+    processor.$process(docs);
+    expect(docs[1].data[0].items).toEqual([
+      { docType: 'class', title: 'AaaAaa', name: 'aaaaaa', path: 'xxx', stability: '', securityRisk: false },
+      { docType: 'class', title: 'BbbBbb', name: 'bbbbbb', path: 'vvv', stability: '', securityRisk: false },
+      { docType: 'class', title: 'CccCcc', name: 'cccccc', path: 'yyy', stability: '', securityRisk: false },
+      { docType: 'class', title: 'DddDdd', name: 'dddddd', path: 'uuu', stability: '', securityRisk: false },
     ]);
   });
 });

@@ -3,16 +3,13 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the compiler library",
   "main": "./bundles/compiler.umd.js",
-  "module": "./@angular/compiler.es5.js",
-  "es2015": "./@angular/compiler.js",
+  "module": "./esm5/compiler.js",
+  "es2015": "./esm2015/compiler.js",
   "typings": "./compiler.d.ts",
   "author": "angular",
   "license": "MIT",
   "dependencies": {
     "tslib": "^1.7.1"
-  },
-  "peerDependencies": {
-    "@angular/core": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",

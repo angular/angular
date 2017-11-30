@@ -27,9 +27,9 @@ repository (google3).
 
 That repository defines dependencies on specific versions of
 all the tools. You can run the tools Bazel installed, for
-example rather than `npm install` (which depends on whatever
+example rather than `yarn install` (which depends on whatever
 version you have installed on your machine), you can
-`bazel run @build_bazel_rules_typescript_node//:bin/npm install`.
+`bazel run @yarn//:yarn`.
 
 Bazel accepts a lot of options. We check in some options in the
 `.bazelrc` file. See the [bazelrc doc]. For example, if you don't

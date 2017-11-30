@@ -1,6 +1,6 @@
-/** @stable */
+/** @deprecated */
 export declare class UpgradeAdapter {
-    constructor(ng2AppModule: Type<any>, compilerOptions?: CompilerOptions);
+    constructor(ng2AppModule: Type<any>, compilerOptions?: CompilerOptions | undefined);
     bootstrap(element: Element, modules?: any[], config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef;
     downgradeNg2Component(component: Type<any>): Function;
     downgradeNg2Provider(token: any): Function;
@@ -11,7 +11,7 @@ export declare class UpgradeAdapter {
     }): void;
 }
 
-/** @stable */
+/** @deprecated */
 export declare class UpgradeAdapterRef {
     ng1Injector: angular.IInjectorService;
     ng1RootScope: angular.IRootScopeService;

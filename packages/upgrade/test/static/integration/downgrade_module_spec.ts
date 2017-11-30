@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, Injector, Input, NgModule, NgZone, OnChanges, StaticProvider, destroyPlatform} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, ApplicationRef, Component, DoCheck, Inject, Injector, Input, NgModule, NgZone, OnChanges, OnDestroy, OnInit, StaticProvider, ViewRef, destroyPlatform} from '@angular/core';
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -16,7 +16,7 @@ import {$ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '@angular/upgrade/src/c
 import {LazyModuleRef} from '@angular/upgrade/src/common/util';
 import {downgradeComponent, downgradeModule} from '@angular/upgrade/static';
 
-import {html} from '../test_helpers';
+import {html, multiTrim} from '../test_helpers';
 
 
 export function main() {
@@ -170,6 +170,42 @@ export function main() {
            });
          }));
 
+      it('should destroy components inside the Angular zone', async(() => {
+           let destroyedInTheZone = false;
+
+           @Component({selector: 'ng2', template: ''})
+           class Ng2Component implements OnDestroy {
+             ngOnDestroy() { destroyedInTheZone = NgZone.isInAngularZone(); }
+           }
+
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive(
+                       'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
+
+           const element = html('<ng2 ng-if="!hideNg2"></ng2>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+
+           // Wait for the module to be bootstrapped.
+           setTimeout(() => {
+             $rootScope.$apply('hideNg2 = true');
+             expect(destroyedInTheZone).toBe(true);
+           });
+         }));
+
       it('should propagate input changes inside the Angular zone', async(() => {
            let ng2Component: Ng2Component;
 
@@ -266,6 +302,210 @@ export function main() {
 
                button.click();
                expect(element.textContent).toBe('2');
+             });
+           });
+         }));
+
+      it('should run the lifecycle hooks in the correct order', async(() => {
+           const logs: string[] = [];
+           let rootScope: angular.IRootScopeService;
+
+           @Component({
+             selector: 'ng2',
+             template: `
+               {{ value }}
+               <button (click)="value = 'qux'"></button>
+               <ng-content></ng-content>
+             `
+           })
+           class Ng2Component implements AfterContentChecked,
+               AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy,
+               OnInit {
+             @Input() value = 'foo';
+
+             ngAfterContentChecked() { this.log('AfterContentChecked'); }
+             ngAfterContentInit() { this.log('AfterContentInit'); }
+             ngAfterViewChecked() { this.log('AfterViewChecked'); }
+             ngAfterViewInit() { this.log('AfterViewInit'); }
+             ngDoCheck() { this.log('DoCheck'); }
+             ngOnChanges() { this.log('OnChanges'); }
+             ngOnDestroy() { this.log('OnDestroy'); }
+             ngOnInit() { this.log('OnInit'); }
+
+             private log(hook: string) { logs.push(`${hook}(${this.value})`); }
+           }
+
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive('ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
+                   .run(($rootScope: angular.IRootScopeService) => {
+                     rootScope = $rootScope;
+                     rootScope.value = 'bar';
+                   });
+
+           const element =
+               html('<div><ng2 value="{{ value }}" ng-if="!hideNg2">Content</ng2></div>');
+           angular.bootstrap(element, [ng1Module.name]);
+
+           setTimeout(() => {    // Wait for the module to be bootstrapped.
+             setTimeout(() => {  // Wait for `$evalAsync()` to propagate inputs.
+               const button = element.querySelector('button') !;
+
+               // Once initialized.
+               expect(multiTrim(element.textContent)).toBe('bar Content');
+               expect(logs).toEqual([
+                 // `ngOnChanges()` call triggered directly through the `inputChanges` $watcher.
+                 'OnChanges(bar)',
+                 // Initial CD triggered directly through the `detectChanges()` or `inputChanges`
+                 // $watcher (for `propagateDigest` true/false respectively).
+                 'OnInit(bar)',
+                 'DoCheck(bar)',
+                 'AfterContentInit(bar)',
+                 'AfterContentChecked(bar)',
+                 'AfterViewInit(bar)',
+                 'AfterViewChecked(bar)',
+                 ...(propagateDigest ?
+                         [
+                           // CD triggered directly through the `detectChanges()` $watcher (2nd
+                           // $digest).
+                           'DoCheck(bar)',
+                           'AfterContentChecked(bar)',
+                           'AfterViewChecked(bar)',
+                         ] :
+                         []),
+                 // CD triggered due to entering/leaving the NgZone (in `downgradeFn()`).
+                 'DoCheck(bar)',
+                 'AfterContentChecked(bar)',
+                 'AfterViewChecked(bar)',
+               ]);
+               logs.length = 0;
+
+               // Change inputs and run `$digest`.
+               rootScope.$apply('value = "baz"');
+               expect(multiTrim(element.textContent)).toBe('baz Content');
+               expect(logs).toEqual([
+                 // `ngOnChanges()` call triggered directly through the `inputChanges` $watcher.
+                 'OnChanges(baz)',
+                 // `propagateDigest: true` (3 CD runs):
+                 //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
+                 //   $watcher).
+                 //   - CD triggered directly through the `detectChanges()` $watcher.
+                 //   - CD triggered due to entering/leaving the NgZone (in `detectChanges`
+                 //   $watcher).
+                 // `propagateDigest: false` (2 CD runs):
+                 //   - CD triggered directly through the `inputChanges` $watcher.
+                 //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
+                 //   $watcher).
+                 'DoCheck(baz)',
+                 'AfterContentChecked(baz)',
+                 'AfterViewChecked(baz)',
+                 'DoCheck(baz)',
+                 'AfterContentChecked(baz)',
+                 'AfterViewChecked(baz)',
+                 ...(propagateDigest ?
+                         [
+                           'DoCheck(baz)',
+                           'AfterContentChecked(baz)',
+                           'AfterViewChecked(baz)',
+                         ] :
+                         []),
+               ]);
+               logs.length = 0;
+
+               // Run `$digest` (without changing inputs).
+               rootScope.$digest();
+               expect(multiTrim(element.textContent)).toBe('baz Content');
+               expect(logs).toEqual(
+                   propagateDigest ?
+                       [
+                         // CD triggered directly through the `detectChanges()` $watcher.
+                         'DoCheck(baz)',
+                         'AfterContentChecked(baz)',
+                         'AfterViewChecked(baz)',
+                         // CD triggered due to entering/leaving the NgZone (in the above $watcher).
+                         'DoCheck(baz)',
+                         'AfterContentChecked(baz)',
+                         'AfterViewChecked(baz)',
+                       ] :
+                       []);
+               logs.length = 0;
+
+               // Trigger change detection (without changing inputs).
+               button.click();
+               expect(multiTrim(element.textContent)).toBe('qux Content');
+               expect(logs).toEqual([
+                 'DoCheck(qux)',
+                 'AfterContentChecked(qux)',
+                 'AfterViewChecked(qux)',
+               ]);
+               logs.length = 0;
+
+               // Destroy the component.
+               rootScope.$apply('hideNg2 = true');
+               expect(logs).toEqual([
+                 'OnDestroy(qux)',
+               ]);
+               logs.length = 0;
+             });
+           });
+         }));
+
+      it('should detach hostViews from the ApplicationRef once destroyed', async(() => {
+           let ng2Component: Ng2Component;
+
+           @Component({selector: 'ng2', template: ''})
+           class Ng2Component {
+             constructor(public appRef: ApplicationRef) {
+               ng2Component = this;
+               spyOn(appRef, 'attachView').and.callThrough();
+               spyOn(appRef, 'detachView').and.callThrough();
+             }
+           }
+
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive(
+                       'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
+
+           const element = html('<ng2 ng-if="!hideNg2"></ng2>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+
+           setTimeout(() => {    // Wait for the module to be bootstrapped.
+             setTimeout(() => {  // Wait for the hostView to be attached (during the `$digest`).
+               const hostView: ViewRef =
+                   (ng2Component.appRef.attachView as jasmine.Spy).calls.mostRecent().args[0];
+
+               expect(hostView.destroyed).toBe(false);
+
+               $rootScope.$apply('hideNg2 = true');
+
+               expect(hostView.destroyed).toBe(true);
+               expect(ng2Component.appRef.detachView).toHaveBeenCalledWith(hostView);
              });
            });
          }));

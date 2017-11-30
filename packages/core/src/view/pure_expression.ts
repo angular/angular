@@ -9,16 +9,16 @@
 import {BindingDef, BindingFlags, NodeDef, NodeFlags, PureExpressionData, ViewData, asPureExpressionData} from './types';
 import {calcBindingFlags, checkAndUpdateBinding} from './util';
 
-export function purePipeDef(argCount: number): NodeDef {
+export function purePipeDef(checkIndex: number, argCount: number): NodeDef {
   // argCount + 1 to include the pipe as first arg
-  return _pureExpressionDef(NodeFlags.TypePurePipe, new Array(argCount + 1));
+  return _pureExpressionDef(NodeFlags.TypePurePipe, checkIndex, new Array(argCount + 1));
 }
 
-export function pureArrayDef(argCount: number): NodeDef {
-  return _pureExpressionDef(NodeFlags.TypePureArray, new Array(argCount));
+export function pureArrayDef(checkIndex: number, argCount: number): NodeDef {
+  return _pureExpressionDef(NodeFlags.TypePureArray, checkIndex, new Array(argCount));
 }
 
-export function pureObjectDef(propToIndex: {[p: string]: number}): NodeDef {
+export function pureObjectDef(checkIndex: number, propToIndex: {[p: string]: number}): NodeDef {
   const keys = Object.keys(propToIndex);
   const nbKeys = keys.length;
   const propertyNames = new Array(nbKeys);
@@ -28,10 +28,11 @@ export function pureObjectDef(propToIndex: {[p: string]: number}): NodeDef {
     propertyNames[index] = key;
   }
 
-  return _pureExpressionDef(NodeFlags.TypePureObject, propertyNames);
+  return _pureExpressionDef(NodeFlags.TypePureObject, checkIndex, propertyNames);
 }
 
-function _pureExpressionDef(flags: NodeFlags, propertyNames: string[]): NodeDef {
+function _pureExpressionDef(
+    flags: NodeFlags, checkIndex: number, propertyNames: string[]): NodeDef {
   const bindings: BindingDef[] = new Array(propertyNames.length);
   for (let i = 0; i < propertyNames.length; i++) {
     const prop = propertyNames[i];
@@ -46,12 +47,13 @@ function _pureExpressionDef(flags: NodeFlags, propertyNames: string[]): NodeDef 
   }
   return {
     // will bet set by the view definition
-    index: -1,
+    nodeIndex: -1,
     parent: null,
     renderParent: null,
     bindingIndex: -1,
     outputIndex: -1,
     // regular values
+    checkIndex,
     flags,
     childFlags: 0,
     directChildFlags: 0,
@@ -93,7 +95,7 @@ export function checkAndUpdatePureExpressionInline(
   if (bindLen > 9 && checkAndUpdateBinding(view, def, 9, v9)) changed = true;
 
   if (changed) {
-    const data = asPureExpressionData(view, def.index);
+    const data = asPureExpressionData(view, def.nodeIndex);
     let value: any;
     switch (def.flags & NodeFlags.Types) {
       case NodeFlags.TypePureArray:
@@ -175,7 +177,7 @@ export function checkAndUpdatePureExpressionDynamic(
     }
   }
   if (changed) {
-    const data = asPureExpressionData(view, def.index);
+    const data = asPureExpressionData(view, def.nodeIndex);
     let value: any;
     switch (def.flags & NodeFlags.Types) {
       case NodeFlags.TypePureArray:

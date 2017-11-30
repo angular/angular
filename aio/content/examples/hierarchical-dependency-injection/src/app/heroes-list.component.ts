@@ -6,7 +6,7 @@ import { Hero, HeroTaxReturn } from './hero';
 import { HeroesService }       from './heroes.service';
 
 @Component({
-  selector: 'heroes-list',
+  selector: 'app-heroes-list',
   template: `
     <div>
       <h3>Hero Tax Returns</h3>
@@ -15,11 +15,11 @@ import { HeroesService }       from './heroes.service';
             (click)="showTaxReturn(hero)">{{hero.name}}
         </li>
       </ul>
-      <hero-tax-return
+      <app-hero-tax-return
         *ngFor="let selected of selectedTaxReturns; let i = index"
         [taxReturn]="selected"
         (close)="closeTaxReturn(i)">
-      </hero-tax-return>
+      </app-hero-tax-return>
     </div>
     `,
   styles: [ 'li {cursor: pointer;}' ]

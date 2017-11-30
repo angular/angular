@@ -8,6 +8,7 @@
 
 import {Location, LocationStrategy} from '@angular/common';
 import {EventEmitter, Injectable} from '@angular/core';
+import {ISubscription} from 'rxjs/Subscription';
 
 
 /**
@@ -41,7 +42,9 @@ export class SpyLocation implements Location {
     return currPath == givenPath + (query.length > 0 ? ('?' + query) : '');
   }
 
-  simulateUrlPop(pathname: string) { this._subject.emit({'url': pathname, 'pop': true}); }
+  simulateUrlPop(pathname: string) {
+    this._subject.emit({'url': pathname, 'pop': true, 'type': 'popstate'});
+  }
 
   simulateHashChange(pathname: string) {
     // Because we don't prevent the native event, the browser will independently update the path
@@ -107,7 +110,7 @@ export class SpyLocation implements Location {
 
   subscribe(
       onNext: (value: any) => void, onThrow?: ((error: any) => void)|null,
-      onReturn?: (() => void)|null): Object {
+      onReturn?: (() => void)|null): ISubscription {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 

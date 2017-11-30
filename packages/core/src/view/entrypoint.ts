@@ -7,11 +7,12 @@
  */
 
 import {Injector} from '../di/injector';
+import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {Type} from '../type';
 
 import {initServicesIfNeeded} from './services';
-import {NgModuleDefinitionFactory, ProviderOverride, Services} from './types';
+import {NgModuleDefinitionFactory, ProviderOverride, Services, ViewDefinition} from './types';
 import {resolveDefinition} from './util';
 
 export function overrideProvider(override: ProviderOverride) {
@@ -19,9 +20,14 @@ export function overrideProvider(override: ProviderOverride) {
   return Services.overrideProvider(override);
 }
 
-export function clearProviderOverrides() {
+export function overrideComponentView(comp: Type<any>, componentFactory: ComponentFactory<any>) {
   initServicesIfNeeded();
-  return Services.clearProviderOverrides();
+  return Services.overrideComponentView(comp, componentFactory);
+}
+
+export function clearOverrides() {
+  initServicesIfNeeded();
+  return Services.clearOverrides();
 }
 
 // Attention: this function is called as top level function.

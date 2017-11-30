@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, CompileIdentifierMetadata, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceSpan, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StaticSymbol, StmtModifier, ThrowStmt, TryCatchStmt, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, CompileIdentifierMetadata, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StaticSymbol, StmtModifier, ThrowStmt, TryCatchStmt, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 export interface Node { sourceSpan: ParseSourceSpan|null; }
@@ -14,26 +14,32 @@ export interface Node { sourceSpan: ParseSourceSpan|null; }
 const METHOD_THIS_NAME = 'this';
 const CATCH_ERROR_NAME = 'error';
 const CATCH_STACK_NAME = 'stack';
+const _VALID_IDENTIFIER_RE = /^[$A-Z_][0-9A-Z_$]*$/i;
 
 export class TypeScriptNodeEmitter {
   updateSourceFile(sourceFile: ts.SourceFile, stmts: Statement[], preamble?: string):
       [ts.SourceFile, Map<ts.Node, Node>] {
     const converter = new _NodeEmitterVisitor();
-    const statements =
-        stmts.map(stmt => stmt.visitStatement(converter, null)).filter(stmt => stmt != null);
-    const newSourceFile = ts.updateSourceFileNode(
-        sourceFile, [...converter.getReexports(), ...converter.getImports(), ...statements]);
+    // [].concat flattens the result so that each `visit...` method can also return an array of
+    // stmts.
+    const statements: any[] = [].concat(
+        ...stmts.map(stmt => stmt.visitStatement(converter, null)).filter(stmt => stmt != null));
+    const preambleStmts: ts.Statement[] = [];
     if (preamble) {
       if (preamble.startsWith('/*') && preamble.endsWith('*/')) {
         preamble = preamble.substr(2, preamble.length - 4);
       }
-      if (!statements.length) {
-        statements.push(ts.createEmptyStatement());
-      }
-      statements[0] = ts.setSyntheticLeadingComments(
-          statements[0],
+      const commentStmt = ts.createNotEmittedStatement(sourceFile);
+      ts.setSyntheticLeadingComments(
+          commentStmt,
           [{kind: ts.SyntaxKind.MultiLineCommentTrivia, text: preamble, pos: -1, end: -1}]);
+      ts.setEmitFlags(commentStmt, ts.EmitFlags.CustomPrologue);
+      preambleStmts.push(commentStmt);
     }
+    const sourceStatments =
+        [...preambleStmts, ...converter.getReexports(), ...converter.getImports(), ...statements];
+    converter.updateSourceMap(sourceStatments);
+    const newSourceFile = ts.updateSourceFileNode(sourceFile, sourceStatments);
     return [newSourceFile, converter.getNodeMap()];
   }
 }
@@ -60,6 +66,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   private _nodeMap = new Map<ts.Node, Node>();
   private _importsWithPrefixes = new Map<string, string>();
   private _reexports = new Map<string, {name: string, as: string}[]>();
+  private _templateSources = new Map<ParseSourceFile, ts.SourceMapSource>();
 
   getReexports(): ts.Statement[] {
     return Array.from(this._reexports.entries())
@@ -85,12 +92,69 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   getNodeMap() { return this._nodeMap; }
 
+  updateSourceMap(statements: ts.Statement[]) {
+    let lastRangeStartNode: ts.Node|undefined = undefined;
+    let lastRangeEndNode: ts.Node|undefined = undefined;
+    let lastRange: ts.SourceMapRange|undefined = undefined;
+
+    const recordLastSourceRange = () => {
+      if (lastRange && lastRangeStartNode && lastRangeEndNode) {
+        if (lastRangeStartNode == lastRangeEndNode) {
+          ts.setSourceMapRange(lastRangeEndNode, lastRange);
+        } else {
+          ts.setSourceMapRange(lastRangeStartNode, lastRange);
+          // Only emit the pos for the first node emitted in the range.
+          ts.setEmitFlags(lastRangeStartNode, ts.EmitFlags.NoTrailingSourceMap);
+          ts.setSourceMapRange(lastRangeEndNode, lastRange);
+          // Only emit emit end for the last node emitted in the range.
+          ts.setEmitFlags(lastRangeEndNode, ts.EmitFlags.NoLeadingSourceMap);
+        }
+      }
+    };
+
+    const visitNode = (tsNode: ts.Node) => {
+      const ngNode = this._nodeMap.get(tsNode);
+      if (ngNode) {
+        const range = this.sourceRangeOf(ngNode);
+        if (range) {
+          if (!lastRange || range.source != lastRange.source || range.pos != lastRange.pos ||
+              range.end != lastRange.end) {
+            recordLastSourceRange();
+            lastRangeStartNode = tsNode;
+            lastRange = range;
+          }
+          lastRangeEndNode = tsNode;
+        }
+      }
+      ts.forEachChild(tsNode, visitNode);
+    };
+    statements.forEach(visitNode);
+    recordLastSourceRange();
+  }
+
   private record<T extends ts.Node>(ngNode: Node, tsNode: T|null): RecordedNode<T> {
     if (tsNode && !this._nodeMap.has(tsNode)) {
       this._nodeMap.set(tsNode, ngNode);
-      ts.forEachChild(tsNode, child => this.record(ngNode, tsNode));
     }
     return tsNode as RecordedNode<T>;
+  }
+
+  private sourceRangeOf(node: Node): ts.SourceMapRange|null {
+    if (node.sourceSpan) {
+      const span = node.sourceSpan;
+      if (span.start.file == span.end.file) {
+        const file = span.start.file;
+        if (file.url) {
+          let source = this._templateSources.get(file);
+          if (!source) {
+            source = ts.createSourceMapSource(file.url, file.content, pos => pos);
+            this._templateSources.set(file, source);
+          }
+          return {pos: span.start.offset, end: span.end.offset, source};
+        }
+      }
+    }
+    return null;
   }
 
   private getModifiers(stmt: Statement) {
@@ -118,20 +182,30 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       }
     }
 
-    return this.record(
-        stmt, ts.createVariableStatement(
-                  this.getModifiers(stmt),
-                  ts.createVariableDeclarationList([ts.createVariableDeclaration(
-                      ts.createIdentifier(stmt.name),
-                      /* type */ undefined,
-                      (stmt.value && stmt.value.visitExpression(this, null)) || undefined)])));
+    const varDeclList = ts.createVariableDeclarationList([ts.createVariableDeclaration(
+        ts.createIdentifier(stmt.name),
+        /* type */ undefined,
+        (stmt.value && stmt.value.visitExpression(this, null)) || undefined)]);
+
+    if (stmt.hasModifier(StmtModifier.Exported)) {
+      // Note: We need to add an explicit variable and export declaration so that
+      // the variable can be referred in the same file as well.
+      const tsVarStmt =
+          this.record(stmt, ts.createVariableStatement(/* modifiers */[], varDeclList));
+      const exportStmt = this.record(
+          stmt, ts.createExportDeclaration(
+                    /*decorators*/ undefined, /*modifiers*/ undefined,
+                    ts.createNamedExports([ts.createExportSpecifier(stmt.name, stmt.name)])));
+      return [tsVarStmt, exportStmt];
+    }
+    return this.record(stmt, ts.createVariableStatement(this.getModifiers(stmt), varDeclList));
   }
 
   visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any) {
     return this.record(
         stmt, ts.createFunctionDeclaration(
                   /* decorators */ undefined, this.getModifiers(stmt),
-                  /* astrictToken */ undefined, stmt.name, /* typeParameters */ undefined,
+                  /* asteriskToken */ undefined, stmt.name, /* typeParameters */ undefined,
                   stmt.params.map(
                       p => ts.createParameter(
                           /* decorators */ undefined, /* modifiers */ undefined,
@@ -175,7 +249,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     // TODO {chuckj}: Determine what should be done for a method with a null name.
     const methods = stmt.methods.filter(method => method.name)
                         .map(
-                            method => ts.createMethodDeclaration(
+                            method => ts.createMethod(
                                 /* decorators */ undefined, /* modifiers */ undefined,
                                 /* astriskToken */ undefined, method.name !/* guarded by filter */,
                                 /* questionToken */ undefined, /* typeParameters */ undefined,
@@ -295,14 +369,13 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(expr, this._visitIdentifier(expr.value));
   }
 
-  visitConditionalExpr(expr: ConditionalExpr): RecordedNode<ts.ConditionalExpression> {
-    // TODO {chuckj}: Review use of ! on flaseCase. Should it be non-nullable?
+  visitConditionalExpr(expr: ConditionalExpr): RecordedNode<ts.ParenthesizedExpression> {
+    // TODO {chuckj}: Review use of ! on falseCase. Should it be non-nullable?
     return this.record(
         expr,
-        ts.createConditional(
+        ts.createParen(ts.createConditional(
             expr.condition.visitExpression(this, null), expr.trueCase.visitExpression(this, null),
-            expr.falseCase !.visitExpression(this, null)));
-    ;
+            expr.falseCase !.visitExpression(this, null))));
   }
 
   visitNotExpr(expr: NotExpr): RecordedNode<ts.PrefixUnaryExpression> {
@@ -331,7 +404,7 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
                   /* type */ undefined, this._visitStatements(expr.statements)));
   }
 
-  visitBinaryOperatorExpr(expr: BinaryOperatorExpr): RecordedNode<ts.BinaryExpression> {
+  visitBinaryOperatorExpr(expr: BinaryOperatorExpr): RecordedNode<ts.ParenthesizedExpression> {
     let binaryOperator: ts.BinaryOperator;
     switch (expr.operator) {
       case BinaryOperator.And:
@@ -383,9 +456,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
         throw new Error(`Unknown operator: ${expr.operator}`);
     }
     return this.record(
-        expr, ts.createBinary(
+        expr, ts.createParen(ts.createBinary(
                   expr.lhs.visitExpression(this, null), binaryOperator,
-                  expr.rhs.visitExpression(this, null)));
+                  expr.rhs.visitExpression(this, null))));
   }
 
   visitReadPropExpr(expr: ReadPropExpr): RecordedNode<ts.PropertyAccessExpression> {
@@ -409,7 +482,9 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
     return this.record(
         expr, ts.createObjectLiteral(expr.entries.map(
                   entry => ts.createPropertyAssignment(
-                      entry.quoted ? ts.createLiteral(entry.key) : entry.key,
+                      entry.quoted || !_VALID_IDENTIFIER_RE.test(entry.key) ?
+                          ts.createLiteral(entry.key) :
+                          entry.key,
                       entry.value.visitExpression(this, null)))));
   }
 

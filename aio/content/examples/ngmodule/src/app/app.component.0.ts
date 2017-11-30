@@ -2,9 +2,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: '<h1>{{title}}</h1>',
 })
 export class AppComponent {
-  title = 'Minimal NgModule';
+  title = 'Angular Modules';
 }

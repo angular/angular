@@ -34,14 +34,14 @@ function getResponseUrl(xhr: any): string|null {
 /**
  * A wrapper around the `XMLHttpRequest` constructor.
  *
- * @experimental
+ * @stable
  */
 export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 
 /**
  * A factory for @{link HttpXhrBackend} that uses the `XMLHttpRequest` browser API.
  *
- * @experimental
+ * @stable
  */
 @Injectable()
 export class BrowserXhr implements XhrFactory {
@@ -63,7 +63,7 @@ interface PartialResponse {
  * An `HttpBackend` which uses the XMLHttpRequest API to send
  * requests to a backend server.
  *
- * @experimental
+ * @stable
  */
 @Injectable()
 export class HttpXhrBackend implements HttpBackend {
@@ -107,7 +107,14 @@ export class HttpXhrBackend implements HttpBackend {
 
       // Set the responseType if one was requested.
       if (req.responseType) {
-        xhr.responseType = req.responseType.toLowerCase() as any;
+        const responseType = req.responseType.toLowerCase();
+
+        // JSON responses need to be processed as text. This is because if the server
+        // returns an XSSI-prefixed JSON response, the browser will fail to parse it,
+        // xhr.response will be null, and xhr.responseText cannot be accessed to
+        // retrieve the prefixed JSON data in order to strip the prefix. Thus, all JSON
+        // is parsed by first requesting text and then applying JSON.parse.
+        xhr.responseType = ((responseType !== 'json') ? responseType : 'text') as any;
       }
 
       // Serialize the request body if one is present. If not, this will be set to null.
@@ -158,12 +165,6 @@ export class HttpXhrBackend implements HttpBackend {
         if (status !== 204) {
           // Use XMLHttpRequest.response if set, responseText otherwise.
           body = (typeof xhr.response === 'undefined') ? xhr.responseText : xhr.response;
-
-          // Strip a common XSSI prefix from string responses.
-          // TODO: determine if this behavior should be optional and moved to an interceptor.
-          if (typeof body === 'string') {
-            body = body.replace(XSSI_PREFIX, '');
-          }
         }
 
         // Normalize another potential bug (this one comes from CORS).
@@ -179,15 +180,27 @@ export class HttpXhrBackend implements HttpBackend {
 
         // Check whether the body needs to be parsed as JSON (in many cases the browser
         // will have done that already).
-        if (ok && typeof body === 'string' && req.responseType === 'json') {
-          // Attempt the parse. If it fails, a parse error should be delivered to the user.
+        if (req.responseType === 'json' && typeof body === 'string') {
+          // Save the original body, before attempting XSSI prefix stripping.
+          const originalBody = body;
+          body = body.replace(XSSI_PREFIX, '');
           try {
-            body = JSON.parse(body);
+            // Attempt the parse. If it fails, a parse error should be delivered to the user.
+            body = body !== '' ? JSON.parse(body) : null;
           } catch (error) {
-            // Even though the response status was 2xx, this is still an error.
-            ok = false;
-            // The parse error contains the text of the body that failed to parse.
-            body = { error, text: body } as HttpJsonParseError;
+            // Since the JSON.parse failed, it's reasonable to assume this might not have been a
+            // JSON response. Restore the original body (including any XSSI prefix) to deliver
+            // a better error response.
+            body = originalBody;
+
+            // If this was an error request to begin with, leave it as a string, it probably
+            // just isn't JSON. Otherwise, deliver the parsing error to the user.
+            if (ok) {
+              // Even though the response status was 2xx, this is still an error.
+              ok = false;
+              // The parse error contains the text of the body that failed to parse.
+              body = { error, text: body } as HttpJsonParseError;
+            }
           }
         }
 

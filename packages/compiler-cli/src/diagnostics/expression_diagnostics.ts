@@ -56,7 +56,7 @@ function getReferences(info: DiagnosticTemplateInfo): SymbolDeclaration[] {
         name: reference.name,
         kind: 'reference',
         type: type || info.query.getBuiltinType(BuiltinType.Any),
-        get definition() { return getDefintionOf(info, reference); }
+        get definition() { return getDefinitionOf(info, reference); }
       });
     }
   }
@@ -77,7 +77,7 @@ function getReferences(info: DiagnosticTemplateInfo): SymbolDeclaration[] {
   return result;
 }
 
-function getDefintionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Definition|undefined {
+function getDefinitionOf(info: DiagnosticTemplateInfo, ast: TemplateAst): Definition|undefined {
   if (info.fileName) {
     const templateOffset = info.offset;
     return [{
@@ -124,7 +124,7 @@ function getVarDeclarations(
         }
         result.push({
           name,
-          kind: 'variable', type, get definition() { return getDefintionOf(info, variable); }
+          kind: 'variable', type, get definition() { return getDefinitionOf(info, variable); }
         });
       }
     }

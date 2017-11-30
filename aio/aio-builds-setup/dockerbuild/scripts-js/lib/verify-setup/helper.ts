@@ -18,7 +18,7 @@ const TEST_AIO_UPLOAD_PORT = +getEnvVar('TEST_AIO_UPLOAD_PORT');
 const WWW_USER = getEnvVar('AIO_WWW_USER');
 
 // Interfaces - Types
-export interface CmdResult { success: boolean; err: Error; stdout: string; stderr: string; }
+export interface CmdResult { success: boolean; err: Error | null; stdout: string; stderr: string; }
 export interface FileSpecs { content?: string; size?: number; }
 
 export type CleanUpFn = () => void;
@@ -143,7 +143,7 @@ class Helper {
       statusText = status[1];
     } else {
       statusCode = status;
-      statusText = http.STATUS_CODES[statusCode];
+      statusText = http.STATUS_CODES[statusCode] || 'UNKNOWN_STATUS_CODE';
     }
 
     return (result: CmdResult) => {
@@ -196,7 +196,7 @@ class Helper {
   }
 
   // Methods - Protected
-  protected createCleanUpFn(fn: Function): CleanUpFn {
+  protected createCleanUpFn(fn: () => void): CleanUpFn {
     const cleanUpFn = () => {
       const idx = this.cleanUpFns.indexOf(cleanUpFn);
       if (idx !== -1) {

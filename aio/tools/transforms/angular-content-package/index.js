@@ -18,16 +18,27 @@ const { CONTENTS_PATH, GUIDE_EXAMPLES_PATH } = require('../config');
 module.exports = new Package('angular-content', [basePackage, contentPackage])
 
   // Where do we get the source files?
-  .config(function(readFilesProcessor, collectExamples) {
+  .config(function(readFilesProcessor, collectExamples, renderExamples) {
 
-    const gitignoreFile = fs.readFileSync(path.resolve(GUIDE_EXAMPLES_PATH, '.gitignore'), 'utf8');
+    const gitignoreFilePath = path.resolve(GUIDE_EXAMPLES_PATH, '.gitignore');
+    const gitignoreFile = fs.readFileSync(gitignoreFilePath, 'utf8');
     const gitignore = ignore().add(gitignoreFile);
 
     const examplePaths = glob.sync('**/*', { cwd: GUIDE_EXAMPLES_PATH, dot: true, ignore: '**/node_modules/**', mark: true })
                             .filter(filePath => filePath !== '.gitignore') // we are not interested in the .gitignore file itself
                             .filter(filePath => !/\/$/.test(filePath)); // this filter removes the folders, leaving only files
-    const filteredExamplePaths = gitignore.filter(examplePaths) // filter out files that match the .gitignore rules
-                            .map(filePath => path.resolve(GUIDE_EXAMPLES_PATH, filePath)); // we need the full paths for the filereader
+    const ignoredExamplePaths = [];
+    const resolvedExamplePaths = [];
+
+    examplePaths.forEach(filePath => {
+      // filter out files that match the .gitignore rules
+      if (gitignore.ignores(filePath)) {
+        ignoredExamplePaths.push(filePath);
+      } else {
+        // we need the full paths for the filereader
+        resolvedExamplePaths.push(path.resolve(GUIDE_EXAMPLES_PATH, filePath));
+      }
+    });
 
     readFilesProcessor.sourceFiles = readFilesProcessor.sourceFiles.concat([
       {
@@ -48,7 +59,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
       },
       {
         basePath: CONTENTS_PATH,
-        include: filteredExamplePaths,
+        include: resolvedExamplePaths,
         fileReader: 'exampleFileReader'
       },
       {
@@ -69,6 +80,9 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
     ]);
 
     collectExamples.exampleFolders.push('examples');
+    collectExamples.registerIgnoredExamples(ignoredExamplePaths, gitignoreFilePath);
+
+    renderExamples.ignoreBrokenExamples = true;
   })
 
 

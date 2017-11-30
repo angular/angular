@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "yarn clean-dist",
     "build": "tsc",
-    "build-watch": "yarn tsc -- --watch",
+    "build-watch": "yarn tsc --watch",
     "clean-dist": "node --eval \"require('shelljs').rm('-rf', 'dist')\"",
     "dev": "concurrently --kill-others --raw --success first \"yarn build-watch\" \"yarn test-watch\"",
     "lint": "tslint --project tsconfig.json",
@@ -20,26 +20,26 @@
     "test-watch": "nodemon --exec \"yarn ~~test-only\" --watch dist"
   },
   "dependencies": {
-    "body-parser": "^1.17.2",
-    "express": "^4.14.1",
-    "jasmine": "^2.5.3",
-    "jsonwebtoken": "^7.3.0",
-    "shelljs": "^0.7.6"
+    "body-parser": "^1.18.2",
+    "express": "^4.15.4",
+    "jasmine": "^2.8.0",
+    "jsonwebtoken": "^8.0.1",
+    "shelljs": "^0.7.8",
+    "tslib": "^1.7.1"
   },
   "devDependencies": {
-    "@types/body-parser": "^1.16.4",
-    "@types/express": "^4.0.35",
-    "@types/jasmine": "^2.5.43",
-    "@types/jsonwebtoken": "^7.2.0",
-    "@types/node": "^7.0.5",
-    "@types/shelljs": "^0.7.0",
-    "@types/supertest": "^2.0.0",
-    "concurrently": "^3.3.0",
-    "eslint": "^3.15.0",
-    "eslint-plugin-jasmine": "^2.2.0",
-    "nodemon": "^1.11.0",
+    "@types/body-parser": "^1.16.5",
+    "@types/express": "^4.0.37",
+    "@types/jasmine": "^2.6.0",
+    "@types/jsonwebtoken": "^7.2.3",
+    "@types/node": "^8.0.30",
+    "@types/shelljs": "^0.7.4",
+    "@types/supertest": "^2.0.3",
+    "concurrently": "^3.5.0",
+    "nodemon": "^1.12.1",
     "supertest": "^3.0.0",
-    "tslint": "^4.4.2",
-    "typescript": "^2.1.6"
+    "tslint": "^5.7.0",
+    "tslint-jasmine-noSkipOrFocus": "^1.0.8",
+    "typescript": "^2.5.2"
   }
 }

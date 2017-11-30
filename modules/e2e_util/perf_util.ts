@@ -7,7 +7,6 @@
  */
 export {verifyNoBrowserErrors} from './e2e_util';
 
-const yargs = require('yargs');
 const nodeUuid = require('node-uuid');
 import * as fs from 'fs-extra';
 

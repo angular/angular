@@ -12,10 +12,17 @@ import {MockDirectory, compile, setup} from './test_util';
 
 describe('aot summaries for jit', () => {
   let angularFiles = setup();
+  let angularSummaryFiles: MockDirectory;
+
+  beforeEach(() => {
+    angularSummaryFiles = compile(angularFiles, {useSummaries: false, emit: true}).outDir;
+  });
 
   function compileApp(rootDir: MockDirectory, options: {useSummaries?: boolean} = {}):
       {genFiles: GeneratedFile[], outDir: MockDirectory} {
-    return compile([rootDir, angularFiles], {...options, enableSummariesForJit: true});
+    return compile(
+        [rootDir, options.useSummaries ? angularSummaryFiles : angularFiles],
+        {...options, enableSummariesForJit: true});
   }
 
   it('should create @Injectable summaries', () => {

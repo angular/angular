@@ -6,10 +6,45 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {IterableChangeRecord, IterableChanges} from '@angular/core/src/change_detection/differs/iterable_differs';
 import {KeyValueChangeRecord, KeyValueChanges} from '@angular/core/src/change_detection/differs/keyvalue_differs';
 
 import {looseIdentical, stringify} from '../../src/util';
 
+export function iterableDifferToString<V>(iterableChanges: IterableChanges<V>) {
+  const collection: string[] = [];
+  iterableChanges.forEachItem(
+      (record: IterableChangeRecord<V>) => collection.push(icrAsString(record)));
+
+  const previous: string[] = [];
+  iterableChanges.forEachPreviousItem(
+      (record: IterableChangeRecord<V>) => previous.push(icrAsString(record)));
+
+  const additions: string[] = [];
+  iterableChanges.forEachAddedItem(
+      (record: IterableChangeRecord<V>) => additions.push(icrAsString(record)));
+
+  const moves: string[] = [];
+  iterableChanges.forEachMovedItem(
+      (record: IterableChangeRecord<V>) => moves.push(icrAsString(record)));
+
+  const removals: string[] = [];
+  iterableChanges.forEachRemovedItem(
+      (record: IterableChangeRecord<V>) => removals.push(icrAsString(record)));
+
+  const identityChanges: string[] = [];
+  iterableChanges.forEachIdentityChange(
+      (record: IterableChangeRecord<V>) => identityChanges.push(icrAsString(record)));
+
+  return iterableChangesAsString(
+      {collection, previous, additions, moves, removals, identityChanges});
+}
+
+function icrAsString<V>(icr: IterableChangeRecord<V>): string {
+  return icr.previousIndex === icr.currentIndex ? stringify(icr.item) :
+                                                  stringify(icr.item) + '[' +
+          stringify(icr.previousIndex) + '->' + stringify(icr.currentIndex) + ']';
+}
 
 export function iterableChangesAsString(
     {collection = [] as any, previous = [] as any, additions = [] as any, moves = [] as any,

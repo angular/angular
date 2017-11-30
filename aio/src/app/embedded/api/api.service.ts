@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
@@ -54,7 +54,7 @@ export class ApiService implements OnDestroy {
     return this._sections;
   };
 
-  constructor(private http: Http, private logger: Logger) { }
+  constructor(private http: HttpClient, private logger: Logger) { }
 
   ngOnDestroy() {
     this.onDestroy.next();
@@ -70,13 +70,12 @@ export class ApiService implements OnDestroy {
   fetchSections(src?: string) {
     // TODO: get URL by configuration?
     const url = this.apiBase + (src || this.apiListJsonDefault);
-    this.http.get(url)
+    this.http.get<ApiSection[]>(url)
       .takeUntil(this.onDestroy)
-      .map(response => response.json())
       .do(() => this.logger.log(`Got API sections from ${url}`))
       .subscribe(
         sections => this.sectionsSubject.next(sections),
-        err => {
+        (err: HttpErrorResponse) => {
           // Todo: handle error
           this.logger.error(err);
           throw err; // rethrow for now.

@@ -1,56 +1,107 @@
-const exampleBoilerPlate = require('./example-boilerplate');
-const shelljs = require('shelljs');
+const path = require('canonical-path');
 const fs = require('fs-extra');
 const glob = require('glob');
-const path = require('canonical-path');
+const shelljs = require('shelljs');
+
+const exampleBoilerPlate = require('./example-boilerplate');
 
 describe('example-boilerplate tool', () => {
   describe('add', () => {
-    const numberOfBoilerPlateFiles = 8;
-    const numberOfBoilerPlateTestFiles = 3;
+    const sharedDir = path.resolve(__dirname, 'shared');
+    const sharedNodeModulesDir = path.resolve(sharedDir, 'node_modules');
+    const BPFiles = {
+      cli: 18,
+      i18n: 1,
+      universal: 2,
+      systemjs: 7,
+      common: 1
+    };
     const exampleFolders = ['a/b', 'c/d'];
 
     beforeEach(() => {
-      spyOn(exampleBoilerPlate, 'installNodeModules');
-      spyOn(exampleBoilerPlate, 'overridePackage');
-      spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
       spyOn(fs, 'ensureSymlinkSync');
+      spyOn(fs, 'existsSync').and.returnValue(true);
       spyOn(exampleBoilerPlate, 'copyFile');
+      spyOn(exampleBoilerPlate, 'getFoldersContaining').and.returnValue(exampleFolders);
       spyOn(exampleBoilerPlate, 'loadJsonFile').and.returnValue({});
     });
 
-    it('should install the node modules', () => {
-      exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.installNodeModules).toHaveBeenCalledWith(path.resolve(__dirname, 'shared'));
-    });
-
-    it('should override the Angular node_modules with the locally built Angular packages if `useLocal` is true', () => {
-      const numberOfAngularPackages = 12;
-      const numberOfAngularToolsPackages = 1;
-      exampleBoilerPlate.add(true);
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledTimes(numberOfAngularPackages + numberOfAngularToolsPackages);
-      // for example
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/packages-dist'), 'core');
-      expect(exampleBoilerPlate.overridePackage).toHaveBeenCalledWith(path.resolve(__dirname, '../../../dist/tools/@angular'), 'tsc-wrapped');
-    });
-
     it('should process all the example folders', () => {
+      const examplesDir = path.resolve(__dirname, '../../content/examples');
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.getFoldersContaining).toHaveBeenCalledWith(path.resolve(__dirname, '../../content/examples'), 'example-config.json', 'node_modules');
+      expect(exampleBoilerPlate.getFoldersContaining)
+          .toHaveBeenCalledWith(examplesDir, 'example-config.json', 'node_modules');
     });
 
     it('should symlink the node_modules', () => {
       exampleBoilerPlate.add();
       expect(fs.ensureSymlinkSync).toHaveBeenCalledTimes(exampleFolders.length);
-      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/node_modules'), path.resolve('a/b/node_modules'));
-      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/node_modules'), path.resolve('c/d/node_modules'));
+      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(sharedNodeModulesDir, path.resolve('a/b/node_modules'));
+      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(sharedNodeModulesDir, path.resolve('c/d/node_modules'));
     });
 
-    it('should copy all the source boilerplate files', () => {
+    it('should error if the node_modules folder is missing', () => {
+      fs.existsSync.and.returnValue(false);
+      expect(() => exampleBoilerPlate.add()).toThrowError(
+        `The shared node_modules folder for the examples (${sharedNodeModulesDir}) is missing.\n` +
+        `Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?`);
+      expect(fs.ensureSymlinkSync).not.toHaveBeenCalled();
+    });
+
+    it('should copy all the source boilerplate files for systemjs', () => {
+      const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'systemjs' } : {})
       exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(numberOfBoilerPlateFiles * exampleFolders.length);
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
+        (BPFiles.cli) +
+        (BPFiles.systemjs) +
+        (BPFiles.common * exampleFolders.length)
+      );
       // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(path.resolve(__dirname, 'shared/boilerplate'), 'a/b', 'package.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/systemjs`, 'a/b', 'package.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'a/b', 'src/styles.css');
+    });
+
+    it('should copy all the source boilerplate files for cli', () => {
+      const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+      exampleBoilerPlate.add();
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
+        (BPFiles.cli * exampleFolders.length) +
+        (BPFiles.common * exampleFolders.length)
+      );
+      // for example
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/cli`, 'a/b', 'package.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
+    });
+
+    it('should copy all the source boilerplate files for i18n', () => {
+      const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'i18n' } : {})
+      exampleBoilerPlate.add();
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
+        (BPFiles.cli + BPFiles.i18n) +
+        (BPFiles.cli) +
+        (BPFiles.common * exampleFolders.length)
+      );
+      // for example
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/i18n`, 'a/b', '../cli/.angular-cli.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/i18n`, 'a/b', 'package.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
+    });
+
+    it('should copy all the source boilerplate files for universal', () => {
+      const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
+      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { projectType: 'universal' } : {})
+      exampleBoilerPlate.add();
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes(
+        (BPFiles.cli + BPFiles.universal) +
+        (BPFiles.cli) +
+        (BPFiles.common * exampleFolders.length)
+      );
+      // for example
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', '../cli/tslint.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', '.angular-cli.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
     });
 
     it('should try to load the example config file', () => {
@@ -59,16 +110,6 @@ describe('example-boilerplate tool', () => {
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve('a/b/example-config.json'));
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve('c/d/example-config.json'));
     });
-
-    it('should copy all the test boilerplate files if unit testing is configured', () => {
-      // configure unit testing for example a/b and not c/d
-      exampleBoilerPlate.loadJsonFile.and.callFake(filePath => filePath.indexOf('a/b') !== -1 ? { unittesting: true } : {});
-      exampleBoilerPlate.add();
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledTimes((numberOfBoilerPlateFiles * 2) + numberOfBoilerPlateTestFiles);
-      // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(path.resolve(__dirname, '../../content/examples/testing'), 'a/b', 'karma.conf.js');
-      expect(exampleBoilerPlate.copyFile).not.toHaveBeenCalledWith(path.resolve(__dirname, '../../content/examples/testing'), 'c/d', 'karma.conf.js');
-    });
   });
 
   describe('remove', () => {
@@ -76,31 +117,6 @@ describe('example-boilerplate tool', () => {
       spyOn(shelljs, 'exec');
       exampleBoilerPlate.remove();
       expect(shelljs.exec).toHaveBeenCalledWith('git clean -xdfq', {cwd: path.resolve(__dirname, '../../content/examples') });
-    });
-  });
-
-  describe('installNodeModules', () => {
-    it('should run `yarn` in the base path', () => {
-      spyOn(shelljs, 'exec');
-      exampleBoilerPlate.installNodeModules('some/base/path');
-      expect(shelljs.exec).toHaveBeenCalledWith('yarn', { cwd: 'some/base/path' });
-    });
-  });
-
-  describe('overridePackage', () => {
-    beforeEach(() => {
-      spyOn(shelljs, 'rm');
-      spyOn(fs, 'ensureSymlinkSync');
-    });
-
-    it('should remove the original package from the shared node_modules folder', () => {
-      exampleBoilerPlate.overridePackage('base/path', 'somePackage');
-      expect(shelljs.rm).toHaveBeenCalledWith('-rf', path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
-    });
-
-    it('should symlink the source folder to the shared node_modules folder', () => {
-      exampleBoilerPlate.overridePackage('base/path', 'somePackage');
-      expect(fs.ensureSymlinkSync).toHaveBeenCalledWith(path.resolve('base/path/somePackage'), path.resolve(__dirname, 'shared/node_modules/@angular/somePackage'));
     });
   });
 

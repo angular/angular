@@ -70,16 +70,6 @@ export class Compiler {
   }
 
   /**
-   * Exposes the CSS-style selectors that have been used in `ngContent` directives within
-   * the template of the given component.
-   * This is used by the `upgrade` library to compile the appropriate transclude content
-   * in the AngularJS wrapper component.
-   *
-   * @deprecated since v4. Use ComponentFactory.ngContentSelectors instead.
-   */
-  getNgContentSelectors(component: Type<any>): string[] { throw _throwError(); }
-
-  /**
    * Clears all caches.
    */
   clearCache(): void {}
@@ -96,10 +86,6 @@ export class Compiler {
  * @experimental
  */
 export type CompilerOptions = {
-  /**
-   * @deprecated since v4 this option has no effect anymore.
-   */
-  useDebug?: boolean,
   useJit?: boolean,
   defaultEncapsulation?: ViewEncapsulation,
   providers?: StaticProvider[],
@@ -107,6 +93,7 @@ export type CompilerOptions = {
   // Whether to support the `<template>` tag and the `template` attribute to define angular
   // templates. They have been deprecated in 4.x, `<ng-template>` should be used instead.
   enableLegacyTemplate?: boolean,
+  preserveWhitespaces?: boolean,
 };
 
 /**

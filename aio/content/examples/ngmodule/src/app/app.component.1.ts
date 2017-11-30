@@ -3,7 +3,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
 // #enddocregion
   /*
   // #docregion template
@@ -11,9 +11,7 @@ import { Component } from '@angular/core';
   // #enddocregion template
   */
 // #docregion
-  template: '<app-title [subtitle]="subtitle"></app-title>'
+  template: '<app-title></app-title>'
 })
-export class AppComponent {
-  subtitle = '(v1)';
-}
+export class AppComponent {}
 // #enddocregion

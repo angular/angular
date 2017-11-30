@@ -61,7 +61,7 @@ The running application displays three heroes:
 E2E test that all children were instantiated and displayed as expected:
 
 
-<code-example path="component-interaction/e2e-spec.ts" region="parent-to-child" title="component-interaction/e2e-spec.ts">
+<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
@@ -105,7 +105,7 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 E2E tests of input property setter with empty and non-empty names:
 
 
-<code-example path="component-interaction/e2e-spec.ts" region="parent-to-child-setter" title="component-interaction/e2e-spec.ts">
+<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child-setter" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
@@ -164,7 +164,7 @@ Test that ***both*** input properties are set initially and that button clicks t
 the expected `ngOnChanges` calls and values:
 
 
-<code-example path="component-interaction/e2e-spec.ts" region="parent-to-child-onchanges" title="component-interaction/e2e-spec.ts">
+<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="parent-to-child-onchanges" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
@@ -217,7 +217,7 @@ and the method processes it:
 Test that clicking the *Agree* and *Disagree* buttons update the appropriate counters:
 
 
-<code-example path="component-interaction/e2e-spec.ts" region="child-to-parent" title="component-interaction/e2e-spec.ts">
+<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="child-to-parent" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
@@ -284,7 +284,7 @@ match the seconds displayed in the child's status message.
 Test also that clicking the *Stop* button pauses the countdown timer:
 
 
-<code-example path="component-interaction/e2e-spec.ts" region="countdown-timer-tests" title="component-interaction/e2e-spec.ts">
+<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="countdown-timer-tests" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 
@@ -356,6 +356,7 @@ Use `setTimeout()` to wait one tick and then revise the `seconds()` method so
 that it takes future values from the timer component.
 
 <h3 class="no-toc">Test it</h3>
+
 Use [the same countdown timer tests](guide/component-interaction#countdown-tests) as before.
 
 [Back to top](guide/component-interaction#top)
@@ -432,7 +433,7 @@ Tests click buttons of both the parent `MissionControlComponent` and the `Astron
 and verify that the history meets expectations:
 
 
-<code-example path="component-interaction/e2e-spec.ts" region="bidirectional-service" title="component-interaction/e2e-spec.ts">
+<code-example path="component-interaction/e2e/app.e2e-spec.ts" region="bidirectional-service" title="component-interaction/e2e/app.e2e-spec.ts">
 
 </code-example>
 

@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'hero-birthday2',
+  selector: 'app-hero-birthday2',
   // #docregion template
   template: `
     <p>The hero's birthday is {{ birthday | date:format }}</p>

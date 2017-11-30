@@ -1,9 +1,12 @@
 {% import "lib/paramList.html" as params -%}
 {% import "lib/memberHelpers.html" as memberHelper -%}
+{% import "lib/descendants.html" as descendants -%}
 {% extends 'export-base.template.html' -%}
 
 {% block overview %}{% include "includes/interface-overview.html" %}{% endblock %}
 {% block details %}
   {% include "includes/description.html" %}
+  {$ descendants.renderDescendants(doc, 'interface', 'Child Interfaces') $}
+  {$ descendants.renderDescendants(doc, 'class', 'Class Implementations') $}
   {$ memberHelper.renderMemberDetails(doc.members, 'instance-members', 'instance-member', 'Members') $}
 {% endblock %}

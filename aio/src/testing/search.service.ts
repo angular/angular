@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs/Subject';
-import { SearchResults } from 'app/search/search.service';
+import { SearchResults } from 'app/search/interfaces';
 
 export class MockSearchService {
   searchResults = new Subject<SearchResults>();

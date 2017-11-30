@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy} from '@angular/core';
+import {MissingTranslationStrategy} from '../core';
 
 export interface AotCompilerOptions {
   locale?: string;
@@ -15,4 +15,8 @@ export interface AotCompilerOptions {
   missingTranslation?: MissingTranslationStrategy;
   enableLegacyTemplate?: boolean;
   enableSummariesForJit?: boolean;
+  preserveWhitespaces?: boolean;
+  fullTemplateTypeCheck?: boolean;
+  allowEmptyCodegenFiles?: boolean;
+  strictInjectionParameters?: boolean;
 }

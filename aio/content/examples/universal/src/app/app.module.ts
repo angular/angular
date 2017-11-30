@@ -1,54 +1,60 @@
 // #docplaster
-// #docregion
-// #docregion v1, v2
-import { NgModule }      from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule }   from '@angular/forms';
-import { HttpModule }    from '@angular/http';
+import { NgModule }       from '@angular/core';
+import { BrowserModule }  from '@angular/platform-browser';
+import { FormsModule }    from '@angular/forms';
+import { HttpClientModule }    from '@angular/common/http';
 
-import { AppRoutingModule } from './app-routing.module';
-
-// #enddocregion v1
-// Imports for loading & configuring the in-memory web api
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService }  from './in-memory-data.service';
 
-// #docregion v1
+import { AppRoutingModule }     from './app-routing.module';
+
 import { AppComponent }         from './app.component';
-import { DashboardComponent }   from './dashboard.component';
-import { HeroesComponent }      from './heroes.component';
-import { HeroDetailComponent }  from './hero-detail.component';
+import { DashboardComponent }   from './dashboard/dashboard.component';
+import { HeroDetailComponent }  from './hero-detail/hero-detail.component';
+import { HeroesComponent }      from './heroes/heroes.component';
+import { HeroSearchComponent }  from './hero-search/hero-search.component';
 import { HeroService }          from './hero.service';
-// #enddocregion v1, v2
-import { HeroSearchComponent }  from './hero-search.component';
-// #docregion v1, v2
+import { MessageService }       from './message.service';
+import { MessagesComponent }    from './messages/messages.component';
+
+// #docregion platform-detection
+import { PLATFORM_ID, APP_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+// #enddocregion platform-detection
 
 @NgModule({
   imports: [
-    BrowserModule.withServerTransition({
-      appId: 'toh-universal'
-    }),
+    // #docregion browsermodule
+    BrowserModule.withServerTransition({ appId: 'tour-of-heroes' }),
+    // #enddocregion browsermodule
     FormsModule,
-    HttpModule,
-    // #enddocregion v1
-    // #docregion in-mem-web-api
-    InMemoryWebApiModule.forRoot(InMemoryDataService),
-    // #enddocregion in-mem-web-api
-    // #docregion v1
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    HttpClientInMemoryWebApiModule.forRoot(
+      InMemoryDataService, { dataEncapsulation: false }
+    )
   ],
-  // #docregion search
   declarations: [
     AppComponent,
     DashboardComponent,
-    HeroDetailComponent,
     HeroesComponent,
-  // #enddocregion v1, v2
+    HeroDetailComponent,
+    MessagesComponent,
     HeroSearchComponent
-  // #docregion v1, v2
   ],
-  // #enddocregion search
-  providers: [ HeroService ],
+  providers: [ HeroService, MessageService ],
   bootstrap: [ AppComponent ]
 })
-export class AppModule { }
+export class AppModule {
+  // #docregion platform-detection
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(APP_ID) private appId: string) {
+    const platform = isPlatformBrowser(platformId) ?
+      'on the server' : 'in the browser';
+    console.log(`Running ${platform} with appId=${appId}`);
+  }
+  // #enddocregion platform-detection
+}

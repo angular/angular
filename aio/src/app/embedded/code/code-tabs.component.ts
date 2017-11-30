@@ -21,9 +21,9 @@ export interface TabInfo {
 @Component({
   selector: 'code-tabs',
   template: `
-    <md-tab-group class="code-tab-group" disableRipple>
-      <md-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
-        <ng-template md-tab-label>
+    <mat-tab-group class="code-tab-group" disableRipple>
+      <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
+        <ng-template mat-tab-label>
           <span class="{{ tab.class }}">{{ tab.title }}</span>
         </ng-template>
         <aio-code class="{{ tab.class }}"
@@ -34,8 +34,8 @@ export interface TabInfo {
           [region]="tab.region"
           [title]="tab.title">
         </aio-code>
-      </md-tab>
-    </md-tab-group>
+      </mat-tab>
+    </mat-tab-group>
   `
 })
 export class CodeTabsComponent implements OnInit {

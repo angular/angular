@@ -9,7 +9,7 @@ import { PrettyPrinter } from './code/pretty-printer.service';
 // It is not enough just to import them inside the AppModule
 
 // Reusable components (used inside embedded components)
-import { MdIconModule, MdSnackBarModule, MdTabsModule } from '@angular/material';
+import { MatIconModule, MatSnackBarModule, MatTabsModule } from '@angular/material';
 import { CodeComponent } from './code/code.component';
 import { SharedModule } from 'app/shared/shared.module';
 
@@ -20,6 +20,7 @@ import { CodeTabsComponent } from './code/code-tabs.component';
 import { ContributorListComponent } from './contributor/contributor-list.component';
 import { ContributorComponent } from './contributor/contributor.component';
 import { CurrentLocationComponent } from './current-location.component';
+import { FileNotFoundSearchComponent } from './search/file-not-found-search.component';
 import { LiveExampleComponent, EmbeddedPlunkerComponent } from './live-example/live-example.component';
 import { ResourceListComponent } from './resource/resource-list.component';
 import { ResourceService } from './resource/resource.service';
@@ -30,7 +31,8 @@ import { TocComponent } from './toc/toc.component';
  */
 export const embeddedComponents: any[] = [
   ApiListComponent, CodeExampleComponent, CodeTabsComponent, ContributorListComponent,
-  CurrentLocationComponent, LiveExampleComponent, ResourceListComponent, TocComponent
+  CurrentLocationComponent, FileNotFoundSearchComponent, LiveExampleComponent, ResourceListComponent,
+  TocComponent
 ];
 
 /** Injectable class w/ property returning components that can be embedded in docs */
@@ -41,9 +43,9 @@ export class EmbeddedComponents {
 @NgModule({
   imports: [
     CommonModule,
-    MdIconModule,
-    MdSnackBarModule,
-    MdTabsModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatTabsModule,
     SharedModule
   ],
   declarations: [

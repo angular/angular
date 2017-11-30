@@ -13,7 +13,11 @@ You should run all these tasks from the `angular/aio` folder.
 Here are the most important tasks you might need to use:
 
 * `yarn` - install all the dependencies.
-* `yarn setup` - Install all the dependencies, boilerplate, plunkers, zips and runs dgeni on the docs.
+* `yarn setup` - install all the dependencies, boilerplate, plunkers, zips and run dgeni on the docs.
+* `yarn setup-local` - same as `setup`, but use the locally built Angular packages for aio and docs examples boilerplate.
+
+* `yarn build` - create a production build of the application (after installing dependencies, boilerplate, etc).
+* `yarn build-local` - same as `build`, but use `setup-local` instead of `setup`.
 
 * `yarn start` - run a development web server that watches the files; then builds the doc-viewer and reloads the page, as necessary.
 * `yarn serve-and-sync` - run both the `docs-watch` and `start` in the same console.
@@ -26,32 +30,33 @@ Here are the most important tasks you might need to use:
 * `yarn docs-lint` - check that the doc gen code follows our style rules.
 * `yarn docs-test` - run the unit tests for the doc generation code.
 
-* `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally.
+* `yarn boilerplate:add` - generate all the boilerplate code for the examples, so that they can be run locally. Add the option `--local` to use your local version of Angular contained in the "dist" folder.
 * `yarn boilerplate:remove` - remove all the boilerplate code that was added via `yarn boilerplate:add`.
 * `yarn generate-plunkers` - generate the plunker files that are used by the `live-example` tags in the docs.
 * `yarn generate-zips` - generate the zip files from the examples. Zip available via the `live-example` tags in the docs.
 
 * `yarn example-e2e` - run all e2e tests for examples
-  - `yarn example-e2e -- --setup` - force webdriver update & other setup, then run tests
-  - `yarn example-e2e -- --filter=foo` - limit e2e tests to those containing the word "foo"
+  - `yarn example-e2e --setup` - force webdriver update & other setup, then run tests
+  - `yarn example-e2e --filter=foo` - limit e2e tests to those containing the word "foo"
+  - `yarn example-e2e --setup --local` - run e2e tests with the local version of Angular contained in the "dist" folder
 
 * `yarn build-ie-polyfills` - generates a js file of polyfills that can be loaded in Internet Explorer.
 
 ## Using ServiceWorker locally
 
-Since abb36e3cb, running `yarn start -- --prod` will no longer set up the ServiceWorker, which
+Since abb36e3cb, running `yarn start --prod` will no longer set up the ServiceWorker, which
 would require manually running `yarn sw-manifest` and `yarn sw-copy` (something that is not possible
 with webpack serving the files from memory).
 
 If you want to test ServiceWorker locally, you can use `yarn build` and serve the files in `dist/`
-with `yarn http-server -- dist -p 4200`.
+with `yarn http-server dist -p 4200`.
 
 For more details see #16745.
 
 
 ## Guide to authoring
 
-There are two types of content in the documentatation:
+There are two types of content in the documentation:
 
 * **API docs**: descriptions of the modules, classes, interfaces, decorators, etc that make up the Angular platform.
 API docs are generated directly from the source code.
@@ -106,8 +111,16 @@ yarn start
 yarn docs-watch
 ```
 
+>Alternatively, try the consolidated `serve-and-sync` command that builds, watches and serves in the same terminal window
+```bash
+yarn serve-and-sync
+```
+
 * Open a browser at https://localhost:4200/ and navigate to the document on which you want to work.
-You can automatically open the browser by using `yarn start -- -o` in the first terminal.
+You can automatically open the browser by using `yarn start -o` in the first terminal.
 
 * Make changes to the page's associated doc or example files. Every time a file is saved, the doc will
 be regenerated, the app will rebuild and the page will reload.
+
+* If you get a build error complaining about examples or any other odd behavior, be sure to consult
+the [Authors Style Guide](https://angular.io/guide/docs-style-guide).

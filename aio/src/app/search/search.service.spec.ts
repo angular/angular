@@ -1,6 +1,7 @@
 import { ReflectiveInjector, NgZone } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
 import { SearchService } from './search.service';
 import { WebWorkerClient } from 'app/shared/web-worker';
 
@@ -36,27 +37,29 @@ describe('SearchService', () => {
 
   describe('search', () => {
     beforeEach(() => {
-      // We must initialize the service before calling search
-      service.initWorker('some/url', 100);
+      // We must initialize the service before calling connectSearches
+      service.initWorker('some/url', 1000);
+      // Simulate the index being ready so that searches get sent to the worker
+      (service as any).ready = Observable.of(true);
     });
 
-    it('should trigger a `loadIndex` synchronously', () => {
-      service.search('some query');
+    it('should trigger a `loadIndex` synchronously (not waiting for the delay)', () => {
+      expect(mockWorker.sendMessage).not.toHaveBeenCalled();
+      service.search('some query').subscribe();
       expect(mockWorker.sendMessage).toHaveBeenCalledWith('load-index');
     });
 
     it('should send a "query-index" message to the worker', () => {
-      service.search('some query');
+      service.search('some query').subscribe();
       expect(mockWorker.sendMessage).toHaveBeenCalledWith('query-index', 'some query');
     });
 
-    it('should push the response to the `searchResults` observable', () => {
+    it('should push the response to the returned observable', () => {
       const mockSearchResults = { results: ['a', 'b'] };
+      let actualSearchResults;
       (mockWorker.sendMessage as jasmine.Spy).and.returnValue(Observable.of(mockSearchResults));
-      let searchResults: any;
-      service.searchResults.subscribe(results => searchResults = results);
-      service.search('some query');
-      expect(searchResults).toEqual(mockSearchResults);
+      service.search('some query').subscribe(results => actualSearchResults = results);
+      expect(actualSearchResults).toEqual(mockSearchResults);
     });
   });
 });

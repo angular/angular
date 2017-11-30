@@ -7,7 +7,6 @@
  */
 
 import * as chars from '../chars';
-import {CompilerInjectable} from '../injectable';
 
 export enum TokenType {
   Character,
@@ -21,7 +20,6 @@ export enum TokenType {
 
 const KEYWORDS = ['var', 'let', 'as', 'null', 'undefined', 'true', 'false', 'if', 'else', 'this'];
 
-@CompilerInjectable()
 export class Lexer {
   tokenize(text: string): Token[] {
     const scanner = new _Scanner(text);

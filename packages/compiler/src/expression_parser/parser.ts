@@ -7,7 +7,6 @@
  */
 
 import * as chars from '../chars';
-import {CompilerInjectable} from '../injectable';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {escapeRegExp} from '../util';
 
@@ -29,7 +28,6 @@ function _createInterpolateRegExp(config: InterpolationConfig): RegExp {
   return new RegExp(pattern, 'g');
 }
 
-@CompilerInjectable()
 export class Parser {
   private errors: ParserError[] = [];
 

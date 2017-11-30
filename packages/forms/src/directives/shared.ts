@@ -82,9 +82,10 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
   dir.valueAccessor !.registerOnChange((newValue: any) => {
     control._pendingValue = newValue;
+    control._pendingChange = true;
     control._pendingDirty = true;
 
-    if (control._updateOn === 'change') updateControl(control, dir);
+    if (control.updateOn === 'change') updateControl(control, dir);
   });
 }
 
@@ -92,8 +93,8 @@ function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
   dir.valueAccessor !.registerOnTouched(() => {
     control._pendingTouched = true;
 
-    if (control._updateOn === 'blur') updateControl(control, dir);
-    if (control._updateOn !== 'submit') control.markAsTouched();
+    if (control.updateOn === 'blur' && control._pendingChange) updateControl(control, dir);
+    if (control.updateOn !== 'submit') control.markAsTouched();
   });
 }
 
@@ -101,6 +102,7 @@ function updateControl(control: FormControl, dir: NgControl): void {
   dir.viewToModelUpdate(control._pendingValue);
   if (control._pendingDirty) control.markAsDirty();
   control.setValue(control._pendingValue, {emitModelToViewChange: false});
+  control._pendingChange = false;
 }
 
 function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
@@ -167,6 +169,17 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
   return BUILTIN_ACCESSORS.some(a => valueAccessor.constructor === a);
 }
 
+export function syncPendingControls(form: FormGroup, directives: NgControl[]): void {
+  form._syncPendingControls();
+  directives.forEach(dir => {
+    const control = dir.control as FormControl;
+    if (control.updateOn === 'submit' && control._pendingChange) {
+      dir.viewToModelUpdate(control._pendingValue);
+      control._pendingChange = false;
+    }
+  });
+}
+
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
     dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor|null {
@@ -197,4 +210,9 @@ export function selectValueAccessor(
 
   _throwError(dir, 'No valid value accessor for form control with');
   return null;
+}
+
+export function removeDir<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) list.splice(index, 1);
 }

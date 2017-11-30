@@ -5,7 +5,6 @@ module.exports =
     new Package('examples', [jsdocPackage])
 
         .factory(require('./inline-tag-defs/example'))
-        // .factory(require('./inline-tag-defs/exampleTabs'))
         .factory(require('./services/parseArgString'))
         .factory(require('./services/example-map'))
         .factory(require('./file-readers/example-reader'))
@@ -21,7 +20,6 @@ module.exports =
 
         .config(function(inlineTagProcessor, exampleInlineTagDef) {
           inlineTagProcessor.inlineTagDefinitions.push(exampleInlineTagDef);
-          // inlineTagProcessor.inlineTagDefinitions.push(exampleTabsInlineTagDef);
         })
 
         .config(function(computePathsProcessor) {

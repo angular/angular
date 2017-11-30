@@ -1,12 +1,10 @@
 language: node_js
 sudo: false
-# force trusty as Google Chrome addon is not supported on Precise
 dist: trusty
 node_js:
   - '6.9.5'
 
 addons:
-  chrome: stable
 #  firefox: "38.0"
   apt:
     sources:
@@ -50,11 +48,13 @@ env:
     - CI_MODE=e2e_2
     - CI_MODE=js
     - CI_MODE=saucelabs_required
-    - CI_MODE=browserstack_required
+    # deactivated, see #19768
+    # - CI_MODE=browserstack_required
     - CI_MODE=saucelabs_optional
     - CI_MODE=browserstack_optional
     - CI_MODE=aio_tools_test
     - CI_MODE=aio
+    - CI_MODE=aio_optional
     - CI_MODE=aio_e2e AIO_SHARD=0
     - CI_MODE=aio_e2e AIO_SHARD=1
     - CI_MODE=bazel
@@ -64,6 +64,7 @@ matrix:
   allow_failures:
     - env: "CI_MODE=saucelabs_optional"
     - env: "CI_MODE=browserstack_optional"
+    - env: "CI_MODE=aio_optional"
 
 before_install:
   # source the env.sh script so that the exported variables are available to other scripts later on

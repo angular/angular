@@ -43,7 +43,7 @@ class AsyncApplication {
   multiTimeoutId: any = null;
   intervalId: any = null;
 
-  increment(): void { this.val1++; };
+  increment(): void { this.val1++; }
 
   delayedIncrement(): void {
     this.cancelDelayedIncrement();
@@ -51,7 +51,7 @@ class AsyncApplication {
       this.val2++;
       this.timeoutId = null;
     }, 2000);
-  };
+  }
 
   multiDelayedIncrements(i: number): void {
     this.cancelMultiDelayedIncrements();
@@ -69,33 +69,33 @@ class AsyncApplication {
       }, 500);
     }
     helper(i);
-  };
+  }
 
   periodicIncrement(): void {
     this.cancelPeriodicIncrement();
     this.intervalId = setInterval(() => this.val4++, 2000);
-  };
+  }
 
   cancelDelayedIncrement(): void {
     if (this.timeoutId != null) {
       clearTimeout(this.timeoutId);
       this.timeoutId = null;
     }
-  };
+  }
 
   cancelMultiDelayedIncrements(): void {
     if (this.multiTimeoutId != null) {
       clearTimeout(this.multiTimeoutId);
       this.multiTimeoutId = null;
     }
-  };
+  }
 
   cancelPeriodicIncrement(): void {
     if (this.intervalId != null) {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
-  };
+  }
 }
 
 @NgModule(

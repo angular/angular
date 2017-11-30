@@ -1,23 +1,27 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 
 import {
-  MdButtonModule,
-  MdIconModule,
-  MdIconRegistry,
-  MdInputModule,
-  MdProgressBarModule,
-  MdSidenavModule,
-  MdTabsModule,
-  MdToolbarModule,
-  Platform
+  MatButtonModule,
+  MatIconModule,
+  MatIconRegistry,
+  MatInputModule,
+  MatProgressBarModule,
+  MatSidenavModule,
+  MatTabsModule,
+  MatToolbarModule
 } from '@angular/material';
 
-// Temporary fix for MdSidenavModule issue:
+import {
+  Platform
+} from '@angular/cdk/platform';
+
+
+// Temporary fix for MatSidenavModule issue:
 // crashes with "missing first" operator when SideNav.mode is "over"
 import 'rxjs/add/operator/first';
 
@@ -25,7 +29,7 @@ import { SwUpdatesModule } from 'app/sw-updates/sw-updates.module';
 
 import { AppComponent } from 'app/app.component';
 import { ApiService } from 'app/embedded/api/api.service';
-import { CustomMdIconRegistry, SVG_ICONS } from 'app/shared/custom-md-icon-registry';
+import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
 import { Deployment } from 'app/shared/deployment.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { DtComponent } from 'app/layout/doc-viewer/dt.component';
@@ -43,13 +47,13 @@ import { NavMenuComponent } from 'app/layout/nav-menu/nav-menu.component';
 import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
 import { ScrollService } from 'app/shared/scroll.service';
 import { ScrollSpyService } from 'app/shared/scroll-spy.service';
-import { SearchResultsComponent } from './search/search-results/search-results.component';
 import { SearchBoxComponent } from './search/search-box/search-box.component';
 import { TocService } from 'app/shared/toc.service';
+import { WindowToken, windowProvider } from 'app/shared/window';
 
 import { SharedModule } from 'app/shared/shared.module';
 
-// These are the hardcoded inline svg sources to be used by the `<md-icon>` component
+// These are the hardcoded inline svg sources to be used by the `<mat-icon>` component
 export const svgIconProviders = [
   {
     provide: SVG_ICONS,
@@ -75,15 +79,15 @@ export const svgIconProviders = [
   imports: [
     BrowserModule,
     EmbeddedModule,
-    HttpModule,
+    HttpClientModule,
     BrowserAnimationsModule,
-    MdButtonModule,
-    MdIconModule,
-    MdInputModule,
-    MdProgressBarModule,
-    MdSidenavModule,
-    MdTabsModule,
-    MdToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressBarModule,
+    MatSidenavModule,
+    MatTabsModule,
+    MatToolbarModule,
     SwUpdatesModule,
     SharedModule
   ],
@@ -95,7 +99,6 @@ export const svgIconProviders = [
     ModeBannerComponent,
     NavMenuComponent,
     NavItemComponent,
-    SearchResultsComponent,
     SearchBoxComponent,
     TopMenuComponent,
   ],
@@ -108,14 +111,15 @@ export const svgIconProviders = [
     Location,
     { provide: LocationStrategy, useClass: PathLocationStrategy },
     LocationService,
-    { provide: MdIconRegistry, useClass: CustomMdIconRegistry },
+    { provide: MatIconRegistry, useClass: CustomIconRegistry },
     NavigationService,
     Platform,
     ScrollService,
     ScrollSpyService,
     SearchService,
     svgIconProviders,
-    TocService
+    TocService,
+    { provide: WindowToken, useFactory: windowProvider },
   ],
   bootstrap: [AppComponent]
 })

@@ -1,5 +1,10 @@
+// #docplaster
 // #docregion
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+
+import { Observable } from 'rxjs/Observable';
+import { of }         from 'rxjs/observable/of';
+import { delay }      from 'rxjs/operators';
 
 export class Contact {
   constructor(public id: number, public name: string) { }
@@ -13,17 +18,21 @@ const CONTACTS: Contact[] = [
 
 const FETCH_LATENCY = 500;
 
+/** Simulate a data service that retrieves contacts from a server */
 @Injectable()
-export class ContactService {
+export class ContactService implements OnDestroy {
+// #enddocregion
+  constructor() { console.log('ContactService instance created.'); }
+  ngOnDestroy() { console.log('ContactService instance destroyed.'); }
 
-  getContacts() {
-    return new Promise<Contact[]>(resolve => {
-      setTimeout(() => { resolve(CONTACTS); }, FETCH_LATENCY);
-    });
+// #docregion
+  getContacts(): Observable<Contact[]> {
+    return of(CONTACTS).pipe(delay(FETCH_LATENCY));
   }
 
-  getContact(id: number | string) {
-    return this.getContacts()
-      .then(heroes => heroes.find(hero => hero.id === +id));
+  getContact(id: number | string): Observable<Contact> {
+    return of(CONTACTS.find(contact => contact.id === +id))
+      .pipe(delay(FETCH_LATENCY));
   }
 }
+// #enddocregion

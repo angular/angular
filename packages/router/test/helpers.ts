@@ -25,7 +25,7 @@ export function provideTokenLogger(token: string, returnValue = true) {
     useFactory: (logger: Logger) => () => (logger.add(token), returnValue),
     deps: [Logger]
   };
-};
+}
 
 export declare type ARSArgs = {
   url?: UrlSegment[],

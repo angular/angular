@@ -2,7 +2,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'power-boost-calculator',
+  selector: 'app-power-boost-calculator',
   template: `
     <h2>Power Boost Calculator</h2>
     <div>Normal power: <input [(ngModel)]="power"></div>

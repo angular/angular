@@ -7,8 +7,8 @@
  */
 
 import {I18nSelectPipe} from '@angular/common';
-import {JitReflector} from '@angular/compiler';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
+import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 export function main() {
   describe('I18nSelectPipe', () => {

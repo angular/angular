@@ -130,6 +130,13 @@
             "rev": true,
             "title": "Apollo",
             "url": "http://docs.apollostack.com/apollo-client/angular2.html"
+          },
+          "ab4": {
+            "desc": "Angular Commerce is a solution for building modern e-commerce applications with power of Google Firebase. Set of components is design agnostic and allows to easily extend functionality.",
+            "logo": "",
+            "rev": true,
+            "title": "AngularCommerce",
+            "url": "https://github.com/NodeArt/angular-commerce"
           }
         }
       },
@@ -202,7 +209,7 @@
             "url": "https://cli.angular.io"
           },
           "d1": {
-            "desc": "A set of tslint rules for static code analysis of Angular TypeScript projects.",
+            "desc": "Static analysis for Angular projects.",
             "logo": "",
             "rev": true,
             "title": "Codelyzer",
@@ -221,12 +228,25 @@
             "rev": true,
             "title": "Compodoc",
             "url": "https://github.com/compodoc/compodoc"
+          },
+          "ncg": {
+            "desc": "Generate several types of CRUD apps complete with e2e testing using template-sets for Angular, Material Design, Bootstrap, Kendo UI, Ionic, ...",
+            "logo": "https://avatars3.githubusercontent.com/u/27976684",
+            "rev": true,
+            "title": "NinjaCodeGen - Angular CRUD Generator",
+            "url": "https://ninjaCodeGen.com"
           }
         }
       },
       "UI Components": {
         "order": 4,
         "resources": {
+          "IgniteUIforAngular": {
+            "desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
+            "rev": true,
+            "title": "Ignite UI for Angular",
+            "url": "https://www.infragistics.com/products/ignite-ui-angular"
+          },
           "DevExtreme": {
             "desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
             "rev": true,
@@ -303,7 +323,7 @@
             "desc": "Material Design components for Angular",
             "logo": "",
             "rev": true,
-            "title": "Angular Material 2",
+            "title": "Angular Material",
             "url": "https://github.com/angular/material2"
           },
           "aggrid": {
@@ -313,10 +333,10 @@
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
           },
           "jqwidgets": {
-            "desc": "Angular UI Components including Grids, Charts, Scheduling and more.",
+            "desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
             "rev": true,
             "title": "jQWidgets",
-            "url": "http://www.jqwidgets.com/angular/"
+            "url": "https://www.jqwidgets.com/angular/"
           },
           "amexio": {
             "desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
@@ -324,7 +344,7 @@
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
-          }          
+          }
         }
       }
     }
@@ -520,6 +540,12 @@
             "rev": true,
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
+          },
+          "angular-firebase": {
+            "desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
+            "rev": true,
+            "title": "AngularFirebase.com",
+            "url": "https://angularfirebase.com/"
           }
         }
       },
@@ -607,6 +633,12 @@
             "rev": true,
             "title": "SFEIR School (French)",
             "url": "https://school.sfeir.com/project/sa200/"
+          },
+          "formationjs": {
+            "desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
+            "rev": true,
+            "title": "Formation JavaScript (French)",
+            "url": "https://formationjavascript.com/formation-angular/"
           }
         }
       }

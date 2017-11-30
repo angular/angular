@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, it} from '@angular/core/testing/src/testing_internal';
+import {ddescribe, describe, iit, it} from '@angular/core/testing/src/testing_internal';
 import {Observable} from 'rxjs/Observable';
 
 import {HttpRequest} from '../src/request';
@@ -17,13 +17,15 @@ import {MockXhrFactory} from './xhr_mock';
 
 function trackEvents(obs: Observable<HttpEvent<any>>): HttpEvent<any>[] {
   const events: HttpEvent<any>[] = [];
-  obs.subscribe(event => events.push(event));
+  obs.subscribe(event => events.push(event), err => events.push(err));
   return events;
 }
 
 const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
   responseType: 'text',
 });
+
+const XSSI_PREFIX = ')]}\'\n';
 
 export function main() {
   describe('XhrBackend', () => {
@@ -87,14 +89,43 @@ export function main() {
     });
     it('handles a json response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
-      factory.mock.mockFlush(200, 'OK', {data: 'some data'});
+      factory.mock.mockFlush(200, 'OK', JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
       expect(res.body !.data).toBe('some data');
     });
-    it('handles a json response that comes via responseText', () => {
+    it('handles a blank json response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
-      factory.mock.mockFlush(200, 'OK', JSON.stringify({data: 'some data'}));
+      factory.mock.mockFlush(200, 'OK', '');
+      expect(events.length).toBe(2);
+      const res = events[1] as HttpResponse<{data: string}>;
+      expect(res.body).toBeNull();
+    });
+    it('handles a json error response', () => {
+      const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+      factory.mock.mockFlush(500, 'Error', JSON.stringify({data: 'some data'}));
+      expect(events.length).toBe(2);
+      const res = events[1] as any as HttpErrorResponse;
+      expect(res.error !.data).toBe('some data');
+    });
+    it('handles a json error response with XSSI prefix', () => {
+      const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+      factory.mock.mockFlush(500, 'Error', XSSI_PREFIX + JSON.stringify({data: 'some data'}));
+      expect(events.length).toBe(2);
+      const res = events[1] as any as HttpErrorResponse;
+      expect(res.error !.data).toBe('some data');
+    });
+    it('handles a json string response', () => {
+      const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+      expect(factory.mock.responseType).toEqual('text');
+      factory.mock.mockFlush(200, 'OK', JSON.stringify('this is a string'));
+      expect(events.length).toBe(2);
+      const res = events[1] as HttpResponse<string>;
+      expect(res.body).toEqual('this is a string');
+    });
+    it('handles a json response with an XSSI prefix', () => {
+      const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+      factory.mock.mockFlush(200, 'OK', XSSI_PREFIX + JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
       expect(res.body !.data).toBe('some data');
@@ -299,7 +330,7 @@ export function main() {
           expect(error.status).toBe(0);
           done();
         });
-        factory.mock.mockFlush(0, 'CORS 0 status', null);
+        factory.mock.mockFlush(0, 'CORS 0 status');
       });
     });
   });

@@ -12,9 +12,7 @@
     "paths": {
       "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../node_modules/rxjs/*"],
-      "@angular/*": ["../dist/all/@angular/*"],
-      "@angular/tsc-wrapped": ["../dist/packages-dist/tsc-wrapped"],
-      "@angular/tsc-wrapped/*": ["../dist/packages-dist/tsc-wrapped/*"]
+      "@angular/*": ["../dist/all/@angular/*"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,
@@ -32,5 +30,8 @@
     "benchmarks_external",
     "payload_tests",
     "rollup-test"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true
+  }
 }

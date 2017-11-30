@@ -37,11 +37,10 @@ import {getSymbolIterator} from '../util';
  * @stable
  */
 export class QueryList<T>/* implements Iterable<T> */ {
-  private _dirty = true;
+  public readonly dirty = true;
   private _results: Array<T> = [];
-  private _emitter = new EventEmitter();
+  public readonly changes: Observable<any> = new EventEmitter();
 
-  get changes(): Observable<any> { return this._emitter; }
   get length(): number { return this._results.length; }
   get first(): T { return this._results[0]; }
   get last(): T { return this._results[this.length - 1]; }
@@ -98,16 +97,19 @@ export class QueryList<T>/* implements Iterable<T> */ {
 
   reset(res: Array<T|any[]>): void {
     this._results = flatten(res);
-    this._dirty = false;
+    (this as{dirty: boolean}).dirty = false;
   }
 
-  notifyOnChanges(): void { this._emitter.emit(this); }
+  notifyOnChanges(): void { (this.changes as EventEmitter<any>).emit(this); }
 
   /** internal */
-  setDirty() { this._dirty = true; }
+  setDirty() { (this as{dirty: boolean}).dirty = true; }
 
   /** internal */
-  get dirty() { return this._dirty; }
+  destroy(): void {
+    (this.changes as EventEmitter<any>).complete();
+    (this.changes as EventEmitter<any>).unsubscribe();
+  }
 }
 
 function flatten<T>(list: Array<T|T[]>): T[] {

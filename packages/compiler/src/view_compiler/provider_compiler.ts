@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵDepFlags as DepFlags, ɵNodeFlags as NodeFlags} from '@angular/core';
-
 import {CompileDiDependencyMetadata, CompileEntryComponentMetadata, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
+import {DepFlags, NodeFlags} from '../core';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import * as o from '../output/output_ast';

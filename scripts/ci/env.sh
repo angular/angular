@@ -35,9 +35,11 @@ fi
 #######################
 
 setEnvVar NODE_VERSION 6.9.5
-setEnvVar NPM_VERSION 3.10.7 # do not upgrade to >3.10.8 unless https://github.com/npm/npm/issues/14042 is resolved
-setEnvVar YARN_VERSION 0.24.6
-setEnvVar SAUCE_CONNECT_VERSION 4.3.11
+setEnvVar YARN_VERSION 1.0.2
+setEnvVar CHROMIUM_VERSION 499098 # Chrome 62 linux stable, see https://www.chromium.org/developers/calendar
+setEnvVar BAZEL_VERSION 0.5.4
+setEnvVar SAUCE_CONNECT_VERSION 4.4.9
+setEnvVar ANGULAR_CLI_VERSION 1.5.0-rc.2
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
 if [[ ${TRAVIS:-} ]]; then
@@ -102,6 +104,7 @@ if [[ ${TRAVIS:-} ]]; then
   setEnvVar BROWSER_STACK_USERNAME angularteam1
   # not using use setEnvVar so that we don't print the key
   export BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
+  setEnvVar CHROME_BIN ${HOME}/.chrome/chromium/chrome-linux/chrome
   setEnvVar BROWSER_PROVIDER_READY_FILE /tmp/angular-build/browser-provider-tunnel-init.lock
 fi
 

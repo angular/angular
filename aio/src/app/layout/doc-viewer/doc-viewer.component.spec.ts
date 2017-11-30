@@ -1,11 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import {
-  Component, ComponentFactoryResolver, DebugElement,
-  ElementRef, Injector, NgModule, OnInit, ViewChild } from '@angular/core';
-import { By } from '@angular/platform-browser';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, DebugElement, ElementRef, NgModule, OnInit, ViewChild } from '@angular/core';
 import { DocViewerComponent } from './doc-viewer.component';
 import { DocumentContents } from 'app/documents/document.service';
-import { EmbeddedModule, embeddedComponents, EmbeddedComponents } from 'app/embedded/embedded.module';
+import { EmbeddedModule, EmbeddedComponents } from 'app/embedded/embedded.module';
 import { Title } from '@angular/platform-browser';
 import { TocService } from 'app/shared/toc.service';
 
@@ -363,6 +360,22 @@ describe('DocViewerComponent', () => {
       setCurrentDoc('<h1><i style="visibility: hidden">link</i>Features</h1>Some content');
       fixture.detectChanges();
       expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Text Content');
+    });
+
+    it('should still use `innerText` if available but empty', () => {
+      const querySelector_ = docViewerEl.querySelector;
+      spyOn(docViewerEl, 'querySelector').and.callFake((selector: string) => {
+        const elem = querySelector_.call(docViewerEl, selector);
+        Object.defineProperties(elem, {
+          innerText: { value: '' },
+          textContent: { value: 'Text Content' }
+        });
+        return elem;
+      });
+
+      setCurrentDoc('<h1><i style="visibility: hidden">link</i></h1>Some content');
+      fixture.detectChanges();
+      expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
     });
   });
 

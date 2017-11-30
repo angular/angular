@@ -5,7 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationMetadata, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
+import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
 
 export const ONE_SECOND = 1000;
 
@@ -231,4 +233,41 @@ export function dashCaseToCamelCase(input: string): string {
 
 export function allowPreviousPlayerStylesMerge(duration: number, delay: number) {
   return duration === 0 || delay === 0;
+}
+
+export function visitDslNode(
+    visitor: AnimationDslVisitor, node: AnimationMetadata, context: any): any;
+export function visitDslNode(
+    visitor: AnimationAstVisitor, node: AnimationAst<AnimationMetadataType>, context: any): any;
+export function visitDslNode(visitor: any, node: any, context: any): any {
+  switch (node.type) {
+    case AnimationMetadataType.Trigger:
+      return visitor.visitTrigger(node, context);
+    case AnimationMetadataType.State:
+      return visitor.visitState(node, context);
+    case AnimationMetadataType.Transition:
+      return visitor.visitTransition(node, context);
+    case AnimationMetadataType.Sequence:
+      return visitor.visitSequence(node, context);
+    case AnimationMetadataType.Group:
+      return visitor.visitGroup(node, context);
+    case AnimationMetadataType.Animate:
+      return visitor.visitAnimate(node, context);
+    case AnimationMetadataType.Keyframes:
+      return visitor.visitKeyframes(node, context);
+    case AnimationMetadataType.Style:
+      return visitor.visitStyle(node, context);
+    case AnimationMetadataType.Reference:
+      return visitor.visitReference(node, context);
+    case AnimationMetadataType.AnimateChild:
+      return visitor.visitAnimateChild(node, context);
+    case AnimationMetadataType.AnimateRef:
+      return visitor.visitAnimateRef(node, context);
+    case AnimationMetadataType.Query:
+      return visitor.visitQuery(node, context);
+    case AnimationMetadataType.Stagger:
+      return visitor.visitStagger(node, context);
+    default:
+      throw new Error(`Unable to resolve animation metadata node #${node.type}`);
+  }
 }

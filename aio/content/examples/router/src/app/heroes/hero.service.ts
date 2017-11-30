@@ -1,11 +1,14 @@
 // #docregion
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/map';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 export class Hero {
   constructor(public id: number, public name: string) { }
 }
 
-let HEROES = [
+const HEROES = [
   new Hero(11, 'Mr. Nice'),
   new Hero(12, 'Narco'),
   new Hero(13, 'Bombasto'),
@@ -14,15 +17,13 @@ let HEROES = [
   new Hero(16, 'RubberMan')
 ];
 
-let heroesPromise = Promise.resolve(HEROES);
-
 @Injectable()
 export class HeroService {
-  getHeroes() { return heroesPromise; }
+  getHeroes() { return Observable.of(HEROES); }
 
   getHero(id: number | string) {
-    return heroesPromise
+    return this.getHeroes()
       // (+) before `id` turns the string into a number
-      .then(heroes => heroes.find(hero => hero.id === +id));
+      .map(heroes => heroes.find(hero => hero.id === +id));
   }
 }
