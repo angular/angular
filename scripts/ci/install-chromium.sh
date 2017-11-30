@@ -77,6 +77,11 @@ if [[ "$EXISTING_VERSION" != "$CHROMIUM_VERSION" ]]; then
   unzip $FILE -d $CHROMIUM_DIR
   rm $FILE
   echo $CHROMIUM_VERSION > $CHROMIUM_VERSION_FILE
+
+  # Temporary workaround for https://github.com/travis-ci/travis-ci/issues/8836.
+  SANDBOX_BIN=$CHROMIUM_DIR/chrome-linux/chrome_sandbox
+  sudo chown root $SANDBOX_BIN
+  sudo chmod 4755 $SANDBOX_BIN
 fi
 
 if [[ "$CHROMIUM_VERSION" != "$LATEST_CHROMIUM_VERSION" ]]; then
