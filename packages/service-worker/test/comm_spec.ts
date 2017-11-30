@@ -71,6 +71,24 @@ export function main() {
         });
         expect(() => TestBed.get(SwPush)).not.toThrow();
       });
+      describe('with no SW', () => {
+        beforeEach(() => { comm = new NgswCommChannel(undefined); });
+        it('can be instantiated', () => { push = new SwPush(comm); });
+        it('does not crash on subscription to observables', () => {
+          push = new SwPush(comm);
+          push.messages.toPromise().catch(err => fail(err));
+          push.subscription.toPromise().catch(err => fail(err));
+        });
+        it('gives an error when registering', done => {
+          push = new SwPush(comm);
+          push.requestSubscription({serverPublicKey: 'test'}).catch(err => { done(); });
+        });
+        it('gives an error when unsubscribing', done => {
+
+          push = new SwPush(comm);
+          push.unsubscribe().catch(err => { done(); });
+        });
+      });
     });
     describe('SwUpdate', () => {
       let update: SwUpdate;
@@ -146,6 +164,23 @@ export function main() {
           ]
         });
         expect(() => TestBed.get(SwUpdate)).not.toThrow();
+      });
+      describe('with no SW', () => {
+        beforeEach(() => { comm = new NgswCommChannel(undefined); });
+        it('can be instantiated', () => { update = new SwUpdate(comm); });
+        it('does not crash on subscription to observables', () => {
+          update = new SwUpdate(comm);
+          update.available.toPromise().catch(err => fail(err));
+          update.activated.toPromise().catch(err => fail(err));
+        });
+        it('gives an error when checking for updates', done => {
+          update = new SwUpdate(comm);
+          update.checkForUpdate().catch(err => { done(); });
+        });
+        it('gives an error when activating updates', done => {
+          update = new SwUpdate(comm);
+          update.activateUpdate().catch(err => { done(); });
+        });
       });
     });
   });
