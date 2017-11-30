@@ -1,8 +1,0 @@
-{
-    "description": "Angular Service Worker",
-    "basePath": "src/",
-    "files":[
-      "!**/*.d.ts",
-      "!**/*.js"
-    ]
-  }
