@@ -639,6 +639,13 @@
             "rev": true,
             "title": "Formation JavaScript (French)",
             "url": "https://formationjavascript.com/formation-angular/"
+          },
+          "wao": {
+            "desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
+            "logo": "https://weareone.ch/wordpress/wao-content/uploads/2014/12/logo_200_2x.png",
+            "rev": true,
+            "title": "We Are One Sàrl",
+            "url": "https://weareone.ch/courses/angular/"
           }
         }
       }
