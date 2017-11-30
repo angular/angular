@@ -51,6 +51,7 @@ export interface Directive {
   providers?: Provider[];
   exportAs?: string;
   queries?: {[key: string]: any};
+  guards?: {[key: string]: any};
 }
 export const createDirective =
     makeMetadataFactory<Directive>('Directive', (dir: Directive = {}) => dir);

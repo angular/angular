@@ -208,6 +208,7 @@ export class CompileMetadataResolver {
       providers: [],
       viewProviders: [],
       queries: [],
+      guards: {},
       viewQueries: [],
       componentViewType: hostViewType,
       rendererType:
@@ -240,6 +241,7 @@ export class CompileMetadataResolver {
         providers: metadata.providers,
         viewProviders: metadata.viewProviders,
         queries: metadata.queries,
+        guards: metadata.guards,
         viewQueries: metadata.viewQueries,
         entryComponents: metadata.entryComponents,
         componentViewType: metadata.componentViewType,
@@ -383,6 +385,7 @@ export class CompileMetadataResolver {
       providers: providers || [],
       viewProviders: viewProviders || [],
       queries: queries || [],
+      guards: dirMeta.guards || {},
       viewQueries: viewQueries || [],
       entryComponents: entryComponentMetadata,
       componentViewType: nonNormalizedTemplateMetadata ? this.getComponentViewClass(directiveType) :
