@@ -126,6 +126,7 @@ export function main() {
         outputs: [],
         host: {},
         queries: {},
+        guards: {},
         exportAs: undefined,
         providers: undefined
       }));
@@ -154,6 +155,7 @@ export function main() {
         outputs: [],
         host: {},
         queries: {},
+        guards: {},
         exportAs: undefined,
         providers: undefined
       }));
@@ -164,6 +166,7 @@ export function main() {
         outputs: [],
         host: {},
         queries: {},
+        guards: {},
         exportAs: undefined,
         providers: undefined
       }));

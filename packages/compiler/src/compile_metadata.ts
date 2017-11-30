@@ -254,6 +254,7 @@ export interface CompileDirectiveSummary extends CompileTypeSummary {
   providers: CompileProviderMetadata[];
   viewProviders: CompileProviderMetadata[];
   queries: CompileQueryMetadata[];
+  guards: {[key: string]: any};
   viewQueries: CompileQueryMetadata[];
   entryComponents: CompileEntryComponentMetadata[];
   changeDetection: ChangeDetectionStrategy|null;
@@ -268,8 +269,8 @@ export interface CompileDirectiveSummary extends CompileTypeSummary {
  */
 export class CompileDirectiveMetadata {
   static create({isHost, type, isComponent, selector, exportAs, changeDetection, inputs, outputs,
-                 host, providers, viewProviders, queries, viewQueries, entryComponents, template,
-                 componentViewType, rendererType, componentFactory}: {
+                 host, providers, viewProviders, queries, guards, viewQueries, entryComponents,
+                 template, componentViewType, rendererType, componentFactory}: {
     isHost: boolean,
     type: CompileTypeMetadata,
     isComponent: boolean,
@@ -282,6 +283,7 @@ export class CompileDirectiveMetadata {
     providers: CompileProviderMetadata[],
     viewProviders: CompileProviderMetadata[],
     queries: CompileQueryMetadata[],
+    guards: {[key: string]: any};
     viewQueries: CompileQueryMetadata[],
     entryComponents: CompileEntryComponentMetadata[],
     template: CompileTemplateMetadata,
@@ -336,6 +338,7 @@ export class CompileDirectiveMetadata {
       providers,
       viewProviders,
       queries,
+      guards,
       viewQueries,
       entryComponents,
       template,
@@ -358,6 +361,7 @@ export class CompileDirectiveMetadata {
   providers: CompileProviderMetadata[];
   viewProviders: CompileProviderMetadata[];
   queries: CompileQueryMetadata[];
+  guards: {[key: string]: any};
   viewQueries: CompileQueryMetadata[];
   entryComponents: CompileEntryComponentMetadata[];
 
@@ -367,10 +371,27 @@ export class CompileDirectiveMetadata {
   rendererType: StaticSymbol|object|null;
   componentFactory: StaticSymbol|object|null;
 
-  constructor({isHost,          type,      isComponent,       selector,      exportAs,
-               changeDetection, inputs,    outputs,           hostListeners, hostProperties,
-               hostAttributes,  providers, viewProviders,     queries,       viewQueries,
-               entryComponents, template,  componentViewType, rendererType,  componentFactory}: {
+  constructor({isHost,
+               type,
+               isComponent,
+               selector,
+               exportAs,
+               changeDetection,
+               inputs,
+               outputs,
+               hostListeners,
+               hostProperties,
+               hostAttributes,
+               providers,
+               viewProviders,
+               queries,
+               guards,
+               viewQueries,
+               entryComponents,
+               template,
+               componentViewType,
+               rendererType,
+               componentFactory}: {
     isHost: boolean,
     type: CompileTypeMetadata,
     isComponent: boolean,
@@ -385,6 +406,7 @@ export class CompileDirectiveMetadata {
     providers: CompileProviderMetadata[],
     viewProviders: CompileProviderMetadata[],
     queries: CompileQueryMetadata[],
+    guards: {[key: string]: any},
     viewQueries: CompileQueryMetadata[],
     entryComponents: CompileEntryComponentMetadata[],
     template: CompileTemplateMetadata|null,
@@ -406,6 +428,7 @@ export class CompileDirectiveMetadata {
     this.providers = _normalizeArray(providers);
     this.viewProviders = _normalizeArray(viewProviders);
     this.queries = _normalizeArray(queries);
+    this.guards = guards;
     this.viewQueries = _normalizeArray(viewQueries);
     this.entryComponents = _normalizeArray(entryComponents);
     this.template = template;
@@ -430,6 +453,7 @@ export class CompileDirectiveMetadata {
       providers: this.providers,
       viewProviders: this.viewProviders,
       queries: this.queries,
+      guards: this.guards,
       viewQueries: this.viewQueries,
       entryComponents: this.entryComponents,
       changeDetection: this.changeDetection,

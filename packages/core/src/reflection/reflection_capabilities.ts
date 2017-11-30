@@ -207,6 +207,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return type instanceof Type && lcProperty in type.prototype;
   }
 
+  guards(type: any): {[key: string]: any} { return {}; }
+
   getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }
 
   setter(name: string): SetterFn {
