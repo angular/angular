@@ -18,7 +18,8 @@ const _attrToPropMap = {
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex',
-  'novalidate: 'noValidate'
+  'novalidate: 'noValidate',
+  'formnovalidate': 'formNoValidate'
 };
 
 const DOM_KEY_LOCATION_NUMPAD = 3;
