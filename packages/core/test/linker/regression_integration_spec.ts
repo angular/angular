@@ -409,7 +409,7 @@ function declareTestsUsingBootstrap() {
 
       logger = new MockConsole();
       errorHandler = new ErrorHandler();
-      errorHandler._console = logger as any;
+      (errorHandler as any)._console = logger as any;
     }));
 
     afterEach(() => { destroyPlatform(); });

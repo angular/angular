@@ -95,6 +95,16 @@ if (platform == 'node') {
         ]
       },
       BaseConfig));
+} else if (platform == 'nodeRender3') {
+  const specFiles = [
+    '@angular/core/src/render3/**/*_spec.js'
+  ];
+  tscWatch = new TscWatch(Object.assign(
+    {
+      tsconfig: 'packages/tsconfig.json',
+      onChangeCmds: [createNodeTestCommand(specFiles, debugMode)]
+    },
+    BaseConfig));
 } else {
   throw new Error(`unknown platform: ${platform}`);
 }
@@ -110,6 +120,7 @@ if (runMode === 'watch') {
 function createNodeTestCommand(specFiles: string[], debugMode: boolean) {
   return ['node']
       .concat(debugMode ? ['--inspect'] : [])
+      .concat('-r', 'source-map-support/register')
       .concat('dist/tools/cjs-jasmine', '--')
       .concat(specFiles);
 }

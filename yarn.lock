@@ -2,14 +2,19 @@
 # yarn lockfile v1
 
 
-"@bazel/typescript@0.3.2":
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.3.2.tgz#b4721b7f9e4c447a553555eab4a437f538a9496d"
+"@bazel/ibazel@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.1.1.tgz#f970c08b4e4efb0ab17e04ade3cc610554f33bed"
+
+"@bazel/typescript@bazelbuild/rules_typescript#c4c065a":
+  version "0.5.0"
+  resolved "https://codeload.github.com/bazelbuild/rules_typescript/tar.gz/c4c065aa6a2a5c203d74a34f362270e837ab564d"
   dependencies:
     "@types/node" "7.0.18"
     "@types/source-map" "^0.5.1"
     protobufjs "5.0.0"
     tsickle "0.25.x"
+    tsutils "2.12.1"
     typescript "2.5.x"
 
 "@google-cloud/common@^0.13.0":
@@ -6194,9 +6199,9 @@ rx-lite@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-3.1.2.tgz#19ce502ca572665f3b647b10939f97fd1615f102"
 
-rxjs@^5.5.2:
+"rxjs@git+https://github.com/gregmagolan/rxjs.git#rxjs-bazel-dist-2":
   version "5.5.2"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.5.2.tgz#28d403f0071121967f18ad665563255d54236ac3"
+  resolved "git+https://github.com/gregmagolan/rxjs.git#255f57e1c1b662276ba011e5290f29d696a2d2a4"
   dependencies:
     symbol-observable "^1.0.1"
 
@@ -6832,8 +6837,8 @@ supports-color@^3.1.0:
     has-flag "^1.0.0"
 
 symbol-observable@^1.0.1:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.0.4.tgz#29bf615d4aa7121bdd898b22d4b3f9bc4e2aa03d"
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.1.0.tgz#5c68fd8d54115d9dfb72a84720549222e8db9b32"
 
 systemjs@0.18.10:
   version "0.18.10"
@@ -7155,6 +7160,12 @@ tslint@~5.1.0:
 tsscmp@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/tsscmp/-/tsscmp-1.0.5.tgz#7dc4a33af71581ab4337da91d85ca5427ebd9a97"
+
+tsutils@2.12.1:
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.12.1.tgz#f4d95ce3391c8971e46e54c4cf0edb0a21dd5b24"
+  dependencies:
+    tslib "^1.7.1"
 
 tsutils@^1.4.0:
   version "1.9.1"

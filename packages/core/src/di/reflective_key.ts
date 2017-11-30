@@ -73,3 +73,5 @@ export class KeyRegistry {
 }
 
 const _globalKeyRegistry = new KeyRegistry();
+export declare var KeyRegistryInternalForTesting: typeof KeyRegistry;
+export type KeyRegistryInternalForTesting = KeyRegistry;
