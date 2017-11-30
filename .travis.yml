@@ -1,5 +1,5 @@
 language: node_js
-sudo: false
+sudo: required
 dist: trusty
 node_js:
   - '6.9.5'
@@ -44,20 +44,20 @@ env:
     - secure: "SxotP/ymNy6uWAVbfwM9BlwETPEBpkRvU/F7fCtQDDic99WfQHzzUSQqHTk8eKk3GrGAOSL09vT0WfStQYEIGEoS5UHWNgOnelxhw+d5EnaoB8vQ0dKQBTK092hQg4feFprr+B/tCasyMV6mVwpUzZMbIJNn/Rx7H5g1bp+Gkfg="
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
-    - CI_MODE=e2e
+    # - CI_MODE=e2e
     - CI_MODE=e2e_2
-    - CI_MODE=js
-    - CI_MODE=saucelabs_required
-    # deactivated, see #19768
-    # - CI_MODE=browserstack_required
-    - CI_MODE=saucelabs_optional
-    - CI_MODE=browserstack_optional
-    - CI_MODE=aio_tools_test
-    - CI_MODE=aio
-    - CI_MODE=aio_optional
-    - CI_MODE=aio_e2e AIO_SHARD=0
-    - CI_MODE=aio_e2e AIO_SHARD=1
-    - CI_MODE=bazel
+    # - CI_MODE=js
+    # - CI_MODE=saucelabs_required
+    # # deactivated, see #19768
+    # # - CI_MODE=browserstack_required
+    # - CI_MODE=saucelabs_optional
+    # - CI_MODE=browserstack_optional
+    # - CI_MODE=aio_tools_test
+    # - CI_MODE=aio
+    # - CI_MODE=aio_optional
+    # - CI_MODE=aio_e2e AIO_SHARD=0
+    # - CI_MODE=aio_e2e AIO_SHARD=1
+    # - CI_MODE=bazel
 
 matrix:
   fast_finish: true
