@@ -58,3 +58,8 @@ script:
 cache:
   directories:
     - ./node_modules/
+
+notifications:
+  webhooks:
+    urls:
+      - https://us-central1-test-jperrott.cloudfunctions.net/travisCi
