@@ -179,7 +179,7 @@ to a component's `@Component` decorator:
 <code-tabs>
   <code-pane title="src/app/hero-app.component.ts (CSS in file)" path="component-styles/src/app/hero-app.component.1.ts"></code-pane>
   <code-pane title="src/app/hero-app.component.css" path="component-styles/src/app/hero-app.component.1.css"></code-pane>
-</code-tabs>
+</code-tabs> 
 
 <div class="alert is-critical">
 
@@ -245,7 +245,8 @@ See the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-
 
 ### Non-CSS style files
 
-You can write style files in [sass](http://sass-lang.com/), [less](http://lesscss.org/), or [stylus](http://stylus-lang.com/) and specify those files in the `styleUrls` metadata, e.g.,
+If you're building with the CLI, 
+you can write style files in [sass](http://sass-lang.com/), [less](http://lesscss.org/), or [stylus](http://stylus-lang.com/) and specify those files in the `@Component.styleUrls` metadata with the appropriate extensions (`.scss`, `.less`, `.styl`) as in the following example:
 
 <code-example>
 @Component({
@@ -256,10 +257,18 @@ You can write style files in [sass](http://sass-lang.com/), [less](http://lesscs
 ...
 </code-example>
 
-The CLI build process runs the corresponding CSS pre-processors.
+The CLI build process runs the pertinent CSS preprocessor.
 
-You can also configure the CLI to default to your preferred CSS pre-processer 
-as explained in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors).
+When generating a component file with `ng generate component`, the CLI emits an empty CSS styles file (`.css`) by default.
+You can configure the CLI to default to your preferred CSS preprocessor 
+as explained in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
+"CSS Preprocessor integration").
+
+<div class="alert is-important">
+
+Style strings added to the `@Component.styles` array _must be written in CSS_ because the CLI cannot apply a preprocessor to inline styles.
+
+</div>
 
 {@a view-encapsulation}
 
