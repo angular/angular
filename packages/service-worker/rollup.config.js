@@ -21,6 +21,7 @@ const globals = {
   'rxjs/observable/defer': 'Rx.Observable',
   'rxjs/observable/fromEvent': 'Rx.Observable',
   'rxjs/observable/merge': 'Rx.Observable',
+  'rxjs/observable/never': 'Rx.Observable',
   'rxjs/observable/of': 'Rx.Observable',
   'rxjs/observable/throw': 'Rx.Observable',
 
