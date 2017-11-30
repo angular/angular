@@ -73,7 +73,7 @@ export class MockServerStateBuilder {
   }
 
   withManifest(manifest: Manifest): MockServerStateBuilder {
-    this.resources.set('/ngsw.json', new MockResponse(JSON.stringify(manifest)));
+    this.resources.set('ngsw.json', new MockResponse(JSON.stringify(manifest)));
     return this;
   }
 
