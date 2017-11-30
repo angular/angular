@@ -10,7 +10,7 @@ import {FormStyle, FormatWidth, NumberSymbol, Time, TranslationWidth, getLocaleD
 
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
-    /((?:[^GyMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
+    /((?:[^GyMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,3}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
 
 enum ZoneWidth {
   Short,
@@ -23,6 +23,7 @@ enum DateType {
   FullYear,
   Month,
   Date,
+  OrdinalDate,
   Hours,
   Minutes,
   Seconds,
@@ -173,6 +174,17 @@ function padNumber(
   return neg + strNum;
 }
 
+function appendOrdinalSuffix(name: DateType, size: number, date: string): string {
+  if (name === DateType.OrdinalDate) {
+    const day: number = parseInt(date);
+    const suffixes = ['th', 'st', 'nd', 'rd'];
+    const relevantDigits = (day < 30) ? day % 20 : day % 30;
+    const suffix = (relevantDigits <= 3) ? suffixes[relevantDigits] : suffixes[0];
+    return date + suffix;
+  }
+  return date;
+}
+
 /**
  * Returns a date formatter that transforms a date into its locale digit representation
  */
@@ -187,8 +199,10 @@ function dateGetter(
     if (name === DateType.Hours && part === 0 && offset === -12) {
       part = 12;
     }
-    return padNumber(
-        part, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign), trim, negWrap);
+    return appendOrdinalSuffix(
+        name, size,
+        padNumber(
+            part, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign), trim, negWrap));
   };
 }
 
@@ -199,6 +213,7 @@ function getDatePart(name: DateType, date: Date, size: number): number {
     case DateType.Month:
       return date.getMonth();
     case DateType.Date:
+    case DateType.OrdinalDate:
       return date.getDate();
     case DateType.Hours:
       return date.getHours();
@@ -436,6 +451,9 @@ function getDateFormatter(format: string): DateFormatter|null {
       break;
     case 'dd':
       formatter = dateGetter(DateType.Date, 2);
+      break;
+    case 'ddd':
+      formatter = dateGetter(DateType.OrdinalDate, 1);
       break;
 
     // Day of the Week
