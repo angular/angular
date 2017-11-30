@@ -10,12 +10,19 @@ const textContent = require('hast-util-to-string');
  * Only docs that have one of these docTypes will be linked to.
  * Usually set to the API exported docTypes, e.g. "class", "function", "directive", etc.
  *
+ * @property customFilters array of functions `(docs, words, wordIndex) => docs` that will filter
+ * out docs where a word should not link to a doc.
+ *   - `docs` is the array of docs that match the link `word`
+ *   - `words` is the collection of words parsed from the code text
+ *   - `wordIndex` is the index of the current `word` for which we are finding a link
+ *
  * @property codeElements an array of strings.
  * Only text contained in these elements will be linked to.
  * Usually set to "code" but also "code-example" for angular.io.
  */
 module.exports = function autoLinkCode(getDocFromAlias) {
   autoLinkCodeImpl.docTypes = [];
+  autoLinkCodeImpl.customFilters = [];
   autoLinkCodeImpl.codeElements = ['code'];
   return autoLinkCodeImpl;
 
@@ -38,12 +45,13 @@ module.exports = function autoLinkCode(getDocFromAlias) {
                 parent.children.splice(index, 1, createLinkNode(docs[0], node.value));
               } else {
                 // Parse the text for words that we can convert to links
-                const nodes = textContent(node).split(/([A-Za-z0-9_]+)/)
+                const nodes = textContent(node).split(/([A-Za-z0-9_-]+)/)
                   .filter(word => word.length)
-                  .map(word => {
-                    const docs = getDocFromAlias(word);
-                    return foundValidDoc(docs) ?
-                              createLinkNode(docs[0], word) : // Create a link wrapping the text node.
+                  .map((word, index, words) => {
+                    // remove docs that fail the custom filter tests
+                    const filteredDocs = autoLinkCodeImpl.customFilters.reduce((docs, filter) => filter(docs, words, index), getDocFromAlias(word));
+                    return foundValidDoc(filteredDocs) ?
+                              createLinkNode(filteredDocs[0], word) : // Create a link wrapping the text node.
                               { type: 'text', value: word };  // this is just text so push a new text node
                   });
 

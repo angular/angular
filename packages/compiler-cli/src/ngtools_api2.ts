@@ -100,6 +100,12 @@ export interface TsEmitArguments {
 
 export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
 
+export interface LazyRoute {
+  module: {name: string, filePath: string};
+  route: string;
+  referencedModule: {name: string, filePath: string};
+}
+
 export interface Program {
   getTsProgram(): ts.Program;
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken): ts.Diagnostic[];
@@ -112,6 +118,7 @@ export interface Program {
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
       Diagnostic[];
   loadNgStructureAsync(): Promise<void>;
+  listLazyRoutes(entryRoute?: string): LazyRoute[];
   emit({emitFlags, cancellationToken, customTransformers, emitCallback}: {
     emitFlags?: EmitFlags,
     cancellationToken?: ts.CancellationToken,

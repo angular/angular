@@ -947,6 +947,55 @@ export function main() {
           sub.unsubscribe();
         });
 
+        it('should not emit valueChanges or statusChanges on blur if value unchanged', () => {
+          const fixture = initTest(FormControlComp);
+          const control = new FormControl('', {validators: Validators.required, updateOn: 'blur'});
+          fixture.componentInstance.control = control;
+          fixture.detectChanges();
+          const values: string[] = [];
+
+          const sub =
+              merge(control.valueChanges, control.statusChanges).subscribe(val => values.push(val));
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              [], 'Expected no valueChanges or statusChanges if value unchanged.');
+
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+          expect(values).toEqual([], 'Expected no valueChanges or statusChanges on input.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID'],
+              'Expected valueChanges and statusChanges on blur if value changed.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID'],
+              'Expected valueChanges and statusChanges not to fire again on blur unless value changed.');
+
+          input.value = 'Bess';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID'],
+              'Expected valueChanges and statusChanges not to fire on input after blur.');
+
+          dispatchEvent(input, 'blur');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID', 'Bess', 'VALID'],
+              'Expected valueChanges and statusChanges to fire again on blur if value changed.');
+
+          sub.unsubscribe();
+        });
+
         it('should mark as pristine properly if pending dirty', () => {
           const fixture = initTest(FormControlComp);
           const control = new FormControl('', {updateOn: 'blur'});
@@ -1268,6 +1317,65 @@ export function main() {
           expect(values).toEqual(
               ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
               'Expected valueChanges and statusChanges to update on submit.');
+
+          sub.unsubscribe();
+        });
+
+        it('should not emit valueChanges or statusChanges on submit if value unchanged', () => {
+          const fixture = initTest(FormGroupComp);
+          const control =
+              new FormControl('', {validators: Validators.required, updateOn: 'submit'});
+          const formGroup = new FormGroup({login: control});
+          fixture.componentInstance.form = formGroup;
+          fixture.detectChanges();
+
+          const values: string[] = [];
+          const streams = merge(
+              control.valueChanges, control.statusChanges, formGroup.valueChanges,
+              formGroup.statusChanges);
+          const sub = streams.subscribe(val => values.push(val));
+
+          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              [], 'Expected no valueChanges or statusChanges if value unchanged.');
+
+          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          input.value = 'Nancy';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+          expect(values).toEqual([], 'Expected no valueChanges or statusChanges on input.');
+
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              'Expected valueChanges and statusChanges on submit if value changed.');
+
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+          expect(values).toEqual(
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              'Expected valueChanges and statusChanges not to fire again if value unchanged.');
+
+          input.value = 'Bess';
+          dispatchEvent(input, 'input');
+          fixture.detectChanges();
+
+          expect(values).toEqual(
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              'Expected valueChanges and statusChanges not to fire on input after submit.');
+
+          dispatchEvent(form, 'submit');
+          fixture.detectChanges();
+
+          expect(values).toEqual(
+              [
+                'Nancy', 'VALID', {login: 'Nancy'}, 'VALID', 'Bess', 'VALID', {login: 'Bess'},
+                'VALID'
+              ],
+              'Expected valueChanges and statusChanges to fire again on submit if value changed.');
 
           sub.unsubscribe();
         });

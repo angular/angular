@@ -15,20 +15,7 @@ benefit _every_ Angular project.
 By the end of the chapter, you'll have a basic understanding of development with the CLI
 and a foundation for both these documentation samples and for real world applications.
 
-<!--
-
-You'll pursue these ends in the following high-level steps:
-
-1. [Set up](guide/cli-quickstart#devenv) the development environment.
-2. [Create](guide/cli-quickstart#create-proj) a new project and skeleton application.
-3. [Serve](guide/cli-quickstart#serve) the application.
-4. [Edit](guide/cli-quickstart#first-component) the application.
-
--->
-
 And you can also <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a>
-
-
 
 <h2 id='devenv'>
   Step 1. Set up the Development Environment
@@ -87,8 +74,8 @@ Generate a new project and skeleton application by running the following command
 
 
 
-Patience please.
-It takes time to set up a new project, most of it spent installing npm packages.
+Patience, please.
+It takes time to set up a new project; most of it is spent installing npm packages.
 
 
 </div>
@@ -108,7 +95,6 @@ Go to the project directory and launch the server.
 <code-example language="sh" class="code-shell">
   cd my-app
   ng serve --open
-
 </code-example>
 
 
@@ -346,8 +332,8 @@ Any files outside of this folder are meant to support building your app.
       The main entry point for your app.
       Compiles the application with the [JIT compiler](guide/glossary#jit)
       and bootstraps the application's root module (`AppModule`) to run in the browser.
-      You can also use the [AOT compiler](guide/glossary#ahead-of-time-aot-compilation)
-      without changing any code by passing in `--aot` to `ng build` or `ng serve`.
+      You can also use the [AOT compiler](guide/aot-compiler)
+      without changing any code by appending the`--aot` flag to the `ng build` and `ng serve` commands.
 
     </td>
   </tr>

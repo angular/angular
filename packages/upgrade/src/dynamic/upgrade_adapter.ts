@@ -399,7 +399,7 @@ export class UpgradeAdapter {
 
     Promise.all([this.ng2BootstrapDeferred.promise, ng1BootstrapPromise]).then(([ng1Injector]) => {
       angular.element(element).data !(controllerKey(INJECTOR_KEY), this.moduleRef !.injector);
-      this.moduleRef !.injector.get(NgZone).run(
+      this.moduleRef !.injector.get<NgZone>(NgZone).run(
           () => { (<any>upgrade)._bootstrapDone(this.moduleRef, ng1Injector); });
     }, onError);
     return upgrade;

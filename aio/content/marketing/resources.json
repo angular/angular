@@ -241,6 +241,12 @@
       "UI Components": {
         "order": 4,
         "resources": {
+          "IgniteUIforAngular": {
+            "desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
+            "rev": true,
+            "title": "Ignite UI for Angular",
+            "url": "https://www.infragistics.com/products/ignite-ui-angular"
+          },
           "DevExtreme": {
             "desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
             "rev": true,
@@ -534,6 +540,12 @@
             "rev": true,
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
+          },
+          "angular-firebase": {
+            "desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
+            "rev": true,
+            "title": "AngularFirebase.com",
+            "url": "https://angularfirebase.com/"
           }
         }
       },
@@ -628,6 +640,12 @@
             "rev": true,
             "title": "We Are One Sàrl",
             "url": "https://weareone.ch/courses/angular/"
+          },
+          "formationjs": {
+            "desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
+            "rev": true,
+            "title": "Formation JavaScript (French)",
+            "url": "https://formationjavascript.com/formation-angular/"
           }
         }
       }

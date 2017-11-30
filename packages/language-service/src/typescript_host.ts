@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, FormattedError, FormattedMessageChain, HtmlParser, InterpolationConfig, JitSummaryResolver, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, analyzeNgModules, createOfflineCompileUrlResolver, isFormattedError} from '@angular/compiler';
 import {CompilerOptions, getClassMembersFromDeclaration, getPipesTable, getSymbolQuery} from '@angular/compiler-cli/src/language_services';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
@@ -15,8 +15,9 @@ import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
-import {BuiltinType, Declaration, DeclarationError, DeclarationKind, Declarations, Definition, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
+import {BuiltinType, Declaration, DeclarationError, DeclarationKind, Declarations, Definition, DiagnosticMessageChain, LanguageService, LanguageServiceHost, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable, TemplateSource, TemplateSources} from './types';
 import {isTypescriptVersion} from './utils';
+
 
 
 /**
@@ -146,11 +147,19 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private ensureAnalyzedModules(): NgAnalyzedModules {
     let analyzedModules = this.analyzedModules;
     if (!analyzedModules) {
-      const analyzeHost = {isSourceFile(filePath: string) { return true; }};
-      const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
-
-      analyzedModules = this.analyzedModules =
-          analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
+      if (this.host.getScriptFileNames().length === 0) {
+        analyzedModules = {
+          files: [],
+          ngModuleByPipeOrDirective: new Map(),
+          ngModules: [],
+        };
+      } else {
+        const analyzeHost = {isSourceFile(filePath: string) { return true; }};
+        const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
+        analyzedModules =
+            analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
+      }
+      this.analyzedModules = analyzedModules;
     }
     return analyzedModules;
   }
@@ -357,7 +366,11 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     if (!result) {
       if (!this.context) {
         // Make up a context by finding the first script and using that as the base dir.
-        this.context = this.host.getScriptFileNames()[0];
+        const scriptFileNames = this.host.getScriptFileNames();
+        if (0 === scriptFileNames.length) {
+          throw new Error('Internal error: no script file names found');
+        }
+        this.context = scriptFileNames[0];
       }
 
       // Use the file context's directory as the base directory.
@@ -375,6 +388,9 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
       const compilerOptions = this.host.getCompilationSettings();
       if (compilerOptions && compilerOptions.baseUrl) {
         options.baseUrl = compilerOptions.baseUrl;
+      }
+      if (compilerOptions && compilerOptions.paths) {
+        options.paths = compilerOptions.paths;
       }
       result = this._reflectorHost =
           new ReflectorHost(() => this.tsService.getProgram(), this.host, options);
@@ -491,7 +507,13 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private getCollectedErrors(defaultSpan: Span, sourceFile: ts.SourceFile): DeclarationError[] {
     const errors = (this.collectedErrors && this.collectedErrors.get(sourceFile.fileName));
     return (errors && errors.map((e: any) => {
-             return {message: e.message, span: spanAt(sourceFile, e.line, e.column) || defaultSpan};
+             const line = e.line || (e.position && e.position.line);
+             const column = e.column || (e.position && e.position.column);
+             const span = spanAt(sourceFile, line, column) || defaultSpan;
+             if (isFormattedError(e)) {
+               return errorToDiagnosticWithChain(e, span);
+             }
+             return {message: e.message, span};
            })) ||
         [];
   }
@@ -595,4 +617,21 @@ function spanAt(sourceFile: ts.SourceFile, line: number, column: number): Span|u
       return {start: node.getStart(), end: node.getEnd()};
     }
   }
+}
+
+function chainedMessage(chain: DiagnosticMessageChain, indent = ''): string {
+  return indent + chain.message + (chain.next ? chainedMessage(chain.next, indent + '  ') : '');
+}
+
+class DiagnosticMessageChainImpl implements DiagnosticMessageChain {
+  constructor(public message: string, public next?: DiagnosticMessageChain) {}
+  toString(): string { return chainedMessage(this); }
+}
+
+function convertChain(chain: FormattedMessageChain): DiagnosticMessageChain {
+  return {message: chain.message, next: chain.next ? convertChain(chain.next) : undefined};
+}
+
+function errorToDiagnosticWithChain(error: FormattedError, span: Span): DeclarationError {
+  return {message: error.chain ? convertChain(error.chain) : error.message, span};
 }

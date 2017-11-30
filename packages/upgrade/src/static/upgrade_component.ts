@@ -227,7 +227,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   private initializeBindings(directive: angular.IDirective) {
     const btcIsObject = typeof directive.bindToController === 'object';
-    if (btcIsObject && Object.keys(directive.scope).length) {
+    if (btcIsObject && Object.keys(directive.scope !).length) {
       throw new Error(
           `Binding definitions on scope and controller at the same time is not supported.`);
     }

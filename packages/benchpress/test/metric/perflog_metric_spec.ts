@@ -18,12 +18,13 @@ export function main() {
 
   function createMetric(
       perfLogs: PerfLogEvent[], perfLogFeatures: PerfLogFeatures,
-      {microMetrics, forceGc, captureFrames, receivedData, requestCount}: {
+      {microMetrics, forceGc, captureFrames, receivedData, requestCount, ignoreNavigation}: {
         microMetrics?: {[key: string]: string},
         forceGc?: boolean,
         captureFrames?: boolean,
         receivedData?: boolean,
-        requestCount?: boolean
+        requestCount?: boolean,
+        ignoreNavigation?: boolean
       } = {}): Metric {
     commandLog = [];
     if (!perfLogFeatures) {
@@ -58,6 +59,9 @@ export function main() {
     }
     if (requestCount != null) {
       providers.push({provide: Options.REQUEST_COUNT, useValue: requestCount});
+    }
+    if (ignoreNavigation != null) {
+      providers.push({provide: PerflogMetric.IGNORE_NAVIGATION, useValue: ignoreNavigation});
     }
     return Injector.create(providers).get(PerflogMetric);
   }
@@ -180,6 +184,22 @@ export function main() {
            const metric = createMetric(events, null !);
            metric.beginMeasure().then((_) => metric.endMeasure(false)).then((data) => {
              expect(data['scriptTime']).toBe(1);
+
+             async.done();
+           });
+         }));
+
+      it('should ignore navigationStart if ignoreNavigation is set',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const events = [[
+             eventFactory.markStart('benchpress0', 0), eventFactory.start('script', 4),
+             eventFactory.end('script', 6), eventFactory.instant('navigationStart', 7),
+             eventFactory.start('script', 8), eventFactory.end('script', 9),
+             eventFactory.markEnd('benchpress0', 10)
+           ]];
+           const metric = createMetric(events, null !, {ignoreNavigation: true});
+           metric.beginMeasure().then((_) => metric.endMeasure(false)).then((data) => {
+             expect(data['scriptTime']).toBe(3);
 
              async.done();
            });

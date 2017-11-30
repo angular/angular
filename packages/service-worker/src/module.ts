@@ -30,8 +30,10 @@ export function ngswAppInitializer(
         op_filter.call(app.isStable, (stable: boolean) => !!stable) as Observable<boolean>;
     const isStable = op_take.call(onStable, 1) as Observable<boolean>;
     const whenStable = op_toPromise.call(isStable) as Promise<boolean>;
-    return whenStable.then(() => navigator.serviceWorker.register(script, options))
-        .then(() => undefined) as Promise<void>;
+
+    // Don't return the Promise, as that will block the application until the SW is registered, and
+    // cause a crash if the SW registration fails.
+    whenStable.then(() => navigator.serviceWorker.register(script, options));
   };
   return initializer;
 }

@@ -399,6 +399,18 @@ export function main() {
 
          expect(() => resolver.getNgModuleMetadata(ModuleWithComponentInBootstrap)).not.toThrow();
        }));
+
+    // #20049
+    it('should throw a reasonable message when an invalid import is given',
+       inject([CompileMetadataResolver], (resolver: CompileMetadataResolver) => {
+         @NgModule({imports: [{ngModule: true as any}]})
+         class InvalidModule {
+         }
+
+         expect(() => { resolver.getNgModuleMetadata(InvalidModule); })
+             .toThrowError(
+                 `Unexpected value '[object Object]' imported by the module 'InvalidModule'. Please add a @NgModule annotation.`);
+       }));
   });
 
   it('should dedupe declarations in NgModule',

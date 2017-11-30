@@ -1,0 +1,20 @@
+<!-- #docregion list -->
+<h2>My Heroes</h2>
+<ul class="heroes">
+  <li>
+    <span class="badge">{{hero.id}}</span> {{hero.name}}
+  </li>
+</ul>
+<!-- #enddocregion list -->
+
+<!-- #docregion li -->
+  <li *ngFor="let hero of heroes">
+<!-- #enddocregion li -->
+
+<!-- #docregion selectedHero-click -->
+<li *ngFor="let hero of heroes" (click)="onSelect(hero)">
+<!-- #enddocregion selectedHero-click -->
+
+<!-- #docregion class-selected -->
+[class.selected]="hero === selectedHero"
+<!-- #enddocregion class-selected -->

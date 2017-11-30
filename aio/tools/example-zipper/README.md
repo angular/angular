@@ -46,6 +46,8 @@ Here you find a:
 * **base.json** - All the common scripts and packages
 * **cli.json** - Extra scripts and packages for the CLI
 * **webpack.json** - Extra scripts and packages for Webpack
+* **universal.json** - Extra scripts and packages for universal
+* **i18n.json** - Extra scripts and packages for i18n
 * **systemjs.json** - All the System.js related packages but it also contains the remainder scripts
   that are not in the other files.
 

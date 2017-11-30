@@ -16,7 +16,7 @@
     "app/contact/awesome.pipe.ts",
     "app/contact/contact.component.3.ts",
     "app/contact/contact.module.2.ts",
-    "app/contact/highlight.directive.ts",
+    "app/contact/contact-highlight.directive.ts",
 
     "main.2.ts",
     "styles.css",

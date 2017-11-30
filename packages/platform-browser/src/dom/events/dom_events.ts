@@ -22,9 +22,9 @@ import {EventManagerPlugin} from './event_manager';
  * addEventListener by 3x.
  */
 const __symbol__ =
-    (typeof Zone !== 'undefined') && (Zone as any)['__symbol__'] || function<T>(v: T): T {
-  return v;
-};
+    (typeof Zone !== 'undefined') && (Zone as any)['__symbol__'] || function(v: string): string {
+      return '__zone_symbol__' + v;
+    };
 const ADD_EVENT_LISTENER: 'addEventListener' = __symbol__('addEventListener');
 const REMOVE_EVENT_LISTENER: 'removeEventListener' = __symbol__('removeEventListener');
 
@@ -34,6 +34,10 @@ const FALSE = 'FALSE';
 const ANGULAR = 'ANGULAR';
 const NATIVE_ADD_LISTENER = 'addEventListener';
 const NATIVE_REMOVE_LISTENER = 'removeEventListener';
+
+// use the same symbol string which is used in zone.js
+const stopSymbol = '__zone_symbol__propagationStopped';
+const stopMethodSymbol = '__zone_symbol__stopImmediatePropagation';
 
 const blackListedEvents: string[] =
     (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('BLACK_LISTED_EVENTS')];
@@ -81,6 +85,11 @@ const globalListener = function(event: Event) {
     // itself or others
     const copiedTasks = taskDatas.slice();
     for (let i = 0; i < copiedTasks.length; i++) {
+      // if other listener call event.stopImmediatePropagation
+      // just break
+      if ((event as any)[stopSymbol] === true) {
+        break;
+      }
       const taskData = copiedTasks[i];
       if (taskData.zone !== Zone.current) {
         // only use Zone.run when Zone.current not equals to stored zone
@@ -94,7 +103,33 @@ const globalListener = function(event: Event) {
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
-  constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) { super(doc); }
+  constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) {
+    super(doc);
+
+    this.patchEvent();
+  }
+
+  private patchEvent() {
+    if (!Event || !Event.prototype) {
+      return;
+    }
+    if ((Event.prototype as any)[stopMethodSymbol]) {
+      // already patched by zone.js
+      return;
+    }
+    const delegate = (Event.prototype as any)[stopMethodSymbol] =
+        Event.prototype.stopImmediatePropagation;
+    Event.prototype.stopImmediatePropagation = function() {
+      if (this) {
+        this[stopSymbol] = true;
+      }
+
+      // should call native delegate in case
+      // in some enviroment part of the application
+      // will not use the patched Event
+      delegate && delegate.apply(this, arguments);
+    };
+  }
 
   // This plugin should come last in the list of plugins, because it accepts all
   // events.
@@ -168,16 +203,26 @@ export class DomEventsPlugin extends EventManagerPlugin {
       // just call native removeEventListener
       return target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
     }
+    // fix issue 20532, should be able to remove
+    // listener which was added inside of ngZone
+    let found = false;
     for (let i = 0; i < taskDatas.length; i++) {
       // remove listener from taskDatas if the callback equals
       if (taskDatas[i].handler === callback) {
+        found = true;
         taskDatas.splice(i, 1);
         break;
       }
     }
-    if (taskDatas.length === 0) {
-      // all listeners are removed, we can remove the globalListener from target
-      underlyingRemove.apply(target, [eventName, globalListener, false]);
+    if (found) {
+      if (taskDatas.length === 0) {
+        // all listeners are removed, we can remove the globalListener from target
+        underlyingRemove.apply(target, [eventName, globalListener, false]);
+      }
+    } else {
+      // not found in taskDatas, the callback may be added inside of ngZone
+      // use native remove listener to remove the calback
+      target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
     }
   }
 }

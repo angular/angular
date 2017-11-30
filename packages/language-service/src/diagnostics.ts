@@ -10,7 +10,7 @@ import {NgAnalyzedModules, StaticSymbol} from '@angular/compiler';
 import {DiagnosticTemplateInfo, getTemplateExpressionDiagnostics} from '@angular/compiler-cli/src/language_services';
 
 import {AstResult} from './common';
-import {Declarations, Diagnostic, DiagnosticKind, Diagnostics, Span, TemplateSource} from './types';
+import {Declarations, Diagnostic, DiagnosticKind, DiagnosticMessageChain, Diagnostics, Span, TemplateSource} from './types';
 import {offsetSpan, spanOf} from './utils';
 
 export interface AstProvider {
@@ -56,7 +56,7 @@ export function getDeclarationDiagnostics(
 
   let directives: Set<StaticSymbol>|undefined = undefined;
   for (const declaration of declarations) {
-    const report = (message: string, span?: Span) => {
+    const report = (message: string | DiagnosticMessageChain, span?: Span) => {
       results.push(<Diagnostic>{
         kind: DiagnosticKind.Error,
         span: span || declaration.declarationSpan, message
@@ -71,9 +71,12 @@ export function getDeclarationDiagnostics(
           report(
               `Component '${declaration.type.name}' is not included in a module and will not be available inside a template. Consider adding it to a NgModule declaration`);
         }
-        if (!declaration.metadata.template !.template &&
-            !declaration.metadata.template !.templateUrl) {
-          report(`Component ${declaration.type.name} must have a template or templateUrl`);
+        const {template, templateUrl} = declaration.metadata.template !;
+        if (template === null && !templateUrl) {
+          report(`Component '${declaration.type.name}' must have a template or templateUrl`);
+        } else if (template && templateUrl) {
+          report(
+              `Component '${declaration.type.name}' must not have both template and templateUrl`);
         }
       } else {
         if (!directives) {

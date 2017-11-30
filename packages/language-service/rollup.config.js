@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import commonjs from 'rollup-plugin-commonjs';
-import sourcemaps from 'rollup-plugin-sourcemaps';
-import * as path from 'path';
+const commonjs = require('rollup-plugin-commonjs');
+const sourcemaps = require('rollup-plugin-sourcemaps');
+const path = require('path');
 
 var m = /^\@angular\/((\w|\-)+)(\/(\w|\d|\/|\-)+)?$/;
 var location = normalize('../../dist/packages-dist') + '/';
@@ -60,7 +60,7 @@ module.exports = function(provided) {
 }
 `;
 
-export default {
+module.exports = {
   entry: '../../dist/packages-dist/language-service/esm5/language-service.js',
   dest: '../../dist/packages-dist/language-service/bundles/language-service.umd.js',
   format: 'amd',

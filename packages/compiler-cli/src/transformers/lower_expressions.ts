@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {createLoweredSymbol, isLoweredSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {CollectorOptions, MetadataCollector, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '../metadata/index';
 
 export interface LoweringRequest {
@@ -181,11 +183,13 @@ function createVariableStatementForDeclarations(declarations: Declaration[]): ts
       /* modifiers */ undefined, ts.createVariableDeclarationList(varDecls, ts.NodeFlags.Const));
 }
 
-export function getExpressionLoweringTransformFactory(requestsMap: RequestsMap):
-    (context: ts.TransformationContext) => (sourceFile: ts.SourceFile) => ts.SourceFile {
+export function getExpressionLoweringTransformFactory(
+    requestsMap: RequestsMap, program: ts.Program): (context: ts.TransformationContext) =>
+    (sourceFile: ts.SourceFile) => ts.SourceFile {
   // Return the factory
   return (context: ts.TransformationContext) => (sourceFile: ts.SourceFile): ts.SourceFile => {
-    const requests = requestsMap.getRequests(sourceFile);
+    // We need to use the original SourceFile for reading metadata, and not the transformed one.
+    const requests = requestsMap.getRequests(program.getSourceFile(sourceFile.fileName));
     if (requests && requests.size) {
       return transformSourceFile(sourceFile, requests, context);
     }
@@ -223,14 +227,12 @@ function shouldLower(node: ts.Node | undefined): boolean {
   return true;
 }
 
-const REWRITE_PREFIX = '\u0275';
-
 function isPrimitive(value: any): boolean {
   return Object(value) !== value;
 }
 
 function isRewritten(value: any): boolean {
-  return isMetadataGlobalReferenceExpression(value) && value.name.startsWith(REWRITE_PREFIX);
+  return isMetadataGlobalReferenceExpression(value) && isLoweredSymbol(value.name);
 }
 
 function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
@@ -274,7 +276,7 @@ export class LowerMetadataCache implements RequestsMap {
 
   private getMetadataAndRequests(sourceFile: ts.SourceFile): MetadataAndLoweringRequests {
     let identNumber = 0;
-    const freshIdent = () => REWRITE_PREFIX + identNumber++;
+    const freshIdent = () => createLoweredSymbol(identNumber++);
     const requests = new Map<number, LoweringRequest>();
 
     const isExportedSymbol = (() => {

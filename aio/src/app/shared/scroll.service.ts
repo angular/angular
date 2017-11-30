@@ -17,7 +17,7 @@ export class ScrollService {
   // at the top (e.g. toolbar) + some margin
   get topOffset() {
     if (!this._topOffset) {
-      const toolbar = this.document.querySelector('md-toolbar.app-toolbar');
+      const toolbar = this.document.querySelector('mat-toolbar.app-toolbar');
       this._topOffset = (toolbar && toolbar.clientHeight || 0) + topMargin;
     }
     return this._topOffset;

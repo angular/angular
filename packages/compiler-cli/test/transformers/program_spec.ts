@@ -11,7 +11,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {CompilerHost} from '../../src/transformers/api';
+import {formatDiagnostics} from '../../src/perform_compile';
+import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
 import {createSrcToOutPathMapper} from '../../src/transformers/program';
 import {GENERATED_FILES, StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
 import {TestSupport, expectNoDiagnosticsInProgram, setup} from '../test_support';
@@ -75,6 +76,15 @@ describe('ng program', () => {
     expectNoDiagnosticsInProgram(options, program);
     const emitResult = program.emit();
     return {emitResult, program};
+  }
+
+  function resolveFiles(rootNames: string[]) {
+    const preOptions = testSupport.createCompilerOptions();
+    const preHost = ts.createCompilerHost(preOptions);
+    // don't resolve symlinks
+    preHost.realpath = (f) => f;
+    const preProgram = ts.createProgram(rootNames, preOptions, preHost);
+    return preProgram.getSourceFiles().map(sf => sf.fileName);
   }
 
   describe('reuse of old program', () => {
@@ -309,11 +319,35 @@ describe('ng program', () => {
     });
   });
 
-  it('should typecheck templates even if skipTemplateCodegen is set', () => {
+  it('should not typecheck templates if skipTemplateCodegen is set but fullTemplateTypeCheck is not',
+     () => {
+       testSupport.writeFiles({
+         'src/main.ts': `
+        import {NgModule} from '@angular/core';
+
+        @NgModule((() => {if (1==1) return null as any;}) as any)
+        export class SomeClassWithInvalidMetadata {}
+      `,
+       });
+       const options = testSupport.createCompilerOptions({skipTemplateCodegen: true});
+       const host = ng.createCompilerHost({options});
+       const program = ng.createProgram(
+           {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
+       expectNoDiagnosticsInProgram(options, program);
+       const emitResult = program.emit({emitFlags: EmitFlags.All});
+       expect(emitResult.diagnostics.length).toBe(0);
+
+       testSupport.shouldExist('built/src/main.metadata.json');
+     });
+
+  it('should typecheck templates if skipTemplateCodegen and fullTemplateTypeCheck is set', () => {
     testSupport.writeFiles({
       'src/main.ts': createModuleAndCompSource('main', `{{nonExistent}}`),
     });
-    const options = testSupport.createCompilerOptions({skipTemplateCodegen: true});
+    const options = testSupport.createCompilerOptions({
+      skipTemplateCodegen: true,
+      fullTemplateTypeCheck: true,
+    });
     const host = ng.createCompilerHost({options});
     const program = ng.createProgram(
         {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
@@ -348,13 +382,7 @@ describe('ng program', () => {
     testSupport.writeFiles({
       'src/main.ts': createModuleAndCompSource('main'),
     });
-    const preOptions = testSupport.createCompilerOptions();
-    const preHost = ts.createCompilerHost(preOptions);
-    // don't resolve symlinks
-    preHost.realpath = (f) => f;
-    const preProgram =
-        ts.createProgram([path.resolve(testSupport.basePath, 'src/main.ts')], preOptions, preHost);
-    const allRootNames = preProgram.getSourceFiles().map(sf => sf.fileName);
+    const allRootNames = resolveFiles([path.resolve(testSupport.basePath, 'src/main.ts')]);
 
     // now do the actual test with noResolve
     const program = compile(undefined, {noResolve: true}, allRootNames);
@@ -454,25 +482,33 @@ describe('ng program', () => {
   });
 
   it('should not emit generated files whose sources are outside of the rootDir', () => {
-    compileLib('lib');
     testSupport.writeFiles({
       'src/main.ts': createModuleAndCompSource('main'),
       'src/index.ts': `
           export * from './main';
-          export * from 'lib/index';
         `
     });
-    compile(undefined, {rootDir: path.resolve(testSupport.basePath, 'src')});
+    const options =
+        testSupport.createCompilerOptions({rootDir: path.resolve(testSupport.basePath, 'src')});
+    const host = ng.createCompilerHost({options});
+    const writtenFileNames: string[] = [];
+    const oldWriteFile = host.writeFile;
+    host.writeFile = (fileName, data, writeByteOrderMark) => {
+      writtenFileNames.push(fileName);
+      oldWriteFile(fileName, data, writeByteOrderMark);
+    };
+
+    compile(/*oldProgram*/ undefined, options, /*rootNames*/ undefined, host);
+
+    // no emit for files from node_modules as they are outside of rootDir
+    expect(writtenFileNames.some(f => /node_modules/.test(f))).toBe(false);
+
+    // emit all gen files for files under src/
     testSupport.shouldExist('built/main.js');
     testSupport.shouldExist('built/main.d.ts');
     testSupport.shouldExist('built/main.ngfactory.js');
     testSupport.shouldExist('built/main.ngfactory.d.ts');
     testSupport.shouldExist('built/main.ngsummary.json');
-    testSupport.shouldNotExist('built/node_modules/lib/index.js');
-    testSupport.shouldNotExist('built/node_modules/lib/index.d.ts');
-    testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.js');
-    testSupport.shouldNotExist('built/node_modules/lib/index.ngfactory.d.ts');
-    testSupport.shouldNotExist('built/node_modules/lib/index.ngsummary.json');
   });
 
   describe('createSrcToOutPathMapper', () => {
@@ -492,9 +528,16 @@ describe('ng program', () => {
     });
 
     it('should adjust the filename if the outDir is outside of the rootDir', () => {
-      const mapper = createSrcToOutPathMapper('/out', '/tmp/a/x.ts', '/a/x.js');
+      const mapper = createSrcToOutPathMapper('/out', '/tmp/a/x.ts', '/out/a/x.js');
       expect(mapper('/tmp/b/y.js')).toBe('/out/b/y.js');
     });
+
+    it('should adjust the filename if the common prefix of sampleSrc and sampleOut is outside of outDir',
+       () => {
+         const mapper =
+             createSrcToOutPathMapper('/dist/common', '/src/common/x.ts', '/dist/common/x.js');
+         expect(mapper('/src/common/y.js')).toBe('/dist/common/y.js');
+       });
 
     it('should work on windows with normalized paths', () => {
       const mapper =
@@ -507,5 +550,440 @@ describe('ng program', () => {
           'c:\\tmp\\out', 'c:\\tmp\\a\\x.ts', 'c:\\tmp\\out\\a\\x.js', path.win32);
       expect(mapper('c:\\tmp\\b\\y.js')).toBe('c:\\tmp\\out\\b\\y.js');
     });
+  });
+
+  describe('listLazyRoutes', () => {
+    function writeSomeRoutes() {
+      testSupport.writeFiles({
+        'src/main.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [RouterModule.forRoot([{loadChildren: './child#ChildModule'}])]
+          })
+          export class MainModule {}
+        `,
+        'src/child.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [RouterModule.forChild([{loadChildren: './child2#ChildModule2'}])]
+          })
+          export class ChildModule {}
+        `,
+        'src/child2.ts': `
+          import {NgModule} from '@angular/core';
+
+          @NgModule()
+          export class ChildModule2 {}
+        `,
+      });
+    }
+
+    function createProgram(rootNames: string[], overrideOptions: ng.CompilerOptions = {}) {
+      const options = testSupport.createCompilerOptions(overrideOptions);
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram(
+          {rootNames: rootNames.map(p => path.resolve(testSupport.basePath, p)), options, host});
+      return {program, options};
+    }
+
+    function normalizeRoutes(lazyRoutes: LazyRoute[]) {
+      return lazyRoutes.map(
+          r => ({
+            route: r.route,
+            module: {name: r.module.name, filePath: r.module.filePath},
+            referencedModule:
+                {name: r.referencedModule.name, filePath: r.referencedModule.filePath},
+          }));
+    }
+
+    it('should list all lazyRoutes', () => {
+      writeSomeRoutes();
+      const {program, options} = createProgram(['src/main.ts', 'src/child.ts', 'src/child2.ts']);
+      expectNoDiagnosticsInProgram(options, program);
+      expect(normalizeRoutes(program.listLazyRoutes())).toEqual([
+        {
+          module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
+          referencedModule:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          route: './child#ChildModule'
+        },
+        {
+          module:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          referencedModule:
+              {name: 'ChildModule2', filePath: path.resolve(testSupport.basePath, 'src/child2.ts')},
+          route: './child2#ChildModule2'
+        },
+      ]);
+    });
+
+    it('should emit correctly after listing lazyRoutes', () => {
+      testSupport.writeFiles({
+        'src/main.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [RouterModule.forRoot([{loadChildren: './lazy/lazy#LazyModule'}])]
+          })
+          export class MainModule {}
+        `,
+        'src/lazy/lazy.ts': `
+          import {NgModule} from '@angular/core';
+
+          @NgModule()
+          export class ChildModule {}
+        `,
+      });
+      const {program, options} = createProgram(['src/main.ts', 'src/lazy/lazy.ts']);
+      expectNoDiagnosticsInProgram(options, program);
+      program.listLazyRoutes();
+      program.emit();
+
+      const lazyNgFactory =
+          fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/lazy/lazy.ngfactory.js'));
+      expect(lazyNgFactory).toContain('import * as i1 from "./lazy";');
+    });
+
+    it('should list lazyRoutes given an entryRoute recursively', () => {
+      writeSomeRoutes();
+      const {program, options} = createProgram(['src/main.ts']);
+      expectNoDiagnosticsInProgram(options, program);
+      expect(normalizeRoutes(program.listLazyRoutes('src/main#MainModule'))).toEqual([
+        {
+          module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
+          referencedModule:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          route: './child#ChildModule'
+        },
+        {
+          module:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          referencedModule:
+              {name: 'ChildModule2', filePath: path.resolve(testSupport.basePath, 'src/child2.ts')},
+          route: './child2#ChildModule2'
+        },
+      ]);
+
+      expect(normalizeRoutes(program.listLazyRoutes('src/child#ChildModule'))).toEqual([
+        {
+          module:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          referencedModule:
+              {name: 'ChildModule2', filePath: path.resolve(testSupport.basePath, 'src/child2.ts')},
+          route: './child2#ChildModule2'
+        },
+      ]);
+    });
+
+    it('should list lazyRoutes pointing to a default export', () => {
+      testSupport.writeFiles({
+        'src/main.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [RouterModule.forRoot([{loadChildren: './child'}])]
+          })
+          export class MainModule {}
+        `,
+        'src/child.ts': `
+          import {NgModule} from '@angular/core';
+
+          @NgModule()
+          export default class ChildModule {}
+        `,
+      });
+      const {program, options} = createProgram(['src/main.ts']);
+      expect(normalizeRoutes(program.listLazyRoutes('src/main#MainModule'))).toEqual([
+        {
+          module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
+          referencedModule:
+              {name: undefined, filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          route: './child'
+        },
+      ]);
+    });
+
+    it('should list lazyRoutes from imported modules', () => {
+      testSupport.writeFiles({
+        'src/main.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+          import {NestedMainModule} from './nested/main';
+
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([{loadChildren: './child#ChildModule'}]),
+              NestedMainModule,
+            ]
+          })
+          export class MainModule {}
+        `,
+        'src/child.ts': `
+          import {NgModule} from '@angular/core';
+
+          @NgModule()
+          export class ChildModule {}
+        `,
+        'src/nested/main.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [RouterModule.forChild([{loadChildren: './child#NestedChildModule'}])]
+          })
+          export class NestedMainModule {}
+        `,
+        'src/nested/child.ts': `
+          import {NgModule} from '@angular/core';
+
+          @NgModule()
+          export class NestedChildModule {}
+        `,
+      });
+      const {program, options} = createProgram(['src/main.ts']);
+      expect(normalizeRoutes(program.listLazyRoutes('src/main#MainModule'))).toEqual([
+        {
+          module: {
+            name: 'NestedMainModule',
+            filePath: path.resolve(testSupport.basePath, 'src/nested/main.ts')
+          },
+          referencedModule: {
+            name: 'NestedChildModule',
+            filePath: path.resolve(testSupport.basePath, 'src/nested/child.ts')
+          },
+          route: './child#NestedChildModule'
+        },
+        {
+          module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
+          referencedModule:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          route: './child#ChildModule'
+        },
+      ]);
+    });
+
+    it('should dedupe lazyRoutes given an entryRoute', () => {
+      writeSomeRoutes();
+      testSupport.writeFiles({
+        'src/index.ts': `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([{loadChildren: './main#MainModule'}]),
+              RouterModule.forRoot([{loadChildren: './child#ChildModule'}]),
+            ]
+          })
+          export class MainModule {}
+        `,
+      });
+      const {program, options} = createProgram(['src/index.ts']);
+      expectNoDiagnosticsInProgram(options, program);
+      expect(normalizeRoutes(program.listLazyRoutes('src/main#MainModule'))).toEqual([
+        {
+          module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
+          referencedModule:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          route: './child#ChildModule'
+        },
+        {
+          module:
+              {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          referencedModule:
+              {name: 'ChildModule2', filePath: path.resolve(testSupport.basePath, 'src/child2.ts')},
+          route: './child2#ChildModule2'
+        },
+      ]);
+    });
+
+    it('should list lazyRoutes given an entryRoute even with static errors', () => {
+      testSupport.writeFiles({
+        'src/main.ts': `
+          import {NgModule, Component} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({
+            selector: 'url-comp',
+            // Non existent external template
+            templateUrl: 'non-existent.html',
+          })
+          export class ErrorComp {}
+
+          @Component({
+            selector: 'err-comp',
+            // Error in template
+            template: '<input/>{{',
+          })
+          export class ErrorComp2 {}
+
+          // Component with metadata errors.
+          @Component(() => {if (1==1) return null as any;})
+          export class ErrorComp3 {}
+
+          // Unused component
+          @Component({
+            selector: 'unused-comp',
+            template: ''
+          })
+          export class UnusedComp {}
+
+          @NgModule({
+            declarations: [ErrorComp, ErrorComp2, ErrorComp3, NonExistentComp],
+            imports: [RouterModule.forRoot([{loadChildren: './child#ChildModule'}])]
+          })
+          export class MainModule {}
+
+          @NgModule({
+            // Component used in 2 NgModules
+            declarations: [ErrorComp],
+          })
+          export class Mod2 {}
+        `,
+        'src/child.ts': `
+          import {NgModule} from '@angular/core';
+
+          @NgModule()
+          export class ChildModule {}
+        `,
+      });
+      const program = createProgram(['src/main.ts'], {collectAllErrors: true}).program;
+      expect(normalizeRoutes(program.listLazyRoutes('src/main#MainModule'))).toEqual([{
+        module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
+        referencedModule:
+            {name: 'ChildModule', filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+        route: './child#ChildModule'
+      }]);
+    });
+  });
+
+  it('should report errors for ts and ng errors on emit with noEmitOnError=true', () => {
+    testSupport.writeFiles({
+      'src/main.ts': `
+        import {Component, NgModule} from '@angular/core';
+
+        // Ts error
+        let x: string = 1;
+
+        // Ng error
+        @Component({selector: 'comp', templateUrl: './main.html'})
+        export class MyComp {}
+
+        @NgModule({declarations: [MyComp]})
+        export class MyModule {}
+        `,
+      'src/main.html': '{{nonExistent}}'
+    });
+    const options = testSupport.createCompilerOptions({noEmitOnError: true});
+    const host = ng.createCompilerHost({options});
+    const program1 = ng.createProgram(
+        {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
+    const errorDiags =
+        program1.emit().diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
+    expect(formatDiagnostics(errorDiags))
+        .toContain(`src/main.ts(5,13): error TS2322: Type '1' is not assignable to type 'string'.`);
+    expect(formatDiagnostics(errorDiags))
+        .toContain(
+            `src/main.html(1,1): error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
+  });
+
+  it('should not report emit errors with noEmitOnError=false', () => {
+    testSupport.writeFiles({
+      'src/main.ts': `
+        @NgModule()
+      `
+    });
+    const options = testSupport.createCompilerOptions({noEmitOnError: false});
+    const host = ng.createCompilerHost({options});
+    const program1 = ng.createProgram(
+        {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
+    expect(program1.emit().diagnostics.length).toBe(0);
+  });
+
+  describe('errors', () => {
+    const fileWithStructuralError = `
+      import {NgModule} from '@angular/core';
+
+      @NgModule(() => (1===1 ? null as any : null as any))
+      export class MyModule {}
+    `;
+    const fileWithGoodContent = `
+      import {NgModule} from '@angular/core';
+
+      @NgModule()
+      export class MyModule {}
+    `;
+
+    it('should not throw on structural errors but collect them', () => {
+      testSupport.write('src/index.ts', fileWithStructuralError);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram(
+          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+
+      const structuralErrors = program.getNgStructuralDiagnostics();
+      expect(structuralErrors.length).toBe(1);
+      expect(structuralErrors[0].messageText).toContain('Function expressions are not supported');
+    });
+
+    it('should not throw on structural errors but collect them (loadNgStructureAsync)', (done) => {
+      testSupport.write('src/index.ts', fileWithStructuralError);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram(
+          {rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')], options, host});
+      program.loadNgStructureAsync().then(() => {
+        const structuralErrors = program.getNgStructuralDiagnostics();
+        expect(structuralErrors.length).toBe(1);
+        expect(structuralErrors[0].messageText).toContain('Function expressions are not supported');
+        done();
+      });
+    });
+
+    it('should be able report structural errors with noResolve:true and generateCodeForLibraries:false ' +
+           'even if getSourceFile throws for non existent files',
+       () => {
+         testSupport.write('src/index.ts', fileWithGoodContent);
+
+         // compile angular and produce .ngsummary.json / ngfactory.d.ts files
+         compile();
+
+         testSupport.write('src/ok.ts', fileWithGoodContent);
+         testSupport.write('src/error.ts', fileWithStructuralError);
+
+         // Make sure the ok.ts file is before the error.ts file,
+         // so we added a .ngfactory.ts file for it.
+         const allRootNames = resolveFiles(
+             ['src/ok.ts', 'src/error.ts'].map(fn => path.resolve(testSupport.basePath, fn)));
+
+         const options = testSupport.createCompilerOptions({
+           noResolve: true,
+           generateCodeForLibraries: false,
+         });
+         const host = ng.createCompilerHost({options});
+         const originalGetSourceFile = host.getSourceFile;
+         host.getSourceFile =
+             (fileName: string, languageVersion: ts.ScriptTarget,
+              onError?: ((message: string) => void) | undefined): ts.SourceFile => {
+               // We should never try to load .ngfactory.ts files
+               if (fileName.match(/\.ngfactory\.ts$/)) {
+                 throw new Error(`Non existent ngfactory file: ` + fileName);
+               }
+               return originalGetSourceFile.call(host, fileName, languageVersion, onError);
+             };
+         const program = ng.createProgram({rootNames: allRootNames, options, host});
+         const structuralErrors = program.getNgStructuralDiagnostics();
+         expect(structuralErrors.length).toBe(1);
+         expect(structuralErrors[0].messageText)
+             .toContain('Function expressions are not supported');
+       });
   });
 });

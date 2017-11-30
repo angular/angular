@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-// TODO(tbosch): figure out why we need this as it breaks node code within ngc-wrapped
-/// <reference types="node" />
+
 import * as ng from '@angular/compiler-cli';
 import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
@@ -60,6 +59,9 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     inputs,
     expectedOuts
   });
+  if (diagnostics.length) {
+    console.error(ng.formatDiagnostics(diagnostics));
+  }
   return diagnostics.every(d => d.category !== ts.DiagnosticCategory.Error);
 }
 
@@ -162,11 +164,19 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     }
     return origBazelHostFileExist.call(bazelHost, fileName);
   };
+  const origBazelHostShouldNameModule = bazelHost.shouldNameModule.bind(bazelHost);
+  bazelHost.shouldNameModule = (fileName: string) =>
+      origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
 
-  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) =>
-      relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+  ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
+    if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
+        ngHost.amdModuleName) {
+      return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
+    }
+    return relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+  };
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
       ngHost.fileNameToModuleName(fileName, referringSrcFileName);
   if (allDepsCompiledWithBazel) {
@@ -204,9 +214,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
       {rootNames: files, options: compilerOpts, host: ngHost, emitCallback, gatherDiagnostics});
   const tsickleEmitResult = emitResult as tsickle.EmitResult;
   let externs = '/** @externs */\n';
-  if (diagnostics.length) {
-    console.error(ng.formatDiagnostics(diagnostics));
-  } else {
+  if (!diagnostics.length) {
     if (bazelOpts.tsickleGenerateExterns) {
       externs += tsickle.getGeneratedExterns(tsickleEmitResult.externs);
     }

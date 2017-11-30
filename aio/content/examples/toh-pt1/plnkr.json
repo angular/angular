@@ -4,7 +4,8 @@
   "files":[
     "!**/*.d.ts",
     "!**/*.js",
-    "!**/*.[1].*"
+    "!**/*.[1].*",
+    "!**/dummy.module.ts"
   ],
   "tags": ["tutorial", "tour", "heroes"]
 }

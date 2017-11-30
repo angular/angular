@@ -92,17 +92,19 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
 
   private addTitleAndToc(docId: string) {
     this.tocService.reset();
-    let title = '';
     const titleEl = this.hostElement.querySelector('h1');
+    let title = '';
+
     // Only create TOC for docs with an <h1> title
     // If you don't want a TOC, add "no-toc" class to <h1>
     if (titleEl) {
-      title = (titleEl.innerText || titleEl.textContent).trim();
+      title = (typeof titleEl.innerText === 'string') ? titleEl.innerText : titleEl.textContent;
       if (!/(no-toc|notoc)/i.test(titleEl.className)) {
         this.tocService.genToc(this.hostElement, docId);
         titleEl.insertAdjacentHTML('afterend', '<aio-toc class="embedded"></aio-toc>');
       }
     }
+
     this.titleService.setTitle(title ? `Angular - ${title}` : 'Angular');
   }
 

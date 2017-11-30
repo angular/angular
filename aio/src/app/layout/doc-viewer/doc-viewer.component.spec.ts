@@ -361,6 +361,22 @@ describe('DocViewerComponent', () => {
       fixture.detectChanges();
       expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Text Content');
     });
+
+    it('should still use `innerText` if available but empty', () => {
+      const querySelector_ = docViewerEl.querySelector;
+      spyOn(docViewerEl, 'querySelector').and.callFake((selector: string) => {
+        const elem = querySelector_.call(docViewerEl, selector);
+        Object.defineProperties(elem, {
+          innerText: { value: '' },
+          textContent: { value: 'Text Content' }
+        });
+        return elem;
+      });
+
+      setCurrentDoc('<h1><i style="visibility: hidden">link</i></h1>Some content');
+      fixture.detectChanges();
+      expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
+    });
   });
 
   describe('TOC', () => {

@@ -6,16 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile, ParseSourceSpan} from '@angular/compiler';
+import {GeneratedFile, ParseSourceSpan, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
 export const DEFAULT_ERROR_CODE = 100;
 export const UNKNOWN_ERROR_CODE = 500;
 export const SOURCE = 'angular' as 'angular';
 
+export interface DiagnosticMessageChain {
+  messageText: string;
+  position?: Position;
+  next?: DiagnosticMessageChain;
+}
+
 export interface Diagnostic {
   messageText: string;
   span?: ParseSourceSpan;
+  position?: Position;
+  chain?: DiagnosticMessageChain;
   category: ts.DiagnosticCategory;
   code: number;
   source: 'angular';
@@ -150,6 +158,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * in JIT mode. This is off by default.
    */
   enableSummariesForJit?: boolean;
+
+  /** @internal */
+  collectAllErrors?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {
@@ -189,6 +200,13 @@ export interface CompilerHost extends ts.CompilerHost {
    * cause a diagnostics diagnostic error or an exception to be thrown.
    */
   readResource?(fileName: string): Promise<string>|string;
+  /**
+   * Produce an AMD module name for the source file. Used in Bazel.
+   *
+   * An AMD module can have an arbitrary name, so that it is require'd by name
+   * rather than by path. See http://requirejs.org/docs/whyamd.html#namedmodules
+   */
+  amdModuleName?(sf: ts.SourceFile): string|undefined;
 }
 
 export enum EmitFlags {
@@ -227,6 +245,12 @@ export interface LibrarySummary {
   fileName: string;
   text: string;
   sourceFile?: ts.SourceFile;
+}
+
+export interface LazyRoute {
+  route: string;
+  module: {name: string, filePath: string};
+  referencedModule: {name: string, filePath: string};
 }
 
 export interface Program {
@@ -292,6 +316,14 @@ export interface Program {
    * will produce a diagnostic error message or, `getTsProgram()` or `emit` to throw.
    */
   loadNgStructureAsync(): Promise<void>;
+
+  /**
+   * Returns the lazy routes in the program.
+   * @param entryRoute A reference to an NgModule like `someModule#name`. If given,
+   *              will recursively analyze routes starting from this symbol only.
+   *              Otherwise will list all routes for all NgModules in the program/
+   */
+  listLazyRoutes(entryRoute?: string): LazyRoute[];
 
   /**
    * Emit the files requested by emitFlags implied by the program.

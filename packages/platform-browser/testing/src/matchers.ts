@@ -107,7 +107,7 @@ export const expect: (actual: any) => NgMatchers = <any>_global.expect;
     return '' + m;
   }
   const res: any[] = [];
-  m.forEach((v: any, k: any) => { res.push(`${k}:${v}`); });
+  m.forEach((v: any, k: any) => { res.push(`${String(k)}:${String(v)}`); });
   return `{ ${res.join(',')} }`;
 };
 

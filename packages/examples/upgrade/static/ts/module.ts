@@ -135,7 +135,7 @@ ng1AppModule.component('ng1Hero', {
 // This AngularJS service will be "upgraded" to be used in Angular
 ng1AppModule.factory(
     'titleCase',
-    () => (value: string) => value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase()));
+    (() => (value: string) => value.replace(/((^|\s)[a-z])/g, (_, c) => c.toUpperCase())) as any);
 // #enddocregion
 
 // #docregion downgrade-ng2-heroes-service
@@ -154,18 +154,20 @@ ng1AppModule.component('exampleApp', {
   // We inject the "downgraded" HeroesService into this AngularJS component
   // (We don't need the `HeroesService` type for AngularJS DI - it just helps with TypeScript
   // compilation)
-  controller: [
-    'heroesService', function(heroesService: HeroesService) { this.heroesService = heroesService; }
-  ],
-  // This template make use of the downgraded `ng2-heroes` component
-  // Note that because its element is compiled by AngularJS we must use kebab-case attributes for
-  // inputs and outputs
-  template: `<link rel="stylesheet" href="./styles.css">
+  controller:
+      [
+        'heroesService',
+        function(heroesService: HeroesService) { this.heroesService = heroesService; }
+      ],
+      // This template make use of the downgraded `ng2-heroes` component
+      // Note that because its element is compiled by AngularJS we must use kebab-case attributes
+      // for inputs and outputs
+      template: `<link rel="stylesheet" href="./styles.css">
              <ng2-heroes [heroes]="$ctrl.heroesService.heroes" (add-hero)="$ctrl.heroesService.addHero()" (remove-hero)="$ctrl.heroesService.removeHero($event)">
                <h1>Heroes</h1>
                <p class="extra">There are {{ $ctrl.heroesService.heroes.length }} heroes.</p>
              </ng2-heroes>`
-});
+} as any);
 // #enddocregion
 // #enddocregion
 

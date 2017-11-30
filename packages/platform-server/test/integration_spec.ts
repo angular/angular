@@ -592,7 +592,7 @@ export function main() {
            platform.bootstrapModule(ExampleModule).then(ref => {
              const mock = ref.injector.get(MockBackend);
              const http = ref.injector.get(Http);
-             ref.injector.get(NgZone).run(() => {
+             ref.injector.get<NgZone>(NgZone).run(() => {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
                  NgZone.assertInAngularZone();
@@ -612,11 +612,11 @@ export function main() {
            platform.bootstrapModule(ExampleModule).then(ref => {
              const mock = ref.injector.get(MockBackend);
              const http = ref.injector.get(Http);
-             expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get(NgZone).run(() => {
+             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+             ref.injector.get<NgZone>(NgZone).run(() => {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
                http.get('http://localhost/testing').subscribe(resp => {
@@ -631,11 +631,11 @@ export function main() {
            platform.bootstrapModule(HttpBeforeExampleModule).then(ref => {
              const mock = ref.injector.get(MockBackend);
              const http = ref.injector.get(Http);
-             expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get(NgZone).run(() => {
+             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+             ref.injector.get<NgZone>(NgZone).run(() => {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
                http.get('http://localhost/testing').subscribe(resp => {
@@ -650,11 +650,11 @@ export function main() {
            platform.bootstrapModule(HttpAfterExampleModule).then(ref => {
              const mock = ref.injector.get(MockBackend);
              const http = ref.injector.get(Http);
-             expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get(NgZone).run(() => {
+             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+             ref.injector.get<NgZone>(NgZone).run(() => {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
                http.get('http://localhost/testing').subscribe(resp => {
@@ -688,7 +688,7 @@ export function main() {
            platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
-             ref.injector.get(NgZone).run(() => {
+             ref.injector.get<NgZone>(NgZone).run(() => {
                http.get('http://localhost/testing').subscribe(body => {
                  NgZone.assertInAngularZone();
                  expect(body).toEqual('success!');
@@ -703,13 +703,13 @@ export function main() {
            platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
-             ref.injector.get(NgZone).run(() => {
+             ref.injector.get<NgZone>(NgZone).run(() => {
                http.get('http://localhost/testing').subscribe(body => {
                  expect(body).toEqual('success!');
                });
-               expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+               expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
                mock.expectOne('http://localhost/testing').flush('success!');
-               expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
+               expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
              });
            });
          }));

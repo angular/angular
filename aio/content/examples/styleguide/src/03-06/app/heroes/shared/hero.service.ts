@@ -20,12 +20,12 @@ export class HeroService {
 
   getHero(id: number) {
     return this.http.get(`api/heroes/${id}`)
-      .map(response => response.json().data as Hero);
+      .map(response => response.json() as Hero);
   }
 
   getHeroes() {
     return this.http.get(`api/heroes`)
-      .map(response => response.json().data as Hero[]);
+      .map(response => response.json() as Hero[]);
   }
 
 }

@@ -37,6 +37,8 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('refactor(platform-webworker): something')).toBe(VALID);
       expect(validateMessage('test(language-service): something')).toBe(VALID);
       expect(validateMessage('test(packaging): something')).toBe(VALID);
+      expect(validateMessage('release: something')).toBe(VALID);
+      expect(validateMessage('release(packaging): something')).toBe(VALID);
       expect(errors).toEqual([]);
     });
 
@@ -65,16 +67,17 @@ describe('validate-commit-message.js', function() {
           .forEach((expectedErrorMessage, index) => {
             expect(expectedErrorMessage).toEqual(errors[index]);
           });
+      expect(validateMessage('release(angular): something')).toBe(INVALID);
     });
 
 
     it('should validate 100 characters length', function() {
       var msg =
-          'fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer... ';
+          'fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer and longer and longer and longer... ';
 
       expect(validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual([
-        'INVALID COMMIT MSG: "fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer... "\n => ERROR: The commit message is longer than 100 characters'
+        'INVALID COMMIT MSG: "fix(compiler): something super mega extra giga tera long, maybe even longer and longer and longer and longer and longer and longer... "\n => ERROR: The commit message is longer than 120 characters'
       ]);
     });
 
@@ -106,7 +109,7 @@ describe('validate-commit-message.js', function() {
       expect(errors).toEqual(
           ['INVALID COMMIT MSG: "weird($filter): something"\n' +
            ' => ERROR: weird is not an allowed type.\n' +
-           ' => TYPES: build, ci, docs, feat, fix, perf, refactor, style, test']);
+           ' => TYPES: build, ci, docs, feat, fix, perf, refactor, release, style, test']);
     });
 
 

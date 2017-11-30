@@ -12,6 +12,7 @@
     "no-jasmine-focus": true,
     "no-var-keyword": true,
     "require-internal-with-underscore": true,
+    "rollup-config": true,
     "semicolon": [true],
     "variable-name": [true, "ban-keywords"],
     "no-inner-declarations": [true, "function"]

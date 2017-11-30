@@ -132,7 +132,6 @@ You launch an Angular application by "bootstrapping" it using the application ro
 
 Bootstrapping identifies an application's top level "root" [component](guide/glossary#component),
 which is the first component that is loaded for the application.
-For more information, see the [Setup](guide/setup) page.
 
 You can bootstrap multiple apps in the same `index.html`, each app with its own top-level root.
 
@@ -149,6 +148,12 @@ Function, property, and method names are typically spelled in camelCase. For exa
 camelCase is also known as *lower camel case* to distinguish it from *upper camel case*, or [PascalCase](guide/glossary#pascalcase).
 In Angular documentation, "camelCase" always means *lower camel case*.
 
+
+## CLI
+
+The Angular CLI is a `command line interface` tool that can create a project, add files, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+
+Learn more in the [Getting Started](guide/quickstart) guide.
 
 {@a component}
 
@@ -496,7 +501,7 @@ is based on the [ES2015 module standard](http://www.2ality.com/2014/09/es6-modul
 An application that adheres to this standard requires a module loader to
 load modules on request and resolve inter-module dependencies.
 Angular doesn't include a module loader and doesn't have a preference
-for any particular third-party library (although most examples use SystemJS).
+for any particular third-party library.
 You can use any module library that conforms to the standard.
 
 Modules are typically named after the file in which the exported thing is defined.

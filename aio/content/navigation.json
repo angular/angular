@@ -83,34 +83,39 @@
           "tooltip": "Part 1: Introduction to the Tour of Heroes tutorial"
         },
         {
+          "url": "tutorial/toh-pt0",
+          "title": "2. The Application Shell",
+          "tooltip": "Part 2: Creating the application shell"
+        },
+        {
           "url": "tutorial/toh-pt1",
-          "title": "2. The Hero Editor",
-          "tooltip": "Part 2: Build a simple hero editor"
+          "title": "3. The Hero Editor",
+          "tooltip": "Part 3: Build a simple hero editor"
         },
         {
           "url": "tutorial/toh-pt2",
-          "title": "3. Master/Detail",
-          "tooltip": "Part 3: Build a master/detail page with a list of heroes."
+          "title": "4. Displaying a List",
+          "tooltip": "Part 4: Build a master/detail page with a list of heroes."
         },
         {
           "url": "tutorial/toh-pt3",
-          "title": "4. Multiple Components",
-          "tooltip": "Part 4: Refactor the master/detail view into separate components."
+          "title": "5. Master/Detail Components",
+          "tooltip": "Part 5: Refactor the master/detail view into separate components."
         },
         {
           "url": "tutorial/toh-pt4",
-          "title": "5. Services",
-          "tooltip": "Part 5: Create a reusable service to manage hero data."
+          "title": "6. Services",
+          "tooltip": "Part 6: Create a reusable service to manage hero data."
         },
         {
           "url": "tutorial/toh-pt5",
-          "title": "6. Routing",
-          "tooltip": "Part 6: Add the Angular router and navigate among the views."
+          "title": "7. Routing",
+          "tooltip": "Part 7: Add the Angular router and navigate among the views."
         },
         {
           "url": "tutorial/toh-pt6",
-          "title": "7. HTTP",
-          "tooltip": "Part 7: Use HTTP to retrieve and save hero data."
+          "title": "8. HTTP",
+          "tooltip": "Part 8: Use HTTP to retrieve and save hero data."
         }
       ]
     },
@@ -220,17 +225,17 @@
 
         {
           "title": "NgModules",
-          "tooltip": "Learn how to use NgModules to make your apps efficient.",
+          "tooltip": "Modularize your app with NgModules.",
           "children": [
             {
               "url": "guide/ngmodule",
               "title": "NgModules",
-              "tooltip": "Define application modules with @NgModule."
+              "tooltip": "Define application modules with the NgModule."
             },
             {
               "url": "guide/ngmodule-faq",
               "title": "NgModule FAQs",
-              "tooltip": "Answers to frequently asked questions about @NgModule."
+              "tooltip": "Answers to frequently asked questions about NgModules."
             }
         ]},
 
@@ -239,9 +244,14 @@
           "tooltip": "Dependency Injection: creating and injecting services",
           "children": [
             {
+              "url": "guide/dependency-injection-pattern",
+              "title": "The Dependency Injection pattern",
+              "tooltip": "Learn about the dependency injection pattern behind the Angular DI system."
+            },
+            {
               "url": "guide/dependency-injection",
-              "title": "Dependency Injection",
-              "tooltip": "Angular's dependency injection system creates and delivers dependent services \"just-in-time\"."
+              "title": "Angular Dependency Injection",
+              "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
             },
             {
               "url": "guide/hierarchical-dependency-injection",
@@ -266,6 +276,38 @@
           "title": "Routing & Navigation",
           "tooltip": "Discover the basics of screen navigation with the Angular Router."
         },
+        {
+          "title": "Service Workers",
+          "tooltip": "Angular service workers: Controlling caching of application resources.",
+          "children": [
+            {
+              "url": "guide/service-worker-intro",
+              "title": "Introduction",
+              "tooltip": "Angular's implementation of service workers improves user experience with slow or unreliable network connectivity."
+            },
+            {
+              "url": "guide/service-worker-getstart",
+              "title": "Getting Started",
+              "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
+            },
+            {
+              "url": "guide/service-worker-comm",
+              "title": "Communication",
+              "tooltip": "Services that enable you to interact with an Angular service worker."
+            },
+            {
+              "url": "guide/service-worker-devops",
+              "title": "Service Workers in Production",
+              "tooltip": "Information about running applications with service workers, including application update management, debugging, and killing applications."
+            },
+            {
+              "url": "guide/service-worker-configref",
+              "title": "Reference: Configuration File",
+              "tooltip": "The ngsw-config.json configuration file controls service worker caching behavior."
+            }
+          ]
+        },
+
         {
           "url": "guide/testing",
           "title": "Testing",
@@ -332,11 +374,6 @@
               "url": "guide/aot-compiler",
               "title": "Ahead-of-Time Compilation",
               "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
-            },
-            {
-              "url": "guide/metadata",
-              "title": "Metadata and AOT",
-              "tooltip": "How Angular handles metadata with AOT."
             },
             {
               "url": "guide/deployment",
@@ -491,6 +528,7 @@
   ],
 
   "docVersions": [
+    { "title": "v4 (LTS)", "url": "https://v4.angular.io" },
     { "title": "v2", "url": "https://v2.angular.io" },
     { "title": "AngularDart", "url": "https://webdev.dartlang.org/angular" }
 

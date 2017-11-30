@@ -184,8 +184,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      expect(errorSpy.calls.mostRecent().args[0])
-          .toContain('Error at ' + path.join(basePath, 'mymodule.ts.MyComp.html'));
+      expect(errorSpy.calls.mostRecent().args[0]).toContain('mymodule.ts.MyComp.html');
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain(`Property 'unknownProp' does not exist on type 'MyComp'`);
 
@@ -215,8 +214,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
-      expect(errorSpy.calls.mostRecent().args[0])
-          .toContain('Error at ' + path.join(basePath, 'my.component.html(1,5):'));
+      expect(errorSpy.calls.mostRecent().args[0]).toContain('my.component.html(1,5):');
       expect(errorSpy.calls.mostRecent().args[0])
           .toContain(`Property 'unknownProp' does not exist on type 'MyComp'`);
 
@@ -502,29 +500,69 @@ describe('ngc transformer command-line', () => {
       it('should add metadata as decorators', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
+          "compilerOptions": {
+            "emitDecoratorMetadata": true
+          },
           "angularCompilerOptions": {
             "annotationsAs": "decorators"
           },
           "files": ["mymodule.ts"]
         }`);
+        write('aclass.ts', `export class AClass {}`);
         write('mymodule.ts', `
-        import {NgModule, Component} from '@angular/core';
+          import {NgModule} from '@angular/core';
+          import {AClass} from './aclass';
 
-        @Component({template: ''})
-        export class MyComp {
-          fn(p: any) {}
-        }
-
-        @NgModule({declarations: [MyComp]})
-        export class MyModule {}
-      `);
+          @NgModule({declarations: []})
+          export class MyModule {
+            constructor(importedClass: AClass) {}
+          }
+        `);
 
         const exitCode = main(['-p', basePath], errorSpy);
         expect(exitCode).toEqual(0);
 
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
-        expect(mymoduleSource).toContain('MyComp = __decorate([');
+        expect(mymoduleSource).toContain('MyModule = __decorate([');
+        expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
+        expect(mymoduleSource).toContain(`__metadata("design:paramtypes", [AClass])`);
+      });
+
+      it('should add metadata as static fields', () => {
+        // Note: Don't specify emitDecoratorMetadata here on purpose,
+        // as regression test for https://github.com/angular/angular/issues/19916.
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "compilerOptions": {
+            "emitDecoratorMetadata": false
+          },
+          "angularCompilerOptions": {
+            "annotationsAs": "static fields"
+          },
+          "files": ["mymodule.ts"]
+        }`);
+        write('aclass.ts', `export class AClass {}`);
+        write('mymodule.ts', `
+          import {NgModule} from '@angular/core';
+          import {AClass} from './aclass';
+
+          @NgModule({declarations: []})
+          export class MyModule {
+            constructor(importedClass: AClass) {}
+          }
+        `);
+
+        const exitCode = main(['-p', basePath], errorSpy);
+        expect(exitCode).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).not.toContain('__decorate');
+        expect(mymoduleSource).toContain('args: [{ declarations: [] },] }');
+        expect(mymoduleSource).not.toContain(`__metadata`);
+        expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
+        expect(mymoduleSource).toContain(`{ type: AClass, }`);
       });
     });
 
@@ -1352,6 +1390,42 @@ describe('ngc transformer command-line', () => {
   });
 
   describe('regressions', () => {
+    //#19544
+    it('should recognize @NgModule() directive with a redundant @Injectable()', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "outDir": "../dist",
+          "rootDir": ".",
+          "rootDirs": [
+            ".",
+            "../dist"
+          ]
+        },
+        "files": ["test-module.ts"]
+      }`);
+      write('src/test.component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<p>hello</p>',
+        })
+        export class TestComponent {}
+      `);
+      write('src/test-module.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+        import {TestComponent} from './test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        @Injectable()
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(0, 'Compile failed unexpectedly.\n  ' + messages.join('\n  '));
+    });
+
     // #19765
     it('should not report an error when the resolved .css file is in outside rootDir', () => {
       write('src/tsconfig.json', `{
@@ -1390,6 +1464,149 @@ describe('ngc transformer command-line', () => {
       const exitCode =
           main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
       expect(exitCode).toBe(0, 'Compile failed unexpectedly.\n  ' + messages.join('\n  '));
+    });
+
+    it('should emit all structural errors', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/indirect2.ts', `
+        declare var f: any;
+        export const t2 = f\`<p>hello</p>\`;
+      `);
+      write('src/lib/indirect1.ts', `
+        import {t2} from './indirect2';
+        export const t1 = t2 + ' ';
+      `);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+        import {t1} from './indirect1';
+
+        @Component({
+          template: t1
+        })
+        export class TestComponent {}
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain(['Tagged template expressions are not supported in metadata']);
+    });
+
+    // Regression: #20076
+    it('should report template error messages', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '{{thing.?stuff}}'
+        })
+        export class TestComponent {
+          thing: string;
+        }
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain('Parser Error: Unexpected token');
+    });
+
+    it('should allow using 2 classes with the same name in declarations with noEmitOnError=true',
+       () => {
+         write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "noEmitOnError": true
+        },
+        "files": ["test-module.ts"]
+      }`);
+         function writeComp(fileName: string) {
+           write(fileName, `
+        import {Component} from '@angular/core';
+
+        @Component({selector: 'comp', template: ''})
+        export class TestComponent {}
+      `);
+         }
+         writeComp('src/comp1.ts');
+         writeComp('src/comp2.ts');
+         write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent as Comp1} from './comp1';
+        import {TestComponent as Comp2} from './comp2';
+
+        @NgModule({
+          declarations: [Comp1, Comp2],
+        })
+        export class MyModule {}
+      `);
+         expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
+       });
+  });
+
+  describe('formatted messages', () => {
+    it('should emit a formatted error message for a structural error', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+      write('src/lib/indirect2.ts', `
+        declare var f: any;
+
+        export const t2 = f\`<p>hello</p>\`;
+      `);
+      write('src/lib/indirect1.ts', `
+        import {t2} from './indirect2';
+        export const t1 = t2 + ' ';
+      `);
+      write('src/lib/test.component.ts', `
+        import {Component} from '@angular/core';
+        import {t1} from './indirect1';
+
+        @Component({
+          template: t1,
+          styleUrls: ['./test.component.css']
+        })
+        export class TestComponent {}
+      `);
+      write('src/test-module.ts', `
+        import {NgModule} from '@angular/core';
+        import {TestComponent} from './lib/test.component';
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      const messages: string[] = [];
+      const exitCode =
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
+      expect(exitCode).toBe(1, 'Compile was expected to fail');
+      expect(messages[0])
+          .toEqual(`lib/test.component.ts(6,21): Error during template compile of 'TestComponent'
+  Tagged template expressions are not supported in metadata in 't1'
+    't1' references 't2' at lib/indirect1.ts(3,27)
+      't2' contains the error at lib/indirect2.ts(4,27).
+`);
     });
   });
 });

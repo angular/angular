@@ -70,7 +70,7 @@ export const ISO8601_DATE_REGEX =
  *  |                    | ww          | Numeric: 2 digits + zero padded                               | 01... 53                                                   |
  *  | Week of month      | W           | Numeric: 1 digit                                              | 1... 5                                                     |
  *  | Day of month       | d           | Numeric: minimum digits                                       | 1                                                          |
- *  |                    | dd          | Numeric: 2 digits + zero padded                               | 1                                                          |
+ *  |                    | dd          | Numeric: 2 digits + zero padded                               | 01                                                          |
  *  | Week day           | E, EE & EEE | Abbreviated                                                   | Tue                                                        |
  *  |                    | EEEE        | Wide                                                          | Tuesday                                                    |
  *  |                    | EEEEE       | Narrow                                                        | T                                                          |

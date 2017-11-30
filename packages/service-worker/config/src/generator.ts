@@ -46,7 +46,7 @@ export class Generator {
       plainFiles.forEach(file => seenMap.add(file));
 
       // Add the hashes.
-      await plainFiles.reduce(async(previous, file) => {
+      await[...versionedFiles, ...plainFiles].reduce(async(previous, file) => {
         await previous;
         const hash = await this.fs.hash(file);
         hashTable[joinUrls(this.baseHref, file)] = hash;

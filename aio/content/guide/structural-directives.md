@@ -25,7 +25,7 @@ They shape or reshape the DOM's _structure_, typically by adding, removing, or m
 elements.
 
 As with other directives, you apply a structural directive to a _host element_.
-The directive then does whatever it's supposed to do with that host element and its descendents.
+The directive then does whatever it's supposed to do with that host element and its descendants.
 
 Structural directives are easy to recognize.
 An asterisk (*) precedes the directive attribute name as in this example.
@@ -285,7 +285,7 @@ that you reference within the template. The input variables in this example are 
 The parser translates `let hero`, `let i`, and `let odd` into variables named,
 `let-hero`, `let-i`, and `let-odd`.
 
-* The microsyntax parser takes `of` and `trackby`, title-cases them (`of` -> `Of`, `trackBy` -> `TrackBy`),
+* The microsyntax parser takes `of` and `trackBy`, title-cases them (`of` -> `Of`, `trackBy` -> `TrackBy`),
 and prefixes them with the directive's attribute name (`ngFor`), yielding the names `ngForOf` and `ngForTrackBy`.
 Those are the names of two `NgFor` _input properties_ .
 That's how the directive learns that the list is `heroes` and the track-by function is `trackById`.

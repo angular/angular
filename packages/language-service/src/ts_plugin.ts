@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
-import {Completion, Diagnostic, LanguageService, LanguageServiceHost} from './types';
+import {Completion, Diagnostic, DiagnosticMessageChain, LanguageService, LanguageServiceHost} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
 const projectHostMap = new WeakMap<any, TypeScriptServiceHost>();
@@ -179,7 +179,31 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   function completionToEntry(c: Completion): ts.CompletionEntry {
-    return {kind: c.kind, name: c.name, sortText: c.sort, kindModifiers: ''};
+    return {
+      // TODO: remove any and fix type error.
+      kind: c.kind as any,
+      name: c.name,
+      sortText: c.sort,
+      kindModifiers: ''
+    };
+  }
+
+  function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
+      ts.DiagnosticMessageChain {
+    return {
+      messageText: chain.message,
+      category: ts.DiagnosticCategory.Error,
+      code: 0,
+      next: chain.next ? diagnosticChainToDiagnosticChain(chain.next) : undefined
+    };
+  }
+
+  function diagnosticMessageToDiagnosticMessageText(message: string | DiagnosticMessageChain):
+      string|ts.DiagnosticMessageChain {
+    if (typeof message === 'string') {
+      return message;
+    }
+    return diagnosticChainToDiagnosticChain(message);
   }
 
   function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
@@ -187,7 +211,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       file,
       start: d.span.start,
       length: d.span.end - d.span.start,
-      messageText: d.message,
+      messageText: diagnosticMessageToDiagnosticMessageText(d.message),
       category: ts.DiagnosticCategory.Error,
       code: 0,
       source: 'ng'
@@ -294,9 +318,10 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
                    fileName: loc.fileName,
                    textSpan: {start: loc.span.start, length: loc.span.end - loc.span.start},
                    name: '',
-                   kind: 'definition',
+                   // TODO: remove any and fix type error.
+                   kind: 'definition' as any,
                    containerName: loc.fileName,
-                   containerKind: 'file'
+                   containerKind: 'file' as any,
                  });
                }
              }

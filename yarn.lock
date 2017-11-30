@@ -2,15 +2,15 @@
 # yarn lockfile v1
 
 
-"@bazel/typescript@0.2.x":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.2.2.tgz#0a0d09924508c946de32e6acdb2b5cc1ee32c506"
+"@bazel/typescript@0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.3.2.tgz#b4721b7f9e4c447a553555eab4a437f538a9496d"
   dependencies:
     "@types/node" "7.0.18"
     "@types/source-map" "^0.5.1"
     protobufjs "5.0.0"
-    tsickle "0.24.x"
-    typescript "2.4.x"
+    tsickle "0.25.x"
+    typescript "2.5.x"
 
 "@google-cloud/common@^0.13.0":
   version "0.13.5"
@@ -6194,9 +6194,9 @@ rx-lite@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/rx-lite/-/rx-lite-3.1.2.tgz#19ce502ca572665f3b647b10939f97fd1615f102"
 
-rxjs@^5.5.0:
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.5.0.tgz#26d8f3866eb700e247e0728a147c3d628993d812"
+rxjs@^5.5.2:
+  version "5.5.2"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-5.5.2.tgz#28d403f0071121967f18ad665563255d54236ac3"
   dependencies:
     symbol-observable "^1.0.1"
 
@@ -7102,9 +7102,9 @@ ts-api-guardian@0.2.2:
     minimist "^1.2.0"
     typescript "2.0.10"
 
-tsickle@0.24.x:
-  version "0.24.1"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.24.1.tgz#039343b205bf517a333b0703978892f80a7d848e"
+tsickle@0.25.5, tsickle@0.25.x:
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.25.5.tgz#2891d29f97c4aab1306e06378d8496d1765a4bfe"
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
@@ -7199,9 +7199,9 @@ typescript@2.0.10:
   version "2.0.10"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.0.10.tgz#ccdd4ed86fd5550a407101a0814012e1b3fac3dd"
 
-typescript@2.4.2, typescript@2.4.x:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.4.2.tgz#f8395f85d459276067c988aa41837a8f82870844"
+typescript@2.5.x:
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.3.tgz#df3dcdc38f3beb800d4bc322646b04a3f6ca7f0d"
 
 uglify-js@1.2.6, uglify-js@~1.2.5:
   version "1.2.6"
@@ -7886,10 +7886,6 @@ yargs@~3.10.0:
     cliui "^2.1.0"
     decamelize "^1.0.0"
     window-size "0.1.0"
-
-yarn@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.0.2.tgz#d1b8f4b6d3b0684e86f63a072ac630995b8b7b0a"
 
 yeast@0.1.2:
   version "0.1.2"

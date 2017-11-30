@@ -14,7 +14,7 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer as RendererV1, Renderer2} from '../render/api';
 
 import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';
-import {BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, ViewData, ViewFlags, ViewState, asElementData, asProviderData} from './types';
+import {BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, ViewData, ViewFlags, ViewState, asElementData, asProviderData, shouldCallLifecycleInitHook} from './types';
 import {calcBindingFlags, checkBinding, dispatchEvent, isComponentView, splitDepsDsl, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
 
 const RendererV1TokenKey = tokenKey(RendererV1);
@@ -198,7 +198,8 @@ export function checkAndUpdateDirectiveInline(
   if (changes) {
     directive.ngOnChanges(changes);
   }
-  if ((view.state & ViewState.FirstCheck) && (def.flags & NodeFlags.OnInit)) {
+  if ((def.flags & NodeFlags.OnInit) &&
+      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)) {
     directive.ngOnInit();
   }
   if (def.flags & NodeFlags.DoCheck) {
@@ -222,7 +223,8 @@ export function checkAndUpdateDirectiveDynamic(
   if (changes) {
     directive.ngOnChanges(changes);
   }
-  if ((view.state & ViewState.FirstCheck) && (def.flags & NodeFlags.OnInit)) {
+  if ((def.flags & NodeFlags.OnInit) &&
+      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingOnInit, def.nodeIndex)) {
     directive.ngOnInit();
   }
   if (def.flags & NodeFlags.DoCheck) {
@@ -447,17 +449,61 @@ function updateProp(
   return changes;
 }
 
+// This function calls the ngAfterContentCheck, ngAfterContentInit,
+// ngAfterViewCheck, and ngAfterViewInit lifecycle hooks (depending on the node
+// flags in lifecycle). Unlike ngDoCheck, ngOnChanges and ngOnInit, which are
+// called during a pre-order traversal of the view tree (that is calling the
+// parent hooks before the child hooks) these events are sent in using a
+// post-order traversal of the tree (children before parents). This changes the
+// meaning of initIndex in the view state. For ngOnInit, initIndex tracks the
+// expected nodeIndex which a ngOnInit should be called. When sending
+// ngAfterContentInit and ngAfterViewInit it is the expected count of
+// ngAfterContentInit or ngAfterViewInit methods that have been called. This
+// ensure that dispite being called recursively or after picking up after an
+// exception, the ngAfterContentInit or ngAfterViewInit will be called on the
+// correct nodes. Consider for example, the following (where E is an element
+// and D is a directive)
+//  Tree:       pre-order index  post-order index
+//    E1        0                6
+//      E2      1                1
+//       D3     2                0
+//      E4      3                5
+//       E5     4                4
+//        E6    5                2
+//        E7    6                3
+// As can be seen, the post-order index has an unclear relationship to the
+// pre-order index (postOrderIndex === preOrderIndex - parentCount +
+// childCount). Since number of calls to ngAfterContentInit and ngAfterViewInit
+// are stable (will be the same for the same view regardless of exceptions or
+// recursion) we just need to count them which will roughly correspond to the
+// post-order index (it skips elements and directives that do not have
+// lifecycle hooks).
+//
+// For example, if an exception is raised in the E6.onAfterViewInit() the
+// initIndex is left at 3 (by shouldCallLifecycleInitHook() which set it to
+// initIndex + 1). When checkAndUpdateView() is called again D3, E2 and E6 will
+// not have their ngAfterViewInit() called but, starting with E7, the rest of
+// the view will begin getting ngAfterViewInit() called until a check and
+// pass is complete.
+//
+// This algorthim also handles recursion. Consider if E4's ngAfterViewInit()
+// indirectly calls E1's ChangeDetectorRef.detectChanges(). The expected
+// initIndex is set to 6, the recusive checkAndUpdateView() starts walk again.
+// D3, E2, E6, E7, E5 and E4 are skipped, ngAfterViewInit() is called on E1.
+// When the recursion returns the initIndex will be 7 so E1 is skipped as it
+// has already been called in the recursively called checkAnUpdateView().
 export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: NodeFlags) {
   if (!(view.def.nodeFlags & lifecycles)) {
     return;
   }
   const nodes = view.def.nodes;
+  let initIndex = 0;
   for (let i = 0; i < nodes.length; i++) {
     const nodeDef = nodes[i];
     let parent = nodeDef.parent;
     if (!parent && nodeDef.flags & lifecycles) {
       // matching root node (e.g. a pipe)
-      callProviderLifecycles(view, i, nodeDef.flags & lifecycles);
+      callProviderLifecycles(view, i, nodeDef.flags & lifecycles, initIndex++);
     }
     if ((nodeDef.childFlags & lifecycles) === 0) {
       // no child matches one of the lifecycles
@@ -467,25 +513,28 @@ export function callLifecycleHooksChildrenFirst(view: ViewData, lifecycles: Node
            i === parent.nodeIndex + parent.childCount) {
       // last child of an element
       if (parent.directChildFlags & lifecycles) {
-        callElementProvidersLifecycles(view, parent, lifecycles);
+        initIndex = callElementProvidersLifecycles(view, parent, lifecycles, initIndex);
       }
       parent = parent.parent;
     }
   }
 }
 
-function callElementProvidersLifecycles(view: ViewData, elDef: NodeDef, lifecycles: NodeFlags) {
+function callElementProvidersLifecycles(
+    view: ViewData, elDef: NodeDef, lifecycles: NodeFlags, initIndex: number): number {
   for (let i = elDef.nodeIndex + 1; i <= elDef.nodeIndex + elDef.childCount; i++) {
     const nodeDef = view.def.nodes[i];
     if (nodeDef.flags & lifecycles) {
-      callProviderLifecycles(view, i, nodeDef.flags & lifecycles);
+      callProviderLifecycles(view, i, nodeDef.flags & lifecycles, initIndex++);
     }
     // only visit direct children
     i += nodeDef.childCount;
   }
+  return initIndex;
 }
 
-function callProviderLifecycles(view: ViewData, index: number, lifecycles: NodeFlags) {
+function callProviderLifecycles(
+    view: ViewData, index: number, lifecycles: NodeFlags, initIndex: number) {
   const providerData = asProviderData(view, index);
   if (!providerData) {
     return;
@@ -495,13 +544,15 @@ function callProviderLifecycles(view: ViewData, index: number, lifecycles: NodeF
     return;
   }
   Services.setCurrentNode(view, index);
-  if (lifecycles & NodeFlags.AfterContentInit) {
+  if (lifecycles & NodeFlags.AfterContentInit &&
+      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingAfterContentInit, initIndex)) {
     provider.ngAfterContentInit();
   }
   if (lifecycles & NodeFlags.AfterContentChecked) {
     provider.ngAfterContentChecked();
   }
-  if (lifecycles & NodeFlags.AfterViewInit) {
+  if (lifecycles & NodeFlags.AfterViewInit &&
+      shouldCallLifecycleInitHook(view, ViewState.InitState_CallingAfterViewInit, initIndex)) {
     provider.ngAfterViewInit();
   }
   if (lifecycles & NodeFlags.AfterViewChecked) {

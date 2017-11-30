@@ -144,12 +144,14 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       const span = node.sourceSpan;
       if (span.start.file == span.end.file) {
         const file = span.start.file;
-        let source = this._templateSources.get(file);
-        if (!source) {
-          source = ts.createSourceMapSource(file.url, file.content, pos => pos);
-          this._templateSources.set(file, source);
+        if (file.url) {
+          let source = this._templateSources.get(file);
+          if (!source) {
+            source = ts.createSourceMapSource(file.url, file.content, pos => pos);
+            this._templateSources.set(file, source);
+          }
+          return {pos: span.start.offset, end: span.end.offset, source};
         }
-        return {pos: span.start.offset, end: span.end.offset, source};
       }
     }
     return null;

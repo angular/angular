@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
-import sourcemaps from 'rollup-plugin-sourcemaps';
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   'rxjs/Observable': 'Rx',
@@ -18,7 +18,7 @@ const globals = {
   'rxjs/operator/share': 'Rx.Observable.prototype'
 };
 
-export default {
+module.exports = {
   entry: '../../dist/packages-dist/core/esm5/core.js',
   dest: '../../dist/packages-dist/core/bundles/core.umd.js',
   format: 'umd',

@@ -451,7 +451,7 @@ Here's the markup for an "avoid" example in the
 {@a code-tabs}
 ### Code Tabs
 
-Code tabs display code much like _code examples_ do.  The added advantage is that they can display mutiple code samples within a tabbed interface.  Each tab is displayed using _code pane_.
+Code tabs display code much like _code examples_ do.  The added advantage is that they can display multiple code samples within a tabbed interface.  Each tab is displayed using _code pane_.
 
 #### Code-tabs attributes
 
@@ -1207,9 +1207,9 @@ Wide images can be a problem. Most browsers try to rescale the image but wide im
 
 **Do not set a width greater than 700px**. If you wish to display a larger image, provide a link to the actual image that the user can click on to see the full size image separately as in this example of `source-map-explorer` output from the "Ahead-of-time Compilation" guide:
 
-<a href="generated/images/guide/aot-compiler/toh-pt6-bundle.png" title="Click to view larger image">
+<a href="generated/images/guide/docs-style-guide/toh-pt6-bundle.png" title="Click to view larger image">
   <figure>
-    <img src="generated/images/guide/aot-compiler/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle" width="300px">
+    <img src="generated/images/guide/docs-style-guide/toh-pt6-bundle-700w.png" alt="toh-pt6-bundle" width="300px">
   </figure>
 </a>
 

@@ -71,12 +71,12 @@ export declare class TestBed implements Injector {
     }): void;
     configureTestingModule(moduleDef: TestModuleMetadata): void;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    deprecatedOverrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
     /** @deprecated */ deprecatedOverrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
-    }): void;
-    deprecatedOverrideProvider(token: any, provider: {
-        useValue: any;
     }): void;
     execute(tokens: any[], fn: Function, context?: any): any;
     get(token: any, notFoundValue?: any): any;
@@ -92,6 +92,7 @@ export declare class TestBed implements Injector {
     overrideProvider(token: any, provider: {
         useValue: any;
     }): void;
+    overrideTemplateUsingTestingModule(component: Type<any>, template: string): void;
     /** @experimental */ resetTestEnvironment(): void;
     resetTestingModule(): void;
     static compileComponents(): Promise<any>;
@@ -101,12 +102,12 @@ export declare class TestBed implements Injector {
     }): typeof TestBed;
     static configureTestingModule(moduleDef: TestModuleMetadata): typeof TestBed;
     static createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    static deprecatedOverrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
     /** @deprecated */ static deprecatedOverrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
-    }): void;
-    static deprecatedOverrideProvider(token: any, provider: {
-        useValue: any;
     }): void;
     static get(token: any, notFoundValue?: any): any;
     /** @experimental */ static initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
@@ -117,11 +118,12 @@ export declare class TestBed implements Injector {
     static overrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
-    }): void;
+    }): typeof TestBed;
     static overrideProvider(token: any, provider: {
         useValue: any;
-    }): void;
+    }): typeof TestBed;
     static overrideTemplate(component: Type<any>, template: string): typeof TestBed;
+    static overrideTemplateUsingTestingModule(component: Type<any>, template: string): typeof TestBed;
     /** @experimental */ static resetTestEnvironment(): void;
     static resetTestingModule(): typeof TestBed;
 }
@@ -137,6 +139,7 @@ export declare type TestModuleMetadata = {
     declarations?: any[];
     imports?: any[];
     schemas?: Array<SchemaMetadata | any[]>;
+    aotSummaries?: () => any[];
 };
 
 /** @experimental */

@@ -1152,7 +1152,6 @@ export function main() {
              ]);
            }));
       });
-
     });
 
     describe('enforce no new changes', () => {
@@ -1461,6 +1460,151 @@ export function main() {
         const divEl = ctx.debugElement.children[0];
         expect(divEl.nativeElement).toHaveCssClass('init');
         expect(divEl.nativeElement).toHaveCssClass('foo');
+      });
+    });
+
+    describe('lifecycle asserts', () => {
+      let logged: string[];
+
+      function log(value: string) { logged.push(value); }
+      function clearLog() { logged = []; }
+
+      function expectOnceAndOnlyOnce(log: string) {
+        expect(logged.indexOf(log) >= 0)
+            .toBeTruthy(`'${log}' not logged. Log was ${JSON.stringify(logged)}`);
+        expect(logged.lastIndexOf(log) === logged.indexOf(log))
+            .toBeTruthy(`'${log}' logged more than once. Log was ${JSON.stringify(logged)}`);
+      }
+
+      beforeEach(() => { clearLog(); });
+
+      enum LifetimeMethods {
+        None = 0,
+        ngOnInit = 1 << 0,
+        ngOnChanges = 1 << 1,
+        ngAfterViewInit = 1 << 2,
+        ngAfterContentInit = 1 << 3,
+        ngDoCheck = 1 << 4,
+        InitMethods = ngOnInit | ngAfterViewInit | ngAfterContentInit,
+        InitMethodsAndChanges = InitMethods | ngOnChanges,
+        All = InitMethodsAndChanges | ngDoCheck,
+      }
+
+      function forEachMethod(methods: LifetimeMethods, cb: (method: LifetimeMethods) => void) {
+        if (methods & LifetimeMethods.ngOnInit) cb(LifetimeMethods.ngOnInit);
+        if (methods & LifetimeMethods.ngOnChanges) cb(LifetimeMethods.ngOnChanges);
+        if (methods & LifetimeMethods.ngAfterContentInit) cb(LifetimeMethods.ngAfterContentInit);
+        if (methods & LifetimeMethods.ngAfterViewInit) cb(LifetimeMethods.ngAfterViewInit);
+        if (methods & LifetimeMethods.ngDoCheck) cb(LifetimeMethods.ngDoCheck);
+      }
+
+      interface Options {
+        childRecursion: LifetimeMethods;
+        childThrows: LifetimeMethods;
+      }
+
+      describe('calling init', () => {
+        function initialize(options: Options) {
+          @Component({selector: 'my-child', template: ''})
+          class MyChild {
+            private thrown = LifetimeMethods.None;
+
+            @Input() inp: boolean;
+            @Output() outp = new EventEmitter<any>();
+
+            constructor() {}
+
+            ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
+            ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
+            ngOnChanges() { this.check(LifetimeMethods.ngOnChanges); }
+            ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
+            ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
+
+            private check(method: LifetimeMethods) {
+              log(`MyChild::${LifetimeMethods[method]}()`);
+
+              if ((options.childRecursion & method) !== 0) {
+                if (logged.length < 20) {
+                  this.outp.emit(null);
+                } else {
+                  fail(`Unexpected MyChild::${LifetimeMethods[method]} recursion`);
+                }
+              }
+              if ((options.childThrows & method) !== 0) {
+                if ((this.thrown & method) === 0) {
+                  this.thrown |= method;
+                  log(`<THROW from MyChild::${LifetimeMethods[method]}>()`);
+                  throw new Error(`Throw from MyChild::${LifetimeMethods[method]}`);
+                }
+              }
+            }
+          }
+
+          @Component({
+            selector: 'my-component',
+            template: `<my-child [inp]='true' (outp)='onOutp()'></my-child>`
+          })
+          class MyComponent {
+            constructor(private changeDetectionRef: ChangeDetectorRef) {}
+            ngDoCheck() { this.check(LifetimeMethods.ngDoCheck); }
+            ngOnInit() { this.check(LifetimeMethods.ngOnInit); }
+            ngAfterViewInit() { this.check(LifetimeMethods.ngAfterViewInit); }
+            ngAfterContentInit() { this.check(LifetimeMethods.ngAfterContentInit); }
+            onOutp() {
+              log('<RECURSION START>');
+              this.changeDetectionRef.detectChanges();
+              log('<RECURSION DONE>');
+            }
+
+            private check(method: LifetimeMethods) {
+              log(`MyComponent::${LifetimeMethods[method]}()`);
+            }
+          }
+
+          TestBed.configureTestingModule({declarations: [MyChild, MyComponent]});
+
+          return createCompFixture(`<my-component></my-component>`);
+        }
+
+        function ensureOneInit(options: Options) {
+          const ctx = initialize(options);
+
+
+          const throws = options.childThrows != LifetimeMethods.None;
+          if (throws) {
+            log(`<CYCLE 0 START>`);
+            expect(() => {
+              // Expect child to throw.
+              ctx.detectChanges();
+            }).toThrow();
+            log(`<CYCLE 0 END>`);
+            log(`<CYCLE 1 START>`);
+          }
+          ctx.detectChanges();
+          if (throws) log(`<CYCLE 1 DONE>`);
+          expectOnceAndOnlyOnce('MyComponent::ngOnInit()');
+          expectOnceAndOnlyOnce('MyChild::ngOnInit()');
+          expectOnceAndOnlyOnce('MyComponent::ngAfterViewInit()');
+          expectOnceAndOnlyOnce('MyComponent::ngAfterContentInit()');
+          expectOnceAndOnlyOnce('MyChild::ngAfterViewInit()');
+          expectOnceAndOnlyOnce('MyChild::ngAfterContentInit()');
+        }
+
+        forEachMethod(LifetimeMethods.InitMethodsAndChanges, method => {
+          it(`should ensure that init hooks are called once an only once with recursion in ${LifetimeMethods[method]} `,
+             () => {
+               // Ensure all the init methods are called once.
+               ensureOneInit({childRecursion: method, childThrows: LifetimeMethods.None});
+             });
+        });
+        forEachMethod(LifetimeMethods.All, method => {
+          it(`should ensure that init hooks are called once an only once with a throw in ${LifetimeMethods[method]} `,
+             () => {
+               // Ensure all the init methods are called once.
+               // the first cycle throws but the next cycle should complete the inits.
+               ensureOneInit({childRecursion: LifetimeMethods.None, childThrows: method});
+             });
+        });
       });
     });
   });

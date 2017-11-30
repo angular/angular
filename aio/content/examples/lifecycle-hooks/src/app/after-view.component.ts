@@ -95,22 +95,20 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
 
     <h4>-- AfterView Logs --</h4>
     <p><button (click)="reset()">Reset</button></p>
-    <div *ngFor="let msg of logs">{{msg}}</div>
+    <div *ngFor="let msg of logger.logs">{{msg}}</div>
   </div>
   `,
   styles: ['.parent {background: burlywood}'],
   providers: [LoggerService]
 })
 export class AfterViewParentComponent {
-  logs: string[];
   show = true;
 
-  constructor(private logger: LoggerService) {
-    this.logs = logger.logs;
+  constructor(public logger: LoggerService) {
   }
 
   reset() {
-    this.logs.length = 0;
+    this.logger.clear();
     // quickly remove and reload AfterViewComponent which recreates it
     this.show = false;
     this.logger.tick_then(() => this.show = true);

@@ -84,7 +84,7 @@ This tool expects all the examples to be build with `npm run build`. If an examp
 with that script, the author would need to specify the new build command in the `example-config.json`
 as shown earlier.
 
-### add-example-boilerplate.js
+### example-boilerplate.js
 
 This script installs all the dependencies that are shared among all the examples, creates the
 `node_modules` symlinks and copy all the boilerplate files where needed. It won't do anything
@@ -102,7 +102,7 @@ This script will find all the `e2e-spec.ts` files and run them.
 To not run all tests, you can use the `--filter=name` flag to run the example's e2e that contains
 that name.
 
-It also has an optional `--setup` flag to run the `add-example-boilerplate.js` script and install
+It also has an optional `--setup` flag to run the `example-boilerplate.js` script and install
 the latest `webdriver`.
 
 It will create a `/aio/protractor-results-txt` file when it finishes running tests.

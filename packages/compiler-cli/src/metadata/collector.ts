@@ -8,8 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {Evaluator, errorSymbol} from './evaluator';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
+import {Evaluator, errorSymbol, recordMapEntry} from './evaluator';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, InterfaceMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataSymbolicBinaryExpression, MetadataSymbolicCallExpression, MetadataSymbolicExpression, MetadataSymbolicIfExpression, MetadataSymbolicIndexExpression, MetadataSymbolicPrefixExpression, MetadataSymbolicReferenceExpression, MetadataSymbolicSelectExpression, MetadataSymbolicSpreadExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportDefaultReference, isMetadataImportedSymbolReferenceExpression, isMetadataSymbolicExpression, isMetadataSymbolicReferenceExpression, isMetadataSymbolicSelectExpression, isMethodMetadata} from './schema';
 import {Symbols} from './symbols';
 
 const isStatic = (node: ts.Node) => ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Static;
@@ -76,8 +76,7 @@ export class MetadataCollector {
     }
 
     function recordEntry<T extends MetadataEntry>(entry: T, node: ts.Node): T {
-      nodeMap.set(entry, node);
-      return entry;
+      return recordMapEntry(entry, node, nodeMap, sourceFile);
     }
 
     function errorSym(
@@ -116,8 +115,8 @@ export class MetadataCollector {
     function classMetadataOf(classDeclaration: ts.ClassDeclaration): ClassMetadata {
       const result: ClassMetadata = {__symbolic: 'class'};
 
-      function getDecorators(decorators: ts.Decorator[] | undefined): MetadataSymbolicExpression[]|
-          undefined {
+      function getDecorators(decorators: ReadonlyArray<ts.Decorator>| undefined):
+          MetadataSymbolicExpression[]|undefined {
         if (decorators && decorators.length)
           return decorators.map(decorator => objFromDecorator(decorator));
         return undefined;

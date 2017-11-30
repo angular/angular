@@ -34,7 +34,7 @@ export function main() {
           }
         }
       ];
-      return Injector.create(providers).get(JsonFileReporter);
+      return Injector.create(providers).get<JsonFileReporter>(JsonFileReporter);
     }
 
     it('should write all data into a file',

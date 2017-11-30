@@ -129,6 +129,7 @@ export function performWatchCompilation(host: PerformWatchHost):
   return {close, ready: cb => readyPromise.then(cb), firstCompileResult};
 
   function cacheEntry(fileName: string): CacheEntry {
+    fileName = path.normalize(fileName);
     let entry = fileCache.get(fileName);
     if (!entry) {
       entry = {};
@@ -191,6 +192,10 @@ export function performWatchCompilation(host: PerformWatchHost):
       };
     }
     ingoreFilesForWatch.clear();
+    const oldProgram = cachedProgram;
+    // We clear out the `cachedProgram` here as a
+    // program can only be used as `oldProgram` 1x
+    cachedProgram = undefined;
     const compileResult = performCompilation({
       rootNames: cachedOptions.rootNames,
       options: cachedOptions.options,
@@ -245,7 +250,7 @@ export function performWatchCompilation(host: PerformWatchHost):
     if (event === FileChangeEvent.CreateDeleteDir) {
       fileCache.clear();
     } else {
-      fileCache.delete(fileName);
+      fileCache.delete(path.normalize(fileName));
     }
 
     if (!ingoreFilesForWatch.has(path.normalize(fileName))) {

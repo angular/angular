@@ -22,12 +22,9 @@ calculateSize() {
 # Write to global variable $failed
 # Read from global variables $size, $size7, $size9, $label, $limitUncompressed
 checkSize() {
-  for fileType in "uncompressed" "gzip7" "gzip9"; do
-    if [[ ${size[$fileType]} -gt ${payloadLimits[$name, $fileType, $label]} ]]; then
-      failed=true
-      echo "$fileType $label size is ${size[$fileType]} which is greater than ${payloadLimits[$name, $fileType, $label]}"
-    fi
-  done
+  name="$1"
+  limitFile="$2"
+  node ${PROJECT_ROOT}/scripts/ci/payload-size.js $limitFile $name $TRAVIS_BRANCH
 }
 
 # Write timestamp to global variable $payloadData
@@ -81,9 +78,11 @@ uploadData() {
 
   echo The data for $name is:
   echo $payloadData
+  echo $payloadData > /tmp/current.log
+
+  readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
 
   if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-    readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
     readonly dbPath=/payload/$name/$safeBranchName/$TRAVIS_COMMIT
 
     # WARNING: FIREBASE_TOKEN should NOT be printed.
@@ -95,6 +94,7 @@ uploadData() {
 # Track payload size, $1 is the name in database, $2 is the file path
 # $3 is whether we check the payload size and fail the test if the size exceeds
 # limit, $4 is whether record the type of changes: true | false
+# $5 is the payload size limit file
 trackPayloadSize() {
   name="$1"
   path="$2"
@@ -106,9 +106,6 @@ trackPayloadSize() {
   for filename in $path; do
     declare -A size
     calculateSize
-    if [[ $checkSize = true ]]; then
-      checkSize
-    fi
   done
   addTimestamp
   if [[ $trackChange = true ]]; then
@@ -116,6 +113,9 @@ trackPayloadSize() {
   fi
   addMessage
   uploadData $name
+  if [[ $checkSize = true ]]; then
+    checkSize $name "$5"
+  fi
   if [[ $failed = true ]]; then
     echo exit 1
     exit 1

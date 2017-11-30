@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import sourcemaps from 'rollup-plugin-sourcemaps';
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
-export default {plugins: [sourcemaps()]};
+module.exports = {
+  plugins: [sourcemaps()]
+};

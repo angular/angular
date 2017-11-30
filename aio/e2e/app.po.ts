@@ -5,6 +5,7 @@ const githubRegex = /https:\/\/github.com\/angular\/angular\//;
 export class SitePage {
 
   links = element.all(by.css('md-toolbar a'));
+  homeLink = element(by.css('a.home'));
   docsMenuLink = element(by.cssContainingText('aio-top-menu a', 'Docs'));
   docViewer = element(by.css('aio-doc-viewer'));
   codeExample = element.all(by.css('aio-doc-viewer pre > code'));
@@ -23,15 +24,12 @@ export class SitePage {
                   .filter(element => element.getText().then(text => pattern.test(text)))
                   .first();
   }
-  getLink(path) { return element(by.css(`a[href="${path}"]`)); }
+  getTopMenuLink(path) { return element(by.css(`aio-top-menu a[href="${path}"]`)); }
   ga() { return browser.executeScript('return window["ga"].q') as promise.Promise<any[][]>; }
   locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
   navigateTo(pageUrl = '') {
-    return browser.get('/' + pageUrl)
-      // We need to tell the index.html not to load the real analytics library
-      // See the GA snippet in index.html
-      .then(() => browser.driver.executeScript('sessionStorage.setItem("__e2e__", true);'));
+    return browser.get('/' + pageUrl);
   }
 
   getDocViewerText() {

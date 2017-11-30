@@ -10,6 +10,7 @@ import {isDevMode} from '../application_ref';
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
 import {ErrorHandler} from '../error_handler';
+import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
 import {Sanitizer} from '../security';
@@ -18,9 +19,9 @@ import {Type} from '../type';
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
-import {createInjector, createNgModuleRef} from './refs';
+import {createInjector, createNgModuleRef, getComponentViewDefinitionFactory} from './refs';
 import {ArgumentType, BindingFlags, CheckType, DebugContext, DepDef, ElementData, NgModuleDefinition, NgModuleProviderDef, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
-import {NOOP, isComponentView, renderNode, splitDepsDsl, viewParentEl} from './util';
+import {NOOP, isComponentView, renderNode, resolveDefinition, splitDepsDsl, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createComponentView, createEmbeddedView, createRootView, destroyView} from './view';
 
 
@@ -38,7 +39,8 @@ export function initServicesIfNeeded() {
   Services.createComponentView = services.createComponentView;
   Services.createNgModuleRef = services.createNgModuleRef;
   Services.overrideProvider = services.overrideProvider;
-  Services.clearProviderOverrides = services.clearProviderOverrides;
+  Services.overrideComponentView = services.overrideComponentView;
+  Services.clearOverrides = services.clearOverrides;
   Services.checkAndUpdateView = services.checkAndUpdateView;
   Services.checkNoChangesView = services.checkNoChangesView;
   Services.destroyView = services.destroyView;
@@ -58,7 +60,8 @@ function createProdServices() {
     createComponentView: createComponentView,
     createNgModuleRef: createNgModuleRef,
     overrideProvider: NOOP,
-    clearProviderOverrides: NOOP,
+    overrideComponentView: NOOP,
+    clearOverrides: NOOP,
     checkAndUpdateView: checkAndUpdateView,
     checkNoChangesView: checkNoChangesView,
     destroyView: destroyView,
@@ -84,7 +87,8 @@ function createDebugServices() {
     createComponentView: debugCreateComponentView,
     createNgModuleRef: debugCreateNgModuleRef,
     overrideProvider: debugOverrideProvider,
-    clearProviderOverrides: debugClearProviderOverrides,
+    overrideComponentView: debugOverrideComponentView,
+    clearOverrides: debugClearOverrides,
     checkAndUpdateView: debugCheckAndUpdateView,
     checkNoChangesView: debugCheckNoChangesView,
     destroyView: debugDestroyView,
@@ -139,10 +143,15 @@ function debugCreateEmbeddedView(
 
 function debugCreateComponentView(
     parentView: ViewData, nodeDef: NodeDef, viewDef: ViewDefinition, hostElement: any): ViewData {
-  const defWithOverride = applyProviderOverridesToView(viewDef);
+  const overrideComponentView =
+      viewDefOverrides.get(nodeDef.element !.componentProvider !.provider !.token);
+  if (overrideComponentView) {
+    viewDef = overrideComponentView;
+  } else {
+    viewDef = applyProviderOverridesToView(viewDef);
+  }
   return callWithDebugContext(
-      DebugAction.create, createComponentView, null,
-      [parentView, nodeDef, defWithOverride, hostElement]);
+      DebugAction.create, createComponentView, null, [parentView, nodeDef, viewDef, hostElement]);
 }
 
 function debugCreateNgModuleRef(
@@ -153,13 +162,21 @@ function debugCreateNgModuleRef(
 }
 
 const providerOverrides = new Map<any, ProviderOverride>();
+const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
 }
 
-function debugClearProviderOverrides() {
+function debugOverrideComponentView(comp: any, compFactory: ComponentFactory<any>) {
+  const hostViewDef = resolveDefinition(getComponentViewDefinitionFactory(compFactory));
+  const compViewDef = resolveDefinition(hostViewDef.nodes[0].element !.componentView !);
+  viewDefOverrides.set(comp, compViewDef);
+}
+
+function debugClearOverrides() {
   providerOverrides.clear();
+  viewDefOverrides.clear();
 }
 
 // Notes about the algorithm:

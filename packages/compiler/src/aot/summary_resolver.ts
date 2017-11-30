@@ -10,7 +10,7 @@ import {Summary, SummaryResolver} from '../summary_resolver';
 
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {deserializeSummaries} from './summary_serializer';
-import {ngfactoryFilePath, stripGeneratedFileSuffix, summaryFileName} from './util';
+import {stripGeneratedFileSuffix, summaryFileName} from './util';
 
 export interface AotSummaryResolverHost {
   /**
@@ -119,11 +119,7 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
       if (moduleName) {
         this.knownFileNameToModuleNames.set(filePath, moduleName);
       }
-      importAs.forEach((importAs) => {
-        this.importAs.set(
-            importAs.symbol,
-            this.staticSymbolCache.get(ngfactoryFilePath(filePath), importAs.importAs));
-      });
+      importAs.forEach((importAs) => { this.importAs.set(importAs.symbol, importAs.importAs); });
     }
     return hasSummary;
   }

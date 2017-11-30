@@ -126,6 +126,7 @@ export interface ExtraOptions {
     enableTracing?: boolean;
     errorHandler?: ErrorHandler;
     initialNavigation?: InitialNavigation;
+    onSameUrlNavigation?: 'reload' | 'ignore';
     preloadingStrategy?: any;
     useHash?: boolean;
 }
@@ -327,6 +328,7 @@ export declare class Router {
     errorHandler: ErrorHandler;
     readonly events: Observable<Event>;
     navigated: boolean;
+    onSameUrlNavigation: 'reload' | 'ignore';
     routeReuseStrategy: RouteReuseStrategy;
     readonly routerState: RouterState;
     readonly url: string;

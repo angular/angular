@@ -72,7 +72,7 @@ var rulesToApply = [
   {
     pattern: 'script',
     from: 'node_modules/rxjs/bundles/Rx.js',
-    to:   'https://unpkg.com/rxjs@5.0.1/bundles/Rx.js'
+    to:   'https://unpkg.com/rxjs@5.5.2/bundles/Rx.js'
   },
   {
     pattern: 'script',

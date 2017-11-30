@@ -80,6 +80,38 @@ export function main() {
            flushMicrotasks();
            expect(cmp.status).toEqual('done');
          }));
+
+      it('should always run .start callbacks before .done callbacks even for noop animations',
+         fakeAsync(() => {
+           @Component({
+             selector: 'cmp',
+             template: `
+                <div [@myAnimation]="exp" (@myAnimation.start)="cb('start')" (@myAnimation.done)="cb('done')"></div>
+          `,
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition('* => go', []),
+                   ]),
+             ]
+           })
+           class Cmp {
+             exp: any = false;
+             log: string[] = [];
+             cb(status: string) { this.log.push(status); }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'go';
+           fixture.detectChanges();
+           expect(cmp.log).toEqual([]);
+
+           flushMicrotasks();
+           expect(cmp.log).toEqual(['start', 'done']);
+         }));
     });
 
     describe('component fixture integration', () => {
@@ -2616,6 +2648,57 @@ export function main() {
           players = getLog();
           expect(players.length).toEqual(1);
           expect(players[0].totalTime).toEqual(1234);
+        });
+
+        it('should ensure state() values are applied when an animation is disabled', () => {
+          @Component({
+            selector: 'if-cmp',
+            template: `
+              <div [@.disabled]="disableExp">
+                <div [@myAnimation]="exp" #elm></div>
+              </div>
+            `,
+            animations: [
+              trigger(
+                  'myAnimation',
+                  [
+                    state('1', style({height: '100px'})), state('2', style({height: '200px'})),
+                    state('3', style({height: '300px'})), transition('* => *', animate(500))
+                  ]),
+            ]
+          })
+          class Cmp {
+            exp: any = false;
+            disableExp = false;
+
+            @ViewChild('elm') public element: any;
+          }
+
+          TestBed.configureTestingModule({declarations: [Cmp]});
+
+          const fixture = TestBed.createComponent(Cmp);
+          const engine = TestBed.get(ɵAnimationEngine);
+
+          function assertHeight(element: any, height: string) {
+            expect(element.style['height']).toEqual(height);
+          }
+
+          const cmp = fixture.componentInstance;
+          const element = cmp.element.nativeElement;
+          fixture.detectChanges();
+
+          cmp.disableExp = true;
+          cmp.exp = '1';
+          fixture.detectChanges();
+          assertHeight(element, '100px');
+
+          cmp.exp = '2';
+          fixture.detectChanges();
+          assertHeight(element, '200px');
+
+          cmp.exp = '3';
+          fixture.detectChanges();
+          assertHeight(element, '300px');
         });
 
         it('should disable animations for the element that they are disabled on', () => {

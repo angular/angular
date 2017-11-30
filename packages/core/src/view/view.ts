@@ -16,7 +16,7 @@ import {checkAndUpdatePureExpressionDynamic, checkAndUpdatePureExpressionInline,
 import {checkAndUpdateQuery, createQuery} from './query';
 import {createTemplateData, createViewContainerData} from './refs';
 import {checkAndUpdateTextDynamic, checkAndUpdateTextInline, createText} from './text';
-import {ArgumentType, CheckType, ElementData, NodeData, NodeDef, NodeFlags, ProviderData, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asQueryList, asTextData} from './types';
+import {ArgumentType, CheckType, ElementData, NodeData, NodeDef, NodeFlags, ProviderData, RootData, Services, ViewData, ViewDefinition, ViewFlags, ViewHandleEventFn, ViewState, ViewUpdateFn, asElementData, asQueryList, asTextData, shiftInitState} from './types';
 import {NOOP, checkBindingNoChanges, isComponentView, markParentViewsForCheckProjectedViews, resolveDefinition, tokenKey} from './util';
 import {detachProjectedView} from './view_attach';
 
@@ -236,7 +236,8 @@ function createView(
     context: null,
     component: null, nodes,
     state: ViewState.CatInit, root, renderer,
-    oldValues: new Array(def.bindingCount), disposables
+    oldValues: new Array(def.bindingCount), disposables,
+    initIndex: -1
   };
   return view;
 }
@@ -353,29 +354,32 @@ export function checkAndUpdateView(view: ViewData) {
   } else {
     view.state &= ~ViewState.FirstCheck;
   }
+  shiftInitState(view, ViewState.InitState_BeforeInit, ViewState.InitState_CallingOnInit);
   markProjectedViewsForCheck(view);
   Services.updateDirectives(view, CheckType.CheckAndUpdate);
   execEmbeddedViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(
       view, NodeFlags.TypeContentQuery, NodeFlags.DynamicQuery, CheckType.CheckAndUpdate);
-
+  let callInit = shiftInitState(
+      view, ViewState.InitState_CallingOnInit, ViewState.InitState_CallingAfterContentInit);
   callLifecycleHooksChildrenFirst(
-      view, NodeFlags.AfterContentChecked |
-          (view.state & ViewState.FirstCheck ? NodeFlags.AfterContentInit : 0));
+      view, NodeFlags.AfterContentChecked | (callInit ? NodeFlags.AfterContentInit : 0));
 
   Services.updateRenderer(view, CheckType.CheckAndUpdate);
 
   execComponentViewsAction(view, ViewAction.CheckAndUpdate);
   execQueriesAction(
       view, NodeFlags.TypeViewQuery, NodeFlags.DynamicQuery, CheckType.CheckAndUpdate);
+  callInit = shiftInitState(
+      view, ViewState.InitState_CallingAfterContentInit, ViewState.InitState_CallingAfterViewInit);
   callLifecycleHooksChildrenFirst(
-      view, NodeFlags.AfterViewChecked |
-          (view.state & ViewState.FirstCheck ? NodeFlags.AfterViewInit : 0));
+      view, NodeFlags.AfterViewChecked | (callInit ? NodeFlags.AfterViewInit : 0));
 
   if (view.def.flags & ViewFlags.OnPush) {
     view.state &= ~ViewState.ChecksEnabled;
   }
   view.state &= ~(ViewState.CheckProjectedViews | ViewState.CheckProjectedView);
+  shiftInitState(view, ViewState.InitState_CallingAfterViewInit, ViewState.InitState_AfterInit);
 }
 
 export function checkAndUpdateNode(

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
-import sourcemaps from 'rollup-plugin-sourcemaps';
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {};
 
-export default {
+module.exports = {
   entry: '../../../dist/packages-dist/service-worker/esm5/config.js',
   dest: '../../../dist/packages-dist/service-worker/bundles/service-worker-config.umd.js',
   format: 'umd',

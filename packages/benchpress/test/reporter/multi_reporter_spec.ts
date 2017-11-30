@@ -17,7 +17,7 @@ export function main() {
                     ids.map(id => ({provide: id, useValue: new MockReporter(id)})),
                     MultiReporter.provideWith(ids)
                   ])
-                  .get(MultiReporter);
+                  .get<MultiReporter>(MultiReporter);
     return Promise.resolve(r);
   }
 

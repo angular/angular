@@ -1,41 +1,25 @@
 {
   "scripts": [
-    { "name": "build" },
-    { "name": "build:watch" },
-    { "name": "serve" },
-    { "name": "build:aot" },
-    { "name": "serve:aot" },
-    { "name": "build:uni" },
-    { "name": "serve:uni" },
-    { "name": "copy-dist-files" },
-    { "name": "i18n" }
+    { "name": "ng", "command": "ng" },
+    { "name": "start", "command": "ng serve" },
+    { "name": "test", "command": "ng test" },
+    { "name": "lint", "command": "ng lint" },
+    { "name": "e2e", "command": "ng e2e" },
+    { "name": "build:ssr", "command": "npm run build:client-and-server-bundles && npm run webpack:server" },
+    { "name": "serve:ssr", "command": "node dist/server.js" },
+    { "name": "build:client-and-server-bundles", "command": "ng build --prod && ng build --prod --app 1 --output-hashing=false" },
+    { "name": "webpack:server", "command": "webpack --config webpack.server.config.js --progress --colors" }
   ],
   "dependencies": [
-    "systemjs",
-    "@angular/compiler-cli",
-    "@angular/platform-server",
-    "express"
+    "web-animations-js",
+    "@nguniversal/express-engine",
+    "@nguniversal/module-map-ngfactory-loader",
+    "ts-loader"
   ],
   "devDependencies": [
-    "@ngtools/webpack",
-    "@types/angular",
-    "@types/angular-animate",
-    "@types/angular-cookies",
-    "@types/angular-mocks",
-    "@types/angular-resource",
-    "@types/angular-route",
-    "@types/angular-sanitize",
-    "@types/express",
-    "canonical-path",
-    "http-server",
-    "concurrently",
-    "lite-server",
-    "raw-loader",
-    "rollup",
-    "rollup-plugin-commonjs",
-    "rollup-plugin-node-resolve",
-    "rollup-plugin-uglify",
-    "source-map-explorer",
-    "webpack"
+    "@angular/cli",
+    "@types/jasminewd2",
+    "karma-coverage-istanbul-reporter",
+    "ts-node"
   ]
 }

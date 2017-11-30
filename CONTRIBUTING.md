@@ -69,36 +69,37 @@ You can file new issues by filling out our [new issue form](https://github.com/a
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-* Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR
+1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
-* Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
+1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
   We cannot accept code without this.
-* Make your changes in a new git branch:
+1. Fork the angular/angular repo.
+1. Make your changes in a new git branch:
 
      ```shell
      git checkout -b my-fix-branch master
      ```
 
-* Create your patch, **including appropriate test cases**.
-* Follow our [Coding Rules](#rules).
-* Run the full Angular test suite, as described in the [developer documentation][dev-doc],
+1. Create your patch, **including appropriate test cases**.
+1. Follow our [Coding Rules](#rules).
+1. Run the full Angular test suite, as described in the [developer documentation][dev-doc],
   and ensure that all tests pass.
-* Commit your changes using a descriptive commit message that follows our
+1. Commit your changes using a descriptive commit message that follows our
   [commit message conventions](#commit). Adherence to these conventions
   is necessary because release notes are automatically generated from these messages.
 
      ```shell
      git commit -a
      ```
-  Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
+    Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
 
-* Push your branch to GitHub:
+1. Push your branch to GitHub:
 
     ```shell
     git push origin my-fix-branch
     ```
 
-* In GitHub, send a pull request to `angular:master`.
+1. In GitHub, send a pull request to `angular:master`.
 * If we suggest changes then:
   * Make the required updates.
   * Re-run the Angular test suites to ensure tests are still passing.
@@ -220,6 +221,7 @@ The following is the list of supported scopes:
 * **platform-webworker**
 * **platform-webworker-dynamic**
 * **router**
+* **service-worker**
 * **upgrade**
 
 There are currently a few exceptions to the "use package name" rule:

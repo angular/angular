@@ -112,7 +112,7 @@ export const _WORKER_UI_PLATFORM_PROVIDERS: StaticProvider[] = [
 
 function initializeGenericWorkerRenderer(injector: Injector) {
   const bus = injector.get(MessageBus);
-  const zone = injector.get(NgZone);
+  const zone = injector.get<NgZone>(NgZone);
   bus.attachToZone(zone);
 
   // initialize message services after the bus has been created

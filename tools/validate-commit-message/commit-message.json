@@ -1,5 +1,5 @@
 {
-  "maxLength": 100,
+  "maxLength": 120,
   "types": [
     "build",
     "ci",
@@ -8,6 +8,7 @@
     "fix",
     "perf",
     "refactor",
+    "release",
     "style",
     "test"
   ],

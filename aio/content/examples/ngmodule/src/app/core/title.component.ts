@@ -7,7 +7,6 @@ import { UserService }      from '../core/user.service';
   templateUrl: './title.component.html',
 })
 export class TitleComponent {
-  @Input() subtitle = '';
   title = 'Angular Modules';
   user = '';
 

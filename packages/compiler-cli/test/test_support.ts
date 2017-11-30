@@ -64,10 +64,10 @@ export function setup(): TestSupport {
   function write(fileName: string, content: string) {
     const dir = path.dirname(fileName);
     if (dir != '.') {
-      const newDir = path.join(basePath, dir);
+      const newDir = path.resolve(basePath, dir);
       if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
     }
-    fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
+    fs.writeFileSync(path.resolve(basePath, fileName), content, {encoding: 'utf-8'});
   }
 
   function writeFiles(...mockDirs: {[fileName: string]: string}[]) {

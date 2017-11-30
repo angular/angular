@@ -37,7 +37,10 @@
       {"type": 301, "source": "/docs/ts/latest", "destination": "/docs"},
 
       // guide/*, tutorial/*, **/*
-      {"type": 301, "source": "/docs/ts/latest/:any*", "destination": "/:any*"}
+      {"type": 301, "source": "/docs/ts/latest/:any*", "destination": "/:any*"},
+
+      // aot-compiler.md and metadata.md combined into aot-compiler.md - issue #19510
+      {"type": 301, "source": "/guide/metadata", "destination": "/guide/aot-compiler"}
     ],
     "rewrites": [
       {

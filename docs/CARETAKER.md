@@ -62,7 +62,7 @@ If the `cherry-pick` command fails than resolve conflicts and use `git cherry-pi
 ## Cherry-picking PRs into patch branch
 
 In addition to merging PRs into the master branch, many PRs need to be also merged into a patch branch.
-Follow these steps to get path brach up to date.
+Follow these steps to get patch branch up to date.
 
 1. Check out the most recent patch branch: `git checkout 4.3.x`
 2. Get a list of PRs merged into master: `git log master --oneline -n10`

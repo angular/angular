@@ -180,24 +180,27 @@ export class HttpXhrBackend implements HttpBackend {
 
         // Check whether the body needs to be parsed as JSON (in many cases the browser
         // will have done that already).
-        if (ok && req.responseType === 'json' && typeof body === 'string') {
-          // Attempt the parse. If it fails, a parse error should be delivered to the user.
+        if (req.responseType === 'json' && typeof body === 'string') {
+          // Save the original body, before attempting XSSI prefix stripping.
+          const originalBody = body;
           body = body.replace(XSSI_PREFIX, '');
           try {
-            body = JSON.parse(body);
+            // Attempt the parse. If it fails, a parse error should be delivered to the user.
+            body = body !== '' ? JSON.parse(body) : null;
           } catch (error) {
-            // Even though the response status was 2xx, this is still an error.
-            ok = false;
-            // The parse error contains the text of the body that failed to parse.
-            body = { error, text: body } as HttpJsonParseError;
-          }
-        } else if (!ok && req.responseType === 'json' && typeof body === 'string') {
-          try {
-            // Attempt to parse the body as JSON.
-            body = JSON.parse(body);
-          } catch (error) {
-            // Cannot be certain that the body was meant to be parsed as JSON.
-            // Leave the body as a string.
+            // Since the JSON.parse failed, it's reasonable to assume this might not have been a
+            // JSON response. Restore the original body (including any XSSI prefix) to deliver
+            // a better error response.
+            body = originalBody;
+
+            // If this was an error request to begin with, leave it as a string, it probably
+            // just isn't JSON. Otherwise, deliver the parsing error to the user.
+            if (ok) {
+              // Even though the response status was 2xx, this is still an error.
+              ok = false;
+              // The parse error contains the text of the body that failed to parse.
+              body = { error, text: body } as HttpJsonParseError;
+            }
           }
         }
 

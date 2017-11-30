@@ -27,7 +27,7 @@ export class MyCounterComponent implements OnChanges {
     // Empty the changeLog whenever counter goes to zero
     // hint: this is a way to respond programmatically to external value changes.
     if (this.counter === 0) {
-      this.changeLog.length = 0;
+      this.changeLog = [];
     }
 
     // A change to `counter` is the only change we care about

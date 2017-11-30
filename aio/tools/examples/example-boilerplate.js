@@ -45,6 +45,21 @@ const BOILERPLATE_PATHS = {
   ]
 };
 
+// All paths in this tool are relative to the current boilerplate folder, i.e boilerplate/i18n
+// This maps the CLI files that exists in a parent folder
+const cliRelativePath = BOILERPLATE_PATHS.cli.map(file => `../cli/${file}`);
+
+BOILERPLATE_PATHS.i18n = [
+  ...cliRelativePath,
+  'package.json'
+];
+
+BOILERPLATE_PATHS.universal = [
+  ...cliRelativePath,
+  '.angular-cli.json',
+  'package.json'
+];
+
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
@@ -101,6 +116,10 @@ class ExampleBoilerPlate {
 
   copyFile(sourceFolder, destinationFolder, filePath) {
     const sourcePath = path.resolve(sourceFolder, filePath);
+
+    // normalize path if needed
+    filePath = this.normalizePath(filePath);
+
     const destinationPath = path.resolve(destinationFolder, filePath);
     fs.copySync(sourcePath, destinationPath, { overwrite: true });
     fs.chmodSync(destinationPath, 444);
@@ -108,6 +127,11 @@ class ExampleBoilerPlate {
 
   loadJsonFile(filePath) {
     return fs.readJsonSync(filePath, {throws: false}) || {};
+  }
+
+  normalizePath(filePath) {
+    // transform for example ../cli/src/tsconfig.app.json to src/tsconfig.app.json
+    return filePath.replace(/\.{2}\/\w+\//, '');
   }
 }
 

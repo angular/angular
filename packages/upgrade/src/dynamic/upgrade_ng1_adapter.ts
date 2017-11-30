@@ -67,7 +67,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
   extractBindings() {
     const btcIsObject = typeof this.directive !.bindToController === 'object';
-    if (btcIsObject && Object.keys(this.directive !.scope).length) {
+    if (btcIsObject && Object.keys(this.directive !.scope !).length) {
       throw new Error(
           `Binding definitions on scope and controller at the same time are not supported.`);
     }

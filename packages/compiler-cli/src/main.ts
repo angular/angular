@@ -20,7 +20,6 @@ import {GENERATED_FILES} from './transformers/util';
 
 import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult, filterErrorsAndWarnings} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
-import {isSyntaxError} from '@angular/compiler';
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
@@ -28,15 +27,15 @@ export function main(
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
-    return reportErrorsAndExit(configErrors, consoleError);
+    return reportErrorsAndExit(configErrors, /*options*/ undefined, consoleError);
   }
   if (watch) {
     const result = watchMode(project, options, consoleError);
-    return reportErrorsAndExit(result.firstCompileResult, consoleError);
+    return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
   }
   const {diagnostics: compileDiags} = performCompilation(
       {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
-  return reportErrorsAndExit(compileDiags, consoleError);
+  return reportErrorsAndExit(compileDiags, options, consoleError);
 }
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
@@ -44,6 +43,12 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
   const transformTypesToClosure = options.annotateForClosureCompiler;
   if (!transformDecorators && !transformTypesToClosure) {
     return undefined;
+  }
+  if (transformDecorators) {
+    // This is needed as a workaround for https://github.com/angular/tsickle/issues/635
+    // Otherwise tsickle might emit references to non imported values
+    // as TypeScript elided the import.
+    options.emitDecoratorMetadata = true;
   }
   const tsickleHost: tsickle.TsickleHost = {
     shouldSkipTsickleProcessing: (fileName) =>
@@ -128,10 +133,17 @@ export function readCommandLineAndConfiguration(
 }
 
 function reportErrorsAndExit(
-    allDiagnostics: Diagnostics, consoleError: (s: string) => void = console.error): number {
+    allDiagnostics: Diagnostics, options?: api.CompilerOptions,
+    consoleError: (s: string) => void = console.error): number {
   const errorsAndWarnings = filterErrorsAndWarnings(allDiagnostics);
   if (errorsAndWarnings.length) {
-    consoleError(formatDiagnostics(errorsAndWarnings));
+    let currentDir = options ? options.basePath : undefined;
+    const formatHost: ts.FormatDiagnosticsHost = {
+      getCurrentDirectory: () => currentDir || ts.sys.getCurrentDirectory(),
+      getCanonicalFileName: fileName => fileName,
+      getNewLine: () => ts.sys.newLine
+    };
+    consoleError(formatDiagnostics(errorsAndWarnings, formatHost));
   }
   return exitCodeFromResult(allDiagnostics);
 }

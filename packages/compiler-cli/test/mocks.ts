@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerHostContext} from '@angular/compiler-cli/src/compiler_host';
 import * as ts from 'typescript';
 
 export type Entry = string | Directory;
 
 export interface Directory { [name: string]: Entry; }
 
-export class MockAotContext implements CompilerHostContext {
+export class MockAotContext {
   constructor(public currentDirectory: string, private files: Entry) {}
 
   fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }

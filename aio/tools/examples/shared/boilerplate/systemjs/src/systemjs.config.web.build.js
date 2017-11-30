@@ -66,11 +66,12 @@
       '@angular/forms/testing': 'ng:forms-builds/master/bundles/forms-testing.umd.js',
 
       // other libraries
-      'rxjs':                      'npm:rxjs@5.0.1',
+      'rxjs':                      'npm:rxjs@5.5.2',
+      'rxjs/operators':            'npm:rxjs@5.5.2/operators/index.js',
       'tslib':                     'npm:tslib/tslib.js',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api@0.4/bundles/in-memory-web-api.umd.js',
       'ts':                        'npm:plugin-typescript@5.2.7/lib/plugin.js',
-      'typescript':                'npm:typescript@2.3.2/lib/typescript.js',
+      'typescript':                'npm:typescript@2.4.2/lib/typescript.js',
 
     },
     // packages tells the System loader how to load when no filename and/or no extension

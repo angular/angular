@@ -13,6 +13,7 @@ import {buildAnimationTimelines} from '../dsl/animation_timeline_builder';
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
@@ -55,7 +56,8 @@ export class TimelineAnimationEngine {
 
     if (ast) {
       instructions = buildAnimationTimelines(
-          this._driver, element, ast, {}, {}, options, EMPTY_INSTRUCTION_MAP, errors);
+          this._driver, element, ast, ENTER_CLASSNAME, LEAVE_CLASSNAME, {}, {}, options,
+          EMPTY_INSTRUCTION_MAP, errors);
       instructions.forEach(inst => {
         const styles = getOrSetAsInMap(autoStylesMap, inst.element, {});
         inst.postStyleProps.forEach(prop => styles[prop] = null);

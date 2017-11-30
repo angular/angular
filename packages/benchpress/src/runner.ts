@@ -81,7 +81,9 @@ export class Runner {
             {provide: WebDriverAdapter, useValue: adapter}
           ]);
 
-          const sampler = injector.get(Sampler);
+          // TODO: With TypeScript 2.5 injector.get does not infer correctly the
+          // return type. Remove 'any' and investigate the issue.
+          const sampler = injector.get(Sampler) as any;
           return sampler.sample();
         });
   }

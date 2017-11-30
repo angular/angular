@@ -7,12 +7,12 @@
  * Fails if the score is below `<min-score>`.
  * If `<log-file>` is defined, the full results will be logged there.
  *
- * (Ignores HTTPS-related audits, when run for HTTP URL.)
+ * (Skips HTTPS-related audits, when run for HTTP URL.)
  */
 
 // Imports
 const lighthouse = require('lighthouse');
-const chromeLauncher = require('lighthouse/chrome-launcher/chrome-launcher');
+const chromeLauncher = require('lighthouse/chrome-launcher');
 const printer = require('lighthouse/lighthouse-cli/printer');
 const config = require('lighthouse/lighthouse-core/config/default.js');
 
@@ -35,7 +35,7 @@ function _main(args) {
   console.log(`Running PWA audit for '${url}'...`);
 
   if (isOnHttp) {
-    ignoreHttpsAudits(config);
+    skipHttpsAudits(config);
   }
 
   launchChromeAndRunLighthouse(url, {}, config).
@@ -54,20 +54,14 @@ function evaluateScore(expectedScore, actualScore) {
   }
 }
 
-function ignoreHttpsAudits(config) {
+function skipHttpsAudits(config) {
   const httpsAudits = [
     'redirects-http'
   ];
 
-  console.info(`Ignoring HTTPS-related audits (${httpsAudits.join(', ')})...`);
+  console.info(`Skipping HTTPS-related audits (${httpsAudits.join(', ')})...`);
 
-  config.categories.pwa.audits.forEach(audit => {
-    if (httpsAudits.indexOf(audit.id) !== -1) {
-      // Ugly hack to ignore HTTPS-related audits.
-      // Only meant for use during development.
-      audit.weight = 0;
-     }
-   });
+  config.settings.skipAudits = httpsAudits;
 }
 
 function launchChromeAndRunLighthouse(url, flags, config) {
@@ -105,7 +99,10 @@ function processResults(results, logFile) {
     console.log(`Saving results in '${logFile}'...`);
     console.log(`(LightHouse viewer: ${VIEWER_URL})`);
 
-    results.artifacts = undefined;   // Too large for the logs.
+    // Remove the artifacts, which are not necessary for the report.
+    // (Saves ~1,500,000 lines of formatted JSON output \o/)
+    results.artifacts = undefined;
+
     promise = printer.write(results, 'json', logFile);
   }
 
