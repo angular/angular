@@ -127,12 +127,7 @@ function runE2eTestsSystemJS(appDir, outputFile) {
   const appBuildSpawnInfo = spawnExt('yarn', [config.build], { cwd: appDir });
   const appRunSpawnInfo = spawnExt('yarn', [config.run, '-s'], { cwd: appDir }, true);
 
-  let run = runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
-
-  if (fs.existsSync(appDir + '/aot/index.html')) {
-    run = run.then((ok) => ok && runProtractorAoT(appDir, outputFile));
-  }
-  return run;
+  return runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
 }
 
 function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile) {
@@ -179,20 +174,6 @@ function finish(spawnProcId, ok) {
   // appRun.proc.kill();
   treeKill(spawnProcId);
   return ok;
-}
-
-// Run e2e tests over the AOT build for projects that examples it.
-function runProtractorAoT(appDir, outputFile) {
-  fs.appendFileSync(outputFile, '++ AoT version ++\n');
-  const aotBuildSpawnInfo = spawnExt('yarn', ['build:aot'], { cwd: appDir });
-  let promise = aotBuildSpawnInfo.promise;
-
-  const copyFileCmd = 'copy-dist-files.js';
-  if (fs.existsSync(appDir + '/' + copyFileCmd)) {
-    promise = promise.then(() => spawnExt('node', [copyFileCmd], { cwd: appDir }).promise);
-  }
-  const aotRunSpawnInfo = spawnExt('yarn', ['serve:aot'], { cwd: appDir }, true);
-  return runProtractorSystemJS(promise, appDir, aotRunSpawnInfo, outputFile);
 }
 
 // Start the example in appDir; then run protractor with the specified

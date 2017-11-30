@@ -345,16 +345,6 @@
           "tooltip": "Setup and Deployment",
           "children": [
             {
-              "url": "guide/setup",
-              "title": "Setup for local development",
-              "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
-            },
-            {
-              "url": "guide/setup-systemjs-anatomy",
-              "title": "Anatomy of the Setup",
-              "tooltip": "Inside the local development environment for SystemJS."
-            },
-            {
               "url": "guide/browser-support",
               "title": "Browser Support",
               "tooltip": "Browser support and polyfills guide."
@@ -363,12 +353,6 @@
               "url": "guide/npm-packages",
               "title": "Npm Packages",
               "tooltip": "Recommended npm packages, and how to specify package dependencies."
-            },
-
-            {
-              "url": "guide/typescript-configuration",
-              "title": "TypeScript Configuration",
-              "tooltip": "TypeScript configuration for Angular developers."
             },
             {
               "url": "guide/aot-compiler",
@@ -403,11 +387,6 @@
           "url": "guide/universal",
           "title": "Server-side Rendering",
           "tooltip": "Render HTML server-side with Angular Universal."
-        },
-        {
-          "url": "guide/visual-studio-2015",
-          "title": "Visual Studio 2015 QuickStart",
-          "tooltip": "Use Visual Studio 2015 with the QuickStart files."
         },
         {
           "url": "guide/styleguide",

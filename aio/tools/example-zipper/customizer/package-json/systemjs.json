@@ -11,9 +11,6 @@
     { "name": "test:once" },
     { "name": "build:upgrade" },
     { "name": "serve:upgrade" },
-    { "name": "build:aot" },
-    { "name": "serve:aot" },
-    { "name": "build:babel" },
     { "name": "copy-dist-files" },
     { "name": "i18n" }
   ],
@@ -28,17 +25,10 @@
     "@types/angular-resource",
     "@types/angular-route",
     "@types/angular-sanitize",
-    "babel-cli",
-    "babel-preset-angular2",
-    "babel-preset-es2015",
     "canonical-path",
     "http-server",
     "concurrently",
     "lite-server",
-    "rollup",
-    "rollup-plugin-commonjs",
-    "rollup-plugin-node-resolve",
-    "rollup-plugin-uglify",
     "source-map-explorer"
   ]
 }
