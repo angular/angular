@@ -90,6 +90,14 @@ export class ConvertPropertyBindingResult {
   constructor(public stmts: o.Statement[], public currValExpr: o.Expression) {}
 }
 
+export enum BindingForm {
+  // The general form of binding expression, supports all expressions.
+  General,
+
+  // Try to generate a simple binding (no temporaries or statements)
+  // otherise generate a general binding
+  TrySimple,
+}
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression
  * is used in property binding. The expression has to be preprocessed via
@@ -97,7 +105,8 @@ export class ConvertPropertyBindingResult {
  */
 export function convertPropertyBinding(
     localResolver: LocalResolver | null, implicitReceiver: o.Expression,
-    expressionWithoutBuiltins: cdAst.AST, bindingId: string): ConvertPropertyBindingResult {
+    expressionWithoutBuiltins: cdAst.AST, bindingId: string,
+    form: BindingForm): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
@@ -110,6 +119,8 @@ export function convertPropertyBinding(
     for (let i = 0; i < visitor.temporaryCount; i++) {
       stmts.push(temporaryDeclaration(bindingId, i));
     }
+  } else if (form == BindingForm.TrySimple) {
+    return new ConvertPropertyBindingResult([], outputExpr);
   }
 
   stmts.push(currValExpr.set(outputExpr).toDeclStmt(null, [o.StmtModifier.Final]));

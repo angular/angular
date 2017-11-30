@@ -8,7 +8,7 @@
 
 import {CompileDirectiveMetadata, CompilePipeSummary, rendererTypeName, tokenReference, viewClassName} from '../compile_metadata';
 import {CompileReflector} from '../compile_reflector';
-import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
+import {BindingForm, BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {ArgumentType, BindingFlags, ChangeDetectionStrategy, NodeFlags, QueryBindingType, QueryValueType, ViewFlags} from '../core';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
@@ -859,7 +859,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
         const bindingId = `${updateBindingCount++}`;
         const nameResolver = context === COMP_VAR ? self : null;
         const {stmts, currValExpr} =
-            convertPropertyBinding(nameResolver, context, value, bindingId);
+            convertPropertyBinding(nameResolver, context, value, bindingId, BindingForm.General);
         updateStmts.push(...stmts.map(
             (stmt: o.Statement) => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
         return o.applySourceSpanToExpressionIfNeeded(currValExpr, sourceSpan);
