@@ -118,8 +118,11 @@ export class SelectionModel<T> {
 
   /** Emits a change event and clears the records of selected and deselected values. */
   private _emitChangeEvent() {
+    // Clear the selected values so they can be re-cached.
+    this._selected = null;
+
     if (this._selectedToEmit.length || this._deselectedToEmit.length) {
-      let eventData = new SelectionChange(this._selectedToEmit, this._deselectedToEmit);
+      const eventData = new SelectionChange(this._selectedToEmit, this._deselectedToEmit);
 
       if (this.onChange) {
         this.onChange.next(eventData);
@@ -128,8 +131,6 @@ export class SelectionModel<T> {
       this._deselectedToEmit = [];
       this._selectedToEmit = [];
     }
-
-    this._selected = null;
   }
 
   /** Selects a value. */

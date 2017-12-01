@@ -102,6 +102,19 @@ describe('SelectionModel', () => {
       expect(event.added).toEqual([2]);
     });
 
+    it('should have updated the selected value before emitting the change event', () => {
+      let model = new SelectionModel(true);
+      let spy = jasmine.createSpy('SelectionModel change event');
+
+      // Note: this assertion is only here to run the getter.
+      expect(model.selected).toEqual([]);
+
+      model.onChange!.subscribe(() => spy(model.selected));
+      model.select(1);
+
+      expect(spy).toHaveBeenCalledWith([1]);
+    });
+
     describe('selection', () => {
       let model: SelectionModel<any>;
       let spy: jasmine.Spy;
