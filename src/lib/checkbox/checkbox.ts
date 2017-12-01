@@ -17,8 +17,10 @@ import {
   ElementRef,
   EventEmitter,
   forwardRef,
+  Inject,
   Input,
   OnDestroy,
+  Optional,
   Output,
   ViewChild,
   ViewEncapsulation,
@@ -37,6 +39,7 @@ import {
   RippleConfig,
   RippleRef,
 } from '@angular/material/core';
+import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from './checkbox-config';
 
 
 // Increasing integer for generating unique ids for checkbox components.
@@ -203,8 +206,11 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   constructor(elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
-              @Attribute('tabindex') tabIndex: string) {
+              @Attribute('tabindex') tabIndex: string,
+              @Optional() @Inject(MAT_CHECKBOX_CLICK_ACTION)
+                  private _clickAction: MatCheckboxClickAction) {
     super(elementRef);
+
     this.tabIndex = parseInt(tabIndex) || 0;
   }
 
@@ -369,10 +375,13 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     // Preventing bubbling for the second event will solve that issue.
     event.stopPropagation();
 
-    if (!this.disabled) {
+    // If resetIndeterminate is false, and the current state is indeterminate, do nothing on click
+    if (!this.disabled && this._clickAction !== 'noop') {
       // When user manually click on the checkbox, `indeterminate` is set to false.
-      if (this._indeterminate) {
+      if (this.indeterminate && this._clickAction !== 'check') {
+
         Promise.resolve().then(() => {
+          console.log(`reset indeterminate`);
           this._indeterminate = false;
           this.indeterminateChange.emit(this._indeterminate);
         });
@@ -380,12 +389,17 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
       this.toggle();
       this._transitionCheckState(
-        this._checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
+          this._checked ? TransitionCheckState.Checked : TransitionCheckState.Unchecked);
 
       // Emit our custom change event if the native input emitted one.
       // It is important to only emit it, if the native input triggered one, because
       // we don't want to trigger a change event, when the `checked` variable changes for example.
       this._emitChangeEvent();
+    } else if (!this.disabled && this._clickAction === 'noop') {
+      // Reset native input when clicked with noop. The native checkbox becomes checked after
+      // click, reset it to be align with `checked` value of `mat-checkbox`.
+      this._inputElement.nativeElement.checked = this.checked;
+      this._inputElement.nativeElement.indeterminate = this.indeterminate;
     }
   }
 

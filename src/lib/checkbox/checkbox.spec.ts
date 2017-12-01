@@ -12,6 +12,7 @@ import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {MatCheckbox, MatCheckboxChange, MatCheckboxModule} from './index';
 import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '@angular/material/core';
+import {MAT_CHECKBOX_CLICK_ACTION} from './checkbox-config';
 
 
 describe('MatCheckbox', () => {
@@ -543,6 +544,112 @@ describe('MatCheckbox', () => {
       it('should not initially have any transition classes', () => {
         expect(checkboxNativeElement).not.toMatch(/^mat\-checkbox\-anim/g);
       });
+    });
+
+    describe(`when MAT_CHECKBOX_CLICK_ACTION is 'check'`, () => {
+      beforeEach(() => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+          imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
+          declarations: [
+            SingleCheckbox,
+          ],
+          providers: [
+            {provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'check'}
+          ]
+        });
+
+        fixture = TestBed.createComponent(SingleCheckbox);
+        fixture.detectChanges();
+
+        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+        checkboxNativeElement = checkboxDebugElement.nativeElement;
+        checkboxInstance = checkboxDebugElement.componentInstance;
+        testComponent = fixture.debugElement.componentInstance;
+
+        inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+        labelElement = checkboxNativeElement.querySelector('label') as HTMLLabelElement;
+      });
+
+      it('should not set `indeterminate` to false on click if check is set', fakeAsync(() => {
+        testComponent.isIndeterminate = true;
+        inputElement.click();
+
+        fixture.detectChanges();
+        flushMicrotasks();
+        fixture.detectChanges();
+        expect(inputElement.checked).toBe(true);
+        expect(checkboxNativeElement.classList).toContain('mat-checkbox-checked');
+        expect(inputElement.indeterminate).toBe(true);
+        expect(checkboxNativeElement.classList).toContain('mat-checkbox-indeterminate');
+      }));
+    });
+
+    describe(`when MAT_CHECKBOX_CLICK_ACTION is 'noop'`, () => {
+      beforeEach(() => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({
+          imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
+          declarations: [
+            SingleCheckbox,
+          ],
+          providers: [
+            {provide: MAT_CHECKBOX_CLICK_ACTION, useValue: 'noop'}
+          ]
+        });
+
+        fixture = TestBed.createComponent(SingleCheckbox);
+        fixture.detectChanges();
+
+        checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+        checkboxNativeElement = checkboxDebugElement.nativeElement;
+        checkboxInstance = checkboxDebugElement.componentInstance;
+        testComponent = fixture.debugElement.componentInstance;
+        inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+        labelElement = checkboxNativeElement.querySelector('label') as HTMLLabelElement;
+      });
+
+      it('should not change `indeterminate` on click if noop is set', fakeAsync(() => {
+        testComponent.isIndeterminate = true;
+        inputElement.click();
+
+        fixture.detectChanges();
+        flushMicrotasks();
+        fixture.detectChanges();
+
+        expect(inputElement.checked).toBe(false);
+        expect(checkboxNativeElement.classList).not.toContain('mat-checkbox-checked');
+        expect(inputElement.indeterminate).toBe(true);
+        expect(checkboxNativeElement.classList).toContain('mat-checkbox-indeterminate');
+      }));
+
+
+      it(`should not change 'checked' or 'indeterminate' on click if noop is set`, fakeAsync(() => {
+        testComponent.isChecked = true;
+        testComponent.isIndeterminate = true;
+        inputElement.click();
+
+        fixture.detectChanges();
+        flushMicrotasks();
+        fixture.detectChanges();
+
+        expect(inputElement.checked).toBe(true);
+        expect(checkboxNativeElement.classList).toContain('mat-checkbox-checked');
+        expect(inputElement.indeterminate).toBe(true);
+        expect(checkboxNativeElement.classList).toContain('mat-checkbox-indeterminate');
+
+        testComponent.isChecked = false;
+        inputElement.click();
+
+        fixture.detectChanges();
+        flushMicrotasks();
+        fixture.detectChanges();
+
+        expect(inputElement.checked).toBe(false);
+        expect(checkboxNativeElement.classList).not.toContain('mat-checkbox-checked');
+        expect(inputElement.indeterminate).toBe(true, 'indeterminate should not change');
+        expect(checkboxNativeElement.classList).toContain('mat-checkbox-indeterminate');
+      }));
     });
   });
 

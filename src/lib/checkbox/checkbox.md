@@ -23,6 +23,25 @@ While the `indeterminate` property of the checkbox is true, it will render as in
 regardless of the `checked` value. Any interaction with the checkbox by a user (i.e., clicking) will
 remove the indeterminate state.
 
+### Click action config
+When user clicks on the `mat-checkbox`, the default behavior is toggle `checked` value and set
+`indeterminate` to `false`. Developers now are able to change the behavior by providing a new value
+of `MatCheckboxClickAction` to the checkbox. The possible values are:
+
+#### `noop`
+Do not change the `checked` value or `indeterminate` value. Developers have the power to
+implement customized click actions.
+
+#### `check`
+Toggle `checked` value of the checkbox, ignore `indeterminate` value. If the
+checkbox is in `indeterminate` state, the checkbox will display as an `indeterminate` checkbox
+regardless the `checked` value.
+
+####`check-indeterminate`
+Default behavior of `mat-checkbox`. Always set `indeterminate` to `false`
+when user click on the `mat-checkbox`.
+This matches the behavior of native `<input type="checkbox">`.
+
 ### Theming
 The color of a `<mat-checkbox>` can be changed by using the `color` property. By default, checkboxes
 use the theme's accent color. This can be changed to `'primary'` or `'warn'`.  
