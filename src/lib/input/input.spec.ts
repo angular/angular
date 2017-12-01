@@ -688,6 +688,27 @@ describe('MatInput without forms', () => {
     expect(container.classList).toContain('mat-focused');
   }));
 
+  it('should remove the focused class if the input becomes disabled while focused',
+    fakeAsync(() => {
+      const fixture = TestBed.createComponent(MatInputTextTestController);
+      fixture.detectChanges();
+
+      const input = fixture.debugElement.query(By.directive(MatInput)).injector.get(MatInput);
+      const container = fixture.debugElement.query(By.css('mat-form-field')).nativeElement;
+
+      // Call the focus handler directly to avoid flakyness where
+      // browsers don't focus elements if the window is minimized.
+      input._focusChanged(true);
+      fixture.detectChanges();
+
+      expect(container.classList).toContain('mat-focused');
+
+      input.disabled = true;
+      fixture.detectChanges();
+
+      expect(container.classList).not.toContain('mat-focused');
+    }));
+
   it('should be able to animate the label up and lock it in position', fakeAsync(() => {
     let fixture = TestBed.createComponent(MatInputTextTestController);
     fixture.detectChanges();
