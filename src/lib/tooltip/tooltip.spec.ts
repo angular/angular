@@ -37,8 +37,12 @@ describe('MatTooltip', () => {
   let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let dir: {value: Direction};
+  let platform: {IOS: boolean, isBrowser: boolean};
 
   beforeEach(async(() => {
+    // Set the default Platform override that can be updated before component creation.
+    platform = {IOS: false, isBrowser: true};
+
     TestBed.configureTestingModule({
       imports: [MatTooltipModule, OverlayModule, NoopAnimationsModule],
       declarations: [
@@ -49,7 +53,7 @@ describe('MatTooltip', () => {
         TooltipOnTextFields
       ],
       providers: [
-        {provide: Platform, useValue: {IOS: false, isBrowser: true}},
+        {provide: Platform, useFactory: () => platform},
         {provide: Directionality, useFactory: () => {
           return dir = {value: 'ltr'};
         }}
@@ -684,9 +688,7 @@ describe('MatTooltip', () => {
 
   describe('special cases', () => {
     it('should clear the `user-select` when a tooltip is set on a text field in iOS', () => {
-      TestBed.overrideProvider(Platform, {
-        useValue: {IOS: true, isBrowser: true}
-      });
+      platform.IOS = true;
 
       const fixture = TestBed.createComponent(TooltipOnTextFields);
       const instance = fixture.componentInstance;
