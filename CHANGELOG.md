@@ -1,3 +1,17 @@
+<a name="5.1.0-rc.1"></a>
+# [5.1.0-rc.1](https://github.com/angular/angular/compare/5.1.0-rc.0...5.1.0-rc.1) (2017-12-01)
+
+
+### Bug Fixes
+
+* **compiler-cli:** propagate ts.SourceFile moduleName into metadata ([f841fbe](https://github.com/angular/angular/commit/f841fbe))
+* **service-worker:** allow disabling SW while still using services ([65f4fad](https://github.com/angular/angular/commit/65f4fad))
+* **service-worker:** don't crash if SW not supported ([b9a91a5](https://github.com/angular/angular/commit/b9a91a5))
+* **service-worker:** send initialization signal from the application ([3fbcde9](https://github.com/angular/angular/commit/3fbcde9))
+* **service-worker:** use relative path for ngsw.json ([f582620](https://github.com/angular/angular/commit/f582620))
+
+
+
 <a name="5.0.5"></a>
 ## [5.0.5](https://github.com/angular/angular/compare/5.0.4...5.0.5) (2017-12-01)
 
