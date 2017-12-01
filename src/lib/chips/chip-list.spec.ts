@@ -346,6 +346,15 @@ describe('MatChipList', () => {
       });
     });
 
+    it('should complete the stateChanges stream on destroy', () => {
+      const spy = jasmine.createSpy('stateChanges complete');
+      const subscription = chipListInstance.stateChanges.subscribe(undefined, undefined, spy);
+
+      fixture.destroy();
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
+
   });
 
   describe('selection logic', () => {

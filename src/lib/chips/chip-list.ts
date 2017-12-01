@@ -376,6 +376,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       this._changeSubscription.unsubscribe();
     }
     this._dropSubscriptions();
+    this.stateChanges.complete();
   }
 
 
