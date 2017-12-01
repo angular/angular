@@ -172,7 +172,7 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
 /** @experimental */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
-    expr: string;
+    expr: string | ((fromState: string, toState: string) => boolean);
     options: AnimationOptions | null;
 }
 
@@ -240,7 +240,7 @@ export declare function style(tokens: '*' | {
 }>): AnimationStyleMetadata;
 
 /** @experimental */
-export declare function transition(stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationTransitionMetadata;
+export declare function transition(stateChangeExpr: string | ((fromState: string, toState: string) => boolean), steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationTransitionMetadata;
 
 /** @experimental */
 export declare function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata;

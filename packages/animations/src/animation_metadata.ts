@@ -115,7 +115,7 @@ export interface AnimationStateMetadata extends AnimationMetadata {
  * @experimental Animation support is experimental.
  */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
-  expr: string;
+  expr: string|((fromState: string, toState: string) => boolean);
   animation: AnimationMetadata|AnimationMetadata[];
   options: AnimationOptions|null;
 }
@@ -836,7 +836,8 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  * @experimental Animation support is experimental.
  */
 export function transition(
-    stateChangeExpr: string, steps: AnimationMetadata | AnimationMetadata[],
+    stateChangeExpr: string | ((fromState: string, toState: string) => boolean),
+    steps: AnimationMetadata | AnimationMetadata[],
     options: AnimationOptions | null = null): AnimationTransitionMetadata {
   return {type: AnimationMetadataType.Transition, expr: stateChangeExpr, animation: steps, options};
 }
