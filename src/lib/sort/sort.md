@@ -19,13 +19,18 @@ direction to sort (`asc` or `desc`).
 By default, a sort header starts its sorting at `asc` and then `desc`. Triggering the sort header
 after `desc` will remove sorting.
 
-To reverse the sort order for all headers, set the `matSortStart` to `desc` on the `matSort` 
-directive. To reverse the order only for a specific header, set the `start` input only on the header 
+To reverse the sort order for all headers, set the `matSortStart` to `desc` on the `matSort`
+directive. To reverse the order only for a specific header, set the `start` input only on the header
 instead.
 
-To prevent the user from clearing the sort sort state from an already sorted column, set 
-`matSortDisableClear` to `true` on the `matSort` to affect all headers, or set `disableClear` to 
+To prevent the user from clearing the sort sort state from an already sorted column, set
+`matSortDisableClear` to `true` on the `matSort` to affect all headers, or set `disableClear` to
 `true` on a specific header.
+
+#### Disabling sorting
+
+If you want to prevent the user from changing the sorting order of any column, you can use the
+`matSortDisabled` binding on the `mat-sort`, or the `disabled` on an single `mat-sort-header`.
 
 #### Using sort with the mat-table
 

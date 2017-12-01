@@ -6,14 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Input, isDevMode, Output} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  Input,
+  isDevMode,
+  Output,
+  OnChanges,
+  OnDestroy,
+} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {CanDisable, mixinDisabled} from '@angular/material/core';
 import {SortDirection} from './sort-direction';
 import {
   getSortInvalidDirectionError,
   getSortDuplicateSortableIdError,
   getSortHeaderMissingIdError
 } from './sort-errors';
+import {Subject} from 'rxjs/Subject';
 
 /** Interface for a directive that holds sorting state consumed by `MatSortHeader`. */
 export interface MatSortable {
@@ -36,14 +46,23 @@ export interface Sort {
   direction: SortDirection;
 }
 
+// Boilerplate for applying mixins to MatSort.
+/** @docs-private */
+export class MatSortBase {}
+export const _MatSortMixinBase = mixinDisabled(MatSortBase);
+
 /** Container for MatSortables to manage the sort state and provide default sort parameters. */
 @Directive({
   selector: '[matSort]',
-  exportAs: 'matSort'
+  exportAs: 'matSort',
+  inputs: ['disabled: matSortDisabled']
 })
-export class MatSort {
+export class MatSort extends _MatSortMixinBase implements CanDisable, OnChanges, OnDestroy {
   /** Collection of all registered sortables that this directive manages. */
   sortables = new Map<string, MatSortable>();
+
+  /** Used to notify any child components listening to state changes. */
+  _stateChanges = new Subject<void>();
 
   /** The id of the most recently sorted MatSortable. */
   @Input('matSortActive') active: string;
@@ -124,6 +143,14 @@ export class MatSort {
     let nextDirectionIndex = sortDirectionCycle.indexOf(this.direction) + 1;
     if (nextDirectionIndex >= sortDirectionCycle.length) { nextDirectionIndex = 0; }
     return sortDirectionCycle[nextDirectionIndex];
+  }
+
+  ngOnChanges() {
+    this._stateChanges.next();
+  }
+
+  ngOnDestroy() {
+    this._stateChanges.complete();
   }
 }
 

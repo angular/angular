@@ -221,7 +221,13 @@
 
   <table-header-demo (shiftColumns)="displayedColumns.push(displayedColumns.shift())"
                      (toggleColorColumn)="toggleColorColumn()" *ngIf="selection.isEmpty()">
+
+    <button mat-menu-item (click)="progressSortingDisabled = !progressSortingDisabled">
+      <mat-icon>sort</mat-icon>
+      Toggle Progress Sorting
+    </button>
   </table-header-demo>
+
   <div class="example-header example-selection-header"
        *ngIf="!selection.isEmpty()">
     {{selection.selected.length}}
@@ -257,7 +263,10 @@
 
     <!-- Column Definition: Progress -->
     <ng-container matColumnDef="progress">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Progress </mat-header-cell>
+      <mat-header-cell
+        *matHeaderCellDef
+        [disabled]="progressSortingDisabled"
+        mat-sort-header> Progress </mat-header-cell>
       <mat-cell *matCellDef="let row">
         <div class="demo-progress-stat">{{row.progress}}%</div>
         <div class="demo-progress-indicator-container">

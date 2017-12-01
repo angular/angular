@@ -43,6 +43,7 @@ export class TableDemo {
   displayedColumns: UserProperties[] = [];
   trackByStrategy: TrackByStrategy = 'reference';
   changeReferences = false;
+  progressSortingDisabled = false;
   highlights = new Set<string>();
   wasExpanded = new Set<UserData>();
 
