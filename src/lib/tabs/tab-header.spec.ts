@@ -243,7 +243,7 @@ describe('MatTabHeader', () => {
       });
     });
 
-    it('should re-align the ink bar when the direction changes', () => {
+    it('should re-align the ink bar when the direction changes', fakeAsync(() => {
       fixture = TestBed.createComponent(SimpleTabHeaderApp);
 
       const inkBar = fixture.componentInstance.tabHeader._inkBar;
@@ -253,9 +253,10 @@ describe('MatTabHeader', () => {
 
       change.next();
       fixture.detectChanges();
+      tick(20); // Angular turns rAF calls into 16.6ms timeouts in tests.
 
       expect(inkBar.alignToElement).toHaveBeenCalled();
-    });
+    }));
 
     it('should re-align the ink bar when the window is resized', fakeAsync(() => {
       fixture = TestBed.createComponent(SimpleTabHeaderApp);

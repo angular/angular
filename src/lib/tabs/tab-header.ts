@@ -8,7 +8,6 @@
 
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
-import {startWith} from 'rxjs/operators/startWith';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -188,11 +187,15 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   ngAfterContentInit() {
     const dirChange = this._dir ? this._dir.change : observableOf(null);
     const resize = this._viewportRuler.change(150);
-
-    this._realignInkBar = merge(dirChange, resize).pipe(startWith(null)).subscribe(() => {
+    const realign = () => {
       this._updatePagination();
       this._alignInkBarToSelectedTab();
-    });
+    };
+
+    // Defer the first call in order to allow for slower browsers to lay out the elements.
+    // This helps in cases where the user lands directly on a page with paginated tabs.
+    typeof requestAnimationFrame !== 'undefined' ? requestAnimationFrame(realign) : realign();
+    this._realignInkBar = merge(dirChange, resize).subscribe(realign);
   }
 
   ngOnDestroy() {
