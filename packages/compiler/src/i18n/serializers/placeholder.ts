@@ -122,3 +122,6 @@ export class PlaceholderRegistry {
     return `${base}_${id}`;
   }
 }
+
+export declare var PlaceholderRegistryInternalForTesting: typeof PlaceholderRegistry;
+export type PlaceholderRegistryInternalForTesting = PlaceholderRegistry;
