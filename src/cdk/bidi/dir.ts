@@ -34,7 +34,7 @@ export class Dir implements Directionality {
   private _isInitialized: boolean = false;
 
   /** Event emitted when the direction changes. */
-  @Output('dirChange') change = new EventEmitter<void>();
+  @Output('dirChange') change = new EventEmitter<Direction>();
 
   /** @docs-private */
   @Input('dir')
@@ -43,7 +43,7 @@ export class Dir implements Directionality {
     let old = this._dir;
     this._dir = v;
     if (old !== this._dir && this._isInitialized) {
-      this.change.emit();
+      this.change.emit(this._dir);
     }
   }
 

@@ -39,7 +39,7 @@ export class Directionality {
   readonly value: Direction = 'ltr';
 
   /** Stream that emits whenever the 'ltr' / 'rtl' state changes. */
-  readonly change = new EventEmitter<void>();
+  readonly change = new EventEmitter<Direction>();
 
   constructor(@Optional() @Inject(DIR_DOCUMENT) _document?: any) {
     if (_document) {

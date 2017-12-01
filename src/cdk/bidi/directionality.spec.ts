@@ -1,7 +1,7 @@
-import {async, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {async, fakeAsync, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {BidiModule, Directionality, DIR_DOCUMENT} from './index';
+import {BidiModule, Directionality, Direction, DIR_DOCUMENT} from './index';
 
 describe('Directionality', () => {
   let fakeDocument: FakeDocument;
@@ -62,14 +62,18 @@ describe('Directionality', () => {
 
       fixture.detectChanges();
 
+      let direction = injectedDirectionality.value;
+      injectedDirectionality.change.subscribe((dir: Direction) => { direction = dir; });
+
+      expect(direction).toBe('rtl');
       expect(injectedDirectionality.value).toBe('rtl');
       expect(fixture.componentInstance.changeCount).toBe(0);
 
       fixture.componentInstance.direction = 'ltr';
 
       fixture.detectChanges();
-      tick();
 
+      expect(direction).toBe('ltr');
       expect(injectedDirectionality.value).toBe('ltr');
       expect(fixture.componentInstance.changeCount).toBe(1);
     }));
@@ -79,7 +83,7 @@ describe('Directionality', () => {
 
 @Component({
   template: `
-    <div [dir]="direction" (dirChange)="changeCount= changeCount + 1">
+    <div [dir]="direction" (dirChange)="changeCount = changeCount + 1">
       <injects-directionality></injects-directionality>
     </div>
   `
