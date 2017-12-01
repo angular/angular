@@ -1079,11 +1079,12 @@ describe('StaticReflector', () => {
            '/tmp/root.ts': ``,
            '/tmp/a.ts': `export const x = 1;`,
          });
-         let symbol =
-             reflector.resolveExternalReference({moduleName: './a', name: 'x', /*FIXME*/runtime: null}, '/tmp/root.ts');
+         let symbol = reflector.resolveExternalReference(
+             {moduleName: './a', name: 'x', /*FIXME*/ runtime: null}, '/tmp/root.ts');
          expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBeFalsy();
 
-         symbol = reflector.resolveExternalReference({moduleName: 'a', name: 'x', /*FIXME*/runtime: null});
+         symbol = reflector.resolveExternalReference(
+             {moduleName: 'a', name: 'x', /*FIXME*/ runtime: null});
          expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBe('a');
        });
   });

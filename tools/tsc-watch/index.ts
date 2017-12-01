@@ -96,15 +96,13 @@ if (platform == 'node') {
       },
       BaseConfig));
 } else if (platform == 'nodeRender3') {
-  const specFiles = [
-    '@angular/core/src/render3/**/*_spec.js'
-  ];
+  const specFiles = ['@angular/core/src/render3/**/*_spec.js'];
   tscWatch = new TscWatch(Object.assign(
-    {
-      tsconfig: 'packages/tsconfig.json',
-      onChangeCmds: [createNodeTestCommand(specFiles, debugMode)]
-    },
-    BaseConfig));
+      {
+        tsconfig: 'packages/tsconfig.json',
+        onChangeCmds: [createNodeTestCommand(specFiles, debugMode)]
+      },
+      BaseConfig));
 } else {
   throw new Error(`unknown platform: ${platform}`);
 }

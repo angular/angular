@@ -33,7 +33,7 @@ gulp.task('build.sh', loadTask('build', 'all'));
 gulp.task('build.sh:no-bundle', loadTask('build', 'no-bundle'));
 gulp.task('public-api:enforce', loadTask('public-api', 'enforce'));
 gulp.task('public-api:update', ['build.sh'], loadTask('public-api', 'update'));
-gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);
+gulp.task('lint', ['format:enforce', 'tslint']);
 gulp.task('tslint', ['tools:build'], loadTask('lint'));
 gulp.task('validate-commit-messages', loadTask('validate-commit-message'));
 gulp.task('source-map-test', loadTask('source-map-test'));
