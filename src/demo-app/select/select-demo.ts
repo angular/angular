@@ -60,7 +60,7 @@ export class SelectDemo {
     {value: 'charizard-1', viewValue: 'Charizard'},
     {value: 'squirtle-2', viewValue: 'Squirtle'},
     {value: 'pikachu-3', viewValue: 'Pikachu'},
-    {value: 'eevee-4', viewValue: 'Eevee'},
+    {value: 'jigglypuff-4', viewValue: 'Jigglypuff with a really long name that will truncate'},
     {value: 'ditto-5', viewValue: 'Ditto'},
     {value: 'psyduck-6', viewValue: 'Psyduck'},
   ];
@@ -120,7 +120,7 @@ export class SelectDemo {
   }
 
   setPokemonValue() {
-    this.currentPokemon = ['eevee-4', 'psyduck-6'];
+    this.currentPokemon = ['jigglypuff-4', 'psyduck-6'];
   }
 
   reassignDrinkByCopy() {
