@@ -687,6 +687,16 @@ describe('MatDatepicker', () => {
         expect(attachToRef.nativeElement.classList.contains('mat-form-field-underline'))
             .toBe(true, 'popup should be attached to mat-form-field underline');
       });
+
+      it('should float the placeholder when an invalid value is entered', () => {
+        testComponent.datepickerInput.value = 'totally-not-a-date' as any;
+        fixture.debugElement.nativeElement.querySelector('input').value = 'totally-not-a-date';
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.nativeElement.querySelector('mat-form-field').classList)
+          .toContain('mat-form-field-should-float');
+      });
+
     });
 
     describe('datepicker with min and max dates and validation', () => {
