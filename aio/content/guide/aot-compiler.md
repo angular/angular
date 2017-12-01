@@ -2,7 +2,7 @@
 
 The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code.
 
-This guide explains how to to build with the AOT compiler and how to write Angular metadata that AOT can compile.
+This guide explains how to build with the AOT compiler and how to write Angular metadata that AOT can compile.
 
 <div class="l-sub-section">
 
