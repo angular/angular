@@ -2310,6 +2310,66 @@ export function main() {
            expect(cmp.event2.triggerName).toBeTruthy('ani2');
          }));
 
+      it('should handle a leave animation for multiple triggers even if not all triggers have their own leave transition specified',
+         fakeAsync(() => {
+           @Component({
+             selector: 'if-cmp',
+             template: `
+               <div *ngIf="exp" @foo @bar>123</div>
+             `,
+             animations: [
+               trigger(
+                   'foo',
+                   [
+                     transition(
+                         ':enter',
+                         [
+                           style({opacity: 0}),
+                           animate(1000, style({opacity: 1})),
+                         ]),
+                   ]),
+               trigger(
+                   'bar',
+                   [
+                     transition(
+                         ':leave',
+                         [
+                           animate(1000, style({opacity: 0})),
+                         ]),
+                   ])
+             ],
+           })
+           class Cmp {
+             exp: boolean = false;
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+           const fixture = TestBed.createComponent(Cmp);
+           const elm = fixture.elementRef.nativeElement;
+           const cmp = fixture.componentInstance;
+
+           cmp.exp = true;
+           fixture.detectChanges();
+
+           let players = getLog();
+           expect(players.length).toEqual(1);
+           let [p1] = players;
+           p1.finish();
+           flushMicrotasks();
+           expect(elm.innerText.trim()).toEqual('123');
+
+           resetLog();
+           cmp.exp = false;
+           fixture.detectChanges();
+
+           players = getLog();
+           expect(players.length).toEqual(1);
+           [p1] = players;
+           p1.finish();
+           flushMicrotasks();
+           expect(elm.innerText.trim()).toEqual('');
+         }));
+
       it('should trigger a state change listener for when the animation changes state from void => state on the host element',
          fakeAsync(() => {
            @Component({
