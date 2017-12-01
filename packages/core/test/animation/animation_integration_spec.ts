@@ -255,6 +255,45 @@ export function main() {
         ]);
       });
 
+      it('should allow a transition to use a function to determine what method to run', () => {
+        let valueToMatch = '';
+        const transitionFn =
+            (fromState: string, toState: string) => { return toState == valueToMatch; };
+
+        @Component({
+          selector: 'if-cmp',
+          template: '<div [@myAnimation]="exp"></div>',
+          animations: [
+            trigger('myAnimation', [transition(
+                                       transitionFn,
+                                       [style({opacity: 0}), animate(1234, style({opacity: 1}))])]),
+          ]
+        })
+        class Cmp {
+          exp: any = '';
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        valueToMatch = cmp.exp = 'something';
+        fixture.detectChanges();
+
+        let players = getLog();
+        expect(players.length).toEqual(1);
+        let [p1] = players;
+        expect(p1.totalTime).toEqual(1234);
+        resetLog();
+
+        valueToMatch = 'something-else';
+        cmp.exp = 'this-wont-match';
+        fixture.detectChanges();
+
+        players = getLog();
+        expect(players.length).toEqual(0);
+      });
+
       it('should allow a state value to be `0`', () => {
         @Component({
           selector: 'if-cmp',
