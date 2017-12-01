@@ -3,9 +3,14 @@ import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ReactiveFormsModule,
+  ValidationErrors, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {map} from 'rxjs/operators/map';
+import {take} from 'rxjs/operators/take';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 import {MatStepperModule} from './index';
 import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
@@ -156,15 +161,23 @@ describe('MatHorizontalStepper', () => {
       expect(stepperComponent.linear).toBe(true);
     });
 
-    it('should not move to next step if current step is not valid', () => {
+    it('should not move to next step if current step is invalid', () => {
       expect(testComponent.oneGroup.get('oneCtrl')!.value).toBe('');
       expect(testComponent.oneGroup.get('oneCtrl')!.valid).toBe(false);
       expect(testComponent.oneGroup.valid).toBe(false);
+      expect(testComponent.oneGroup.invalid).toBe(true);
       expect(stepperComponent.selectedIndex).toBe(0);
 
       let stepHeaderEl = fixture.debugElement
           .queryAll(By.css('.mat-horizontal-stepper-header'))[1].nativeElement;
       assertLinearStepperValidity(stepHeaderEl, testComponent, fixture);
+    });
+
+    it('should not move to next step if current step is pending', () => {
+      let stepHeaderEl = fixture.debugElement
+          .queryAll(By.css('.mat-horizontal-stepper-header'))[2].nativeElement;
+
+      assertLinearStepperPending(stepHeaderEl, testComponent, fixture);
     });
 
     it('should not focus step header upon click if it is not able to be selected', () => {
@@ -317,16 +330,24 @@ describe('MatVerticalStepper', () => {
       expect(stepperComponent.linear).toBe(true);
     });
 
-    it('should not move to next step if current step is not valid', () => {
+    it('should not move to next step if current step is invalid', () => {
       expect(testComponent.oneGroup.get('oneCtrl')!.value).toBe('');
       expect(testComponent.oneGroup.get('oneCtrl')!.valid).toBe(false);
       expect(testComponent.oneGroup.valid).toBe(false);
+      expect(testComponent.oneGroup.invalid).toBe(true);
       expect(stepperComponent.selectedIndex).toBe(0);
 
       let stepHeaderEl = fixture.debugElement
           .queryAll(By.css('.mat-vertical-stepper-header'))[1].nativeElement;
 
       assertLinearStepperValidity(stepHeaderEl, testComponent, fixture);
+    });
+
+    it('should not move to next step if current step is pending', () => {
+      let stepHeaderEl = fixture.debugElement
+          .queryAll(By.css('.mat-vertical-stepper-header'))[2].nativeElement;
+
+      assertLinearStepperPending(stepHeaderEl, testComponent, fixture);
     });
 
     it('should not focus step header upon click if it is not able to be selected', () => {
@@ -617,6 +638,58 @@ function assertLinearStepperValidity(stepHeaderEl: HTMLElement,
   expect(stepperComponent.selectedIndex).toBe(1);
 }
 
+/** Asserts that linear stepper does not allow step selection change if current step is pending. */
+function assertLinearStepperPending(stepHeaderEl: HTMLElement,
+                                    testComponent:
+                                        LinearMatHorizontalStepperApp |
+                                        LinearMatVerticalStepperApp,
+                                    fixture: ComponentFixture<any>) {
+  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+  let nextButtonNativeEl = fixture.debugElement
+      .queryAll(By.directive(MatStepperNext))[1].nativeElement;
+
+  testComponent.oneGroup.get('oneCtrl')!.setValue('input');
+  testComponent.twoGroup.get('twoCtrl')!.setValue('input');
+  stepperComponent.selectedIndex = 1;
+  fixture.detectChanges();
+  expect(stepperComponent.selectedIndex).toBe(1);
+
+  // Step status = PENDING
+  // Assert that linear stepper does not allow step selection change
+  expect(testComponent.twoGroup.pending).toBe(true);
+
+  stepHeaderEl.click();
+  fixture.detectChanges();
+
+  expect(stepperComponent.selectedIndex).toBe(1);
+
+  nextButtonNativeEl.click();
+  fixture.detectChanges();
+
+  expect(stepperComponent.selectedIndex).toBe(1);
+
+  // Trigger asynchronous validation
+  testComponent.validationTrigger.next();
+  // Asynchronous validation completed:
+  // Step status = VALID
+  expect(testComponent.twoGroup.pending).toBe(false);
+  expect(testComponent.twoGroup.valid).toBe(true);
+
+  stepHeaderEl.click();
+  fixture.detectChanges();
+
+  expect(stepperComponent.selectedIndex).toBe(2);
+
+  stepperComponent.selectedIndex = 1;
+  fixture.detectChanges();
+  expect(stepperComponent.selectedIndex).toBe(1);
+
+  nextButtonNativeEl.click();
+  fixture.detectChanges();
+
+  expect(stepperComponent.selectedIndex).toBe(2);
+}
+
 /** Asserts that step header focus is blurred if the step cannot be selected upon header click. */
 function assertStepHeaderBlurred(fixture: ComponentFixture<any>) {
   let stepHeaderEl = fixture.debugElement
@@ -659,6 +732,7 @@ function assertOptionalStepValidity(testComponent:
 
   testComponent.oneGroup.get('oneCtrl')!.setValue('input');
   testComponent.twoGroup.get('twoCtrl')!.setValue('input');
+  testComponent.validationTrigger.next();
   stepperComponent.selectedIndex = 2;
   fixture.detectChanges();
 
@@ -704,6 +778,18 @@ function assertCorrectStepIcon(fixture: ComponentFixture<any>,
   fixture.detectChanges();
 
   expect(stepperComponent._getIndicatorType(0)).toBe(icon);
+}
+
+function asyncValidator(minLength: number, validationTrigger: Observable<any>): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    return validationTrigger.pipe(
+      map(() =>  {
+        const success = control.value && control.value.length >= minLength;
+        return success ? null : { 'asyncValidation': {}};
+      }),
+      take(1)
+    );
+  };
 }
 
 @Component({
@@ -783,12 +869,14 @@ class LinearMatHorizontalStepperApp {
   twoGroup: FormGroup;
   threeGroup: FormGroup;
 
+  validationTrigger: Subject<any> = new Subject();
+
   ngOnInit() {
     this.oneGroup = new FormGroup({
       oneCtrl: new FormControl('', Validators.required)
     });
     this.twoGroup = new FormGroup({
-      twoCtrl: new FormControl('', Validators.required)
+      twoCtrl: new FormControl('', Validators.required, asyncValidator(3, this.validationTrigger))
     });
     this.threeGroup = new FormGroup({
       threeCtrl: new FormControl('', Validators.pattern(VALID_REGEX))
@@ -873,12 +961,14 @@ class LinearMatVerticalStepperApp {
   twoGroup: FormGroup;
   threeGroup: FormGroup;
 
+  validationTrigger: Subject<any> = new Subject();
+
   ngOnInit() {
     this.oneGroup = new FormGroup({
       oneCtrl: new FormControl('', Validators.required)
     });
     this.twoGroup = new FormGroup({
-      twoCtrl: new FormControl('', Validators.required)
+      twoCtrl: new FormControl('', Validators.required, asyncValidator(3, this.validationTrigger))
     });
     this.threeGroup = new FormGroup({
       threeCtrl: new FormControl('', Validators.pattern(VALID_REGEX))

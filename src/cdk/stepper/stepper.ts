@@ -152,7 +152,7 @@ export class CdkStepper implements OnDestroy {
   get selectedIndex() { return this._selectedIndex; }
   set selectedIndex(index: number) {
     if (this._steps) {
-      if (this._anyControlsInvalid(index) || index < this._selectedIndex &&
+      if (this._anyControlsInvalidOrPending(index) || index < this._selectedIndex &&
           !this._steps.toArray()[index].editable) {
         // remove focus from clicked step header if the step is not able to be selected
         this._stepHeader.toArray()[index].nativeElement.blur();
@@ -291,13 +291,15 @@ export class CdkStepper implements OnDestroy {
     this._stepHeader.toArray()[this._focusIndex].nativeElement.focus();
   }
 
-  private _anyControlsInvalid(index: number): boolean {
+  private _anyControlsInvalidOrPending(index: number): boolean {
     const steps = this._steps.toArray();
 
     steps[this._selectedIndex].interacted = true;
 
     if (this._linear && index >= 0) {
-      return steps.slice(0, index).some(step => step.stepControl && step.stepControl.invalid);
+      return steps.slice(0, index).some(step =>
+        step.stepControl && (step.stepControl.invalid || step.stepControl.pending)
+      );
     }
     return false;
   }
