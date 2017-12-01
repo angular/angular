@@ -15,5 +15,6 @@ ng_module(
     tsconfig = "//packages:tsconfig",
     deps = [
         "@rxjs//:rxjs",
+        "//packages:types",
     ],
 )
