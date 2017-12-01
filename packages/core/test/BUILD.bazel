@@ -6,7 +6,10 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 ts_library(
     name = "test_lib",
     testonly = 1,
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["render3/**/*.ts"],
+    ),
     tsconfig = "//packages:tsconfig",
     deps = [
         "//packages/animations",

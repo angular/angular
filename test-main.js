@@ -90,9 +90,6 @@ System.import('@angular/core/testing')
                                return System.import(path).then(function(module) {
                                  if (module.hasOwnProperty('main')) {
                                    module.main();
-                                 } else {
-                                   throw new Error(
-                                       'Module ' + path + ' does not implement main() method.');
                                  }
                                });
                              }));

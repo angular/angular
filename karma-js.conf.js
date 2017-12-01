@@ -57,6 +57,7 @@ module.exports = function(config) {
       'dist/all/@angular/**/*node_only_spec.js',
       'dist/all/@angular/benchpress/**',
       'dist/all/@angular/compiler-cli/**',
+      'dist/all/@angular/core/test/render3/**',
       'dist/all/@angular/compiler/test/aot/**',
       'dist/all/@angular/examples/**/e2e_test/*',
       'dist/all/@angular/language-service/**',
