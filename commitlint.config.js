@@ -10,8 +10,5 @@ module.exports = {
 function getPackages() {
   return glob.sync('packages/*/package.json')
       .map(manifest => require(`./${manifest}`).name)
-      .map(name => {
-        const f = name.split('/');
-        return f[f.length - 1];
-      });
+      .map(name => name.split('/').pop());
 }
