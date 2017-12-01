@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ApplicationRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {APP_INITIALIZER, ApplicationRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {filter as op_filter} from 'rxjs/operator/filter';
 import {take as op_take} from 'rxjs/operator/take';
@@ -20,10 +21,11 @@ export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
 export const OPTS = new InjectionToken<Object>('NGSW_REGISTER_OPTIONS');
 
 export function ngswAppInitializer(
-    injector: Injector, script: string, options: RegistrationOptions): Function {
+    injector: Injector, script: string, options: RegistrationOptions,
+    platformId: string): Function {
   const initializer = () => {
     const app = injector.get<ApplicationRef>(ApplicationRef);
-    if (!('serviceWorker' in navigator)) {
+    if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator))) {
       return;
     }
     const onStable =
@@ -59,7 +61,7 @@ export class ServiceWorkerModule {
         {
           provide: APP_INITIALIZER,
           useFactory: ngswAppInitializer,
-          deps: [Injector, SCRIPT, OPTS],
+          deps: [Injector, SCRIPT, OPTS, PLATFORM_ID],
           multi: true,
         },
       ],
