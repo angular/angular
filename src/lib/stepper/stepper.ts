@@ -90,6 +90,7 @@ export class MatStepper extends _MatStepper implements AfterContentInit {
   inputs: ['selectedIndex'],
   host: {
     'class': 'mat-stepper-horizontal',
+    'aria-orientation': 'horizontal',
     'role': 'tablist',
   },
   animations: [
@@ -116,6 +117,7 @@ export class MatHorizontalStepper extends MatStepper { }
   inputs: ['selectedIndex'],
   host: {
     'class': 'mat-stepper-vertical',
+    'aria-orientation': 'vertical',
     'role': 'tablist',
   },
   animations: [

@@ -56,6 +56,11 @@ describe('MatHorizontalStepper', () => {
       expect(stepperEl.getAttribute('role')).toBe('tablist');
     });
 
+    it('should set the proper "aria-orientation"', () => {
+      let stepperEl = fixture.debugElement.query(By.css('mat-horizontal-stepper')).nativeElement;
+      expect(stepperEl.getAttribute('aria-orientation')).toBe('horizontal');
+    });
+
     it('should set aria-expanded of content correctly', () => {
       let stepContents = fixture.debugElement.queryAll(By.css(`.mat-horizontal-stepper-content`));
       assertCorrectAriaExpandedAttribute(fixture, stepContents);
@@ -225,6 +230,11 @@ describe('MatVerticalStepper', () => {
     it('should set the "tablist" role on stepper', () => {
       let stepperEl = fixture.debugElement.query(By.css('mat-vertical-stepper')).nativeElement;
       expect(stepperEl.getAttribute('role')).toBe('tablist');
+    });
+
+    it('should set the proper "aria-orientation"', () => {
+      let stepperEl = fixture.debugElement.query(By.css('mat-vertical-stepper')).nativeElement;
+      expect(stepperEl.getAttribute('aria-orientation')).toBe('vertical');
     });
 
     it('should set aria-expanded of content correctly', () => {
