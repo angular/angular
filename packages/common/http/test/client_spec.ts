@@ -45,9 +45,24 @@ export function main() {
         expect(req.request.headers.get('X-Option')).toEqual('true');
         req.flush({});
       });
-      it('with params', (done: DoneFn) => {
-        client.get('/test', {params: {'test': 'true'}}).subscribe(() => done());
-        backend.expectOne('/test?test=true').flush({});
+      it('params as object', (done: DoneFn) => {
+        client
+            .get(
+                '/test',
+                {params: {'string': 'string', number: 1, array: [2, 3, '4'], bool: true, a: null}})
+            .subscribe(() => done());
+        backend.expectOne('/test?string=string&number=1&array=2&array=3&array=4&bool=true&a=null')
+            .flush({});
+      });
+      it('params as string', (done: DoneFn) => {
+        client.get('/test', {params: 'angular=awesome&angular5=yes&a=null'})
+            .subscribe(() => done());
+        backend.expectOne('/test?angular=awesome&angular5=yes&a=null').flush({});
+      });
+      it('params as string with `?` prefix', (done: DoneFn) => {
+        client.get('/test', {params: '?angular=awesome&angular5=yes'})
+            .subscribe(() => done());  // With '?' prefix
+        backend.expectOne('/test?angular=awesome&angular5=yes').flush({});
       });
       it('for an arraybuffer', (done: DoneFn) => {
         const body = new ArrayBuffer(4);

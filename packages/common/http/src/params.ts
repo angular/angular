@@ -41,6 +41,8 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
 function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, string[]> {
   const map = new Map<string, string[]>();
   if (rawParams.length > 0) {
+    rawParams.charAt(0) == '?' &&
+        (rawParams = rawParams.substr(1));  // safe check to remove '?' prefix, if exists
     const params: string[] = rawParams.split('&');
     params.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
@@ -82,7 +84,7 @@ export interface HttpParamsOptions {
   fromString?: string;
 
   /** Object map of the HTTP params. Mutally exclusive with `fromString`. */
-  fromObject?: {[param: string]: string | string[]};
+  fromObject?: {[param: string]: string | number | boolean | null | (string | number)[]};
 
   /** Encoding codec used to parse and serialize the params. */
   encoder?: HttpParameterCodec;
