@@ -1,0 +1,29 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "lib",
+    testonly = 1,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_perf.ts"],
+    ),
+    tsconfig = "//packages:tsconfig.json",
+    deps = [
+        "//packages:types",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+jasmine_node_test(
+    name = "render3",
+    bootstrap = [
+        "angular_src/packages/core/test/render3/load_domino",
+    ],
+    deps = [
+        ":lib",
+    ],
+)

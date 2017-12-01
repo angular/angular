@@ -56,6 +56,7 @@ var specFiles: any =
                        '@angular/platform-browser/**',
                        '@angular/platform-browser-dynamic/**',
                        '@angular/core/test/zone/**',
+                       '@angular/core/test/render3/**',
                        '@angular/core/test/fake_async_spec.*',
                        '@angular/forms/test/**',
                        '@angular/router/test/route_config/route_config_spec.*',
