@@ -15,12 +15,6 @@ import {
   CdkRowDef,
 } from '@angular/cdk/table';
 
-/** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatHeaderRowDef = CdkHeaderRowDef;
-export const _MatCdkRowDef = CdkRowDef;
-export const _MatHeaderRow = CdkHeaderRow;
-export const _MatRow = CdkRow;
-
 /**
  * Header row definition for the mat-table.
  * Captures the header row's template and other header properties such as the columns to display.
@@ -30,7 +24,7 @@ export const _MatRow = CdkRow;
   providers: [{provide: CdkHeaderRowDef, useExisting: MatHeaderRowDef}],
   inputs: ['columns: matHeaderRowDef'],
 })
-export class MatHeaderRowDef extends _MatHeaderRowDef { }
+export class MatHeaderRowDef extends CdkHeaderRowDef { }
 
 /**
  * Data row definition for the mat-table.
@@ -42,7 +36,7 @@ export class MatHeaderRowDef extends _MatHeaderRowDef { }
   providers: [{provide: CdkRowDef, useExisting: MatRowDef}],
   inputs: ['columns: matRowDefColumns', 'when: matRowDefWhen'],
 })
-export class MatRowDef<T> extends _MatCdkRowDef<T> {
+export class MatRowDef<T> extends CdkRowDef<T> {
 }
 
 /** Header template container that contains the cell outlet. Adds the right class and role. */
@@ -59,7 +53,7 @@ export class MatRowDef<T> extends _MatCdkRowDef<T> {
   exportAs: 'matHeaderRow',
   preserveWhitespaces: false,
 })
-export class MatHeaderRow extends _MatHeaderRow { }
+export class MatHeaderRow extends CdkHeaderRow { }
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -75,4 +69,4 @@ export class MatHeaderRow extends _MatHeaderRow { }
   exportAs: 'matRow',
   preserveWhitespaces: false,
 })
-export class MatRow extends _MatRow { }
+export class MatRow extends CdkRow { }

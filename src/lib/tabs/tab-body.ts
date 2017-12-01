@@ -35,9 +35,6 @@ import {TemplatePortal, CdkPortalOutlet} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {Subscription} from 'rxjs/Subscription';
 
-/** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatTabBodyPortalBaseClass = CdkPortalOutlet;
-
 /**
  * These position states are used internally as animation states for the tab body. Setting the
  * position state to left, right, or center will transition the tab body from its current
@@ -66,7 +63,7 @@ export type MatTabBodyOriginState = 'left' | 'right';
 @Directive({
   selector: '[matTabBodyHost]'
 })
-export class MatTabBodyPortal extends _MatTabBodyPortalBaseClass implements OnInit, OnDestroy {
+export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestroy {
   /** A subscription to events for when the tab body begins centering. */
   private _centeringSub: Subscription;
 

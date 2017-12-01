@@ -15,13 +15,6 @@ import {
   CdkHeaderCellDef,
 } from '@angular/cdk/table';
 
-/** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatCellDef = CdkCellDef;
-export const _MatHeaderCellDef = CdkHeaderCellDef;
-export const _MatColumnDef = CdkColumnDef;
-export const _MatHeaderCell = CdkHeaderCell;
-export const _MatCell = CdkCell;
-
 /**
  * Cell definition for the mat-table.
  * Captures the template of a column's data row cell as well as cell-specific properties.
@@ -30,7 +23,7 @@ export const _MatCell = CdkCell;
   selector: '[matCellDef]',
   providers: [{provide: CdkCellDef, useExisting: MatCellDef}]
 })
-export class MatCellDef extends _MatCellDef { }
+export class MatCellDef extends CdkCellDef { }
 
 /**
  * Header cell definition for the mat-table.
@@ -40,7 +33,7 @@ export class MatCellDef extends _MatCellDef { }
   selector: '[matHeaderCellDef]',
   providers: [{provide: CdkHeaderCellDef, useExisting: MatHeaderCellDef}]
 })
-export class MatHeaderCellDef extends _MatHeaderCellDef { }
+export class MatHeaderCellDef extends CdkHeaderCellDef { }
 
 /**
  * Column definition for the mat-table.
@@ -50,7 +43,7 @@ export class MatHeaderCellDef extends _MatHeaderCellDef { }
   selector: '[matColumnDef]',
   providers: [{provide: CdkColumnDef, useExisting: MatColumnDef}],
 })
-export class MatColumnDef extends _MatColumnDef {
+export class MatColumnDef extends CdkColumnDef {
   /** Unique name for this column. */
   @Input('matColumnDef') name: string;
 }
@@ -63,7 +56,7 @@ export class MatColumnDef extends _MatColumnDef {
     'role': 'columnheader',
   },
 })
-export class MatHeaderCell extends _MatHeaderCell {
+export class MatHeaderCell extends CdkHeaderCell {
   constructor(columnDef: CdkColumnDef,
               elementRef: ElementRef) {
     super(columnDef, elementRef);
@@ -79,7 +72,7 @@ export class MatHeaderCell extends _MatHeaderCell {
     'role': 'gridcell',
   },
 })
-export class MatCell extends _MatCell {
+export class MatCell extends CdkCell {
   constructor(columnDef: CdkColumnDef,
               elementRef: ElementRef) {
     super(columnDef, elementRef);

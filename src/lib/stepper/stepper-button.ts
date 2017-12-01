@@ -10,17 +10,13 @@ import {Directive} from '@angular/core';
 import {CdkStepper, CdkStepperNext, CdkStepperPrevious} from '@angular/cdk/stepper';
 import {MatStepper} from './stepper';
 
-/** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatStepperNext = CdkStepperNext;
-export const _MatStepperPrevious = CdkStepperPrevious;
-
 /** Button that moves to the next step in a stepper workflow. */
 @Directive({
   selector: 'button[matStepperNext]',
   host: {'(click)': '_stepper.next()'},
   providers: [{provide: CdkStepper, useExisting: MatStepper}]
 })
-export class MatStepperNext extends _MatStepperNext { }
+export class MatStepperNext extends CdkStepperNext { }
 
 /** Button that moves to the previous step in a stepper workflow. */
 @Directive({
@@ -28,4 +24,4 @@ export class MatStepperNext extends _MatStepperNext { }
   host: {'(click)': '_stepper.previous()'},
   providers: [{provide: CdkStepper, useExisting: MatStepper}]
 })
-export class MatStepperPrevious extends _MatStepperPrevious { }
+export class MatStepperPrevious extends CdkStepperPrevious { }

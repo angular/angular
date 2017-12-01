@@ -29,10 +29,6 @@ import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
 import {takeUntil} from 'rxjs/operators/takeUntil';
 
-/** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatStep = CdkStep;
-export const _MatStepper = CdkStepper;
-
 @Component({
   moduleId: module.id,
   selector: 'mat-step',
@@ -43,7 +39,7 @@ export const _MatStepper = CdkStepper;
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatStep extends _MatStep implements ErrorStateMatcher {
+export class MatStep extends CdkStep implements ErrorStateMatcher {
   /** Content for step label given by <ng-template matStepLabel>. */
   @ContentChild(MatStepLabel) stepLabel: MatStepLabel;
 
@@ -68,7 +64,7 @@ export class MatStep extends _MatStep implements ErrorStateMatcher {
 @Directive({
   selector: '[matStepper]'
 })
-export class MatStepper extends _MatStepper implements AfterContentInit {
+export class MatStepper extends CdkStepper implements AfterContentInit {
   /** The list of step headers of the steps in the stepper. */
   @ViewChildren(MatStepHeader, {read: ElementRef}) _stepHeader: QueryList<ElementRef>;
 

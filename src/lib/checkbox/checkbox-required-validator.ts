@@ -16,8 +16,6 @@ import {
   NG_VALIDATORS,
 } from '@angular/forms';
 
-export const _MatCheckboxRequiredValidator = CheckboxRequiredValidator;
-
 export const MAT_CHECKBOX_REQUIRED_VALIDATOR: Provider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => MatCheckboxRequiredValidator),
@@ -35,4 +33,4 @@ export const MAT_CHECKBOX_REQUIRED_VALIDATOR: Provider = {
   providers: [MAT_CHECKBOX_REQUIRED_VALIDATOR],
   host: {'[attr.required]': 'required ? "" : null'}
 })
-export class MatCheckboxRequiredValidator extends _MatCheckboxRequiredValidator {}
+export class MatCheckboxRequiredValidator extends CheckboxRequiredValidator {}

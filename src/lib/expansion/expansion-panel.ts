@@ -28,9 +28,6 @@ import {Subject} from 'rxjs/Subject';
 import {MatAccordion} from './accordion';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
-/** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _CdkAccordionItem = CdkAccordionItem;
-
 /** Time and timing curve for expansion panel animations. */
 export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,1)';
 
@@ -43,7 +40,7 @@ export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatExpansionPanelBase extends _CdkAccordionItem {
+export class MatExpansionPanelBase extends CdkAccordionItem {
   constructor(accordion: MatAccordion,
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher) {
