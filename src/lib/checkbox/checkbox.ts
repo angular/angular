@@ -381,7 +381,6 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
       if (this.indeterminate && this._clickAction !== 'check') {
 
         Promise.resolve().then(() => {
-          console.log(`reset indeterminate`);
           this._indeterminate = false;
           this.indeterminateChange.emit(this._indeterminate);
         });
