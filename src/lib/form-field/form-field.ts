@@ -159,6 +159,7 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
   /** Reference to the form field's underline element. */
   @ViewChild('underline') underlineRef: ElementRef;
   @ViewChild('connectionContainer') _connectionContainerRef: ElementRef;
+  @ViewChild('inputContainer') _inputContainerRef: ElementRef;
   @ViewChild('label') private _label: ElementRef;
   @ContentChild(MatFormFieldControl) _control: MatFormFieldControl<any>;
   @ContentChild(MatPlaceholder) _placeholderChild: MatPlaceholder;
