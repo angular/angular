@@ -37,6 +37,22 @@
     display: none;
   }
 
+  // Fixes an issue on iOS where the following input types will collapse to 1px,
+  // if they're empty, because we've overridden their background color.
+  // See: https://stackoverflow.com/questions/18381594/input-type-date-appearance-in-safari-on-ios
+  &[type='date'],
+  &[type='datetime'],
+  &[type='datetime-local'],
+  &[type='month'],
+  &[type='week'],
+  &[type='time'] {
+    &::after {
+      content: ' ';
+      white-space: pre;
+      width: 1px;
+    }
+  }
+
   @include input-placeholder {
     // Delay the transition until the label has animated about a third of the way through, in
     // order to prevent the placeholder from overlapping for a split second.
