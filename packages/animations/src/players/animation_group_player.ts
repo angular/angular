@@ -32,7 +32,6 @@ export class AnimationGroupPlayer implements AnimationPlayer {
       scheduleMicroTask(() => this._onFinish());
     } else {
       this.players.forEach(player => {
-        player.parentPlayer = this;
         player.onDone(() => {
           if (++doneCount >= total) {
             this._onFinish();
