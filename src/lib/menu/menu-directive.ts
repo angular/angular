@@ -187,7 +187,6 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
 
   ngOnDestroy() {
     this._tabSubscription.unsubscribe();
-    this.closed.emit();
     this.closed.complete();
   }
 
