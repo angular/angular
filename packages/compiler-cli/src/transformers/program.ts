@@ -71,10 +71,11 @@ class AngularCompilerProgram implements Program {
       rootNames: ReadonlyArray<string>, private options: CompilerOptions,
       private host: CompilerHost, oldProgram?: Program) {
     this.rootNames = [...rootNames];
-    const [major, minor] = ts.version.split('.');
 
-    Number(major) > 2 || (Number(major) === 2 && Number(minor) >= 4) ||
-        userError('The Angular Compiler requires TypeScript >= 2.4.');
+    if (ts.version < '2.4.2' || (ts.version >= '2.7.0' && !options.disableTypeScriptVersionCheck)) {
+      throw new Error(
+          `The Angular Compiler requires TypeScript >=2.4.2 and <2.7 but ${ts.version} was found instead.`);
+    }
 
     this.oldTsProgram = oldProgram ? oldProgram.getTsProgram() : undefined;
     if (oldProgram) {
