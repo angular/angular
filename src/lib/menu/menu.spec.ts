@@ -247,15 +247,23 @@ describe('MatMenu', () => {
   it('should close the menu when using the CloseScrollStrategy', fakeAsync(() => {
     const scrolledSubject = new Subject();
 
-    TestBed.overrideProvider(ScrollDispatcher, {
-      deps: [],
-      useFactory: () => ({scrolled: () => scrolledSubject})
-    });
-
-    TestBed.overrideProvider(MAT_MENU_SCROLL_STRATEGY, {
-      deps: [Overlay],
-      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close()
-    });
+    TestBed
+      .resetTestingModule()
+      .configureTestingModule({
+        imports: [MatMenuModule, NoopAnimationsModule],
+        declarations: [SimpleMenu, FakeIcon],
+        providers: [
+          {
+            provide: ScrollDispatcher,
+            useFactory: () => ({scrolled: () => scrolledSubject})
+          },
+          {
+            provide: MAT_MENU_SCROLL_STRATEGY,
+            deps: [Overlay],
+            useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close()
+          }
+        ]
+      });
 
     const fixture = TestBed.createComponent(SimpleMenu);
     const trigger = fixture.componentInstance.trigger;
