@@ -20,6 +20,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
+    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "testing.js",
     "flatModuleId": "@angular/http/testing"
   }

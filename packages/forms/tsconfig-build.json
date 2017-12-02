@@ -25,6 +25,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
+    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "forms.js",
     "flatModuleId": "@angular/forms"
   }

@@ -26,6 +26,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
+    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "animations.js",
     "flatModuleId": "@angular/platform-browser/animations"
   }

@@ -29,6 +29,10 @@ export function main(
   if (configErrors.length) {
     return reportErrorsAndExit(configErrors, /*options*/ undefined, consoleError);
   }
+  const [major, minor] = ts.version.split('.');
+  if (!options.disableTypeScriptVersionCheck && !(Number(major) === 2 && Number(minor) === 4)) {
+    throw new Error('The Angular Compiler requires TypeScript 2.4.');
+  }
   if (watch) {
     const result = watchMode(project, options, consoleError);
     return reportErrorsAndExit(result.firstCompileResult, options, consoleError);

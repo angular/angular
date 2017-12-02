@@ -21,6 +21,7 @@
     "strictMetadataEmit": false,
     "flatModuleOutFile": "service-worker.js",
     "flatModuleId": "@angular/service-worker",
+    "disableTypeScriptVersionCheck": true,
     "skipTemplateCodegen": true
   }
 }

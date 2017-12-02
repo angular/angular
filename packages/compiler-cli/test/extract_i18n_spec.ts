@@ -104,7 +104,12 @@ describe('extract_i18n command line', () => {
   let write: (fileName: string, content: string) => void;
   let errorSpy: jasmine.Spy&((s: string) => void);
 
-  function writeConfig(tsconfig: string = '{"extends": "./tsconfig-base.json"}') {
+  function writeConfig(tsconfig: string = `{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+            "disableTypeScriptVersionCheck": true
+        }
+      }`) {
     write('tsconfig.json', tsconfig);
   }
 

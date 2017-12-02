@@ -17,6 +17,7 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
+    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "config.js",
     "flatModuleId": "@angular/service-worker/config",
     "skipTemplateCodegen": true

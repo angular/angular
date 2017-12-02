@@ -24,6 +24,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
+    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "platform-webworker-dynamic.js",
     "flatModuleId": "@angular/platform-webworker-dynamic"
   }

@@ -19,6 +19,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
+    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "http.js",
     "flatModuleId": "@angular/common/http"
   }

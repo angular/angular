@@ -23,6 +23,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
+    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "upgrade.js",
     "flatModuleId": "@angular/upgrade"
   }

@@ -21,6 +21,7 @@ export class CompilerConfig {
   public jitDevMode: boolean;
   public missingTranslation: MissingTranslationStrategy|null;
   public preserveWhitespaces: boolean;
+  public disableTypeScriptVersionCheck: boolean;
   public strictInjectionParameters: boolean;
 
   constructor(

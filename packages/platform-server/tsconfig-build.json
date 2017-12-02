@@ -29,6 +29,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
+    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "platform-server.js",
     "flatModuleId": "@angular/platform-server"
   }

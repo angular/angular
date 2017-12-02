@@ -17,6 +17,7 @@
 
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
+    "disableTypeScriptVersionCheck": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
     "flatModuleOutFile": "common.js",
