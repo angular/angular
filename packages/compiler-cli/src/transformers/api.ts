@@ -132,6 +132,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // position.
   disableExpressionLowering?: boolean;
 
+  // Disable TypeScript Version Check.
+  disableTypeScriptVersionCheck?: boolean;
+
   // Locale of the application
   i18nOutLocale?: string;
   // Export format (xlf, xlf2 or xmb)

@@ -60,6 +60,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
   i18nInFile?: string;
   i18nInMissingTranslations?: 'error'|'warning'|'ignore';
   preserveWhitespaces?: boolean;
+  disableTypeScriptVersionCheck?: boolean;
 }
 
 export interface CompilerHost extends ts.CompilerHost {
