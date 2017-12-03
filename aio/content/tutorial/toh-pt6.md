@@ -250,7 +250,7 @@ There are three significant differences from  `getHeroes()`.
 
 ## Update heroes
 
-Editing a hero's name in the _hero detail_ view.
+Edit a hero's name in the _hero detail_ view.
 As you type, the hero name updates the heading at the top of the page.
 But when you click the "go back button", the changes are lost.
 
@@ -439,7 +439,7 @@ Create a `HeroSearchComponent` with the CLI.
   ng generate component hero-search
 </code-example>
 
-The CLI generates the three `HeroSearchComponent` and adds the component to the `AppModule' declarations
+The CLI generates the three `HeroSearchComponent` files and adds the component to the `AppModule` declarations
 
 Replace the generated `HeroSearchComponent` _template_ with a text box and a list of matching search results like this.
 
