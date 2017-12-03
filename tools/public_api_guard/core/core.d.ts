@@ -362,9 +362,9 @@ export interface DoCheck {
 }
 
 /** @stable */
-export declare class ElementRef {
-    /** @stable */ nativeElement: any;
-    constructor(nativeElement: any);
+export declare class ElementRef<T = any> {
+    /** @stable */ nativeElement: T;
+    constructor(nativeElement: T);
 }
 
 /** @experimental */
