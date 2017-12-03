@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {DOCUMENT} from '@angular/common';
 import {APP_ID, NgModule} from '@angular/core';
-import {DOCUMENT, TransferState, ɵescapeHtml as escapeHtml} from '@angular/platform-browser';
+import {TransferState, ɵescapeHtml as escapeHtml} from '@angular/platform-browser';
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
@@ -15,10 +16,15 @@ export function serializeTransferStateFactory(
     doc: Document, appId: string, transferStore: TransferState) {
   return () => {
     const script = doc.createElement('script');
+    const priorScripts = doc.body.getElementsByTagName('script');
     script.id = appId + '-state';
     script.setAttribute('type', 'application/json');
     script.textContent = escapeHtml(transferStore.toJson());
-    doc.body.appendChild(script);
+    if (priorScripts.length > 0) {
+      doc.body.insertBefore(script, priorScripts[0]);
+    } else {
+      doc.body.appendChild(script);
+    }
   };
 }
 
