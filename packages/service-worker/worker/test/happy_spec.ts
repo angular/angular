@@ -158,7 +158,7 @@ export function main() {
       expect(await scope.startup(true)).toEqual(true);
       await scope.resolveSelfMessages();
       await driver.initialized;
-      server.assertSawRequestFor('/ngsw.json');
+      server.assertSawRequestFor('ngsw.json');
       server.assertSawRequestFor('/foo.txt');
       server.assertSawRequestFor('/bar.txt');
       server.assertSawRequestFor('/redirected.txt');
@@ -170,7 +170,7 @@ export function main() {
     async_it('initializes prefetched content correctly, after a request kicks it off', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
-      server.assertSawRequestFor('/ngsw.json');
+      server.assertSawRequestFor('ngsw.json');
       server.assertSawRequestFor('/foo.txt');
       server.assertSawRequestFor('/bar.txt');
       server.assertSawRequestFor('/redirected.txt');
@@ -230,7 +230,7 @@ export function main() {
 
       scope.updateServerState(serverUpdate);
       expect(await driver.checkForUpdate()).toEqual(true);
-      serverUpdate.assertSawRequestFor('/ngsw.json');
+      serverUpdate.assertSawRequestFor('ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
       serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();
@@ -263,7 +263,7 @@ export function main() {
 
       scope.updateServerState(serverUpdate);
       expect(await driver.checkForUpdate()).toEqual(true);
-      serverUpdate.assertSawRequestFor('/ngsw.json');
+      serverUpdate.assertSawRequestFor('ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
       serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();
@@ -331,7 +331,7 @@ export function main() {
       scope.advance(12000);
       await driver.idle.empty;
 
-      serverUpdate.assertSawRequestFor('/ngsw.json');
+      serverUpdate.assertSawRequestFor('ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
       serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();

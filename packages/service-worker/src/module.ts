@@ -16,14 +16,18 @@ import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
 
+export abstract class RegistrationOptions {
+  scope?: string;
+  enabled?: boolean;
+}
+
 export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
-export const OPTS = new InjectionToken<Object>('NGSW_REGISTER_OPTIONS');
 
 export function ngswAppInitializer(
     injector: Injector, script: string, options: RegistrationOptions): Function {
   const initializer = () => {
     const app = injector.get<ApplicationRef>(ApplicationRef);
-    if (!('serviceWorker' in navigator)) {
+    if (!('serviceWorker' in navigator) || options.enabled === false) {
       return;
     }
     const onStable =
@@ -31,15 +35,24 @@ export function ngswAppInitializer(
     const isStable = op_take.call(onStable, 1) as Observable<boolean>;
     const whenStable = op_toPromise.call(isStable) as Promise<boolean>;
 
+    // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+    // becomes active. This allows the SW to initialize itself even if there is no application
+    // traffic.
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (navigator.serviceWorker.controller !== null) {
+        navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
+      }
+    });
+
     // Don't return the Promise, as that will block the application until the SW is registered, and
     // cause a crash if the SW registration fails.
-    whenStable.then(() => navigator.serviceWorker.register(script, options));
+    whenStable.then(() => navigator.serviceWorker.register(script, {scope: options.scope}));
   };
   return initializer;
 }
 
-export function ngswCommChannelFactory(): NgswCommChannel {
-  return new NgswCommChannel(navigator.serviceWorker);
+export function ngswCommChannelFactory(opts: RegistrationOptions): NgswCommChannel {
+  return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined);
 }
 
 /**
@@ -49,17 +62,24 @@ export function ngswCommChannelFactory(): NgswCommChannel {
   providers: [SwPush, SwUpdate],
 })
 export class ServiceWorkerModule {
-  static register(script: string, opts: RegistrationOptions = {}): ModuleWithProviders {
+  /**
+   * Register the given Angular Service Worker script.
+   *
+   * If `enabled` is set to `false` in the given options, the module will behave as if service
+   * workers are not supported by the browser, and the service worker will not be registered.
+   */
+  static register(script: string, opts: {scope?: string; enabled?: boolean;} = {}):
+      ModuleWithProviders {
     return {
       ngModule: ServiceWorkerModule,
       providers: [
         {provide: SCRIPT, useValue: script},
-        {provide: OPTS, useValue: opts},
-        {provide: NgswCommChannel, useFactory: ngswCommChannelFactory},
+        {provide: RegistrationOptions, useValue: opts},
+        {provide: NgswCommChannel, useFactory: ngswCommChannelFactory, deps: [RegistrationOptions]},
         {
           provide: APP_INITIALIZER,
           useFactory: ngswAppInitializer,
-          deps: [Injector, SCRIPT, OPTS],
+          deps: [Injector, SCRIPT, RegistrationOptions],
           multi: true,
         },
       ],

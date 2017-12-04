@@ -112,6 +112,7 @@ function upgradeMetadataWithDtsData(
         newMetadata.metadata[prop] = dtsMetadata.metadata[prop];
       }
     }
+    if (dtsMetadata['importAs']) newMetadata['importAs'] = dtsMetadata['importAs'];
 
     // Only copy exports from exports from metadata prior to version 3.
     // Starting with version 3 the collector began collecting exports and

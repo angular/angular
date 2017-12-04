@@ -9,15 +9,15 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-
 import {merge as obs_merge} from 'rxjs/observable/merge';
-
+import {never as obs_never} from 'rxjs/observable/never';
 import {map as op_map} from 'rxjs/operator/map';
 import {switchMap as op_switchMap} from 'rxjs/operator/switchMap';
 import {take as op_take} from 'rxjs/operator/take';
 import {toPromise as op_toPromise} from 'rxjs/operator/toPromise';
 
-import {NgswCommChannel} from './low_level';
+import {ERR_SW_NOT_SUPPORTED, NgswCommChannel} from './low_level';
+
 
 /**
  * Subscribe and listen to push notifications from the Service Worker.
@@ -34,6 +34,11 @@ export class SwPush {
       new Subject<PushSubscription|null>();
 
   constructor(private sw: NgswCommChannel) {
+    if (!sw.isEnabled) {
+      this.messages = obs_never();
+      this.subscription = obs_never();
+      return;
+    }
     this.messages =
         op_map.call(this.sw.eventsOfType('PUSH'), (message: {data: object}) => message.data);
 
@@ -46,7 +51,16 @@ export class SwPush {
     this.subscription = obs_merge(workerDrivenSubscriptions, this.subscriptionChanges);
   }
 
+  /**
+   * Returns true if the Service Worker is enabled (supported by the browser and enabled via
+   * ServiceWorkerModule).
+   */
+  get isEnabled(): boolean { return this.sw.isEnabled; }
+
   requestSubscription(options: {serverPublicKey: string}): Promise<PushSubscription> {
+    if (!this.sw.isEnabled) {
+      return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+    }
     const pushOptions: PushSubscriptionOptionsInit = {userVisibleOnly: true};
     let key = atob(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
     let applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
@@ -64,6 +78,9 @@ export class SwPush {
   }
 
   unsubscribe(): Promise<void> {
+    if (!this.sw.isEnabled) {
+      return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
+    }
     const unsubscribe = op_switchMap.call(this.subscription, (sub: PushSubscription | null) => {
       if (sub !== null) {
         return sub.unsubscribe().then(success => {
