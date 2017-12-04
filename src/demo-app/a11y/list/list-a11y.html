@@ -3,7 +3,7 @@
     <h2> Seasoning </h2>
     <p>Showing a non-interactive list of seasonings.</p>
     <mat-list role="list">
-      <mat-list-item *ngFor="let item of items"> {{item}} </mat-list-item>
+      <mat-list-item role="listitem" *ngFor="let item of items"> {{item}} </mat-list-item>
     </mat-list>
   </section>
 
@@ -26,7 +26,7 @@
       message subject, and content of the message.
     </p>
     <mat-list role="list">
-      <mat-list-item *ngFor="let message of messages">
+      <mat-list-item role="listitem" *ngFor="let message of messages">
         <img mat-list-avatar [src]="message.image" [alt]="message.from">
         <h3 mat-line> {{message.from}} </h3>
         <p mat-line> {{message.subject}} </p>
@@ -39,8 +39,8 @@
   <section>
     <h2>Seasoning</h2>
     <p>Showing a non-interactive list of seasonings with dense style.</p>
-    <mat-list dense>
-      <mat-list-item *ngFor="let item of items"> {{item}} </mat-list-item>
+    <mat-list role="list" dense>
+      <mat-list-item role="listitem" *ngFor="let item of items"> {{item}} </mat-list-item>
     </mat-list>
   </section>
 
@@ -49,14 +49,14 @@
     <p>Showing a list with two sections, "folders" and "notes".</p>
     <mat-list role="list">
       <h3 mat-subheader>Folders</h3>
-      <mat-list-item *ngFor="let folder of folders">
+      <mat-list-item role="listitem" *ngFor="let folder of folders">
         <mat-icon mat-list-icon>folder</mat-icon>
         <h4 mat-line>{{folder.name}}</h4>
         <p mat-line class="demo-secondary-text"> {{folder.updated}} </p>
       </mat-list-item>
       <mat-divider></mat-divider>
       <h3 mat-subheader>Notes</h3>
-      <mat-list-item *ngFor="let note of notes">
+      <mat-list-item role="listitem" *ngFor="let note of notes">
         <mat-icon mat-list-icgon>note</mat-icon>
         <h4 mat-line>{{note.name}}</h4>
         <p mat-line class="demo-secondary-text"> {{note.updated}} </p>

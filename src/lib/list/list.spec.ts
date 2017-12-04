@@ -115,8 +115,8 @@ describe('MatList', () => {
 
     let list = fixture.debugElement.children[0];
     let listItem = fixture.debugElement.children[0].query(By.css('mat-list-item'));
-    expect(list.nativeElement.getAttribute('role')).toBeNull();
-    expect(listItem.nativeElement.getAttribute('role')).toBe('listitem');
+    expect(list.nativeElement.getAttribute('role')).toBeNull('Expect mat-list no role');
+    expect(listItem.nativeElement.getAttribute('role')).toBeNull('Expect mat-list-item no role');
   });
 
   it('should not show ripples for non-nav lists', () => {
