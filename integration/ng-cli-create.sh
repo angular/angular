@@ -40,6 +40,11 @@ else
     sed -i -E 's/ng test/ng test --single-run/g' package.json
     sed -i -E 's/"typescript\"\: \".*\"/"typescript":  "2.4.2"/g' package.json
 
+    # FIXME: rxjs is pinned because of size regression in 5.5.3
+    #        see: https://github.com/ReactiveX/rxjs/issues/3165
+    #        ideally we should not be pinning stuff in a random file like this. Use env.sh instead?
+    sed -i -E 's/"rxjs"\: ".*"/"rxjs"\: "5.5.2"/g' package.json
+
     yarn add \
       file:../../dist/packages-dist/compiler-cli \
       file:../../dist/packages-dist/language-service \
