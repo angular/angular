@@ -59,7 +59,7 @@
     "~~update-webdriver": "webdriver-manager update --standalone false --gecko false"
   },
   "engines": {
-    "node": ">=6.9.5 <7.0.0",
+    "node": ">=8.9.1 <9.0.0",
     "yarn": ">=1.0.2 <2.0.0"
   },
   "private": true,
