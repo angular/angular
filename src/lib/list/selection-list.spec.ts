@@ -2,12 +2,18 @@ import {DOWN_ARROW, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
 import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
-import {MatListModule, MatListOption, MatSelectionList, MatListOptionChange} from './index';
+import {
+  MatListModule,
+  MatListOption,
+  MatListOptionChange,
+  MatSelectionList,
+  MatSelectionListChange
+} from './index';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 
-
-describe('MatSelectionList', () => {
+describe('MatSelectionList without forms', () => {
   describe('with list option', () => {
     let fixture: ComponentFixture<SelectionListWithListOptions>;
     let listOptions: DebugElement[];
@@ -59,6 +65,44 @@ describe('MatSelectionList', () => {
       optionValues.forEach((optionValue, index) => {
         expect(listOptions[index].componentInstance.value).toBe(optionValue);
       });
+    });
+
+    it('should not emit a selectionChange event if an option changed programmatically', () => {
+      spyOn(fixture.componentInstance, 'onValueChange');
+
+      expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(0);
+
+      listOptions[2].componentInstance.toggle();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(0);
+    });
+
+    it('should emit a selectionChange event if an option got clicked', () => {
+      spyOn(fixture.componentInstance, 'onValueChange');
+
+      expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(0);
+
+      dispatchFakeEvent(listOptions[2].nativeElement, 'click');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.onValueChange).toHaveBeenCalledTimes(1);
+    });
+
+    it('should emit a deprecated selectionChange event on the list option that got clicked', () => {
+      const optionInstance = listOptions[2].componentInstance as MatListOption;
+      let lastChangeEvent: MatListOptionChange | null = null;
+
+      optionInstance.selectionChange.subscribe(ev => lastChangeEvent = ev);
+
+      expect(lastChangeEvent).toBeNull();
+
+      dispatchFakeEvent(listOptions[2].nativeElement, 'click');
+      fixture.detectChanges();
+
+      expect(lastChangeEvent).not.toBeNull();
+      expect(lastChangeEvent!.source).toBe(optionInstance);
+      expect(lastChangeEvent!.selected).toBe(true);
     });
 
     it('should be able to dispatch one selected item', () => {
@@ -480,90 +524,167 @@ describe('MatSelectionList', () => {
       expect(listItemContent.nativeElement.classList).toContain('mat-list-item-content-reverse');
     });
   });
-
-
-  describe('with multiple values', () => {
-    let fixture: ComponentFixture<SelectionListWithMultipleValues>;
-    let listOption: DebugElement[];
-    let listItemEl: DebugElement;
-    let selectionList: DebugElement;
-
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        imports: [MatListModule],
-        declarations: [
-          SelectionListWithMultipleValues
-        ],
-      });
-
-      TestBed.compileComponents();
-    }));
-
-    beforeEach(async(() => {
-      fixture = TestBed.createComponent(SelectionListWithMultipleValues);
-      listOption = fixture.debugElement.queryAll(By.directive(MatListOption));
-      listItemEl = fixture.debugElement.query(By.css('.mat-list-item'));
-      selectionList = fixture.debugElement.query(By.directive(MatSelectionList));
-      fixture.detectChanges();
-    }));
-
-    it('should have a value for each item', () => {
-      expect(listOption[0].componentInstance.value).toBe(1);
-      expect(listOption[1].componentInstance.value).toBe('a');
-      expect(listOption[2].componentInstance.value).toBe(true);
-    });
-
-  });
-
-  describe('with option selected events', () => {
-    let fixture: ComponentFixture<SelectionListWithOptionEvents>;
-    let testComponent: SelectionListWithOptionEvents;
-    let listOption: DebugElement[];
-    let selectionList: DebugElement;
-
-    beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        imports: [MatListModule],
-        declarations: [
-          SelectionListWithOptionEvents
-        ],
-      });
-
-      TestBed.compileComponents();
-    }));
-
-    beforeEach(async(() => {
-      fixture = TestBed.createComponent(SelectionListWithOptionEvents);
-      testComponent = fixture.debugElement.componentInstance;
-      listOption = fixture.debugElement.queryAll(By.directive(MatListOption));
-      selectionList = fixture.debugElement.query(By.directive(MatSelectionList));
-      fixture.detectChanges();
-    }));
-
-    it('should trigger the selected and deselected events when clicked in succession.', () => {
-
-      let selected: boolean = false;
-
-      spyOn(testComponent, 'onOptionSelectionChange')
-        .and.callFake((event: MatListOptionChange) => {
-          selected = event.selected;
-        });
-
-      listOption[0].nativeElement.click();
-      expect(testComponent.onOptionSelectionChange).toHaveBeenCalledTimes(1);
-      expect(selected).toBe(true);
-
-      listOption[0].nativeElement.click();
-      expect(testComponent.onOptionSelectionChange).toHaveBeenCalledTimes(2);
-      expect(selected).toBe(false);
-    });
-
-  });
-
 });
 
+describe('MatSelectionList with forms', () => {
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      imports: [MatListModule, FormsModule, ReactiveFormsModule],
+      declarations: [
+        SelectionListWithModel,
+        SelectionListWithFormControl
+      ]
+    });
+
+    TestBed.compileComponents();
+  }));
+
+  describe('and ngModel', () => {
+    let fixture: ComponentFixture<SelectionListWithModel>;
+    let selectionListDebug: DebugElement;
+    let selectionList: MatSelectionList;
+    let listOptions: MatListOption[];
+    let ngModel: NgModel;
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SelectionListWithModel);
+      fixture.detectChanges();
+
+      selectionListDebug = fixture.debugElement.query(By.directive(MatSelectionList));
+      selectionList = selectionListDebug.componentInstance;
+      ngModel = selectionListDebug.injector.get<NgModel>(NgModel);
+      listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
+        .map(optionDebugEl => optionDebugEl.componentInstance);
+    });
+
+    it('should update the model if an option got selected programmatically', fakeAsync(() => {
+      expect(fixture.componentInstance.selectedOptions.length)
+        .toBe(0, 'Expected no options to be selected by default');
+
+      listOptions[0].toggle();
+      fixture.detectChanges();
+
+      tick();
+
+      expect(fixture.componentInstance.selectedOptions.length)
+        .toBe(1, 'Expected first list option to be selected');
+    }));
+
+    it('should update the model if an option got clicked', fakeAsync(() => {
+      expect(fixture.componentInstance.selectedOptions.length)
+        .toBe(0, 'Expected no options to be selected by default');
+
+      dispatchFakeEvent(listOptions[0]._getHostElement(), 'click');
+      fixture.detectChanges();
+
+      tick();
+
+      expect(fixture.componentInstance.selectedOptions.length)
+        .toBe(1, 'Expected first list option to be selected');
+    }));
+
+    it('should update the options if a model value is set', fakeAsync(() => {
+      expect(fixture.componentInstance.selectedOptions.length)
+        .toBe(0, 'Expected no options to be selected by default');
+
+      fixture.componentInstance.selectedOptions = ['opt3'];
+      fixture.detectChanges();
+
+      tick();
+
+      expect(fixture.componentInstance.selectedOptions.length)
+        .toBe(1, 'Expected first list option to be selected');
+    }));
+
+    it('should set the selection-list to touched on blur', fakeAsync(() => {
+      expect(ngModel.touched)
+        .toBe(false, 'Expected the selection-list to be untouched by default.');
+
+      dispatchFakeEvent(selectionListDebug.nativeElement, 'blur');
+      fixture.detectChanges();
+
+      tick();
+
+      expect(ngModel.touched).toBe(true, 'Expected the selection-list to be touched after blur');
+    }));
+
+    it('should be pristine by default', fakeAsync(() => {
+      fixture = TestBed.createComponent(SelectionListWithModel);
+      fixture.componentInstance.selectedOptions = ['opt2'];
+      fixture.detectChanges();
+
+      ngModel =
+        fixture.debugElement.query(By.directive(MatSelectionList)).injector.get<NgModel>(NgModel);
+      listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
+        .map(optionDebugEl => optionDebugEl.componentInstance);
+
+      // Flush the initial tick to ensure that every action from the ControlValueAccessor
+      // happened before the actual test starts.
+      tick();
+
+      expect(ngModel.pristine)
+        .toBe(true, 'Expected the selection-list to be pristine by default.');
+
+      listOptions[1].toggle();
+      fixture.detectChanges();
+
+      tick();
+
+      expect(ngModel.pristine)
+        .toBe(false, 'Expected the selection-list to be dirty after state change.');
+    }));
+  });
+
+  describe('and formControl', () => {
+    let fixture: ComponentFixture<SelectionListWithFormControl>;
+    let selectionListDebug: DebugElement;
+    let selectionList: MatSelectionList;
+    let listOptions: MatListOption[];
+
+    beforeEach(() => {
+      fixture = TestBed.createComponent(SelectionListWithFormControl);
+      fixture.detectChanges();
+
+      selectionListDebug = fixture.debugElement.query(By.directive(MatSelectionList));
+      selectionList = selectionListDebug.componentInstance;
+      listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
+        .map(optionDebugEl => optionDebugEl.componentInstance);
+    });
+
+    it('should be able to disable options from the control', () => {
+      expect(listOptions.every(option => !option.disabled))
+        .toBe(true, 'Expected every list option to be enabled.');
+
+      fixture.componentInstance.formControl.disable();
+      fixture.detectChanges();
+
+      expect(listOptions.every(option => option.disabled))
+        .toBe(true, 'Expected every list option to be disabled.');
+    });
+
+    it('should be able to set the value through the form control', () => {
+      expect(listOptions.every(option => !option.selected))
+        .toBe(true, 'Expected every list option to be unselected.');
+
+      fixture.componentInstance.formControl.setValue(['opt2', 'opt3']);
+      fixture.detectChanges();
+
+      expect(listOptions[1].selected).toBe(true, 'Expected second option to be selected.');
+      expect(listOptions[2].selected).toBe(true, 'Expected third option to be selected.');
+
+      fixture.componentInstance.formControl.setValue(null);
+      fixture.detectChanges();
+
+      expect(listOptions.every(option => !option.selected))
+        .toBe(true, 'Expected every list option to be unselected.');
+    });
+  });
+});
+
+
 @Component({template: `
-  <mat-selection-list id="selection-list-1">
+  <mat-selection-list id="selection-list-1" (selectionChange)="onValueChange($event)">
     <mat-list-option checkboxPosition="before" disabled="true" value="inbox">
       Inbox (disabled selection-option)
     </mat-list-option>
@@ -580,6 +701,8 @@ describe('MatSelectionList', () => {
   </mat-selection-list>`})
 class SelectionListWithListOptions {
   showLastOption: boolean = true;
+
+  onValueChange(_change: MatSelectionListChange) {}
 }
 
 @Component({template: `
@@ -656,27 +779,27 @@ class SelectionListWithTabindexBinding {
   disabled: boolean;
 }
 
-@Component({template: `
-<mat-selection-list id="selection-list-5">
-  <mat-list-option [value]="1" checkboxPosition="after">
-    1
-  </mat-list-option>
-  <mat-list-option value="a" checkboxPosition="after">
-    a
-  </mat-list-option>
-  <mat-list-option [value]="true" checkboxPosition="after">
-    true
-  </mat-list-option>
-</mat-selection-list>`})
-class SelectionListWithMultipleValues {
+@Component({
+  template: `
+    <mat-selection-list [(ngModel)]="selectedOptions">
+      <mat-list-option value="opt1">Option 1</mat-list-option>
+      <mat-list-option value="opt2">Option 2</mat-list-option>
+      <mat-list-option value="opt3">Option 3</mat-list-option>
+    </mat-selection-list>`
+})
+class SelectionListWithModel {
+  selectedOptions: string[] = [];
 }
 
-@Component({template: `
-<mat-selection-list id="selection-list-6">
-  <mat-list-option (selectionChange)="onOptionSelectionChange($event)">
-    Inbox
-  </mat-list-option>
-</mat-selection-list>`})
-class SelectionListWithOptionEvents {
-  onOptionSelectionChange: (event?: MatListOptionChange) => void = () => {};
+@Component({
+  template: `
+    <mat-selection-list [formControl]="formControl">
+      <mat-list-option value="opt1">Option 1</mat-list-option>
+      <mat-list-option value="opt2">Option 2</mat-list-option>
+      <mat-list-option value="opt3">Option 3</mat-list-option>
+    </mat-selection-list>
+  `
+})
+class SelectionListWithFormControl {
+  formControl = new FormControl();
 }

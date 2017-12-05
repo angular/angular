@@ -39,6 +39,7 @@ import {
   mixinDisableRipple,
   mixinTabIndex,
 } from '@angular/material/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 
 /** @docs-private */
@@ -50,12 +51,32 @@ export const _MatSelectionListMixinBase =
 export class MatListOptionBase {}
 export const _MatListOptionMixinBase = mixinDisableRipple(MatListOptionBase);
 
-/** Change event object emitted by MatListOption */
+/** @docs-private */
+export const MAT_SELECTION_LIST_VALUE_ACCESSOR: any = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: forwardRef(() => MatSelectionList),
+  multi: true
+};
+
+/**
+ * Change event object emitted by MatListOption whenever the selected state changes.
+ * @deprecated Use the `MatSelectionListChange` event on the selection list instead.
+ */
 export class MatListOptionChange {
-  /** The source MatListOption of the event. */
-  source: MatListOption;
-  /** The new `selected` value of the option. */
-  selected: boolean;
+  constructor(
+    /** Reference to the list option that changed. */
+    public source: MatListOption,
+    /** The new selected state of the option. */
+    public selected: boolean) {}
+}
+
+/** Change event that is being fired whenever the selected state of an option changes. */
+export class MatSelectionListChange {
+  constructor(
+    /** Reference to the selection list that emitted the event. */
+    public source: MatSelectionList,
+    /** Reference to the option that has been changed. */
+    public option: MatListOption) {}
 }
 
 /**
@@ -72,7 +93,7 @@ export class MatListOptionChange {
     'role': 'option',
     'class': 'mat-list-item mat-list-option',
     '(focus)': '_handleFocus()',
-    '(blur)': '_hasFocus = false',
+    '(blur)': '_handleBlur()',
     '(click)': '_handleClick()',
     'tabindex': '-1',
     '[class.mat-list-item-disabled]': 'disabled',
@@ -86,8 +107,10 @@ export class MatListOptionChange {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatListOption extends _MatListOptionMixinBase
-    implements AfterContentInit, OnInit, OnDestroy, FocusableOption, CanDisableRipple {
+    implements AfterContentInit, OnDestroy, OnInit, FocusableOption, CanDisableRipple {
+
   private _lineSetter: MatLineSetter;
+  private _selected: boolean = false;
   private _disabled: boolean = false;
 
   /** Whether the option has focus. */
@@ -98,15 +121,20 @@ export class MatListOption extends _MatListOptionMixinBase
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: 'before' | 'after' = 'after';
 
-  /** Whether the option is disabled. */
-  @Input()
-  get disabled(): boolean {
-    return (this.selectionList && this.selectionList.disabled) || this._disabled;
-  }
-  set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
-
   /** Value of the option */
   @Input() value: any;
+
+  /** Whether the option is disabled. */
+  @Input()
+  get disabled() { return (this.selectionList && this.selectionList.disabled) || this._disabled; }
+  set disabled(value: any) {
+    const newValue = coerceBooleanProperty(value);
+
+    if (newValue !== this._disabled) {
+      this._disabled = newValue;
+      this._changeDetector.markForCheck();
+    }
+  }
 
   /** Whether the option is selected. */
   @Input()
@@ -114,15 +142,18 @@ export class MatListOption extends _MatListOptionMixinBase
   set selected(value: boolean) {
     const isSelected = coerceBooleanProperty(value);
 
-    if (isSelected !== this.selected) {
-      this.selectionList.selectedOptions.toggle(this);
-      this._changeDetector.markForCheck();
-      this.selectionChange.emit(this._createChangeEvent());
+    if (isSelected !== this._selected) {
+      this._setSelected(isSelected);
+      this.selectionList._reportValueChange();
     }
   }
 
-  /** Emitted when the option is selected or deselected. */
-  @Output() selectionChange = new EventEmitter<MatListOptionChange>();
+  /**
+   * Emits a change event whenever the selected state of an option changes.
+   * @deprecated Use the `selectionChange` event on the `<mat-selection-list>` instead.
+   */
+  @Output() selectionChange: EventEmitter<MatListOptionChange> =
+    new EventEmitter<MatListOptionChange>();
 
   constructor(private _element: ElementRef,
               private _changeDetector: ChangeDetectorRef,
@@ -133,7 +164,12 @@ export class MatListOption extends _MatListOptionMixinBase
 
   ngOnInit() {
     if (this.selected) {
-      this.selectionList.selectedOptions.select(this);
+      // List options that are selected at initialization can't be reported properly to the form
+      // control. This is because it takes some time until the selection-list knows about all
+      // available options. Also it can happen that the ControlValueAccessor has an initial value
+      // that should be used instead. Deferring the value change report to the next tick ensures
+      // that the form control value is not being overwritten.
+      Promise.resolve(() => this.selected && this.selectionList._reportValueChange());
     }
   }
 
@@ -163,6 +199,12 @@ export class MatListOption extends _MatListOptionMixinBase
   _handleClick() {
     if (!this.disabled) {
       this.toggle();
+
+      // Emit a change event if the selected state of the option changed through user interaction.
+      this.selectionList._emitChangeEvent(this);
+
+      // TODO: the `selectionChange` event on the option is deprecated. Remove that in the future.
+      this._emitDeprecatedChangeEvent();
     }
   }
 
@@ -171,19 +213,37 @@ export class MatListOption extends _MatListOptionMixinBase
     this.selectionList._setFocusedOption(this);
   }
 
-  /** Creates a selection event object from the specified option. */
-  private _createChangeEvent(option: MatListOption = this): MatListOptionChange {
-    const event = new MatListOptionChange();
-
-    event.source = option;
-    event.selected = option.selected;
-
-    return event;
+  _handleBlur() {
+    this._hasFocus = false;
+    this.selectionList.onTouched();
   }
 
   /** Retrieves the DOM element of the component host. */
   _getHostElement(): HTMLElement {
     return this._element.nativeElement;
+  }
+
+  /** Sets the selected state of the option. */
+  _setSelected(selected: boolean) {
+    if (selected === this._selected) {
+      return;
+    }
+
+    this._selected = selected;
+
+    if (selected) {
+      this.selectionList.selectedOptions.select(this);
+    } else {
+      this.selectionList.selectedOptions.deselect(this);
+    }
+
+    this._changeDetector.markForCheck();
+  }
+
+  /** Emits a selectionChange event for this option. */
+  _emitDeprecatedChangeEvent() {
+    // TODO: the `selectionChange` event on the option is deprecated. Remove that in the future.
+    this.selectionChange.emit(new MatListOptionChange(this, this.selected));
   }
 }
 
@@ -201,16 +261,18 @@ export class MatListOption extends _MatListOptionMixinBase
     '[tabIndex]': 'tabIndex',
     'class': 'mat-selection-list',
     '(focus)': 'focus()',
+    '(blur)': 'onTouched()',
     '(keydown)': '_keydown($event)',
     '[attr.aria-disabled]': 'disabled.toString()'},
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
+  providers: [MAT_SELECTION_LIST_VALUE_ACCESSOR],
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption,
-    CanDisable, CanDisableRipple, HasTabIndex, AfterContentInit {
+    CanDisable, CanDisableRipple, HasTabIndex, AfterContentInit, ControlValueAccessor {
 
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MatListOption>;
@@ -218,8 +280,18 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** The option components contained within this selection-list. */
   @ContentChildren(MatListOption) options: QueryList<MatListOption>;
 
+  /** Emits a change event whenever the selected state of an option changes. */
+  @Output() selectionChange: EventEmitter<MatSelectionListChange> =
+      new EventEmitter<MatSelectionListChange>();
+
   /** The currently selected options. */
   selectedOptions: SelectionModel<MatListOption> = new SelectionModel<MatListOption>(true);
+
+  /** View to model callback that should be called whenever the selected options change. */
+  private _onChange: (value: any) => void = (_: any) => {};
+
+  /** View to model callback that should be called if the list or its options lost focus. */
+  onTouched: () => void = () => {};
 
   constructor(private _element: ElementRef, @Attribute('tabindex') tabIndex: string) {
     super();
@@ -238,20 +310,14 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Selects all of the options. */
   selectAll() {
-    this.options.forEach(option => {
-      if (!option.selected) {
-        option.toggle();
-      }
-    });
+    this.options.forEach(option => option._setSelected(true));
+    this._reportValueChange();
   }
 
   /** Deselects all of the options. */
   deselectAll() {
-    this.options.forEach(option => {
-      if (option.selected) {
-        option.toggle();
-      }
-    });
+    this.options.forEach(option => option._setSelected(false));
+    this._reportValueChange();
   }
 
   /** Sets the focused option of the selection-list. */
@@ -286,6 +352,62 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
     }
   }
 
+  /** Reports a value change to the ControlValueAccessor */
+  _reportValueChange() {
+    if (this.options) {
+      this._onChange(this._getSelectedOptionValues());
+    }
+  }
+
+  /** Emits a change event if the selected state of an option changed. */
+  _emitChangeEvent(option: MatListOption) {
+    this.selectionChange.emit(new MatSelectionListChange(this, option));
+  }
+
+  /** Implemented as part of ControlValueAccessor. */
+  writeValue(values: string[]): void {
+    if (this.options) {
+      this._setOptionsFromValues(values || []);
+    }
+  }
+
+  /** Implemented as a part of ControlValueAccessor. */
+  setDisabledState(isDisabled: boolean): void {
+    if (this.options) {
+      this.options.forEach(option => option.disabled = isDisabled);
+    }
+  }
+
+  /** Implemented as part of ControlValueAccessor. */
+  registerOnChange(fn: (value: any) => void): void {
+    this._onChange = fn;
+  }
+
+  /** Implemented as part of ControlValueAccessor. */
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  /** Returns the option with the specified value. */
+  private _getOptionByValue(value: string): MatListOption | undefined {
+    return this.options.find(option => option.value === value);
+  }
+
+  /** Sets the selected options based on the specified values. */
+  private _setOptionsFromValues(values: string[]) {
+    this.options.forEach(option => option._setSelected(false));
+
+    values
+      .map(value => this._getOptionByValue(value))
+      .filter(Boolean)
+      .forEach(option => option!._setSelected(true));
+  }
+
+  /** Returns the values of the selected options. */
+  private _getSelectedOptionValues(): string[] {
+    return this.options.filter(option => option.selected).map(option => option.value);
+  }
+
   /** Toggles the selected state of the currently focused option. */
   private _toggleSelectOnFocusedOption(): void {
     let focusedIndex = this._keyManager.activeItemIndex;
@@ -295,13 +417,19 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
       if (focusedOption) {
         focusedOption.toggle();
+
+        // Emit a change event because the focused option changed its state through user
+        // interaction.
+        this._emitChangeEvent(focusedOption);
+
+        // TODO: the `selectionChange` event on the option is deprecated. Remove that in the future.
+        focusedOption._emitDeprecatedChangeEvent();
       }
     }
   }
 
   /**
    * Utility to ensure all indexes are valid.
-   *
    * @param index The index to be checked.
    * @returns True if the index is valid for our list of options.
    */
