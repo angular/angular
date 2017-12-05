@@ -476,13 +476,13 @@ export class Router {
   parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
 
   /** Returns whether the url is activated */
-  isActive(url: string|UrlTree, exact: boolean): boolean {
+  isActive(url: string|UrlTree, exact: boolean, ignoreQueryParams: boolean): boolean {
     if (url instanceof UrlTree) {
-      return containsTree(this.currentUrlTree, url, exact);
+      return containsTree(this.currentUrlTree, url, exact, ignoreQueryParams);
     }
 
     const urlTree = this.urlSerializer.parse(url);
-    return containsTree(this.currentUrlTree, urlTree, exact);
+    return containsTree(this.currentUrlTree, urlTree, exact, ignoreQueryParams);
   }
 
   private removeEmptyProps(params: Params): Params {

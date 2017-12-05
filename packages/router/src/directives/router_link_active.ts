@@ -50,6 +50,15 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  * true}">Bob</a>
  * ```
  *
+ * You can configure RouterLinkActive by passing `ignoreQueryParams: true`. This will add the
+ * classes only when the url matches the link (following the `exact` rule) regardless of
+ * the query parameters.
+ *
+ * ```
+ * <a routerLink="/user/bob" routerLinkActive="active-link"
+ * [routerLinkActiveOptions]="{ignoreQueryParams: true}">Bob</a>
+ * ```
+ *
  * You can assign the RouterLinkActive instance to a template variable and directly check
  * the `isActive` status.
  * ```
@@ -88,7 +97,9 @@ export class RouterLinkActive implements OnChanges,
   private subscription: Subscription;
   public readonly isActive: boolean = false;
 
-  @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
+  @Input()
+  routerLinkActiveOptions: {exact: boolean,
+                            ignoreQueryParams: boolean} = {exact: false, ignoreQueryParams: false};
 
   constructor(
       private router: Router, private element: ElementRef, private renderer: Renderer2,
@@ -134,8 +145,9 @@ export class RouterLinkActive implements OnChanges,
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
-    return (link: RouterLink | RouterLinkWithHref) =>
-               router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
+    return (link: RouterLink | RouterLinkWithHref) => router.isActive(
+               link.urlTree, this.routerLinkActiveOptions.exact,
+               this.routerLinkActiveOptions.ignoreQueryParams);
   }
 
   private hasActiveLinks(): boolean {

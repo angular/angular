@@ -13,14 +13,23 @@ export function createEmptyUrlTree() {
   return new UrlTree(new UrlSegmentGroup([], {}), {}, null);
 }
 
-export function containsTree(container: UrlTree, containee: UrlTree, exact: boolean): boolean {
+export function containsTree(
+    container: UrlTree, containee: UrlTree, exact: boolean, ignoreQueryParams: boolean): boolean {
   if (exact) {
-    return equalQueryParams(container.queryParams, containee.queryParams) &&
-        equalSegmentGroups(container.root, containee.root);
+    if (ignoreQueryParams) {
+      return equalSegmentGroups(container.root, containee.root);
+    } else {
+      return equalQueryParams(container.queryParams, containee.queryParams) &&
+          equalSegmentGroups(container.root, containee.root);
+    }
+  } else {
+    if (ignoreQueryParams) {
+      return containsSegmentGroup(container.root, containee.root);
+    } else {
+      return containsQueryParams(container.queryParams, containee.queryParams) &&
+          containsSegmentGroup(container.root, containee.root);
+    }
   }
-
-  return containsQueryParams(container.queryParams, containee.queryParams) &&
-      containsSegmentGroup(container.root, containee.root);
 }
 
 function equalQueryParams(

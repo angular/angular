@@ -337,7 +337,7 @@ export declare class Router {
     createUrlTree(commands: any[], navigationExtras?: NavigationExtras): UrlTree;
     dispose(): void;
     initialNavigation(): void;
-    isActive(url: string | UrlTree, exact: boolean): boolean;
+    isActive(url: string | UrlTree, exact: boolean, ignoreQueryParams: boolean): boolean;
     navigate(commands: any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationExtras): Promise<boolean>;
     ngOnDestroy(): void;
@@ -396,6 +396,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
     routerLinkActive: string[] | string;
     routerLinkActiveOptions: {
         exact: boolean;
+        ignoreQueryParams: boolean;
     };
     constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef);
     ngAfterContentInit(): void;
