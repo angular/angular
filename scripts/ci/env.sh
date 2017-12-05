@@ -36,7 +36,7 @@ fi
 
 setEnvVar NODE_VERSION 6.9.5
 setEnvVar YARN_VERSION 1.0.2
-setEnvVar CHROMIUM_VERSION 490000 # Chrome ??, see https://www.chromium.org/developers/calendar
+setEnvVar CHROMIUM_VERSION 492500 # Chrome ??, see https://www.chromium.org/developers/calendar
 setEnvVar BAZEL_VERSION 0.5.4
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar ANGULAR_CLI_VERSION 1.5.0-rc.2
