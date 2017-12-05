@@ -17,6 +17,7 @@ import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
+import {log} from 'util';
 
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -839,6 +840,92 @@ describe('Integration', () => {
          [NavigationEnd, '/user/fedor']
        ]);
      })));
+
+  it('should dispatch NavigationError after the url has been reset back', fakeAsync(() => {
+       const router = TestBed.get(Router);
+       const location = TestBed.get(Location);
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig(
+           [{path: 'simple', component: SimpleCmp}, {path: 'throwing', component: ThrowingCmp}]);
+
+       router.navigateByUrl('/simple');
+       advance(fixture);
+
+       let routerUrlBeforeEmittingError;
+       let locationUrlBeforeEmittingError;
+       router.events.forEach((e: any) => {
+         if (e instanceof NavigationError) {
+           routerUrlBeforeEmittingError = router.url;
+           locationUrlBeforeEmittingError = location.path();
+         }
+       });
+
+       router.navigateByUrl('/throwing').catch(() => null);
+       advance(fixture);
+
+       expect(routerUrlBeforeEmittingError).toEqual('/simple');
+       expect(locationUrlBeforeEmittingError).toEqual('/simple');
+     }));
+
+  it('should not trigger another navigation when resetting the url back due to a NavigationError',
+     fakeAsync(() => {
+       const router = TestBed.get(Router);
+       router.onSameUrlNavigation = 'reload';
+
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig(
+           [{path: 'simple', component: SimpleCmp}, {path: 'throwing', component: ThrowingCmp}]);
+
+       const events: any[] = [];
+       router.events.forEach((e: any) => {
+         if (e instanceof NavigationStart) {
+           events.push(e.url);
+         }
+       });
+
+       router.navigateByUrl('/simple');
+       advance(fixture);
+
+       router.navigateByUrl('/throwing').catch(() => null);
+       advance(fixture);
+
+       // we do not trigger another navigation to /simple
+       expect(events).toEqual(['/simple', '/throwing']);
+     }));
+
+  it('should dispatch NavigationCancel after the url has been reset back', fakeAsync(() => {
+       TestBed.configureTestingModule(
+           {providers: [{provide: 'returnsFalse', useValue: () => false}]});
+
+       const router = TestBed.get(Router);
+       const location = TestBed.get(Location);
+
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([
+         {path: 'simple', component: SimpleCmp},
+         {path: 'throwing', loadChildren: 'doesnotmatter', canLoad: ['returnsFalse']}
+       ]);
+
+       router.navigateByUrl('/simple');
+       advance(fixture);
+
+       let routerUrlBeforeEmittingError;
+       let locationUrlBeforeEmittingError;
+       router.events.forEach((e: any) => {
+         if (e instanceof NavigationCancel) {
+           routerUrlBeforeEmittingError = router.url;
+           locationUrlBeforeEmittingError = location.path();
+         }
+       });
+
+       (<any>location).simulateHashChange('/throwing');
+       advance(fixture);
+
+       expect(locationUrlBeforeEmittingError).toEqual('/simple');
+     }));
 
   it('should support custom error handlers', fakeAsync(inject([Router], (router: Router) => {
        router.errorHandler = (error) => 'resolvedValue';
@@ -3915,6 +4002,12 @@ class RootCmpWithOnInit {
 class RootCmpWithTwoOutlets {
 }
 
+@Component({selector: 'throwing-cmp', template: ''})
+class ThrowingCmp {
+  constructor() { throw new Error('Throwing Cmp'); }
+}
+
+
 
 function advance(fixture: ComponentFixture<any>): void {
   tick();
@@ -3955,6 +4048,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    ThrowingCmp
   ],
 
 
@@ -3982,6 +4076,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    ThrowingCmp
   ],
 
 
@@ -4010,6 +4105,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    ThrowingCmp
   ]
 })
 class TestModule {

@@ -745,12 +745,14 @@ export class Router {
               },
               (e: any) => {
                 if (isNavigationCancelingError(e)) {
-                  this.resetUrlToCurrentUrlTree();
                   this.navigated = true;
+                  this.resetStateAndUrl(storedState, storedUrl, rawUrl);
                   (this.events as Subject<Event>)
                       .next(new NavigationCancel(id, this.serializeUrl(url), e.message));
+
                   resolvePromise(false);
                 } else {
+                  this.resetStateAndUrl(storedState, storedUrl, rawUrl);
                   (this.events as Subject<Event>)
                       .next(new NavigationError(id, this.serializeUrl(url), e));
                   try {
@@ -759,13 +761,15 @@ export class Router {
                     rejectPromise(ee);
                   }
                 }
-
-                (this as{routerState: RouterState}).routerState = storedState;
-                this.currentUrlTree = storedUrl;
-                this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
-                this.resetUrlToCurrentUrlTree();
               });
     });
+  }
+
+  private resetStateAndUrl(storedState: RouterState, storedUrl: UrlTree, rawUrl: UrlTree): void {
+    (this as{routerState: RouterState}).routerState = storedState;
+    this.currentUrlTree = storedUrl;
+    this.rawUrlTree = this.urlHandlingStrategy.merge(this.currentUrlTree, rawUrl);
+    this.resetUrlToCurrentUrlTree();
   }
 
   private resetUrlToCurrentUrlTree(): void {
