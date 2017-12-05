@@ -2,11 +2,11 @@
 
 set -u -e -o pipefail
 
-
-# These ones can be `npm link`ed for fast development
-LINKABLE_PKGS=(
-  $(pwd)/dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations}
-)
+# npm 5 symlinks from local file installations rather than copying files, but
+# webpack will not follow the symlinks.
+# We prefer to emulate how a user will install angular, so we `npm pack` the
+# packages, then install them from the resulting .tgz files later.
+ANGULAR_PKGS=$(npm pack dist/packages-dist/{common,forms,core,compiler,compiler-cli,platform-{browser,server},platform-browser-dynamic,router,http,animations} | awk "{ printf \"$PWD/\"; print }")
 
 TYPESCRIPT_2_4=typescript@2.4.x
 PKGS=(
@@ -34,8 +34,7 @@ cp -v package.json $TMP
   cd $TMP
   set -ex -o pipefail
   npm install ${PKGS[*]} $TYPESCRIPT_2_4
-  # TODO(alexeagle): allow this to be npm link instead
-  npm install ${LINKABLE_PKGS[*]}
+  npm install ${ANGULAR_PKGS[*]}
 
   ./node_modules/.bin/tsc --version
   # Compile the compiler-cli third_party simulation.
