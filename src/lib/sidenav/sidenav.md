@@ -131,6 +131,16 @@ Custom handling for backdrop clicks can be done via the `(backdropClick)` output
 
 <!-- example(sidenav-disable-close) -->
 
+### Resizing an open sidenav
+By default, Material will only measure and resize the drawer container in a few key moments
+(on open, on window resize, on mode change) in order to avoid layout thrashing, however there
+are cases where this can be problematic. If your app requires for a drawer to change its width
+while it is open, you can use the `autosize` option to tell Material to continue measuring it.
+Note that you should use this option **at your own risk**, because it could cause performance
+issues.
+
+<!-- example(sidenav-autosize) -->
+
 ### Setting the sidenav's size
 
 The `<mat-sidenav>` and `<mat-drawer>` will, by default, fit the size of its content. The width can
@@ -158,7 +168,7 @@ the top or bottom.
 A sidenav often needs to behave differently on a mobile vs a desktop display. On a desktop, it may
 make sense to have just the content section scroll. However, on mobile you often want the body to be
 the element that scrolls; this allows the address bar to auto-hide. The sidenav can be styled with
-CSS to adjust to either type of device. 
+CSS to adjust to either type of device.
 
 <!-- example(sidenav-responsive) -->
 
@@ -174,7 +184,7 @@ describes your sidenav, `role="region"` is recommended.
 
 Similarly, the `<mat-sidenav-content>` should be given a role based on what it contains. If it
 represents the primary content of the page, it may make sense to mark it `role="main"`. If no more
-specific role makes sense, `role="region"` is again a good fallback. 
+specific role makes sense, `role="region"` is again a good fallback.
 
 ### Troubleshooting
 

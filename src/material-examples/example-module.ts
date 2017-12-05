@@ -104,6 +104,7 @@ import {SidenavOpenCloseExample} from './sidenav-open-close/sidenav-open-close-e
 import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-example';
 import {SidenavPositionExample} from './sidenav-position/sidenav-position-example';
 import {SidenavResponsiveExample} from './sidenav-responsive/sidenav-responsive-example';
+import {SidenavAutosizeExample} from './sidenav-autosize/sidenav-autosize-example';
 import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
 import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
 import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
@@ -674,6 +675,12 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  'sidenav-autosize': {
+    title: 'Autosize sidenav',
+    component: SidenavAutosizeExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'slide-toggle-configurable': {
     title: 'Configurable slide-toggle',
     component: SlideToggleConfigurableExample,
@@ -900,6 +907,7 @@ export const EXAMPLE_LIST = [
   SidenavOverviewExample,
   SidenavPositionExample,
   SidenavResponsiveExample,
+  SidenavAutosizeExample,
   SlideToggleConfigurableExample,
   SlideToggleFormsExample,
   SlideToggleOverviewExample,

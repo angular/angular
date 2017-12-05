@@ -1,4 +1,11 @@
-import {fakeAsync, async, tick, ComponentFixture, TestBed} from '@angular/core/testing';
+import {
+  fakeAsync,
+  async,
+  tick,
+  ComponentFixture,
+  TestBed,
+  discardPeriodicTasks,
+} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -422,6 +429,7 @@ describe('MatDrawerContainer', () => {
         DrawerDelayed,
         DrawerSetToOpenedTrue,
         DrawerContainerStateChangesTestApp,
+        AutosizeDrawer,
       ],
     });
 
@@ -522,6 +530,30 @@ describe('MatDrawerContainer', () => {
 
     expect(container.classList).not.toContain('mat-drawer-transition');
   }));
+
+  it('should recalculate the margin if a drawer changes size while open in autosize mode',
+    fakeAsync(() => {
+      const fixture = TestBed.createComponent(AutosizeDrawer);
+
+      fixture.detectChanges();
+      fixture.componentInstance.drawer.open();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      const contentEl = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
+      const initialMargin = parseInt(contentEl.style.marginLeft);
+
+      expect(initialMargin).toBeGreaterThan(0);
+
+      fixture.componentInstance.fillerWidth = 200;
+      fixture.detectChanges();
+      tick(10);
+      fixture.detectChanges();
+
+      expect(parseInt(contentEl.style.marginLeft)).toBeGreaterThan(initialMargin);
+      discardPeriodicTasks();
+    }));
 
 });
 
@@ -676,3 +708,17 @@ class DrawerContainerStateChangesTestApp {
   renderDrawer = true;
 }
 
+
+@Component({
+  template: `
+    <mat-drawer-container autosize>
+      <mat-drawer mode="push" [position]="drawer1Position">
+        Text
+        <div [style.width.px]="fillerWidth"></div>
+      </mat-drawer>
+    </mat-drawer-container>`,
+})
+class AutosizeDrawer {
+  @ViewChild(MatDrawer) drawer: MatDrawer;
+  fillerWidth = 0;
+}
