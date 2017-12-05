@@ -1,7 +1,7 @@
 // #docregion import-locale-extra
 import { registerLocaleData } from '@angular/common';
-import localeFrCa from '@angular/common/locales/fr-CA';
-import localeFrCaExtra from '@angular/common/locales/extra/fr-CA';
+import localeFr from '@angular/common/locales/fr';
+import localeFrExtra from '@angular/common/locales/extra/fr';
 
-registerLocaleData(localeFrCa, localeFrCaExtra);
+registerLocaleData(localeFr, 'fr-FR', localeFrExtra);
 // #enddocregion import-locale-extra
