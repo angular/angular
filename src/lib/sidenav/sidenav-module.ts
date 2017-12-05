@@ -12,6 +12,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {ScrollDispatchModule} from '@angular/cdk/scrolling';
+import {PlatformModule} from '@angular/cdk/platform';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from './sidenav';
 import {
   MatDrawer,
@@ -28,6 +29,7 @@ import {
     A11yModule,
     OverlayModule,
     ScrollDispatchModule,
+    PlatformModule,
   ],
   exports: [
     MatCommonModule,

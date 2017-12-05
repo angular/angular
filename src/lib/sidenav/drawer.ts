@@ -10,7 +10,9 @@ import {FocusTrap, FocusTrapFactory, FocusMonitor, FocusOrigin} from '@angular/c
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
+import {Platform} from '@angular/cdk/platform';
 import {
+  AfterContentChecked,
   AfterContentInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -139,7 +141,7 @@ export class MatDrawerContent implements AfterContentInit {
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
 })
-export class MatDrawer implements AfterContentInit, OnDestroy {
+export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestroy {
   private _focusTrap: FocusTrap;
   private _elementFocusedBeforeDrawerWasOpened: HTMLElement | null = null;
 
@@ -257,6 +259,7 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
   constructor(private _elementRef: ElementRef,
               private _focusTrapFactory: FocusTrapFactory,
               private _focusMonitor: FocusMonitor,
+              private _platform: Platform,
               @Optional() @Inject(DOCUMENT) private _doc: any) {
     this.openedChange.subscribe((opened: boolean) => {
       if (opened) {
@@ -295,7 +298,16 @@ export class MatDrawer implements AfterContentInit, OnDestroy {
   ngAfterContentInit() {
     this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
     this._focusTrap.enabled = this._isFocusTrapEnabled;
-    this._enableAnimations = true;
+  }
+
+  ngAfterContentChecked() {
+    // Enable the animations after the lifecycle hooks have run, in order to avoid animating
+    // drawers that are open by default. When we're on the server, we shouldn't enable the
+    // animations, because we don't want the drawer to animate the first time the user sees
+    // the page.
+    if (this._platform.isBrowser) {
+      this._enableAnimations = true;
+    }
   }
 
   ngOnDestroy() {
