@@ -25,14 +25,14 @@ for (const compressionType in limitSizes) {
         failed = true;
         console.log(
             `Commit ${commit} ${compressionType} ${filename} exceeded expected size by >1% ` +
-            `(expected: ${expectedSize}, actual: ${actualSize}).\n` +
-            `If this is a desired change, please update the size limits in file '${limitFile}'.`);
+            `(expected: ${expectedSize}, actual: ${actualSize}).`);
       }
     }
   }
 }
 
 if (failed) {
+  console.log(`If this is a desired change, please update the size limits in file '${limitFile}'.`);
   process.exit(1);
 } else {
   console.log('Payload size <1% change check passed.');
