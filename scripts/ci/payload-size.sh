@@ -79,8 +79,6 @@ uploadData() {
   name="$1"
   payloadData="{${payloadData}}"
 
-  echo The data for $name is:
-  echo $payloadData
   echo $payloadData > /tmp/current.log
 
   readonly safeBranchName=$(echo $TRAVIS_BRANCH | sed -e 's/\./_/g')
