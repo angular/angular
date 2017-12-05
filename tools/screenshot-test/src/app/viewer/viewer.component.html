@@ -36,7 +36,7 @@
       <a mat-icon-button *ngIf="githubStatus" [ngClass]="githubClass">
         <mat-icon>{{githubIcon}}</mat-icon>
       </a>
-      <a mat-tooltip="Refresh Github Status" (click)="refreshGithubStatus()" mat-icon-button>
+      <a matTooltip="Refresh Github Status" (click)="refreshGithubStatus()" mat-icon-button>
         <mat-icon>refresh</mat-icon>
       </a>
       <br>
