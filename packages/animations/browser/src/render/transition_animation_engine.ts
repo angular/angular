@@ -312,9 +312,13 @@ export class AnimationTransitionNamespace {
     // If there are no animations found for any of the nodes then clear the cache
     // for the element.
     this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true).forEach(elm => {
+      // this means that an inner remove() operation has already kicked off
+      // the animation on this element...
+      if (elm[REMOVAL_FLAG]) return;
+
       const namespaces = this._engine.fetchNamespacesByElement(elm);
       if (namespaces.size) {
-        namespaces.forEach(ns => { ns.triggerLeaveAnimation(elm, context, false, true); });
+        namespaces.forEach(ns => ns.triggerLeaveAnimation(elm, context, false, true));
       } else {
         this.clearElementCache(elm);
       }
