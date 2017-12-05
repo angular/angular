@@ -1022,8 +1022,11 @@ export class FormControl extends AbstractControl {
         coerceToAsyncValidator(asyncValidator, validatorOrOpts));
     this._applyFormState(formState);
     this._setUpdateStrategy(validatorOrOpts);
-    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._initObservables();
+    this.updateValueAndValidity({
+      onlySelf: true,
+      emitEvent: asyncValidator ? true : false
+    });  // `asyncValidator` will cause status change, and that needs to be notified
   }
 
   /**
@@ -1272,7 +1275,10 @@ export class FormGroup extends AbstractControl {
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
-    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this.updateValueAndValidity({
+      onlySelf: true,
+      emitEvent: asyncValidator ? true : false
+    });  //`asyncValidator` will cause status change, and that needs to be notified
   }
 
   /**
@@ -1689,7 +1695,10 @@ export class FormArray extends AbstractControl {
     this._initObservables();
     this._setUpdateStrategy(validatorOrOpts);
     this._setUpControls();
-    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
+    this.updateValueAndValidity({
+      onlySelf: true,
+      emitEvent: asyncValidator ? true : false
+    });  // `asyncValidator` will cause status change, and that needs to be notified
   }
 
   /**

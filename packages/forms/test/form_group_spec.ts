@@ -1298,6 +1298,36 @@ import {of } from 'rxjs';
         expect(logger).toEqual(['change!']);
       });
 
+      it('should only emit (`VALID`) status change event in absence of `FormControl.asyncValidator`',
+         fakeAsync(() => {
+           const logger: string[] = [];
+           const c2 = new FormControl('new!');
+           g.statusChanges.subscribe((status) => logger.push(status));
+           g.setControl('one', c2);
+           tick();
+           expect(logger).toEqual(['VALID']);
+         }));
+
+      it('should emit (`PENDING, VALID`) status change events, if `FormControl.asyncValidator` leads to success',
+         fakeAsync(() => {
+           const logger: string[] = [];
+           const c2 = new FormControl('new!', null, asyncValidator('new!'));
+           g.statusChanges.subscribe((status) => logger.push(status));
+           g.setControl('one', c2);
+           tick();
+           expect(logger).toEqual(['PENDING', 'VALID']);
+         }));
+
+      it('should emit (`PENDING, INVALID`) status change eventse, if `FormControl.asyncValidator` leads to errors',
+         fakeAsync(() => {
+           const logger: string[] = [];
+           const c2 = new FormControl('new!', null, asyncValidator('expected'));
+           g.statusChanges.subscribe((status) => logger.push(status));
+           g.setControl('one', c2);
+           tick();
+           expect(logger).toEqual(['PENDING', 'INVALID']);
+         }));
+
     });
 
     describe('pending', () => {
