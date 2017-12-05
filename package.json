@@ -33,7 +33,7 @@
     "@angular/forms": "^5.0.0",
     "@angular/platform-browser": "^5.0.0",
     "core-js": "^2.4.1",
-    "rxjs": "^5.5.0",
+    "rxjs": "5.5.2",
     "systemjs": "0.19.43",
     "tsickle": "^0.24.x",
     "tslib": "^1.7.1",
