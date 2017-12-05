@@ -1,9 +1,10 @@
-import {ESCAPE} from '@angular/cdk/keycodes';
+import {ENTER, ESCAPE, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {
   createKeyboardEvent,
   dispatchEvent,
   dispatchFakeEvent,
+  dispatchKeyboardEvent,
   dispatchMouseEvent,
 } from '@angular/cdk/testing';
 import {Component, ViewChild} from '@angular/core';
@@ -203,7 +204,7 @@ describe('MatDatepicker', () => {
         });
       }));
 
-      it('setting selected should update input and close calendar', async(() => {
+      it('setting selected via click should update input and close calendar', async(() => {
         testComponent.touch = true;
         fixture.detectChanges();
 
@@ -223,8 +224,31 @@ describe('MatDatepicker', () => {
         });
       }));
 
+      it('setting selected via enter press should update input and close calendar', () => {
+        testComponent.touch = true;
+        fixture.detectChanges();
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+        expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
+
+        let calendarBodyEl = document.querySelector('.mat-calendar-content') as HTMLElement;
+
+        dispatchKeyboardEvent(calendarBodyEl, 'keydown', RIGHT_ARROW);
+        fixture.detectChanges();
+        dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          expect(document.querySelector('mat-dialog-container')).toBeNull();
+          expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
+        });
+      });
+
       it('clicking the currently selected date should close the calendar ' +
-          'without firing selectedChanged', () => {
+         'without firing selectedChanged', () => {
         const selectedChangedSpy =
             spyOn(testComponent.datepicker.selectedChanged, 'emit').and.callThrough();
 
@@ -244,6 +268,28 @@ describe('MatDatepicker', () => {
         expect(selectedChangedSpy.calls.count()).toEqual(1);
         expect(document.querySelector('mat-dialog-container')).toBeNull();
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
+      });
+
+      it('pressing enter on the currently selected date should close the calendar without ' +
+         'firing selectedChanged', () => {
+        const selectedChangedSpy =
+            spyOn(testComponent.datepicker.selectedChanged, 'emit').and.callThrough();
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        let calendarBodyEl = document.querySelector('.mat-calendar-content') as HTMLElement;
+        expect(calendarBodyEl).not.toBeNull();
+        expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
+
+        dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
+        fixture.detectChanges();
+
+        fixture.whenStable().then(() => {
+          expect(selectedChangedSpy.calls.count()).toEqual(0);
+          expect(document.querySelector('mat-dialog-container')).toBeNull();
+          expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
+        });
       });
 
       it('startAt should fallback to input value', () => {

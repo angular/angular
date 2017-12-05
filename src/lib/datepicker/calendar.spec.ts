@@ -20,9 +20,10 @@ import {
   JUL,
   JUN,
   MAR,
-  MAY,
   MatNativeDateModule,
+  MAY,
   NOV,
+  OCT,
   SEP,
 } from '@angular/material/core';
 import {By} from '@angular/platform-browser';
@@ -341,7 +342,7 @@ describe('MatCalendar', () => {
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', UP_ARROW);
             fixture.detectChanges();
 
-            expect(calendarInstance._activeDate).toEqual(new Date(2016, AUG, 31));
+            expect(calendarInstance._activeDate).toEqual(new Date(2016, SEP, 30));
 
             calendarInstance._activeDate = new Date(2017, JUL, 1);
             fixture.detectChanges();
@@ -349,7 +350,7 @@ describe('MatCalendar', () => {
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', UP_ARROW);
             fixture.detectChanges();
 
-            expect(calendarInstance._activeDate).toEqual(new Date(2016, JUL, 1));
+            expect(calendarInstance._activeDate).toEqual(new Date(2017, MAR, 1));
 
             calendarInstance._activeDate = new Date(2017, DEC, 10);
             fixture.detectChanges();
@@ -357,14 +358,14 @@ describe('MatCalendar', () => {
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', UP_ARROW);
             fixture.detectChanges();
 
-            expect(calendarInstance._activeDate).toEqual(new Date(2017, MAY, 10));
+            expect(calendarInstance._activeDate).toEqual(new Date(2017, AUG, 10));
           });
 
           it('should go down a row on down arrow press', () => {
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', DOWN_ARROW);
             fixture.detectChanges();
 
-            expect(calendarInstance._activeDate).toEqual(new Date(2017, AUG, 31));
+            expect(calendarInstance._activeDate).toEqual(new Date(2017, MAY, 31));
 
             calendarInstance._activeDate = new Date(2017, JUN, 1);
             fixture.detectChanges();
@@ -372,7 +373,7 @@ describe('MatCalendar', () => {
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', DOWN_ARROW);
             fixture.detectChanges();
 
-            expect(calendarInstance._activeDate).toEqual(new Date(2018, JUN, 1));
+            expect(calendarInstance._activeDate).toEqual(new Date(2017, OCT, 1));
 
             calendarInstance._activeDate = new Date(2017, SEP, 30);
             fixture.detectChanges();
@@ -380,7 +381,7 @@ describe('MatCalendar', () => {
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', DOWN_ARROW);
             fixture.detectChanges();
 
-            expect(calendarInstance._activeDate).toEqual(new Date(2018, FEB, 28));
+            expect(calendarInstance._activeDate).toEqual(new Date(2018, JAN, 30));
           });
 
           it('should go to first month of the year on home press', () => {
