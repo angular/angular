@@ -33,7 +33,11 @@ let _uniqueAutocompleteIdCounter = 0;
 
 /** Event object that is emitted when an autocomplete option is selected */
 export class MatAutocompleteSelectedEvent {
-  constructor(public source: MatAutocomplete, public option: MatOption) { }
+  constructor(
+    /** Reference to the autocomplete panel that emitted the event. */
+    public source: MatAutocomplete,
+    /** Option that was selected. */
+    public option: MatOption) { }
 }
 
 

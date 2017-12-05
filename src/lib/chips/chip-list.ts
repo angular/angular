@@ -60,7 +60,11 @@ let nextUniqueId = 0;
 
 /** Change event object that is emitted when the chip list value has changed. */
 export class MatChipListChange {
-  constructor(public source: MatChipList, public value: any) { }
+  constructor(
+    /** Chip list that emitted the event. */
+    public source: MatChipList,
+    /** Value of the chip list when the event was emitted. */
+    public value: any) { }
 }
 
 

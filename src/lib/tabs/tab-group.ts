@@ -41,7 +41,9 @@ let nextId = 0;
 
 /** A simple change event emitted on focus or selection changes. */
 export class MatTabChangeEvent {
+  /** Index of the currently-selected tab. */
   index: number;
+  /** Reference to the currently-selected tab. */
   tab: MatTab;
 }
 

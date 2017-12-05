@@ -69,8 +69,10 @@ export class MatChipInput {
   @Output('matChipInputTokenEnd')
   chipEnd = new EventEmitter<MatChipInputEvent>();
 
+  /** The input's placeholder text. */
   @Input() placeholder: string = '';
 
+  /** Whether the input is empty. */
   get empty(): boolean {
     let value: string | null = this._inputElement.value;
     return (value == null || value === '');

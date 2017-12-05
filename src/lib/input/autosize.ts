@@ -29,14 +29,15 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
   private _minRows: number;
   private _maxRows: number;
 
+  /** Minimum amount of rows in the textarea. */
   @Input('matAutosizeMinRows')
   get minRows() { return this._minRows; }
-
   set minRows(value: number) {
     this._minRows = value;
     this._setMinHeight();
   }
 
+  /** Maximum amount of rows in the textarea. */
   @Input('matAutosizeMaxRows')
   get maxRows() { return this._maxRows; }
   set maxRows(value: number) {

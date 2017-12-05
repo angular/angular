@@ -32,7 +32,11 @@ let _uniqueIdCounter = 0;
 
 /** Event object emitted by MatOption when selected or deselected. */
 export class MatOptionSelectionChange {
-  constructor(public source: MatOption, public isUserInput = false) { }
+  constructor(
+    /** Reference to the option that emitted the event. */
+    public source: MatOption,
+    /** Whether the change in the option's value was a result of a user action. */
+    public isUserInput = false) { }
 }
 
 /**

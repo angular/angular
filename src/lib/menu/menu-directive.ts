@@ -122,6 +122,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
     this.setPositionClasses();
   }
 
+  /** @docs-private */
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 
   /** List of the items inside of a menu. */
