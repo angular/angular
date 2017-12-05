@@ -98,19 +98,19 @@
         "preserveWhitespaces": "false$",
         "changeDetection": "\\.OnPush$"
       }
-    }, "src/+(lib|cdk)/**/!(*.spec).ts"],
+    }, "src/+(lib|cdk|material-experimental)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
-      "src/+(lib|cdk|demo-app)/**/!(*.spec).ts"
+      "src/+(lib|cdk|material-experimental|demo-app)/**/!(*.spec).ts"
     ],
     "no-rxjs-patch-imports": [
       true,
-      "src/+(lib|cdk)/**/*.ts"
+      "src/+(lib|cdk|material-experimental)/**/*.ts"
     ],
     "missing-rollup-globals": [
       true,
       "./tools/package-tools/rollup-globals.ts",
-      "src/+(lib|cdk|material-examples)/**/*.ts"
+      "src/+(lib|cdk|material-examples|material-experimental)/**/*.ts"
     ]
   }
 }
