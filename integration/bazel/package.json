@@ -20,6 +20,6 @@
   },
   "scripts": {
     "postinstall": "ngc -p angular.tsconfig.json",
-    "test": "bazel build ..."
+    "test": "bazel build ... --noshow_progress"
   }
 }
