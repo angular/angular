@@ -948,6 +948,35 @@ describe('ng program', () => {
       });
     });
 
+    it('should include non-formatted errors (e.g. invalid templateUrl)', () => {
+      testSupport.write('src/index.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'my-component',
+          templateUrl: 'template.html',   // invalid template url
+        })
+        export class MyComponent {}
+
+        @NgModule({
+          declarations: [MyComponent]
+        })
+        export class MyModule {}
+      `);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram({
+        rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
+        options,
+        host,
+      });
+
+      const structuralErrors = program.getNgStructuralDiagnostics();
+      expect(structuralErrors.length).toBe(1);
+      expect(structuralErrors[0].messageText).toContain('Couldn\'t resolve resource template.html');
+    });
+
     it('should be able report structural errors with noResolve:true and generateCodeForLibraries:false ' +
            'even if getSourceFile throws for non existent files',
        () => {
