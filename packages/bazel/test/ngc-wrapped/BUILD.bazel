@@ -8,32 +8,32 @@ ts_library(
         "test_support.ts",
         "tsconfig_template.ts",
     ],
+    tsconfig = ":tsconfig.json",
     deps = [
         # BEGIN-INTERNAL
         # Only needed when compiling within the Angular repo.
         # Users will get this dependency from node_modules.
         "@//packages/compiler-cli",
         # END-INTERNAL
-        "//src/ngc-wrapped:ngc_lib"
+        "//src/ngc-wrapped:ngc_lib",
     ],
-    tsconfig = ":tsconfig.json",
 )
 
 # We need a filegroup so that we can refer
 # .d.ts files (by default, jasmine_node_test would get the .js files).
 filegroup(
     name = "angular_core",
-    srcs = ["@//packages/core"]
+    srcs = ["@//packages/core"],
 )
 
 jasmine_node_test(
     name = "ngc_test",
+    size = "small",
     srcs = [":ngc_test_lib"],
     data = [
-        "@build_bazel_rules_typescript//internal:worker_protocol.proto",
         ":angular_core",
         "//test/ngc-wrapped/empty:empty_tsconfig.json",
         "//test/ngc-wrapped/empty:tsconfig.json",
+        "@build_bazel_rules_typescript//internal:worker_protocol.proto",
     ],
-    size="small",
 )

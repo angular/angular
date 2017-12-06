@@ -1,4 +1,5 @@
 package(default_visibility = ["//visibility:public"])
+
 load("@angular//:index.bzl", "ng_module")
 load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
 
@@ -10,6 +11,9 @@ sass_binary(
 ng_module(
     name = "hello-world",
     srcs = glob(["*.ts"]),
-    tsconfig = "//src:tsconfig.json",
     assets = [":hello-world-styles.css"],
+    tsconfig = "//src:tsconfig.json",
+    # FIXME(alexeagle): the rxjs dep should come from Angular, but if we use the
+    # npm distro of angular there is no ts_library rule to propagate the dep.
+    deps = ["@rxjs"],
 )

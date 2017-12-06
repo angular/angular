@@ -49,13 +49,13 @@ export function main() {
          player.onDone(() => log.push('done'));
          flushMicrotasks();
 
-         player.triggerCallback('start');
+         (player as any).triggerCallback('start');
          expect(log).toEqual(['started']);
 
          player.play();
          expect(log).toEqual(['started']);
 
-         player.triggerCallback('done');
+         (player as any).triggerCallback('done');
          expect(log).toEqual(['started', 'done']);
 
          player.finish();
