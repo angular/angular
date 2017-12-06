@@ -1,13 +1,19 @@
-package(default_visibility=["//visibility:public"])
+package(default_visibility = ["//visibility:public"])
 
 load("@angular//:index.bzl", "ng_module")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 
 ng_module(
-  name = "core",
-  srcs = glob(["**/*.ts"], exclude=[
-      "test/**",
-      "testing/**",
-  ]),
-  module_name = "@angular/core",
-  tsconfig = ":tsconfig-build.json",
+    name = "core",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/core",
+    tsconfig = "//packages:tsconfig",
+    deps = [
+        "@rxjs",
+    ],
 )

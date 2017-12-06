@@ -6,6 +6,6 @@ exports_files(["tsconfig.json"])
 ng_module(
     name = "src",
     srcs = glob(["*.ts"]),
-    deps = ["//src/hello-world"],
     tsconfig = ":tsconfig.json",
+    deps = ["//src/hello-world"],
 )
