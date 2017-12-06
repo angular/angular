@@ -75,6 +75,8 @@ export class BrowserDetection {
     return (typeof(document as any).registerElement !== 'undefined');
   }
 
+  get supportsRegExUnicodeFlag(): boolean { return RegExp.prototype.hasOwnProperty('unicode'); }
+
   get supportsShadowDom() {
     const testEl = document.createElement('div');
     return (typeof testEl.attachShadow !== 'undefined');
