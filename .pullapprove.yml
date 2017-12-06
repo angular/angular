@@ -73,6 +73,7 @@ groups:
     users:
       - alexeagle #primary
       - chuckjaz
+      - IgorMinar
       - vikerman #fallback
 
   build-and-ci:
