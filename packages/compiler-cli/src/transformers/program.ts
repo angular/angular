@@ -869,17 +869,21 @@ function syntaxErrorToDiagnostics(error: Error): Diagnostic[] {
                                           source: SOURCE,
                                           code: DEFAULT_ERROR_CODE
                                         }));
-  } else {
-    if (isFormattedError(error)) {
-      return [{
-        messageText: error.message,
-        chain: error.chain && diagnosticChainFromFormattedDiagnosticChain(error.chain),
-        category: ts.DiagnosticCategory.Error,
-        source: SOURCE,
-        code: DEFAULT_ERROR_CODE,
-        position: error.position
-      }];
-    }
+  } else if (isFormattedError(error)) {
+    return [{
+      messageText: error.message,
+      chain: error.chain && diagnosticChainFromFormattedDiagnosticChain(error.chain),
+      category: ts.DiagnosticCategory.Error,
+      source: SOURCE,
+      code: DEFAULT_ERROR_CODE,
+      position: error.position
+    }];
   }
-  return [];
+  // Produce a Diagnostic anyway since we know for sure `error` is a SyntaxError
+  return [{
+    messageText: error.message,
+    category: ts.DiagnosticCategory.Error,
+    code: DEFAULT_ERROR_CODE,
+    source: SOURCE,
+  }];
 }
