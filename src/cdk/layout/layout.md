@@ -63,7 +63,7 @@ The available values are:
 
 ### MediaMatcher
 `MediaMatcher` is a lower-level utility that wraps the native `matchMedia`. This service normalizes
-browser differences and serves as a convenient API that can be replaces with a fake in unit tests.
+browser differences and serves as a convenient API that can be replaced with a fake in unit tests.
 The `matchMedia` method can be used to get a native
 [`MediaQueryList`](https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList).
 
