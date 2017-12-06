@@ -42,7 +42,7 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':', '.'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'CHF', 'franc suisse',
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤ ;-#,##0.00 ¤', '#E0'], 'CHF', 'franc suisse',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n));

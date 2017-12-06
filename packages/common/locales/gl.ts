@@ -20,7 +20,7 @@ export default [
     ['d.', 'l.', 'm.', 'm.', 'x.', 'v.', 's.'],
     ['dom.', 'luns', 'mar.', 'mér.', 'xov.', 'ven.', 'sáb.'],
     ['domingo', 'luns', 'martes', 'mércores', 'xoves', 'venres', 'sábado'],
-    ['dom.', 'luns', 'mar.', 'mér.', 'xov.', 'ven.', 'sáb.']
+    ['do.', 'lu.', 'ma.', 'mé.', 'xo.', 've.', 'sá.']
   ],
   [
     ['D', 'L', 'M', 'M', 'X', 'V', 'S'], ['Dom.', 'Luns', 'Mar.', 'Mér.', 'Xov.', 'Ven.', 'Sáb.'],
@@ -48,7 +48,7 @@ export default [
     ]
   ],
   [['a.C.', 'd.C.'], , ['antes de Cristo', 'despois de Cristo']], 1, [6, 0],
-  ['dd/MM/yy', 'd \'de\' MMM \'de\' y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+  ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
     '{0}, {1}',

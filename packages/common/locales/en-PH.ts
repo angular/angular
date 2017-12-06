@@ -42,7 +42,7 @@ export default [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₱', 'Philippine Peso',
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₱', 'Philippine Piso',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;

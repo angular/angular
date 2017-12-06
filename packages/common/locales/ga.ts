@@ -13,9 +13,12 @@ export default [
   'ga',
   [
     ['a', 'p'],
+    ['r.n.', 'i.n.'],
+  ],
+  [
+    ['a', 'p'],
     ['a.m.', 'p.m.'],
   ],
-  ,
   [
     ['D', 'L', 'M', 'C', 'D', 'A', 'S'], ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
     [
