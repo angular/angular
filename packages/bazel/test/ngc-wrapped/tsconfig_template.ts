@@ -68,6 +68,9 @@ export function createTsConfig(options: TsConfigOptions) {
       // Because we ask for :empty_tsconfig.json, we get the ES6 version which
       // expects to write externs, yet that doesn't work under this fixture.
       'tsickleExternsPath': '',
+      // we don't copy the node_modules into our tmp dir, so we should look in
+      // the original workspace directory for it
+      'nodeModulesPrefix': '../angular_src/node_modules',
     },
     'files': options.files,
     'angularCompilerOptions': {

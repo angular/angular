@@ -1,0 +1,43 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//packages:tsconfig",
+    deps = [
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/compiler/test",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/platform-server",
+        "//packages/router",
+        "//packages/router/testing",
+        "@rxjs",
+    ],
+)
+
+# TODO(mhevery): re-enable when passing
+jasmine_node_test(
+    name = "test",
+    srcs = [],
+    bootstrap = [
+        "zone.js/dist/zone-node.js",
+    ],
+    tags = ["manual"],
+    deps = [
+        ":test_lib",
+    ],
+)
