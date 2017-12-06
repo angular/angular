@@ -42,7 +42,7 @@ export default [
     '{1} \'at\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '0/00', 'INF', 'NaN', ':'],
-  ['#0.######', '#0%', '¤ #0.00', '0.000000E+000'], '$', 'US Dollar',
+  ['0.######', '0%', '¤ 0.00', '0.000000E+000'], '$', 'US Dollar',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;

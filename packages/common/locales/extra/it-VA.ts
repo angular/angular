@@ -11,8 +11,8 @@
 
 export default [
   [
-    ['mezzanotte', 'mezzogiorno', 'mattina', 'pomeriggio', 'sera', 'notte'],
     ['mezzanotte', 'mezzogiorno', 'di mattina', 'del pomeriggio', 'di sera', 'di notte'],
+    ,
   ],
   [
     ['mezzanotte', 'mezzogiorno', 'mattina', 'pomeriggio', 'sera', 'notte'],

@@ -31,7 +31,7 @@ export default [
     ]
   ],
   , [['ईसा-पूर्व', 'ईस्वी'], , ['ईसा-पूर्व', 'ईसवी सन']], 0, [0, 0],
-  ['d/M/yy', 'dd/MM/y', 'd MMMM y', 'EEEE, d MMMM y'],
+  ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1}, {0}',
