@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ApplicationRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {APP_INITIALIZER, ApplicationRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {filter as op_filter} from 'rxjs/operator/filter';
 import {take as op_take} from 'rxjs/operator/take';
@@ -24,10 +25,12 @@ export abstract class RegistrationOptions {
 export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
 
 export function ngswAppInitializer(
-    injector: Injector, script: string, options: RegistrationOptions): Function {
+    injector: Injector, script: string, options: RegistrationOptions,
+    platformId: string): Function {
   const initializer = () => {
     const app = injector.get<ApplicationRef>(ApplicationRef);
-    if (!('serviceWorker' in navigator) || options.enabled === false) {
+    if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
+          options.enabled !== false)) {
       return;
     }
     const onStable =
@@ -51,8 +54,10 @@ export function ngswAppInitializer(
   return initializer;
 }
 
-export function ngswCommChannelFactory(opts: RegistrationOptions): NgswCommChannel {
-  return new NgswCommChannel(opts.enabled !== false ? navigator.serviceWorker : undefined);
+export function ngswCommChannelFactory(
+    opts: RegistrationOptions, platformId: string): NgswCommChannel {
+  return new NgswCommChannel(
+      opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
 }
 
 /**
@@ -75,11 +80,15 @@ export class ServiceWorkerModule {
       providers: [
         {provide: SCRIPT, useValue: script},
         {provide: RegistrationOptions, useValue: opts},
-        {provide: NgswCommChannel, useFactory: ngswCommChannelFactory, deps: [RegistrationOptions]},
+        {
+          provide: NgswCommChannel,
+          useFactory: ngswCommChannelFactory,
+          deps: [RegistrationOptions, PLATFORM_ID]
+        },
         {
           provide: APP_INITIALIZER,
           useFactory: ngswAppInitializer,
-          deps: [Injector, SCRIPT, RegistrationOptions],
+          deps: [Injector, SCRIPT, RegistrationOptions, PLATFORM_ID],
           multi: true,
         },
       ],

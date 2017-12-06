@@ -80,7 +80,7 @@ export function main() {
     async_beforeEach(async() => {
       // Fire up the client.
       mock = new MockServiceWorkerContainer();
-      comm = new NgswCommChannel(mock as any);
+      comm = new NgswCommChannel(mock as any, 'browser');
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
