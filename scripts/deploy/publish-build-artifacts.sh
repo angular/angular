@@ -41,11 +41,6 @@ publishPackage() {
   repoUrl="https://github.com/angular/${packageRepo}.git"
   repoDir="tmp/${packageRepo}"
 
-  if [[ $(git rev-parse -q --verify "refs/tags/${commitTag}") ]]; then
-    echo "Skipping publish because tag is already published"
-    exit 0
-  fi
-
   if [[ ! ${COMMAND_ARGS} == *--no-build* ]]; then
     # Create a release of the current repository.
     $(npm bin)/gulp ${packageName}:build-release:clean
@@ -64,6 +59,11 @@ publishPackage() {
 
   # Create the build commit and push the changes to the repository.
   cd ${repoDir}
+
+  if [[ $(git ls-remote origin "refs/tags/${commitTag}") ]]; then
+    echo "Skipping publish because tag is already published"
+    exit 0
+  fi
 
   # Replace the version in every file recursively with a more specific version that also includes
   # the SHA of the current build job. Normally this "sed" call would just replace the version
