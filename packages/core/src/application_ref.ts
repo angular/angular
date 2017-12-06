@@ -102,7 +102,8 @@ export function createPlatformFactory(
     parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
     name: string, providers: StaticProvider[] = []): (extraProviders?: StaticProvider[]) =>
     PlatformRef {
-  const marker = new InjectionToken(`Platform: ${name}`);
+  const desc = `Platform: ${name}`;
+  const marker = new InjectionToken(desc);
   return (extraProviders: StaticProvider[] = []) => {
     let platform = getPlatform();
     if (!platform || platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
@@ -110,8 +111,9 @@ export function createPlatformFactory(
         parentPlatformFactory(
             providers.concat(extraProviders).concat({provide: marker, useValue: true}));
       } else {
-        createPlatform(Injector.create(
-            providers.concat(extraProviders).concat({provide: marker, useValue: true})));
+        const injectedProviders: StaticProvider[] =
+            providers.concat(extraProviders).concat({provide: marker, useValue: true});
+        createPlatform(Injector.create({providers: injectedProviders, name: desc}));
       }
     }
     return assertPlatform(marker);
@@ -224,10 +226,12 @@ export class PlatformRef {
     // pass that as parent to the NgModuleFactory.
     const ngZoneOption = options ? options.ngZone : undefined;
     const ngZone = getNgZone(ngZoneOption);
+    const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
     // Attention: Don't use ApplicationRef.run here,
     // as we want to be sure that all possible constructor calls are inside `ngZone.run`!
     return ngZone.run(() => {
-      const ngZoneInjector = Injector.create([{provide: NgZone, useValue: ngZone}], this.injector);
+      const ngZoneInjector = Injector.create(
+          {providers: providers, parent: this.injector, name: moduleFactory.moduleType.name});
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
       const exceptionHandler: ErrorHandler = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
