@@ -12,7 +12,8 @@ source ${thisDir}/_travis-fold.sh
   # Run e2e tests
   travisFoldStart "test.aio.e2e"
     yarn setup
-    yarn e2e
+    for i in `seq 1 10`; do
+      yarn e2e;
+    done
   travisFoldEnd "test.aio.e2e"
-
 )
