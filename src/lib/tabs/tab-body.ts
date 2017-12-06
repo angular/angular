@@ -66,6 +66,8 @@ export type MatTabBodyOriginState = 'left' | 'right';
 export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestroy {
   /** A subscription to events for when the tab body begins centering. */
   private _centeringSub: Subscription;
+  /** A subscription to events for when the tab body finishes leaving from center position. */
+  private _leavingSub: Subscription;
 
   constructor(
     _componentFactoryResolver: ComponentFactoryResolver,
@@ -84,9 +86,11 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
         if (!this.hasAttached()) {
           this.attach(this._host._content);
         }
-      } else {
-        this.detach();
       }
+    });
+
+    this._leavingSub = this._host._afterLeavingCenter.subscribe(() => {
+      this.detach();
     });
   }
 
@@ -94,6 +98,10 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
   ngOnDestroy(): void {
     if (this._centeringSub && !this._centeringSub.closed) {
       this._centeringSub.unsubscribe();
+    }
+
+    if (this._leavingSub && !this._leavingSub.closed) {
+      this._leavingSub.unsubscribe();
     }
   }
 }
@@ -138,6 +146,9 @@ export class MatTabBody implements OnInit {
 
   /** Event emitted before the centering of the tab begins. */
   @Output() _beforeCentering: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  /** Event emitted before the centering of the tab begins. */
+  @Output() _afterLeavingCenter: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   /** Event emitted when the tab completes its animation towards the center. */
   @Output() _onCentered: EventEmitter<void> = new EventEmitter<void>(true);
@@ -197,6 +208,10 @@ export class MatTabBody implements OnInit {
     // If the transition to the center is complete, emit an event.
     if (this._isCenterPosition(e.toState) && this._isCenterPosition(this._position)) {
       this._onCentered.emit();
+    }
+
+    if (this._isCenterPosition(e.fromState) && !this._isCenterPosition(this._position)) {
+      this._afterLeavingCenter.emit();
     }
   }
 
