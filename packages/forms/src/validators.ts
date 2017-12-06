@@ -306,7 +306,11 @@ export class Validators {
 
       if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
 
-      regex = new RegExp(regexStr);
+      if (RegExp.prototype.hasOwnProperty('unicode')) {
+        regex = new RegExp(regexStr, 'u');
+      } else {
+        regex = new RegExp(regexStr);
+      }
     } else {
       regexStr = pattern.toString();
       regex = pattern;
