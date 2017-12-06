@@ -13,9 +13,12 @@ export default [
   'de-AT',
   [
     ['vm.', 'nm.'],
+    ['AM', 'PM'],
+  ],
+  [
+    ['vm.', 'nm.'],
     ['vorm.', 'nachm.'],
   ],
-  ,
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
     ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],

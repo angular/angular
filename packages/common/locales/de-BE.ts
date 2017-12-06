@@ -13,7 +13,7 @@ export default [
   'de-BE',
   [
     ['vm.', 'nm.'],
-    ['vorm.', 'nachm.'],
+    ['AM', 'PM'],
   ],
   [
     ['vorm.', 'nachm.'],

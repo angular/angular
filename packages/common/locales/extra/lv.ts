@@ -11,8 +11,7 @@
 
 export default [
   [
-    ['pusnaktī', 'pusd.', 'no rīta', 'pēcpusdienā', 'vakarā', 'naktī'],
-    ['pusnaktī', 'pusd.', 'no rīta', 'pēcpusd.', 'vakarā', 'naktī'],
+    ['pusnaktī', 'pusd.', 'no rīta', 'pēcpusd.', 'vakarā', 'naktī'], ,
     ['pusnaktī', 'pusdienlaikā', 'no rīta', 'pēcpusdienā', 'vakarā', 'naktī']
   ],
   [

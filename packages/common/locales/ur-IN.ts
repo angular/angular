@@ -37,7 +37,7 @@ export default [
     ['قبل مسیح', 'عیسوی'],
     ,
   ],
-  0, [0, 0], ['d/M/yy', 'y MMM d', 'd MMMM، y', 'EEEE، d MMMM، y'],
+  0, [0, 0], ['d/M/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
@@ -45,7 +45,7 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '‎+', '‎-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'بھارتی روپیہ',
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₹', 'بھارتی روپیہ',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;

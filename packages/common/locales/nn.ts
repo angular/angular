@@ -49,9 +49,9 @@ export default [
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', '\'kl\'. HH:mm:ss zzzz'],
   ['{1}, {0}', , '{1} \'kl\'. {0}', '{1} {0}'],
   [',', ' ', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr', 'norsk krone', function(n: number):
-                                                                          number {
-                                                                            if (n === 1) return 1;
-                                                                            return 5;
-                                                                          }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr', 'norske kroner', function(n: number):
+                                                                            number {
+                                                                              if (n === 1) return 1;
+                                                                              return 5;
+                                                                            }
 ];

@@ -30,7 +30,7 @@ export default [
       'kele', 'adeɛmekpɔxe', 'dzome'
     ]
   ],
-  , [['hY', 'Yŋ'], , ['Hafi Yesu Va Do ŋgɔ', 'Yesu Ŋɔli']], 1, [6, 0],
+  , [['HYV', 'Yŋ'], , ['Hafi Yesu Va', 'Yesu ŋɔli']], 1, [6, 0],
   ['M/d/yy', 'MMM d \'lia\', y', 'MMMM d \'lia\' y', 'EEEE, MMMM d \'lia\' y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
