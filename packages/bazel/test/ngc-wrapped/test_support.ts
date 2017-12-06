@@ -40,7 +40,7 @@ export function setup(
       bazelBin?: string,
       tsconfig?: string,
     } = {}): TestSupport {
-  const runfilesPath = process.env['RUNFILES'];
+  const runfilesPath = process.env['TEST_SRCDIR'];
 
   const basePath = makeTempDir(runfilesPath);
 
@@ -150,7 +150,7 @@ function makeTempDir(baseDir): string {
 }
 
 export function listFilesRecursive(dir: string, fileList: string[] = []) {
-  fs.readdirSync(dir).map(file => {
+  fs.readdirSync(dir).forEach(file => {
     if (fs.statSync(path.join(dir, file)).isDirectory()) {
       listFilesRecursive(path.join(dir, file), fileList);
     } else {
