@@ -148,15 +148,22 @@ class DefaultServerRenderer2 implements Renderer2 {
         this.schema.securityContext(tagName, propertyName, false);
   }
 
+  // Only support boolean value for hidden property
+  private _isValueTypeSupported(name: string, value: any) {
+    if (typeof value !== 'boolean') return;
+    return name === 'hidden';
+  }
+
   setProperty(el: any, name: string, value: any): void {
     checkNoSyntheticProp(name, 'property');
     getDOM().setProperty(el, name, value);
     // Mirror property values for known HTML element properties in the attributes.
     const tagName = (el.tagName as string).toLowerCase();
-    if (value != null && (typeof value === 'number' || typeof value == 'string') &&
+    if (value != null &&
+        (typeof value === 'number' || typeof value == 'string' || typeof value == 'boolean') &&
         this.schema.hasElement(tagName, EMPTY_ARRAY) &&
         this.schema.hasProperty(tagName, name, EMPTY_ARRAY) &&
-        this._isSafeToReflectProperty(tagName, name)) {
+        this._isSafeToReflectProperty(tagName, name) && this._isValueTypeSupported(name, value)) {
       this.setAttribute(el, name, value.toString());
     }
   }
