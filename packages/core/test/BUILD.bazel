@@ -33,8 +33,11 @@ ts_library(
 jasmine_node_test(
     name = "test",
     srcs = [],
+    bootstrap = [
+        "zone.js/dist/zone-node.js",
+    ],
+    tags = ["manual"],
     deps = [
         ":test_lib",
     ],
-    tags = ["manual"],
 )
