@@ -21,15 +21,15 @@ following products on your development machine:
   [Windows](http://windows.github.com)); [GitHub's Guide to Installing
   Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version `>=6.9.5 <7.0.0`) which is used to run a development web server,
-  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
-  (version `>=3.10.7 <4.0.0`), which comes with Node. Depending on your system, you can install Node either from
-  source or as a pre-packaged bundle.
+* [Node.js](http://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
+  run tests, and generate distributable files.
 
-* [Yarn](https://yarnpkg.com) (version `>=1.0.2 <2.0.0`) which is used to install dependencies.
+* [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
 
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
+
+* (Optional for now) [Bazel](https://bazel.build/), please follow instructions in [Bazel.md]
 
 ## Getting the Sources
 
@@ -61,19 +61,11 @@ Next, install the JavaScript modules needed to build and test Angular:
 yarn install
 ```
 
-**Optional**: In this document, we make use of project local `npm` package scripts and binaries
-(stored under `./node_modules/.bin`) by prefixing these command invocations with `$(npm bin)`; in
-particular `gulp` and `protractor` commands. If you prefer, you can drop this path prefix by either:
+**Optional**: In this document, we make use of installed npm package scripts and binaries
+(stored under `./node_modules/.bin`) by prefixing these command invocations with `$(yarn bin)`; in
+particular `gulp` and `protractor` commands.
 
 
-## Installing Bower Modules
-
-Now run `bower` to install additional dependencies:
-
-```shell
-# Install other Angular project dependencies (bower.json)
-bower install
-```
 
 ## Windows only
 
