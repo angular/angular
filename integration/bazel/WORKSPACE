@@ -1,3 +1,5 @@
+workspace(name = "bazel_integration_test")
+
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 git_repository(
@@ -17,6 +19,11 @@ local_repository(
 local_repository(
     name = "angular",
     path = "node_modules/@angular/bazel",
+)
+
+local_repository(
+    name = "rxjs",
+    path = "node_modules/rxjs/src",
 )
 
 git_repository(

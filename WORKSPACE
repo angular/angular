@@ -5,7 +5,7 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 git_repository(
     name = "build_bazel_rules_nodejs",
     remote = "https://github.com/bazelbuild/rules_nodejs.git",
-    commit = "0.2.1",
+    commit = "799aa032047e04d26f1f834cb026f8ce6102c0be",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories")
@@ -20,4 +20,9 @@ local_repository(
 local_repository(
     name = "angular",
     path = "packages/bazel",
+)
+
+local_repository(
+    name = "rxjs",
+    path = "node_modules/rxjs/src",
 )

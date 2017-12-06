@@ -1,4 +1,5 @@
 package(default_visibility = ["//visibility:public"])
+
 exports_files(["tsconfig.json"])
 
 # This rule belongs in node_modules/BUILD
@@ -11,17 +12,25 @@ filegroup(
     # bazel query "deps(:node_modules)" | wc -l
     # This won't scale in the general case.
     # TODO(alexeagle): figure out what to do
-    srcs = glob(["/".join(["node_modules", pkg, "**", ext]) for pkg in [
+    srcs = glob(["/".join([
+        "node_modules",
+        pkg,
+        "**",
+        ext,
+    ]) for pkg in [
         "jasmine",
         "typescript",
         "zone.js",
-        "rxjs",
-        "@types",
+        "tsutils",
+        "@types/jasmine",
+        "@types/node",
+        "@types/source-map",
         "tsickle",
         "hammerjs",
         "protobufjs",
         "bytebuffer",
         "reflect-metadata",
+        "source-map-support",
         "minimist",
     ] for ext in [
         "*.js",

@@ -1,1 +1,20 @@
-exports_files(["tsconfig-build.json"])
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "tsconfig-build.json",
+    "tsconfig.json",
+])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_config", "ts_library")
+
+ts_config(
+    name = "tsconfig",
+    src = ":tsconfig-build.json",
+    deps = [],
+)
+
+ts_library(
+    name = "types",
+    srcs = glob(["*.ts"]),
+    tsconfig = ":tsconfig",
+)
