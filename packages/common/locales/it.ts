@@ -31,7 +31,7 @@ export default [
     ]
   ],
   , [['aC', 'dC'], ['a.C.', 'd.C.'], ['avanti Cristo', 'dopo Cristo']], 1, [6, 0],
-  ['dd/MM/yy', 'dd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+  ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
     '{1}, {0}',

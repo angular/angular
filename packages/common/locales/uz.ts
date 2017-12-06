@@ -46,7 +46,7 @@ export default [
     ,
     ,
   ],
-  [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'haqiqiy son emas', ':'],
+  [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'son emas', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi', function(n: number):
                                                                                  number {
                                                                                    if (n === 1)

@@ -35,7 +35,7 @@ export default [
     ]
   ],
   , [['p. n. e.', 'n. e.'], , ['prije nove ere', 'nove ere']], 1, [6, 0],
-  ['d.M.yy.', 'd. MMM. y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
+  ['d.M.yy.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
     '{1} {0}',

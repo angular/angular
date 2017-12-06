@@ -10,10 +10,14 @@
 // See angular/tools/gulp-tasks/cldr/extract.js
 
 export default [
-  'sw-UG', [['am', 'pm'], ['AM', 'PM'], ['Asubuhi', 'Mchana']],
+  'sw-UG',
   [
     ['am', 'pm'],
     ['AM', 'PM'],
+  ],
+  [
+    ['AM', 'PM'],
+    ,
   ],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],

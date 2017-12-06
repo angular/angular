@@ -16,8 +16,8 @@ export default [
     ['a.m.', 'p.m.'],
   ],
   [
-    ['AM', 'PM'],
     ['a.m.', 'p.m.'],
+    ,
   ],
   [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
@@ -38,7 +38,10 @@ export default [
   ],
   , [['av. J.-C.', 'ap. J.-C.'], , ['avant Jésus-Christ', 'après Jésus-Christ']], 0, [6, 0],
   ['yy-MM-dd', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH \'h\' mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  [
+    'HH \'h\' mm', 'HH \'h\' mm \'min\' ss \'s\'', 'HH \'h\' mm \'min\' ss \'s\' z',
+    'HH \'h\' mm \'min\' ss \'s\' zzzz'
+  ],
   [
     '{1} {0}',
     ,

@@ -27,7 +27,7 @@ export default [
     ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
   ],
   [
-    ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+    ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     [
       'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'set.', 'oct.', 'nov.', 'dic.'
     ],
