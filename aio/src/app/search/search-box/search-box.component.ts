@@ -35,15 +35,25 @@ export class SearchBoxComponent implements OnInit {
 
   constructor(private locationService: LocationService) { }
 
-  /**
-   * When we first show this search box we trigger a search if there is a search query in the URL
-   */
   ngOnInit() {
+    // When we first show this search box we trigger a search if there is a search query in the URL
     const query = this.locationService.search()['search'];
     if (query) {
       this.query = query;
       this.doSearch();
     }
+
+    // Update the URL params after search events
+    this.onSearch.subscribe(searchTerm => {
+      const params = this.locationService.search();
+      if (searchTerm) { params['search'] = searchTerm; }
+      this.locationService.setSearch('', params);
+    });
+
+    // Clear the query value whenever the current path changes.
+    this.locationService.currentPath.subscribe(() => {
+      this.query = '';
+    });
   }
 
   doSearch() {

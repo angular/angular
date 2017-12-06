@@ -62,6 +62,17 @@ describe('SearchBoxComponent', () => {
       expect(host.searchHandler).toHaveBeenCalledWith('some query (input)');
     }));
 
+    it('should update the URL with the current search term, after debouncing occurs',
+          fakeAsync(inject([LocationService], (location: MockLocationService) => {
+      const input = fixture.debugElement.query(By.css('input'));
+      input.nativeElement.value = 'clever search term';
+      expect(location.setSearch).not.toHaveBeenCalled();
+      component.doSearch();
+      expect(location.setSearch).not.toHaveBeenCalled();
+      tick(300);
+      expect(location.setSearch).toHaveBeenCalled();
+    })));
+
     it('should only send events if the search value has changed', fakeAsync(() => {
       const input = fixture.debugElement.query(By.css('input'));
 

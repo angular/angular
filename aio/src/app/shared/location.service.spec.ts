@@ -400,6 +400,7 @@ describe('LocationService', () => {
     beforeEach(() => {
       anchor = document.createElement('a');
       spyOn(service, 'go');
+      spyOn(service, 'setSearch');
     });
 
     describe('should try to navigate with go() when anchor clicked for', () => {
@@ -442,6 +443,15 @@ describe('LocationService', () => {
         anchor.href = 'tut.or.ial/toh-p2';
         const result = service.handleAnchorClick(anchor);
         expect(service.go).toHaveBeenCalled();
+        expect(result).toBe(false);
+      });
+
+      it('local url with search params, replacing previous history state', () => {
+        service.go('some/local/url?search=component&something=else');
+        anchor.href = 'some/other/url';
+        const result = service.handleAnchorClick(anchor);
+        expect(service.go).toHaveBeenCalledWith('/some/other/url');
+        expect(service.setSearch).toHaveBeenCalledWith('', {});
         expect(result).toBe(false);
       });
     });

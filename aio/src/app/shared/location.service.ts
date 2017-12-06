@@ -142,6 +142,11 @@ export class LocationService {
       return true;
     }
 
+    // clear query parameters for search
+    const params = this.search();
+    delete params['search'];
+    this.setSearch('', params);
+
     // approved for navigation
     this.go(relativeUrl);
     return false;
