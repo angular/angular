@@ -48,11 +48,11 @@ describe('ng type checker', () => {
   }
 
   function reject(
-      message: string | RegExp, location: RegExp, files: MockFiles,
+      message: string | RegExp, location: RegExp | null, files: MockFiles,
       overrideOptions: ng.CompilerOptions = {}) {
     const diagnostics = compileAndCheck([QUICKSTART, files], overrideOptions);
     if (!diagnostics || !diagnostics.length) {
-      throw new Error('Expected a diagnostic erorr message');
+      throw new Error('Expected a diagnostic error message');
     } else {
       const matches: (d: ng.Diagnostic) => boolean = typeof message === 'string' ?
           d => ng.isNgDiagnostic(d)&& d.messageText == message :
@@ -63,11 +63,13 @@ describe('ng type checker', () => {
             `Expected a diagnostics matching ${message}, received\n  ${diagnostics.map(d => d.messageText).join('\n  ')}`);
       }
 
-      const span = matchingDiagnostics[0].span;
-      if (!span) {
-        throw new Error('Expected a sourceSpan');
+      if (location) {
+        const span = matchingDiagnostics[0].span;
+        if (!span) {
+          throw new Error('Expected a sourceSpan');
+        }
+        expect(`${span.start.file.url}@${span.start.line}:${span.start.offset}`).toMatch(location);
       }
-      expect(`${span.start.file.url}@${span.start.line}:${span.start.offset}`).toMatch(location);
     }
   }
 
@@ -212,6 +214,110 @@ describe('ng type checker', () => {
           declarations: [MainComp, MyIf],
         })
         export class MainModule {}`
+      });
+    });
+  });
+
+  describe('casting $any', () => {
+    const a = (files: MockFiles, options: object = {}) => {
+      accept(
+          {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
+          {fullTemplateTypeCheck: true, ...options});
+    };
+
+    const r =
+        (message: string | RegExp, location: RegExp | null, files: MockFiles,
+         options: object = {}) => {
+          reject(
+              message, location, {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
+              {fullTemplateTypeCheck: true, ...options});
+        };
+
+    it('should allow member access of an expression', () => {
+      a({
+        'src/app.module.ts': `
+        import {NgModule, Component} from '@angular/core';
+
+        export interface Person {
+          name: string;
+        }
+
+        @Component({
+          selector: 'comp',
+          template: ' {{$any(person).address}}'
+        })
+        export class MainComp {
+          person: Person;
+        }
+
+        @NgModule({
+          declarations: [MainComp],
+        })
+        export class MainModule {
+        }`
+      });
+    });
+
+    it('should allow invalid this.member access', () => {
+      a({
+        'src/app.module.ts': `
+        import {NgModule, Component} from '@angular/core';
+
+        @Component({
+          selector: 'comp',
+          template: ' {{$any(this).missing}}'
+        })
+        export class MainComp { }
+
+        @NgModule({
+          declarations: [MainComp],
+        })
+        export class MainModule {
+        }`
+      });
+    });
+
+    it('should reject too few parameters to $any', () => {
+      r(/Invalid call to \$any, expected 1 argument but received none/, null, {
+        'src/app.module.ts': `
+        import {NgModule, Component} from '@angular/core';
+
+        @Component({
+          selector: 'comp',
+          template: ' {{$any().missing}}'
+        })
+        export class MainComp { }
+
+        @NgModule({
+          declarations: [MainComp],
+        })
+        export class MainModule {
+        }`
+      });
+    });
+
+    it('should reject too many parameters to $any', () => {
+      r(/Invalid call to \$any, expected 1 argument but received 2/, null, {
+        'src/app.module.ts': `
+        import {NgModule, Component} from '@angular/core';
+
+        export interface Person {
+          name: string;
+        }
+
+        @Component({
+          selector: 'comp',
+          template: ' {{$any(person, 12).missing}}'
+        })
+        export class MainComp {
+          person: Person;
+        }
+
+        @NgModule({
+          declarations: [MainComp],
+        })
+        export class MainModule {
+        }`
       });
     });
   });
