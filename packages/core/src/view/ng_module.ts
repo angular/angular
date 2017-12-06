@@ -9,6 +9,7 @@
 import {resolveForwardRef} from '../di/forward_ref';
 import {Injector} from '../di/injector';
 import {NgModuleRef} from '../linker/ng_module_factory';
+import {stringify} from '../util';
 
 import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
 import {splitDepsDsl, tokenKey} from './util';
@@ -25,7 +26,7 @@ export function moduleProvideDef(
   // lowered the expression and then stopped evaluating it,
   // i.e. also didn't unwrap it.
   value = resolveForwardRef(value);
-  const depDefs = splitDepsDsl(deps);
+  const depDefs = splitDepsDsl(deps, stringify(token));
   return {
     // will bet set by the module definition
     index: -1,

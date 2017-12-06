@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Testability, TestabilityRegistry, Type} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
@@ -54,8 +54,9 @@ export class DowngradeComponentAdapter {
   }
 
   createComponent(projectableNodes: Node[][]) {
-    const childInjector =
-        Injector.create([{provide: $SCOPE, useValue: this.componentScope}], this.parentInjector);
+    const providers: StaticProvider[] = [{provide: $SCOPE, useValue: this.componentScope}];
+    const childInjector = Injector.create(
+        {providers: providers, parent: this.parentInjector, name: 'DowngradeComponentAdapter'});
 
     this.componentRef =
         this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
