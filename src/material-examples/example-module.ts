@@ -51,8 +51,8 @@ import {ExpansionStepsExample} from './expansion-steps/expansion-steps-example';
 import {MyTelInput,FormFieldCustomControlExample} from './form-field-custom-control/form-field-custom-control-example';
 import {FormFieldErrorExample} from './form-field-error/form-field-error-example';
 import {FormFieldHintExample} from './form-field-hint/form-field-hint-example';
-import {FormFieldOverviewExample} from './form-field-overview/form-field-overview-example';
 import {FormFieldLabelExample} from './form-field-label/form-field-label-example';
+import {FormFieldOverviewExample} from './form-field-overview/form-field-overview-example';
 import {FormFieldPrefixSuffixExample} from './form-field-prefix-suffix/form-field-prefix-suffix-example';
 import {FormFieldThemingExample} from './form-field-theming/form-field-theming-example';
 import {GridListDynamicExample} from './grid-list-dynamic/grid-list-dynamic-example';
@@ -96,6 +96,7 @@ import {SelectOverviewExample} from './select-overview/select-overview-example';
 import {SelectPanelClassExample} from './select-panel-class/select-panel-class-example';
 import {SelectResetExample} from './select-reset/select-reset-example';
 import {SelectValueBindingExample} from './select-value-binding/select-value-binding-example';
+import {SidenavAutosizeExample} from './sidenav-autosize/sidenav-autosize-example';
 import {SidenavDisableCloseExample} from './sidenav-disable-close/sidenav-disable-close-example';
 import {SidenavDrawerOverviewExample} from './sidenav-drawer-overview/sidenav-drawer-overview-example';
 import {SidenavFixedExample} from './sidenav-fixed/sidenav-fixed-example';
@@ -104,7 +105,6 @@ import {SidenavOpenCloseExample} from './sidenav-open-close/sidenav-open-close-e
 import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-example';
 import {SidenavPositionExample} from './sidenav-position/sidenav-position-example';
 import {SidenavResponsiveExample} from './sidenav-responsive/sidenav-responsive-example';
-import {SidenavAutosizeExample} from './sidenav-autosize/sidenav-autosize-example';
 import {SlideToggleConfigurableExample} from './slide-toggle-configurable/slide-toggle-configurable-example';
 import {SlideToggleFormsExample} from './slide-toggle-forms/slide-toggle-forms-example';
 import {SlideToggleOverviewExample} from './slide-toggle-overview/slide-toggle-overview-example';
@@ -357,15 +357,15 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
-  'form-field-overview': {
-    title: 'Simple form field ',
-    component: FormFieldOverviewExample,
-    additionalFiles: null,
-    selectorName: null
-  },
   'form-field-label': {
     title: 'Form field with label ',
     component: FormFieldLabelExample,
+    additionalFiles: null,
+    selectorName: null
+  },
+  'form-field-overview': {
+    title: 'Simple form field ',
+    component: FormFieldOverviewExample,
     additionalFiles: null,
     selectorName: null
   },
@@ -627,6 +627,12 @@ export const EXAMPLE_COMPONENTS = {
     additionalFiles: null,
     selectorName: null
   },
+  'sidenav-autosize': {
+    title: 'Autosize sidenav',
+    component: SidenavAutosizeExample,
+    additionalFiles: null,
+    selectorName: null
+  },
   'sidenav-disable-close': {
     title: 'Sidenav with custom escape and backdrop click behavior ',
     component: SidenavDisableCloseExample,
@@ -672,12 +678,6 @@ export const EXAMPLE_COMPONENTS = {
   'sidenav-responsive': {
     title: 'Responsive sidenav ',
     component: SidenavResponsiveExample,
-    additionalFiles: null,
-    selectorName: null
-  },
-  'sidenav-autosize': {
-    title: 'Autosize sidenav',
-    component: SidenavAutosizeExample,
     additionalFiles: null,
     selectorName: null
   },
@@ -854,8 +854,8 @@ export const EXAMPLE_LIST = [
   MyTelInput,FormFieldCustomControlExample,
   FormFieldErrorExample,
   FormFieldHintExample,
-  FormFieldOverviewExample,
   FormFieldLabelExample,
+  FormFieldOverviewExample,
   FormFieldPrefixSuffixExample,
   FormFieldThemingExample,
   GridListDynamicExample,
@@ -899,6 +899,7 @@ export const EXAMPLE_LIST = [
   SelectPanelClassExample,
   SelectResetExample,
   SelectValueBindingExample,
+  SidenavAutosizeExample,
   SidenavDisableCloseExample,
   SidenavDrawerOverviewExample,
   SidenavFixedExample,
@@ -907,7 +908,6 @@ export const EXAMPLE_LIST = [
   SidenavOverviewExample,
   SidenavPositionExample,
   SidenavResponsiveExample,
-  SidenavAutosizeExample,
   SlideToggleConfigurableExample,
   SlideToggleFormsExample,
   SlideToggleOverviewExample,
