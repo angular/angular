@@ -9,6 +9,7 @@ ng_module(
     "//src/cdk/bidi",
     "//src/cdk/coercion",
     "//src/cdk/keycodes",
+    "@rxjs",
   ],
   tsconfig = ":tsconfig-build.json",
 )

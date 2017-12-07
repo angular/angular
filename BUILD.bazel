@@ -18,7 +18,6 @@ filegroup(
     "typescript",
     "tslib",
     "zone.js",
-    "rxjs",
     "@types",
     "tsickle",
     "hammerjs",
@@ -33,3 +32,4 @@ filegroup(
     "*.d.ts",
   ]]),
 )
+

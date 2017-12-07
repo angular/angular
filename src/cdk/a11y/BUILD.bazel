@@ -9,6 +9,7 @@ ng_module(
     "//src/cdk/coercion",
     "//src/cdk/keycodes",
     "//src/cdk/platform",
+    "@rxjs",
   ],
   tsconfig = ":tsconfig-build.json",
 )

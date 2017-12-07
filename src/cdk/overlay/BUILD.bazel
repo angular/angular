@@ -12,6 +12,7 @@ ng_module(
     "//src/cdk/platform",
     "//src/cdk/portal",
     "//src/cdk/scrolling",
+    "@rxjs",
   ],
   tsconfig = ":tsconfig-build.json",
 )

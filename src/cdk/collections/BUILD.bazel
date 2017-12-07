@@ -5,6 +5,6 @@ ng_module(
   name = "collections",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/collections",
-  deps = [],
+  deps = ["@rxjs"],
   tsconfig = ":tsconfig-build.json",
 )
