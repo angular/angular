@@ -399,7 +399,7 @@ class AngularCompilerProgram implements Program {
     if (!this.options.disableExpressionLowering) {
       beforeTs.push(getExpressionLoweringTransformFactory(this.metadataCache, this.tsProgram));
     }
-    beforeTs.push(getAngularEmitterTransformFactory(genFiles));
+    beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
     if (customTransformers && customTransformers.beforeTs) {
       beforeTs.push(...customTransformers.beforeTs);
     }
@@ -628,15 +628,12 @@ class AngularCompilerProgram implements Program {
     // Filter out generated files for which we didn't generate code.
     // This can happen as the stub caclulation is not completely exact.
     // Note: sourceFile refers to the .ngfactory.ts / .ngsummary.ts file
+    // node_emitter_transform already set the file contents to be empty,
+    //  so this code only needs to skip the file if !allowEmptyCodegenFiles.
     const isGenerated = GENERATED_FILES.test(outFileName);
-    if (isGenerated) {
-      if (!genFile || !genFile.stmts || genFile.stmts.length === 0) {
-        if (this.options.allowEmptyCodegenFiles) {
-          outData = '';
-        } else {
-          return;
-        }
-      }
+    if (isGenerated && !this.options.allowEmptyCodegenFiles &&
+        (!genFile || !genFile.stmts || genFile.stmts.length === 0)) {
+      return;
     }
     if (baseFile) {
       sourceFiles = sourceFiles ? [...sourceFiles, baseFile] : [baseFile];
