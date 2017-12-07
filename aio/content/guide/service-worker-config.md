@@ -1,6 +1,13 @@
 {@a glob}
 
-# Reference: Configuration file
+# Service Worker Configuration
+
+#### Prerequisites
+
+A basic understanding of the following:
+* [Service Worker in Production](guide/service-worker-devops).
+
+<hr />
 
 The `src/ngsw-config.json` configuration file specifies which files and data URLs the Angular 
 service worker should cache and how it should update the cached files and data. The 
@@ -8,7 +15,7 @@ CLI processes the configuration file during `ng build --prod`. Manually, you can
 it with the `ngsw-config` tool:
 
 ```sh
-ngsw-config dist src/ngswn-config.json /base/href
+ngsw-config dist src/ngsw-config.json /base/href
 ```
 
 The configuration file uses the JSON format. All file paths must begin with `/`, which is the deployment directory&mdash;usually `dist` in CLI projects.
@@ -159,3 +166,4 @@ The Angular service worker can use either of two caching strategies for data res
 * `performance`, the default, optimizes for responses that are as fast as possible. If a resource exists in the cache, the cached version is used. This allows for some staleness, depending on the `maxAge`, in exchange for better performance. This is suitable for resources that don't change often; for example, user avatar images.
 
 * `freshness` optimizes for currency of data, preferentially fetching requested data from the network. Only if the network times out, according to `timeout`, does the request fall back to the cache. This is useful for resources that change frequently; for example, account balances.
+
