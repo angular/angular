@@ -13,6 +13,7 @@ ts_library(
     module_name = "@angular/service-worker",
     tsconfig = "//packages:tsconfig",
     deps = [
+        "//packages/common",
         "//packages/core",
         "@rxjs//:rxjs",
     ],
