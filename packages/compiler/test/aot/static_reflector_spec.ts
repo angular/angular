@@ -33,7 +33,7 @@ describe('StaticReflector', () => {
   beforeEach(() => init());
 
   function simplify(context: StaticSymbol, value: any) {
-    return reflector.simplify(context, value);
+    return (reflector as any).simplify(context, value);
   }
 
   it('should get annotations for NgFor', () => {
@@ -1079,11 +1079,11 @@ describe('StaticReflector', () => {
            '/tmp/root.ts': ``,
            '/tmp/a.ts': `export const x = 1;`,
          });
-         let symbol =
-             reflector.resolveExternalReference({moduleName: './a', name: 'x'}, '/tmp/root.ts');
+         let symbol = reflector.resolveExternalReference(
+             {moduleName: './a', name: 'x', runtime: null}, '/tmp/root.ts');
          expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBeFalsy();
 
-         symbol = reflector.resolveExternalReference({moduleName: 'a', name: 'x'});
+         symbol = reflector.resolveExternalReference({moduleName: 'a', name: 'x', runtime: null});
          expect(symbolResolver.getKnownModuleName(symbol.filePath)).toBe('a');
        });
   });

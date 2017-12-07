@@ -313,8 +313,6 @@ function onLeave(zone: NgZonePrivate) {
 /**
  * Provides a noop implementation of `NgZone` which does nothing. This zone requires explicit calls
  * to framework to perform rendering.
- *
- * @internal
  */
 export class NoopNgZone implements NgZone {
   readonly hasPendingMicrotasks: boolean = false;

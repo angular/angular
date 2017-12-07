@@ -52,7 +52,7 @@ export function main() {
         options = providersOrOptions || {};
       }
       const errorHandler = new ErrorHandler();
-      errorHandler._console = mockConsole as any;
+      (errorHandler as any)._console = mockConsole as any;
 
       const platformModule = getDOM().supportsDOMEvents() ? BrowserModule : ServerModule;
 
