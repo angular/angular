@@ -37,7 +37,7 @@ describe('Structural Directives', function () {
     expect(paragraph.count()).toEqual(1);
   });
 
-  it('myUnless should show 3 paragraph (A)s and (B)s at the start', function () {
+  it('appUnless should show 3 paragraph (A)s and (B)s at the start', function () {
     const paragraph = element.all(by.css('p.unless'));
     expect(paragraph.count()).toEqual(3);
     for (let i = 0; i < 3; i++) {
@@ -45,7 +45,7 @@ describe('Structural Directives', function () {
     }
   });
 
-  it('myUnless should show 1 paragraph (B) after toggling condition', function () {
+  it('appUnless should show 1 paragraph (B) after toggling condition', function () {
     const toggleConditionButton = element.all(by.cssContainingText('button', 'Toggle condition')).get(0);
     const paragraph = element.all(by.css('p.unless'));
 

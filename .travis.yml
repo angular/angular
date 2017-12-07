@@ -2,7 +2,7 @@ language: node_js
 sudo: false
 dist: trusty
 node_js:
-  - '6.9.5'
+  - '8.9.1'
 
 addons:
 #  firefox: "38.0"

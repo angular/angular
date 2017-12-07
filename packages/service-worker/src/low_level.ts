@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {ConnectableObservable} from 'rxjs/observable/ConnectableObservable';
@@ -86,8 +87,11 @@ export class NgswCommChannel {
    */
   readonly events: Observable<IncomingEvent>;
 
-  constructor(private serviceWorker: ServiceWorkerContainer|undefined) {
-    if (!serviceWorker) {
+  constructor(
+      private serviceWorker: ServiceWorkerContainer|undefined,
+      @Inject(PLATFORM_ID) platformId: string) {
+    if (!serviceWorker || !isPlatformBrowser(platformId)) {
+      this.serviceWorker = undefined;
       this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
     } else {
       const controllerChangeEvents =

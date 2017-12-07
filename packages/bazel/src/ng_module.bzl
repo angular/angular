@@ -73,7 +73,8 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
           "allowEmptyCodegenFiles": True,
           "enableSummariesForJit": True,
           # FIXME: wrong place to de-dupe
-          "expectedOut": depset([o.path for o in expected_outs]).to_list()
+          "expectedOut": depset([o.path for o in expected_outs]).to_list(),
+          "preserveWhitespaces": False,
       }
   })
 

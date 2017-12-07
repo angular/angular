@@ -163,7 +163,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', 'not-exist'], errorSpy);
       expect(errorSpy).toHaveBeenCalledTimes(1);
       expect(errorSpy.calls.mostRecent().args[0]).toContain('no such file or directory');
-      expect(errorSpy.calls.mostRecent().args[0]).toContain('at Error (native)');
+      expect(errorSpy.calls.mostRecent().args[0]).toContain('at Object.fs.lstatSync');
       expect(exitCode).toEqual(2);
     });
 
