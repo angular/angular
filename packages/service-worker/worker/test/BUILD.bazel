@@ -1,0 +1,28 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    tsconfig = "//packages:tsconfig",
+    deps = [
+        "//packages:types",
+        "//packages/service-worker/worker",
+        "//packages/service-worker/worker/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = [],
+    # TODO(alxhub): re-enable when need for main() is removed
+    tags = ["manual"],
+    deps = [
+        ":test_lib",
+    ],
+)
