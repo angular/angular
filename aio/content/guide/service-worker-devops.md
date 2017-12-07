@@ -1,6 +1,13 @@
-# DevOps: Angular service worker in production
+# Service Worker in Production
 
 This page is a reference for deploying and supporting production apps that use the Angular service worker. It explains how the Angular service worker fits into the larger production environment, the service worker's behavior under various conditions, and available recourses and fail-safes.
+
+#### Prerequisites
+
+A basic understanding of the following:
+* [Service Worker Communication](guide/service-worker-communications).
+
+<hr />
 
 ## Service worker and caching of app resources
 
@@ -297,4 +304,8 @@ for `ngsw.json` returns a `404`, then the service worker
 removes all of its caches and de-registers itself, 
 essentially self-destructing.
 
+## More on Angular service workers
+
+You may also be interested in the following:
+* [Service Worker Configuration](guide/service-worker-config).
 
