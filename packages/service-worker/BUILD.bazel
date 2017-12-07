@@ -15,6 +15,6 @@ ts_library(
     deps = [
         "//packages/common",
         "//packages/core",
-        "@rxjs//:rxjs",
+        "@rxjs",
     ],
 )

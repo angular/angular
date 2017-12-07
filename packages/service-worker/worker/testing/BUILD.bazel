@@ -10,6 +10,6 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/service-worker/worker",
-        "@rxjs//:rxjs",
+        "@rxjs",
     ],
 )

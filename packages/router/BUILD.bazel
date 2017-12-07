@@ -17,6 +17,6 @@ ts_library(
         "//packages/core",
         "//packages/platform-browser",
         "//packages/upgrade/static",
-        "@rxjs//:rxjs",
+        "@rxjs",
     ],
 )

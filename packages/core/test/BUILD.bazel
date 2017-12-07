@@ -25,7 +25,7 @@ ts_library(
         "//packages/platform-server",
         "//packages/router",
         "//packages/router/testing",
-        "@rxjs//:rxjs",
+        "@rxjs",
     ],
 )
 
