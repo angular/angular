@@ -63,7 +63,7 @@ If your component has view encapsulation turned on (default), your component sty
 affect the top level children in your template. HTML elements belonging to child components cannot
 be targeted by your component styles unless you do one of the following:
 
-- Add the overriding style to you global stylesheet. Scope the selectors so that it only affects
+- Add the overriding style to your global stylesheet. Scope the selectors so that it only affects
 the specific elements you need it to.
 - Turn view encapsulation off on your component. If you do this, be sure to scope your styles
 appropriately, or else you may end up incidentally targeting other components elswhere in your
