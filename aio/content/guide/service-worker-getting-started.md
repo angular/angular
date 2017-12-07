@@ -1,9 +1,14 @@
-# Getting started
+# Getting Started with Service Workers
+
+#### Prerequisites
+
+A basic understanding of the following:
+* [Introduction to Angular service workers](guide/service-worker-intro).
+
+<hr />
+
 
 Beginning in Angular 5.0.0, you can easily enable Angular service worker support in any CLI project. This document explains how to enable Angular service worker support in new and existing projects. It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching.  
-
-See the <live-example></live-example>.
-
 
 ## Adding a service worker to a new application
 
@@ -54,12 +59,12 @@ To import and register the Angular service worker:
 
 At the top of the root module, `src/app/app.module.ts`, import `ServiceWorkerModule` and `environment`.
 
-<code-example path="service-worker-getstart/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts" region="sw-import"> </code-example>
+<code-example path="service-worker-getting-started/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts" region="sw-import"> </code-example>
 
 
 Add `ServiceWorkerModule` to the `@NgModule` `imports` array. Use the `register()` helper to take care of registering the service worker, taking care to disable the service worker when not running in production mode.
 
-<code-example path="service-worker-getstart/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts" region="sw-module"> </code-example>
+<code-example path="service-worker-getting-started/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts" region="sw-module"> </code-example>
 
 The file `ngsw-worker.js` is the name of the prebuilt service worker script, which the CLI copies into `dist/` to deploy along with your server.
 
@@ -72,7 +77,7 @@ You can begin with the boilerplate version from the CLI, which configures sensib
 
 Alternately, save the following as `src/ngsw-config.json`:
 
-<code-example path="service-worker-getstart/src/ngsw-config.json" linenums="false" title="src/ngsw-config.json"> </code-example>
+<code-example path="service-worker-getting-started/src/ngsw-config.json" linenums="false" title="src/ngsw-config.json"> </code-example>
 
 ### Step 5: Build the project
 
@@ -92,7 +97,9 @@ using an example application.
 
 ### Serving with `http-server`
 
-As `ng serve` does not work with service workers, you must use a real HTTP server to test your project locally. It's a good idea to test on a dedicated port.
+Because `ng serve` does not work with service workers, you must use a seperate HTTP server to test your project locally. You can use any HTTP server. The example below uses the [http-server](https://www.npmjs.com/package/http-server) package from npm. To reduce the possibility of conflicts, test on a dedicated port.
+
+To serve with `http-server`, change to the directory containing your web files and start the web server: 
 
 ```sh
 cd dist
@@ -181,7 +188,6 @@ What went wrong? Nothing, actually. The Angular service worker is doing its job 
 If you look at the `http-server` logs, you can see the service worker requesting `/ngsw.json`. This is how the service worker checks for updates.
 
 2. Refresh the page.
-![The text has changed to say "Bienvenue à app!"](generated/images/guide/service-worker/welcome-msg-fr.png) 
 
 <figure>
   <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="The text has changed to say Bienvenue à app!">
@@ -189,3 +195,9 @@ If you look at the `http-server` logs, you can see the service worker requesting
 
 The service worker installed the updated version of your app *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.
 
+<hr />
+
+## More on Angular service workers
+
+You may also be interested in the following:
+* [Communicating with service workers](guide/service-worker-communications).

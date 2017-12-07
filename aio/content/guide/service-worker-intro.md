@@ -1,4 +1,4 @@
-# Introduction to Angular service workers
+# Angular Service Worker Introduction
 
 Service workers augment the traditional web deployment model and empower applications to deliver a user experience with the reliability and performance on par with natively-installed code.
 
@@ -46,3 +46,8 @@ For more information about browser support, see the [browser support](https://de
 [Can I Use](http://caniuse.com/#feat=serviceworkers). 
 
 The remainder of this Angular documentation specifically addresses the Angular implementation of service workers. 
+
+## More on Angular service workers
+
+You may also be interested in the following:
+* [Getting Started with service workers](guide/service-worker-getting-started).
