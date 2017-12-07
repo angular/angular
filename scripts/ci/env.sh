@@ -36,7 +36,9 @@ fi
 
 setEnvVar NODE_VERSION 8.9.1
 setEnvVar YARN_VERSION 1.0.2
-setEnvVar CHROMIUM_VERSION 499098 # Chrome 62 linux stable, see https://www.chromium.org/developers/calendar
+# Pin to a Chromium version that does not cause the aio e2e tests to flake. (See https://github.com/angular/angular/pull/20403.)
+# Revision 494239 (which was part of Chrome 62.0.3186.0) is the last version that does not cause flakes. (Latest revision checked: 508578)
+setEnvVar CHROMIUM_VERSION 494239 # Chrome 62 linux stable, see https://www.chromium.org/developers/calendar
 setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.33"
 setEnvVar BAZEL_VERSION 0.8.1
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
