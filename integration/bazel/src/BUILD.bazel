@@ -1,11 +1,35 @@
 load("@angular//:index.bzl", "ng_module")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 
 # Allow targets under sub-packages to reference the tsconfig.json file
 exports_files(["tsconfig.json"])
 
 ng_module(
-    name = "src",
-    srcs = glob(["*.ts"]),
+    name = "app",
+    srcs = ["app.module.ts"],
     deps = ["//src/hello-world"],
     tsconfig = ":tsconfig.json",
+)
+
+ng_module(
+    name = "main",
+    srcs = ["main.ts"],
+    deps = [":app"],
+    tsconfig = ":tsconfig.json",
+)
+
+ts_library(
+    name = "test_lib",
+    srcs = [
+        "init-tests.ts", 
+        "ngsummary.spec.ts", 
+        "ngfactory.spec.ts",
+    ],
+    deps = [":app"],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = [":test_lib"],
 )

@@ -8,5 +8,11 @@
       "es2015.iterable",
       "es2015.promise"
     ]
-  }
+  },
+  "types": [
+    "jasmine"
+  ],
+  "typeRoots": [
+    "node_modules/@types"
+  ]
 }
