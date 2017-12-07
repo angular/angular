@@ -437,7 +437,8 @@ describe('ng program', () => {
                  sf => sf.fileName === path.join(testSupport.basePath, checks.originalFileName)))
           .toBe(true);
       if (checks.shouldBeEmpty) {
-        expect(writeData !.data).toBe('');
+        // The file should only contain comments (the preamble comment added by ngc).
+        expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
       } else {
         expect(writeData !.data).not.toBe('');
       }
