@@ -69,6 +69,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
 
   return dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
       "angularCompilerOptions": {
+          "skipMetadataEmit": False, # Needed to generate ngfactory files.
           "generateCodeForLibraries": False,
           "allowEmptyCodegenFiles": True,
           "enableSummariesForJit": True,
