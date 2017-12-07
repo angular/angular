@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationMetadataType, AnimationOptions, ɵStyleData} from '@angular/animations';
+import {AnimateTimings, AnimationMetadataType, AnimationOptions, AnimationStaggerHandler, ɵStyleData} from '@angular/animations';
 
 const EMPTY_ANIMATION_OPTIONS: AnimationOptions = {};
 
@@ -95,7 +95,7 @@ export interface QueryAst extends Ast<AnimationMetadataType.Query> {
 }
 
 export interface StaggerAst extends Ast<AnimationMetadataType.Stagger> {
-  timings: AnimateTimings;
+  handler: AnimationStaggerHandler;
   animation: Ast<AnimationMetadataType>;
 }
 

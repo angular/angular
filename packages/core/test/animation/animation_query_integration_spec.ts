@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationPlayer, animate, animateChild, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
+import {AUTO_STYLE, AnimationPlayer, AnimationStaggerHandler, animate, animateChild, group, query, sequence, stagger, state, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {matchesElement} from '@angular/animations/browser/src/render/shared';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/util';
@@ -1811,6 +1811,84 @@ export function main() {
              expect(players[1].element.innerText.trim()).toEqual('d');
              expect(players[2].element.innerText.trim()).toEqual('e');
            });
+      });
+    });
+
+    describe('custom staggering', () => {
+      it('stagger() should support a custom stagger handler', () => {
+        class EvenThenOddStagger implements AnimationStaggerHandler {
+          private _oddCeiling: number;
+          private _oddDuration: number;
+
+          constructor(private _duration: number) {}
+
+          init(elements: any, params: {[key: string]: any}) {
+            this._oddCeiling = (elements.length / 2) * this._duration;
+            this._oddDuration = this._duration / 2;
+          }
+
+          compute(
+              element: any, styles: {[prop: string]: string | number}, params: {[key: string]: any},
+              index: number) {
+            let time = index * this._oddDuration;
+            if (index % 2 == 1) {
+              time += this._oddCeiling;
+            }
+            return time;
+          }
+        }
+
+        @Component({
+          selector: 'ani-cmp',
+          template: `
+            <div [@myAnimation]="exp">
+              <div>0</div>
+              <div>1</div>
+              <div>2</div>
+              <div>3</div>
+              <div>4</div>
+            </div>
+          `,
+          animations: [
+            trigger('myAnimation', [
+              transition('* => go', [
+                query('div', [
+                  style({ opacity: 0 }),
+                  stagger(new EvenThenOddStagger(1000), [
+                    animate('1s', style({ opacity: 0 }))
+                  ])
+                ])
+              ])
+            ])
+          ]
+        })
+        class Cmp {
+          public exp: any;
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+
+        cmp.exp = 'go';
+        fixture.detectChanges();
+
+        function assertValueAndTime(
+            player: MockAnimationPlayer, htmlValue: string, totalAnimationTime: number) {
+          expect(player.element.innerText.trim()).toEqual(htmlValue);
+          expect(player.totalTime).toEqual(totalAnimationTime);
+        }
+
+        const players = getLog();
+        expect(players.length).toEqual(5);
+
+        // order is = 0, 2, 4, 1, 3
+        assertValueAndTime(players[0], '0', 1000);
+        assertValueAndTime(players[1], '1', 4000);
+        assertValueAndTime(players[2], '2', 2000);
+        assertValueAndTime(players[3], '3', 5000);
+        assertValueAndTime(players[4], '4', 3000);
       });
     });
 

@@ -363,6 +363,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
         options.optional ? true : false, context.errors);
 
     context.currentQueryTotal = elms.length;
+    context.currentQueryElements = elms;
     let sameElementTimeline: TimelineBuilder|null = null;
     elms.forEach((element, i) => {
 
@@ -387,6 +388,7 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
       furthestTime = Math.max(furthestTime, endTime);
     });
 
+    context.currentQueryElements = [];
     context.currentQueryIndex = 0;
     context.currentQueryTotal = 0;
     context.transformIntoNewTimeline(furthestTime);
@@ -400,22 +402,18 @@ export class AnimationTimelineBuilderVisitor implements AstVisitor {
   }
 
   visitStagger(ast: StaggerAst, context: AnimationTimelineContext) {
+    const index = context.currentQueryIndex;
+    const staggerHandler = ast.handler;
     const parentContext = context.parentContext !;
-    const tl = context.currentTimeline;
-    const timings = ast.timings;
-    const duration = Math.abs(timings.duration);
-    const maxTime = duration * (context.currentQueryTotal - 1);
-    let delay = duration * context.currentQueryIndex;
 
-    let staggerTransformer = timings.duration < 0 ? 'reverse' : timings.easing;
-    switch (staggerTransformer) {
-      case 'reverse':
-        delay = maxTime - delay;
-        break;
-      case 'full':
-        delay = parentContext.currentStaggerTime;
-        break;
+    if (index == 0 && staggerHandler.init) {
+      staggerHandler.init(context.currentQueryElements, parentContext.params || {});
     }
+
+    const tl = context.currentTimeline;
+    const delay = staggerHandler.compute(
+        context.element, tl.collectedStyles, context.params || {}, index,
+        parentContext.currentStaggerTime);
 
     const timeline = context.currentTimeline;
     if (delay) {
@@ -449,6 +447,7 @@ export class AnimationTimelineContext {
   public options: AnimationOptions = {};
   public currentQueryIndex: number = 0;
   public currentQueryTotal: number = 0;
+  public currentQueryElements: any[] = [];
   public currentStaggerTime: number = 0;
 
   constructor(
@@ -518,6 +517,7 @@ export class AnimationTimelineContext {
 
     context.currentQueryIndex = this.currentQueryIndex;
     context.currentQueryTotal = this.currentQueryTotal;
+    context.currentQueryElements = this.currentQueryElements;
     context.parentContext = this;
     this.subContextCount++;
     return context;
@@ -678,6 +678,8 @@ export class TimelineBuilder {
     this._globalTimelineStyles[prop] = value;
     this._styleSummary[prop] = {time: this.currentTime, value};
   }
+
+  get collectedStyles() { return this._globalTimelineStyles; }
 
   allowOnlyTimelineStyles() { return this._currentEmptyStepKeyframe !== this._currentKeyframe; }
 

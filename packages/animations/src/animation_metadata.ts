@@ -237,8 +237,20 @@ export declare interface AnimationQueryOptions extends AnimationOptions {
 * @experimental Animation support is experimental.
 */
 export interface AnimationStaggerMetadata extends AnimationMetadata {
-  timings: string|number;
+  timings: string|number|AnimationStaggerHandler;
   animation: AnimationMetadata|AnimationMetadata[];
+}
+
+/**
+ * This interface represents a custom animation stagger handler.
+ *
+* @experimental Animation support is experimental.
+*/
+export interface AnimationStaggerHandler {
+  init?: (elements: any[], params: {[key: string]: any}) => any;
+  compute(
+      element: any, styles: {[key: string]: string | number}, params: {[key: string]: any},
+      index: number, currentStaggerTime?: number): number;
 }
 
 /**
@@ -1175,7 +1187,7 @@ export function query(
  * @experimental Animation support is experimental.
  */
 export function stagger(
-    timings: string | number,
+    timings: string | number | AnimationStaggerHandler,
     animation: AnimationMetadata | AnimationMetadata[]): AnimationStaggerMetadata {
   return {type: AnimationMetadataType.Stagger, timings, animation};
 }

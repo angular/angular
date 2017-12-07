@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationAnimateRefMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationQueryMetadata, AnimationQueryOptions, AnimationReferenceMetadata, AnimationSequenceMetadata, AnimationStaggerMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, style, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimateTimings, AnimationAnimateChildMetadata, AnimationAnimateMetadata, AnimationAnimateRefMetadata, AnimationGroupMetadata, AnimationKeyframesSequenceMetadata, AnimationMetadata, AnimationMetadataType, AnimationOptions, AnimationQueryMetadata, AnimationQueryOptions, AnimationReferenceMetadata, AnimationSequenceMetadata, AnimationStaggerHandler, AnimationStaggerMetadata, AnimationStateMetadata, AnimationStyleMetadata, AnimationTransitionMetadata, AnimationTriggerMetadata, style, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
@@ -456,13 +456,21 @@ export class AnimationAstBuilderVisitor implements AnimationDslVisitor {
     if (!context.currentQuery) {
       context.errors.push(`stagger() can only be used inside of query()`);
     }
-    const timings = metadata.timings === 'full' ?
-        {duration: 0, delay: 0, easing: 'full'} :
-        resolveTiming(metadata.timings, context.errors, true);
+
+    let handler: AnimationStaggerHandler;
+    const tyo = typeof metadata.timings;
+    if (tyo == 'number' || tyo == 'string') {
+      const timings = metadata.timings === 'full' ?
+          {duration: 0, delay: 0, easing: 'full'} :
+          resolveTiming(metadata.timings as number | string, context.errors, true);
+      handler = createDefaultStaggerHandler(timings);
+    } else {
+      handler = metadata.timings as AnimationStaggerHandler;
+    }
 
     return {
       type: AnimationMetadataType.Stagger,
-      animation: visitDslNode(this, normalizeAnimationEntry(metadata.animation), context), timings,
+      animation: visitDslNode(this, normalizeAnimationEntry(metadata.animation), context), handler,
       options: null
     };
   }
@@ -565,4 +573,45 @@ function normalizeAnimationOptions(options: AnimationOptions | null): AnimationO
 
 function makeTimingAst(duration: number, delay: number, easing: string | null): TimingAst {
   return {duration, delay, easing};
+}
+
+function createDefaultStaggerHandler(timings: AnimateTimings): AnimationStaggerHandler {
+  let {duration, easing} = timings;
+  if (easing == 'full') {
+    return new SequentialAnimationStagger();
+  }
+
+  let isReverse = duration < 0 || easing == 'reverse';
+  if (isReverse) {
+    duration = Math.abs(duration);
+  }
+  return new LinearAnimationStagger(duration, isReverse);
+}
+
+export class LinearAnimationStagger implements AnimationStaggerHandler {
+  private _maxTime: number;
+
+  constructor(private _duration: number, private _isReverse: boolean) {}
+
+  init(elements: any[], params: {[key: string]: any}) {
+    this._maxTime = elements.length * this._duration;
+  }
+
+  compute(
+      element: any, styles: {[key: string]: string | number}, params: {[key: string]: any},
+      index: number) {
+    if (this._isReverse) {
+      return this._maxTime - (this._duration * index);
+    } else {
+      return this._duration * index;
+    }
+  }
+}
+
+export class SequentialAnimationStagger implements AnimationStaggerHandler {
+  compute(
+      element: any, styles: {[key: string]: string | number}, params: {[key: string]: any},
+      index: number, currentStaggerTime: number) {
+    return currentStaggerTime;
+  }
 }

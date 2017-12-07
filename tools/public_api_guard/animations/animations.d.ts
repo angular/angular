@@ -143,9 +143,21 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
 }
 
 /** @experimental */
+export interface AnimationStaggerHandler {
+    init?: (elements: any[], params: {
+        [key: string]: any;
+    }) => any;
+    compute(element: any, styles: {
+        [key: string]: string | number;
+    }, params: {
+        [key: string]: any;
+    }, index: number, currentStaggerTime?: number): number;
+}
+
+/** @experimental */
 export interface AnimationStaggerMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
-    timings: string | number;
+    timings: string | number | AnimationStaggerHandler;
 }
 
 /** @experimental */
@@ -223,7 +235,7 @@ export declare function query(selector: string, animation: AnimationMetadata | A
 export declare function sequence(steps: AnimationMetadata[], options?: AnimationOptions | null): AnimationSequenceMetadata;
 
 /** @experimental */
-export declare function stagger(timings: string | number, animation: AnimationMetadata | AnimationMetadata[]): AnimationStaggerMetadata;
+export declare function stagger(timings: string | number | AnimationStaggerHandler, animation: AnimationMetadata | AnimationMetadata[]): AnimationStaggerMetadata;
 
 /** @experimental */
 export declare function state(name: string, styles: AnimationStyleMetadata, options?: {
