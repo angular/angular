@@ -159,6 +159,12 @@ export function main() {
     });
 
     describe('email', () => {
+      it('should not error on an empty string',
+         () => expect(Validators.email(new FormControl(''))).toBeNull());
+
+      it('should not error on null',
+         () => expect(Validators.email(new FormControl(null))).toBeNull());
+
       it('should error on invalid email',
          () => expect(Validators.email(new FormControl('some text'))).toEqual({'email': true}));
 
