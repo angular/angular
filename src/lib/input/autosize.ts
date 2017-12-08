@@ -6,8 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Input, AfterViewInit, DoCheck} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  Input,
+  AfterViewInit,
+  DoCheck,
+  OnDestroy,
+  NgZone,
+} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
+import {fromEvent} from 'rxjs/observable/fromEvent';
+import {auditTime} from 'rxjs/operators/auditTime';
+import {takeUntil} from 'rxjs/operators/takeUntil';
+import {Subject} from 'rxjs/Subject';
 
 
 /**
@@ -23,9 +35,10 @@ import {Platform} from '@angular/cdk/platform';
     'rows': '1',
   },
 })
-export class MatTextareaAutosize implements AfterViewInit, DoCheck {
+export class MatTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   /** Keep track of the previous textarea value to avoid resizing when the value hasn't changed. */
   private _previousValue: string;
+  private _destroyed = new Subject<void>();
 
   private _minRows: number;
   private _maxRows: number;
@@ -49,7 +62,12 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;
 
-  constructor(private _elementRef: ElementRef, private _platform: Platform) {}
+  constructor(
+    private _elementRef: ElementRef,
+    private _platform: Platform,
+    private _ngZone?: NgZone) {}
+
+  // TODO(crisbeto): make the `_ngZone` a required param in the next major version.
 
   /** Sets the minimum height of the textarea as determined by minRows. */
   _setMinHeight(): void {
@@ -74,7 +92,20 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
   ngAfterViewInit() {
     if (this._platform.isBrowser) {
       this.resizeToFitContent();
+
+      if (this._ngZone) {
+        this._ngZone.runOutsideAngular(() => {
+          fromEvent(window, 'resize')
+            .pipe(auditTime(16), takeUntil(this._destroyed))
+            .subscribe(() => this.resizeToFitContent(true));
+        });
+      }
     }
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   /** Sets a style property on the textarea element. */
@@ -134,8 +165,12 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
     }
   }
 
-  /** Resize the textarea to fit its content. */
-  resizeToFitContent() {
+  /**
+   * Resize the textarea to fit its content.
+   * @param force Whether to force a height recalculation. By default the height will be
+   *    recalculated only if the value changed since the last call.
+   */
+  resizeToFitContent(force = false) {
     this._cacheTextareaLineHeight();
 
     // If we haven't determined the line-height yet, we know we're still hidden and there's no point
@@ -148,7 +183,7 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck {
     const value = textarea.value;
 
     // Only resize of the value changed since these calculations can be expensive.
-    if (value === this._previousValue) {
+    if (value === this._previousValue && !force) {
       return;
     }
 

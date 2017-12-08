@@ -1,12 +1,13 @@
 import {Component, ViewChild} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {ComponentFixture, TestBed, async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {ComponentFixture, TestBed, async, fakeAsync, flush, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {MatInputModule} from './index';
 import {MatTextareaAutosize} from './autosize';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatTabsModule} from '@angular/material/tabs';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {dispatchFakeEvent} from '@angular/cdk/testing';
 
 
 describe('MatTextareaAutosize', () => {
@@ -185,14 +186,14 @@ describe('MatTextareaAutosize', () => {
     autosize = fixtureWithPlaceholder.debugElement.query(
       By.directive(MatTextareaAutosize)).injector.get<MatTextareaAutosize>(MatTextareaAutosize);
 
-    triggerTextareaResize();
+    autosize.resizeToFitContent(true);
 
     const heightWithLongPlaceholder = textarea.clientHeight;
 
     fixtureWithPlaceholder.componentInstance.placeholder = 'Short';
     fixtureWithPlaceholder.detectChanges();
 
-    triggerTextareaResize();
+    autosize.resizeToFitContent(true);
 
     expect(textarea.clientHeight).toBe(heightWithLongPlaceholder,
         'Expected the textarea height to be the same with a long placeholder.');
@@ -213,7 +214,7 @@ describe('MatTextareaAutosize', () => {
     Some late visitor entreating entrance at my chamber door;—
                 This it is and nothing more.” `;
     fixtureWithForms.detectChanges();
-    flushMicrotasks();
+    flush();
     fixtureWithForms.detectChanges();
 
     expect(textarea.clientHeight)
@@ -229,7 +230,7 @@ describe('MatTextareaAutosize', () => {
     `;
 
     fixture.detectChanges();
-    flushMicrotasks();
+    flush();
     fixture.detectChanges();
 
     expect(textarea.clientHeight)
@@ -250,16 +251,14 @@ describe('MatTextareaAutosize', () => {
     expect(textarea.getBoundingClientRect().height).toBeGreaterThan(1);
   });
 
-  /** Triggers a textarea resize to fit the content. */
-  function triggerTextareaResize() {
-    // To be able to trigger a new calculation of the height with a short placeholder, the
-    // textarea value needs to be changed.
-    textarea.value = '1';
-    autosize.resizeToFitContent();
+  it('should trigger a resize when the window is resized', fakeAsync(() => {
+    spyOn(autosize, 'resizeToFitContent');
 
-    textarea.value = '';
-    autosize.resizeToFitContent();
-  }
+    dispatchFakeEvent(window, 'resize');
+    tick(16);
+
+    expect(autosize.resizeToFitContent).toHaveBeenCalled();
+  }));
 });
 
 // Styles to reset padding and border to make measurement comparisons easier.
