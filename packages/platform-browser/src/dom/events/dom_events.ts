@@ -103,6 +103,11 @@ const globalListener = function(event: Event) {
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
+  // keep a eventTask only for trigger onScheduleTask event
+  globalEventTask: any;
+  PREDEFINED_PAYLOAD: any = {};
+  noop: () => void = function() {};
+
   constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) {
     super(doc);
 
@@ -154,35 +159,85 @@ export class DomEventsPlugin extends EventManagerPlugin {
     let callback: EventListener = handler as EventListener;
     // if zonejs is loaded and current zone is not ngZone
     // we keep Zone.current on target for later restoration.
-    if (zoneJsLoaded && (!NgZone.isInAngularZone() || isBlackListedEvent(eventName))) {
-      let symbolName = symbolNames[eventName];
-      if (!symbolName) {
-        symbolName = symbolNames[eventName] = __symbol__(ANGULAR + eventName + FALSE);
-      }
-      let taskDatas: TaskData[] = (element as any)[symbolName];
-      const globalListenerRegistered = taskDatas && taskDatas.length > 0;
-      if (!taskDatas) {
-        taskDatas = (element as any)[symbolName] = [];
-      }
+    if (zoneJsLoaded) {
+      if (!NgZone.isInAngularZone() || isBlackListedEvent(eventName)) {
+        let symbolName = symbolNames[eventName];
+        if (!symbolName) {
+          symbolName = symbolNames[eventName] = __symbol__(ANGULAR + eventName + FALSE);
+        }
+        let taskDatas: TaskData[] = (element as any)[symbolName];
+        const globalListenerRegistered = taskDatas && taskDatas.length > 0;
+        if (!taskDatas) {
+          taskDatas = (element as any)[symbolName] = [];
+        }
 
-      const zone = isBlackListedEvent(eventName) ? Zone.root : Zone.current;
-      if (taskDatas.length === 0) {
-        taskDatas.push({zone: zone, handler: callback});
-      } else {
-        let callbackRegistered = false;
-        for (let i = 0; i < taskDatas.length; i++) {
-          if (taskDatas[i].handler === callback) {
-            callbackRegistered = true;
-            break;
+        const zone = isBlackListedEvent(eventName) ? Zone.root : Zone.current;
+        if (taskDatas.length === 0) {
+          taskDatas.push({zone: zone, handler: callback});
+        } else {
+          let callbackRegistered = false;
+          for (let i = 0; i < taskDatas.length; i++) {
+            if (taskDatas[i].handler === callback) {
+              callbackRegistered = true;
+              break;
+            }
+          }
+          if (!callbackRegistered) {
+            taskDatas.push({zone: zone, handler: callback});
           }
         }
-        if (!callbackRegistered) {
-          taskDatas.push({zone: zone, handler: callback});
-        }
-      }
 
-      if (!globalListenerRegistered) {
-        element[ADD_EVENT_LISTENER](eventName, globalListener, false);
+        if (!globalListenerRegistered) {
+          element[ADD_EVENT_LISTENER](eventName, globalListener, false);
+        }
+      } else {
+        let wrappedCallback: (() => void)|null = null;
+        // if zone.js loaded and we are in angular zone, we don't need to
+        // use zone.js patched addEventListener
+        const innerZone = (self.ngZone as any)._inner;
+        if (innerZone) {
+          // use inner zone to simulate eventTask onScheduleTask/onInvokeTask callback
+          if (!self.globalEventTask) {
+            // schedule an eventTask with empty payload, noop custom schedule, noop custom cancel
+            // function, just for trigger ZoneSpec.onScheduleTask callback
+            self.globalEventTask = innerZone.scheduleEventTask(
+                eventName, callback, this.PREDEFINED_PAYLOAD, this.noop, this.noop);
+            // don't need to transit task.state
+            self.globalEventTask._transitionTo = this.noop;
+            // fake a zoneDelegates to prevent zoneDelegate._updateTaskCount being called
+            const desc = Object.getOwnPropertyDescriptor(self.globalEventTask, '_zoneDelegates');
+            if (desc) {
+              delete desc.value;
+              delete desc.writable;
+            }
+            Object.defineProperty(
+                self.globalEventTask, '_zoneDelegates',
+                {configurable: true, enumerable: false, get: () => { return []; }, set: () => {}});
+          } else {
+            innerZone.scheduleTask(self.globalEventTask);
+          }
+          // create a wrapped callback to let globalEventTask trigger ZoneSpec.onInvokeTask callback
+          wrappedCallback = function() {
+            const args = Array.prototype.slice.call(arguments);
+            self.globalEventTask.callback = callback;
+            self.globalEventTask.invoke.apply(element, args);
+          };
+        } else {
+          // inner zone is not available (maybe noop zone)
+          // just wrap the call back with ngZone.run
+          wrappedCallback = function() {
+            return self.ngZone.run(callback, this, arguments as any);
+          };
+        }
+        zoneJsLoaded.apply(element, [eventName, wrappedCallback, false]);
+        // we just use the underlying removeEventListener
+        return () => {
+          // should call globalEventTask.cancel to trigger ZoneSpec.OnCancelTask callback
+          if (self.globalEventTask && innerZone) {
+            innerZone.cancelTask(self.globalEventTask);
+          }
+          element[REMOVE_EVENT_LISTENER].apply(element, [eventName, wrappedCallback, false]);
+        };
       }
     } else {
       element[NATIVE_ADD_LISTENER](eventName, callback, false);
