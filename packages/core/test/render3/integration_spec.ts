@@ -589,4 +589,54 @@ describe('iv integration test', () => {
     });
   });
 
+  describe('template data', () => {
+
+    it('should re-use template data and node data', () => {
+      /**
+       *  % if (condition) {
+       *    <div></div>
+       *  % }
+       */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          C(0);
+          c();
+        }
+        rC(0);
+        {
+          if (ctx.condition) {
+            if (V(0)) {
+              E(0, 'div');
+              {}
+              e();
+            }
+            v();
+          }
+        }
+        rc();
+      }
+
+      expect((Template as any).ngStaticData).toBeUndefined();
+
+      renderToHtml(Template, {condition: true});
+
+      const oldTemplateData = (Template as any).ngStaticData;
+      const oldContainerData = (oldTemplateData as any)[0];
+      const oldElementData = oldContainerData.containerStatic[0][0];
+      expect(oldContainerData).not.toBeNull();
+      expect(oldElementData).not.toBeNull();
+
+      renderToHtml(Template, {condition: false});
+      renderToHtml(Template, {condition: true});
+
+      const newTemplateData = (Template as any).ngStaticData;
+      const newContainerData = (oldTemplateData as any)[0];
+      const newElementData = oldContainerData.containerStatic[0][0];
+      expect(newTemplateData === oldTemplateData).toBe(true);
+      expect(newContainerData === oldContainerData).toBe(true);
+      expect(newElementData === oldElementData).toBe(true);
+    });
+
+  });
+
 });

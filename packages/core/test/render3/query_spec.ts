@@ -31,10 +31,10 @@ describe('query', () => {
       if (cm) {
         m(0, Q(Child, false));
         m(1, Q(Child, true));
-        E(0, Child.ngComponentDef);
+        E(2, Child.ngComponentDef);
         {
           child1 = D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          E(1, Child.ngComponentDef);
+          E(3, Child.ngComponentDef);
           { child2 = D(1, Child.ngComponentDef.n(), Child.ngComponentDef); }
           e();
         }

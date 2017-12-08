@@ -37,7 +37,7 @@ export function findBeforeNode(index: number, state: ContainerState, native: RCo
   const children = state.children;
   // Find the node to insert in front of
   return index + 1 < children.length ?
-      (children[index + 1].data.nodesAndBindings[0] as LText | LElement | LContainer).native :
+      (children[index + 1].child as LText | LElement | LContainer).native :
       native;
 }
 
@@ -50,7 +50,7 @@ export function addRemoveViewFromContainer(
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   ngDevMode && assertNodeType(rootNode, LNodeFlags.View);
   const parent = findNativeParent(container);
-  let node: LNode|null = rootNode.data.nodesAndBindings[0];
+  let node: LNode|null = rootNode.child;
   if (parent) {
     while (node) {
       const type = node.flags & LNodeFlags.TYPE_MASK;
@@ -78,13 +78,11 @@ export function addRemoveViewFromContainer(
             (isFnRenderer ?
                  (renderer as Renderer3Fn).removeChild !(parent as RElement, node.native !) :
                  parent.removeChild(node.native !));
-        nextNode = childContainerData.children.length ?
-            childContainerData.children[0].data.nodesAndBindings[0] :
-            null;
+        nextNode = childContainerData.children.length ? childContainerData.children[0].child : null;
       } else if (type === LNodeFlags.Projection) {
         nextNode = (node as LProjection).data[0];
       } else {
-        nextNode = (node as LView).data.nodesAndBindings[0];
+        nextNode = (node as LView).child;
       }
       if (nextNode === null) {
         while (node && !node.next) {
@@ -277,10 +275,12 @@ export function processProjectedNode(
     currentParent: LView | LElement, currentView: ViewState) {
   if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container &&
       (currentParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element &&
-      currentParent.data === null) {
-    // The node we are adding is a Container and we are adding it to Element
-    // which is not Component (no more re-projection). Assignee the final
-    // projection location.
+      (currentParent.data === null || currentParent.data === currentView)) {
+    // The node we are adding is a Container and we are adding it to Element which
+    // is not a component (no more re-projection).
+    // Alternatively a container is projected at the root of a component's template
+    // and can't be re-projected (as not content of any component).
+    // Assignee the final projection location in those cases.
     const containerState = (node as LContainer).data;
     containerState.renderParent = currentParent as LElement;
     const views = containerState.children;

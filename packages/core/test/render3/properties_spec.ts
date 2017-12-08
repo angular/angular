@@ -239,6 +239,73 @@ describe('elementProperty', () => {
       renderToHtml(Template, ctx);
       expect(otherDir !.id).toEqual(2);
     });
+
+    it('should support unrelated element properties at same index in if-else block', () => {
+      let idDir: IdDir;
+
+      class IdDir {
+        idNumber: number;
+
+        static ngDirectiveDef = defineDirective(
+            {type: IdDir, factory: () => idDir = new IdDir(), inputs: {idNumber: 'id'}});
+      }
+
+      /**
+       * <button idDir [id]="id1">Click me</button>             // inputs: {'id': [0, 'idNumber']}
+       * % if (condition) {
+       *   <button [id]="id2">Click me too</button>             // inputs: null
+       * % } else {
+       *   <button otherDir [id]="id3">Click me too</button>   // inputs: {'id': [0, 'id']}
+       * % }
+       */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, 'button');
+          {
+            D(0, IdDir.ngDirectiveDef.n(), IdDir.ngDirectiveDef);
+            T(1, 'Click me');
+          }
+          e();
+          C(2);
+          c();
+        }
+        p(0, 'id', b(ctx.id1));
+        rC(2);
+        {
+          if (ctx.condition) {
+            if (V(0)) {
+              E(0, 'button');
+              { T(1, 'Click me too'); }
+              e();
+            }
+            p(0, 'id', b(ctx.id2));
+            v();
+          } else {
+            if (V(1)) {
+              E(0, 'button');
+              {
+                D(0, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
+                T(1, 'Click me too');
+              }
+              e();
+            }
+            p(0, 'id', b(ctx.id3));
+            v();
+          }
+        }
+        rc();
+      }
+
+      expect(renderToHtml(Template, {condition: true, id1: 'one', id2: 'two', id3: 'three'}))
+          .toEqual(`<button>Click me</button><button id="two">Click me too</button>`);
+      expect(idDir !.idNumber).toEqual('one');
+
+      expect(renderToHtml(Template, {condition: false, id1: 'four', id2: 'two', id3: 'three'}))
+          .toEqual(`<button>Click me</button><button>Click me too</button>`);
+      expect(idDir !.idNumber).toEqual('four');
+      expect(otherDir !.id).toEqual('three');
+    });
+
   });
 
   describe('attributes and input properties', () => {
@@ -380,6 +447,58 @@ describe('elementProperty', () => {
       expect(myDir !.role).toEqual('button');
       expect(myDir !.direction).toEqual('rtl');
       expect(dirB !.roleB).toEqual('listbox');
+    });
+
+    it('should support attributes at same index inside an if-else block', () => {
+      /**
+       * <div role="listbox" myDir></div>          // initialInputs: [['role', 'listbox']]
+       *
+       * % if (condition) {
+       *   <div role="button" myDirB></div>       // initialInputs: [['role', 'button']]
+       * % } else {
+       *   <div role="menu"></div>               // initialInputs: [null]
+       * % }
+       */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, 'div', ['role', 'listbox']);
+          { D(0, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+          e();
+          C(1);
+          c();
+        }
+        rC(1);
+        {
+          if (ctx.condition) {
+            if (V(0)) {
+              E(0, 'div', ['role', 'button']);
+              { D(0, MyDirB.ngDirectiveDef.n(), MyDirB.ngDirectiveDef); }
+              e();
+            }
+            v();
+          } else {
+            if (V(1)) {
+              E(0, 'div', ['role', 'menu']);
+              {}
+              e();
+            }
+            v();
+          }
+        }
+        rc();
+      }
+
+      expect(renderToHtml(Template, {
+        condition: true
+      })).toEqual(`<div role="listbox"></div><div role="button"></div>`);
+      expect(myDir !.role).toEqual('listbox');
+      expect(dirB !.roleB).toEqual('button');
+      expect((dirB !as any).role).toBeUndefined();
+
+      expect(renderToHtml(Template, {
+        condition: false
+      })).toEqual(`<div role="listbox"></div><div role="menu"></div>`);
+      expect(myDir !.role).toEqual('listbox');
     });
 
     it('should process attributes properly inside a for loop', () => {

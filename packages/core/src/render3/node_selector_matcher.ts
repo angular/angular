@@ -9,7 +9,7 @@
 import './ng_dev_mode';
 
 import {assertNotNull} from './assert';
-import {CSSSelector, CSSSelectorWithNegations, NodeBindings, SimpleCSSSelector} from './interfaces';
+import {CSSSelector, CSSSelectorWithNegations, LNodeStatic, SimpleCSSSelector} from './interfaces';
 
 function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
   const nodeClassesLen = nodeClassAttrVal.length;
@@ -28,12 +28,12 @@ function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): 
 /**
  * A utility function to match an Ivy node static data against a simple CSS selector
  *
- * @param {NodeBindings} node static data to match
+ * @param {LNodeStatic} node static data to match
  * @param {SimpleCSSSelector} selector
  * @returns {boolean}
  */
 export function isNodeMatchingSimpleSelector(
-    lNodeStaticData: NodeBindings, selector: SimpleCSSSelector): boolean {
+    lNodeStaticData: LNodeStatic, selector: SimpleCSSSelector): boolean {
   const noOfSelectorParts = selector.length;
   ngDevMode && assertNotNull(selector[0], 'selector[0]');
   const tagNameInSelector = selector[0];
@@ -83,7 +83,7 @@ export function isNodeMatchingSimpleSelector(
 }
 
 export function isNodeMatchingSelectorWithNegations(
-    lNodeStaticData: NodeBindings, selector: CSSSelectorWithNegations): boolean {
+    lNodeStaticData: LNodeStatic, selector: CSSSelectorWithNegations): boolean {
   const positiveSelector = selector[0];
   if (positiveSelector != null &&
       !isNodeMatchingSimpleSelector(lNodeStaticData, positiveSelector)) {
@@ -105,7 +105,7 @@ export function isNodeMatchingSelectorWithNegations(
 }
 
 export function isNodeMatchingSelector(
-    lNodeStaticData: NodeBindings, selector: CSSSelector): boolean {
+    lNodeStaticData: LNodeStatic, selector: CSSSelector): boolean {
   for (let i = 0; i < selector.length; i++) {
     if (isNodeMatchingSelectorWithNegations(lNodeStaticData, selector[i])) {
       return true;
