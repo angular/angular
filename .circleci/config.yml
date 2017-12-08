@@ -11,7 +11,11 @@
 anchor_1: &job_defaults
   working_directory: ~/ng
   docker:
+    ## IMPORTANT
+    # If you change this, also change the version of com_github_bazelbuild_buildtools
+    # in the /WORKSPACE file
     - image: angular/ngcontainer:0.0.7
+    ## IMPORTANT
 
 # After checkout, rebase on top of master.
 # Similar to travis behavior, but not quite the same.
@@ -28,8 +32,8 @@ jobs:
           <<: *post_checkout
       # Check BUILD.bazel formatting before we have a node_modules directory
       # Then we don't need any exclude pattern to avoid checking those files
-      - run: buildifier -mode=diff $(find . -iname BUILD.bazel -type f)
-      - run: buildifier -mode=check $(find . -iname BUILD.bazel -type f)
+      - run: 'buildifier -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD \)) ||
+              (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
 
       - restore_cache:
           key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
