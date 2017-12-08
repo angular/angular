@@ -43,7 +43,7 @@ export default [
     ['f.Kr.', 'e.Kr.'],
   ],
   1, [6, 0], ['dd/MM/y', 'd. MMM y', 'd. MMMM y', 'EEEE \'den\' d. MMMM y'],
-  ['h.mm a', 'h.mm.ss a', 'h.mm.ss a z', 'h.mm.ss a zzzz'],
+  ['HH.mm', 'HH.mm.ss', 'HH.mm.ss z', 'HH.mm.ss zzzz'],
   [
     '{1} {0}',
     ,

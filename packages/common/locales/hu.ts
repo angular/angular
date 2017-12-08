@@ -33,8 +33,8 @@ export default [
       'szeptember', 'október', 'november', 'december'
     ]
   ],
-  , [['ie.', 'isz.'], ['i. e.', 'i. sz.'], ['időszámításunk előtt', 'időszámításunk szerint']], 1,
-  [6, 0], ['y. MM. dd.', 'y. MMM d.', 'y. MMMM d.', 'y. MMMM d., EEEE'],
+  , [['ie.', 'isz.'], ['i. e.', 'i. sz.'], ['Krisztus előtt', 'időszámításunk szerint']], 1, [6, 0],
+  ['y. MM. dd.', 'y. MMM d.', 'y. MMMM d.', 'y. MMMM d., EEEE'],
   ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   [
     '{1} {0}',

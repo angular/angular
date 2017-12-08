@@ -13,7 +13,7 @@ export default [
   [
     ['minuit', 'midi', 'mat.', 'ap.m.', 'soir', 'nuit'],
     ['min.', 'midi', 'mat.', 'ap.m.', 'soir', 'nuit'],
-    ['minuit', 'midi', 'du matin', 'de l’après-midi', 'du soir', 'de nuit']
+    ['minuit', 'midi', 'du matin', 'de l’après-midi', 'du soir', 'du matin']
   ],
   [
     ['min.', 'midi', 'mat.', 'ap.m.', 'soir', 'nuit'], ,

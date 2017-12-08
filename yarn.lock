@@ -1032,9 +1032,9 @@ cldr-data-downloader@0.3.2:
     request "~2.74.0"
     request-progress "0.3.1"
 
-cldr@4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/cldr/-/cldr-4.5.0.tgz#938ab343c074d1bdaf6c1dd0c31c8bce1abe6ba4"
+cldr@4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/cldr/-/cldr-4.7.0.tgz#504aeda150a0e3d8c2302d44602c254afd576b67"
   dependencies:
     memoizeasync "1.0.0"
     passerror "1.1.1"
