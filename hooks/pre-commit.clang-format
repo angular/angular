@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+import subprocess
+
+def check_git_config(key, value):
+    try:
+        output = subprocess.check_output(["git", "config", "--global", "--get", key]).strip()
+    except subprocess.CalledProcessError as e:
+        print("""ERROR: You need to update your global git config:
+            git config --global %s %s""" % (key, value))
+        exit(1)
+    else:
+        if (output != value):
+            print("""ERROR: Expected `git config --global --get {key}` == {value}
+            Instead found {output}
+
+            You need to run:
+            git config --global {key} {value}""".format(key=key, value=value, output=output))
+            exit(1)
+
+try:
+    output = subprocess.check_output(["git", "clang-format", "-v"], stderr=subprocess.STDOUT)
+except subprocess.CalledProcessError as e:
+    if "'clang-format' is not a git command" in e.output:
+        print("""ERROR: You need to install git-clang-format:
+        curl https://raw.githubusercontent.com/llvm-mirror/clang/master/tools/clang-format/git-clang-format > /usr/local/bin/git-clang-format""")
+    elif "cannot exec 'git-clang-format'" in e.output:
+        print("""ERROR: You need to make git-clang-format executable:
+        chmod u+x /usr/local/bin/git-clang-format""")
+    else:
+        print("unexpected error, please report: %s" % e.output)
+
+    exit(1)
+else:
+    check_git_config("clangFormat.binary", "node_modules/.bin/clang-format")
+    check_git_config("clangFormat.style", "file")
+
+    if ("no modified files to format" in output or
+        "clang-format did not modify any files" in output):
+        exit(0)
+
+    print("ERROR: You need to run 'git clang-format -f' to re-format your staged edits before commit")
+    exit(1)
