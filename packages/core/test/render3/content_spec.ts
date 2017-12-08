@@ -19,8 +19,8 @@ describe('content projection', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        E(0, 'div');
-        { P(1, 0); }
+        E(1, 'div');
+        { P(2, 0); }
         e();
       }
     });
@@ -47,7 +47,7 @@ describe('content projection', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        P(0, 0);
+        P(1, 0);
       }
     });
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
@@ -69,21 +69,21 @@ describe('content projection', () => {
     const GrandChild = createComponent('grand-child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        E(0, 'div');
-        { P(1, 0); }
+        E(1, 'div');
+        { P(2, 0); }
         e();
       }
     });
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        E(0, GrandChild.ngComponentDef);
+        E(1, GrandChild.ngComponentDef);
         {
           D(0, GrandChild.ngComponentDef.n(), GrandChild.ngComponentDef);
-          P(1, 0);
+          P(2, 0);
         }
         e();
-        GrandChild.ngComponentDef.r(0, 0);
+        GrandChild.ngComponentDef.r(0, 1);
       }
     });
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
@@ -109,8 +109,8 @@ describe('content projection', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        E(0, 'div');
-        { P(1, 0); }
+        E(1, 'div');
+        { P(2, 0); }
         e();
       }
     });
@@ -148,12 +148,53 @@ describe('content projection', () => {
     expect(toHtml(parent)).toEqual('<child><div>()</div></child>');
   });
 
+  it('should project content with container into root', () => {
+    const Child = createComponent('child', function(ctx: any, cm: boolean) {
+      if (cm) {
+        m(0, dP());
+        P(1, 0);
+      }
+    });
+    const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
+      if (cm) {
+        E(0, Child.ngComponentDef);
+        {
+          D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
+          C(1);
+          c();
+        }
+        e();
+      }
+      rC(1);
+      {
+        if (ctx.value) {
+          if (V(0)) {
+            T(0, 'content');
+          }
+          v();
+        }
+      }
+      rc();
+      Child.ngComponentDef.r(0, 0);
+    });
+    const parent = renderComponent(Parent);
+    expect(toHtml(parent)).toEqual('<child></child>');
+
+    parent.value = true;
+    detectChanges(parent);
+    expect(toHtml(parent)).toEqual('<child>content</child>');
+
+    parent.value = false;
+    detectChanges(parent);
+    expect(toHtml(parent)).toEqual('<child></child>');
+  });
+
   it('should project content with container and if-else.', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        E(0, 'div');
-        { P(1, 0); }
+        E(1, 'div');
+        { P(2, 0); }
         e();
       }
     });
@@ -211,14 +252,14 @@ describe('content projection', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        E(0, 'div');
+        E(1, 'div');
         {
-          C(1);
+          C(2);
           c();
         }
         e();
       }
-      rC(1);
+      rC(2);
       {
         if (!ctx.skipContent) {
           if (V(0)) {
@@ -268,14 +309,14 @@ describe('content projection', () => {
        const Child = createComponent('child', function(ctx: any, cm: boolean) {
          if (cm) {
            m(0, dP());
-           E(0, 'div');
+           E(1, 'div');
            {
-             C(1);
+             C(2);
              c();
            }
            e();
          }
-         rC(1);
+         rC(2);
          {
            if (!ctx.skipContent) {
              if (V(0)) {
@@ -317,11 +358,11 @@ describe('content projection', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        E(0, 'div');
-        { P(1, 0); }
+        E(1, 'div');
+        { P(2, 0); }
         e();
-        E(2, 'span');
-        { P(3, 0); }
+        E(3, 'span');
+        { P(4, 0); }
         e();
       }
     });
@@ -366,15 +407,15 @@ describe('content projection', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
         m(0, dP());
-        P(0, 0);
-        E(1, 'div');
+        P(1, 0);
+        E(2, 'div');
         {
-          C(2);
+          C(3);
           c();
         }
         e();
       }
-      rC(2);
+      rC(3);
       {
         if (ctx.show) {
           if (V(0)) {
@@ -419,11 +460,11 @@ describe('content projection', () => {
         if (cm) {
           m(0,
             dP([[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]]));
-          E(0, 'div', ['id', 'first']);
-          { P(1, 0, 1); }
+          E(1, 'div', ['id', 'first']);
+          { P(2, 0, 1); }
           e();
-          E(2, 'div', ['id', 'second']);
-          { P(3, 0, 2); }
+          E(3, 'div', ['id', 'second']);
+          { P(4, 0, 2); }
           e();
         }
       });
@@ -466,11 +507,11 @@ describe('content projection', () => {
         if (cm) {
           m(0,
             dP([[[['span', 'class', 'toFirst'], null]], [[['span', 'class', 'toSecond'], null]]]));
-          E(0, 'div', ['id', 'first']);
-          { P(1, 0, 1); }
+          E(1, 'div', ['id', 'first']);
+          { P(2, 0, 1); }
           e();
-          E(2, 'div', ['id', 'second']);
-          { P(3, 0, 2); }
+          E(3, 'div', ['id', 'second']);
+          { P(4, 0, 2); }
           e();
         }
       });
@@ -513,11 +554,11 @@ describe('content projection', () => {
         if (cm) {
           m(0,
             dP([[[['span', 'class', 'toFirst'], null]], [[['span', 'class', 'toSecond'], null]]]));
-          E(0, 'div', ['id', 'first']);
-          { P(1, 0, 1); }
+          E(1, 'div', ['id', 'first']);
+          { P(2, 0, 1); }
           e();
-          E(2, 'div', ['id', 'second']);
-          { P(3, 0, 2); }
+          E(3, 'div', ['id', 'second']);
+          { P(4, 0, 2); }
           e();
         }
       });
@@ -559,11 +600,11 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           m(0, dP([[[['span'], null]], [[['span', 'class', 'toSecond'], null]]]));
-          E(0, 'div', ['id', 'first']);
-          { P(1, 0, 1); }
+          E(1, 'div', ['id', 'first']);
+          { P(2, 0, 1); }
           e();
-          E(2, 'div', ['id', 'second']);
-          { P(3, 0, 2); }
+          E(3, 'div', ['id', 'second']);
+          { P(4, 0, 2); }
           e();
         }
       });
@@ -605,11 +646,11 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           m(0, dP([[[['span', 'class', 'toFirst'], null]]]));
-          E(0, 'div', ['id', 'first']);
-          { P(1, 0, 1); }
+          E(1, 'div', ['id', 'first']);
+          { P(2, 0, 1); }
           e();
-          E(2, 'div', ['id', 'second']);
-          { P(3, 0); }
+          E(3, 'div', ['id', 'second']);
+          { P(4, 0); }
           e();
         }
       });
@@ -652,11 +693,11 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           m(0, dP([[[['span', 'class', 'toSecond'], null]]]));
-          E(0, 'div', ['id', 'first']);
-          { P(1, 0); }
+          E(1, 'div', ['id', 'first']);
+          { P(2, 0); }
           e();
-          E(2, 'div', ['id', 'second']);
-          { P(3, 0, 1); }
+          E(3, 'div', ['id', 'second']);
+          { P(4, 0, 1); }
           e();
         }
       });
@@ -706,10 +747,10 @@ describe('content projection', () => {
       const GrandChild = createComponent('grand-child', function(ctx: any, cm: boolean) {
         if (cm) {
           m(0, dP([[[['span'], null]]]));
-          P(0, 0, 1);
-          E(1, 'hr');
+          P(1, 0, 1);
+          E(2, 'hr');
           e();
-          P(2, 0, 0);
+          P(3, 0, 0);
         }
       });
 
@@ -722,16 +763,16 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           m(0, dP());
-          E(0, GrandChild.ngComponentDef);
+          E(1, GrandChild.ngComponentDef);
           {
             D(0, GrandChild.ngComponentDef.n(), GrandChild.ngComponentDef);
-            P(1, 0);
-            E(2, 'span');
-            { T(3, 'in child template'); }
+            P(2, 0);
+            E(3, 'span');
+            { T(4, 'in child template'); }
             e();
           }
           e();
-          GrandChild.ngComponentDef.r(0, 0);
+          GrandChild.ngComponentDef.r(0, 1);
         }
       });
 
@@ -772,8 +813,8 @@ describe('content projection', () => {
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
           m(0, dP([[[['div'], null]]]));
-          E(0, 'span');
-          { P(1, 0, 1); }
+          E(1, 'span');
+          { P(2, 0, 1); }
           e();
         }
       });

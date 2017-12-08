@@ -14,7 +14,7 @@ import {diPublic, refreshComponent} from './instructions';
  * Definition of what a template rendering function should look like.
  */
 export type ComponentTemplate<T> = {
-  (ctx: T, creationMode: boolean): void; ngData?: never;
+  (ctx: T, creationMode: boolean): void; ngStaticData?: never;
 };
 export type EmbeddedTemplate<T> = (ctx: T) => void;
 

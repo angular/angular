@@ -7,9 +7,7 @@
  */
 
 import {Observable} from 'rxjs/Observable';
-
 import {QueryList as IQueryList, Type} from '../core';
-
 import {assertNotNull} from './assert';
 import {LContainer, LNode, LNodeFlags, LView, QueryState} from './interfaces';
 

@@ -94,7 +94,7 @@ export interface ViewState {
    * do this by creating ViewState in incomplete state with nodes == null
    * and we initialize it on first run.
    */
-  readonly nodesAndBindings: any[];
+  readonly data: any[];
 
   /**
    * All directives created inside this view. Stored as an array
@@ -159,8 +159,6 @@ export interface ViewState {
    * in the same container. We need a way to link component views as well.
    */
   next: ViewState|ContainerState|null;
-
-  locals: any[]|null;
 }
 
 export interface LNodeInjector {
@@ -291,10 +289,10 @@ export interface LNode {
   query: QueryState|null;
 
   /**
-   * Pointer to the corresponding NodeBindings object, which stores static
+   * Pointer to the corresponding LNodeStatic object, which stores static
    * data about this node.
    */
-  nodeBindings: NodeBindings|null;
+  staticData: LNodeStatic|null;
 }
 
 /**
@@ -457,7 +455,7 @@ export type InitialInputs = string[];
  *    - Null: that property's data was already generated and nothing was found.
  *    - Undefined: that property's data has not yet been generated
  */
-export interface NodeBindings {
+export interface LNodeStatic {
   /** The tag name associated with this node. */
   tagName: string|null;
 
@@ -483,7 +481,30 @@ export interface NodeBindings {
 
   /** Output data for all directives on this node. */
   outputs: MinificationData|null|undefined;
+
+  /**
+   * If this LNodeStatic corresponds to an LContainer, the container will
+   * need to have nested static data for each of its embedded views.
+   * Otherwise, nodes in embedded views with the same index as nodes
+   * in their parent views will overwrite each other, as they are in
+   * the same template.
+   *
+   * Each index in this array corresponds to the static data for a certain
+   * view. So if you had V(0) and V(1) in a container, you might have:
+   *
+   * [
+   *   [{tagName: 'div', attrs: ...}, null],     // V(0) ngData
+   *   [{tagName: 'button', attrs ...}, null]    // V(1) ngData
+   * ]
+   */
+  containerStatic: (LNodeStatic|null)[][]|null;
 }
+
+/** Static data for an LElement */
+export interface LElementStatic extends LNodeStatic { containerStatic: null; }
+
+/** Static data for an LContainer */
+export interface LContainerStatic extends LNodeStatic { containerStatic: (LNodeStatic|null)[][]; }
 
 /** Interface necessary to work with view tree traversal */
 export interface ViewOrContainerState {
