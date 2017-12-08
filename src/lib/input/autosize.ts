@@ -17,6 +17,7 @@ import {Platform} from '@angular/cdk/platform';
   selector: `textarea[mat-autosize], textarea[matTextareaAutosize]`,
   exportAs: 'matTextareaAutosize',
   host: {
+    'class': 'mat-autosize',
     // Textarea elements that have the directive applied should have a single row by default.
     // Browsers normally show two rows by default and therefore this limits the minRows binding.
     'rows': '1',

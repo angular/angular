@@ -82,3 +82,9 @@ textarea.mat-input-element {
   resize: vertical;
   overflow: auto;
 }
+
+// Remove the resize handle on autosizing textareas, because whatever height
+// the user resized to will be overwritten once they start typing again.
+textarea.mat-autosize {
+  resize: none;
+}
