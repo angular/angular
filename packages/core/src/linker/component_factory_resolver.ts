@@ -66,13 +66,20 @@ export class CodegenComponentFactoryResolver implements ComponentFactoryResolver
 }
 
 export class ComponentFactoryBoundToModule<C> extends ComponentFactory<C> {
-  constructor(private factory: ComponentFactory<C>, private ngModule: NgModuleRef<any>) { super(); }
+  readonly selector: string;
+  readonly componentType: Type<any>;
+  readonly ngContentSelectors: string[];
+  readonly inputs: {propName: string, templateName: string}[];
+  readonly outputs: {propName: string, templateName: string}[];
 
-  get selector() { return this.factory.selector; }
-  get componentType() { return this.factory.componentType; }
-  get ngContentSelectors() { return this.factory.ngContentSelectors; }
-  get inputs() { return this.factory.inputs; }
-  get outputs() { return this.factory.outputs; }
+  constructor(private factory: ComponentFactory<C>, private ngModule: NgModuleRef<any>) {
+    super();
+    this.selector = factory.selector;
+    this.componentType = factory.componentType;
+    this.ngContentSelectors = factory.ngContentSelectors;
+    this.inputs = factory.inputs;
+    this.outputs = factory.outputs;
+  }
 
   create(
       injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
