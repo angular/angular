@@ -15,17 +15,15 @@ module.exports = (gulp) => (done) => {
 };
 ```
 
-E.g. The `format.js` file contains two tasks:
+E.g. A `tasks.js` file that defines two tasks:
 
 ```js
 module.exports = {
-  // Check source code for formatting errors (clang-format)
   enforce: (gulp) => () => {
     ...
   },
 
-  // Format the source code with clang-format (see .clang-format)
-  format: (gulp) => () => {
+  check: (gulp) => () => {
     ...
   }
 };

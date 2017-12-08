@@ -213,8 +213,7 @@ export function attributeType(element: string, attribute: string): string|string
   return compose(elements[element.toUpperCase()] || defaultAttributes)[attribute.toLowerCase()];
 }
 
-// This section is describes the DOM property surface of a DOM element and is derivgulp formated
-// from
+// This section describes the DOM property surface of a DOM element and is derived
 // from the SCHEMA strings from the security context information. SCHEMA is copied here because
 // it would be an unnecessary risk to allow this array to be imported from the security context
 // schema registry.
