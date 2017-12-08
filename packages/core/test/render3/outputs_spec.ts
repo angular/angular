@@ -28,6 +28,17 @@ describe('outputs', () => {
     });
   }
 
+  let otherDir: OtherDir;
+
+  class OtherDir {
+    changeStream = new EventEmitter();
+
+    static ngDirectiveDef = defineDirective({
+      type: OtherDir,
+      factory: () => otherDir = new OtherDir,
+      outputs: {changeStream: 'change'}
+    });
+  }
 
   it('should call component output function when event is emitted', () => {
     /** <button-toggle (change)="onChange()"></button-toggle> */
@@ -328,15 +339,6 @@ describe('outputs', () => {
   });
 
   it('should work with two outputs of the same name', () => {
-    let otherDir: OtherDir;
-
-    class OtherDir {
-      change = new EventEmitter();
-
-      static ngDirectiveDef = defineDirective(
-          {type: OtherDir, factory: () => otherDir = new OtherDir, outputs: {change: 'change'}});
-    }
-
     /** <button-toggle (change)="onChange()" otherDir></button-toggle> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
@@ -357,7 +359,7 @@ describe('outputs', () => {
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
-    otherDir !.change.next();
+    otherDir !.changeStream.next();
     expect(counter).toEqual(2);
   });
 
@@ -395,6 +397,69 @@ describe('outputs', () => {
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
+  });
+
+  it('should work with outputs at same index in if block', () => {
+    /**
+     * <button (click)="onClick()">Click me</button>             // outputs: null
+     * % if (condition) {
+     *   <button-toggle (change)="onChange()"></button-toggle>   // outputs: {change: [0, 'change']}
+     * % } else {
+     *   <div otherDir (change)="onChange()"></div>             // outputs: {change: [0,
+     * 'changeStream']}
+     * % }
+     */
+    function Template(ctx: any, cm: boolean) {
+      if (cm) {
+        E(0, 'button');
+        {
+          L('click', ctx.onClick.bind(ctx));
+          T(1, 'Click me');
+        }
+        e();
+        C(2);
+        c();
+      }
+      rC(2);
+      {
+        if (ctx.condition) {
+          if (V(0)) {
+            E(0, ButtonToggle.ngComponentDef);
+            {
+              D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+              L('change', ctx.onChange.bind(ctx));
+            }
+            e();
+          }
+          v();
+        } else {
+          if (V(1)) {
+            E(0, 'div');
+            {
+              D(0, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
+              L('change', ctx.onChange.bind(ctx));
+            }
+            e();
+          }
+          v();
+        }
+      }
+      rc();
+    }
+
+    let counter = 0;
+    const ctx = {condition: true, onChange: () => counter++, onClick: () => {}};
+    renderToHtml(Template, ctx);
+
+    buttonToggle !.change.next();
+    expect(counter).toEqual(1);
+
+    ctx.condition = false;
+    renderToHtml(Template, ctx);
+    expect(counter).toEqual(1);
+
+    otherDir !.changeStream.next();
+    expect(counter).toEqual(2);
   });
 
 });

@@ -10,7 +10,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {bloomFindPossibleInjector} from '../../src/render3/di';
 import {C, D, E, PublicFeature, T, V, b, b2, c, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, rC, rc, t, v} from '../../src/render3/index';
-import {bloomAdd, createNode, createViewState, enterView, getOrCreateNodeInjector, leaveView} from '../../src/render3/instructions';
+import {bloomAdd, createLNode, createViewState, enterView, getOrCreateNodeInjector, leaveView} from '../../src/render3/instructions';
 import {LNodeFlags, LNodeInjector} from '../../src/render3/interfaces';
 
 import {renderToHtml} from './render_util';
@@ -321,7 +321,7 @@ describe('di', () => {
       const contentView = createViewState(-1, null !);
       const oldView = enterView(contentView, null !);
       try {
-        const parent = createNode(0, LNodeFlags.Element, null, null);
+        const parent = createLNode(0, LNodeFlags.Element, null, null);
 
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values

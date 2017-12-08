@@ -7,7 +7,7 @@
  */
 
 import {ComponentTemplate, ComponentType, PublicFeature, defineComponent, renderComponent as _renderComponent} from '../../src/render3/index';
-import {NG_HOST_SYMBOL, createNode, createViewState, renderTemplate} from '../../src/render3/instructions';
+import {NG_HOST_SYMBOL, createLNode, createViewState, renderTemplate} from '../../src/render3/instructions';
 import {LElement, LNodeFlags} from '../../src/render3/interfaces';
 import {RElement, RText, Renderer3} from '../../src/render3/renderer';
 import {getRenderer2} from './imported_renderer2';
@@ -37,7 +37,7 @@ export function resetDOM() {
   requestAnimationFrame.queue = [];
   containerEl = document.createElement('div');
   containerEl.setAttribute('host', '');
-  host = createNode(null, LNodeFlags.Element, containerEl, createViewState(-1, activeRenderer));
+  host = createLNode(null, LNodeFlags.Element, containerEl, createViewState(-1, activeRenderer));
   // TODO: assert that the global state is clean (e.g. ngData, previousOrParentNode, etc)
 }
 

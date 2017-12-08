@@ -10,7 +10,7 @@ import './ng_dev_mode';
 
 import {Type} from '../core';
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
-import {CSSSelector, ContainerState, InitialInputData, InitialInputs, LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LProjection, LText, LView, MinificationData, MinificationDataValue, NodeBindings, ProjectionState, QueryState, ViewState} from './interfaces';
+import {CSSSelector, ContainerState, InitialInputData, InitialInputs, LContainer, LContainerStatic, LElement, LNode, LNodeFlags, LNodeInjector, LNodeStatic, LProjection, LText, LView, MinificationData, MinificationDataValue, ProjectionState, QueryState, ViewState} from './interfaces';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
@@ -45,10 +45,10 @@ let isParent: boolean;
  * given type).
  *
  * Each node's static data is stored at the same index that it's stored
- * in the nodes array. Any nodes that do not have static data store a null
+ * in the data array. Any nodes that do not have static data store a null
  * value to avoid a sparse array.
  */
-let ngData: (NodeBindings | null)[];
+let ngStaticData: (LNodeStatic | null)[];
 
 /**
  * State of the current view being processed.
@@ -63,17 +63,10 @@ let currentQuery: QueryState|null;
 let creationMode: boolean;
 
 /**
- * An array of nodes (text, element, container, etc) and their bindings
- * in the current view
+ * An array of nodes (text, element, container, etc), their bindings, and
+ * any local variables that need to be stored between invocations.
  */
-let nodesAndBindings: any[];
-
-/**
- * At times it is necessary for template to store information between invocations.
- * `locals` is the storage mechanism along with `memory` instruction.
- * For Example: storing queries between template invocations.
- */
-let locals: any[]|null;
+let data: any[];
 
 /**
  * An array of directives in the current view
@@ -125,16 +118,15 @@ let cleanup: any[]|null;
 export function enterView(newViewState: ViewState, host: LElement | LView | null): ViewState {
   const oldViewState = currentView;
   directives = newViewState.directives;
-  nodesAndBindings = newViewState.nodesAndBindings;
+  data = newViewState.data;
   bindingIndex = newViewState.bindingStartIndex || 0;
 
-  if (creationMode = !nodesAndBindings) {
-    // Absence of nodes implies creationMode.
-    (newViewState as{nodesAndBindings: LNode[]}).nodesAndBindings = nodesAndBindings = [];
+  if (creationMode = !data) {
+    // Absence of data implies creationMode.
+    (newViewState as{data: any[]}).data = data = [];
   }
   cleanup = newViewState.cleanup;
   renderer = newViewState.renderer;
-  locals = newViewState.locals;
 
   if (host != null) {
     previousOrParentNode = host;
@@ -150,13 +142,12 @@ export const leaveView: (newViewState: ViewState) => void = enterView as any;
 export function createViewState(viewId: number, renderer: Renderer3): ViewState {
   const newView = {
     parent: currentView,
-    id: viewId,                // -1 for component views
-    node: null !,              // until we initialize it in createNode.
-    nodesAndBindings: null !,  // Hack use as a marker for creationMode
+    id: viewId,    // -1 for component views
+    node: null !,  // until we initialize it in createNode.
+    data: null !,  // Hack use as a marker for creationMode
     directives: [],
     cleanup: null,
     renderer: renderer,
-    locals: null,
     child: null,
     tail: null,
     next: null,
@@ -170,18 +161,18 @@ export function createViewState(viewId: number, renderer: Renderer3): ViewState 
  * A common way of creating the LNode to make sure that all of them have same shape to
  * keep the execution code monomorphic and fast.
  */
-export function createNode(
+export function createLNode(
     index: number | null, type: LNodeFlags.Element, native: RElement | RText | null,
     viewState?: ViewState | null): LElement;
-export function createNode(
+export function createLNode(
     index: null, type: LNodeFlags.View, native: null, viewState: ViewState): LView;
-export function createNode(
+export function createLNode(
     index: number, type: LNodeFlags.Container, native: RComment,
     containerState: ContainerState): LContainer;
-export function createNode(
+export function createLNode(
     index: number, type: LNodeFlags.Projection, native: null,
     projectionState: ProjectionState): LProjection;
-export function createNode(
+export function createLNode(
     index: number | null, type: LNodeFlags, native: RText | RElement | RComment | null,
     state?: null | ViewState | ContainerState | ProjectionState): LElement&LText&LView&LContainer&
     LProjection {
@@ -200,7 +191,7 @@ export function createNode(
     nodeInjector: parent ? parent.nodeInjector : null,
     data: isState ? state as any : null,
     query: query,
-    nodeBindings: null
+    staticData: null
   };
 
   if ((type & LNodeFlags.ViewOrElement) === LNodeFlags.ViewOrElement && isState) {
@@ -211,21 +202,21 @@ export function createNode(
   }
   if (index != null) {
     // We are Element or Container
-    ngDevMode &&
-        assertEqual(nodesAndBindings.length, index, 'nodesAndBindings.length not in sequence');
-    nodesAndBindings[index] = node;
+    ngDevMode && assertEqual(data.length, index, 'data.length not in sequence');
+    data[index] = node;
 
-    // Every node adds a value to the data array to avoid a sparse array
-    if (ngData && index >= ngData.length) {
-      ngData[index] = null;
-    } else if (ngData) {
-      node.nodeBindings = ngData[index];
+    // Every node adds a value to the static data array to avoid a sparse array
+    if (ngStaticData && index >= ngStaticData.length) {
+      ngStaticData[index] = null;
+    } else if (ngStaticData) {
+      node.staticData = ngStaticData[index];
     }
 
     // Now link ourselves into the tree.
     if (isParent) {
       currentQuery = null;
-      if (previousOrParentNode.view === currentView) {
+      if (previousOrParentNode.view === currentView ||
+          (previousOrParentNode.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
         // We are in the same view, which means we are adding content node to the parent View.
         ngDevMode && assertEqual(previousOrParentNode.child, null, 'previousNode.child');
         previousOrParentNode.child = node;
@@ -259,7 +250,7 @@ export function renderTemplate<T>(host: LElement, template: ComponentTemplate<T>
   ngDevMode && assertNotEqual(hostView, null, 'hostView');
   const oldView = enterView(hostView, host);
   try {
-    ngData = template.ngData || (template.ngData = [] as never);
+    ngStaticData = template.ngStaticData || (template.ngStaticData = [] as never);
     template(context, creationMode);
   } finally {
     leaveView(oldView);
@@ -327,7 +318,7 @@ export function getOrCreateNodeInjector(): LNodeInjector {
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
  *
- * @param index Index of the element in the nodes array
+ * @param index Index of the element in the data array
  * @param nameOrComponentDef Name of the DOM Node or `ComponentDef`.
  * @param attrs Statically bound set of attributes to be written into the DOM element on creation.
  *
@@ -342,7 +333,7 @@ export function elementCreate(
 
   if (nameOrComponentDef == null) {
     // native node retrieval - used for exporting elements as tpl local variables (<div #foo>)
-    const node = nodesAndBindings[index] !;
+    const node = data[index] !;
     native = node && (node as LElement).native;
   } else {
     ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
@@ -356,12 +347,12 @@ export function elementCreate(
       native = renderer.createElement(name);
       // Only component views should be added to the view tree directly. Embedded views are
       // accessed through their containers because they may be removed / re-added later.
-      node = createNode(
+      node = createLNode(
           index, LNodeFlags.Element, native,
           isHostElement ? addToViewTree(createViewState(-1, renderer)) : null);
 
-      if (node.nodeBindings == null) {
-        node.nodeBindings = ngData[index] = createNodeBindings(name, attrs || null);
+      if (node.staticData == null) {
+        node.staticData = ngStaticData[index] = createStaticData(name, attrs || null, null);
       }
 
       if (attrs) setUpAttributes(native, attrs);
@@ -391,7 +382,7 @@ export function createError(text: string, token: any) {
  * @param elementOrSelector Render element or CSS selector to locate the element.
  */
 export function elementHost(elementOrSelector: RElement | string) {
-  ngDevMode && assertNodesInRange(-1);
+  ngDevMode && assertDataInRange(-1);
   const rNode = typeof elementOrSelector === 'string' ?
       ((renderer as Renderer3Fn).selectRootElement ?
            (renderer as Renderer3Fn).selectRootElement(elementOrSelector) :
@@ -404,7 +395,7 @@ export function elementHost(elementOrSelector: RElement | string) {
       throw createError('Host node is required:', elementOrSelector);
     }
   }
-  createNode(0, LNodeFlags.Element, rNode, createViewState(-1, renderer));
+  createLNode(0, LNodeFlags.Element, rNode, createViewState(-1, renderer));
 }
 
 
@@ -434,9 +425,9 @@ export function listenerCreate(
     (cleanup || (cleanup = currentView.cleanup = [])).push(eventName, native, listener, useCapture);
   }
 
-  let mergeData: NodeBindings|null = node.nodeBindings !;
+  let mergeData: LNodeStatic|null = node.staticData !;
   if (mergeData.outputs === undefined) {
-    // if we createNodeBindings here, inputs must be undefined so we know they still need to be
+    // if we create LNodeStatic here, inputs must be undefined so we know they still need to be
     // checked
     mergeData.outputs = null;
     mergeData = generateMinifiedData(node.flags, mergeData);
@@ -480,14 +471,14 @@ export function elementEnd() {
 /**
  * Update an attribute on an Element. This is used with a `bind` instruction.
  *
- * @param index The index of the element to update in the nodes array
+ * @param index The index of the element to update in the data array
  * @param attrName Name of attribute. Because it is going to DOM, this is not subject to
  *        renaming as port of minification.
  * @param value Value to write. This value will go through stringification.
  */
 export function elementAttribute(index: number, attrName: string, value: any): void {
   if (value !== NO_CHANGE) {
-    const lElement = nodesAndBindings[index] as LElement;
+    const lElement = data[index] as LElement;
     if (value == null) {
       (renderer as Renderer3Fn).removeAttribute ?
           (renderer as Renderer3Fn).removeAttribute(lElement.native, attrName) :
@@ -509,7 +500,7 @@ export function elementAttribute(index: number, attrName: string, value: any): v
  * be conducted at runtime as well so child components that add new @Inputs don't have to be
  * re-compiled.
  *
- * @param index The index of the element to update in the nodes array
+ * @param index The index of the element to update in the data array
  * @param propName Name of property. Because it is going to DOM, this is not subject to
  *        renaming as part of minification.
  * @param value New value to write.
@@ -517,18 +508,19 @@ export function elementAttribute(index: number, attrName: string, value: any): v
 
 export function elementProperty<T>(index: number, propName: string, value: T | NO_CHANGE): void {
   if (value === NO_CHANGE) return;
-  const node = nodesAndBindings[index] as LElement;
+  const node = data[index] as LElement;
 
-  let data: NodeBindings|null = node.nodeBindings !;
-  // if data.inputs is undefined, a listener has created output data, but inputs haven't yet been
+  let staticData: LNodeStatic|null = node.staticData !;
+  // if staticData.inputs is undefined, a listener has created output staticData, but inputs haven't
+  // yet been
   // checked
-  if (data.inputs === undefined) {
+  if (staticData.inputs === undefined) {
     // mark inputs as checked
-    data.inputs = null;
-    data = generateMinifiedData(node.flags, data, true);
+    staticData.inputs = null;
+    staticData = generateMinifiedData(node.flags, staticData, true);
   }
 
-  const inputData = data.inputs;
+  const inputData = staticData.inputs;
   let dataValue: MinificationDataValue|null;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
@@ -541,8 +533,16 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
   }
 }
 
-function createNodeBindings(tagName: string, attrs: string[] | null): NodeBindings {
-  return {tagName, attrs, initialInputs: undefined, inputs: undefined, outputs: undefined};
+function createStaticData(
+    tagName: string | null, attrs: string[] | null,
+    containerStatic: (LNodeStatic | null)[][] | null): LNodeStatic {
+  return {
+    tagName,
+    attrs,
+    initialInputs: undefined,
+    inputs: undefined,
+    outputs: undefined, containerStatic
+  };
 }
 
 /**
@@ -558,13 +558,12 @@ function setInputsForProperty(inputs: (number | string)[], value: any): void {
 
 /**
  * This function consolidates all the inputs or outputs defined by directives
- * on this node into one object and stores it in ngData so it can
+ * on this node into one object and stores it in ngStaticData so it can
  * be shared between all templates of this type.
  *
- * @param index Index where data should be stored in ngData
+ * @param index Index where data should be stored in ngStaticData
  */
-function generateMinifiedData(
-    flags: number, data: NodeBindings, isInputData = false): NodeBindings {
+function generateMinifiedData(flags: number, data: LNodeStatic, isInputData = false): LNodeStatic {
   const start = flags >> LNodeFlags.INDX_SHIFT;
   const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
 
@@ -591,14 +590,14 @@ function generateMinifiedData(
  *
  * This instruction is meant to handle the [class.foo]="exp" case
  *
- * @param index The index of the element to update in the nodes array
+ * @param index The index of the element to update in the data array
  * @param className Name of class to toggle. Because it is going to DOM, this is not subject to
  *        renaming as part of minification.
  * @param value A value indicating if a given class should be added or removed.
  */
 export function elementClass<T>(index: number, className: string, value: T | NO_CHANGE): void {
   if (value !== NO_CHANGE) {
-    const lElement = nodesAndBindings[index] as LElement;
+    const lElement = data[index] as LElement;
     if (value) {
       (renderer as Renderer3Fn).addClass ?
           (renderer as Renderer3Fn).addClass(lElement.native, className) :
@@ -615,7 +614,7 @@ export function elementClass<T>(index: number, className: string, value: T | NO_
 /**
  * Update a given style on an Element.
  *
- * @param index Index of the element to change in the nodes array
+ * @param index Index of the element to change in the data array
  * @param styleName Name of property. Because it is going to DOM this is not subject to
  *        renaming as part of minification.
  * @param value New value to write (null to remove).
@@ -624,7 +623,7 @@ export function elementClass<T>(index: number, className: string, value: T | NO_
 export function elementStyle<T>(
     index: number, styleName: string, value: T | NO_CHANGE, suffix?: string): void {
   if (value !== NO_CHANGE) {
-    const lElement = nodesAndBindings[index] as LElement;
+    const lElement = data[index] as LElement;
     if (value == null) {
       (renderer as Renderer3Fn).removeStyle ?
           (renderer as Renderer3Fn)
@@ -651,7 +650,7 @@ export function elementStyle<T>(
 /**
  * Create static text node
  *
- * @param index Index of the node in the nodes array.
+ * @param index Index of the node in the data array.
  * @param value Value to write. This value will be stringified.
  *   If value is not provided than the actual creation of the text node is delayed.
  */
@@ -662,7 +661,7 @@ export function textCreate(index: number, value?: any): void {
            (renderer as Renderer3Fn).createText(stringify(value)) :
            (renderer as Renderer3oo).createTextNode !(stringify(value))) :
       null;
-  const node = createNode(index, LNodeFlags.Element, textNode);
+  const node = createLNode(index, LNodeFlags.Element, textNode);
   // Text nodes are self closing.
   isParent = false;
   appendChild(node.parent !, textNode, currentView);
@@ -672,12 +671,12 @@ export function textCreate(index: number, value?: any): void {
  * Create text node with binding
  * Bindings should be handled externally with the proper bind(1-8) method
  *
- * @param index Index of the node in the nodes array.
+ * @param index Index of the node in the data array.
  * @param value Stringified value to write.
  */
 export function textCreateBound<T>(index: number, value: T | NO_CHANGE): void {
   // TODO(misko): I don't think index < nodes.length check is needed here.
-  let existingNode = index < nodesAndBindings.length && nodesAndBindings[index] as LText;
+  let existingNode = index < data.length && data[index] as LText;
   if (existingNode && existingNode.native) {
     // If DOM node exists and value changed, update textContent
     value !== NO_CHANGE &&
@@ -744,7 +743,7 @@ export function directiveCreate<T>(
     if (diPublic) {
       diPublic(directiveDef !);
     }
-    const nodeBindings: NodeBindings|null = ngData && ngData[nodesAndBindings.length - 1];
+    const nodeBindings: LNodeStatic|null = previousOrParentNode.staticData;
     if (nodeBindings && nodeBindings.attrs)
       setInputsFromAttrs<T>(instance, directiveDef !.inputs, nodeBindings);
   }
@@ -756,16 +755,16 @@ export function directiveCreate<T>(
  *
  * @param instance Instance of the directive on which to set the initial inputs
  * @param inputs The list of inputs from the directive def
- * @param nodeBindings The static data for this node
+ * @param staticData The static data for this node
  */
 function setInputsFromAttrs<T>(
-    instance: T, inputs: {[key: string]: string}, nodeBindings: NodeBindings): void {
+    instance: T, inputs: {[key: string]: string}, staticData: LNodeStatic): void {
   const directiveIndex =
       ((previousOrParentNode.flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT) - 1;
 
-  let initialInputData = nodeBindings.initialInputs as InitialInputData | undefined;
+  let initialInputData = staticData.initialInputs as InitialInputData | undefined;
   if (initialInputData === undefined || directiveIndex >= initialInputData.length) {
-    initialInputData = generateInitialInputs(directiveIndex, inputs, nodeBindings);
+    initialInputData = generateInitialInputs(directiveIndex, inputs, staticData);
   }
 
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
@@ -785,12 +784,12 @@ function setInputsFromAttrs<T>(
  */
 function generateInitialInputs(
     directiveIndex: number, inputs: {[key: string]: string},
-    nodeBindings: NodeBindings): InitialInputData {
+    staticData: LNodeStatic): InitialInputData {
   const initialInputData: InitialInputData =
-      nodeBindings.initialInputs || (nodeBindings.initialInputs = []);
+      staticData.initialInputs || (staticData.initialInputs = []);
   initialInputData[directiveIndex] = null;
 
-  const attrs = nodeBindings.attrs !;
+  const attrs = staticData.attrs !;
   for (let i = 0; i < attrs.length; i += 2) {
     const attrName = attrs[i];
     const minifiedInputName = inputs[attrName];
@@ -830,7 +829,7 @@ export function directiveLifeCycle(
  *
  * Only `LView`s can go into `LContainer`.
  *
- * @param index The index of the container in the nodes array
+ * @param index The index of the container in the data array
  * @param template Optional inline template
  */
 export function containerCreate(
@@ -851,7 +850,7 @@ export function containerCreate(
     renderParent = currentParent as LElement;
   }
 
-  const node = createNode(index, LNodeFlags.Container, comment, <ContainerState>{
+  const node = createLNode(index, LNodeFlags.Container, comment, <ContainerState>{
     children: [],
     nextIndex: 0, renderParent,
     template: template == null ? null : template,
@@ -859,8 +858,8 @@ export function containerCreate(
     parent: currentView
   });
 
-  if (tagName && node.nodeBindings == null) {
-    node.nodeBindings = ngData[index] = createNodeBindings(tagName, attrs || null);
+  if (node.staticData == null) {
+    node.staticData = ngStaticData[index] = createStaticData(tagName || null, attrs || null, []);
   }
 
   // Containers are added to the current view tree instead of their embedded views
@@ -881,11 +880,11 @@ export function containerEnd() {
 /**
  * Sets a container up to receive views.
  *
- * @param index The index of the container in the nodes array
+ * @param index The index of the container in the data array
  */
 export function refreshContainer(index: number): void {
-  ngDevMode && assertNodesInRange(index);
-  previousOrParentNode = nodesAndBindings[index] as LNode;
+  ngDevMode && assertDataInRange(index);
+  previousOrParentNode = data[index] as LNode;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   isParent = true;
   (previousOrParentNode as LContainer).data.nextIndex = 0;
@@ -938,10 +937,30 @@ export function viewCreate(viewBlockId: number): boolean {
   } else {
     // When we create a new View, we always reset the state of the instructions.
     const newViewState = createViewState(viewBlockId, renderer);
-    enterView(newViewState, createNode(null, LNodeFlags.View, null, newViewState));
+    enterView(newViewState, createLNode(null, LNodeFlags.View, null, newViewState));
     containerState.nextIndex++;
   }
+  setNgStaticDataForView(viewBlockId);
+
   return !viewUpdateMode;
+}
+
+/**
+ * Each embedded view needs to set the global ngStaticData variable to the static data for that
+ * view.
+ * Otherwise, the view's static data for a particular node would overwrite the static
+ * data for a node in the view above it with the same index (since it's in the same template).
+ *
+ * @param viewIndex The index of the view's static data in containerStatic
+ */
+function setNgStaticDataForView(viewIndex: number): void {
+  ngDevMode && assertNodeType(previousOrParentNode.parent !, LNodeFlags.Container);
+  const containerStatic =
+      (previousOrParentNode.parent !.staticData as LContainerStatic).containerStatic;
+  if (viewIndex >= containerStatic.length || containerStatic[viewIndex] == null) {
+    containerStatic[viewIndex] = [];
+  }
+  ngStaticData = containerStatic[viewIndex];
 }
 
 /**
@@ -975,8 +994,8 @@ export const refreshComponent:
         void = function<T>(
             this: undefined | {template: ComponentTemplate<T>}, directiveIndex: number,
             elementIndex: number, template: ComponentTemplate<T>) {
-  ngDevMode && assertNodesInRange(elementIndex);
-  const element = nodesAndBindings ![elementIndex] as LElement;
+  ngDevMode && assertDataInRange(elementIndex);
+  const element = data ![elementIndex] as LElement;
   ngDevMode && assertNodeType(element, LNodeFlags.Element);
   ngDevMode && assertNotEqual(element.data, null, 'isComponent');
   ngDevMode && assertDirectivesInRange(directiveIndex << 1);
@@ -984,13 +1003,13 @@ export const refreshComponent:
   ngDevMode && assertNotEqual(hostView, null, 'hostView');
   const directive = directives[directiveIndex << 1];
   const oldView = enterView(hostView, element);
-  const oldNgData = ngData;
+  const oldNgStaticData = ngStaticData;
   try {
     const _template = template || this !.template;
-    ngData = _template.ngData || (_template.ngData = [] as never);
+    ngStaticData = _template.ngStaticData || (_template.ngStaticData = [] as never);
     _template(directive, creationMode);
   } finally {
-    ngData = oldNgData;
+    ngStaticData = oldNgStaticData;
     leaveView(oldView);
   }
 };
@@ -1023,9 +1042,9 @@ export function distributeProjectedNodes(selectors?: CSSSelector[]): LNode[][] {
       // - elements, excluding text nodes;
       // - containers that have tagName and attributes associated.
 
-      if (componentChild.nodeBindings) {
+      if (componentChild.staticData) {
         for (let i = 0; i < selectors !.length; i++) {
-          if (isNodeMatchingSelector(componentChild.nodeBindings, selectors ![i])) {
+          if (isNodeMatchingSelector(componentChild.staticData, selectors ![i])) {
             distributedNodes[i + 1].push(componentChild);
             break;  // first matching selector "captures" a given node
           } else {
@@ -1058,7 +1077,7 @@ export function distributeProjectedNodes(selectors?: CSSSelector[]): LNode[][] {
 export function contentProjection(
     nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
   const projectedNodes: ProjectionState = [];
-  const node = createNode(nodeIndex, LNodeFlags.Projection, null, projectedNodes);
+  const node = createLNode(nodeIndex, LNodeFlags.Projection, null, projectedNodes);
   isParent = false;  // self closing
   const currentParent = node.parent;
 
@@ -1066,9 +1085,8 @@ export function contentProjection(
   const componentNode = findComponentHost(currentView);
 
   // make sure that nodes to project were memorized
-  ngDevMode && assertNotNull(componentNode.data !.locals, 'componentNode.data.locals');
   const nodesForSelector =
-      valueInLocals<LNode[][]>(componentNode.data !.locals !, localIndex)[selectorIndex];
+      valueInData<LNode[][]>(componentNode.data !.data !, localIndex)[selectorIndex];
 
   for (let i = 0; i < nodesForSelector.length; i++) {
     const nodeToProject = nodesForSelector[i];
@@ -1148,11 +1166,11 @@ export function bindV(values: any[]): string|NO_CHANGE {
   if (different = creationMode) {
     // make a copy of the array.
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] = parts = values.slice();
+    data[bindingIndex++] = parts = values.slice();
   } else {
-    parts = nodesAndBindings[bindingIndex++];
+    parts = data[bindingIndex++];
     different = false;
     for (let i = 0; i < values.length; i++) {
       different = different || values[i] !== NO_CHANGE && isDifferent(values[i], parts[i]);
@@ -1181,12 +1199,12 @@ export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
   let different: boolean;
   if (different = creationMode) {
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] = value;
+    data[bindingIndex++] = value;
   } else {
-    if (different = value !== NO_CHANGE && isDifferent(nodesAndBindings[bindingIndex], value)) {
-      nodesAndBindings[bindingIndex] = value;
+    if (different = value !== NO_CHANGE && isDifferent(data[bindingIndex], value)) {
+      data[bindingIndex] = value;
     }
     bindingIndex++;
   }
@@ -1218,11 +1236,11 @@ export function bind2(prefix: string, v0: any, i0: string, v1: any, suffix: stri
   let different: boolean;
   if (different = creationMode) {
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] = {v0: v0, v1: v1};
+    data[bindingIndex++] = {v0: v0, v1: v1};
   } else {
-    const parts: {v0: any, v1: any} = nodesAndBindings[bindingIndex++];
+    const parts: {v0: any, v1: any} = data[bindingIndex++];
     if (v0 === NO_CHANGE) v0 = parts.v0;
     if (v1 === NO_CHANGE) v1 = parts.v1;
     if (different = (isDifferent(parts.v0, v0) || isDifferent(parts.v1, v1))) {
@@ -1250,11 +1268,11 @@ export function bind3(
   let different: boolean;
   if (different = creationMode) {
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] = {v0: v0, v1: v1, v2: v2};
+    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2};
   } else {
-    const parts: {v0: any, v1: any, v2: any} = nodesAndBindings[bindingIndex++];
+    const parts: {v0: any, v1: any, v2: any} = data[bindingIndex++];
     if (v0 === NO_CHANGE) v0 = parts.v0;
     if (v1 === NO_CHANGE) v1 = parts.v1;
     if (v2 === NO_CHANGE) v2 = parts.v2;
@@ -1288,11 +1306,11 @@ export function bind4(
   let different: boolean;
   if (different = creationMode) {
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3};
+    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3};
   } else {
-    const parts: {v0: any, v1: any, v2: any, v3: any} = nodesAndBindings[bindingIndex++];
+    const parts: {v0: any, v1: any, v2: any, v3: any} = data[bindingIndex++];
     if (v0 === NO_CHANGE) v0 = parts.v0;
     if (v1 === NO_CHANGE) v1 = parts.v1;
     if (v2 === NO_CHANGE) v2 = parts.v2;
@@ -1333,11 +1351,11 @@ export function bind5(
   let different: boolean;
   if (different = creationMode) {
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3, v4};
+    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3, v4};
   } else {
-    const parts: {v0: any, v1: any, v2: any, v3: any, v4: any} = nodesAndBindings[bindingIndex++];
+    const parts: {v0: any, v1: any, v2: any, v3: any, v4: any} = data[bindingIndex++];
     if (v0 === NO_CHANGE) v0 = parts.v0;
     if (v1 === NO_CHANGE) v1 = parts.v1;
     if (v2 === NO_CHANGE) v2 = parts.v2;
@@ -1382,12 +1400,11 @@ export function bind6(
   let different: boolean;
   if (different = creationMode) {
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5};
+    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5};
   } else {
-    const parts: {v0: any, v1: any, v2: any, v3: any, v4: any, v5: any} =
-        nodesAndBindings[bindingIndex++];
+    const parts: {v0: any, v1: any, v2: any, v3: any, v4: any, v5: any} = data[bindingIndex++];
     if (v0 === NO_CHANGE) v0 = parts.v0;
     if (v1 === NO_CHANGE) v1 = parts.v1;
     if (v2 === NO_CHANGE) v2 = parts.v2;
@@ -1437,12 +1454,12 @@ export function bind7(
   let different: boolean;
   if (different = creationMode) {
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5, v6: v6};
+    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5, v6: v6};
   } else {
     const parts: {v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any} =
-        nodesAndBindings[bindingIndex++];
+        data[bindingIndex++];
     if (v0 === NO_CHANGE) v0 = parts.v0;
     if (v1 === NO_CHANGE) v1 = parts.v1;
     if (v2 === NO_CHANGE) v2 = parts.v2;
@@ -1497,13 +1514,12 @@ export function bind8(
   let different: boolean;
   if (different = creationMode) {
     if (typeof currentView.bindingStartIndex !== 'number') {
-      bindingIndex = currentView.bindingStartIndex = nodesAndBindings.length;
+      bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    nodesAndBindings[bindingIndex++] =
-        {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5, v6: v6, v7: v7};
+    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5, v6: v6, v7: v7};
   } else {
     const parts: {v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any} =
-        nodesAndBindings[bindingIndex++];
+        data[bindingIndex++];
     if (v0 === NO_CHANGE) v0 = parts.v0;
     if (v1 === NO_CHANGE) v1 = parts.v1;
     if (v2 === NO_CHANGE) v2 = parts.v2;
@@ -1533,16 +1549,15 @@ export function bind8(
 }
 
 export function memory<T>(index: number, value?: T): T {
-  const _locals = locals || (locals = currentView.locals = []);
-  return valueInLocals<T>(_locals, index, value);
+  return valueInData<T>(data, index, value);
 }
 
-function valueInLocals<T>(locals: any[], index: number, value?: T): T {
-  ngDevMode && assertLocalsInRange(locals, index);
+function valueInData<T>(data: any[], index: number, value?: T): T {
+  ngDevMode && assertDataInRange(index, data);
   if (value === undefined) {
-    value = locals[index];
+    value = data[index];
   } else {
-    locals[index] = value;
+    data[index] = value;
   }
   return value !;
 }
@@ -1565,12 +1580,9 @@ function assertHasParent() {
   assertNotEqual(previousOrParentNode.parent, null, 'isParent');
 }
 
-function assertLocalsInRange(locals: any[], index: number) {
-  assertLessThan(locals ? locals.length : 0, index, 'locals.length');
-}
-
-function assertNodesInRange(index: number) {
-  assertLessThan(nodesAndBindings ? nodesAndBindings.length : 0, index, 'nodes.length');
+function assertDataInRange(index: number, arr?: any[]) {
+  if (arr == null) arr = data;
+  assertLessThan(arr ? arr.length : 0, index, 'data.length');
 }
 
 function assertDirectivesInRange(index: number) {

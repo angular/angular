@@ -6,11 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CSSSelector, CSSSelectorWithNegations, NodeBindings, SimpleCSSSelector} from '../../src/render3/interfaces';
+import {CSSSelector, CSSSelectorWithNegations, LNodeStatic, SimpleCSSSelector} from '../../src/render3/interfaces';
 import {isNodeMatchingSelector, isNodeMatchingSelectorWithNegations, isNodeMatchingSimpleSelector} from '../../src/render3/node_selector_matcher';
 
-function testLStaticData(tagName: string, attrs: string[] | null): NodeBindings {
-  return {tagName, attrs, initialInputs: undefined, inputs: undefined, outputs: undefined};
+function testLStaticData(tagName: string, attrs: string[] | null): LNodeStatic {
+  return {
+    tagName,
+    attrs,
+    initialInputs: undefined,
+    inputs: undefined,
+    outputs: undefined,
+    containerStatic: null
+  };
 }
 
 describe('css selector matching', () => {
