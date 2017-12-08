@@ -10,12 +10,6 @@
   $primary: map-get($theme, primary);
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
-  $is-dark-theme: map-get($theme, is-dark);
-
-  .mat-select-disabled .mat-select-value,
-  .mat-select-arrow {
-    color: mat-color($foreground, secondary-text);
-  }
 
   .mat-select-content, .mat-select-panel-done-animating {
     background: mat-color($background, card);
@@ -23,6 +17,18 @@
 
   .mat-select-value {
     color: mat-color($foreground, text);
+  }
+
+  .mat-select-placeholder {
+    color: _mat-control-placeholder-color($theme);
+  }
+
+  .mat-select-disabled .mat-select-value {
+    color: mat-color($foreground, disabled-text);
+  }
+
+  .mat-select-arrow {
+    color: mat-color($foreground, secondary-text);
   }
 
   .mat-select-panel {
@@ -51,16 +57,8 @@
     }
 
     .mat-select.mat-select-disabled .mat-select-arrow {
-      color: mat-color($foreground, secondary-text);
+      color: mat-color($foreground, disabled-text);
     }
-  }
-
-  .mat-select.mat-select-disabled .mat-select-arrow {
-    color: mat-color($warn);
-  }
-
-  .mat-select-placeholder {
-    color: _mat-control-placeholder-color($theme);
   }
 }
 

@@ -7,10 +7,9 @@
 
 @mixin mat-input-theme($theme) {
   $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
 
   .mat-input-element:disabled {
-    color: mat-color($foreground, secondary-text, if($is-dark-theme, 0.7, 0.42));
+    color: mat-color($foreground, disabled-text);
   }
 
   .mat-input-element {
