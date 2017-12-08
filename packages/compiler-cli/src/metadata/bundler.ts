@@ -598,7 +598,7 @@ export class CompilerHostAdapter implements MetadataBundlerHost {
 
   getMetadataFor(fileName: string): ModuleMetadata|undefined {
     const sourceFile = this.host.getSourceFile(fileName + '.ts', ts.ScriptTarget.Latest);
-    return this.collector.getMetadata(sourceFile);
+    return sourceFile && this.collector.getMetadata(sourceFile);
   }
 }
 

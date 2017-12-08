@@ -85,7 +85,7 @@ describe('ng type checker', () => {
 
   describe('type narrowing', () => {
     const a = (files: MockFiles, options: object = {}) => {
-      accept(files, {fullTemplateTypeCheck: true, ...options});
+      accept(files, { fullTemplateTypeCheck: true, ...options } as ts.CompilerOptions);
     };
 
     it('should narrow an *ngIf like directive', () => {
@@ -220,17 +220,17 @@ describe('ng type checker', () => {
 
   describe('casting $any', () => {
     const a = (files: MockFiles, options: object = {}) => {
-      accept(
-          {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
-          {fullTemplateTypeCheck: true, ...options});
+      accept({'src/app.component.ts': '', 'src/lib.ts': '', ...files}, {
+        fullTemplateTypeCheck: true, ...options
+      } as ng.CompilerOptions);
     };
 
     const r =
         (message: string | RegExp, location: RegExp | null, files: MockFiles,
          options: object = {}) => {
-          reject(
-              message, location, {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
-              {fullTemplateTypeCheck: true, ...options});
+          reject(message, location, {'src/app.component.ts': '', 'src/lib.ts': '', ...files}, {
+            fullTemplateTypeCheck: true, ...options
+          } as ng.CompilerOptions);
         };
 
     it('should allow member access of an expression', () => {
@@ -324,7 +324,7 @@ describe('ng type checker', () => {
 
   describe('regressions ', () => {
     const a = (files: MockFiles, options: object = {}) => {
-      accept(files, {fullTemplateTypeCheck: true, ...options});
+      accept(files, { fullTemplateTypeCheck: true, ...options } as ng.CompilerOptions);
     };
 
     // #19905

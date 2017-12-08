@@ -81,10 +81,10 @@ export class MockCache implements Cache {
     if (hydrated !== undefined) {
       Object.keys(hydrated).forEach(url => {
         const resp = hydrated[url];
+        const headers = new Headers(resp.headers);
         this.cache.set(
             url, new MockResponse(
-                     resp.body,
-                     {status: resp.status, statusText: resp.statusText, headers: resp.headers}));
+                     resp.body, {status: resp.status, statusText: resp.statusText, headers}));
       });
     }
   }
@@ -102,11 +102,11 @@ export class MockCache implements Cache {
     return false;
   }
 
-  async keys(match?: Request|string): Promise<string[]> {
+  async keys(match?: RequestInfo): Promise<Request[]> {
     if (match !== undefined) {
       throw 'Not implemented';
     }
-    return Array.from(this.cache.keys());
+    return Array.from(this.cache.keys()).map(url => new Request(url));
   }
 
   async match(request: RequestInfo, options?: CacheQueryOptions): Promise<Response> {
@@ -122,8 +122,7 @@ export class MockCache implements Cache {
     return res !;
   }
 
-
-  async matchAll(request?: Request|string, options?: CacheQueryOptions): Promise<Response[]> {
+  async matchAll(request?: RequestInfo, options?: CacheQueryOptions): Promise<Response[]> {
     if (request === undefined) {
       return Array.from(this.cache.values());
     }
@@ -149,7 +148,7 @@ export class MockCache implements Cache {
   dehydrate(): DehydratedCache {
     const dehydrated: DehydratedCache = {};
     Array.from(this.cache.keys()).forEach(url => {
-      const resp = this.cache.get(url) !as MockResponse;
+      const resp = this.cache.get(url) as MockResponse;
       const dehydratedResp = {
         body: resp._body,
         status: resp.status,

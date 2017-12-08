@@ -415,14 +415,14 @@ describe('ng program', () => {
     });
     const host = ng.createCompilerHost({options});
     const written = new Map < string, {
-      original: ts.SourceFile[]|undefined;
+      original: ReadonlyArray<ts.SourceFile>|undefined;
       data: string;
     }
     > ();
 
     host.writeFile =
         (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
+         onError?: (message: string) => void, sourceFiles?: ReadonlyArray<ts.SourceFile>) => {
           written.set(fileName, {original: sourceFiles, data});
         };
     const program = ng.createProgram(
@@ -496,7 +496,7 @@ describe('ng program', () => {
     const oldWriteFile = host.writeFile;
     host.writeFile = (fileName, data, writeByteOrderMark) => {
       writtenFileNames.push(fileName);
-      oldWriteFile(fileName, data, writeByteOrderMark);
+      oldWriteFile(fileName, data, writeByteOrderMark, undefined, []);
     };
 
     compile(/*oldProgram*/ undefined, options, /*rootNames*/ undefined, host);
