@@ -1,4 +1,3 @@
-import {enableProdMode} from '@angular/core';
 import {renderModuleFactory} from '@angular/platform-server';
 import {readFileSync, writeFileSync} from 'fs-extra';
 import {log} from 'gulp-util';
@@ -7,7 +6,8 @@ import 'reflect-metadata';
 import 'zone.js';
 import {KitchenSinkServerModuleNgFactory} from './kitchen-sink/kitchen-sink.ngfactory';
 
-enableProdMode();
+// Do not enable production mode, because otherwise the `MatCommonModule` won't execute
+// the browser related checks that could cause NodeJS issues.
 
 const result = renderModuleFactory(KitchenSinkServerModuleNgFactory, {
   document: readFileSync(join(__dirname, 'index.html'), 'utf-8')
