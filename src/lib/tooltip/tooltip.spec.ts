@@ -12,7 +12,8 @@ import {
   Component,
   DebugElement,
   ElementRef,
-  ViewChild
+  ViewChild,
+  NgZone,
 } from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
 import {By} from '@angular/platform-browser';
@@ -628,6 +629,26 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._isTooltipVisible())
           .toBe(false, 'Expected tooltip hidden when scrolled out of view, after throttle limit');
     }));
+
+    it('should execute the `hide` call, after scrolling away, inside the NgZone', fakeAsync(() => {
+      const inZoneSpy = jasmine.createSpy('in zone spy');
+
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick(0);
+
+      spyOn(tooltipDirective._tooltipInstance!, 'hide').and.callFake(() => {
+        inZoneSpy(NgZone.isInAngularZone());
+      });
+
+      fixture.componentInstance.scrollDown();
+      tick(100);
+      fixture.detectChanges();
+
+      expect(inZoneSpy).toHaveBeenCalled();
+      expect(inZoneSpy).toHaveBeenCalledWith(true);
+    }));
+
   });
 
   describe('with OnPush', () => {
