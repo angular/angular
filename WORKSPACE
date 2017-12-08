@@ -8,8 +8,9 @@ git_repository(
     tag = "0.3.1",
 )
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
+check_bazel_version("0.8.1")
 node_repositories(package_json = ["//:package.json"])
 
 git_repository(
