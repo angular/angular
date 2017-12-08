@@ -14,7 +14,7 @@ anchor_1: &job_defaults
     ## IMPORTANT
     # If you change this, also change the version of com_github_bazelbuild_buildtools
     # in the /WORKSPACE file
-    - image: angular/ngcontainer:0.0.7
+    - image: angular/ngcontainer:0.0.8
     ## IMPORTANT
 
 # After checkout, rebase on top of master.
