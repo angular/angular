@@ -176,6 +176,7 @@ $mat-form-field-default-infix-width: 180px !default;
     transform-origin: 50%;
     transform: scaleX(0.5);
     visibility: hidden;
+    opacity: 0;
     transition: background-color $swift-ease-in-duration $swift-ease-in-timing-function;
 
     .mat-form-field-invalid:not(.mat-focused) & {
@@ -185,9 +186,11 @@ $mat-form-field-default-infix-width: 180px !default;
     .mat-focused &,
     .mat-form-field-invalid & {
       visibility: visible;
+      opacity: 1;
       transform: scaleX(1);
-      transition: transform 150ms linear,
-      background-color $swift-ease-in-duration $swift-ease-in-timing-function;
+      transition: transform 300ms $swift-ease-out-timing-function,
+        opacity 100ms $swift-ease-out-timing-function,
+        background-color 300ms $swift-ease-out-timing-function;
     }
   }
 }
