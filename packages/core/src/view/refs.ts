@@ -255,9 +255,12 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
     if (fs.begin) {
       fs.begin();
     }
-    Services.checkAndUpdateView(this._view);
-    if (fs.end) {
-      fs.end();
+    try {
+      Services.checkAndUpdateView(this._view);
+    } finally {
+      if (fs.end) {
+        fs.end();
+      }
     }
   }
   checkNoChanges(): void { Services.checkNoChangesView(this._view); }
