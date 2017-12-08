@@ -151,6 +151,8 @@ export class NgIf {
       }
     }
   }
+
+  public static ngIfTypeGuard: <T>(v: T|null|undefined|false) => v is T;
 }
 
 /**

@@ -271,7 +271,7 @@ export class AotCompiler {
     const {template: parsedTemplate, pipes: usedPipes} =
         this._parseTemplate(compMeta, moduleMeta, directives);
     ctx.statements.push(...this._typeCheckCompiler.compileComponent(
-        componentId, compMeta, parsedTemplate, usedPipes, externalReferenceVars));
+        componentId, compMeta, parsedTemplate, usedPipes, externalReferenceVars, ctx));
   }
 
   emitMessageBundle(analyzeResult: NgAnalyzedModules, locale: string|null): MessageBundle {

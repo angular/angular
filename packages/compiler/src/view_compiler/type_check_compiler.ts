@@ -10,13 +10,15 @@ import {AotCompilerOptions} from '../aot/compiler_options';
 import {StaticReflector} from '../aot/static_reflector';
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileDiDependencyMetadata, CompileDirectiveMetadata, CompilePipeSummary} from '../compile_metadata';
-import {BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
+import {BindingForm, BuiltinConverter, EventHandlerVars, LocalResolver, convertActionBinding, convertPropertyBinding, convertPropertyBindingBuiltins} from '../compiler_util/expression_converter';
 import {AST, ASTWithSource, Interpolation} from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {convertValueToOutputAst} from '../output/value_util';
 import {ParseSourceSpan} from '../parse_util';
 import {AttrAst, BoundDirectivePropertyAst, BoundElementPropertyAst, BoundEventAst, BoundTextAst, DirectiveAst, ElementAst, EmbeddedTemplateAst, NgContentAst, PropertyBindingType, ProviderAst, ProviderAstType, QueryMatch, ReferenceAst, TemplateAst, TemplateAstVisitor, TextAst, VariableAst, templateVisitAll} from '../template_parser/template_ast';
+import {OutputContext} from '../util';
+
 
 /**
  * Generates code that is used to type check templates.
@@ -34,27 +36,33 @@ export class TypeCheckCompiler {
    */
   compileComponent(
       componentId: string, component: CompileDirectiveMetadata, template: TemplateAst[],
-      usedPipes: CompilePipeSummary[],
-      externalReferenceVars: Map<StaticSymbol, string>): o.Statement[] {
+      usedPipes: CompilePipeSummary[], externalReferenceVars: Map<StaticSymbol, string>,
+      ctx: OutputContext): o.Statement[] {
     const pipes = new Map<string, StaticSymbol>();
     usedPipes.forEach(p => pipes.set(p.name, p.type.reference));
     let embeddedViewCount = 0;
-    const viewBuilderFactory = (parent: ViewBuilder | null): ViewBuilder => {
-      const embeddedViewIndex = embeddedViewCount++;
-      return new ViewBuilder(
-          this.options, this.reflector, externalReferenceVars, parent, component.type.reference,
-          component.isHost, embeddedViewIndex, pipes, viewBuilderFactory);
-    };
+    const viewBuilderFactory =
+        (parent: ViewBuilder | null, guards: GuardExpression[]): ViewBuilder => {
+          const embeddedViewIndex = embeddedViewCount++;
+          return new ViewBuilder(
+              this.options, this.reflector, externalReferenceVars, parent, component.type.reference,
+              component.isHost, embeddedViewIndex, pipes, guards, ctx, viewBuilderFactory);
+        };
 
-    const visitor = viewBuilderFactory(null);
+    const visitor = viewBuilderFactory(null, []);
     visitor.visitAll([], template);
 
     return visitor.build(componentId);
   }
 }
 
+interface GuardExpression {
+  guard: StaticSymbol;
+  expression: Expression;
+}
+
 interface ViewBuilderFactory {
-  (parent: ViewBuilder): ViewBuilder;
+  (parent: ViewBuilder, guards: GuardExpression[]): ViewBuilder;
 }
 
 // Note: This is used as key in Map and should therefore be
@@ -94,6 +102,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       private externalReferenceVars: Map<StaticSymbol, string>, private parent: ViewBuilder|null,
       private component: StaticSymbol, private isHostComponent: boolean,
       private embeddedViewIndex: number, private pipes: Map<string, StaticSymbol>,
+      private guards: GuardExpression[], private ctx: OutputContext,
       private viewBuilderFactory: ViewBuilderFactory) {}
 
   private getOutputVar(type: o.BuiltinTypeName|StaticSymbol): string {
@@ -112,6 +121,20 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     return varName;
   }
 
+  private getTypeGuardExpressions(ast: EmbeddedTemplateAst): GuardExpression[] {
+    const result = [...this.guards];
+    for (let directive of ast.directives) {
+      for (let input of directive.inputs) {
+        const guard = directive.directive.guards[input.directiveName];
+        if (guard) {
+          result.push(
+              {guard, expression: {context: this.component, value: input.value} as Expression});
+        }
+      }
+    }
+    return result;
+  }
+
   visitAll(variables: VariableAst[], astNodes: TemplateAst[]) {
     this.variables = variables;
     templateVisitAll(this, astNodes);
@@ -119,7 +142,7 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
 
   build(componentId: string, targetStatements: o.Statement[] = []): o.Statement[] {
     this.children.forEach((child) => child.build(componentId, targetStatements));
-    const viewStmts: o.Statement[] =
+    let viewStmts: o.Statement[] =
         [o.variable(DYNAMIC_VAR_NAME).set(o.NULL_EXPR).toDeclStmt(o.DYNAMIC_TYPE)];
     let bindingCount = 0;
     this.updates.forEach((expression) => {
@@ -127,7 +150,8 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       const bindingId = `${bindingCount++}`;
       const nameResolver = context === this.component ? this : defaultResolver;
       const {stmts, currValExpr} = convertPropertyBinding(
-          nameResolver, o.variable(this.getOutputVar(context)), value, bindingId);
+          nameResolver, o.variable(this.getOutputVar(context)), value, bindingId,
+          BindingForm.General);
       stmts.push(new o.ExpressionStatement(currValExpr));
       viewStmts.push(...stmts.map(
           (stmt: o.Statement) => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
@@ -141,6 +165,27 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
       viewStmts.push(...stmts.map(
           (stmt: o.Statement) => o.applySourceSpanToStatementIfNeeded(stmt, sourceSpan)));
     });
+
+    if (this.guards.length) {
+      let guardExpression: o.Expression|undefined = undefined;
+      for (const guard of this.guards) {
+        const {context, value} = this.preprocessUpdateExpression(guard.expression);
+        const bindingId = `${bindingCount++}`;
+        const nameResolver = context === this.component ? this : defaultResolver;
+        // We only support support simple expressions and ignore others as they
+        // are unlikely to affect type narrowing.
+        const {stmts, currValExpr} = convertPropertyBinding(
+            nameResolver, o.variable(this.getOutputVar(context)), value, bindingId,
+            BindingForm.TrySimple);
+        if (stmts.length == 0) {
+          const callGuard = this.ctx.importExpr(guard.guard).callFn([currValExpr]);
+          guardExpression = guardExpression ? guardExpression.and(callGuard) : callGuard;
+        }
+      }
+      if (guardExpression) {
+        viewStmts = [new o.IfStmt(guardExpression, viewStmts)];
+      }
+    }
 
     const viewName = `_View_${componentId}_${this.embeddedViewIndex}`;
     const viewFactory = new o.DeclareFunctionStmt(viewName, [], viewStmts);
@@ -163,7 +208,12 @@ class ViewBuilder implements TemplateAstVisitor, LocalResolver {
     // for the context in any embedded view.
     // We keep this behaivor behind a flag for now.
     if (this.options.fullTemplateTypeCheck) {
-      const childVisitor = this.viewBuilderFactory(this);
+      // Find any applicable type guards. For example, NgIf has a type guard on ngIf
+      // (see NgIf.ngIfTypeGuard) that can be used to indicate that a template is only
+      // stamped out if ngIf is truthy so any bindings in the template can assume that,
+      // if a nullable type is used for ngIf, that expression is not null or undefined.
+      const guards = this.getTypeGuardExpressions(ast);
+      const childVisitor = this.viewBuilderFactory(this, guards);
       this.children.push(childVisitor);
       childVisitor.visitAll(ast.variables, ast.children);
     }

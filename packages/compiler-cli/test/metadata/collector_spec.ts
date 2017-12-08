@@ -1038,6 +1038,25 @@ describe('Collector', () => {
       expect(metadata).toBeUndefined();
     });
 
+    it('should collect type guards', () => {
+      const metadata = collectSource(`
+        import {Directive, Input, TemplateRef} from '@angular/core';
+
+        @Directive({selector: '[myIf]'})
+        export class MyIf {
+
+          constructor(private templateRef: TemplateRef) {}
+
+          @Input() myIf: any;
+
+          static typeGuard: <T>(v: T | null | undefined): v is T;
+        }
+      `);
+
+      expect((metadata.metadata.MyIf as any).statics.typeGuard)
+          .not.toBeUndefined('typeGuard was not collected');
+    });
+
     it('should be able to collect an invalid access expression', () => {
       const source = createSource(`
         import {Component} from '@angular/core';

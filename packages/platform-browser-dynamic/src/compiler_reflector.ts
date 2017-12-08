@@ -42,6 +42,7 @@ export class JitReflector implements CompileReflector {
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     return this.reflectionCapabilities.hasLifecycleHook(type, lcProperty);
   }
+  guards(type: any): {[key: string]: any} { return this.reflectionCapabilities.guards(type); }
   resolveExternalReference(ref: ExternalReference): any {
     return builtinExternalReferences.get(ref) || ref.runtime;
   }
