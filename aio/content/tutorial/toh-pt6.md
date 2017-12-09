@@ -135,7 +135,7 @@ Convert that method to use `HttpClient`
 Refresh the browser. The hero data should successfully load from the
 mock server.
 
-You've swapped `http.get` for `of` and the app keeps working without any other changes
+You've swapped `of` for `http.get` and the app keeps working without any other changes
 because both functions return an `Observable<Hero[]>`.
 
 ### Http methods return one value
