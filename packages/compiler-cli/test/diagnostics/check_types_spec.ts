@@ -249,6 +249,30 @@ describe('ng type checker', () => {
         export class MainModule {}`
       });
     });
+
+    // #19905
+    it('should accept references the default module', () => {
+      a({
+        'src/app.component.ts': '',
+        'src/lib.ts': '',
+        'src/app.module.ts': `
+        import {NgModule, Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        import {FormsModule} from '@angular/forms';
+
+        @Component({
+          selector: 'test-comp',
+          template: '<form> <input name="first" ngModel required #first="ngModel"> </form>'
+        })
+        export class TestComponent { }
+
+        @NgModule({
+          declarations: [TestComponent],
+          imports: [CommonModule, FormsModule]
+        })
+        export class MainModule {}`
+      });
+    });
   });
 
   describe('with modified quickstart (fullTemplateTypeCheck: false)', () => {
