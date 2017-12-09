@@ -51,7 +51,8 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
    */
   private _match(match: string|RequestMatch|((req: HttpRequest<any>) => boolean)): TestRequest[] {
     if (typeof match === 'string') {
-      return this.open.filter(testReq => testReq.request.urlWithParams === match);
+      return this.open.filter(
+          testReq => (testReq.request.urlWithParams === match) || (testReq.request.url === match));
     } else if (typeof match === 'function') {
       return this.open.filter(testReq => match(testReq.request));
     } else {

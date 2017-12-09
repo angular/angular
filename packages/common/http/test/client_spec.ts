@@ -49,6 +49,10 @@ export function main() {
         client.get('/test', {params: {'test': 'true'}}).subscribe(() => done());
         backend.expectOne('/test?test=true').flush({});
       });
+      it('with params without matching them, but the URL', (done: DoneFn) => {
+        client.jsonp('/test?output=json&callback=callback', 'callback').subscribe(() => done());
+        backend.expectOne('/test?output=json&callback=callback').flush('hello world!');
+      });
       it('for an arraybuffer', (done: DoneFn) => {
         const body = new ArrayBuffer(4);
         client.get('/test', {responseType: 'arraybuffer'}).subscribe(res => {
