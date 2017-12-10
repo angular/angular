@@ -2119,6 +2119,7 @@ describe('Integration', () => {
          expect(() => anchors[1].click()).not.toThrow();
          expect(() => buttons[0].click()).not.toThrow();
          expect(() => buttons[1].click()).not.toThrow();
+         expect(buttons[0].getAttribute('tabindex')).toBeNull();
        }));
 
     it('should not throw when some command is null', fakeAsync(() => {

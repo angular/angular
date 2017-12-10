@@ -9,13 +9,13 @@
 import {LocationStrategy} from '@angular/common';
 import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
-
 import {QueryParamsHandling} from '../config';
 import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {Params} from '../shared';
 import {UrlTree} from '../url_tree';
+
 
 
 /**
@@ -188,17 +188,20 @@ export class RouterLink implements OnChanges {
 
   constructor(
       private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
-    if (tabIndex == null) {
-      renderer.setAttribute(el.nativeElement, 'tabindex', '0');
-    }
-  }
+      @Attribute('tabindex') private tabIndex: string, private renderer: Renderer2,
+      private el: ElementRef) {}
 
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     // This is subscribed to by `RouterLinkActive` so that it knows to update when there are changes
     // to the RouterLinks it's tracking.
     this.onChanges.next(this);
+    const routerLinkChange = changes['routerLink'];
+    if (routerLinkChange) {
+      if (this.tabIndex == null && routerLinkChange.currentValue != null) {
+        this.renderer.setAttribute(this.el.nativeElement, 'tabindex', '0');
+      }
+    }
   }
 
   /**
