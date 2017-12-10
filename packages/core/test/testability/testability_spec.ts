@@ -16,13 +16,11 @@ import {scheduleMicroTask} from '../../src/util';
 
 
 
-// Schedules a microtasks (using a resolved promise .then())
-function microTask(fn: Function): void {
-  scheduleMicroTask(() => {
-    // We do double dispatch so that we  can wait for scheduleMicrotask in the Testability when
-    // NgZone becomes stable.
-    scheduleMicroTask(fn);
-  });
+// Schedules a task to be run after Testability checks for oustanding tasks. Since Testability
+// uses a 0 second timeout to check for outstanding tasks we add our 0 second timeout after a
+// micro task (which ensures Testability's timeout is run first).
+function afterTestabilityCheck(fn: Function): void {
+  scheduleMicroTask(() => setTimeout(fn));
 }
 
 @Injectable()
@@ -65,7 +63,7 @@ class MockNgZone extends NgZone {
       it('should fire whenstable callbacks if pending count is 0',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            testability.whenStable(execute);
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).toHaveBeenCalled();
              async.done();
            });
@@ -82,11 +80,11 @@ class MockNgZone extends NgZone {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).not.toHaveBeenCalled();
              testability.decreasePendingRequestCount();
 
-             microTask(() => {
+             afterTestabilityCheck(() => {
                expect(execute).not.toHaveBeenCalled();
                async.done();
              });
@@ -98,11 +96,11 @@ class MockNgZone extends NgZone {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).not.toHaveBeenCalled();
              testability.decreasePendingRequestCount();
 
-             microTask(() => {
+             afterTestabilityCheck(() => {
                expect(execute).toHaveBeenCalled();
                async.done();
              });
@@ -120,7 +118,7 @@ class MockNgZone extends NgZone {
       it('should fire whenstable callbacks with didWork if pending count is 0',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            testability.whenStable(execute);
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).toHaveBeenCalledWith(false);
              async.done();
            });
@@ -131,14 +129,14 @@ class MockNgZone extends NgZone {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              testability.decreasePendingRequestCount();
 
-             microTask(() => {
+             afterTestabilityCheck(() => {
                expect(execute).toHaveBeenCalledWith(true);
                testability.whenStable(execute2);
 
-               microTask(() => {
+               afterTestabilityCheck(() => {
                  expect(execute2).toHaveBeenCalledWith(false);
                  async.done();
                });
@@ -154,7 +152,7 @@ class MockNgZone extends NgZone {
            ngZone.stable();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).toHaveBeenCalled();
              async.done();
            });
@@ -173,11 +171,11 @@ class MockNgZone extends NgZone {
            ngZone.unstable();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).not.toHaveBeenCalled();
              ngZone.stable();
 
-             microTask(() => {
+             afterTestabilityCheck(() => {
                expect(execute).toHaveBeenCalled();
                async.done();
              });
@@ -198,15 +196,15 @@ class MockNgZone extends NgZone {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).not.toHaveBeenCalled();
              testability.decreasePendingRequestCount();
 
-             microTask(() => {
+             afterTestabilityCheck(() => {
                expect(execute).not.toHaveBeenCalled();
                ngZone.stable();
 
-               microTask(() => {
+               afterTestabilityCheck(() => {
                  expect(execute).toHaveBeenCalled();
                  async.done();
                });
@@ -221,19 +219,19 @@ class MockNgZone extends NgZone {
            testability.increasePendingRequestCount();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).not.toHaveBeenCalled();
              ngZone.stable();
 
-             microTask(() => {
+             afterTestabilityCheck(() => {
                expect(execute).not.toHaveBeenCalled();
                testability.decreasePendingRequestCount();
 
-               microTask(() => {
+               afterTestabilityCheck(() => {
                  expect(execute).not.toHaveBeenCalled();
                  testability.decreasePendingRequestCount();
 
-                 microTask(() => {
+                 afterTestabilityCheck(() => {
                    expect(execute).toHaveBeenCalled();
                    async.done();
                  });
@@ -248,11 +246,11 @@ class MockNgZone extends NgZone {
            ngZone.stable();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              expect(execute).toHaveBeenCalledWith(true);
              testability.whenStable(execute2);
 
-             microTask(() => {
+             afterTestabilityCheck(() => {
                expect(execute2).toHaveBeenCalledWith(false);
                async.done();
              });
@@ -264,14 +262,14 @@ class MockNgZone extends NgZone {
            ngZone.unstable();
            testability.whenStable(execute);
 
-           microTask(() => {
+           afterTestabilityCheck(() => {
              ngZone.stable();
 
-             microTask(() => {
+             afterTestabilityCheck(() => {
                expect(execute).toHaveBeenCalledWith(true);
                testability.whenStable(execute2);
 
-               microTask(() => {
+               afterTestabilityCheck(() => {
                  expect(execute2).toHaveBeenCalledWith(false);
                  async.done();
                });
