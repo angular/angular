@@ -1394,6 +1394,37 @@ Try the <live-example plnkr="final" title="Reactive Forms (final) in Plunker"></
 
 
 
+## File Upload
+Handling file uploads with Reactive forms has a couple of challenges you can solve with a few techniques.
+
+* Validation.
+* Integrating with the rest of the form.
+* Displaying progress to the user.
+
+### File Upload Accessor
+One way to handle file uploads is to create a `FileAccessor`—this handles retrieving the file from the native UI element and passing it to the form. From there the file must be uploaded along with the rest of the form data to the server.
+
+The first way would be to use a `ControlValueAccessor` to take the file out of an input with `type=file` and pass it to the form control.
+
+<code-example path="reactive-forms/src/app/file-upload/file-accessor.directive.ts" region="v1" title="src/app/file-upload/file-accessor.directive.ts" linenums="false">
+
+</code-example>
+
+### File Upload Component
+Another option would be to make a component which handles all of the file uploading for you. You could then pass it to the `FormControl` and expect the value to be set to the files url rather than the file itself, thus abstracting away the process of uploading it in the view of the form.
+
+<code-example path="reactive-forms/src/app/file-upload/file-upload.component.ts" region="v1" title="src/app/file-upload/file-upload.component.ts" linenums="false">
+
+</code-example>
+
+### File Upload Progress
+Finally, show users the progress of file uploads to provide some feedback. We can build onto our `FileUploadComponent` by utilizing the progress events emitted by the [HttpClient](/guide/http).
+
+<code-example path="reactive-forms/src/app/file-upload/file-upload-progress.component.ts" region="v1" title="src/app/file-upload/file-upload-progress.component.ts" linenums="false">
+
+</code-example>
+
+
 
 ## Summary
 
