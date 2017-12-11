@@ -15,7 +15,7 @@ function noop() {}
 export function main() {
   let component: TreeFunction;
   if (typeof window !== 'undefined') {
-    component = renderComponent(TreeFunction, {renderer: document});
+    component = renderComponent(TreeFunction);
     bindAction('#createDom', () => createDom(component));
     bindAction('#destroyDom', () => destroyDom(component));
     bindAction('#detectChanges', () => detectChanges(component));

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, b, c, defineComponent, detectChanges, e, rC, rc, s, t, v} from '@angular/core/src/render3/index';
+import {C, E, T, V, b, c, cR, cr, defineComponent, detectChanges, e, s, t, v} from '@angular/core/src/render3/index';
 import {ComponentDef} from '@angular/core/src/render3/public_interfaces';
 
 import {TableCell, buildTable, emptyTable} from '../util';
@@ -31,7 +31,7 @@ export class LargeTableComponent {
         }
         e();
       }
-      rC(2);
+      cR(2);
       {
         for (let row of ctx.data) {
           let cm1 = V(1);
@@ -42,7 +42,7 @@ export class LargeTableComponent {
               c();
               e();
             }
-            rC(1);
+            cR(1);
             {
               for (let cell of row) {
                 let cm2 = V(2);
@@ -58,12 +58,12 @@ export class LargeTableComponent {
                 v();
               }
             }
-            rc();
+            cr();
           }
           v();
         }
       }
-      rc();
+      cr();
     },
     factory: () => new LargeTableComponent(),
     inputs: {data: 'data'}
