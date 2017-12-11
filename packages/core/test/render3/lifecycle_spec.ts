@@ -20,10 +20,10 @@ describe('lifecycles', () => {
     let Parent = createOnDestroyComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
         E(0, Comp.ngComponentDef);
-        { D(0, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+        { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
         e();
       }
-      Comp.ngComponentDef.r(0, 0);
+      Comp.ngComponentDef.r(1, 0);
     });
 
     function createOnDestroyComponent(name: string, template: ComponentTemplate<any>) {
@@ -62,10 +62,10 @@ describe('lifecycles', () => {
           if (ctx.condition) {
             if (V(0)) {
               E(0, Comp.ngComponentDef);
-              { D(0, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+              { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
               e();
             }
-            Comp.ngComponentDef.r(0, 0);
+            Comp.ngComponentDef.r(1, 0);
             v();
           }
         }
@@ -95,16 +95,16 @@ describe('lifecycles', () => {
           if (ctx.condition) {
             if (V(0)) {
               E(0, Comp.ngComponentDef);
-              { D(0, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
-              e();
-              E(1, Comp.ngComponentDef);
               { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+              e();
+              E(2, Comp.ngComponentDef);
+              { D(3, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
               e();
             }
             p(0, 'val', b('1'));
-            p(1, 'val', b('2'));
-            Comp.ngComponentDef.r(0, 0);
-            Comp.ngComponentDef.r(1, 1);
+            p(2, 'val', b('2'));
+            Comp.ngComponentDef.r(1, 0);
+            Comp.ngComponentDef.r(3, 2);
             v();
           }
         }
@@ -135,10 +135,10 @@ describe('lifecycles', () => {
           if (ctx.condition) {
             if (V(0)) {
               E(0, Parent.ngComponentDef);
-              { D(0, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+              { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
               e();
             }
-            Parent.ngComponentDef.r(0, 0);
+            Parent.ngComponentDef.r(1, 0);
             v();
           }
         }
@@ -163,10 +163,10 @@ describe('lifecycles', () => {
       let Grandparent = createOnDestroyComponent('grandparent', function(ctx: any, cm: boolean) {
         if (cm) {
           E(0, Parent.ngComponentDef);
-          { D(0, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+          { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
           e();
         }
-        Parent.ngComponentDef.r(0, 0);
+        Parent.ngComponentDef.r(1, 0);
       });
 
       function Template(ctx: any, cm: boolean) {
@@ -179,10 +179,10 @@ describe('lifecycles', () => {
           if (ctx.condition) {
             if (V(0)) {
               E(0, Grandparent.ngComponentDef);
-              { D(0, Grandparent.ngComponentDef.n(), Grandparent.ngComponentDef); }
+              { D(1, Grandparent.ngComponentDef.n(), Grandparent.ngComponentDef); }
               e();
             }
-            Grandparent.ngComponentDef.r(0, 0);
+            Grandparent.ngComponentDef.r(1, 0);
             v();
           }
         }
@@ -216,32 +216,32 @@ describe('lifecycles', () => {
           if (ctx.condition) {
             if (V(0)) {
               E(0, Comp.ngComponentDef);
-              { D(0, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
-              e();
-              C(1);
-              c();
-              E(2, Comp.ngComponentDef);
               { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+              e();
+              C(2);
+              c();
+              E(3, Comp.ngComponentDef);
+              { D(4, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
               e();
             }
             p(0, 'val', b('1'));
-            Comp.ngComponentDef.r(0, 0);
-            rC(1);
+            Comp.ngComponentDef.r(1, 0);
+            rC(2);
             {
               if (ctx.condition2) {
                 if (V(0)) {
                   E(0, Comp.ngComponentDef);
-                  { D(0, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+                  { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
                   e();
                 }
                 p(0, 'val', b('2'));
-                Comp.ngComponentDef.r(0, 0);
+                Comp.ngComponentDef.r(1, 0);
                 v();
               }
             }
             rc();
-            p(2, 'val', b('3'));
-            Comp.ngComponentDef.r(1, 2);
+            p(3, 'val', b('3'));
+            Comp.ngComponentDef.r(4, 3);
             v();
           }
         }
@@ -294,32 +294,32 @@ describe('lifecycles', () => {
           if (ctx.condition) {
             if (V(0)) {
               E(0, Comp.ngComponentDef);
-              { D(0, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
-              e();
-              C(1);
-              c();
-              E(2, Comp.ngComponentDef);
               { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+              e();
+              C(2);
+              c();
+              E(3, Comp.ngComponentDef);
+              { D(4, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
               e();
             }
             p(0, 'val', b('1'));
-            Comp.ngComponentDef.r(0, 0);
-            rC(1);
+            Comp.ngComponentDef.r(1, 0);
+            rC(2);
             {
               for (let j = 2; j < ctx.len; j++) {
                 if (V(0)) {
                   E(0, Comp.ngComponentDef);
-                  { D(0, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+                  { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
                   e();
                 }
                 p(0, 'val', b(j));
-                Comp.ngComponentDef.r(0, 0);
+                Comp.ngComponentDef.r(1, 0);
                 v();
               }
             }
             rc();
-            p(2, 'val', b('5'));
-            Comp.ngComponentDef.r(1, 2);
+            p(3, 'val', b('5'));
+            Comp.ngComponentDef.r(4, 3);
             v();
           }
         }
@@ -380,16 +380,16 @@ describe('lifecycles', () => {
               }
               e();
               E(2, Comp.ngComponentDef);
-              { D(0, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+              { D(3, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
               e();
-              E(3, 'button');
+              E(4, 'button');
               {
                 L('click', ctx.onClick.bind(ctx));
-                T(4, 'Click me');
+                T(5, 'Click me');
               }
               e();
             }
-            Comp.ngComponentDef.r(0, 2);
+            Comp.ngComponentDef.r(3, 2);
             v();
           }
         }

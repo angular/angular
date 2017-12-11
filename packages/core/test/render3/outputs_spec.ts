@@ -46,12 +46,12 @@ describe('outputs', () => {
       if (cm) {
         E(0, ButtonToggle.ngComponentDef);
         {
-          D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+          D(1, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
           L('change', ctx.onChange.bind(ctx));
         }
         e();
       }
-      ButtonToggle.ngComponentDef.r(0, 0);
+      ButtonToggle.ngComponentDef.r(1, 0);
     }
 
     let counter = 0;
@@ -71,13 +71,13 @@ describe('outputs', () => {
       if (cm) {
         E(0, ButtonToggle.ngComponentDef);
         {
-          D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+          D(1, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
           L('change', ctx.onChange.bind(ctx));
           L('reset', ctx.onReset.bind(ctx));
         }
         e();
       }
-      ButtonToggle.ngComponentDef.r(0, 0);
+      ButtonToggle.ngComponentDef.r(1, 0);
     }
 
     let counter = 0;
@@ -98,12 +98,12 @@ describe('outputs', () => {
       if (cm) {
         E(0, ButtonToggle.ngComponentDef);
         {
-          D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+          D(1, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
           L('change', () => ctx.counter++);
         }
         e();
       }
-      ButtonToggle.ngComponentDef.r(0, 0);
+      ButtonToggle.ngComponentDef.r(1, 0);
     }
 
     const ctx = {counter: 0};
@@ -135,12 +135,12 @@ describe('outputs', () => {
           if (V(0)) {
             E(0, ButtonToggle.ngComponentDef);
             {
-              D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+              D(1, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
               L('change', ctx.onChange.bind(ctx));
             }
             e();
           }
-          ButtonToggle.ngComponentDef.r(0, 0);
+          ButtonToggle.ngComponentDef.r(1, 0);
           v();
         }
       }
@@ -189,12 +189,12 @@ describe('outputs', () => {
               if (V(0)) {
                 E(0, ButtonToggle.ngComponentDef);
                 {
-                  D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+                  D(1, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
                   L('change', ctx.onChange.bind(ctx));
                 }
                 e();
               }
-              ButtonToggle.ngComponentDef.r(0, 0);
+              ButtonToggle.ngComponentDef.r(1, 0);
               v();
             }
           }
@@ -262,16 +262,16 @@ describe('outputs', () => {
             e();
             E(2, ButtonToggle.ngComponentDef);
             {
-              D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+              D(3, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
               L('change', ctx.onChange.bind(ctx));
             }
             e();
-            E(3, DestroyComp.ngComponentDef);
-            { D(1, DestroyComp.ngComponentDef.n(), DestroyComp.ngComponentDef); }
+            E(4, DestroyComp.ngComponentDef);
+            { D(5, DestroyComp.ngComponentDef.n(), DestroyComp.ngComponentDef); }
             e();
           }
-          ButtonToggle.ngComponentDef.r(0, 2);
-          DestroyComp.ngComponentDef.r(1, 3);
+          ButtonToggle.ngComponentDef.r(3, 2);
+          DestroyComp.ngComponentDef.r(5, 4);
           v();
         }
       }
@@ -318,7 +318,7 @@ describe('outputs', () => {
       if (cm) {
         E(0, 'button');
         {
-          D(0, MyButton.ngDirectiveDef.n(), MyButton.ngDirectiveDef);
+          D(1, MyButton.ngDirectiveDef.n(), MyButton.ngDirectiveDef);
           L('click', ctx.onClick.bind(ctx));
         }
         e();
@@ -344,13 +344,13 @@ describe('outputs', () => {
       if (cm) {
         E(0, ButtonToggle.ngComponentDef);
         {
-          D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
-          D(1, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
+          D(1, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+          D(2, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
           L('change', ctx.onChange.bind(ctx));
         }
         e();
       }
-      ButtonToggle.ngComponentDef.r(0, 0);
+      ButtonToggle.ngComponentDef.r(1, 0);
     }
 
     let counter = 0;
@@ -378,14 +378,14 @@ describe('outputs', () => {
       if (cm) {
         E(0, ButtonToggle.ngComponentDef);
         {
-          D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
-          D(1, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
+          D(1, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+          D(2, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
           L('change', ctx.onChange.bind(ctx));
         }
         e();
       }
       p(0, 'change', b(ctx.change));
-      ButtonToggle.ngComponentDef.r(0, 0);
+      ButtonToggle.ngComponentDef.r(1, 0);
     }
 
     let counter = 0;
@@ -426,17 +426,18 @@ describe('outputs', () => {
           if (V(0)) {
             E(0, ButtonToggle.ngComponentDef);
             {
-              D(0, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
+              D(1, ButtonToggle.ngComponentDef.n(), ButtonToggle.ngComponentDef);
               L('change', ctx.onChange.bind(ctx));
             }
             e();
           }
+          ButtonToggle.ngComponentDef.r(1, 0);
           v();
         } else {
           if (V(1)) {
             E(0, 'div');
             {
-              D(0, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
+              D(1, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
               L('change', ctx.onChange.bind(ctx));
             }
             e();

@@ -33,9 +33,9 @@ describe('query', () => {
         m(1, Q(Child, true));
         E(2, Child.ngComponentDef);
         {
-          child1 = D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          E(3, Child.ngComponentDef);
-          { child2 = D(1, Child.ngComponentDef.n(), Child.ngComponentDef); }
+          child1 = D(3, Child.ngComponentDef.n(), Child.ngComponentDef);
+          E(4, Child.ngComponentDef);
+          { child2 = D(5, Child.ngComponentDef.n(), Child.ngComponentDef); }
           e();
         }
         e();

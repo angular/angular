@@ -33,11 +33,11 @@ describe('exports', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, MyComponent.ngComponentDef);
-        { D(0, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
+        { D(1, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
         e();
-        T(1);
+        T(2);
       }
-      t(1, D<MyComponent>(0).name);
+      t(2, D<MyComponent>(1).name);
     }
 
     class MyComponent {
@@ -79,13 +79,13 @@ describe('exports', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, MyComponent.ngComponentDef);
-        { D(0, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
+        { D(1, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
         e();
-        E(1, 'div');
-        { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+        E(2, 'div');
+        { D(3, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
         e();
       }
-      p(1, 'myDir', b(D<MyComponent>(0)));
+      p(2, 'myDir', b(D<MyComponent>(1)));
     }
 
     renderToHtml(Template, {});
@@ -98,11 +98,11 @@ describe('exports', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        D(0, SomeDirDef.n(), SomeDirDef);
+        D(1, SomeDirDef.n(), SomeDirDef);
         e();
-        T(1);
+        T(2);
       }
-      t(1, D<SomeDir>(0).name);
+      t(2, D<SomeDir>(1).name);
     }
 
     class SomeDir {
@@ -208,13 +208,13 @@ describe('exports', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, 'div');
-          { D(0, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+          { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
           e();
-          E(1, MyComponent.ngComponentDef);
-          { D(1, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
+          E(2, MyComponent.ngComponentDef);
+          { D(3, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
           e();
         }
-        p(0, 'myDir', b(D<MyComponent>(1)));
+        p(0, 'myDir', b(D<MyComponent>(3)));
       }
 
       renderToHtml(Template, {});
@@ -229,13 +229,13 @@ describe('exports', () => {
           T(0);
           T(1);
           E(2, 'comp');
-          { D(0, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
+          { D(3, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
           e();
-          E(3, 'input', ['value', 'one']);
+          E(4, 'input', ['value', 'one']);
           e();
         }
-        let myInput = E(3);
-        let myComp = D(0) as MyComponent;
+        let myInput = E(4);
+        let myComp = D(3) as MyComponent;
         t(0, b(myInput && (myInput as any).value));
         t(1, b(myComp && myComp.name));
       }
