@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": true,
+    "declaration": false,
     "stripInternal": true,
     "experimentalDecorators": true,
     "module": "es2015",
@@ -21,6 +21,7 @@
     "./closure-locale.ts"
   ],
   "angularCompilerOptions": {
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    "skipMetadataEmit": true
   }
 }
