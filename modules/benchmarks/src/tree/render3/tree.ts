@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, T, V, b, b1, c, defineComponent, detectChanges as _detectChanges, e, p, rC, rc, s, t, v} from '@angular/core/src/render3/index';
+import {C, D, E, T, V, b, b1, c, cR, cr, defineComponent, detectChanges as _detectChanges, e, p, s, t, v} from '@angular/core/src/render3/index';
 import {ComponentDef} from '@angular/core/src/render3/public_interfaces';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
@@ -50,7 +50,7 @@ export class TreeComponent {
       }
       s(0, 'background-color', b(ctx.data.depth % 2 ? '' : 'grey'));
       t(1, b1(' ', ctx.data.value, ' '));
-      rC(2);
+      cR(2);
       {
         if (ctx.data.left != null) {
           let cm0 = V(0);
@@ -66,8 +66,8 @@ export class TreeComponent {
           v();
         }
       }
-      rc();
-      rC(3);
+      cr();
+      cR(3);
       {
         if (ctx.data.right != null) {
           let cm0 = V(0);
@@ -83,7 +83,7 @@ export class TreeComponent {
           v();
         }
       }
-      rc();
+      cr();
     },
     factory: () => new TreeComponent,
     inputs: {data: 'data'}
@@ -118,7 +118,7 @@ export function TreeTpl(ctx: TreeNode, cm: boolean) {
   }
   s(0, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
   t(1, b1(' ', ctx.value, ' '));
-  rC(2);
+  cR(2);
   {
     if (ctx.left != null) {
       let cm0 = V(0);
@@ -126,8 +126,8 @@ export function TreeTpl(ctx: TreeNode, cm: boolean) {
       v();
     }
   }
-  rc();
-  rC(3);
+  cr();
+  cR(3);
   {
     if (ctx.right != null) {
       let cm0 = V(0);
@@ -135,5 +135,5 @@ export function TreeTpl(ctx: TreeNode, cm: boolean) {
       v();
     }
   }
-  rc();
+  cr();
 }

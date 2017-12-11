@@ -17,7 +17,7 @@ function noop() {}
 export function main() {
   let component: LargeTableComponent;
   if (typeof window !== 'undefined') {
-    component = renderComponent<LargeTableComponent>(LargeTableComponent, {renderer: document});
+    component = renderComponent<LargeTableComponent>(LargeTableComponent);
     bindAction('#createDom', () => createDom(component));
     bindAction('#destroyDom', () => destroyDom(component));
     bindAction('#updateDomProfile', profile(() => createDom(component), noop, 'update'));

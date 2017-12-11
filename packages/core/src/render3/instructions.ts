@@ -18,9 +18,9 @@ import {NgStaticData, LNodeStatic, LContainerStatic, InitialInputData, InitialIn
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, DirectiveDef} from './public_interfaces';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef} from './public_interfaces';
 import {QueryList, QueryState_} from './query';
-import {RComment, RElement, RText, Renderer3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './renderer';
+import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './renderer';
 import {isDifferent, stringify} from './util';
 
 export {queryRefresh} from './query';
@@ -73,6 +73,7 @@ let nextNgElementId = 0;
  * Renderer2.
  */
 let renderer: Renderer3;
+let rendererFactory: RendererFactory3;
 
 /** Used to set the parent property when nodes are created. */
 let previousOrParentNode: LNode;
@@ -278,18 +279,44 @@ export function createLNode(
 /**
  *
  * @param host Existing node to render into.
- * @param renderer Renderer to use.
  * @param template Template function with the instructions.
  * @param context to pass into the template.
  */
-export function renderTemplate<T>(host: LElement, template: ComponentTemplate<T>, context: T) {
+export function renderTemplate<T>(
+    hostNode: RElement, template: ComponentTemplate<T>, context: T,
+    providedRendererFactory: RendererFactory3, host: LElement | null): LElement {
+  if (host == null) {
+    rendererFactory = providedRendererFactory;
+    host = createLNode(
+        null, LNodeFlags.Element, hostNode,
+        createViewState(-1, providedRendererFactory.createRenderer(null, null), []));
+  }
   const hostView = host.data !;
   ngDevMode && assertNotEqual(hostView, null, 'hostView');
   hostView.ngStaticData = getTemplateStatic(template);
-  const oldView = enterView(hostView, host);
+  renderComponentOrTemplate(host, hostView, context, template);
+  return host;
+}
+
+export function renderComponentOrTemplate<T>(
+    node: LElement, viewState: ViewState, componentOrContext: T, template?: ComponentTemplate<T>) {
+  const oldView = enterView(viewState, node);
   try {
-    template(context, creationMode);
+    if (rendererFactory.begin) {
+      rendererFactory.begin();
+    }
+    if (template) {
+      ngStaticData = template.ngStaticData || (template.ngStaticData = [] as never);
+      template(componentOrContext !, creationMode);
+    } else {
+      // Element was stored at 0 and directive was stored at 1 in renderComponent
+      // so to refresh the component, r() needs to be called with (1, 0)
+      (componentOrContext.constructor as ComponentType<T>).ngComponentDef.r(1, 0);
+    }
   } finally {
+    if (rendererFactory.end) {
+      rendererFactory.end();
+    }
     leaveView(oldView);
   }
 }
@@ -406,7 +433,10 @@ export function elementStart(
       let componentView: ViewState|null = null;
       if (isHostElement) {
         const ngStaticData = getTemplateStatic((nameOrComponentDef as ComponentDef<any>).template);
-        componentView = addToViewTree(createViewState(-1, renderer, ngStaticData));
+        componentView = addToViewTree(createViewState(
+            -1, rendererFactory.createRenderer(
+                    native, (nameOrComponentDef as ComponentDef<any>).rendererType),
+            ngStaticData));
       }
 
       // Only component views should be added to the view tree directly. Embedded views are
@@ -453,16 +483,19 @@ export function createError(text: string, token: any) {
 
 
 /**
- * Used for bootstrapping existing nodes into rendering pipeline.
+ * Locates the host native element, used for bootstrapping existing nodes into rendering pipeline.
  *
  * @param elementOrSelector Render element or CSS selector to locate the element.
  */
-export function elementHost(elementOrSelector: RElement | string, def: ComponentDef<any>) {
+export function locateHostElement(
+    factory: RendererFactory3, elementOrSelector: RElement | string): RElement|null {
   ngDevMode && assertDataInRange(-1);
+  rendererFactory = factory;
+  const defaultRenderer = factory.createRenderer(null, null);
   const rNode = typeof elementOrSelector === 'string' ?
-      ((renderer as ProceduralRenderer3).selectRootElement ?
-           (renderer as ProceduralRenderer3).selectRootElement(elementOrSelector) :
-           (renderer as ObjectOrientedRenderer3).querySelector !(elementOrSelector)) :
+      ((defaultRenderer as ProceduralRenderer3).selectRootElement ?
+           (defaultRenderer as ProceduralRenderer3).selectRootElement(elementOrSelector) :
+           (defaultRenderer as ObjectOrientedRenderer3).querySelector !(elementOrSelector)) :
       elementOrSelector;
   if (ngDevMode && !rNode) {
     if (typeof elementOrSelector === 'string') {
@@ -471,6 +504,15 @@ export function elementHost(elementOrSelector: RElement | string, def: Component
       throw createError('Host node is required:', elementOrSelector);
     }
   }
+  return rNode;
+}
+
+/**
+ * Creates the host LNode..
+ *
+ * @param rNode Render host element.
+ */
+export function hostElement(rNode: RElement | null, def: ComponentDef<any>) {
   createLNode(
       0, LNodeFlags.Element, rNode, createViewState(-1, renderer, getTemplateStatic(def.template)));
 }

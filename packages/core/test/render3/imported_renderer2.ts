@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter, NgZone, Renderer2} from '@angular/core';
+import {EventEmitter, NgZone, RendererFactory2} from '@angular/core';
 import {EventManager, ɵDomEventsPlugin, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
-
 
 // Adapted renderer: it creates a Renderer2 instance and adapts it to Renderer3
 // TODO: remove once this code is in angular/angular
@@ -47,11 +46,9 @@ export class SimpleDomEventsPlugin extends ɵDomEventsPlugin {
   }
 }
 
-export function getRenderer2(document: any): Renderer2 {
+export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager =
       new EventManager([new SimpleDomEventsPlugin(document, fakeNgZone)], fakeNgZone);
-  const rendererFactory2 =
-      new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
-  return rendererFactory2.createRenderer(null, null);
+  return new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
 }

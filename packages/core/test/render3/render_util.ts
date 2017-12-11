@@ -9,19 +9,17 @@
 import {ComponentTemplate, ComponentType, PublicFeature, defineComponent, renderComponent as _renderComponent} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, createLNode, createViewState, renderTemplate} from '../../src/render3/instructions';
 import {LElement, LNodeFlags} from '../../src/render3/l_node';
-import {RElement, RText, Renderer3} from '../../src/render3/renderer';
-import {getRenderer2} from './imported_renderer2';
+import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/renderer';
+import {getRendererFactory2} from './imported_renderer2';
 
 export const document = ((global || window) as any).document;
 export let containerEl: HTMLElement = null !;
-let host: LElement;
-let activeRenderer: Renderer3 =
-    (typeof process !== 'undefined' && process.argv[3] && process.argv[3] === '--r=renderer2') ?
-    getRenderer2(document) :
-    document;
+let host: LElement|null;
+const isRenderer2 = process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
-console.log(
-    `Running tests with ${activeRenderer === document ? 'document' : 'Renderer2'} renderer...`);
+console.log(`Running tests with ${!isRenderer2 ? 'document' : 'Renderer2'} renderer...`);
+const testRendererFactory: RendererFactory3 =
+    isRenderer2 ? getRendererFactory2(document) : domRendererFactory3;
 
 export const requestAnimationFrame:
     {(fn: () => void): void; flush(): void; queue: (() => void)[];} = function(fn: () => void) {
@@ -37,20 +35,22 @@ export function resetDOM() {
   requestAnimationFrame.queue = [];
   containerEl = document.createElement('div');
   containerEl.setAttribute('host', '');
-  host = createLNode(
-      null, LNodeFlags.Element, containerEl, createViewState(-1, activeRenderer, null !));
+  host = null;
   // TODO: assert that the global state is clean (e.g. ngData, previousOrParentNode, etc)
 }
 
-export function renderToHtml(template: ComponentTemplate<any>, ctx: any) {
-  renderTemplate(host, template, ctx);
-  return toHtml(host.native);
+export function renderToHtml(
+    template: ComponentTemplate<any>, ctx: any, providedRendererFactory?: RendererFactory3) {
+  host = renderTemplate(
+      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host);
+  return toHtml(containerEl);
 }
 
 beforeEach(resetDOM);
 
-export function renderComponent<T>(type: ComponentType<T>): T {
-  return _renderComponent(type, {renderer: activeRenderer, host: containerEl});
+export function renderComponent<T>(type: ComponentType<T>, rendererFactory?: RendererFactory3): T {
+  return _renderComponent(
+      type, {rendererFactory: rendererFactory || testRendererFactory, host: containerEl});
 }
 
 export function toHtml<T>(componentOrElement: T | RElement): string {
