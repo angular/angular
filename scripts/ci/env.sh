@@ -17,7 +17,7 @@ function  setEnvVar() {
   if [[ ${print} == "print" ]]; then
     echo ${name}=${value}
   fi
-  export ${name}=${value}
+  export ${name}="${value}"
 }
 
 # use BASH_SOURCE so that we get the right path when this script is called AND source-d
@@ -37,6 +37,7 @@ fi
 setEnvVar NODE_VERSION 8.9.1
 setEnvVar YARN_VERSION 1.0.2
 setEnvVar CHROMIUM_VERSION 499098 # Chrome 62 linux stable, see https://www.chromium.org/developers/calendar
+setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.33"
 setEnvVar BAZEL_VERSION 0.8.1
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar ANGULAR_CLI_VERSION 1.5.0-rc.2
