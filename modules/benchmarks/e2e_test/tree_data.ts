@@ -50,6 +50,12 @@ export const Benchmarks: Benchmark[] = [
     buttons: CreateDestroyButtons,
   },
   {
+    id: `deepTree.ng2.render3`,
+    url: 'all/benchmarks/src/tree/render3/index.html',
+    buttons: CreateDestroyDetectChangesButtons,
+    ignoreBrowserSynchronization: true,
+  },
+  {
     id: `deepTree.baseline`,
     url: 'all/benchmarks/src/tree/baseline/index.html',
     buttons: CreateDestroyButtons,
