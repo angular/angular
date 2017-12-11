@@ -25,6 +25,13 @@ describe('largetable benchmark spec', () => {
     });
   });
 
+  it('should work for render3', () => {
+    testTableBenchmark({
+      url: 'all/benchmarks/src/largetable/render3/index.html',
+      ignoreBrowserSynchronization: true,
+    });
+  });
+
   it('should work for the baseline', () => {
     testTableBenchmark({
       url: 'all/benchmarks/src/largetable/baseline/index.html',
