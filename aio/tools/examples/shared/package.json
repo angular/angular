@@ -6,7 +6,7 @@
   "scripts": {
     "http-server": "http-server",
     "protractor": "protractor",
-    "webdriver:update": "webdriver-manager update --standalone false --gecko false",
+    "webdriver:update": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "postinstall": "yarn webdriver:update"
   },
   "keywords": [],
