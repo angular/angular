@@ -1,3 +1,19 @@
+<a name="5.0.1"></a>
+## [5.0.1 ceramic-gravy](https://github.com/angular/material2/compare/5.0.0...5.0.1) (2017-12-11)
+
+
+### Bug Fixes
+
+* **common:** safety check for window in common module. ([#8816](https://github.com/angular/material2/issues/8816)) ([fb9ea53](https://github.com/angular/material2/commit/fb9ea53)), closes [#8809](https://github.com/angular/material2/issues/8809)
+* **autosize:** not updating when window is resized ([#8619](https://github.com/angular/material2/issues/8619)) ([b8664b8](https://github.com/angular/material2/commit/b8664b8)), closes [#8610](https://github.com/angular/material2/issues/8610)
+* **autosize:** remove resize handle ([#8621](https://github.com/angular/material2/issues/8621)) ([0d2a419](https://github.com/angular/material2/commit/0d2a419))
+* **overlay:** export OverlaySizeConfig ([#8932](https://github.com/angular/material2/issues/8932)) ([a626c8f](https://github.com/angular/material2/commit/a626c8f))
+* **portal:** inaccurate hasAttahed result and portal being cleared if attached too early ([#8642](https://github.com/angular/material2/issues/8642)) ([b488b39](https://github.com/angular/material2/commit/b488b39)), closes [/github.com/angular/material2/blob/master/src/lib/dialog/dialog-container.ts#L118](https://github.com//github.com/angular/material2/blob/master/src/lib/dialog/dialog-container.ts/issues/L118) [#8628](https://github.com/angular/material2/issues/8628)
+* **select,input:** inconsistent disabled text color ([#7794](https://github.com/angular/material2/issues/7794)) ([f31be6f](https://github.com/angular/material2/commit/f31be6f)), closes [#7793](https://github.com/angular/material2/issues/7793)
+* **tooltip:** not closing when scrolling away ([#8688](https://github.com/angular/material2/issues/8688)) ([d5a2fca](https://github.com/angular/material2/commit/d5a2fca))
+
+
+
 <a name="5.0.0"></a>
 # [5.0.0 velvet-cuttlefish](https://github.com/angular/material2/compare/5.0.0-rc.3...5.0.0) (2017-12-06)
 
