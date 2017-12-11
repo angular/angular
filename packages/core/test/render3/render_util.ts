@@ -37,7 +37,7 @@ export function resetDOM() {
   requestAnimationFrame.queue = [];
   containerEl = document.createElement('div');
   containerEl.setAttribute('host', '');
-  host = createLNode(null, LNodeFlags.Element, containerEl, createViewState(-1, activeRenderer));
+  host = createLNode(null, LNodeFlags.Element, containerEl, createViewState(-1, activeRenderer, null !));
   // TODO: assert that the global state is clean (e.g. ngData, previousOrParentNode, etc)
 }
 

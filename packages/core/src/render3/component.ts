@@ -143,10 +143,12 @@ export function renderComponent<T>(
   const renderer = opts.renderer || document;
   const componentDef = componentType.ngComponentDef;
   let component: T;
-  const oldView = enterView(createViewState(-1, renderer), null);
+  const oldView = enterView(createViewState(-1, renderer, []), null);
   try {
-    elementHost(opts.host || componentDef.tag);
-    component = directiveCreate(0, componentDef.n(), componentDef);
+    // Create element node at index 0 in data array
+    elementHost(opts.host || componentDef.tag, componentDef);
+    // Create directive instance with n() and store at index 1 in data array (el is 0)
+    component = directiveCreate(1, componentDef.n(), componentDef);
   } finally {
     leaveView(oldView);
   }
@@ -165,7 +167,9 @@ export function detectChanges<T>(component: T) {
   ngDevMode && assertNotNull(hostNode.data, 'hostNode.data');
   const oldView = enterView(hostNode.view !, hostNode);
   try {
-    (component.constructor as ComponentType<T>).ngComponentDef.r(0, 0);
+    // Element was stored at 0 and directive was stored at 1 in renderComponent
+    // so to refresh the component, r() needs to be called with (1, 0)
+    (component.constructor as ComponentType<T>).ngComponentDef.r(1, 0);
     isDirty = false;
   } finally {
     leaveView(oldView);

@@ -204,14 +204,14 @@ describe('event listeners', () => {
           if (V(0)) {
             T(0, 'Hello');
             E(1, MyComp.ngComponentDef);
-            { D(0, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+            { D(2, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
             e();
-            E(2, MyComp.ngComponentDef);
-            { D(1, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+            E(3, MyComp.ngComponentDef);
+            { D(4, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
             e();
           }
-          MyComp.ngComponentDef.r(0, 1);
-          MyComp.ngComponentDef.r(1, 2);
+          MyComp.ngComponentDef.r(2, 1);
+          MyComp.ngComponentDef.r(4, 3);
           v();
         }
       }
