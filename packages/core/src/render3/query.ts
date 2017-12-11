@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveDef} from '@angular/core/src/render3/public_interfaces';
 import {Observable} from 'rxjs/Observable';
 
 import * as viewEngine from '../core';
@@ -15,6 +14,7 @@ import {assertNotNull} from './assert';
 import {injectElementRefForNode} from './di';
 import {QueryState} from './interfaces';
 import {LContainer, LElement, LNode, LNodeFlags, LView} from './l_node';
+import {DirectiveDef} from './public_interfaces';
 
 
 
