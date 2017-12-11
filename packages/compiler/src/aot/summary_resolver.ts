@@ -65,13 +65,15 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
   }
 
   resolveSummary(staticSymbol: StaticSymbol): Summary<StaticSymbol>|null {
-    staticSymbol.assertNoMembers();
-    let summary = this.summaryCache.get(staticSymbol);
+    const rootSymbol = staticSymbol.members.length ?
+        this.staticSymbolCache.get(staticSymbol.filePath, staticSymbol.name) :
+        staticSymbol;
+    let summary = this.summaryCache.get(rootSymbol);
     if (!summary) {
       this._loadSummaryFile(staticSymbol.filePath);
       summary = this.summaryCache.get(staticSymbol) !;
     }
-    return summary || null;
+    return (rootSymbol === staticSymbol && summary) || null;
   }
 
   getSymbolsOf(filePath: string): StaticSymbol[]|null {
