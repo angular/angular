@@ -57,7 +57,7 @@
     "~~check-env": "node scripts/check-environment",
     "~~build": "ng build --target=production --environment=stable -sm --build-optimizer",
     "post~~build": "yarn sw-manifest && yarn sw-copy",
-    "~~update-webdriver": "webdriver-manager update --standalone false --gecko false"
+    "~~update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG"
   },
   "engines": {
     "node": ">=6.9.5 <7.0.0",

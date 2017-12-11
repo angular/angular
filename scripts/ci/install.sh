@@ -35,7 +35,7 @@ travisFoldEnd "install-yarn"
 
 # Install all npm dependencies according to yarn.lock
 travisFoldStart "yarn-install"
-  node tools/npm/check-node-modules --purge || yarn install --freeze-lockfile --non-interactive
+  (node tools/npm/check-node-modules --purge && yarn update-webdriver) || yarn install --frozen-lockfile --non-interactive
 travisFoldEnd "yarn-install"
 
 
@@ -100,12 +100,6 @@ if [[ ${TRAVIS} && (${CI_MODE} == "browserstack_required" || ${CI_MODE} == "brow
     )
   travisFoldEnd "install-browserstack"
 fi
-
-
-# Install Selenium WebDriver
-travisFoldStart "webdriver-manager-update"
-  $(npm bin)/webdriver-manager update
-travisFoldEnd "webdriver-manager-update"
 
 
 # Install bower packages
