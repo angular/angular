@@ -27,12 +27,12 @@ describe('di', () => {
         if (cm) {
           E(0, 'div');
           {
-            D(0, DirectiveDef.n(), DirectiveDef);
-            T(1);
+            D(1, DirectiveDef.n(), DirectiveDef);
+            T(2);
           }
           e();
         }
-        t(1, b(D<Directive>(0).value));
+        t(2, b(D<Directive>(1).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>Created</div>');
@@ -66,18 +66,18 @@ describe('di', () => {
         if (cm) {
           E(0, 'div');
           {
-            D(0, DirectiveADef.n(), DirectiveADef);
-            E(1, 'span');
+            D(1, DirectiveADef.n(), DirectiveADef);
+            E(2, 'span');
             {
-              D(1, DirectiveBDef.n(), DirectiveBDef);
-              D(2, DirectiveCDef.n(), DirectiveCDef);
-              T(2);
+              D(3, DirectiveBDef.n(), DirectiveBDef);
+              D(4, DirectiveCDef.n(), DirectiveCDef);
+              T(5);
             }
             e();
           }
           e();
         }
-        t(2, b(D<DirectiveC>(2).value));
+        t(5, b(D<DirectiveC>(4).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div><span>AB</span></div>');
@@ -113,13 +113,13 @@ describe('di', () => {
         if (cm) {
           E(0, 'div');
           {
-            D(0, DirectiveDef.n(), DirectiveDef);
-            D(1, DirectiveSameInstanceDef.n(), DirectiveSameInstanceDef);
-            T(1);
+            D(1, DirectiveDef.n(), DirectiveDef);
+            D(2, DirectiveSameInstanceDef.n(), DirectiveSameInstanceDef);
+            T(3);
           }
           e();
         }
-        t(1, b2('', D<Directive>(0).value, '-', D<DirectiveSameInstance>(1).value, ''));
+        t(3, b2('', D<Directive>(1).value, '-', D<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ElementRef-true</div>');
@@ -156,13 +156,13 @@ describe('di', () => {
         if (cm) {
           C(0, function() {});
           {
-            D(0, DirectiveDef.n(), DirectiveDef);
-            D(1, DirectiveSameInstanceDef.n(), DirectiveSameInstanceDef);
+            D(1, DirectiveDef.n(), DirectiveDef);
+            D(2, DirectiveSameInstanceDef.n(), DirectiveSameInstanceDef);
           }
           c();
-          T(1);
+          T(3);
         }
-        t(1, b2('', D<Directive>(0).value, '-', D<DirectiveSameInstance>(1).value, ''));
+        t(3, b2('', D<Directive>(1).value, '-', D<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('TemplateRef-true');
@@ -198,13 +198,13 @@ describe('di', () => {
         if (cm) {
           E(0, 'div');
           {
-            D(0, DirectiveDef.n(), DirectiveDef);
-            D(1, DirectiveSameInstanceDef.n(), DirectiveSameInstanceDef);
-            T(1);
+            D(1, DirectiveDef.n(), DirectiveDef);
+            D(2, DirectiveSameInstanceDef.n(), DirectiveSameInstanceDef);
+            T(3);
           }
           e();
         }
-        t(1, b2('', D<Directive>(0).value, '-', D<DirectiveSameInstance>(1).value, ''));
+        t(3, b2('', D<Directive>(1).value, '-', D<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ViewContainerRef-true</div>');
@@ -285,24 +285,24 @@ describe('di', () => {
         if (cm) {
           E(0, 'div');
           {
-            D(0, ParentDirectiveDef.n(), ParentDirectiveDef);
-            C(1);
+            D(1, ParentDirectiveDef.n(), ParentDirectiveDef);
+            C(2);
             c();
           }
           e();
         }
-        rC(1);
+        rC(2);
         {
           if (V(0)) {
             E(0, 'span');
             {
-              D(0, ChildDirectiveDef.n(), ChildDirectiveDef);
-              D(1, Child2DirectiveDef.n(), Child2DirectiveDef);
-              T(1);
+              D(1, ChildDirectiveDef.n(), ChildDirectiveDef);
+              D(2, Child2DirectiveDef.n(), Child2DirectiveDef);
+              T(3);
             }
             e();
           }
-          t(1, b2('', D<ChildDirective>(0).value, '-', D<Child2Directive>(1).value, ''));
+          t(3, b2('', D<ChildDirective>(1).value, '-', D<Child2Directive>(2).value, ''));
           v();
         }
         rc();
@@ -318,7 +318,7 @@ describe('di', () => {
 
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
-      const contentView = createViewState(-1, null !);
+      const contentView = createViewState(-1, null !, []);
       const oldView = enterView(contentView, null !);
       try {
         const parent = createLNode(0, LNodeFlags.Element, null, null);

@@ -10,6 +10,7 @@ import {Observable} from 'rxjs/Observable';
 import {QueryList as IQueryList, Type} from '../core';
 import {assertNotNull} from './assert';
 import {LContainer, LNode, LNodeFlags, LView, QueryState} from './interfaces';
+import {DirectiveDef} from '@angular/core/src/render3/public_interfaces';
 
 
 
@@ -101,14 +102,14 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
   while (predicate) {
     const type = predicate.type;
     if (type) {
-      const directives = node.view.directives;
+      const ngStaticData = node.view.ngStaticData;
       const flags = node.flags;
       for (let i = flags >> LNodeFlags.INDX_SHIFT,
                ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
            i < ii; i++) {
-        const def = directives[i << 1 | 1];
+        const def = ngStaticData[i] as DirectiveDef<any>;
         if (def.diPublic && def.type === type) {
-          predicate.values.push(directives[i << 1]);
+          predicate.values.push(node.view.data[i]);
         }
       }
     }

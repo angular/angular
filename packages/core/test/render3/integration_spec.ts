@@ -231,10 +231,10 @@ describe('iv integration test', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, TodoComponent.ngComponentDef);
-          { D(0, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
           e();
         }
-        TodoComponent.ngComponentDef.r(0, 0);
+        TodoComponent.ngComponentDef.r(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>');
@@ -244,11 +244,11 @@ describe('iv integration test', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, TodoComponent.ngComponentDef);
-          { D(0, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
           e();
-          T(1, 'two');
+          T(2, 'two');
         }
-        TodoComponent.ngComponentDef.r(0, 0);
+        TodoComponent.ngComponentDef.r(1, 0);
       }
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>two');
     });
@@ -261,14 +261,14 @@ describe('iv integration test', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, TodoComponent.ngComponentDef);
-          { D(0, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
-          e();
-          E(1, TodoComponent.ngComponentDef);
           { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
           e();
+          E(2, TodoComponent.ngComponentDef);
+          { D(3, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          e();
         }
-        TodoComponent.ngComponentDef.r(0, 0);
-        TodoComponent.ngComponentDef.r(1, 1);
+        TodoComponent.ngComponentDef.r(1, 0);
+        TodoComponent.ngComponentDef.r(3, 2);
       }
       expect(renderToHtml(Template, null))
           .toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
@@ -303,12 +303,12 @@ describe('iv integration test', () => {
         if (cm) {
           E(0, TodoComponentHostBinding.ngComponentDef);
           {
-            D(0, TodoComponentHostBinding.ngComponentDef.n(),
+            D(1, TodoComponentHostBinding.ngComponentDef.n(),
               TodoComponentHostBinding.ngComponentDef);
           }
           e();
         }
-        TodoComponentHostBinding.ngComponentDef.r(0, 0);
+        TodoComponentHostBinding.ngComponentDef.r(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<todo title="one">one</todo>');
@@ -338,10 +338,10 @@ describe('iv integration test', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, MyComp.ngComponentDef);
-          { D(0, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+          { D(1, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
           e();
         }
-        MyComp.ngComponentDef.r(0, 0);
+        MyComp.ngComponentDef.r(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<comp><p>Bess</p></comp>');
@@ -385,11 +385,11 @@ describe('iv integration test', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, MyComp.ngComponentDef);
-          { D(0, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+          { D(1, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
           e();
         }
         p(0, 'condition', b(ctx.condition));
-        MyComp.ngComponentDef.r(0, 0);
+        MyComp.ngComponentDef.r(1, 0);
       }
 
       expect(renderToHtml(Template, {condition: true})).toEqual('<comp><div>text</div></comp>');

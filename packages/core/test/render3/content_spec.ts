@@ -32,12 +32,12 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          T(1, 'content');
+          D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+          T(2, 'content');
         }
         e();
       }
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
@@ -54,12 +54,12 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          T(1, 'content');
+          D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+          T(2, 'content');
         }
         e();
       }
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content</child>');
@@ -79,26 +79,26 @@ describe('content projection', () => {
         m(0, dP());
         E(1, GrandChild.ngComponentDef);
         {
-          D(0, GrandChild.ngComponentDef.n(), GrandChild.ngComponentDef);
-          P(2, 0);
+          D(2, GrandChild.ngComponentDef.n(), GrandChild.ngComponentDef);
+          P(3, 0);
         }
         e();
-        GrandChild.ngComponentDef.r(0, 1);
+        GrandChild.ngComponentDef.r(2, 1);
       }
     });
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          E(1, 'b');
-          T(2, 'Hello');
+          D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+          E(2, 'b');
+          T(3, 'Hello');
           e();
-          T(3, 'World!');
+          T(4, 'World!');
         }
         e();
       }
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
@@ -118,15 +118,15 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          T(1, '(');
-          C(2);
+          D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+          T(2, '(');
+          C(3);
           c();
-          T(3, ')');
+          T(4, ')');
         }
         e();
       }
-      rC(2);
+      rC(3);
       {
         if (ctx.value) {
           if (V(0)) {
@@ -136,7 +136,7 @@ describe('content projection', () => {
         }
       }
       rc();
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>()</div></child>');
@@ -159,13 +159,13 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          C(1);
+          D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+          C(2);
           c();
         }
         e();
       }
-      rC(1);
+      rC(2);
       {
         if (ctx.value) {
           if (V(0)) {
@@ -175,7 +175,7 @@ describe('content projection', () => {
         }
       }
       rc();
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child></child>');
@@ -202,15 +202,15 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          T(1, '(');
-          C(2);
+          D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+          T(2, '(');
+          C(3);
           c();
-          T(3, ')');
+          T(4, ')');
         }
         e();
       }
-      rC(2);
+      rC(3);
       {
         if (ctx.value) {
           if (V(0)) {
@@ -225,7 +225,7 @@ describe('content projection', () => {
         }
       }
       rc();
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>(else)</div></child>');
@@ -280,12 +280,12 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, childCmptInstance = Child.ngComponentDef.n(), Child.ngComponentDef);
-          T(1, 'content');
+          D(1, childCmptInstance = Child.ngComponentDef.n(), Child.ngComponentDef);
+          T(2, 'content');
         }
         e();
       }
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div><span>content</span></div></child>');
@@ -335,12 +335,12 @@ describe('content projection', () => {
          if (cm) {
            E(0, Child.ngComponentDef);
            {
-             D(0, childCmptInstance = Child.ngComponentDef.n(), Child.ngComponentDef);
-             T(1, 'content');
+             D(1, childCmptInstance = Child.ngComponentDef.n(), Child.ngComponentDef);
+             T(2, 'content');
            }
            e();
          }
-         Child.ngComponentDef.r(0, 0);
+         Child.ngComponentDef.r(1, 0);
        });
        const parent = renderComponent(Parent);
        expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
@@ -374,12 +374,12 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-          T(1, 'content');
+          D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+          T(2, 'content');
         }
         e();
       }
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div></div><span>content</span></child>');
@@ -434,12 +434,12 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child.ngComponentDef);
         {
-          D(0, childCmptInstance = Child.ngComponentDef.n(), Child.ngComponentDef);
-          T(1, 'content');
+          D(1, childCmptInstance = Child.ngComponentDef.n(), Child.ngComponentDef);
+          T(2, 'content');
         }
         e();
       }
-      Child.ngComponentDef.r(0, 0);
+      Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content<div></div></child>');
@@ -479,17 +479,17 @@ describe('content projection', () => {
         if (cm) {
           E(0, Child.ngComponentDef);
           {
-            D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-            E(1, 'span', ['title', 'toFirst']);
-            { T(2, '1'); }
+            D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+            E(2, 'span', ['title', 'toFirst']);
+            { T(3, '1'); }
             e();
-            E(3, 'span', ['title', 'toSecond']);
-            { T(4, '2'); }
+            E(4, 'span', ['title', 'toSecond']);
+            { T(5, '2'); }
             e();
           }
           e();
         }
-        Child.ngComponentDef.r(0, 0);
+        Child.ngComponentDef.r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -526,17 +526,17 @@ describe('content projection', () => {
         if (cm) {
           E(0, Child.ngComponentDef);
           {
-            D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-            E(1, 'span', ['class', 'toFirst']);
-            { T(2, '1'); }
+            D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+            E(2, 'span', ['class', 'toFirst']);
+            { T(3, '1'); }
             e();
-            E(3, 'span', ['class', 'toSecond']);
-            { T(4, '2'); }
+            E(4, 'span', ['class', 'toSecond']);
+            { T(5, '2'); }
             e();
           }
           e();
         }
-        Child.ngComponentDef.r(0, 0);
+        Child.ngComponentDef.r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -573,17 +573,17 @@ describe('content projection', () => {
         if (cm) {
           E(0, Child.ngComponentDef);
           {
-            D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-            E(1, 'span', ['class', 'other toFirst']);
-            { T(2, '1'); }
+            D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+            E(2, 'span', ['class', 'other toFirst']);
+            { T(3, '1'); }
             e();
-            E(3, 'span', ['class', 'toSecond noise']);
-            { T(4, '2'); }
+            E(4, 'span', ['class', 'toSecond noise']);
+            { T(5, '2'); }
             e();
           }
           e();
         }
-        Child.ngComponentDef.r(0, 0);
+        Child.ngComponentDef.r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -619,17 +619,17 @@ describe('content projection', () => {
         if (cm) {
           E(0, Child.ngComponentDef);
           {
-            D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-            E(1, 'span', ['class', 'toFirst']);
-            { T(2, '1'); }
+            D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+            E(2, 'span', ['class', 'toFirst']);
+            { T(3, '1'); }
             e();
-            E(3, 'span', ['class', 'toSecond']);
-            { T(4, '2'); }
+            E(4, 'span', ['class', 'toSecond']);
+            { T(5, '2'); }
             e();
           }
           e();
         }
-        Child.ngComponentDef.r(0, 0);
+        Child.ngComponentDef.r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -665,18 +665,18 @@ describe('content projection', () => {
         if (cm) {
           E(0, Child.ngComponentDef);
           {
-            D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-            E(1, 'span', ['class', 'toFirst']);
-            { T(2, '1'); }
+            D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+            E(2, 'span', ['class', 'toFirst']);
+            { T(3, '1'); }
             e();
-            E(3, 'span');
-            { T(4, 'remaining'); }
+            E(4, 'span');
+            { T(5, 'remaining'); }
             e();
-            T(5, 'more remaining');
+            T(6, 'more remaining');
           }
           e();
         }
-        Child.ngComponentDef.r(0, 0);
+        Child.ngComponentDef.r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -713,14 +713,14 @@ describe('content projection', () => {
         if (cm) {
           E(0, Child.ngComponentDef);
           {
-            D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-            E(1, 'span');
-            { T(2, '1'); }
+            D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+            E(2, 'span');
+            { T(3, '1'); }
             e();
-            E(3, 'span', ['class', 'toSecond']);
-            { T(4, '2'); }
+            E(4, 'span', ['class', 'toSecond']);
+            { T(5, '2'); }
             e();
-            T(5, 'remaining');
+            T(6, 'remaining');
           }
           e();
         }
@@ -765,14 +765,14 @@ describe('content projection', () => {
           m(0, dP());
           E(1, GrandChild.ngComponentDef);
           {
-            D(0, GrandChild.ngComponentDef.n(), GrandChild.ngComponentDef);
-            P(2, 0);
-            E(3, 'span');
-            { T(4, 'in child template'); }
+            D(2, GrandChild.ngComponentDef.n(), GrandChild.ngComponentDef);
+            P(3, 0);
+            E(4, 'span');
+            { T(5, 'in child template'); }
             e();
           }
           e();
-          GrandChild.ngComponentDef.r(0, 1);
+          GrandChild.ngComponentDef.r(2, 1);
         }
       });
 
@@ -787,14 +787,14 @@ describe('content projection', () => {
         if (cm) {
           E(0, Child.ngComponentDef);
           {
-            D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-            E(1, 'span');
-            { T(2, 'parent content'); }
+            D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+            E(2, 'span');
+            { T(3, 'parent content'); }
             e();
           }
           e();
         }
-        Child.ngComponentDef.r(0, 0);
+        Child.ngComponentDef.r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -828,13 +828,13 @@ describe('content projection', () => {
         if (cm) {
           E(0, Child.ngComponentDef);
           {
-            D(0, Child.ngComponentDef.n(), Child.ngComponentDef);
-            C(1, undefined, 'div');
+            D(1, Child.ngComponentDef.n(), Child.ngComponentDef);
+            C(2, undefined, 'div');
             c();
           }
           e();
         }
-        rC(1);
+        rC(2);
         {
           if (true) {
             if (V(0)) {
@@ -846,7 +846,7 @@ describe('content projection', () => {
           }
         }
         rc();
-        Child.ngComponentDef.r(0, 0);
+        Child.ngComponentDef.r(1, 0);
       });
       const parent = renderComponent(Parent);
       expect(toHtml(parent)).toEqual('<child><span><div>content</div></span></child>');

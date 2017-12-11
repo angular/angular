@@ -31,10 +31,10 @@ describe('directive', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, 'span');
-          { D(0, DirectiveDef.n(), DirectiveDef); }
+          { D(1, DirectiveDef.n(), DirectiveDef); }
           e();
         }
-        DirectiveDef.r(0, 0);
+        DirectiveDef.r(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<span class="foo"></span>');

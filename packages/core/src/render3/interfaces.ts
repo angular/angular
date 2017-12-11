@@ -7,7 +7,7 @@
  */
 
 import {ElementRef, Injector, QueryList, TemplateRef, Type, ViewContainerRef} from '../core';
-import {ComponentTemplate} from './public_interfaces';
+import {ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {RComment, RElement, RText, Renderer3} from './renderer';
 
 declare global {
@@ -49,8 +49,7 @@ export const enum LNodeFlags {
  * being processed and restored when the child `View` is done.
  *
  * Keeping separate state for each view facilities view insertion / deletion, so we
- * don't have to edit the nodes array or directives array based on which views
- * are present.
+ * don't have to edit the data array based on which views are present.
  */
 export interface ViewState {
   /**
@@ -78,38 +77,6 @@ export interface ViewState {
    * Renderer to be used for this view.
    */
   readonly renderer: Renderer3;
-
-  /**
-   * This array stores all element/text/container nodes created inside this view
-   * and their bindings. Stored as an array rather than a linked list so we can
-   * look up nodes directly in the case of forward declaration or bindings
-   * (e.g. E(1))..
-   *
-   * All bindings for a given view are stored in the order in which they
-   * appear in the template, starting with `bindingStartIndex`.
-   * We use `bindingIndex` to internally keep track of which binding
-   * is currently active.
-   *
-   * NOTE: We also use nodes == null as a marker for creationMode. We
-   * do this by creating ViewState in incomplete state with nodes == null
-   * and we initialize it on first run.
-   */
-  readonly data: any[];
-
-  /**
-   * All directives created inside this view. Stored as an array
-   * rather than a linked list so we can look up directives directly
-   * in the case of forward declaration or DI.
-   *
-   * The array alternates between instances and directive tokens.
-   *  - even indices: contain the directive token (type)
-   *  - odd indices: contain the directive def
-   *
-   * We must store the directive def (rather than token | null)
-   * because we need to be able to access the inputs and outputs
-   * of directives that aren't diPublic.
-   */
-  readonly directives: any[];
 
   /**
    * The binding start index is the index at which the nodes array
@@ -159,6 +126,30 @@ export interface ViewState {
    * in the same container. We need a way to link component views as well.
    */
   next: ViewState|ContainerState|null;
+
+  /**
+   * This array stores all element/text/container nodes created inside this view
+   * and their bindings. Stored as an array rather than a linked list so we can
+   * look up nodes directly in the case of forward declaration or bindings
+   * (e.g. E(1))..
+   *
+   * All bindings for a given view are stored in the order in which they
+   * appear in the template, starting with `bindingStartIndex`.
+   * We use `bindingIndex` to internally keep track of which binding
+   * is currently active.
+   *
+   * NOTE: We also use data == null as a marker for creationMode. We
+   * do this by creating ViewState in incomplete state with nodes == null
+   * and we initialize it on first run.
+   */
+  readonly data: any[];
+
+  /**
+   * The static data array for the current view. We need a reference to this so we
+   * can easily walk up the node tree in DI and get the ngStaticData array associated
+   * with a node (where the directive defs are stored).
+   */
+  ngStaticData: (LNodeStatic|DirectiveDef<any>|null)[];
 }
 
 export interface LNodeInjector {
@@ -169,9 +160,9 @@ export interface LNodeInjector {
   readonly parent: LNodeInjector|null;
 
   /**
-   * Allows access to the directives array in that node's view and to
+   * Allows access to the directives array in that node's static data and to
    * the node's flags (for starting directive index and directive size). Necessary
-   * for DI to retrieve a directive from the directives array if injector indicates
+   * for DI to retrieve a directive from the data array if injector indicates
    * it is there.
    */
   readonly node: LElement|LContainer;
@@ -445,6 +436,9 @@ export type InitialInputData = (InitialInputs | null)[];
  * e.g. ['role-min', 'button']
  */
 export type InitialInputs = string[];
+
+/** The type of the global ngStaticData array. */
+export type NgStaticData = (LNodeStatic | DirectiveDef<any> | null)[];
 
 /**
  * LNode binding data for a particular node that is shared between all templates

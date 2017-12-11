@@ -9,7 +9,7 @@
 import {ComponentFactory, ComponentRef as IComponentRef, ElementRef as IElementRef, EmbeddedViewRef as IEmbeddedViewRef, Injector, NgModuleRef as INgModuleRef, TemplateRef as ITemplateRef, Type, ViewContainerRef as IViewContainerRef, ViewRef as IViewRef} from '../core';
 import {BLOOM_SIZE, NG_ELEMENT_ID, getOrCreateNodeInjector} from './instructions';
 import {LContainer, LNodeFlags, LNodeInjector} from './interfaces';
-import {ComponentTemplate} from './public_interfaces';
+import {ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {stringify} from './util';
 
 export const enum InjectFlags {
@@ -43,13 +43,11 @@ export function inject<T>(token: Type<T>, flags?: InjectFlags): T {
         if (size !== 0) {
           size = size >> LNodeFlags.SIZE_SHIFT;
           const start = flags >> LNodeFlags.INDX_SHIFT;
-          const directives = node.view.directives;
-          if (directives) {
-            for (let i = start, ii = start + size; i < ii; i++) {
-              const def = directives[(i << 1) | 1];
-              if (def.diPublic && def.type == token) {
-                return directives[i << 1];
-              }
+          const ngStaticData = node.view.ngStaticData;
+          for (let i = start, ii = start + size; i < ii; i++) {
+            const def = ngStaticData[i] as DirectiveDef<any>;
+            if (def.diPublic && def.type == token) {
+              return node.view.data[i];
             }
           }
         }
