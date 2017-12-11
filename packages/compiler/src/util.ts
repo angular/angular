@@ -152,7 +152,7 @@ export function utf8Encode(str: string): string {
 export interface OutputContext {
   genFilePath: string;
   statements: o.Statement[];
-  importExpr(reference: any, typeParams?: o.Type[]|null): o.Expression;
+  importExpr(reference: any, typeParams?: o.Type[]|null, useSummaries?: boolean): o.Expression;
 }
 
 export function stringify(token: any): string {

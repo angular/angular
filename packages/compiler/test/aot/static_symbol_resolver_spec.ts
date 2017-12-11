@@ -196,6 +196,25 @@ describe('StaticSymbolResolver', () => {
           .toBe(symbolCache.get('/test3.d.ts', 'b'));
     });
 
+    it('should ignore summaries for inputAs if requested', () => {
+      init(
+          {
+            '/test.ts': `
+        export {a} from './test2';
+      `
+          },
+          [], [{
+            symbol: symbolCache.get('/test2.d.ts', 'a'),
+            importAs: symbolCache.get('/test3.d.ts', 'b')
+          }]);
+
+      symbolResolver.getSymbolsOf('/test.ts');
+
+      expect(
+          symbolResolver.getImportAs(symbolCache.get('/test2.d.ts', 'a'), /* useSummaries */ false))
+          .toBeUndefined();
+    });
+
     it('should calculate importAs for symbols with members based on importAs for symbols without',
        () => {
          init(

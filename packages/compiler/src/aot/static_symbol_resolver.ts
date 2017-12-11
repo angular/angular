@@ -98,10 +98,10 @@ export class StaticSymbolResolver {
    *
    * @param staticSymbol the symbol for which to generate a import symbol
    */
-  getImportAs(staticSymbol: StaticSymbol): StaticSymbol|null {
+  getImportAs(staticSymbol: StaticSymbol, useSummaries: boolean = true): StaticSymbol|null {
     if (staticSymbol.members.length) {
       const baseSymbol = this.getStaticSymbol(staticSymbol.filePath, staticSymbol.name);
-      const baseImportAs = this.getImportAs(baseSymbol);
+      const baseImportAs = this.getImportAs(baseSymbol, useSummaries);
       return baseImportAs ?
           this.getStaticSymbol(baseImportAs.filePath, baseImportAs.name, staticSymbol.members) :
           null;
@@ -111,14 +111,14 @@ export class StaticSymbolResolver {
       const summarizedName = stripSummaryForJitNameSuffix(staticSymbol.name);
       const baseSymbol =
           this.getStaticSymbol(summarizedFileName, summarizedName, staticSymbol.members);
-      const baseImportAs = this.getImportAs(baseSymbol);
+      const baseImportAs = this.getImportAs(baseSymbol, useSummaries);
       return baseImportAs ?
           this.getStaticSymbol(
               summaryForJitFileName(baseImportAs.filePath), summaryForJitName(baseImportAs.name),
               baseSymbol.members) :
           null;
     }
-    let result = this.summaryResolver.getImportAs(staticSymbol);
+    let result = (useSummaries && this.summaryResolver.getImportAs(staticSymbol)) || null;
     if (!result) {
       result = this.importAs.get(staticSymbol) !;
     }
