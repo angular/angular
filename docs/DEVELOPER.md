@@ -132,14 +132,10 @@ the project before trying to verify after an API change.
 
 ## <a name="clang-format"></a> Formatting your source code
 
-Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code. If the source code
-is not properly formatted, the CI will fail and the PR can not be merged.
+Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+A git pre-commit hook will be automatically installed when you `yarn install` and it will re-format regions that you modified in a commit.
 
-You can automatically format your code by running:
-
-``` shell
-$ gulp format
-```
+There is no other enforcement that your code is properly formatted.
 
 ## Linting/verifying your source code
 

@@ -12,7 +12,7 @@ const {I18N_DATA_FOLDER, RELATIVE_I18N_DATA_FOLDER, HEADER} = require('./extract
 const OUTPUT_NAME = `closure-locale.ts`;
 
 // tslint:disable:no-console
-module.exports = (gulp, done) => {
+module.exports = () => {
   // the locales used by closure that will be used to generate the closure-locale file
   // extracted from:
   // https://github.com/google/closure-library/blob/master/closure/goog/i18n/datetimepatterns.js#L2136
@@ -55,13 +55,6 @@ module.exports = (gulp, done) => {
   console.log(`Writing file ${I18N_DATA_FOLDER}/${OUTPUT_NAME}`);
   fs.writeFileSync(
       `${RELATIVE_I18N_DATA_FOLDER}/${OUTPUT_NAME}`, generateAllLocalesFile(GOOG_LOCALES, ALIASES));
-
-  console.log(`Formatting ${I18N_DATA_FOLDER}/${OUTPUT_NAME}..."`);
-  const format = require('gulp-clang-format');
-  const clangFormat = require('clang-format');
-  return gulp.src([`${I18N_DATA_FOLDER}/${OUTPUT_NAME}`], {base: '.'})
-      .pipe(format.format('file', clangFormat))
-      .pipe(gulp.dest('.'));
 };
 
 /**

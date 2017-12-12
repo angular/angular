@@ -27,13 +27,15 @@ function loadTask(fileName, taskName) {
   return task(gulp);
 }
 
-gulp.task('format:enforce', loadTask('format', 'enforce'));
-gulp.task('format', loadTask('format', 'format'));
+gulp.task('format', () => {
+  console.error('\nERROR: Run `yarn format` instead');
+  process.exit(1);
+});
 gulp.task('build.sh', loadTask('build', 'all'));
 gulp.task('build.sh:no-bundle', loadTask('build', 'no-bundle'));
 gulp.task('public-api:enforce', loadTask('public-api', 'enforce'));
 gulp.task('public-api:update', ['build.sh'], loadTask('public-api', 'update'));
-gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);
+gulp.task('lint', ['validate-commit-messages', 'tslint']);
 gulp.task('tslint', ['tools:build'], loadTask('lint'));
 gulp.task('validate-commit-messages', loadTask('validate-commit-message'));
 gulp.task('source-map-test', loadTask('source-map-test'));
