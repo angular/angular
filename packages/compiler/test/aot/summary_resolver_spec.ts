@@ -95,6 +95,15 @@ export function main() {
            expect(host.isSourceFile).toHaveBeenCalledWith('someFile.ts');
          });
     });
+
+    describe('regression', () => {
+      // #18170
+      it('should support resolving symbol with members ', () => {
+        init();
+        expect(summaryResolver.resolveSummary(symbolCache.get('/src.d.ts', 'Src', ['One', 'Two'])))
+            .toBeNull();
+      });
+    });
   });
 }
 
