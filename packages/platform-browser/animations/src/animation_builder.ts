@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationBuilder, AnimationFactory, AnimationMetadata, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, sequence} from '@angular/animations';
+import {ɵANIMATION_BUILDER_PREFIX as ANIMATION_BUILDER_PREFIX} from '@angular/animations/browser';
 import {Inject, Injectable, RendererFactory2, RendererType2, ViewEncapsulation} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 
@@ -55,7 +56,8 @@ export class RendererAnimationPlayer implements AnimationPlayer {
   }
 
   private _listen(eventName: string, callback: (event: any) => any): () => void {
-    return this._renderer.listen(this.element, `@@${this.id}:${eventName}`, callback);
+    return this._renderer.listen(
+        this.element, `@${ANIMATION_BUILDER_PREFIX}${this.id}:${eventName}`, callback);
   }
 
   private _command(command: string, ...args: any[]) {
@@ -96,5 +98,5 @@ export class RendererAnimationPlayer implements AnimationPlayer {
 
 function issueAnimationCommand(
     renderer: AnimationRenderer, element: any, id: string, command: string, args: any[]): any {
-  return renderer.setProperty(element, `@@${id}:${command}`, args);
+  return renderer.setProperty(element, `@${ANIMATION_BUILDER_PREFIX}${id}:${command}`, args);
 }

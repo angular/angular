@@ -13,8 +13,10 @@ import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_sty
 
 import {AnimationDriver} from './animation_driver';
 import {parseTimelineCommand} from './shared';
-import {TimelineAnimationEngine} from './timeline_animation_engine';
+import {TimelineAnimationEngine,} from './timeline_animation_engine';
 import {TransitionAnimationEngine} from './transition_animation_engine';
+
+export const ANIMATION_BUILDER_PREFIX = '!';
 
 export class AnimationEngine {
   private _transitionEngine: TransitionAnimationEngine;
@@ -73,7 +75,7 @@ export class AnimationEngine {
   }
 
   process(namespaceId: string, element: any, property: string, value: any) {
-    if (property.charAt(0) == '@') {
+    if (property.charAt(0) == ANIMATION_BUILDER_PREFIX) {  // AnimationBuilder animations
       const [id, action] = parseTimelineCommand(property);
       const args = value as any[];
       this._timelineEngine.command(id, element, action, args);
@@ -86,7 +88,7 @@ export class AnimationEngine {
       namespaceId: string, element: any, eventName: string, eventPhase: string,
       callback: (event: any) => any): () => any {
     // @@listen
-    if (eventName.charAt(0) == '@') {
+    if (eventName.charAt(0) == ANIMATION_BUILDER_PREFIX) {
       const [id, action] = parseTimelineCommand(eventName);
       return this._timelineEngine.listen(id, element, action, callback);
     }

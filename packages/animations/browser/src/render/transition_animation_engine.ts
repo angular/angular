@@ -5,12 +5,13 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AUTO_STYLE, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, ɵAnimationGroupPlayer as AnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
+import {AUTO_STYLE, AnimationMetadata, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, ɵAnimationGroupPlayer as AnimationGroupPlayer, ɵPRE_STYLE as PRE_STYLE, ɵStyleData} from '@angular/animations';
 
+import {AstBasedTransitionState, TransitionState, isMetadataNode} from '../dsl/animation_state';
 import {AnimationTimelineInstruction} from '../dsl/animation_timeline_instruction';
 import {AnimationTransitionFactory} from '../dsl/animation_transition_factory';
 import {AnimationTransitionInstruction} from '../dsl/animation_transition_instruction';
-import {AnimationTrigger} from '../dsl/animation_trigger';
+import {AnimationTrigger, ImplicitTrigger, _AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, iteratorToArray, setStyles} from '../util';
@@ -18,6 +19,7 @@ import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_S
 import {AnimationDriver} from './animation_driver';
 import {getBodyNode, getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
+const DYNAMIC_ANIMATION_PREFIX = '@';
 const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';
 const DISABLED_CLASSNAME = 'ng-animate-disabled';
@@ -40,7 +42,7 @@ const NULL_REMOVED_QUERIED_STATE: ElementAnimationState = {
 };
 
 interface TriggerListener {
-  name: string;
+  triggerName: string;
   phase: string;
   callback: (event: any) => any;
 }
@@ -48,8 +50,8 @@ interface TriggerListener {
 export interface QueueInstruction {
   element: any;
   triggerName: string;
-  fromState: StateValue;
-  toState: StateValue;
+  fromState: TransitionState;
+  toState: TransitionState;
   transition: AnimationTransitionFactory;
   player: TransitionAnimationPlayer;
   isFallbackTransition: boolean;
@@ -64,44 +66,11 @@ export interface ElementAnimationState {
   removedBeforeQueried: boolean;
 }
 
-export class StateValue {
-  public value: string;
-  public options: AnimationOptions;
-
-  get params(): {[key: string]: any} { return this.options.params as{[key: string]: any}; }
-
-  constructor(input: any, public namespaceId: string = '') {
-    const isObj = input && input.hasOwnProperty('value');
-    const value = isObj ? input['value'] : input;
-    this.value = normalizeTriggerValue(value);
-    if (isObj) {
-      const options = copyObj(input as any);
-      delete options['value'];
-      this.options = options as AnimationOptions;
-    } else {
-      this.options = {};
-    }
-    if (!this.options.params) {
-      this.options.params = {};
-    }
-  }
-
-  absorbOptions(options: AnimationOptions) {
-    const newParams = options.params;
-    if (newParams) {
-      const oldParams = this.options.params !;
-      Object.keys(newParams).forEach(prop => {
-        if (oldParams[prop] == null) {
-          oldParams[prop] = newParams[prop];
-        }
-      });
-    }
-  }
-}
-
 export const VOID_VALUE = 'void';
-export const DEFAULT_STATE_VALUE = new StateValue(VOID_VALUE);
-export const DELETED_STATE_VALUE = new StateValue('DELETED');
+export const DEFAULT_STATE_VALUE = new TransitionState(VOID_VALUE);
+export const DELETED_STATE_VALUE = new TransitionState('DELETED');
+
+const GLOBAL_IMPLICIT_TRIGGER_HANDLER = new ImplicitTrigger();
 
 export class AnimationTransitionNamespace {
   public players: TransitionAnimationPlayer[] = [];
@@ -116,34 +85,39 @@ export class AnimationTransitionNamespace {
   constructor(
       public id: string, public hostElement: any, private _engine: TransitionAnimationEngine) {
     this._hostClassName = 'ng-tns-' + id;
-    addClass(hostElement, this._hostClassName);
+    if (hostElement) {
+      addClass(hostElement, this._hostClassName);
+    }
   }
 
-  listen(element: any, name: string, phase: string, callback: (event: any) => boolean): () => any {
-    if (!this._triggers.hasOwnProperty(name)) {
+  listen(element: any, triggerName: string, phase: string, callback: (event: any) => boolean):
+      () => any {
+    const trigger = this._getTrigger(triggerName);
+    if (!trigger) {
       throw new Error(`Unable to listen on the animation trigger event "${
-          phase}" because the animation trigger "${name}" doesn\'t exist!`);
+          phase}" because the animation trigger @"${triggerName}" doesn\'t exist!`);
     }
+
+    const isImplicit = trigger === GLOBAL_IMPLICIT_TRIGGER_HANDLER;
 
     if (phase == null || phase.length == 0) {
       throw new Error(`Unable to listen on the animation trigger "${
-          name}" because the provided event is undefined!`);
+          triggerName}" because the provided event is undefined!`);
     }
 
     if (!isTriggerEventValid(phase)) {
       throw new Error(`The provided animation trigger event "${phase}" for the animation trigger "${
-          name}" is not supported!`);
+          triggerName}" is not supported!`);
     }
 
     const listeners = getOrSetAsInMap(this._elementListeners, element, []);
-    const data = {name, phase, callback};
+    const data = {triggerName, phase, callback};
     listeners.push(data);
 
     const triggersWithStates = getOrSetAsInMap(this._engine.statesByElement, element, {});
-    if (!triggersWithStates.hasOwnProperty(name)) {
-      addClass(element, NG_TRIGGER_CLASSNAME);
-      addClass(element, NG_TRIGGER_CLASSNAME + '-' + name);
-      triggersWithStates[name] = DEFAULT_STATE_VALUE;
+    if (!triggersWithStates.hasOwnProperty(triggerName)) {
+      this._instantiateTriggerOnElement(element, triggerName);
+      triggersWithStates[triggerName] = this._instantiateDefaultTriggerState(isImplicit);
     }
 
     return () => {
@@ -156,8 +130,8 @@ export class AnimationTransitionNamespace {
           listeners.splice(index, 1);
         }
 
-        if (!this._triggers[name]) {
-          delete triggersWithStates[name];
+        if (!this._triggers[triggerName]) {
+          delete triggersWithStates[triggerName];
         }
       });
     };
@@ -174,42 +148,67 @@ export class AnimationTransitionNamespace {
   }
 
   private _getTrigger(name: string) {
-    const trigger = this._triggers[name];
+    let trigger = this._triggers[name];
     if (!trigger) {
-      throw new Error(`The provided animation trigger "${name}" has not been registered!`);
+      if (name.charAt(0) == DYNAMIC_ANIMATION_PREFIX) {  // @@dynamic animations
+        this._engine.hasImplicitTrigger = true;
+        return GLOBAL_IMPLICIT_TRIGGER_HANDLER;
+      } else {
+        throw new Error(`The provided animation trigger "${name}" has not been registered!`);
+      }
     }
     return trigger;
+  }
+
+  private _instantiateTriggerOnElement(element: any, triggerName: string) {
+    if (triggerName.charAt(0) == DYNAMIC_ANIMATION_PREFIX) {
+      triggerName = triggerName.substr(1);
+    }
+    addClass(element, NG_TRIGGER_CLASSNAME);
+    addClass(element, NG_TRIGGER_CLASSNAME + '-' + triggerName);
+  }
+
+  private _instantiateDefaultTriggerState(isImplicit: boolean) {
+    return isImplicit ? new AstBasedTransitionState(this._engine.driver, VOID_VALUE, this.id) :
+                        DEFAULT_STATE_VALUE;
   }
 
   trigger(element: any, triggerName: string, value: any, defaultToFallback: boolean = true):
       TransitionAnimationPlayer|undefined {
     const trigger = this._getTrigger(triggerName);
+    const isImplicit = trigger === GLOBAL_IMPLICIT_TRIGGER_HANDLER;
+    if (isImplicit && value && !isMetadataNode(value)) {
+      throw new Error(
+          `The value passed into the dynamic trigger @${triggerName} must be either null or an animation sequence`);
+    }
+
     const player = new TransitionAnimationPlayer(this.id, triggerName, element);
+    const engine = this._engine;
 
     let triggersWithStates = this._engine.statesByElement.get(element);
     if (!triggersWithStates) {
-      addClass(element, NG_TRIGGER_CLASSNAME);
-      addClass(element, NG_TRIGGER_CLASSNAME + '-' + triggerName);
+      this._instantiateTriggerOnElement(element, triggerName);
       this._engine.statesByElement.set(element, triggersWithStates = {});
     }
 
     let fromState = triggersWithStates[triggerName];
-    const toState = new StateValue(value, this.id);
+    const toState = isImplicit ? new AstBasedTransitionState(engine.driver, value, this.id) :
+                                 new TransitionState(value, this.id);
 
     const isObj = value && value.hasOwnProperty('value');
     if (!isObj && fromState) {
-      toState.absorbOptions(fromState.options);
+      toState.absorbState(fromState);
     }
 
     triggersWithStates[triggerName] = toState;
 
     if (!fromState) {
-      fromState = DEFAULT_STATE_VALUE;
+      fromState = this._instantiateDefaultTriggerState(isImplicit);
     } else if (fromState === DELETED_STATE_VALUE) {
       return player;
     }
 
-    const isRemoval = toState.value === VOID_VALUE;
+    const isRemoval = toState.getValue() === VOID_VALUE;
 
     // normally this isn't reached by here, however, if an object expression
     // is passed in then it may be a new object each time. Comparing the value
@@ -217,13 +216,13 @@ export class AnimationTransitionNamespace {
     // The removal arc here is special cased because the same element is triggered
     // twice in the event that it contains animations on the outer/inner portions
     // of the host container
-    if (!isRemoval && fromState.value === toState.value) {
+    if (!isRemoval && fromState.equals(toState)) {
       // this means that despite the value not changing, some inner params
       // have changed which means that the animation final styles need to be applied
-      if (!objEquals(fromState.params, toState.params)) {
+      if (!objEquals(fromState.getParams(), toState.getParams())) {
         const errors: any[] = [];
-        const fromStyles = trigger.matchStyles(fromState.value, fromState.params, errors);
-        const toStyles = trigger.matchStyles(toState.value, toState.params, errors);
+        const fromStyles = trigger.matchStyles(fromState, fromState.getParams(), errors);
+        const toStyles = trigger.matchStyles(toState, toState.getParams(), errors);
         if (errors.length) {
           this._engine.reportError(errors);
         } else {
@@ -248,7 +247,7 @@ export class AnimationTransitionNamespace {
       }
     });
 
-    let transition = trigger.matchTransition(fromState.value, toState.value);
+    let transition = trigger.matchTransition(fromState, toState);
     let isFallbackTransition = false;
     if (!transition) {
       if (!defaultToFallback) return;
@@ -293,7 +292,7 @@ export class AnimationTransitionNamespace {
 
     this._elementListeners.forEach((listeners, element) => {
       this._elementListeners.set(
-          element, listeners.filter(entry => { return entry.name != name; }));
+          element, listeners.filter(entry => { return entry.triggerName != name; }));
     });
   }
 
@@ -358,7 +357,7 @@ export class AnimationTransitionNamespace {
     if (listeners) {
       const visitedTriggers = new Set<string>();
       listeners.forEach(listener => {
-        const triggerName = listener.name;
+        const triggerName = listener.triggerName;
         if (visitedTriggers.has(triggerName)) return;
         visitedTriggers.add(triggerName);
 
@@ -366,7 +365,7 @@ export class AnimationTransitionNamespace {
         const transition = trigger.fallbackTransition;
         const elementStates = this._engine.statesByElement.get(element) !;
         const fromState = elementStates[triggerName] || DEFAULT_STATE_VALUE;
-        const toState = new StateValue(VOID_VALUE);
+        const toState = new TransitionState(VOID_VALUE, '');
         const player = new TransitionAnimationPlayer(this.id, triggerName, element);
 
         this._engine.totalQueuedPlayers++;
@@ -437,7 +436,13 @@ export class AnimationTransitionNamespace {
     }
   }
 
-  insertNode(element: any, parent: any): void { addClass(element, this._hostClassName); }
+  insertNode(element: any, parent: any): void {
+    if (!this.hostElement) {
+      this.hostElement = element;
+      this._engine.newHostElements.set(element, this);
+    }
+    addClass(element, this._hostClassName);
+  }
 
   drainQueuedTransitions(microtaskId: number): QueueInstruction[] {
     const instructions: QueueInstruction[] = [];
@@ -449,9 +454,9 @@ export class AnimationTransitionNamespace {
       const listeners = this._elementListeners.get(element);
       if (listeners) {
         listeners.forEach((listener: TriggerListener) => {
-          if (listener.name == entry.triggerName) {
+          if (listener.triggerName == entry.triggerName) {
             const baseEvent = makeAnimationEvent(
-                element, entry.triggerName, entry.fromState.value, entry.toState.value);
+                element, entry.triggerName, entry.fromState.getValue(), entry.toState.getValue());
             (baseEvent as any)['_data'] = microtaskId;
             listenOnPlayer(entry.player, listener.phase, baseEvent, listener.callback);
           }
@@ -474,8 +479,8 @@ export class AnimationTransitionNamespace {
     return instructions.sort((a, b) => {
       // if depCount == 0 them move to front
       // otherwise if a contains b then move back
-      const d0 = a.transition.ast.depCount;
-      const d1 = b.transition.ast.depCount;
+      const d0 = a.transition.depCount;
+      const d1 = b.transition.depCount;
       if (d0 == 0 || d1 == 0) {
         return d0 - d1;
       }
@@ -508,8 +513,9 @@ export class TransitionAnimationEngine {
   public newHostElements = new Map<any, AnimationTransitionNamespace>();
   public playersByElement = new Map<any, TransitionAnimationPlayer[]>();
   public playersByQueriedElement = new Map<any, TransitionAnimationPlayer[]>();
-  public statesByElement = new Map<any, {[triggerName: string]: StateValue}>();
+  public statesByElement = new Map<any, {[triggerName: string]: TransitionState}>();
   public disabledNodes = new Set<any>();
+  public hasImplicitTrigger = false;
 
   public totalAnimations = 0;
   public totalQueuedPlayers = 0;
@@ -545,7 +551,9 @@ export class TransitionAnimationEngine {
 
   createNamespace(namespaceId: string, hostElement: any) {
     const ns = new AnimationTransitionNamespace(namespaceId, hostElement, this);
-    if (hostElement.parentNode) {
+    this._namespaceLookup[namespaceId] = ns;
+
+    if (!hostElement || hostElement.parentNode) {
       this._balanceNamespaceList(ns, hostElement);
     } else {
       // defer this later until flush during when the host element has
@@ -560,7 +568,8 @@ export class TransitionAnimationEngine {
       // is a renderer then the set data-structure will normalize the entry
       this.collectEnterElement(hostElement);
     }
-    return this._namespaceLookup[namespaceId] = ns;
+
+    return ns;
   }
 
   private _balanceNamespaceList(ns: AnimationTransitionNamespace, hostElement: any) {
@@ -569,7 +578,8 @@ export class TransitionAnimationEngine {
       let found = false;
       for (let i = limit; i >= 0; i--) {
         const nextNamespace = this._namespaceList[i];
-        if (this.driver.containsElement(nextNamespace.hostElement, hostElement)) {
+        if (!nextNamespace.hostElement ||
+            this.driver.containsElement(nextNamespace.hostElement, hostElement)) {
           this._namespaceList.splice(i + 1, 0, ns);
           found = true;
           break;
@@ -724,8 +734,8 @@ export class TransitionAnimationEngine {
       entry: QueueInstruction, subTimelines: ElementInstructionMap, enterClassName: string,
       leaveClassName: string) {
     return entry.transition.build(
-        this.driver, entry.element, entry.fromState.value, entry.toState.value, enterClassName,
-        leaveClassName, entry.fromState.options, entry.toState.options, subTimelines);
+        this.driver, entry.element, entry.triggerName, entry.fromState, entry.toState,
+        enterClassName, leaveClassName, subTimelines);
   }
 
   destroyInnerAnimations(containerElement: any) {
@@ -813,7 +823,7 @@ export class TransitionAnimationEngine {
       }
     }
 
-    if (this._namespaceList.length &&
+    if ((this.hasImplicitTrigger || this._namespaceList.length) &&
         (this.totalQueuedPlayers || this.collectedLeaveElements.length)) {
       const cleanupFns: Function[] = [];
       try {
@@ -1510,13 +1520,6 @@ function deleteOrUnsetInMap(map: Map<any, any[]>| {[key: string]: any}, key: any
     }
   }
   return currentValues;
-}
-
-function normalizeTriggerValue(value: any): any {
-  // we use `!= null` here because it's the most simple
-  // way to test against a "falsy" value without mixing
-  // in empty strings or a zero value. DO NOT OPTIMIZE.
-  return value != null ? value : null;
 }
 
 function isElementNode(node: any) {

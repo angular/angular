@@ -384,6 +384,40 @@ export function main() {
           .toBeLessThan(0.05);
     });
 
+    it('should compute intermediate styles properly when an animation is cancelled for a @@dynamic animation',
+       () => {
+         @Component({
+           selector: 'ani-cmp',
+           template: `
+          <div [@@dynamic]="exp">...</div>
+        `
+         })
+         class Cmp {
+           public exp: any|null = null;
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.get(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+
+         cmp.exp = [style({height: '0px'}), animate('1s', style({height: '500px'}))];
+         fixture.detectChanges();
+
+         let player = engine.players[0] !;
+         let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+         webPlayer.setPosition(0.5);
+
+         cmp.exp = [animate('1s', style({height: '100px'}))];
+         fixture.detectChanges();
+
+         player = engine.players[0] !;
+         webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+         expect(approximate(parseFloat(webPlayer.previousStyles['height'] as string), 250))
+             .toBeLessThan(0.05);
+       });
+
     it('should compute intermediate styles properly for multiple queried elements when an animation is cancelled',
        () => {
          @Component({
