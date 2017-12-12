@@ -135,7 +135,7 @@ export function main() {
           name = 'square';
         }
 
-        const injector = Injector.create([{provide: Square, deps: []}]);
+        const injector = Injector.create({providers: [{provide: Square, deps: []}]});
 
         const shape: Square = injector.get(Square);
         expect(shape.name).toEqual('square');

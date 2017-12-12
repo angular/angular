@@ -12,7 +12,7 @@ import {ElementRef} from '../linker/element_ref';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer as RendererV1, Renderer2} from '../render/api';
-
+import {stringify} from '../util';
 import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';
 import {BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, ViewData, ViewFlags, ViewState, asElementData, asProviderData, shouldCallLifecycleInitHook} from './types';
 import {calcBindingFlags, checkBinding, dispatchEvent, isComponentView, splitDepsDsl, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
@@ -83,7 +83,7 @@ export function _def(
   // i.e. also didn't unwrap it.
   value = resolveForwardRef(value);
 
-  const depDefs = splitDepsDsl(deps);
+  const depDefs = splitDepsDsl(deps, stringify(token));
 
   return {
     // will bet set by the view definition
