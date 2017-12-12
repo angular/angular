@@ -138,7 +138,7 @@ is not properly formatted, the CI will fail and the PR can not be merged.
 You can automatically format your code by running:
 
 ``` shell
-$ gulp format
+$ yarn format
 ```
 
 ## Linting/verifying your source code
