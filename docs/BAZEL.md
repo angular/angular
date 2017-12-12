@@ -58,5 +58,5 @@ in `node_modules/.bin`.
 To run tests, use the `test` command, eg. `ibazel test //packages/core/test`
 
 To run a test so that you can attach with a debugger, add the `--config=debug`
-argument after `bazel run`. It will print the debug URL, you can then attach from
+argument after `[i]bazel test`. It will print the debug URL, you can then attach from
 Chrome devtools using an extension, from your editor, etc.
