@@ -304,6 +304,12 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
         // Forward it to the component instance.
         this.setInputValue(propName, initialValue);
       }
+      
+      if (this.hasOwnProperty(propName)) {
+        let value = this[propName];
+        delete this[propName];
+        this[propName] = value;
+      }
     });
 
     this.initialInputValues.clear();
