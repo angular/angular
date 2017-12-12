@@ -123,7 +123,7 @@ export function convertPropertyBinding(
     return new ConvertPropertyBindingResult([], outputExpr);
   }
 
-  stmts.push(currValExpr.set(outputExpr).toDeclStmt(null, [o.StmtModifier.Final]));
+  stmts.push(currValExpr.set(outputExpr).toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Final]));
   return new ConvertPropertyBindingResult(stmts, currValExpr);
 }
 
@@ -334,7 +334,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitLiteralPrimitive(ast: cdAst.LiteralPrimitive, mode: _Mode): any {
-    return convertToStatementIfNeeded(mode, o.literal(ast.value));
+    // For literal values of null, undefined, true, or false allow type inteference
+    // to infer the type.
+    const type =
+        ast.value === null || ast.value === undefined || ast.value === true || ast.value === true ?
+        o.INFERRED_TYPE :
+        undefined;
+    return convertToStatementIfNeeded(mode, o.literal(ast.value, type));
   }
 
   private _getLocal(name: string): o.Expression|null { return this._localResolver.getLocal(name); }

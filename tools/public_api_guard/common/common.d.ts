@@ -276,7 +276,6 @@ export declare class NgIf {
     ngIfElse: TemplateRef<NgIfContext>;
     ngIfThen: TemplateRef<NgIfContext>;
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>);
-    static ngIfTypeGuard: <T>(v: T | null | undefined | false) => v is T;
 }
 
 /** @stable */
