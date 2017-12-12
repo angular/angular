@@ -12,8 +12,9 @@ import {Observable} from 'rxjs/Observable';
 import * as viewEngine from '../core';
 
 import {assertNotNull} from './assert';
+import {injectElementRefForNode} from './di';
 import {QueryState} from './interfaces';
-import {LContainer, LNode, LNodeFlags, LView} from './l_node';
+import {LContainer, LElement, LNode, LNodeFlags, LView} from './l_node';
 
 
 
@@ -37,16 +38,9 @@ export interface QueryPredicate<T> {
   type: viewEngine.Type<T>|null;
 
   /**
-   * If selector then contains the selector parts where:
-   * - even index:
-   *    - `null`: represents a tag name
-   *    - `"#""`: represents a reference name
-   *    - `string`: name of the attribute
-   * - odd index:
-   *    - `null`: any value will match
-   *    - `string`: the value which mast match.
+   * If selector then contains local names to query for.
    */
-  selector: any[]|null;
+  selector: string[]|null;
 
   /**
    * Values which have been located.
@@ -63,7 +57,7 @@ export class QueryState_ implements QueryState {
   constructor(deep?: QueryPredicate<any>) { this.deep = deep == null ? null : deep; }
 
   track<T>(
-      queryList: viewEngine.QueryList<T>, predicate: viewEngine.Type<T>|any[],
+      queryList: viewEngine.QueryList<T>, predicate: viewEngine.Type<T>|string[],
       descend?: boolean): void {
     // TODO(misko): This is not right. In case of inherited state, a calling track will incorrectly
     // mutate parent.
@@ -117,6 +111,16 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
           predicate.values.push(node.view.data[i]);
         }
       }
+    } else {
+      const staticData = node.staticData;
+      if (staticData && staticData.localName) {
+        const selector = predicate.selector !;
+        for (let i = 0; i < selector.length; i++) {
+          if (selector[i] === staticData.localName) {
+            predicate.values.push(injectElementRefForNode(node as LElement | LContainer));
+          }
+        }
+      }
     }
     predicate = predicate.next;
   }
@@ -124,7 +128,7 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
 
 function createPredicate<T>(
     previous: QueryPredicate<any>| null, queryList: QueryList<T>,
-    predicate: viewEngine.Type<T>| any[]): QueryPredicate<T> {
+    predicate: viewEngine.Type<T>| string[]): QueryPredicate<T> {
   const isArray = Array.isArray(predicate);
   const values = <any>[];
   if ((queryList as any as QueryList_<T>)._valuesTree === null) {
@@ -134,7 +138,7 @@ function createPredicate<T>(
     next: previous,
     list: queryList,
     type: isArray ? null : predicate as viewEngine.Type<T>,
-    selector: isArray ? predicate as any[] : null,
+    selector: isArray ? predicate as string[] : null,
     values: values
   };
 }

@@ -11,7 +11,7 @@
 import * as viewEngine from '../core';
 
 import {BLOOM_SIZE, NG_ELEMENT_ID, getOrCreateNodeInjector} from './instructions';
-import {LContainer, LNodeFlags, LNodeInjector} from './l_node';
+import {LContainer, LElement, LNodeFlags, LNodeInjector} from './l_node';
 import {ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {notImplemented, stringify} from './util';
 
@@ -201,15 +201,23 @@ export function bloomFindPossibleInjector(
 }
 
 /**
+ * Creates an ElementRef for a given node and stores it on the injector.
+ * Or, if the ElementRef already exists, retrieves the existing ElementRef.
+ *
+ * @returns The ElementRef instance to use
+ */
+export function injectElementRefForNode(node?: LElement | LContainer): viewEngine.ElementRef {
+  let di = getOrCreateNodeInjector(node);
+  return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
+}
+
+/**
  * Creates an ElementRef and stores it on the injector. Or, if the ElementRef already
  * exists, retrieves the existing ElementRef.
  *
  * @returns The ElementRef instance to use
  */
-export function injectElementRef(): viewEngine.ElementRef {
-  let di = getOrCreateNodeInjector();
-  return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
-}
+export const injectElementRef: () => viewEngine.ElementRef = injectElementRefForNode;
 
 /** A ref to a node's native element. */
 class ElementRef implements viewEngine.ElementRef {

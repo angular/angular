@@ -48,4 +48,69 @@ describe('query', () => {
     expect((parent.query0 as QueryList<any>).toArray()).toEqual([child1]);
     expect((parent.query1 as QueryList<any>).toArray()).toEqual([child1, child2]);
   });
+
+  describe('local names', () => {
+
+    it('should query for a single element', () => {
+
+      let elToQuery;
+      /**
+       * <div #foo></div>
+       * <div></div>
+       * class Cmpt {
+       *  @ViewChildren('foo') query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo']));
+          elToQuery = E(1, 'div', [], 'foo');
+          e();
+          E(2, 'div');
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(query.first.nativeElement).toEqual(elToQuery);
+    });
+
+    it('should query for multiple elements', () => {
+
+      let el1ToQuery;
+      let el2ToQuery;
+      /**
+       * <div #foo></div>
+       * <div></div>
+       * <div #bar></div>
+       * class Cmpt {
+       *  @ViewChildren('foo,bar') query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo', 'bar']));
+          el1ToQuery = E(1, 'div', null, 'foo');
+          e();
+          E(2, 'div');
+          e();
+          el2ToQuery = E(3, 'div', null, 'bar');
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(2);
+      expect(query.first.nativeElement).toEqual(el1ToQuery);
+      expect(query.last.nativeElement).toEqual(el2ToQuery);
+    });
+
+  });
 });
