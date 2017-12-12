@@ -29,7 +29,10 @@ export class SitePage {
   locationPath() { return browser.executeScript('return document.location.pathname') as promise.Promise<string>; }
 
   navigateTo(pageUrl) {
-    return browser.get('/' + pageUrl).then(() => browser.waitForAngular());
+    // Navigate to the page, disable animations, and wait for Angular.
+    return browser.get('/' + pageUrl)
+        .then(() => browser.executeScript('document.body.classList.add(\'no-animations\')'))
+        .then(() => browser.waitForAngular());
   }
 
   getDocViewerText() {
