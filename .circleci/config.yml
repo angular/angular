@@ -7,21 +7,25 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
+# Variables
+
+## IMPORTANT
+# If you change the `docker_image` version, also change the `cache_key` suffix and the version of
+# `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
+var_1: &docker_image angular/ngcontainer:0.0.8
+var_2: &cache_key angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.0.8
+
 # Settings common to each job
 anchor_1: &job_defaults
   working_directory: ~/ng
   docker:
-    ## IMPORTANT
-    # If you change this, also change the version of com_github_bazelbuild_buildtools
-    # in the /WORKSPACE file and the cache keys below
-    - image: angular/ngcontainer:0.0.8
-    ## IMPORTANT
+    - image: *docker_image
 
 # After checkout, rebase on top of master.
 # Similar to travis behavior, but not quite the same.
 # See https://discuss.circleci.com/t/1662
 anchor_2: &post_checkout
-  post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
+  post: git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
 
 version: 2
 jobs:
@@ -36,7 +40,7 @@ jobs:
               (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
 
       - restore_cache:
-          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.0.8
+          key: *cache_key
 
       - run: yarn install --frozen-lockfile --non-interactive
       - run: ./node_modules/.bin/gulp lint
@@ -47,13 +51,13 @@ jobs:
       - checkout:
           <<: *post_checkout
       - restore_cache:
-          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.0.8
+          key: *cache_key
       - run: bazel info release
       - run: bazel run @yarn//:yarn
       - run: bazel build --config=ci packages/...
       - run: bazel test --config=ci packages/... @angular//...
       - save_cache:
-          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.0.8
+          key: *cache_key
           paths:
             - "node_modules"
 
