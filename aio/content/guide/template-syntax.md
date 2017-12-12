@@ -1983,6 +1983,29 @@ You'll need this template operator when you turn on strict null checks. It's opt
 
 <hr/>
 
+{@a any-type-cast-function}
+
+## The `$any` type cast function (`$any( <expression> )`) 
+
+Sometimes a binding expression will be reported as a type error and it is not possible or difficult
+to fully specify the type. To silence the error, you can use the `$any` cast function to cast
+the expression to [the `any` type](http://www.typescriptlang.org/docs/handbook/basic-types.html#any).
+
+<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-1" title="src/app/app.component.html" linenums="false">
+</code-example>
+
+In this example, when the Angular compiler turns your template into TypeScript code, 
+it prevents TypeScript from reporting that `marker` is not a member of the `Hero`
+interface.
+
+The `$any` cast function can be used in conjunction with `this` to allow access to undeclared members of
+the component.
+
+<code-example path="template-syntax/src/app/app.component.html" region="any-type-cast-function-2" title="src/app/app.component.html" linenums="false">
+</code-example>
+
+The `$any` cast function can be used anywhere in a binding expression where a method call is valid.
+
 ## Summary
 You've completed this survey of template syntax.
 Now it's time to put that knowledge to work on your own components and directives.
