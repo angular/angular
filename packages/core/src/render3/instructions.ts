@@ -339,9 +339,9 @@ export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
   }
 }
 
-export function getOrCreateNodeInjector(): LNodeInjector {
-  ngDevMode && assertPreviousIsParent();
-  const node = previousOrParentNode as LElement | LContainer;
+export function getOrCreateNodeInjector(node?: LElement | LContainer): LNodeInjector {
+  ngDevMode && !node && assertPreviousIsParent();
+  node = node || previousOrParentNode as LElement | LContainer;
   const nodeInjector = node.nodeInjector;
   const parentInjector = node.parent && node.parent.nodeInjector;
   if (nodeInjector != parentInjector) {
@@ -376,13 +376,15 @@ export function getOrCreateNodeInjector(): LNodeInjector {
  * @param index Index of the element in the data array
  * @param nameOrComponentDef Name of the DOM Node or `ComponentDef`.
  * @param attrs Statically bound set of attributes to be written into the DOM element on creation.
+ * @param localName A name under which a given element is exported.
  *
  * Attributes are passed as an array of strings where elements with an even index hold an attribute
  * name and elements with an odd index hold an attribute value, ex.:
  * ['id', 'warning5', 'class', 'alert']
  */
 export function elementStart(
-    index: number, nameOrComponentDef?: string | ComponentDef<any>, attrs?: string[]): RElement {
+    index: number, nameOrComponentDef?: string | ComponentDef<any>, attrs?: string[] | null,
+    localName?: string): RElement {
   let node: LElement;
   let native: RElement;
 
@@ -413,7 +415,8 @@ export function elementStart(
 
       if (node.staticData == null) {
         ngDevMode && assertDataInRange(index - 1);
-        node.staticData = ngStaticData[index] = createNodeStatic(name, attrs || null, null);
+        node.staticData = ngStaticData[index] =
+            createNodeStatic(name, attrs || null, null, localName || null);
       }
 
       if (attrs) setUpAttributes(native, attrs);
@@ -610,10 +613,11 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
  */
 function createNodeStatic(
     tagName: string | null, attrs: string[] | null,
-    containerStatic: (LNodeStatic | null)[][] | null): LNodeStatic {
+    containerStatic: (LNodeStatic | null)[][] | null, localName: string | null): LNodeStatic {
   return {
-    tagName,
-    attrs,
+    tagName: tagName,
+    attrs: attrs,
+    localName: localName,
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
@@ -973,7 +977,8 @@ export function containerStart(
   });
 
   if (node.staticData == null) {
-    node.staticData = ngStaticData[index] = createNodeStatic(tagName || null, attrs || null, []);
+    node.staticData = ngStaticData[index] =
+        createNodeStatic(tagName || null, attrs || null, [], null);
   }
 
   // Containers are added to the current view tree instead of their embedded views
@@ -1696,7 +1701,7 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-export function query<T>(predicate: Type<any>| any[], descend?: boolean): QueryList<T> {
+export function query<T>(predicate: Type<any>| string[], descend?: boolean): QueryList<T> {
   ngDevMode && assertPreviousIsParent();
   const queryList = new QueryList<T>();
   const query = currentQuery || (currentQuery = new QueryState_());
