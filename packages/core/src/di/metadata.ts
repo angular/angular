@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectorDefType} from '@angular/core/src/di/injector';
+
+import {InjectableProvider} from '../di/provider';
+import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
+
 
 
 /**
@@ -135,7 +140,9 @@ export interface InjectableDecorator {
    * @stable
    */
   (): any;
+  (moduleType: Type<any>, provide: InjectableProvider): any;
   new (): Injectable;
+  new (moduleType: Type<any>, provide: InjectableProvider): Injectable;
 }
 
 /**
@@ -143,7 +150,10 @@ export interface InjectableDecorator {
  *
  * @stable
  */
-export interface Injectable {}
+export interface Injectable {
+  moduleType?: Type<any>;
+  provide?: InjectableProvider;
+}
 
 /**
  * Injectable decorator and metadata.
@@ -151,7 +161,15 @@ export interface Injectable {}
  * @stable
  * @Annotation
  */
-export const Injectable: InjectableDecorator = makeDecorator('Injectable');
+export const Injectable: InjectableDecorator = function(
+    moduleType?: Type<any>/* InjectorDefType<any> */, provide?: InjectableProvider) {
+  return function(type: Type<any>) {
+    if (moduleType) {
+      const indjectorDef = (moduleType as InjectorDefType<any>).ngInjectorDef;
+      (type as any)[indjectorDef.symbol] = provide;
+    }
+  };
+} as any;
 
 /**
  * Type of the Self decorator / constructor function.

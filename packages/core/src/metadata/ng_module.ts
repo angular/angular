@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../di';
+import {Provider, StaticProvider, InjectorDef, InjectorDefType} from '../di';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
@@ -184,11 +184,34 @@ export interface NgModule {
   id?: string;
 }
 
+let uniqueInjectorSymbolId = 0;
+
 /**
  * NgModule decorator and metadata.
  *
  * @stable
  * @Annotation
  */
-export const NgModule: NgModuleDecorator =
-    makeDecorator('NgModule', (ngModule: NgModule) => ngModule);
+export const NgModule: NgModuleDecorator = function(module: NgModule) {
+  return function(type: Type<any>) {
+    const deps: any[] = []; // TODO need to extract T's arguments
+    const providers: StaticProvider[] = module.providers || [] as any; // TODO: Need to properly convert to StaticProviders
+    const imports = module.imports as any[]; // TODO: Need a proper way of converting.
+    (type as InjectorDefType<any>).ngInjectorDef = defineInjector(type as InjectorDefType<any>, deps, {
+      providers: providers,
+      imports: imports,
+    });
+  };
+} as any;
+
+export function defineInjector<T>(type: InjectorDefType<T>, deps: any[], opts: {
+  providers: StaticProvider[], imports: InjectorDefType<any>[]
+}): InjectorDef<T> {
+  return {
+    type: type,
+    deps: deps,
+    providers: opts.providers,
+    imports: opts.imports,
+    symbol: `__ngInjectorDef_${uniqueInjectorSymbolId++}__`
+  };
+}

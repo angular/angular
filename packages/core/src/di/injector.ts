@@ -17,6 +17,59 @@ import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvi
 const _THROW_IF_NOT_FOUND = new Object();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
+/**
+ * Static information needed to instantiate an `Injector` from
+ * `@NgModule` decorator.
+ */
+export interface InjectorDef<T> {
+  /**
+   * An Injector initialization class. This class will be eagerly
+   * instantiated when `Injector` is created from `InjectorDef`.
+   * It is the class which was decorated with the `@NgModule`
+   */
+  type: InjectorDefType<T>;
+
+  /**
+   * Static dependencies for the `type` class.
+   */
+  deps: any[];
+
+  /**
+   * A set of providers extracted from the `@NgModule` definition.
+   */
+  providers: StaticProvider[];
+
+  /**
+   * A set of other `InjectorDefType`s which have been statically
+   * imported from `@NgModule.imports`
+   */
+  imports: InjectorDefType<any>[];
+
+  /**
+   * A unique symbol used to associate a lazy loaded injection token with
+   * this `InjectorDef`.
+   *
+   * see: https://docs.google.com/document/d/1h0_nSlQ9QApplwsKfd57vLTkVgdl6B06Fp-dg3VreDE
+   */
+  symbol: string;
+}
+
+
+/**
+ * A subclass of `Type` which is annotated with `@NgModule`.
+ *
+ * A `@NgModule` decorator will transform the class into `InjectorDefType`.
+ * see: https://github.com/Microsoft/TypeScript/issues/4881
+ *
+ * During AoT the `@NgModule` decorator is removed and replaced with
+ * static fields which turn the type into `InjectorDefType`.
+ *
+ * The `InjectorDefType` contains all of the information to build the
+ * injector at runtime.
+ */
+export interface InjectorDefType<T> extends Type<T> { ngInjectorDef: InjectorDef<T>; }
+
+
 class _NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
     if (notFoundValue === _THROW_IF_NOT_FOUND) {
@@ -71,8 +124,10 @@ export abstract class Injector {
    *
    * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
    */
-  static create(providers: StaticProvider[], parent?: Injector): Injector {
-    return new StaticInjector(providers, parent);
+  static create(
+      providersOrInjectorDefType: (StaticProvider|InjectorDefType<any>)[],
+      parent?: Injector): Injector {
+    return new StaticInjector(providersOrInjectorDefType, parent);
   }
 }
 
@@ -106,7 +161,8 @@ export class StaticInjector implements Injector {
 
   private _records: Map<any, Record>;
 
-  constructor(providers: StaticProvider[], parent: Injector = NULL_INJECTOR) {
+  constructor(
+      providers: (StaticProvider|InjectorDefType<any>)[], parent: Injector = NULL_INJECTOR) {
     this.parent = parent;
     const records = this._records = new Map<any, Record>();
     records.set(
@@ -184,23 +240,28 @@ function multiProviderMixError(token: any) {
   return staticError('Cannot mix multi providers and regular providers', token);
 }
 
-function recursivelyProcessProviders(records: Map<any, Record>, provider: StaticProvider) {
-  if (provider) {
-    provider = resolveForwardRef(provider);
-    if (provider instanceof Array) {
+function recursivelyProcessProviders(
+    records: Map<any, Record>, providerOrInjectorDefType: StaticProvider | InjectorDefType<any>) {
+  if (providerOrInjectorDefType) {
+    providerOrInjectorDefType = resolveForwardRef(providerOrInjectorDefType);
+    if (providerOrInjectorDefType instanceof Array) {
       // if we have an array recurse into the array
-      for (let i = 0; i < provider.length; i++) {
-        recursivelyProcessProviders(records, provider[i]);
+      for (let i = 0; i < providerOrInjectorDefType.length; i++) {
+        recursivelyProcessProviders(records, providerOrInjectorDefType[i]);
       }
-    } else if (typeof provider === 'function') {
+    } else if (
+        typeof providerOrInjectorDefType === 'function' &&
+        providerOrInjectorDefType.ngInjectorDef) {
+      throw staticError('ImplementMe', providerOrInjectorDefType);
+    } else if (typeof providerOrInjectorDefType === 'function') {
       // Functions were supported in ReflectiveInjector, but are not here. For safety give useful
       // error messages
-      throw staticError('Function/Class not supported', provider);
-    } else if (provider && typeof provider === 'object' && provider.provide) {
+      throw staticError('Function/Class not supported', providerOrInjectorDefType);
+    } else if (typeof providerOrInjectorDefType === 'object' && providerOrInjectorDefType.provide) {
       // At this point we have what looks like a provider: {provide: ?, ....}
-      let token = resolveForwardRef(provider.provide);
-      const resolvedProvider = resolveProvider(provider);
-      if (provider.multi === true) {
+      let token = resolveForwardRef(providerOrInjectorDefType.provide);
+      const resolvedProvider = resolveProvider(providerOrInjectorDefType);
+      if (providerOrInjectorDefType.multi === true) {
         // This is a multi provider.
         let multiProvider: Record|undefined = records.get(token);
         if (multiProvider) {
@@ -210,7 +271,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
         } else {
           // Create a placeholder factory which will look up the constituents of the multi provider.
           records.set(token, multiProvider = <Record>{
-            token: provider.provide,
+            token: providerOrInjectorDefType.provide,
             deps: [],
             useNew: false,
             fn: MULTI_PROVIDER_FN,
@@ -218,7 +279,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
           });
         }
         // Treat the provider as the token.
-        token = provider;
+        token = providerOrInjectorDefType;
         multiProvider.deps.push({token, options: OptionFlags.Default});
       }
       const record = records.get(token);
@@ -227,7 +288,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
       }
       records.set(token, resolvedProvider);
     } else {
-      throw staticError('Unexpected provider', provider);
+      throw staticError('Unexpected provider', providerOrInjectorDefType);
     }
   }
 }
