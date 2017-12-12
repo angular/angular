@@ -176,6 +176,14 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
       return () => cancelAnimationFrame(rafId);
     });
 
+    // Get the actual transition duration (taking global styles into account).
+    // According to the [CSSOM spec](https://drafts.csswg.org/cssom/#serializing-css-values),
+    // `time` values should be returned in seconds.
+    const getActualDuration = (elem: HTMLElement) => {
+      const cssValue = getComputedStyle(elem).transitionDuration;
+      const seconds = Number(cssValue.replace(/s$/, ''));
+      return 1000 * seconds;
+    };
     const animateProp =
         (elem: HTMLElement, prop: string, from: string, to: string, duration = 333) => {
           elem.style.transition = '';
@@ -189,7 +197,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
                     .switchMap(() => raf$).do(() => elem.style[prop] = from)
                     .switchMap(() => raf$).do(() => elem.style.transition = `all ${duration}ms ease-in-out`)
                     .switchMap(() => raf$).do(() => elem.style[prop] = to)
-                    .switchMap(() => timer(duration)).switchMap(() => this.void$);
+                    .switchMap(() => timer(getActualDuration(elem))).switchMap(() => this.void$);
         };
 
     const animateLeave = (elem: HTMLElement) => animateProp(elem, 'opacity', '1', '0.25');
