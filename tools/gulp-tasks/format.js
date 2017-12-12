@@ -14,7 +14,7 @@ module.exports = {
     const result = shell.exec("./node_modules/.bin/git-clang-format");
     if (result.code !== 0) {
       console.error('git-clang-format found unformatted changes');
-      process.exit(1);
+      process.exit(1) ;
     }
   },
 };
