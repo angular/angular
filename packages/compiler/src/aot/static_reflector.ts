@@ -30,6 +30,7 @@ const USE_VALUE = 'useValue';
 const PROVIDE = 'provide';
 const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data']);
 const TYPEGUARD_POSTFIX = 'TypeGuard';
+const USE_IF = 'UseIf';
 
 function shouldIgnore(value: any): boolean {
   return value && value.__symbolic == 'ignore';
@@ -296,8 +297,17 @@ export class StaticReflector implements CompileReflector {
     const staticMembers = this._staticMembers(type);
     const result: {[key: string]: StaticSymbol} = {};
     for (let name of staticMembers) {
-      result[name.substr(0, name.length - TYPEGUARD_POSTFIX.length)] =
-          this.getStaticSymbol(type.filePath, type.name, [name]);
+      if (name.endsWith(TYPEGUARD_POSTFIX)) {
+        let property = name.substr(0, name.length - TYPEGUARD_POSTFIX.length);
+        let value: any;
+        if (property.endsWith(USE_IF)) {
+          property = name.substr(0, property.length - USE_IF.length);
+          value = USE_IF;
+        } else {
+          value = this.getStaticSymbol(type.filePath, type.name, [name]);
+        }
+        result[property] = value;
+      }
     }
     return result;
   }
