@@ -47,6 +47,16 @@ want Bazel to create several symlinks in your project directory
 
 You can use [ibazel] to get a "watch mode" that continuously
 keeps the outputs up-to-date as you save sources. Note this is
-new as of May 2017 and not very stable yet.
+new as of May 2017 and not very stable yet. [ibazel] is a
+devDependency of Angular, so you should find it already installed
+in `node_modules/.bin`.
 
 [ibazel]: https://github.com/bazelbuild/bazel-watcher
+
+## Running and Debugging tests
+
+To run tests, use the `test` command, eg. `ibazel test //packages/core/test`
+
+To run a test so that you can attach with a debugger, add the `--config=debug`
+argument after `bazel run`. It will print the debug URL, you can then attach from
+Chrome devtools using an extension, from your editor, etc.
