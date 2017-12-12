@@ -39,6 +39,11 @@ export interface LNodeStatic {
   attrs: string[]|null;
 
   /**
+   * A local name under which a given element is exported in a view.
+   */
+  localName: string|null;
+
+  /**
    * This property contains information about input properties that
    * need to be set once from attribute data.
    */
