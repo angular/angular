@@ -138,7 +138,6 @@ export class AriaDescriber {
   /** Creates the global container for all aria-describedby messages. */
   private _createMessagesContainer() {
     messagesContainer = this._document.createElement('div');
-
     messagesContainer.setAttribute('id', MESSAGES_CONTAINER_ID);
     messagesContainer.setAttribute('aria-hidden', 'true');
     messagesContainer.style.display = 'none';
@@ -147,8 +146,10 @@ export class AriaDescriber {
 
   /** Deletes the global messages container. */
   private _deleteMessagesContainer() {
-    this._document.body.removeChild(messagesContainer!);
-    messagesContainer = null;
+    if (messagesContainer && messagesContainer.parentNode) {
+      messagesContainer.parentNode.removeChild(messagesContainer);
+      messagesContainer = null;
+    }
   }
 
   /** Removes all cdk-describedby messages that are hosted through the element. */
