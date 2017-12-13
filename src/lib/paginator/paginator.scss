@@ -18,6 +18,10 @@ $mat-paginator-button-icon-width: 8px;
 $mat-paginator-button-decrement-icon-margin: 12px;
 $mat-paginator-button-increment-icon-margin: 16px;
 
+.mat-paginator {
+  display: block;
+}
+
 .mat-paginator-container {
   display: flex;
   align-items: center;
