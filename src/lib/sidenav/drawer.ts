@@ -195,7 +195,9 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   _animationState: 'open-instant' | 'open' | 'void' = 'void';
 
   /** Event emitted when the drawer open state is changed. */
-  @Output() openedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() openedChange: EventEmitter<boolean> =
+      // Note this has to be async in order to avoid some issues with two-bindings (see #8872).
+      new EventEmitter<boolean>(/* isAsync */true);
 
   /** Event emitted when the drawer has been opened. */
   @Output('opened')
@@ -402,10 +404,9 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   _onAnimationEnd(event: AnimationEvent) {
     const {fromState, toState} = event;
 
-    if (toState.indexOf('open') === 0 && fromState === 'void') {
-      this.openedChange.emit(true);
-    } else if (toState === 'void' && fromState.indexOf('open') === 0) {
-      this.openedChange.emit(false);
+    if ((toState.indexOf('open') === 0 && fromState === 'void') ||
+        (toState === 'void' && fromState.indexOf('open') === 0)) {
+      this.openedChange.emit(this._opened);
     }
   }
 

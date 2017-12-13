@@ -8,7 +8,7 @@ import {
 } from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatDrawer, MatSidenavModule, MatDrawerContainer} from './index';
 import {A11yModule} from '@angular/cdk/a11y';
 import {PlatformModule} from '@angular/cdk/platform';
@@ -139,6 +139,7 @@ describe('MatDrawer', () => {
       expect(testComponent.openCount).toBe(0);
       expect(testComponent.closeCount).toBe(0);
 
+      tick();
       fixture.debugElement.query(By.css('.close')).nativeElement.click();
       fixture.detectChanges();
 
@@ -368,6 +369,37 @@ describe('MatDrawer', () => {
 
       expect(fixture.componentInstance.isOpen).toBe(true);
     }));
+
+    it('should not throw when a two-way binding is toggled quickly while animating',
+      fakeAsync(() => {
+        TestBed
+          .resetTestingModule()
+          .configureTestingModule({
+            imports: [MatSidenavModule, BrowserAnimationsModule],
+            declarations: [DrawerOpenBinding],
+          })
+          .compileComponents();
+
+        const fixture = TestBed.createComponent(DrawerOpenBinding);
+        fixture.detectChanges();
+
+        // Note that we need actual timeouts and the `BrowserAnimationsModule`
+        // in order to test it correctly.
+        setTimeout(() => {
+          fixture.componentInstance.isOpen = !fixture.componentInstance.isOpen;
+          expect(() => fixture.detectChanges()).not.toThrow();
+
+          setTimeout(() => {
+            fixture.componentInstance.isOpen = !fixture.componentInstance.isOpen;
+            expect(() => fixture.detectChanges()).not.toThrow();
+          }, 1);
+
+          tick(1);
+        }, 1);
+
+        tick(1);
+      }));
+
   });
 
   describe('focus trapping behavior', () => {
@@ -512,6 +544,7 @@ describe('MatDrawerContainer', () => {
 
     fixture.componentInstance.renderDrawer = false;
     fixture.detectChanges();
+    tick();
 
     expect(parseInt(contentElement.style.marginLeft)).toBeLessThan(initialMargin);
   }));
