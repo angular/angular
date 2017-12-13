@@ -12,7 +12,12 @@ import {PlatformModule} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
-import {MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER, MatTooltip, TooltipComponent} from './tooltip';
+import {
+  MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER,
+  MAT_TOOLTIP_DEFAULT_OPTIONS,
+  MatTooltip,
+  TooltipComponent,
+} from './tooltip';
 
 
 @NgModule({
@@ -26,6 +31,17 @@ import {MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER, MatTooltip, TooltipComponent} from
   exports: [MatTooltip, TooltipComponent, MatCommonModule],
   declarations: [MatTooltip, TooltipComponent],
   entryComponents: [TooltipComponent],
-  providers: [MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER, ARIA_DESCRIBER_PROVIDER],
+  providers: [
+    MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER,
+    ARIA_DESCRIBER_PROVIDER,
+    {
+      provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+      useValue: {
+        showDelay: 0,
+        hideDelay: 0,
+        touchendHideDelay: 1500
+      }
+    }
+  ],
 })
 export class MatTooltipModule {}

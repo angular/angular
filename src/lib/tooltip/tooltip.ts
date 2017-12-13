@@ -48,9 +48,6 @@ import {Subject} from 'rxjs/Subject';
 
 export type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';
 
-/** Time in ms to delay before changing the tooltip visibility to hidden */
-export const TOUCHEND_HIDE_DELAY = 1500;
-
 /** Time in ms to throttle repositioning after scroll events. */
 export const SCROLL_THROTTLE_MS = 20;
 
@@ -78,6 +75,18 @@ export const MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
   deps: [Overlay],
   useFactory: MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER_FACTORY
 };
+
+/** Default `matTooltip` options that can be overridden. */
+export interface MatTooltipDefaultOptions {
+  showDelay: number;
+  hideDelay: number;
+  touchendHideDelay: number;
+}
+
+/** Injection token to be used to override the default options for `matTooltip`. */
+export const MAT_TOOLTIP_DEFAULT_OPTIONS =
+    new InjectionToken<MatTooltipDefaultOptions>('mat-tooltip-default-options');
+
 /**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
  * hiding of a tooltip provided position (defaults to below the element).
@@ -90,7 +99,7 @@ export const MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
   host: {
     '(longpress)': 'show()',
     '(keydown)': '_handleKeydown($event)',
-    '(touchend)': 'hide(' + TOUCHEND_HIDE_DELAY + ')',
+    '(touchend)': '_handleTouchend()',
   },
 })
 export class MatTooltip implements OnDestroy {
@@ -134,10 +143,12 @@ export class MatTooltip implements OnDestroy {
   set _positionDeprecated(value: TooltipPosition) { this._position = value; }
 
   /** The default delay in ms before showing the tooltip after show is called */
-  @Input('matTooltipShowDelay') showDelay = 0;
+  @Input('matTooltipShowDelay') showDelay =
+      this._defaultOptions ? this._defaultOptions.showDelay : 0;
 
   /** The default delay in ms before hiding the tooltip after hide is called */
-  @Input('matTooltipHideDelay') hideDelay = 0;
+  @Input('matTooltipHideDelay') hideDelay =
+      this._defaultOptions ? this._defaultOptions.hideDelay : 0;
 
   private _message = '';
 
@@ -180,7 +191,11 @@ export class MatTooltip implements OnDestroy {
     private _ariaDescriber: AriaDescriber,
     private _focusMonitor: FocusMonitor,
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) private _scrollStrategy,
-    @Optional() private _dir: Directionality) {
+    @Optional() private _dir: Directionality,
+    @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS)
+      private _defaultOptions?: MatTooltipDefaultOptions) {
+
+    // TODO(crisbeto): make the `_defaultOptions` a required param next time we do breaking changes.
 
     const element: HTMLElement = _elementRef.nativeElement;
 
@@ -268,6 +283,11 @@ export class MatTooltip implements OnDestroy {
       e.stopPropagation();
       this.hide(0);
     }
+  }
+
+  /** Handles the touchend events on the host element. */
+  _handleTouchend() {
+    this.hide(this._defaultOptions ? this._defaultOptions.touchendHideDelay : 1500);
   }
 
   /** Create the tooltip to display */
