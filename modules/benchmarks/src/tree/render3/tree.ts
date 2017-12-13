@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, T, V, a, b, b1, c, defineComponent, detectChanges as _detectChanges, e, p, rC, rc, t, v} from '@angular/core/src/render3/index';
+import {C, D, E, T, V, s, b, b1, c, defineComponent, detectChanges as _detectChanges, e, p, rC, rc, t, v} from '@angular/core/src/render3/index';
 import {ComponentDef} from '@angular/core/src/render3/public_interfaces';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
@@ -48,7 +48,7 @@ export class TreeComponent {
         C(3);
         c();
       }
-      a(0, 'style', b1('background-color:', ctx.data.depth % 2 ? '' : 'grey', ''));
+      s(0, 'background-color', b(ctx.data.depth % 2 ? '' : 'grey'));
       t(1, b1(' ', ctx.data.value, ' '));
       rC(2);
       {
@@ -116,7 +116,7 @@ export function TreeTpl(ctx: TreeNode, cm: boolean) {
     C(3);
     c();
   }
-  a(0, 'style', b1('background-color:', ctx.depth % 2 ? '' : 'grey', ''));
+  s(0, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
   t(1, b1(' ', ctx.value, ' '));
   rC(2);
   {
