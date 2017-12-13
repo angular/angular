@@ -47,3 +47,6 @@ test --experimental_ui
 
 # Don't be spammy in the continuous integration logs
 build:ci --noshow_progress
+
+# Don't run manual tests on CI
+test:ci --test_tag_filters=-manual
