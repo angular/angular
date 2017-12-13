@@ -7,6 +7,7 @@
     [maxDate]="datepicker._maxDate"
     [dateFilter]="datepicker._dateFilter"
     [selected]="datepicker._selected"
+    [@fadeInCalendar]="'enter'"
     (selectedChange)="datepicker._select($event)"
     (_userSelection)="datepicker.close()">
 </mat-calendar>

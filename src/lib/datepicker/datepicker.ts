@@ -16,6 +16,7 @@ import {
   PositionStrategy,
   RepositionScrollStrategy,
   ScrollStrategy,
+  ConnectedPositionStrategy,
 } from '@angular/cdk/overlay';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {take} from 'rxjs/operators/take';
@@ -35,6 +36,8 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
+  ChangeDetectorRef,
+  OnInit,
 } from '@angular/core';
 import {DateAdapter} from '@angular/material/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
@@ -44,6 +47,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {MatCalendar} from './calendar';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatDatepickerInput} from './datepicker-input';
+import{trigger, state, style, animate, transition} from '@angular/animations';
 
 
 /** Used to generate a unique ID for each datepicker instance. */
@@ -81,21 +85,71 @@ export const MAT_DATEPICKER_SCROLL_STRATEGY_PROVIDER = {
   styleUrls: ['datepicker-content.css'],
   host: {
     'class': 'mat-datepicker-content',
+    '[@tranformPanel]': '"enter"',
     '[class.mat-datepicker-content-touch]': 'datepicker.touchUi',
+    '[class.mat-datepicker-content-above]': '_isAbove',
     '(keydown)': '_handleKeydown($event)',
   },
+  animations: [
+    trigger('tranformPanel', [
+      state('void', style({opacity: 0, transform: 'scale(1, 0)'})),
+      state('enter', style({opacity: 1, transform: 'scale(1, 1)'})),
+      transition('void => enter', animate('400ms cubic-bezier(0.25, 0.8, 0.25, 1)')),
+      transition('* => void', animate('100ms linear', style({opacity: 0})))
+    ]),
+    trigger('fadeInCalendar', [
+      state('void', style({opacity: 0})),
+      state('enter', style({opacity: 1})),
+      transition('void => *', animate('400ms 100ms cubic-bezier(0.55, 0, 0.55, 0.2)'))
+    ])
+  ],
   exportAs: 'matDatepickerContent',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatDatepickerContent<D> implements AfterContentInit {
+export class MatDatepickerContent<D> implements AfterContentInit, OnInit, OnDestroy {
+  /** Subscription to changes in the overlay's position. */
+  private _positionChange: Subscription|null;
+
+  /** Reference to the internal calendar component. */
+  @ViewChild(MatCalendar) _calendar: MatCalendar<D>;
+
+  /** Reference to the datepicker that created the overlay. */
   datepicker: MatDatepicker<D>;
 
-  @ViewChild(MatCalendar) _calendar: MatCalendar<D>;
+  /** Whether the datepicker is above or below the input. */
+  _isAbove: boolean;
+
+  constructor(private _changeDetectorRef: ChangeDetectorRef) {}
+
+  ngOnInit() {
+    if (!this.datepicker._popupRef || this._positionChange) {
+      return;
+    }
+
+    const positionStrategy =
+      this.datepicker._popupRef.getConfig().positionStrategy! as ConnectedPositionStrategy;
+
+    this._positionChange = positionStrategy.onPositionChange.subscribe(change => {
+      const isAbove = change.connectionPair.overlayY === 'bottom';
+
+      if (isAbove !== this._isAbove) {
+        this._isAbove = isAbove;
+        this._changeDetectorRef.markForCheck();
+      }
+    });
+  }
 
   ngAfterContentInit() {
     this._calendar._focusActiveCell();
+  }
+
+  ngOnDestroy() {
+    if (this._positionChange) {
+      this._positionChange.unsubscribe();
+      this._positionChange = null;
+    }
   }
 
   /**
@@ -214,7 +268,7 @@ export class MatDatepicker<D> implements OnDestroy {
   }
 
   /** A reference to the overlay when the calendar is opened as a popup. */
-  private _popupRef: OverlayRef;
+  _popupRef: OverlayRef;
 
   /** A reference to the dialog when the calendar is opened as a dialog. */
   private _dialogRef: MatDialogRef<any> | null;
