@@ -2371,6 +2371,29 @@ describe('MatSelect', () => {
 
       expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
     }));
+
+    it('should update the data binding before emitting the change event', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicSelectWithoutForms);
+      const instance = fixture.componentInstance;
+      const spy = jasmine.createSpy('change spy');
+
+      fixture.detectChanges();
+      instance.select.change.subscribe(() => spy(instance.selectedFood));
+
+      expect(instance.selectedFood).toBeFalsy();
+
+      fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
+      fixture.detectChanges();
+      flush();
+
+      (overlayContainerElement.querySelector('mat-option') as HTMLElement).click();
+      fixture.detectChanges();
+      flush();
+
+      expect(instance.selectedFood).toBe('steak-0');
+      expect(spy).toHaveBeenCalledWith('steak-0');
+    }));
+
   });
 
   describe('positioning', () => {
