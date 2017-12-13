@@ -31,7 +31,6 @@ import {MAT_INPUT_VALUE_ACCESSOR} from './input-value-accessor';
 const MAT_INPUT_INVALID_TYPES = [
   'button',
   'checkbox',
-  'color',
   'file',
   'hidden',
   'image',

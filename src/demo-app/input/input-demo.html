@@ -8,7 +8,7 @@
 
       <table style="width: 100%" cellspacing="0"><tr>
         <td>
-          <mat-form-field style="width: 100%" floatPlaceholder="never">
+          <mat-form-field style="width: 100%" floatLabel="never">
             <input matInput placeholder="First name">
           </mat-form-field>
         </td>
@@ -304,8 +304,15 @@
     </p>
 
     <p>
-      <mat-form-field [floatPlaceholder]="floatingLabel">
+      <mat-form-field [floatLabel]="floatingLabel">
         <input matInput placeholder="Placeholder">
+      </mat-form-field>
+    </p>
+
+    <p>
+      <mat-form-field [floatLabel]="floatingLabel">
+        <mat-label>What is your favorite color?</mat-label>
+        <input matInput type="color" value="#00ff00">
       </mat-form-field>
     </p>
 
