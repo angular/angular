@@ -393,6 +393,10 @@ $mat-slider-focus-ring-size: 30px !default;
     left: 50%;
   }
 
+  .mat-slider-thumb {
+    @include backface-visibility(hidden);
+  }
+
   .mat-slider-thumb-label {
     bottom: -$mat-slider-thumb-label-size / 2;
     left: -($mat-slider-thumb-label-size + $mat-slider-thumb-arrow-gap);
