@@ -253,6 +253,36 @@ describe('MatSelect', () => {
               'Expected value from second option to have been set on the model.');
         }));
 
+        it('should open a single-selection select using ALT + DOWN_ARROW', fakeAsync(() => {
+          const {control: formControl, select: selectInstance} = fixture.componentInstance;
+
+          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed.');
+          expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+          const event = createKeyboardEvent('keydown', DOWN_ARROW);
+          Object.defineProperty(event, 'altKey', {get: () => true});
+
+          dispatchEvent(select, event);
+
+          expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
+          expect(formControl.value).toBeFalsy('Expected value not to have changed.');
+        }));
+
+        it('should open a single-selection select using ALT + UP_ARROW', fakeAsync(() => {
+          const {control: formControl, select: selectInstance} = fixture.componentInstance;
+
+          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed.');
+          expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+          const event = createKeyboardEvent('keydown', UP_ARROW);
+          Object.defineProperty(event, 'altKey', {get: () => true});
+
+          dispatchEvent(select, event);
+
+          expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
+          expect(formControl.value).toBeFalsy('Expected value not to have changed.');
+        }));
+
         it('should be able to select options by typing on a closed select', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();

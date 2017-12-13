@@ -644,7 +644,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW;
     const isOpenKey = keyCode === ENTER || keyCode === SPACE;
 
-    if (isOpenKey || (this.multiple && isArrowKey)) {
+    if (isOpenKey || ((this.multiple || event.altKey) && isArrowKey)) {
       event.preventDefault(); // prevents the page from scrolling down when pressing space
       this.open();
     } else if (!this.multiple) {
