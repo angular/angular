@@ -11,6 +11,7 @@ import {
   OverlayContainer,
   ConnectedPositionStrategy,
   ConnectedOverlayPositionChange,
+  ConnectionPositionPair,
 } from '../index';
 
 
@@ -544,6 +545,32 @@ describe('ConnectedPositionStrategy', () => {
         expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.top));
         expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect!.left));
       });
+
+      it('should allow for the positions to be updated after init', () => {
+        strategy = positionBuilder.connectedTo(
+            fakeElementRef,
+            {originX: 'start', originY: 'bottom'},
+            {overlayX: 'start', overlayY: 'top'});
+
+        strategy.attach(fakeOverlayRef(overlayElement));
+        strategy.apply();
+
+        let overlayRect = overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.bottom));
+        expect(Math.floor(overlayRect.left)).toBe(Math.floor(originRect!.left));
+
+        strategy.withPositions([new ConnectionPositionPair(
+          {originX: 'start', originY: 'bottom'},
+          {overlayX: 'end', overlayY: 'top'}
+        )]);
+
+        strategy.apply();
+
+        overlayRect = overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect!.bottom));
+        expect(Math.floor(overlayRect.right)).toBe(Math.floor(originRect!.left));
+      });
+
     }
   });
 
