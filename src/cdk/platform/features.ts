@@ -14,7 +14,7 @@ let supportsPassiveEvents: boolean;
  * See: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
  */
 export function supportsPassiveEventListeners(): boolean {
-  if (supportsPassiveEvents == null) {
+  if (supportsPassiveEvents == null && typeof window !== 'undefined') {
     try {
       window.addEventListener('test', null!, Object.defineProperty({}, 'passive', {
         get: () => supportsPassiveEvents = true

@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {ElementRef, NgZone} from '@angular/core';
-import {Platform} from '@angular/cdk/platform';
+import {Platform, supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {RippleRef, RippleState} from './ripple-ref';
 
 
@@ -58,6 +57,9 @@ export class RippleRenderer {
   /** Time in milliseconds when the last touchstart event happened. */
   private _lastTouchStartEvent: number;
 
+  /** Options that apply to all the event listeners that are bound by the renderer. */
+  private _eventOptions = supportsPassiveEventListeners() ? ({passive: true} as any) : false;
+
   /** Ripple config for all ripples created by events. */
   rippleConfig: RippleConfig = {};
 
@@ -70,12 +72,12 @@ export class RippleRenderer {
       this._containerElement = elementRef.nativeElement;
 
       // Specify events which need to be registered on the trigger.
-      this._triggerEvents.set('mousedown', this.onMousedown.bind(this));
-      this._triggerEvents.set('mouseup', this.onPointerUp.bind(this));
-      this._triggerEvents.set('mouseleave', this.onPointerUp.bind(this));
+      this._triggerEvents.set('mousedown', this.onMousedown);
+      this._triggerEvents.set('mouseup', this.onPointerUp);
+      this._triggerEvents.set('mouseleave', this.onPointerUp);
 
-      this._triggerEvents.set('touchstart', this.onTouchStart.bind(this));
-      this._triggerEvents.set('touchend', this.onPointerUp.bind(this));
+      this._triggerEvents.set('touchstart', this.onTouchStart);
+      this._triggerEvents.set('touchend', this.onPointerUp);
 
       // By default use the host element as trigger element.
       this.setTriggerElement(this._containerElement);
@@ -173,14 +175,15 @@ export class RippleRenderer {
     // Remove all previously register event listeners from the trigger element.
     if (this._triggerElement) {
       this._triggerEvents.forEach((fn, type) => {
-        this._triggerElement!.removeEventListener(type, fn);
+        this._triggerElement!.removeEventListener(type, fn, this._eventOptions);
       });
     }
 
     if (element) {
       // If the element is not null, register all event listeners on the trigger element.
       this._ngZone.runOutsideAngular(() => {
-        this._triggerEvents.forEach((fn, type) => element.addEventListener(type, fn));
+        this._triggerEvents.forEach((fn, type) =>
+            element.addEventListener(type, fn, this._eventOptions));
       });
     }
 
@@ -188,7 +191,7 @@ export class RippleRenderer {
   }
 
   /** Function being called whenever the trigger is being pressed using mouse. */
-  private onMousedown(event: MouseEvent) {
+  private onMousedown = (event: MouseEvent) => {
     const isSyntheticEvent = this._lastTouchStartEvent &&
         Date.now() < this._lastTouchStartEvent + IGNORE_MOUSE_EVENTS_TIMEOUT;
 
@@ -199,7 +202,7 @@ export class RippleRenderer {
   }
 
   /** Function being called whenever the trigger is being pressed using touch. */
-  private onTouchStart(event: TouchEvent) {
+  private onTouchStart = (event: TouchEvent) => {
     if (!this.rippleDisabled) {
       // Some browsers fire mouse events after a `touchstart` event. Those synthetic mouse
       // events will launch a second ripple if we don't ignore mouse events for a specific
@@ -212,7 +215,7 @@ export class RippleRenderer {
   }
 
   /** Function being called whenever the trigger is being released. */
-  private onPointerUp() {
+  private onPointerUp = () => {
     if (!this._isPointerDown) {
       return;
     }
