@@ -11,6 +11,15 @@ import {ContainerState, LContainer, LElement, LNode, LNodeFlags, LProjection, LT
 import {assertNodeType} from './node_assert';
 import {RComment, RElement, RNode, RText, Renderer3Fn} from './renderer';
 
+/**
+ * Finds the closest DOM node above a given container in the hierarchy.
+ *
+ * This is necessary to add or remove elements from the DOM when a view
+ * is added or removed from the container. e.g. parent.removeChild(...)
+ *
+ * @param {LContainer} containerNode The container node whose parent must be found
+ * @returns {RNode}
+ */
 export function findNativeParent(containerNode: LContainer): RNode|null {
   let container: LContainer|null = containerNode;
   while (container) {
@@ -32,6 +41,19 @@ export function findNativeParent(containerNode: LContainer): RNode|null {
   return null;
 }
 
+/**
+ * Finds the DOM element before which a certain view should be inserting its
+ * child elements.
+ *
+ * If the view has a next (e.g. for loop), elements should be inserted before
+ * the next view's first child element. Otherwise, the container's comment
+ * anchor is the marker.
+ *
+ * @param {number} index The index of the view to check
+ * @param {ContainerState} state ContainerState of the parent container
+ * @param {RComment} native Comment anchor for container
+ * @returns {RElement | RText | RComment}
+ */
 export function findBeforeNode(index: number, state: ContainerState, native: RComment): RElement|
     RText|RComment {
   const children = state.children;
@@ -41,6 +63,18 @@ export function findBeforeNode(index: number, state: ContainerState, native: RCo
       native;
 }
 
+/**
+ * Adds or removes all DOM elements associated with a view.
+ *
+ * Because some root nodes of the view may be containers, we sometimes need
+ * to propagate deeply into the nested containers to remove all elements in the
+ * views beneath it.
+ *
+ * @param {LContainer} container - The container to which the root view belongs
+ * @param {LView} rootNode - The view from which elements should be added or removed
+ * @param {boolean} insertMode - Whether or not elements should be added (if false, removing)
+ * @param {RNode} beforeNode - The node before which elements should be added, if insert mode
+ */
 export function addRemoveViewFromContainer(
     container: LContainer, rootNode: LView, insertMode: true, beforeNode: RNode | null): void;
 export function addRemoveViewFromContainer(
@@ -98,14 +132,17 @@ export function addRemoveViewFromContainer(
 }
 
 /**
- * Traverses the tree of component views and containers to remove listeners.
+ * Traverses the tree of component views and containers to remove listeners and
+ * call onDestroy callbacks.
  *
  * Notes:
- *  - Will be used for onDestroy calls later, so needs to be bottom-up.
+ *  - Because it's used for onDestroy calls, it needs to be bottom-up.
  *  - Must process containers instead of their views to avoid splicing
  *  when views are destroyed and re-added.
- *  - Using a while loop because it's faster than recursing
+ *  - Using a while loop because it's faster than recursion
  *  - Destroy only called on movement to sibling or movement to parent (laterally or up)
+ *
+ *  @param {ViewState} rootView - The view to destroy
  */
 export function destroyViewTree(rootView: ViewState): void {
   let viewOrContainerState: ViewOrContainerState|null = rootView;
@@ -135,6 +172,19 @@ export function destroyViewTree(rootView: ViewState): void {
   }
 }
 
+/**
+ * Inserts a view into a container.
+ *
+ * This adds the view to the container's array of active children in the correct
+ * position. It also adds the view's elements to the DOM if the container isn't a
+ * root node of another view (in that case, the view's elements will be added when
+ * the container's parent view is added later).
+ *
+ * @param {LContainer} container - The container into which the view should be inserted
+ * @param {LView} newView - The view to insert
+ * @param {number} index - The index at which to insert the view
+ * @returns {LView} - The inserted view
+ */
 export function insertView(container: LContainer, newView: LView, index: number): LView {
   const state = container.data;
   const children = state.children;
@@ -169,7 +219,17 @@ export function insertView(container: LContainer, newView: LView, index: number)
   return newView;
 }
 
-
+/**
+ * Removes a view from a container.
+ *
+ * This method splices the view from the container's array of active children. It also
+ * removes the view's elements from the DOM and conducts cleanup (e.g. removing
+ * listeners, calling onDestroys).
+ *
+ * @param {LContainer} container - The container from which to remove a view
+ * @param {number} removeIndex - The index of the view to remove
+ * @returns {LView} - The removed view
+ */
 export function removeView(container: LContainer, removeIndex: number): LView {
   const children = container.data.children;
   const viewNode = children[removeIndex];
@@ -184,11 +244,31 @@ export function removeView(container: LContainer, removeIndex: number): LView {
   return viewNode;
 }
 
+/**
+ * Sets a next on the view node, so views in for loops can easily jump from
+ * one view to the next to add/remove elements. Also adds the ViewState (view.data)
+ * to the view tree for easy traversal when cleaning up the view.
+ *
+ * @param {LView} view - The view to set up
+ * @param {LView} next - The view's new next
+ */
 export function setViewNext(view: LView, next: LView | null): void {
   view.next = next;
   view.data.next = next ? next.data : null;
 }
 
+/**
+ * Determines which ViewOrContainerState to jump to when traversing back up the
+ * tree in destroyViewTree.
+ *
+ * Normally, the view's parent ViewState should be checked, but in the case of
+ * embedded views, the container (which is the view node's parent, but not the
+ * ViewState's parent) needs to be checked for a possible next property.
+ *
+ * @param {ViewOrContainerState} state - The ViewOrContainerState for which we need a parent state
+ * @param {ViewState} rootView - The rootView, so we don't propagate too far up the view tree
+ * @returns {ViewOrContainerState}
+ */
 export function getParentState(
     state: ViewOrContainerState, rootView: ViewState): ViewOrContainerState|null {
   let node;
@@ -203,7 +283,11 @@ export function getParentState(
   }
 }
 
-/** Removes all listeners and call all onDestroys in a given view. */
+/**
+ * Removes all listeners and call all onDestroys in a given view.
+ *
+ * @param {ViewState} viewState - The ViewState of the view to clean up
+ */
 function cleanUpView(viewState: ViewState): void {
   if (!viewState.cleanup) return;
   const cleanup = viewState.cleanup !;
@@ -218,6 +302,19 @@ function cleanUpView(viewState: ViewState): void {
   viewState.cleanup = null;
 }
 
+/**
+ * Appends the provided child element to the provided parent, if appropriate.
+ *
+ * If the parent is a view, the element will be appended as part of viewEnd(), so
+ * the element should not be appended now. Similarly, if the child is a content child
+ * of a parent component, the child will be appended to the right position later by
+ * the content projection system. Otherwise, append normally.
+ *
+ * @param {LNode} parent - The parent to which to append the child
+ * @param {RNode} child - The child that should be appended
+ * @param {ViewState} currentView - The current view's ViewState
+ * @returns {boolean} - Whether or not the child was appended
+ */
 export function appendChild(parent: LNode, child: RNode | null, currentView: ViewState): boolean {
   // Only add native child element to parent element if the parent element is regular Element.
   // If parent is:
@@ -242,7 +339,18 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: Vie
   return false;
 }
 
-export function insertChild(node: LNode, currentView: ViewState) {
+/**
+ * Inserts the provided node before the correct element in the DOM, if appropriate.
+ *
+ * If the parent is a view, the element will be inserted as part of viewEnd(), so
+ * the element should not be inserted now. Similarly, if the child is a content child
+ * of a parent component, the child will be inserted to the right position later by
+ * the content projection system. Otherwise, insertBefore normally.
+ *
+ * @param {LNode} node - Node to insert
+ * @param {ViewState} currentView - The current view's ViewState
+ */
+export function insertChild(node: LNode, currentView: ViewState): void {
   const parent = node.parent !;
   // Only add child element to parent element if the parent element is regular Element.
   // If parent is:
@@ -270,9 +378,19 @@ export function insertChild(node: LNode, currentView: ViewState) {
   }
 }
 
+/**
+ * Appends a projected node to the DOM, or in the case of a projected container,
+ * appends the nodes from all of the container's active views to the DOM. Also stores the
+ * node in the given projectedNodes array.
+ *
+ * @param {ProjectionState} projectedNodes - Array to store the projected node
+ * @param {LElement | LText | LContainer} node - The node to process
+ * @param {LView | LElement} currentParent - The last parent element to be processed
+ * @param {ViewState} currentView - The current view's ViewState
+ */
 export function processProjectedNode(
     projectedNodes: ProjectionState, node: LElement | LText | LContainer,
-    currentParent: LView | LElement, currentView: ViewState) {
+    currentParent: LView | LElement, currentView: ViewState): void {
   if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container &&
       (currentParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element &&
       (currentParent.data === null || currentParent.data === currentView)) {
