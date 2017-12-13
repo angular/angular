@@ -136,9 +136,6 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   /** The chip input to add more chips */
   protected _chipInput: MatChipInput;
 
-  /** The aria-describedby attribute on the chip list for improved a11y. */
-  protected _ariaDescribedby: string;
-
   /** Id of the chip list */
   protected _id: string;
 
@@ -156,7 +153,10 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   /** Placeholder for the chip list. Alternatively, placeholder can be set on MatChipInput */
   protected _placeholder: string;
 
-  /** Tab index for the chip list. */
+  /** The aria-describedby attribute on the chip list for improved a11y. */
+  _ariaDescribedby: string;
+
+    /** Tab index for the chip list. */
   _tabIndex = 0;
 
   /**

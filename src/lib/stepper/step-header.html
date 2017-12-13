@@ -10,7 +10,7 @@
      [class.mat-step-label-active]="active"
      [class.mat-step-label-selected]="selected">
   <!-- If there is a label template, use it. -->
-  <ng-container *ngIf="_templateLabel()" [ngTemplateOutlet]="label.template">
+  <ng-container *ngIf="_templateLabel()" [ngTemplateOutlet]="_templateLabel()!.template">
   </ng-container>
   <!-- It there is no label template, fall back to the text label. -->
   <div class="mat-step-text-label" *ngIf="_stringLabel()">{{label}}</div>
