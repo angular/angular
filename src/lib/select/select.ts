@@ -20,6 +20,7 @@ import {
 import {filter} from 'rxjs/operators/filter';
 import {take} from 'rxjs/operators/take';
 import {map} from 'rxjs/operators/map';
+import {switchMap} from 'rxjs/operators/switchMap';
 import {startWith} from 'rxjs/operators/startWith';
 import {takeUntil} from 'rxjs/operators/takeUntil';
 import {
@@ -75,6 +76,7 @@ import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {Subject} from 'rxjs/Subject';
+import {defer} from 'rxjs/observable/defer';
 import {fadeInContent, transformPanel} from './select-animations';
 import {
   getMatSelectDynamicMultipleError,
@@ -397,9 +399,15 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _id: string;
 
   /** Combined stream of all of the child options' change events. */
-  get optionSelectionChanges(): Observable<MatOptionSelectionChange> {
-    return merge(...this.options.map(option => option.onSelectionChange));
-  }
+  optionSelectionChanges: Observable<MatOptionSelectionChange> = defer(() => {
+    if (this.options) {
+      return merge(...this.options.map(option => option.onSelectionChange));
+    }
+
+    return this._ngZone.onStable
+      .asObservable()
+      .pipe(take(1), switchMap(() => this.optionSelectionChanges));
+  });
 
    /** Event emitted when the select has been opened. */
    @Output() openedChange: EventEmitter<boolean> = new EventEmitter<boolean>();

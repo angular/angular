@@ -43,12 +43,14 @@ import {
   FloatLabelType,
   MAT_LABEL_GLOBAL_OPTIONS,
   MatOption,
+  MatOptionSelectionChange,
 } from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {map} from 'rxjs/operators/map';
 import {Subject} from 'rxjs/Subject';
+import {Subscription} from 'rxjs/Subscription';
 import {MatSelectModule} from './index';
 import {MatSelect} from './select';
 import {
@@ -1001,6 +1003,54 @@ describe('MatSelect', () => {
       it('should not throw if triggerValue accessed with no selected value', fakeAsync(() => {
         expect(() => fixture.componentInstance.select.triggerValue).not.toThrow();
       }));
+
+      it('should emit to `optionSelectionChanges` when an option is selected', fakeAsync(() => {
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const spy = jasmine.createSpy('option selection spy');
+        const subscription = fixture.componentInstance.select.optionSelectionChanges.subscribe(spy);
+        const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
+        option.click();
+        fixture.detectChanges();
+        flush();
+
+        expect(spy).toHaveBeenCalledWith(jasmine.any(MatOptionSelectionChange));
+
+        subscription.unsubscribe();
+      }));
+
+      it('should handle accessing `optionSelectionChanges` before the options are initialized',
+        fakeAsync(() => {
+          fixture.destroy();
+          fixture = TestBed.createComponent(BasicSelect);
+
+          let spy = jasmine.createSpy('option selection spy');
+          let subscription: Subscription;
+
+          expect(fixture.componentInstance.select.options).toBeFalsy();
+          expect(() => {
+            subscription = fixture.componentInstance.select.optionSelectionChanges.subscribe(spy);
+          }).not.toThrow();
+
+          fixture.detectChanges();
+          trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
+
+          trigger.click();
+          fixture.detectChanges();
+          flush();
+
+          const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
+          option.click();
+          fixture.detectChanges();
+          flush();
+
+          expect(spy).toHaveBeenCalledWith(jasmine.any(MatOptionSelectionChange));
+
+          subscription!.unsubscribe();
+        }));
+
     });
 
     describe('forms integration', () => {
