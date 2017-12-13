@@ -1778,6 +1778,25 @@ describe('MatSelect', () => {
     }));
   });
 
+  describe('change events', () => {
+    beforeEach(async(() => configureMatSelectTestingModule([SelectWithPlainTabindex])));
+
+    it('should complete the stateChanges stream on destroy', () => {
+      const fixture = TestBed.createComponent(SelectWithPlainTabindex);
+      fixture.detectChanges();
+
+      const debugElement = fixture.debugElement.query(By.directive(MatSelect));
+      const select = debugElement.componentInstance;
+
+      const spy = jasmine.createSpy('stateChanges complete');
+      const subscription = select.stateChanges.subscribe(undefined, undefined, spy);
+
+      fixture.destroy();
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
+  });
+
   describe('when initially hidden', () => {
     beforeEach(async(() => configureMatSelectTestingModule([BasicSelectInitiallyHidden])));
 

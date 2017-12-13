@@ -509,6 +509,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   ngOnDestroy() {
     this._destroy.next();
     this._destroy.complete();
+    this.stateChanges.complete();
   }
 
   /** Toggles the overlay panel open or closed. */
