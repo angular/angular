@@ -21,3 +21,13 @@ export function stringify(value: any): string {
   if (value == null) return '';
   return '' + value;
 }
+
+/**
+ *  Function that throws a "not implemented" error so it's clear certain
+ *  behaviors/methods aren't yet ready.
+ *
+ * @returns Not implemented error
+ */
+export function notImplemented(): Error {
+  return new Error('NotImplemented');
+}
