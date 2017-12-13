@@ -267,6 +267,14 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     this._onTouched = fn;
   }
 
+  /**
+   * Disables the input. Implemented as a part of `ControlValueAccessor`.
+   * @param isDisabled Whether the component should be disabled.
+   */
+  setDisabledState(isDisabled: boolean) {
+    this._element.nativeElement.disabled = isDisabled;
+  }
+
   _handleKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
 

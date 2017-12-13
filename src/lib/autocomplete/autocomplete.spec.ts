@@ -596,6 +596,22 @@ describe('MatAutocomplete', () => {
           .toBe(true, `Expected control to become touched on blur.`);
     });
 
+    it('should disable the input when used with a value accessor and without `matInput`', () => {
+      fixture.destroy();
+      TestBed.resetTestingModule();
+
+      const plainFixture = createComponent(PlainAutocompleteInputWithFormControl);
+      plainFixture.detectChanges();
+      input = plainFixture.nativeElement.querySelector('input');
+
+      expect(input.disabled).toBe(false);
+
+      plainFixture.componentInstance.formControl.disable();
+      plainFixture.detectChanges();
+
+      expect(input.disabled).toBe(true);
+    });
+
   });
 
   describe('keyboard events', () => {
@@ -1922,4 +1938,15 @@ class AutocompleteWithSelectEvent {
 
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   @ViewChild(MatAutocomplete) autocomplete: MatAutocomplete;
+}
+
+
+@Component({
+  template: `
+    <input [formControl]="formControl" [matAutocomplete]="auto"/>
+    <mat-autocomplete #auto="matAutocomplete"></mat-autocomplete>
+  `
+})
+export class PlainAutocompleteInputWithFormControl {
+  formControl = new FormControl();
 }
