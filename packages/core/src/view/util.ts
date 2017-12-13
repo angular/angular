@@ -28,13 +28,10 @@ export function tokenKey(token: any): string {
 }
 
 export function unwrapValue(view: ViewData, nodeIdx: number, bindingIdx: number, value: any): any {
-  if (value instanceof WrappedValue) {
-    value = value.wrapped;
-    let globalBindingIdx = view.def.nodes[nodeIdx].bindingIndex + bindingIdx;
-    let oldValue = view.oldValues[globalBindingIdx];
-    if (oldValue instanceof WrappedValue) {
-      oldValue = oldValue.wrapped;
-    }
+  if (WrappedValue.isWrapped(value)) {
+    value = WrappedValue.unwrap(value);
+    const globalBindingIdx = view.def.nodes[nodeIdx].bindingIndex + bindingIdx;
+    const oldValue = WrappedValue.unwrap(view.oldValues[globalBindingIdx]);
     view.oldValues[globalBindingIdx] = new WrappedValue(oldValue);
   }
   return value;

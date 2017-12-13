@@ -1093,8 +1093,10 @@ export declare abstract class ViewRef extends ChangeDetectorRef {
 
 /** @stable */
 export declare class WrappedValue {
-    wrapped: any;
-    constructor(wrapped: any);
+    /** @deprecated */ wrapped: any;
+    constructor(value: any);
+    static isWrapped(value: any): value is WrappedValue;
+    static unwrap(value: any): any;
     static wrap(value: any): WrappedValue;
 }
 
