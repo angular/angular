@@ -15,7 +15,9 @@ describe('MatExpansionPanel', () => {
       declarations: [
         PanelWithContent,
         PanelWithContentInNgIf,
-        PanelWithCustomMargin
+        PanelWithCustomMargin,
+        LazyPanelWithContent,
+        LazyPanelOpenOnLoad,
       ],
     });
     TestBed.compileComponents();
@@ -34,6 +36,29 @@ describe('MatExpansionPanel', () => {
     expect(headerEl.classes['mat-expanded']).toBeTruthy();
     expect(contentEl.classes['mat-expanded']).toBeTruthy();
   });
+
+  it('should be able to render panel content lazily', fakeAsync(() => {
+    let fixture = TestBed.createComponent(LazyPanelWithContent);
+    let content = fixture.debugElement.query(By.css('.mat-expansion-panel-content')).nativeElement;
+    fixture.detectChanges();
+
+    expect(content.textContent.trim()).toBe('', 'Expected content element to be empty.');
+
+    fixture.componentInstance.expanded = true;
+    fixture.detectChanges();
+
+    expect(content.textContent.trim())
+        .toContain('Some content', 'Expected content to be rendered.');
+  }));
+
+  it('should render the content for a lazy-loaded panel that is opened on init', fakeAsync(() => {
+    let fixture = TestBed.createComponent(LazyPanelOpenOnLoad);
+    let content = fixture.debugElement.query(By.css('.mat-expansion-panel-content')).nativeElement;
+    fixture.detectChanges();
+
+    expect(content.textContent.trim())
+        .toContain('Some content', 'Expected content to be rendered.');
+  }));
 
   it('emit correct events for change in panel expanded state', () => {
     const fixture = TestBed.createComponent(PanelWithContent);
@@ -61,11 +86,12 @@ describe('MatExpansionPanel', () => {
 
   it('should not be able to focus content while closed', fakeAsync(() => {
     const fixture = TestBed.createComponent(PanelWithContent);
-    const button = fixture.debugElement.query(By.css('button')).nativeElement;
 
     fixture.componentInstance.expanded = true;
     fixture.detectChanges();
     tick(250);
+
+    const button = fixture.debugElement.query(By.css('button')).nativeElement;
 
     button.focus();
     expect(document.activeElement).toBe(button, 'Expected button to start off focusable.');
@@ -260,3 +286,30 @@ class PanelWithContentInNgIf {
 class PanelWithCustomMargin {
   expanded: boolean = false;
 }
+
+@Component({
+  template: `
+  <mat-expansion-panel [expanded]="expanded">
+    <mat-expansion-panel-header>Panel Title</mat-expansion-panel-header>
+
+    <ng-template matExpansionPanelContent>
+      <p>Some content</p>
+      <button>I am a button</button>
+    </ng-template>
+  </mat-expansion-panel>`
+})
+class LazyPanelWithContent {
+  expanded = false;
+}
+
+@Component({
+  template: `
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>Panel Title</mat-expansion-panel-header>
+
+    <ng-template matExpansionPanelContent>
+      <p>Some content</p>
+    </ng-template>
+  </mat-expansion-panel>`
+})
+class LazyPanelOpenOnLoad {}

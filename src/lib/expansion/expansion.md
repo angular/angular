@@ -99,9 +99,25 @@ panel can be expanded at a given time:
 </mat-accordion>
 ```
 
+### Lazy rendering
+By default, the expansion panel content will be initialized even when the panel is closed.
+To instead defer initialization until the panel is open, the content should be provided as
+an `ng-template`:
+```html
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    This is the expansion title
+  </mat-expansion-panel-header>
+
+  <ng-template matExpansionPanelContent>
+    Some deferred content
+  </ng-template>
+</mat-expansion-panel>
+```
+
 ### Accessibility
 The expansion-panel aims to mimic the experience of the native `<details>` and `<summary>` elements.
-The expansion panel header has `role="button"` and also the attribute `aria-controls` with the 
+The expansion panel header has `role="button"` and also the attribute `aria-controls` with the
 expansion panel's id as value.
 
 The expansion panel headers are buttons. Users can use the keyboard to activate the expansion panel

@@ -1,8 +1,11 @@
 <ng-content select="mat-expansion-panel-header"></ng-content>
-<div [class.mat-expanded]="expanded" class="mat-expansion-panel-content"
-     [@bodyExpansion]="_getExpandedState()" [id]="id">
+<div class="mat-expansion-panel-content"
+     [class.mat-expanded]="expanded"
+     [@bodyExpansion]="_getExpandedState()"
+     [id]="id">
   <div class="mat-expansion-panel-body">
     <ng-content></ng-content>
+    <ng-template [cdkPortalOutlet]="_portal"></ng-template>
   </div>
   <ng-content select="mat-action-row"></ng-content>
 </div>

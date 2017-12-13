@@ -6,8 +6,10 @@
     <mat-panel-title>Panel Title</mat-panel-title>
   </mat-expansion-panel-header>
 
+  <ng-template matExpansionPanelContent>
     This is the content text that makes sense here.
     <mat-checkbox>Trigger a ripple</mat-checkbox>
+  </ng-template>
 
   <mat-action-row>
     <button mat-button (click)="myPanel.expanded = false">CANCEL</button>
