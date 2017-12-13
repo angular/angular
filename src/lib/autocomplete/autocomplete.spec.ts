@@ -1,6 +1,6 @@
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {DOWN_ARROW, ENTER, ESCAPE, SPACE, UP_ARROW, TAB} from '@angular/cdk/keycodes';
-import {OverlayContainer} from '@angular/cdk/overlay';
+import {OverlayContainer, Overlay} from '@angular/cdk/overlay';
 import {map} from 'rxjs/operators/map';
 import {startWith} from 'rxjs/operators/startWith';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
@@ -45,6 +45,7 @@ import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
   MatAutocompleteTrigger,
+  MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
 } from './index';
 
 
@@ -1518,6 +1519,29 @@ describe('MatAutocomplete', () => {
       expect(panel.classList).toContain('class-two');
     }));
 
+
+    it('should reset correctly when closed programmatically', async(() => {
+      TestBed.overrideProvider(MAT_AUTOCOMPLETE_SCROLL_STRATEGY, {
+        useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
+        deps: [Overlay]
+      });
+
+      const fixture = TestBed.createComponent(SimpleAutocomplete);
+      fixture.detectChanges();
+      const trigger = fixture.componentInstance.trigger;
+
+      trigger.openPanel();
+      fixture.detectChanges();
+
+      fixture.whenStable().then(() => {
+        expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+
+        scrolledSubject.next();
+        fixture.detectChanges();
+
+        expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+      });
+    }));
 
   });
 
