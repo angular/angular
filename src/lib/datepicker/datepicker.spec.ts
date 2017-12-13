@@ -340,6 +340,29 @@ describe('MatDatepicker', () => {
 
         expect(() => fixture.detectChanges()).not.toThrow();
       });
+
+      it('should clear out the backdrop subscriptions on close', () => {
+        for (let i = 0; i < 3; i++) {
+          testComponent.datepicker.open();
+          fixture.detectChanges();
+
+          testComponent.datepicker.close();
+          fixture.detectChanges();
+        }
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+
+        spyOn(testComponent.datepicker, 'close').and.callThrough();
+
+        const backdrop = document.querySelector('.cdk-overlay-backdrop')! as HTMLElement;
+
+        backdrop.click();
+        fixture.detectChanges();
+
+        expect(testComponent.datepicker.close).toHaveBeenCalledTimes(1);
+        expect(testComponent.datepicker.opened).toBe(false);
+      });
     });
 
     describe('datepicker with too many inputs', () => {

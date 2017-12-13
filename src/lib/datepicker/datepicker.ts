@@ -352,8 +352,6 @@ export class MatDatepicker<D> implements OnDestroy {
         this._popupRef.updatePosition();
       });
     }
-
-    this._popupRef.backdropClick().subscribe(() => this.close());
   }
 
   /** Create the popup. */
@@ -368,6 +366,7 @@ export class MatDatepicker<D> implements OnDestroy {
     });
 
     this._popupRef = this._overlay.create(overlayConfig);
+    this._popupRef.backdropClick().subscribe(() => this.close());
   }
 
   /** Create the popup PositionStrategy. */
