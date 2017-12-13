@@ -32,10 +32,10 @@ import {ListDemo} from '../list/list-demo';
 import {LiveAnnouncerDemo} from '../live-announcer/live-announcer-demo';
 import {MenuDemo} from '../menu/menu-demo';
 import {
+  KeyboardTrackingPanel,
   OverlayDemo,
   RotiniPanel,
-  SpagettiPanel,
-  KeyboardTrackingPanel
+  SpagettiPanel
 } from '../overlay/overlay-demo';
 import {PlatformDemo} from '../platform/platform-demo';
 import {PortalDemo, ScienceJoke} from '../portal/portal-demo';
@@ -49,17 +49,15 @@ import {SlideToggleDemo} from '../slide-toggle/slide-toggle-demo';
 import {SliderDemo} from '../slider/slider-demo';
 import {SnackBarDemo} from '../snack-bar/snack-bar-demo';
 import {StepperDemo} from '../stepper/stepper-demo';
-import {PeopleDatabase} from '../table/people-database';
-import {TableDemo} from '../table/table-demo';
 import {ScreenTypeDemo} from '../screen-type/screen-type-demo';
 import {LayoutModule} from '@angular/cdk/layout';
-import {TableHeaderDemo} from '../table/table-header-demo';
 import {FoggyTabContent, RainyTabContent, SunnyTabContent, TabsDemo} from '../tabs/tabs-demo';
 import {ToolbarDemo} from '../toolbar/toolbar-demo';
 import {TooltipDemo} from '../tooltip/tooltip-demo';
 import {TypographyDemo} from '../typography/typography-demo';
 import {DemoApp, Home} from './demo-app';
 import {DEMO_APP_ROUTES} from './routes';
+import {TableDemoModule} from '../table/table-demo-module';
 
 @NgModule({
   imports: [
@@ -69,6 +67,7 @@ import {DEMO_APP_ROUTES} from './routes';
     RouterModule.forChild(DEMO_APP_ROUTES),
     DemoMaterialModule,
     LayoutModule,
+    TableDemoModule,
   ],
   declarations: [
     AutocompleteDemo,
@@ -117,8 +116,6 @@ import {DEMO_APP_ROUTES} from './routes';
     SpagettiPanel,
     StepperDemo,
     SunnyTabContent,
-    TableDemo,
-    TableHeaderDemo,
     TabsDemo,
     ToolbarDemo,
     TooltipDemo,
@@ -126,7 +123,6 @@ import {DEMO_APP_ROUTES} from './routes';
   ],
   providers: [
     {provide: OverlayContainer, useClass: FullscreenOverlayContainer},
-    PeopleDatabase
   ],
   entryComponents: [
     ContentElementDialog,

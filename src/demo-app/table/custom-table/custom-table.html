@@ -1,0 +1,40 @@
+<mat-card class="demo-table-card">
+  <h3> MatTable with Simple Columns </h3>
+
+  <mat-table [dataSource]="simpleTableDataSource"
+             matSort #simpleTableSort="matSort">
+    <!-- Basic column: name is used for header label AND data property -->
+    <simple-column name="name" sortable></simple-column>
+    <simple-column name="position"></simple-column>
+
+    <!-- Name doesn't match the data property (or transform needed); define a custom data accessor -->
+    <simple-column name="weight" [dataAccessor]="getWeight"></simple-column>
+
+    <!-- Name doesn't match desired header text; define a custom label -->
+    <simple-column name="symbol" label="SYMBOL!"></simple-column>
+
+    <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+    <mat-row *matRowDef="let data; columns: columnsToDisplay;"></mat-row>
+  </mat-table>
+</mat-card>
+
+
+
+<mat-card class="demo-table-card">
+  <h3> Wrapper Table </h3>
+
+  <wrapper-table [dataSource]="wrapperTableDataSource" [columns]="columnsToDisplay"
+                 matSort #wrapperTableSort="matSort">
+    <!-- Name (normal column) -->
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+    </ng-container>
+
+    <!-- Position (simple column) -->
+    <simple-column name="position"></simple-column>
+
+    <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: columnsToDisplay; "></mat-row>
+  </wrapper-table>
+</mat-card>

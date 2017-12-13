@@ -1,5 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component, ViewChild} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Input, QueryList, ViewChild} from '@angular/core';
 import {CdkTable} from './table';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
@@ -13,6 +13,8 @@ import {
   getTableMultipleDefaultRowDefsError,
   getTableUnknownColumnError
 } from './table-errors';
+import {CdkHeaderRowDef, CdkRowDef} from './row';
+import {CdkColumnDef} from './cell';
 
 describe('CdkTable', () => {
   let fixture: ComponentFixture<SimpleCdkTableApp>;
@@ -40,7 +42,9 @@ describe('CdkTable', () => {
         WhenRowWithoutDefaultCdkTableApp,
         WhenRowMultipleDefaultsCdkTableApp,
         MissingRowDefsCdkTableApp,
-        BooleanRowCdkTableApp
+        BooleanRowCdkTableApp,
+        WrapperCdkTableApp,
+        OuterTableApp,
       ],
     }).compileComponents();
   }));
@@ -182,7 +186,6 @@ describe('CdkTable', () => {
   it('should be able to dynamically add/remove column definitions', () => {
     const dynamicColumnDefFixture = TestBed.createComponent(DynamicColumnDefinitionsCdkTableApp);
     dynamicColumnDefFixture.detectChanges();
-    dynamicColumnDefFixture.detectChanges();
 
     const dynamicColumnDefTable = dynamicColumnDefFixture.nativeElement.querySelector('cdk-table');
     const dynamicColumnDefComp = dynamicColumnDefFixture.componentInstance;
@@ -230,6 +233,22 @@ describe('CdkTable', () => {
     getRows(tableElement).forEach(row => {
       expect(getCells(row).length).toBe(component.columnsToRender.length);
     });
+  });
+
+  it('should be able to register column, row, and header row definitions outside content', () => {
+    const outerTableAppFixture = TestBed.createComponent(OuterTableApp);
+    outerTableAppFixture.detectChanges();
+
+    // The first two columns were defined in the wrapped table component as content children,
+    // while the injected columns were provided to the wrapped table from the outer component.
+    // A special row was provided with a when predicate that shows the single column with text.
+    // The header row was defined by the outer component.
+    expectTableToMatchContent(outerTableAppFixture.nativeElement.querySelector('cdk-table'), [
+      ['Content Column A', 'Content Column B', 'Injected Column A', 'Injected Column B'],
+      ['injected row with when predicate'],
+      ['a_2', 'b_2', 'a_2', 'b_2'],
+      ['a_3', 'b_3', 'a_3', 'b_3']
+    ]);
   });
 
   describe('using when predicate', () => {
@@ -1070,6 +1089,72 @@ class RowContextCdkTableApp {
   columnsToRender = ['column_a'];
   enableRowContextClasses = false;
   enableCellContextClasses = false;
+}
+
+@Component({
+  selector: 'wrapper-table',
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="content_column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Content Column A </cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}} </cdk-cell>
+      </ng-container>
+      <ng-container cdkColumnDef="content_column_b">
+        <cdk-header-cell *cdkHeaderCellDef> Content Column B </cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.b}} </cdk-cell>
+      </ng-container>
+
+      <cdk-row *cdkRowDef="let row; columns: columns"></cdk-row>
+    </cdk-table>
+  `
+})
+class WrapperCdkTableApp<T> {
+  @ContentChildren(CdkColumnDef) columnDefs: QueryList<CdkColumnDef>;
+  @ContentChild(CdkHeaderRowDef) headerRowDef: CdkHeaderRowDef;
+  @ContentChildren(CdkRowDef) rowDefs: QueryList<CdkRowDef<T>>;
+
+  @ViewChild(CdkTable) table: CdkTable<T>;
+
+  @Input() columns: string[];
+  @Input() dataSource: DataSource<T>;
+
+  ngAfterContentInit() {
+    // Register the content's column, row, and header row definitions.
+    this.columnDefs.forEach(columnDef => this.table.addColumnDef(columnDef));
+    this.rowDefs.forEach(rowDef => this.table.addRowDef(rowDef));
+    this.table.setHeaderRowDef(this.headerRowDef);
+  }
+}
+
+@Component({
+  template: `
+    <wrapper-table [dataSource]="dataSource" [columns]="columnsToRender">
+      <ng-container cdkColumnDef="injected_column_a">
+        <cdk-header-cell *cdkHeaderCellDef> Injected Column A </cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}} </cdk-cell>
+      </ng-container>
+      <ng-container cdkColumnDef="injected_column_b">
+        <cdk-header-cell *cdkHeaderCellDef> Injected Column B </cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.b}} </cdk-cell>
+      </ng-container>
+
+      <!-- Only used for the 'when' row, the first row -->
+      <ng-container cdkColumnDef="special_column">
+        <cdk-cell *cdkCellDef="let row"> injected row with when predicate </cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
+      <cdk-row class="first-row" *cdkRowDef="let row; columns: ['special_column']; when: firstRow">
+      </cdk-row>
+    </wrapper-table>
+  `
+})
+class OuterTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+  columnsToRender =
+      ['content_column_a', 'content_column_b', 'injected_column_a', 'injected_column_b'];
+
+  firstRow = i => i === 0;
 }
 
 function getElements(element: Element, query: string): Element[] {

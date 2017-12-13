@@ -36,6 +36,10 @@ export class CdkColumnDef {
   @Input('cdkColumnDef')
   get name(): string { return this._name; }
   set name(name: string) {
+    // If the directive is set without a name (updated programatically), then this setter will
+    // trigger with an empty string and should not overwrite the programatically set value.
+    if (!name) { return; }
+
     this._name = name;
     this.cssClassFriendlyName = name.replace(/[^a-z0-9_-]/ig, '-');
   }

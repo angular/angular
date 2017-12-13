@@ -7,6 +7,7 @@
  */
 
 import {
+  AfterContentChecked,
   Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -22,6 +23,7 @@ import {
   IterableDiffer,
   IterableDiffers,
   NgIterable,
+  OnInit,
   QueryList,
   TrackByFunction,
   ViewChild,
@@ -91,7 +93,7 @@ abstract class RowViewRef<T> extends EmbeddedViewRef<CdkCellOutletRowContext<T>>
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CdkTable<T> implements CollectionViewer {
+export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecked {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 
@@ -101,14 +103,36 @@ export class CdkTable<T> implements CollectionViewer {
   /** Subscription that listens for the data provided by the data source. */
   private _renderChangeSubscription: Subscription | null;
 
-  /** Map of all the user's defined columns (header and data cell template) identified by name. */
+  /**
+   * Map of all the user's defined columns (header and data cell template) identified by name.
+   * Collection populated by the column definitions gathered by `ContentChildren` as well as any
+   * custom column definitions added to `_customColumnDefs`.
+   */
   private _columnDefsByName = new Map<string,  CdkColumnDef>();
+
+  /**
+   * Set of all row defitions that can be used by this table. Populated by the rows gathered by
+   * using `ContentChildren` as well as any custom row definitions added to `_customRowDefs`.
+   */
+  private _rowDefs: CdkRowDef<T>[];
 
   /** Differ used to find the changes in the data provided by the data source. */
   private _dataDiffer: IterableDiffer<T>;
 
   /** Stores the row definition that does not have a when predicate. */
   private _defaultRowDef: CdkRowDef<T> | null;
+
+  /** Column definitions that were defined outside of the direct content children of the table. */
+  private _customColumnDefs = new Set<CdkColumnDef>();
+
+  /** Row definitions that were defined outside of the direct content children of the table. */
+  private _customRowDefs = new Set<CdkRowDef<T>>();
+
+  /**
+   * Whether the header row definition has been changed. Triggers an update to the header row after
+   * content is checked.
+   */
+  private _headerRowDefChanged = false;
 
   /**
    * Tracking function that will be used to check the differences in data changes. Used similarly
@@ -158,19 +182,23 @@ export class CdkTable<T> implements CollectionViewer {
    * The column definitions provided by the user that contain what the header and cells should
    * render for each column.
    */
-  @ContentChildren(CdkColumnDef) _columnDefs: QueryList<CdkColumnDef>;
-
-  /** Template definition used as the header container. */
-  @ContentChild(CdkHeaderRowDef) _headerDef: CdkHeaderRowDef;
+  @ContentChildren(CdkColumnDef) _contentColumnDefs: QueryList<CdkColumnDef>;
 
   /** Set of template definitions that used as the data row containers. */
-  @ContentChildren(CdkRowDef) _rowDefs: QueryList<CdkRowDef<T>>;
+  @ContentChildren(CdkRowDef) _contentRowDefs: QueryList<CdkRowDef<T>>;
+
+  /**
+   * Template definition used as the header container. By default it stores the header row
+   * definition found as a direct content child. Override this value through `setHeaderRowDef` if
+   * the header row definition should be changed or was not defined as a part of the table's
+   * content.
+   */
+  @ContentChild(CdkHeaderRowDef) _headerRowDef: CdkHeaderRowDef;
 
   constructor(private readonly _differs: IterableDiffers,
               private readonly _changeDetectorRef: ChangeDetectorRef,
               elementRef: ElementRef,
               @Attribute('role') role: string) {
-
     if (!role) {
       elementRef.nativeElement.setAttribute('role', 'grid');
     }
@@ -179,26 +207,36 @@ export class CdkTable<T> implements CollectionViewer {
   ngOnInit() {
     // TODO(andrewseguin): Setup a listener for scrolling, emit the calculated view to viewChange
     this._dataDiffer = this._differs.find([]).create(this._trackByFn);
-  }
 
-  ngAfterContentInit() {
-    if (!this._headerDef && !this._rowDefs.length) {
-      throw getTableMissingRowDefsError();
+    // If the table has a header row definition defined as part of its content, flag this as a
+    // header row def change so that the content check will render the header row.
+    if (this._headerRowDef) {
+      this._headerRowDefChanged = true;
     }
-
-    this._cacheColumnDefsByName();
-    this._columnDefs.changes.subscribe(() => this._cacheColumnDefsByName());
-    this._renderHeaderRow();
   }
 
   ngAfterContentChecked() {
+    // Cache the row and column definitions gathered by ContentChildren and programmatic injection.
+    this._cacheRowDefs();
+    this._cacheColumnDefs();
+
+    // Make sure that the user has at least added a header row or row def.
+    if (!this._headerRowDef && !this._rowDefs.length) {
+      throw getTableMissingRowDefsError();
+    }
+
+    // Render updates if the list of columns have been changed for the header or row definitions.
     this._renderUpdatedColumns();
 
-    const defaultRowDefs = this._rowDefs.filter(def => !def.when);
-    if (defaultRowDefs.length > 1) { throw getTableMultipleDefaultRowDefsError(); }
-    this._defaultRowDef = defaultRowDefs[0];
+    // If the header row definition has been changed, trigger a render to the header row.
+    if (this._headerRowDefChanged) {
+      this._renderHeaderRow();
+      this._headerRowDefChanged = false;
+    }
 
-    if (this.dataSource && !this._renderChangeSubscription) {
+    // If there is a data source and row definitions, connect to the data source unless a
+    // connection has already been made.
+    if (this.dataSource && this._rowDefs.length > 0 && !this._renderChangeSubscription) {
       this._observeRenderChanges();
     }
   }
@@ -214,15 +252,59 @@ export class CdkTable<T> implements CollectionViewer {
     }
   }
 
+  /**
+   * Sets the header row definition to be used. Overrides the header row definition gathered by
+   * using `ContentChild`, if one exists. Sets a flag that will re-render the header row after the
+   * table's content is checked.
+   */
+  setHeaderRowDef(headerRowDef: CdkHeaderRowDef) {
+    this._headerRowDef = headerRowDef;
+    this._headerRowDefChanged = true;
+  }
+
+  /** Adds a column definition that was not included as part of the direct content children. */
+  addColumnDef(columnDef: CdkColumnDef) {
+    this._customColumnDefs.add(columnDef);
+  }
+
+  /** Removes a column definition that was not included as part of the direct content children. */
+  removeColumnDef(columnDef: CdkColumnDef) {
+    this._customColumnDefs.delete(columnDef);
+  }
+
+  /** Adds a column definition that was not included as part of the direct content children. */
+  addRowDef(rowDef: CdkRowDef<T>) {
+    this._customRowDefs.add(rowDef);
+  }
+
+  /** Removes a column definition that was not included as part of the direct content children. */
+  removeRowDef(rowDef: CdkRowDef<T>) {
+    this._customRowDefs.delete(rowDef);
+  }
+
   /** Update the map containing the content's column definitions. */
-  private _cacheColumnDefsByName() {
+  private _cacheColumnDefs() {
     this._columnDefsByName.clear();
-    this._columnDefs.forEach(columnDef => {
+
+    const columnDefs = this._contentColumnDefs ? this._contentColumnDefs.toArray() : [];
+    this._customColumnDefs.forEach(columnDef => columnDefs.push(columnDef));
+
+    columnDefs.forEach(columnDef => {
       if (this._columnDefsByName.has(columnDef.name)) {
         throw getTableDuplicateColumnNameError(columnDef.name);
       }
       this._columnDefsByName.set(columnDef.name, columnDef);
     });
+  }
+
+  /** Update the list of all available row definitions that can be used. */
+  private _cacheRowDefs() {
+    this._rowDefs = this._contentRowDefs ? this._contentRowDefs.toArray() : [];
+    this._customRowDefs.forEach(rowDef => this._rowDefs.push(rowDef));
+
+    const defaultRowDefs = this._rowDefs.filter(def => !def.when);
+    if (defaultRowDefs.length > 1) { throw getTableMultipleDefaultRowDefsError(); }
+    this._defaultRowDef = defaultRowDefs[0];
   }
 
   /**
@@ -242,8 +324,7 @@ export class CdkTable<T> implements CollectionViewer {
     });
 
     // Re-render the header row if there is a difference in its columns.
-    if (this._headerDef.getColumnsDiff()) {
-      this._headerRowPlaceholder.viewContainer.clear();
+    if (this._headerRowDef && this._headerRowDef.getColumnsDiff()) {
       this._renderHeaderRow();
     }
   }
@@ -284,17 +365,23 @@ export class CdkTable<T> implements CollectionViewer {
   }
 
   /**
-   * Create the embedded view for the header template and place it in the header row view container.
+   * Clears any existing content in the header row placeholder and creates a new embedded view
+   * in the placeholder using the header row definition.
    */
   private _renderHeaderRow() {
-    const cells = this._getHeaderCellTemplatesForRow(this._headerDef);
+    // Clear the header row placeholder if any content exists.
+    if (this._headerRowPlaceholder.viewContainer.length > 0) {
+      this._headerRowPlaceholder.viewContainer.clear();
+    }
+
+    const cells = this._getHeaderCellTemplatesForRow(this._headerRowDef);
     if (!cells.length) { return; }
 
     // TODO(andrewseguin): add some code to enforce that exactly
     //   one CdkCellOutlet was instantiated as a result
     //   of `createEmbeddedView`.
     this._headerRowPlaceholder.viewContainer
-        .createEmbeddedView(this._headerDef.template, {cells});
+        .createEmbeddedView(this._headerRowDef.template, {cells});
 
     cells.forEach(cell => {
       if (CdkCellOutlet.mostRecentCellOutlet) {
@@ -344,7 +431,7 @@ export class CdkTable<T> implements CollectionViewer {
    * definition.
    */
   _getRowDef(data: T, i: number): CdkRowDef<T> {
-    if (this._rowDefs.length == 1) { return this._rowDefs.first; }
+    if (this._rowDefs.length == 1) { return this._rowDefs[0]; }
 
     let rowDef = this._rowDefs.find(def => def.when && def.when(i, data)) || this._defaultRowDef;
     if (!rowDef) { throw getTableMissingMatchingRowDefError(); }
@@ -398,7 +485,7 @@ export class CdkTable<T> implements CollectionViewer {
    * as defined by its list of columns to display.
    */
   private _getHeaderCellTemplatesForRow(headerDef: CdkHeaderRowDef): CdkHeaderCellDef[] {
-    if (!headerDef.columns) { return []; }
+    if (!headerDef || !headerDef.columns) { return []; }
     return headerDef.columns.map(columnId => {
       const column = this._columnDefsByName.get(columnId);
 
