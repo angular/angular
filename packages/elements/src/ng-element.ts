@@ -100,6 +100,17 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
       private componentFactory: ComponentFactory<T>, private readonly inputs: NgElementInput[],
       private readonly outputs: NgElementOutput[]) {
     super();
+    
+    this.checkExistingProperties(inputs);
+  }
+  
+  checkExistingProperties(properties: NgElementInput[]) {
+    properties.forEach(({ propName }) => {
+      if (this.hasOwnProperty(propName)) {
+        this.setInputValue(propName, this[propName]);
+        delete this[propName];
+      }
+    });
   }
 
   attributeChangedCallback(
@@ -303,12 +314,6 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
         // The property does have an initial value.
         // Forward it to the component instance.
         this.setInputValue(propName, initialValue);
-      }
-      
-      if (this.hasOwnProperty(propName)) {
-        let value = this[propName];
-        delete this[propName];
-        this[propName] = value;
       }
     });
 
