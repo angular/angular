@@ -23,6 +23,7 @@ describe('MatPaginator', () => {
         MatPaginatorWithoutPageSizeApp,
         MatPaginatorWithoutOptionsApp,
         MatPaginatorWithoutInputsApp,
+        MatPaginatorWithStringValues
       ],
       providers: [MatPaginatorIntl]
     }).compileComponents();
@@ -251,6 +252,18 @@ describe('MatPaginator', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.mat-select')).toBeNull();
   });
+
+ it('should handle the number inputs being passed in as strings', () => {
+    const withStringFixture = TestBed.createComponent(MatPaginatorWithStringValues);
+    const withStringPaginator = withStringFixture.componentInstance.paginator;
+
+    withStringFixture.detectChanges();
+
+    expect(withStringPaginator.pageIndex).toEqual(0);
+    expect(withStringPaginator.length).toEqual(100);
+    expect(withStringPaginator.pageSize).toEqual(10);
+    expect(withStringPaginator.pageSizeOptions).toEqual([5, 10, 25, 100]);
+  });
 });
 
 function getPreviousButton(fixture: ComponentFixture<any>) {
@@ -264,10 +277,10 @@ function getNextButton(fixture: ComponentFixture<any>) {
 @Component({
   template: `
     <mat-paginator [pageIndex]="pageIndex"
-                  [pageSize]="pageSize"
-                  [pageSizeOptions]="pageSizeOptions"
-                  [length]="length"
-                  (page)="latestPageEvent = $event">
+                   [pageSize]="pageSize"
+                   [pageSizeOptions]="pageSizeOptions"
+                   [length]="length"
+                   (page)="latestPageEvent = $event">
     </mat-paginator>
   `,
 })
@@ -310,5 +323,18 @@ class MatPaginatorWithoutPageSizeApp {
   `,
 })
 class MatPaginatorWithoutOptionsApp {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+}
+
+@Component({
+  template: `
+    <mat-paginator pageIndex="0"
+                   pageSize="10"
+                   [pageSizeOptions]="['5', '10', '25', '100']"
+                   length="100">
+    </mat-paginator>
+  `
+  })
+class MatPaginatorWithStringValues {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 }

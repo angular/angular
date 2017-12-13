@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -64,7 +65,7 @@ export class MatPaginator implements OnInit, OnDestroy {
   @Input()
   get pageIndex(): number { return this._pageIndex; }
   set pageIndex(pageIndex: number) {
-    this._pageIndex = pageIndex;
+    this._pageIndex = coerceNumberProperty(pageIndex);
     this._changeDetectorRef.markForCheck();
   }
   _pageIndex: number = 0;
@@ -73,7 +74,7 @@ export class MatPaginator implements OnInit, OnDestroy {
   @Input()
   get length(): number { return this._length; }
   set length(length: number) {
-    this._length = length;
+    this._length = coerceNumberProperty(length);
     this._changeDetectorRef.markForCheck();
   }
   _length: number = 0;
@@ -82,7 +83,7 @@ export class MatPaginator implements OnInit, OnDestroy {
   @Input()
   get pageSize(): number { return this._pageSize; }
   set pageSize(pageSize: number) {
-    this._pageSize = pageSize;
+    this._pageSize = coerceNumberProperty(pageSize);
     this._updateDisplayedPageSizeOptions();
   }
   private _pageSize: number;
@@ -91,7 +92,7 @@ export class MatPaginator implements OnInit, OnDestroy {
   @Input()
   get pageSizeOptions(): number[] { return this._pageSizeOptions; }
   set pageSizeOptions(pageSizeOptions: number[]) {
-    this._pageSizeOptions = pageSizeOptions;
+    this._pageSizeOptions = (pageSizeOptions || []).map(p => coerceNumberProperty(p));
     this._updateDisplayedPageSizeOptions();
   }
   private _pageSizeOptions: number[] = [];
