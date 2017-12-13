@@ -36,8 +36,22 @@
   $line-height: mat-line-height($config, $level);
   $font-family: mat-font-family($config, $level);
 
-  // Use the shorthand `font` to represent a typography level, because it's the shortest. Notes that
-  // we need to use interpolation for `font-size/line-height` in order to prevent SASS from dividing
-  // the two values.
-  font: $font-weight #{$font-size}/#{$line-height} $font-family;
+  // If any of the values are set to `inherit`, we can't use the shorthand
+  // so we fall back to passing in the individual properties.
+  @if ($font-size == inherit or
+       $font-weight == inherit or
+       $line-height == inherit or
+       $font-family == inherit) {
+
+    font-size: $font-size;
+    font-weight: $font-weight;
+    line-height: $line-height;
+    font-family: $font-family;
+  }
+  @else {
+    // Otherwise use the shorthand `font` to represent a typography level, because it's the the
+    // least amount of bytes. Note that we need to use interpolation for `font-size/line-height`
+    // in order to prevent SASS from dividing the two values.
+    font: $font-weight #{$font-size}/#{$line-height} $font-family;
+  }
 }
