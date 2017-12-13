@@ -23,7 +23,7 @@ let uniqueId = 0;
 /**
  * Reference to a dialog opened via the MatDialog service.
  */
-export class MatDialogRef<T> {
+export class MatDialogRef<T, R = any> {
   /** The instance of component opened into the dialog. */
   componentInstance: T;
 
@@ -34,13 +34,13 @@ export class MatDialogRef<T> {
   private _afterOpen = new Subject<void>();
 
   /** Subject for notifying the user that the dialog has finished closing. */
-  private _afterClosed = new Subject<any>();
+  private _afterClosed = new Subject<R | undefined>();
 
   /** Subject for notifying the user that the dialog has started closing. */
-  private _beforeClose = new Subject<any>();
+  private _beforeClose = new Subject<R | undefined>();
 
   /** Result to be passed to afterClosed. */
-  private _result: any;
+  private _result: R | undefined;
 
   constructor(
     private _overlayRef: OverlayRef,
@@ -74,7 +74,7 @@ export class MatDialogRef<T> {
    * Close the dialog.
    * @param dialogResult Optional result to return to the dialog opener.
    */
-  close(dialogResult?: any): void {
+  close(dialogResult?: R): void {
     this._result = dialogResult;
 
     // Transition the backdrop in parallel to the dialog.
@@ -101,14 +101,14 @@ export class MatDialogRef<T> {
   /**
    * Gets an observable that is notified when the dialog is finished closing.
    */
-  afterClosed(): Observable<any> {
+  afterClosed(): Observable<R | undefined> {
     return this._afterClosed.asObservable();
   }
 
   /**
    * Gets an observable that is notified when the dialog has started closing.
    */
-  beforeClose(): Observable<any> {
+  beforeClose(): Observable<R | undefined> {
     return this._beforeClose.asObservable();
   }
 
