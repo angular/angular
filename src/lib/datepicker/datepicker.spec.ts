@@ -8,7 +8,7 @@ import {
   dispatchMouseEvent,
 } from '@angular/cdk/testing';
 import {Component, ViewChild} from '@angular/core';
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, inject, TestBed, fakeAsync, flush} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   DEC,
