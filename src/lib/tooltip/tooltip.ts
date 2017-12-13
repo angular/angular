@@ -85,7 +85,7 @@ export const MAT_TOOLTIP_SCROLL_STRATEGY_PROVIDER = {
  * https://material.google.com/components/tooltips.html
  */
 @Directive({
-  selector: '[mat-tooltip], [matTooltip]',
+  selector: '[matTooltip]',
   exportAs: 'matTooltip',
   host: {
     '(longpress)': 'show()',
