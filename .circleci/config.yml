@@ -52,10 +52,14 @@ jobs:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
+      
       - run: bazel info release
       - run: bazel run @yarn//:yarn
-      - run: bazel build --config=ci packages/...
-      - run: bazel test --config=ci packages/... @angular//...
+      # Use bazel query so that we explicitly ask for all buildable targets to be built as well
+      # This avoids waiting for a build command to finish before running the first test
+      # See https://github.com/bazelbuild/bazel/issues/4257
+      - run: bazel query --output=label '//packages/... union @angular//...' | xargs bazel test --config=ci
+
       - save_cache:
           key: *cache_key
           paths:
