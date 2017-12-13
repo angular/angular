@@ -122,6 +122,7 @@ export function main() {
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2')).toEqual('$00,005.12');
           expect(pipe.transform(5.1234, 'CAD', 'symbol-narrow', '5.2-2', 'fr'))
               .toEqual('00 005,12 $');
+          expect(pipe.transform(5.1234, 'FAKE', 'symbol')).toEqual('FAKE5.12');
         });
 
         it('should not support other objects', () => {

@@ -11,7 +11,7 @@ import localeEn from '../../locales/en';
 import localeFr from '../../locales/fr';
 import localeFrCA from '../../locales/fr-CA';
 import {registerLocaleData} from '../../src/i18n/locale_data';
-import {findLocaleData} from '../../src/i18n/locale_data_api';
+import {findLocaleData, getCurrencySymbol} from '../../src/i18n/locale_data_api';
 
 export function main() {
   describe('locale data api', () => {
@@ -49,6 +49,19 @@ export function main() {
         expect(findLocaleData('fake-id')).toEqual(localeFr);
         expect(findLocaleData('fake_iD')).toEqual(localeFr);
         expect(findLocaleData('fake-id2')).toEqual(localeFrCA);
+      });
+    });
+
+    describe('getCurrencySymbolElseCode', () => {
+      it('should return the correct symbol', () => {
+        expect(getCurrencySymbol('USD', 'wide')).toEqual('$');
+        expect(getCurrencySymbol('USD', 'narrow')).toEqual('$');
+        expect(getCurrencySymbol('AUD', 'wide')).toEqual('A$');
+        expect(getCurrencySymbol('AUD', 'narrow')).toEqual('$');
+        expect(getCurrencySymbol('CRC', 'wide')).toEqual('CRC');
+        expect(getCurrencySymbol('CRC', 'narrow')).toEqual('₡');
+        expect(getCurrencySymbol('FAKE', 'wide')).toEqual('FAKE');
+        expect(getCurrencySymbol('FAKE', 'narrow')).toEqual('FAKE');
       });
     });
   });
