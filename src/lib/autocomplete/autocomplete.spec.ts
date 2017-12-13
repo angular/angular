@@ -1333,6 +1333,23 @@ describe('MatAutocomplete', () => {
       expect(closingActionSpy).toHaveBeenCalled();
     });
 
+    it('should not emit when tabbing away from a closed panel', () => {
+      const tabEvent = createKeyboardEvent('keydown', TAB);
+
+      input.focus();
+      zone.simulateZoneExit();
+
+      trigger._handleKeydown(tabEvent);
+
+      // Ensure that it emitted once while the panel was open.
+      expect(closingActionSpy).toHaveBeenCalledTimes(1);
+
+      trigger._handleKeydown(tabEvent);
+
+      // Ensure that it didn't emit again when tabbing out again.
+      expect(closingActionSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should emit panel close event when selecting an option', () => {
       const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
 
