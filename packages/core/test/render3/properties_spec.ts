@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, D, E, L, T, V, b, b1, c, defineComponent, defineDirective, e, p, cR, cr, t, v} from '../../src/render3/index';
+import {C, D, E, L, T, V, b, b1, c, cR, cr, defineComponent, defineDirective, e, p, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';

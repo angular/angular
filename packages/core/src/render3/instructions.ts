@@ -63,7 +63,8 @@ let nextNgElementId = 0;
  * - ObjectedOrientedRenderer3
  *
  * This is the native browser API style, e.g. operations are methods on individual objects
- * like HTMLElement. With this style, no additional code is needed as a facade (reducing payload size).
+ * like HTMLElement. With this style, no additional code is needed as a facade (reducing payload
+ * size).
  *
  * - ProceduralRenderer3
  *
@@ -437,8 +438,9 @@ function setUpAttributes(native: RElement, attrs: string[]): void {
   ngDevMode && assertEqual(attrs.length % 2, 0, 'attrs.length % 2');
   const isProceduralRenderer = (renderer as ProceduralRenderer3).setAttribute;
   for (let i = 0; i < attrs.length; i += 2) {
-    isProceduralRenderer ? (renderer as ProceduralRenderer3).setAttribute !(native, attrs[i], attrs[i | 1]) :
-                   native.setAttribute(attrs[i], attrs[i | 1]);
+    isProceduralRenderer ?
+        (renderer as ProceduralRenderer3).setAttribute !(native, attrs[i], attrs[i | 1]) :
+        native.setAttribute(attrs[i], attrs[i | 1]);
   }
 }
 
@@ -481,8 +483,7 @@ export function elementHost(elementOrSelector: RElement | string, def: Component
  * @param listener The function to be called when event emits
  * @param useCapture Whether or not to use capture in event listener.
  */
-export function listener(
-    eventName: string, listener: EventListener, useCapture = false): void {
+export function listener(eventName: string, listener: EventListener, useCapture = false): void {
   ngDevMode && assertPreviousIsParent();
   const node = previousOrParentNode;
   const native = node.native as RElement;
@@ -789,8 +790,7 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
  */
 export function directive<T>(index: number): T;
 export function directive<T>(index: number, directive: T, directiveDef: DirectiveDef<T>): T;
-export function directive<T>(
-    index: number, directive?: T, directiveDef?: DirectiveDef<T>): T {
+export function directive<T>(index: number, directive?: T, directiveDef?: DirectiveDef<T>): T {
   let instance;
   if (directive == null) {
     // return existing
@@ -920,11 +920,9 @@ export function diPublic(def: DirectiveDef<any>): void {
  * @param self
  * @param method
  */
-export function lifecycle(
-  lifeCycle: LifecycleHook.ON_DESTROY, self: any, method: Function): void;
+export function lifecycle(lifeCycle: LifecycleHook.ON_DESTROY, self: any, method: Function): void;
 export function lifecycle(lifeCycle: LifecycleHook): boolean;
-export function lifecycle(
-  lifeCycle: LifecycleHook, self?: any, method?: Function): boolean {
+export function lifecycle(lifeCycle: LifecycleHook, self?: any, method?: Function): boolean {
   if (lifeCycle === LifecycleHook.ON_INIT) {
     return creationMode;
   } else if (lifeCycle === LifecycleHook.ON_DESTROY) {
@@ -1195,8 +1193,7 @@ export function projectionDef(selectors?: CssSelector[]): LNode[][] {
  * @param {number} localIndex - index under which distribution of projected nodes was memorized
  * @param {number} selectorIndex - 0 means <ng-content> without any selector
  */
-export function projection(
-    nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
+export function projection(nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
   const projectedNodes: ProjectionState = [];
   const node = createLNode(nodeIndex, LNodeFlags.Projection, null, projectedNodes);
   isParent = false;  // self closing
