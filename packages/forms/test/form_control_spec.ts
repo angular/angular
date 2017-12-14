@@ -1139,6 +1139,26 @@ import {FormArray} from '@angular/forms/src/model';
           expect(fn).toThrowError(`Expected validator to return Promise or Observable.`);
         });
 
+        it('should not emit value change events when emitEvent = false', () => {
+          c.valueChanges.subscribe(() => logger.push('control'));
+          g.valueChanges.subscribe(() => logger.push('group'));
+
+          c.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          c.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit status change events when emitEvent = false', () => {
+          c.statusChanges.subscribe(() => logger.push('control'));
+          g.statusChanges.subscribe(() => logger.push('form'));
+
+          c.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          c.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
       });
     });
   });

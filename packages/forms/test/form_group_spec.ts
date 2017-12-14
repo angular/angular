@@ -1045,6 +1045,28 @@ import {of } from 'rxjs/observable/of';
           expect(logger).toEqual(['control', 'group', 'form']);
         });
 
+        it('should not emit value change events when emitEvent = false', () => {
+          c.valueChanges.subscribe(() => logger.push('control'));
+          g.valueChanges.subscribe(() => logger.push('group'));
+          form.valueChanges.subscribe(() => logger.push('form'));
+
+          g.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          g.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit status change events when emitEvent = false', () => {
+          c.statusChanges.subscribe(() => logger.push('control'));
+          g.statusChanges.subscribe(() => logger.push('group'));
+          form.statusChanges.subscribe(() => logger.push('form'));
+
+          g.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          g.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
       });
 
     });
