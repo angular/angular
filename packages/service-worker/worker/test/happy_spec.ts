@@ -337,6 +337,41 @@ export function main() {
       serverUpdate.assertNoOtherRequests();
     });
 
+    async_it('checks for updates on navigation', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.clearRequests();
+
+      expect(await makeRequest(scope, '/foo.txt', 'default', {
+        mode: 'navigate',
+      })).toEqual('this is foo');
+
+      scope.advance(12000);
+      await driver.idle.empty;
+
+      server.assertSawRequestFor('ngsw.json');
+    });
+
+    async_it('does not make concurrent checks for updates on navigation', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.clearRequests();
+
+      expect(await makeRequest(scope, '/foo.txt', 'default', {
+        mode: 'navigate',
+      })).toEqual('this is foo');
+
+      expect(await makeRequest(scope, '/foo.txt', 'default', {
+        mode: 'navigate',
+      })).toEqual('this is foo');
+
+      scope.advance(12000);
+      await driver.idle.empty;
+
+      server.assertSawRequestFor('ngsw.json');
+      server.assertNoOtherRequests();
+    });
+
     async_it('preserves multiple client assignments across restarts', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
