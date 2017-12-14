@@ -27,7 +27,8 @@
     }
   },
   "files": [
-    "public-api.ts"
+    "public-api.ts",
+    "typings.d.ts"
   ],
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
