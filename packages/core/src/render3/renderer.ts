@@ -24,12 +24,10 @@ export enum RendererStyleFlags3 {
   DashCase = 1 << 1
 }
 
-export type Renderer3 = Renderer3oo | Renderer3Fn;
+export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
 
-/**
- * Object Oriented style of API needed to create elements and text nodes.
- */
-export interface Renderer3oo {
+/** Object Oriented style of API needed to create elements and text nodes. */
+export interface ObjectOrientedRenderer3 {
   createComment(data: string): RComment;
   createElement(tagName: string): RElement;
   createTextNode(data: string): RText;
@@ -37,10 +35,8 @@ export interface Renderer3oo {
   querySelector(selectors: string): RElement|null;
 }
 
-/**
- * Functional style of API needed to create elements and text nodes.
- */
-export interface Renderer3Fn {
+/** Procedural style of API needed to create elements and text nodes. */
+export interface ProceduralRenderer3 {
   destroy(): void;
   createElement(name: string, namespace?: string|null): RElement;
   createComment(value: string): RComment;
@@ -77,9 +73,7 @@ export interface RendererFactory3 {
   end?(): void;
 }
 
-/**
- * Subset of API needed for appending elements and text nodes.
- */
+/** Subset of API needed for appending elements and text nodes. */
 export interface RNode {
   removeChild(oldChild: RNode): void;
 
