@@ -8,7 +8,7 @@
 
 import {ComponentTemplate, ComponentType, PublicFeature, defineComponent, renderComponent as _renderComponent} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, createLNode, createViewState, renderTemplate} from '../../src/render3/instructions';
-import {LElement, LNodeFlags} from '../../src/render3/interfaces';
+import {LElement, LNodeFlags} from '../../src/render3/l_node';
 import {RElement, RText, Renderer3} from '../../src/render3/renderer';
 import {getRenderer2} from './imported_renderer2';
 

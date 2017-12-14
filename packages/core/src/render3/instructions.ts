@@ -10,11 +10,9 @@ import './ng_dev_mode';
 
 import {Type} from '../core';
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
-import {
-  CSSSelector, ContainerState, InitialInputData, InitialInputs, LContainer, LContainerStatic, LElement, LNode,
-  LNodeFlags, LNodeInjector, LNodeStatic, LProjection, LText, LView, MinificationData, MinificationDataValue,
-  ProjectionState, QueryState, ViewState, NgStaticData
-} from './interfaces';
+import {CssSelector, ContainerState, ProjectionState, QueryState, ViewState} from './interfaces';
+import {LText, LView, LElement, LNode, LNodeFlags, LNodeInjector, LContainer, LProjection} from './l_node';
+import {NgStaticData, LNodeStatic, LContainerStatic, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './l_node_static';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
@@ -439,7 +437,7 @@ export function listenerCreate(
     // if we create LNodeStatic here, inputs must be undefined so we know they still need to be
     // checked
     mergeData.outputs = null;
-    mergeData = generateMinifiedData(node.flags, mergeData);
+    mergeData = generatePropertyAliases(node.flags, mergeData);
   }
 
   const outputs = mergeData.outputs;
@@ -474,7 +472,7 @@ export function elementEnd() {
   }
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Element);
   const query = previousOrParentNode.query;
-  query && query.add(previousOrParentNode);
+  query && query.addNode(previousOrParentNode);
 }
 
 /**
@@ -525,11 +523,11 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
   if (staticData.inputs === undefined) {
     // mark inputs as checked
     staticData.inputs = null;
-    staticData = generateMinifiedData(node.flags, staticData, true);
+    staticData = generatePropertyAliases(node.flags, staticData, true);
   }
 
   const inputData = staticData.inputs;
-  let dataValue: MinificationDataValue|null;
+  let dataValue: PropertyAliasValue|null;
   if (inputData && (dataValue = inputData[propName])) {
     setInputsForProperty(dataValue, value);
   } else {
@@ -572,22 +570,22 @@ function setInputsForProperty(inputs: (number | string)[], value: any): void {
  *
  * @param index Index where data should be stored in ngStaticData
  */
-function generateMinifiedData(flags: number, data: LNodeStatic, isInputData = false): LNodeStatic {
+function generatePropertyAliases(flags: number, data: LNodeStatic, isInputData = false): LNodeStatic {
   const start = flags >> LNodeFlags.INDX_SHIFT;
   const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
 
   for (let i = start, ii = start + size; i < ii; i++) {
     const directiveDef: DirectiveDef<any> = ngStaticData ![i] as DirectiveDef<any>;
-    const minifiedPropertyMap: {[minifiedKey: string]: string} =
+    const propertyAliasMap: {[publicName: string]: string} =
         isInputData ? directiveDef.inputs : directiveDef.outputs;
-    for (let unminifiedKey in minifiedPropertyMap) {
-      if (minifiedPropertyMap.hasOwnProperty(unminifiedKey)) {
-        const minifiedKey = minifiedPropertyMap[unminifiedKey];
-        const staticDirData: MinificationData = isInputData ? (data.inputs || (data.inputs = {})) :
+    for (let publicName in propertyAliasMap) {
+      if (propertyAliasMap.hasOwnProperty(publicName)) {
+        const internalName = propertyAliasMap[publicName];
+        const staticDirData: PropertyAliases = isInputData ? (data.inputs || (data.inputs = {})) :
                                                               (data.outputs || (data.outputs = {}));
-        const hasProperty: boolean = staticDirData.hasOwnProperty(unminifiedKey);
-        hasProperty ? staticDirData[unminifiedKey].push(i, minifiedKey) :
-                      (staticDirData[unminifiedKey] = [i, minifiedKey]);
+        const hasProperty: boolean = staticDirData.hasOwnProperty(publicName);
+        hasProperty ? staticDirData[publicName].push(i, internalName) :
+                      (staticDirData[publicName] = [i, internalName]);
       }
     }
   }
@@ -851,9 +849,9 @@ export function containerCreate(
     index: number, template?: ComponentTemplate<any>, tagName?: string, attrs?: string[]): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
 
-  // If the direct parent of the container is a view, its children (including its comment)
+  // If the direct parent of the container is a view, its views (including its comment)
   // will need to be added through insertView() when its parent view is being inserted.
-  // For now, it is marked "headless" so we know to append its children later.
+  // For now, it is marked "headless" so we know to append its views later.
   let comment = renderer.createComment(ngDevMode ? 'container' : '');
   let renderParent: LElement|null = null;
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
@@ -866,7 +864,7 @@ export function containerCreate(
   }
 
   const node = createLNode(index, LNodeFlags.Container, comment, <ContainerState>{
-    children: [],
+    views: [],
     nextIndex: 0, renderParent,
     template: template == null ? null : template,
     next: null,
@@ -922,7 +920,7 @@ export function refreshContainerEnd(): void {
   const container = previousOrParentNode as LContainer;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   const nextIndex = container.data.nextIndex;
-  while (nextIndex < container.data.children.length) {
+  while (nextIndex < container.data.views.length) {
     // remove extra view.
     removeView(container, nextIndex);
   }
@@ -938,14 +936,14 @@ export function viewCreate(viewBlockId: number): boolean {
   const container = (isParent ? previousOrParentNode : previousOrParentNode.parent !) as LContainer;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   const containerState = container.data;
-  const children = containerState.children;
+  const views = containerState.views;
 
-  const existingView: LView|false = !creationMode && containerState.nextIndex < children.length &&
-      children[containerState.nextIndex];
+  const existingView: LView|false = !creationMode && containerState.nextIndex < views.length &&
+      views[containerState.nextIndex];
   let viewUpdateMode = existingView && viewBlockId === (existingView as LView).data.id;
 
   if (viewUpdateMode) {
-    previousOrParentNode = children[containerState.nextIndex++];
+    previousOrParentNode = views[containerState.nextIndex++];
     ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.View);
     isParent = true;
     enterView((existingView as LView).data, previousOrParentNode as LView);
@@ -990,8 +988,8 @@ export function viewEnd(): void {
   ngDevMode && assertNodeType(viewNode, LNodeFlags.View);
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   const containerState = container.data;
-  const previousView = containerState.nextIndex <= containerState.children.length ?
-      containerState.children[containerState.nextIndex - 1] as LView :
+  const previousView = containerState.nextIndex <= containerState.views.length ?
+      containerState.views[containerState.nextIndex - 1] as LView :
       null;
   const viewIdChanged = previousView == null ? true : previousView.data.id !== viewNode.data.id;
 
@@ -1033,9 +1031,9 @@ export const refreshComponent:
  * each projected node belongs (it re-distributes nodes among "buckets" where each "bucket" is
  * backed by a selector).
  *
- * @param {CSSSelector[]} selectors
+ * @param {CssSelector[]} selectors
  */
-export function distributeProjectedNodes(selectors?: CSSSelector[]): LNode[][] {
+export function distributeProjectedNodes(selectors?: CssSelector[]): LNode[][] {
   const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
   const distributedNodes = new Array<LNode[]>(noOfNodeBuckets);
   for (let i = 0; i < noOfNodeBuckets; i++) {

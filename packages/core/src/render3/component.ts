@@ -9,10 +9,10 @@
 import {ComponentRef, EmbeddedViewRef, Injector} from '../core';
 import {assertNotNull} from './assert';
 import {NG_HOST_SYMBOL, createError, createViewState, directiveCreate, elementHost, enterView, leaveView} from './instructions';
-import {LElement} from './interfaces';
+import {LElement} from './l_node';
 import {ComponentDef, ComponentType} from './public_interfaces';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
-import {stringify} from './util';
+import {stringify, notImplemented} from './util';
 
 
 
@@ -71,27 +71,28 @@ export function createComponentRef<T>(
 function createViewRef<T>(detectChanges: () => void, context: T): EmbeddedViewRef<T> {
   return addDestroyable(
       {
+        // TODO: rootNodes should be replaced when properly implemented
         rootNodes: null !,
         // inherited from core/ChangeDetectorRef
         markForCheck: () => {
           if (ngDevMode) {
-            implement();
+            throw notImplemented();
           }
         },
         detach: () => {
           if (ngDevMode) {
-            implement();
+            throw notImplemented();
           }
         },
         detectChanges: detectChanges,
         checkNoChanges: () => {
           if (ngDevMode) {
-            implement();
+            throw notImplemented();
           }
         },
         reattach: () => {
           if (ngDevMode) {
-            implement();
+            throw notImplemented();
           }
         },
       },
@@ -103,10 +104,6 @@ interface DestroyRef<T> {
   destroyed: boolean;
   destroy(): void;
   onDestroy(cb: Function): void;
-}
-
-function implement() {
-  throw new Error('NotImplemented');
 }
 
 function addDestroyable<T, C>(obj: any, context: C): T&DestroyRef<C> {
