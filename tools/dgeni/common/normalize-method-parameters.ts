@@ -37,22 +37,23 @@ export function normalizeMethodParameters(method: NormalizedMethodMemberDoc) {
         method.params = [];
       }
 
-      const hasExistingParameterInfo = method.params.some(p => p.name == parameterName);
+      if (!parameterType) {
+        console.warn(`Missing parameter type information (${parameterName}) in ` +
+          `${method.fileInfo.relativePath}:${method.startingLine}`);
+        return;
+      }
 
-      if (!hasExistingParameterInfo) {
-        if (!parameterType) {
-          console.warn(`Missing parameter type information (${parameterName}) in ` +
-              `${method.fileInfo.relativePath}:${method.startingLine}`);
-          return;
-        }
+      const existingParameterInfo = method.params.find(p => p.name == parameterName);
 
-        const newParameterInfo = {
+      if (!existingParameterInfo) {
+        method.params.push({
           name: parameterName,
           type: parameterType.trim(),
           isOptional: isOptional
-        };
-
-        method.params.push(newParameterInfo);
+        });
+      } else {
+        existingParameterInfo.type = parameterType.trim();
+        existingParameterInfo.isOptional = isOptional;
       }
     });
   }

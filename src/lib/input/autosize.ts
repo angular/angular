@@ -170,7 +170,7 @@ export class MatTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
    * @param force Whether to force a height recalculation. By default the height will be
    *    recalculated only if the value changed since the last call.
    */
-  resizeToFitContent(force = false) {
+  resizeToFitContent(force: boolean = false) {
     this._cacheTextareaLineHeight();
 
     // If we haven't determined the line-height yet, we know we're still hidden and there's no point
