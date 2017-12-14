@@ -168,7 +168,8 @@ function bloomHashBit(type: viewEngine.Type<any>): number|null {
 export function bloomFindPossibleInjector(
     startInjector: LNodeInjector, bloomBit: number): LNodeInjector|null {
   // Create a mask that targets the specific bit associated with the directive we're looking for.
-  // This will be a number between 0 and 31, corresponding to a bit position in a 32 bit integer.
+  // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
+  // to bit positions 0 - 31 in a 32 bit integer.
   const mask = 1 << bloomBit;
 
   // Traverse up the injector tree until we find a potential match or until we know there *isn't* a

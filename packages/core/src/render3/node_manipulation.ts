@@ -10,7 +10,7 @@ import {assertNotNull} from './assert';
 import {ContainerState, ProjectionState, ViewOrContainerState, ViewState} from './interfaces';
 import {LContainer, LElement, LNode, LNodeFlags, LProjection, LText, LView} from './l_node';
 import {assertNodeType} from './node_assert';
-import {RComment, RElement, RNode, RText, Renderer3Fn} from './renderer';
+import {RComment, RElement, RNode, RText, ProceduralRenderer3} from './renderer';
 
 /**
  * Finds the closest DOM node above a given container in the hierarchy.
@@ -91,15 +91,15 @@ export function addRemoveViewFromContainer(
       const type = node.flags & LNodeFlags.TYPE_MASK;
       let nextNode: LNode|null = null;
       const renderer = container.view.renderer;
-      const isFnRenderer = (renderer as Renderer3Fn).listen;
+      const isFnRenderer = (renderer as ProceduralRenderer3).listen;
       if (type === LNodeFlags.Element) {
         insertMode ?
             (isFnRenderer ?
-                 (renderer as Renderer3Fn)
+                 (renderer as ProceduralRenderer3)
                      .insertBefore !(parent, node.native !, beforeNode as RNode | null) :
                  parent.insertBefore(node.native !, beforeNode as RNode | null, true)) :
             (isFnRenderer ?
-                 (renderer as Renderer3Fn).removeChild !(parent as RElement, node.native !) :
+                 (renderer as ProceduralRenderer3).removeChild !(parent as RElement, node.native !) :
                  parent.removeChild(node.native !));
         nextNode = node.next;
       } else if (type === LNodeFlags.Container) {
@@ -108,10 +108,10 @@ export function addRemoveViewFromContainer(
         const childContainerData: ContainerState = (node as LContainer).data;
         insertMode ?
             (isFnRenderer ?
-                 (renderer as Renderer3Fn).appendChild !(parent as RElement, node.native !) :
+                 (renderer as ProceduralRenderer3).appendChild !(parent as RElement, node.native !) :
                  parent.appendChild(node.native !)) :
             (isFnRenderer ?
-                 (renderer as Renderer3Fn).removeChild !(parent as RElement, node.native !) :
+                 (renderer as ProceduralRenderer3).removeChild !(parent as RElement, node.native !) :
                  parent.removeChild(node.native !));
         nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
       } else if (type === LNodeFlags.Projection) {
@@ -332,8 +332,8 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: Vie
     // We only add element if not in View or not projected.
 
     const renderer = currentView.renderer;
-    (renderer as Renderer3Fn).listen ?
-        (renderer as Renderer3Fn).appendChild !(parent.native !as RElement, child) :
+    (renderer as ProceduralRenderer3).listen ?
+        (renderer as ProceduralRenderer3).appendChild !(parent.native !as RElement, child) :
         parent.native !.appendChild(child);
     return true;
   }
@@ -373,8 +373,8 @@ export function insertChild(node: LNode, currentView: ViewState): void {
       sibling = sibling.next;
     }
     const renderer = currentView.renderer;
-    (renderer as Renderer3Fn).listen ?
-        (renderer as Renderer3Fn).insertBefore !(parent.native !, node.native !, nativeSibling) :
+    (renderer as ProceduralRenderer3).listen ?
+        (renderer as ProceduralRenderer3).insertBefore !(parent.native !, node.native !, nativeSibling) :
         parent.native !.insertBefore(node.native !, nativeSibling, false);
   }
 }
