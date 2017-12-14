@@ -7,10 +7,11 @@
  */
 
 import {QueryList, Type} from '../core';
+
+import {LContainer, LElement, LNode, LText, LView} from './l_node';
+import {LNodeStatic} from './l_node_static';
 import {ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {Renderer3} from './renderer';
-import {LNode, LView, LElement, LContainer, LText} from './l_node';
-import {LNodeStatic} from './l_node_static';
 
 declare global {
   const ngDevMode: boolean;

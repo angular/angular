@@ -9,9 +9,11 @@
 import './ng_dev_mode';
 
 import {Type} from '../core';
+
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
-import {CssSelector, ContainerState, ProjectionState, QueryState, ViewState} from './interfaces';
-import {LText, LView, LElement, LNode, LNodeFlags, LNodeInjector, LContainer, LProjection} from './l_node';
+import {ContainerState, CssSelector, ProjectionState, QueryState, ViewState} from './interfaces';
+import {LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LProjection, LText, LView} from './l_node';
+
 import {NgStaticData, LNodeStatic, LContainerStatic, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './l_node_static';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
@@ -129,7 +131,8 @@ export function enterView(newViewState: ViewState, host: LElement | LView | null
 
 export const leaveView: (newViewState: ViewState) => void = enterView as any;
 
-export function createViewState(viewId: number, renderer: Renderer3, ngStaticData: NgStaticData): ViewState {
+export function createViewState(
+    viewId: number, renderer: Renderer3, ngStaticData: NgStaticData): ViewState {
   const newView = {
     parent: currentView,
     id: viewId,    // -1 for component views
@@ -336,7 +339,7 @@ export function elementCreate(
     } else {
       native = renderer.createElement(name);
 
-      let componentView: ViewState | null = null;
+      let componentView: ViewState|null = null;
       if (isHostElement) {
         const ngStaticData = getTemplateStatic((nameOrComponentDef as ComponentDef<any>).template);
         componentView = addToViewTree(createViewState(-1, renderer, ngStaticData));
@@ -402,7 +405,8 @@ export function elementHost(elementOrSelector: RElement | string, def: Component
       throw createError('Host node is required:', elementOrSelector);
     }
   }
-  createLNode(0, LNodeFlags.Element, rNode, createViewState(-1, renderer, getTemplateStatic(def.template)));
+  createLNode(
+      0, LNodeFlags.Element, rNode, createViewState(-1, renderer, getTemplateStatic(def.template)));
 }
 
 
@@ -454,8 +458,7 @@ export function listenerCreate(
 function outputCreate(outputs: (number | string)[], listener: Function): void {
   for (let i = 0; i < outputs.length; i += 2) {
     ngDevMode && assertDataInRange(outputs[i] as number);
-    const subscription =
-        data[outputs[i] as number][outputs[i | 1]].subscribe(listener);
+    const subscription = data[outputs[i] as number][outputs[i | 1]].subscribe(listener);
     cleanup !.push(subscription.unsubscribe, subscription);
   }
 }
@@ -570,7 +573,8 @@ function setInputsForProperty(inputs: (number | string)[], value: any): void {
  *
  * @param index Index where data should be stored in ngStaticData
  */
-function generatePropertyAliases(flags: number, data: LNodeStatic, isInputData = false): LNodeStatic {
+function generatePropertyAliases(
+    flags: number, data: LNodeStatic, isInputData = false): LNodeStatic {
   const start = flags >> LNodeFlags.INDX_SHIFT;
   const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
 
@@ -582,7 +586,7 @@ function generatePropertyAliases(flags: number, data: LNodeStatic, isInputData =
       if (propertyAliasMap.hasOwnProperty(publicName)) {
         const internalName = propertyAliasMap[publicName];
         const staticDirData: PropertyAliases = isInputData ? (data.inputs || (data.inputs = {})) :
-                                                              (data.outputs || (data.outputs = {}));
+                                                             (data.outputs || (data.outputs = {}));
         const hasProperty: boolean = staticDirData.hasOwnProperty(publicName);
         hasProperty ? staticDirData[publicName].push(i, internalName) :
                       (staticDirData[publicName] = [i, internalName]);
@@ -938,8 +942,8 @@ export function viewCreate(viewBlockId: number): boolean {
   const containerState = container.data;
   const views = containerState.views;
 
-  const existingView: LView|false = !creationMode && containerState.nextIndex < views.length &&
-      views[containerState.nextIndex];
+  const existingView: LView|false =
+      !creationMode && containerState.nextIndex < views.length && views[containerState.nextIndex];
   let viewUpdateMode = existingView && viewBlockId === (existingView as LView).data.id;
 
   if (viewUpdateMode) {
@@ -949,7 +953,8 @@ export function viewCreate(viewBlockId: number): boolean {
     enterView((existingView as LView).data, previousOrParentNode as LView);
   } else {
     // When we create a new View, we always reset the state of the instructions.
-    const newViewState = createViewState(viewBlockId, renderer, initViewStaticData(viewBlockId, container));
+    const newViewState =
+        createViewState(viewBlockId, renderer, initViewStaticData(viewBlockId, container));
     enterView(newViewState, createLNode(null, LNodeFlags.View, null, newViewState));
     containerState.nextIndex++;
   }
@@ -1571,7 +1576,7 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
     // We don't store any static data for local variables, so the first time
     // we see the template, we should store as null to avoid a sparse array
     if (index >= ngStaticData.length) {
-     ngStaticData[index] = null;
+      ngStaticData[index] = null;
     }
     data[index] = value;
   }
@@ -1600,4 +1605,3 @@ function assertDataInRange(index: number, arr?: any[]) {
   if (arr == null) arr = data;
   assertLessThan(arr ? arr.length : 0, index, 'data.length');
 }
-
