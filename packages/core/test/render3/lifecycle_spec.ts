@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, ComponentTemplate, D, E, L, LifecycleHook, T, V, b, c, defineComponent, e, l, p, cR, cr, v} from '../../src/render3/index';
+import {C, ComponentTemplate, D, E, L, LifecycleHook, T, V, b, c, cR, cr, defineComponent, e, l, p, v} from '../../src/render3/index';
+
 import {containerEl, renderToHtml} from './render_util';
 
 describe('lifecycles', () => {

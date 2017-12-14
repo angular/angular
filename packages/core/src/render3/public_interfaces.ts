@@ -7,7 +7,9 @@
  */
 
 import {Type} from '../core';
-import {diPublic, componentRefresh} from './instructions';
+
+import {componentRefresh, diPublic} from './instructions';
+
 
 
 /**
