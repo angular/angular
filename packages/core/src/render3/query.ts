@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as viewEngine from '../core';
 import {Observable} from 'rxjs/Observable';
-import {QueryList as IQueryList, Type} from '../core';
 import {assertNotNull} from './assert';
-import {LContainer, LNode, LNodeFlags, LView, QueryState} from './interfaces';
+import {QueryState} from './interfaces';
 import {DirectiveDef} from '@angular/core/src/render3/public_interfaces';
+import {LContainer, LNode, LNodeFlags, LView} from './l_node';
 
 
 
@@ -31,7 +32,7 @@ export interface QueryPredicate<T> {
   /**
    * If looking for directives than it contains the directive type.
    */
-  type: Type<T>|null;
+  type: viewEngine.Type<T>|null;
 
   /**
    * If selector then contains the selector parts where:
@@ -59,7 +60,7 @@ export class QueryState_ implements QueryState {
 
   constructor(deep?: QueryPredicate<any>) { this.deep = deep == null ? null : deep; }
 
-  track<T>(queryList: IQueryList<T>, predicate: Type<T>|any[], descend?: boolean): void {
+  track<T>(queryList: viewEngine.QueryList<T>, predicate: viewEngine.Type<T>|any[], descend?: boolean): void {
     // TODO(misko): This is not right. In case of inherited state, a calling track will incorrectly
     // mutate parent.
     if (descend) {
@@ -84,16 +85,16 @@ export class QueryState_ implements QueryState {
     }
   }
 
-  add(node: LNode): void {
+  addNode(node: LNode): void {
     add(this.shallow, node);
     add(this.deep, node);
   }
 
-  insert(container: LContainer, view: LView, index: number): void {
+  insertView(container: LContainer, view: LView, index: number): void {
     throw new Error('Method not implemented.');
   }
 
-  remove(container: LContainer, view: LView, index: number): void {
+  removeView(container: LContainer, view: LView, index: number): void {
     throw new Error('Method not implemented.');
   }
 }
@@ -119,7 +120,7 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
 
 function createPredicate<T>(
     previous: QueryPredicate<any>| null, queryList: QueryList<T>,
-    predicate: Type<T>| any[]): QueryPredicate<T> {
+    predicate: viewEngine.Type<T>| any[]): QueryPredicate<T> {
   const isArray = Array.isArray(predicate);
   const values = <any>[];
   if ((queryList as any as QueryList_<T>)._valuesTree === null) {
@@ -128,13 +129,13 @@ function createPredicate<T>(
   return {
     next: previous,
     list: queryList,
-    type: isArray ? null : predicate as Type<T>,
+    type: isArray ? null : predicate as viewEngine.Type<T>,
     selector: isArray ? predicate as any[] : null,
     values: values
   };
 }
 
-class QueryList_<T>/* implements IQueryList<T> */ {
+class QueryList_<T>/* implements viewEngine.QueryList<T> */ {
   dirty: boolean = false;
   changes: Observable<T>;
 
@@ -201,8 +202,8 @@ class QueryList_<T>/* implements IQueryList<T> */ {
 
 // NOTE: this hack is here because IQueryList has private members and therefore
 // it can't be implemented only extended.
-export type QueryList<T> = IQueryList<T>;
-export const QueryList: typeof IQueryList = QueryList_ as any;
+export type QueryList<T> = viewEngine.QueryList<T>;
+export const QueryList: typeof viewEngine.QueryList = QueryList_ as any;
 
 export function refreshQuery(query: QueryList<any>): boolean {
   return (query as any as QueryList_<any>)._refresh();

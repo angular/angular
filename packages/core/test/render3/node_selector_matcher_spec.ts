@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CSSSelector, CSSSelectorWithNegations, LNodeStatic, SimpleCSSSelector} from '../../src/render3/interfaces';
+import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from '../../src/render3/interfaces';
+import {LNodeStatic} from '../../src/render3/l_node_static';
 import {isNodeMatchingSelector, isNodeMatchingSelectorWithNegations, isNodeMatchingSimpleSelector} from '../../src/render3/node_selector_matcher';
 
 function testLStaticData(tagName: string, attrs: string[] | null): LNodeStatic {
@@ -25,7 +26,7 @@ describe('css selector matching', () => {
   describe('isNodeMatchingSimpleSelector', () => {
 
     function isMatching(
-        tagName: string, attrs: string[] | null, selector: SimpleCSSSelector): boolean {
+        tagName: string, attrs: string[] | null, selector: SimpleCssSelector): boolean {
       return isNodeMatchingSimpleSelector(testLStaticData(tagName, attrs), selector);
     }
 
@@ -139,7 +140,7 @@ describe('css selector matching', () => {
 
   describe('isNodeMatchingSelectorWithNegations', () => {
     function isMatching(
-        tagName: string, attrs: string[] | null, selector: CSSSelectorWithNegations): boolean {
+        tagName: string, attrs: string[] | null, selector: CssSelectorWithNegations): boolean {
       return isNodeMatchingSelectorWithNegations(testLStaticData(tagName, attrs), selector);
     }
 
@@ -157,7 +158,7 @@ describe('css selector matching', () => {
 
   describe('isNodeMatchingSelector', () => {
 
-    function isMatching(tagName: string, attrs: string[] | null, selector: CSSSelector): boolean {
+    function isMatching(tagName: string, attrs: string[] | null, selector: CssSelector): boolean {
       return isNodeMatchingSelector(testLStaticData(tagName, attrs), selector);
     }
 

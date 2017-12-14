@@ -11,7 +11,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {bloomFindPossibleInjector} from '../../src/render3/di';
 import {C, D, E, PublicFeature, T, V, b, b2, c, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, rC, rc, t, v} from '../../src/render3/index';
 import {bloomAdd, createLNode, createViewState, enterView, getOrCreateNodeInjector, leaveView} from '../../src/render3/instructions';
-import {LNodeFlags, LNodeInjector} from '../../src/render3/interfaces';
+import {LNodeFlags, LNodeInjector} from '../../src/render3/l_node';
 
 import {renderToHtml} from './render_util';
 

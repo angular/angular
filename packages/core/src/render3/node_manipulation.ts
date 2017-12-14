@@ -7,7 +7,8 @@
  */
 
 import {assertNotNull} from './assert';
-import {ContainerState, LContainer, LElement, LNode, LNodeFlags, LProjection, LText, LView, ProjectionState, ViewOrContainerState, ViewState} from './interfaces';
+import {ContainerState, ProjectionState, ViewOrContainerState, ViewState} from './interfaces';
+import {LContainer, LElement, LNode, LNodeFlags, LProjection, LText, LView} from './l_node';
 import {assertNodeType} from './node_assert';
 import {RComment, RElement, RNode, RText, Renderer3Fn} from './renderer';
 
@@ -56,10 +57,10 @@ export function findNativeParent(containerNode: LContainer): RNode|null {
  */
 export function findBeforeNode(index: number, state: ContainerState, native: RComment): RElement|
     RText|RComment {
-  const children = state.children;
+  const views = state.views;
   // Find the node to insert in front of
-  return index + 1 < children.length ?
-      (children[index + 1].child as LText | LElement | LContainer).native :
+  return index + 1 < views.length ?
+      (views[index + 1].child as LText | LElement | LContainer).native :
       native;
 }
 
@@ -112,7 +113,7 @@ export function addRemoveViewFromContainer(
             (isFnRenderer ?
                  (renderer as Renderer3Fn).removeChild !(parent as RElement, node.native !) :
                  parent.removeChild(node.native !));
-        nextNode = childContainerData.children.length ? childContainerData.children[0].child : null;
+        nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
       } else if (type === LNodeFlags.Projection) {
         nextNode = (node as LProjection).data[0];
       } else {
@@ -150,8 +151,8 @@ export function destroyViewTree(rootView: ViewState): void {
   while (viewOrContainerState) {
     let next: ViewOrContainerState|null = null;
 
-    if (viewOrContainerState.children && viewOrContainerState.children.length) {
-      next = viewOrContainerState.children[0].data;
+    if (viewOrContainerState.views && viewOrContainerState.views.length) {
+      next = viewOrContainerState.views[0].data;
     } else if (viewOrContainerState.child) {
       next = viewOrContainerState.child;
     } else if (viewOrContainerState.next) {
@@ -175,7 +176,7 @@ export function destroyViewTree(rootView: ViewState): void {
 /**
  * Inserts a view into a container.
  *
- * This adds the view to the container's array of active children in the correct
+ * This adds the view to the container's array of active views in the correct
  * position. It also adds the view's elements to the DOM if the container isn't a
  * root node of another view (in that case, the view's elements will be added when
  * the container's parent view is added later).
@@ -187,19 +188,19 @@ export function destroyViewTree(rootView: ViewState): void {
  */
 export function insertView(container: LContainer, newView: LView, index: number): LView {
   const state = container.data;
-  const children = state.children;
+  const views = state.views;
 
   if (index > 0) {
     // This is a new view, we need to add it to the children.
-    setViewNext(children[index - 1], newView);
+    setViewNext(views[index - 1], newView);
   }
 
-  if (index < children.length && children[index].data.id !== newView.data.id) {
+  if (index < views.length && views[index].data.id !== newView.data.id) {
     // View ID change replace the view.
-    setViewNext(newView, children[index]);
-    children.splice(index, 0, newView);
-  } else if (index >= children.length) {
-    children.push(newView);
+    setViewNext(newView, views[index]);
+    views.splice(index, 0, newView);
+  } else if (index >= views.length) {
+    views.push(newView);
   }
 
   if (state.nextIndex <= index) {
@@ -215,14 +216,14 @@ export function insertView(container: LContainer, newView: LView, index: number)
   }
 
   // Notify query that view has been inserted
-  container.query && container.query.insert(container, newView, index);
+  container.query && container.query.insertView(container, newView, index);
   return newView;
 }
 
 /**
  * Removes a view from a container.
  *
- * This method splices the view from the container's array of active children. It also
+ * This method splices the view from the container's array of active views. It also
  * removes the view's elements from the DOM and conducts cleanup (e.g. removing
  * listeners, calling onDestroys).
  *
@@ -231,16 +232,16 @@ export function insertView(container: LContainer, newView: LView, index: number)
  * @returns The removed view
  */
 export function removeView(container: LContainer, removeIndex: number): LView {
-  const children = container.data.children;
-  const viewNode = children[removeIndex];
+  const views = container.data.views;
+  const viewNode = views[removeIndex];
   if (removeIndex > 0) {
-    setViewNext(children[removeIndex - 1], viewNode.next);
+    setViewNext(views[removeIndex - 1], viewNode.next);
   }
-  children.splice(removeIndex, 1);
+  views.splice(removeIndex, 1);
   destroyViewTree(viewNode.data);
   addRemoveViewFromContainer(container, viewNode, false);
   // Notify query that view has been removed
-  container.query && container.query.remove(container, viewNode, removeIndex);
+  container.query && container.query.removeView(container, viewNode, removeIndex);
   return viewNode;
 }
 
@@ -401,7 +402,7 @@ export function processProjectedNode(
     // Assignee the final projection location in those cases.
     const containerState = (node as LContainer).data;
     containerState.renderParent = currentParent as LElement;
-    const views = containerState.children;
+    const views = containerState.views;
     for (let i = 0; i < views.length; i++) {
       addRemoveViewFromContainer(node as LContainer, views[i], true, null);
     }
