@@ -366,7 +366,8 @@ export abstract class AbstractControl {
   disable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = DISABLED;
     (this as{errors: ValidationErrors | null}).errors = null;
-    this._forEachChild((control: AbstractControl) => { control.disable({onlySelf: true}); });
+    this._forEachChild(
+        (control: AbstractControl) => { control.disable({...opts, onlySelf: true}); });
     this._updateValue();
 
     if (opts.emitEvent !== false) {
@@ -374,7 +375,7 @@ export abstract class AbstractControl {
       (this.statusChanges as EventEmitter<string>).emit(this.status);
     }
 
-    this._updateAncestors(!!opts.onlySelf);
+    this._updateAncestors(opts);
     this._onDisabledChange.forEach((changeFn) => changeFn(true));
   }
 
@@ -387,16 +388,17 @@ export abstract class AbstractControl {
    */
   enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = VALID;
-    this._forEachChild((control: AbstractControl) => { control.enable({onlySelf: true}); });
+    this._forEachChild(
+        (control: AbstractControl) => { control.enable({...opts, onlySelf: true}); });
     this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
 
-    this._updateAncestors(!!opts.onlySelf);
+    this._updateAncestors(opts);
     this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
-  private _updateAncestors(onlySelf: boolean) {
-    if (this._parent && !onlySelf) {
-      this._parent.updateValueAndValidity();
+  private _updateAncestors(opts: {onlySelf?: boolean, emitEvent?: boolean}) {
+    if (this._parent && !opts.onlySelf) {
+      this._parent.updateValueAndValidity(opts);
       this._parent._updatePristine();
       this._parent._updateTouched();
     }
