@@ -7,12 +7,13 @@
  */
 
 import {ComponentRef, EmbeddedViewRef, Injector} from '../core';
+
 import {assertNotNull} from './assert';
 import {NG_HOST_SYMBOL, createError, createViewState, directiveCreate, elementHost, enterView, leaveView} from './instructions';
 import {LElement} from './l_node';
 import {ComponentDef, ComponentType} from './public_interfaces';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
-import {stringify, notImplemented} from './util';
+import {notImplemented, stringify} from './util';
 
 
 

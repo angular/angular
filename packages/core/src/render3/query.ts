@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as viewEngine from '../core';
+import {DirectiveDef} from '@angular/core/src/render3/public_interfaces';
 import {Observable} from 'rxjs/Observable';
+
+import * as viewEngine from '../core';
+
 import {assertNotNull} from './assert';
 import {QueryState} from './interfaces';
-import {DirectiveDef} from '@angular/core/src/render3/public_interfaces';
 import {LContainer, LNode, LNodeFlags, LView} from './l_node';
 
 
@@ -60,7 +62,9 @@ export class QueryState_ implements QueryState {
 
   constructor(deep?: QueryPredicate<any>) { this.deep = deep == null ? null : deep; }
 
-  track<T>(queryList: viewEngine.QueryList<T>, predicate: viewEngine.Type<T>|any[], descend?: boolean): void {
+  track<T>(
+      queryList: viewEngine.QueryList<T>, predicate: viewEngine.Type<T>|any[],
+      descend?: boolean): void {
     // TODO(misko): This is not right. In case of inherited state, a calling track will incorrectly
     // mutate parent.
     if (descend) {

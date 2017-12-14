@@ -7,9 +7,11 @@
  */
 
 import {ElementRef, Injector, TemplateRef, ViewContainerRef} from '../core';
-import {RComment, RElement, RText} from './renderer';
-import {ViewState, ContainerState, ProjectionState, QueryState} from './interfaces';
+
+import {ContainerState, ProjectionState, QueryState, ViewState} from './interfaces';
 import {LNodeStatic} from './l_node_static';
+import {RComment, RElement, RText} from './renderer';
+
 
 /**
  * LNodeFlags corresponds to the LNode.flags property. It contains information
