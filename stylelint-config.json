@@ -22,6 +22,7 @@
     "function-comma-space-before": "never",
     "function-name-case": "lower",
     "function-url-quotes": "always",
+    "function-url-scheme-blacklist": ["data"],
     "function-whitespace-after": "always",
 
     "number-leading-zero": "always",
