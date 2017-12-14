@@ -7,17 +7,25 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
+# Variables
+
+## IMPORTANT
+# If you change the `docker_image` version, also change the `cache_key` suffix and the version of
+# `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
+var_1: &docker_image angular/ngcontainer:0.0.8
+var_2: &cache_key angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.0.8
+
 # Settings common to each job
 anchor_1: &job_defaults
   working_directory: ~/ng
   docker:
-    - image: angular/ngcontainer:0.0.6
+    - image: *docker_image
 
 # After checkout, rebase on top of master.
 # Similar to travis behavior, but not quite the same.
 # See https://discuss.circleci.com/t/1662
 anchor_2: &post_checkout
-  post: git pull --ff-only origin "refs/pull/${CI_PULL_REQUEST//*pull\//}/merge"
+  post: git pull --ff-only origin "refs/pull/${CIRCLE_PULL_REQUEST//*pull\//}/merge"
 
 version: 2
 jobs:
@@ -26,8 +34,13 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
+      # Check BUILD.bazel formatting before we have a node_modules directory
+      # Then we don't need any exclude pattern to avoid checking those files
+      - run: 'buildifier -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD \)) ||
+              (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
+
       - restore_cache:
-          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: *cache_key
 
       - run: yarn install --frozen-lockfile --non-interactive
       - run: ./node_modules/.bin/gulp lint
@@ -38,13 +51,17 @@ jobs:
       - checkout:
           <<: *post_checkout
       - restore_cache:
-          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: *cache_key
+      
       - run: bazel info release
       - run: bazel run @yarn//:yarn
-      - run: bazel build packages/...
-      - run: bazel test @angular//...
+      # Use bazel query so that we explicitly ask for all buildable targets to be built as well
+      # This avoids waiting for a build command to finish before running the first test
+      # See https://github.com/bazelbuild/bazel/issues/4257
+      - run: bazel query --output=label '//packages/... union @angular//...' | xargs bazel test --config=ci
+
       - save_cache:
-          key: angular-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: *cache_key
           paths:
             - "node_modules"
 
