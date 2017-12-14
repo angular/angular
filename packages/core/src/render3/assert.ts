@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * The functions in this file verify that the assumptions we are making
- * about state in an instruction are correct before implementing any logic.
- * They are meant only to be called in dev mode as sanity checks.
- */
+// The functions in this file verify that the assumptions we are making
+// about state in an instruction are correct before implementing any logic.
+// They are meant only to be called in dev mode as sanity checks.
 
 /**
  * Stringifies values such that strings are wrapped in explicit quotation marks and
@@ -19,8 +17,8 @@
  *
  * e.g. `expected "3" to be 3` is easier to understand than `expected 3 to be 3`.
  *
- * @param {any} value - The value to be stringified
- * @returns {string} the stringified value
+ * @param value The value to be stringified
+ * @returns The stringified value
  */
 function stringifyValueForError(value: any): string {
   return typeof value === 'string' ? `"${value}"` : '' + value;
@@ -50,11 +48,11 @@ export function assertNotEqual<T>(actual: T, expected: T, name: string) {
 /**
  * Throws an error with a message constructed from the arguments.
  *
- * @param {T} actual - The actual value (e.g. 3)
- * @param {T} expected - The expected value (e.g. 5)
- * @param {string} name - The name of the value being checked (e.g. attrs.length)
- * @param {string} operator - The comparison operator (e.g. <, >, ==)
- * @param {(v: T) => string)} serializer - Function that maps a value to its display value
+ * @param actual The actual value (e.g. 3)
+ * @param expected The expected value (e.g. 5)
+ * @param name The name of the value being checked (e.g. attrs.length)
+ * @param operator The comparison operator (e.g. <, >, ==)
+ * @param serializer Function that maps a value to its display value
  */
 export function assertThrow<T>(
     actual: T, expected: T, name: string, operator: string,
