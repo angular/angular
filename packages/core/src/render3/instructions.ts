@@ -20,17 +20,58 @@ import {appendChild, insertChild, insertView, processProjectedNode, removeView} 
 import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {QueryList, QueryState_} from './query';
-import {RComment, RElement, RText, Renderer3, Renderer3Fn, Renderer3oo, RendererStyleFlags3} from './renderer';
+import {RComment, RElement, RText, Renderer3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './renderer';
 import {isDifferent, stringify} from './util';
 
 export {refreshQuery} from './query';
 
+/**
+ * Enum used by the directiveLifecycle (l) instruction to determine which lifecycle
+ * hook is requesting processing and whether it should be allowed to run. It "guards"
+ * certain hooks, e.g. "ngOnInit" should only run once on creation.
+ */
 export const enum LifeCycleGuard {ON_INIT = 1, ON_DESTROY = 2, ON_CHANGES = 4}
 
+/**
+ * directiveCreate (D) sets a property on all component instances using this constant
+ * as a key, and the component's host node (LElement) as the value. This is used in
+ * methods like detectChanges to facilitate jumping from an instance to the host node.
+ */
 export const NG_HOST_SYMBOL = '__ngHostLNode__';
 
 /**
+ * If a directive is diPublic, bloomAdd sets a property on the instance with this constant as
+ * the key and the directive's unique ID as the value. This allows us to map directives to their
+ * bloom filter bit for DI.
+ */
+export const NG_ELEMENT_ID = '__NG_ELEMENT_ID__';
+
+/**
+ * The number of slots in each bloom filter (used by DI). The larger this number, the fewer
+ * directives that will share slots, and thus, the fewer false positives when checking for
+ * the existence of a directive.
+ */
+export const BLOOM_SIZE = 128;
+
+/** Counter used to generate unique IDs for directives. */
+let nextNgElementId = 0;
+
+/**
  * This property gets set before entering a template.
+ *
+ * This renderer can be one of two varieties of Renderer3:
+ *
+ * - ObjectedOrientedRenderer3
+ *
+ * This is the native browser API style. e.g. operations are methods on individual objects
+ * like HTMLElement. With this style, no additional code is needed (reducing payload size)
+ * as a facade.
+ *
+ * - ProceduralRenderer3
+ *
+ * In non-native browser environments (e.g. platforms such as web-workers), this is the facade
+ * that facilitates element manipulation. This also facilitates backwards compatibility with
+ * Renderer2.
  */
 let renderer: Renderer3;
 
@@ -129,6 +170,10 @@ export function enterView(newViewState: ViewState, host: LElement | LView | null
   return oldViewState !;
 }
 
+/**
+ * Used in lieu of enterView to make it clear when we are exiting a child view. This makes
+ * the direction of traversal (up or down the view tree) a bit clearer.
+ */
 export const leaveView: (newViewState: ViewState) => void = enterView as any;
 
 export function createViewState(
@@ -250,29 +295,47 @@ export function renderTemplate<T>(host: LElement, template: ComponentTemplate<T>
   }
 }
 
-export const NG_ELEMENT_ID = '__NG_ELEMENT_ID__';
-export const BLOOM_SIZE = 128;
-let nextNgElementId = 0;
-
-export function bloomAdd(di: LNodeInjector, type: Type<any>): void {
+/**
+ * Registers this directive as present in its node's injector by flipping the directive's
+ * corresponding bit in the injector's bloom filter.
+ *
+ * @param injector The injector to which the type should be added
+ * @param type The directive type to add
+ */
+export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
   let id: number|undefined = (type as any)[NG_ELEMENT_ID];
+
+  // Set a unique ID on the directive type, so if something tries to inject the directive,
+  // we can easily retrieve the ID and hash it into the bloom bit that should be checked.
   if (id == null) {
     id = (type as any)[NG_ELEMENT_ID] = nextNgElementId++;
   }
+
+  // We only have BLOOM_SIZE (128) slots in our bloom filter (4 buckets * 32 bits each),
+  // so all unique IDs must be modulo-ed into a number from 0 - 127 to fit into the filter.
+  // This means that after 128, some directives will share slots, leading to some false positives
+  // when checking for a directive's presence.
   const bloomBit = id % BLOOM_SIZE;
-  // JS bit operations are 32 bits
+
+  // Create a mask that targets the specific bit associated with the directive.
+  // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
+  // to bit positions 0 - 31 in a 32 bit integer.
   const mask = 1 << bloomBit;
+
+  // Use the raw bloomBit number to determine which bloom filter bucket we should check
+  // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
   if (bloomBit < 64) {
     if (bloomBit < 32) {
-      di.bf0 |= mask;
+      // Then use the mask to flip on the bit (0-31) associated with the directive in that bucket
+      injector.bf0 |= mask;
     } else {
-      di.bf1 |= mask;
+      injector.bf1 |= mask;
     }
   } else {
     if (bloomBit < 96) {
-      di.bf2 |= mask;
+      injector.bf2 |= mask;
     } else {
-      di.bf3 |= mask;
+      injector.bf3 |= mask;
     }
   }
 }
@@ -305,7 +368,7 @@ export function getOrCreateNodeInjector(): LNodeInjector {
 
 
 //////////////////////////
-//// ELEMENT
+//// Element
 //////////////////////////
 
 /**
@@ -351,7 +414,7 @@ export function elementCreate(
 
       if (node.staticData == null) {
         ngDevMode && assertDataInRange(index - 1);
-        node.staticData = ngStaticData[index] = createStaticData(name, attrs || null, null);
+        node.staticData = ngStaticData[index] = createNodeStatic(name, attrs || null, null);
       }
 
       if (attrs) setUpAttributes(native, attrs);
@@ -374,9 +437,9 @@ function getTemplateStatic(template: ComponentTemplate<any>): NgStaticData {
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
   ngDevMode && assertEqual(attrs.length % 2, 0, 'attrs.length % 2');
-  const isFnRenderer = (renderer as Renderer3Fn).setAttribute;
+  const isFnRenderer = (renderer as ProceduralRenderer3).setAttribute;
   for (let i = 0; i < attrs.length; i += 2) {
-    isFnRenderer ? (renderer as Renderer3Fn).setAttribute !(native, attrs[i], attrs[i | 1]) :
+    isFnRenderer ? (renderer as ProceduralRenderer3).setAttribute !(native, attrs[i], attrs[i | 1]) :
                    native.setAttribute(attrs[i], attrs[i | 1]);
   }
 }
@@ -394,9 +457,9 @@ export function createError(text: string, token: any) {
 export function elementHost(elementOrSelector: RElement | string, def: ComponentDef<any>) {
   ngDevMode && assertDataInRange(-1);
   const rNode = typeof elementOrSelector === 'string' ?
-      ((renderer as Renderer3Fn).selectRootElement ?
-           (renderer as Renderer3Fn).selectRootElement(elementOrSelector) :
-           (renderer as Renderer3oo).querySelector !(elementOrSelector)) :
+      ((renderer as ProceduralRenderer3).selectRootElement ?
+           (renderer as ProceduralRenderer3).selectRootElement(elementOrSelector) :
+           (renderer as ObjectOrientedRenderer3).querySelector !(elementOrSelector)) :
       elementOrSelector;
   if (ngDevMode && !rNode) {
     if (typeof elementOrSelector === 'string') {
@@ -426,25 +489,25 @@ export function listenerCreate(
   const node = previousOrParentNode;
   const native = node.native as RElement;
 
-  // In order to match current behavior, event listeners must be added for all events (including
-  // outputs).
-  if ((renderer as Renderer3Fn).listen) {
-    const cleanupFn = (renderer as Renderer3Fn).listen(native, eventName, listener);
+  // In order to match current behavior, native DOM event listeners must be added for all
+  // events (including outputs).
+  if ((renderer as ProceduralRenderer3).listen) {
+    const cleanupFn = (renderer as ProceduralRenderer3).listen(native, eventName, listener);
     (cleanup || (cleanup = currentView.cleanup = [])).push(cleanupFn, null);
   } else {
     native.addEventListener(eventName, listener, useCapture);
     (cleanup || (cleanup = currentView.cleanup = [])).push(eventName, native, listener, useCapture);
   }
 
-  let mergeData: LNodeStatic|null = node.staticData !;
-  if (mergeData.outputs === undefined) {
+  let staticData: LNodeStatic|null = node.staticData !;
+  if (staticData.outputs === undefined) {
     // if we create LNodeStatic here, inputs must be undefined so we know they still need to be
     // checked
-    mergeData.outputs = null;
-    mergeData = generatePropertyAliases(node.flags, mergeData);
+    staticData.outputs = null;
+    staticData = generatePropertyAliases(node.flags, staticData);
   }
 
-  const outputs = mergeData.outputs;
+  const outputs = staticData.outputs;
   let outputData: (number | string)[]|undefined;
   if (outputs && (outputData = outputs[eventName])) {
     outputCreate(outputData, listener);
@@ -488,15 +551,15 @@ export function elementEnd() {
  */
 export function elementAttribute(index: number, attrName: string, value: any): void {
   if (value !== NO_CHANGE) {
-    const lElement = data[index] as LElement;
+    const element = data[index] as LElement;
     if (value == null) {
-      (renderer as Renderer3Fn).removeAttribute ?
-          (renderer as Renderer3Fn).removeAttribute(lElement.native, attrName) :
-          lElement.native.removeAttribute(attrName);
+      (renderer as ProceduralRenderer3).removeAttribute ?
+          (renderer as ProceduralRenderer3).removeAttribute(element.native, attrName) :
+          element.native.removeAttribute(attrName);
     } else {
-      (renderer as Renderer3Fn).setAttribute ?
-          (renderer as Renderer3Fn).setAttribute(lElement.native, attrName, value) :
-          lElement.native.setAttribute(attrName, value);
+      (renderer as ProceduralRenderer3).setAttribute ?
+          (renderer as ProceduralRenderer3).setAttribute(element.native, attrName, value) :
+          element.native.setAttribute(attrName, value);
     }
   }
 }
@@ -535,14 +598,22 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
     setInputsForProperty(dataValue, value);
   } else {
     const native = node.native;
-    (renderer as Renderer3Fn).setProperty ?
-        (renderer as Renderer3Fn).setProperty(native, propName, value) :
+    (renderer as ProceduralRenderer3).setProperty ?
+        (renderer as ProceduralRenderer3).setProperty(native, propName, value) :
         native.setProperty ? native.setProperty(propName, value) :
                              (native as any)[propName] = value;
   }
 }
 
-function createStaticData(
+/**
+ * Constructs a LNodeStatic object from the arguments.
+ *
+ * @param tagName
+ * @param attrs
+ * @param containerStatic
+ * @returns the LNodeStatic object
+ */
+function createNodeStatic(
     tagName: string | null, attrs: string[] | null,
     containerStatic: (LNodeStatic | null)[][] | null): LNodeStatic {
   return {
@@ -610,13 +681,13 @@ export function elementClass<T>(index: number, className: string, value: T | NO_
   if (value !== NO_CHANGE) {
     const lElement = data[index] as LElement;
     if (value) {
-      (renderer as Renderer3Fn).addClass ?
-          (renderer as Renderer3Fn).addClass(lElement.native, className) :
+      (renderer as ProceduralRenderer3).addClass ?
+          (renderer as ProceduralRenderer3).addClass(lElement.native, className) :
           lElement.native.classList.add(className);
 
     } else {
-      (renderer as Renderer3Fn).removeClass ?
-          (renderer as Renderer3Fn).removeClass(lElement.native, className) :
+      (renderer as ProceduralRenderer3).removeClass ?
+          (renderer as ProceduralRenderer3).removeClass(lElement.native, className) :
           lElement.native.classList.remove(className);
     }
   }
@@ -636,13 +707,13 @@ export function elementStyle<T>(
   if (value !== NO_CHANGE) {
     const lElement = data[index] as LElement;
     if (value == null) {
-      (renderer as Renderer3Fn).removeStyle ?
-          (renderer as Renderer3Fn)
+      (renderer as ProceduralRenderer3).removeStyle ?
+          (renderer as ProceduralRenderer3)
               .removeStyle(lElement.native, styleName, RendererStyleFlags3.DashCase) :
           lElement.native.style.removeProperty(styleName);
     } else {
-      (renderer as Renderer3Fn).setStyle ?
-          (renderer as Renderer3Fn)
+      (renderer as ProceduralRenderer3).setStyle ?
+          (renderer as ProceduralRenderer3)
               .setStyle(
                   lElement.native, styleName, suffix ? stringify(value) + suffix : stringify(value),
                   RendererStyleFlags3.DashCase) :
@@ -655,7 +726,7 @@ export function elementStyle<T>(
 
 
 //////////////////////////
-//// TEXT
+//// Text
 //////////////////////////
 
 /**
@@ -668,9 +739,9 @@ export function elementStyle<T>(
 export function textCreate(index: number, value?: any): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
   const textNode = value != null ?
-      ((renderer as Renderer3Fn).createText ?
-           (renderer as Renderer3Fn).createText(stringify(value)) :
-           (renderer as Renderer3oo).createTextNode !(stringify(value))) :
+      ((renderer as ProceduralRenderer3).createText ?
+           (renderer as ProceduralRenderer3).createText(stringify(value)) :
+           (renderer as ObjectOrientedRenderer3).createTextNode !(stringify(value))) :
       null;
   const node = createLNode(index, LNodeFlags.Element, textNode);
   // Text nodes are self closing.
@@ -691,15 +762,15 @@ export function textCreateBound<T>(index: number, value: T | NO_CHANGE): void {
   if (existingNode && existingNode.native) {
     // If DOM node exists and value changed, update textContent
     value !== NO_CHANGE &&
-        ((renderer as Renderer3Fn).setValue ?
-             (renderer as Renderer3Fn).setValue(existingNode.native, stringify(value)) :
+        ((renderer as ProceduralRenderer3).setValue ?
+             (renderer as ProceduralRenderer3).setValue(existingNode.native, stringify(value)) :
              existingNode.native.textContent = stringify(value));
   } else if (existingNode) {
     // Node was created but DOM node creation was delayed. Create and append now.
     existingNode.native =
-        ((renderer as Renderer3Fn).createText ?
-             (renderer as Renderer3Fn).createText(stringify(value)) :
-             (renderer as Renderer3oo).createTextNode !(stringify(value)));
+        ((renderer as ProceduralRenderer3).createText ?
+             (renderer as ProceduralRenderer3).createText(stringify(value)) :
+             (renderer as ObjectOrientedRenderer3).createTextNode !(stringify(value)));
     insertChild(existingNode, currentView);
   } else {
     textCreate(index, value);
@@ -793,7 +864,15 @@ function setInputsFromAttrs<T>(
 }
 
 /**
- * Generates the initialInputData for the template's static storage.
+ * Generates initialInputData for a node and stores it in the template's static storage
+ * so subsequent template invocations don't have to recalculate it.
+ *
+ * initialInputData is an array containing values that need to be set as input properties
+ * for directives on this node, but only once on creation. We need this array to support
+ * the case where you set an @Input property of a directive using attribute-like syntax.
+ * e.g. if you have a `name` @Input, you can set it once like this:
+ *
+ * <my-component name="Bess"></my-component>
  *
  * @param directiveIndex Index to store the initial input data
  * @param inputs The list of inputs from the directive def
@@ -819,10 +898,34 @@ function generateInitialInputs(
   return initialInputData;
 }
 
+/**
+ * Makes a directive public to the DI system by adding it to an injector's bloom filter.
+ *
+ * @param def The definition of the directive to be made public
+ */
 export function diPublic(def: DirectiveDef<any>): void {
   bloomAdd(getOrCreateNodeInjector(), def.type);
 }
 
+/**
+ * Accepts a lifecycle hook type and determines when and how the related lifecycle hook
+ * callback should run.
+ *
+ * For the onInit lifecycle hook, it will return whether or not the ngOnInit() function
+ * should run. If so, ngOnInit() will be called outside of this function.
+ *
+ * e.g. l(LifecycleGuard.ON_INIT) && ctx.ngOnInit();
+ *
+ * For the onDestroy lifecycle hook, this instruction also accepts an onDestroy
+ * method that should be stored and called internally when the parent view is being
+ * cleaned up.
+ *
+ * e.g.  l(LifecycleGuard.ON_DESTROY, ctx, ctx.onDestroy);
+ *
+ * @param lifeCycle
+ * @param self
+ * @param method
+ */
 export function directiveLifeCycle(
     lifeCycle: LifeCycleGuard.ON_DESTROY, self: any, method: Function): void;
 export function directiveLifeCycle(lifeCycle: LifeCycleGuard): boolean;
@@ -848,6 +951,8 @@ export function directiveLifeCycle(
  *
  * @param index The index of the container in the data array
  * @param template Optional inline template
+ * @param tagName The name of the container element, if applicable
+ * @param attrs The attrs attached to the container, if applicable
  */
 export function containerCreate(
     index: number, template?: ComponentTemplate<any>, tagName?: string, attrs?: string[]): void {
@@ -876,7 +981,7 @@ export function containerCreate(
   });
 
   if (node.staticData == null) {
-    node.staticData = ngStaticData[index] = createStaticData(tagName || null, attrs || null, []);
+    node.staticData = ngStaticData[index] = createNodeStatic(tagName || null, attrs || null, []);
   }
 
   // Containers are added to the current view tree instead of their embedded views
@@ -1155,23 +1260,29 @@ export function addToViewTree<T extends ViewState|ContainerState>(state: T): T {
   return state;
 }
 
-/** The type of the NO_CHANGE constant. */
-export type NO_CHANGE = {
-  brand: 'no change detected'
-};
+//////////////////////////
+//// Bindings
+//////////////////////////
 
 /**
- * A special value which designates that a value has not changed.
+ * The type of the NO_CHANGE constant, which can never be structurally matched
+ * because of its private member.
  */
-export const NO_CHANGE: NO_CHANGE = {
-  brand: 'no change detected'
-};
+export declare class NO_CHANGE_TYPE {
+  // This is a brand that ensures that this type can never match anything else
+  private _;
+}
 
+// This is an alias for NO_CHANGE_TYPE for brevity throughout the codebase.
+export type NO_CHANGE = typeof NO_CHANGE_TYPE;
+
+/** A special value which designates that a value has not changed. */
+export const NO_CHANGE = {} as NO_CHANGE;
 
 /**
  * Create interpolation bindings with variable number of arguments.
  *
- * If any of the arguments change that the interpolation is concatenated
+ * If any of the arguments change, then the interpolation is concatenated
  * and causes an update.
  *
  * @param values an array of values to diff.
@@ -1205,6 +1316,11 @@ export function bindV(values: any[]): string|NO_CHANGE {
     return NO_CHANGE;
   }
 }
+
+// For bindings that have 0 - 7 dynamic values to watch, we can use a bind function that
+// matches the number of interpolations. This is faster than using the bindV function above
+// because we know ahead of time how many interpolations we'll have and don't need to
+// accept the values as an array that will need to be copied and looped over.
 
 /**
  * Create a single value binding without interpolation.
