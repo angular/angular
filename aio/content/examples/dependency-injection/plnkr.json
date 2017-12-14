@@ -5,7 +5,7 @@
     "!**/*.d.ts",
     "!**/*.js",
     "!**/*.[0,1,2].*",
-    "**/dummy.module.ts"
+    "!**/dummy.module.ts"
   ],
   "tags": ["dependency", "di"]
 }
