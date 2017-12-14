@@ -32,12 +32,10 @@ server can ensure that the Angular app always has a consistent set of files.
 
 #### Update checks
 
-Every time the Angular service worker starts, it checks for updates to the 
-app by looking for updates to the `ngsw.json` manifest. 
-
-Note that the service worker starts periodically throughout the usage of 
-the app because the web browser terminates the service worker if the page 
-is idle beyond a given timeout.
+Every time the user opens or refreshes the application, the Angular service worker
+checks for updates to the app by looking for updates to the `ngsw.json` manifest. If
+an update is found, it is downloaded and cached automatically, and will be served
+the next time the application is loaded.
 
 ### Resource integrity
 
@@ -276,8 +274,8 @@ with service workers. Such tools can be powerful when used properly,
 but there are a few things to keep in mind.
 
 * When using developer tools, the service worker is kept running 
-in the background and never restarts. For the Angular service 
-worker, this means that update checks to the app will generally not happen.
+in the background and never restarts. This can cause behavior with Dev
+Tools open to differ from behavior a user might experience.
 
 * If you look in the Cache Storage viewer, the cache is frequently 
 out of date. Right click the Cache Storage title and refresh the caches.
