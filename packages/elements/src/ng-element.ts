@@ -101,11 +101,7 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
       private readonly outputs: NgElementOutput[]) {
     super();
     
-    this.checkExistingProperties(inputs);
-  }
-  
-  checkExistingProperties(properties: NgElementInput[]) {
-    properties.forEach(({ propName }) => {
+    inputs.forEach(({ propName }) => {
       if (this.hasOwnProperty(propName)) {
         this.setInputValue(propName, this[propName]);
         delete this[propName];
