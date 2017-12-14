@@ -9,14 +9,17 @@
 // We are temporarily importing the existing viewEngine from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 import * as viewEngine from '../core';
+
 import {BLOOM_SIZE, NG_ELEMENT_ID, getOrCreateNodeInjector} from './instructions';
 import {LContainer, LNodeFlags, LNodeInjector} from './l_node';
 import {ComponentTemplate, DirectiveDef} from './public_interfaces';
-import {stringify, notImplemented} from './util';
+import {notImplemented, stringify} from './util';
+
 
 /** Injection flags for DI. */
 export const enum InjectFlags {
-  /** Dependency is not required. Null will be injected if there is no provider for the dependency. */
+  /** Dependency is not required. Null will be injected if there is no provider for the dependency.
+     */
   Optional = 1 << 0,
   /** When resolving a dependency, include the node that is requesting injection. */
   CheckSelf = 1 << 1,
@@ -86,7 +89,9 @@ export function inject<T>(token: viewEngine.Type<T>, flags?: InjectFlags): T {
 
       // If no injector is found, we *know* that there is no ancestor injector that contains the
       // token, so we abort.
-      if (!injector) { break; }
+      if (!injector) {
+        break;
+      }
 
       // At this point, we have an injector which *may* contain the token, so we step through the
       // directives associated with the injector's corresponding node to get the directive instance.
@@ -160,8 +165,8 @@ function bloomHashBit(type: viewEngine.Type<any>): number|null {
  * @param  bloomBit The bit to check in each injector's bloom filter
  * @returns An injector that might have the directive
  */
-export function bloomFindPossibleInjector(startInjector: LNodeInjector, bloomBit: number): LNodeInjector|
-  null {
+export function bloomFindPossibleInjector(
+    startInjector: LNodeInjector, bloomBit: number): LNodeInjector|null {
   // Create a mask that targets the specific bit associated with the directive we're looking for.
   // This will be a number between 0 and 31, corresponding to a bit position in a 32 bit integer.
   const mask = 1 << bloomBit;
@@ -173,8 +178,8 @@ export function bloomFindPossibleInjector(startInjector: LNodeInjector, bloomBit
     // Our bloom filter size is 128 bits, which is four 32-bit bloom filter buckets:
     // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
     // Get the bloom filter value from the appropriate bucket based on the directive's bloomBit.
-    let value: number =
-      bloomBit < 64 ? (bloomBit < 32 ? injector.bf0 : injector.bf1) : (bloomBit < 96 ? injector.bf2 : injector.bf3);
+    let value: number = bloomBit < 64 ? (bloomBit < 32 ? injector.bf0 : injector.bf1) :
+                                        (bloomBit < 96 ? injector.bf2 : injector.bf3);
 
     // If the bloom filter value has the bit corresponding to the directive's bloomBit flipped on,
     // this injector is a potential match.
@@ -184,8 +189,8 @@ export function bloomFindPossibleInjector(startInjector: LNodeInjector, bloomBit
 
     // If the current injector does not have the directive, check the bloom filters for the ancestor
     // injectors (cbf0 - cbf3). These filters capture *all* ancestor injectors.
-    value =
-      bloomBit < 64 ? (bloomBit < 32 ? injector.cbf0 : injector.cbf1) : (bloomBit < 96 ? injector.cbf2 : injector.cbf3);
+    value = bloomBit < 64 ? (bloomBit < 32 ? injector.cbf0 : injector.cbf1) :
+                            (bloomBit < 96 ? injector.cbf2 : injector.cbf3);
 
     // If the ancestor bloom filter value has the bit corresponding to the directive, traverse up to
     // find the specific injector. If the ancestor bloom filter does not have the bit, we can abort.
@@ -264,8 +269,8 @@ class ViewContainerRef implements viewEngine.ViewContainerRef {
   get(index: number): viewEngine.ViewRef|null { throw notImplemented(); }
   length: number;
   createEmbeddedView<C>(
-    templateRef: viewEngine.TemplateRef<C>, context?: C|undefined,
-    index?: number|undefined): viewEngine.EmbeddedViewRef<C> {
+      templateRef: viewEngine.TemplateRef<C>, context?: C|undefined,
+      index?: number|undefined): viewEngine.EmbeddedViewRef<C> {
     throw notImplemented();
   }
   createComponent<C>(
@@ -274,8 +279,12 @@ class ViewContainerRef implements viewEngine.ViewContainerRef {
       ngModule?: viewEngine.NgModuleRef<any>|undefined): viewEngine.ComponentRef<C> {
     throw notImplemented();
   }
-  insert(viewRef: viewEngine.ViewRef, index?: number|undefined): viewEngine.ViewRef { throw notImplemented(); }
-  move(viewRef: viewEngine.ViewRef, currentIndex: number): viewEngine.ViewRef { throw notImplemented(); }
+  insert(viewRef: viewEngine.ViewRef, index?: number|undefined): viewEngine.ViewRef {
+    throw notImplemented();
+  }
+  move(viewRef: viewEngine.ViewRef, currentIndex: number): viewEngine.ViewRef {
+    throw notImplemented();
+  }
   indexOf(viewRef: viewEngine.ViewRef): number { throw notImplemented(); }
   remove(index?: number|undefined): void { throw notImplemented(); }
   detach(index?: number|undefined): viewEngine.ViewRef|null { throw notImplemented(); }

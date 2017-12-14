@@ -9,7 +9,7 @@
 import {DirectiveDef} from './public_interfaces';
 
 /** The type of the global ngStaticData array. */
-export type NgStaticData = (LNodeStatic | DirectiveDef<any> | null)[];
+export type NgStaticData = (LNodeStatic | DirectiveDef<any>| null)[];
 
 /**
  * LNode binding data (flywiehgt) for a particular node that is shared between all templates
