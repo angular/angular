@@ -9,6 +9,7 @@
 import {Adapter} from './src/adapter';
 import {CacheDatabase} from './src/db-cache';
 import {Driver} from './src/driver';
+import {ServiceWorkerGlobalScope} from './src/typings';
 
 const scope = self as any as ServiceWorkerGlobalScope;
 

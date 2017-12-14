@@ -21,13 +21,13 @@
  * @email tiernanc@gmail.com
  * @license: ISC
  */
-interface ExtendableEvent extends Event {
+export interface ExtendableEvent extends Event {
   waitUntil(fn: Promise<any>): void;
 }
 
 // CacheStorage API
 
-interface Cache {
+export interface Cache {
   add(request: Request): Promise<void>;
   addAll(requestArray: Array<Request>): Promise<void>;
   'delete'(request: Request, options?: CacheStorageOptions): Promise<boolean>;
@@ -37,7 +37,7 @@ interface Cache {
   put(request: Request|string, response: Response): Promise<void>;
 }
 
-interface CacheStorage {
+export interface CacheStorage {
   'delete'(cacheName: string): Promise<boolean>;
   has(cacheName: string): Promise<boolean>;
   keys(): Promise<Array<string>>;
@@ -45,7 +45,7 @@ interface CacheStorage {
   open(cacheName: string): Promise<Cache>;
 }
 
-interface CacheStorageOptions {
+export interface CacheStorageOptions {
   cacheName?: string;
   ignoreMethod?: boolean;
   ignoreSearch?: boolean;
@@ -54,63 +54,64 @@ interface CacheStorageOptions {
 
 // Client API
 
-declare class Client {
+export interface IClient {
   frameType: ClientFrameType;
   id: string;
   url: string;
   postMessage(message: any): void;
 }
+export declare var Client: any;
 
-interface Clients {
+export interface Clients {
   claim(): Promise<any>;
-  get(id: string): Promise<Client>;
-  matchAll(options?: ClientMatchOptions): Promise<Array<Client>>;
+  get(id: string): Promise<IClient>;
+  matchAll(options?: ClientMatchOptions): Promise<Array<IClient>>;
 }
 
-interface ClientMatchOptions {
+export interface ClientMatchOptions {
   includeUncontrolled?: boolean;
   type?: ClientMatchTypes;
 }
 
-interface WindowClient {
+export interface WindowClient  {
   focused: boolean;
   visibilityState: WindowClientState;
   focus(): Promise<WindowClient>;
   navigate(url: string): Promise<WindowClient>;
 }
 
-type ClientFrameType = 'auxiliary' | 'top-level' | 'nested' | 'none';
-type ClientMatchTypes = 'window' | 'worker' | 'sharedworker' | 'all';
-type WindowClientState = 'hidden' | 'visible' | 'prerender' | 'unloaded';
+export type ClientFrameType = 'auxiliary' | 'top-level' | 'nested' | 'none';
+export type ClientMatchTypes = 'window' | 'worker' | 'sharedworker' | 'all';
+export type WindowClientState = 'hidden' | 'visible' | 'prerender' | 'unloaded';
 
 // Fetch API
 
-interface FetchEvent extends ExtendableEvent {
+export interface FetchEvent extends ExtendableEvent {
   clientId: string|null;
   request: Request;
   respondWith(response: Promise<Response>|Response): Promise<Response>;
 }
 
-interface InstallEvent extends ExtendableEvent {
+export interface InstallEvent extends ExtendableEvent {
   activeWorker: ServiceWorker;
 }
 
-interface ActivateEvent extends ExtendableEvent {}
+export interface ActivateEvent extends ExtendableEvent {}
 
 // Notification API
 
-interface NotificationEvent {
+export interface NotificationEvent {
   action: string;
   notification: Notification;
 }
 
 // Push API
 
-interface PushEvent extends ExtendableEvent {
+export interface PushEvent extends ExtendableEvent {
   data: PushMessageData;
 }
 
-interface PushMessageData {
+export interface PushMessageData {
   arrayBuffer(): ArrayBuffer;
   blob(): Blob;
   json(): any;
@@ -119,19 +120,19 @@ interface PushMessageData {
 
 // Sync API
 
-interface SyncEvent extends ExtendableEvent {
+export interface SyncEvent extends ExtendableEvent {
   lastChance: boolean;
   tag: string;
 }
 
-interface ExtendableMessageEvent extends ExtendableEvent {
+export interface ExtendableMessageEvent extends ExtendableEvent {
   data: any;
-  source: Client|Object;
+  source: IClient|Object;
 }
 
 // ServiceWorkerGlobalScope
 
-interface ServiceWorkerGlobalScope {
+export interface ServiceWorkerGlobalScope {
   caches: CacheStorage;
   clients: Clients;
   registration: ServiceWorkerRegistration;

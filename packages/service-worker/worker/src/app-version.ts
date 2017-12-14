@@ -13,6 +13,7 @@ import {DataGroup} from './data';
 import {Database} from './database';
 import {IdleScheduler} from './idle';
 import {Manifest} from './manifest';
+import {ServiceWorkerGlobalScope} from './typings';
 import {isNavigationRequest} from './util';
 
 

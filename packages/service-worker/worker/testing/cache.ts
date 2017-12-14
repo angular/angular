@@ -7,6 +7,7 @@
  */
 
 import {MockRequest, MockResponse} from './fetch';
+import {Cache, CacheStorage} from '../src/typings';
 
 export interface DehydratedResponse {
   body: string|null;

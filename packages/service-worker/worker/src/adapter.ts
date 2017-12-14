@@ -6,6 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {IClient} from './typings';
+
+declare var Client: any;
+
 /**
  * Adapts the service worker to its runtime environment.
  *
@@ -33,7 +37,7 @@ export class Adapter {
   /**
    * Test if a given object is an instance of `Client`.
    */
-  isClient(source: any): source is Client { return (source instanceof Client); }
+  isClient(source: any): source is IClient { return (source instanceof Client); }
 
   /**
    * Read the current UNIX time in milliseconds.
