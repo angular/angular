@@ -96,7 +96,8 @@
         "encapsulation": "\\.None$",
         "moduleId": "^module\\.id$",
         "preserveWhitespaces": "false$",
-        "changeDetection": "\\.OnPush$"
+        "changeDetection": "\\.OnPush$",
+        "!styles": ".*"
       }
     }, "src/+(lib|cdk|material-experimental)/**/!(*.spec).ts"],
     "require-license-banner": [

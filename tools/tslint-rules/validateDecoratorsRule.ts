@@ -5,12 +5,14 @@ import * as minimatch from 'minimatch';
 
 /**
  * Rule that enforces certain decorator properties to be defined and to match a pattern.
- * Supports whitelisting via the third argument. E.g.
+ * Properties can be forbidden by prefixing their name with a `!`.
+ * Supports whitelisting files via the third argument. E.g.
  *
  * ```
  * "validate-decorators": [true, {
  *   "Component": {
- *     "encapsulation": "\\.None$"
+ *     "encapsulation": "\\.None$",
+ *     "!styles": ".*"
  *   }
  * }, "src/lib"]
  * ```
@@ -21,8 +23,16 @@ export class Rule extends Lint.Rules.AbstractRule {
   }
 }
 
-/** Rules that can be used to validate the decorators in a file. */
-type DecoratorRules = {[key: string]: {[key: string]: RegExp}};
+/** Represents a set of required and forbidden decorator properties. */
+type DecoratorRuleSet = {
+  required:  {[key: string]: RegExp},
+  forbidden:  {[key: string]: RegExp},
+};
+
+/** Represents a map between decorator names and rule sets. */
+type DecoratorRules = {
+  [key: string]: DecoratorRuleSet
+};
 
 class Walker extends Lint.RuleWalker {
   // Whether the file should be checked at all.
@@ -76,20 +86,30 @@ class Walker extends Lint.RuleWalker {
       node
     }));
 
-    // Find all of the rule properties that are missing from the decorator.
-    const missing = Object.keys(rules).filter(key => !props.find((prop: any) => prop.name === key));
+    // Find all of the required rule properties that are missing from the decorator.
+    const missing = Object.keys(rules.required)
+        .filter(key => !props.find((prop: any) => prop.name === key));
 
     if (missing.length) {
       // Exit early if any of the properties are missing.
       this.addFailureAtNode(decorator.parent, 'Missing required properties: ' + missing.join(', '));
     } else {
-      // If all the necessary properties are defined, ensure that they match the pattern.
+      // If all the necessary properties are defined, ensure that
+      // they match the pattern and aren't in the forbidden list.
       props
-        .filter((prop: any) => rules[prop.name])
-        .filter((prop: any) => !rules[prop.name].test(prop.value))
+        .filter((prop: any) => rules.required[prop.name] || rules.forbidden[prop.name])
         .forEach((prop: any) => {
-          this.addFailureAtNode(prop.node,
-              `Invalid value for property. Expected value to match "${rules[prop.name]}".`);
+          const {name, value, node} = prop;
+          const requiredPattern = rules.required[name];
+          const forbiddenPattern = rules.forbidden[name];
+
+          if (requiredPattern && !requiredPattern.test(value)) {
+            this.addFailureAtNode(node, `Invalid value for property. ` +
+                                        `Expected value to match "${requiredPattern}".`);
+          } else if (forbiddenPattern && forbiddenPattern.test(value)) {
+            this.addFailureAtNode(node, `Property value not allowed. ` +
+                                        `Value should not match "${forbiddenPattern}".`);
+          }
         });
     }
   }
@@ -108,9 +128,18 @@ class Walker extends Lint.RuleWalker {
         .filter(decoratorName => Object.keys(config[decoratorName]).length > 0)
         .forEach(decoratorName => {
           output[decoratorName] = Object.keys(config[decoratorName]).reduce((accumulator, prop) => {
-            accumulator[prop] = new RegExp(config[decoratorName][prop]);
+            const isForbidden = prop.startsWith('!');
+            const cleanName = isForbidden ? prop.slice(1) : prop;
+            const pattern = new RegExp(config[decoratorName][prop]);
+
+            if (isForbidden) {
+              accumulator.forbidden[cleanName] = pattern;
+            } else {
+              accumulator.required[cleanName] = pattern;
+            }
+
             return accumulator;
-          }, {} as {[key: string]: RegExp});
+          }, {required: {}, forbidden: {}} as DecoratorRuleSet);
         });
     }
 
