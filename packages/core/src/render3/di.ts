@@ -10,7 +10,7 @@
 // correctly implementing its interfaces for backwards compatibility.
 import * as viewEngine from '../core';
 import {BLOOM_SIZE, NG_ELEMENT_ID, getOrCreateNodeInjector} from './instructions';
-import {LContainer, LNodeFlags, LNodeInjector} from './interfaces';
+import {LContainer, LNodeFlags, LNodeInjector} from './l_node';
 import {ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {stringify, notImplemented} from './util';
 
