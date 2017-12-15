@@ -58,6 +58,7 @@ describe('site App', function() {
       expect(page.getScrollTop()).toBeGreaterThan(0);
 
       page.getNavItem(/api/i).click();
+      browser.waitForAngular();
       expect(page.locationPath()).toBe('/api');
       expect(page.getScrollTop()).toBe(0);
     });
@@ -69,6 +70,7 @@ describe('site App', function() {
       expect(page.getScrollTop()).toBeGreaterThan(0);
 
       page.getNavItem(/security/i).click();
+      browser.waitForAngular();
       expect(page.locationPath()).toBe('/guide/security');
       expect(page.getScrollTop()).toBe(0);
     });
