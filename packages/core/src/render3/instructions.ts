@@ -8,7 +8,7 @@
 
 import './ng_dev_mode';
 
-import {Type} from '../core';
+import {ElementRef, TemplateRef, Type, ViewContainerRef} from '../core';
 
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
 import {ContainerState, CssSelector, ProjectionState, QueryState, ViewState} from './interfaces';
@@ -19,6 +19,7 @@ import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef} from './public_interfaces';
+import {InjectFlags, diPublicInInjector, getOrCreateNodeInjectorForNode, getOrCreateElementRef, getOrCreateTemplateRef, getOrCreateContainerRef, getOrCreateInjectable} from './di';
 import {QueryList, QueryState_} from './query';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './renderer';
 import {isDifferent, stringify} from './util';
@@ -37,23 +38,6 @@ export const enum LifecycleHook {ON_INIT = 1, ON_DESTROY = 2, ON_CHANGES = 4}
  * facilitate jumping from an instance to the host node.
  */
 export const NG_HOST_SYMBOL = '__ngHostLNode__';
-
-/**
- * If a directive is diPublic, bloomAdd sets a property on the instance with this constant as
- * the key and the directive's unique ID as the value. This allows us to map directives to their
- * bloom filter bit for DI.
- */
-export const NG_ELEMENT_ID = '__NG_ELEMENT_ID__';
-
-/**
- * The number of slots in each bloom filter (used by DI). The larger this number, the fewer
- * directives that will share slots, and thus, the fewer false positives when checking for
- * the existence of a directive.
- */
-export const BLOOM_SIZE = 128;
-
-/** Counter used to generate unique IDs for directives. */
-let nextNgElementId = 0;
 
 /**
  * This property gets set before entering a template.
@@ -321,77 +305,75 @@ export function renderComponentOrTemplate<T>(
   }
 }
 
+export function getOrCreateNodeInjector(): LNodeInjector {
+  ngDevMode && assertPreviousIsParent();
+  return getOrCreateNodeInjectorForNode(previousOrParentNode as LElement | LContainer);
+}
+
 /**
- * Registers this directive as present in its node's injector by flipping the directive's
- * corresponding bit in the injector's bloom filter.
+ * Makes a directive public to the DI system by adding it to an injector's bloom filter.
  *
- * @param injector The injector in which the directive should be registered
- * @param type The directive to register
+ * @param def The definition of the directive to be made public
  */
-export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
-  let id: number|undefined = (type as any)[NG_ELEMENT_ID];
-
-  // Set a unique ID on the directive type, so if something tries to inject the directive,
-  // we can easily retrieve the ID and hash it into the bloom bit that should be checked.
-  if (id == null) {
-    id = (type as any)[NG_ELEMENT_ID] = nextNgElementId++;
-  }
-
-  // We only have BLOOM_SIZE (128) slots in our bloom filter (4 buckets * 32 bits each),
-  // so all unique IDs must be modulo-ed into a number from 0 - 127 to fit into the filter.
-  // This means that after 128, some directives will share slots, leading to some false positives
-  // when checking for a directive's presence.
-  const bloomBit = id % BLOOM_SIZE;
-
-  // Create a mask that targets the specific bit associated with the directive.
-  // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
-  // to bit positions 0 - 31 in a 32 bit integer.
-  const mask = 1 << bloomBit;
-
-  // Use the raw bloomBit number to determine which bloom filter bucket we should check
-  // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
-  if (bloomBit < 64) {
-    if (bloomBit < 32) {
-      // Then use the mask to flip on the bit (0-31) associated with the directive in that bucket
-      injector.bf0 |= mask;
-    } else {
-      injector.bf1 |= mask;
-    }
-  } else {
-    if (bloomBit < 96) {
-      injector.bf2 |= mask;
-    } else {
-      injector.bf3 |= mask;
-    }
-  }
+export function diPublic(def: DirectiveDef<any>): void {
+  diPublicInInjector(getOrCreateNodeInjector(), def);
 }
 
-export function getOrCreateNodeInjector(node?: LElement | LContainer): LNodeInjector {
-  ngDevMode && !node && assertPreviousIsParent();
-  node = node || previousOrParentNode as LElement | LContainer;
-  const nodeInjector = node.nodeInjector;
-  const parentInjector = node.parent && node.parent.nodeInjector;
-  if (nodeInjector != parentInjector) {
-    return nodeInjector !;
-  }
-  return node.nodeInjector = {
-    parent: parentInjector,
-    node: node,
-    bf0: 0,
-    bf1: 0,
-    bf2: 0,
-    bf3: 0,
-    cbf0: parentInjector == null ? 0 : parentInjector.cbf0 | parentInjector.bf0,
-    cbf1: parentInjector == null ? 0 : parentInjector.cbf1 | parentInjector.bf1,
-    cbf2: parentInjector == null ? 0 : parentInjector.cbf2 | parentInjector.bf2,
-    cbf3: parentInjector == null ? 0 : parentInjector.cbf3 | parentInjector.bf3,
-    injector: null,
-    templateRef: null,
-    viewContainerRef: null,
-    elementRef: null
-  };
+/**
+ * Searches for an instance of the given directive type up the injector tree and returns
+ * that instance if found.
+ *
+ * If not found, it will propagate up to the next parent injector until the token
+ * is found or the top is reached.
+ *
+ * Usage example (in factory function):
+ *
+ * class SomeDirective {
+ *   constructor(directive: DirectiveA) {}
+ *
+ *   static ngDirectiveDef = defineDirective({
+ *     type: SomeDirective,
+ *     factory: () => new SomeDirective(inject(DirectiveA))
+ *   });
+ * }
+ *
+ * @param token The directive type to search for
+ * @param flags Injection flags (e.g. CheckParent)
+ * @returns The instance found
+ */
+export function inject<T>(token: Type<T>, flags?: InjectFlags): T {
+  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
 }
 
+/**
+ * Creates an ElementRef and stores it on the injector.
+ * Or, if the ElementRef already exists, retrieves the existing ElementRef.
+ *
+ * @returns The ElementRef instance to use
+ */
+export function injectElementRef(): ElementRef {
+  return getOrCreateElementRef(getOrCreateNodeInjector());
+}
+
+/**
+ * Creates a TemplateRef and stores it on the injector. Or, if the TemplateRef already
+ * exists, retrieves the existing TemplateRef.
+ *
+ * @returns The TemplateRef instance to use
+ */
+export function injectTemplateRef<T>(): TemplateRef<T> {
+  return getOrCreateTemplateRef<T>(getOrCreateNodeInjector());
+}
+
+/**
+ * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef
+ * already exists, retrieves the existing ViewContainerRef.
+ *
+ * @returns The ViewContainerRef instance to use
+ */
+export function injectViewContainerRef(): ViewContainerRef {
+  return getOrCreateContainerRef(getOrCreateNodeInjector());
+}
 
 //////////////////////////
 //// Element
@@ -936,15 +918,6 @@ function generateInitialInputs(
     }
   }
   return initialInputData;
-}
-
-/**
- * Makes a directive public to the DI system by adding it to an injector's bloom filter.
- *
- * @param def The definition of the directive to be made public
- */
-export function diPublic(def: DirectiveDef<any>): void {
-  bloomAdd(getOrCreateNodeInjector(), def.type);
 }
 
 /**

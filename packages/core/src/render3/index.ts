@@ -7,7 +7,6 @@
  */
 
 import {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent} from './component';
-import {inject, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, NgOnChangesFeature, PublicFeature, defineComponent, defineDirective} from './public_interfaces';
 
 // Naming scheme:
@@ -20,6 +19,8 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveD
 // - lower case for closing: c(containerEnd), e(elementEnd), v(viewEnd)
 // clang-format off
 export {
+  inject, injectElementRef, injectTemplateRef, injectViewContainerRef,
+
   LifecycleHook,
 
   NO_CHANGE as NC,
@@ -69,7 +70,6 @@ export {
 } from './instructions';
 // clang-format on
 export {QueryList} from './query';
-export {inject, injectElementRef, injectTemplateRef, injectViewContainerRef};
 export {
   ComponentDef,
   ComponentTemplate,
