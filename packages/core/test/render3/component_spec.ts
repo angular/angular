@@ -34,11 +34,6 @@ describe('component', () => {
     });
   }
 
-  beforeEach(
-      () => {
-
-      });
-
   describe('renderComponent', () => {
     it('should render on initial call', () => {
       renderComponent(CounterComponent);
