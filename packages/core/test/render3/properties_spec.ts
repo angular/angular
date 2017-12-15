@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, D, E, L, T, V, b, b1, c, defineComponent, defineDirective, e, p, rC, rc, t, v} from '../../src/render3/index';
+import {C, D, E, L, T, V, b, b1, c, defineComponent, defineDirective, e, p, cR, cr, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
@@ -270,7 +270,7 @@ describe('elementProperty', () => {
           c();
         }
         p(0, 'id', b(ctx.id1));
-        rC(3);
+        cR(3);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -293,7 +293,7 @@ describe('elementProperty', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       expect(renderToHtml(Template, {condition: true, id1: 'one', id2: 'two', id3: 'three'}))
@@ -467,7 +467,7 @@ describe('elementProperty', () => {
           C(2);
           c();
         }
-        rC(2);
+        cR(2);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -485,7 +485,7 @@ describe('elementProperty', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       expect(renderToHtml(Template, {
@@ -530,7 +530,7 @@ describe('elementProperty', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           for (let i = 0; i < 2; i++) {
             if (V(0)) {
@@ -542,7 +542,7 @@ describe('elementProperty', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       expect(renderToHtml(Template, {}))

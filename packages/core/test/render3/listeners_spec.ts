@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, L, T, V, c, defineComponent, e, rC, rc, v} from '../../src/render3/index';
+import {C, D, E, L, T, V, c, defineComponent, e, cR, cr, v} from '../../src/render3/index';
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 
 
@@ -89,7 +89,7 @@ describe('event listeners', () => {
       if (cm) {
         C(0);
       }
-      rC(0);
+      cR(0);
       {
         if (ctx.showing) {
           if (V(1)) {
@@ -103,7 +103,7 @@ describe('event listeners', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     let comp = new MyComp();
@@ -138,7 +138,7 @@ describe('event listeners', () => {
         C(0);
         c();
       }
-      rC(0);
+      cR(0);
       {
         if (ctx.showing) {
           if (V(0)) {
@@ -146,7 +146,7 @@ describe('event listeners', () => {
             C(1);
             c();
           }
-          rC(1);
+          cR(1);
           {
             if (ctx.button) {
               if (V(0)) {
@@ -160,11 +160,11 @@ describe('event listeners', () => {
               v();
             }
           }
-          rc();
+          cr();
           v();
         }
       }
-      rc();
+      cr();
     }
 
     const comp = {showing: true, counter: 0, button: true, onClick: function() { this.counter++; }};
@@ -198,7 +198,7 @@ describe('event listeners', () => {
         C(0);
         c();
       }
-      rC(0);
+      cR(0);
       {
         if (ctx.showing) {
           if (V(0)) {
@@ -215,7 +215,7 @@ describe('event listeners', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     const ctx = {showing: true};
@@ -255,7 +255,7 @@ describe('event listeners', () => {
         C(0);
         c();
       }
-      rC(0);
+      cR(0);
       {
         if (ctx.condition) {
           if (V(0)) {
@@ -265,7 +265,7 @@ describe('event listeners', () => {
             C(2);
             c();
           }
-          rC(1);
+          cR(1);
           {
             if (ctx.sub1) {
               if (V(0)) {
@@ -279,8 +279,8 @@ describe('event listeners', () => {
               v();
             }
           }
-          rc();
-          rC(2);
+          cr();
+          cR(2);
           {
             if (ctx.sub2) {
               if (V(0)) {
@@ -294,11 +294,11 @@ describe('event listeners', () => {
               v();
             }
           }
-          rc();
+          cr();
           v();
         }
       }
-      rc();
+      cr();
     }
 
     const ctx = {condition: true, counter1: 0, counter2: 0, sub1: true, sub2: true};

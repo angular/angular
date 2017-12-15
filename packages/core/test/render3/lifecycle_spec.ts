@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, ComponentTemplate, D, E, L, LifeCycleGuard, T, V, b, c, defineComponent, e, l, p, rC, rc, v} from '../../src/render3/index';
+import {C, ComponentTemplate, D, E, L, LifecycleHook, T, V, b, c, defineComponent, e, l, p, cR, cr, v} from '../../src/render3/index';
 import {containerEl, renderToHtml} from './render_util';
 
 describe('lifecycles', () => {
@@ -36,7 +36,7 @@ describe('lifecycles', () => {
           tag: name,
           factory: () => {
             const comp = new Component();
-            l(LifeCycleGuard.ON_DESTROY, comp, comp.ngOnDestroy);
+            l(LifecycleHook.ON_DESTROY, comp, comp.ngOnDestroy);
             return comp;
           },
           inputs: {val: 'val'},
@@ -57,7 +57,7 @@ describe('lifecycles', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -69,7 +69,7 @@ describe('lifecycles', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       renderToHtml(Template, {condition: true});
@@ -90,7 +90,7 @@ describe('lifecycles', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -108,7 +108,7 @@ describe('lifecycles', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       renderToHtml(Template, {condition: true});
@@ -130,7 +130,7 @@ describe('lifecycles', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -142,7 +142,7 @@ describe('lifecycles', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       renderToHtml(Template, {condition: true});
@@ -174,7 +174,7 @@ describe('lifecycles', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -186,7 +186,7 @@ describe('lifecycles', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       renderToHtml(Template, {condition: true});
@@ -211,7 +211,7 @@ describe('lifecycles', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -226,7 +226,7 @@ describe('lifecycles', () => {
             }
             p(0, 'val', b('1'));
             Comp.ngComponentDef.r(1, 0);
-            rC(2);
+            cR(2);
             {
               if (ctx.condition2) {
                 if (V(0)) {
@@ -239,13 +239,13 @@ describe('lifecycles', () => {
                 v();
               }
             }
-            rc();
+            cr();
             p(3, 'val', b('3'));
             Comp.ngComponentDef.r(4, 3);
             v();
           }
         }
-        rc();
+        cr();
       }
 
       renderToHtml(Template, {condition: true, condition2: true});
@@ -289,7 +289,7 @@ describe('lifecycles', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -304,7 +304,7 @@ describe('lifecycles', () => {
             }
             p(0, 'val', b('1'));
             Comp.ngComponentDef.r(1, 0);
-            rC(2);
+            cR(2);
             {
               for (let j = 2; j < ctx.len; j++) {
                 if (V(0)) {
@@ -317,13 +317,13 @@ describe('lifecycles', () => {
                 v();
               }
             }
-            rc();
+            cr();
             p(3, 'val', b('5'));
             Comp.ngComponentDef.r(4, 3);
             v();
           }
         }
-        rc();
+        cr();
       }
 
       /**
@@ -369,7 +369,7 @@ describe('lifecycles', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -393,7 +393,7 @@ describe('lifecycles', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       class App {
