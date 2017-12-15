@@ -33,8 +33,12 @@ requestAnimationFrame.flush = function() {
 
 export function resetDOM() {
   requestAnimationFrame.queue = [];
+  if (containerEl) {
+    document.body.removeChild(containerEl);
+  }
   containerEl = document.createElement('div');
   containerEl.setAttribute('host', '');
+  document.body.appendChild(containerEl);
   host = null;
   // TODO: assert that the global state is clean (e.g. ngData, previousOrParentNode, etc)
 }

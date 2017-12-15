@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
+import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {EventEmitter, NgZone, RendererFactory2} from '@angular/core';
 import {EventManager, ɵDomEventsPlugin, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
+import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
+
 
 // Adapted renderer: it creates a Renderer2 instance and adapts it to Renderer3
 // TODO: remove once this code is in angular/angular
@@ -51,4 +55,12 @@ export function getRendererFactory2(document: any): RendererFactory2 {
   const eventManager =
       new EventManager([new SimpleDomEventsPlugin(document, fakeNgZone)], fakeNgZone);
   return new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
+}
+
+export function getAnimationRendererFactory2(document: any): RendererFactory2 {
+  const fakeNgZone: NgZone = new NoopNgZone();
+  return new ɵAnimationRendererFactory(
+      getRendererFactory2(document),
+      new ɵAnimationEngine(new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
+      fakeNgZone);
 }

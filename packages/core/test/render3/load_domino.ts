@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// Needed to run animation tests
+require('zone.js/dist/zone-node.js');
+
 if (typeof window == 'undefined') {
-  const createWindow = require('domino').createWindow;
+  const domino = require('domino');
+  const createWindow = domino.createWindow;
   const window = createWindow('', 'http://localhost');
   (global as any).document = window.document;
 
@@ -16,4 +20,8 @@ if (typeof window == 'undefined') {
   // It fails with Domino with TypeError: Cannot assign to read only property
   // 'stopImmediatePropagation' of object '#<Event>'
   (global as any).Event = null;
+
+  // For animation tests, see
+  // https://github.com/angular/angular/blob/master/packages/animations/browser/src/render/shared.ts#L140
+  (global as any).Element = domino.impl.Element;
 }
