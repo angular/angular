@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentRef, EmbeddedViewRef, Injector} from '../core';
+// We are temporarily importing the existing viewEngine from core so we can be sure we are
+// correctly implementing its interfaces for backwards compatibility.
+import * as viewEngine from '../core';
 
 import {assertNotNull} from './assert';
 import {NG_HOST_SYMBOL, createError, createViewState, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
@@ -17,44 +19,41 @@ import {notImplemented, stringify} from './util';
 
 
 
-/**
- * Options which control how the component should be bootstrapped.
- */
-export interface CreateComponentOptionArgs {
-  /**
-   * Which renderer factory to use.
-   */
+/** Options that control how the component should be bootstrapped. */
+export interface CreateComponentOptions {
+  /** Which renderer factory to use. */
   rendererFactory?: RendererFactory3;
 
   /**
-   * Which host element should the component be bootstrapped on. If not specified
+   * Host element on which the component will be bootstrapped. If not specified,
    * the component definition's `tag` is used to query the existing DOM for the
    * element to bootstrap.
    */
   host?: RElement|string;
 
-  /**
-   * Optional Injector which is the Module Injector for the component.
-   */
-  injector?: Injector;
+  /** Module injector for the component. If unspecified, the injector will be NULL_INJECTOR. */
+  injector?: viewEngine.Injector;
 
   /**
-   * a set of features which should be applied to this component.
+   * List of features to be applied to the created component. Features are simply
+   * functions that decorate a component with a certain behavior.
+   *
+   * Example: PublicFeature is a function that makes the component public to the DI system.
    */
   features?: (<T>(component: T, componentDef: ComponentDef<T>) => void)[];
 }
 
 
 /**
- * Bootstrap a Component into an existing host element and return `ComponentRef`.
+ * Bootstraps a component, then creates and returns a `ComponentRef` for that component.
  *
  * @param componentType Component to bootstrap
  * @param options Optional parameters which control bootstrapping
  */
 export function createComponentRef<T>(
-    componentType: ComponentType<T>, opts: CreateComponentOptionArgs): ComponentRef<T> {
+    componentType: ComponentType<T>, opts: CreateComponentOptions): viewEngine.ComponentRef<T> {
   const component = renderComponent(componentType, opts);
-  const hostView = createViewRef(detectChanges.bind(component), component);
+  const hostView = createViewRef(() => detectChanges(component), component);
   return {
     location: {nativeElement: getHostElement(component)},
     injector: opts.injector || NULL_INJECTOR,
@@ -62,49 +61,78 @@ export function createComponentRef<T>(
     hostView: hostView,
     changeDetectorRef: hostView,
     componentType: componentType,
-    destroy: function() {},
-    onDestroy: function(cb: Function): void {}
+    // TODO: implement destroy and onDestroy
+    destroy: () => {},
+    onDestroy: (cb: Function) => {}
   };
 }
 
+/**
+ * Creates an EmbeddedViewRef.
+ *
+ * @param detectChanges The detectChanges function for this view
+ * @param context The context for this view
+ * @returns The EmbeddedViewRef
+ */
 function createViewRef<T>(detectChanges: () => void, context: T): EmbeddedViewRef<T> {
-  return addDestroyable(
-      {
-        // TODO: rootNodes should be replaced when properly implemented
-        rootNodes: null !,
-        // inherited from core/ChangeDetectorRef
-        markForCheck: () => {
-          if (ngDevMode) {
-            throw notImplemented();
-          }
-        },
-        detach: () => {
-          if (ngDevMode) {
-            throw notImplemented();
-          }
-        },
-        detectChanges: detectChanges,
-        checkNoChanges: () => {
-          if (ngDevMode) {
-            throw notImplemented();
-          }
-        },
-        reattach: () => {
-          if (ngDevMode) {
-            throw notImplemented();
-          }
-        },
-      },
-      context);
+  return addDestroyable(new EmbeddedViewRef(detectChanges), context);
 }
 
-interface DestroyRef<T> {
+class EmbeddedViewRef<T> implements viewEngine.EmbeddedViewRef<T> {
+  // TODO: rootNodes should be replaced when properly implemented
+  rootNodes = null !;
   context: T;
   destroyed: boolean;
+
+  constructor(public detectChanges: () => void) {}
+
+  // inherited from core/ChangeDetectorRef
+  markForCheck() {
+    if (ngDevMode) {
+      throw notImplemented();
+    }
+  }
+  detach() {
+    if (ngDevMode) {
+      throw notImplemented();
+    }
+  }
+
+  checkNoChanges() {
+    if (ngDevMode) {
+      throw notImplemented();
+    }
+  }
+
+  reattach() {
+    if (ngDevMode) {
+      throw notImplemented();
+    }
+  }
+
+  destroy(): void {}
+
+  onDestroy(cb: Function): void {}
+}
+
+/** Interface for destroy logic. Implemented by addDestroyable. */
+interface DestroyRef<T> {
+  context: T;
+  /** Whether or not this object has been destroyed */
+  destroyed: boolean;
+  /** Destroy the instance and call all onDestroy callbacks. */
   destroy(): void;
+  /** Register callbacks that should be called onDestroy */
   onDestroy(cb: Function): void;
 }
 
+/**
+ * Decorates an object with destroy logic (implementing the DestroyRef interface)
+ * and returns the enhanced object.
+ *
+ * @param obj The object to decorate
+ * @returns The object with destroy logic
+ */
 function addDestroyable<T, C>(obj: any, context: C): T&DestroyRef<C> {
   let destroyFn: Function[]|null = null;
   obj.destroyed = false;
@@ -113,29 +141,28 @@ function addDestroyable<T, C>(obj: any, context: C): T&DestroyRef<C> {
     this.destroyed = true;
   };
   obj.onDestroy = (fn: Function) => (destroyFn || (destroyFn = [])).push(fn);
+  obj.context = context;
   return obj;
 }
 
 
 // TODO: A hack to not pull in the NullInjector from @angular/core.
-export const NULL_INJECTOR: Injector = {
-  get: function(token: any, notFoundValue?: any) {
+export const NULL_INJECTOR: viewEngine.Injector = {
+  get: (token: any, notFoundValue?: any) => {
     throw new Error('NullInjector: Not found: ' + stringify(token));
   }
 };
 
 
 /**
- * Bootstrap a Component into an existing host element and return `NgComponent`.
- *
- * NgComponent is a light weight Custom Elements inspired API for bootstrapping and
- * interacting with bootstrapped component.
+ * Bootstraps a Component into an existing host element and returns an instance
+ * of the component.
  *
  * @param componentType Component to bootstrap
  * @param options Optional parameters which control bootstrapping
  */
 export function renderComponent<T>(
-    componentType: ComponentType<T>, opts: CreateComponentOptionArgs = {}): T {
+    componentType: ComponentType<T>, opts: CreateComponentOptions = {}): T {
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const componentDef = componentType.ngComponentDef;
   let component: T;
@@ -174,7 +201,7 @@ export function markDirty<T>(
   ngDevMode && assertNotNull(component, 'component');
   if (!isDirty) {
     isDirty = true;
-    scheduler(detectChanges.bind(null, component));
+    scheduler(() => detectChanges(component));
   }
 }
 

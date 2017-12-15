@@ -13,10 +13,6 @@ import {LNodeStatic} from './l_node_static';
 import {ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {Renderer3} from './renderer';
 
-declare global {
-  const ngDevMode: boolean;
-}
-
 /**
  * `ViewState` stores all of the information needed to process the instructions as
  * they are invoked from the template. Each embedded view and component view has its
