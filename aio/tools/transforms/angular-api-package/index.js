@@ -38,6 +38,8 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     readTypeScriptModules.basePath = API_SOURCE_PATH;
     readTypeScriptModules.ignoreExportsMatching = [/^[_ɵ]|^VERSION$/];
     readTypeScriptModules.hidePrivateMembers = true;
+
+    // NOTE: This list shold be in sync with tools/gulp-tasks/public-api.js
     readTypeScriptModules.sourceFiles = [
       'animations/index.ts',
       'animations/browser/index.ts',
