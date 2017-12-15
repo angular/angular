@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RendererType2} from '@angular/core';
+import {AnimationEvent} from '@angular/animations';
+import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 
-import {D, E, e} from '../../src/render3';
-import {T, defineComponent, detectChanges} from '../../src/render3/index';
+import {RendererType2, ViewEncapsulation} from '../../src/core';
+import {D, E, L, T, b, defineComponent, detectChanges, e, p} from '../../src/render3';
+import {createRendererType2} from '../../src/view';
 
-import {getRendererFactory2} from './imported_renderer2';
-import {document, renderComponent, renderToHtml, resetDOM} from './render_util';
+import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
+import {containerEl, document, renderComponent, renderToHtml} from './render_util';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
@@ -103,4 +105,100 @@ describe('renderer factory lifecycle', () => {
     expect(logs).toEqual(['begin', 'function_with_component', 'component', 'end']);
   });
 
+});
+
+describe('animation renderer factory', () => {
+  let eventLogs: string[] = [];
+  function getLog(): MockAnimationPlayer[] {
+    return MockAnimationDriver.log as MockAnimationPlayer[];
+  }
+
+  function resetLog() { MockAnimationDriver.log = []; }
+
+  beforeEach(() => {
+    eventLogs = [];
+    resetLog();
+  });
+
+  class SomeComponent {
+    static ngComponentDef = defineComponent({
+      type: SomeComponent,
+      tag: 'some-component',
+      template: function(ctx: SomeComponent, cm: boolean) {
+        if (cm) {
+          T(0, 'foo');
+        }
+      },
+      factory: () => new SomeComponent
+    });
+  }
+
+  class SomeComponentWithAnimation {
+    exp: string;
+    callback(event: AnimationEvent) {
+      eventLogs.push(`${event.fromState ? event.fromState : event.toState} - ${event.phaseName}`);
+    }
+    static ngComponentDef = defineComponent({
+      type: SomeComponentWithAnimation,
+      tag: 'some-component',
+      template: function(ctx: SomeComponentWithAnimation, cm: boolean) {
+        if (cm) {
+          E(0, 'div');
+          {
+            L('@myAnimation.start', ctx.callback.bind(ctx));
+            L('@myAnimation.done', ctx.callback.bind(ctx));
+            T(1, 'foo');
+          }
+          e();
+        }
+        p(0, '@myAnimation', b(ctx.exp));
+      },
+      factory: () => new SomeComponentWithAnimation,
+      rendererType: createRendererType2({
+        encapsulation: ViewEncapsulation.None,
+        styles: [],
+        data: {
+          animation: [{
+            type: 7,
+            name: 'myAnimation',
+            definitions: [{
+              type: 1,
+              expr: '* => on',
+              animation:
+                  [{type: 4, styles: {type: 6, styles: {opacity: 1}, offset: null}, timings: 10}],
+              options: null
+            }],
+            options: {}
+          }]
+        }
+      }),
+    });
+  }
+
+  it('should work with components without animations', () => {
+    renderComponent(SomeComponent, getAnimationRendererFactory2(document));
+    expect(containerEl.innerHTML).toEqual('foo');
+  });
+
+  it('should work with animated components', (done) => {
+    const factory = getAnimationRendererFactory2(document);
+    const component = renderComponent(SomeComponentWithAnimation, factory);
+    expect(containerEl.innerHTML)
+        .toEqual('<div class="ng-tns-c1-0 ng-trigger ng-trigger-myAnimation">foo</div>');
+
+    component.exp = 'on';
+    detectChanges(component);
+
+    const [player] = getLog();
+    expect(player.keyframes).toEqual([
+      {opacity: '*', offset: 0},
+      {opacity: 1, offset: 1},
+    ]);
+    player.finish();
+
+    factory.whenRenderingDone !().then(() => {
+      expect(eventLogs).toEqual(['void - start', 'void - done', 'on - start', 'on - done']);
+      done();
+    });
+  });
 });
