@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, c, defineComponent, e, rC, rc, v} from '../../src/render3/index';
+import {C, E, T, V, c, defineComponent, e, cR, cr, v} from '../../src/render3/index';
 
 import {document, renderComponent} from './render_util';
 
@@ -39,7 +39,7 @@ describe('iv perf test', () => {
                 C(0);
                 c();
               }
-              rC(0);
+              cR(0);
               {
                 for (let i = 0; i < count; i++) {
                   let cm0 = V(0);
@@ -53,7 +53,7 @@ describe('iv perf test', () => {
                   v();
                 }
               }
-              rc();
+              cr();
             },
             factory: () => new Component
           });

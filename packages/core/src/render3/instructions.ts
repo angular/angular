@@ -23,19 +23,18 @@ import {QueryList, QueryState_} from './query';
 import {RComment, RElement, RText, Renderer3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './renderer';
 import {isDifferent, stringify} from './util';
 
-export {refreshQuery} from './query';
+export {queryRefresh} from './query';
 
 /**
- * Enum used by the directiveLifecycle (l) instruction to determine which lifecycle
- * hook is requesting processing and whether it should be allowed to run. It "guards"
- * certain hooks, e.g. "ngOnInit" should only run once on creation.
+ * Enum used by the lifecycle (l) instruction to determine which lifecycle hook is requesting
+ * processing.
  */
-export const enum LifeCycleGuard {ON_INIT = 1, ON_DESTROY = 2, ON_CHANGES = 4}
+export const enum LifecycleHook {ON_INIT = 1, ON_DESTROY = 2, ON_CHANGES = 4}
 
 /**
- * directiveCreate (D) sets a property on all component instances using this constant
- * as a key, and the component's host node (LElement) as the value. This is used in
- * methods like detectChanges to facilitate jumping from an instance to the host node.
+ * directive (D) sets a property on all component instances using this constant as a key and the
+ * component's host node (LElement) as the value. This is used in methods like detectChanges to
+ * facilitate jumping from an instance to the host node.
  */
 export const NG_HOST_SYMBOL = '__ngHostLNode__';
 
@@ -63,14 +62,13 @@ let nextNgElementId = 0;
  *
  * - ObjectedOrientedRenderer3
  *
- * This is the native browser API style. e.g. operations are methods on individual objects
- * like HTMLElement. With this style, no additional code is needed (reducing payload size)
- * as a facade.
+ * This is the native browser API style, e.g. operations are methods on individual objects
+ * like HTMLElement. With this style, no additional code is needed as a facade (reducing payload size).
  *
  * - ProceduralRenderer3
  *
  * In non-native browser environments (e.g. platforms such as web-workers), this is the facade
- * that facilitates element manipulation. This also facilitates backwards compatibility with
+ * that enables element manipulation. This also facilitates backwards compatibility with
  * Renderer2.
  */
 let renderer: Renderer3;
@@ -299,8 +297,8 @@ export function renderTemplate<T>(host: LElement, template: ComponentTemplate<T>
  * Registers this directive as present in its node's injector by flipping the directive's
  * corresponding bit in the injector's bloom filter.
  *
- * @param injector The injector to which the type should be added
- * @param type The directive type to add
+ * @param injector The injector in which the directive should be registered
+ * @param type The directive to register
  */
 export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
   let id: number|undefined = (type as any)[NG_ELEMENT_ID];
@@ -382,7 +380,7 @@ export function getOrCreateNodeInjector(): LNodeInjector {
  * name and elements with an odd index hold an attribute value, ex.:
  * ['id', 'warning5', 'class', 'alert']
  */
-export function elementCreate(
+export function elementStart(
     index: number, nameOrComponentDef?: string | ComponentDef<any>, attrs?: string[]): RElement {
   let node: LElement;
   let native: RElement;
@@ -437,9 +435,9 @@ function getTemplateStatic(template: ComponentTemplate<any>): NgStaticData {
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
   ngDevMode && assertEqual(attrs.length % 2, 0, 'attrs.length % 2');
-  const isFnRenderer = (renderer as ProceduralRenderer3).setAttribute;
+  const isProceduralRenderer = (renderer as ProceduralRenderer3).setAttribute;
   for (let i = 0; i < attrs.length; i += 2) {
-    isFnRenderer ? (renderer as ProceduralRenderer3).setAttribute !(native, attrs[i], attrs[i | 1]) :
+    isProceduralRenderer ? (renderer as ProceduralRenderer3).setAttribute !(native, attrs[i], attrs[i | 1]) :
                    native.setAttribute(attrs[i], attrs[i | 1]);
   }
 }
@@ -483,7 +481,7 @@ export function elementHost(elementOrSelector: RElement | string, def: Component
  * @param listener The function to be called when event emits
  * @param useCapture Whether or not to use capture in event listener.
  */
-export function listenerCreate(
+export function listener(
     eventName: string, listener: EventListener, useCapture = false): void {
   ngDevMode && assertPreviousIsParent();
   const node = previousOrParentNode;
@@ -510,7 +508,7 @@ export function listenerCreate(
   const outputs = staticData.outputs;
   let outputData: (number | string)[]|undefined;
   if (outputs && (outputData = outputs[eventName])) {
-    outputCreate(outputData, listener);
+    createOutput(outputData, listener);
   }
 }
 
@@ -518,7 +516,7 @@ export function listenerCreate(
  * Iterates through the outputs associated with a particular event name and subscribes to
  * each output.
  */
-function outputCreate(outputs: (number | string)[], listener: Function): void {
+function createOutput(outputs: (number | string)[], listener: Function): void {
   for (let i = 0; i < outputs.length; i += 2) {
     ngDevMode && assertDataInRange(outputs[i] as number);
     const subscription = data[outputs[i] as number][outputs[i | 1]].subscribe(listener);
@@ -526,9 +524,7 @@ function outputCreate(outputs: (number | string)[], listener: Function): void {
   }
 }
 
-/**
- * Mark the end of the element.
- */
+/** Mark the end of the element. */
 export function elementEnd() {
   if (isParent) {
     isParent = false;
@@ -568,10 +564,8 @@ export function elementAttribute(index: number, attrName: string, value: any): v
  * Update a property on an Element.
  *
  * If the property name also exists as an input property on one of the element's directives,
- * the component property will be set instead of the element property. This check is also
- * done at compile time to determine whether to generate an i() or p() instruction, but must
- * be conducted at runtime as well so child components that add new @Inputs don't have to be
- * re-compiled.
+ * the component property will be set instead of the element property. This check must
+ * be conducted at runtime so child components that add new @Inputs don't have to be re-compiled.
  *
  * @param index The index of the element to update in the data array
  * @param propName Name of property. Because it is going to DOM, this is not subject to
@@ -736,7 +730,7 @@ export function elementStyle<T>(
  * @param value Value to write. This value will be stringified.
  *   If value is not provided than the actual creation of the text node is delayed.
  */
-export function textCreate(index: number, value?: any): void {
+export function text(index: number, value?: any): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
   const textNode = value != null ?
       ((renderer as ProceduralRenderer3).createText ?
@@ -756,7 +750,7 @@ export function textCreate(index: number, value?: any): void {
  * @param index Index of the node in the data array.
  * @param value Stringified value to write.
  */
-export function textCreateBound<T>(index: number, value: T | NO_CHANGE): void {
+export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
   // TODO(misko): I don't think index < nodes.length check is needed here.
   let existingNode = index < data.length && data[index] as LText;
   if (existingNode && existingNode.native) {
@@ -773,7 +767,7 @@ export function textCreateBound<T>(index: number, value: T | NO_CHANGE): void {
              (renderer as ObjectOrientedRenderer3).createTextNode !(stringify(value)));
     insertChild(existingNode, currentView);
   } else {
-    textCreate(index, value);
+    text(index, value);
   }
 }
 
@@ -793,9 +787,9 @@ export function textCreateBound<T>(index: number, value: T | NO_CHANGE): void {
  * @param directive The directive instance.
  * @param directiveDef DirectiveDef object which contains information about the template.
  */
-export function directiveCreate<T>(index: number): T;
-export function directiveCreate<T>(index: number, directive: T, directiveDef: DirectiveDef<T>): T;
-export function directiveCreate<T>(
+export function directive<T>(index: number): T;
+export function directive<T>(index: number, directive: T, directiveDef: DirectiveDef<T>): T;
+export function directive<T>(
     index: number, directive?: T, directiveDef?: DirectiveDef<T>): T {
   let instance;
   if (directive == null) {
@@ -914,26 +908,26 @@ export function diPublic(def: DirectiveDef<any>): void {
  * For the onInit lifecycle hook, it will return whether or not the ngOnInit() function
  * should run. If so, ngOnInit() will be called outside of this function.
  *
- * e.g. l(LifecycleGuard.ON_INIT) && ctx.ngOnInit();
+ * e.g. l(LifecycleHook.ON_INIT) && ctx.ngOnInit();
  *
  * For the onDestroy lifecycle hook, this instruction also accepts an onDestroy
  * method that should be stored and called internally when the parent view is being
  * cleaned up.
  *
- * e.g.  l(LifecycleGuard.ON_DESTROY, ctx, ctx.onDestroy);
+ * e.g.  l(LifecycleHook.ON_DESTROY, ctx, ctx.onDestroy);
  *
  * @param lifeCycle
  * @param self
  * @param method
  */
-export function directiveLifeCycle(
-    lifeCycle: LifeCycleGuard.ON_DESTROY, self: any, method: Function): void;
-export function directiveLifeCycle(lifeCycle: LifeCycleGuard): boolean;
-export function directiveLifeCycle(
-    lifeCycle: LifeCycleGuard, self?: any, method?: Function): boolean {
-  if (lifeCycle === LifeCycleGuard.ON_INIT) {
+export function lifecycle(
+  lifeCycle: LifecycleHook.ON_DESTROY, self: any, method: Function): void;
+export function lifecycle(lifeCycle: LifecycleHook): boolean;
+export function lifecycle(
+  lifeCycle: LifecycleHook, self?: any, method?: Function): boolean {
+  if (lifeCycle === LifecycleHook.ON_INIT) {
     return creationMode;
-  } else if (lifeCycle === LifeCycleGuard.ON_DESTROY) {
+  } else if (lifeCycle === LifecycleHook.ON_DESTROY) {
     (cleanup || (currentView.cleanup = cleanup = [])).push(method, self);
   }
   return false;
@@ -954,7 +948,7 @@ export function directiveLifeCycle(
  * @param tagName The name of the container element, if applicable
  * @param attrs The attrs attached to the container, if applicable
  */
-export function containerCreate(
+export function containerStart(
     index: number, template?: ComponentTemplate<any>, tagName?: string, attrs?: string[]): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
 
@@ -1004,7 +998,7 @@ export function containerEnd() {
  *
  * @param index The index of the container in the data array
  */
-export function refreshContainer(index: number): void {
+export function containerRefreshStart(index: number): void {
   ngDevMode && assertDataInRange(index);
   previousOrParentNode = data[index] as LNode;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
@@ -1017,7 +1011,7 @@ export function refreshContainer(index: number): void {
  *
  * Marking the end of ViewContainer is the time when to child Views get inserted or removed.
  */
-export function refreshContainerEnd(): void {
+export function containerRefreshEnd(): void {
   if (isParent) {
     isParent = false;
   } else {
@@ -1041,7 +1035,7 @@ export function refreshContainerEnd(): void {
  * @param viewBlockId The ID of this view
  * @return Whether or not this view is in creation mode
  */
-export function viewCreate(viewBlockId: number): boolean {
+export function viewStart(viewBlockId: number): boolean {
   const container = (isParent ? previousOrParentNode : previousOrParentNode.parent !) as LContainer;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   const containerState = container.data;
@@ -1088,9 +1082,7 @@ function initViewStaticData(viewIndex: number, parent: LContainer): NgStaticData
   return containerStatic[viewIndex];
 }
 
-/**
- * Marks the end of the LView.
- */
+/** Marks the end of the LView. */
 export function viewEnd(): void {
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LView;
@@ -1113,8 +1105,16 @@ export function viewEnd(): void {
 }
 /////////////
 
-
-export const refreshComponent:
+/**
+ * Refreshes the component view.
+ *
+ * In other words, enters the component's view and processes it to update bindings, queries, etc.
+ *
+ * @param directiveIndex
+ * @param elementIndex
+ * @param template
+ */
+export const componentRefresh:
     <T>(directiveIndex: number, elementIndex: number, template: ComponentTemplate<T>) =>
         void = function<T>(
             this: undefined | {template: ComponentTemplate<T>}, directiveIndex: number,
@@ -1143,7 +1143,7 @@ export const refreshComponent:
  *
  * @param {CssSelector[]} selectors
  */
-export function distributeProjectedNodes(selectors?: CssSelector[]): LNode[][] {
+export function projectionDef(selectors?: CssSelector[]): LNode[][] {
   const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
   const distributedNodes = new Array<LNode[]>(noOfNodeBuckets);
   for (let i = 0; i < noOfNodeBuckets; i++) {
@@ -1189,13 +1189,13 @@ export function distributeProjectedNodes(selectors?: CssSelector[]): LNode[][] {
 
 /**
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
- * to the distributeProjectedNodes instruction.
+ * to the projectionDef instruction.
  *
  * @param {number} nodeIndex
  * @param {number} localIndex - index under which distribution of projected nodes was memorized
  * @param {number} selectorIndex - 0 means <ng-content> without any selector
  */
-export function contentProjection(
+export function projection(
     nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
   const projectedNodes: ProjectionState = [];
   const node = createLNode(nodeIndex, LNodeFlags.Projection, null, projectedNodes);
@@ -1228,8 +1228,8 @@ export function contentProjection(
 /**
  * Given a current view, finds the nearest component's host (LElement).
  *
- * @param {ViewState} viewState
- * @returns {LElement}
+ * @param viewState ViewState for which we want a host element node
+ * @returns The host node
  */
 function findComponentHost(viewState: ViewState): LElement {
   let viewRootLNode = viewState.node;
@@ -1246,13 +1246,13 @@ function findComponentHost(viewState: ViewState): LElement {
 }
 
 /**
- * Adds a ViewState or a ContainerState to the end of the current
- * view tree.
+ * Adds a ViewState or a ContainerState to the end of the current view tree.
  *
- * This structure will be used to traverse through nested views
- * to remove listeners and call onDestroy callbacks.
+ * This structure will be used to traverse through nested views to remove listeners
+ * and call onDestroy callbacks.
  *
- * @param {ViewState | ContainerState} state
+ * @param state The ViewState or ContainerState to add to the view tree
+ * @returns The state passed in
  */
 export function addToViewTree<T extends ViewState|ContainerState>(state: T): T {
   currentView.tail ? (currentView.tail.next = state) : (currentView.child = state);
@@ -1699,7 +1699,7 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-export function queryCreate<T>(predicate: Type<any>| any[], descend?: boolean): QueryList<T> {
+export function query<T>(predicate: Type<any>| any[], descend?: boolean): QueryList<T> {
   ngDevMode && assertPreviousIsParent();
   const queryList = new QueryList<T>();
   const query = currentQuery || (currentQuery = new QueryState_());

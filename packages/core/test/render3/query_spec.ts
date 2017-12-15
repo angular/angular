@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {D, E, Q, QueryList, e, m, rQ} from '../../src/render3/index';
+import {D, E, Q, QueryList, e, m, qR} from '../../src/render3/index';
 
 import {createComponent, renderComponent} from './render_util';
 
@@ -40,8 +40,8 @@ describe('query', () => {
         }
         e();
       }
-      rQ(tmp = m<QueryList<any>>(0)) && (ctx.query0 = tmp as QueryList<any>);
-      rQ(tmp = m<QueryList<any>>(1)) && (ctx.query1 = tmp as QueryList<any>);
+      qR(tmp = m<QueryList<any>>(0)) && (ctx.query0 = tmp as QueryList<any>);
+      qR(tmp = m<QueryList<any>>(1)) && (ctx.query1 = tmp as QueryList<any>);
     });
 
     const parent = renderComponent(Cmp);

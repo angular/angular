@@ -9,7 +9,7 @@
 import {ComponentRef, EmbeddedViewRef, Injector} from '../core';
 
 import {assertNotNull} from './assert';
-import {NG_HOST_SYMBOL, createError, createViewState, directiveCreate, elementHost, enterView, leaveView} from './instructions';
+import {NG_HOST_SYMBOL, createError, createViewState, directive, elementHost, enterView, leaveView} from './instructions';
 import {LElement} from './l_node';
 import {ComponentDef, ComponentType} from './public_interfaces';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
@@ -146,7 +146,7 @@ export function renderComponent<T>(
     // Create element node at index 0 in data array
     elementHost(opts.host || componentDef.tag, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
-    component = directiveCreate(1, componentDef.n(), componentDef);
+    component = directive(1, componentDef.n(), componentDef);
   } finally {
     leaveView(oldView);
   }

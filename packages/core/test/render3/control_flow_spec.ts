@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, b, c, e, rC, rc, t, v} from '../../src/render3/index';
+import {C, E, T, V, b, c, e, cR, cr, t, v} from '../../src/render3/index';
 
 import {renderToHtml} from './render_util';
 
@@ -23,7 +23,7 @@ describe('JS control flow', () => {
         }
         e();
       }
-      rC(1);
+      cR(1);
       {
         if (ctx.condition) {
           let cm1 = V(1);
@@ -38,7 +38,7 @@ describe('JS control flow', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
@@ -74,7 +74,7 @@ describe('JS control flow', () => {
         }
         e();
       }
-      rC(1);
+      cR(1);
       {
         if (ctx.condition) {
           let cm1 = V(1);
@@ -87,7 +87,7 @@ describe('JS control flow', () => {
               }
               e();
             }
-            rC(1);
+            cR(1);
             {
               if (ctx.condition2) {
                 let cm2 = V(2);
@@ -99,12 +99,12 @@ describe('JS control flow', () => {
                 v();
               }
             }
-            rc();
+            cr();
           }
           v();
         }
       }
-      rc();
+      cr();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
@@ -143,7 +143,7 @@ describe('JS control flow', () => {
         C(2);
         c();
       }
-      rC(2);
+      cR(2);
       {
         if (ctx.condition1) {
           let cm0 = V(0);
@@ -152,7 +152,7 @@ describe('JS control flow', () => {
               C(0);
               c();
             }
-            rC(0);
+            cR(0);
             {
               if (ctx.condition2) {
                 let cm0 = V(0);
@@ -164,12 +164,12 @@ describe('JS control flow', () => {
                 v();
               }
             }
-            rc();
+            cr();
           }
           v();
         }
       }
-      rc();
+      cr();
     }
 
     expect(renderToHtml(Template, {condition1: true, condition2: true}))
@@ -191,7 +191,7 @@ describe('JS control flow', () => {
         }
         e();
       }
-      rC(1);
+      cR(1);
       {
         for (let i = 0; i < ctx.data.length; i++) {
           let cm1 = V(1);
@@ -206,7 +206,7 @@ describe('JS control flow', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<ul><li>a</li><li>b</li><li>c</li></ul>');
@@ -240,7 +240,7 @@ describe('JS control flow', () => {
         }
         e();
       }
-      rC(1);
+      cR(1);
       {
         for (let i = 0; i < ctx.data[0].length; i++) {
           let cm1 = V(1);
@@ -253,7 +253,7 @@ describe('JS control flow', () => {
               }
               e();
             }
-            rC(1);
+            cR(1);
             {
               ctx.data[1].forEach((value: string, ind: number) => {
                 if (V(2)) {
@@ -263,12 +263,12 @@ describe('JS control flow', () => {
                 v();
               });
             }
-            rc();
+            cr();
           }
           v();
         }
       }
-      rc();
+      cr();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<ul><li>aman</li><li>bmbn</li><li>cmcn</li></ul>');
@@ -303,7 +303,7 @@ describe('JS control flow', () => {
         }
         e();
       }
-      rC(2);
+      cR(2);
       {
         for (let i = 0; i < ctx.cafes.length; i++) {
           let cm1 = V(1);
@@ -317,7 +317,7 @@ describe('JS control flow', () => {
               T(3, '-');
             }
             t(1, b(ctx.cafes[i].name));
-            rC(2);
+            cR(2);
             {
               for (let j = 0; j < ctx.cafes[i].entrees.length; j++) {
                 if (V(1)) {
@@ -327,12 +327,12 @@ describe('JS control flow', () => {
                 v();
               }
             }
-            rc();
+            cr();
           }
           v();
         }
       }
-      rc();
+      cr();
     }
 
     const ctx = {
@@ -385,7 +385,7 @@ describe('JS control flow', () => {
         }
         e();
       }
-      rC(2);
+      cR(2);
       {
         for (let i = 0; i < ctx.cafes.length; i++) {
           let cm1 = V(1);
@@ -399,7 +399,7 @@ describe('JS control flow', () => {
               T(3, '-');
             }
             t(1, b(ctx.cafes[i].name));
-            rC(2);
+            cR(2);
             {
               for (let j = 0; j < ctx.cafes[i].entrees.length; j++) {
                 let cm1 = V(1);
@@ -412,7 +412,7 @@ describe('JS control flow', () => {
                     c();
                   }
                   t(1, b(ctx.cafes[i].entrees[j].name));
-                  rC(2);
+                  cR(2);
                   {
                     for (let k = 0; k < ctx.cafes[i].entrees[j].foods.length; k++) {
                       if (V(1)) {
@@ -422,17 +422,17 @@ describe('JS control flow', () => {
                       v();
                     }
                   }
-                  rc();
+                  cr();
                 }
                 v();
               }
             }
-            rc();
+            cr();
           }
           v();
         }
       }
-      rc();
+      cr();
     }
 
     const ctx = {
@@ -476,7 +476,7 @@ describe('JS control flow', () => {
         }
         e();
       }
-      rC(1);
+      cR(1);
       {
         if (ctx.condition) {
           let cm1 = V(1);
@@ -500,7 +500,7 @@ describe('JS control flow', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
@@ -527,7 +527,7 @@ describe('JS for loop', () => {
         }
         e();
       }
-      rC(1);
+      cR(1);
       {
         for (let i = 0; i < ctx.data1.length; i++) {
           if (V(1)) {
@@ -544,7 +544,7 @@ describe('JS for loop', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     expect(renderToHtml(Template, ctx)).toEqual('<div>abc12</div>');
@@ -587,20 +587,20 @@ describe('function calls', () => {
         }
         e();
       }
-      rC(2);
+      cR(2);
       {
         let cm0 = V(0);
         { spanify({message: ctx.data[0]}, cm0); }
         v();
       }
-      rc();
-      rC(3);
+      cr();
+      cR(3);
       {
         let cm0 = V(0);
         { spanify({message: ctx.data[1]}, cm0); }
         v();
       }
-      rc();
+      cr();
     }
 
     expect(renderToHtml(Template, ctx))

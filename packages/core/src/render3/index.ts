@@ -20,7 +20,7 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveD
 // - lower case for closing: c(containerEnd), e(elementEnd), v(viewEnd)
 // clang-format off
 export {
-  LifeCycleGuard,
+  LifecycleHook,
 
   NO_CHANGE as NC,
 
@@ -35,33 +35,36 @@ export {
   bind8 as b8,
   bindV as bV,
 
-  containerCreate as C,
-  containerEnd as c,
-  contentProjection as P,
+  componentRefresh as r,
 
-  directiveCreate as D,
-  directiveLifeCycle as l,
-  distributeProjectedNodes as dP,
+  containerStart as C,
+  containerEnd as c,
+  containerRefreshStart as cR,
+  containerRefreshEnd as cr,
+
+  directive as D,
 
   elementAttribute as a,
   elementClass as k,
-  elementCreate as E,
   elementEnd as e,
   elementProperty as p,
+  elementStart as E,
   elementStyle as s,
 
-  listenerCreate as L,
+  lifecycle as l,
+  listener as L,
   memory as m,
-  queryCreate as Q,
 
-  refreshComponent as r,
-  refreshContainer as rC,
-  refreshContainerEnd as rc,
-  refreshQuery as rQ,
-  textCreate as T,
-  textCreateBound as t,
+  projection as P,
+  projectionDef as pD,
 
-  viewCreate as V,
+  query as Q,
+  queryRefresh as qR,
+
+  text as T,
+  textBinding as t,
+
+  viewStart as V,
   viewEnd as v,
 } from './instructions';
 // clang-format on

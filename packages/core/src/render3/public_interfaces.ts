@@ -7,7 +7,7 @@
  */
 
 import {Type} from '../core';
-import {diPublic, refreshComponent} from './instructions';
+import {diPublic, componentRefresh} from './instructions';
 
 
 /**
@@ -150,7 +150,7 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     n: componentDefinition.factory,
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
     template: (componentDefinition as ComponentDefArgs<T>).template || null !,
-    r: componentDefinition.refresh || refreshComponent,
+    r: componentDefinition.refresh || componentRefresh,
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
     methods: invertObject(componentDefinition.methods),
