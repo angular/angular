@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, D, E, L, LifeCycleGuard, T, V, b, c, defineComponent, defineDirective, e, l, p, rC, rc, v} from '../../src/render3/index';
+import {C, D, E, L, LifecycleHook, T, V, b, c, defineComponent, defineDirective, e, l, p, cR, cr, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -129,7 +129,7 @@ describe('outputs', () => {
         C(0);
         c();
       }
-      rC(0);
+      cR(0);
       {
         if (ctx.condition) {
           if (V(0)) {
@@ -144,7 +144,7 @@ describe('outputs', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     let counter = 0;
@@ -176,14 +176,14 @@ describe('outputs', () => {
         C(0);
         c();
       }
-      rC(0);
+      cR(0);
       {
         if (ctx.condition) {
           if (V(0)) {
             C(0);
             c();
           }
-          rC(0);
+          cR(0);
           {
             if (ctx.condition2) {
               if (V(0)) {
@@ -198,11 +198,11 @@ describe('outputs', () => {
               v();
             }
           }
-          rc();
+          cr();
           v();
         }
       }
-      rc();
+      cr();
     }
 
     let counter = 0;
@@ -232,7 +232,7 @@ describe('outputs', () => {
         template: function(ctx: any, cm: boolean) {},
         factory: () => {
           destroyComp = new DestroyComp();
-          l(LifeCycleGuard.ON_DESTROY, destroyComp, destroyComp.ngOnDestroy);
+          l(LifecycleHook.ON_DESTROY, destroyComp, destroyComp.ngOnDestroy);
           return destroyComp;
         }
       });
@@ -250,7 +250,7 @@ describe('outputs', () => {
         C(0);
         c();
       }
-      rC(0);
+      cR(0);
       {
         if (ctx.condition) {
           if (V(0)) {
@@ -275,7 +275,7 @@ describe('outputs', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     let clickCounter = 0;
@@ -420,7 +420,7 @@ describe('outputs', () => {
         C(2);
         c();
       }
-      rC(2);
+      cR(2);
       {
         if (ctx.condition) {
           if (V(0)) {
@@ -445,7 +445,7 @@ describe('outputs', () => {
           v();
         }
       }
-      rc();
+      cr();
     }
 
     let counter = 0;

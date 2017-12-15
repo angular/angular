@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, T, V, a, b, c, defineComponent, defineDirective, e, k, p, rC, rc, t, v} from '../../src/render3/index';
+import {C, D, E, T, V, a, b, c, defineComponent, defineDirective, e, k, p, cR, cr, t, v} from '../../src/render3/index';
 
 import {renderToHtml} from './render_util';
 
@@ -267,7 +267,7 @@ describe('exports', () => {
           }
           e();
         }
-        rC(1);
+        cR(1);
         {
           if (ctx.condition) {
             let cm1 = V(1);
@@ -283,7 +283,7 @@ describe('exports', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       expect(renderToHtml(Template, {

@@ -9,7 +9,7 @@
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {bloomFindPossibleInjector} from '../../src/render3/di';
-import {C, D, E, PublicFeature, T, V, b, b2, c, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, rC, rc, t, v} from '../../src/render3/index';
+import {C, D, E, PublicFeature, T, V, b, b2, c, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, cR, cr, t, v} from '../../src/render3/index';
 import {bloomAdd, createLNode, createViewState, enterView, getOrCreateNodeInjector, leaveView} from '../../src/render3/instructions';
 import {LNodeFlags, LNodeInjector} from '../../src/render3/l_node';
 
@@ -291,7 +291,7 @@ describe('di', () => {
           }
           e();
         }
-        rC(2);
+        cR(2);
         {
           if (V(0)) {
             E(0, 'span');
@@ -305,7 +305,7 @@ describe('di', () => {
           t(3, b2('', D<ChildDirective>(1).value, '-', D<Child2Directive>(2).value, ''));
           v();
         }
-        rc();
+        cr();
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div><span>ParentDirective-true</span></div>');

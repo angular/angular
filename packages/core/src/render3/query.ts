@@ -209,6 +209,6 @@ class QueryList_<T>/* implements viewEngine.QueryList<T> */ {
 export type QueryList<T> = viewEngine.QueryList<T>;
 export const QueryList: typeof viewEngine.QueryList = QueryList_ as any;
 
-export function refreshQuery(query: QueryList<any>): boolean {
+export function queryRefresh(query: QueryList<any>): boolean {
   return (query as any as QueryList_<any>)._refresh();
 }

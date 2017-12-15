@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, NC, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, c, defineComponent, e, k, p, r, rC, rc, s, t, v} from '../../src/render3/index';
+import {C, D, E, NC, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, c, defineComponent, e, k, p, r, cR, cr, s, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
@@ -363,7 +363,7 @@ describe('iv integration test', () => {
               C(0);
               c();
             }
-            rC(0);
+            cR(0);
             {
               if (ctx.condition) {
                 if (V(0)) {
@@ -374,7 +374,7 @@ describe('iv integration test', () => {
                 v();
               }
             }
-            rc();
+            cr();
           },
           factory: () => new MyComp,
           inputs: {condition: 'condition'}
@@ -487,7 +487,7 @@ describe('iv integration test', () => {
             e();
           }
           a(0, 'title', b(ctx.title));
-          rC(1);
+          cR(1);
           {
             if (true) {
               let cm1 = V(1);
@@ -502,7 +502,7 @@ describe('iv integration test', () => {
               v();
             }
           }
-          rc();
+          cr();
         }
 
         // initial binding
@@ -602,7 +602,7 @@ describe('iv integration test', () => {
           C(0);
           c();
         }
-        rC(0);
+        cR(0);
         {
           if (ctx.condition) {
             if (V(0)) {
@@ -613,7 +613,7 @@ describe('iv integration test', () => {
             v();
           }
         }
-        rc();
+        cr();
       }
 
       expect((Template as any).ngStaticData).toBeUndefined();
