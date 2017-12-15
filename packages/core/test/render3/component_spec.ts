@@ -170,6 +170,6 @@ describe('encapsulation', () => {
     renderComponent(WrapperComponentWith, getRendererFactory2(document));
     expect(containerEl.outerHTML)
         .toEqual(
-            '<div host="" _nghost-c1=""><leaf _ngcontent-c1="" _nghost-c2=""><span _ngcontent-c2="">bar</span></leaf></div>');
+            '<div host="" _nghost-c2=""><leaf _ngcontent-c2="" _nghost-c3=""><span _ngcontent-c3="">bar</span></leaf></div>');
   });
 });

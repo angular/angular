@@ -15,6 +15,10 @@ ts_library(
         "//packages:types",
         "//packages/core",
         "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
     ],
 )
 
