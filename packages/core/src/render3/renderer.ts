@@ -26,7 +26,13 @@ export enum RendererStyleFlags3 {
 
 export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
 
-/** Object Oriented style of API needed to create elements and text nodes. */
+/**
+ * Object Oriented style of API needed to create elements and text nodes.
+ *
+ * This is the native browser API style, e.g. operations are methods on individual objects
+ * like HTMLElement. With this style, no additional code is needed as a facade
+ * (reducing payload size).
+ * */
 export interface ObjectOrientedRenderer3 {
   createComment(data: string): RComment;
   createElement(tagName: string): RElement;
@@ -35,7 +41,13 @@ export interface ObjectOrientedRenderer3 {
   querySelector(selectors: string): RElement|null;
 }
 
-/** Procedural style of API needed to create elements and text nodes. */
+/**
+ * Procedural style of API needed to create elements and text nodes.
+ *
+ * In non-native browser environments (e.g. platforms such as web-workers), this is the
+ * facade that enables element manipulation. This also facilitates backwards compatibility
+ * with Renderer2.
+ */
 export interface ProceduralRenderer3 {
   destroy(): void;
   createElement(name: string, namespace?: string|null): RElement;
@@ -102,8 +114,8 @@ export interface RNode {
  * listeners on Element.
  */
 export interface RElement extends RNode {
-  style: RCSSStyleDeclaration;
-  classList: RDOMTokenList;
+  style: RCssStyleDeclaration;
+  classList: RDomTokenList;
   setAttribute(name: string, value: string): void;
   removeAttribute(name: string): void;
   setAttributeNS(namespaceURI: string, qualifiedName: string, value: string): void;
@@ -113,12 +125,12 @@ export interface RElement extends RNode {
   setProperty?(name: string, value: any): void;
 }
 
-export interface RCSSStyleDeclaration {
+export interface RCssStyleDeclaration {
   removeProperty(propertyName: string): string;
   setProperty(propertyName: string, value: string|null, priority?: string): void;
 }
 
-export interface RDOMTokenList {
+export interface RDomTokenList {
   add(token: string): void;
   remove(token: string): void;
 }

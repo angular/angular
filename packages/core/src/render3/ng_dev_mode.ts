@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+
+declare global {
+  const ngDevMode: boolean;
+}
+
 if (typeof ngDevMode == 'undefined') {
   if (typeof window != 'undefined') (window as any).ngDevMode = true;
   if (typeof self != 'undefined') (self as any).ngDevMode = true;

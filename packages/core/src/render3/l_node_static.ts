@@ -12,13 +12,15 @@ import {DirectiveDef} from './public_interfaces';
 export type NgStaticData = (LNodeStatic | DirectiveDef<any>| null)[];
 
 /**
- * LNode binding data (flywiehgt) for a particular node that is shared between all templates
+ * LNode binding data (flyweight) for a particular node that is shared between all templates
  * of a specific type.
  *
  * If a property is:
- *    - Minification Data: that property's data was generated and this is it
+ *    - PropertyAliases: that property's data was generated and this is it
  *    - Null: that property's data was already generated and nothing was found.
  *    - Undefined: that property's data has not yet been generated
+ *
+ * see: https://en.wikipedia.org/wiki/Flyweight_pattern for more on the Flyweight pattern
  */
 export interface LNodeStatic {
   /** The tag name associated with this node. */

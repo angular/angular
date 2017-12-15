@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+// We are temporarily importing the existing viewEngine from core so we can be sure we are
+// correctly implementing its interfaces for backwards compatibility.
 import {Observable} from 'rxjs/Observable';
 
 import * as viewEngine from '../core';
