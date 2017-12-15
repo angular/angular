@@ -130,7 +130,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
                      moduleName, containingFile.replace(/\\/g, '/'), this.options, this,
                      this.moduleResolutionCache)
                    .resolvedModule;
-    if (rm && this.isSourceFile(rm.resolvedFileName)) {
+    if (rm && this.isSourceFile(rm.resolvedFileName) && DTS.test(rm.resolvedFileName)) {
       // Case: generateCodeForLibraries = true and moduleName is
       // a .d.ts file in a node_modules folder.
       // Need to set isExternalLibraryImport to false so that generated files for that file
