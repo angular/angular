@@ -1667,6 +1667,38 @@ describe('ngc transformer command-line', () => {
       `);
          expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
        });
+
+    it('should not type check a .js files from node_modules with allowJs', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "compilerOptions": {
+          "noEmitOnError": true,
+          "allowJs": true,
+          "declaration": false
+        },
+        "files": ["test-module.ts"]
+      }`);
+      write('src/test-module.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import 'my-library';
+
+        @Component({
+          template: 'hello'
+        })
+        export class HelloCmp {}
+
+        @NgModule({
+          declarations: [HelloCmp],
+        })
+        export class MyModule {}
+      `);
+      write('src/node_modules/t.txt', ``);
+      write('src/node_modules/my-library/index.js', `
+        export someVar = 1;
+        export someOtherVar = undefined + 1;
+      `);
+      expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
+    });
   });
 
   describe('formatted messages', () => {
