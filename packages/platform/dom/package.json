@@ -1,0 +1,21 @@
+{
+  "name": "@angular/platform/dom",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the platform/dom framework",
+  "main": "../bundles/platform-dom.umd.js",
+  "module": "../@angular/platform/dom.es5.js",
+  "es2015": "../@angular/platform/dom.js",
+  "typings": "../platform/dom.d.ts",
+  "author": "angular",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^1.7.1"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git"
+  }
+}

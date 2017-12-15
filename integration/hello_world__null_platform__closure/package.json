@@ -8,12 +8,12 @@
     "@angular/compiler": "file:../../dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
-    "google-closure-compiler": "20171023.0.1",
-    "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
+    "@angular/platform": "file:../../dist/packages-dist/platform",
+    "@angular/tsc-wrapped": "file:../../dist/packages-dist/tsc-wrapped",
+    "google-closure-compiler": "20170409.0.0",
+    "rxjs": "5.3.1",
+    "typescript": "2.1.6",
+    "zone.js": "0.8.16"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.41",
@@ -22,7 +22,6 @@
     "protractor": "file:../../node_modules/protractor"
   },
   "scripts": {
-    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
     "closure": "java -jar node_modules/google-closure-compiler/compiler.jar --flagfile closure.conf",
     "build": "ngc && yarn run closure",
     "test": "yarn run build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",

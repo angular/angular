@@ -1,0 +1,38 @@
+{
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": true,
+    "flatModuleOutFile": "index.js",
+    "flatModuleId": "@angular/platform"
+  },
+
+  "compilerOptions": {
+    "declaration": true,
+    "stripInternal": true,
+    "strictNullChecks": true,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "target": "es2015",
+    "lib": ["es2015", "dom"],
+    "skipLibCheck": true,
+    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
+    "types": [],
+
+    /**
+     * The rest of the file is configuration that's overridden by bazel.
+     * It can be removed after we fully migrate.
+     */
+    "baseUrl": ".",
+    "experimentalDecorators": true,
+    "outDir": "../../dist/packages/platform",
+    "paths": {
+      "@angular/core": ["../../dist/packages/core"]
+    },
+    "rootDir": ".",
+    "sourceMap": true,
+    "inlineSources": true
+  },
+  "files": [
+    "public_api.ts"
+  ]
+}
