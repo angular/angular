@@ -11,7 +11,7 @@ import {Observable} from 'rxjs/Observable';
 import * as viewEngine from '../core';
 
 import {assertNotNull} from './assert';
-import {injectElementRefForNode} from './di';
+import {getOrCreateElementRef, getOrCreateNodeInjectorForNode} from './di';
 import {QueryState} from './interfaces';
 import {LContainer, LElement, LNode, LNodeFlags, LView} from './l_node';
 import {DirectiveDef} from './public_interfaces';
@@ -117,7 +117,8 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
         const selector = predicate.selector !;
         for (let i = 0; i < selector.length; i++) {
           if (selector[i] === staticData.localName) {
-            predicate.values.push(injectElementRefForNode(node as LElement | LContainer));
+            predicate.values.push(getOrCreateElementRef(
+                getOrCreateNodeInjectorForNode(node as LElement | LContainer)));
           }
         }
       }
