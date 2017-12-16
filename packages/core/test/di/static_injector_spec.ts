@@ -75,9 +75,9 @@ class NoAnnotations {
   constructor(secretDependency: any) {}
 }
 
-function factoryFn(a: any) {}
+function factoryFn(a: any){}
 
-export function main() {
+{
   const dynamicProviders = [
     {provide: 'provider0', useValue: 1}, {provide: 'provider1', useValue: 1},
     {provide: 'provider2', useValue: 1}, {provide: 'provider3', useValue: 1},

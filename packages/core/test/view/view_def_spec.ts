@@ -9,7 +9,7 @@
 import {NodeFlags, QueryValueType, ViewDefinition, ViewFlags, anchorDef, directiveDef, elementDef, textDef, viewDef} from '@angular/core/src/view/index';
 import {filterQueryId} from '@angular/core/src/view/util';
 
-export function main() {
+{
   describe('viewDef', () => {
 
     describe('parent', () => {

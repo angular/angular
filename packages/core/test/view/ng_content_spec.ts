@@ -12,7 +12,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {compViewDef, compViewDefFactory, createEmbeddedView, createRootView, isBrowser} from './helper';
 
-export function main() {
+{
   describe(`View NgContent`, () => {
     function hostElDef(
         checkIndex: number, contentNodes: NodeDef[], viewNodes: NodeDef[]): NodeDef[] {

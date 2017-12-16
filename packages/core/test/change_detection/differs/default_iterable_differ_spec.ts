@@ -24,7 +24,7 @@ class ComplexItem {
 }
 
 // todo(vicb): UnmodifiableListView / frozen object when implemented
-export function main() {
+{
   describe('iterable differ', function() {
     describe('DefaultIterableDiffer', function() {
       let differ: DefaultIterableDiffer<any>;

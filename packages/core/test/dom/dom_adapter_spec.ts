@@ -10,7 +10,7 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {el, stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
-export function main() {
+{
   describe('dom adapter', () => {
     let defaultDoc: any;
     beforeEach(() => {

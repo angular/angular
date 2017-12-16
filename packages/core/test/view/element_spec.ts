@@ -23,7 +23,7 @@ import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDy
 const addEventListener = '__zone_symbol__addEventListener';
 const removeEventListener = '__zone_symbol__removeEventListener';
 
-export function main() {
+{
   describe(`View Elements`, () => {
 
     describe('create', () => {

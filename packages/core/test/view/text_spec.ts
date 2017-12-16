@@ -12,7 +12,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes} from './helper';
 
-export function main() {
+{
   describe(`View Text`, () => {
 
     describe('create', () => {

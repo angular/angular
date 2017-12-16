@@ -10,7 +10,7 @@
 import {Injector} from '@angular/core';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-export function main() {
+{
   describe('Injector.NULL', () => {
     it('should throw if no arg is given', () => {
       expect(() => Injector.NULL.get('someToken'))

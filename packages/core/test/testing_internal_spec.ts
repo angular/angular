@@ -19,7 +19,7 @@ class SpyTestObj extends SpyObject {
   constructor() { super(TestObj); }
 }
 
-export function main() {
+{
   describe('testing', () => {
     describe('equality', () => {
       it('should structurally compare objects', () => {
