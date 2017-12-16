@@ -1474,6 +1474,26 @@ describe('ngc transformer command-line', () => {
   });
 
   describe('regressions', () => {
+    //#20479
+    it('should not generate an invalid metadata file', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["lib.ts"],
+        "angularCompilerOptions": {
+          "skipTemplateCodegen": true
+        }
+      }`);
+      write('src/lib.ts', `
+        export namespace A{
+          export class C1 {
+          }
+          export interface I1{
+          }
+        }`);
+      expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
+      shouldNotExist('src/lib.metadata.json');
+    });
+
     //#19544
     it('should recognize @NgModule() directive with a redundant @Injectable()', () => {
       write('src/tsconfig.json', `{
