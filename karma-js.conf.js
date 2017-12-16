@@ -53,6 +53,7 @@ module.exports = function(config) {
     ],
 
     exclude: [
+      'dist/all/@angular/_testing_init/**',
       'dist/all/@angular/**/e2e_test/**',
       'dist/all/@angular/**/*node_only_spec.js',
       'dist/all/@angular/benchpress/**',

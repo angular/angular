@@ -8,5 +8,8 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     module_name = "@angular/compiler/testing",
     tsconfig = "//packages:tsconfig",
-    deps = ["//packages/compiler"],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+    ],
 )
