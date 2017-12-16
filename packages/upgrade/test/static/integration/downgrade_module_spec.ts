@@ -19,7 +19,7 @@ import {downgradeComponent, downgradeModule} from '@angular/upgrade/static';
 import {html, multiTrim} from '../test_helpers';
 
 
-export function main() {
+{
   [true, false].forEach(propagateDigest => {
     describe(`lazy-load ng2 module (propagateDigest: ${propagateDigest})`, () => {
 

@@ -16,7 +16,7 @@ import localeHu from '../../locales/hu';
 import localeSr from '../../locales/sr';
 import localeTh from '../../locales/th';
 
-export function main() {
+{
   describe('DatePipe', () => {
     let date: Date;
     const isoStringWithoutTime = '2015-01-01';

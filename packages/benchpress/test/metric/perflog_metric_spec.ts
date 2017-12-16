@@ -12,7 +12,7 @@ import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@ang
 import {Injector, Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
 
-export function main() {
+(function(){
   let commandLog: any[];
   const eventFactory = new TraceEventFactory('timeline', 'pid0');
 
@@ -680,7 +680,7 @@ export function main() {
     });
 
   });
-}
+})();
 
 class MockDriverExtension extends WebDriverExtension {
   constructor(

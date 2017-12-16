@@ -12,7 +12,7 @@ import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModu
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
-export function main() {
+{
   describe('value accessors', () => {
 
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {

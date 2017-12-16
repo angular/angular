@@ -14,7 +14,7 @@ import {ServiceMessageBroker} from '@angular/platform-webworker/src/web_workers/
 
 import {createPairedMessageBuses} from './web_worker_test_util';
 
-export function main() {
+{
   const CHANNEL = 'UIMessageBroker Test Channel';
   const TEST_METHOD = 'TEST_METHOD';
   const PASSED_ARG_1 = 5;

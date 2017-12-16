@@ -11,7 +11,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 import {getDOM} from '../../src/dom/dom_adapter';
 import {sanitizeHtml} from '../../src/security/html_sanitizer';
 
-export function main() {
+{
   describe('HTML sanitizer', () => {
     let defaultDoc: any;
     let originalLog: (msg: any) => any = null !;

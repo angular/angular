@@ -16,7 +16,7 @@ import {merge} from 'rxjs/observable/merge';
 
 import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integration_spec';
 
-export function main() {
+{
   describe('template-driven forms integration tests', () => {
 
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {

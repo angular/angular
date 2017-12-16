@@ -40,7 +40,7 @@ function asyncValidator(expected: any, timeout = 0) {
   };
 }
 
-export function main() {
+{
   describe('Form Directives', () => {
     let defaultAccessor: DefaultValueAccessor;
 

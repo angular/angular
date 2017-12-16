@@ -8,7 +8,7 @@
 
 import {Headers} from '../src/headers';
 
-export function main() {
+{
   describe('Headers', () => {
 
     describe('initialization', () => {

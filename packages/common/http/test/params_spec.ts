@@ -8,7 +8,7 @@
 
 import {HttpParams} from '../src/params';
 
-export function main() {
+{
   describe('HttpUrlEncodedParams', () => {
     describe('initialization', () => {
       it('should be empty at construction', () => {

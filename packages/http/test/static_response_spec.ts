@@ -13,7 +13,7 @@ import {Response} from '../src/static_response';
 
 
 
-export function main() {
+{
   describe('Response', () => {
     it('should be ok for 200 statuses', () => {
       expect(new Response(new ResponseOptions({status: 200})).ok).toEqual(true);

@@ -139,7 +139,7 @@ const scope = new SwTestHarnessBuilder().withServerState(server).build();
 const manifestHash = sha1(JSON.stringify(manifest));
 const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 
-export function main() {
+(function(){
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
@@ -674,7 +674,7 @@ export function main() {
       });
     });
   });
-}
+})();
 
 async function makeRequest(
     scope: SwTestHarness, url: string, clientId?: string, init?: Object): Promise<string|null> {

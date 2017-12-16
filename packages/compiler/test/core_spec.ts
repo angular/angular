@@ -9,7 +9,7 @@
 import {core as compilerCore} from '@angular/compiler';
 import * as core from '@angular/core';
 
-export function main() {
+{
   describe('compiler core', () => {
     it('Attribute should be equal', () => {
       typeExtends<compilerCore.Attribute, core.Attribute>();

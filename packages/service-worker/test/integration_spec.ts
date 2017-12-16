@@ -65,7 +65,7 @@ const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(m
 const serverUpdate =
     new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifestUpdate).build();
 
-export function main() {
+(function(){
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
@@ -129,4 +129,4 @@ export function main() {
       await gotPushNotice;
     });
   });
-}
+})();

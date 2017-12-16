@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, Metric, MultiMetric} from '../../index';
 
-export function main() {
+(function(){
   function createMetric(ids: any[]) {
     const m = Injector
                   .create([
@@ -49,7 +49,7 @@ export function main() {
     });
 
   });
-}
+})();
 
 class MockMetric extends Metric {
   constructor(private _id: string) { super(); }

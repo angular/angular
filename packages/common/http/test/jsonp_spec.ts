@@ -24,7 +24,7 @@ function runOnlyCallback(home: any, data: Object) {
 
 const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
 
-export function main() {
+{
   describe('JsonpClientBackend', () => {
     let home = {};
     let document: MockDocument;

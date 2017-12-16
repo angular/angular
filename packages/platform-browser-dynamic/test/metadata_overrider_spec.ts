@@ -46,7 +46,7 @@ class OtherMetadata extends SomeMetadata implements OtherMetadataType {
   }
 }
 
-export function main() {
+{
   describe('metadata overrider', () => {
     let overrider: MetadataOverrider;
 

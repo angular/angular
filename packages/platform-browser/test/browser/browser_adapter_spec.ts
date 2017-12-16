@@ -10,7 +10,7 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 
-export function main() {
+{
   describe('cookies', () => {
     it('sets cookie values', () => {
       getDOM().setCookie('my test cookie', 'my test value');

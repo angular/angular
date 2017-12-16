@@ -12,7 +12,7 @@ import {PRESERVE_WS_ATTR_NAME, removeWhitespaces} from '../../src/ml_parser/html
 
 import {humanizeDom} from './ast_spec_utils';
 
-export function main() {
+{
   describe('removeWhitespaces', () => {
 
     function parseAndRemoveWS(template: string): any[] {

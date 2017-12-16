@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, Metric, Options, Runner, SampleDescription, SampleState, Sampler, Validator, WebDriverAdapter} from '../index';
 
-export function main() {
+{
   describe('runner', () => {
     let injector: Injector;
     let runner: Runner;

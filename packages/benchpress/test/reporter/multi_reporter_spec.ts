@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, MeasureValues, MultiReporter, Reporter} from '../../index';
 
-export function main() {
+(function(){
   function createReporters(ids: any[]) {
     const r = Injector
                   .create([
@@ -51,7 +51,7 @@ export function main() {
        }));
 
   });
-}
+})();
 
 class MockReporter extends Reporter {
   constructor(private _id: string) { super(); }

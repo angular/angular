@@ -89,7 +89,7 @@ System.import('@angular/core/testing')
                              .map(function(path) {
                                return System.import(path).then(function(module) {
                                  if (module.hasOwnProperty('main')) {
-                                   module.main();
+                                   throw new Error('main() in specs are no longer supported');
                                  }
                                });
                              }));

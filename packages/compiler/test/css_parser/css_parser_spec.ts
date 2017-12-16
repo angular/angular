@@ -18,7 +18,7 @@ export function assertTokens(tokens: CssToken[], valuesArr: string[]) {
   }
 }
 
-export function main() {
+{
   describe('CssParser', () => {
     function parse(css: string): ParsedCssResult {
       return new CssParser().parse(css, 'some-fake-css-file.css');

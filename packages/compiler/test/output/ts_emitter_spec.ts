@@ -19,7 +19,7 @@ const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
 
 const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'someExternalId', null);
 
-export function main() {
+{
   // Not supported features of our OutputAst in TS:
   // - real `const` like in Dart
   // - final fields

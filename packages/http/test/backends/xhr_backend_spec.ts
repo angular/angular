@@ -84,7 +84,7 @@ class MockBrowserXHR extends BrowserXhr {
   }
 }
 
-export function main() {
+{
   describe('XHRBackend', () => {
     let backend: XHRBackend;
     let sampleRequest: Request;
