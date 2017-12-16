@@ -47,6 +47,11 @@ export function main() {
 
     it('should not support other objects',
        () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
+
+    it('should support custom regular expression', () => {
+      expect(pipe.transform('¿Cuántos años tienes?', /[\wáñ]+/g))
+          .toEqual('¿Cuántos Años Tienes?');
+    });
   });
 
   describe('UpperCasePipe', () => {

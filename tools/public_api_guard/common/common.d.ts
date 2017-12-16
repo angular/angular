@@ -437,7 +437,7 @@ export declare type Time = {
 
 /** @stable */
 export declare class TitleCasePipe implements PipeTransform {
-    transform(value: string): string;
+    transform(value: string, regExp?: RegExp): string;
 }
 
 /** @experimental */
