@@ -1636,6 +1636,68 @@ describe('ngc transformer command-line', () => {
       expect(messages[0]).toContain('Parser Error: Unexpected token');
     });
 
+    // Regression test for #19979
+    it('should not stack overflow on a recursive module export', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+
+      write('src/test-module.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          template: 'Hello'
+        })
+        export class MyFaultyComponent {}
+
+        @NgModule({
+          exports: [MyFaultyModule],
+          declarations: [MyFaultyComponent],
+          providers: [],
+        })
+        export class MyFaultyModule { }
+      `);
+      const messages: string[] = [];
+      expect(
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message)))
+          .toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain(`module 'MyFaultyModule' is exported recursively`);
+    });
+
+    // Regression test for #19979
+    it('should not stack overflow on a recursive module import', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"]
+      }`);
+
+      write('src/test-module.ts', `
+        import {Component, NgModule, forwardRef} from '@angular/core';
+
+        @Component({
+          template: 'Hello'
+        })
+        export class MyFaultyComponent {}
+
+        @NgModule({
+          imports: [forwardRef(() => MyFaultyModule)]
+        })
+        export class MyFaultyImport {}
+
+        @NgModule({
+          imports: [MyFaultyImport],
+          declarations: [MyFaultyComponent]
+        })
+        export class MyFaultyModule { }
+      `);
+      const messages: string[] = [];
+      expect(
+          main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message)))
+          .toBe(1, 'Compile was expected to fail');
+      expect(messages[0]).toContain(`is imported recursively by the module 'MyFaultyImport`);
+    });
+
     it('should allow using 2 classes with the same name in declarations with noEmitOnError=true',
        () => {
          write('src/tsconfig.json', `{
