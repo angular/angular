@@ -44,7 +44,7 @@ class MockNgZone extends NgZone {
   stable(): void { this.onStable.emit(null); }
 }
 
-export function main() {
+{
   describe('Testability', () => {
     let testability: Testability;
     let execute: any;

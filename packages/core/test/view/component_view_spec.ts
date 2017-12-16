@@ -20,7 +20,7 @@ import {callMostRecentEventListenerHandler, compViewDef, createAndGetRootNodes, 
  */
 const addEventListener = '__zone_symbol__addEventListener';
 
-export function main() {
+{
   describe(`Component Views`, () => {
     it('should create and attach component views', () => {
       let instance: AComp = undefined !;

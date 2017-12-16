@@ -12,7 +12,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {compViewDef, createAndGetRootNodes} from './helper';
 
-export function main() {
+{
   describe(`View Anchor`, () => {
 
     describe('create', () => {

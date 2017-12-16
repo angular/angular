@@ -19,7 +19,7 @@ import {TestBed} from '../../testing';
 import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
 
 
-export function main() {
+(function() {
   // these tests are only mean't to be run within the DOM (for now)
   if (typeof Element == 'undefined') return;
 
@@ -3300,7 +3300,7 @@ export function main() {
       });
     });
   });
-}
+})();
 
 function cancelAllPlayers(players: AnimationPlayer[]) {
   players.forEach(p => p.destroy());

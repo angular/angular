@@ -14,7 +14,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
-export function main() {
+(function() {
   // these tests are only mean't to be run within the DOM (for now)
   if (typeof Element == 'undefined') return;
 
@@ -519,7 +519,7 @@ export function main() {
          expect(p2.element.getAttribute('data-depth')).toEqual('1');
        }));
   });
-}
+});
 
 function makeAnimationData(value: string, params: {[key: string]: any} = {}): {[key: string]: any} {
   return {'animation': {value, params}};
