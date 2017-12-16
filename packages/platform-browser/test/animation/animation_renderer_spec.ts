@@ -14,7 +14,7 @@ import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_rendere
 import {InjectableAnimationEngine} from '../../animations/src/providers';
 import {el} from '../../testing/src/browser_util';
 
-export function main() {
+{
   describe('AnimationRenderer', () => {
     let element: any;
     beforeEach(() => {

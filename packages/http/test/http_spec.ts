@@ -17,7 +17,7 @@ import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, J
 import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/src/mock_backend';
 
-export function main() {
+{
   describe('injectables', () => {
     const url = 'http://foo.bar';
     let http: Http;

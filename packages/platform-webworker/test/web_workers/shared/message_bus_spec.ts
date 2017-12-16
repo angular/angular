@@ -13,7 +13,7 @@ import {MessageBus} from '@angular/platform-webworker/src/web_workers/shared/mes
 
 import {createConnectedMessageBus} from './message_bus_util';
 
-export function main() {
+{
   /**
    * Tests the PostMessageBus
    */

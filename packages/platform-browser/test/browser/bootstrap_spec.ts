@@ -127,7 +127,7 @@ function bootstrap(
   return platformBrowserDynamic(platformProviders).bootstrapModule(TestModule);
 }
 
-export function main() {
+{
   let el: any /** TODO #9100 */, el2: any /** TODO #9100 */, testProviders: Provider[],
       lightDom: any /** TODO #9100 */;
 

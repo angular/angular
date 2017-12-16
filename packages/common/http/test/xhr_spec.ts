@@ -27,7 +27,7 @@ const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
 
 const XSSI_PREFIX = ')]}\'\n';
 
-export function main() {
+{
   describe('XhrBackend', () => {
     let factory: MockXhrFactory = null !;
     let backend: HttpXhrBackend = null !;

@@ -10,7 +10,7 @@ import {flushMicrotasks} from '../../core/testing/src/fake_async';
 import {NoopAnimationPlayer} from '../src/players/animation_player';
 import {scheduleMicroTask} from '../src/util';
 
-export function main() {
+{
   describe('NoopAnimationPlayer', function() {
     it('should finish after the next microtask once started', fakeAsync(() => {
          const log: string[] = [];

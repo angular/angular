@@ -9,7 +9,7 @@
 import {fakeAsync} from '@angular/core/testing/src/fake_async';
 import {SyncAsync, escapeRegExp, splitAtColon, utf8Encode} from '../src/util';
 
-export function main() {
+{
   describe('util', () => {
     describe('splitAtColon', () => {
       it('should split when a single ":" is present', () => {

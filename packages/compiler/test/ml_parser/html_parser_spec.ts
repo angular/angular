@@ -13,7 +13,7 @@ import {ParseError} from '../../src/parse_util';
 
 import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spec_utils';
 
-export function main() {
+{
   describe('HtmlParser', () => {
     let parser: HtmlParser;
 

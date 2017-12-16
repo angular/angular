@@ -12,7 +12,7 @@ import {DowngradeComponentAdapter, groupNodesBySelector} from '@angular/upgrade/
 
 import {nodes} from './test_helpers';
 
-export function main() {
+{
   describe('DowngradeComponentAdapter', () => {
     describe('groupNodesBySelector', () => {
       it('should return an array of node collections for each selector', () => {

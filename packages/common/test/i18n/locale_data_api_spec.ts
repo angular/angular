@@ -13,7 +13,7 @@ import localeFrCA from '../../locales/fr-CA';
 import {registerLocaleData} from '../../src/i18n/locale_data';
 import {findLocaleData} from '../../src/i18n/locale_data_api';
 
-export function main() {
+{
   describe('locale data api', () => {
     beforeAll(() => {
       registerLocaleData(localeCaESVALENCIA);

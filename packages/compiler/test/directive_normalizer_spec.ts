@@ -42,7 +42,7 @@ function normalizeTemplate(normalizer: DirectiveNormalizer, o: {
   });
 }
 
-export function main() {
+{
   describe('DirectiveNormalizer', () => {
     let resourceLoaderSpy: jasmine.Spy;
 

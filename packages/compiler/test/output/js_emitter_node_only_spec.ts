@@ -17,7 +17,7 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
 
 const someGenFilePath = 'somePackage/someGenFile';
 
-export function main() {
+{
   describe('JavaScriptEmitter', () => {
     let emitter: JavaScriptEmitter;
     let someVar: o.ReadVarExpr;

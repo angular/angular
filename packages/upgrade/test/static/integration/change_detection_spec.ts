@@ -15,7 +15,7 @@ import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgr
 
 import {bootstrap, html} from '../test_helpers';
 
-export function main() {
+{
   describe('scope/component change-detection', () => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());

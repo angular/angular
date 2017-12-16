@@ -25,7 +25,7 @@ import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker
 
 let lastCreatedRenderer: Renderer2;
 
-export function main() {
+{
   describe('Web Worker Renderer v2', () => {
     // Don't run on server...
     if (!getDOM().supportsDOMEvents()) return;

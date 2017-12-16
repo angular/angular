@@ -16,7 +16,7 @@ import {NgLocaleLocalization, NgLocalization, getPluralCategory, DEPRECATED_PLUR
 import {Plural} from '../../src/i18n/locale_data_api';
 import {registerLocaleData} from '../../src/i18n/locale_data';
 
-export function main() {
+{
   describe('l10n', () => {
     beforeAll(() => {
       registerLocaleData(localeRo);

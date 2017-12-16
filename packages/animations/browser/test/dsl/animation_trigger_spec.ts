@@ -14,7 +14,7 @@ import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../../src/util';
 import {MockAnimationDriver} from '../../testing';
 import {makeTrigger} from '../shared';
 
-export function main() {
+{
   describe('AnimationTrigger', () => {
     // these tests are only mean't to be run within the DOM (for now)
     if (typeof Element == 'undefined') return;

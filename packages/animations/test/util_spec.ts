@@ -7,7 +7,7 @@
  */
 import {scheduleMicroTask} from '../src/util';
 
-export function main() {
+{
   describe('util', () => {
     it('should schedule a microtask and not call an async timeout', (done) => {
       let count = 0;

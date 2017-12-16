@@ -12,7 +12,7 @@ import localeFr from '../../locales/fr';
 import {registerLocaleData, CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-export function main() {
+{
   describe('Number pipes', () => {
     beforeAll(() => {
       registerLocaleData(localeEn);

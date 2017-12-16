@@ -10,7 +10,7 @@ import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
-export function main() {
+{
   describe('NgStyle', () => {
     let fixture: ComponentFixture<any>;
 

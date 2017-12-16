@@ -8,7 +8,7 @@
 
 import * as o from '../../src/output/output_ast';
 
-export function main() {
+{
   describe('OutputAst', () => {
     describe('collectExternalReferences', () => {
       it('should find expressions of variable types', () => {

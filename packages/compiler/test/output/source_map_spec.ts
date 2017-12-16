@@ -8,7 +8,7 @@
 
 import {SourceMapGenerator, toBase64String} from '@angular/compiler/src/output/source_map';
 
-export function main() {
+{
   describe('source map generation', () => {
     describe('generation', () => {
       it('should generate a valid source map', () => {

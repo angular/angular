@@ -18,7 +18,7 @@ function createDiv() {
   return document.createElement('div');
 }
 
-export function main() {
+{
   describe('Animation', () => {
     // these tests are only mean't to be run within the DOM (for now)
     if (typeof Element == 'undefined') return;
