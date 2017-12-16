@@ -16,7 +16,7 @@ import {UpgradeModule, downgradeInjectable, getAngularJSGlobal, setAngularJSGlob
 
 import {bootstrap, html} from '../test_helpers';
 
-export function main() {
+{
   describe('injection', () => {
 
     beforeEach(() => destroyPlatform());

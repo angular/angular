@@ -11,7 +11,7 @@ import {ddescribe, describe, it} from '@angular/core/testing/src/testing_interna
 import {HttpHeaders} from '../src/headers';
 import {HttpResponse} from '../src/response';
 
-export function main() {
+{
   describe('HttpResponse', () => {
     describe('constructor()', () => {
       it('fully constructs responses', () => {

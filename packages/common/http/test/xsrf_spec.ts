@@ -19,7 +19,7 @@ class SampleTokenExtractor {
   getToken(): string|null { return this.token; }
 }
 
-export function main() {
+{
   describe('HttpXsrfInterceptor', () => {
     let backend: HttpClientTestingBackend;
     const interceptor = new HttpXsrfInterceptor(new SampleTokenExtractor('test'), 'X-XSRF-TOKEN');

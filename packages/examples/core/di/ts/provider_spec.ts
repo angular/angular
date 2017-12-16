@@ -8,7 +8,7 @@
 
 import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from '@angular/core';
 
-export function main() {
+{
   describe('Provider examples', () => {
     describe('TypeProvider', () => {
       it('works', () => {

@@ -18,7 +18,7 @@ import {_do} from 'rxjs/operator/do';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
-export function main() {
+{
   describe('reactive forms integration tests', () => {
 
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {

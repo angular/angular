@@ -14,7 +14,7 @@ import {SwPush} from '../src/push';
 import {SwUpdate} from '../src/update';
 import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
 
-export function main() {
+{
   describe('ServiceWorker library', () => {
     let mock: MockServiceWorkerContainer;
     let comm: NgswCommChannel;

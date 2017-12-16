@@ -11,7 +11,7 @@ import {BaseRequestOptions, RequestOptions} from '../src/base_request_options';
 import {RequestMethod} from '../src/enums';
 import {Headers} from '../src/headers';
 
-export function main() {
+{
   describe('BaseRequestOptions', () => {
     it('should create a new object when calling merge', () => {
       const options1 = new BaseRequestOptions();

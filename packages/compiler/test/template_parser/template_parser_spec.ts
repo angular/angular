@@ -116,8 +116,214 @@ function compileTemplateMetadata({encapsulation, template, templateUrl, styles, 
 }
 
 
+function humanizeTplAst(
+    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
+  const humanizer = new TemplateHumanizer(false, interpolationConfig);
+  templateVisitAll(humanizer, templateAsts);
+  return humanizer.result;
+}
 
-export function main() {
+function humanizeTplAstSourceSpans(
+    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
+  const humanizer = new TemplateHumanizer(true, interpolationConfig);
+  templateVisitAll(humanizer, templateAsts);
+  return humanizer.result;
+}
+
+class TemplateHumanizer implements TemplateAstVisitor {
+  result: any[] = [];
+
+  constructor(
+      private includeSourceSpan: boolean,
+      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {}
+
+  visitNgContent(ast: NgContentAst, context: any): any {
+    const res = [NgContentAst];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+    const res = [EmbeddedTemplateAst];
+    this.result.push(this._appendContext(ast, res));
+    templateVisitAll(this, ast.attrs);
+    templateVisitAll(this, ast.outputs);
+    templateVisitAll(this, ast.references);
+    templateVisitAll(this, ast.variables);
+    templateVisitAll(this, ast.directives);
+    templateVisitAll(this, ast.children);
+    return null;
+  }
+  visitElement(ast: ElementAst, context: any): any {
+    const res = [ElementAst, ast.name];
+    this.result.push(this._appendContext(ast, res));
+    templateVisitAll(this, ast.attrs);
+    templateVisitAll(this, ast.inputs);
+    templateVisitAll(this, ast.outputs);
+    templateVisitAll(this, ast.references);
+    templateVisitAll(this, ast.directives);
+    templateVisitAll(this, ast.children);
+    return null;
+  }
+  visitReference(ast: ReferenceAst, context: any): any {
+    const res = [ReferenceAst, ast.name, ast.value];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+  visitVariable(ast: VariableAst, context: any): any {
+    const res = [VariableAst, ast.name, ast.value];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+  visitEvent(ast: BoundEventAst, context: any): any {
+    const res =
+        [BoundEventAst, ast.name, ast.target, unparse(ast.handler, this.interpolationConfig)];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
+    const res = [
+      BoundElementPropertyAst, ast.type, ast.name, unparse(ast.value, this.interpolationConfig),
+      ast.unit
+    ];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+  visitAttr(ast: AttrAst, context: any): any {
+    const res = [AttrAst, ast.name, ast.value];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+  visitBoundText(ast: BoundTextAst, context: any): any {
+    const res = [BoundTextAst, unparse(ast.value, this.interpolationConfig)];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+  visitText(ast: TextAst, context: any): any {
+    const res = [TextAst, ast.value];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+  visitDirective(ast: DirectiveAst, context: any): any {
+    const res = [DirectiveAst, ast.directive];
+    this.result.push(this._appendContext(ast, res));
+    templateVisitAll(this, ast.inputs);
+    templateVisitAll(this, ast.hostProperties);
+    templateVisitAll(this, ast.hostEvents);
+    return null;
+  }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
+    const res = [
+      BoundDirectivePropertyAst, ast.directiveName, unparse(ast.value, this.interpolationConfig)
+    ];
+    this.result.push(this._appendContext(ast, res));
+    return null;
+  }
+
+  private _appendContext(ast: TemplateAst, input: any[]): any[] {
+    if (!this.includeSourceSpan) return input;
+    input.push(ast.sourceSpan !.toString());
+    return input;
+  }
+}
+
+function humanizeContentProjection(templateAsts: TemplateAst[]): any[] {
+  const humanizer = new TemplateContentProjectionHumanizer();
+  templateVisitAll(humanizer, templateAsts);
+  return humanizer.result;
+}
+
+class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
+  result: any[] = [];
+  visitNgContent(ast: NgContentAst, context: any): any {
+    this.result.push(['ng-content', ast.ngContentIndex]);
+    return null;
+  }
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
+    this.result.push(['template', ast.ngContentIndex]);
+    templateVisitAll(this, ast.children);
+    return null;
+  }
+  visitElement(ast: ElementAst, context: any): any {
+    this.result.push([ast.name, ast.ngContentIndex]);
+    templateVisitAll(this, ast.children);
+    return null;
+  }
+  visitReference(ast: ReferenceAst, context: any): any { return null; }
+  visitVariable(ast: VariableAst, context: any): any { return null; }
+  visitEvent(ast: BoundEventAst, context: any): any { return null; }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }
+  visitAttr(ast: AttrAst, context: any): any { return null; }
+  visitBoundText(ast: BoundTextAst, context: any): any {
+    this.result.push([`#text(${unparse(ast.value)})`, ast.ngContentIndex]);
+    return null;
+  }
+  visitText(ast: TextAst, context: any): any {
+    this.result.push([`#text(${ast.value})`, ast.ngContentIndex]);
+    return null;
+  }
+  visitDirective(ast: DirectiveAst, context: any): any { return null; }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
+}
+
+class ThrowingVisitor implements TemplateAstVisitor {
+  visitNgContent(ast: NgContentAst, context: any): any { throw 'not implemented'; }
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any { throw 'not implemented'; }
+  visitElement(ast: ElementAst, context: any): any { throw 'not implemented'; }
+  visitReference(ast: ReferenceAst, context: any): any { throw 'not implemented'; }
+  visitVariable(ast: VariableAst, context: any): any { throw 'not implemented'; }
+  visitEvent(ast: BoundEventAst, context: any): any { throw 'not implemented'; }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { throw 'not implemented'; }
+  visitAttr(ast: AttrAst, context: any): any { throw 'not implemented'; }
+  visitBoundText(ast: BoundTextAst, context: any): any { throw 'not implemented'; }
+  visitText(ast: TextAst, context: any): any { throw 'not implemented'; }
+  visitDirective(ast: DirectiveAst, context: any): any { throw 'not implemented'; }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
+    throw 'not implemented';
+  }
+}
+
+class FooAstTransformer extends ThrowingVisitor {
+  visitElement(ast: ElementAst, context: any): any {
+    if (ast.name != 'div') return ast;
+    return new ElementAst(
+        'foo', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
+        ast.endSourceSpan);
+  }
+}
+
+class BarAstTransformer extends FooAstTransformer {
+  visitElement(ast: ElementAst, context: any): any {
+    if (ast.name != 'foo') return ast;
+    return new ElementAst(
+        'bar', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
+        ast.endSourceSpan);
+  }
+}
+
+class NullVisitor implements TemplateAstVisitor {
+  visitNgContent(ast: NgContentAst, context: any): any {}
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {}
+  visitElement(ast: ElementAst, context: any): any {}
+  visitReference(ast: ReferenceAst, context: any): any {}
+  visitVariable(ast: VariableAst, context: any): any {}
+  visitEvent(ast: BoundEventAst, context: any): any {}
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {}
+  visitAttr(ast: AttrAst, context: any): any {}
+  visitBoundText(ast: BoundTextAst, context: any): any {}
+  visitText(ast: TextAst, context: any): any {}
+  visitDirective(ast: DirectiveAst, context: any): any {}
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {}
+}
+
+class ArrayConsole implements Console {
+  logs: string[] = [];
+  warnings: string[] = [];
+  log(msg: string) { this.logs.push(msg); }
+  warn(msg: string) { this.warnings.push(msg); }
+}
+
+
+(function(){
   let ngIf: CompileDirectiveSummary;
   let parse: (
       template: string, directives: CompileDirectiveSummary[], pipes?: CompilePipeSummary[],
@@ -2179,210 +2385,4 @@ The pipe 'test' could not be found ("{{[ERROR ->]a | test}}"): TestComp@0:2`);
       ]);
     });
   });
-}
-
-function humanizeTplAst(
-    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
-  const humanizer = new TemplateHumanizer(false, interpolationConfig);
-  templateVisitAll(humanizer, templateAsts);
-  return humanizer.result;
-}
-
-function humanizeTplAstSourceSpans(
-    templateAsts: TemplateAst[], interpolationConfig?: InterpolationConfig): any[] {
-  const humanizer = new TemplateHumanizer(true, interpolationConfig);
-  templateVisitAll(humanizer, templateAsts);
-  return humanizer.result;
-}
-
-class TemplateHumanizer implements TemplateAstVisitor {
-  result: any[] = [];
-
-  constructor(
-      private includeSourceSpan: boolean,
-      private interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {}
-
-  visitNgContent(ast: NgContentAst, context: any): any {
-    const res = [NgContentAst];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-    const res = [EmbeddedTemplateAst];
-    this.result.push(this._appendContext(ast, res));
-    templateVisitAll(this, ast.attrs);
-    templateVisitAll(this, ast.outputs);
-    templateVisitAll(this, ast.references);
-    templateVisitAll(this, ast.variables);
-    templateVisitAll(this, ast.directives);
-    templateVisitAll(this, ast.children);
-    return null;
-  }
-  visitElement(ast: ElementAst, context: any): any {
-    const res = [ElementAst, ast.name];
-    this.result.push(this._appendContext(ast, res));
-    templateVisitAll(this, ast.attrs);
-    templateVisitAll(this, ast.inputs);
-    templateVisitAll(this, ast.outputs);
-    templateVisitAll(this, ast.references);
-    templateVisitAll(this, ast.directives);
-    templateVisitAll(this, ast.children);
-    return null;
-  }
-  visitReference(ast: ReferenceAst, context: any): any {
-    const res = [ReferenceAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitVariable(ast: VariableAst, context: any): any {
-    const res = [VariableAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitEvent(ast: BoundEventAst, context: any): any {
-    const res =
-        [BoundEventAst, ast.name, ast.target, unparse(ast.handler, this.interpolationConfig)];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
-    const res = [
-      BoundElementPropertyAst, ast.type, ast.name, unparse(ast.value, this.interpolationConfig),
-      ast.unit
-    ];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitAttr(ast: AttrAst, context: any): any {
-    const res = [AttrAst, ast.name, ast.value];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitBoundText(ast: BoundTextAst, context: any): any {
-    const res = [BoundTextAst, unparse(ast.value, this.interpolationConfig)];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitText(ast: TextAst, context: any): any {
-    const res = [TextAst, ast.value];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-  visitDirective(ast: DirectiveAst, context: any): any {
-    const res = [DirectiveAst, ast.directive];
-    this.result.push(this._appendContext(ast, res));
-    templateVisitAll(this, ast.inputs);
-    templateVisitAll(this, ast.hostProperties);
-    templateVisitAll(this, ast.hostEvents);
-    return null;
-  }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
-    const res = [
-      BoundDirectivePropertyAst, ast.directiveName, unparse(ast.value, this.interpolationConfig)
-    ];
-    this.result.push(this._appendContext(ast, res));
-    return null;
-  }
-
-  private _appendContext(ast: TemplateAst, input: any[]): any[] {
-    if (!this.includeSourceSpan) return input;
-    input.push(ast.sourceSpan !.toString());
-    return input;
-  }
-}
-
-function humanizeContentProjection(templateAsts: TemplateAst[]): any[] {
-  const humanizer = new TemplateContentProjectionHumanizer();
-  templateVisitAll(humanizer, templateAsts);
-  return humanizer.result;
-}
-
-class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
-  result: any[] = [];
-  visitNgContent(ast: NgContentAst, context: any): any {
-    this.result.push(['ng-content', ast.ngContentIndex]);
-    return null;
-  }
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-    this.result.push(['template', ast.ngContentIndex]);
-    templateVisitAll(this, ast.children);
-    return null;
-  }
-  visitElement(ast: ElementAst, context: any): any {
-    this.result.push([ast.name, ast.ngContentIndex]);
-    templateVisitAll(this, ast.children);
-    return null;
-  }
-  visitReference(ast: ReferenceAst, context: any): any { return null; }
-  visitVariable(ast: VariableAst, context: any): any { return null; }
-  visitEvent(ast: BoundEventAst, context: any): any { return null; }
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { return null; }
-  visitAttr(ast: AttrAst, context: any): any { return null; }
-  visitBoundText(ast: BoundTextAst, context: any): any {
-    this.result.push([`#text(${unparse(ast.value)})`, ast.ngContentIndex]);
-    return null;
-  }
-  visitText(ast: TextAst, context: any): any {
-    this.result.push([`#text(${ast.value})`, ast.ngContentIndex]);
-    return null;
-  }
-  visitDirective(ast: DirectiveAst, context: any): any { return null; }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
-}
-
-class ThrowingVisitor implements TemplateAstVisitor {
-  visitNgContent(ast: NgContentAst, context: any): any { throw 'not implemented'; }
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any { throw 'not implemented'; }
-  visitElement(ast: ElementAst, context: any): any { throw 'not implemented'; }
-  visitReference(ast: ReferenceAst, context: any): any { throw 'not implemented'; }
-  visitVariable(ast: VariableAst, context: any): any { throw 'not implemented'; }
-  visitEvent(ast: BoundEventAst, context: any): any { throw 'not implemented'; }
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { throw 'not implemented'; }
-  visitAttr(ast: AttrAst, context: any): any { throw 'not implemented'; }
-  visitBoundText(ast: BoundTextAst, context: any): any { throw 'not implemented'; }
-  visitText(ast: TextAst, context: any): any { throw 'not implemented'; }
-  visitDirective(ast: DirectiveAst, context: any): any { throw 'not implemented'; }
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
-    throw 'not implemented';
-  }
-}
-
-class FooAstTransformer extends ThrowingVisitor {
-  visitElement(ast: ElementAst, context: any): any {
-    if (ast.name != 'div') return ast;
-    return new ElementAst(
-        'foo', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
-        ast.endSourceSpan);
-  }
-}
-
-class BarAstTransformer extends FooAstTransformer {
-  visitElement(ast: ElementAst, context: any): any {
-    if (ast.name != 'foo') return ast;
-    return new ElementAst(
-        'bar', [], [], [], [], [], [], false, [], [], ast.ngContentIndex, ast.sourceSpan,
-        ast.endSourceSpan);
-  }
-}
-
-class NullVisitor implements TemplateAstVisitor {
-  visitNgContent(ast: NgContentAst, context: any): any {}
-  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {}
-  visitElement(ast: ElementAst, context: any): any {}
-  visitReference(ast: ReferenceAst, context: any): any {}
-  visitVariable(ast: VariableAst, context: any): any {}
-  visitEvent(ast: BoundEventAst, context: any): any {}
-  visitElementProperty(ast: BoundElementPropertyAst, context: any): any {}
-  visitAttr(ast: AttrAst, context: any): any {}
-  visitBoundText(ast: BoundTextAst, context: any): any {}
-  visitText(ast: TextAst, context: any): any {}
-  visitDirective(ast: DirectiveAst, context: any): any {}
-  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {}
-}
-
-class ArrayConsole implements Console {
-  logs: string[] = [];
-  warnings: string[] = [];
-  log(msg: string) { this.logs.push(msg); }
-  warn(msg: string) { this.warnings.push(msg); }
-}
+})();

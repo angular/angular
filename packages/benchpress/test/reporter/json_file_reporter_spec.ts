@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} from '../../index';
 
-export function main() {
+{
   describe('file reporter', () => {
     let loggedFile: any;
 

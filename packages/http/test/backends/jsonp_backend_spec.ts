@@ -46,7 +46,7 @@ class MockBrowserJsonp extends BrowserJsonp {
   }
 }
 
-export function main() {
+{
   describe('JSONPBackend', () => {
     let backend: JSONPBackend;
     let sampleRequest: Request;

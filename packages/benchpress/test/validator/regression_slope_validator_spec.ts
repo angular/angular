@@ -10,7 +10,7 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {Injector, MeasureValues, RegressionSlopeValidator} from '../../index';
 
-export function main() {
+{
   describe('regression slope validator', () => {
     let validator: RegressionSlopeValidator;
 

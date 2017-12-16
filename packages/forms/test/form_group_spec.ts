@@ -13,7 +13,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Va
 import {of } from 'rxjs/observable/of';
 
 
-export function main() {
+(function(){
   function simpleValidator(c: AbstractControl): ValidationErrors|null {
     return c.get('one') !.value === 'correct' ? null : {'broken': true};
   }
@@ -1126,4 +1126,4 @@ export function main() {
 
 
   });
-}
+})();

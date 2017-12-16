@@ -17,7 +17,7 @@ import {map} from 'rxjs/operator/map';
 import {normalizeAsyncValidator} from '../src/directives/normalize_validator';
 import {AsyncValidator, ValidationErrors, ValidatorFn} from '../src/directives/validators';
 
-export function main() {
+(function(){
   function validator(key: string, error: any): ValidatorFn {
     return (c: AbstractControl) => {
       const r: ValidationErrors = {};
@@ -435,4 +435,4 @@ export function main() {
 
     });
   });
-}
+})();

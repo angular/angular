@@ -15,7 +15,7 @@ import {HttpClient} from '../src/client';
 import {HttpErrorResponse, HttpEventType, HttpResponse} from '../src/response';
 import {HttpClientTestingBackend} from '../testing/src/backend';
 
-export function main() {
+{
   describe('HttpClient', () => {
     let client: HttpClient = null !;
     let backend: HttpClientTestingBackend = null !;

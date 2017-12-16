@@ -15,7 +15,7 @@ import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgr
 
 import {bootstrap, html, multiTrim} from '../test_helpers';
 
-export function main() {
+{
   describe('content projection', () => {
 
     beforeEach(() => destroyPlatform());

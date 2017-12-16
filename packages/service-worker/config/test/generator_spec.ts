@@ -9,7 +9,7 @@
 import {Generator} from '../src/generator';
 import {MockFilesystem} from '../testing/mock';
 
-export function main() {
+{
   describe('Generator', () => {
     it('generates a correct config', (done: DoneFn) => {
       const fs = new MockFilesystem({

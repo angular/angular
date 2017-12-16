@@ -9,7 +9,7 @@
 import {MissingTranslationStrategy} from '@angular/core';
 import {CompilerConfig} from '../src/config';
 
-export function main() {
+{
   describe('compiler config', () => {
     it('should set missing translation strategy', () => {
       const config = new CompilerConfig({missingTranslation: MissingTranslationStrategy.Error});

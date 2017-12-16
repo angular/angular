@@ -17,7 +17,7 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
 
 const someGenFilePath = 'somePackage/someGenFile';
 
-export function main() {
+{
   // Not supported features of our OutputAst in TS:
   // - real `const` like in Dart
   // - final fields

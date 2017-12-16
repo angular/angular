@@ -12,7 +12,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
-export function main() {
+{
   describe('DefaultDomRendererV2', () => {
     let renderer: Renderer2;
 

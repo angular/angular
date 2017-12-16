@@ -11,7 +11,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 import {IOsDriverExtension, Injector, WebDriverAdapter, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
 
-export function main() {
+{
   describe('ios driver extension', () => {
     let log: any[];
     let extension: IOsDriverExtension;

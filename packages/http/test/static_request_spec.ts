@@ -15,7 +15,7 @@ import {Headers} from '../src/headers';
 import {stringToArrayBuffer, stringToArrayBuffer8} from '../src/http_utils';
 import {ArrayBuffer, Request} from '../src/static_request';
 
-export function main() {
+{
   describe('Request', () => {
     describe('detectContentType', () => {
       it('should return ContentType.NONE', () => {

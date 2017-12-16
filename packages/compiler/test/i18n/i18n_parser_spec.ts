@@ -12,7 +12,7 @@ import {Message} from '@angular/compiler/src/i18n/i18n_ast';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler/src/ml_parser/interpolation_config';
 
-export function main() {
+{
   describe('I18nParser', () => {
 
     describe('elements', () => {

@@ -16,7 +16,7 @@ import {MockMessageBrokerFactory, createPairedMessageBuses, expectBrokerCall} fr
 
 import {SpyMessageBroker} from './spies';
 
-export function main() {
+{
   describe('WebWorkerPlatformLocation', () => {
     let uiBus: MessageBus = null !;
     let workerBus: MessageBus = null !;

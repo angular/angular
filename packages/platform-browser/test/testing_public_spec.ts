@@ -108,7 +108,7 @@ class SomeLibModule {
 class CompWithUrlTemplate {
 }
 
-export function main() {
+{
   describe('public testing API', () => {
     describe('using the async helper with context passing', () => {
       beforeEach(function() { this.actuallyDone = false; });
