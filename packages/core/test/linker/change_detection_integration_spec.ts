@@ -25,7 +25,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 ];
 
 
-export function main() {
+(function() {
   let elSchema: MockSchemaRegistry;
   let renderLog: RenderLog;
   let directiveLog: DirectiveLog;
@@ -1608,7 +1608,7 @@ export function main() {
       });
     });
   });
-}
+})();
 
 @Injectable()
 class RenderLog {

@@ -12,7 +12,7 @@ import {NodeDef, NodeFlags, QueryBindingType, QueryValueType, Services, anchorDe
 
 import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedView} from './helper';
 
-export function main() {
+{
   describe(`Query Views`, () => {
 
     const someQueryId = 1;

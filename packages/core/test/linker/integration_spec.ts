@@ -28,7 +28,7 @@ import {stringify} from '../../src/util';
 
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
-export function main() {
+{
   describe('jit', () => { declareTests({useJit: true}); });
 
   describe('no jit', () => { declareTests({useJit: false}); });

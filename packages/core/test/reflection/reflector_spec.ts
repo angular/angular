@@ -67,7 +67,7 @@ class TestObj {
   identity(arg: any) { return arg; }
 }
 
-export function main() {
+{
   describe('Reflector', () => {
     let reflector: Reflector;
 

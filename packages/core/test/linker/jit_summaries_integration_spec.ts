@@ -13,7 +13,7 @@ import {Component, Directive, Injectable, NgModule, Pipe, Type} from '@angular/c
 import {TestBed, async, getTestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('Jit Summaries', () => {
     let instances: Map<any, Base>;
     let summaries: () => any[];

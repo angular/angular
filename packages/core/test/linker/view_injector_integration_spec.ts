@@ -182,7 +182,7 @@ export class DuplicatePipe2 implements PipeTransform {
 class TestComp {
 }
 
-export function main() {
+(function() {
   function createComponentFixture<T>(
       template: string, providers?: Provider[] | null, comp?: Type<T>): ComponentFixture<T> {
     if (!comp) {
@@ -932,7 +932,7 @@ export function main() {
       });
     });
   });
-}
+})();
 
 class TestValue {
   constructor(public value: string) {}

@@ -18,7 +18,7 @@ import {TestBed, fakeAsync, flushMicrotasks} from '../../testing';
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
 
-export function main() {
+(function() {
   // these tests are only mean't to be run within the DOM (for now)
   if (typeof Element == 'undefined') return;
 
@@ -3428,7 +3428,7 @@ export function main() {
       });
     });
   });
-}
+});
 
 function assertHasParent(element: any, yes: boolean) {
   const parent = getDOM().parentElement(element);

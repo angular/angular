@@ -11,7 +11,7 @@ import {IterableDiffers} from '@angular/core/src/change_detection/differs/iterab
 
 import {SpyIterableDifferFactory} from '../../spies';
 
-export function main() {
+{
   describe('IterableDiffers', function() {
     let factory1: any;
     let factory2: any;

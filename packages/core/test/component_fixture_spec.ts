@@ -82,7 +82,7 @@ class NestedAsyncTimeoutComp {
   }
 }
 
-export function main() {
+{
   describe('ComponentFixture', () => {
     beforeEach(async(() => {
       TestBed.configureTestingModule({
