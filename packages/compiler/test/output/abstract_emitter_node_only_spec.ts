@@ -11,7 +11,7 @@ import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitt
 import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
 
-export function main() {
+{
   describe('AbstractEmitter', () => {
     describe('EmitterVisitorContext', () => {
       const fileA = new ParseSourceFile('a0a1a2a3a4a5a6a7a8a9', 'a.js');

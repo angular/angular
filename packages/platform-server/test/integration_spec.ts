@@ -298,7 +298,7 @@ class TransferStoreModule {
 class EscapedTransferStoreModule {
 }
 
-export function main() {
+(function(){
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
   describe('platform-server integration', () => {
@@ -756,4 +756,4 @@ export function main() {
          }));
     });
   });
-}
+})();

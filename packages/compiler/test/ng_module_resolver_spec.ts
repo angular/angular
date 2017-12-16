@@ -29,7 +29,7 @@ class SomeModule {
 
 class SimpleClass {}
 
-export function main() {
+{
   describe('NgModuleResolver', () => {
     let resolver: NgModuleResolver;
 

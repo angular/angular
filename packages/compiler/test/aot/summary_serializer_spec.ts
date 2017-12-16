@@ -15,7 +15,7 @@ import {MockStaticSymbolResolverHost} from './static_symbol_resolver_spec';
 import {MockAotSummaryResolverHost, createMockOutputContext} from './summary_resolver_spec';
 
 
-export function main() {
+{
   describe('summary serializer', () => {
     let summaryResolver: AotSummaryResolver;
     let symbolResolver: StaticSymbolResolver;

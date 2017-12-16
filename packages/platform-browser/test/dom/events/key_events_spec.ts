@@ -9,7 +9,7 @@
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_events';
 
-export function main() {
+{
   describe('KeyEventsPlugin', () => {
 
     it('should ignore unrecognized events', () => {

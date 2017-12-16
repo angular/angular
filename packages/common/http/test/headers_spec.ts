@@ -8,7 +8,7 @@
 
 import {HttpHeaders} from '../src/headers';
 
-export function main() {
+{
   describe('HttpHeaders', () => {
 
     describe('initialization', () => {

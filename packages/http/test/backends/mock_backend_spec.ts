@@ -17,7 +17,7 @@ import {Request} from '../../src/static_request';
 import {Response} from '../../src/static_response';
 import {MockBackend, MockConnection} from '../../testing/src/mock_backend';
 
-export function main() {
+{
   describe('MockBackend', () => {
 
     let backend: MockBackend;

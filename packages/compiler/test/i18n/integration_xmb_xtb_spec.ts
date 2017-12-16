@@ -20,7 +20,7 @@ import {SpyResourceLoader} from '../spies';
 
 import {FrLocalization, HTML, I18nComponent, validateHtml} from './integration_common';
 
-export function main() {
+{
   describe('i18n XMB/XTB integration spec', () => {
 
     beforeEach(async(() => {

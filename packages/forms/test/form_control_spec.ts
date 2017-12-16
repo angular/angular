@@ -13,7 +13,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {FormArray} from '../src/model';
 
-export function main() {
+(function(){
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: FormControl) => {
       let resolve: (result: any) => void = undefined !;
@@ -1142,4 +1142,4 @@ export function main() {
       });
     });
   });
-}
+})();

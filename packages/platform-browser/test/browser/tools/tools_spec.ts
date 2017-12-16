@@ -10,7 +10,7 @@ import {disableDebugTools, enableDebugTools} from '@angular/platform-browser';
 
 import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';
 
-export function main() {
+{
   describe('profiler', () => {
     beforeEach(() => { enableDebugTools((<any>new SpyComponentRef())); });
 

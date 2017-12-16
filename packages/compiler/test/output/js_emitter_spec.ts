@@ -19,7 +19,7 @@ const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
 
 const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'someExternalId', null);
 
-export function main() {
+{
   // Note supported features of our OutputAstin JavaScript / ES5:
   // - types
   // - declaring fields
