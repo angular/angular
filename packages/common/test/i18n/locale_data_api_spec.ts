@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import localeCaESVALENCIA from '../../locales/ca-ES-VALENCIA';
-import localeEn from '../../locales/en';
-import localeFr from '../../locales/fr';
-import localeFrCA from '../../locales/fr-CA';
+import localeCaESVALENCIA from '@angular/common/locales/ca-ES-VALENCIA';
+import localeEn from '@angular/common/locales/en';
+import localeFr from '@angular/common/locales/fr';
+import localeFrCA from '@angular/common/locales/fr-CA';
 import {registerLocaleData} from '../../src/i18n/locale_data';
 import {findLocaleData} from '../../src/i18n/locale_data_api';
 
