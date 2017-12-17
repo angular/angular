@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import localeEn from '../../locales/en';
-import localeEsUS from '../../locales/es-US';
-import localeFr from '../../locales/fr';
+import localeEn from '@angular/common/locales/en';
+import localeEsUS from '@angular/common/locales/es-US';
+import localeFr from '@angular/common/locales/fr';
 import {registerLocaleData, CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 

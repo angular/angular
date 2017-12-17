@@ -9,12 +9,12 @@
 import {DatePipe, registerLocaleData} from '@angular/common';
 import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
-import localeEn from '../../locales/en';
-import localeEnExtra from '../../locales/extra/en';
-import localeDe from '../../locales/de';
-import localeHu from '../../locales/hu';
-import localeSr from '../../locales/sr';
-import localeTh from '../../locales/th';
+import localeEn from '@angular/common/locales/en';
+import localeEnExtra from '@angular/common/locales/extra/en';
+import localeDe from '@angular/common/locales/de';
+import localeHu from '@angular/common/locales/hu';
+import localeSr from '@angular/common/locales/sr';
+import localeTh from '@angular/common/locales/th';
 
 {
   describe('DatePipe', () => {
