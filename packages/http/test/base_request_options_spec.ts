@@ -7,9 +7,9 @@
  */
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {BaseRequestOptions, RequestOptions} from '../src/base_request_options';
-import {RequestMethod} from '../src/enums';
-import {Headers} from '../src/headers';
+import {BaseRequestOptions, RequestOptions} from '@angular/http/src/base_request_options';
+import {RequestMethod} from '@angular/http/src/enums';
+import {Headers} from '@angular/http/src/headers';
 
 {
   describe('BaseRequestOptions', () => {

@@ -161,7 +161,7 @@ function bootstrap(
        inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler();
-         errorHandler._console = logger as any;
+         (errorHandler as any)._console = logger as any;
          expect(
              () => bootstrap(
                  HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
@@ -173,7 +173,7 @@ function bootstrap(
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler();
-         errorHandler._console = logger as any;
+         (errorHandler as any)._console = logger as any;
          bootstrap(NonExistentComp, [
            {provide: ErrorHandler, useValue: errorHandler}
          ]).then(null, (reason) => {
@@ -187,7 +187,7 @@ function bootstrap(
     it('should throw if no provider', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler();
-         errorHandler._console = logger as any;
+         (errorHandler as any)._console = logger as any;
 
          class IDontExist {}
 
@@ -223,7 +223,7 @@ function bootstrap(
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const logger = new MockConsole();
            const errorHandler = new ErrorHandler();
-           errorHandler._console = logger as any;
+           (errorHandler as any)._console = logger as any;
 
            const refPromise =
                bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
@@ -238,7 +238,7 @@ function bootstrap(
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const logger = new MockConsole();
            const errorHandler = new ErrorHandler();
-           errorHandler._console = logger as any;
+           (errorHandler as any)._console = logger as any;
 
            const refPromise =
                bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);

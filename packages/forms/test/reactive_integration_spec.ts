@@ -1560,6 +1560,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
          }));
 
       it('should not update the view when the value initially came from the view', fakeAsync(() => {
+           if (isNode) return;
            const fixture = initTest(FormControlNgModel);
            fixture.componentInstance.control = new FormControl('');
            fixture.detectChanges();

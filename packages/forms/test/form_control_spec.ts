@@ -11,9 +11,9 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {FormArray} from '../src/model';
+import {FormArray} from '@angular/forms/src/model';
 
-(function(){
+(function() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: FormControl) => {
       let resolve: (result: any) => void = undefined !;

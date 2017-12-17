@@ -45,6 +45,9 @@ if (globsIndex < 0) {
   args = process.argv.slice(globsIndex + 1);
 }
 
+(global as any).isNode = true;
+(global as any).isBrowser = false;
+
 var specFiles: any =
     args.map(function(globstr: string):
                  string[] {

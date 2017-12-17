@@ -8,8 +8,8 @@
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-import {ResponseOptions} from '../src/base_response_options';
-import {Response} from '../src/static_response';
+import {ResponseOptions} from '@angular/http/src/base_response_options';
+import {Response} from '@angular/http/src/static_response';
 
 
 

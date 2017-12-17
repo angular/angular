@@ -298,7 +298,7 @@ class TransferStoreModule {
 class EscapedTransferStoreModule {
 }
 
-(function(){
+(function() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
   describe('platform-server integration', () => {

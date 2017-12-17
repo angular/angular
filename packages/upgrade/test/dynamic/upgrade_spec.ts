@@ -14,6 +14,10 @@ import * as angular from '@angular/upgrade/src/common/angular1';
 import {UpgradeAdapter, UpgradeAdapterRef} from '@angular/upgrade/src/dynamic/upgrade_adapter';
 import {$digest, html, multiTrim} from './test_helpers';
 
+declare global {
+  export var inject: Function;
+}
+
 {
   describe('adapter: ng1 to ng2', () => {
     beforeEach(() => destroyPlatform());

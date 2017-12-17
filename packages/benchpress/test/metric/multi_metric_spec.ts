@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, Metric, MultiMetric} from '../../index';
 
-(function(){
+(function() {
   function createMetric(ids: any[]) {
     const m = Injector
                   .create([
