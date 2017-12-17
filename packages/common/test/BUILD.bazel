@@ -10,41 +10,23 @@ ts_library(
     ),
     tsconfig = "//packages:tsconfig",
     deps = [
-        "//packages:types",
-        "//packages/common",
         "//packages/compiler",
-        "//packages/compiler-cli",
-        "//packages/compiler/testing",
+        "//packages/common",
+        "//packages/common/locales",
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
-    ],
-)
-
-ts_library(
-    name = "test_node_only_lib",
-    testonly = 1,
-    srcs = glob(["**/*_node_only_spec.ts"]),
-    tsconfig = "//packages:tsconfig",
-    deps = [
-        ":test_lib",
-        "//packages/compiler",
-        "//packages/compiler/testing",
+        "//packages/platform-browser-dynamic",
     ],
 )
 
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular_src/packages/_testing_init/init_node_spec.js"],
-    # dissable since tests are running but not yet passing
-    tags = ["manual"],
     deps = [
         ":test_lib",
-        ":test_node_only_lib",
         "//packages/_testing_init:node",
-        "//packages/core",
     ],
 )
 
@@ -53,8 +35,6 @@ ts_web_test(
     bootstrap = [
         "//:angular_bootstrap_scripts",
     ],
-    # dissable since tests are running but not yet passing
-    tags = ["manual"],
     # do not sort
     deps = [
         "//packages/_testing_init:browser",
