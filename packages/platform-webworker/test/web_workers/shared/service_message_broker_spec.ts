@@ -34,9 +34,10 @@ import {createPairedMessageBuses} from './web_worker_test_util';
     });
     it('should call registered method with correct arguments',
        inject([Serializer], (serializer: Serializer) => {
-         const broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);
+         const broker = new (ServiceMessageBroker as any)(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(
-             TEST_METHOD, [SerializerTypes.PRIMITIVE, SerializerTypes.PRIMITIVE], (arg1, arg2) => {
+             TEST_METHOD, [SerializerTypes.PRIMITIVE, SerializerTypes.PRIMITIVE],
+             (arg1: any, arg2: any) => {
                expect(arg1).toEqual(PASSED_ARG_1);
                expect(arg2).toEqual(PASSED_ARG_2);
              });
@@ -47,8 +48,8 @@ import {createPairedMessageBuses} from './web_worker_test_util';
        }));
 
     it('should return promises to the worker', inject([Serializer], (serializer: Serializer) => {
-         const broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);
-         broker.registerMethod(TEST_METHOD, [SerializerTypes.PRIMITIVE], (arg1) => {
+         const broker = new (ServiceMessageBroker as any)(messageBuses.ui, serializer, CHANNEL);
+         broker.registerMethod(TEST_METHOD, [SerializerTypes.PRIMITIVE], (arg1: any) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            return new Promise((res, rej) => {
              try {

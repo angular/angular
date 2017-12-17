@@ -214,7 +214,7 @@ describe('bootstrap', () => {
          const appRef: ApplicationRef = res.injector.get(ApplicationRef);
          appRef.bootstrap(SecondRootCmp);
 
-         expect(router.resetRootComponentType).not.toHaveBeenCalled();
+         expect((router as any).resetRootComponentType).not.toHaveBeenCalled();
 
          done();
        });
@@ -240,7 +240,7 @@ describe('bootstrap', () => {
          const appRef: ApplicationRef = res.injector.get(ApplicationRef);
          appRef.components[0].onDestroy(() => {
            appRef.bootstrap(SecondRootCmp);
-           expect(router.resetRootComponentType).toHaveBeenCalled();
+           expect((router as any).resetRootComponentType).toHaveBeenCalled();
            done();
          });
 

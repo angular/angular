@@ -178,7 +178,7 @@ describe('applyRedirects', () => {
       applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
           .forEach(r => {
             expectTreeToBe(r, '/a/b');
-            expect(config[0]._loadedConfig).toBe(loadedConfig);
+            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
           });
     });
 
@@ -304,7 +304,7 @@ describe('applyRedirects', () => {
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).forEach(r => {
         expectTreeToBe(r, 'a');
-        expect(config[1]._loadedConfig).toBe(loadedConfig);
+        expect((config[1] as any)._loadedConfig).toBe(loadedConfig);
       });
     });
 
@@ -329,7 +329,7 @@ describe('applyRedirects', () => {
           .subscribe(
               r => {
                 expectTreeToBe(r, 'a?k2');
-                expect(config[0]._loadedConfig).toBe(loadedConfig);
+                expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
               },
               (e) => { throw 'Should not reach'; });
     });
@@ -342,7 +342,7 @@ describe('applyRedirects', () => {
       const config: Routes = [{path: '**', loadChildren: 'children'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
     });
 
     it('should load the configuration after a local redirect from a wildcard route', () => {
@@ -354,7 +354,7 @@ describe('applyRedirects', () => {
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: 'not-found'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
     });
 
     it('should load the configuration after an absolute redirect from a wildcard route', () => {
@@ -366,7 +366,7 @@ describe('applyRedirects', () => {
           [{path: 'not-found', loadChildren: 'children'}, {path: '**', redirectTo: '/not-found'}];
 
       applyRedirects(testModule.injector, <any>loader, serializer, tree('xyz'), config)
-          .forEach(r => { expect(config[0]._loadedConfig).toBe(loadedConfig); });
+          .forEach(r => { expect((config[0] as any)._loadedConfig).toBe(loadedConfig); });
     });
   });
 

@@ -295,7 +295,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              const name = form.control.get('name') as FormControl;
-             expect(name._updateOn).toBeUndefined();
+             expect((name as any)._updateOn).toBeUndefined();
              expect(name.updateOn).toEqual('change');
            }));
 
@@ -309,7 +309,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              const name = form.control.get('name') as FormControl;
-             expect(name._updateOn).toEqual('blur');
+             expect((name as any)._updateOn).toEqual('blur');
              expect(name.updateOn).toEqual('blur');
            }));
 
@@ -555,7 +555,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              const name = form.control.get('name') as FormControl;
-             expect(name._updateOn).toEqual('submit');
+             expect((name as any)._updateOn).toEqual('submit');
              expect(name.updateOn).toEqual('submit');
            }));
 
@@ -891,12 +891,12 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              const controlOne = form.control.get('one') !as FormControl;
-             expect(controlOne._updateOn).toBeUndefined();
+             expect((controlOne as any)._updateOn).toBeUndefined();
              expect(controlOne.updateOn)
                  .toEqual('blur', 'Expected first control to inherit updateOn from parent form.');
 
              const controlTwo = form.control.get('two') !as FormControl;
-             expect(controlTwo._updateOn).toBeUndefined();
+             expect((controlTwo as any)._updateOn).toBeUndefined();
              expect(controlTwo.updateOn)
                  .toEqual('blur', 'Expected last control to inherit updateOn from parent form.');
            }));
@@ -932,12 +932,13 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              const controlOne = form.control.get('one') !as FormControl;
-             expect(controlOne._updateOn).toBeUndefined();
+             expect((controlOne as any)._updateOn).toBeUndefined();
              expect(controlOne.updateOn)
                  .toEqual('change', 'Expected control updateOn to inherit form updateOn.');
 
              const controlTwo = form.control.get('two') !as FormControl;
-             expect(controlTwo._updateOn).toEqual('blur', 'Expected control to set blur override.');
+             expect((controlTwo as any)._updateOn)
+                 .toEqual('blur', 'Expected control to set blur override.');
              expect(controlTwo.updateOn)
                  .toEqual('blur', 'Expected control updateOn to override form updateOn.');
            }));

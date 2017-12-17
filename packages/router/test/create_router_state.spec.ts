@@ -18,8 +18,8 @@ import {TreeNode} from '../src/utils/tree';
 describe('create router state', () => {
   const reuseStrategy = new DefaultRouteReuseStrategy();
 
-  const emptyState = () =>
-      createEmptyState(new UrlTree(new UrlSegmentGroup([], {}), {}, null !), RootComponent);
+  const emptyState = () => createEmptyState(
+      new (UrlTree as any)(new UrlSegmentGroup([], {}), {}, null !), RootComponent);
 
   it('should work create new state', () => {
     const state = createRouterState(
@@ -34,7 +34,7 @@ describe('create router state', () => {
 
     checkActivatedRoute(state.root, RootComponent);
 
-    const c = state.children(state.root);
+    const c = (state as any).children(state.root);
     checkActivatedRoute(c[0], ComponentA);
     checkActivatedRoute(c[1], ComponentB, 'left');
     checkActivatedRoute(c[2], ComponentC, 'right');
@@ -52,8 +52,8 @@ describe('create router state', () => {
     const state = createRouterState(reuseStrategy, createState(config, 'a(left:c)'), prevState);
 
     expect(prevState.root).toBe(state.root);
-    const prevC = prevState.children(prevState.root);
-    const currC = state.children(state.root);
+    const prevC = (prevState as any).children(prevState.root);
+    const currC = (state as any).children(state.root);
 
     expect(prevC[0]).toBe(currC[0]);
     expect(prevC[1]).not.toBe(currC[1]);
@@ -76,11 +76,11 @@ describe('create router state', () => {
         createRouterState(reuseStrategy, createState(config, 'a/2;p=22/(b//right:c)'), prevState);
 
     expect(prevState.root).toBe(state.root);
-    const prevP = prevState.firstChild(prevState.root) !;
-    const currP = state.firstChild(state.root) !;
+    const prevP = (prevState as any).firstChild(prevState.root) !;
+    const currP = (state as any).firstChild(state.root) !;
     expect(prevP).toBe(currP);
 
-    const currC = state.children(currP);
+    const currC = (state as any).children(currP);
 
     expect(currP._futureSnapshot.params).toEqual({id: '2', p: '22'});
     expect(currP._futureSnapshot.paramMap.get('id')).toEqual('2');
@@ -91,7 +91,7 @@ describe('create router state', () => {
 });
 
 function advanceState(state: RouterState): void {
-  advanceNode(state._root);
+  advanceNode((state as any)._root);
 }
 
 function advanceNode(node: TreeNode<ActivatedRoute>): void {

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {MetadataOverrider} from '@angular/platform-browser-dynamic/testing/src/metadata_overrider';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {MetadataOverrider} from '../testing/src/metadata_overrider';
 
 interface SomeMetadataType {
   plainProp?: string;

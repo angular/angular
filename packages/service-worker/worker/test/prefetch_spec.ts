@@ -29,7 +29,7 @@ const db = new CacheDatabase(scope, scope);
 
 
 
-(function(){
+(function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;

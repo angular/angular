@@ -67,18 +67,18 @@ import {SpyMessageBroker} from './spies';
     it('should get location on init', () => {
       const platformLocation = createWebWorkerPlatformLocation(null !);
       expectBrokerCall(broker, 'getLocation');
-      platformLocation.init();
+      (platformLocation as any).init();
     });
 
     it('should throw if set pathname is called before init finishes', () => {
       const platformLocation = createWebWorkerPlatformLocation(null !);
-      platformLocation.init();
+      (platformLocation as any).init();
       expect(() => platformLocation.pathname = 'TEST').toThrowError();
     });
 
     it('should send pathname to render thread', done => {
       const platformLocation = createWebWorkerPlatformLocation(TEST_LOCATION);
-      platformLocation.init().then((_) => {
+      (platformLocation as any).init().then((_: any) => {
         const PATHNAME = '/test';
         expectBrokerCall(broker, 'setPathname', [PATHNAME]);
         platformLocation.pathname = PATHNAME;

@@ -9,10 +9,10 @@
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors} from '@angular/forms';
+import {Validators} from '@angular/forms/src/validators';
 import {of } from 'rxjs/observable/of';
-import {Validators} from '../src/validators';
 
-(function(){
+(function() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void = undefined !;
