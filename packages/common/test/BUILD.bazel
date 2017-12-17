@@ -10,14 +10,14 @@ ts_library(
     ),
     tsconfig = "//packages:tsconfig",
     deps = [
-        "//packages/compiler",
         "//packages/common",
         "//packages/common/locales",
+        "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
-        "//packages/platform-browser/testing",
         "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
     ],
 )
 

@@ -323,7 +323,7 @@ class ArrayConsole implements Console {
 }
 
 
-(function(){
+(function() {
   let ngIf: CompileDirectiveSummary;
   let parse: (
       template: string, directives: CompileDirectiveSummary[], pipes?: CompilePipeSummary[],

@@ -13,7 +13,7 @@ import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, Va
 import {of } from 'rxjs/observable/of';
 
 
-(function(){
+(function() {
   function simpleValidator(c: AbstractControl): ValidationErrors|null {
     return c.get('one') !.value === 'correct' ? null : {'broken': true};
   }
@@ -1070,12 +1070,12 @@ import {of } from 'rxjs/observable/of';
       });
 
       it('should update tree validity', () => {
-        form._updateTreeValidity();
+        (form as any)._updateTreeValidity();
         expect(logger).toEqual(['one', 'two', 'nested', 'three', 'form']);
       });
 
       it('should not emit events when turned off', () => {
-        form._updateTreeValidity({emitEvent: false});
+        (form as any)._updateTreeValidity({emitEvent: false});
         expect(logger).toEqual([]);
       });
 

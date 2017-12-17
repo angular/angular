@@ -12,6 +12,9 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
 
 __karma__.loaded = function() {};
 
+window.isNode = false;
+window.isBrowser = true;
+
 function isJsFile(path) {
   return path.slice(-3) == '.js';
 }

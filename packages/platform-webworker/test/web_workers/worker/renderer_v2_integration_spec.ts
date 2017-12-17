@@ -184,10 +184,10 @@ function createWebWorkerBrokerFactory(
   const wwMessageBus = messageBuses.worker;
 
   // set up the worker side
-  const wwBrokerFactory = new ClientMessageBrokerFactory(wwMessageBus, wwSerializer);
+  const wwBrokerFactory = new (ClientMessageBrokerFactory as any)(wwMessageBus, wwSerializer);
 
   // set up the ui side
-  const uiBrokerFactory = new ServiceMessageBrokerFactory(uiMessageBus, uiSerializer);
+  const uiBrokerFactory = new (ServiceMessageBrokerFactory as any)(uiMessageBus, uiSerializer);
   const renderer = new MessageBasedRenderer2(
       uiBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRendererFactory);
   renderer.start();

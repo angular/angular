@@ -16,7 +16,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
 
 const DEFAULT_NAMESPACE_ID = 'id';
 
-(function(){
+(function() {
   const driver = new MockAnimationDriver();
 
   // these tests are only mean't to be run within the DOM

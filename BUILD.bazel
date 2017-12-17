@@ -1,6 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["tsconfig.json"])
+exports_files([
+    "tsconfig.json",
+    "node_modules/angular/angular.js",
+])
 
 # This rule belongs in node_modules/BUILD
 # It's here as a workaround for

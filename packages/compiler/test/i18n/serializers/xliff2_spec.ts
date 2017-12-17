@@ -242,7 +242,7 @@ lignes</target>
 </xliff>
 `;
 
-(function(){
+(function() {
   const serializer = new Xliff2();
 
   function toXliff(html: string, locale: string | null = null): string {

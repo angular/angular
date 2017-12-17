@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, Options, WebDriverExtension} from '../index';
 
-(function(){
+(function() {
   function createExtension(ids: any[], caps: any) {
     return new Promise<any>((res, rej) => {
       try {
