@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, MeasureValues, MultiReporter, Reporter} from '../../index';
 
-(function(){
+(function() {
   function createReporters(ids: any[]) {
     const r = Injector
                   .create([

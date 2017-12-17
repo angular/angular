@@ -15,6 +15,9 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 // we will call `__karma__.start()` later, once all the specs are loaded.
 __karma__.loaded = function() {};
 
+window.isNode = false;
+window.isBrowser = true;
+
 System.config({
   baseURL: '/base',
   defaultJSExtensions: true,

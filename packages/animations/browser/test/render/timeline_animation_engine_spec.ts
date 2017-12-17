@@ -12,7 +12,7 @@ import {AnimationDriver} from '../../src/render/animation_driver';
 import {TimelineAnimationEngine} from '../../src/render/timeline_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
 
-(function(){
+(function() {
   const defaultDriver = new MockAnimationDriver();
 
   function makeEngine(driver?: AnimationDriver, normalizer?: AnimationStyleNormalizer) {

@@ -7,7 +7,7 @@
  */
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {URLSearchParams} from '../src/url_search_params';
+import {URLSearchParams} from '@angular/http/src/url_search_params';
 
 {
   describe('URLSearchParams', () => {

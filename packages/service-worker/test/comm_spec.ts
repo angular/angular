@@ -30,14 +30,14 @@ import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../test
 
         mock.setupSw();
 
-        comm.registration.subscribe(reg => { done(); });
+        (comm as any).registration.subscribe((reg: any) => { done(); });
       });
       it('can access the registration when it comes after subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
         const comm = new NgswCommChannel(mock as any, 'browser');
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
-        comm.registration.subscribe(reg => { done(); });
+        (comm as any).registration.subscribe((reg: any) => { done(); });
 
         mock.setupSw();
       });

@@ -36,7 +36,7 @@ describe('SpyNgModuleFactoryLoader', () => {
        const r = new SpyNgModuleFactoryLoader(<any>null);
 
        let error: any = null;
-       r.load('two').catch(e => error = e);
+       r.load('two').catch((e: any) => error = e);
 
        tick();
 

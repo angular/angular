@@ -9,7 +9,7 @@
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {FormBuilder} from '@angular/forms';
 
-(function(){
+(function() {
   function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ { return null; }
   function asyncValidator(_: any /** TODO #9100 */) { return Promise.resolve(null); }
 
