@@ -1386,14 +1386,16 @@ export function bind2(prefix: string, v0: any, i0: string, v1: any, suffix: stri
     if (typeof currentView.bindingStartIndex !== 'number') {
       bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    data[bindingIndex++] = {v0: v0, v1: v1};
+    data[bindingIndex++] = v0;
+    data[bindingIndex++] = v1;
   } else {
-    const parts: {v0: any, v1: any} = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = parts.v0;
-    if (v1 === NO_CHANGE) v1 = parts.v1;
-    if (different = (isDifferent(parts.v0, v0) || isDifferent(parts.v1, v1))) {
-      parts.v0 = v0;
-      parts.v1 = v1;
+    const part0 = data[bindingIndex++];
+    const part1 = data[bindingIndex++];
+    if (v0 === NO_CHANGE) v0 = part0;
+    if (v1 === NO_CHANGE) v1 = part1;
+    if (different = (isDifferent(part0, v0) || isDifferent(part1, v1))) {
+      data[bindingIndex - 2] = v0;
+      data[bindingIndex - 1] = v1;
     }
   }
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
@@ -1418,17 +1420,20 @@ export function bind3(
     if (typeof currentView.bindingStartIndex !== 'number') {
       bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2};
+    data[bindingIndex++] = v0;
+    data[bindingIndex++] = v1;
+    data[bindingIndex++] = v2;
   } else {
-    const parts: {v0: any, v1: any, v2: any} = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = parts.v0;
-    if (v1 === NO_CHANGE) v1 = parts.v1;
-    if (v2 === NO_CHANGE) v2 = parts.v2;
-    if (different =
-            (isDifferent(parts.v0, v0) || isDifferent(parts.v1, v1) || isDifferent(parts.v2, v2))) {
-      parts.v0 = v0;
-      parts.v1 = v1;
-      parts.v2 = v2;
+    const part0 = data[bindingIndex++];
+    const part1 = data[bindingIndex++];
+    const part2 = data[bindingIndex++];
+    if (v0 === NO_CHANGE) v0 = part0;
+    if (v1 === NO_CHANGE) v1 = part1;
+    if (v2 === NO_CHANGE) v2 = part2;
+    if (different = (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2))) {
+      data[bindingIndex - 3] = v0;
+      data[bindingIndex - 2] = v1;
+      data[bindingIndex - 1] = v2;
     }
   }
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + suffix :
@@ -1456,20 +1461,26 @@ export function bind4(
     if (typeof currentView.bindingStartIndex !== 'number') {
       bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3};
+    data[bindingIndex++] = v0;
+    data[bindingIndex++] = v1;
+    data[bindingIndex++] = v2;
+    data[bindingIndex++] = v3;
   } else {
-    const parts: {v0: any, v1: any, v2: any, v3: any} = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = parts.v0;
-    if (v1 === NO_CHANGE) v1 = parts.v1;
-    if (v2 === NO_CHANGE) v2 = parts.v2;
-    if (v3 === NO_CHANGE) v3 = parts.v3;
+    const part0 = data[bindingIndex++];
+    const part1 = data[bindingIndex++];
+    const part2 = data[bindingIndex++];
+    const part3 = data[bindingIndex++];
+    if (v0 === NO_CHANGE) v0 = part0;
+    if (v1 === NO_CHANGE) v1 = part1;
+    if (v2 === NO_CHANGE) v2 = part2;
+    if (v3 === NO_CHANGE) v3 = part3;
     if (different =
-            (isDifferent(parts.v0, v0) || isDifferent(parts.v1, v1) || isDifferent(parts.v2, v2) ||
-             isDifferent(parts.v3, v3))) {
-      parts.v0 = v0;
-      parts.v1 = v1;
-      parts.v2 = v2;
-      parts.v3 = v3;
+            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+             isDifferent(part3, v3))) {
+      data[bindingIndex - 4] = v0;
+      data[bindingIndex - 3] = v1;
+      data[bindingIndex - 2] = v2;
+      data[bindingIndex - 1] = v3;
     }
   }
   return different ?
@@ -1501,22 +1512,31 @@ export function bind5(
     if (typeof currentView.bindingStartIndex !== 'number') {
       bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3, v4};
+    data[bindingIndex++] = v0;
+    data[bindingIndex++] = v1;
+    data[bindingIndex++] = v2;
+    data[bindingIndex++] = v3;
+    data[bindingIndex++] = v4;
   } else {
-    const parts: {v0: any, v1: any, v2: any, v3: any, v4: any} = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = parts.v0;
-    if (v1 === NO_CHANGE) v1 = parts.v1;
-    if (v2 === NO_CHANGE) v2 = parts.v2;
-    if (v3 === NO_CHANGE) v3 = parts.v3;
-    if (v4 === NO_CHANGE) v4 = parts.v4;
+    const part0 = data[bindingIndex++];
+    const part1 = data[bindingIndex++];
+    const part2 = data[bindingIndex++];
+    const part3 = data[bindingIndex++];
+    const part4 = data[bindingIndex++];
+    if (v0 === NO_CHANGE) v0 = part0;
+    if (v1 === NO_CHANGE) v1 = part1;
+    if (v2 === NO_CHANGE) v2 = part2;
+    if (v3 === NO_CHANGE) v3 = part3;
+    if (v4 === NO_CHANGE) v4 = part4;
+
     if (different =
-            (isDifferent(parts.v0, v0) || isDifferent(parts.v1, v1) || isDifferent(parts.v2, v2) ||
-             isDifferent(parts.v3, v3) || isDifferent(parts.v4, v4))) {
-      parts.v0 = v0;
-      parts.v1 = v1;
-      parts.v2 = v2;
-      parts.v3 = v3;
-      parts.v4 = v4;
+            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+             isDifferent(part3, v3) || isDifferent(part4, v4))) {
+      data[bindingIndex - 5] = v0;
+      data[bindingIndex - 4] = v1;
+      data[bindingIndex - 3] = v2;
+      data[bindingIndex - 2] = v3;
+      data[bindingIndex - 1] = v4;
     }
   }
   return different ?
@@ -1550,24 +1570,35 @@ export function bind6(
     if (typeof currentView.bindingStartIndex !== 'number') {
       bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5};
+    data[bindingIndex++] = v0;
+    data[bindingIndex++] = v1;
+    data[bindingIndex++] = v2;
+    data[bindingIndex++] = v3;
+    data[bindingIndex++] = v4;
+    data[bindingIndex++] = v5;
   } else {
-    const parts: {v0: any, v1: any, v2: any, v3: any, v4: any, v5: any} = data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = parts.v0;
-    if (v1 === NO_CHANGE) v1 = parts.v1;
-    if (v2 === NO_CHANGE) v2 = parts.v2;
-    if (v3 === NO_CHANGE) v3 = parts.v3;
-    if (v4 === NO_CHANGE) v4 = parts.v4;
-    if (v5 === NO_CHANGE) v5 = parts.v5;
+    const part0 = data[bindingIndex++];
+    const part1 = data[bindingIndex++];
+    const part2 = data[bindingIndex++];
+    const part3 = data[bindingIndex++];
+    const part4 = data[bindingIndex++];
+    const part5 = data[bindingIndex++];
+    if (v0 === NO_CHANGE) v0 = part0;
+    if (v1 === NO_CHANGE) v1 = part1;
+    if (v2 === NO_CHANGE) v2 = part2;
+    if (v3 === NO_CHANGE) v3 = part3;
+    if (v4 === NO_CHANGE) v4 = part4;
+    if (v5 === NO_CHANGE) v5 = part5;
+
     if (different =
-            (isDifferent(parts.v0, v0) || isDifferent(parts.v1, v1) || isDifferent(parts.v2, v2) ||
-             isDifferent(parts.v3, v3) || isDifferent(parts.v4, v4) || isDifferent(parts.v5, v5))) {
-      parts.v0 = v0;
-      parts.v1 = v1;
-      parts.v2 = v2;
-      parts.v3 = v3;
-      parts.v4 = v4;
-      parts.v5 = v5;
+            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5))) {
+      data[bindingIndex - 6] = v0;
+      data[bindingIndex - 5] = v1;
+      data[bindingIndex - 4] = v2;
+      data[bindingIndex - 3] = v3;
+      data[bindingIndex - 2] = v4;
+      data[bindingIndex - 1] = v5;
     }
   }
   return different ?
@@ -1604,28 +1635,39 @@ export function bind7(
     if (typeof currentView.bindingStartIndex !== 'number') {
       bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5, v6: v6};
+    data[bindingIndex++] = v0;
+    data[bindingIndex++] = v1;
+    data[bindingIndex++] = v2;
+    data[bindingIndex++] = v3;
+    data[bindingIndex++] = v4;
+    data[bindingIndex++] = v5;
+    data[bindingIndex++] = v6;
   } else {
-    const parts: {v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any} =
-        data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = parts.v0;
-    if (v1 === NO_CHANGE) v1 = parts.v1;
-    if (v2 === NO_CHANGE) v2 = parts.v2;
-    if (v3 === NO_CHANGE) v3 = parts.v3;
-    if (v4 === NO_CHANGE) v4 = parts.v4;
-    if (v5 === NO_CHANGE) v5 = parts.v5;
-    if (v6 === NO_CHANGE) v6 = parts.v6;
+    const part0 = data[bindingIndex++];
+    const part1 = data[bindingIndex++];
+    const part2 = data[bindingIndex++];
+    const part3 = data[bindingIndex++];
+    const part4 = data[bindingIndex++];
+    const part5 = data[bindingIndex++];
+    const part6 = data[bindingIndex++];
+    if (v0 === NO_CHANGE) v0 = part0;
+    if (v1 === NO_CHANGE) v1 = part1;
+    if (v2 === NO_CHANGE) v2 = part2;
+    if (v3 === NO_CHANGE) v3 = part3;
+    if (v4 === NO_CHANGE) v4 = part4;
+    if (v5 === NO_CHANGE) v5 = part5;
+    if (v6 === NO_CHANGE) v6 = part6;
     if (different =
-            (isDifferent(parts.v0, v0) || isDifferent(parts.v1, v1) || isDifferent(parts.v2, v2) ||
-             isDifferent(parts.v3, v3) || isDifferent(parts.v4, v4) || isDifferent(parts.v5, v5) ||
-             isDifferent(parts.v6, v6))) {
-      parts.v0 = v0;
-      parts.v1 = v1;
-      parts.v2 = v2;
-      parts.v3 = v3;
-      parts.v4 = v4;
-      parts.v5 = v5;
-      parts.v6 = v6;
+            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5) ||
+             isDifferent(part6, v6))) {
+      data[bindingIndex - 7] = v0;
+      data[bindingIndex - 6] = v1;
+      data[bindingIndex - 5] = v2;
+      data[bindingIndex - 4] = v3;
+      data[bindingIndex - 3] = v4;
+      data[bindingIndex - 2] = v5;
+      data[bindingIndex - 1] = v6;
     }
   }
   return different ?
@@ -1664,30 +1706,43 @@ export function bind8(
     if (typeof currentView.bindingStartIndex !== 'number') {
       bindingIndex = currentView.bindingStartIndex = data.length;
     }
-    data[bindingIndex++] = {v0: v0, v1: v1, v2: v2, v3: v3, v4: v4, v5: v5, v6: v6, v7: v7};
+    data[bindingIndex++] = v0;
+    data[bindingIndex++] = v1;
+    data[bindingIndex++] = v2;
+    data[bindingIndex++] = v3;
+    data[bindingIndex++] = v4;
+    data[bindingIndex++] = v5;
+    data[bindingIndex++] = v6;
+    data[bindingIndex++] = v7;
   } else {
-    const parts: {v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any} =
-        data[bindingIndex++];
-    if (v0 === NO_CHANGE) v0 = parts.v0;
-    if (v1 === NO_CHANGE) v1 = parts.v1;
-    if (v2 === NO_CHANGE) v2 = parts.v2;
-    if (v3 === NO_CHANGE) v3 = parts.v3;
-    if (v4 === NO_CHANGE) v4 = parts.v4;
-    if (v5 === NO_CHANGE) v5 = parts.v5;
-    if (v6 === NO_CHANGE) v6 = parts.v6;
-    if (v7 === NO_CHANGE) v7 = parts.v7;
+    const part0 = data[bindingIndex++];
+    const part1 = data[bindingIndex++];
+    const part2 = data[bindingIndex++];
+    const part3 = data[bindingIndex++];
+    const part4 = data[bindingIndex++];
+    const part5 = data[bindingIndex++];
+    const part6 = data[bindingIndex++];
+    const part7 = data[bindingIndex++];
+    if (v0 === NO_CHANGE) v0 = part0;
+    if (v1 === NO_CHANGE) v1 = part1;
+    if (v2 === NO_CHANGE) v2 = part2;
+    if (v3 === NO_CHANGE) v3 = part3;
+    if (v4 === NO_CHANGE) v4 = part4;
+    if (v5 === NO_CHANGE) v5 = part5;
+    if (v6 === NO_CHANGE) v6 = part6;
+    if (v7 === NO_CHANGE) v7 = part7;
     if (different =
-            (isDifferent(parts.v0, v0) || isDifferent(parts.v1, v1) || isDifferent(parts.v2, v2) ||
-             isDifferent(parts.v3, v3) || isDifferent(parts.v4, v4) || isDifferent(parts.v5, v5) ||
-             isDifferent(parts.v6, v6))) {
-      parts.v0 = v0;
-      parts.v1 = v1;
-      parts.v2 = v2;
-      parts.v3 = v3;
-      parts.v4 = v4;
-      parts.v5 = v5;
-      parts.v6 = v6;
-      parts.v7 = v7;
+            (isDifferent(part0, v0) || isDifferent(part1, v1) || isDifferent(part2, v2) ||
+             isDifferent(part3, v3) || isDifferent(part4, v4) || isDifferent(part5, v5) ||
+             isDifferent(part6, v6) || isDifferent(part7, v7))) {
+      data[bindingIndex - 8] = v0;
+      data[bindingIndex - 7] = v1;
+      data[bindingIndex - 6] = v2;
+      data[bindingIndex - 5] = v3;
+      data[bindingIndex - 4] = v4;
+      data[bindingIndex - 3] = v5;
+      data[bindingIndex - 2] = v6;
+      data[bindingIndex - 1] = v7;
     }
   }
   return different ?
