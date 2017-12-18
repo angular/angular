@@ -11,8 +11,10 @@
 import * as viewEngine from '../core';
 
 import {LContainer, LElement, LNodeFlags, LNodeInjector} from './l_node';
+import {assertNodeType} from './node_assert';
 import {ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {notImplemented, stringify} from './util';
+
 
 
 /**
@@ -316,10 +318,8 @@ class ElementRef implements viewEngine.ElementRef {
  * @returns The TemplateRef instance to use
  */
 export function getOrCreateTemplateRef<T>(di: LNodeInjector): viewEngine.TemplateRef<T> {
+  ngDevMode && assertNodeType(di.node, LNodeFlags.Container);
   const data = (di.node as LContainer).data;
-  if (data === null || data.template === null) {
-    throw createInjectionError('Directive does not have a template.', null);
-  }
   return di.templateRef ||
       (di.templateRef = new TemplateRef<any>(getOrCreateElementRef(di), data.template));
 }
@@ -328,7 +328,7 @@ export function getOrCreateTemplateRef<T>(di: LNodeInjector): viewEngine.Templat
 class TemplateRef<T> implements viewEngine.TemplateRef<T> {
   readonly elementRef: viewEngine.ElementRef;
 
-  constructor(elementRef: viewEngine.ElementRef, template: ComponentTemplate<T>) {
+  constructor(elementRef: viewEngine.ElementRef, template: ComponentTemplate<T>|null) {
     this.elementRef = elementRef;
   }
 

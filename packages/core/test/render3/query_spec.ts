@@ -5,10 +5,38 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-import {D, E, Q, QueryList, e, m, qR} from '../../src/render3/index';
+import {C, D, E, Q, QueryList, c, e, m, qR} from '../../src/render3/index';
+import {QueryReadType} from '../../src/render3/interfaces';
 
 import {createComponent, renderComponent} from './render_util';
+
+
+/**
+ * Helper function to check if a given candidate object resembles ElementRef
+ * @param candidate
+ * @returns {boolean}
+ */
+function isElementRef(candidate: any): boolean {
+  return candidate.nativeElement != null;
+}
+
+/**
+ * Helper function to check if a given candidate object resembles TemplateRef
+ * @param candidate
+ * @returns {boolean}
+ */
+function isTemplateRef(candidate: any): boolean {
+  return candidate.createEmbeddedView != null && candidate.createComponent == null;
+}
+
+/**
+ * Helper function to check if a given candidate object resembles ViewContainerRef
+ * @param candidate
+ * @returns {boolean}
+ */
+function isViewContainerRef(candidate: any): boolean {
+  return candidate.createEmbeddedView != null && candidate.createComponent != null;
+}
 
 describe('query', () => {
   it('should project query children', () => {
@@ -51,7 +79,7 @@ describe('query', () => {
 
   describe('local names', () => {
 
-    it('should query for a single element', () => {
+    it('should query for a single element and read ElementRef', () => {
 
       let elToQuery;
       /**
@@ -79,7 +107,7 @@ describe('query', () => {
       expect(query.first.nativeElement).toEqual(elToQuery);
     });
 
-    it('should query for multiple elements', () => {
+    it('should query for multiple elements and read ElementRef', () => {
 
       let el1ToQuery;
       let el2ToQuery;
@@ -110,6 +138,154 @@ describe('query', () => {
       expect(query.length).toBe(2);
       expect(query.first.nativeElement).toEqual(el1ToQuery);
       expect(query.last.nativeElement).toEqual(el2ToQuery);
+    });
+
+    it('should read ElementRef from an element when explicitly asked for', () => {
+
+      let elToQuery;
+      /**
+       * <div #foo></div>
+       * <div></div>
+       * class Cmpt {
+       *  @ViewChildren('foo', {read: ElementRef}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo'], false, QueryReadType.ElementRef));
+          elToQuery = E(1, 'div', [], 'foo');
+          e();
+          E(2, 'div');
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(isElementRef(query.first)).toBeTruthy();
+      expect(query.first.nativeElement).toEqual(elToQuery);
+    });
+
+    it('should read ViewContainerRef from element nodes when explicitly asked for', () => {
+      /**
+       * <div #foo></div>
+       * class Cmpt {
+       *  @ViewChildren('foo', {read: ViewContainerRef}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo'], false, QueryReadType.ViewContainerRef));
+          E(1, 'div', [], 'foo');
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(isViewContainerRef(query.first)).toBeTruthy();
+    });
+
+    it('should read ViewContainerRef from container nodes when explicitly asked for', () => {
+      /**
+       * <ng-template #foo></ng-template>
+       * class Cmpt {
+       *  @ViewChildren('foo', {read: ViewContainerRef}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo'], false, QueryReadType.ViewContainerRef));
+          C(1, undefined, undefined, undefined, 'foo');
+          c();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(isViewContainerRef(query.first)).toBeTruthy();
+    });
+
+    it('should read ElementRef with a native element pointing to comment DOM node from containers',
+       () => {
+         /**
+          * <ng-template #foo></ng-template>
+          * class Cmpt {
+          *  @ViewChildren('foo', {read: ElementRef}) query;
+          * }
+          */
+         const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+           let tmp: any;
+           if (cm) {
+             m(0, Q(['foo'], false, QueryReadType.ElementRef));
+             C(1, undefined, undefined, undefined, 'foo');
+             c();
+           }
+           qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+         });
+
+         const cmptInstance = renderComponent(Cmpt);
+         const query = (cmptInstance.query as QueryList<any>);
+         expect(query.length).toBe(1);
+         expect(isElementRef(query.first)).toBeTruthy();
+         expect(query.first.nativeElement.nodeType).toBe(8);  // Node.COMMENT_NODE = 8
+       });
+
+    it('should read TemplateRef from container nodes by default', () => {
+      // http://plnkr.co/edit/BVpORly8wped9I3xUYsX?p=preview
+      /**
+       * <ng-template #foo></ng-template>
+       * class Cmpt {
+       *  @ViewChildren('foo') query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo']));
+          C(1, undefined, undefined, undefined, 'foo');
+          c();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(isTemplateRef(query.first)).toBeTruthy();
+    });
+
+
+    it('should read TemplateRef from container nodes when explicitly asked for', () => {
+      /**
+       * <ng-template #foo></ng-template>
+       * class Cmpt {
+       *  @ViewChildren('foo', {read: TemplateRef}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo'], false, QueryReadType.TemplateRef));
+          C(1, undefined, undefined, undefined, 'foo');
+          c();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(isTemplateRef(query.first)).toBeTruthy();
     });
 
   });

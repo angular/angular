@@ -210,6 +210,14 @@ export interface ViewOrContainerState {
  */
 export type ProjectionState = Array<LElement|LText|LContainer>;
 
+/**
+ * An enum representing possible values of the "read" option for queries.
+ */
+export const enum QueryReadType {
+  ElementRef = 0,
+  ViewContainerRef = 1,
+  TemplateRef = 2,
+}
 
 /**
  * Used for tracking queries (e.g. ViewChild, ContentChild).
@@ -245,8 +253,11 @@ export interface QueryState {
    * @param queryList `QueryList` to update with changes.
    * @param predicate Either `Type` or selector array of [key, value] predicates.
    * @param descend If true the query will recursively apply to the children.
+   * @param read Indicates which token should be read from DI for this query.
    */
-  track<T>(queryList: QueryList<T>, predicate: Type<T>|any[], descend?: boolean): void;
+  track<T>(
+      queryList: QueryList<T>, predicate: Type<T>|string[], descend?: boolean,
+      read?: QueryReadType): void;
 }
 
 /**
