@@ -14,6 +14,17 @@ export function assertNodeType(node: LNode, type: LNodeFlags) {
   assertEqual(node.flags & LNodeFlags.TYPE_MASK, type, 'Node.type', typeSerializer);
 }
 
+export function assertNodeOfPossibleTypes(node: LNode, ...types: LNodeFlags[]) {
+  assertNotEqual(node, null, 'node');
+  const nodeType = (node.flags & LNodeFlags.TYPE_MASK);
+  for (let i = 0; i < types.length; i++) {
+    if (nodeType === types[i]) {
+      return;
+    }
+  }
+  throw new Error(
+      `Expected node of possible types: ${types.map(typeSerializer).join(', ')} but got ${typeSerializer(nodeType)}`);
+}
 
 function typeSerializer(type: LNodeFlags): string {
   if (type == LNodeFlags.Projection) return 'Projection';
