@@ -14,6 +14,7 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
 {
   describe('DefaultDomRendererV2', () => {
+    if (isNode) return;
     let renderer: Renderer2;
 
     beforeEach(() => {

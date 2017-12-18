@@ -17,6 +17,7 @@ import {el} from '../../testing/src/browser_util';
 
 {
   describe('BrowserAnimationBuilder', () => {
+    if (isNode) return;
     let element: any;
     beforeEach(() => {
       element = el('<div></div>');
