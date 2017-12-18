@@ -23,8 +23,6 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular_src/packages/_testing_init/init_node_spec.js"],
-    # dissable since tests are running but not yet passing
-    tags = ["manual"],
     deps = [
         ":test_lib",
         "//packages/_testing_init:node",
@@ -36,8 +34,6 @@ ts_web_test(
     bootstrap = [
         "//:angular_bootstrap_scripts",
     ],
-    # dissable since tests are running but not yet passing
-    tags = ["manual"],
     # do not sort
     deps = [
         "//packages/_testing_init:browser",
