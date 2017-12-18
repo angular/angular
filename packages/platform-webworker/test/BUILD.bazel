@@ -21,21 +21,21 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular_src/packages/_testing_init/init_node_spec.js"],
+    bootstrap = ["angular_src/tools/testing/init_node_spec.js"],
     deps = [
         ":test_lib",
-        "//packages/_testing_init:node",
+        "//tools/testing:node",
     ],
 )
 
 ts_web_test(
     name = "test_web",
     bootstrap = [
-        "//:angular_bootstrap_scripts",
+        "//:web_test_bootstrap_scripts",
     ],
     # do not sort
     deps = [
-        "//packages/_testing_init:browser",
+        "//tools/testing:browser",
         ":test_lib",
     ],
 )

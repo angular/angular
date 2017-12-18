@@ -2,8 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "tsconfig.json",
-    "node_modules/angular/angular.js",
-    "node_modules/angular-mocks/angular-mocks.js",
 ])
 
 # This rule belongs in node_modules/BUILD
@@ -44,7 +42,7 @@ filegroup(
 )
 
 filegroup(
-    name = "angular_bootstrap_scripts",
+    name = "web_test_bootstrap_scripts",
     # do not sort
     srcs = [
         "//:node_modules/reflect-metadata/Reflect.js",
@@ -54,5 +52,14 @@ filegroup(
         "//:node_modules/zone.js/dist/fake-async-test.js",
         "//:node_modules/zone.js/dist/proxy.js",
         "//:node_modules/zone.js/dist/jasmine-patch.js",
+    ],
+)
+
+filegroup(
+    name = "angularjs",
+    # do not sort
+    srcs = [
+        "//:node_modules/angular/angular.js",
+        "//:node_modules/angular-mocks/angular-mocks.js",
     ],
 )
