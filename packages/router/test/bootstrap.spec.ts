@@ -15,6 +15,7 @@ import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 
 
 describe('bootstrap', () => {
+  if (isNode) return;
   let log: any[] = [];
   let testProviders: any[] = null !;
 
