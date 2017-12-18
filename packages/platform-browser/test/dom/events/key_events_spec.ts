@@ -11,6 +11,7 @@ import {KeyEventsPlugin} from '@angular/platform-browser/src/dom/events/key_even
 
 {
   describe('KeyEventsPlugin', () => {
+    if (isNode) return;
 
     it('should ignore unrecognized events', () => {
       expect(KeyEventsPlugin.parseEventName('keydown')).toEqual(null);

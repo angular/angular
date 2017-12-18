@@ -10,6 +10,7 @@ import {HammerGestureConfig, HammerGesturesPlugin} from '@angular/platform-brows
 
 {
   describe('HammerGesturesPlugin', () => {
+    if (isNode) return;
 
     it('should implement addGlobalEventListener', () => {
       const plugin = new HammerGesturesPlugin(document, new HammerGestureConfig());

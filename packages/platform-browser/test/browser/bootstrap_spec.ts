@@ -132,6 +132,7 @@ function bootstrap(
       lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
+    if (isNode) return;
     let compilerConsole: DummyConsole;
 
     beforeEachProviders(() => { return [Log]; });
