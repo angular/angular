@@ -13,7 +13,8 @@ import {DomEventsPlugin} from '@angular/platform-browser/src/dom/events/dom_even
 import {EventManager, EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
 import {el} from '../../../testing/src/browser_util';
 
-{
+(function() {
+  if (isNode) return;
   let domEventPlugin: DomEventsPlugin;
   let doc: any;
   let zone: NgZone;
@@ -319,7 +320,7 @@ import {el} from '../../../testing/src/browser_util';
       expect(receivedEvent).toBe(null);
     });
   });
-}
+})();
 
 /** @internal */
 class FakeEventManagerPlugin extends EventManagerPlugin {

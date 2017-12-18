@@ -12,6 +12,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 {
   describe('cookies', () => {
+    if (isNode) return;
     it('sets cookie values', () => {
       getDOM().setCookie('my test cookie', 'my test value');
       getDOM().setCookie('my other cookie', 'my test value 2');

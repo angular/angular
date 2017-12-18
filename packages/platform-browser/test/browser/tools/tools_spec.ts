@@ -12,6 +12,7 @@ import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';
 
 {
   describe('profiler', () => {
+    if (isNode) return;
     beforeEach(() => { enableDebugTools((<any>new SpyComponentRef())); });
 
     afterEach(() => { disableDebugTools(); });
