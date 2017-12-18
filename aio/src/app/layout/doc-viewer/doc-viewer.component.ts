@@ -15,6 +15,9 @@ import { Logger } from 'app/shared/logger.service';
 import { TocService } from 'app/shared/toc.service';
 
 
+// Constants
+export const NO_ANIMATIONS = 'no-animations';
+
 // Initialization prevents flicker once pre-rendering is on
 const initialDocViewerElement = document.querySelector('aio-doc-viewer');
 const initialDocViewerContent = initialDocViewerElement ? initialDocViewerElement.innerHTML : '';
@@ -186,8 +189,11 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     };
     const animateProp =
         (elem: HTMLElement, prop: string, from: string, to: string, duration = 333) => {
+          const animationsDisabled = !DocViewerComponent.animationsEnabled
+                                     || this.hostElement.classList.contains(NO_ANIMATIONS);
+
           elem.style.transition = '';
-          return !DocViewerComponent.animationsEnabled
+          return animationsDisabled
               ? this.void$.do(() => elem.style[prop] = to)
               : this.void$
                     // In order to ensure that the `from` value will be applied immediately (i.e.
