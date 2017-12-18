@@ -32,8 +32,6 @@ ts_web_test(
     bootstrap = [
         "//:angular_bootstrap_scripts",
     ],
-    # dissable since tests are running but not yet passing
-    tags = ["manual"],
     # do not sort
     deps = [
         "//packages/_testing_init:browser",
