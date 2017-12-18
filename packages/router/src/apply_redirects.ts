@@ -166,7 +166,7 @@ class ApplyRedirects {
     const concattedProcessedRoutes$ = concatAll.call(processedRoutes$);
     const first$ = first.call(concattedProcessedRoutes$, (s: any) => !!s);
     return _catch.call(first$, (e: any, _: any): Observable<UrlSegmentGroup> => {
-      if (e instanceof EmptyError) {
+      if (e instanceof EmptyError || e.name === 'EmptyError') {
         if (this.noLeftoversInUrl(segmentGroup, segments, outlet)) {
           return of (new UrlSegmentGroup([], {}));
         }
