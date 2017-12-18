@@ -22,13 +22,14 @@ ts_library(
 ts_web_test(
     name = "test_web",
     bootstrap = [
-        "//:angular_bootstrap_scripts",
-        "//:node_modules/angular/angular.js",
-        "//:node_modules/angular-mocks/angular-mocks.js",
+        "//:web_test_bootstrap_scripts",
+        "//:angularjs",
     ],
+    # "exclusive" - a work around for circle CI to prevent too many concurrent tests. :-()
+    tags = ["exclusive"],
     # do not sort
     deps = [
-        "//packages/_testing_init:browser",
+        "//tools/testing:browser",
         ":test_lib",
     ],
 )
