@@ -11,7 +11,7 @@ import './ng_dev_mode';
 import {ElementRef, TemplateRef, Type, ViewContainerRef} from '../core';
 
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
-import {ContainerState, CssSelector, ProjectionState, QueryState, ViewState} from './interfaces';
+import {ContainerState, CssSelector, ProjectionState, QueryReadType, QueryState, ViewState} from './interfaces';
 import {LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LProjection, LText, LView} from './l_node';
 
 import {NgStaticData, LNodeStatic, LContainerStatic, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './l_node_static';
@@ -966,7 +966,8 @@ export function lifecycle(lifeCycle: LifecycleHook, self?: any, method?: Functio
  * @param attrs The attrs attached to the container, if applicable
  */
 export function containerStart(
-    index: number, template?: ComponentTemplate<any>, tagName?: string, attrs?: string[]): void {
+    index: number, template?: ComponentTemplate<any>, tagName?: string, attrs?: string[],
+    localName?: string): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
 
   // If the direct parent of the container is a view, its views (including its comment)
@@ -993,7 +994,7 @@ export function containerStart(
 
   if (node.staticData == null) {
     node.staticData = ngStaticData[index] =
-        createNodeStatic(tagName || null, attrs || null, [], null);
+        createNodeStatic(tagName || null, attrs || null, [], localName || null);
   }
 
   // Containers are added to the current view tree instead of their embedded views
@@ -1009,6 +1010,8 @@ export function containerEnd() {
     previousOrParentNode = previousOrParentNode.parent !;
   }
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
+  const query = previousOrParentNode.query;
+  query && query.addNode(previousOrParentNode);
 }
 
 /**
@@ -1716,11 +1719,12 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-export function query<T>(predicate: Type<any>| string[], descend?: boolean): QueryList<T> {
+export function query<T>(
+    predicate: Type<any>| string[], descend?: boolean, read?: QueryReadType): QueryList<T> {
   ngDevMode && assertPreviousIsParent();
   const queryList = new QueryList<T>();
   const query = currentQuery || (currentQuery = new QueryState_());
-  query.track(queryList, predicate, descend);
+  query.track(queryList, predicate, descend, read);
   return queryList;
 }
 
