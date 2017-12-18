@@ -25,7 +25,6 @@
 # tinayuangao - Tina Gao
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
-# wardbell - Ward Bell
 
 
 version: 2
@@ -312,7 +311,6 @@ groups:
       - juleskremer #primary
       - Foxandxss
       - stephenfluin
-      - wardbell
       - petebacondarwin
       - gkalpak
       - IgorMinar #fallback
