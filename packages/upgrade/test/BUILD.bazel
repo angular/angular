@@ -24,9 +24,8 @@ ts_web_test(
     bootstrap = [
         "//:angular_bootstrap_scripts",
         "//:node_modules/angular/angular.js",
+        "//:node_modules/angular-mocks/angular-mocks.js",
     ],
-    # dissable since tests are running but not yet passing
-    tags = ["manual"],
     # do not sort
     deps = [
         "//packages/_testing_init:browser",
