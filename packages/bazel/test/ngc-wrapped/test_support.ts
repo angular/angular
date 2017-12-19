@@ -47,7 +47,7 @@ export function setup(
   const bazelBinPath = path.resolve(basePath, bazelBin);
   fs.mkdirSync(bazelBinPath);
 
-  const angularCorePath = path.resolve(runfilesPath, 'angular_src', 'packages', 'core');
+  const angularCorePath = path.resolve(runfilesPath, 'angular', 'packages', 'core');
   const ngFiles = listFilesRecursive(angularCorePath);
 
   const tsConfigJsonPath = path.resolve(basePath, tsconfig);
@@ -113,7 +113,8 @@ export function setup(
 
     const emptyTsConfig = ts.readConfigFile(
         path.resolve(
-            runfilesPath, 'angular', 'test', 'ngc-wrapped', 'empty', 'empty_tsconfig.json'),
+            runfilesPath, 'angular', 'packages', 'bazel', 'test', 'ngc-wrapped', 'empty',
+            'empty_tsconfig.json'),
         read);
 
     const tsconfig = createTsConfig({

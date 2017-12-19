@@ -1,4 +1,4 @@
-workspace(name = "angular_src")
+workspace(name = "angular")
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
@@ -23,11 +23,6 @@ git_repository(
 load("@build_bazel_rules_typescript//:setup.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
-
-local_repository(
-    name = "angular",
-    path = "packages/bazel",
-)
 
 local_repository(
     name = "rxjs",

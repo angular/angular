@@ -268,13 +268,13 @@ NG_MODULE_ATTRIBUTES = {
     "no_i18n": attr.bool(default = False),
 
     "compiler": attr.label(
-        default = Label("//src/ngc-wrapped"),
+        default = Label("//packages/bazel/src/ngc-wrapped"),
         executable = True,
         cfg = "host",
     ),
 
     "_ng_xi18n": attr.label(
-        default = Label("//src/ngc-wrapped:xi18n"),
+        default = Label("//packages/bazel/src/ngc-wrapped:xi18n"),
         executable = True,
         cfg = "host",
     ),
