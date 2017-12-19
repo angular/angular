@@ -9,12 +9,12 @@ ts_library(
     ],
     module_name = "@angular/bazel",
     tsconfig = ":tsconfig.json",
-    visibility = ["//test/ngc-wrapped:__subpackages__"],
+    visibility = ["//packages/bazel/test/ngc-wrapped:__subpackages__"],
     deps = [
         # BEGIN-INTERNAL
-        # Only needed when compiling within the Angular repo.
-        # Users will get this dependency from node_modules.
-        "@//packages/compiler-cli",
+        # Only needed when compiling Angular from sources.
+        # Users with an npm depnedency will get this dependency from node_modules.
+        "//packages/compiler-cli",
         # END-INTERNAL
         "@build_bazel_rules_typescript//internal/tsc_wrapped",
     ],
@@ -26,9 +26,7 @@ nodejs_binary(
         ":ngc_lib",
         "@build_bazel_rules_typescript//internal:worker_protocol.proto",
     ],
-    # Entry point assumes the user is outside this WORKSPACE,
-    # and references our rules with @angular//src/ngc-wrapped
-    entry_point = "angular/src/ngc-wrapped/index.js",
+    entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
     node_modules = "@build_bazel_rules_typescript_deps//:node_modules",
     visibility = ["//visibility:public"],
 )
@@ -38,8 +36,6 @@ nodejs_binary(
     data = [
         ":ngc_lib",
     ],
-    # Entry point assumes the user is outside this WORKSPACE,
-    # and references our rules with @angular//src/ngc-wrapped
-    entry_point = "angular/src/ngc-wrapped/index.js/extract_i18n.js",
+    entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js/extract_i18n.js",
     visibility = ["//visibility:public"],
 )

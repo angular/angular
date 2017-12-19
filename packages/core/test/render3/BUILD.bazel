@@ -46,7 +46,7 @@ ts_library(
 jasmine_node_test(
     name = "render3",
     bootstrap = [
-        "angular_src/packages/core/test/render3/load_domino",
+        "angular/packages/core/test/render3/load_domino",
     ],
     deps = [
         ":render3_node_lib",
