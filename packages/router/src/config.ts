@@ -277,11 +277,11 @@ export type UrlMatchResult = {
  * For instance, the following matcher matches html files.
  *
  * ```
- * function htmlFiles(url: UrlSegment[]) {
- *  return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
+ * export function htmlFiles(url: UrlSegment[]) {
+ *   return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
  * }
  *
- * const routes = [{ matcher: htmlFiles, component: HtmlCmp }];
+ * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
  * @experimental
