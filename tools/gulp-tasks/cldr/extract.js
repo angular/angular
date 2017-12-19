@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+ // clang-format off
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
@@ -37,7 +38,7 @@ const HEADER = `/**
 `;
 
 // tslint:disable:no-console
-module.exports = (gulp, done) => {
+module.exports = () => {
   const cldrData = require('./cldr-data');
   const LOCALES = cldrData.availableLocales;
 
@@ -72,17 +73,7 @@ module.exports = (gulp, done) => {
   console.log(`Writing file ${I18N_FOLDER}/currencies.ts`);
   fs.writeFileSync(`${RELATIVE_I18N_FOLDER}/currencies.ts`, generateCurrencies());
 
-  console.log(`All i18n cldr files have been generated, formatting files..."`);
-  const format = require('gulp-clang-format');
-  const clangFormat = require('clang-format');
-  return gulp
-    .src([
-        `${I18N_DATA_FOLDER}/**/*.ts`,
-        `${I18N_FOLDER}/currencies.ts`,
-        `${I18N_FOLDER}/locale_en.ts`
-      ], {base: '.'})
-    .pipe(format.format('file', clangFormat))
-    .pipe(gulp.dest('.'));
+  console.log(`All i18n cldr files have been generated`);
 };
 
 /**
