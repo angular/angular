@@ -4,12 +4,14 @@
   <mat-progress-bar mode="indeterminate" color="warn"></mat-progress-bar>
 </div>
 
-<mat-toolbar color="primary" class="app-toolbar">
-  <button class="hamburger" [class.starting]="isStarting" mat-button
-    (click)="sidenav.toggle()" title="Docs menu">
-    <mat-icon [ngClass]="{'sidenav-open': !isSideBySide }" svgIcon="menu"></mat-icon>
+<mat-toolbar color="primary" class="app-toolbar" [class.transitioning]="isTransitioning">
+  <button mat-button class="hamburger" (click)="sidenav.toggle()" title="Docs menu">
+    <mat-icon svgIcon="menu"></mat-icon>
   </button>
-  <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
+  <a class="nav-link home" href="/" [ngSwitch]="isSideBySide">
+    <img *ngSwitchCase="true" src="assets/images/logos/angular/logo-nav@2x.png" width="150" height="40" title="Home" alt="Home">
+    <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
+  </a>
   <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
   <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
 </mat-toolbar>
@@ -17,7 +19,7 @@
 
 <mat-sidenav-container class="sidenav-container" [class.starting]="isStarting" [class.has-floating-toc]="hasFloatingToc" role="main">
 
-  <mat-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
+  <mat-sidenav [ngClass]="{'collapsed': !isSideBySide}" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
     <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="false"></aio-nav-menu>
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="isSideBySide"></aio-nav-menu>
 
@@ -28,7 +30,13 @@
 
   <section class="sidenav-content" [id]="pageId" role="content">
     <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
-    <aio-doc-viewer [doc]="currentDocument" (docReady)="onDocReady()" (docRemoved)="onDocRemoved()" (docInserted)="onDocInserted()"></aio-doc-viewer>
+    <aio-doc-viewer [class.no-animations]="isStarting"
+        [doc]="currentDocument"
+        (docReady)="onDocReady()"
+        (docRemoved)="onDocRemoved()"
+        (docInserted)="onDocInserted()"
+        (docRendered)="onDocRendered()">
+    </aio-doc-viewer>
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
   </section>
 
