@@ -1,3 +1,77 @@
+// DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
+mat-toolbar.mat-toolbar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  padding: 0 16px 0 0;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
+
+  mat-icon {
+    color: $white;
+  }
+}
+
+
+// HOME PAGE OVERRIDE: TOPNAV TOOLBAR
+aio-shell.page-home mat-toolbar.mat-toolbar {
+  background-color: transparent;
+  transition: background-color .2s linear .3s;
+
+  @media (max-width: 480px) {
+    background-color: $blue;
+  }
+}
+
+
+// MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
+aio-shell.page-home mat-toolbar.mat-toolbar,
+aio-shell.page-features mat-toolbar.mat-toolbar,
+aio-shell.page-events mat-toolbar.mat-toolbar,
+aio-shell.page-resources mat-toolbar.mat-toolbar {
+  box-shadow: none;
+
+  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
+  @media (min-width: 481px) {
+    position: absolute;
+  }
+
+  @media (min-width: 992px) {
+    button.hamburger {
+      margin: 0 24px 0 -88px;
+    }
+  }
+}
+
+
+// HAMBURGER BUTTON
+.hamburger.mat-button {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  transition-duration: .4s;
+  transition-property: color, margin;
+  transition-timing-function: cubic-bezier(.25, .8, .25, 1);
+
+  &.starting {
+    transition-duration: 150ms;
+    transition-property: background-color, color;
+    transition-timing-function: ease-in-out;
+  }
+
+  &:hover {
+    color: $offwhite;
+  }
+
+  & .mat-icon {
+    color: white;
+    position: inherit;
+  }
+}
+
+
+// HOME NAV-LINK
 .nav-link.home img {
   position: relative;
   margin-top: -21px;
@@ -12,6 +86,8 @@
   }
 }
 
+
+// TOP MENU
 aio-top-menu {
   display: flex;
   flex-direction: row;
@@ -54,55 +130,6 @@ aio-top-menu {
       padding: 8px 16px;
     }
   }
-}
-
-// HOME PAGE OVERRIDE: TOPNAV TOOLBAR HAMBURGER MENU
-aio-shell.page-home mat-toolbar.app-toolbar.mat-toolbar {
-  background-color: transparent;
-  transition: background-color .2s linear .3s;
-
-  @media (max-width: 480px) {
-    background-color: $blue;
-  }
-}
-
-// DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
-mat-toolbar.mat-toolbar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 10;
-  padding: 0 16px 0 0;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
-
-  mat-icon {
-    color: $white;
-  }
-}
-
-// MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
-aio-shell.page-home mat-toolbar.mat-toolbar,
-aio-shell.page-features mat-toolbar.mat-toolbar,
-aio-shell.page-events mat-toolbar.mat-toolbar,
-aio-shell.page-resources mat-toolbar.mat-toolbar {
-  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
-  @media (min-width: 481px) {
-    position: absolute;
-  }
-
-  @media (min-width: 992px) {
-    button.hamburger {
-      margin: 0 24px 0 -88px;
-    }
-  }
-}
-
-// REMOVE BOX SHADOW ON CERTAIN MARKETING PAGES
-aio-shell.page-home mat-toolbar.mat-toolbar,
-aio-shell.page-events mat-toolbar.mat-toolbar,
-aio-shell.page-resources mat-toolbar.mat-toolbar {
-  box-shadow: none;
 }
 
 
