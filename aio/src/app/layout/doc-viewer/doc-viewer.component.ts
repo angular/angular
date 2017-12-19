@@ -80,8 +80,6 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
 
     if (this.hostElement.firstElementChild) {
       this.currViewContainer = this.hostElement.firstElementChild as HTMLElement;
-    } else {
-      this.hostElement.appendChild(this.currViewContainer);
     }
 
     this.onDestroy$.subscribe(() => this.destroyEmbeddedComponents());
@@ -188,7 +186,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
       return 1000 * seconds;
     };
     const animateProp =
-        (elem: HTMLElement, prop: string, from: string, to: string, duration = 333) => {
+        (elem: HTMLElement, prop: string, from: string, to: string, duration = 200) => {
           const animationsDisabled = !DocViewerComponent.animationsEnabled
                                      || this.hostElement.classList.contains(NO_ANIMATIONS);
 
@@ -206,8 +204,8 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
                     .switchMap(() => timer(getActualDuration(elem))).switchMap(() => this.void$);
         };
 
-    const animateLeave = (elem: HTMLElement) => animateProp(elem, 'opacity', '1', '0.25');
-    const animateEnter = (elem: HTMLElement) => animateProp(elem, 'opacity', '0.25', '1');
+    const animateLeave = (elem: HTMLElement) => animateProp(elem, 'opacity', '1', '0.1');
+    const animateEnter = (elem: HTMLElement) => animateProp(elem, 'opacity', '0.1', '1');
 
     let done$ = this.void$;
 
