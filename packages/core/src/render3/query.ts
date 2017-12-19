@@ -20,9 +20,8 @@ import {assertNotNull} from './assert';
 import {DirectiveDef} from './definition_interfaces';
 import {getOrCreateContainerRef, getOrCreateElementRef, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from './di';
 import {LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LView, QueryReadType, QueryState} from './interfaces';
+import {LNodeStatic} from './l_node_static';
 import {assertNodeOfPossibleTypes} from './node_assert';
-
-
 
 /**
  * A predicate which determines if a given element/directive should be included in the query
@@ -121,9 +120,7 @@ function readDefaultInjectable(nodeInjector: LNodeInjector, node: LNode): viewEn
 
 function readFromNodeInjector(nodeInjector: LNodeInjector, node: LNode, read: QueryReadType | null):
     viewEngine_ElementRef|viewEngine_ViewContainerRef|viewEngine_TemplateRef<any>|undefined {
-  if (read === null) {
-    return readDefaultInjectable(nodeInjector, node);
-  } else if (read === QueryReadType.ElementRef) {
+  if (read === QueryReadType.ElementRef) {
     return getOrCreateElementRef(nodeInjector);
   } else if (read === QueryReadType.ViewContainerRef) {
     return getOrCreateContainerRef(nodeInjector);
@@ -134,6 +131,26 @@ function readFromNodeInjector(nodeInjector: LNodeInjector, node: LNode, read: Qu
   if (ngDevMode) {
     throw new Error(`Unrecognised read type for queries: ${read}`);
   }
+}
+
+/**
+ * Goes over local names for a given node and returns directive index
+ * (or -1 if a local name points to an element).
+ *
+ * @param staticData static data of a node to check
+ * @param selector selector to match
+ * @returns directive index, -1 or null if a selector didn't match any of the local names
+ */
+function getIdxOfMatchingSelector(staticData: LNodeStatic, selector: string): number|null {
+  const localNames = staticData.localNames;
+  if (localNames) {
+    for (let i = 0; i < localNames.length; i += 2) {
+      if (localNames[i] === selector) {
+        return localNames[i + 1] as number;
+      }
+    }
+  }
+  return null;
 }
 
 function add(predicate: QueryPredicate<any>| null, node: LNode) {
@@ -151,15 +168,22 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
         }
       }
     } else {
-      const staticData = node.staticData;
       const nodeInjector = getOrCreateNodeInjectorForNode(node as LElement | LContainer);
-      if (staticData && staticData.localName) {
-        const selector = predicate.selector !;
-        for (let i = 0; i < selector.length; i++) {
-          if (selector[i] === staticData.localName) {
-            const injectable = readFromNodeInjector(nodeInjector, node, predicate.read);
-            assertNotNull(injectable, 'injectable');
-            predicate.values.push(injectable);
+      const selector = predicate.selector !;
+      for (let i = 0; i < selector.length; i++) {
+        ngDevMode && assertNotNull(node.staticData, 'node.staticData');
+        const directiveIdx = getIdxOfMatchingSelector(node.staticData !, selector[i]);
+        // is anything on a node matching a selector?
+        if (directiveIdx !== null) {
+          if (predicate.read != null) {
+            predicate.values.push(readFromNodeInjector(nodeInjector, node, predicate.read));
+          } else {
+            // is local name pointing to a directive?
+            if (directiveIdx > -1) {
+              predicate.values.push(node.view.data[directiveIdx]);
+            } else {
+              predicate.values.push(readDefaultInjectable(nodeInjector, node));
+            }
           }
         }
       }
