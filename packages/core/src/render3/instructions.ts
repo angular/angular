@@ -35,7 +35,7 @@ export {queryRefresh} from './query';
 export const enum LifecycleHook {ON_INIT = 1, ON_DESTROY = 2, ON_CHANGES = 4}
 
 /**
- * directive (D) sets a property on all component instances using this constant as a key and the
+ * Directive (D) sets a property on all component instances using this constant as a key and the
  * component's host node (LElement) as the value. This is used in methods like detectChanges to
  * facilitate jumping from an instance to the host node.
  */
@@ -645,7 +645,7 @@ function createNodeStatic(
   return {
     tagName: tagName,
     attrs: attrs,
-    localName: localName,
+    localNames: localName ? [localName, -1] : null,
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
@@ -821,8 +821,10 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
  * @param directiveDef DirectiveDef object which contains information about the template.
  */
 export function directive<T>(index: number): T;
-export function directive<T>(index: number, directive: T, directiveDef: DirectiveDef<T>): T;
-export function directive<T>(index: number, directive?: T, directiveDef?: DirectiveDef<T>): T {
+export function directive<T>(
+    index: number, directive: T, directiveDef: DirectiveDef<T>, localName?: string): T;
+export function directive<T>(
+    index: number, directive?: T, directiveDef?: DirectiveDef<T>, localName?: string): T {
   let instance;
   if (directive == null) {
     // return existing
@@ -844,10 +846,17 @@ export function directive<T>(index: number, directive?: T, directiveDef?: Direct
     ngDevMode && assertDataInRange(index - 1);
     Object.defineProperty(
         directive, NG_HOST_SYMBOL, {enumerable: false, value: previousOrParentNode});
+
     data[index] = instance = directive;
 
     if (index >= ngStaticData.length) {
       ngStaticData[index] = directiveDef !;
+      if (localName) {
+        ngDevMode &&
+            assertNotNull(previousOrParentNode.staticData, 'previousOrParentNode.staticData');
+        const nodeStaticData = previousOrParentNode !.staticData !;
+        (nodeStaticData.localNames || (nodeStaticData.localNames = [])).push(localName, index);
+      }
     }
 
     const diPublic = directiveDef !.diPublic;

@@ -14,7 +14,7 @@ function testLStaticData(tagName: string, attrs: string[] | null): LNodeStatic {
   return {
     tagName,
     attrs,
-    localName: null,
+    localNames: null,
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
