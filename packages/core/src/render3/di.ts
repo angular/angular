@@ -82,8 +82,8 @@ export function bloomAdd(injector: LNodeInjector, type: viewEngine.Type<any>): v
 /**
  * Creates (or gets an existing) injector for a given element or container.
  *
- * @param {LElement | LContainer} node for which an injector should be retrieved / created.
- * @returns {LNodeInjector} Node injector
+ * @param node for which an injector should be retrieved / created.
+ * @returns Node injector
  */
 export function getOrCreateNodeInjectorForNode(node: LElement | LContainer): LNodeInjector {
   const nodeInjector = node.nodeInjector;

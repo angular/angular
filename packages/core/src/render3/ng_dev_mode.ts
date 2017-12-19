@@ -11,6 +11,8 @@ declare global {
   const ngDevMode: boolean;
 }
 
+declare let global: any;
+
 if (typeof ngDevMode == 'undefined') {
   if (typeof window != 'undefined') (window as any).ngDevMode = true;
   if (typeof self != 'undefined') (self as any).ngDevMode = true;
