@@ -45,13 +45,16 @@ function titleCaseWord(word: string) {
  */
 @Pipe({name: 'titlecase'})
 export class TitleCasePipe implements PipeTransform {
-  transform(value: string): string {
+  transform(value: string, regExp: RegExp = /\w+/g): string {
     if (!value) return value;
     if (typeof value !== 'string') {
       throw invalidPipeArgumentError(TitleCasePipe, value);
     }
+    if (!(regExp instanceof RegExp)) {
+      throw invalidPipeArgumentError(TitleCasePipe, regExp);
+    }
 
-    return value.split(/\b/g).map(word => titleCaseWord(word)).join('');
+    return value.replace(regExp, (word) => titleCaseWord(word));
   }
 }
 
