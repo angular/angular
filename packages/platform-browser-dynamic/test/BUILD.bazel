@@ -19,7 +19,7 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    bootstrap = ["angular_src/tools/testing/init_node_spec.js"],
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
     # dissable since tests are running but not yet passing
     tags = ["manual"],
     deps = [
