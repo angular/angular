@@ -31,8 +31,6 @@ ts_web_test(
     bootstrap = [
         "//:web_test_bootstrap_scripts",
     ],
-    # "exclusive" - a work around for circle CI to prevent too many concurrent tests. :-()
-    tags = ["exclusive"],
     # do not sort
     deps = [
         "//tools/testing:browser",
