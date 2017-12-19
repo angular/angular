@@ -21,6 +21,7 @@
     "skipLibCheck": true
   },
   "exclude": [
+    "testing",
     "node_modules",
     "typings-test",
     "public_api_guard",
