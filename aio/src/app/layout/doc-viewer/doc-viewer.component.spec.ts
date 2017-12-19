@@ -368,7 +368,7 @@ describe('DocViewerComponent', () => {
       });
 
       it('should display nothing if the document has no contents', async () => {
-        docViewer.currViewContainer.innerHTML = 'Test';
+        await doRender('Test');
         expect(docViewerEl.textContent).toBe('Test');
 
         await doRender('');
@@ -646,6 +646,8 @@ describe('DocViewerComponent', () => {
 
       oldCurrViewContainer.innerHTML = 'Current view';
       oldNextViewContainer.innerHTML = 'Next view';
+
+      docViewerEl.appendChild(oldCurrViewContainer);
 
       expect(docViewerEl.contains(oldCurrViewContainer)).toBe(true);
       expect(docViewerEl.contains(oldNextViewContainer)).toBe(false);
