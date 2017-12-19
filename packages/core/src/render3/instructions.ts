@@ -1162,7 +1162,7 @@ export const componentRefresh:
  * each projected node belongs (it re-distributes nodes among "buckets" where each "bucket" is
  * backed by a selector).
  *
- * @param {CssSelector[]} selectors
+ * @param selectors
  */
 export function projectionDef(selectors?: CssSelector[]): LNode[][] {
   const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
@@ -1212,9 +1212,9 @@ export function projectionDef(selectors?: CssSelector[]): LNode[][] {
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
  * to the projectionDef instruction.
  *
- * @param {number} nodeIndex
- * @param {number} localIndex - index under which distribution of projected nodes was memorized
- * @param {number} selectorIndex - 0 means <ng-content> without any selector
+ * @param nodeIndex
+ * @param localIndex - index under which distribution of projected nodes was memorized
+ * @param selectorIndex - 0 means <ng-content> without any selector
  */
 export function projection(nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
   const projectedNodes: ProjectionState = [];

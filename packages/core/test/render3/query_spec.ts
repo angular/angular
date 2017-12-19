@@ -14,7 +14,7 @@ import {createComponent, renderComponent} from './render_util';
 /**
  * Helper function to check if a given candidate object resembles ElementRef
  * @param candidate
- * @returns {boolean}
+ * @returns true if `ElementRef`.
  */
 function isElementRef(candidate: any): boolean {
   return candidate.nativeElement != null;
@@ -23,7 +23,7 @@ function isElementRef(candidate: any): boolean {
 /**
  * Helper function to check if a given candidate object resembles TemplateRef
  * @param candidate
- * @returns {boolean}
+ * @returns true if `TemplateRef`.
  */
 function isTemplateRef(candidate: any): boolean {
   return candidate.createEmbeddedView != null && candidate.createComponent == null;
@@ -32,7 +32,7 @@ function isTemplateRef(candidate: any): boolean {
 /**
  * Helper function to check if a given candidate object resembles ViewContainerRef
  * @param candidate
- * @returns {boolean}
+ * @returns true if `ViewContainerRef`.
  */
 function isViewContainerRef(candidate: any): boolean {
   return candidate.createEmbeddedView != null && candidate.createComponent != null;

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {renderComponent} from '@angular/core/src/render3/index';
+import {ɵrenderComponent as renderComponent} from '@angular/core';
 import {bindAction, profile} from '../../util';
 import {TreeFunction, createDom, destroyDom, detectChanges} from '../render3/tree';
 

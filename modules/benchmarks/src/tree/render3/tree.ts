@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, T, V, b, b1, c, cR, cr, defineComponent, detectChanges as _detectChanges, e, p, s, t, v} from '@angular/core/src/render3/index';
+import {ɵC as C, ɵD as D, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵb1 as b1, ɵc as c, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵp as p, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
 import {ComponentDef} from '@angular/core/src/render3/public_interfaces';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
@@ -57,11 +57,11 @@ export class TreeComponent {
           {
             if (cm0) {
               E(0, TreeComponent.ngComponentDef);
-              { D(0, TreeComponent.ngComponentDef.n(), TreeComponent.ngComponentDef); }
+              { D(1, TreeComponent.ngComponentDef.n(), TreeComponent.ngComponentDef); }
               e();
             }
             p(0, 'data', b(ctx.data.left));
-            TreeComponent.ngComponentDef.r(0, 0);
+            TreeComponent.ngComponentDef.r(1, 0);
           }
           v();
         }
@@ -74,11 +74,11 @@ export class TreeComponent {
           {
             if (cm0) {
               E(0, TreeComponent.ngComponentDef);
-              { D(0, TreeComponent.ngComponentDef.n(), TreeComponent.ngComponentDef); }
+              { D(1, TreeComponent.ngComponentDef.n(), TreeComponent.ngComponentDef); }
               e();
             }
             p(0, 'data', b(ctx.data.right));
-            TreeComponent.ngComponentDef.r(0, 0);
+            TreeComponent.ngComponentDef.r(1, 0);
           }
           v();
         }
