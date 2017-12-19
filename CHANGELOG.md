@@ -1,3 +1,46 @@
+<a name="5.0.2"></a>
+## [5.0.2 flannel-battlestar](https://github.com/angular/material2/compare/5.0.0...5.0.2) (2017-12-19)
+
+
+### Bug Fixes
+
+* **aria-describer:** server-side rendering error during cleanup ([#8903](https://github.com/angular/material2/issues/8903)) ([b2370ce](https://github.com/angular/material2/commit/b2370ce)), closes [#8901](https://github.com/angular/material2/issues/8901)
+* **autocomplete:** not implementing setDisabledState from ControlValueAccessor ([#8746](https://github.com/angular/material2/issues/8746)) ([ae639da](https://github.com/angular/material2/commit/ae639da)), closes [#8735](https://github.com/angular/material2/issues/8735)
+* **autocomplete:** not resetting completely when overlay is detached externally ([#8515](https://github.com/angular/material2/issues/8515)) ([8e14343](https://github.com/angular/material2/commit/8e14343))
+* **autocomplete:** panelClosingActions emitting when tabbing away from a closed autocomplete ([#8774](https://github.com/angular/material2/issues/8774)) ([3066929](https://github.com/angular/material2/commit/3066929)), closes [#8763](https://github.com/angular/material2/issues/8763)
+* **autosize:** not updating when window is resized ([#8619](https://github.com/angular/material2/issues/8619)) ([97f67c5](https://github.com/angular/material2/commit/97f67c5)), closes [#8610](https://github.com/angular/material2/issues/8610)
+* **autosize:** remove resize handle ([#8621](https://github.com/angular/material2/issues/8621)) ([28452ab](https://github.com/angular/material2/commit/28452ab))
+* **chip,stepper:** compile cleanly with `"fullTemplateTypeCheck"` ([#8889](https://github.com/angular/material2/issues/8889)) ([eec7c73](https://github.com/angular/material2/commit/eec7c73))
+* **chips:** event propagation not stopped by remove button ([#8772](https://github.com/angular/material2/issues/8772)) ([0236623](https://github.com/angular/material2/commit/0236623)), closes [#8771](https://github.com/angular/material2/issues/8771)
+* **connected-position-strategy:** allow positions to be updated after init ([#8800](https://github.com/angular/material2/issues/8800)) ([c207219](https://github.com/angular/material2/commit/c207219))
+* **datepicker:** leaking backdropClick subscriptions ([#8919](https://github.com/angular/material2/issues/8919)) ([baf22ec](https://github.com/angular/material2/commit/baf22ec))
+* **dialog:** improved type safety in dialog ref result ([#8766](https://github.com/angular/material2/issues/8766)) ([657f649](https://github.com/angular/material2/commit/657f649)), closes [#8760](https://github.com/angular/material2/issues/8760)
+* **drawer:** infinite loop when two-way opened binding is toggled mid-animation ([#8872](https://github.com/angular/material2/issues/8872)) ([241be7a](https://github.com/angular/material2/commit/241be7a)), closes [#8869](https://github.com/angular/material2/issues/8869)
+* **drawer:** unable to close using keyboard if there are no focusable elements ([#8783](https://github.com/angular/material2/issues/8783)) ([9aabb14](https://github.com/angular/material2/commit/9aabb14))
+* **global-position-strategy:** error if disposed before applied ([#8761](https://github.com/angular/material2/issues/8761)) ([8d79cc8](https://github.com/angular/material2/commit/8d79cc8)), closes [#8758](https://github.com/angular/material2/issues/8758)
+* **input:** allow color inputs in mat-form-field ([#8748](https://github.com/angular/material2/issues/8748)) ([92d198b](https://github.com/angular/material2/commit/92d198b)), closes [#8686](https://github.com/angular/material2/issues/8686)
+* **menu:** not closing when overlay is detached externally ([#8868](https://github.com/angular/material2/issues/8868)) ([534c797](https://github.com/angular/material2/commit/534c797))
+* **overlay:** export OverlaySizeConfig ([#8932](https://github.com/angular/material2/issues/8932)) ([adfa31e](https://github.com/angular/material2/commit/adfa31e))
+* **paginator:** set default display value ([#8455](https://github.com/angular/material2/issues/8455)) ([ccb325e](https://github.com/angular/material2/commit/ccb325e)), closes [#8454](https://github.com/angular/material2/issues/8454)
+* **portal:** inaccurate hasAttahed result and portal being cleared if attached too early ([#8642](https://github.com/angular/material2/issues/8642)) ([93e6c53](https://github.com/angular/material2/commit/93e6c53)), closes [/github.com/angular/material2/blob/master/src/lib/dialog/dialog-container.ts#L118](https://github.com//github.com/angular/material2/blob/master/src/lib/dialog/dialog-container.ts/issues/L118) [#8628](https://github.com/angular/material2/issues/8628)
+* **select:** alt + arrow key not opening in single-selection mode ([#8910](https://github.com/angular/material2/issues/8910)) ([85f83f9](https://github.com/angular/material2/commit/85f83f9))
+* **select:** change event emitted before data binding is updated ([#8740](https://github.com/angular/material2/issues/8740)) ([2493797](https://github.com/angular/material2/commit/2493797)), closes [#8739](https://github.com/angular/material2/issues/8739)
+* **select:** complete state change event ([#8777](https://github.com/angular/material2/issues/8777)) ([46411e3](https://github.com/angular/material2/commit/46411e3))
+* safety check for window in common module. ([#8816](https://github.com/angular/material2/issues/8816)) ([a6cedd2](https://github.com/angular/material2/commit/a6cedd2)), closes [#8809](https://github.com/angular/material2/issues/8809)
+* **select:** handle `optionSelectionChanges` being accessed early ([#8830](https://github.com/angular/material2/issues/8830)) ([c98321c](https://github.com/angular/material2/commit/c98321c))
+* **select,input:** inconsistent disabled text color ([#7794](https://github.com/angular/material2/issues/7794)) ([4d47750](https://github.com/angular/material2/commit/4d47750)), closes [#7793](https://github.com/angular/material2/issues/7793)
+* **selection-list:** unable to select using the enter key ([#8595](https://github.com/angular/material2/issues/8595)) ([c23853f](https://github.com/angular/material2/commit/c23853f)), closes [#8589](https://github.com/angular/material2/issues/8589)
+* **slider:** prevent slider thumb from getting cropped ([#8061](https://github.com/angular/material2/issues/8061)) ([f33c7cf](https://github.com/angular/material2/commit/f33c7cf))
+* **tooltip:** not closing when scrolling away ([#8688](https://github.com/angular/material2/issues/8688)) ([e96a847](https://github.com/angular/material2/commit/e96a847))
+* **typography:** handle inherit being set as a typography value ([#8721](https://github.com/angular/material2/issues/8721)) ([e45b164](https://github.com/angular/material2/commit/e45b164)), closes [#8700](https://github.com/angular/material2/issues/8700)
+
+
+### Performance Improvements
+
+* **ripple:** use passive event listeners ([#8719](https://github.com/angular/material2/issues/8719)) ([d67f971](https://github.com/angular/material2/commit/d67f971))
+
+
+
 <a name="5.0.1"></a>
 ## [5.0.1 ceramic-gravy](https://github.com/angular/material2/compare/5.0.0...5.0.1) (2017-12-11)
 
