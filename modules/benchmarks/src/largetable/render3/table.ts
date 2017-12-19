@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, T, V, b, c, cR, cr, defineComponent, detectChanges, e, s, t, v} from '@angular/core/src/render3/index';
+import {ɵC as C, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵc as c, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
 import {ComponentDef} from '@angular/core/src/render3/public_interfaces';
 
 import {TableCell, buildTable, emptyTable} from '../util';

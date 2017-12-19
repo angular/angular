@@ -29,9 +29,9 @@ function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): 
 /**
  * A utility function to match an Ivy node static data against a simple CSS selector
  *
- * @param {LNodeStatic} node static data to match
- * @param {SimpleCssSelector} selector
- * @returns {boolean}
+ * @param node static data to match
+ * @param selector
+ * @returns true if node matches the selector.
  */
 export function isNodeMatchingSimpleSelector(
     lNodeStaticData: LNodeStatic, selector: SimpleCssSelector): boolean {
