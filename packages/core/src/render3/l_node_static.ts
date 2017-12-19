@@ -41,9 +41,23 @@ export interface LNodeStatic {
   attrs: string[]|null;
 
   /**
-   * A local name under which a given element is exported in a view.
+   * A set of local names under which a given element is exported in a template and
+   * visible to queries. An entry in this array can be created for different reasons:
+   * - an element itself is referenced, ex.: `<div #foo>`
+   * - a component is referenced, ex.: `<my-cmpt #foo>`
+   * - a directive is referenced, ex.: `<my-cmpt #foo="directiveExportAs">`.
+   *
+   * A given element might have different local names and those names can be associated
+   * with a directive. We store local names at even indexes while odd indexes are reserved
+   * for directive index in a view (or `-1` if there is no associated directive).
+   *
+   * Some examples:
+   * - `<div #foo>` => `["foo", -1]`
+   * - `<my-cmpt #foo>` => `["foo", myCmptIdx]`
+   * - `<my-cmpt #foo #bar="directiveExportAs">` => `["foo", myCmptIdx, "bar", directiveIdx]`
+   * - `<div #foo #bar="directiveExportAs">` => `["foo", -1, "bar", directiveIdx]`
    */
-  localName: string|null;
+  localNames: (string|number)[]|null;
 
   /**
    * This property contains information about input properties that

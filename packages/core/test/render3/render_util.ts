@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentTemplate, ComponentType, PublicFeature, defineComponent, renderComponent as _renderComponent} from '../../src/render3/index';
+import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, createLNode, createViewState, renderTemplate} from '../../src/render3/instructions';
 import {LElement, LNodeFlags} from '../../src/render3/interfaces';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/renderer';
@@ -80,6 +80,14 @@ export function createComponent(
   };
 }
 
+export function createDirective(): DirectiveType<any> {
+  return class Directive {
+    static ngDirectiveDef = defineDirective({
+      type: Directive,
+      factory: () => new Directive(),
+    });
+  };
+}
 
 
 // Verify that DOM is a type of render. This is here for error checking only and has no use.

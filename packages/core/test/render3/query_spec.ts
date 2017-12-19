@@ -8,7 +8,7 @@
 import {C, D, E, Q, QueryList, c, e, m, qR} from '../../src/render3/index';
 import {QueryReadType} from '../../src/render3/interfaces';
 
-import {createComponent, renderComponent} from './render_util';
+import {createComponent, createDirective, renderComponent} from './render_util';
 
 
 /**
@@ -286,6 +286,148 @@ describe('query', () => {
       const query = (cmptInstance.query as QueryList<any>);
       expect(query.length).toBe(1);
       expect(isTemplateRef(query.first)).toBeTruthy();
+    });
+
+    it('should read component instance if element queried for is a component host', () => {
+      const Child = createComponent('child', function(ctx: any, cm: boolean) {});
+
+      let childInstance;
+      /**
+       * <cmpt #foo></cmpt>
+       * class Cmpt {
+       *  @ViewChildren('foo') query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo']));
+          E(1, Child.ngComponentDef, []);
+          { childInstance = D(2, Child.ngComponentDef.n(), Child.ngComponentDef, 'foo'); }
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(query.first).toBe(childInstance);
+    });
+
+    it('should read directive instance if element queried for has an exported directive with a matching name',
+       () => {
+         const Child = createDirective();
+
+         let childInstance;
+         /**
+          * <div #foo="child" child></div>
+          * class Cmpt {
+          *  @ViewChildren('foo') query;
+          * }
+          */
+         const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+           let tmp: any;
+           if (cm) {
+             m(0, Q(['foo']));
+             E(1, 'div');
+             { childInstance = D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef, 'foo'); }
+             e();
+           }
+           qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+         });
+
+         const cmptInstance = renderComponent(Cmpt);
+         const query = (cmptInstance.query as QueryList<any>);
+         expect(query.length).toBe(1);
+         expect(query.first).toBe(childInstance);
+       });
+
+    it('should read all matching directive instances from a given element', () => {
+      const Child1 = createDirective();
+      const Child2 = createDirective();
+
+      let child1Instance, child2Instance;
+      /**
+       * <div #foo="child1" child1 #bar="child2" child2></div>
+       * class Cmpt {
+       *  @ViewChildren('foo, bar') query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo', 'bar']));
+          E(1, 'div');
+          {
+            child1Instance = D(2, Child1.ngDirectiveDef.n(), Child1.ngDirectiveDef, 'foo');
+            child2Instance = D(3, Child2.ngDirectiveDef.n(), Child2.ngDirectiveDef, 'bar');
+          }
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(2);
+      expect(query.first).toBe(child1Instance);
+      expect(query.last).toBe(child2Instance);
+    });
+
+    it('should match match on exported directive name and read a requested token', () => {
+      const Child = createDirective();
+
+      let div;
+      /**
+       * <div #foo="child" child></div>
+       * class Cmpt {
+       *  @ViewChildren('foo', {read: ElementRef}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo'], undefined, QueryReadType.ElementRef));
+          div = E(1, 'div');
+          { D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef, 'foo'); }
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(query.first.nativeElement).toBe(div);
+    });
+
+    it('should support reading a mix of ElementRef and directive instances', () => {
+      const Child = createDirective();
+
+      let childInstance, div;
+      /**
+       * <div #foo #bar="child" child></div>
+       * class Cmpt {
+       *  @ViewChildren('foo, bar') query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo', 'bar']));
+          div = E(1, 'div', [], 'foo');
+          { childInstance = D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef, 'bar'); }
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(2);
+      expect(query.first.nativeElement).toBe(div);
+      expect(query.last).toBe(childInstance);
     });
 
   });
