@@ -416,9 +416,13 @@ if [[ ${BUILD_TOOLS} == true || ${BUILD_ALL} == true ]]; then
 
   mkdir -p ./dist/packages-dist
   rsync -a packages/bazel/ ./dist/packages-dist/bazel
+  echo "workspace(name=\"angular\")" > ./dist/packages-dist/bazel/WORKSPACE
   # Remove BEGIN-INTERNAL...END-INTERAL blocks
   # https://stackoverflow.com/questions/24175271/how-can-i-match-multi-line-patterns-in-the-command-line-with-perl-style-regex
   perl -0777 -n -i -e "s/(?m)^.*BEGIN-INTERNAL[\w\W]*END-INTERNAL.*\n//g; print" $(grep -ril BEGIN-INTERNAL dist/packages-dist/bazel) < /dev/null 2> /dev/null
+  # Re-host //packages/bazel/ which is just // in the public distro
+  perl -0777 -n -i -e "s#//packages/bazel/#//#g; print" $(grep -ril packages/bazel dist/packages-dist/bazel) < /dev/null 2> /dev/null
+  perl -0777 -n -i -e "s#angular/packages/bazel/#angular/#g; print" $(grep -ril packages/bazel dist/packages-dist/bazel) < /dev/null 2> /dev/null
   updateVersionReferences dist/packages-dist/bazel
 fi
 
