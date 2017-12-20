@@ -156,7 +156,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   /** The aria-describedby attribute on the chip list for improved a11y. */
   _ariaDescribedby: string;
 
-    /** Tab index for the chip list. */
+  /** Tab index for the chip list. */
   _tabIndex = 0;
 
   /**
