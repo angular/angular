@@ -7,10 +7,10 @@
  */
 
 import {assertNotNull} from './assert';
-import {ContainerState, ProjectionState, ViewOrContainerState, ViewState} from './interfaces';
-import {LContainer, LElement, LNode, LNodeFlags, LProjection, LText, LView} from './l_node';
+import {ContainerState, LContainer, LElement, LNode, LNodeFlags, LProjection, LText, LView, ProjectionState, ViewOrContainerState, ViewState} from './interfaces';
 import {assertNodeType} from './node_assert';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText} from './renderer';
+
 
 
 /**
@@ -56,8 +56,7 @@ export function findNativeParent(containerNode: LContainer): RNode|null {
  * @param native Comment anchor for container
  * @returns The DOM element for which the view should insert elements
  */
-export function findBeforeNode(index: number, state: ContainerState, native: RComment): RElement|
-    RText|RComment {
+function findBeforeNode(index: number, state: ContainerState, native: RNode): RNode {
   const views = state.views;
   // Find the node to insert in front of
   return index + 1 < views.length ?
