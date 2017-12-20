@@ -62,7 +62,7 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   /** Emits whenever the label changes. */
   _labelChange = new Subject<void>();
 
-  /** Emits whenevfer the disable changes */
+  /** Emits whenever the disable changes */
   _disableChange = new Subject<void>();
 
   /**
