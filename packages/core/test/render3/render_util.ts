@@ -85,6 +85,7 @@ export function createDirective(): DirectiveType<any> {
     static ngDirectiveDef = defineDirective({
       type: Directive,
       factory: () => new Directive(),
+      features: [PublicFeature],
     });
   };
 }
