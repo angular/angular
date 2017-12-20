@@ -4,7 +4,8 @@ import {join} from 'path';
 export const cdkPackage = new BuildPackage('cdk');
 export const materialPackage = new BuildPackage('material', [cdkPackage]);
 export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [materialPackage]);
-export const materialExperimentalPackage = new BuildPackage('material-experimental', [cdkPackage]);
+export const materialExperimentalPackage = new BuildPackage('material-experimental',
+    [cdkExperimentalPackage]);
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
 export const examplesPackage = new BuildPackage('material-examples', [momentAdapterPackage]);
 

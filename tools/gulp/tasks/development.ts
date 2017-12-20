@@ -78,6 +78,7 @@ task(':build:devapp:material-with-styles', sequenceTask(
 task('build:devapp', sequenceTask(
   'cdk:build-no-bundles',
   'material:build-no-bundles',
+  'cdk-experimental:build-no-bundles',
   'material-experimental:build-no-bundles',
   'material-moment-adapter:build-no-bundles',
   [':build:devapp:assets', ':build:devapp:scss', ':build:devapp:ts']
