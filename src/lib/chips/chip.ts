@@ -308,7 +308,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   selector: '[matChipRemove]',
   host: {
     'class': 'mat-chip-remove',
-    '(click)': '_handleClick($event)',
+    '(click)': '_handleClick()',
   }
 })
 export class MatChipRemove {
@@ -316,14 +316,9 @@ export class MatChipRemove {
   }
 
   /** Calls the parent chip's public `remove()` method if applicable. */
-  _handleClick(event: MouseEvent): void {
+  _handleClick(): void {
     if (this._parentChip.removable) {
       this._parentChip.remove();
-
-      // Note: the parent chip does something similar, however since we're removing it,
-      // its event handler will be unbound before it has had the chance to fire.
-      event.preventDefault();
-      event.stopPropagation();
     }
   }
 }
