@@ -69,6 +69,7 @@
     "firebase-admin": "^5.0.0",
     "firebase-tools": "^3.11.0",
     "fs-extra": "^3.0.1",
+    "github": "^12.0.3",
     "glob": "^7.1.2",
     "google-closure-compiler": "20170409.0.0",
     "gulp": "^3.9.1",
