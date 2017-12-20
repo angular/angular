@@ -4,7 +4,7 @@
   <p>Learn one way to build applications with Angular and reuse your code and abilities to build 
     apps for any deployment target. For web, mobile web, native mobile and native desktop.</p>
   
-  <h3>SPEED & PERFORMANCE</h3>
+  <h3>SPEED &amp; PERFORMANCE</h3>
   <p>Achieve the maximum speed possible on the Web Platform today, and take it further, via Web 
     Workers and server-side rendering. Angular puts you in control over scalability. Meet huge data requirements 
     by building data models on RxJS, Immutable.js or another push-model.</p>
@@ -20,6 +20,6 @@
     that supports Google's largest applications.</p>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="true" tabindex="1">Install</button>
-  <button mat-button mat-dialog-close tabindex="-1">Cancel</button>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
 </mat-dialog-actions>
