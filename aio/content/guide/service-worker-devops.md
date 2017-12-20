@@ -200,8 +200,8 @@ versions are safe to use, so existing tabs continue to run from
 cache, but new loads of the app will be served from the network.
 
 * `SAFE_MODE`: the service worker cannot guarantee the safety of 
-using cached data. Either an unexpected error occurred or all c
-ached versions are invalid. All traffic will be served from the 
+using cached data. Either an unexpected error occurred or all 
+cached versions are invalid. All traffic will be served from the 
 network, running as little service worker code as possible.
 
 In both cases, the parenthetical annotation provides the 
