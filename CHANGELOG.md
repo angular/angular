@@ -1,3 +1,19 @@
+<a name="5.1.2"></a>
+## [5.1.2](https://github.com/angular/angular/compare/5.1.1...5.1.2) (2017-12-20)
+
+
+### Bug Fixes
+
+* **common:** fix a Closure compilation issue. ([267ebf3](https://github.com/angular/angular/commit/267ebf3))
+* **compiler:** make tsx file aot compatible ([756dd34](https://github.com/angular/angular/commit/756dd34)), closes [#20555](https://github.com/angular/angular/issues/20555)
+* **compiler:** report an error for recursive module references ([ced575f](https://github.com/angular/angular/commit/ced575f))
+* **compiler-cli:** do not emit invalid .metadata.json files ([a1d4c2d](https://github.com/angular/angular/commit/a1d4c2d))
+* **compiler-cli:** do not force type checking on .js files ([3b63e16](https://github.com/angular/angular/commit/3b63e16))
+* **service-worker:** check for updates on navigation ([a33182c](https://github.com/angular/angular/commit/a33182c)), closes [#20877](https://github.com/angular/angular/issues/20877)
+* **upgrade:** replaces get/setAngularLib with get/setAngularJSGlobal ([66cc2fa](https://github.com/angular/angular/commit/66cc2fa))
+
+
+
 <a name="5.2.0-beta.0"></a>
 # [5.2.0-beta.0](https://github.com/angular/angular/compare/5.1.0...5.2.0-beta.0) (2017-12-13)
 
