@@ -1,6 +1,7 @@
 import {Package} from 'dgeni';
 import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {Categorizer} from './processors/categorizer';
+import {FilterExportAliases} from './processors/filter-export-aliases';
 import {ComponentGrouper} from './processors/component-grouper';
 import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTypeScriptModules';
 import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
@@ -47,6 +48,8 @@ const materialPackages = globSync(path.join(sourceDir, 'lib', '*/'))
 
 export const apiDocsPackage = new Package('material2-api-docs', dgeniPackageDeps);
 
+// Processor that filters out aliased exports that should not be shown in the docs.
+apiDocsPackage.processor(new FilterExportAliases());
 
 // Processor that filters out symbols that should not be shown in the docs.
 apiDocsPackage.processor(new DocsPrivateFilter());
