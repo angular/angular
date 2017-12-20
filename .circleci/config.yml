@@ -34,8 +34,7 @@ jobs:
       # For some reason, circleci needs the postinstall to be run explicitly.
       # This may be unnecessary once ngcontainer uses nodejs 8
       - run: bazel run @nodejs//:npm run postinstall
-      # Disabled until next patch of Angular - broken currently
-      #- run: bazel build src/cdk/...
+      - run: bazel build src/cdk/...
       - save_cache:
           key: material2-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
