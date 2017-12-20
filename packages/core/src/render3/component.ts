@@ -8,12 +8,14 @@
 
 // We are temporarily importing the existing viewEngine from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
-import * as viewEngine from '../core';
+import {Injector} from '../di/injector';
+import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
+import {ComponentDef, ComponentType} from './definition_interfaces';
 import {NG_HOST_SYMBOL, createError, createViewState, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
-import {LElement} from './l_node';
-import {ComponentDef, ComponentType} from './public_interfaces';
+import {LElement} from './interfaces';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './renderer';
 import {notImplemented, stringify} from './util';
 
@@ -32,7 +34,7 @@ export interface CreateComponentOptions {
   host?: RElement|string;
 
   /** Module injector for the component. If unspecified, the injector will be NULL_INJECTOR. */
-  injector?: viewEngine.Injector;
+  injector?: Injector;
 
   /**
    * List of features to be applied to the created component. Features are simply
@@ -51,7 +53,7 @@ export interface CreateComponentOptions {
  * @param options Optional parameters which control bootstrapping
  */
 export function createComponentRef<T>(
-    componentType: ComponentType<T>, opts: CreateComponentOptions): viewEngine.ComponentRef<T> {
+    componentType: ComponentType<T>, opts: CreateComponentOptions): viewEngine_ComponentRef<T> {
   const component = renderComponent(componentType, opts);
   const hostView = createViewRef(() => detectChanges(component), component);
   return {
@@ -78,7 +80,7 @@ function createViewRef<T>(detectChanges: () => void, context: T): EmbeddedViewRe
   return addDestroyable(new EmbeddedViewRef(detectChanges), context);
 }
 
-class EmbeddedViewRef<T> implements viewEngine.EmbeddedViewRef<T> {
+class EmbeddedViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
   // TODO: rootNodes should be replaced when properly implemented
   rootNodes = null !;
   context: T;
@@ -147,7 +149,7 @@ function addDestroyable<T, C>(obj: any, context: C): T&DestroyRef<C> {
 
 
 // TODO: A hack to not pull in the NullInjector from @angular/core.
-export const NULL_INJECTOR: viewEngine.Injector = {
+export const NULL_INJECTOR: Injector = {
   get: (token: any, notFoundValue?: any) => {
     throw new Error('NullInjector: Not found: ' + stringify(token));
   }

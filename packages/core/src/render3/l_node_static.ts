@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveDef} from './public_interfaces';
+import {DirectiveDef} from './definition_interfaces';
 
 /** The type of the global ngStaticData array. */
 export type NgStaticData = (LNodeStatic | DirectiveDef<any>| null)[];

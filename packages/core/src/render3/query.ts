@@ -6,18 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// We are temporarily importing the existing viewEngine from core so we can be sure we are
+// We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 import {Observable} from 'rxjs/Observable';
 
-import * as viewEngine from '../core';
+import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
+import {QueryList as viewEngine_QueryList} from '../linker/query_list';
+import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
+import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
+import {Type} from '../type';
 
 import {assertNotNull} from './assert';
+import {DirectiveDef} from './definition_interfaces';
 import {getOrCreateContainerRef, getOrCreateElementRef, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from './di';
-import {QueryReadType, QueryState} from './interfaces';
-import {LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LView} from './l_node';
+import {LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LView, QueryReadType, QueryState} from './interfaces';
 import {assertNodeOfPossibleTypes} from './node_assert';
-import {DirectiveDef} from './public_interfaces';
 
 
 
@@ -38,7 +41,7 @@ export interface QueryPredicate<T> {
   /**
    * If looking for directives than it contains the directive type.
    */
-  type: viewEngine.Type<T>|null;
+  type: Type<T>|null;
 
   /**
    * If selector then contains local names to query for.
@@ -65,7 +68,7 @@ export class QueryState_ implements QueryState {
   constructor(deep?: QueryPredicate<any>) { this.deep = deep == null ? null : deep; }
 
   track<T>(
-      queryList: viewEngine.QueryList<T>, predicate: viewEngine.Type<T>|string[], descend?: boolean,
+      queryList: viewEngine_QueryList<T>, predicate: Type<T>|string[], descend?: boolean,
       read?: QueryReadType): void {
     // TODO(misko): This is not right. In case of inherited state, a calling track will incorrectly
     // mutate parent.
@@ -106,8 +109,8 @@ export class QueryState_ implements QueryState {
   }
 }
 
-function readDefaultInjectable(nodeInjector: LNodeInjector, node: LNode):
-    viewEngine.ElementRef|viewEngine.TemplateRef<any>|undefined {
+function readDefaultInjectable(nodeInjector: LNodeInjector, node: LNode): viewEngine_ElementRef|
+    viewEngine_TemplateRef<any>|undefined {
   ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
   if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
     return getOrCreateElementRef(nodeInjector);
@@ -117,7 +120,7 @@ function readDefaultInjectable(nodeInjector: LNodeInjector, node: LNode):
 }
 
 function readFromNodeInjector(nodeInjector: LNodeInjector, node: LNode, read: QueryReadType | null):
-    viewEngine.ElementRef|viewEngine.ViewContainerRef|viewEngine.TemplateRef<any>|undefined {
+    viewEngine_ElementRef|viewEngine_ViewContainerRef|viewEngine_TemplateRef<any>|undefined {
   if (read === null) {
     return readDefaultInjectable(nodeInjector, node);
   } else if (read === QueryReadType.ElementRef) {
@@ -166,8 +169,8 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
 }
 
 function createPredicate<T>(
-    previous: QueryPredicate<any>| null, queryList: QueryList<T>,
-    predicate: viewEngine.Type<T>| string[], read: QueryReadType | null): QueryPredicate<T> {
+    previous: QueryPredicate<any>| null, queryList: QueryList<T>, predicate: Type<T>| string[],
+    read: QueryReadType | null): QueryPredicate<T> {
   const isArray = Array.isArray(predicate);
   const values = <any>[];
   if ((queryList as any as QueryList_<T>)._valuesTree === null) {
@@ -176,14 +179,14 @@ function createPredicate<T>(
   return {
     next: previous,
     list: queryList,
-    type: isArray ? null : predicate as viewEngine.Type<T>,
+    type: isArray ? null : predicate as Type<T>,
     selector: isArray ? predicate as string[] : null,
     read: read,
     values: values
   };
 }
 
-class QueryList_<T>/* implements viewEngine.QueryList<T> */ {
+class QueryList_<T>/* implements viewEngine_QueryList<T> */ {
   dirty: boolean = false;
   changes: Observable<T>;
 
@@ -250,8 +253,8 @@ class QueryList_<T>/* implements viewEngine.QueryList<T> */ {
 
 // NOTE: this hack is here because IQueryList has private members and therefore
 // it can't be implemented only extended.
-export type QueryList<T> = viewEngine.QueryList<T>;
-export const QueryList: typeof viewEngine.QueryList = QueryList_ as any;
+export type QueryList<T> = viewEngine_QueryList<T>;
+export const QueryList: typeof viewEngine_QueryList = QueryList_ as any;
 
 export function queryRefresh(query: QueryList<any>): boolean {
   return (query as any as QueryList_<any>)._refresh();

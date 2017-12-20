@@ -15,8 +15,9 @@
  * it will be easy to implement such API.
  */
 
-import {RendererStyleFlags2, RendererType2, ViewEncapsulation} from '../core';
-import {ComponentDef} from './public_interfaces';
+import {ViewEncapsulation} from '../metadata/view';
+import {RendererStyleFlags2, RendererType2} from '../render/api';
+
 
 // TODO: cleanup once the code is merged in angular/angular
 export enum RendererStyleFlags3 {

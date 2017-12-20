@@ -7,7 +7,7 @@
  */
 
 import {ɵC as C, ɵD as D, ɵE as E, ɵT as T, ɵV as V, ɵb as b, ɵb1 as b1, ɵc as c, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵp as p, ɵs as s, ɵt as t, ɵv as v} from '@angular/core';
-import {ComponentDef} from '@angular/core/src/render3/public_interfaces';
+import {ComponentDef} from '@angular/core/src/render3/definition_interfaces';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
 
