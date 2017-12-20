@@ -6,13 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// We are temporarily importing the existing viewEngine from core so we can be sure we are
+// We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
-import * as viewEngine from '../core';
+import {Injector} from '../di/injector';
+import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
+import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
+import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
+import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
+import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
+import {Type} from '../type';
 
-import {LContainer, LElement, LNodeFlags, LNodeInjector} from './l_node';
+import {ComponentTemplate, DirectiveDef} from './definition_interfaces';
+import {LContainer, LElement, LNodeFlags, LNodeInjector} from './interfaces';
 import {assertNodeType} from './node_assert';
-import {ComponentTemplate, DirectiveDef} from './public_interfaces';
 import {notImplemented, stringify} from './util';
 
 
@@ -41,7 +48,7 @@ let nextNgElementId = 0;
  * @param injector The node injector in which the directive should be registered
  * @param type The directive to register
  */
-export function bloomAdd(injector: LNodeInjector, type: viewEngine.Type<any>): void {
+export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
   let id: number|undefined = (type as any)[NG_ELEMENT_ID];
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
@@ -161,7 +168,7 @@ export function diPublicInInjector(di: LNodeInjector, def: DirectiveDef<any>): v
  * @returns The instance found
  */
 export function getOrCreateInjectable<T>(
-    di: LNodeInjector, token: viewEngine.Type<T>, flags?: InjectFlags): T {
+    di: LNodeInjector, token: Type<T>, flags?: InjectFlags): T {
   const bloomHash = bloomHashBit(token);
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
@@ -234,7 +241,7 @@ export function getOrCreateInjectable<T>(
  * @param type The directive type
  * @returns The bloom bit to check for the directive
  */
-function bloomHashBit(type: viewEngine.Type<any>): number|null {
+function bloomHashBit(type: Type<any>): number|null {
   let id: number|undefined = (type as any)[NG_ELEMENT_ID];
   return typeof id === 'number' ? id % BLOOM_SIZE : null;
 }
@@ -300,12 +307,12 @@ export function bloomFindPossibleInjector(
  * @param di The node injector where we should store a created ElementRef
  * @returns The ElementRef instance to use
  */
-export function getOrCreateElementRef(di: LNodeInjector): viewEngine.ElementRef {
+export function getOrCreateElementRef(di: LNodeInjector): viewEngine_ElementRef {
   return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
 }
 
 /** A ref to a node's native element. */
-class ElementRef implements viewEngine.ElementRef {
+class ElementRef implements viewEngine_ElementRef {
   readonly nativeElement: any;
   constructor(nativeElement: any) { this.nativeElement = nativeElement; }
 }
@@ -317,7 +324,7 @@ class ElementRef implements viewEngine.ElementRef {
  * @param di The node injector where we should store a created TemplateRef
  * @returns The TemplateRef instance to use
  */
-export function getOrCreateTemplateRef<T>(di: LNodeInjector): viewEngine.TemplateRef<T> {
+export function getOrCreateTemplateRef<T>(di: LNodeInjector): viewEngine_TemplateRef<T> {
   ngDevMode && assertNodeType(di.node, LNodeFlags.Container);
   const data = (di.node as LContainer).data;
   return di.templateRef ||
@@ -325,14 +332,14 @@ export function getOrCreateTemplateRef<T>(di: LNodeInjector): viewEngine.Templat
 }
 
 /** A ref to a particular template. */
-class TemplateRef<T> implements viewEngine.TemplateRef<T> {
-  readonly elementRef: viewEngine.ElementRef;
+class TemplateRef<T> implements viewEngine_TemplateRef<T> {
+  readonly elementRef: viewEngine_ElementRef;
 
-  constructor(elementRef: viewEngine.ElementRef, template: ComponentTemplate<T>|null) {
+  constructor(elementRef: viewEngine_ElementRef, template: ComponentTemplate<T>|null) {
     this.elementRef = elementRef;
   }
 
-  createEmbeddedView(context: T): viewEngine.EmbeddedViewRef<T> { throw notImplemented(); }
+  createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> { throw notImplemented(); }
 }
 
 /**
@@ -341,7 +348,7 @@ class TemplateRef<T> implements viewEngine.TemplateRef<T> {
  *
  * @returns The ViewContainerRef instance to use
  */
-export function getOrCreateContainerRef(di: LNodeInjector): viewEngine.ViewContainerRef {
+export function getOrCreateContainerRef(di: LNodeInjector): viewEngine_ViewContainerRef {
   return di.viewContainerRef || (di.viewContainerRef = new ViewContainerRef(di.node as LContainer));
 }
 
@@ -349,34 +356,34 @@ export function getOrCreateContainerRef(di: LNodeInjector): viewEngine.ViewConta
  * A ref to a container that enables adding and removing views from that container
  * imperatively.
  */
-class ViewContainerRef implements viewEngine.ViewContainerRef {
-  element: viewEngine.ElementRef;
-  injector: viewEngine.Injector;
-  parentInjector: viewEngine.Injector;
+class ViewContainerRef implements viewEngine_ViewContainerRef {
+  element: viewEngine_ElementRef;
+  injector: Injector;
+  parentInjector: Injector;
 
   constructor(node: LContainer) {}
 
   clear(): void { throw notImplemented(); }
-  get(index: number): viewEngine.ViewRef|null { throw notImplemented(); }
+  get(index: number): viewEngine_ViewRef|null { throw notImplemented(); }
   length: number;
   createEmbeddedView<C>(
-      templateRef: viewEngine.TemplateRef<C>, context?: C|undefined,
-      index?: number|undefined): viewEngine.EmbeddedViewRef<C> {
+      templateRef: viewEngine_TemplateRef<C>, context?: C|undefined,
+      index?: number|undefined): viewEngine_EmbeddedViewRef<C> {
     throw notImplemented();
   }
   createComponent<C>(
-      componentFactory: viewEngine.ComponentFactory<C>, index?: number|undefined,
-      injector?: viewEngine.Injector|undefined, projectableNodes?: any[][]|undefined,
-      ngModule?: viewEngine.NgModuleRef<any>|undefined): viewEngine.ComponentRef<C> {
+      componentFactory: viewEngine_ComponentFactory<C>, index?: number|undefined,
+      injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
+      ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
     throw notImplemented();
   }
-  insert(viewRef: viewEngine.ViewRef, index?: number|undefined): viewEngine.ViewRef {
+  insert(viewRef: viewEngine_ViewRef, index?: number|undefined): viewEngine_ViewRef {
     throw notImplemented();
   }
-  move(viewRef: viewEngine.ViewRef, currentIndex: number): viewEngine.ViewRef {
+  move(viewRef: viewEngine_ViewRef, currentIndex: number): viewEngine_ViewRef {
     throw notImplemented();
   }
-  indexOf(viewRef: viewEngine.ViewRef): number { throw notImplemented(); }
+  indexOf(viewRef: viewEngine_ViewRef): number { throw notImplemented(); }
   remove(index?: number|undefined): void { throw notImplemented(); }
-  detach(index?: number|undefined): viewEngine.ViewRef|null { throw notImplemented(); }
+  detach(index?: number|undefined): viewEngine_ViewRef|null { throw notImplemented(); }
 }

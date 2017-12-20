@@ -7,7 +7,9 @@
  */
 
 import {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent} from './component';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, NgOnChangesFeature, PublicFeature, defineComponent, defineDirective} from './public_interfaces';
+import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective} from './definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags} from './definition_interfaces';
+
 
 // Naming scheme:
 // - Capital letters are for creating things: T(Text), E(Element), D(Directive), V(View),

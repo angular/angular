@@ -8,17 +8,19 @@
 
 import './ng_dev_mode';
 
-import {ElementRef, TemplateRef, Type, ViewContainerRef} from '../core';
+import {ElementRef} from '../linker/element_ref';
+import {TemplateRef} from '../linker/template_ref';
+import {ViewContainerRef} from '../linker/view_container_ref';
+import {Type} from '../type';
 
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
-import {ContainerState, CssSelector, ProjectionState, QueryReadType, QueryState, ViewState} from './interfaces';
-import {LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LProjection, LText, LView} from './l_node';
+import {ContainerState, CssSelector, LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LProjection, LText, LView, ProjectionState, QueryReadType, QueryState, ViewState} from './interfaces';
 
 import {NgStaticData, LNodeStatic, LContainerStatic, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './l_node_static';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef} from './public_interfaces';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef} from './definition_interfaces';
 import {InjectFlags, diPublicInInjector, getOrCreateNodeInjectorForNode, getOrCreateElementRef, getOrCreateTemplateRef, getOrCreateContainerRef, getOrCreateInjectable} from './di';
 import {QueryList, QueryState_} from './query';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './renderer';
@@ -82,7 +84,9 @@ let ngStaticData: NgStaticData;
 /**
  * State of the current view being processed.
  */
-let currentView: ViewState = createViewState(null !, null !, []);
+let currentView: ViewState;
+// The initialization has to be after the `let`, otherwise `createViewState` can't see `let`.
+currentView = createViewState(null !, null !, []);
 
 let currentQuery: QueryState|null;
 
@@ -1138,8 +1142,7 @@ export function viewEnd(): void {
 export const componentRefresh:
     <T>(directiveIndex: number, elementIndex: number, template: ComponentTemplate<T>) =>
         void = function<T>(
-            this: undefined | {template: ComponentTemplate<T>}, directiveIndex: number,
-            elementIndex: number, template: ComponentTemplate<T>) {
+            directiveIndex: number, elementIndex: number, template: ComponentTemplate<T>) {
   ngDevMode && assertDataInRange(elementIndex);
   const element = data ![elementIndex] as LElement;
   ngDevMode && assertNodeType(element, LNodeFlags.Element);
@@ -1150,7 +1153,7 @@ export const componentRefresh:
   const directive = data[directiveIndex];
   const oldView = enterView(hostView, element);
   try {
-    (template || this !.template)(directive, creationMode);
+    template(directive, creationMode);
   } finally {
     leaveView(oldView);
   }
@@ -1284,17 +1287,10 @@ export function addToViewTree<T extends ViewState|ContainerState>(state: T): T {
 //// Bindings
 //////////////////////////
 
-/**
- * The type of the NO_CHANGE constant, which can never be structurally matched
- * because of its private member.
- */
-export declare class NO_CHANGE_TYPE {
+export interface NO_CHANGE {
   // This is a brand that ensures that this type can never match anything else
-  private _;
+  brand: 'NO_CHANGE';
 }
-
-// This is an alias for NO_CHANGE_TYPE for brevity throughout the codebase.
-export type NO_CHANGE = typeof NO_CHANGE_TYPE;
 
 /** A special value which designates that a value has not changed. */
 export const NO_CHANGE = {} as NO_CHANGE;
