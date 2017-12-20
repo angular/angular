@@ -8,6 +8,3 @@ export declare const RouterUpgradeInitializer: {
 
 /** @experimental */
 export declare function setUpLocationSync(ngUpgrade: UpgradeModule): void;
-
-/** @experimental */
-export declare function setUpRouterSync(injector: Injector, $injector: any): void;
