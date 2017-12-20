@@ -154,6 +154,7 @@ function getIdxOfMatchingSelector(staticData: LNodeStatic, selector: string): nu
 }
 
 function add(predicate: QueryPredicate<any>| null, node: LNode) {
+  const nodeInjector = getOrCreateNodeInjectorForNode(node as LElement | LContainer);
   while (predicate) {
     const type = predicate.type;
     if (type) {
@@ -164,18 +165,21 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
            i < ii; i++) {
         const def = ngStaticData[i] as DirectiveDef<any>;
         if (def.diPublic && def.type === type) {
-          predicate.values.push(node.view.data[i]);
+          if (predicate.read !== null) {
+            predicate.values.push(readFromNodeInjector(nodeInjector, node, predicate.read));
+          } else {
+            predicate.values.push(node.view.data[i]);
+          }
         }
       }
     } else {
-      const nodeInjector = getOrCreateNodeInjectorForNode(node as LElement | LContainer);
       const selector = predicate.selector !;
       for (let i = 0; i < selector.length; i++) {
         ngDevMode && assertNotNull(node.staticData, 'node.staticData');
         const directiveIdx = getIdxOfMatchingSelector(node.staticData !, selector[i]);
         // is anything on a node matching a selector?
         if (directiveIdx !== null) {
-          if (predicate.read != null) {
+          if (predicate.read !== null) {
             predicate.values.push(readFromNodeInjector(nodeInjector, node, predicate.read));
           } else {
             // is local name pointing to a directive?
