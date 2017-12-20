@@ -1,0 +1,32 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "progress-spinner",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/progress_spinner",
+  assets = [":progress_spinner_css"],
+  deps = [
+    "//src/lib/core",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+sass_binary(
+  name = "progress_spinner_scss",
+  src = "progress-spinner.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "progress_spinner_css",
+  srcs = [":progress_spinner_scss"],
+  outs = ["progress-spinner.css"],
+  cmd = "cat $(locations :progress_spinner_scss) > $@",
+)
+

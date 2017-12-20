@@ -1,0 +1,34 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "input",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/input",
+  deps = [
+    "//src/lib/core",
+    "//src/lib/form-field",
+    "//src/cdk/coercion",
+    "//src/cdk/platform",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+sass_binary(
+  name = "input_scss",
+  src = "input.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "input_css",
+  srcs = [":input_scss"],
+  outs = ["input.css"],
+  cmd = "cat $(locations :input_scss) > $@",
+)
+

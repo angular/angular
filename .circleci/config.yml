@@ -11,7 +11,7 @@
 anchor_1: &job_defaults
   working_directory: ~/ng
   docker:
-    - image: angular/ngcontainer:0.0.4
+    - image: angular/ngcontainer:0.0.7
 
 # After checkout, rebase on top of master.
 # Similar to travis behavior, but not quite the same.
@@ -24,6 +24,7 @@ version: 2
 jobs:
   build:
     <<: *job_defaults
+    resource_class: large
     steps:
       - checkout:
           <<: *post_checkout
@@ -32,9 +33,9 @@ jobs:
 
       - run: bazel run @nodejs//:npm install
       # For some reason, circleci needs the postinstall to be run explicitly.
-      # This may be unnecessary once ngcontainer uses nodejs 8
+      # This may be unnecessary once rules_nodejs uses nodejs 8
       - run: bazel run @nodejs//:npm run postinstall
-      - run: bazel build src/cdk/...
+      - run: bazel build src/...
       - save_cache:
           key: material2-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:

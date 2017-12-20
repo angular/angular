@@ -1,0 +1,42 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "core",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/core",
+  assets = [":pseudo_checkbox_css"],
+  deps = [
+    "//src/cdk/bidi",
+    "//src/cdk/coercion",
+    "//src/cdk/keycodes",
+    "//src/cdk/platform",
+    "@rxjs",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+# Library of all core scss partials.
+sass_library(
+  name = "core_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = ["//src/cdk/a11y:a11y_scss_lib"],
+)
+
+sass_binary(
+  name = "pseudo_checkbox_scss",
+  src = "selection/pseudo-checkbox/pseudo-checkbox.scss",
+  deps = [":core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "pseudo_checkbox_css",
+  srcs = [":pseudo_checkbox_scss"],
+  outs = ["selection/pseudo-checkbox/pseudo-checkbox.css"],
+  cmd = "cat $(locations :pseudo_checkbox_scss) > $@",
+)

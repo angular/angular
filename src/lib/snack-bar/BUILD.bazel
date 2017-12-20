@@ -1,0 +1,54 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "snack-bar",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/snack_bar",
+  assets = [
+    ":snack_bar_container_css",
+    "simple_snack_bar_css",
+  ],
+  deps = [
+    "//src/lib/core",
+    "//src/cdk/a11y",
+    "//src/cdk/layout",
+    "//src/cdk/overlay",
+    "//src/cdk/portal",
+    "@rxjs",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+sass_binary(
+  name = "snack_bar_container_scss",
+  src = "snack-bar-container.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "simple_snack_bar_scss",
+  src = "simple-snack-bar.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "snack_bar_container_css",
+  srcs = [":snack_bar_container_scss"],
+  outs = ["snack-bar-container.css"],
+  cmd = "cat $(locations :snack_bar_container_scss) > $@",
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "simple_snack_bar_css",
+  srcs = [":simple_snack_bar_scss"],
+  outs = ["simple-snack-bar.css"],
+  cmd = "cat $(locations :simple_snack_bar_scss) > $@",
+)

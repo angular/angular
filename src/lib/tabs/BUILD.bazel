@@ -1,0 +1,107 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "tabs",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/tabs",
+  assets = [
+    "tab_body_css",
+    "tab_header_css",
+    "tab_group_css",
+    "tab_nav_bar_css",
+  ],
+  deps = [
+    "//src/lib/core",
+    "//src/cdk/bidi",
+    "//src/cdk/coercion",
+    "//src/cdk/observers",
+    "//src/cdk/portal",
+    "//src/cdk/scrolling",
+    "@rxjs",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+# Library of all tabs scss partials.
+sass_library(
+  name = "tabs_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "tab_body_scss",
+  src = "tab-body.scss",
+  deps = [
+    "//src/lib/core:core_scss_lib",
+    "tabs_scss_lib",
+  ],
+)
+
+sass_binary(
+  name = "tab_header_scss",
+  src = "tab-header.scss",
+  deps = [
+    "//src/lib/core:core_scss_lib",
+    "tabs_scss_lib",
+  ],
+)
+
+sass_binary(
+  name = "tab_group_scss",
+  src = "tab-group.scss",
+  deps = [
+    "//src/lib/core:core_scss_lib",
+    "tabs_scss_lib",
+  ],
+)
+
+sass_binary(
+  name = "tab_nav_bar_scss",
+  src = "tab-nav-bar/tab-nav-bar.scss",
+  deps = [
+    "//src/lib/core:core_scss_lib",
+    "tabs_scss_lib",
+  ],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "tab_body_css",
+  srcs = [":tab_body_scss"],
+  outs = ["tab-body.css"],
+  cmd = "cat $(locations :tab_body_scss) > $@",
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "tab_header_css",
+  srcs = [":tab_header_scss"],
+  outs = ["tab-header.css"],
+  cmd = "cat $(locations :tab_header_scss) > $@",
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "tab_group_css",
+  srcs = [":tab_group_scss"],
+  outs = ["tab-group.css"],
+  cmd = "cat $(locations :tab_group_scss) > $@",
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "tab_nav_bar_css",
+  srcs = [":tab_nav_bar_scss"],
+  outs = ["tab-nav-bar/tab-nav-bar.css"],
+  cmd = "cat $(locations :tab_nav_bar_scss) > $@",
+)
+

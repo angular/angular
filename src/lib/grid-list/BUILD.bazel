@@ -1,0 +1,32 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "grid-list",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/grid-list",
+  assets = [":grid_list_css"],
+  deps = [
+    "//src/lib/core",
+    "//src/cdk/bidi",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+sass_binary(
+  name = "grid_list_scss",
+  src = "grid-list.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "grid_list_css",
+  srcs = [":grid_list_scss"],
+  outs = ["grid-list.css"],
+  cmd = "cat $(locations :grid_list_scss) > $@",
+)

@@ -1,0 +1,75 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "datepicker",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/datepicker",
+  assets = [
+    ":datepicker_content_css",
+    ":calendar_body_css",
+    ":calendar_css",
+  ],
+  deps = [
+    "//src/lib/core",
+    "//src/lib/button",
+    "//src/lib/dialog",
+    "//src/lib/icon",
+    "//src/lib/input",
+    "//src/cdk/a11y",
+    "//src/cdk/bidi",
+    "//src/cdk/coercion",
+    "//src/cdk/keycodes",
+    "//src/cdk/portal",
+    "//src/cdk/overlay",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+sass_binary(
+  name = "datepicker_content_scss",
+  src = "datepicker-content.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "calendar_scss",
+  src = "calendar.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "calendar_body_scss",
+  src = "calendar-body.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "datepicker_content_css",
+  srcs = [":datepicker_content_scss"],
+  outs = ["datepicker-content.css"],
+  cmd = "cat $(locations :datepicker_content_scss) > $@",
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "calendar_css",
+  srcs = [":calendar_scss"],
+  outs = ["calendar.css"],
+  cmd = "cat $(locations :calendar_scss) > $@",
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "calendar_body_css",
+  srcs = [":calendar_body_scss"],
+  outs = ["calendar-body.css"],
+  cmd = "cat $(locations :calendar_body_scss) > $@",
+)

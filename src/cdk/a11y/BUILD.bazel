@@ -1,5 +1,11 @@
 package(default_visibility=["//visibility:public"])
 load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library")
+
+sass_library(
+  name = "a11y_scss_lib",
+  srcs = glob(["**/_*.scss"]),
+)
 
 ng_module(
   name = "a11y",

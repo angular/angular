@@ -1,0 +1,36 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "slide-toggle",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/slide_toggle",
+  assets = [":slide_toggle_css"],
+  deps = [
+    "//src/lib/core",
+    "//src/cdk/a11y",
+    "//src/cdk/coercion",
+    "//src/cdk/observers",
+    "//src/cdk/platform",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+sass_binary(
+  name = "slide_toggle_scss",
+  src = "slide-toggle.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "slide_toggle_css",
+  srcs = [":slide_toggle_scss"],
+  outs = ["slide-toggle.css"],
+  cmd = "cat $(locations :slide_toggle_scss) > $@",
+)
+

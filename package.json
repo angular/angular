@@ -122,7 +122,7 @@
     "tsconfig-paths": "^2.3.0",
     "tslint": "^5.8.0",
     "tsutils": "^2.6.0",
-    "typescript": "~2.5.2",
+    "typescript": "~2.5.3",
     "uglify-js": "^2.8.14",
     "web-animations-js": "^2.2.5"
   }

@@ -1,0 +1,57 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "stepper",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/material/stepper",
+  assets = [
+    ":stepper_css",
+    ":step_header_css",
+  ],
+  deps = [
+    "//src/lib/core",
+    "//src/lib/button",
+    "//src/lib/icon",
+    "//src/cdk/a11y",
+    "//src/cdk/coercion",
+    "//src/cdk/portal",
+    "//src/cdk/stepper",
+    "@rxjs",
+  ],
+  tsconfig = ":tsconfig-build.json",
+)
+
+
+sass_binary(
+  name = "stepper_scss",
+  src = "stepper.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+sass_binary(
+  name = "step_header_scss",
+  src = "step-header.scss",
+  deps = ["//src/lib/core:core_scss_lib"],
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "stepper_css",
+  srcs = [":stepper_scss"],
+  outs = ["stepper.css"],
+  cmd = "cat $(locations :stepper_scss) > $@",
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "step_header_css",
+  srcs = [":step_header_scss"],
+  outs = ["step-header.css"],
+  cmd = "cat $(locations :step_header_scss) > $@",
+)
+
