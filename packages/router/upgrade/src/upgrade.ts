@@ -81,6 +81,6 @@ export function setUpRouterSync(injector: Injector, $injector: any) {
 
   $injector.get('$rootScope').$on('$locationChangeStart', (_: any, next: string, __: string) => {
     url.href = next;
-    router.navigateByUrl(url.pathname + url.search + url.hash, {replaceUrl: true});
+    router.navigateByUrl(url.pathname + url.search + url.hash);
   });
 }
