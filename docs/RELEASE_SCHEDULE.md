@@ -17,7 +17,7 @@ In such case, we'll update this document accordingly.
 
 The dates are just a guidance and might be adjusted slightly if necessary.
 
-## Tentative Schedule Until September 2017
+## Tentative Schedule Until December 2017
 
 <!--
 The table below is formatted so that it's easy to read and edit in both markdown and rendered html form.
@@ -59,9 +59,20 @@ Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@n
 2017‑10‑02	  | 4.4.3                               | 5.0.0‑rc.1                         |
 2017‑10‑09	  | 4.4.4                               | 5.0.0‑rc.2                         |
 2017‑10‑16    | 4.4.5                               | 5.0.0‑rc.3                         |
-2017‑10‑23    | 5.0.0                               | ‑                                  | Major Version Release
+2017‑11-01    | 5.0.0                               | ‑                                  | Major Version Release
+2017-11-08    | 5.0.1                               | 5.1.0.Beta.0                       | *Regression Patch Release*
+2017-11-16    | 5.0.2                               | 5.1.0.Beta.1                       | *Regression Patch Release*
+2017-11-22    | 5.0.3                               | 5.1.0.beta.2                       | *Regression Patch Release*
+2017-11-30    | 5.0.4                               | 5.1.0.rc.0                         |
+2017-12-01    | 5.0.5                               | 5.1.0.rc.1                         |
+2017-12-06    | 5.1.0                               |                                    | Minor Version Release
+2017-12-13    | 5.1.1                               | 5.2.0.beta.0                       |
+2017-12-20    | 5.1.2                               |                                    |
 
-## Tentative Schedule After September 2017
+
+
+
+## Tentative Schedule After December 2017
 
  Date                   | Stable Release | Compatibility`*`
  ---------------------- | -------------- | ----------------
