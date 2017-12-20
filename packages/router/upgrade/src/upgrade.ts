@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken, Injector} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
 
@@ -50,7 +50,7 @@ export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
 }
 
 /**
- * @whatItDoes Sets up a location synchronization using the provided UpgradeModule.
+ * @whatItDoes Sets up a location synchronization.
  *
  * History.pushState does not fire onPopState, so the Angular location
  * doesn't detect it. The workaround is to attach a location change listener
@@ -64,23 +64,13 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule) {
         Remove RouterUpgradeInitializer and call setUpLocationSync after UpgradeModule.bootstrap.
       `);
   }
-  setUpRouterSync(ngUpgrade.injector, ngUpgrade.$injector);
-}
 
-/**
- * @whatItDoes Sets up a router synchronization using the Angular and AngularJS injectors.
- *
- * History.pushState does not fire onPopState, so the Angular location
- * doesn't detect it. The workaround is to attach a location change listener
- *
- * @experimental
- */
-export function setUpRouterSync(injector: Injector, $injector: any) {
-  const router: Router = injector.get(Router);
+  const router: Router = ngUpgrade.injector.get(Router);
   const url = document.createElement('a');
 
-  $injector.get('$rootScope').$on('$locationChangeStart', (_: any, next: string, __: string) => {
-    url.href = next;
-    router.navigateByUrl(url.pathname + url.search + url.hash);
-  });
+  ngUpgrade.$injector.get('$rootScope')
+      .$on('$locationChangeStart', (_: any, next: string, __: string) => {
+        url.href = next;
+        router.navigateByUrl(url.pathname + url.search + url.hash);
+      });
 }
