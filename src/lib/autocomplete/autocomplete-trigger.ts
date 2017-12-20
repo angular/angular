@@ -167,15 +167,15 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** Closes the autocomplete suggestion panel. */
   closePanel(): void {
-    if (this._overlayRef && this._overlayRef.hasAttached()) {
-      this._overlayRef.detach();
-      this._closingActionsSubscription.unsubscribe();
-    }
-
     this._resetLabel();
 
     if (this._panelOpen) {
       this.autocomplete._isOpen = this._panelOpen = false;
+
+      if (this._overlayRef && this._overlayRef.hasAttached()) {
+        this._overlayRef.detach();
+        this._closingActionsSubscription.unsubscribe();
+      }
 
       // We need to trigger change detection manually, because
       // `fromEvent` doesn't seem to do it at the proper time.
@@ -195,7 +195,9 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this.autocomplete._keyManager.tabOut.pipe(filter(() => this._panelOpen)),
       this._escapeEventStream,
       this._outsideClickStream,
-      this._overlayRef ? this._overlayRef.detachments() : observableOf()
+      this._overlayRef ?
+          this._overlayRef.detachments().pipe(filter(() => this._panelOpen)) :
+          observableOf()
     );
   }
 

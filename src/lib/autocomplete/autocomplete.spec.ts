@@ -1520,27 +1520,26 @@ describe('MatAutocomplete', () => {
     }));
 
 
-    it('should reset correctly when closed programmatically', async(() => {
+    it('should reset correctly when closed programmatically', fakeAsync(() => {
       TestBed.overrideProvider(MAT_AUTOCOMPLETE_SCROLL_STRATEGY, {
         useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
         deps: [Overlay]
       });
 
-      const fixture = TestBed.createComponent(SimpleAutocomplete);
+      const fixture = createComponent(SimpleAutocomplete);
       fixture.detectChanges();
       const trigger = fixture.componentInstance.trigger;
 
       trigger.openPanel();
       fixture.detectChanges();
+      zone.simulateZoneExit();
 
-      fixture.whenStable().then(() => {
-        expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
 
-        scrolledSubject.next();
-        fixture.detectChanges();
+      scrolledSubject.next();
+      fixture.detectChanges();
 
-        expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
-      });
+      expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
     }));
 
   });
