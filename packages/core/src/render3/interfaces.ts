@@ -518,8 +518,8 @@ export interface QueryState {
    * @param read Indicates which token should be read from DI for this query.
    */
   track<T>(
-      queryList: QueryList<T>, predicate: Type<T>|string[], descend?: boolean,
-      read?: QueryReadType): void;
+      queryList: QueryList<T>, predicate: Type<any>|string[], descend?: boolean,
+      read?: QueryReadType|Type<T>): void;
 }
 
 /**
