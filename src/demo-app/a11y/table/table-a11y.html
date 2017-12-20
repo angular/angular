@@ -28,8 +28,8 @@
     <mat-table [dataSource]="sortDataSource"
               aria-label="Users favorite colors and age"
               aria-readonly="true"
-              mdSort mdSortActive="age"
-              mdSortDirection="asc">
+              matSort matSortActive="age"
+              matSortDirection="asc">
       <ng-container cdkColumnDef="name">
         <mat-header-cell *cdkHeaderCellDef>Name</mat-header-cell>
         <mat-cell *cdkCellDef="let row">{{row.name}}</mat-cell>

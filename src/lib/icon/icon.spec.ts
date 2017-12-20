@@ -124,26 +124,26 @@ describe('MatIcon', () => {
       let fixture = TestBed.createComponent(IconFromSvgName);
       let svgElement: SVGElement;
       const testComponent = fixture.componentInstance;
-      const mdIconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+      const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
 
       testComponent.iconName = 'fido';
       fixture.detectChanges();
       http.expectOne('dog.svg').flush(FAKE_SVGS.dog);
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
       verifyPathChildElement(svgElement, 'woof');
 
       // Change the icon, and the SVG element should be replaced.
       testComponent.iconName = 'fluffy';
       fixture.detectChanges();
       http.expectOne('cat.svg').flush(FAKE_SVGS.cat);
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
       verifyPathChildElement(svgElement, 'meow');
 
       // Using an icon from a previously loaded URL should not cause another HTTP request.
       testComponent.iconName = 'fido';
       fixture.detectChanges();
       http.expectNone('dog.svg');
-      svgElement = verifyAndGetSingleSvgChild(mdIconElement);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
       verifyPathChildElement(svgElement, 'woof');
 
       // Assert that a registered icon can be looked-up by url.
