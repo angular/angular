@@ -16,6 +16,7 @@ task('aot:deps', sequenceTask(
   [
     'cdk:build-release',
     'material:build-release',
+    'cdk-experimental:build-release',
     'material-experimental:build-release',
     'material-moment-adapter:build-release'
   ],

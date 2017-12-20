@@ -10,6 +10,7 @@ import * as minimist from 'minimist';
 /** Packages that will be published to NPM by the release task. */
 export const releasePackages = [
   'cdk',
+  'cdk-experimental',
   'material',
   'material-experimental',
   'material-moment-adapter'

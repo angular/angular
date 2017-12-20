@@ -37,6 +37,7 @@ task('e2e-app:build', sequenceTask(
   [
     'cdk:build-release',
     'material:build-release',
+    'cdk-experimental:build-release',
     'material-experimental:build-release',
     'material-moment-adapter:build-release',
     'material-examples:build-release'
@@ -82,6 +83,7 @@ task('serve:e2eapp:watch', ['serve:e2eapp', 'material:watch', ':watch:e2eapp']);
 task('e2e-app:copy-release', () => {
   copySync(join(releasesDir, 'cdk'), join(outDir, 'cdk'));
   copySync(join(releasesDir, 'material'), join(outDir, 'material'));
+  copySync(join(releasesDir, 'cdk-experimental'), join(outDir, 'cdk-experimental'));
   copySync(join(releasesDir, 'material-experimental'), join(outDir, 'material-experimental'));
   copySync(join(releasesDir, 'material-examples'), join(outDir, 'material-examples'));
   copySync(join(releasesDir, 'material-moment-adapter'), join(outDir, 'material-moment-adapter'));

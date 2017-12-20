@@ -11,7 +11,7 @@
     "newLine": "lf",
     "module": "es2015",
     "moduleResolution": "node",
-    "outDir": "../../dist/packages/material-experimental",
+    "outDir": "../../dist/packages/cdk-experimental",
     "rootDir": ".",
     "sourceMap": true,
     "inlineSources": true,
@@ -23,9 +23,7 @@
       "@angular/material/*": ["../../dist/packages/material/*"],
       "@angular/material": ["../../dist/packages/material/public-api"],
       "@angular/cdk/*": ["../../dist/packages/cdk/*"],
-      "@angular/cdk": ["../../dist/packages/cdk"],
-      "@angular/cdk-experimental/*": ["../../dist/packages/cdk-experimental/*"],
-      "@angular/cdk-experimental": ["../../dist/packages/cdk-experimental"]
+      "@angular/cdk": ["../../dist/packages/cdk"]
     }
   },
   "files": [
@@ -36,7 +34,7 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
-    "flatModuleId": "@angular/material-experimental",
+    "flatModuleId": "@angular/cdk-experimental",
     "skipTemplateCodegen": true
   }
 }

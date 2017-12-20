@@ -76,6 +76,9 @@
 /src/material-experimental/**                      @jelbourn
 /src/material-experimental/dialog/**               @jelbourn @josephperrott @crisbeto
 
+# CDK experimental package
+/src/cdk-experimental/**                           @jelbourn
+
 # Docs examples & guides
 /guides/**                                         @amcdnl @jelbourn
 /src/material-examples/**                          @amcdnl @jelbourn

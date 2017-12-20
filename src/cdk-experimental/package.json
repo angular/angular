@@ -1,0 +1,25 @@
+{
+  "name": "@angular/cdk-experimental",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Experimental components for Angular CDK",
+  "main": "./bundles/cdk-experimental.umd.js",
+  "module": "./esm5/cdk-experimental.es5.js",
+  "es2015": "./esm2015/cdk-experimental.js",
+  "typings": "./cdk-experimental.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/material2.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/material2/issues"
+  },
+  "homepage": "https://github.com/angular/material2#readme",
+  "peerDependencies": {
+    "@angular/material": "0.0.0-PLACEHOLDER",
+    "@angular/core": "0.0.0-NG"
+  },
+  "dependencies": {
+    "tslib": "^1.7.1"
+  }
+}

@@ -10,6 +10,8 @@
       "@angular/material": ["../lib/public-api.ts"],
       "@angular/material-experimental/*": ["../material-experimental/*"],
       "@angular/material-experimental": ["../material-experimental/"],
+      "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
+      "@angular/cdk-experimental": ["../cdk-experimental/"],
       "@angular/material-moment-adapter": ["../material-moment-adapter/"],
       "@angular/material-examples": ["../material-examples/"]
     }

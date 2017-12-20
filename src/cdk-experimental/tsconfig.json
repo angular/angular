@@ -8,9 +8,7 @@
       "@angular/cdk/*": ["../cdk/*"],
       "@angular/cdk": ["../cdk"],
       "@angular/material/*": ["../lib/*"],
-      "@angular/material": ["../lib/public-api.ts"],
-      "@angular/cdk-experimental/*": ["../cdk-experimental/*"],
-      "@angular/cdk-experimental": ["../cdk-experimental/public-api.ts"]
+      "@angular/material": ["../lib/public-api.ts"]
     }
   },
   "include": ["./**/*.ts"]

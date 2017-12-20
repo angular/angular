@@ -1,15 +1,17 @@
 import {createPackageBuildTasks} from 'material2-build-tools';
 import {
   cdkPackage,
+  cdkExperimentalPackage,
   examplesPackage,
-  experimentalPackage,
+  materialExperimentalPackage,
   materialPackage,
   momentAdapterPackage
 } from './packages';
 
 createPackageBuildTasks(cdkPackage);
+createPackageBuildTasks(cdkExperimentalPackage);
 createPackageBuildTasks(materialPackage);
-createPackageBuildTasks(experimentalPackage);
+createPackageBuildTasks(materialExperimentalPackage);
 createPackageBuildTasks(examplesPackage);
 createPackageBuildTasks(momentAdapterPackage);
 

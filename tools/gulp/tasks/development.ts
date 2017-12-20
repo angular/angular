@@ -4,7 +4,13 @@ import {join} from 'path';
 import {
   buildConfig, copyFiles, buildScssTask, sequenceTask, watchFiles
 } from 'material2-build-tools';
-import {cdkPackage, experimentalPackage, materialPackage, momentAdapterPackage} from '../packages';
+import {
+  cdkPackage,
+  materialExperimentalPackage,
+  cdkExperimentalPackage,
+  materialPackage,
+  momentAdapterPackage
+} from '../packages';
 
 // These imports don't have any typings provided.
 const firebaseTools = require('firebase-tools');
@@ -48,8 +54,10 @@ task(':watch:devapp', () => {
   watchFiles(join(materialPackage.sourceDir, '**/*.scss'), [':build:devapp:material-with-styles']);
   watchFiles(join(momentAdapterPackage.sourceDir, '**/*'),
       ['material-moment-adapter:build-no-bundles']);
-  watchFiles(join(experimentalPackage.sourceDir, '**/*'),
+  watchFiles(join(materialExperimentalPackage.sourceDir, '**/*'),
       ['material-experimental:build-no-bundles']);
+  watchFiles(join(cdkExperimentalPackage.sourceDir, '**/*'),
+      ['cdk-experimental:build-no-bundles']);
 });
 
 /** Path to the demo-app tsconfig file. */
@@ -83,8 +91,10 @@ task('stage-deploy:devapp', ['build:devapp'], () => {
   copyFiles(bundlesDir, '*.+(js|map)', join(outDir, 'dist/bundles'));
   copyFiles(cdkPackage.outputDir, '**/*.+(js|map)', join(outDir, 'dist/packages/cdk'));
   copyFiles(materialPackage.outputDir, '**/*.+(js|map)', join(outDir, 'dist/packages/material'));
-  copyFiles(experimentalPackage.outputDir, '**/*.+(js|map)',
+  copyFiles(materialExperimentalPackage.outputDir, '**/*.+(js|map)',
       join(outDir, 'dist/packages/material-experimental'));
+  copyFiles(cdkExperimentalPackage.outputDir, '**/*.+(js|map)',
+      join(outDir, 'dist/packages/cdk-experimental'));
   copyFiles(materialPackage.outputDir, '**/prebuilt/*.+(css|map)',
       join(outDir, 'dist/packages/material'));
 });
