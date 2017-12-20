@@ -1,3 +1,20 @@
+<a name="5.2.0-beta.1"></a>
+# [5.2.0-beta.1](https://github.com/angular/angular/compare/5.2.0-beta.0...5.2.0-beta.1) (2017-12-20)
+
+
+### Bug Fixes
+
+* **compiler:** generate the correct imports for summary type-check ([d91ff17](https://github.com/angular/angular/commit/d91ff17))
+* **forms:** avoid producing an error with hostBindingTypeCheck ([d213a20](https://github.com/angular/angular/commit/d213a20))
+
+
+### Features
+
+* **compiler:** allow ngIf to use the ngIf expression directly as a guard ([82bcd83](https://github.com/angular/angular/commit/82bcd83))
+* **router:** add "paramsInheritanceStrategy" router configuration option ([5efea2f](https://github.com/angular/angular/commit/5efea2f)), closes [#20572](https://github.com/angular/angular/issues/20572)
+
+
+
 <a name="5.1.2"></a>
 ## [5.1.2](https://github.com/angular/angular/compare/5.1.1...5.1.2) (2017-12-20)
 
