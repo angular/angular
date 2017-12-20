@@ -15,7 +15,6 @@
 # hansl - Hans Larsen
 # IgorMinar - Igor Minar
 # jasonaden - Jason Aden
-# juleskremer - Jules Kremer
 # kara - Kara Erickson
 # matsko - Matias Niemelä
 # mhevery - Misko Hevery
@@ -31,10 +30,18 @@ version: 2
 
 group_defaults:
   required: 1
+  # Require a github code review approval
+  github_reviews:
+    enabled: true
   reset_on_reopened:
     enabled: true
   approve_by_comment:
     enabled: false
+  # see http://docs.pullapprove.com/groups/author_approval/
+  author_approval:
+    # If the author is a reviewer on the PR, they will automatically have an
+    # "approved" status.
+    auto: true
 
 groups:
   root:
@@ -43,6 +50,8 @@ groups:
         include:
           - "*"
         exclude:
+          - "WORKSPACE"
+          - "BUILD.bazel"
           - ".circleci/*"
           - "aio/*"
           - "integration/*"
@@ -70,6 +79,7 @@ groups:
           - "*.bazel"
           - "*.bzl"
           - "packages/bazel/*"
+          - "tools/bazel.rc"
     users:
       - alexeagle #primary
       - chuckjaz
@@ -85,6 +95,7 @@ groups:
           - "*.lock"
           - "tools/*"
         exclude:
+          - "tools/bazel.rc"
           - "tools/public_api_guard/*"
           - "aio/*"
     users:
@@ -280,7 +291,7 @@ groups:
       files:
         - "packages/benchpress/*"
     users:
-      # needs primary
+      - alxhub # primary
       # needs secondary
       - IgorMinar #fallback
       - mhevery #fallback
@@ -308,9 +319,8 @@ groups:
           - "aio/content/navigation.json"
           - "aio/content/license.md"
     users:
-      - juleskremer #primary
-      - Foxandxss
       - stephenfluin
+      - Foxandxss
       - petebacondarwin
       - gkalpak
       - IgorMinar #fallback
@@ -324,7 +334,6 @@ groups:
           - "aio/content/navigation.json"
           - "aio/content/license.md"
     users:
-      - juleskremer #primary
       - stephenfluin
       - petebacondarwin
       - gkalpak
