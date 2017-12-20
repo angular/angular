@@ -36,6 +36,8 @@
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
     "flatModuleId": "@angular/material-examples",
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    // TODO: disabled for now due to @angular/forms
+    "fullTemplateTypeCheck": false
   }
 }

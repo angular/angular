@@ -227,7 +227,7 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
 
   constructor(
       private _elementRef: ElementRef,
-      @Optional() private _dateAdapter: DateAdapter<D>,
+      @Optional() public _dateAdapter: DateAdapter<D>,
       @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
       @Optional() private _formField: MatFormField) {
     if (!this._dateAdapter) {

@@ -16,7 +16,8 @@
   "angularCompilerOptions": {
     "strictMetadataEmit": true,
     "skipTemplateCodegen": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "fullTemplateTypeCheck": true
   },
   "include": [
     "**/*.spec.ts",

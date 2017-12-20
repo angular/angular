@@ -20,7 +20,8 @@
   "angularCompilerOptions": {
     "strictMetadataEmit": true,
     "skipTemplateCodegen": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "fullTemplateTypeCheck": true
   },
   "include": [
     // Include the index.ts for each secondary entry-point

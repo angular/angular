@@ -37,6 +37,8 @@
     "./system-config.ts"
   ],
   "angularCompilerOptions": {
-    "skipMetadataEmit": true
+    "skipMetadataEmit": true,
+    // TODO: disabled for now due to @angular/forms
+    "fullTemplateTypeCheck": false
   }
 }

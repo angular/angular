@@ -31,6 +31,8 @@
     "./main-aot.ts"
   ],
   "angularCompilerOptions": {
-    "skipTemplateCodegen": false
+    "skipTemplateCodegen": false,
+    // TODO: disabled for now due to @angular/forms
+    "fullTemplateTypeCheck": false
   }
 }

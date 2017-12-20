@@ -27,6 +27,7 @@
     "main.ts"
   ],
   "angularCompilerOptions": {
-    "annotateForClosureCompiler": true
+    "annotateForClosureCompiler": true,
+    "fullTemplateTypeCheck": true
   }
 }
