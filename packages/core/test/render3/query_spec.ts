@@ -77,7 +77,38 @@ describe('query', () => {
     expect((parent.query1 as QueryList<any>).toArray()).toEqual([child1, child2]);
   });
 
-  describe('local names', () => {
+  describe('types predicate', () => {
+
+    it('should query using type predicate and read specified token', () => {
+      const Child = createDirective();
+      let elToQuery;
+      /**
+       * <div child></div>
+       * class Cmpt {
+       *  @ViewChildren(Child, {read: ElementRef}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(Child, false, QueryReadType.ElementRef));
+          elToQuery = E(1, 'div');
+          { D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef); }
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(isElementRef(query.first)).toBeTruthy();
+      expect(query.first.nativeElement).toEqual(elToQuery);
+    });
+
+  });
+
+  describe('local names predicate', () => {
 
     it('should query for a single element and read ElementRef', () => {
 
