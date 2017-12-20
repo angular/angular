@@ -79,7 +79,7 @@ describe('query', () => {
 
   describe('types predicate', () => {
 
-    it('should query using type predicate and read specified token', () => {
+    it('should query using type predicate and read a specified token', () => {
       const Child = createDirective();
       let elToQuery;
       /**
@@ -106,6 +106,61 @@ describe('query', () => {
       expect(query.first.nativeElement).toEqual(elToQuery);
     });
 
+
+    it('should query using type predicate and read another directive type', () => {
+      const Child = createDirective();
+      const OtherChild = createDirective();
+      let otherChildInstance;
+      /**
+       * <div child otherChild></div>
+       * class Cmpt {
+       *  @ViewChildren(Child, {read: OtherChild}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(Child, false, OtherChild));
+          E(1, 'div');
+          {
+            D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef);
+            D(3, otherChildInstance = OtherChild.ngDirectiveDef.n(), OtherChild.ngDirectiveDef);
+          }
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(1);
+      expect(query.first).toBe(otherChildInstance);
+    });
+
+    it('should not add results to query if a requested token cant be read', () => {
+      const Child = createDirective();
+      const OtherChild = createDirective();
+      /**
+       * <div child></div>
+       * class Cmpt {
+       *  @ViewChildren(Child, {read: OtherChild}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(Child, false, OtherChild));
+          E(1, 'div');
+          { D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef); }
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(0);
+    });
   });
 
   describe('local names predicate', () => {
@@ -459,6 +514,31 @@ describe('query', () => {
       expect(query.length).toBe(2);
       expect(query.first.nativeElement).toBe(div);
       expect(query.last).toBe(childInstance);
+    });
+
+    it('should not add results to query if a requested token cant be read', () => {
+      const Child = createDirective();
+
+      let childInstance, div;
+      /**
+       * <div #foo></div>
+       * class Cmpt {
+       *  @ViewChildren('foo', {read: Child}) query;
+       * }
+       */
+      const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
+        let tmp: any;
+        if (cm) {
+          m(0, Q(['foo'], false, Child));
+          div = E(1, 'div', [], 'foo');
+          e();
+        }
+        qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+      });
+
+      const cmptInstance = renderComponent(Cmpt);
+      const query = (cmptInstance.query as QueryList<any>);
+      expect(query.length).toBe(0);
     });
 
   });

@@ -13,7 +13,6 @@ import {Observable} from 'rxjs/Observable';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList as viewEngine_QueryList} from '../linker/query_list';
 import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
-import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {Type} from '../type';
 
 import {assertNotNull} from './assert';
@@ -108,33 +107,8 @@ export class QueryState_ implements QueryState {
   }
 }
 
-function readDefaultInjectable(nodeInjector: LNodeInjector, node: LNode): viewEngine_ElementRef|
-    viewEngine_TemplateRef<any>|undefined {
-  ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
-  if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
-    return getOrCreateElementRef(nodeInjector);
-  } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
-    return getOrCreateTemplateRef(nodeInjector);
-  }
-}
-
-function readFromNodeInjector(nodeInjector: LNodeInjector, node: LNode, read: QueryReadType | null):
-    viewEngine_ElementRef|viewEngine_ViewContainerRef|viewEngine_TemplateRef<any>|undefined {
-  if (read === QueryReadType.ElementRef) {
-    return getOrCreateElementRef(nodeInjector);
-  } else if (read === QueryReadType.ViewContainerRef) {
-    return getOrCreateContainerRef(nodeInjector);
-  } else if (read === QueryReadType.TemplateRef) {
-    return getOrCreateTemplateRef(nodeInjector);
-  }
-
-  if (ngDevMode) {
-    throw new Error(`Unrecognised read type for queries: ${read}`);
-  }
-}
-
 /**
- * Goes over local names for a given node and returns directive index
+ * Iterates over local names for a given node and returns directive index
  * (or -1 if a local name points to an element).
  *
  * @param staticData static data of a node to check
@@ -153,23 +127,68 @@ function getIdxOfMatchingSelector(staticData: LNodeStatic, selector: string): nu
   return null;
 }
 
+/**
+ * Iterates over all the directives for a node and returns index of a directive for a given type.
+ *
+ * @param node Node on which directives are present.
+ * @param type Type of a directive to look for.
+ * @returns Index of a found directive or null when none found.
+ */
+function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
+  const ngStaticData = node.view.ngStaticData;
+  const flags = node.flags;
+  for (let i = flags >> LNodeFlags.INDX_SHIFT,
+           ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
+       i < ii; i++) {
+    const def = ngStaticData[i] as DirectiveDef<any>;
+    if (def.diPublic && def.type === type) {
+      return i;
+    }
+  }
+  return null;
+}
+
+function readDefaultInjectable(nodeInjector: LNodeInjector, node: LNode): viewEngine_ElementRef|
+    viewEngine_TemplateRef<any>|undefined {
+  ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
+  if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
+    return getOrCreateElementRef(nodeInjector);
+  } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
+    return getOrCreateTemplateRef(nodeInjector);
+  }
+}
+
+function readFromNodeInjector(
+    nodeInjector: LNodeInjector, node: LNode, read: QueryReadType | Type<any>): any {
+  if (read === QueryReadType.ElementRef) {
+    return getOrCreateElementRef(nodeInjector);
+  } else if (read === QueryReadType.ViewContainerRef) {
+    return getOrCreateContainerRef(nodeInjector);
+  } else if (read === QueryReadType.TemplateRef) {
+    return getOrCreateTemplateRef(nodeInjector);
+  } else {
+    const matchingIdx = geIdxOfMatchingDirective(node, read);
+    if (matchingIdx !== null) {
+      return node.view.data[matchingIdx];
+    }
+  }
+  return null;
+}
+
 function add(predicate: QueryPredicate<any>| null, node: LNode) {
   const nodeInjector = getOrCreateNodeInjectorForNode(node as LElement | LContainer);
   while (predicate) {
     const type = predicate.type;
     if (type) {
-      const ngStaticData = node.view.ngStaticData;
-      const flags = node.flags;
-      for (let i = flags >> LNodeFlags.INDX_SHIFT,
-               ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
-           i < ii; i++) {
-        const def = ngStaticData[i] as DirectiveDef<any>;
-        if (def.diPublic && def.type === type) {
-          if (predicate.read !== null) {
-            predicate.values.push(readFromNodeInjector(nodeInjector, node, predicate.read));
-          } else {
-            predicate.values.push(node.view.data[i]);
+      const directiveIdx = geIdxOfMatchingDirective(node, type);
+      if (directiveIdx !== null) {
+        if (predicate.read !== null) {
+          const requestedRead = readFromNodeInjector(nodeInjector, node, predicate.read);
+          if (requestedRead !== null) {
+            predicate.values.push(requestedRead);
           }
+        } else {
+          predicate.values.push(node.view.data[directiveIdx]);
         }
       }
     } else {
@@ -180,7 +199,10 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
         // is anything on a node matching a selector?
         if (directiveIdx !== null) {
           if (predicate.read !== null) {
-            predicate.values.push(readFromNodeInjector(nodeInjector, node, predicate.read));
+            const requestedRead = readFromNodeInjector(nodeInjector, node, predicate.read);
+            if (requestedRead !== null) {
+              predicate.values.push(requestedRead);
+            }
           } else {
             // is local name pointing to a directive?
             if (directiveIdx > -1) {

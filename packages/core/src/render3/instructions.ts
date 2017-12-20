@@ -1725,7 +1725,8 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
 }
 
 export function query<T>(
-    predicate: Type<any>| string[], descend?: boolean, read?: QueryReadType): QueryList<T> {
+    predicate: Type<any>| string[], descend?: boolean,
+    read?: QueryReadType | Type<T>): QueryList<T> {
   ngDevMode && assertPreviousIsParent();
   const queryList = new QueryList<T>();
   const query = currentQuery || (currentQuery = new QueryState_());
