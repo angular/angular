@@ -1970,6 +1970,6 @@ class AutocompleteWithSelectEvent {
     <mat-autocomplete #auto="matAutocomplete"></mat-autocomplete>
   `
 })
-export class PlainAutocompleteInputWithFormControl {
+class PlainAutocompleteInputWithFormControl {
   formControl = new FormControl();
 }
