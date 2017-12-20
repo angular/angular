@@ -343,7 +343,7 @@ describe('MatDatepicker', () => {
         expect(() => fixture.detectChanges()).not.toThrow();
       });
 
-      it('should clear out the backdrop subscriptions on close', () => {
+      it('should clear out the backdrop subscriptions on close', fakeAsync(() => {
         for (let i = 0; i < 3; i++) {
           testComponent.datepicker.open();
           fixture.detectChanges();
@@ -361,10 +361,11 @@ describe('MatDatepicker', () => {
 
         backdrop.click();
         fixture.detectChanges();
+        flush();
 
         expect(testComponent.datepicker.close).toHaveBeenCalledTimes(1);
         expect(testComponent.datepicker.opened).toBe(false);
-      });
+      }));
     });
 
     describe('datepicker with too many inputs', () => {
