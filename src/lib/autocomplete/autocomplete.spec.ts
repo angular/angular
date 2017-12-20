@@ -89,11 +89,12 @@ describe('MatAutocomplete', () => {
     return TestBed.createComponent(component);
   }
 
-  afterEach(() => {
-    if (overlayContainer) {
-      overlayContainer.ngOnDestroy();
-    }
-  });
+  afterEach(inject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+    // Since we're resetting the testing module in some of the tests,
+    // we can potentially have multiple overlay containers.
+    currentOverlayContainer.ngOnDestroy();
+    overlayContainer.ngOnDestroy();
+  }));
 
   describe('panel toggling', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
@@ -598,6 +599,7 @@ describe('MatAutocomplete', () => {
     });
 
     it('should disable the input when used with a value accessor and without `matInput`', () => {
+      overlayContainer.ngOnDestroy();
       fixture.destroy();
       TestBed.resetTestingModule();
 

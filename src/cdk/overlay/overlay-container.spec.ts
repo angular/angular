@@ -29,7 +29,7 @@ describe('OverlayContainer', () => {
     overlayRef.attach(fixture.componentInstance.templatePortal);
     fixture.detectChanges();
 
-    expect(document.querySelectorAll('.cdk-overlay-container'))
+    expect(document.querySelector('.cdk-overlay-container'))
         .not.toBeNull('Expected the overlay container to be in the DOM after opening an overlay');
 
     // Manually call `ngOnDestroy` because there is no way to force Angular to destroy an
