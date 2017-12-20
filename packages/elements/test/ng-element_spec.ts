@@ -1153,6 +1153,42 @@ export function main() {
       });
     });
 
+    describe('(lazily upgraded)', () => {
+      beforeEach(done => {
+        mockScheduler = installMockScheduler();
+
+        destroyPlatform();
+        platformBrowserDynamic()
+            .bootstrapModule(TestModule)
+            .then(ref => {
+              moduleRef = ref;
+              e = document.createElement(LazyTestNgElement.is) as any;
+
+              // In order for an existing element to be upgraded, it has to be attached to the DOM.
+              document.body.appendChild(e);
+            })
+            .then(done, done.fail);
+      });
+
+      afterEach(() => {
+        e.parentNode !.removeChild(e);
+        destroyPlatform();
+      });
+
+      it('should take into account properties set before being upgraded', () => {
+        e.foo = 'eagerFoo';
+        e.bar = 'eagerBar';
+
+        customElements.define(LazyTestNgElement.is, LazyTestNgElement);
+        const component = e.componentRef !.instance;
+
+        expect(e.foo).toBe('eagerFoo');
+        expect(e.bar).toBe('eagerBar');
+        expect(component.foo).toBe('eagerFoo');
+        expect(component.bar).toBe('eagerBar');
+      });
+    });
+
     // Helpers
     @Component({
       selector: 'test-component-for-nge',
@@ -1224,9 +1260,14 @@ export function main() {
       }
     }
 
+    class LazyTestNgElement extends TestNgElement {
+      static is = 'lazy-test-component-for-nge';
+    }
+
     // The `@webcomponents/custom-elements/src/native-shim.js` polyfill, that we use to enable
     // ES2015 classes transpiled to ES5 constructor functions to be used as Custom Elements in
     // tests, only works if the elements have been registered with `customElements.define()`.
+    // (The `LazyTestNgElement` will be registered lazily.)
     customElements.define(TestNgElement.is, TestNgElement);
   });
 }

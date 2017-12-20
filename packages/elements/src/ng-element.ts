@@ -100,6 +100,14 @@ export abstract class NgElementImpl<T> extends HTMLElement implements NgElement<
       private componentFactory: ComponentFactory<T>, private readonly inputs: NgElementInput[],
       private readonly outputs: NgElementOutput[]) {
     super();
+
+    inputs.forEach(({propName}) => {
+      if (this.hasOwnProperty(propName)) {
+        const pThis = this as (this & {[key: string]: any});
+        pThis.setInputValue(propName, pThis[propName]);
+        delete pThis[propName];
+      }
+    });
   }
 
   attributeChangedCallback(
