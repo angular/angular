@@ -2823,6 +2823,96 @@ export function main() {
            expect(child.log).toEqual(['child-start', 'child-done']);
          }));
 
+      it('should fire and synchronize the start/done callbacks on multiple blocked sub triggers',
+         fakeAsync(() => {
+           @Component({
+             selector: 'cmp',
+             animations: [
+               trigger(
+                   'parent1',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({opacity: 0}),
+                           animate('1s', style({opacity: 1})),
+                         ]),
+                   ]),
+               trigger(
+                   'parent2',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({lineHeight: '0px'}),
+                           animate('1s', style({lineHeight: '10px'})),
+                         ]),
+                   ]),
+               trigger(
+                   'child1',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({width: '0px'}),
+                           animate('1s', style({width: '100px'})),
+                         ]),
+                   ]),
+               trigger(
+                   'child2',
+                   [
+                     transition(
+                         '* => go, * => go-again',
+                         [
+                           style({height: '0px'}),
+                           animate('1s', style({height: '100px'})),
+                         ]),
+                   ]),
+             ],
+             template: `
+               <div [@parent1]="parent1Exp" (@parent1.start)="track($event)"
+                    [@parent2]="parent2Exp" (@parent2.start)="track($event)">
+                 <div [@child1]="child1Exp" (@child1.start)="track($event)"
+                      [@child2]="child2Exp" (@child2.start)="track($event)"></div>
+               </div>
+          `
+           })
+           class Cmp {
+             public parent1Exp = '';
+             public parent2Exp = '';
+             public child1Exp = '';
+             public child2Exp = '';
+             public log: string[] = [];
+
+             track(event: any) { this.log.push(`${event.triggerName}-${event.phaseName}`); }
+           }
+
+           TestBed.configureTestingModule({declarations: [Cmp]});
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           const cmp = fixture.componentInstance;
+           cmp.log = [];
+           cmp.parent1Exp = 'go';
+           cmp.parent2Exp = 'go';
+           cmp.child1Exp = 'go';
+           cmp.child2Exp = 'go';
+           fixture.detectChanges();
+           flushMicrotasks();
+
+           expect(cmp.log).toEqual(
+               ['parent1-start', 'parent2-start', 'child1-start', 'child2-start']);
+
+           cmp.parent1Exp = 'go-again';
+           cmp.parent2Exp = 'go-again';
+           cmp.child1Exp = 'go-again';
+           cmp.child2Exp = 'go-again';
+           fixture.detectChanges();
+           flushMicrotasks();
+         }));
+
       it('should stretch the starting keyframe of a child animation queries are issued by the parent',
          () => {
            @Component({
