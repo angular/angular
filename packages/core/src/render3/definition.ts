@@ -39,6 +39,7 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     template: (componentDefinition as ComponentDefArgs<T>).template || null !,
     r: componentDefinition.refresh ||
         function(d: number, e: number) { componentRefresh(d, e, componentDefinition.template); },
+    h: componentDefinition.hostBindings || noop,
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
     methods: invertObject(componentDefinition.methods),
@@ -58,6 +59,8 @@ export function PublicFeature<T>(definition: DirectiveDef<T>) {
 }
 
 const EMPTY = {};
+
+function noop() {}
 
 /** Swaps the keys and values of an object. */
 function invertObject(obj: any): any {

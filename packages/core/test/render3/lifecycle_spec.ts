@@ -6,11 +6,362 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, ComponentTemplate, D, E, L, LifecycleHook, T, V, b, c, cR, cr, defineComponent, e, l, p, v} from '../../src/render3/index';
+import {C, ComponentDef, ComponentTemplate, D, E, L, LifecycleHook, T, V, b, c, cR, cr, defineComponent, e, l, p, r, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
 describe('lifecycles', () => {
+
+  describe('onInit', () => {
+    let events: string[];
+
+    beforeEach(() => { events = []; });
+
+    let Comp = createOnInitComponent('comp', (ctx: any, cm: boolean) => {});
+    let Parent = createOnInitComponent('parent', (ctx: any, cm: boolean) => {
+      if (cm) {
+        E(0, Comp.ngComponentDef);
+        { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+        e();
+      }
+      p(0, 'val', b(ctx.val));
+      Comp.ngComponentDef.h(1, 0);
+      Comp.ngComponentDef.r(1, 0);
+    });
+
+    function createOnInitComponent(name: string, template: ComponentTemplate<any>) {
+      return class Component {
+        val: string = '';
+        ngOnInit() { events.push(`${name}${this.val}`); }
+
+        static ngComponentDef = defineComponent({
+          type: Component,
+          tag: name,
+          factory: () => new Component(),
+          hostBindings: function(directiveIndex: number, elementIndex: number):
+              void { l(LifecycleHook.ON_INIT) && D<Component>(directiveIndex).ngOnInit(); },
+          inputs: {val: 'val'}, template
+        });
+      };
+    }
+
+    it('should call onInit method after inputs are set in creation mode (and not in update mode)',
+       () => {
+         /** <comp [val]="val"></comp> */
+         function Template(ctx: any, cm: boolean) {
+           if (cm) {
+             E(0, Comp.ngComponentDef);
+             { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+             e();
+           }
+           p(0, 'val', b(ctx.val));
+           Comp.ngComponentDef.h(1, 0);
+           Comp.ngComponentDef.r(1, 0);
+         }
+
+         renderToHtml(Template, {val: '1'});
+         expect(events).toEqual(['comp1']);
+
+         renderToHtml(Template, {val: '2'});
+         expect(events).toEqual(['comp1']);
+       });
+
+    it('should call parent onInit before child onInit', () => {
+      /**
+       * <parent></parent>
+       * parent temp: <comp></comp>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Parent.ngComponentDef);
+          { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+          e();
+        }
+        Parent.ngComponentDef.h(1, 0);
+        Parent.ngComponentDef.r(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['parent', 'comp']);
+    });
+
+    it('should call all parent onInits across view before calling children onInits', () => {
+      /**
+       * <parent [val]="1"></parent>
+       * <parent [val]="2"></parent>
+       *
+       * parent temp: <comp [val]="val"></comp>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Parent.ngComponentDef);
+          { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+          e();
+          E(2, Parent.ngComponentDef);
+          { D(3, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+          e();
+        }
+        p(0, 'val', 1);
+        Parent.ngComponentDef.h(1, 0);
+        p(2, 'val', 2);
+        Parent.ngComponentDef.h(3, 2);
+        Parent.ngComponentDef.r(1, 0);
+        Parent.ngComponentDef.r(3, 2);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['parent1', 'parent2', 'comp1', 'comp2']);
+    });
+
+
+    it('should call onInit every time a new view is created (if block)', () => {
+      /**
+       * % if (condition) {
+       *   <comp></comp>
+       * % }
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          C(0);
+          c();
+        }
+        cR(0);
+        {
+          if (ctx.condition) {
+            if (V(0)) {
+              E(0, Comp.ngComponentDef);
+              { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+              e();
+            }
+            Comp.ngComponentDef.h(1, 0);
+            Comp.ngComponentDef.r(1, 0);
+            v();
+          }
+        }
+        cr();
+      }
+
+      renderToHtml(Template, {condition: true});
+      expect(events).toEqual(['comp']);
+
+      renderToHtml(Template, {condition: false});
+      expect(events).toEqual(['comp']);
+
+      renderToHtml(Template, {condition: true});
+      expect(events).toEqual(['comp', 'comp']);
+    });
+
+    it('should call onInit properly in for loop', () => {
+      /**
+       *  <comp [val]="1"></comp>
+       * % for (let j = 2; j < 5; j++) {
+       *   <comp [val]="j"></comp>
+       * % }
+       *  <comp [val]="5"></comp>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Comp.ngComponentDef);
+          { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+          e();
+          C(2);
+          c();
+          E(3, Comp.ngComponentDef);
+          { D(4, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+          e();
+        }
+        p(0, 'val', 1);
+        Comp.ngComponentDef.h(1, 0);
+        p(3, 'val', 5);
+        Comp.ngComponentDef.h(4, 3);
+        cR(2);
+        {
+          for (let j = 2; j < 5; j++) {
+            if (V(0)) {
+              E(0, Comp.ngComponentDef);
+              { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+              e();
+            }
+            p(0, 'val', j);
+            Comp.ngComponentDef.h(1, 0);
+            Comp.ngComponentDef.r(1, 0);
+            v();
+          }
+        }
+        cr();
+        Comp.ngComponentDef.r(1, 0);
+        Comp.ngComponentDef.r(4, 3);
+      }
+
+      renderToHtml(Template, {});
+
+      // onInit is called top to bottom, so top level comps (1 and 5) are called
+      // before the comps inside the for loop's embedded view (2, 3, and 4)
+      expect(events).toEqual(['comp1', 'comp5', 'comp2', 'comp3', 'comp4']);
+    });
+
+    it('should call onInit properly in for loop with children', () => {
+      /**
+       *  <parent [val]="1"></parent>
+       * % for (let j = 2; j < 5; j++) {
+       *   <parent [val]="j"></parent>
+       * % }
+       *  <parent [val]="5"></parent>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Parent.ngComponentDef);
+          { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+          e();
+          C(2);
+          c();
+          E(3, Parent.ngComponentDef);
+          { D(4, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+          e();
+        }
+        p(0, 'val', 1);
+        Parent.ngComponentDef.h(1, 0);
+        p(3, 'val', 5);
+        Parent.ngComponentDef.h(4, 3);
+        cR(2);
+        {
+          for (let j = 2; j < 5; j++) {
+            if (V(0)) {
+              E(0, Parent.ngComponentDef);
+              { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+              e();
+            }
+            p(0, 'val', j);
+            Parent.ngComponentDef.h(1, 0);
+            Parent.ngComponentDef.r(1, 0);
+            v();
+          }
+        }
+        cr();
+        Parent.ngComponentDef.r(1, 0);
+        Parent.ngComponentDef.r(4, 3);
+      }
+
+      renderToHtml(Template, {});
+
+      // onInit is called top to bottom, so top level comps (1 and 5) are called
+      // before the comps inside the for loop's embedded view (2, 3, and 4)
+      expect(events).toEqual([
+        'parent1', 'parent5', 'parent2', 'comp2', 'parent3', 'comp3', 'parent4', 'comp4', 'comp1',
+        'comp5'
+      ]);
+    });
+
+  });
+
+
+  describe('doCheck', () => {
+    let events: string[];
+    let allEvents: string[];
+
+    beforeEach(() => {
+      events = [];
+      allEvents = [];
+    });
+
+    let Comp = createDoCheckComponent('comp', (ctx: any, cm: boolean) => {});
+    let Parent = createDoCheckComponent('parent', (ctx: any, cm: boolean) => {
+      if (cm) {
+        E(0, Comp.ngComponentDef);
+        { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+        e();
+      }
+      Comp.ngComponentDef.h(1, 0);
+      Comp.ngComponentDef.r(1, 0);
+    });
+
+    function createDoCheckComponent(name: string, template: ComponentTemplate<any>) {
+      return class Component {
+        ngDoCheck() {
+          events.push(name);
+          allEvents.push('ngDoCheck ' + name);
+        }
+
+        ngOnInit() { allEvents.push('ngOnInit ' + name); }
+
+        static ngComponentDef = defineComponent({
+          type: Component,
+          tag: name,
+          factory: () => new Component(),
+          hostBindings: function(
+              this: ComponentDef<Component>, directiveIndex: number, elementIndex: number): void {
+            l(LifecycleHook.ON_INIT) && D<Component>(directiveIndex).ngOnInit();
+            D<Component>(directiveIndex).ngDoCheck();
+          },
+          template
+        });
+      };
+    }
+
+    it('should call doCheck on every refresh', () => {
+      /** <comp></comp> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Comp.ngComponentDef);
+          { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+          e();
+        }
+        Comp.ngComponentDef.h(1, 0);
+        Comp.ngComponentDef.r(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['comp']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['comp', 'comp']);
+    });
+
+    it('should call parent doCheck before child doCheck', () => {
+      /**
+       * <parent></parent>
+       * parent temp: <comp></comp>
+       */
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Parent.ngComponentDef);
+          { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
+          e();
+        }
+        Parent.ngComponentDef.h(1, 0);
+        Parent.ngComponentDef.r(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['parent', 'comp']);
+    });
+
+    it('should call ngOnInit before ngDoCheck if creation mode', () => {
+      /** <comp></comp> */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Comp.ngComponentDef);
+          { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+          e();
+        }
+        Comp.ngComponentDef.h(1, 0);
+        Comp.ngComponentDef.r(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(allEvents).toEqual(['ngOnInit comp', 'ngDoCheck comp']);
+
+      renderToHtml(Template, {});
+      expect(allEvents).toEqual(['ngOnInit comp', 'ngDoCheck comp', 'ngDoCheck comp']);
+    });
+
+  });
 
   describe('onDestroy', () => {
     let events: string[];
@@ -24,6 +375,7 @@ describe('lifecycles', () => {
         { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
         e();
       }
+      Comp.ngComponentDef.h(1, 0);
       Comp.ngComponentDef.r(1, 0);
     });
 
@@ -66,6 +418,7 @@ describe('lifecycles', () => {
               { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
               e();
             }
+            Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.r(1, 0);
             v();
           }
@@ -103,7 +456,9 @@ describe('lifecycles', () => {
               e();
             }
             p(0, 'val', b('1'));
+            Comp.ngComponentDef.h(1, 0);
             p(2, 'val', b('2'));
+            Comp.ngComponentDef.h(3, 2);
             Comp.ngComponentDef.r(1, 0);
             Comp.ngComponentDef.r(3, 2);
             v();
@@ -139,6 +494,7 @@ describe('lifecycles', () => {
               { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
               e();
             }
+            Parent.ngComponentDef.h(1, 0);
             Parent.ngComponentDef.r(1, 0);
             v();
           }
@@ -167,6 +523,7 @@ describe('lifecycles', () => {
           { D(1, Parent.ngComponentDef.n(), Parent.ngComponentDef); }
           e();
         }
+        Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.r(1, 0);
       });
 
@@ -183,6 +540,7 @@ describe('lifecycles', () => {
               { D(1, Grandparent.ngComponentDef.n(), Grandparent.ngComponentDef); }
               e();
             }
+            Grandparent.ngComponentDef.h(1, 0);
             Grandparent.ngComponentDef.r(1, 0);
             v();
           }
@@ -226,7 +584,9 @@ describe('lifecycles', () => {
               e();
             }
             p(0, 'val', b('1'));
-            Comp.ngComponentDef.r(1, 0);
+            Comp.ngComponentDef.h(1, 0);
+            p(3, 'val', b('3'));
+            Comp.ngComponentDef.h(4, 3);
             cR(2);
             {
               if (ctx.condition2) {
@@ -236,12 +596,13 @@ describe('lifecycles', () => {
                   e();
                 }
                 p(0, 'val', b('2'));
+                Comp.ngComponentDef.h(1, 0);
                 Comp.ngComponentDef.r(1, 0);
                 v();
               }
             }
             cr();
-            p(3, 'val', b('3'));
+            Comp.ngComponentDef.r(1, 0);
             Comp.ngComponentDef.r(4, 3);
             v();
           }
@@ -304,7 +665,9 @@ describe('lifecycles', () => {
               e();
             }
             p(0, 'val', b('1'));
-            Comp.ngComponentDef.r(1, 0);
+            Comp.ngComponentDef.h(1, 0);
+            p(3, 'val', b('5'));
+            Comp.ngComponentDef.h(4, 3);
             cR(2);
             {
               for (let j = 2; j < ctx.len; j++) {
@@ -314,12 +677,13 @@ describe('lifecycles', () => {
                   e();
                 }
                 p(0, 'val', b(j));
+                Comp.ngComponentDef.h(1, 0);
                 Comp.ngComponentDef.r(1, 0);
                 v();
               }
             }
             cr();
-            p(3, 'val', b('5'));
+            Comp.ngComponentDef.r(1, 0);
             Comp.ngComponentDef.r(4, 3);
             v();
           }
@@ -390,6 +754,7 @@ describe('lifecycles', () => {
               }
               e();
             }
+            Comp.ngComponentDef.h(3, 2);
             Comp.ngComponentDef.r(3, 2);
             v();
           }

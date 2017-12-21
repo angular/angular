@@ -72,6 +72,7 @@ describe('encapsulation', () => {
           { D(1, EncapsulatedComponent.ngComponentDef.n(), EncapsulatedComponent.ngComponentDef); }
           e();
         }
+        EncapsulatedComponent.ngComponentDef.h(1, 0);
         EncapsulatedComponent.ngComponentDef.r(1, 0);
       },
       factory: () => new WrapperComponent,
@@ -89,6 +90,7 @@ describe('encapsulation', () => {
           { D(2, LeafComponent.ngComponentDef.n(), LeafComponent.ngComponentDef); }
           e();
         }
+        LeafComponent.ngComponentDef.h(2, 1);
         LeafComponent.ngComponentDef.r(2, 1);
       },
       factory: () => new EncapsulatedComponent,
@@ -137,6 +139,7 @@ describe('encapsulation', () => {
             { D(1, LeafComponentwith.ngComponentDef.n(), LeafComponentwith.ngComponentDef); }
             e();
           }
+          LeafComponentwith.ngComponentDef.h(1, 0);
           LeafComponentwith.ngComponentDef.r(1, 0);
         },
         factory: () => new WrapperComponentWith,

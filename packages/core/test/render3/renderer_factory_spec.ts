@@ -67,6 +67,7 @@ describe('renderer factory lifecycle', () => {
       { D(2, SomeComponent.ngComponentDef.n(), SomeComponent.ngComponentDef); }
       e();
     }
+    SomeComponent.ngComponentDef.h(2, 1);
     SomeComponent.ngComponentDef.r(2, 1);
   }
 
