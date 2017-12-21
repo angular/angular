@@ -51,6 +51,7 @@ describe('outputs', () => {
         }
         e();
       }
+      ButtonToggle.ngComponentDef.h(1, 0);
       ButtonToggle.ngComponentDef.r(1, 0);
     }
 
@@ -77,6 +78,7 @@ describe('outputs', () => {
         }
         e();
       }
+      ButtonToggle.ngComponentDef.h(1, 0);
       ButtonToggle.ngComponentDef.r(1, 0);
     }
 
@@ -103,6 +105,7 @@ describe('outputs', () => {
         }
         e();
       }
+      ButtonToggle.ngComponentDef.h(1, 0);
       ButtonToggle.ngComponentDef.r(1, 0);
     }
 
@@ -140,6 +143,7 @@ describe('outputs', () => {
             }
             e();
           }
+          ButtonToggle.ngComponentDef.h(1, 0);
           ButtonToggle.ngComponentDef.r(1, 0);
           v();
         }
@@ -194,6 +198,7 @@ describe('outputs', () => {
                 }
                 e();
               }
+              ButtonToggle.ngComponentDef.h(1, 0);
               ButtonToggle.ngComponentDef.r(1, 0);
               v();
             }
@@ -270,6 +275,8 @@ describe('outputs', () => {
             { D(5, DestroyComp.ngComponentDef.n(), DestroyComp.ngComponentDef); }
             e();
           }
+          ButtonToggle.ngComponentDef.h(3, 2);
+          DestroyComp.ngComponentDef.h(5, 4);
           ButtonToggle.ngComponentDef.r(3, 2);
           DestroyComp.ngComponentDef.r(5, 4);
           v();
@@ -350,6 +357,7 @@ describe('outputs', () => {
         }
         e();
       }
+      ButtonToggle.ngComponentDef.h(1, 0);
       ButtonToggle.ngComponentDef.r(1, 0);
     }
 
@@ -385,6 +393,7 @@ describe('outputs', () => {
         e();
       }
       p(0, 'change', b(ctx.change));
+      ButtonToggle.ngComponentDef.h(1, 0);
       ButtonToggle.ngComponentDef.r(1, 0);
     }
 
@@ -431,6 +440,7 @@ describe('outputs', () => {
             }
             e();
           }
+          ButtonToggle.ngComponentDef.h(1, 0);
           ButtonToggle.ngComponentDef.r(1, 0);
           v();
         } else {

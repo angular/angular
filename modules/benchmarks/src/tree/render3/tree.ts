@@ -61,6 +61,7 @@ export class TreeComponent {
               e();
             }
             p(0, 'data', b(ctx.data.left));
+            TreeComponent.ngComponentDef.h(1, 0);
             TreeComponent.ngComponentDef.r(1, 0);
           }
           v();
@@ -78,6 +79,7 @@ export class TreeComponent {
               e();
             }
             p(0, 'data', b(ctx.data.right));
+            TreeComponent.ngComponentDef.h(1, 0);
             TreeComponent.ngComponentDef.r(1, 0);
           }
           v();
