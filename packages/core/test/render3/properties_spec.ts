@@ -164,6 +164,7 @@ describe('elementProperty', () => {
           e();
         }
         p(0, 'id', b(ctx.id));
+        Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.r(1, 0);
       }
 
@@ -538,6 +539,7 @@ describe('elementProperty', () => {
               { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
               e();
             }
+            Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.r(1, 0);
             v();
           }

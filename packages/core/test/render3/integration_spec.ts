@@ -234,6 +234,7 @@ describe('iv integration test', () => {
           { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
           e();
         }
+        TodoComponent.ngComponentDef.h(1, 0);
         TodoComponent.ngComponentDef.r(1, 0);
       }
 
@@ -248,6 +249,7 @@ describe('iv integration test', () => {
           e();
           T(2, 'two');
         }
+        TodoComponent.ngComponentDef.h(1, 0);
         TodoComponent.ngComponentDef.r(1, 0);
       }
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>two');
@@ -267,6 +269,8 @@ describe('iv integration test', () => {
           { D(3, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
           e();
         }
+        TodoComponent.ngComponentDef.h(1, 0);
+        TodoComponent.ngComponentDef.h(3, 2);
         TodoComponent.ngComponentDef.r(1, 0);
         TodoComponent.ngComponentDef.r(3, 2);
       }
@@ -290,11 +294,9 @@ describe('iv integration test', () => {
             t(0, b(ctx.title));
           },
           factory: () => cmptInstance = new TodoComponentHostBinding,
-          refresh: function(directiveIndex: number, elementIndex: number): void {
+          hostBindings: function(directiveIndex: number, elementIndex: number): void {
             // host bindings
             p(elementIndex, 'title', b(D<TodoComponentHostBinding>(directiveIndex).title));
-            // refresh component's template
-            r(directiveIndex, elementIndex, this.template);
           }
         });
       }
@@ -308,6 +310,7 @@ describe('iv integration test', () => {
           }
           e();
         }
+        TodoComponentHostBinding.ngComponentDef.h(1, 0);
         TodoComponentHostBinding.ngComponentDef.r(1, 0);
       }
 
@@ -341,6 +344,7 @@ describe('iv integration test', () => {
           { D(1, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
           e();
         }
+        MyComp.ngComponentDef.h(1, 0);
         MyComp.ngComponentDef.r(1, 0);
       }
 
@@ -389,6 +393,7 @@ describe('iv integration test', () => {
           e();
         }
         p(0, 'condition', b(ctx.condition));
+        MyComp.ngComponentDef.h(1, 0);
         MyComp.ngComponentDef.r(1, 0);
       }
 

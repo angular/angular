@@ -211,6 +211,8 @@ describe('event listeners', () => {
             { D(4, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
             e();
           }
+          MyComp.ngComponentDef.h(2, 1);
+          MyComp.ngComponentDef.h(4, 3);
           MyComp.ngComponentDef.r(2, 1);
           MyComp.ngComponentDef.r(4, 3);
           v();

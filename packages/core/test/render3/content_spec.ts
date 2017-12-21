@@ -37,6 +37,7 @@ describe('content projection', () => {
         }
         e();
       }
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -59,6 +60,7 @@ describe('content projection', () => {
         }
         e();
       }
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -83,6 +85,7 @@ describe('content projection', () => {
           P(3, 0);
         }
         e();
+        GrandChild.ngComponentDef.h(2, 1);
         GrandChild.ngComponentDef.r(2, 1);
       }
     });
@@ -98,6 +101,7 @@ describe('content projection', () => {
         }
         e();
       }
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -136,6 +140,7 @@ describe('content projection', () => {
         }
       }
       cr();
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -175,6 +180,7 @@ describe('content projection', () => {
         }
       }
       cr();
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -225,6 +231,7 @@ describe('content projection', () => {
         }
       }
       cr();
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -285,6 +292,7 @@ describe('content projection', () => {
         }
         e();
       }
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -340,6 +348,7 @@ describe('content projection', () => {
            }
            e();
          }
+         Child.ngComponentDef.h(1, 0);
          Child.ngComponentDef.r(1, 0);
        });
        const parent = renderComponent(Parent);
@@ -379,6 +388,7 @@ describe('content projection', () => {
         }
         e();
       }
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -439,6 +449,7 @@ describe('content projection', () => {
         }
         e();
       }
+      Child.ngComponentDef.h(1, 0);
       Child.ngComponentDef.r(1, 0);
     });
     const parent = renderComponent(Parent);
@@ -489,6 +500,7 @@ describe('content projection', () => {
           }
           e();
         }
+        Child.ngComponentDef.h(1, 0);
         Child.ngComponentDef.r(1, 0);
       });
 
@@ -536,6 +548,7 @@ describe('content projection', () => {
           }
           e();
         }
+        Child.ngComponentDef.h(1, 0);
         Child.ngComponentDef.r(1, 0);
       });
 
@@ -583,6 +596,7 @@ describe('content projection', () => {
           }
           e();
         }
+        Child.ngComponentDef.h(1, 0);
         Child.ngComponentDef.r(1, 0);
       });
 
@@ -629,6 +643,7 @@ describe('content projection', () => {
           }
           e();
         }
+        Child.ngComponentDef.h(1, 0);
         Child.ngComponentDef.r(1, 0);
       });
 
@@ -676,6 +691,7 @@ describe('content projection', () => {
           }
           e();
         }
+        Child.ngComponentDef.h(1, 0);
         Child.ngComponentDef.r(1, 0);
       });
 
@@ -724,6 +740,7 @@ describe('content projection', () => {
           }
           e();
         }
+        Child.ngComponentDef.h(0, 0);
         Child.ngComponentDef.r(0, 0);
       });
 
@@ -772,6 +789,7 @@ describe('content projection', () => {
             e();
           }
           e();
+          GrandChild.ngComponentDef.h(2, 1);
           GrandChild.ngComponentDef.r(2, 1);
         }
       });
@@ -794,6 +812,7 @@ describe('content projection', () => {
           }
           e();
         }
+        Child.ngComponentDef.h(1, 0);
         Child.ngComponentDef.r(1, 0);
       });
 
@@ -846,6 +865,7 @@ describe('content projection', () => {
           }
         }
         cr();
+        Child.ngComponentDef.h(1, 0);
         Child.ngComponentDef.r(1, 0);
       });
       const parent = renderComponent(Parent);
