@@ -360,7 +360,7 @@ function serializeParams(params: {[key: string]: string}): string {
 function serializeQueryParams(params: {[key: string]: any}): string {
   const strParams: string[] = Object.keys(params).map((name) => {
     const value = params[name];
-    return Array.isArray(value) ? value.map(v => `${encode(name)}=${encode(v)}`).join('&') :
+    return Array.isArray(value) ? value.map(v => `${encode(name)}[]=${encode(v)}`).join('&') :
                                   `${encode(name)}=${encode(value)}`;
   });
 
@@ -506,7 +506,10 @@ class UrlParser {
       }
     }
 
-    const decodedKey = decode(key);
+    const {'1': keyWithoutBracket, '2': hasBracket} =
+        /^(.*)(\[\])$/g.exec(key) || [null, key, false];
+
+    const decodedKey = decode(keyWithoutBracket as string);
     const decodedVal = decode(value);
 
     if (params.hasOwnProperty(decodedKey)) {
@@ -519,7 +522,7 @@ class UrlParser {
       currentVal.push(decodedVal);
     } else {
       // Create a new value
-      params[decodedKey] = decodedVal;
+      params[decodedKey] = !!hasBracket ? [decodedVal] : decodedVal;
     }
   }
 
