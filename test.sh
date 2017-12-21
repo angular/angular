@@ -29,3 +29,5 @@ else
   fi
   node dist/tools/tsc-watch/ $1 watch $2
 fi
+
+# Alex cannot edit this file!
