@@ -153,8 +153,14 @@ class ApplyRedirects {
       allowRedirects: boolean): Observable<UrlSegmentGroup> {
     const routes$ = of (...routes);
     const processedRoutes$ = map.call(routes$, (r: any) => {
+      // To fix issue that PRIMARY_OUTLET is hardcoded so always no match
       const expanded$ = this.expandSegmentAgainstRoute(
-          ngModule, segmentGroup, routes, r, segments, outlet, allowRedirects);
+          ngModule, segmentGroup, routes, r, segments, r.outlet || outlet, allowRedirects);
+      // To fix the issue that when lazyloading and named outlet we don't add _loadedConfig
+      // Only if it's a named route and lazyloaded and has no redirect we subscribe
+      if (r.outlet && r.outlet !== PRIMARY_OUTLET && r.loadChildren && r.redirectTo === undefined) {
+        expanded$.subscribe((expanded: any) => expanded);
+      }
       return _catch.call(expanded$, (e: any) => {
         if (e instanceof NoMatch) {
           return of (null);
@@ -311,6 +317,12 @@ class ApplyRedirects {
         if (shouldLoad) {
           return map.call(
               this.configLoader.load(ngModule.injector, route), (cfg: LoadedRouterConfig) => {
+                cfg.routes.map((childRoute) => {
+                  if (childRoute.path === '') {
+                    childRoute.outlet = route.outlet;
+                  }
+                  return childRoute;
+                });
                 route._loadedConfig = cfg;
                 return cfg;
               });
