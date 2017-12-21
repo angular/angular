@@ -30,20 +30,28 @@ version: 2
 
 group_defaults:
   required: 1
-  # Require a github code review approval
-  github_reviews:
-    enabled: true
   reset_on_reopened:
     enabled: true
   approve_by_comment:
     enabled: false
   # see http://docs.pullapprove.com/groups/author_approval/
   author_approval:
-    # If the author is a reviewer on the PR, they will automatically have an
-    # "approved" status.
+    # If the author is a reviewer on the PR, they will automatically have an "approved" status.
     auto: true
 
 groups:
+  # Require all PRs to have at least one approval from *someone*
+  all:
+    users: all
+    required: 1
+    # In this group, your self-approval does not count
+    author_approval:
+      auto: false
+      ignored: true
+    files:
+      include:
+        - "*"
+
   root:
     conditions:
       files:
