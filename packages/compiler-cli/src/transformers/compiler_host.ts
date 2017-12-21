@@ -266,9 +266,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     }
     // Note: This can also return undefined,
     // as the TS typings are not correct!
-    const sf = this.context.getSourceFile(filePath, languageVersion, onError) || null;
+    const sf = this.context.getSourceFile(filePath, languageVersion, onError);
     this.originalSourceFiles.set(filePath, sf);
-    return sf;
+    return sf || null;
   }
 
   updateGeneratedFile(genFile: GeneratedFile): ts.SourceFile {
@@ -565,7 +565,8 @@ function addReferencesToSourceFile(sf: ts.SourceFile, genFileNames: string[]) {
   // value for `referencedFiles` around in cache the original host is caching ts.SourceFiles.
   // Note: cloning the ts.SourceFile is expensive as the nodes in have parent pointers,
   // i.e. we would also need to clone and adjust all nodes.
-  let originalReferencedFiles: ts.FileReference[]|undefined = (sf as any).originalReferencedFiles;
+  let originalReferencedFiles: ReadonlyArray<ts.FileReference>|undefined =
+      (sf as any).originalReferencedFiles;
   if (!originalReferencedFiles) {
     originalReferencedFiles = sf.referencedFiles;
     (sf as any).originalReferencedFiles = originalReferencedFiles;

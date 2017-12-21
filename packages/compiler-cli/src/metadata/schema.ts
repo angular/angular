@@ -99,7 +99,11 @@ export function isFunctionMetadata(value: any): value is FunctionMetadata {
 }
 
 export type MetadataValue = string | number | boolean | undefined | null | MetadataObject |
-    MetadataArray | MetadataSymbolicExpression | MetadataError;
+    MetadataArray | MetadataSymbolicExpression | MetadataSymbolicReferenceExpression |
+    MetadataSymbolicBinaryExpression | MetadataSymbolicIndexExpression |
+    MetadataSymbolicCallExpression | MetadataSymbolicPrefixExpression |
+    MetadataSymbolicIfExpression | MetadataSymbolicSpreadExpression |
+    MetadataSymbolicSelectExpression | MetadataError;
 
 export interface MetadataObject { [name: string]: MetadataValue; }
 

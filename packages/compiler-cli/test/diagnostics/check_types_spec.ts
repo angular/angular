@@ -84,7 +84,7 @@ describe('ng type checker', () => {
   });
 
   describe('type narrowing', () => {
-    const a = (files: MockFiles, options: object = {}) => {
+    const a = (files: MockFiles, options: ng.AngularCompilerOptions = {}) => {
       accept(files, {fullTemplateTypeCheck: true, ...options});
     };
 
@@ -517,7 +517,7 @@ describe('ng type checker', () => {
   });
 
   describe('casting $any', () => {
-    const a = (files: MockFiles, options: object = {}) => {
+    const a = (files: MockFiles, options: ng.AngularCompilerOptions = {}) => {
       accept(
           {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
           {fullTemplateTypeCheck: true, ...options});
@@ -525,7 +525,7 @@ describe('ng type checker', () => {
 
     const r =
         (message: string | RegExp, location: RegExp | null, files: MockFiles,
-         options: object = {}) => {
+         options: ng.AngularCompilerOptions = {}) => {
           reject(
               message, location, {'src/app.component.ts': '', 'src/lib.ts': '', ...files},
               {fullTemplateTypeCheck: true, ...options});
@@ -621,7 +621,7 @@ describe('ng type checker', () => {
   });
 
   describe('regressions ', () => {
-    const a = (files: MockFiles, options: object = {}) => {
+    const a = (files: MockFiles, options: ng.AngularCompilerOptions = {}) => {
       accept(files, {fullTemplateTypeCheck: true, ...options});
     };
 
