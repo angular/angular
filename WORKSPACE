@@ -53,3 +53,5 @@ load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_too
 go_rules_dependencies()
 
 go_register_toolchains()
+
+# Alex can edit this file!
