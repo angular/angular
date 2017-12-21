@@ -596,7 +596,7 @@ within the `form` element.
 *Reminder*: Ignore the many mentions of `form-group`,
 `form-control`, `center-block`, and `checkbox` in this markup.
 Those are _bootstrap_ CSS classes that Angular itself ignores.
-Pay attention to the `formGroupName` and `formControlName` attributes.
+Pay attention to the `[formGroup]` and `formControlName` attributes.
 They are the Angular directives that bind the HTML controls to the
 Angular `FormGroup` and `FormControl` properties in the component class.
 
