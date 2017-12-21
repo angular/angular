@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": false,
+    "declaration": true,
     "stripInternal": true,
     "experimentalDecorators": true,
     "module": "es2015",
