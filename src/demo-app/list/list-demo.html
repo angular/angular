@@ -24,13 +24,14 @@
 
     <mat-list>
       <h3 mat-subheader>Today</h3>
-      <mat-list-item *ngFor="let message of messages">
+      <mat-list-item *ngFor="let message of messages; last as last">
         <img mat-list-avatar [src]="message.image" alt="Image of {{message.from}}">
         <h4 mat-line>{{message.from}}</h4>
         <p mat-line>
           <span>{{message.subject}} -- </span>
           <span class="demo-secondary-text">{{message.message}}</span>
         </p>
+        <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
       </mat-list-item>
       <mat-divider></mat-divider>
       <mat-list-item *ngFor="let message of messages">

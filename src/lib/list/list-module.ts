@@ -15,16 +15,15 @@ import {
   MatRippleModule,
 } from '@angular/material/core';
 import {
-  MatDividerCssMatStyler,
   MatList,
   MatNavList,
   MatListAvatarCssMatStyler,
-  MatListDivider,
   MatListIconCssMatStyler,
   MatListItem,
   MatListSubheaderCssMatStyler,
 } from './list';
 import {MatListOption, MatSelectionList} from './selection-list';
+import {MatDividerModule} from '@angular/material/divider';
 
 
 @NgModule({
@@ -33,25 +32,22 @@ import {MatListOption, MatSelectionList} from './selection-list';
     MatList,
     MatNavList,
     MatListItem,
-    MatListDivider,
     MatListAvatarCssMatStyler,
     MatLineModule,
     MatCommonModule,
     MatListIconCssMatStyler,
-    MatDividerCssMatStyler,
     MatListSubheaderCssMatStyler,
     MatPseudoCheckboxModule,
     MatSelectionList,
-    MatListOption
+    MatListOption,
+    MatDividerModule
   ],
   declarations: [
     MatList,
     MatNavList,
     MatListItem,
-    MatListDivider,
     MatListAvatarCssMatStyler,
     MatListIconCssMatStyler,
-    MatDividerCssMatStyler,
     MatListSubheaderCssMatStyler,
     MatSelectionList,
     MatListOption

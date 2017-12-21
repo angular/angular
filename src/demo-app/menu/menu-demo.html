@@ -15,6 +15,24 @@
     </mat-menu>
   </div>
   <div class="menu-section">
+    <p>Menu with divider</p>
+
+    <mat-toolbar>
+      <button mat-icon-button [matMenuTriggerFor]="divider" aria-label="Open basic menu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <mat-menu #divider="matMenu">
+      <ng-container *ngFor="let item of items; last as last">
+        <button mat-menu-item [disabled]="item.disabled">
+          {{ item.text }}
+        </button>
+        <mat-divider *ngIf="!last"></mat-divider>
+      </ng-container>
+    </mat-menu>
+  </div>
+  <div class="menu-section">
     <p>Nested menu</p>
 
     <mat-toolbar>

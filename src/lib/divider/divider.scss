@@ -1,0 +1,23 @@
+$mat-divider-width: 1px;
+$mat-divider-inset-margin: 80px;
+
+.mat-divider {
+  display: block;
+  margin: 0;
+  border-top-width: $mat-divider-width;
+  border-top-style: solid;
+
+  &.mat-divider-vertical {
+    border-top: 0;
+    border-right-width: $mat-divider-width;
+    border-right-style: solid;
+  }
+
+  &.mat-divider-inset {
+    margin-left: $mat-divider-inset-margin;
+    [dir='rtl'] & {
+      margin-left: auto;
+      margin-right: $mat-divider-inset-margin;
+    }
+  }
+}

@@ -9,6 +9,7 @@
 @import '../../table/table-theme';
 @import '../../datepicker/datepicker-theme';
 @import '../../dialog/dialog-theme';
+@import '../../divider/divider-theme';
 @import '../../expansion/expansion-theme';
 @import '../../grid-list/grid-list-theme';
 @import '../../icon/icon-theme';
@@ -43,6 +44,7 @@
   @include mat-table-theme($theme);
   @include mat-datepicker-theme($theme);
   @include mat-dialog-theme($theme);
+  @include mat-divider-theme($theme);
   @include mat-expansion-panel-theme($theme);
   @include mat-form-field-theme($theme);
   @include mat-grid-list-theme($theme);

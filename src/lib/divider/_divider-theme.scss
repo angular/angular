@@ -1,0 +1,15 @@
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+
+
+@mixin mat-divider-theme($theme) {
+  $foreground: map-get($theme, foreground);
+
+  .mat-divider {
+    border-top-color: mat-color($foreground, divider);
+  }
+
+  .mat-divider-vertical {
+    border-right-color: mat-color($foreground, divider);
+  }
+}

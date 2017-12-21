@@ -16,6 +16,22 @@ $mat-card-header-size: 40px !default;
   padding: $mat-card-default-padding;
   border-radius: $mat-card-border-radius;
 
+  .mat-divider {
+    position: absolute;
+    left: 0;
+    width: 100%;
+
+    [dir='rtl'] & {
+      left: auto;
+      right: 0;
+    }
+
+    &.mat-divider-inset {
+      position: static;
+      margin: 0;
+    }
+  }
+
   @include cdk-high-contrast {
     outline: solid 1px;
   }

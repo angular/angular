@@ -8,6 +8,7 @@
 /src/lib/chips/**                                  @tinayuangao
 /src/lib/datepicker/**                             @mmalerba
 /src/lib/dialog/**                                 @jelbourn @crisbeto
+/src/lib/divider/**                                @jelbourn @crisbeto
 /src/lib/expansion/**                              @josephperrott @jelbourn
 /src/lib/form-field/**                             @mmalerba
 /src/lib/grid-list/**                              @kara @jelbourn

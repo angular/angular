@@ -27,6 +27,8 @@ $mat-dense-three-line-height: 76px;
 $mat-dense-multi-line-padding: 16px;
 $mat-dense-list-icon-size: 20px;
 
+$mat-list-item-inset-divider-offset: 72px;
+
 // This mixin provides all list-item styles, changing font size and height
 // based on whether the list is in dense mode.
 @mixin mat-list-item-base($base-height, $avatar-height, $two-line-height,
@@ -116,6 +118,29 @@ $mat-dense-list-icon-size: 20px;
     border-radius: 50%;
     padding: 4px;
   }
+
+  .mat-divider {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    [dir='rtl'] & {
+      left: auto;
+      right: 0;
+    }
+
+    &.mat-divider-inset {
+      left: $mat-list-item-inset-divider-offset;
+      width: calc(100% - #{$mat-list-item-inset-divider-offset});
+      margin: 0;
+
+      [dir='rtl'] & {
+        left: auto;
+        right: $mat-list-item-inset-divider-offset;
+      }
+    }
+  }
 }
 
 .mat-subheader {
@@ -185,12 +210,6 @@ $mat-dense-list-icon-size: 20px;
   }
 }
 
-.mat-divider {
-  display: block;
-  border-top-style: solid;
-  border-top-width: 1px;
-  margin: 0;
-}
 
 .mat-nav-list {
   a {
