@@ -9,6 +9,7 @@
 import {Adapter, Context} from './adapter';
 import {Database, Table} from './database';
 import {DataGroupConfig} from './manifest';
+import {Cache, ServiceWorkerGlobalScope} from './typings';
 
 /**
  * A metadata record of how old a particular cached resource is.

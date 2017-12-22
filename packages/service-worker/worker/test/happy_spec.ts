@@ -10,6 +10,7 @@ import {CacheDatabase} from '../src/db-cache';
 import {Driver} from '../src/driver';
 import {Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
+import {IClient} from '../src/typings';
 import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
@@ -297,7 +298,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       scope.updateServerState(serverUpdate);
       expect(await driver.checkForUpdate()).toEqual(true);
       serverUpdate.clearRequests();
-      await driver.updateClient(client as any as Client);
+      await driver.updateClient(client as any as IClient);
 
       expect(client.messages).toEqual([
         {

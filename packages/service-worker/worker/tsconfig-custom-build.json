@@ -16,7 +16,6 @@
     "typeRoots": []
   },
   "files": [
-    "main.ts",
-    "src/service-worker.d.ts"
+    "main.ts"
   ]
 }

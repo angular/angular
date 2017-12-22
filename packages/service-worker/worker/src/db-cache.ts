@@ -8,6 +8,7 @@
 
 import {Adapter} from './adapter';
 import {Database, NotFound, Table} from './database';
+import {Cache, ServiceWorkerGlobalScope} from './typings';
 
 
 /**

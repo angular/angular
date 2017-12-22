@@ -11,6 +11,7 @@ import {Subject} from 'rxjs/Subject';
 import {Adapter, Context} from '../src/adapter';
 import {AssetGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
+import {Clients, IClient, ServiceWorkerGlobalScope} from '../src/typings';
 
 import {MockCacheStorage} from './cache';
 import {MockHeaders, MockRequest, MockResponse} from './fetch';
@@ -62,15 +63,15 @@ export class MockClients implements Clients {
 
   remove(clientId: string): void { this.clients.delete(clientId); }
 
-  async get(id: string): Promise<Client> {
+  async get(id: string): Promise<IClient> {
     this.add(id);
-    return this.clients.get(id) !as any as Client;
+    return this.clients.get(id) !as any as IClient;
   }
 
   getMock(id: string): MockClient|undefined { return this.clients.get(id); }
 
-  async matchAll(): Promise<Client[]> {
-    return Array.from(this.clients.values()) as any[] as Client[];
+  async matchAll(): Promise<IClient[]> {
+    return Array.from(this.clients.values()) as any[] as IClient[];
   }
 
   async claim(): Promise<any> {}
@@ -245,7 +246,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
         });
   }
 
-  isClient(obj: any): obj is Client { return obj instanceof MockClient; }
+  isClient(obj: any): obj is IClient { return obj instanceof MockClient; }
 }
 
 interface StaticFile {

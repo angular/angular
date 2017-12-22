@@ -14,6 +14,7 @@ import {DebugHandler} from './debug';
 import {IdleScheduler} from './idle';
 import {Manifest, ManifestHash, hashManifest} from './manifest';
 import {MsgAny, isMsgActivateUpdate, isMsgCheckForUpdates} from './msg';
+import {IClient, ExtendableMessageEvent, FetchEvent, InstallEvent, PushEvent, ServiceWorkerGlobalScope} from './typings';
 import {isNavigationRequest} from './util';
 
 type ClientId = string;
@@ -232,7 +233,7 @@ export class Driver implements Debuggable, UpdateSource {
     msg.waitUntil(this.handlePush(msg.data.json()));
   }
 
-  private async handleMessage(msg: MsgAny&{action: string}, from: Client): Promise<void> {
+  private async handleMessage(msg: MsgAny&{action: string}, from: IClient): Promise<void> {
     if (isMsgCheckForUpdates(msg)) {
       const action = (async() => { await this.checkForUpdate(); })();
       await this.reportStatus(from, action, msg.statusNonce);
@@ -256,7 +257,7 @@ export class Driver implements Debuggable, UpdateSource {
     this.scope.registration.showNotification(desc['title'] !, options);
   }
 
-  private async reportStatus(client: Client, promise: Promise<void>, nonce: number): Promise<void> {
+  private async reportStatus(client: IClient, promise: Promise<void>, nonce: number): Promise<void> {
     const response = {type: 'STATUS', nonce, status: true};
     try {
       await promise;
@@ -270,7 +271,7 @@ export class Driver implements Debuggable, UpdateSource {
     }
   }
 
-  async updateClient(client: Client): Promise<void> {
+  async updateClient(client: IClient): Promise<void> {
     // Figure out which version the client is on. If it's not on the latest,
     // it needs to be moved.
     const existing = this.clientVersionMap.get(client.id);

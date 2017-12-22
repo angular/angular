@@ -4,7 +4,7 @@ set -u -e -o pipefail
 
 BIN=$(cd .. && npm bin)
 
-$BIN/tsc -p worker/tsconfig.json
+$BIN/tsc -p worker/tsconfig-custom-build.json
 $BIN/rollup -c worker/rollup-worker.config.js
 
 

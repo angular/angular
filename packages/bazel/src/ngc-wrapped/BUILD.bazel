@@ -11,11 +11,6 @@ ts_library(
     tsconfig = ":tsconfig.json",
     visibility = ["//test/ngc-wrapped:__subpackages__"],
     deps = [
-        # BEGIN-INTERNAL
-        # Only needed when compiling within the Angular repo.
-        # Users will get this dependency from node_modules.
-        "@//packages/compiler-cli",
-        # END-INTERNAL
         "@build_bazel_rules_typescript//internal/tsc_wrapped",
     ],
 )

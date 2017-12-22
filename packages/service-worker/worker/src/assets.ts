@@ -12,6 +12,7 @@ import {Database, Table} from './database';
 import {IdleScheduler} from './idle';
 import {AssetGroupConfig} from './manifest';
 import {sha1Binary} from './sha1';
+import {Cache, ServiceWorkerGlobalScope} from './typings';
 
 /**
  * A group of assets that are cached in a `Cache` and managed by a given policy.
