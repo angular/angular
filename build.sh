@@ -206,7 +206,7 @@ minify() {
     base_file=$( basename "${file}" )
     if [[ "${base_file}" =~ $regex && "${base_file##*.}" != "map" ]]; then
       local out_file=$(dirname "${file}")/${BASH_REMATCH[1]}.min.js
-      $UGLIFYJS -c --screw-ie8 --comments -o ${out_file} --source-map ${out_file}.map --source-map-include-sources ${file}
+      $UGLIFYJS -c --screw-ie8 --comments -o ${out_file} --source-map ${out_file}.map --prefix relative --source-map-include-sources ${file}
     fi
   done
 }
