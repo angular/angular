@@ -124,7 +124,7 @@ export class RouterOutlet implements OnDestroy, OnInit {
 
   activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver|null) {
     if (this.isActivated) {
-      throw new Error('Cannot activate an already activated outlet');
+      this.deactivate();
     }
     this._activatedRoute = activatedRoute;
     const snapshot = activatedRoute._futureSnapshot;
