@@ -684,7 +684,7 @@ describe('ngc transformer command-line', () => {
       expect(exitCode).toEqual(0);
       const mymodulejs = path.resolve(outDir, 'mymodule.js');
       const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
-      expect(mymoduleSource).toContain(`import { A } from "submodule"`);
+      expect(mymoduleSource).toContain(`import { A } from 'submodule'`);
     });
 
     describe('expression lowering', () => {

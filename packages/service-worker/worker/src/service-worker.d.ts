@@ -25,33 +25,6 @@ interface ExtendableEvent extends Event {
   waitUntil(fn: Promise<any>): void;
 }
 
-// CacheStorage API
-
-interface Cache {
-  add(request: Request): Promise<void>;
-  addAll(requestArray: Array<Request>): Promise<void>;
-  'delete'(request: Request, options?: CacheStorageOptions): Promise<boolean>;
-  keys(request?: Request, options?: CacheStorageOptions): Promise<Array<string>>;
-  match(request: Request, options?: CacheStorageOptions): Promise<Response|undefined>;
-  matchAll(request: Request, options?: CacheStorageOptions): Promise<Array<Response>>;
-  put(request: Request|string, response: Response): Promise<void>;
-}
-
-interface CacheStorage {
-  'delete'(cacheName: string): Promise<boolean>;
-  has(cacheName: string): Promise<boolean>;
-  keys(): Promise<Array<string>>;
-  match(request: Request, options?: CacheStorageOptions): Promise<Response|undefined>;
-  open(cacheName: string): Promise<Cache>;
-}
-
-interface CacheStorageOptions {
-  cacheName?: string;
-  ignoreMethod?: boolean;
-  ignoreSearch?: boolean;
-  ignoreVary?: boolean;
-}
-
 // Client API
 
 declare class Client {

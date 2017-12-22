@@ -161,6 +161,9 @@ export function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
       const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
       // tslint:disable-next-line:no-console
       console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+    } else {
+      // tslint:disable-next-line:no-console
+      console.log(message);
     }
   }
   expect(diagnostics.length).toBe(0);
