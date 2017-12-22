@@ -124,7 +124,7 @@ export class AppVersion implements UpdateSource {
 
       // No response has been found yet. Maybe this group will have one.
       return group.handleFetch(req, context);
-    }, Promise.resolve(null));
+    }, Promise.resolve<Response|null>(null));
 
     // The result of the above is the asset response, if there is any, or null otherwise. Return the
     // asset
@@ -142,7 +142,7 @@ export class AppVersion implements UpdateSource {
       }
 
       return group.handleFetch(req, context);
-    }, Promise.resolve(null));
+    }, Promise.resolve<Response|null>(null));
 
     // If the data caching group returned a response, go with it.
     if (data !== null) {

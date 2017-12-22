@@ -51,7 +51,7 @@ export class CacheTable implements Table {
   'delete'(key: string): Promise<boolean> { return this.cache.delete(this.request(key)); }
 
   keys(): Promise<string[]> {
-    return this.cache.keys().then(keys => keys.map(key => key.substr(1)));
+    return this.cache.keys().then(requests => requests.map(req => req.url.substr(1)));
   }
 
   read(key: string): Promise<any> {

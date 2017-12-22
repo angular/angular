@@ -13,13 +13,16 @@ import * as coreTesting from '@angular/core/testing';
 import * as forms from '@angular/forms';
 import * as http from '@angular/http';
 import * as httpTesting from '@angular/http/testing';
-import * as platformBrowserDynamic from '@angular/platform-browser-dynamic';
 import * as platformBrowser from '@angular/platform-browser';
 import * as platformBrowserTesting from '@angular/platform-browser/testing';
+import * as platformBrowserDynamic from '@angular/platform-browser-dynamic';
 import * as platformServer from '@angular/platform-server';
 import * as platformServerTesting from '@angular/platform-server/testing';
+import * as platformWebworker from '@angular/platform-webworker';
+import * as platformWebworkerDynamic from '@angular/platform-webworker-dynamic';
 import * as router from '@angular/router';
 import * as routerTesting from '@angular/router/testing';
+import * as serviceWorker from '@angular/service-worker';
 import * as upgrade from '@angular/upgrade';
 
 export default {
@@ -35,7 +38,10 @@ export default {
   platformBrowserDynamic,
   platformServer,
   platformServerTesting,
+  platformWebworker,
+  platformWebworkerDynamic,
   router,
   routerTesting,
-  upgrade
+  serviceWorker,
+  upgrade,
 };

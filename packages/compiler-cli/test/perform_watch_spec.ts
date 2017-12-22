@@ -166,10 +166,10 @@ class MockWatchHost {
   nextTimeoutListenerId = 1;
   timeoutListeners: {[id: string]: (() => void)} = {};
   fileChangeListeners: Array<((event: FileChangeEvent, fileName: string) => void)|null> = [];
-  diagnostics: ng.Diagnostics = [];
+  diagnostics: ng.Diagnostic[] = [];
   constructor(public config: ng.ParsedConfiguration) {}
 
-  reportDiagnostics(diags: ng.Diagnostics) { this.diagnostics.push(...diags); }
+  reportDiagnostics(diags: ng.Diagnostics) { this.diagnostics.push(...(diags as ng.Diagnostic[])); }
   readConfiguration() { return this.config; }
   createCompilerHost(options: ng.CompilerOptions) { return ng.createCompilerHost({options}); }
   createEmitCallback() { return undefined; }

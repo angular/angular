@@ -203,12 +203,14 @@ describe('plugin', () => {
   }
   function contains(fileName: string, locationMarker: string, ...names: string[]) {
     const location = getMarkerLocation(fileName, locationMarker);
-    expectEntries(locationMarker, plugin.getCompletionsAtPosition(fileName, location), ...names);
+    expectEntries(
+        locationMarker, plugin.getCompletionsAtPosition(fileName, location, undefined), ...names);
   }
 
   function expectEmpty(fileName: string, locationMarker: string) {
     const location = getMarkerLocation(fileName, locationMarker);
-    expect(plugin.getCompletionsAtPosition(fileName, location).entries || []).toEqual([]);
+    expect(plugin.getCompletionsAtPosition(fileName, location, undefined).entries || []).toEqual([
+    ]);
   }
 
   function expectSemanticError(fileName: string, locationMarker: string, message: string) {

@@ -40,6 +40,7 @@ const defaultEmitCallback: TsEmitCallback =
             targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
 
 class AngularCompilerProgram implements Program {
+  private rootNames: string[];
   private metadataCache: LowerMetadataCache;
   private oldProgramLibrarySummaries: Map<string, LibrarySummary>|undefined;
   private oldProgramEmittedGeneratedFiles: Map<string, GeneratedFile>|undefined;
@@ -60,8 +61,9 @@ class AngularCompilerProgram implements Program {
   private _optionsDiagnostics: Diagnostic[] = [];
 
   constructor(
-      private rootNames: string[], private options: CompilerOptions, private host: CompilerHost,
-      oldProgram?: Program) {
+      rootNames: ReadonlyArray<string>, private options: CompilerOptions,
+      private host: CompilerHost, oldProgram?: Program) {
+    this.rootNames = [...rootNames];
     const [major, minor] = ts.version.split('.');
     if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 4)) {
       throw new Error('The Angular Compiler requires TypeScript >= 2.4.');
@@ -74,7 +76,8 @@ class AngularCompilerProgram implements Program {
     }
 
     if (options.flatModuleOutFile) {
-      const {host: bundleHost, indexName, errors} = createBundleIndexHost(options, rootNames, host);
+      const {host: bundleHost, indexName, errors} =
+          createBundleIndexHost(options, this.rootNames, host);
       if (errors) {
         // TODO(tbosch): once we move MetadataBundler from tsc_wrapped into compiler_cli,
         // directly create ng.Diagnostic instead of using ts.Diagnostic here.
@@ -85,7 +88,7 @@ class AngularCompilerProgram implements Program {
                                                       code: DEFAULT_ERROR_CODE
                                                     })));
       } else {
-        rootNames.push(indexName !);
+        this.rootNames.push(indexName !);
         this.host = bundleHost;
       }
     }
@@ -133,21 +136,21 @@ class AngularCompilerProgram implements Program {
     return this.tsProgram.getOptionsDiagnostics(cancellationToken);
   }
 
-  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[] {
+  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic> {
     return [...this._optionsDiagnostics, ...getNgOptionDiagnostics(this.options)];
   }
 
   getTsSyntacticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
-      ts.Diagnostic[] {
+      ReadonlyArray<ts.Diagnostic> {
     return this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
   }
 
-  getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[] {
+  getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic> {
     return this.structuralDiagnostics;
   }
 
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
-      ts.Diagnostic[] {
+      ReadonlyArray<ts.Diagnostic> {
     const sourceFiles = sourceFile ? [sourceFile] : this.tsProgram.getSourceFiles();
     let diags: ts.Diagnostic[] = [];
     sourceFiles.forEach(sf => {
@@ -159,7 +162,7 @@ class AngularCompilerProgram implements Program {
   }
 
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      Diagnostic[] {
+      ReadonlyArray<Diagnostic> {
     let diags: ts.Diagnostic[] = [];
     this.tsProgram.getSourceFiles().forEach(sf => {
       if (GENERATED_FILES.test(sf.fileName) && !sf.isDeclarationFile) {
@@ -245,7 +248,7 @@ class AngularCompilerProgram implements Program {
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
-    const augmentedReferences = new Map<ts.SourceFile, ts.FileReference[]>();
+    const augmentedReferences = new Map<ts.SourceFile, ReadonlyArray<ts.FileReference>>();
     for (const sourceFile of this.tsProgram.getSourceFiles()) {
       const originalReferences = getOriginalReferences(sourceFile);
       if (originalReferences) {
@@ -295,7 +298,8 @@ class AngularCompilerProgram implements Program {
       // Restore the references back to the augmented value to ensure that the
       // checks that TypeScript makes for project structure reuse will succeed.
       for (const [sourceFile, references] of Array.from(augmentedReferences)) {
-        sourceFile.referencedFiles = references;
+        // TODO(chuckj): Remove any cast after updating build to 2.6
+        (sourceFile as any).referencedFiles = references;
       }
     }
     this.emittedSourceFiles = emittedSourceFiles;
@@ -312,7 +316,8 @@ class AngularCompilerProgram implements Program {
 
     if (!outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
-      emitResult.diagnostics.push(createMessageDiagnostic(`Emitted no files.`));
+      emitResult.diagnostics =
+          emitResult.diagnostics.concat([createMessageDiagnostic(`Emitted no files.`)]);
       return emitResult;
     }
 
@@ -346,12 +351,12 @@ class AngularCompilerProgram implements Program {
     }
     const emitEnd = Date.now();
     if (this.options.diagnostics) {
-      emitResult.diagnostics.push(createMessageDiagnostic([
+      emitResult.diagnostics = emitResult.diagnostics.concat([createMessageDiagnostic([
         `Emitted in ${emitEnd - emitStart}ms`,
         `- ${emittedUserTsCount} user ts files`,
         `- ${genTsFiles.length} generated ts files`,
         `- ${genJsonFiles.length + metadataJsonCount} generated json files`,
-      ].join('\n')));
+      ].join('\n'))]);
     }
     return emitResult;
   }
@@ -378,7 +383,7 @@ class AngularCompilerProgram implements Program {
     return this._analyzedModules !;
   }
 
-  private get structuralDiagnostics(): Diagnostic[] {
+  private get structuralDiagnostics(): ReadonlyArray<Diagnostic> {
     let diagnostics = this._structuralDiagnostics;
     if (!diagnostics) {
       this.initSync();
@@ -645,10 +650,11 @@ class AngularCompilerProgram implements Program {
   }
 }
 
-export function createProgram(
-    {rootNames, options, host, oldProgram}:
-        {rootNames: string[], options: CompilerOptions, host: CompilerHost, oldProgram?: Program}):
-    Program {
+export function createProgram({rootNames, options, host, oldProgram}: {
+  rootNames: ReadonlyArray<string>,
+  options: CompilerOptions,
+  host: CompilerHost, oldProgram?: Program
+}): Program {
   return new AngularCompilerProgram(rootNames, options, host, oldProgram);
 }
 
@@ -689,7 +695,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
   };
 }
 
-function getNgOptionDiagnostics(options: CompilerOptions): Diagnostic[] {
+function getNgOptionDiagnostics(options: CompilerOptions): ReadonlyArray<Diagnostic> {
   if (options.annotationsAs) {
     switch (options.annotationsAs) {
       case 'decorators':
@@ -767,7 +773,7 @@ export function i18nExtract(
   const content = i18nSerialize(bundle, formatName, options);
   const dstFile = outFile || `messages.${ext}`;
   const dstPath = path.resolve(options.outDir || options.basePath, dstFile);
-  host.writeFile(dstPath, content, false);
+  host.writeFile(dstPath, content, false, undefined, []);
   return [dstPath];
 }
 

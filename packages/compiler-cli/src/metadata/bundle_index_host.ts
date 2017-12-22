@@ -44,7 +44,8 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
 
   newHost.writeFile =
       (fileName: string, data: string, writeByteOrderMark: boolean,
-       onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
+       onError: ((message: string) => void) | undefined,
+       sourceFiles: Readonly<ts.SourceFile>[]) => {
         delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         if (fileName.match(DTS) && sourceFiles && sourceFiles.length == 1 &&
             path.normalize(sourceFiles[0].fileName) == normalSyntheticIndexName) {
@@ -57,7 +58,7 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
 }
 
 export function createBundleIndexHost<H extends ts.CompilerHost>(
-    ngOptions: CompilerOptions, rootFiles: string[],
+    ngOptions: CompilerOptions, rootFiles: ReadonlyArray<string>,
     host: H): {host: H, indexName?: string, errors?: ts.Diagnostic[]} {
   const files = rootFiles.filter(f => !DTS.test(f));
   if (files.length != 1) {
