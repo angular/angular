@@ -45,6 +45,7 @@ import {DialogContentExampleDialog,DialogContentExample} from './dialog-content/
 import {DialogDataExampleDialog,DialogDataExample} from './dialog-data/dialog-data-example';
 import {DialogElementsExampleDialog,DialogElementsExample} from './dialog-elements/dialog-elements-example';
 import {DialogOverviewExampleDialog,DialogOverviewExample} from './dialog-overview/dialog-overview-example';
+import {DividerOverviewExample} from './divider-overview/divider-overview-example';
 import {ElevationOverviewExample} from './elevation-overview/elevation-overview-example';
 import {ExpansionOverviewExample} from './expansion-overview/expansion-overview-example';
 import {ExpansionStepsExample} from './expansion-steps/expansion-steps-example';
@@ -127,7 +128,6 @@ import {ToolbarMultirowExample} from './toolbar-multirow/toolbar-multirow-exampl
 import {ToolbarOverviewExample} from './toolbar-overview/toolbar-overview-example';
 import {TooltipOverviewExample} from './tooltip-overview/tooltip-overview-example';
 import {TooltipPositionExample} from './tooltip-position/tooltip-position-example';
-import {DividerOverviewExample} from './divider-overview/divider-overview-example';
 
 export const EXAMPLE_COMPONENTS = {
   'autocomplete-display': {
@@ -323,7 +323,7 @@ export const EXAMPLE_COMPONENTS = {
     selectorName: 'DialogOverviewExample, DialogOverviewExampleDialog'
   },
   'divider-overview': {
-    title: 'Divider Overview',
+    title: 'Basic divider',
     component: DividerOverviewExample,
     additionalFiles: null,
     selectorName: null

@@ -14,75 +14,70 @@ if [ -z ${MATERIAL2_DOCS_CONTENT_TOKEN} ]; then
   exit 1
 fi
 
-docsPath="./dist/docs"
-packagePath="./dist/releases/material-examples"
-repoPath="/tmp/material2-docs-content"
-repoUrl="https://github.com/angular/material2-docs-content"
-examplesSource="./dist/docs/examples"
-
 if [[ ! ${*} == *--no-build* ]]; then
   $(npm bin)/gulp material-examples:build-release:clean
   $(npm bin)/gulp docs
 fi
 
-# Get git meta info for commit
-commitSha="$(git rev-parse --short HEAD)"
-commitAuthorName="$(git --no-pager show -s --format='%an' HEAD)"
-commitAuthorEmail="$(git --no-pager show -s --format='%ae' HEAD)"
-commitMessage="$(git log --oneline -n 1)"
+# Path to the directory that contains the generated docs output.
+docsDistPath="./dist/docs"
 
-# create directory and clone test repo
-rm -rf $repoPath
-mkdir -p $repoPath
-git clone $repoUrl $repoPath --depth 1
+# Path to the release output of the @angular/material-examples package.
+examplesPackagePath="./dist/releases/material-examples"
 
-# Clean out repo directory and copy contents of dist/docs into it
-rm -rf $repoPath/*
+# Path to the cloned docs-content repository.
+docsContentPath=./tmp/material2-docs-content
 
-# Create folders that will contain docs content files.  
-mkdir $repoPath/{overview,guides,api,examples,stackblitz,examples-package}
+# Git clone URL for the material2-docs-content repository.
+docsContentRepoUrl="https://github.com/angular/material2-docs-content"
 
-# Copy api files over to $repoPath/api
-cp -r $docsPath/api/* $repoPath/api
+# Current version of Angular Material from the package.json file
+buildVersion=$(node -pe "require('./package.json').version")
 
-# Copy the material-examples package to the docs content repository.
-cp -r $packagePath/* $repoPath/examples-package
+# Additional information about the last commit for docs-content commits.
+commitSha=$(git rev-parse --short HEAD)
+commitAuthorName=$(git --no-pager show -s --format='%an' HEAD)
+commitAuthorEmail=$(git --no-pager show -s --format='%ae' HEAD)
+commitMessage=$(git log --oneline -n 1)
+commitTag="${buildVersion}-${commitSha}"
 
-# Flatten the markdown docs structure and move it into $repoPath/overview
-overviewFiles=$docsPath/markdown/
-for filename in $overviewFiles*
-do
-  if [ -d $filename ]; then
-    for _ in $filename/*
-    do
-      markdownFile=${filename#$overviewFiles}.html
-      # Filename should be same as folder name with .html extension
-      if [ -e $filename/$markdownFile ]; then
-        cp -r $filename/$markdownFile $repoPath/overview/
-      fi
-    done
-  fi
+# Remove the docs-content repository if the directory exists
+rm -Rf ${docsContentPath}
+
+# Clone the docs-content repository.
+git clone ${docsContentRepoUrl} ${docsContentPath} --depth 1
+
+# Remove everything inside of the docs-content repository.
+rm -Rf ${docsContentPath}/*
+
+# Create all folders that need to exist in the docs-content repository.
+mkdir ${docsContentPath}/{overview,guides,api,examples,stackblitz,examples-package}
+
+# Copy API and example files to the docs-content repository.
+cp -R ${docsDistPath}/api/* ${docsContentPath}/api
+cp -r ${docsDistPath}/examples/* ${docsContentPath}/examples
+cp -r ${docsDistPath}/stackblitz/* ${docsContentPath}/stackblitz
+
+# Copy the @angular/material-examples package to the docs-content repository.
+cp -r ${examplesPackagePath}/* ${docsContentPath}/examples-package
+
+# Copy the license file to the docs-content repository.
+cp ./LICENSE ${docsContentPath}
+
+# Copy all immediate children of the markdown output the guides/ directory.
+for guidePath in $(find ${docsDistPath}/markdown/ -maxdepth 1 -type f); do
+  cp ${guidePath} ${docsContentPath}/guides
 done
 
-# Copy guide files over to $repoPath/guides
-for filename in $overviewFiles*
-do
-  if [ -f $filename ]; then
-    cp -r $filename $repoPath/guides
-  fi
+# All files that aren't immediate children of the markdown output are overview documents.
+for overviewPath in $(find ${docsDistPath}/markdown/ -mindepth 2 -type f); do
+  cp ${overviewPath} ${docsContentPath}/overview
 done
 
-# Copy highlighted examples into $repoPath
-cp -r $examplesSource/* $repoPath/examples
+# Go into the repository directory.
+cd ${docsContentPath}
 
-# Copy example stackblitz assets
-cp -r $docsPath/stackblitz/* $repoPath/stackblitz
-
-# Copies assets over to the docs-content repository.
-cp LICENSE $repoPath/
-
-# Push content to repo
-cd $repoPath
+# Setup the Git configuration
 git config user.name "$commitAuthorName"
 git config user.email "$commitAuthorEmail"
 git config credential.helper "store --file=.git/credentials"
@@ -90,6 +85,6 @@ git config credential.helper "store --file=.git/credentials"
 echo "https://${MATERIAL2_DOCS_CONTENT_TOKEN}:@github.com" > .git/credentials
 
 git add -A
-git commit --allow-empty -m "$commitMessage"
-git tag "$commitSha"
+git commit --allow-empty -m "${commitMessage}"
+git tag "${commitTag}"
 git push origin master --tags

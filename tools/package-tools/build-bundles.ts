@@ -94,12 +94,10 @@ export class PackageBundler {
     uglifyJsFile(config.umdDest, config.umdMinDest);
 
     // Remaps the sourcemaps to be based on top of the original TypeScript source files.
-    await Promise.all([
-      remapSourcemap(config.esm2015Dest),
-      remapSourcemap(config.esm5Dest),
-      remapSourcemap(config.umdDest),
-      remapSourcemap(config.umdMinDest),
-    ]);
+    await remapSourcemap(config.esm2015Dest);
+    await remapSourcemap(config.esm5Dest);
+    await remapSourcemap(config.umdDest);
+    await remapSourcemap(config.umdMinDest);
   }
 
   /** Creates a rollup bundle of a specified JavaScript file.*/
