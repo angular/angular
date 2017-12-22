@@ -27,6 +27,8 @@ const ALLOW_NON_HERMETIC_READS = true;
 // Note: We compile the content of node_modules with plain ngc command line.
 const ALL_DEPS_COMPILED_WITH_BAZEL = false;
 
+const NODE_MODULES = 'node_modules/';
+
 export function main(args) {
   if (runAsWorker(args)) {
     runWorkerLoop(runOneBuild);
@@ -175,7 +177,11 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
     }
-    return relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+    const result = relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+    if (result.startsWith(NODE_MODULES)) {
+      return result.substr(NODE_MODULES.length);
+    }
+    return bazelOpts.workspaceName + '/' + result;
   };
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
       relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, '');
