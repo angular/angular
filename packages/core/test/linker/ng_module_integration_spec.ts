@@ -102,7 +102,7 @@ class DummyConsole implements Console {
   warn(message: string) { this.warnings.push(message); }
 }
 
-export function main() {
+{
   describe('jit', () => { declareTests({useJit: true}); });
 
   describe('no jit', () => { declareTests({useJit: false}); });

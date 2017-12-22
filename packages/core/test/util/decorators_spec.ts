@@ -12,7 +12,7 @@ import {ANNOTATIONS, makeDecorator, makePropDecorator} from '../../src/util/deco
 class DecoratedParent {}
 class DecoratedChild extends DecoratedParent {}
 
-export function main() {
+{
   const TerminalDecorator =
       makeDecorator('TerminalDecorator', (data: any) => ({terminal: true, ...data}));
   const TestDecorator = makeDecorator(

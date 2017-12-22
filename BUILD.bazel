@@ -1,6 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["tsconfig.json"])
+exports_files([
+    "tsconfig.json",
+])
 
 # This rule belongs in node_modules/BUILD
 # It's here as a workaround for
@@ -37,4 +39,27 @@ filegroup(
         "*.json",
         "*.d.ts",
     ]]),
+)
+
+filegroup(
+    name = "web_test_bootstrap_scripts",
+    # do not sort
+    srcs = [
+        "//:node_modules/reflect-metadata/Reflect.js",
+        "//:node_modules/zone.js/dist/zone.js",
+        "//:node_modules/zone.js/dist/async-test.js",
+        "//:node_modules/zone.js/dist/sync-test.js",
+        "//:node_modules/zone.js/dist/fake-async-test.js",
+        "//:node_modules/zone.js/dist/proxy.js",
+        "//:node_modules/zone.js/dist/jasmine-patch.js",
+    ],
+)
+
+filegroup(
+    name = "angularjs",
+    # do not sort
+    srcs = [
+        "//:node_modules/angular/angular.js",
+        "//:node_modules/angular-mocks/angular-mocks.js",
+    ],
 )

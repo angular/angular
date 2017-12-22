@@ -9,15 +9,15 @@
 import {Injector} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing';
 import {AsyncTestCompleter, afterEach, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
+import {stringToArrayBuffer} from '@angular/http/src/http_utils';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {Observable} from 'rxjs/Observable';
 import {zip} from 'rxjs/observable/zip';
 
 import {BaseRequestOptions, ConnectionBackend, Http, HttpModule, JSONPBackend, Jsonp, JsonpModule, Request, RequestMethod, RequestOptions, Response, ResponseContentType, ResponseOptions, URLSearchParams, XHRBackend} from '../index';
-import {stringToArrayBuffer} from '../src/http_utils';
 import {MockBackend, MockConnection} from '../testing/src/mock_backend';
 
-export function main() {
+{
   describe('injectables', () => {
     const url = 'http://foo.bar';
     let http: Http;

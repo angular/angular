@@ -14,7 +14,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
 
-export function main() {
+{
   describe(`View Providers`, () => {
 
     describe('create', () => {

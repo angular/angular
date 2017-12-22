@@ -127,11 +127,12 @@ function bootstrap(
   return platformBrowserDynamic(platformProviders).bootstrapModule(TestModule);
 }
 
-export function main() {
+{
   let el: any /** TODO #9100 */, el2: any /** TODO #9100 */, testProviders: Provider[],
       lightDom: any /** TODO #9100 */;
 
   describe('bootstrap factory method', () => {
+    if (isNode) return;
     let compilerConsole: DummyConsole;
 
     beforeEachProviders(() => { return [Log]; });
@@ -161,7 +162,7 @@ export function main() {
        inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler();
-         errorHandler._console = logger as any;
+         (errorHandler as any)._console = logger as any;
          expect(
              () => bootstrap(
                  HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
@@ -173,7 +174,7 @@ export function main() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler();
-         errorHandler._console = logger as any;
+         (errorHandler as any)._console = logger as any;
          bootstrap(NonExistentComp, [
            {provide: ErrorHandler, useValue: errorHandler}
          ]).then(null, (reason) => {
@@ -187,7 +188,7 @@ export function main() {
     it('should throw if no provider', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const logger = new MockConsole();
          const errorHandler = new ErrorHandler();
-         errorHandler._console = logger as any;
+         (errorHandler as any)._console = logger as any;
 
          class IDontExist {}
 
@@ -223,7 +224,7 @@ export function main() {
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const logger = new MockConsole();
            const errorHandler = new ErrorHandler();
-           errorHandler._console = logger as any;
+           (errorHandler as any)._console = logger as any;
 
            const refPromise =
                bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);
@@ -238,7 +239,7 @@ export function main() {
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const logger = new MockConsole();
            const errorHandler = new ErrorHandler();
-           errorHandler._console = logger as any;
+           (errorHandler as any)._console = logger as any;
 
            const refPromise =
                bootstrap(NonExistentComp, [{provide: ErrorHandler, useValue: errorHandler}]);

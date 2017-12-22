@@ -12,7 +12,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('projection', () => {
     beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
 

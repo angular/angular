@@ -11,7 +11,7 @@ import {InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import * as lex from '../../src/ml_parser/lexer';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 
-export function main() {
+{
   describe('HtmlLexer', () => {
     describe('line/column numbers', () => {
       it('should work without newlines', () => {

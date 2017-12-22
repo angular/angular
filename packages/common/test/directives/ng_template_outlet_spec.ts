@@ -11,7 +11,7 @@ import {Component, ContentChildren, Directive, Injectable, NO_ERRORS_SCHEMA, OnD
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('NgTemplateOutlet', () => {
     let fixture: ComponentFixture<any>;
 

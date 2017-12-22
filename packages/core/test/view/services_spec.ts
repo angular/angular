@@ -10,7 +10,7 @@ import {DebugContext, NodeFlags, QueryValueType, Services, asElementData, asText
 
 import {compViewDef, createAndGetRootNodes} from './helper';
 
-export function main() {
+{
   describe('View Services', () => {
 
     describe('DebugContext', () => {

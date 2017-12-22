@@ -16,7 +16,7 @@ import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol
 
 const EXT = /(\.d)?\.ts$/;
 
-export function main() {
+{
   describe('AotSummaryResolver', () => {
     let summaryResolver: AotSummaryResolver;
     let symbolCache: StaticSymbolCache;

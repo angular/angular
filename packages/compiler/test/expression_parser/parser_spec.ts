@@ -15,7 +15,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {unparse} from './unparser';
 import {validate} from './validator';
 
-export function main() {
+(function() {
   function createParser() { return new Parser(new Lexer()); }
 
   function parseAction(text: string, location: any = null): ASTWithSource {
@@ -604,4 +604,4 @@ export function main() {
       });
     });
   });
-}
+})();

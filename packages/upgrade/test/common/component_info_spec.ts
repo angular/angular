@@ -8,7 +8,7 @@
 
 import {PropertyBinding} from '@angular/upgrade/src/common/component_info';
 
-export function main() {
+{
   describe('PropertyBinding', () => {
     it('should process a simple binding', () => {
       const binding = new PropertyBinding('someBinding', 'someBinding');

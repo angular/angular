@@ -11,7 +11,7 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
 import {ConsoleReporter, Injector, MeasureValues, SampleDescription} from '../../index';
 
-export function main() {
+{
   describe('console reporter', () => {
     let reporter: ConsoleReporter;
     let log: string[];

@@ -9,10 +9,9 @@
 import {AotSummaryResolver, GeneratedFile, StaticSymbolCache, StaticSymbolResolver, toTypeScript} from '@angular/compiler';
 import {MetadataBundler} from '@angular/compiler-cli/src/metadata/bundler';
 import {privateEntriesToIndex} from '@angular/compiler-cli/src/metadata/index_writer';
+import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
 import {NodeFlags} from '@angular/core/src/view/index';
 import * as ts from 'typescript';
-
-import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
 
 import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
 

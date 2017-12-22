@@ -12,7 +12,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('integration tests', () => {
     let fixture: ComponentFixture<TestComponent>;
 

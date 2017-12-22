@@ -12,7 +12,7 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
 
 import {MockPipeResolver} from '../testing';
 
-export function main() {
+{
   describe('MockPipeResolver', () => {
     let pipeResolver: MockPipeResolver;
 

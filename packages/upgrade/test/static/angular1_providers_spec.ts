@@ -9,7 +9,7 @@
 import {Ng1Token} from '@angular/upgrade/src/common/angular1';
 import {compileFactory, injectorFactory, parseFactory, rootScopeFactory, setTempInjectorRef} from '@angular/upgrade/src/static/angular1_providers';
 
-export function main() {
+{
   describe('upgrade angular1_providers', () => {
     describe('compileFactory', () => {
       it('should retrieve and return `$compile`', () => {

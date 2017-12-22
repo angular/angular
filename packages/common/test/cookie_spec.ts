@@ -19,7 +19,7 @@
 import {parseCookieValue} from '@angular/common/src/cookie';
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-export function main() {
+{
   describe('cookies', () => {
     it('parses cookies', () => {
       const cookie = 'other-cookie=false; xsrf-token=token-value; is_awesome=true; ffo=true;';

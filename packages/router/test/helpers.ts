@@ -42,7 +42,7 @@ export declare type ARSArgs = {
 };
 
 export function createActivatedRouteSnapshot(args: ARSArgs): ActivatedRouteSnapshot {
-  return new ActivatedRouteSnapshot(
+  return new (ActivatedRouteSnapshot as any)(
       args.url || <any>[], args.params || {}, args.queryParams || <any>null,
       args.fragment || <any>null, args.data || <any>null, args.outlet || <any>null,
       <any>args.component, args.routeConfig || <any>{}, args.urlSegment || <any>null,

@@ -16,7 +16,7 @@ import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import * as html from '../../src/ml_parser/ast';
 import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_spec';
 
-export function main() {
+{
   describe('Extractor', () => {
     describe('elements', () => {
       it('should extract from elements', () => {
