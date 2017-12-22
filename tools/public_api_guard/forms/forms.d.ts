@@ -57,6 +57,9 @@ export declare abstract class AbstractControl {
     setParent(parent: FormGroup | FormArray): void;
     setValidators(newValidator: ValidatorFn | ValidatorFn[] | null): void;
     abstract setValue(value: any, options?: Object): void;
+    /** @experimental */ updateTreeValidity(opts?: {
+        emitEvent?: boolean;
+    }): void;
     updateValueAndValidity(opts?: {
         onlySelf?: boolean;
         emitEvent?: boolean;

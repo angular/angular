@@ -1070,12 +1070,12 @@ export function main() {
       });
 
       it('should update tree validity', () => {
-        form._updateTreeValidity();
+        form.updateTreeValidity();
         expect(logger).toEqual(['one', 'two', 'nested', 'three', 'form']);
       });
 
       it('should not emit events when turned off', () => {
-        form._updateTreeValidity({emitEvent: false});
+        form.updateTreeValidity({emitEvent: false});
         expect(logger).toEqual([]);
       });
 

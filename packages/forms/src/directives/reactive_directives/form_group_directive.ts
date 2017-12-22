@@ -158,7 +158,7 @@ export class FormGroupDirective extends ControlContainer implements Form,
       }
     });
 
-    this.form._updateTreeValidity({emitEvent: false});
+    this.form.updateTreeValidity({emitEvent: false});
   }
 
   private _updateRegistrations() {
