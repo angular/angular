@@ -62,7 +62,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private flatModuleIndexRedirectNames = new Set<string>();
   private rootDirs: string[];
   private moduleResolutionCache: ts.ModuleResolutionCache;
-  private originalSourceFiles = new Map<string, ts.SourceFile|undefined>();
+  private originalSourceFiles = new Map<string, ts.SourceFile|null>();
   private originalFileExistsCache = new Map<string, boolean>();
   private generatedSourceFiles = new Map<string, GenSourceFile>();
   private generatedCodeFor = new Map<string, string[]>();
@@ -76,8 +76,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   directoryExists?: (directoryName: string) => boolean;
 
   constructor(
-      private rootFiles: string[], private options: CompilerOptions, private context: CompilerHost,
-      private metadataProvider: MetadataProvider, private codeGenerator: CodeGenerator,
+      private rootFiles: ReadonlyArray<string>, private options: CompilerOptions,
+      private context: CompilerHost, private metadataProvider: MetadataProvider,
+      private codeGenerator: CodeGenerator,
       private librarySummaries = new Map<string, LibrarySummary>()) {
     this.moduleResolutionCache = ts.createModuleResolutionCache(
         this.context.getCurrentDirectory !(), this.context.getCanonicalFileName.bind(this.context));
@@ -565,7 +566,8 @@ function addReferencesToSourceFile(sf: ts.SourceFile, genFileNames: string[]) {
   // value for `referencedFiles` around in cache the original host is caching ts.SourceFiles.
   // Note: cloning the ts.SourceFile is expensive as the nodes in have parent pointers,
   // i.e. we would also need to clone and adjust all nodes.
-  let originalReferencedFiles: ts.FileReference[]|undefined = (sf as any).originalReferencedFiles;
+  let originalReferencedFiles: ReadonlyArray<ts.FileReference> =
+      (sf as any).originalReferencedFiles;
   if (!originalReferencedFiles) {
     originalReferencedFiles = sf.referencedFiles;
     (sf as any).originalReferencedFiles = originalReferencedFiles;

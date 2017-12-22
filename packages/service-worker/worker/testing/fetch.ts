@@ -57,9 +57,14 @@ export class MockBody implements Body {
 
 export class MockHeaders implements Headers {
   map = new Map<string, string>();
+
+  [Symbol.iterator]() { return this.map[Symbol.iterator](); }
+
   append(name: string, value: string): void { this.map.set(name, value); }
 
   delete (name: string): void { this.map.delete(name); }
+
+  entries() { return this.map.entries(); }
 
   forEach(callback: Function): void { this.map.forEach(callback as any); }
 
@@ -67,7 +72,11 @@ export class MockHeaders implements Headers {
 
   has(name: string): boolean { return this.map.has(name); }
 
+  keys() { return this.map.keys(); }
+
   set(name: string, value: string): void { this.map.set(name, value); }
+
+  values() { return this.map.values(); }
 }
 
 export class MockRequest extends MockBody implements Request {
@@ -91,13 +100,12 @@ export class MockRequest extends MockBody implements Request {
       throw 'Not implemented';
     }
     this.url = input;
-    if (init.headers !== undefined) {
-      if (init.headers instanceof MockHeaders) {
-        this.headers = init.headers;
+    const headers = init.headers as{[key: string]: string};
+    if (headers !== undefined) {
+      if (headers instanceof MockHeaders) {
+        this.headers = headers;
       } else {
-        Object.keys(init.headers).forEach(header => {
-          this.headers.set(header, init.headers[header]);
-        });
+        Object.keys(headers).forEach(header => { this.headers.set(header, headers[header]); });
       }
     }
     if (init.mode !== undefined) {
@@ -134,13 +142,12 @@ export class MockResponse extends MockBody implements Response {
     super(typeof body === 'string' ? body : null);
     this.status = (init.status !== undefined) ? init.status : 200;
     this.statusText = init.statusText || 'OK';
-    if (init.headers !== undefined) {
-      if (init.headers instanceof MockHeaders) {
-        this.headers = init.headers;
+    const headers = init.headers as{[key: string]: string};
+    if (headers !== undefined) {
+      if (headers instanceof MockHeaders) {
+        this.headers = headers;
       } else {
-        Object.keys(init.headers).forEach(header => {
-          this.headers.set(header, init.headers[header]);
-        });
+        Object.keys(headers).forEach(header => { this.headers.set(header, headers[header]); });
       }
     }
     if (init.type !== undefined) {

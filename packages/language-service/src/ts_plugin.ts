@@ -64,13 +64,15 @@ function angularOnlyFilter(ls: ts.LanguageService): ts.LanguageService {
     getFormattingEditsAfterKeystroke: (fileName, position, key, options) => <ts.TextChange[]>[],
     getDocCommentTemplateAtPosition: (fileName, position) => <ts.TextInsertion><any>undefined,
     isValidBraceCompletionAtPosition: (fileName, position, openingBrace) => <boolean><any>undefined,
+    getSpanOfEnclosingComment: (fileName, position, onlyMultiLine) => <ts.TextSpan><any>undefined,
     getCodeFixesAtPosition: (fileName, start, end, errorCodes) => <ts.CodeAction[]>[],
+    applyCodeActionCommand: (action: any) => <any>Promise.resolve(undefined),
     getEmitOutput: fileName => <ts.EmitOutput><any>undefined,
     getProgram: () => ls.getProgram(),
     dispose: () => ls.dispose(),
     getApplicableRefactors: (fileName, positionOrRaneg) => <ts.ApplicableRefactorInfo[]>[],
     getEditsForRefactor: (fileName, formatOptions, positionOrRange, refactorName, actionName) =>
-                             undefined,
+                             undefined
   };
 }
 
@@ -130,9 +132,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getSemanticClassifications: tryFilenameOneCall(ls.getSemanticClassifications),
       getEncodedSyntacticClassifications: tryFilenameOneCall(ls.getEncodedSyntacticClassifications),
       getEncodedSemanticClassifications: tryFilenameOneCall(ls.getEncodedSemanticClassifications),
-      getCompletionsAtPosition: tryFilenameOneCall(ls.getCompletionsAtPosition),
-      getCompletionEntryDetails: tryFilenameTwoCall(ls.getCompletionEntryDetails),
-      getCompletionEntrySymbol: tryFilenameTwoCall(ls.getCompletionEntrySymbol),
+      getCompletionsAtPosition: tryFilenameTwoCall(ls.getCompletionsAtPosition),
+      getCompletionEntryDetails: tryFilenameFourCall(ls.getCompletionEntryDetails),
+      getCompletionEntrySymbol: tryFilenameThreeCall(ls.getCompletionEntrySymbol),
       getQuickInfoAtPosition: tryFilenameOneCall(ls.getQuickInfoAtPosition),
       getNameOrDottedNameSpan: tryFilenameTwoCall(ls.getNameOrDottedNameSpan),
       getBreakpointStatementAtPosition: tryFilenameOneCall(ls.getBreakpointStatementAtPosition),
@@ -162,13 +164,15 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getFormattingEditsAfterKeystroke: tryFilenameThreeCall(ls.getFormattingEditsAfterKeystroke),
       getDocCommentTemplateAtPosition: tryFilenameOneCall(ls.getDocCommentTemplateAtPosition),
       isValidBraceCompletionAtPosition: tryFilenameTwoCall(ls.isValidBraceCompletionAtPosition),
+      getSpanOfEnclosingComment: tryFilenameTwoCall(ls.getSpanOfEnclosingComment),
       getCodeFixesAtPosition: tryFilenameFourCall(ls.getCodeFixesAtPosition),
+      applyCodeActionCommand:
+          <any>((action: any) => tryCall(undefined, () => ls.applyCodeActionCommand(action))),
       getEmitOutput: tryFilenameCall(ls.getEmitOutput),
       getProgram: () => ls.getProgram(),
       dispose: () => ls.dispose(),
-      getApplicableRefactors: (fileName, positionOrRaneg) => <ts.ApplicableRefactorInfo[]>[],
-      getEditsForRefactor: (fileName, formatOptions, positionOrRange, refactorName, actionName) =>
-                               undefined,
+      getApplicableRefactors: tryFilenameOneCall(ls.getApplicableRefactors),
+      getEditsForRefactor: tryFilenameFourCall(ls.getEditsForRefactor)
     };
   }
 
@@ -234,8 +238,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   serviceHost.setSite(ls);
   projectHostMap.set(info.project, serviceHost);
 
-  proxy.getCompletionsAtPosition = function(fileName: string, position: number) {
-    let base = oldLS.getCompletionsAtPosition(fileName, position) || {
+  proxy.getCompletionsAtPosition = function(
+      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined) {
+    let base = oldLS.getCompletionsAtPosition(fileName, position, options) || {
       isGlobalCompletion: false,
       isMemberCompletion: false,
       isNewIdentifierLocation: false,

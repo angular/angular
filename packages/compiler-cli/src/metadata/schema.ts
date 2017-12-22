@@ -99,15 +99,24 @@ export function isFunctionMetadata(value: any): value is FunctionMetadata {
 }
 
 export type MetadataValue = string | number | boolean | undefined | null | MetadataObject |
-    MetadataArray | MetadataSymbolicExpression | MetadataError;
+    MetadataArray | MetadataSymbolicExpression | MetadataSymbolicReferenceExpression |
+    MetadataSymbolicBinaryExpression | MetadataSymbolicIndexExpression |
+    MetadataSymbolicCallExpression | MetadataSymbolicPrefixExpression |
+    MetadataSymbolicIfExpression | MetadataSymbolicSpreadExpression |
+    MetadataSymbolicSelectExpression | MetadataError;
 
 export interface MetadataObject { [name: string]: MetadataValue; }
 
 export interface MetadataArray { [name: number]: MetadataValue; }
 
-export interface MetadataSymbolicExpression {
-  __symbolic: 'binary'|'call'|'index'|'new'|'pre'|'reference'|'select'|'spread'|'if';
-}
+export type MetadataSymbolicExpression = MetadataSymbolicBinaryExpression |
+    MetadataSymbolicIndexExpression | MetadataSymbolicIndexExpression |
+    MetadataSymbolicCallExpression | MetadataSymbolicCallExpression |
+    MetadataSymbolicPrefixExpression | MetadataSymbolicIfExpression |
+    MetadataGlobalReferenceExpression | MetadataModuleReferenceExpression |
+    MetadataImportedSymbolReferenceExpression | MetadataImportedDefaultReferenceExpression |
+    MetadataSymbolicSelectExpression | MetadataSymbolicSpreadExpression;
+
 export function isMetadataSymbolicExpression(value: any): value is MetadataSymbolicExpression {
   if (value) {
     switch (value.__symbolic) {
@@ -126,7 +135,7 @@ export function isMetadataSymbolicExpression(value: any): value is MetadataSymbo
   return false;
 }
 
-export interface MetadataSymbolicBinaryExpression extends MetadataSymbolicExpression {
+export interface MetadataSymbolicBinaryExpression {
   __symbolic: 'binary';
   operator: '&&'|'||'|'|'|'^'|'&'|'=='|'!='|'==='|'!=='|'<'|'>'|'<='|'>='|'instanceof'|'in'|'as'|
       '<<'|'>>'|'>>>'|'+'|'-'|'*'|'/'|'%'|'**';
@@ -138,7 +147,7 @@ export function isMetadataSymbolicBinaryExpression(value: any):
   return value && value.__symbolic === 'binary';
 }
 
-export interface MetadataSymbolicIndexExpression extends MetadataSymbolicExpression {
+export interface MetadataSymbolicIndexExpression {
   __symbolic: 'index';
   expression: MetadataValue;
   index: MetadataValue;
@@ -148,7 +157,7 @@ export function isMetadataSymbolicIndexExpression(value: any):
   return value && value.__symbolic === 'index';
 }
 
-export interface MetadataSymbolicCallExpression extends MetadataSymbolicExpression {
+export interface MetadataSymbolicCallExpression {
   __symbolic: 'call'|'new';
   expression: MetadataValue;
   arguments?: MetadataValue[];
@@ -158,7 +167,7 @@ export function isMetadataSymbolicCallExpression(value: any):
   return value && (value.__symbolic === 'call' || value.__symbolic === 'new');
 }
 
-export interface MetadataSymbolicPrefixExpression extends MetadataSymbolicExpression {
+export interface MetadataSymbolicPrefixExpression {
   __symbolic: 'pre';
   operator: '+'|'-'|'~'|'!';
   operand: MetadataValue;
@@ -168,7 +177,7 @@ export function isMetadataSymbolicPrefixExpression(value: any):
   return value && value.__symbolic === 'pre';
 }
 
-export interface MetadataSymbolicIfExpression extends MetadataSymbolicExpression {
+export interface MetadataSymbolicIfExpression {
   __symbolic: 'if';
   condition: MetadataValue;
   thenExpression: MetadataValue;
@@ -190,8 +199,7 @@ export interface MetadataSourceLocationInfo {
   character?: number;
 }
 
-export interface MetadataGlobalReferenceExpression extends MetadataSymbolicExpression,
-    MetadataSourceLocationInfo {
+export interface MetadataGlobalReferenceExpression extends MetadataSourceLocationInfo {
   __symbolic: 'reference';
   name: string;
   arguments?: MetadataValue[];
@@ -201,8 +209,7 @@ export function isMetadataGlobalReferenceExpression(value: any):
   return value && value.name && !value.module && isMetadataSymbolicReferenceExpression(value);
 }
 
-export interface MetadataModuleReferenceExpression extends MetadataSymbolicExpression,
-    MetadataSourceLocationInfo {
+export interface MetadataModuleReferenceExpression extends MetadataSourceLocationInfo {
   __symbolic: 'reference';
   module: string;
 }
@@ -212,8 +219,7 @@ export function isMetadataModuleReferenceExpression(value: any):
       isMetadataSymbolicReferenceExpression(value);
 }
 
-export interface MetadataImportedSymbolReferenceExpression extends MetadataSymbolicExpression,
-    MetadataSourceLocationInfo {
+export interface MetadataImportedSymbolReferenceExpression extends MetadataSourceLocationInfo {
   __symbolic: 'reference';
   module: string;
   name: string;
@@ -224,8 +230,7 @@ export function isMetadataImportedSymbolReferenceExpression(value: any):
   return value && value.module && !!value.name && isMetadataSymbolicReferenceExpression(value);
 }
 
-export interface MetadataImportedDefaultReferenceExpression extends MetadataSymbolicExpression,
-    MetadataSourceLocationInfo {
+export interface MetadataImportedDefaultReferenceExpression extends MetadataSourceLocationInfo {
   __symbolic: 'reference';
   module: string;
   default:
@@ -245,17 +250,17 @@ export function isMetadataSymbolicReferenceExpression(value: any):
   return value && value.__symbolic === 'reference';
 }
 
-export interface MetadataSymbolicSelectExpression extends MetadataSymbolicExpression {
+export interface MetadataSymbolicSelectExpression {
   __symbolic: 'select';
   expression: MetadataValue;
-  name: string;
+  member: string;
 }
 export function isMetadataSymbolicSelectExpression(value: any):
     value is MetadataSymbolicSelectExpression {
   return value && value.__symbolic === 'select';
 }
 
-export interface MetadataSymbolicSpreadExpression extends MetadataSymbolicExpression {
+export interface MetadataSymbolicSpreadExpression {
   __symbolic: 'spread';
   expression: MetadataValue;
 }
