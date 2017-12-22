@@ -82,6 +82,8 @@
     "import-blacklist": [true, "rxjs", "rxjs/operators"],
     // Avoids inconsistent linebreak styles in source files. Forces developers to use LF linebreaks.
     "linebreak-style": [true, "LF"],
+    // Namespaces are no allowed, because of Closure compiler.
+    "no-namespace": true,
 
     // Custom Rules
     "ts-loader": true,
