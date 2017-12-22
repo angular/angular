@@ -11,7 +11,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Options, PerfLogEvent, PerfLogFeatures, UserMetric, WebDriverAdapter} from '../../index';
 
-export function main() {
+(function() {
   let wdAdapter: MockDriverAdapter;
 
   function createMetric(
@@ -63,7 +63,7 @@ export function main() {
          }), 600);
     });
   });
-}
+})();
 
 class MockDriverAdapter extends WebDriverAdapter {
   data: any = {};

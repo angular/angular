@@ -11,7 +11,7 @@ import {NodeFlags, Services, asProviderData, directiveDef, elementDef, nodeValue
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes} from './helper';
 
-export function main() {
+{
   describe(`View Pure Expressions`, () => {
 
     class Service {

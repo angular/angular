@@ -112,7 +112,7 @@ class SomeDirectiveWithMalformedHostBinding2 {
 
 class SomeDirectiveWithoutMetadata {}
 
-export function main() {
+{
   describe('DirectiveResolver', () => {
     let resolver: DirectiveResolver;
 

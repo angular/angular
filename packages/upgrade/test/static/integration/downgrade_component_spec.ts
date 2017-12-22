@@ -15,7 +15,7 @@ import {UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 
 import {$apply, bootstrap, html, multiTrim} from '../test_helpers';
 
-export function main() {
+{
   describe('downgrade ng2 component', () => {
 
     beforeEach(() => destroyPlatform());

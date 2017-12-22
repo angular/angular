@@ -10,7 +10,7 @@ import * as html from '@angular/compiler/src/ml_parser/ast';
 import {HtmlParser} from '@angular/compiler/src/ml_parser/html_parser';
 import {getHtmlTagDefinition} from '@angular/compiler/src/ml_parser/html_tags';
 
-export function main() {
+{
   describe('Node serializer', () => {
     let parser: HtmlParser;
 

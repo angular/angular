@@ -14,7 +14,7 @@ import {SwPush} from '../src/push';
 import {SwUpdate} from '../src/update';
 import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
 
-export function main() {
+{
   describe('ServiceWorker library', () => {
     let mock: MockServiceWorkerContainer;
     let comm: NgswCommChannel;
@@ -30,14 +30,14 @@ export function main() {
 
         mock.setupSw();
 
-        comm.registration.subscribe(reg => { done(); });
+        (comm as any).registration.subscribe((reg: any) => { done(); });
       });
       it('can access the registration when it comes after subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
         const comm = new NgswCommChannel(mock as any, 'browser');
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
-        comm.registration.subscribe(reg => { done(); });
+        (comm as any).registration.subscribe((reg: any) => { done(); });
 
         mock.setupSw();
       });

@@ -10,7 +10,7 @@ import {IdleScheduler} from '../src/idle';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
 import {async_beforeEach, async_fit, async_it} from './async';
 
-export function main() {
+(function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
@@ -134,4 +134,4 @@ export function main() {
       expect(completed).toEqual(true);
     });
   });
-}
+})();

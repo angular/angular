@@ -11,7 +11,7 @@ import * as t from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '../../src/dom/dom_adapter';
 import {sanitizeSrcset, sanitizeUrl} from '../../src/security/url_sanitizer';
 
-export function main() {
+{
   t.describe('URL sanitizer', () => {
     let logMsgs: string[];
     let originalLog: (msg: any) => any;

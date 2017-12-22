@@ -9,7 +9,7 @@ import {Injector} from '@angular/core';
 import {APP_INITIALIZER, ApplicationInitStatus} from '../src/application_init';
 import {TestBed, async, inject} from '../testing';
 
-export function main() {
+{
   describe('ApplicationInitStatus', () => {
     describe('no initializers', () => {
 

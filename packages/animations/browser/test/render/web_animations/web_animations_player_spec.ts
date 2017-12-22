@@ -8,7 +8,7 @@
 import {DOMAnimation} from '../../../src/render/web_animations/dom_animation';
 import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player';
 
-export function main() {
+{
   let element: any;
   let innerPlayer: MockDomAnimation|null = null;
   beforeEach(() => {

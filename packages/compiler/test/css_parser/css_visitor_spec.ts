@@ -115,7 +115,7 @@ function _getCaptureAst(capture: any[], index = 0): CssAst {
   return <CssAst>capture[index][0];
 }
 
-export function main() {
+(function() {
   function parse(cssCode: string, ignoreErrors: boolean = false) {
     const output = new CssParser().parse(cssCode, 'some-fake-css-file.css');
     const errors = output.errors;
@@ -318,4 +318,4 @@ export function main() {
       _assertTokens(rule.tokens, ['six', 'seven', 'eight']);
     });
   });
-}
+})();

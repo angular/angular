@@ -9,7 +9,7 @@
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {EventEmitter} from '../src/event_emitter';
 
-export function main() {
+{
   describe('EventEmitter', () => {
     let emitter: EventEmitter<any>;
 

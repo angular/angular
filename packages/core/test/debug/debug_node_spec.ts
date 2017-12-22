@@ -164,7 +164,7 @@ class TestApp {
   isClosed = true;
 }
 
-export function main() {
+{
   describe('debug element', () => {
     let fixture: ComponentFixture<any>;
 

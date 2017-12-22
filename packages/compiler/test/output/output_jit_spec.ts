@@ -13,7 +13,7 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
 
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
-export function main() {
+{
   describe('Output JIT', () => {
     describe('regression', () => {
       it('should generate unique argument names', () => {

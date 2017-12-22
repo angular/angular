@@ -7,12 +7,12 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
+import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
-import {SpyLocation} from 'common/testing';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
@@ -3527,7 +3527,7 @@ describe('Integration', () => {
                router.navigateByUrl('/blank');
                advance(fixture);
 
-               const config = router.config;
+               const config = router.config as any;
                const firstConfig = config[1]._loadedConfig !;
 
                expect(firstConfig).toBeDefined();
@@ -3553,7 +3553,7 @@ describe('Integration', () => {
             children[PRIMARY_OUTLET] = oldRoot.children[PRIMARY_OUTLET];
           }
           const root = new UrlSegmentGroup(oldRoot.segments, children);
-          return new UrlTree(root, url.queryParams, url.fragment);
+          return new (UrlTree as any)(root, url.queryParams, url.fragment);
         }
 
         merge(newUrlPart: UrlTree, wholeUrl: UrlTree): UrlTree {
@@ -3571,7 +3571,7 @@ describe('Integration', () => {
             v.parent = this;
           });
           const root = new UrlSegmentGroup(oldRoot.segments, children);
-          return new UrlTree(root, newUrlPart.queryParams, newUrlPart.fragment);
+          return new (UrlTree as any)(root, newUrlPart.queryParams, newUrlPart.fragment);
         }
       }
 
@@ -3992,7 +3992,7 @@ class ComponentRecordingRoutePathAndUrl {
   private url: any;
 
   constructor(router: Router, route: ActivatedRoute) {
-    this.path = router.routerState.pathFromRoot(route);
+    this.path = (router.routerState as any).pathFromRoot(route);
     this.url = router.url.toString();
   }
 }

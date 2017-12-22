@@ -16,7 +16,7 @@ import {UpgradeModule} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
 
-export function main() {
+{
   describe('testability', () => {
 
     beforeEach(() => destroyPlatform());

@@ -25,7 +25,7 @@ import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker
 
 let lastCreatedRenderer: Renderer2;
 
-export function main() {
+{
   describe('Web Worker Renderer v2', () => {
     // Don't run on server...
     if (!getDOM().supportsDOMEvents()) return;
@@ -184,10 +184,10 @@ function createWebWorkerBrokerFactory(
   const wwMessageBus = messageBuses.worker;
 
   // set up the worker side
-  const wwBrokerFactory = new ClientMessageBrokerFactory(wwMessageBus, wwSerializer);
+  const wwBrokerFactory = new (ClientMessageBrokerFactory as any)(wwMessageBus, wwSerializer);
 
   // set up the ui side
-  const uiBrokerFactory = new ServiceMessageBrokerFactory(uiMessageBus, uiSerializer);
+  const uiBrokerFactory = new (ServiceMessageBrokerFactory as any)(uiMessageBus, uiSerializer);
   const renderer = new MessageBasedRenderer2(
       uiBrokerFactory, uiMessageBus, uiSerializer, uiRenderStore, domRendererFactory);
   renderer.start();

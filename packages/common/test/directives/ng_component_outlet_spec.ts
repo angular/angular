@@ -12,7 +12,7 @@ import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_
 import {TestBed, async, fakeAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('insert/remove', () => {
 
     beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });

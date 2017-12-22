@@ -37,7 +37,7 @@ class BadTemplateUrl {
 
 // Tests for angular/testing bundle specific to the browser environment.
 // For general tests, see test/testing/testing_public_spec.ts.
-export function main() {
+{
   describe('test APIs for the browser', () => {
     describe('using the async helper', () => {
       let actuallyDone: boolean;

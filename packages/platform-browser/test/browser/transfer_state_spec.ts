@@ -12,7 +12,7 @@ import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular
 import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 
-export function main() {
+(function() {
   function removeScriptTag(doc: Document, id: string) {
     const existing = doc.getElementById(id);
     if (existing) {
@@ -109,4 +109,4 @@ export function main() {
       expect(unescapedObj['testString']).toBe(testString);
     });
   });
-}
+})();

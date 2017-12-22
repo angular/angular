@@ -12,7 +12,7 @@ import {DeprecatedI18NPipesModule} from '../src/common_module';
 import {Plural} from '../src/i18n/locale_data_api';
 import {DEPRECATED_PLURAL_FN, getPluralCase} from '../src/i18n/localization';
 
-export function main() {
+{
   describe('DeprecatedI18NPipesModule', () => {
     beforeEach(() => { TestBed.configureTestingModule({imports: [DeprecatedI18NPipesModule]}); });
 

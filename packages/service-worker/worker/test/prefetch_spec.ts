@@ -29,7 +29,7 @@ const db = new CacheDatabase(scope, scope);
 
 
 
-export function main() {
+(function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
@@ -86,7 +86,7 @@ export function main() {
       expect(err.message).toContain('Hash mismatch');
     });
   });
-}
+})();
 
 function errorFrom(promise: Promise<any>): Promise<any> {
   return promise.catch(err => err);

@@ -14,7 +14,7 @@ import {Subject} from 'rxjs/Subject';
 
 import {stringify} from '../../src/util';
 
-export function main() {
+{
   describe('Query API', () => {
 
     beforeEach(() => TestBed.configureTestingModule({

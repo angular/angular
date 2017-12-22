@@ -13,7 +13,7 @@ import {ParseError} from '../../src/parse_util';
 
 import {humanizeNodes} from './ast_spec_utils';
 
-export function main() {
+{
   describe('Expander', () => {
     function expand(template: string): ExpansionResult {
       const htmlParser = new HtmlParser();
