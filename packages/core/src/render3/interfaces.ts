@@ -287,6 +287,19 @@ export interface LNodeInjector {
  */
 export interface ViewState {
   /**
+   * Whether or not the view is in creationMode.
+   *
+   * This must be stored in the view rather than using `data` as a marker so that
+   * we can properly support embedded views. Otherwise, when exiting a child view
+   * back into the parent view, `data` will be defined and `creationMode` will be
+   * improperly reported as false.
+   */
+  creationMode: boolean;
+
+  /** The index in the data array at which view hooks begin to be stored. */
+  viewHookStartIndex: number|null;
+
+  /**
    * The parent view is needed when we exit the view and must restore the previous
    * `ViewState`. Without this, the render method would have to keep a stack of
    * views as it is recursively rendering templates.

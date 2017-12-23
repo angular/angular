@@ -32,7 +32,13 @@ export {queryRefresh} from './query';
  * Enum used by the lifecycle (l) instruction to determine which lifecycle hook is requesting
  * processing.
  */
-export const enum LifecycleHook {ON_INIT = 1, ON_DESTROY = 2, ON_CHANGES = 4}
+export const enum LifecycleHook {
+  ON_INIT = 1,
+  ON_DESTROY = 2,
+  ON_CHANGES = 4,
+  AFTER_VIEW_INIT = 8,
+  AFTER_VIEW_CHECKED = 16
+}
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -124,6 +130,9 @@ let bindingIndex: number;
  */
 let cleanup: any[]|null;
 
+/** Index in the data array at which view hooks begin to be stored. */
+let viewHookStartIndex: number|null;
+
 /**
  * Swap the current state with a new state.
  *
@@ -141,11 +150,9 @@ export function enterView(newViewState: ViewState, host: LElement | LView | null
   data = newViewState.data;
   bindingIndex = newViewState.bindingStartIndex || 0;
   ngStaticData = newViewState.ngStaticData;
+  creationMode = newViewState.creationMode;
 
-  if (creationMode = !data) {
-    // Absence of data implies creationMode.
-    (newViewState as{data: any[]}).data = data = [];
-  }
+  viewHookStartIndex = newViewState.viewHookStartIndex;
   cleanup = newViewState.cleanup;
   renderer = newViewState.renderer;
 
@@ -162,7 +169,10 @@ export function enterView(newViewState: ViewState, host: LElement | LView | null
  * Used in lieu of enterView to make it clear when we are exiting a child view. This makes
  * the direction of traversal (up or down the view tree) a bit clearer.
  */
-export const leaveView: (newViewState: ViewState) => void = enterView as any;
+export function leaveView(newViewState: ViewState): void {
+  executeViewHooks();
+  enterView(newViewState, null);
+}
 
 export function createViewState(
     viewId: number, renderer: Renderer3, ngStaticData: NgStaticData): ViewState {
@@ -170,14 +180,16 @@ export function createViewState(
     parent: currentView,
     id: viewId,    // -1 for component views
     node: null !,  // until we initialize it in createNode.
-    data: null !,  // Hack use as a marker for creationMode
+    data: [],
     ngStaticData: ngStaticData,
     cleanup: null,
     renderer: renderer,
     child: null,
     tail: null,
     next: null,
-    bindingStartIndex: null
+    bindingStartIndex: null,
+    creationMode: true,
+    viewHookStartIndex: null
   };
 
   return newView;
@@ -314,6 +326,7 @@ export function renderComponentOrTemplate<T>(
     if (rendererFactory.end) {
       rendererFactory.end();
     }
+    viewState.creationMode = false;
     leaveView(oldView);
   }
 }
@@ -959,19 +972,59 @@ function generateInitialInputs(
  *
  * e.g.  l(LifecycleHook.ON_DESTROY, ctx, ctx.onDestroy);
  *
- * @param lifeCycle
+ * @param lifecycle
  * @param self
  * @param method
  */
-export function lifecycle(lifeCycle: LifecycleHook.ON_DESTROY, self: any, method: Function): void;
-export function lifecycle(lifeCycle: LifecycleHook): boolean;
-export function lifecycle(lifeCycle: LifecycleHook, self?: any, method?: Function): boolean {
-  if (lifeCycle === LifecycleHook.ON_INIT) {
+export function lifecycle(lifecycle: LifecycleHook.ON_DESTROY, self: any, method: Function): void;
+export function lifecycle(
+    lifecycle: LifecycleHook.AFTER_VIEW_INIT, self: any, method: Function): void;
+export function lifecycle(
+    lifecycle: LifecycleHook.AFTER_VIEW_CHECKED, self: any, method: Function): void;
+export function lifecycle(lifecycle: LifecycleHook): boolean;
+export function lifecycle(lifecycle: LifecycleHook, self?: any, method?: Function): boolean {
+  if (lifecycle === LifecycleHook.ON_INIT) {
     return creationMode;
-  } else if (lifeCycle === LifecycleHook.ON_DESTROY) {
+  } else if (lifecycle === LifecycleHook.ON_DESTROY) {
     (cleanup || (currentView.cleanup = cleanup = [])).push(method, self);
+  } else if (
+      creationMode && (lifecycle === LifecycleHook.AFTER_VIEW_INIT ||
+                       lifecycle === LifecycleHook.AFTER_VIEW_CHECKED)) {
+    if (viewHookStartIndex == null) {
+      currentView.viewHookStartIndex = viewHookStartIndex = data.length;
+    }
+    data.push(lifecycle, method, self);
   }
   return false;
+}
+
+/** Iterates over view hook functions and calls them. */
+export function executeViewHooks(): void {
+  if (viewHookStartIndex == null) return;
+
+  // Instead of using splice to remove init hooks after their first run (expensive), we
+  // shift over the AFTER_CHECKED hooks as we call them and truncate once at the end.
+  let checkIndex = viewHookStartIndex as number;
+  let writeIndex = checkIndex;
+  while (checkIndex < data.length) {
+    // Call lifecycle hook with its context
+    data[checkIndex + 1].call(data[checkIndex + 2]);
+
+    if (data[checkIndex] === LifecycleHook.AFTER_VIEW_CHECKED) {
+      // We know if the writeIndex falls behind that there is an init that needs to
+      // be overwritten.
+      if (writeIndex < checkIndex) {
+        data[writeIndex] = data[checkIndex];
+        data[writeIndex + 1] = data[checkIndex + 1];
+        data[writeIndex + 2] = data[checkIndex + 2];
+      }
+      writeIndex += 3;
+    }
+    checkIndex += 3;
+  }
+
+  // Truncate once at the writeIndex
+  data.length = writeIndex;
 }
 
 
@@ -1142,7 +1195,7 @@ export function viewEnd(): void {
 
   if (viewIdChanged) {
     insertView(container, viewNode, containerState.nextIndex - 1);
-    creationMode = false;
+    currentView.creationMode = false;
   }
   leaveView(currentView !.parent !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
@@ -1175,6 +1228,7 @@ export const componentRefresh:
   try {
     template(directive, creationMode);
   } finally {
+    hostView.creationMode = false;
     leaveView(oldView);
   }
 };
