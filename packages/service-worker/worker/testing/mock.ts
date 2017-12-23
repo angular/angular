@@ -67,7 +67,8 @@ export class MockServerStateBuilder {
   withStaticFiles(fs: MockFileSystem): MockServerStateBuilder {
     fs.list().forEach(path => {
       const file = fs.lookup(path) !;
-      this.resources.set(path, new MockResponse(file.contents, {headers: file.headers}));
+      const headers = new Headers(file.headers);
+      this.resources.set(path, new MockResponse(file.contents, {headers}));
     });
     return this;
   }

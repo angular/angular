@@ -257,7 +257,7 @@ function defaultGatherDiagnostics(program: api.Program): Diagnostics {
 
   // Check syntactic diagnostics
   checkOtherDiagnostics =
-      checkOtherDiagnostics && checkDiagnostics(program.getTsSyntacticDiagnostics());
+      checkOtherDiagnostics && checkDiagnostics(program.getTsSyntacticDiagnostics() as Diagnostics);
 
   // Check TypeScript semantic and Angular structure diagnostics
   checkOtherDiagnostics =
@@ -267,7 +267,7 @@ function defaultGatherDiagnostics(program: api.Program): Diagnostics {
 
   // Check Angular semantic diagnostics
   checkOtherDiagnostics =
-      checkOtherDiagnostics && checkDiagnostics(program.getNgSemanticDiagnostics());
+      checkOtherDiagnostics && checkDiagnostics(program.getNgSemanticDiagnostics() as Diagnostics);
 
   return allDiagnostics;
 }

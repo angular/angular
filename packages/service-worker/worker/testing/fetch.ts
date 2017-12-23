@@ -57,9 +57,14 @@ export class MockBody implements Body {
 
 export class MockHeaders implements Headers {
   map = new Map<string, string>();
+
+  [Symbol.iterator]() { return this.map[Symbol.iterator](); }
+
   append(name: string, value: string): void { this.map.set(name, value); }
 
   delete (name: string): void { this.map.delete(name); }
+
+  entries() { return this.map.entries(); }
 
   forEach(callback: Function): void { this.map.forEach(callback as any); }
 
@@ -67,7 +72,11 @@ export class MockHeaders implements Headers {
 
   has(name: string): boolean { return this.map.has(name); }
 
+  keys() { return this.map.keys(); }
+
   set(name: string, value: string): void { this.map.set(name, value); }
+
+  values() { return this.map.values(); }
 }
 
 export class MockRequest extends MockBody implements Request {
@@ -95,9 +104,7 @@ export class MockRequest extends MockBody implements Request {
       if (init.headers instanceof MockHeaders) {
         this.headers = init.headers;
       } else {
-        Object.keys(init.headers).forEach(header => {
-          this.headers.set(header, init.headers[header]);
-        });
+        new Headers(init.headers).forEach((value, key) => this.headers.set(key, value));
       }
     }
     if (init.mode !== undefined) {
@@ -138,9 +145,7 @@ export class MockResponse extends MockBody implements Response {
       if (init.headers instanceof MockHeaders) {
         this.headers = init.headers;
       } else {
-        Object.keys(init.headers).forEach(header => {
-          this.headers.set(header, init.headers[header]);
-        });
+        new Headers(init.headers).forEach((value, key) => this.headers.set(key, value));
       }
     }
     if (init.type !== undefined) {

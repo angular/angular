@@ -16,7 +16,8 @@ export interface TypeCheckHost {
   parseSourceSpanOf(fileName: string, line: number, character: number): ParseSourceSpan|null;
 }
 
-export function translateDiagnostics(host: TypeCheckHost, untranslatedDiagnostics: ts.Diagnostic[]):
+export function translateDiagnostics(
+    host: TypeCheckHost, untranslatedDiagnostics: ReadonlyArray<ts.Diagnostic>):
     {ts: ts.Diagnostic[], ng: Diagnostic[]} {
   const ts: ts.Diagnostic[] = [];
   const ng: Diagnostic[] = [];

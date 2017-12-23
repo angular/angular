@@ -60,8 +60,8 @@ class AngularCompilerProgram implements Program {
   private _optionsDiagnostics: Diagnostic[] = [];
 
   constructor(
-      private rootNames: string[], private options: CompilerOptions, private host: CompilerHost,
-      oldProgram?: Program) {
+      private rootNames: ReadonlyArray<string>, private options: CompilerOptions,
+      private host: CompilerHost, oldProgram?: Program) {
     const [major, minor] = ts.version.split('.');
     if (Number(major) < 2 || (Number(major) === 2 && Number(minor) < 4)) {
       throw new Error('The Angular Compiler requires TypeScript >= 2.4.');
@@ -85,7 +85,8 @@ class AngularCompilerProgram implements Program {
                                                       code: DEFAULT_ERROR_CODE
                                                     })));
       } else {
-        rootNames.push(indexName !);
+        // TODO: Review use of `string[]` here (pushing to a `ReadonlyArray`)
+        (rootNames as string[]).push(indexName !);
         this.host = bundleHost;
       }
     }
@@ -138,16 +139,16 @@ class AngularCompilerProgram implements Program {
   }
 
   getTsSyntacticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
-      ts.Diagnostic[] {
+      ReadonlyArray<ts.Diagnostic> {
     return this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
   }
 
-  getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): Diagnostic[] {
+  getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic> {
     return this.structuralDiagnostics;
   }
 
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
-      ts.Diagnostic[] {
+      ReadonlyArray<ts.Diagnostic> {
     const sourceFiles = sourceFile ? [sourceFile] : this.tsProgram.getSourceFiles();
     let diags: ts.Diagnostic[] = [];
     sourceFiles.forEach(sf => {
@@ -159,7 +160,7 @@ class AngularCompilerProgram implements Program {
   }
 
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      Diagnostic[] {
+      ReadonlyArray<Diagnostic> {
     let diags: ts.Diagnostic[] = [];
     this.tsProgram.getSourceFiles().forEach(sf => {
       if (GENERATED_FILES.test(sf.fileName) && !sf.isDeclarationFile) {
@@ -245,7 +246,7 @@ class AngularCompilerProgram implements Program {
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
-    const augmentedReferences = new Map<ts.SourceFile, ts.FileReference[]>();
+    const augmentedReferences = new Map<ts.SourceFile, ReadonlyArray<ts.FileReference>>();
     for (const sourceFile of this.tsProgram.getSourceFiles()) {
       const originalReferences = getOriginalReferences(sourceFile);
       if (originalReferences) {
@@ -312,7 +313,9 @@ class AngularCompilerProgram implements Program {
 
     if (!outSrcMapping.length) {
       // if no files were emitted by TypeScript, also don't emit .json files
-      emitResult.diagnostics.push(createMessageDiagnostic(`Emitted no files.`));
+      // TODO: Review use of `as ts.Diagnostics[]` here (pushing to a `ReadonlyArray`)
+      (emitResult.diagnostics as ts.Diagnostic[])
+          .push(createMessageDiagnostic(`Emitted no files.`));
       return emitResult;
     }
 
@@ -346,7 +349,8 @@ class AngularCompilerProgram implements Program {
     }
     const emitEnd = Date.now();
     if (this.options.diagnostics) {
-      emitResult.diagnostics.push(createMessageDiagnostic([
+      // TODO: Review use of `as ts.Diagnostics[]` here (pushing to a `ReadonlyArray`)
+      (emitResult.diagnostics as ts.Diagnostic[]).push(createMessageDiagnostic([
         `Emitted in ${emitEnd - emitStart}ms`,
         `- ${emittedUserTsCount} user ts files`,
         `- ${genTsFiles.length} generated ts files`,
@@ -645,10 +649,11 @@ class AngularCompilerProgram implements Program {
   }
 }
 
-export function createProgram(
-    {rootNames, options, host, oldProgram}:
-        {rootNames: string[], options: CompilerOptions, host: CompilerHost, oldProgram?: Program}):
-    Program {
+export function createProgram({rootNames, options, host, oldProgram}: {
+  rootNames: ReadonlyArray<string>,
+  options: CompilerOptions,
+  host: CompilerHost, oldProgram?: Program
+}): Program {
   return new AngularCompilerProgram(rootNames, options, host, oldProgram);
 }
 
@@ -767,7 +772,7 @@ export function i18nExtract(
   const content = i18nSerialize(bundle, formatName, options);
   const dstFile = outFile || `messages.${ext}`;
   const dstPath = path.resolve(options.outDir || options.basePath, dstFile);
-  host.writeFile(dstPath, content, false);
+  host.writeFile(dstPath, content, false, undefined, []);
   return [dstPath];
 }
 

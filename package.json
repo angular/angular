@@ -100,7 +100,7 @@
     "tslint": "5.7.0",
     "tslint-eslint-rules": "4.1.1",
     "tsutils": "2.12.1",
-    "typescript": "2.5.x",
+    "typescript": "2.6.x",
     "uglify-js": "2.8.29",
     "universal-analytics": "0.4.15",
     "vlq": "0.2.2",
