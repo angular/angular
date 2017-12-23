@@ -75,6 +75,8 @@ const EMAIL_REGEXP =
 export class Validators {
   /**
    * Validator that requires controls to have a value greater than a number.
+   *`min()` exists only as a function, not as a directive. For example,
+   * `control = new FormControl('', Validators.min(3));`.
    */
   static min(min: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -90,6 +92,8 @@ export class Validators {
 
   /**
    * Validator that requires controls to have a value less than a number.
+   * `max()` exists only as a function, not as a directive. For example,
+   * `control = new FormControl('', Validators.max(15));`.
    */
   static max(max: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
