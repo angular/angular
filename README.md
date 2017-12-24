@@ -1,1 +1,1 @@
-# Angular 한글화 프로젝트
+# angular.io 한글화 프로젝트
