@@ -2,45 +2,45 @@
   "TopBar": [
     {
       "url": "features",
-      "title": "Features"
+      "title": "기능"
     },
     {
       "url": "docs",
-      "title": "Docs"
+      "title": "문서"
     },
     {
       "url": "resources",
-      "title": "Resources"
+      "title": "리소스"
     },
     {
       "url": "events",
-      "title": "Events"
+      "title": "행사 정보"
     },
     {
       "url": "https://blog.angular.io/",
-      "title": "Blog"
+      "title": "블로그"
     }
   ],
 
   "TopBarNarrow": [
     {
-      "title": "About Angular",
+      "title": "Angular",
       "children": [
         {
           "url": "features",
-          "title": "Features"
+          "title": "기능"
         },
         {
           "url": "resources",
-          "title": "Resources"
+          "title": "리소스"
         },
         {
           "url": "events",
-          "title": "Events"
+          "title": "행사 정보"
         },
         {
           "url": "https://blog.angular.io/",
-          "title": "Blog"
+          "title": "블로그"
         }
       ]
     }
@@ -49,32 +49,32 @@
   "SideNav": [
     {
       "url": "docs",
-      "title": "Docs",
-      "tooltip": "Angular Documentation",
+      "title": "문서",
+      "tooltip": "Angular 문서",
       "hidden": true
     },
 
     {
       "url": "guide/docs-style-guide",
-      "title": "Doc authors style guide",
-      "tooltip": "Style guide for documentation authors",
+      "title": "문서 편집 가이드",
+      "tooltip": "문서 편집 가이드",
       "hidden": true
     },
 
     {
       "url": "guide/webpack",
-      "title": "Webpack: An Introduction",
+      "title": "Webpack: 소개",
       "hidden": true
     },
 
     {
       "url": "guide/quickstart",
-      "title": "Getting Started",
-      "tooltip": "A gentle introduction to Angular."
+      "title": "시작하기",
+      "tooltip": "Angular 시작하기"
     },
 
     {
-      "title": "Tutorial",
+      "title": "튜토리얼",
       "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
       "children": [
         {
@@ -121,147 +121,147 @@
     },
 
     {
-      "title": "Fundamentals",
-      "tooltip": "The fundamentals of Angular",
+      "title": "심화",
+      "tooltip": "Angular 심화",
       "children": [
         {
           "url": "guide/architecture",
-          "title": "Architecture",
-          "tooltip": "The basic building blocks of Angular applications."
+          "title": "코드 구조",
+          "tooltip": "Angular 애플리케이션을 구성하는 기본 요소"
         },
         {
-          "title": "Template & Data Binding",
-          "tooltip": "Template & Data Binding",
+          "title": "템플릿 & 데이터 바인딩",
+          "tooltip": "템플릿 & 데이터 바인딩",
           "children": [
             {
               "url": "guide/displaying-data",
-              "title": "Displaying Data",
-              "tooltip": "Property binding helps show app data in the UI."
+              "title": "데이터 표시하기",
+              "tooltip": "UI에 데이터 바인딩하기"
             },
             {
               "url": "guide/template-syntax",
-              "title": "Template Syntax",
-              "tooltip": "Learn how to write templates that display data and consume user events with the help of data binding."
+              "title": "템플릿 문법",
+              "tooltip": "템플릿에 데이터를 어떻게 표시하는지, 이벤트를 어떻게 처리하는지 알아봅니다."
             },
             {
               "url": "guide/lifecycle-hooks",
-              "title": "Lifecycle Hooks",
-              "tooltip": "Angular calls lifecycle hook methods on directives and components as it creates, changes, and destroys them."
+              "title": "라이프싸이클 후킹",
+              "tooltip": "Angular 디렉티브와 컴포넌트는 라이프싸이클 후킹 함수를 지원합니다."
             },
             {
               "url": "guide/component-interaction",
-              "title": "Component Interaction",
-              "tooltip": "Share information between different directives and components."
+              "title": "컴포넌트 통신",
+              "tooltip": "디렉티브와 컴포넌트끼리 데이터를 전달할 수 있습니다."
             },
             {
               "url": "guide/component-styles",
-              "title": "Component Styles",
-              "tooltip": "Add CSS styles that are specific to a component."
+              "title": "컴포넌트 스타일",
+              "tooltip": "CSS 스타일을 추가해서 컴포넌트를 꾸밀 수 있습니다."
             },
             {
               "url": "guide/dynamic-component-loader",
-              "title": "Dynamic Components",
-              "tooltip": "Load components dynamically."
+              "title": "동적 컴포넌트",
+              "tooltip": "컴포넌트를 동적으로 불러올 수 있습니다."
             },
             {
               "url": "guide/attribute-directives",
-              "title": "Attribute Directives",
-              "tooltip": "Attribute directives attach behavior to elements."
+              "title": "어트리뷰트 디렉티브",
+              "tooltip": "어트리뷰트 디렉티브는 DOM 엘리먼트의 속성을 정의합니다."
             },
             {
               "url": "guide/structural-directives",
-              "title": "Structural Directives",
-              "tooltip": "Structural directives manipulate the layout of the page."
+              "title": "구조 디렉티브",
+              "tooltip": "구조 디렉티브는 페이지의 DOM을 조작합니다."
             },
             {
               "url": "guide/pipes",
-              "title": "Pipes",
-              "tooltip": "Pipes transform displayed values within a template."
+              "title": "파이프",
+              "tooltip": "파이프는 템플릿에 표시되는 데이터의 형식을 지정합니다."
             },
             {
               "url": "guide/animations",
-              "title": "Animations",
-              "tooltip": "A guide to Angular's animation system."
+              "title": "애니메이션",
+              "tooltip": "Angular 애니메이션 가이드"
             }
           ]
         },
         {
-          "title": "Forms",
-          "tooltip": "Angular Forms",
+          "title": "폼",
+          "tooltip": "Angular 폼",
           "children": [
             {
               "url": "guide/user-input",
-              "title": "User Input",
-              "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
+              "title": "사용자 입력",
+              "tooltip": "사용자가 입력을 하거나 마우스를 클릭하면 DOM 이벤트가 발생합니다. 이 이벤트를 바인딩해서 컴포넌트 변수나 모델에 적용할 수 있습니다."
             },
             {
               "url": "guide/forms",
-              "title": "Template-driven Forms",
-              "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+              "title": "템플릿 기반 폼",
+              "tooltip": "폼을 구성하면 사용자 입력을 일관되고 효율적으로 처리할 수 있습니다. Angular 폼은 입력 컨트롤을 묶어서 구성하고, 변화를 감지하며, 입력값의 유효성을 판단하고 에러를 표시할 수 있습니다."
             },
             {
               "url": "guide/form-validation",
-              "title": "Form Validation",
-              "tooltip": "Validate user's form entries."
+              "title": "폼 유효성 검사",
+              "tooltip": "사용자가 입력한 폼의 유효성을 검사합니다."
             },
             {
               "url": "guide/reactive-forms",
-              "title": "Reactive Forms",
-              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
+              "title": "반응형 폼",
+              "tooltip": "FormBuilder, FormGroul, FormArray를 사용해서 반응형 폼을 구성할 수 있습니다."
             },
             {
               "url": "guide/dynamic-form",
-              "title": "Dynamic forms",
-              "tooltip": "Render dynamic forms with FormGroup."
+              "title": "동적 폼",
+              "tooltip": "FormGroup을 사용해서 동적 폼을 구성할 수 있습니다."
             }
           ]
         },
 
         {
           "url": "guide/bootstrapping",
-          "title": "Bootstrapping",
-          "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
+          "title": "부트스트랩",
+          "tooltip": "Angular가 \"AppModule\"을 어떻게 구성하고 실행하는지 알아봅니다."
         },
 
         {
-          "title": "NgModules",
-          "tooltip": "Modularize your app with NgModules.",
+          "title": "NgModule",
+          "tooltip": "NgModule을 사용해서 앱을 모듈화 하세요.",
           "children": [
             {
               "url": "guide/ngmodule",
-              "title": "NgModules",
-              "tooltip": "Define application modules with the NgModule."
+              "title": "NgModule",
+              "tooltip": "NgModule을 사용해서 애플리케이션 모듈을 정의할 수 있습니다."
             },
             {
               "url": "guide/ngmodule-faq",
               "title": "NgModule FAQs",
-              "tooltip": "Answers to frequently asked questions about NgModules."
+              "tooltip": "NgModule에 대해 자주 물어보는 질문"
             }
         ]},
 
         {
-          "title": "Dependency Injection",
-          "tooltip": "Dependency Injection: creating and injecting services",
+          "title": "의존성 주입",
+          "tooltip": "의존성 주입: 서비스 만들고 의존성으로 주입하기",
           "children": [
             {
               "url": "guide/dependency-injection-pattern",
-              "title": "The Dependency Injection pattern",
-              "tooltip": "Learn about the dependency injection pattern behind the Angular DI system."
+              "title": "의존성 주입 패턴",
+              "tooltip": "의존성 주입 패턴과 Angular의 의존성 주입 방식을 알아봅니다"
             },
             {
               "url": "guide/dependency-injection",
-              "title": "Angular Dependency Injection",
-              "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
+              "title": "Angular의 의존성 주입",
+              "tooltip": "Angular는 의존성으로 주입하는 클래스를 직접 만들어서 목표 클래스에 주입합니다."
             },
             {
               "url": "guide/hierarchical-dependency-injection",
-              "title": "Hierarchical Injectors",
-              "tooltip": "Angular's hierarchical dependency injection system supports nested injectors in parallel with the component tree."
+              "title": "인젝터 계층",
+              "tooltip": "Angular의 인젝터는 컴포넌트 트리의 구조에 맞게 구성됩니다."
             },
             {
               "url": "guide/dependency-injection-in-action",
-              "title": "DI in Action",
-              "tooltip": "Techniques for Dependency Injection."
+              "title": "의존성 주입 따라하기",
+              "tooltip": "의존성 주입 테크닉"
             }
           ]
         },
@@ -269,214 +269,214 @@
         {
           "url": "guide/http",
           "title": "HttpClient",
-          "tooltip": "Use HTTP to talk to a remote server."
+          "tooltip": "서버와 HTTP 통신하기"
         },
         {
           "url": "guide/router",
-          "title": "Routing & Navigation",
-          "tooltip": "Discover the basics of screen navigation with the Angular Router."
+          "title": "라우팅 & 네비게이션",
+          "tooltip": "Angular 라우터를 사용해서 화면을 전환할 수 있습니다."
         },
         {
           "url": "guide/testing",
-          "title": "Testing",
-          "tooltip": "Techniques and practices for testing an Angular app."
+          "title": "테스트",
+          "tooltip": "Angular 앱을 테스트하는 방법"
         },
         {
           "url": "guide/cheatsheet",
-          "title": "Cheat Sheet",
-          "tooltip": "A quick guide to common Angular coding techniques."
+          "title": "치트 시트",
+          "tooltip": "사용방법 간단하게 찾아보기"
         }
     ]},
 
     {
-      "title": "Techniques",
-      "tooltip": "Techniques for putting Angular to work in your environment",
+      "title": "추가 기능",
+      "tooltip": "Angular에 활용할 수 있는 추가 기능",
       "children": [
 
         {
           "url": "guide/i18n",
           "title": "Internationalization (i18n)",
-          "tooltip": "Translate the app's template text into multiple languages."
+          "tooltip": "템플릿에 표시되는 텍스트를 여러 언어로 변환하기"
         },
         {
           "url": "guide/language-service",
-          "title": "Language Service",
-          "tooltip": "Use Angular Language Service to speed up dev time."
+          "title": "템플릿 개발 지원",
+          "tooltip": "템플릿 개발 지원 기능을 활용해서 더 빠르게 개발하세요."
         },
         {
           "url": "guide/security",
-          "title": "Security",
-          "tooltip": "Developing for content security in Angular applications."
+          "title": "보안",
+          "tooltip": "Angular 애플리케이션에 보안 기능 적용하기"
         },
         {
-          "title": "Setup & Deployment",
-          "tooltip": "Setup and Deployment",
+          "title": "개발환경 설정 & 배포",
+          "tooltip": "개발환경 설정과 배포",
           "children": [
             {
               "url": "guide/setup",
-              "title": "Setup for local development",
-              "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine."
+              "title": "로컬 개발환경 설정하기",
+              "tooltip": "프로젝트를 빠르게 구성하려면 Angular QuickStart 프로젝트부터 시작하세요."
             },
             {
               "url": "guide/setup-systemjs-anatomy",
-              "title": "Anatomy of the Setup",
-              "tooltip": "Inside the local development environment for SystemJS."
+              "title": "프로젝트 설정 파일 분석하기",
+              "tooltip": "SystemJS를 사용하는 개발환경을 자세하게 알아봅니다."
             },
             {
               "url": "guide/browser-support",
-              "title": "Browser Support",
-              "tooltip": "Browser support and polyfills guide."
+              "title": "브라우저 지원",
+              "tooltip": "브라우저 지원 현황을 확인하고 폴리필에 대해 알아봅니다."
             },
             {
               "url": "guide/npm-packages",
-              "title": "Npm Packages",
-              "tooltip": "Recommended npm packages, and how to specify package dependencies."
+              "title": "Npm 패키지",
+              "tooltip": "npm 패키지 구성에 대해 알아봅니다."
             },
 
             {
               "url": "guide/typescript-configuration",
-              "title": "TypeScript Configuration",
-              "tooltip": "TypeScript configuration for Angular developers."
+              "title": "TypeScript 설정",
+              "tooltip": "TypeScript 권장 설정"
             },
             {
               "url": "guide/aot-compiler",
-              "title": "Ahead-of-Time Compilation",
-              "tooltip": "Learn why and how to use the Ahead-of-Time (AOT) compiler."
+              "title": "Ahead-of-Time 컴파일",
+              "tooltip": "Ahead-of-Time (AOT) 컴파일러를 왜 사용해야 하는지, 어떻게 사용하는지 알아봅니다."
             },
             {
               "url": "guide/deployment",
-              "title": "Deployment",
-              "tooltip": "Learn how to deploy your Angular app."
+              "title": "배포",
+              "tooltip": "Angular 앱 배포하기"
             }
           ]
         },
         {
-          "title": "Service Workers",
+          "title": "서비스 워커",
           "tooltip": "Angular service workers: Controlling caching of application resources.",
           "children": [
             {
               "url": "guide/service-worker-intro",
-              "title": "Introduction",
-              "tooltip": "Angular's implementation of service workers improves user experience with slow or unreliable network connectivity."
+              "title": "소개",
+              "tooltip": "Angular가 제공하는 서비스 워커에 대해 알아봅니다. 서비스 워커를 활용하면 네트워크 연결이 원활하지 않은 곳에서도 앱 사용성을 유지할 수 있습니다."
             },
             {
               "url": "guide/service-worker-getting-started",
-              "title": "Getting Started",
-              "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
+              "title": "시작하기",
+              "tooltip": "CLI로 Angular 프로젝트를 만들면서 서비스 워커를 시작할 수 있습니다. 브라우저에서 서비스 워커 동작을 확인할 수도 있습니다."
             },
             {
               "url": "guide/service-worker-communications",
-              "title": "Service Worker Communication",
-              "tooltip": "Services that enable you to interact with an Angular service worker."
+              "title": "서비스 워커 통신",
+              "tooltip": "서비스 워커를 사용하는 Angular 서비스 만들기"
             },
             {
               "url": "guide/service-worker-devops",
-              "title": "Service Worker in Production",
-              "tooltip": "Running applications with service workers, managing application update, debugging, and killing applications."
+              "title": "서비스 워커 활용",
+              "tooltip": "서비스 워커를 사용해서 애플리케이션을 실행하고, 애플리케이션을 업데이트 할 수 있습니다. 애플리케이션을 디버깅하거나 종료할 수도 있습니다."
             },
             {
               "url": "guide/service-worker-config",
-              "title": "Service Worker Configuration",
-              "tooltip": "Configuring service worker caching behavior."
+              "title": "서비스 워커 설정",
+              "tooltip": "서비스 워커 캐시 설정하기"
             }
           ]
         },
 
         {
-          "title": "Upgrading",
-          "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
+          "title": "업그레이드",
+          "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요.",
           "children": [
             {
               "url": "guide/upgrade",
-              "title": "Upgrading from AngularJS",
-              "tooltip": "Incrementally upgrade an AngularJS application to Angular."
+              "title": "AngularJS 애플리케이션 업그레이드 하기",
+              "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요."
             },
             {
               "url": "guide/ajs-quick-reference",
-              "title": "Upgrade Cheatsheet",
-              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
+              "title": "업그레이드 치트 시트",
+              "tooltip": "AngularJS와 Angular 구현 방식 비교"
             }
           ]
         },
         {
           "url": "guide/universal",
-          "title": "Server-side Rendering",
-          "tooltip": "Render HTML server-side with Angular Universal."
+          "title": "서버 사이드 렌더링",
+          "tooltip": "Angular Universal을 사용해서 서버에 HTML 문서를 미리 렌더링 해두세요."
         },
         {
           "url": "guide/visual-studio-2015",
           "title": "Visual Studio 2015 QuickStart",
-          "tooltip": "Use Visual Studio 2015 with the QuickStart files."
+          "tooltip": "Visual Studio 2015에서 QuickStart 시작하기"
         },
         {
           "url": "guide/styleguide",
-          "title": "Style Guide",
-          "tooltip": "Write Angular with style."
+          "title": "코딩 가이드",
+          "tooltip": "Angular 코딩 가이드"
         },
         {
           "url": "guide/glossary",
-          "title": "Glossary",
-          "tooltip": "Brief definitions of the most important words in the Angular vocabulary."
+          "title": "찾아보기",
+          "tooltip": "Angular에 자주 나오는 용어"
         }
       ]
     },
 
     {
       "title": "API",
-      "tooltip": "Details of the Angular classes and values.",
+      "tooltip": "Angular 클래스 API 찾아보기",
       "url": "api"
     },
     {
       "url": "guide/change-log",
-      "title": "Change Log",
-      "tooltip": "Angular Documentation Change Log",
+      "title": "변경사항",
+      "tooltip": "Angular 문서 변경사항",
       "hidden": true
     }
   ],
 
   "Footer": [
     {
-      "title": "Resources",
+      "title": "리소스",
       "children": [
         {
           "url": "about",
           "title": "About",
-          "tooltip": "Angular contributors."
+          "tooltip": "Angular 컨트리뷰터"
         },
         {
           "url": "resources",
-          "title": "Resource Listing",
-          "tooltip": "Angular tools, training, and blogs from around the web."
+          "title": "참고 자료",
+          "tooltip": "Angular 툴, 강좌, 블로그"
         },
         {
           "url": "presskit",
-          "title": "Press Kit",
-          "tooltip": "Press contacts, logos, and branding."
+          "title": "브랜드 자료",
+          "tooltip": "Angular 로고, 브랜드 설명"
         },
         {
           "url": "https://blog.angular.io/",
-          "title": "Blog",
-          "tooltip": "Angular Blog"
+          "title": "블로그",
+          "tooltip": "Angular 블로그"
         }
       ]
     },
     {
-      "title": "Help",
+      "title": "참고 사이트",
       "children": [
         {
           "url": "https://stackoverflow.com/questions/tagged/angular",
           "title": "Stack Overflow",
-          "tooltip": "Stack Overflow: where the community answers your technical Angular questions."
+          "tooltip": "Stack Overflow: \"Angular\"가 태그된 질문"
         },
         {
           "url": "https://gitter.im/angular/angular",
           "title": "Gitter",
-          "tooltip": "Chat about Angular with other birds of a feather."
+          "tooltip": "Angular를 주제로 채팅하기"
         },
         {
           "url": "https://github.com/angular/angular/issues",
-          "title": "Report Issues",
-          "tooltip": "Post issues and suggestions on github."
+          "title": "이슈 등록하기",
+          "tooltip": "github에 이슈 등록, 개선 제안하기."
         },
         {
           "url": "https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md",
@@ -490,13 +490,13 @@
       "children": [
         {
           "url": "events",
-          "title": "Events",
-          "tooltip": "Post issues and suggestions on github."
+          "title": "행사일정",
+          "tooltip": "github에 등록된 행사 일정 확인하기"
         },
         {
           "url": "http://www.meetup.com/topics/angularjs/",
-          "title": "Meetups",
-          "tooltip": "Attend a meetup and learn from fellow developers."
+          "title": "밋업",
+          "tooltip": "Angular 밋업 확인하기"
         },
         {
           "url": "https://twitter.com/angular",
@@ -510,8 +510,8 @@
         },
         {
           "url": "contribute",
-          "title": "Contribute",
-          "tooltip": "Contribute to Angular"
+          "title": "개발에 참여하기",
+          "tooltip": "Angular 개발에 참여하기"
         }
       ]
     },
