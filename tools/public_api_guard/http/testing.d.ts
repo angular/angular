@@ -1,8 +1,8 @@
 /** @deprecated */
 export declare class MockBackend implements ConnectionBackend {
-    connections: any;
+    connections: Subject<MockConnection>;
     connectionsArray: MockConnection[];
-    pendingConnections: any;
+    pendingConnections: Subject<MockConnection>;
     constructor();
     createConnection(req: Request): MockConnection;
     resolveAllConnections(): void;

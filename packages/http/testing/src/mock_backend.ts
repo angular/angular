@@ -195,9 +195,9 @@ export class MockConnection implements Connection {
 @Injectable()
 export class MockBackend implements ConnectionBackend {
   /**
-   * {@link EventEmitter}
-   * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
-   * to in order to respond to connections.
+   * {@link Subject} emitting {@link MockConnection} instances that have been created by this
+   * backend.
+   * Can be subscribed to in order to respond to connections.
    *
    * ### Example
    *
@@ -230,7 +230,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connections: any;  //<MockConnection>
+  connections: Subject<MockConnection>;
 
   /**
    * An array representation of `connections`. This array will be updated with each connection that
@@ -240,14 +240,14 @@ export class MockBackend implements ConnectionBackend {
    */
   connectionsArray: MockConnection[];
   /**
-   * {@link EventEmitter} of {@link MockConnection} instances that haven't yet been resolved (i.e.
+   * {@link Subject} emitting {@link MockConnection} instances that haven't yet been resolved (i.e.
    * with a `readyState`
    * less than 4). Used internally to verify that no connections are pending via the
    * `verifyNoPendingRequests` method.
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  pendingConnections: any;  // Subject<MockConnection>
+  pendingConnections: Subject<MockConnection>;
   constructor() {
     this.connectionsArray = [];
     this.connections = new Subject();
