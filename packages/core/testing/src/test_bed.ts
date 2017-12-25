@@ -115,6 +115,45 @@ export class TestBed implements Injector {
    */
   static compileComponents(): Promise<any> { return getTestBed().compileComponents(); }
 
+  /**
+   * Overrides an NgModule that is being used in a test module.
+   *
+   * ## Simple Example
+   *
+   * In this example, `FeatureModule` is imported into the testing module and then
+   * `FeatureComponent` is added to the `entryComponents` for the test.
+   *
+   * Through `MetadataOverride` it is possible to add, set, or remove properties of the NgModule
+   * metadata. Here, the property `entryComponents` is explicitly set to a fixed value.
+   *
+   * ```typescript
+   * @NgModule({
+   *   imports: [ CommonModule ],
+   *   declarations: [ FeatureComponent ]
+   * })
+   * class FeatureModule {}
+   *
+   * // 1. Imports `FeatureModule` into the testing module
+   * TestBed.configureTestingModule({
+   *   imports: [ FeatureModule ]
+   * });
+   * // 2. Override `FeatureModule` for the test
+   * TestBed.overrideModule(FeatureModule, {
+   *   set: {
+   *     entryComponents: [ FeatureComponent ]
+   *   }
+   * });
+   *
+   * const resolver: ComponentFactoryResolver = TestBed.get(ComponentFactoryResolver);
+   * const factory: ComponentFactory<FeatureComponent> =
+   *  resolver.resolveComponentFactory(FeatureComponent);
+   *
+   * expect(factory).toBeTruthy();
+   * ```
+   *
+   * @param ngModule The class token of the overridden NgModule
+   * @param override NgModule metadata that should be added/set/removed to the NgModule
+   */
   static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): typeof TestBed {
     getTestBed().overrideModule(ngModule, override);
     return TestBed;
