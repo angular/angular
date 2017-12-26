@@ -140,7 +140,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
   </tr>
   <tr style='vertical-align:top'>
     <td>
-      <code>ngOnDestroy</code>
+      <code>ngOnDestroy()</code>
     </td>
     <td>
 

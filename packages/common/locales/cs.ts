@@ -38,11 +38,8 @@ export default [
       'listopad', 'prosinec'
     ]
   ],
-  [
-    ['př.n.l.', 'n.l.'],
-    ['př. n. l.', 'n. l.'],
-  ],
-  1, [6, 0], ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
+  [['př.n.l.', 'n.l.'], ['př. n. l.', 'n. l.'], ['před naším letopočtem', 'našeho letopočtu']], 1,
+  [6, 0], ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
   ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   [
     '{1} {0}',

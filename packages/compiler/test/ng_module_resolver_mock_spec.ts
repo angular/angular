@@ -12,7 +12,7 @@ import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_refle
 
 import {MockNgModuleResolver} from '../testing';
 
-export function main() {
+{
   describe('MockNgModuleResolver', () => {
     let ngModuleResolver: MockNgModuleResolver;
 

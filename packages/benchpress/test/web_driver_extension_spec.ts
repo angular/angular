@@ -10,7 +10,7 @@ import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/te
 
 import {Injector, Options, WebDriverExtension} from '../index';
 
-export function main() {
+(function() {
   function createExtension(ids: any[], caps: any) {
     return new Promise<any>((res, rej) => {
       try {
@@ -45,7 +45,7 @@ export function main() {
          });
        }));
   });
-}
+})();
 
 class MockExtension extends WebDriverExtension {
   constructor(public id: string) { super(); }

@@ -15,7 +15,7 @@ import {MockStaticSymbolResolverHost} from './static_symbol_resolver_spec';
 import {MockAotSummaryResolverHost, createMockOutputContext} from './summary_resolver_spec';
 
 
-export function main() {
+{
   describe('summary serializer', () => {
     let summaryResolver: AotSummaryResolver;
     let symbolResolver: StaticSymbolResolver;
@@ -429,6 +429,42 @@ export function main() {
         symbol: symbolCache.get('/tmp/external.d.ts', 'lib'),
         importAs: symbolCache.get('someFile.ngfactory.d.ts', 'lib_1')
       }]);
+    });
+
+    describe('with resolved symbols', () => {
+      it('should be able to serialize a call', () => {
+        init();
+        const serialized = serializeSummaries(
+            'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
+              symbol: symbolCache.get('/tmp/test.ts', 'main'),
+              metadata: {
+                __symbolic: 'call',
+                expression:
+                    {__symbolic: 'resolved', symbol: symbolCache.get('/tmp/test2.ts', 'ref')}
+              }
+            }],
+            []);
+        expect(serialized.json).not.toContain('error');
+      });
+
+      it('should be able to serialize a call to a method', () => {
+        init();
+        const serialized = serializeSummaries(
+            'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
+              symbol: symbolCache.get('/tmp/test.ts', 'main'),
+              metadata: {
+                __symbolic: 'call',
+                expression: {
+                  __symbolic: 'select',
+                  expression:
+                      {__symbolic: 'resolved', symbol: symbolCache.get('/tmp/test2.ts', 'ref')},
+                  name: 'foo'
+                }
+              }
+            }],
+            []);
+        expect(serialized.json).not.toContain('error');
+      });
     });
   });
 }

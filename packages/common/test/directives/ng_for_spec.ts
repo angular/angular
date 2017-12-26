@@ -14,7 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 let thisArg: any;
 
-export function main() {
+{
   describe('ngFor', () => {
     let fixture: ComponentFixture<any>;
 

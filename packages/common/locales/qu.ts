@@ -24,10 +24,10 @@ export default [
   ,
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-    ['Qul', 'Hat', 'Pau', 'Ayr', 'Aym', 'Int', 'Ant', 'Qha', 'Uma', 'Kan', 'Aya', 'Kap'],
+    ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dic'],
     [
-      'Qulla puquy', 'Hatun puquy', 'Pauqar waray', 'Ayriwa', 'Aymuray', 'Inti raymi', 'Anta Sitwa',
-      'Qhapaq Sitwa', 'Uma raymi', 'Kantaray', 'Ayamarqʼa', 'Kapaq Raymi'
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Setiembre',
+      'Octubre', 'Noviembre', 'Diciembre'
     ]
   ],
   ,

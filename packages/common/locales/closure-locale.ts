@@ -97,8 +97,8 @@ export const locale_ar = [
   [['ص', 'م'], , ['صباحًا', 'مساءً']],
   [
     ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'],
-    ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
-    ,
+    ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'], ,
+    ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت']
   ],
   ,
   [
@@ -109,7 +109,7 @@ export const locale_ar = [
     ],
   ],
   , [['ق.م', 'م'], , ['قبل الميلاد', 'ميلادي']], 6, [5, 6],
-  ['d‏/M‏/y', 'dd‏/MM‏/y', 'd MMMM، y', 'EEEE، d MMMM، y'],
+  ['d‏/M‏/y', 'dd‏/MM‏/y', 'd MMMM y', 'EEEE، d MMMM y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
@@ -138,8 +138,8 @@ export const locale_ar_DZ = [
   [['ص', 'م'], , ['صباحًا', 'مساءً']],
   [
     ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'],
-    ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
-    ,
+    ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'], ,
+    ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت']
   ],
   ,
   [
@@ -150,7 +150,7 @@ export const locale_ar_DZ = [
     ],
   ],
   , [['ق.م', 'م'], , ['قبل الميلاد', 'ميلادي']], 6, [5, 6],
-  ['d‏/M‏/y', 'dd‏/MM‏/y', 'd MMMM، y', 'EEEE، d MMMM، y'],
+  ['d‏/M‏/y', 'dd‏/MM‏/y', 'd MMMM y', 'EEEE، d MMMM y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
@@ -296,13 +296,13 @@ export const locale_bg = [
   ],
   , [['пр.Хр.', 'сл.Хр.'], , ['преди Христа', 'след Христа']], 1, [6, 0],
   ['d.MM.yy \'г\'.', 'd.MM.y \'г\'.', 'd MMMM y \'г\'.', 'EEEE, d MMMM y \'г\'.'],
-  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  ['H:mm \'ч\'.', 'H:mm:ss \'ч\'.', 'H:mm:ss \'ч\'. z', 'H:mm:ss \'ч\'. zzzz'],
   [
     '{1}, {0}',
     ,
     ,
   ],
-  [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
+  [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '0.00 ¤', '#E0'], 'лв.', 'Български лев', function(n: number):
                                                                         number {
                                                                           if (n === 1) return 1;
@@ -345,11 +345,8 @@ export const locale_bn = [
       'নভেম্বর', 'ডিসেম্বর'
     ],
   ],
-  [
-    ['খ্রিস্টপূর্ব', 'খৃষ্টাব্দ'],
-    ,
-  ],
-  5, [6, 0], ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
+  [['খ্রিস্টপূর্ব', 'খৃষ্টাব্দ'], , ['খ্রিস্টপূর্ব', 'খ্রীষ্টাব্দ']], 5, [6, 0],
+  ['d/M/yy', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
@@ -453,7 +450,7 @@ export const locale_bs = [
     ]
   ],
   , [['p. n. e.', 'n. e.'], , ['prije nove ere', 'nove ere']], 1, [6, 0],
-  ['d.M.yy.', 'd. MMM. y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
+  ['d.M.yy.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
     '{1} {0}',
@@ -595,11 +592,8 @@ export const locale_cs = [
       'listopad', 'prosinec'
     ]
   ],
-  [
-    ['př.n.l.', 'n.l.'],
-    ['př. n. l.', 'n. l.'],
-  ],
-  1, [6, 0], ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
+  [['př.n.l.', 'n.l.'], ['př. n. l.', 'n. l.'], ['před naším letopočtem', 'našeho letopočtu']], 1,
+  [6, 0], ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],
   ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   [
     '{1} {0}',
@@ -735,7 +729,7 @@ export const locale_de = [
   'de',
   [
     ['vm.', 'nm.'],
-    ['vorm.', 'nachm.'],
+    ['AM', 'PM'],
   ],
   [
     ['vorm.', 'nachm.'],
@@ -792,9 +786,12 @@ export const locale_de_AT = [
   'de-AT',
   [
     ['vm.', 'nm.'],
+    ['AM', 'PM'],
+  ],
+  [
+    ['vm.', 'nm.'],
     ['vorm.', 'nachm.'],
   ],
-  ,
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
     ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
@@ -846,7 +843,7 @@ export const locale_de_CH = [
   'de-CH',
   [
     ['vm.', 'nm.'],
-    ['vorm.', 'nachm.'],
+    ['AM', 'PM'],
   ],
   [
     ['vorm.', 'nachm.'],
@@ -855,7 +852,7 @@ export const locale_de_CH = [
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
     ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
-    ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.']
+    ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
   ],
   [
     ['S', 'M', 'D', 'M', 'D', 'F', 'S'], ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
@@ -905,10 +902,7 @@ export const locale_el = [
     ['πμ', 'μμ'],
     ['π.μ.', 'μ.μ.'],
   ],
-  [
-    ['π.μ.', 'μ.μ.'],
-    ,
-  ],
+  ,
   [
     ['Κ', 'Δ', 'Τ', 'Τ', 'Π', 'Π', 'Σ'], ['Κυρ', 'Δευ', 'Τρί', 'Τετ', 'Πέμ', 'Παρ', 'Σάβ'],
     ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'],
@@ -953,7 +947,7 @@ export const locale_en_AU = [
     ['am', 'pm'],
     ,
   ],
-  [['am', 'pm'], ['AM', 'PM'], ['am', 'pm']],
+  ,
   [
     ['Su.', 'M.', 'Tu.', 'W.', 'Th.', 'F.', 'Sa.'],
     ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'],
@@ -977,7 +971,7 @@ export const locale_en_AU = [
     ,
     '{1} \'at\' {0}',
   ],
-  ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
+  ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', '.'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Australian Dollar',
   function(n: number):
       number {
@@ -991,18 +985,26 @@ export const locale_en_CA = [
   'en-CA',
   [
     ['a', 'p'],
-    ['AM', 'PM'],
+    ['a.m.', 'p.m.'],
   ],
   [
-    ['AM', 'PM'],
+    ['a.m.', 'p.m.'],
     ,
   ],
   [
-    ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'],
     ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
   ],
   ,
+  [
+    ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+    ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'],
+    [
+      'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
+      'October', 'November', 'December'
+    ]
+  ],
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -1011,7 +1013,7 @@ export const locale_en_CA = [
       'October', 'November', 'December'
     ]
   ],
-  , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
+  [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [6, 0],
   ['y-MM-dd', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
@@ -1019,7 +1021,7 @@ export const locale_en_CA = [
     ,
     '{1} \'at\' {0}',
   ],
-  ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+  ['.', ',', ';', '%', '+', '-', 'e', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'Canadian Dollar',
   function(n: number):
       number {
@@ -1134,7 +1136,7 @@ export const locale_en_IN = [
     ]
   ],
   , [['B', 'A'], ['BC', 'AD'], ['Before Christ', 'Anno Domini']], 0, [0, 0],
-  ['dd/MM/yy', 'dd-MMM-y', 'd MMMM y', 'EEEE d MMMM y'],
+  ['dd/MM/yy', 'dd-MMM-y', 'd MMMM y', 'EEEE, d MMMM, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1}, {0}',
@@ -1296,16 +1298,6 @@ export const locale_es_419 = [
     ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
   ],
   [
-    ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
-    [
-      'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.', 'dic.'
-    ],
-    [
-      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
-      'octubre', 'noviembre', 'diciembre'
-    ]
-  ],
-  [
     ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     [
       'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.', 'dic.'
@@ -1315,7 +1307,7 @@ export const locale_es_419 = [
       'octubre', 'noviembre', 'diciembre'
     ]
   ],
-  [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 1, [6, 0],
+  , [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 1, [6, 0],
   ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
@@ -1349,7 +1341,7 @@ export const locale_es_MX = [
     ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
   ],
   [
-    ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
+    ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
     [
       'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
@@ -1367,19 +1359,19 @@ export const locale_es_MX = [
     ]
   ],
   [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
-  ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  ['dd/MM/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+  ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   [
     '{1} {0}',
     ,
     '{1}, {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'peso mexicano', function(n: number):
-                                                                         number {
-                                                                           if (n === 1) return 1;
-                                                                           return 5;
-                                                                         }
+  ['#,##0.###', '#,##0 %', '¤#,##0.00', '#E0'], '$', 'peso mexicano', function(n: number):
+                                                                          number {
+                                                                            if (n === 1) return 1;
+                                                                            return 5;
+                                                                          }
 ];
 
 export const locale_es_US = [
@@ -1390,25 +1382,11 @@ export const locale_es_US = [
   ],
   ,
   [
-    ['d', 'l', 'm', 'm', 'j', 'v', 's'], ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
-    ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
-    ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
-  ],
-  [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dom.', 'lun.', 'mar.', 'mié.', 'jue.', 'vie.', 'sáb.'],
     ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'],
     ['DO', 'LU', 'MA', 'MI', 'JU', 'VI', 'SA']
   ],
-  [
-    ['e', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
-    [
-      'ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sep.', 'oct.', 'nov.', 'dic.'
-    ],
-    [
-      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre',
-      'octubre', 'noviembre', 'diciembre'
-    ]
-  ],
+  ,
   [
     ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     [
@@ -1419,7 +1397,7 @@ export const locale_es_US = [
       'octubre', 'noviembre', 'diciembre'
     ]
   ],
-  [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
+  , [['a. C.', 'd. C.'], , ['antes de Cristo', 'después de Cristo']], 0, [6, 0],
   ['d/M/yy', 'd MMM y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
@@ -1478,10 +1456,13 @@ export const locale_et = [
 export const locale_eu = [
   'eu',
   [
+    ['g', 'a'],
+    ['AM', 'PM'],
+  ],
+  [
     ['AM', 'PM'],
     ,
   ],
-  ,
   [
     ['I', 'A', 'A', 'A', 'O', 'O', 'L'], ['ig.', 'al.', 'ar.', 'az.', 'og.', 'or.', 'lr.'],
     ['igandea', 'astelehena', 'asteartea', 'asteazkena', 'osteguna', 'ostirala', 'larunbata'],
@@ -1513,14 +1494,17 @@ export const locale_eu = [
     ]
   ],
   [['K.a.', 'K.o.'], , ['K.a.', 'Kristo ondoren']], 1, [6, 0],
-  ['yy/M/d', 'y MMM d', 'y(\'e\')\'ko\' MMMM d', 'y(\'e\')\'ko\' MMMM d, EEEE'],
+  [
+    'yy/M/d', 'y MMM d', 'y(\'e\')\'ko\' MMMM\'ren\' d(\'a\')',
+    'y(\'e\')\'ko\' MMMM\'ren\' d(\'a\'), EEEE'
+  ],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss (z)', 'HH:mm:ss (zzzz)'],
   [
     '{1} {0}',
     ,
     ,
   ],
-  [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
+  [',', '.', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '% #,##0', '#,##0.00 ¤', '#E0'], '€', 'euroa', function(n: number):
                                                                    number {
                                                                      if (n === 1) return 1;
@@ -1678,8 +1662,8 @@ export const locale_fr_CA = [
     ['a.m.', 'p.m.'],
   ],
   [
-    ['AM', 'PM'],
     ['a.m.', 'p.m.'],
+    ,
   ],
   [
     ['D', 'L', 'M', 'M', 'J', 'V', 'S'], ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'],
@@ -1700,7 +1684,10 @@ export const locale_fr_CA = [
   ],
   , [['av. J.-C.', 'ap. J.-C.'], , ['avant Jésus-Christ', 'après Jésus-Christ']], 0, [6, 0],
   ['yy-MM-dd', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH \'h\' mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  [
+    'HH \'h\' mm', 'HH \'h\' mm \'min\' ss \'s\'', 'HH \'h\' mm \'min\' ss \'s\' z',
+    'HH \'h\' mm \'min\' ss \'s\' zzzz'
+  ],
   [
     '{1} {0}',
     ,
@@ -1720,9 +1707,12 @@ export const locale_ga = [
   'ga',
   [
     ['a', 'p'],
+    ['r.n.', 'i.n.'],
+  ],
+  [
+    ['a', 'p'],
     ['a.m.', 'p.m.'],
   ],
-  ,
   [
     ['D', 'L', 'M', 'C', 'D', 'A', 'S'], ['Domh', 'Luan', 'Máirt', 'Céad', 'Déar', 'Aoine', 'Sath'],
     [
@@ -1773,7 +1763,7 @@ export const locale_gl = [
     ['d.', 'l.', 'm.', 'm.', 'x.', 'v.', 's.'],
     ['dom.', 'luns', 'mar.', 'mér.', 'xov.', 'ven.', 'sáb.'],
     ['domingo', 'luns', 'martes', 'mércores', 'xoves', 'venres', 'sábado'],
-    ['dom.', 'luns', 'mar.', 'mér.', 'xov.', 'ven.', 'sáb.']
+    ['do.', 'lu.', 'ma.', 'mé.', 'xo.', 've.', 'sá.']
   ],
   [
     ['D', 'L', 'M', 'M', 'X', 'V', 'S'], ['Dom.', 'Luns', 'Mar.', 'Mér.', 'Xov.', 'Ven.', 'Sáb.'],
@@ -1801,7 +1791,7 @@ export const locale_gl = [
     ]
   ],
   [['a.C.', 'd.C.'], , ['antes de Cristo', 'despois de Cristo']], 1, [6, 0],
-  ['dd/MM/yy', 'd \'de\' MMM \'de\' y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
+  ['dd/MM/yy', 'dd/MM/y', 'd \'de\' MMMM \'de\' y', 'EEEE, d \'de\' MMMM \'de\' y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
     '{0}, {1}',
@@ -1847,7 +1837,7 @@ export const locale_gsw = [
     ,
     ,
   ],
-  ['.', '’', ';', '%', '+', '−', 'E', '×', '‰', '∞', 'NaN', ':'],
+  ['.', '’', ';', '%', '+', '���', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'CHF', 'Schwiizer Franke', function(n: number):
                                                                                 number {
                                                                                   if (n === 1)
@@ -1883,7 +1873,7 @@ export const locale_gu = [
   [
     '{1} {0}',
     ,
-    ,
+    '{1} એ {0} વાગ્યે',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '[#E0]'], '₹', 'ભારતીય રૂપિયા',
@@ -1958,7 +1948,7 @@ export const locale_hi = [
     ]
   ],
   , [['ईसा-पूर्व', 'ईस्वी'], , ['ईसा-पूर्व', 'ईसवी सन']], 0, [0, 0],
-  ['d/M/yy', 'dd/MM/y', 'd MMMM y', 'EEEE, d MMMM y'],
+  ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1}, {0}',
@@ -2057,8 +2047,8 @@ export const locale_hu = [
       'szeptember', 'október', 'november', 'december'
     ]
   ],
-  , [['ie.', 'isz.'], ['i. e.', 'i. sz.'], ['időszámításunk előtt', 'időszámításunk szerint']], 1,
-  [6, 0], ['y. MM. dd.', 'y. MMM d.', 'y. MMMM d.', 'y. MMMM d., EEEE'],
+  , [['ie.', 'isz.'], ['i. e.', 'i. sz.'], ['Krisztus előtt', 'időszámításunk szerint']], 1, [6, 0],
+  ['y. MM. dd.', 'y. MMM d.', 'y. MMMM d.', 'y. MMMM d., EEEE'],
   ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   [
     '{1} {0}',
@@ -2074,7 +2064,15 @@ export const locale_hu = [
 ];
 
 export const locale_hy = [
-  'hy', [['ա', 'հ'], ['ԿԱ', 'ԿՀ'], ['AM', 'PM']], [['ԿԱ', 'ԿՀ'], , ['AM', 'PM']],
+  'hy',
+  [
+    ['ա', 'հ'],
+    ['ԿԱ', 'ԿՀ'],
+  ],
+  [
+    ['ԿԱ', 'ԿՀ'],
+    ,
+  ],
   [
     ['Կ', 'Ե', 'Ե', 'Չ', 'Հ', 'Ո', 'Շ'], ['կիր', 'երկ', 'երք', 'չրք', 'հնգ', 'ուր', 'շբթ'],
     ['կիրակի', 'երկուշաբթի', 'երեքշաբթի', 'չորեքշաբթի', 'հինգշաբթի', 'ուրբաթ', 'շաբաթ'],
@@ -2106,7 +2104,7 @@ export const locale_hy = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ՈչԹ', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '֏', 'Հայկական դրամ',
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '֏', 'հայկական դրամ',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n));
@@ -2217,7 +2215,7 @@ export const locale_it = [
     ]
   ],
   , [['aC', 'dC'], ['a.C.', 'd.C.'], ['avanti Cristo', 'dopo Cristo']], 1, [6, 0],
-  ['dd/MM/yy', 'dd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
+  ['dd/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
     '{1}, {0}',
@@ -2240,7 +2238,10 @@ export const locale_iw = [
     ['לפנה״צ', 'אחה״צ'],
     ,
   ],
-  ,
+  [
+    ['לפנה״צ', 'אחה״צ'],
+    ['AM', 'PM'],
+  ],
   [
     ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'],
     ['יום א׳', 'יום ב׳', 'יום ג׳', 'יום ד׳', 'יום ה׳', 'יום ו׳', 'שבת'],
@@ -2340,11 +2341,11 @@ export const locale_ka = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'არ არის რიცხვი', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₾', 'ქართული ლარი', function(n: number):
-                                                                            number {
-                                                                              if (n === 1) return 1;
-                                                                              return 5;
-                                                                            }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₾', 'ქართული ლარი', function(n: number):
+                                                                           number {
+                                                                             if (n === 1) return 1;
+                                                                             return 5;
+                                                                           }
 ];
 
 export const locale_kk = [
@@ -2384,7 +2385,7 @@ export const locale_kk = [
       'Қазан', 'Қараша', 'Желтоқсан'
     ]
   ],
-  [['б.з.д.', 'б.з.'], , ['Біздің заманымызға дейін', 'Біздің заманымыз']], 1, [6, 0],
+  [['б.з.д.', 'б.з.'], , ['Біздің заманымызға дейін', 'біздің заманымыз']], 1, [6, 0],
   ['dd.MM.yy', 'y \'ж\'. dd MMM', 'y \'ж\'. d MMMM', 'y \'ж\'. d MMMM, EEEE'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
@@ -2451,13 +2452,21 @@ export const locale_kn = [
   ,
   [
     ['ಜ', 'ಫೆ', 'ಮಾ', 'ಏ', 'ಮೇ', 'ಜೂ', 'ಜು', 'ಆ', 'ಸೆ', 'ಅ', 'ನ', 'ಡಿ'],
+    ['ಜನವರಿ', 'ಫೆಬ್ರವರಿ', 'ಮಾರ್ಚ್', 'ಏಪ್ರಿ', 'ಮೇ', 'ಜೂನ್', 'ಜುಲೈ', 'ಆಗ', 'ಸೆಪ್ಟೆಂ', 'ಅಕ್ಟೋ', 'ನವೆಂ', 'ಡಿಸೆಂ'],
+    [
+      'ಜನವರಿ', 'ಫೆಬ್ರವರಿ', 'ಮಾರ್ಚ್', 'ಏಪ್ರಿಲ್', 'ಮೇ', 'ಜೂನ್', 'ಜುಲೈ', 'ಆಗಸ್ಟ್', 'ಸೆಪ್ಟೆಂಬರ್', 'ಅಕ್ಟೋಬರ್', 'ನವೆಂಬರ್',
+      'ಡಿಸೆಂಬರ್'
+    ]
+  ],
+  [
+    ['ಜ', 'ಫೆ', 'ಮಾ', 'ಏ', 'ಮೇ', 'ಜೂ', 'ಜು', 'ಆ', 'ಸೆ', 'ಅ', 'ನ', 'ಡಿ'],
     ['ಜನ', 'ಫೆಬ್ರ', 'ಮಾರ್ಚ್', 'ಏಪ್ರಿ', 'ಮೇ', 'ಜೂನ್', 'ಜುಲೈ', 'ಆಗ', 'ಸೆಪ್ಟೆಂ', 'ಅಕ್ಟೋ', 'ನವೆಂ', 'ಡಿಸೆಂ'],
     [
       'ಜನವರಿ', 'ಫೆಬ್ರವರಿ', 'ಮಾರ್ಚ್', 'ಏಪ್ರಿಲ್', 'ಮೇ', 'ಜೂನ್', 'ಜುಲೈ', 'ಆಗಸ್ಟ್', 'ಸೆಪ್ಟೆಂಬರ್', 'ಅಕ್ಟೋಬರ್', 'ನವೆಂಬರ್',
       'ಡಿಸೆಂಬರ್'
     ]
   ],
-  , [['ಕ್ರಿ.ಪೂ', 'ಕ್ರಿ.ಶ'], , ['ಕ್ರಿಸ್ತ ಪೂರ್ವ', 'ಕ್ರಿಸ್ತ ಶಕ']], 0, [0, 0],
+  [['ಕ್ರಿ.ಪೂ', 'ಕ್ರಿ.ಶ'], , ['ಕ್ರಿಸ್ತ ಪೂರ್ವ', 'ಕ್ರಿಸ್ತ ಶಕ']], 0, [0, 0],
   ['d/M/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
   ['hh:mm a', 'hh:mm:ss a', 'hh:mm:ss a z', 'hh:mm:ss a zzzz'],
   [
@@ -2690,7 +2699,7 @@ export const locale_lt = [
 
 export const locale_lv = [
   'lv', [['priekšp.', 'pēcp.'], , ['priekšpusdienā', 'pēcpusdienā']],
-  [['priekšp.', 'pēcp.'], ['priekšp.', 'pēcpusd.'], ['priekšpusdiena', 'pēcpusdiena']],
+  [['priekšp.', 'pēcpusd.'], , ['priekšpusdiena', 'pēcpusdiena']],
   [
     ['S', 'P', 'O', 'T', 'C', 'P', 'S'],
     ['svētd.', 'pirmd.', 'otrd.', 'trešd.', 'ceturtd.', 'piektd.', 'sestd.'],
@@ -2809,14 +2818,6 @@ export const locale_ml = [
     ['ഞാ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ']
   ],
   [
-    ['ജ', 'ഫ', 'മാ', 'ഏ', 'മെ', 'ജൂൺ', 'ജൂ', 'ഓ', 'സെ', 'ഒ', 'ന', 'ഡി'],
-    ['ജനു', 'ഫെബ്രു', 'മാർ', 'ഏപ്രി', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗ', 'സെപ്റ്റം', 'ഒക്ടോ', 'നവം', 'ഡിസം'],
-    [
-      'ജനുവരി', 'ഫെബ്രുവരി', 'മാർച്ച്', 'ഏപ്രിൽ', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗസ്റ്റ്', 'സെപ്റ്റംബർ',
-      'ഒക്‌ടോബർ', 'നവംബർ', 'ഡിസംബർ'
-    ]
-  ],
-  [
     ['ജ', 'ഫെ', 'മാ', 'ഏ', 'മെ', 'ജൂൺ', 'ജൂ', 'ഓ', 'സെ', 'ഒ', 'ന', 'ഡി'],
     ['ജനു', 'ഫെബ്രു', 'മാർ', 'ഏപ്രി', 'മേയ്', 'ജൂൺ', 'ജൂലൈ', 'ഓഗ', 'സെപ്റ്റം', 'ഒക്ടോ', 'നവം', 'ഡിസം'],
     [
@@ -2824,6 +2825,7 @@ export const locale_ml = [
       'ഒക്‌ടോബർ', 'നവംബർ', 'ഡിസംബർ'
     ]
   ],
+  ,
   [
     ['ക്രി.മു.', 'എഡി'], ,
     ['ക്രിസ്‌തുവിന് മുമ്പ്', 'ആന്നോ ഡൊമിനി']
@@ -2856,23 +2858,23 @@ export const locale_mn = [
   ],
   ,
   [
-    ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+    ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'],
     [
       '1-р сар', '2-р сар', '3-р сар', '4-р сар', '5-р сар', '6-р сар', '7-р сар', '8-р сар',
       '9-р сар', '10-р сар', '11-р сар', '12-р сар'
     ],
     [
       'Нэгдүгээр сар', 'Хоёрдугаар сар', 'Гуравдугаар сар', 'Дөрөвдүгээр сар', 'Тавдугаар сар',
-      'Зургадугаар сар', 'Долдугаар сар', 'Наймдугаар сар', 'Есдүгээр сар', 'Аравдугаар сар',
+      'Зургаадугаар сар', 'Долдугаар сар', 'Наймдугаар сар', 'Есдүгээр сар', 'Аравдугаар сар',
       'Арван нэгдүгээр сар', 'Арван хоёрдугаар сар'
     ]
   ],
-  , [['МЭӨ', 'МЭ'], ['м.э.ө', 'м.э.'], ['манай эриний өмнөх', 'манай эриний']], 1, [6, 0],
-  ['y-MM-dd', 'y MMM d', 'y\'оны\' MMMM\'сарын\' d\'өдөр\'', 'EEEE, y \'оны\' MM \'сарын\' d'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
+  , [['МЭӨ', 'МЭ'], , ['манай эриний өмнөх', 'манай эриний']], 1, [6, 0],
+  ['y.MM.dd', , 'y \'оны\' MMM\'ын\' d', 'y \'оны\' MMM\'ын\' d. EEEE \'гараг\'.'],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss (z)', 'HH:mm:ss (zzzz)'],
   [
-    '{1}, {0}',
     '{1} {0}',
+    ,
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
@@ -2998,9 +3000,9 @@ export const locale_ms = [
   1, [6, 0], ['d/MM/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
+    '{1}, {0}',
+    ,
     '{1} {0}',
-    ,
-    ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'RM', 'Ringgit Malaysia',
@@ -3081,15 +3083,15 @@ export const locale_my = [
     ]
   ],
   , [['ဘီစီ', 'အေဒီ'], , ['ခရစ်တော် မပေါ်မီနှစ်', 'ခရစ်နှစ်']], 0, [6, 0],
-  ['dd-MM-yy', 'd MMM y', 'd MMMM y', 'EEEE d MMMM y'],
-  ['HH:mm', 'HH:mm:ss', 'z HH:mm:ss', 'zzzz HH:mm:ss'],
+  ['dd-MM-yy', 'y၊ MMM d', 'y၊ d MMMM', 'y၊ MMMM d၊ EEEE'],
+  ['B H:mm', 'B HH:mm:ss', 'z HH:mm:ss', 'zzzz HH:mm:ss'],
   [
     '{1} {0}',
     ,
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ဂဏန်းမဟုတ်သော', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'K', 'မြန်မာကျပ်',
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'K', 'မြန်မာ ကျပ်',
   function(n: number): number { return 5;}
 ];
 
@@ -3107,18 +3109,14 @@ export const locale_ne = [
   ],
   ,
   [
-    ['१', '२', '३', '४', '५', '६', '७', '८', '९', '१०', '११', '१२'],
+    ['जन', 'फेब', 'मार्च', 'अप्र', 'मे', 'जुन', 'जुल', 'अग', 'सेप', 'अक्टो', 'नोभे', 'डिसे'],
     [
       'जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'मे', 'जुन', 'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर', 'नोभेम्बर',
       'डिसेम्बर'
     ],
-    [
-      'जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'मई', 'जुन', 'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर', 'नोभेम्बर',
-      'डिसेम्बर'
-    ]
   ],
   [
-    ['१', '२', '३', '४', '५', '६', '७', '८', '९', '१०', '११', '१२'],
+    ['जन', 'फेेब', 'मार्च', 'अप्र', 'मे', 'जुन', 'जुल', 'अग', 'सेप', 'अक्टो', 'नोभे', 'डिसे'],
     [
       'जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'मे', 'जुन', 'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर', 'नोभेम्बर',
       'डिसेम्बर'
@@ -3128,7 +3126,7 @@ export const locale_ne = [
     ['ईसा पूर्व', 'सन्'],
     ,
   ],
-  0, [6, 0], ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
+  0, [6, 0], ['yy/M/d', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
   [
     '{1}, {0}',
@@ -3227,12 +3225,11 @@ export const locale_no = [
 ];
 
 export const locale_or = [
-  'or',
+  'or', [['ପୂ', 'ଅ'], ['am', 'pm'], ['AM', 'PM']],
   [
-    ['am', 'pm'],
-    ,
+    ['AM', 'ଅପରାହ୍ନ'],
+    ['ପୂର୍ବାହ୍ନ', 'ଅପରାହ୍ନ'],
   ],
-  ,
   [
     ['ର', 'ସୋ', 'ମ', 'ବୁ', 'ଗୁ', 'ଶୁ', 'ଶ'], ['ରବି', 'ସୋମ', 'ମଙ୍ଗଳ', 'ବୁଧ', 'ଗୁରୁ', 'ଶୁକ୍ର', 'ଶନି'],
     ['ରବିବାର', 'ସୋମବାର', 'ମଙ୍ଗଳବାର', 'ବୁଧବାର', 'ଗୁରୁବାର', 'ଶୁକ୍ରବାର', 'ଶନିବାର'],
@@ -3246,20 +3243,16 @@ export const locale_or = [
       'ନଭେମ୍ବର', 'ଡିସେମ୍ବର'
     ],
   ],
-  ,
-  [
-    ['BCE', 'CE'],
-    ,
-  ],
-  0, [0, 0], ['d-M-yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
+  , [['BC', 'AD'], , ['ଖ୍ରୀଷ୍ଟପୂର୍ବ', 'ଖ୍ରୀଷ୍ଟାବ୍ଦ']], 0, [0, 0],
+  ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
-    '{1} {0}',
+    '{1}, {0}',
     ,
-    ,
+    '{0} ଠାରେ {1}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'ଟଙକା', function(n: number):
+  ['#,##,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], '₹', 'ଟଙ୍କା', function(n: number):
                                                                           number {
                                                                             if (n === 1) return 1;
                                                                             return 5;
@@ -3397,7 +3390,7 @@ export const locale_pt = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'R$', 'Real brasileiro',
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'R$', 'Real brasileiro',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n));
@@ -3435,7 +3428,7 @@ export const locale_pt_PT = [
     '{1} \'às\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'Euro',
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '€', 'euro',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n));
@@ -3491,7 +3484,7 @@ export const locale_ro = [
 export const locale_ru = [
   'ru',
   [
-    ['ДП', 'ПП'],
+    ['AM', 'PM'],
     ,
   ],
   ,
@@ -3536,7 +3529,7 @@ export const locale_ru = [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'не число', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₽', 'Российский рубль',
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₽', 'российский рубль',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
@@ -3684,7 +3677,7 @@ export const locale_sk = [
     ]
   ],
   [['pred Kr.', 'po Kr.'], , ['pred Kristom', 'po Kristovi']], 1, [6, 0],
-  ['d. M. y', , 'd. MMMM y', 'EEEE, d. MMMM y'], ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
+  ['d. M. y', , 'd. MMMM y', 'EEEE d. MMMM y'], ['H:mm', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   [
     '{1} {0}',
     '{1}, {0}',
@@ -3756,26 +3749,26 @@ export const locale_sq = [
     ,
   ],
   [
-    ['D', 'H', 'M', 'M', 'E', 'P', 'S'], ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht'],
+    ['D', 'H', 'M', 'M', 'E', 'P', 'Sh'], ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht'],
     ['e diel', 'e hënë', 'e martë', 'e mërkurë', 'e enjte', 'e premte', 'e shtunë'],
     ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht']
   ],
   [
-    ['D', 'H', 'M', 'M', 'E', 'P', 'S'], ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht'],
+    ['D', 'H', 'M', 'M', 'E', 'P', 'Sh'], ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht'],
     ['E diel', 'E hënë', 'E martë', 'E mërkurë', 'E enjte', 'E premte', 'E shtunë'],
     ['Die', 'Hën', 'Mar', 'Mër', 'Enj', 'Pre', 'Sht']
   ],
   [
-    ['j', 's', 'm', 'p', 'm', 'q', 'k', 'g', 's', 't', 'n', 'd'],
-    ['jan', 'shk', 'mar', 'pri', 'maj', 'qer', 'kor', 'gsh', 'sht', 'tet', 'nën', 'dhj'],
+    ['j', 'sh', 'm', 'p', 'm', 'q', 'k', 'g', 'sh', 't', 'n', 'dh'],
+    ['jan', 'shk', 'mar', 'pri', 'maj', 'qer', 'korr', 'gush', 'sht', 'tet', 'nën', 'dhj'],
     [
       'janar', 'shkurt', 'mars', 'prill', 'maj', 'qershor', 'korrik', 'gusht', 'shtator', 'tetor',
       'nëntor', 'dhjetor'
     ]
   ],
   [
-    ['J', 'S', 'M', 'P', 'M', 'Q', 'K', 'G', 'S', 'T', 'N', 'D'],
-    ['Jan', 'Shk', 'Mar', 'Pri', 'Maj', 'Qer', 'Kor', 'Gsh', 'Sht', 'Tet', 'Nën', 'Dhj'],
+    ['J', 'Sh', 'M', 'P', 'M', 'Q', 'K', 'G', 'Sh', 'T', 'N', 'Dh'],
+    ['Jan', 'Shk', 'Mar', 'Pri', 'Maj', 'Qer', 'Korr', 'Gush', 'Sht', 'Tet', 'Nën', 'Dhj'],
     [
       'Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor', 'Korrik', 'Gusht', 'Shtator', 'Tetor',
       'Nëntor', 'Dhjetor'
@@ -3887,10 +3880,14 @@ export const locale_sv = [
 ];
 
 export const locale_sw = [
-  'sw', [['am', 'pm'], ['AM', 'PM'], ['Asubuhi', 'Mchana']],
+  'sw',
   [
     ['am', 'pm'],
     ['AM', 'PM'],
+  ],
+  [
+    ['AM', 'PM'],
+    ,
   ],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -3987,21 +3984,13 @@ export const locale_te = [
       'డిసెంబర్'
     ]
   ],
-  [
-    ['జ', 'ఫి', 'మా', 'ఏ', 'మే', 'జూ', 'జు', 'ఆ', 'సె', 'అ', 'న', 'డి'],
-    ['జన', 'ఫిబ్ర', 'మార్చి', 'ఏప్రి', 'మే', 'జూన్', 'జులై', 'ఆగస్టు', 'సెప్టెం', 'అక్టో', 'నవం', 'డిసెం'],
-    [
-      'జనవరి', 'ఫిబ్రవరి', 'మార్చి', 'ఏప్రిల్', 'మే', 'జూన్', 'జులై', 'ఆగస్టు', 'సెప్టెంబర్', 'అక్టోబర్', 'నవంబర్',
-      'డిసెంబర్'
-    ]
-  ],
-  [['క్రీపూ', 'క్రీశ'], , ['క్రీస్తు పూర్వం', 'క్రీస్తు శకం']], 0, [0, 0],
+  , [['క్రీపూ', 'క్రీశ'], , ['క్రీస్తు పూర్వం', 'క్రీస్తు శకం']], 0, [0, 0],
   ['dd-MM-yy', 'd MMM, y', 'd MMMM, y', 'd, MMMM y, EEEE'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
     ,
-    ,
+    '{1} {0}కి',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##,##0.###', '#,##0%', '¤#,##,##0.00', '#E0'], '₹', 'రూపాయి', function(n: number):
@@ -4047,7 +4036,7 @@ export const locale_th = [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'THB', 'บาทไทย',
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'THB', 'บาท',
   function(n: number): number { return 5;}
 ];
 
@@ -4082,11 +4071,8 @@ export const locale_tl = [
       'Oktubre', 'Nobyembre', 'Disyembre'
     ]
   ],
-  [
-    ['BC', 'AD'],
-    ,
-  ],
-  0, [6, 0], ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+  [['BC', 'AD'], , ['Before Christ', 'Anno Domini']], 0, [6, 0],
+  ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1}, {0}',
@@ -4216,7 +4202,7 @@ export const locale_ur = [
   ],
   [
     ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    ['اتوار', 'سوموار', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'],
+    ['اتوار', 'پیر', 'منگل', 'بدھ', 'جمعرات', 'جمعہ', 'ہفتہ'],
     ,
   ],
   ,
@@ -4232,7 +4218,7 @@ export const locale_ur = [
     ['قبل مسیح', 'عیسوی'],
     ,
   ],
-  0, [6, 0], ['d/M/yy', 'y MMM d', 'd MMMM، y', 'EEEE، d MMMM، y'],
+  0, [6, 0], ['d/M/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1} {0}',
@@ -4240,7 +4226,7 @@ export const locale_ur = [
     ,
   ],
   ['.', ',', ';', '%', '‎+', '‎-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##,##0%', '¤ #,##,##0.00', '#E0'], 'Rs', 'پاکستانی روپیہ',
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'Rs', 'پاکستانی روپیہ',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
@@ -4286,7 +4272,7 @@ export const locale_uz = [
     ,
     ,
   ],
-  [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'haqiqiy son emas', ':'],
+  [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'son emas', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi', function(n: number):
                                                                                  number {
                                                                                    if (n === 1)
@@ -4346,7 +4332,7 @@ export const locale_vi = [
     '{0} {1}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '₫', 'Đồng Việt Nam',
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₫', 'Đồng Việt Nam',
   function(n: number): number { return 5;}
 ];
 
@@ -4504,7 +4490,10 @@ export const locale_zu = [
     ['a', 'p'],
     ['AM', 'PM'],
   ],
-  ,
+  [
+    ['AM', 'PM'],
+    ,
+  ],
   [
     ['S', 'M', 'B', 'T', 'S', 'H', 'M'], ['Son', 'Mso', 'Bil', 'Tha', 'Sin', 'Hla', 'Mgq'],
     ['ISonto', 'UMsombuluko', 'ULwesibili', 'ULwesithathu', 'ULwesine', 'ULwesihlanu', 'UMgqibelo'],
@@ -4515,8 +4504,8 @@ export const locale_zu = [
     ['J', 'F', 'M', 'E', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['Jan', 'Feb', 'Mas', 'Eph', 'Mey', 'Jun', 'Jul', 'Aga', 'Sep', 'Okt', 'Nov', 'Dis'],
     [
-      'UMasingana', 'Februwari', 'Mashi', 'Ephreli', 'Meyi', 'Juni', 'Julayi', 'Agasti',
-      'Septhemba', 'Okthoba', 'Novemba', 'Disemba'
+      'Januwari', 'Februwari', 'Mashi', 'Ephreli', 'Meyi', 'Juni', 'Julayi', 'Agasti', 'Septhemba',
+      'Okthoba', 'Novemba', 'Disemba'
     ]
   ],
   [

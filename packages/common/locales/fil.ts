@@ -40,11 +40,8 @@ export default [
       'Oktubre', 'Nobyembre', 'Disyembre'
     ]
   ],
-  [
-    ['BC', 'AD'],
-    ,
-  ],
-  0, [6, 0], ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
+  [['BC', 'AD'], , ['Before Christ', 'Anno Domini']], 0, [6, 0],
+  ['M/d/yy', 'MMM d, y', 'MMMM d, y', 'EEEE, MMMM d, y'],
   ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
   [
     '{1}, {0}',

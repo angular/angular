@@ -91,7 +91,8 @@ describe('Symbols', () => {
   });
 
   it('should be able to resolve any symbol in core global scope', () => {
-    const core = program.getSourceFiles().find(source => source.fileName.endsWith('lib.d.ts'));
+    const core = (program.getSourceFiles() as ts.SourceFile[])
+                     .find(source => source.fileName.endsWith('lib.d.ts'));
     expect(core).toBeDefined();
     const visit = (node: ts.Node): boolean => {
       switch (node.kind) {

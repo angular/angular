@@ -49,10 +49,10 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngModel],[formControl],[formControlName]',
   host: {
-    '(input)': '_handleInput($event.target.value)',
+    '(input)': '$any(this)._handleInput($event.target.value)',
     '(blur)': 'onTouched()',
-    '(compositionstart)': '_compositionStart()',
-    '(compositionend)': '_compositionEnd($event.target.value)'
+    '(compositionstart)': '$any(this)._compositionStart()',
+    '(compositionend)': '$any(this)._compositionEnd($event.target.value)'
   },
   providers: [DEFAULT_VALUE_ACCESSOR]
 })

@@ -276,6 +276,7 @@ export abstract class AssetGroup {
     const cache = await this.cache;
     // Start with the set of all cached URLs.
     return (await cache.keys())
+        .map(request => request.url)
         // Exclude the URLs which have hashes.
         .filter(url => !this.hashes.has(url));
   }

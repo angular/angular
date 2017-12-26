@@ -391,6 +391,22 @@ describe('ng program', () => {
     testSupport.shouldExist('built/src/main.ngfactory.d.ts');
   });
 
+  it('should work with tsx files', () => {
+    // create a temporary ts program to get the list of all files from angular...
+    testSupport.writeFiles({
+      'src/main.tsx': createModuleAndCompSource('main'),
+    });
+    const allRootNames = resolveFiles([path.resolve(testSupport.basePath, 'src/main.tsx')]);
+
+    const program = compile(undefined, {jsx: ts.JsxEmit.React}, allRootNames);
+
+    testSupport.shouldExist('built/src/main.js');
+    testSupport.shouldExist('built/src/main.d.ts');
+    testSupport.shouldExist('built/src/main.ngfactory.js');
+    testSupport.shouldExist('built/src/main.ngfactory.d.ts');
+    testSupport.shouldExist('built/src/main.ngsummary.json');
+  });
+
   it('should emit also empty generated files depending on the options', () => {
     testSupport.writeFiles({
       'src/main.ts': `
@@ -415,14 +431,15 @@ describe('ng program', () => {
     });
     const host = ng.createCompilerHost({options});
     const written = new Map < string, {
-      original: ts.SourceFile[]|undefined;
+      original: ReadonlyArray<ts.SourceFile>|undefined;
       data: string;
     }
     > ();
 
     host.writeFile =
         (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError?: (message: string) => void, sourceFiles?: ts.SourceFile[]) => {
+         onError: (message: string) => void|undefined,
+         sourceFiles: ReadonlyArray<ts.SourceFile>) => {
           written.set(fileName, {original: sourceFiles, data});
         };
     const program = ng.createProgram(
@@ -437,7 +454,8 @@ describe('ng program', () => {
                  sf => sf.fileName === path.join(testSupport.basePath, checks.originalFileName)))
           .toBe(true);
       if (checks.shouldBeEmpty) {
-        expect(writeData !.data).toBe('');
+        // The file should only contain comments (the preamble comment added by ngc).
+        expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
       } else {
         expect(writeData !.data).not.toBe('');
       }
@@ -493,9 +511,9 @@ describe('ng program', () => {
     const host = ng.createCompilerHost({options});
     const writtenFileNames: string[] = [];
     const oldWriteFile = host.writeFile;
-    host.writeFile = (fileName, data, writeByteOrderMark) => {
+    host.writeFile = (fileName, data, writeByteOrderMark, onError, sourceFiles) => {
       writtenFileNames.push(fileName);
-      oldWriteFile(fileName, data, writeByteOrderMark);
+      oldWriteFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
     };
 
     compile(/*oldProgram*/ undefined, options, /*rootNames*/ undefined, host);
@@ -946,6 +964,35 @@ describe('ng program', () => {
         expect(structuralErrors[0].messageText).toContain('Function expressions are not supported');
         done();
       });
+    });
+
+    it('should include non-formatted errors (e.g. invalid templateUrl)', () => {
+      testSupport.write('src/index.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'my-component',
+          templateUrl: 'template.html',   // invalid template url
+        })
+        export class MyComponent {}
+
+        @NgModule({
+          declarations: [MyComponent]
+        })
+        export class MyModule {}
+      `);
+
+      const options = testSupport.createCompilerOptions();
+      const host = ng.createCompilerHost({options});
+      const program = ng.createProgram({
+        rootNames: [path.resolve(testSupport.basePath, 'src/index.ts')],
+        options,
+        host,
+      });
+
+      const structuralErrors = program.getNgStructuralDiagnostics();
+      expect(structuralErrors.length).toBe(1);
+      expect(structuralErrors[0].messageText).toContain('Couldn\'t resolve resource template.html');
     });
 
     it('should be able report structural errors with noResolve:true and generateCodeForLibraries:false ' +

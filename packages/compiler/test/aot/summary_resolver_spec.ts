@@ -16,7 +16,7 @@ import {MockStaticSymbolResolverHost, MockSummaryResolver} from './static_symbol
 
 const EXT = /(\.d)?\.ts$/;
 
-export function main() {
+{
   describe('AotSummaryResolver', () => {
     let summaryResolver: AotSummaryResolver;
     let symbolCache: StaticSymbolCache;
@@ -94,6 +94,15 @@ export function main() {
            expect(summaryResolver.isLibraryFile('someFile.ngfactory.ts')).toBe(false);
            expect(host.isSourceFile).toHaveBeenCalledWith('someFile.ts');
          });
+    });
+
+    describe('regression', () => {
+      // #18170
+      it('should support resolving symbol with members ', () => {
+        init();
+        expect(summaryResolver.resolveSummary(symbolCache.get('/src.d.ts', 'Src', ['One', 'Two'])))
+            .toBeNull();
+      });
     });
   });
 }

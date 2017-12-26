@@ -7,16 +7,17 @@
  */
 
 import {CommonModule, Location} from '@angular/common';
+import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlTree} from '@angular/router';
-import {SpyLocation} from 'common/testing';
 import {Observable} from 'rxjs/Observable';
 import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 import {map} from 'rxjs/operator/map';
+import {log} from 'util';
 
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -839,6 +840,92 @@ describe('Integration', () => {
          [NavigationEnd, '/user/fedor']
        ]);
      })));
+
+  it('should dispatch NavigationError after the url has been reset back', fakeAsync(() => {
+       const router = TestBed.get(Router);
+       const location = TestBed.get(Location);
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig(
+           [{path: 'simple', component: SimpleCmp}, {path: 'throwing', component: ThrowingCmp}]);
+
+       router.navigateByUrl('/simple');
+       advance(fixture);
+
+       let routerUrlBeforeEmittingError;
+       let locationUrlBeforeEmittingError;
+       router.events.forEach((e: any) => {
+         if (e instanceof NavigationError) {
+           routerUrlBeforeEmittingError = router.url;
+           locationUrlBeforeEmittingError = location.path();
+         }
+       });
+
+       router.navigateByUrl('/throwing').catch(() => null);
+       advance(fixture);
+
+       expect(routerUrlBeforeEmittingError).toEqual('/simple');
+       expect(locationUrlBeforeEmittingError).toEqual('/simple');
+     }));
+
+  it('should not trigger another navigation when resetting the url back due to a NavigationError',
+     fakeAsync(() => {
+       const router = TestBed.get(Router);
+       router.onSameUrlNavigation = 'reload';
+
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig(
+           [{path: 'simple', component: SimpleCmp}, {path: 'throwing', component: ThrowingCmp}]);
+
+       const events: any[] = [];
+       router.events.forEach((e: any) => {
+         if (e instanceof NavigationStart) {
+           events.push(e.url);
+         }
+       });
+
+       router.navigateByUrl('/simple');
+       advance(fixture);
+
+       router.navigateByUrl('/throwing').catch(() => null);
+       advance(fixture);
+
+       // we do not trigger another navigation to /simple
+       expect(events).toEqual(['/simple', '/throwing']);
+     }));
+
+  it('should dispatch NavigationCancel after the url has been reset back', fakeAsync(() => {
+       TestBed.configureTestingModule(
+           {providers: [{provide: 'returnsFalse', useValue: () => false}]});
+
+       const router = TestBed.get(Router);
+       const location = TestBed.get(Location);
+
+       const fixture = createRoot(router, RootCmp);
+
+       router.resetConfig([
+         {path: 'simple', component: SimpleCmp},
+         {path: 'throwing', loadChildren: 'doesnotmatter', canLoad: ['returnsFalse']}
+       ]);
+
+       router.navigateByUrl('/simple');
+       advance(fixture);
+
+       let routerUrlBeforeEmittingError;
+       let locationUrlBeforeEmittingError;
+       router.events.forEach((e: any) => {
+         if (e instanceof NavigationCancel) {
+           routerUrlBeforeEmittingError = router.url;
+           locationUrlBeforeEmittingError = location.path();
+         }
+       });
+
+       (<any>location).simulateHashChange('/throwing');
+       advance(fixture);
+
+       expect(locationUrlBeforeEmittingError).toEqual('/simple');
+     }));
 
   it('should support custom error handlers', fakeAsync(inject([Router], (router: Router) => {
        router.errorHandler = (error) => 'resolvedValue';
@@ -3383,10 +3470,10 @@ describe('Integration', () => {
                declarations: [LazyLoadedComponent],
                imports: [RouterModule.forChild([{path: '', component: LazyLoadedComponent}])],
              })
-             class LoadedModule {
+             class LazyLoadedModule {
              }
 
-             loader.stubbedModules = {lazy: LoadedModule};
+             loader.stubbedModules = {lazy: LazyLoadedModule};
              const fixture = createRoot(router, RootCmp);
 
              router.resetConfig([{path: '**', loadChildren: 'lazy'}]);
@@ -3395,6 +3482,7 @@ describe('Integration', () => {
              advance(fixture);
 
              expect(location.path()).toEqual('/lazy');
+             expect(fixture.nativeElement).toHaveText('lazy-loaded');
            })));
 
     describe('preloading', () => {
@@ -3439,7 +3527,7 @@ describe('Integration', () => {
                router.navigateByUrl('/blank');
                advance(fixture);
 
-               const config = router.config;
+               const config = router.config as any;
                const firstConfig = config[1]._loadedConfig !;
 
                expect(firstConfig).toBeDefined();
@@ -3465,7 +3553,7 @@ describe('Integration', () => {
             children[PRIMARY_OUTLET] = oldRoot.children[PRIMARY_OUTLET];
           }
           const root = new UrlSegmentGroup(oldRoot.segments, children);
-          return new UrlTree(root, url.queryParams, url.fragment);
+          return new (UrlTree as any)(root, url.queryParams, url.fragment);
         }
 
         merge(newUrlPart: UrlTree, wholeUrl: UrlTree): UrlTree {
@@ -3483,7 +3571,7 @@ describe('Integration', () => {
             v.parent = this;
           });
           const root = new UrlSegmentGroup(oldRoot.segments, children);
-          return new UrlTree(root, newUrlPart.queryParams, newUrlPart.fragment);
+          return new (UrlTree as any)(root, newUrlPart.queryParams, newUrlPart.fragment);
         }
       }
 
@@ -3707,6 +3795,19 @@ describe('Integration', () => {
   });
 });
 
+describe('Testing router options', () => {
+  describe('paramsInheritanceStrategy', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule(
+          {imports: [RouterTestingModule.withRoutes([], {paramsInheritanceStrategy: 'always'})]});
+    });
+
+    it('should configure the router', fakeAsync(inject([Router], (router: Router) => {
+         expect(router.paramsInheritanceStrategy).toEqual('always');
+       })));
+  });
+});
+
 function expectEvents(events: Event[], pairs: any[]) {
   expect(events.length).toEqual(pairs.length);
   for (let i = 0; i < events.length; ++i) {
@@ -3891,7 +3992,7 @@ class ComponentRecordingRoutePathAndUrl {
   private url: any;
 
   constructor(router: Router, route: ActivatedRoute) {
-    this.path = router.routerState.pathFromRoot(route);
+    this.path = (router.routerState as any).pathFromRoot(route);
     this.url = router.url.toString();
   }
 }
@@ -3914,6 +4015,12 @@ class RootCmpWithOnInit {
 })
 class RootCmpWithTwoOutlets {
 }
+
+@Component({selector: 'throwing-cmp', template: ''})
+class ThrowingCmp {
+  constructor() { throw new Error('Throwing Cmp'); }
+}
+
 
 
 function advance(fixture: ComponentFixture<any>): void {
@@ -3955,6 +4062,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    ThrowingCmp
   ],
 
 
@@ -3982,6 +4090,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    ThrowingCmp
   ],
 
 
@@ -4010,6 +4119,7 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
     EmptyQueryParamsCmp,
+    ThrowingCmp
   ]
 })
 class TestModule {

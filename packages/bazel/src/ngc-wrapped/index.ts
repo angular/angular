@@ -178,7 +178,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     return relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
   };
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
-      ngHost.fileNameToModuleName(fileName, referringSrcFileName);
+      relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, '');
   if (allDepsCompiledWithBazel) {
     // Note: The default implementation would work as well,
     // but we can be faster as we know how `toSummaryFileName` works.

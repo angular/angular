@@ -96,8 +96,8 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   } as any;
 
   static envIsSupported(): boolean {
-    return (typeof require === 'function' && typeof require('url')['parse'] === 'function') ||
-        (typeof URL === 'function');
+    return (typeof URL === 'function') ||
+        (typeof require === 'function' && typeof require('url')['parse'] === 'function');
   }
 
   time: number;

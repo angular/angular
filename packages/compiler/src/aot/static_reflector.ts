@@ -29,6 +29,8 @@ const IGNORE = {
 const USE_VALUE = 'useValue';
 const PROVIDE = 'provide';
 const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data']);
+const TYPEGUARD_POSTFIX = 'TypeGuard';
+const USE_IF = 'UseIf';
 
 function shouldIgnore(value: any): boolean {
   return value && value.__symbolic == 'ignore';
@@ -43,6 +45,7 @@ export class StaticReflector implements CompileReflector {
   private propertyCache = new Map<StaticSymbol, {[key: string]: any[]}>();
   private parameterCache = new Map<StaticSymbol, any[]>();
   private methodCache = new Map<StaticSymbol, {[key: string]: boolean}>();
+  private staticCache = new Map<StaticSymbol, string[]>();
   private conversionMap = new Map<StaticSymbol, (context: StaticSymbol, args: any[]) => any>();
   private injectionToken: StaticSymbol;
   private opaqueToken: StaticSymbol;
@@ -251,6 +254,18 @@ export class StaticReflector implements CompileReflector {
     return methodNames;
   }
 
+  private _staticMembers(type: StaticSymbol): string[] {
+    let staticMembers = this.staticCache.get(type);
+    if (!staticMembers) {
+      const classMetadata = this.getTypeMetadata(type);
+      const staticMemberData = classMetadata['statics'] || {};
+      staticMembers = Object.keys(staticMemberData);
+      this.staticCache.set(type, staticMembers);
+    }
+    return staticMembers;
+  }
+
+
   private findParentType(type: StaticSymbol, classMetadata: any): StaticSymbol|undefined {
     const parentType = this.trySimplify(type, classMetadata['extends']);
     if (parentType instanceof StaticSymbol) {
@@ -271,6 +286,30 @@ export class StaticReflector implements CompileReflector {
       console.error(`Failed on type ${JSON.stringify(type)} with error ${e}`);
       throw e;
     }
+  }
+
+  guards(type: any): {[key: string]: StaticSymbol} {
+    if (!(type instanceof StaticSymbol)) {
+      this.reportError(
+          new Error(`guards received ${JSON.stringify(type)} which is not a StaticSymbol`), type);
+      return {};
+    }
+    const staticMembers = this._staticMembers(type);
+    const result: {[key: string]: StaticSymbol} = {};
+    for (let name of staticMembers) {
+      if (name.endsWith(TYPEGUARD_POSTFIX)) {
+        let property = name.substr(0, name.length - TYPEGUARD_POSTFIX.length);
+        let value: any;
+        if (property.endsWith(USE_IF)) {
+          property = name.substr(0, property.length - USE_IF.length);
+          value = USE_IF;
+        } else {
+          value = this.getStaticSymbol(type.filePath, type.name, [name]);
+        }
+        result[property] = value;
+      }
+    }
+    return result;
   }
 
   private _registerDecoratorOrConstructor(type: StaticSymbol, ctor: any): void {

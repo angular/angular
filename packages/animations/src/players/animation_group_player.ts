@@ -32,19 +32,18 @@ export class AnimationGroupPlayer implements AnimationPlayer {
       scheduleMicroTask(() => this._onFinish());
     } else {
       this.players.forEach(player => {
-        player.parentPlayer = this;
         player.onDone(() => {
-          if (++doneCount >= total) {
+          if (++doneCount == total) {
             this._onFinish();
           }
         });
         player.onDestroy(() => {
-          if (++destroyCount >= total) {
+          if (++destroyCount == total) {
             this._onDestroy();
           }
         });
         player.onStart(() => {
-          if (++startCount >= total) {
+          if (++startCount == total) {
             this._onStart();
           }
         });
@@ -68,9 +67,9 @@ export class AnimationGroupPlayer implements AnimationPlayer {
 
   private _onStart() {
     if (!this.hasStarted()) {
+      this._started = true;
       this._onStartFns.forEach(fn => fn());
       this._onStartFns = [];
-      this._started = true;
     }
   }
 

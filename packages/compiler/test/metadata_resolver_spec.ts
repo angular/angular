@@ -18,7 +18,7 @@ import {MockResourceLoader} from '../testing/src/resource_loader_mock';
 import {MalformedStylesComponent} from './metadata_resolver_fixture';
 import {TEST_COMPILER_PROVIDERS} from './test_bindings';
 
-export function main() {
+{
   describe('CompileMetadataResolver', () => {
     beforeEach(() => { TestBed.configureCompiler({providers: TEST_COMPILER_PROVIDERS}); });
 

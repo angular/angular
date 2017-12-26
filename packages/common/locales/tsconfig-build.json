@@ -21,6 +21,7 @@
     "./closure-locale.ts"
   ],
   "angularCompilerOptions": {
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    "skipMetadataEmit": true
   }
 }

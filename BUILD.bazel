@@ -1,5 +1,8 @@
 package(default_visibility = ["//visibility:public"])
-exports_files(["tsconfig.json"])
+
+exports_files([
+    "tsconfig.json",
+])
 
 # This rule belongs in node_modules/BUILD
 # It's here as a workaround for
@@ -11,21 +14,52 @@ filegroup(
     # bazel query "deps(:node_modules)" | wc -l
     # This won't scale in the general case.
     # TODO(alexeagle): figure out what to do
-    srcs = glob(["/".join(["node_modules", pkg, "**", ext]) for pkg in [
+    srcs = glob(["/".join([
+        "node_modules",
+        pkg,
+        "**",
+        ext,
+    ]) for pkg in [
         "jasmine",
         "typescript",
         "zone.js",
-        "rxjs",
-        "@types",
+        "tsutils",
+        "@types/jasmine",
+        "@types/node",
+        "@types/source-map",
         "tsickle",
         "hammerjs",
         "protobufjs",
         "bytebuffer",
         "reflect-metadata",
+        "source-map-support",
         "minimist",
     ] for ext in [
         "*.js",
         "*.json",
         "*.d.ts",
     ]]),
+)
+
+filegroup(
+    name = "web_test_bootstrap_scripts",
+    # do not sort
+    srcs = [
+        "//:node_modules/reflect-metadata/Reflect.js",
+        "//:node_modules/zone.js/dist/zone.js",
+        "//:node_modules/zone.js/dist/async-test.js",
+        "//:node_modules/zone.js/dist/sync-test.js",
+        "//:node_modules/zone.js/dist/fake-async-test.js",
+        "//:node_modules/zone.js/dist/proxy.js",
+        "//:node_modules/zone.js/dist/jasmine-patch.js",
+    ],
+)
+
+filegroup(
+    name = "angularjs",
+    # do not sort
+    srcs = [
+        "//:node_modules/angular/angular.js",
+        "//:node_modules/angular-mocks/angular-mocks.js",
+    ],
 )

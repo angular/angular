@@ -11,7 +11,7 @@
 
 export default [
   'lv', [['priekšp.', 'pēcp.'], , ['priekšpusdienā', 'pēcpusdienā']],
-  [['priekšp.', 'pēcp.'], ['priekšp.', 'pēcpusd.'], ['priekšpusdiena', 'pēcpusdiena']],
+  [['priekšp.', 'pēcpusd.'], , ['priekšpusdiena', 'pēcpusdiena']],
   [
     ['S', 'P', 'O', 'T', 'C', 'P', 'S'],
     ['svētd.', 'pirmd.', 'otrd.', 'trešd.', 'ceturtd.', 'piektd.', 'sestd.'],

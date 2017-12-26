@@ -12,7 +12,7 @@ import {Observer} from 'rxjs/Observer';
 import {of } from 'rxjs/observable/of';
 
 import {Data, ResolveData, Route, Routes} from './config';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
+import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, inheritedParamsDataResolve} from './router_state';
 import {PRIMARY_OUTLET, defaultUrlMatcher} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlTree, mapChildrenIntoArray} from './url_tree';
 import {forEach, last} from './utils/collection';
@@ -21,15 +21,17 @@ import {TreeNode} from './utils/tree';
 class NoMatch {}
 
 export function recognize(
-    rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree,
-    url: string): Observable<RouterStateSnapshot> {
-  return new Recognizer(rootComponentType, config, urlTree, url).recognize();
+    rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree, url: string,
+    paramsInheritanceStrategy: ParamsInheritanceStrategy =
+        'emptyOnly'): Observable<RouterStateSnapshot> {
+  return new Recognizer(rootComponentType, config, urlTree, url, paramsInheritanceStrategy)
+      .recognize();
 }
 
 class Recognizer {
   constructor(
       private rootComponentType: Type<any>|null, private config: Routes, private urlTree: UrlTree,
-      private url: string) {}
+      private url: string, private paramsInheritanceStrategy: ParamsInheritanceStrategy) {}
 
   recognize(): Observable<RouterStateSnapshot> {
     try {
@@ -55,7 +57,7 @@ class Recognizer {
   inheritParamsAndData(routeNode: TreeNode<ActivatedRouteSnapshot>): void {
     const route = routeNode.value;
 
-    const i = inheritedParamsDataResolve(route);
+    const i = inheritedParamsDataResolve(route, this.paramsInheritanceStrategy);
     route.params = Object.freeze(i.params);
     route.data = Object.freeze(i.data);
 
@@ -109,28 +111,32 @@ class Recognizer {
 
     if ((route.outlet || PRIMARY_OUTLET) !== outlet) throw new NoMatch();
 
+    let snapshot: ActivatedRouteSnapshot;
+    let consumedSegments: UrlSegment[] = [];
+    let rawSlicedSegments: UrlSegment[] = [];
+
     if (route.path === '**') {
       const params = segments.length > 0 ? last(segments) !.parameters : {};
-      const snapshot = new ActivatedRouteSnapshot(
+      snapshot = new ActivatedRouteSnapshot(
           segments, params, Object.freeze(this.urlTree.queryParams), this.urlTree.fragment !,
           getData(route), outlet, route.component !, route, getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + segments.length, getResolve(route));
-      return [new TreeNode<ActivatedRouteSnapshot>(snapshot, [])];
+    } else {
+      const result: MatchResult = match(rawSegment, route, segments);
+      consumedSegments = result.consumedSegments;
+      rawSlicedSegments = segments.slice(result.lastChild);
+
+      snapshot = new ActivatedRouteSnapshot(
+          consumedSegments, result.parameters, Object.freeze(this.urlTree.queryParams),
+          this.urlTree.fragment !, getData(route), outlet, route.component !, route,
+          getSourceSegmentGroup(rawSegment),
+          getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route));
     }
 
-    const {consumedSegments, parameters, lastChild} = match(rawSegment, route, segments);
-    const rawSlicedSegments = segments.slice(lastChild);
-    const childConfig = getChildConfig(route);
+    const childConfig: Route[] = getChildConfig(route);
 
     const {segmentGroup, slicedSegments} =
         split(rawSegment, consumedSegments, rawSlicedSegments, childConfig);
-
-    const snapshot = new ActivatedRouteSnapshot(
-        consumedSegments, parameters, Object.freeze(this.urlTree.queryParams),
-        this.urlTree.fragment !, getData(route), outlet, route.component !, route,
-        getSourceSegmentGroup(rawSegment), getPathIndexShift(rawSegment) + consumedSegments.length,
-        getResolve(route));
-
 
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
       const children = this.processChildren(childConfig, segmentGroup);
@@ -166,7 +172,13 @@ function getChildConfig(route: Route): Route[] {
   return [];
 }
 
-function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]) {
+interface MatchResult {
+  consumedSegments: UrlSegment[];
+  lastChild: number;
+  parameters: any;
+}
+
+function match(segmentGroup: UrlSegmentGroup, route: Route, segments: UrlSegment[]): MatchResult {
   if (route.path === '') {
     if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
       throw new NoMatch();

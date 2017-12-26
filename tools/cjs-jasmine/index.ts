@@ -45,6 +45,9 @@ if (globsIndex < 0) {
   args = process.argv.slice(globsIndex + 1);
 }
 
+(global as any).isNode = true;
+(global as any).isBrowser = false;
+
 var specFiles: any =
     args.map(function(globstr: string):
                  string[] {
@@ -52,10 +55,12 @@ var specFiles: any =
                      cwd: distAll,
                      ignore: [
                        // the following code and tests are not compatible with CJS/node environment
+                       '@angular/_testing_init/**',
                        '@angular/examples/**',
                        '@angular/platform-browser/**',
                        '@angular/platform-browser-dynamic/**',
                        '@angular/core/test/zone/**',
+                       '@angular/core/test/render3/**',
                        '@angular/core/test/fake_async_spec.*',
                        '@angular/forms/test/**',
                        '@angular/router/test/route_config/route_config_spec.*',

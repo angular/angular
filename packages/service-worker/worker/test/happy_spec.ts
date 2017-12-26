@@ -139,7 +139,7 @@ const scope = new SwTestHarnessBuilder().withServerState(server).build();
 const manifestHash = sha1(JSON.stringify(manifest));
 const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 
-export function main() {
+(function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
@@ -158,7 +158,7 @@ export function main() {
       expect(await scope.startup(true)).toEqual(true);
       await scope.resolveSelfMessages();
       await driver.initialized;
-      server.assertSawRequestFor('/ngsw.json');
+      server.assertSawRequestFor('ngsw.json');
       server.assertSawRequestFor('/foo.txt');
       server.assertSawRequestFor('/bar.txt');
       server.assertSawRequestFor('/redirected.txt');
@@ -170,7 +170,7 @@ export function main() {
     async_it('initializes prefetched content correctly, after a request kicks it off', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
-      server.assertSawRequestFor('/ngsw.json');
+      server.assertSawRequestFor('ngsw.json');
       server.assertSawRequestFor('/foo.txt');
       server.assertSawRequestFor('/bar.txt');
       server.assertSawRequestFor('/redirected.txt');
@@ -230,7 +230,7 @@ export function main() {
 
       scope.updateServerState(serverUpdate);
       expect(await driver.checkForUpdate()).toEqual(true);
-      serverUpdate.assertSawRequestFor('/ngsw.json');
+      serverUpdate.assertSawRequestFor('ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
       serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();
@@ -263,7 +263,7 @@ export function main() {
 
       scope.updateServerState(serverUpdate);
       expect(await driver.checkForUpdate()).toEqual(true);
-      serverUpdate.assertSawRequestFor('/ngsw.json');
+      serverUpdate.assertSawRequestFor('ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
       serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();
@@ -331,10 +331,45 @@ export function main() {
       scope.advance(12000);
       await driver.idle.empty;
 
-      serverUpdate.assertSawRequestFor('/ngsw.json');
+      serverUpdate.assertSawRequestFor('ngsw.json');
       serverUpdate.assertSawRequestFor('/foo.txt');
       serverUpdate.assertSawRequestFor('/redirected.txt');
       serverUpdate.assertNoOtherRequests();
+    });
+
+    async_it('checks for updates on navigation', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.clearRequests();
+
+      expect(await makeRequest(scope, '/foo.txt', 'default', {
+        mode: 'navigate',
+      })).toEqual('this is foo');
+
+      scope.advance(12000);
+      await driver.idle.empty;
+
+      server.assertSawRequestFor('ngsw.json');
+    });
+
+    async_it('does not make concurrent checks for updates on navigation', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      server.clearRequests();
+
+      expect(await makeRequest(scope, '/foo.txt', 'default', {
+        mode: 'navigate',
+      })).toEqual('this is foo');
+
+      expect(await makeRequest(scope, '/foo.txt', 'default', {
+        mode: 'navigate',
+      })).toEqual('this is foo');
+
+      scope.advance(12000);
+      await driver.idle.empty;
+
+      server.assertSawRequestFor('ngsw.json');
+      server.assertNoOtherRequests();
     });
 
     async_it('preserves multiple client assignments across restarts', async() => {
@@ -639,7 +674,7 @@ export function main() {
       });
     });
   });
-}
+})();
 
 async function makeRequest(
     scope: SwTestHarness, url: string, clientId?: string, init?: Object): Promise<string|null> {

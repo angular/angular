@@ -38,6 +38,7 @@ export function main(
   return reportErrorsAndExit(compileDiags, options, consoleError);
 }
 
+
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
   const transformDecorators = options.annotationsAs !== 'decorators';
   const transformTypesToClosure = options.annotateForClosureCompiler;
@@ -50,7 +51,10 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
     // as TypeScript elided the import.
     options.emitDecoratorMetadata = true;
   }
-  const tsickleHost: tsickle.TsickleHost = {
+  const tsickleHost: Pick<
+      tsickle.TsickleHost, 'shouldSkipTsickleProcessing'|'pathToModuleName'|
+      'shouldIgnoreWarningsForPath'|'fileNameToModuleId'|'googmodule'|'untyped'|
+      'convertIndexImportShorthand'|'transformDecorators'|'transformTypesToClosure'> = {
     shouldSkipTsickleProcessing: (fileName) =>
                                      /\.d\.ts$/.test(fileName) || GENERATED_FILES.test(fileName),
     pathToModuleName: (context, importPath) => '',
@@ -72,8 +76,8 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
            options
          }) =>
              tsickle.emitWithTsickle(
-                 program, tsickleHost, host, options, targetSourceFile, writeFile,
-                 cancellationToken, emitOnlyDtsFiles, {
+                 program, {...tsickleHost, options, host}, host, options, targetSourceFile,
+                 writeFile, cancellationToken, emitOnlyDtsFiles, {
                    beforeTs: customTransformers.before,
                    afterTs: customTransformers.after,
                  });

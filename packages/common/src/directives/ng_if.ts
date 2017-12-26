@@ -151,6 +151,9 @@ export class NgIf {
       }
     }
   }
+
+  /** @internal */
+  public static ngIfUseIfTypeGuard: void;
 }
 
 /**

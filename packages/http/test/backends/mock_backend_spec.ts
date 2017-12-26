@@ -8,16 +8,15 @@
 
 import {Injector} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, inject, it, xit} from '@angular/core/testing/src/testing_internal';
+import {BaseRequestOptions, RequestOptions} from '@angular/http/src/base_request_options';
+import {BaseResponseOptions, ResponseOptions} from '@angular/http/src/base_response_options';
+import {Request} from '@angular/http/src/static_request';
+import {Response} from '@angular/http/src/static_response';
+import {MockBackend, MockConnection} from '@angular/http/testing/src/mock_backend';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ReplaySubject} from 'rxjs/ReplaySubject';
 
-import {BaseRequestOptions, RequestOptions} from '../../src/base_request_options';
-import {BaseResponseOptions, ResponseOptions} from '../../src/base_response_options';
-import {Request} from '../../src/static_request';
-import {Response} from '../../src/static_response';
-import {MockBackend, MockConnection} from '../../testing/src/mock_backend';
-
-export function main() {
+{
   describe('MockBackend', () => {
 
     let backend: MockBackend;

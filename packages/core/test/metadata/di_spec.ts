@@ -9,7 +9,7 @@
 import {Component, Directive, ElementRef, Input, NO_ERRORS_SCHEMA, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-export function main() {
+{
   describe('ViewChild', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({

@@ -15,7 +15,6 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ServerModule} from '@angular/platform-server';
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
 
@@ -23,7 +22,7 @@ import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../t
 class SomeComponent {
 }
 
-export function main() {
+{
   describe('bootstrap', () => {
     let mockConsole: MockConsole;
 
@@ -52,9 +51,11 @@ export function main() {
         options = providersOrOptions || {};
       }
       const errorHandler = new ErrorHandler();
-      errorHandler._console = mockConsole as any;
+      (errorHandler as any)._console = mockConsole as any;
 
-      const platformModule = getDOM().supportsDOMEvents() ? BrowserModule : ServerModule;
+      const platformModule = getDOM().supportsDOMEvents() ?
+          BrowserModule :
+          require('@angular/platform-server').ServerModule;
 
       @NgModule({
         providers: [{provide: ErrorHandler, useValue: errorHandler}, options.providers || []],

@@ -17,7 +17,7 @@ import {createMessageDiagnostic} from './transformers/util';
 
 const TS_EXT = /\.ts$/;
 
-export type Diagnostics = Array<ts.Diagnostic|api.Diagnostic>;
+export type Diagnostics = ReadonlyArray<ts.Diagnostic|api.Diagnostic>;
 
 export function filterErrorsAndWarnings(diagnostics: Diagnostics): Diagnostics {
   return diagnostics.filter(d => d.category !== ts.DiagnosticCategory.Message);
@@ -199,7 +199,7 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
 }): PerformCompilationResult {
   let program: api.Program|undefined;
   let emitResult: ts.EmitResult|undefined;
-  let allDiagnostics: Diagnostics = [];
+  let allDiagnostics: Array<ts.Diagnostic|api.Diagnostic> = [];
   try {
     if (!host) {
       host = ng.createCompilerHost({options});
@@ -240,7 +240,7 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
   }
 }
 function defaultGatherDiagnostics(program: api.Program): Diagnostics {
-  const allDiagnostics: Diagnostics = [];
+  const allDiagnostics: Array<ts.Diagnostic|api.Diagnostic> = [];
 
   function checkDiagnostics(diags: Diagnostics | undefined) {
     if (diags) {
@@ -257,7 +257,7 @@ function defaultGatherDiagnostics(program: api.Program): Diagnostics {
 
   // Check syntactic diagnostics
   checkOtherDiagnostics =
-      checkOtherDiagnostics && checkDiagnostics(program.getTsSyntacticDiagnostics());
+      checkOtherDiagnostics && checkDiagnostics(program.getTsSyntacticDiagnostics() as Diagnostics);
 
   // Check TypeScript semantic and Angular structure diagnostics
   checkOtherDiagnostics =
@@ -267,7 +267,7 @@ function defaultGatherDiagnostics(program: api.Program): Diagnostics {
 
   // Check Angular semantic diagnostics
   checkOtherDiagnostics =
-      checkOtherDiagnostics && checkDiagnostics(program.getNgSemanticDiagnostics());
+      checkOtherDiagnostics && checkDiagnostics(program.getNgSemanticDiagnostics() as Diagnostics);
 
   return allDiagnostics;
 }

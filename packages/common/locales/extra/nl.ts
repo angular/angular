@@ -12,8 +12,7 @@
 export default [
   [
     ['middernacht', '‘s ochtends', '‘s middags', '‘s avonds', '‘s nachts'],
-    ['middernacht', 'ochtend', 'middag', 'avond', 'nacht'],
-    ['middernacht', '‘s ochtends', '‘s middags', '‘s avonds', '‘s nachts']
+    ,
   ],
   [
     ['middernacht', 'ochtend', 'middag', 'avond', 'nacht'],

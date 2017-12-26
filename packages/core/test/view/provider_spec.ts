@@ -14,7 +14,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
 
-export function main() {
+{
   describe(`View Providers`, () => {
 
     describe('create', () => {
@@ -147,8 +147,8 @@ export function main() {
 
           expect(() => createAndGetRootNodes(compViewDef(rootElNodes)))
               .toThrowError(
-                  'StaticInjectorError[Dep]: \n' +
-                  '  StaticInjectorError[Dep]: \n' +
+                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
+                  '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
                   '    NullInjectorError: No provider for Dep!');
 
           const nonRootElNodes = [
@@ -161,8 +161,8 @@ export function main() {
 
           expect(() => createAndGetRootNodes(compViewDef(nonRootElNodes)))
               .toThrowError(
-                  'StaticInjectorError[Dep]: \n' +
-                  '  StaticInjectorError[Dep]: \n' +
+                  'StaticInjectorError(DynamicTestModule)[SomeService -> Dep]: \n' +
+                  '  StaticInjectorError(Platform: core)[SomeService -> Dep]: \n' +
                   '    NullInjectorError: No provider for Dep!');
         });
 
@@ -186,8 +186,8 @@ export function main() {
                    directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])
                  ])))
               .toThrowError(
-                  'StaticInjectorError[nonExistingDep]: \n' +
-                  '  StaticInjectorError[nonExistingDep]: \n' +
+                  'StaticInjectorError(DynamicTestModule)[nonExistingDep]: \n' +
+                  '  StaticInjectorError(Platform: core)[nonExistingDep]: \n' +
                   '    NullInjectorError: No provider for nonExistingDep!');
         });
 

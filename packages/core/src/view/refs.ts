@@ -255,9 +255,12 @@ export class ViewRef_ implements EmbeddedViewRef<any>, InternalViewRef {
     if (fs.begin) {
       fs.begin();
     }
-    Services.checkAndUpdateView(this._view);
-    if (fs.end) {
-      fs.end();
+    try {
+      Services.checkAndUpdateView(this._view);
+    } finally {
+      if (fs.end) {
+        fs.end();
+      }
     }
   }
   checkNoChanges(): void { Services.checkNoChangesView(this._view); }
@@ -478,6 +481,8 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   /** @internal */
   _providers: any[];
 
+  readonly injector: Injector = this;
+
   constructor(
       private _moduleType: Type<any>, public _parent: Injector,
       public _bootstrapComponents: Type<any>[], public _def: NgModuleDefinition) {
@@ -492,8 +497,6 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   get instance() { return this.get(this._moduleType); }
 
   get componentFactoryResolver() { return this.get(ComponentFactoryResolver); }
-
-  get injector(): Injector { return this; }
 
   destroy(): void {
     if (this._destroyed) {

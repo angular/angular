@@ -1,10 +1,9 @@
 import { Component, ElementRef, HostBinding, HostListener, OnInit,
          QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { MatSidenav } from '@angular/material';
+import { MatSidenav } from '@angular/material/sidenav';
 
 import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
-import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
 import { ScrollService } from 'app/shared/scroll.service';
@@ -16,6 +15,7 @@ import { TocService } from 'app/shared/toc.service';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import 'rxjs/add/operator/first';
 
 const sideNavView = 'SideNav';
 
@@ -58,6 +58,7 @@ export class AppComponent implements OnInit {
 
   isFetching = false;
   isStarting = true;
+  isTransitioning = true;
   isSideBySide = false;
   private isFetchingTimeout: any;
   private isSideNavDoc = false;
@@ -75,17 +76,8 @@ export class AppComponent implements OnInit {
 
   versionInfo: VersionInfo;
 
-  get homeImageUrl() {
-    return this.isSideBySide ?
-      'assets/images/logos/angular/logo-nav@2x.png' :
-      'assets/images/logos/angular/shield-large.svg';
-  }
   get isOpened() { return this.isSideBySide && this.isSideNavDoc; }
   get mode() { return this.isSideBySide ? 'side' : 'over'; }
-
-  // Need the doc-viewer element for scrolling the contents
-  @ViewChild(DocViewerComponent, { read: ElementRef })
-  docViewer: ElementRef;
 
   // Search related properties
   showSearchResults = false;
@@ -120,12 +112,13 @@ export class AppComponent implements OnInit {
 
     /* No need to unsubscribe because this root component never dies */
 
-    this.documentService.currentDocument.subscribe(doc => {
-      this.currentDocument = doc;
-      this.setPageId(doc.id);
-      this.setFolderId(doc.id);
-      this.updateHostClasses();
-    });
+    this.documentService.currentDocument.subscribe(doc => this.currentDocument = doc);
+    // Generally, we want to delay updating the host classes for the new document, until after the
+    // leaving document has been removed (to avoid having the styles for the new document applied
+    // prematurely).
+    // On the first document, though, (when we know there is no previous document), we want to
+    // ensure the styles are applied as soon as possible to avoid flicker.
+    this.documentService.currentDocument.first().subscribe(doc => this.updateHostClassesForDoc(doc));
 
     this.locationService.currentPath.subscribe(path => {
       // Redirect to docs if we are in not in stable mode and are not hitting a docs page
@@ -146,21 +139,7 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.navigationService.currentNodes.subscribe(currentNodes => {
-      this.currentNodes = currentNodes;
-
-      // Preserve current sidenav open state by default
-      let openSideNav = this.sidenav.opened;
-      const isSideNavDoc = !!currentNodes[sideNavView];
-
-      if (this.isSideNavDoc !== isSideNavDoc) {
-        // View type changed. Is it now a sidenav view (e.g, guide or tutorial)?
-        // Open if changed to a sidenav doc; close if changed to a marketing doc.
-        openSideNav = this.isSideNavDoc = isSideNavDoc;
-      }
-      // May be open or closed when wide; always closed when narrow
-      this.sideNavToggle(this.isSideBySide ? openSideNav : false);
-    });
+    this.navigationService.currentNodes.subscribe(currentNodes => this.currentNodes = currentNodes);
 
     // Compute the version picker list from the current version and the versions in the navigation map
     combineLatest(
@@ -203,20 +182,41 @@ export class AppComponent implements OnInit {
     this.scrollService.scroll();
   }
 
-  onDocRendered() {
+  onDocReady() {
+    // About to transition to new view.
+    this.isTransitioning = true;
+
     // Stop fetching timeout (which, when render is fast, means progress bar never shown)
     clearTimeout(this.isFetchingTimeout);
 
-    // Put page in a clean visual state
-    this.scrollService.scrollToTop();
+    // If progress bar has been shown, keep it for at least 500ms (to avoid flashing).
+    setTimeout(() => this.isFetching = false, 500);
+  }
 
-    // Scroll 500ms after the doc-viewer has finished rendering the new doc
-    // The delay is to allow time for async layout to complete
+  onDocRemoved() {
+    // The previous document has been removed.
+    // Scroll to top to restore a clean visual state for the new document.
+    this.scrollService.scrollToTop();
+  }
+
+  onDocInserted() {
+    // TODO: Find a better way to avoid `ExpressionChangedAfterItHasBeenChecked` error.
     setTimeout(() => {
-      this.autoScroll();
-      this.isStarting = false;
-      this.isFetching = false;
-    }, 500);
+      // Update the SideNav state (if necessary).
+      this.updateSideNav();
+
+      // Update the host classes to match the new document.
+      this.updateHostClassesForDoc(this.currentDocument);
+    });
+
+    // Scroll 500ms after the new document has been inserted into the doc-viewer.
+    // The delay is to allow time for async layout to complete.
+    setTimeout(() => this.autoScroll(), 500);
+  }
+
+  onDocRendered() {
+    this.isStarting = false;
+    this.isTransitioning = false;
   }
 
   onDocVersionChange(versionIndex: number) {
@@ -283,6 +283,27 @@ export class AppComponent implements OnInit {
     this.hostClasses = `${mode} ${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
   }
 
+  updateHostClassesForDoc(doc: DocumentContents) {
+    this.setPageId(doc.id);
+    this.setFolderId(doc.id);
+    this.updateHostClasses();
+  }
+
+  updateSideNav() {
+    // Preserve current sidenav open state by default.
+    let openSideNav = this.sidenav.opened;
+    const isSideNavDoc = !!this.currentNodes[sideNavView];
+
+    if (this.isSideNavDoc !== isSideNavDoc) {
+      // View type changed. Is it now a sidenav view (e.g, guide or tutorial)?
+      // Open if changed to a sidenav doc; close if changed to a marketing doc.
+      openSideNav = this.isSideNavDoc = isSideNavDoc;
+    }
+
+    // May be open or closed when wide; always closed when narrow.
+    this.sideNavToggle(this.isSideBySide && openSideNav);
+  }
+
   // Dynamically change height of table of contents container
   @HostListener('window:scroll')
   onScroll() {
@@ -291,7 +312,7 @@ export class AppComponent implements OnInit {
       const el = this.hostElement.nativeElement as Element;
       this.tocMaxHeightOffset =
           el.querySelector('footer').clientHeight +
-          el.querySelector('mat-toolbar.app-toolbar').clientHeight +
+          el.querySelector('.app-toolbar').clientHeight +
           24; //  fudge margin
     }
 

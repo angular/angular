@@ -38,7 +38,7 @@ export default [
     '{1} \'às\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'Db', 'Dobra de São Tomé e Príncipe',
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'STN', 'STN',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n));

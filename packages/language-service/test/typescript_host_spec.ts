@@ -39,4 +39,11 @@ describe('completions', () => {
     ngHost = new TypeScriptServiceHost(host, service);
     expect(ngHost.getAnalyzedModules()).toBeDefined();
   });
+
+  it('should not throw if there is no script names', () => {
+    host = new MockTypescriptHost([], toh);
+    service = ts.createLanguageService(host);
+    ngHost = new TypeScriptServiceHost(host, service);
+    expect(() => ngHost.getAnalyzedModules()).not.toThrow();
+  });
 });

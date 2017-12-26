@@ -12,7 +12,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedView} from './helper';
 
-export function main() {
+{
   describe(`Embedded Views`, () => {
 
     it('should create embedded views with the right context', () => {

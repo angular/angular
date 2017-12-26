@@ -54,6 +54,19 @@ class ExampleZipper {
     }
   }
 
+  // rename a custom main.ts or index.html file
+  _renameFile(file) {
+    if (/src\/main[-.]\w+\.ts$/.test(file)) {
+      return 'src/main.ts';
+    }
+
+    if (/src\/index[-.]\w+\.html$/.test(file)) {
+      return 'src/index.html';
+    }
+
+    return file;
+  }
+
   _zipExample(configFileName, sourceDirName, outputDirName) {
     let json = require(configFileName, 'utf-8');
     const basePath = json.basePath || '';
@@ -79,12 +92,16 @@ class ExampleZipper {
       'tslint.json',
       'karma-test-shim.js',
       'karma.conf.js',
+      'tsconfig.json',
       'src/testing/**/*',
       'src/.babelrc',
       'src/favicon.ico',
-      'src/typings.d.ts'
+      'src/polyfills.ts',
+      'src/typings.d.ts',
+      'src/environments/**/*',
+      'src/tsconfig.*'
     ];
-    var defaultExcludes = [
+    var alwaysExcludes = [
       '!**/bs-config.e2e.json',
       '!**/*plnkr.*',
       '!**/*zipper.*',
@@ -132,13 +149,14 @@ class ExampleZipper {
       }
     });
 
-    Array.prototype.push.apply(gpaths, defaultExcludes);
+    Array.prototype.push.apply(gpaths, alwaysExcludes);
 
     let fileNames = globby.sync(gpaths, { ignore: ['**/node_modules/**']});
 
     let zip = this._createZipArchive(outputFileName);
     fileNames.forEach((fileName) => {
       let relativePath = path.relative(exampleDirName, fileName);
+      relativePath = this._renameFile(relativePath);
       let content = fs.readFileSync(fileName, 'utf8');
       let extn = path.extname(fileName).substr(1);
       // if we don't need to clean up the file then we can do the following.

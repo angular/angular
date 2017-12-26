@@ -14,7 +14,7 @@ function hasLifecycleHook(hook: Hooks, directive: any): boolean {
   return hasLifecycleHookImpl(new JitReflector(), hook, directive);
 }
 
-export function main() {
+{
   describe('Create Directive', () => {
     describe('lifecycle', () => {
 

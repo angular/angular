@@ -1,0 +1,170 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {ViewEncapsulation} from '../../src/core';
+import {D, E, T, b, defineComponent, e, markDirty, t} from '../../src/render3/index';
+import {createRendererType2} from '../../src/view';
+
+import {getRendererFactory2} from './imported_renderer2';
+import {containerEl, renderComponent, requestAnimationFrame} from './render_util';
+
+describe('component', () => {
+  class CounterComponent {
+    count = 0;
+
+    increment() { this.count++; }
+
+    static ngComponentDef = defineComponent({
+      type: CounterComponent,
+      tag: 'counter',
+      template: function(ctx: CounterComponent, cm: boolean) {
+        if (cm) {
+          T(0);
+        }
+        t(0, b(ctx.count));
+      },
+      factory: () => new CounterComponent,
+      inputs: {count: 'count'},
+      methods: {increment: 'increment'}
+    });
+  }
+
+  describe('renderComponent', () => {
+    it('should render on initial call', () => {
+      renderComponent(CounterComponent);
+      expect(containerEl.innerHTML).toEqual('0');
+    });
+
+    it('should re-render on input change or method invocation', () => {
+      const component = renderComponent(CounterComponent);
+      expect(containerEl.innerHTML).toEqual('0');
+      component.count = 123;
+      markDirty(component, requestAnimationFrame);
+      expect(containerEl.innerHTML).toEqual('0');
+      requestAnimationFrame.flush();
+      expect(containerEl.innerHTML).toEqual('123');
+      component.increment();
+      markDirty(component, requestAnimationFrame);
+      expect(containerEl.innerHTML).toEqual('123');
+      requestAnimationFrame.flush();
+      expect(containerEl.innerHTML).toEqual('124');
+    });
+
+  });
+
+});
+
+// TODO: add tests with Native once tests are run in real browser (domino doesn't support shadow
+// root)
+describe('encapsulation', () => {
+  class WrapperComponent {
+    static ngComponentDef = defineComponent({
+      type: WrapperComponent,
+      tag: 'wrapper',
+      template: function(ctx: WrapperComponent, cm: boolean) {
+        if (cm) {
+          E(0, EncapsulatedComponent.ngComponentDef);
+          { D(1, EncapsulatedComponent.ngComponentDef.n(), EncapsulatedComponent.ngComponentDef); }
+          e();
+        }
+        EncapsulatedComponent.ngComponentDef.r(1, 0);
+      },
+      factory: () => new WrapperComponent,
+    });
+  }
+
+  class EncapsulatedComponent {
+    static ngComponentDef = defineComponent({
+      type: EncapsulatedComponent,
+      tag: 'encapsulated',
+      template: function(ctx: EncapsulatedComponent, cm: boolean) {
+        if (cm) {
+          T(0, 'foo');
+          E(1, LeafComponent.ngComponentDef);
+          { D(2, LeafComponent.ngComponentDef.n(), LeafComponent.ngComponentDef); }
+          e();
+        }
+        LeafComponent.ngComponentDef.r(2, 1);
+      },
+      factory: () => new EncapsulatedComponent,
+      rendererType:
+          createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
+    });
+  }
+
+  class LeafComponent {
+    static ngComponentDef = defineComponent({
+      type: LeafComponent,
+      tag: 'leaf',
+      template: function(ctx: LeafComponent, cm: boolean) {
+        if (cm) {
+          E(0, 'span');
+          { T(1, 'bar'); }
+          e();
+        }
+      },
+      factory: () => new LeafComponent,
+    });
+  }
+
+  it('should encapsulate children, but not host nor grand children', () => {
+    renderComponent(WrapperComponent, getRendererFactory2(document));
+    expect(containerEl.outerHTML)
+        .toEqual(
+            '<div host=""><encapsulated _nghost-c0="">foo<leaf _ngcontent-c0=""><span>bar</span></leaf></encapsulated></div>');
+  });
+
+  it('should encapsulate host', () => {
+    renderComponent(EncapsulatedComponent, getRendererFactory2(document));
+    expect(containerEl.outerHTML)
+        .toEqual(
+            '<div host="" _nghost-c0="">foo<leaf _ngcontent-c0=""><span>bar</span></leaf></div>');
+  });
+
+  it('should encapsulate host and children with different attributes', () => {
+    class WrapperComponentWith {
+      static ngComponentDef = defineComponent({
+        type: WrapperComponent,
+        tag: 'wrapper',
+        template: function(ctx: WrapperComponentWith, cm: boolean) {
+          if (cm) {
+            E(0, LeafComponentwith.ngComponentDef);
+            { D(1, LeafComponentwith.ngComponentDef.n(), LeafComponentwith.ngComponentDef); }
+            e();
+          }
+          LeafComponentwith.ngComponentDef.r(1, 0);
+        },
+        factory: () => new WrapperComponentWith,
+        rendererType:
+            createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
+      });
+    }
+
+    class LeafComponentwith {
+      static ngComponentDef = defineComponent({
+        type: LeafComponentwith,
+        tag: 'leaf',
+        template: function(ctx: LeafComponentwith, cm: boolean) {
+          if (cm) {
+            E(0, 'span');
+            { T(1, 'bar'); }
+            e();
+          }
+        },
+        factory: () => new LeafComponentwith,
+        rendererType:
+            createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
+      });
+    }
+
+    renderComponent(WrapperComponentWith, getRendererFactory2(document));
+    expect(containerEl.outerHTML)
+        .toEqual(
+            '<div host="" _nghost-c2=""><leaf _ngcontent-c2="" _nghost-c3=""><span _ngcontent-c3="">bar</span></leaf></div>');
+  });
+});

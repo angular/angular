@@ -13,11 +13,11 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {SourceMap} from '@angular/compiler/src/output/source_map';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler/src/parse_util';
 
-import {extractSourceMap, originalPositionFor} from './source_map_util';
+import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
 
 const someGenFilePath = 'somePackage/someGenFile';
 
-export function main() {
+{
   describe('JavaScriptEmitter', () => {
     let emitter: JavaScriptEmitter;
     let someVar: o.ReadVarExpr;

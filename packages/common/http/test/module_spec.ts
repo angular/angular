@@ -47,7 +47,7 @@ class InterceptorB extends TestInterceptor {
   constructor() { super('B'); }
 }
 
-export function main() {
+{
   describe('HttpClientModule', () => {
     let injector: Injector;
     beforeEach(() => {

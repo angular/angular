@@ -22,37 +22,21 @@ describe('Collector', () => {
 
   beforeEach(() => {
     host = new Host(FILES, [
-      '/app/app.component.ts',
-      '/app/cases-data.ts',
-      '/app/error-cases.ts',
-      '/promise.ts',
-      '/unsupported-1.ts',
-      '/unsupported-2.ts',
-      '/unsupported-3.ts',
-      'class-arity.ts',
-      'declarations.d.ts',
-      'import-star.ts',
-      'exported-classes.ts',
-      'exported-functions.ts',
-      'exported-enum.ts',
-      'exported-type.ts',
-      'exported-consts.ts',
-      'local-symbol-ref.ts',
-      'local-function-ref.ts',
-      'local-symbol-ref-func.ts',
-      'local-symbol-ref-func-dynamic.ts',
-      'private-enum.ts',
-      're-exports.ts',
-      're-exports-2.ts',
-      'export-as.d.ts',
-      'static-field-reference.ts',
-      'static-method.ts',
-      'static-method-call.ts',
-      'static-method-with-if.ts',
-      'static-method-with-default.ts',
-      'class-inheritance.ts',
-      'class-inheritance-parent.ts',
-      'class-inheritance-declarations.d.ts',
+      '/app/app.component.ts',    '/app/cases-data.ts',
+      '/app/error-cases.ts',      '/promise.ts',
+      '/unsupported-1.ts',        '/unsupported-2.ts',
+      '/unsupported-3.ts',        'class-arity.ts',
+      'declarations.d.ts',        'import-star.ts',
+      'exported-classes.ts',      'exported-functions.ts',
+      'exported-enum.ts',         'exported-type.ts',
+      'exported-consts.ts',       'local-symbol-ref.ts',
+      'local-function-ref.ts',    'local-symbol-ref-func.ts',
+      'private-enum.ts',          're-exports.ts',
+      're-exports-2.ts',          'export-as.d.ts',
+      'named-module.d.ts',        'static-field-reference.ts',
+      'static-method.ts',         'static-method-call.ts',
+      'static-method-with-if.ts', 'static-method-with-default.ts',
+      'class-inheritance.ts',     'class-inheritance-parent.ts',
       'interface-reference.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
@@ -99,6 +83,12 @@ describe('Collector', () => {
       version: METADATA_VERSION,
       metadata: {Hero: {__symbolic: 'interface'}}
     });
+  });
+
+  it('should preserve module names from TypeScript sources', () => {
+    const sourceFile = program.getSourceFile('named-module.d.ts');
+    const metadata = collector.getMetadata(sourceFile);
+    expect(metadata !['importAs']).toEqual('some-named-module');
   });
 
   it('should be able to collect a simple component\'s metadata', () => {
@@ -1031,6 +1021,25 @@ describe('Collector', () => {
       expect(metadata).toBeUndefined();
     });
 
+    it('should collect type guards', () => {
+      const metadata = collectSource(`
+        import {Directive, Input, TemplateRef} from '@angular/core';
+
+        @Directive({selector: '[myIf]'})
+        export class MyIf {
+
+          constructor(private templateRef: TemplateRef) {}
+
+          @Input() myIf: any;
+
+          static typeGuard: <T>(v: T | null | undefined): v is T;
+        }
+      `);
+
+      expect((metadata.metadata.MyIf as any).statics.typeGuard)
+          .not.toBeUndefined('typeGuard was not collected');
+    });
+
     it('should be able to collect an invalid access expression', () => {
       const source = createSource(`
         import {Component} from '@angular/core';
@@ -1516,6 +1525,10 @@ const FILES: Directory = {
      declare function someFunction(): void;
      export { someFunction as SomeFunction };
  `,
+  'named-module.d.ts': `
+    /// <amd-module name="some-named-module" />
+    export type SomeType = 'a';
+  `,
   'local-symbol-ref.ts': `
     import {Component, Validators} from 'angular2/core';
 

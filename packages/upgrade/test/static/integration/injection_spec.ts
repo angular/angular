@@ -12,11 +12,11 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {$INJECTOR, INJECTOR_KEY} from '@angular/upgrade/src/common/constants';
-import {UpgradeModule, downgradeInjectable, getAngularLib, setAngularLib} from '@angular/upgrade/static';
+import {UpgradeModule, downgradeInjectable, getAngularJSGlobal, setAngularJSGlobal} from '@angular/upgrade/static';
 
 import {bootstrap, html} from '../test_helpers';
 
-export function main() {
+{
   describe('injection', () => {
 
     beforeEach(() => destroyPlatform());
@@ -103,9 +103,9 @@ export function main() {
     it('should allow resetting angular at runtime', async(() => {
          let wrappedBootstrapepedCalled = false;
 
-         const n: any = getAngularLib();
+         const n: any = getAngularJSGlobal();
 
-         setAngularLib({
+         setAngularJSGlobal({
            bootstrap: (...args: any[]) => {
              wrappedBootstrapepedCalled = true;
              n.bootstrap(...args);

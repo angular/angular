@@ -476,7 +476,12 @@ export declare abstract class Injector {
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: Object;
-    static create(providers: StaticProvider[], parent?: Injector): Injector;
+    /** @deprecated */ static create(providers: StaticProvider[], parent?: Injector): Injector;
+    static create(options: {
+        providers: StaticProvider[];
+        parent?: Injector;
+        name?: string;
+    }): Injector;
 }
 
 /** @stable */

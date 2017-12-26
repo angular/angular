@@ -34,7 +34,7 @@ import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
 import {ResolvedStaticSymbol, StaticSymbolResolver} from './static_symbol_resolver';
 import {createForJitStub, serializeSummaries} from './summary_serializer';
-import {ngfactoryFilePath, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
+import {ngfactoryFilePath, normalizeGenFileSuffix, splitTypescriptSuffix, summaryFileName, summaryForJitFileName, summaryForJitName} from './util';
 
 enum StubEmitFlags {
   Basic = 1 << 0,
@@ -103,7 +103,7 @@ export class AotCompiler {
         genFileNames.push(summaryForJitFileName(file.fileName, true));
       }
     }
-    const fileSuffix = splitTypescriptSuffix(file.fileName, true)[1];
+    const fileSuffix = normalizeGenFileSuffix(splitTypescriptSuffix(file.fileName, true)[1]);
     file.directives.forEach((dirSymbol) => {
       const compMeta =
           this._metadataResolver.getNonNormalizedDirectiveMetadata(dirSymbol) !.metadata;
@@ -218,15 +218,14 @@ export class AotCompiler {
 
       const externalReferenceVars = new Map<any, string>();
       externalReferences.forEach((ref, typeIndex) => {
-        if (this._host.isSourceFile(ref.filePath)) {
-          externalReferenceVars.set(ref, `_decl${ngModuleIndex}_${typeIndex}`);
-        }
+        externalReferenceVars.set(ref, `_decl${ngModuleIndex}_${typeIndex}`);
       });
       externalReferenceVars.forEach((varName, reference) => {
         outputCtx.statements.push(
             o.variable(varName)
                 .set(o.NULL_EXPR.cast(o.DYNAMIC_TYPE))
-                .toDeclStmt(o.expressionType(outputCtx.importExpr(reference))));
+                .toDeclStmt(o.expressionType(outputCtx.importExpr(
+                    reference, /* typeParams */ null, /* useSummaries */ false))));
       });
 
       if (emitFlags & StubEmitFlags.TypeCheck) {
@@ -271,7 +270,7 @@ export class AotCompiler {
     const {template: parsedTemplate, pipes: usedPipes} =
         this._parseTemplate(compMeta, moduleMeta, directives);
     ctx.statements.push(...this._typeCheckCompiler.compileComponent(
-        componentId, compMeta, parsedTemplate, usedPipes, externalReferenceVars));
+        componentId, compMeta, parsedTemplate, usedPipes, externalReferenceVars, ctx));
   }
 
   emitMessageBundle(analyzeResult: NgAnalyzedModules, locale: string|null): MessageBundle {
@@ -318,7 +317,7 @@ export class AotCompiler {
       srcFileUrl: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
       directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: CompileNgModuleMetadata[],
       injectables: StaticSymbol[]): GeneratedFile[] {
-    const fileSuffix = splitTypescriptSuffix(srcFileUrl, true)[1];
+    const fileSuffix = normalizeGenFileSuffix(splitTypescriptSuffix(srcFileUrl, true)[1]);
     const generatedFiles: GeneratedFile[] = [];
 
     const outputCtx = this._createOutputContext(ngfactoryFilePath(srcFileUrl, true));
@@ -515,35 +514,38 @@ export class AotCompiler {
   }
 
   private _createOutputContext(genFilePath: string): OutputContext {
-    const importExpr = (symbol: StaticSymbol, typeParams: o.Type[] | null = null) => {
-      if (!(symbol instanceof StaticSymbol)) {
-        throw new Error(`Internal error: unknown identifier ${JSON.stringify(symbol)}`);
-      }
-      const arity = this._symbolResolver.getTypeArity(symbol) || 0;
-      const {filePath, name, members} = this._symbolResolver.getImportAs(symbol) || symbol;
-      const importModule = this._fileNameToModuleName(filePath, genFilePath);
+    const importExpr =
+        (symbol: StaticSymbol, typeParams: o.Type[] | null = null,
+         useSummaries: boolean = true) => {
+          if (!(symbol instanceof StaticSymbol)) {
+            throw new Error(`Internal error: unknown identifier ${JSON.stringify(symbol)}`);
+          }
+          const arity = this._symbolResolver.getTypeArity(symbol) || 0;
+          const {filePath, name, members} =
+              this._symbolResolver.getImportAs(symbol, useSummaries) || symbol;
+          const importModule = this._fileNameToModuleName(filePath, genFilePath);
 
-      // It should be good enough to compare filePath to genFilePath and if they are equal
-      // there is a self reference. However, ngfactory files generate to .ts but their
-      // symbols have .d.ts so a simple compare is insufficient. They should be canonical
-      // and is tracked by #17705.
-      const selfReference = this._fileNameToModuleName(genFilePath, genFilePath);
-      const moduleName = importModule === selfReference ? null : importModule;
+          // It should be good enough to compare filePath to genFilePath and if they are equal
+          // there is a self reference. However, ngfactory files generate to .ts but their
+          // symbols have .d.ts so a simple compare is insufficient. They should be canonical
+          // and is tracked by #17705.
+          const selfReference = this._fileNameToModuleName(genFilePath, genFilePath);
+          const moduleName = importModule === selfReference ? null : importModule;
 
-      // If we are in a type expression that refers to a generic type then supply
-      // the required type parameters. If there were not enough type parameters
-      // supplied, supply any as the type. Outside a type expression the reference
-      // should not supply type parameters and be treated as a simple value reference
-      // to the constructor function itself.
-      const suppliedTypeParams = typeParams || [];
-      const missingTypeParamsCount = arity - suppliedTypeParams.length;
-      const allTypeParams =
-          suppliedTypeParams.concat(new Array(missingTypeParamsCount).fill(o.DYNAMIC_TYPE));
-      return members.reduce(
-          (expr, memberName) => expr.prop(memberName),
-          <o.Expression>o.importExpr(
-              new o.ExternalReference(moduleName, name, null), allTypeParams));
-    };
+          // If we are in a type expression that refers to a generic type then supply
+          // the required type parameters. If there were not enough type parameters
+          // supplied, supply any as the type. Outside a type expression the reference
+          // should not supply type parameters and be treated as a simple value reference
+          // to the constructor function itself.
+          const suppliedTypeParams = typeParams || [];
+          const missingTypeParamsCount = arity - suppliedTypeParams.length;
+          const allTypeParams =
+              suppliedTypeParams.concat(new Array(missingTypeParamsCount).fill(o.DYNAMIC_TYPE));
+          return members.reduce(
+              (expr, memberName) => expr.prop(memberName),
+              <o.Expression>o.importExpr(
+                  new o.ExternalReference(moduleName, name, null), allTypeParams));
+        };
 
     return {statements: [], genFilePath, importExpr};
   }

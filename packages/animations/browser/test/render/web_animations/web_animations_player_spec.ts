@@ -8,7 +8,7 @@
 import {DOMAnimation} from '../../../src/render/web_animations/dom_animation';
 import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player';
 
-export function main() {
+{
   let element: any;
   let innerPlayer: MockDomAnimation|null = null;
   beforeEach(() => {
@@ -33,6 +33,24 @@ export function main() {
       expect(p.log).toEqual(['pause', 'play']);
     });
 
+    it('should allow an empty set of keyframes with a set of previous styles', () => {
+      const previousKeyframes = [
+        {opacity: 0, offset: 0},
+        {opacity: 1, offset: 1},
+      ];
+
+      const previousPlayer = new WebAnimationsPlayer(element, previousKeyframes, {duration: 1000});
+      previousPlayer.play();
+      previousPlayer.finish();
+      previousPlayer.beforeDestroy();
+
+      const EMPTY_KEYFRAMES: any[] = [];
+      const player =
+          new WebAnimationsPlayer(element, EMPTY_KEYFRAMES, {duration: 1000}, [previousPlayer]);
+      player.play();
+      player.destroy();
+    });
+
     it('should not pause the player if created and started before initialized', () => {
       const keyframes = [
         {opacity: 0, offset: 0},
@@ -53,13 +71,13 @@ export function main() {
       player.onStart(() => log.push('started'));
       player.onDone(() => log.push('done'));
 
-      player.triggerCallback('start');
+      (player as any).triggerCallback('start');
       expect(log).toEqual(['started']);
 
       player.play();
       expect(log).toEqual(['started']);
 
-      player.triggerCallback('done');
+      (player as any).triggerCallback('done');
       expect(log).toEqual(['started', 'done']);
 
       player.finish();

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ApplicationRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {APP_INITIALIZER, ApplicationRef, Inject, InjectionToken, Injector, ModuleWithProviders, NgModule, PLATFORM_ID} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {filter as op_filter} from 'rxjs/operator/filter';
 import {take as op_take} from 'rxjs/operator/take';
@@ -16,14 +17,20 @@ import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
 
+export abstract class RegistrationOptions {
+  scope?: string;
+  enabled?: boolean;
+}
+
 export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
-export const OPTS = new InjectionToken<Object>('NGSW_REGISTER_OPTIONS');
 
 export function ngswAppInitializer(
-    injector: Injector, script: string, options: RegistrationOptions): Function {
+    injector: Injector, script: string, options: RegistrationOptions,
+    platformId: string): Function {
   const initializer = () => {
     const app = injector.get<ApplicationRef>(ApplicationRef);
-    if (!('serviceWorker' in navigator)) {
+    if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
+          options.enabled !== false)) {
       return;
     }
     const onStable =
@@ -31,15 +38,26 @@ export function ngswAppInitializer(
     const isStable = op_take.call(onStable, 1) as Observable<boolean>;
     const whenStable = op_toPromise.call(isStable) as Promise<boolean>;
 
+    // Wait for service worker controller changes, and fire an INITIALIZE action when a new SW
+    // becomes active. This allows the SW to initialize itself even if there is no application
+    // traffic.
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (navigator.serviceWorker.controller !== null) {
+        navigator.serviceWorker.controller.postMessage({action: 'INITIALIZE'});
+      }
+    });
+
     // Don't return the Promise, as that will block the application until the SW is registered, and
     // cause a crash if the SW registration fails.
-    whenStable.then(() => navigator.serviceWorker.register(script, options));
+    whenStable.then(() => navigator.serviceWorker.register(script, {scope: options.scope}));
   };
   return initializer;
 }
 
-export function ngswCommChannelFactory(): NgswCommChannel {
-  return new NgswCommChannel(navigator.serviceWorker);
+export function ngswCommChannelFactory(
+    opts: RegistrationOptions, platformId: string): NgswCommChannel {
+  return new NgswCommChannel(
+      opts.enabled !== false ? navigator.serviceWorker : undefined, platformId);
 }
 
 /**
@@ -49,17 +67,28 @@ export function ngswCommChannelFactory(): NgswCommChannel {
   providers: [SwPush, SwUpdate],
 })
 export class ServiceWorkerModule {
-  static register(script: string, opts: RegistrationOptions = {}): ModuleWithProviders {
+  /**
+   * Register the given Angular Service Worker script.
+   *
+   * If `enabled` is set to `false` in the given options, the module will behave as if service
+   * workers are not supported by the browser, and the service worker will not be registered.
+   */
+  static register(script: string, opts: {scope?: string; enabled?: boolean;} = {}):
+      ModuleWithProviders {
     return {
       ngModule: ServiceWorkerModule,
       providers: [
         {provide: SCRIPT, useValue: script},
-        {provide: OPTS, useValue: opts},
-        {provide: NgswCommChannel, useFactory: ngswCommChannelFactory},
+        {provide: RegistrationOptions, useValue: opts},
+        {
+          provide: NgswCommChannel,
+          useFactory: ngswCommChannelFactory,
+          deps: [RegistrationOptions, PLATFORM_ID]
+        },
         {
           provide: APP_INITIALIZER,
           useFactory: ngswAppInitializer,
-          deps: [Injector, SCRIPT, OPTS],
+          deps: [Injector, SCRIPT, RegistrationOptions, PLATFORM_ID],
           multi: true,
         },
       ],

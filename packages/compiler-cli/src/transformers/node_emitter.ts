@@ -26,14 +26,7 @@ export class TypeScriptNodeEmitter {
         ...stmts.map(stmt => stmt.visitStatement(converter, null)).filter(stmt => stmt != null));
     const preambleStmts: ts.Statement[] = [];
     if (preamble) {
-      if (preamble.startsWith('/*') && preamble.endsWith('*/')) {
-        preamble = preamble.substr(2, preamble.length - 4);
-      }
-      const commentStmt = ts.createNotEmittedStatement(sourceFile);
-      ts.setSyntheticLeadingComments(
-          commentStmt,
-          [{kind: ts.SyntaxKind.MultiLineCommentTrivia, text: preamble, pos: -1, end: -1}]);
-      ts.setEmitFlags(commentStmt, ts.EmitFlags.CustomPrologue);
+      const commentStmt = this.createCommentStatement(sourceFile, preamble);
       preambleStmts.push(commentStmt);
     }
     const sourceStatments =
@@ -41,6 +34,19 @@ export class TypeScriptNodeEmitter {
     converter.updateSourceMap(sourceStatments);
     const newSourceFile = ts.updateSourceFileNode(sourceFile, sourceStatments);
     return [newSourceFile, converter.getNodeMap()];
+  }
+
+  /** Creates a not emitted statement containing the given comment. */
+  createCommentStatement(sourceFile: ts.SourceFile, comment: string): ts.Statement {
+    if (comment.startsWith('/*') && comment.endsWith('*/')) {
+      comment = comment.substr(2, comment.length - 4);
+    }
+    const commentStmt = ts.createNotEmittedStatement(sourceFile);
+    ts.setSyntheticLeadingComments(
+        commentStmt,
+        [{kind: ts.SyntaxKind.MultiLineCommentTrivia, text: comment, pos: -1, end: -1}]);
+    ts.setEmitFlags(commentStmt, ts.EmitFlags.CustomPrologue);
+    return commentStmt;
   }
 }
 

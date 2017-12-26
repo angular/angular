@@ -4,7 +4,7 @@
   "description": "Angular - service worker tooling!",
   "main": "./bundles/service-worker.umd.js",
   "module": "./esm5/service-worker.js",
-  "es2015": "./esm15/service-worker.js",
+  "es2015": "./esm2015/service-worker.js",
   "typings": "./service-worker.d.ts",
   "author": "angular",
   "license": "MIT",
@@ -12,7 +12,8 @@
     "tslib": "^1.7.1"
   },
   "peerDependencies": {
-    "@angular/core": "0.0.0-PLACEHOLDER"
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",

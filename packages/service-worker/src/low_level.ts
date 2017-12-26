@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
 import {ConnectableObservable} from 'rxjs/observable/ConnectableObservable';
@@ -24,7 +25,7 @@ import {switchMap as op_switchMap} from 'rxjs/operator/switchMap';
 import {take as op_take} from 'rxjs/operator/take';
 import {toPromise as op_toPromise} from 'rxjs/operator/toPromise';
 
-const ERR_SW_NOT_SUPPORTED = 'Service workers are not supported by this browser';
+export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 
 export interface Version {
   hash: string;
@@ -86,9 +87,12 @@ export class NgswCommChannel {
    */
   readonly events: Observable<IncomingEvent>;
 
-  constructor(serviceWorker: ServiceWorkerContainer|undefined) {
-    if (!serviceWorker) {
-      this.worker = this.events = errorObservable(ERR_SW_NOT_SUPPORTED);
+  constructor(
+      private serviceWorker: ServiceWorkerContainer|undefined,
+      @Inject(PLATFORM_ID) platformId: string) {
+    if (!serviceWorker || !isPlatformBrowser(platformId)) {
+      this.serviceWorker = undefined;
+      this.worker = this.events = this.registration = errorObservable(ERR_SW_NOT_SUPPORTED);
     } else {
       const controllerChangeEvents =
           <Observable<any>>(obs_fromEvent(serviceWorker, 'controllerchange'));
@@ -176,4 +180,6 @@ export class NgswCommChannel {
         }));
     return op_toPromise.call(mapErrorAndValue);
   }
+
+  get isEnabled(): boolean { return !!this.serviceWorker; }
 }

@@ -8,8 +8,9 @@
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {HammerGestureConfig, HammerGesturesPlugin} from '@angular/platform-browser/src/dom/events/hammer_gestures';
 
-export function main() {
+{
   describe('HammerGesturesPlugin', () => {
+    if (isNode) return;
 
     it('should implement addGlobalEventListener', () => {
       const plugin = new HammerGesturesPlugin(document, new HammerGestureConfig());

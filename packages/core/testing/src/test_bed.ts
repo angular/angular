@@ -355,8 +355,12 @@ export class TestBed implements Injector {
     }
 
     const ngZone = new NgZone({enableLongStackTrace: true});
-    const ngZoneInjector =
-        Injector.create([{provide: NgZone, useValue: ngZone}], this.platform.injector);
+    const providers: StaticProvider[] = [{provide: NgZone, useValue: ngZone}];
+    const ngZoneInjector = Injector.create({
+      providers: providers,
+      parent: this.platform.injector,
+      name: this._moduleFactory.moduleType.name
+    });
     this._moduleRef = this._moduleFactory.create(ngZoneInjector);
     // ApplicationInitStatus.runInitializers() is marked @internal to core. So casting to any
     // before accessing it.

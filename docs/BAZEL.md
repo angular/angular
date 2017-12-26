@@ -50,3 +50,26 @@ keeps the outputs up-to-date as you save sources. Note this is
 new as of May 2017 and not very stable yet.
 
 [ibazel]: https://github.com/bazelbuild/bazel-watcher
+
+## Testing Angular
+
+- Test package in node: `bazel test packages/core/test:test`
+- Test package in karma: `bazel test packages/core/test:test_web`
+- Test all packages: `bazel test packages/...`
+
+You can use [ibazel] to get a "watch mode" that continuously
+keeps the outputs up-to-date as you save sources. 
+
+### Debugging a Node Test
+
+- Open chrome at: [chrome://inspect](chrome://inspect)
+- Click on  `Open dedicated DevTools for Node` to launch a debugger.
+- Run test: `bazel test packages/core/test:test --config=debug`
+
+The process should automatically connect to the debugger.
+
+### Debugging a Karma Test
+
+- Run test: `bazel run packages/core/test:test_web`
+- Open chrome at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
+- Open chrome inspector

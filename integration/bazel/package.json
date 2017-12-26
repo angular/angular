@@ -20,6 +20,7 @@
   },
   "scripts": {
     "postinstall": "ngc -p angular.tsconfig.json",
-    "test": "bazel build ..."
+    "test": "WORKAROUND https://github.com/bazelbuild/bazel/issues/4242, can't build ...",
+    "test": "bazel build //src/... --noshow_progress"
   }
 }

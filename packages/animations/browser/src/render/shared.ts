@@ -166,12 +166,30 @@ if (typeof Element != 'undefined') {
   };
 }
 
+function containsVendorPrefix(prop: string): boolean {
+  // Webkit is the only real popular vendor prefix nowadays
+  // cc: http://shouldiprefix.com/
+  return prop.substring(1, 6) == 'ebkit';  // webkit or Webkit
+}
+
 let _CACHED_BODY: {style: any}|null = null;
+let _IS_WEBKIT = false;
 export function validateStyleProperty(prop: string): boolean {
   if (!_CACHED_BODY) {
     _CACHED_BODY = getBodyNode() || {};
+    _IS_WEBKIT = _CACHED_BODY !.style ? ('WebkitAppearance' in _CACHED_BODY !.style) : false;
   }
-  return _CACHED_BODY !.style ? prop in _CACHED_BODY !.style : true;
+
+  let result = true;
+  if (_CACHED_BODY !.style && !containsVendorPrefix(prop)) {
+    result = prop in _CACHED_BODY !.style;
+    if (!result && _IS_WEBKIT) {
+      const camelProp = 'Webkit' + prop.charAt(0).toUpperCase() + prop.substr(1);
+      result = camelProp in _CACHED_BODY !.style;
+    }
+  }
+
+  return result;
 }
 
 export function getBodyNode(): any|null {

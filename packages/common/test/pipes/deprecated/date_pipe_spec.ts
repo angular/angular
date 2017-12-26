@@ -11,7 +11,7 @@ import {PipeResolver} from '@angular/compiler/src/pipe_resolver';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
-export function main() {
+{
   describe('DeprecatedDatePipe', () => {
     let date: Date;
     const isoStringWithoutTime = '2015-01-01';

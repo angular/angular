@@ -270,6 +270,13 @@ function getDateTranslation(
       return getLocaleDayPeriods(locale, form, <TranslationWidth>width)[currentHours < 12 ? 0 : 1];
     case TranslationType.Eras:
       return getLocaleEraNames(locale, <TranslationWidth>width)[date.getFullYear() <= 0 ? 0 : 1];
+    default:
+      // This default case is not needed by TypeScript compiler, as the switch is exhaustive.
+      // However Closure Compiler does not understand that and reports an error in typed mode.
+      // The `throw new Error` below works around the problem, and the unexpected: never variable
+      // makes sure tsc still checks this code is unreachable.
+      const unexpected: never = name;
+      throw new Error(`unexpected translation type ${unexpected}`);
   }
 }
 

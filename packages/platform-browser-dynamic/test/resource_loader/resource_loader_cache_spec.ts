@@ -15,7 +15,7 @@ import {CachedResourceLoader} from '../../src/resource_loader/resource_loader_ca
 
 import {setTemplateCache} from './resource_loader_cache_setter';
 
-export function main() {
+{
   describe('CachedResourceLoader', () => {
     let resourceLoader: CachedResourceLoader;
 

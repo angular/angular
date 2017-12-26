@@ -9,10 +9,9 @@
 import {AotSummaryResolver, GeneratedFile, StaticSymbolCache, StaticSymbolResolver, toTypeScript} from '@angular/compiler';
 import {MetadataBundler} from '@angular/compiler-cli/src/metadata/bundler';
 import {privateEntriesToIndex} from '@angular/compiler-cli/src/metadata/index_writer';
+import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
 import {NodeFlags} from '@angular/core/src/view/index';
 import * as ts from 'typescript';
-
-import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
 
 import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
 
@@ -905,6 +904,14 @@ describe('compiler (bundled Angular)', () => {
       expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
       expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
     });
+
+    it('should support tsx', () => {
+      const tsOptions = {jsx: ts.JsxEmit.React};
+      const {genFiles} =
+          compile([QUICKSTART_TSX, angularFiles], /* options */ undefined, tsOptions);
+      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+    });
   });
 
   describe('Bundled library', () => {
@@ -973,6 +980,34 @@ const QUICKSTART: MockDirectory = {
         export function toString(value: any): string {
           return  '';
         }
+      `
+    }
+  }
+};
+
+const QUICKSTART_TSX: MockDirectory = {
+  quickstart: {
+    app: {
+      // #20555
+      'app.component.tsx': `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<h1>Hello {{name}}</h1>'
+        })
+        export class AppComponent {
+          name = 'Angular';
+        }
+      `,
+      'app.module.ts': `
+        import { NgModule }      from '@angular/core';
+        import { AppComponent }  from './app.component';
+
+        @NgModule({
+          declarations: [ AppComponent ],
+          bootstrap:    [ AppComponent ]
+        })
+        export class AppModule { }
       `
     }
   }

@@ -89,6 +89,11 @@ export class Driver implements Debuggable, UpdateSource {
   private lastUpdateCheck: number|null = null;
 
   /**
+   * Whether there is a check for updates currently scheduled due to navigation.
+   */
+  private scheduledNavUpdateCheck: boolean = false;
+
+  /**
    * A scheduler which manages a queue of tasks that need to be executed when the SW is
    * not doing any other work (not processing any other requests).
    */
@@ -325,6 +330,15 @@ export class Driver implements Debuggable, UpdateSource {
       // Since the SW is already committed to responding to the currently active request,
       // respond with a network fetch.
       return this.safeFetch(event.request);
+    }
+
+    // On navigation requests, check for new updates.
+    if (event.request.mode === 'navigate' && !this.scheduledNavUpdateCheck) {
+      this.scheduledNavUpdateCheck = true;
+      this.idle.schedule('check-updates-on-navigation', async() => {
+        this.scheduledNavUpdateCheck = false;
+        await this.checkForUpdate();
+      });
     }
 
     // Decide which version of the app to use to serve this request. This is asynchronous as in
@@ -580,8 +594,8 @@ export class Driver implements Debuggable, UpdateSource {
    * Retrieve a copy of the latest manifest from the server.
    */
   private async fetchLatestManifest(): Promise<Manifest> {
-    const res = await this.safeFetch(
-        this.adapter.newRequest('/ngsw.json?ngsw-cache-bust=' + Math.random()));
+    const res =
+        await this.safeFetch(this.adapter.newRequest('ngsw.json?ngsw-cache-bust=' + Math.random()));
     if (!res.ok) {
       if (res.status === 404) {
         await this.deleteAllCaches();

@@ -206,7 +206,7 @@ minify() {
     base_file=$( basename "${file}" )
     if [[ "${base_file}" =~ $regex && "${base_file##*.}" != "map" ]]; then
       local out_file=$(dirname "${file}")/${BASH_REMATCH[1]}.min.js
-      $UGLIFYJS -c --screw-ie8 --comments -o ${out_file} --source-map ${out_file}.map --source-map-include-sources ${file}
+      $UGLIFYJS -c --screw-ie8 --comments -o ${out_file} --source-map ${out_file}.map --prefix relative --source-map-include-sources ${file}
     fi
   done
 }
@@ -476,7 +476,7 @@ do
 
       if [[ ${PACKAGE} == "common" ]]; then
         echo "======      Copy i18n locale data"
-        rsync -a --exclude=*.d.ts --exclude=*.metadata.json ${OUT_DIR}/locales/ ${NPM_DIR}/locales
+        rsync -a ${OUT_DIR}/locales/ ${NPM_DIR}/locales
       fi
     else
       echo "======        Copy ${PACKAGE} node tool"

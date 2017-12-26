@@ -241,6 +241,12 @@
       "UI Components": {
         "order": 4,
         "resources": {
+          "IgniteUIforAngular": {
+            "desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
+            "rev": true,
+            "title": "Ignite UI for Angular",
+            "url": "https://www.infragistics.com/products/ignite-ui-angular"
+          },
           "DevExtreme": {
             "desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
             "rev": true,
@@ -633,6 +639,13 @@
             "rev": true,
             "title": "Formation JavaScript (French)",
             "url": "https://formationjavascript.com/formation-angular/"
+          },
+          "wao": {
+            "desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
+            "logo": "https://weareone.ch/wordpress/wao-content/uploads/2014/12/logo_200_2x.png",
+            "rev": true,
+            "title": "We Are One Sàrl",
+            "url": "https://weareone.ch/courses/angular/"
           }
         }
       }

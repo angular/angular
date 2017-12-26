@@ -312,9 +312,13 @@ export class AnimationTransitionNamespace {
     // If there are no animations found for any of the nodes then clear the cache
     // for the element.
     this._engine.driver.query(rootElement, NG_TRIGGER_SELECTOR, true).forEach(elm => {
+      // this means that an inner remove() operation has already kicked off
+      // the animation on this element...
+      if (elm[REMOVAL_FLAG]) return;
+
       const namespaces = this._engine.fetchNamespacesByElement(elm);
       if (namespaces.size) {
-        namespaces.forEach(ns => { ns.triggerLeaveAnimation(elm, context, false, true); });
+        namespaces.forEach(ns => ns.triggerLeaveAnimation(elm, context, false, true));
       } else {
         this.clearElementCache(elm);
       }
@@ -1389,9 +1393,9 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
 
   public markedForDestroy: boolean = false;
 
-  constructor(public namespaceId: string, public triggerName: string, public element: any) {}
+  readonly queued: boolean = true;
 
-  get queued() { return this._containsRealPlayer == false; }
+  constructor(public namespaceId: string, public triggerName: string, public element: any) {}
 
   setRealPlayer(player: AnimationPlayer) {
     if (this._containsRealPlayer) return;
@@ -1403,6 +1407,7 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
     });
     this._queuedCallbacks = {};
     this._containsRealPlayer = true;
+    (this as{queued: boolean}).queued = false;
   }
 
   getRealPlayer() { return this._player; }

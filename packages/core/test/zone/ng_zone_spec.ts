@@ -62,9 +62,8 @@ function runNgZoneNoLog(fn: () => any) {
   }
 }
 
-export function main() {
+{
   describe('NgZone', () => {
-
     function createZone(enableLongStackTrace: boolean) {
       return new NgZone({enableLongStackTrace: enableLongStackTrace});
     }

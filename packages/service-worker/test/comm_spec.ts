@@ -14,32 +14,37 @@ import {SwPush} from '../src/push';
 import {SwUpdate} from '../src/update';
 import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
 
-export function main() {
+{
   describe('ServiceWorker library', () => {
     let mock: MockServiceWorkerContainer;
     let comm: NgswCommChannel;
     beforeEach(() => {
       mock = new MockServiceWorkerContainer();
-      comm = new NgswCommChannel(mock as any);
+      comm = new NgswCommChannel(mock as any, 'browser');
     });
     describe('NgswCommsChannel', () => {
       it('can access the registration when it comes before subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
-        const comm = new NgswCommChannel(mock as any);
+        const comm = new NgswCommChannel(mock as any, 'browser');
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
         mock.setupSw();
 
-        comm.registration.subscribe(reg => { done(); });
+        (comm as any).registration.subscribe((reg: any) => { done(); });
       });
       it('can access the registration when it comes after subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
-        const comm = new NgswCommChannel(mock as any);
+        const comm = new NgswCommChannel(mock as any, 'browser');
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
 
-        comm.registration.subscribe(reg => { done(); });
+        (comm as any).registration.subscribe((reg: any) => { done(); });
 
         mock.setupSw();
+      });
+      it('is disabled for platform-server', () => {
+        const mock = new MockServiceWorkerContainer();
+        const comm = new NgswCommChannel(mock as any, 'server');
+        expect(comm.isEnabled).toEqual(false);
       });
     });
     describe('SwPush', () => {
@@ -70,6 +75,24 @@ export function main() {
           ]
         });
         expect(() => TestBed.get(SwPush)).not.toThrow();
+      });
+      describe('with no SW', () => {
+        beforeEach(() => { comm = new NgswCommChannel(undefined, 'browser'); });
+        it('can be instantiated', () => { push = new SwPush(comm); });
+        it('does not crash on subscription to observables', () => {
+          push = new SwPush(comm);
+          push.messages.toPromise().catch(err => fail(err));
+          push.subscription.toPromise().catch(err => fail(err));
+        });
+        it('gives an error when registering', done => {
+          push = new SwPush(comm);
+          push.requestSubscription({serverPublicKey: 'test'}).catch(err => { done(); });
+        });
+        it('gives an error when unsubscribing', done => {
+
+          push = new SwPush(comm);
+          push.unsubscribe().catch(err => { done(); });
+        });
       });
     });
     describe('SwUpdate', () => {
@@ -146,6 +169,23 @@ export function main() {
           ]
         });
         expect(() => TestBed.get(SwUpdate)).not.toThrow();
+      });
+      describe('with no SW', () => {
+        beforeEach(() => { comm = new NgswCommChannel(undefined, 'browser'); });
+        it('can be instantiated', () => { update = new SwUpdate(comm); });
+        it('does not crash on subscription to observables', () => {
+          update = new SwUpdate(comm);
+          update.available.toPromise().catch(err => fail(err));
+          update.activated.toPromise().catch(err => fail(err));
+        });
+        it('gives an error when checking for updates', done => {
+          update = new SwUpdate(comm);
+          update.checkForUpdate().catch(err => { done(); });
+        });
+        it('gives an error when activating updates', done => {
+          update = new SwUpdate(comm);
+          update.activateUpdate().catch(err => { done(); });
+        });
       });
     });
   });

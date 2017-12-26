@@ -25,19 +25,19 @@ registerLocaleData(localeFr);
     <p>e (3.1-5): {{e | number:'3.1-5'}}</p>
 
     <!--output '0,002.71828'-->
-    <p>e (3.5-5): {{e | number:'4.5-5'}}</p>
+    <p>e (4.5-5): {{e | number:'4.5-5'}}</p>
     
     <!--output '0 002,71828'-->
     <p>e (french): {{e | number:'4.5-5':'fr'}}</p>
 
     <!--output '3.14'-->
-    <p>pi (no formatting): {{e | number}}</p>
+    <p>pi (no formatting): {{pi | number}}</p>
     
     <!--output '003.14'-->
-    <p>pi (3.1-5): {{e | number:'3.1-5'}}</p>
+    <p>pi (3.1-5): {{pi | number:'3.1-5'}}</p>
 
     <!--output '003.14000'-->
-    <p>pi (3.5-5): {{e | number:'3.5-5'}}</p>
+    <p>pi (3.5-5): {{pi | number:'3.5-5'}}</p>
   </div>`
 })
 export class NumberPipeComponent {

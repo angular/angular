@@ -10,7 +10,7 @@ import {flushMicrotasks} from '../../core/testing/src/fake_async';
 import {NoopAnimationPlayer} from '../src/players/animation_player';
 import {scheduleMicroTask} from '../src/util';
 
-export function main() {
+{
   describe('NoopAnimationPlayer', function() {
     it('should finish after the next microtask once started', fakeAsync(() => {
          const log: string[] = [];
@@ -49,13 +49,13 @@ export function main() {
          player.onDone(() => log.push('done'));
          flushMicrotasks();
 
-         player.triggerCallback('start');
+         (player as any).triggerCallback('start');
          expect(log).toEqual(['started']);
 
          player.play();
          expect(log).toEqual(['started']);
 
-         player.triggerCallback('done');
+         (player as any).triggerCallback('done');
          expect(log).toEqual(['started', 'done']);
 
          player.finish();

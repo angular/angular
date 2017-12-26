@@ -65,7 +65,7 @@ const server = new MockServerStateBuilder().withStaticFiles(dist).withManifest(m
 const serverUpdate =
     new MockServerStateBuilder().withStaticFiles(distUpdate).withManifest(manifestUpdate).build();
 
-export function main() {
+(function() {
   // Skip environments that don't support the minimum APIs needed to run the SW tests.
   if (!SwTestHarness.envIsSupported()) {
     return;
@@ -80,7 +80,7 @@ export function main() {
     async_beforeEach(async() => {
       // Fire up the client.
       mock = new MockServiceWorkerContainer();
-      comm = new NgswCommChannel(mock as any);
+      comm = new NgswCommChannel(mock as any, 'browser');
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
@@ -129,4 +129,4 @@ export function main() {
       await gotPushNotice;
     });
   });
-}
+})();
