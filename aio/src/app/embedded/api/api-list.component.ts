@@ -43,15 +43,15 @@ export class ApiListComponent implements OnInit {
   // API types
   types: Option[] = [
     { value: 'all', title: 'All' },
-    { value: 'directive', title: 'Directive' },
-    { value: 'pipe', title: 'Pipe'},
-    { value: 'decorator', title: 'Decorator' },
     { value: 'class', title: 'Class' },
-    { value: 'interface', title: 'Interface' },
-    { value: 'function', title: 'Function' },
+    { value: 'const', title: 'Const'},
+    { value: 'decorator', title: 'Decorator' },
+    { value: 'directive', title: 'Directive' },
     { value: 'enum', title: 'Enum' },
-    { value: 'type-alias', title: 'Type Alias' },
-    { value: 'const', title: 'Const'}
+    { value: 'function', title: 'Function' },
+    { value: 'interface', title: 'Interface' },
+    { value: 'pipe', title: 'Pipe'},
+    { value: 'type-alias', title: 'Type Alias' }
   ];
 
   statuses: Option[] = [
