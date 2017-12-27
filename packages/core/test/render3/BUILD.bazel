@@ -1,14 +1,18 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test")
 load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 
 ts_library(
-    name = "lib",
+    name = "render3_lib",
     testonly = 1,
     srcs = glob(
         ["**/*.ts"],
-        exclude = ["**/*_perf.ts"],
+        exclude = [
+            "**/*_perf.ts",
+            "domino.d.ts",
+            "load_domino.ts",
+        ],
     ),
     tsconfig = "//packages:tsconfig.json",
     deps = [
@@ -22,12 +26,37 @@ ts_library(
     ],
 )
 
+ts_library(
+    name = "render3_node_lib",
+    testonly = 1,
+    srcs = [
+        "domino.d.ts",
+        "load_domino.ts",
+    ],
+    tsconfig = "//packages:tsconfig",
+    deps = [
+        ":render3_lib",
+    ],
+)
+
 jasmine_node_test(
     name = "render3",
     bootstrap = [
         "angular_src/packages/core/test/render3/load_domino",
     ],
     deps = [
-        ":lib",
+        ":render3_node_lib",
+    ],
+)
+
+ts_web_test(
+    name = "render3_web",
+    bootstrap = [
+        "//:web_test_bootstrap_scripts",
+    ],
+    # do not sort
+    deps = [
+        "//tools/testing:browser",
+        ":render3_lib",
     ],
 )
