@@ -15,7 +15,8 @@ import {getRendererFactory2} from './imported_renderer2';
 export const document = ((global || window) as any).document;
 export let containerEl: HTMLElement = null !;
 let host: LElement|null;
-const isRenderer2 = process.argv[3] && process.argv[3] === '--r=renderer2';
+const isRenderer2 =
+    typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
 console.log(`Running tests with ${!isRenderer2 ? 'document' : 'Renderer2'} renderer...`);
 const testRendererFactory: RendererFactory3 =
