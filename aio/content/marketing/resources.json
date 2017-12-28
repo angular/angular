@@ -266,6 +266,13 @@
             "title": "Nx",
             "logo": "https://nrwl.io/assets/nx-logo.png",
             "url": "https://nrwl.io/nx"
+          },
+          "uijar": {
+            "desc": "A drop in module to automatically create a living style guide based on the test you write for your components.",
+            "logo": "",
+            "rev": true,
+            "title": "UI-jar - Test Driven Style Guide Development",
+            "url": "https://github.com/ui-jar/ui-jar"
           }
         }
       },
