@@ -291,7 +291,8 @@ That header is in the `httpOptions` constant defined in the `HeroService`.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
-  region="http-options">
+  region="http-options"
+  title="src/app/hero.service.ts">
 </code-example>
 
 Refresh the browser, change a hero name and save your change. Navigating to the previous view is implemented in the `save()` method defined in `HeroDetailComponent`.
