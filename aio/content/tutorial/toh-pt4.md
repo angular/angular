@@ -121,7 +121,7 @@ Import the `HeroService` instead.
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" title="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
 </code-example>
 
-Replace the the definition of the `heroes` property with a simple declaration.
+Replace the definition of the `heroes` property with a simple declaration.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" region="heroes">
 </code-example>
