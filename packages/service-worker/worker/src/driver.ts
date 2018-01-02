@@ -11,6 +11,7 @@ import {CacheState, DebugIdleState, DebugState, DebugVersion, Debuggable, Update
 import {AppVersion} from './app-version';
 import {Database, Table} from './database';
 import {DebugHandler} from './debug';
+import {SwCriticalError} from './error';
 import {IdleScheduler} from './idle';
 import {Manifest, ManifestHash, hashManifest} from './manifest';
 import {MsgAny, isMsgActivateUpdate, isMsgCheckForUpdates} from './msg';
@@ -38,7 +39,7 @@ interface LatestEntry {
   latest: string;
 }
 
-enum DriverReadyState {
+export enum DriverReadyState {
   // The SW is operating in a normal mode, responding to all traffic.
   NORMAL,
 
@@ -57,7 +58,7 @@ export class Driver implements Debuggable, UpdateSource {
    * Tracks the current readiness condition under which the SW is operating. This controls
    * whether the SW attempts to respond to some or all requests.
    */
-  private state: DriverReadyState = DriverReadyState.NORMAL;
+  state: DriverReadyState = DriverReadyState.NORMAL;
   private stateMessage: string = '(nominal)';
 
   /**
@@ -351,8 +352,22 @@ export class Driver implements Debuggable, UpdateSource {
       return this.safeFetch(event.request);
     }
 
-    // Handle the request. First try the AppVersion. If that doesn't work, fall back on the network.
-    const res = await appVersion.handleFetch(event.request, event);
+    let res: Response|null = null;
+    try {
+      // Handle the request. First try the AppVersion. If that doesn't work, fall back on the
+      // network.
+      res = await appVersion.handleFetch(event.request, event);
+    } catch (err) {
+      if (err.isCritical) {
+        // Something went wrong with the activation of this version.
+        await this.versionFailed(appVersion, err, this.latestHash === appVersion.manifestHash);
+
+        event.waitUntil(this.idle.trigger());
+        return this.safeFetch(event.request);
+      }
+      throw err;
+    }
+
 
     // The AppVersion will only return null if the manifest doesn't specify what to do about this
     // request. In that case, just fall back on the network.
@@ -482,7 +497,7 @@ export class Driver implements Debuggable, UpdateSource {
         // Attempt to schedule or initialize this version. If this operation is
         // successful, then initialization either succeeded or was scheduled. If
         // it fails, then full initialization was attempted and failed.
-        await this.scheduleInitialization(this.versions.get(hash) !);
+        await this.scheduleInitialization(this.versions.get(hash) !, this.latestHash === hash);
       } catch (err) {
         this.debugger.log(err, `initialize: schedule init of ${hash}`);
         return false;
@@ -623,13 +638,13 @@ export class Driver implements Debuggable, UpdateSource {
    * when the SW is not busy and has connectivity. This returns a Promise which must be
    * awaited, as under some conditions the AppVersion might be initialized immediately.
    */
-  private async scheduleInitialization(appVersion: AppVersion): Promise<void> {
+  private async scheduleInitialization(appVersion: AppVersion, latest: boolean): Promise<void> {
     const initialize = async() => {
       try {
         await appVersion.initializeFully();
       } catch (err) {
         this.debugger.log(err, `initializeFully for ${appVersion.manifestHash}`);
-        await this.versionFailed(appVersion, err);
+        await this.versionFailed(appVersion, err, latest);
       }
     };
     // TODO: better logic for detecting localhost.
@@ -639,7 +654,7 @@ export class Driver implements Debuggable, UpdateSource {
     this.idle.schedule(`initialization(${appVersion.manifestHash})`, initialize);
   }
 
-  private async versionFailed(appVersion: AppVersion, err: Error): Promise<void> {
+  private async versionFailed(appVersion: AppVersion, err: Error, latest: boolean): Promise<void> {
     // This particular AppVersion is broken. First, find the manifest hash.
     const broken =
         Array.from(this.versions.entries()).find(([hash, version]) => version === appVersion);
@@ -653,7 +668,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     // The action taken depends on whether the broken manifest is the active (latest) or not.
     // If so, the SW cannot accept new clients, but can continue to service old ones.
-    if (this.latestHash === brokenHash) {
+    if (this.latestHash === brokenHash || latest) {
       // The latest manifest is broken. This means that new clients are at the mercy of the
       // network, but caches continue to be valid for previous versions. This is
       // unfortunate but unavoidable.
@@ -711,9 +726,10 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   async checkForUpdate(): Promise<boolean> {
+    let hash: string = '(unknown)';
     try {
       const manifest = await this.fetchLatestManifest();
-      const hash = hashManifest(manifest);
+      hash = hashManifest(manifest);
 
       // Check whether this is really an update.
       if (this.versions.has(hash)) {
@@ -723,7 +739,12 @@ export class Driver implements Debuggable, UpdateSource {
       await this.setupUpdate(manifest, hash);
 
       return true;
-    } catch (_) {
+    } catch (err) {
+      this.debugger.log(err, `Error occurred while updating to manifest ${hash}`);
+
+      this.state = DriverReadyState.EXISTING_CLIENTS_ONLY;
+      this.stateMessage = `Degraded due to failed initialization: ${errorToString(err)}`;
+
       return false;
     }
   }
