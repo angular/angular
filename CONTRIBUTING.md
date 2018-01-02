@@ -40,8 +40,7 @@ You can help the team even more and [submit a Pull Request](#submit-pr) with a f
 ## <a name="feature"></a> Want a Feature?
 You can *request* a new feature by [submitting an issue](#submit-issue) to our [GitHub
 Repository][github]. If you would like to *implement* a new feature, please submit an issue with
-a proposal for your work first, to be sure that we can use it. Angular Material is in very early 
-stages and we are not ready to accept major contributions ahead of the full release.
+a proposal for your work first, to be sure that we can use it. 
 Please consider what kind of change it is:
 
 * For a **Major Feature**, first open an issue and outline your proposal so that it can be
