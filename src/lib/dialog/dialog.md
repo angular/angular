@@ -142,7 +142,8 @@ within itself. Once a dialog is closed, it will return focus to the element that
 before the dialog was opened.
 
 #### Focus management
-By default, the first tabbable element within the dialog will receive focus upon open.
+By default, the first tabbable element within the dialog will receive focus upon open. This can
+be configured by setting the `cdkFocusInitial` attribute on another focusable element.
 
 Tabbing through the elements of the dialog will keep focus inside of the dialog element,
 wrapping back to the first tabbable element when reaching the end of the tab sequence.
