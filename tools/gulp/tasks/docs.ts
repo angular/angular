@@ -74,7 +74,6 @@ const markdownOptions = {
 
 /** Generate all docs content. */
 task('docs', sequenceTask(
-  'clean',
   [
     'markdown-docs-material',
     'markdown-docs-cdk',
