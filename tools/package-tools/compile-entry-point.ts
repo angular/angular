@@ -1,36 +1,25 @@
-import {join, resolve as resolvePath} from 'path';
-import {spawn} from 'child_process';
+import {join} from 'path';
 import {writeFileSync, readFileSync} from 'fs';
 import {sync as glob} from 'glob';
 import {red} from 'chalk';
 import {BuildPackage} from './build-package';
+import {ngcCompile} from './ngc-compile';
 
 /** Incrementing ID counter. */
 let nextId = 0;
 
 /** Compiles the TypeScript sources of a primary or secondary entry point. */
 export async function compileEntryPoint(buildPackage: BuildPackage, tsconfigName: string,
-                                          secondaryEntryPoint = '', es5OutputPath?: string) {
+                                        secondaryEntryPoint = '', es5OutputPath?: string) {
   const entryPointPath = join(buildPackage.sourceDir, secondaryEntryPoint);
   const entryPointTsconfigPath = join(entryPointPath, tsconfigName);
   const ngcFlags = ['-p', entryPointTsconfigPath];
 
   if (es5OutputPath) {
-    ngcFlags.push('--outDir', es5OutputPath);
-    ngcFlags.push('--target', 'ES5');
+    ngcFlags.push('--outDir', es5OutputPath, '--target', 'ES5');
   }
 
-  return new Promise((resolve, reject) => {
-    const ngcPath = resolvePath('./node_modules/.bin/ngc');
-    const childProcess = spawn(ngcPath, ngcFlags, {shell: true});
-
-    // Pipe stdout and stderr from the child process.
-    childProcess.stdout.on('data', (data: any) => console.log(`${data}`));
-    childProcess.stderr.on('data', (data: any) => console.error(red(`${data}`)));
-
-    childProcess.on('exit', (exitCode: number) => exitCode === 0 ? resolve() : reject());
-  })
-  .catch(() => {
+  return ngcCompile(ngcFlags).catch(() => {
     const error = red(`Failed to compile ${secondaryEntryPoint} using ${entryPointTsconfigPath}`);
     console.error(error);
   });
