@@ -195,6 +195,11 @@ export function main() {
         expect(s(':host-context([a=b]) {}', 'contenta', 'a-host'))
             .toEqual('[a=b][a-host], [a="b"] [a-host] {}');
       });
+
+      it('should handle multiple host-context', () => {
+        expect(s(':host-context(.one) :host-context(.two) {}', 'contenta', 'a-host'))
+          .toEqual('.one[a-host] .two[contenta], .one .two [a-host], .two[a-host] .one[contenta], .two .one [a-host], .one.two[a-host], .one.two [a-host] {}');
+      });
     });
 
     it('should support polyfill-next-selector', () => {

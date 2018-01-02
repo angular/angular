@@ -282,7 +282,33 @@ export class ShadowCss {
 
   private _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
     // m[1] = :host(-context), m[2] = contents of (), m[3] rest of rule
+    let _this = this;
     return cssText.replace(regExp, function(...m: string[]) {
+      // Regular expresion for check the next :host-context
+      const regExprCheckHostContext = /-shadowcsscontext\((.+?)\)/mi;
+      // Get first repeated :host-context
+      let match = m[3].match(regExprCheckHostContext);
+      let arrSelector = [m[2]];
+      while (match !== null) {
+        // Clean the founded selector and save it.
+        const selectorHostContext = match[0].replace('-shadowcsscontext(', '').replace(')','');
+        arrSelector.push(selectorHostContext);
+        // Remove the current :host-context
+        m[3] = m[3].replace(regExprCheckHostContext, '');
+        // Get the next repeated :host-context
+        match = m[3].match(regExprCheckHostContext);
+      }
+      // If have more than 1 class, generate all combinations.
+      if(arrSelector.length > 1) {
+        const listOfCombinations = _this._combineArraySelectors(arrSelector);
+        m[2] = '';
+        // Add all combination separated by spaces.
+        for(let i = 0; i < listOfCombinations.length; i++) {
+          m[2] += listOfCombinations[i].join(' ') + ',';
+        }
+        // Add one case of all clases without space separator.
+        m[2] += listOfCombinations[0].join('');
+      }
       if (m[2]) {
         const parts = m[2].split(',');
         const r: string[] = [];
@@ -297,6 +323,20 @@ export class ShadowCss {
       }
     });
   }
+
+  private _combineArraySelectors(arrSelector: string[]): string[][] {
+   let results: string[][] = [];
+   if (arrSelector.length === 1) return [[arrSelector[0]]];
+   for(let i = 0; i < arrSelector.length; i++) {
+     let copyArr: string[] = arrSelector.slice();
+     let firstItem: string[] = copyArr.splice(i, 1);
+     let childResult: string[][] = this._combineArraySelectors(copyArr);
+     for(let j = 0; j < childResult.length; j++) {
+       results.push([...firstItem, ...childResult[j]]);
+     }
+   }
+   return results;
+ }
 
   private _colonHostContextPartReplacer(host: string, part: string, suffix: string): string {
     if (part.indexOf(_polyfillHost) > -1) {
