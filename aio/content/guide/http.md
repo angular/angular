@@ -273,6 +273,8 @@ has a single `intercept()` method. Here is a simple interceptor which does nothi
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpInterceptor, HttpHandler, HttpRequest} from '@angular/common/http';
 
+import {Observable} from 'rxjs/Observable';
+
 @Injectable()
 export class NoopInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -296,6 +298,8 @@ Simply declaring the `NoopInterceptor` above doesn't cause your app to use it. Y
 ```javascript
 import {NgModule} from '@angular/core';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
+
+import {NoopInterceptor} from 'noop.interceptor.ts';
 
 @NgModule({
   providers: [{
