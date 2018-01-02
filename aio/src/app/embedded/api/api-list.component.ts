@@ -44,13 +44,13 @@ export class ApiListComponent implements OnInit {
   types: Option[] = [
     { value: 'all', title: 'All' },
     { value: 'class', title: 'Class' },
-    { value: 'const', title: 'Const'},
+    { value: 'const', title: 'Const' },
     { value: 'decorator', title: 'Decorator' },
     { value: 'directive', title: 'Directive' },
     { value: 'enum', title: 'Enum' },
     { value: 'function', title: 'Function' },
     { value: 'interface', title: 'Interface' },
-    { value: 'pipe', title: 'Pipe'},
+    { value: 'pipe', title: 'Pipe' },
     { value: 'type-alias', title: 'Type Alias' }
   ];
 
