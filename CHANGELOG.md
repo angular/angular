@@ -1,3 +1,14 @@
+<a name="5.0.3"></a>
+## [5.0.3 concrete-aeroplane](https://github.com/angular/material2/compare/5.0.1...5.0.3) (2018-01-02)
+
+
+### Bug Fixes
+
+* **autocomplete:** panelClosingActions emitting twice in some cases ([#8998](https://github.com/angular/material2/issues/8998)) ([22c3259](https://github.com/angular/material2/commit/22c3259))
+* **dialog:** change order of button actions ([#9021](https://github.com/angular/material2/issues/9021)) ([7b879a5](https://github.com/angular/material2/commit/7b879a5))
+
+
+
 <a name="5.0.2"></a>
 ## [5.0.2 flannel-battlestar](https://github.com/angular/material2/compare/5.0.0...5.0.2) (2017-12-19)
 
