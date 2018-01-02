@@ -20,9 +20,11 @@ const _XMLNS = 'urn:oasis:names:tc:xliff:document:1.2';
 // TODO(vicb): make this a param (s/_/-/)
 const _DEFAULT_SOURCE_LANG = 'en';
 const _PLACEHOLDER_TAG = 'x';
+const _MARKER_TAG = 'mrk';
 
 const _FILE_TAG = 'file';
 const _SOURCE_TAG = 'source';
+const _SEGMENT_SOURCE_TAG = 'seg-source';
 const _TARGET_TAG = 'target';
 const _UNIT_TAG = 'trans-unit';
 const _CONTEXT_GROUP_TAG = 'context-group';
@@ -214,8 +216,9 @@ class XliffParser implements ml.Visitor {
         }
         break;
 
+      // ignore those tags
       case _SOURCE_TAG:
-        // ignore source message
+      case _SEGMENT_SOURCE_TAG:
         break;
 
       case _TARGET_TAG:
@@ -266,7 +269,7 @@ class XmlToI18n implements ml.Visitor {
 
     const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length == 0 ?
         [] :
-        ml.visitAll(this, xmlIcu.rootNodes);
+        [].concat(...ml.visitAll(this, xmlIcu.rootNodes));
 
     return {
       i18nNodes: i18nNodes,
@@ -276,7 +279,7 @@ class XmlToI18n implements ml.Visitor {
 
   visitText(text: ml.Text, context: any) { return new i18n.Text(text.value, text.sourceSpan !); }
 
-  visitElement(el: ml.Element, context: any): i18n.Placeholder|null {
+  visitElement(el: ml.Element, context: any): i18n.Placeholder|ml.Node[]|null {
     if (el.name === _PLACEHOLDER_TAG) {
       const nameAttr = el.attrs.find((attr) => attr.name === 'id');
       if (nameAttr) {
@@ -284,9 +287,14 @@ class XmlToI18n implements ml.Visitor {
       }
 
       this._addError(el, `<${_PLACEHOLDER_TAG}> misses the "id" attribute`);
-    } else {
-      this._addError(el, `Unexpected tag`);
+      return null;
     }
+
+    if (el.name === _MARKER_TAG) {
+      return [].concat(...ml.visitAll(this, el.children));
+    }
+
+    this._addError(el, `Unexpected tag`);
     return null;
   }
 
