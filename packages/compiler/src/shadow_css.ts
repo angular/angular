@@ -291,7 +291,7 @@ export class ShadowCss {
       let arrSelector = [m[2]];
       while (match !== null) {
         // Clean the founded selector and save it.
-        const selectorHostContext = match[0].replace('-shadowcsscontext(', '').replace(')','');
+        const selectorHostContext = match[0].replace('-shadowcsscontext(', '').replace(')', '');
         arrSelector.push(selectorHostContext);
         // Remove the current :host-context
         m[3] = m[3].replace(regExprCheckHostContext, '');
@@ -299,11 +299,11 @@ export class ShadowCss {
         match = m[3].match(regExprCheckHostContext);
       }
       // If have more than 1 class, generate all combinations.
-      if(arrSelector.length > 1) {
+      if (arrSelector.length > 1) {
         const listOfCombinations = _this._combineArraySelectors(arrSelector);
         m[2] = '';
         // Add all combination separated by spaces.
-        for(let i = 0; i < listOfCombinations.length; i++) {
+        for (let i = 0; i < listOfCombinations.length; i++) {
           m[2] += listOfCombinations[i].join(' ') + ',';
         }
         // Add one case of all clases without space separator.
@@ -325,18 +325,18 @@ export class ShadowCss {
   }
 
   private _combineArraySelectors(arrSelector: string[]): string[][] {
-   let results: string[][] = [];
-   if (arrSelector.length === 1) return [[arrSelector[0]]];
-   for(let i = 0; i < arrSelector.length; i++) {
-     let copyArr: string[] = arrSelector.slice();
-     let firstItem: string[] = copyArr.splice(i, 1);
-     let childResult: string[][] = this._combineArraySelectors(copyArr);
-     for(let j = 0; j < childResult.length; j++) {
-       results.push([...firstItem, ...childResult[j]]);
-     }
-   }
-   return results;
- }
+    let results: string[][] = [];
+    if (arrSelector.length === 1) return [[arrSelector[0]]];
+    for (let i = 0; i < arrSelector.length; i++) {
+      let copyArr: string[] = arrSelector.slice();
+      let firstItem: string[] = copyArr.splice(i, 1);
+      let childResult: string[][] = this._combineArraySelectors(copyArr);
+      for (let j = 0; j < childResult.length; j++) {
+        results.push([...firstItem, ...childResult[j]]);
+      }
+    }
+    return results;
+  }
 
   private _colonHostContextPartReplacer(host: string, part: string, suffix: string): string {
     if (part.indexOf(_polyfillHost) > -1) {

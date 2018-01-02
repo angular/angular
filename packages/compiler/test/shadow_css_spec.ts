@@ -198,7 +198,8 @@ export function main() {
 
       it('should handle multiple host-context', () => {
         expect(s(':host-context(.one) :host-context(.two) {}', 'contenta', 'a-host'))
-          .toEqual('.one[a-host] .two[contenta], .one .two [a-host], .two[a-host] .one[contenta], .two .one [a-host], .one.two[a-host], .one.two [a-host] {}');
+            .toEqual(
+                '.one[a-host] .two[contenta], .one .two [a-host], .two[a-host] .one[contenta], .two .one [a-host], .one.two[a-host], .one.two [a-host] {}');
       });
     });
 
