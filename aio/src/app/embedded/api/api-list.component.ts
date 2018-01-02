@@ -43,7 +43,7 @@ export class ApiListComponent implements OnInit {
   // API types
   types: Option[] = [
     { value: 'all', title: 'All' },
-    { value: 'class', title: 'Class' },  
+    { value: 'class', title: 'Class' },
     { value: 'const', title: 'Const'},
     { value: 'decorator', title: 'Decorator' },
     { value: 'directive', title: 'Directive' },
