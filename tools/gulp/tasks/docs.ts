@@ -1,7 +1,7 @@
 import {task, src, dest} from 'gulp';
 import {Dgeni} from 'dgeni';
 import * as path from 'path';
-import {buildConfig} from 'material2-build-tools';
+import {buildConfig, sequenceTask} from 'material2-build-tools';
 import {apiDocsPackage} from '../../dgeni/index';
 
 // There are no type definitions available for these imports.
@@ -73,18 +73,21 @@ const markdownOptions = {
 };
 
 /** Generate all docs content. */
-task('docs', [
-  'markdown-docs',
-  'markdown-docs-cdk',
-  'highlight-examples',
-  'api-docs',
-  'minified-api-docs',
-  'build-examples-module',
-  'stackblitz-example-assets',
-]);
+task('docs', sequenceTask(
+  'clean',
+  [
+    'markdown-docs-material',
+    'markdown-docs-cdk',
+    'build-highlighted-examples',
+    'build-examples-module',
+    'api-docs',
+    'copy-stackblitz-examples'
+  ],
+  'minify-html-files'
+));
 
 /** Generates html files from the markdown overviews and guides for material. */
-task('markdown-docs', () => {
+task('markdown-docs-material', () => {
   // Extend the renderer for custom heading anchor rendering
   markdown.marked.Renderer.prototype.heading = (text: string, level: number): string => {
     if (level === 3 || level === 4) {
@@ -124,7 +127,7 @@ task('markdown-docs-cdk', () => {
  * Creates syntax-highlighted html files from the examples to be used for the source view of
  * live examples on the docs site.
  */
-task('highlight-examples', () => {
+task('build-highlighted-examples', () => {
   // rename files to fit format: [filename]-[filetype].html
   const renameFile = (filePath: any) => {
     const extension = filePath.extname.slice(1);
@@ -144,15 +147,18 @@ task('api-docs', () => {
   return docs.generate();
 });
 
-/** Generates minified html api docs. */
-task('minified-api-docs', ['api-docs'], () => {
-  return src('dist/docs/api/*.html')
+/**
+ * Minifies all HTML files that have been generated. The HTML files for the
+ * highlighted examples can be skipped, because it won't have any effect.
+ */
+task('minify-html-files', ['api-docs'], () => {
+  return src('dist/docs/+(api|markdown)/**/*.html')
     .pipe(htmlmin(htmlMinifierOptions))
-    .pipe(dest('dist/docs/api/'));
+    .pipe(dest('dist/docs'));
 });
 
 /** Copies example sources to be used as stackblitz assets for the docs site. */
-task('stackblitz-example-assets', () => {
+task('copy-stackblitz-examples', () => {
   src(path.join(packagesDir, 'material-examples', '**/*'))
       .pipe(dest(path.join(DIST_DOCS, 'stackblitz', 'examples')));
 });
