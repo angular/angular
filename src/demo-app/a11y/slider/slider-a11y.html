@@ -5,15 +5,15 @@
     <div class="demo-color-sliders">
       <div>
         <label class="demo-color-label" for="r-slider">Red</label>
-        <mat-slider id="r-slider" min="0" max="255" [(ngModel)]="red"></mat-slider>
+        <mat-slider aria-label="Red" id="r-slider" min="0" max="255" [(ngModel)]="red"></mat-slider>
       </div>
       <div>
         <label class="demo-color-label" for="g-slider">Green</label>
-        <mat-slider id="g-slider" min="0" max="255" [(ngModel)]="green"></mat-slider>
+        <mat-slider aria-label="Green" id="g-slider" min="0" max="255" [(ngModel)]="green"></mat-slider>
       </div>
       <div>
         <label class="demo-color-label" for="b-slider">Blue</label>
-        <mat-slider id="b-slider" min="0" max="255" [(ngModel)]="blue"></mat-slider>
+        <mat-slider aria-label="Blue" id="b-slider" min="0" max="255" [(ngModel)]="blue"></mat-slider>
       </div>
     </div>
   <div class="demo-color-swatch" [style.background]="swatchBackground"></div>
@@ -34,6 +34,6 @@
       <mat-icon aria-hidden>volume_up</mat-icon>
       <span class="cdk-visually-hidden">Volume</span>
     </label>
-    <mat-slider id="vol-slider" min="0" max="100" vertical inverted></mat-slider>
+    <mat-slider aria-label="Volume" id="vol-slider" min="0" max="100" vertical inverted></mat-slider>
   </div>
 </section>
