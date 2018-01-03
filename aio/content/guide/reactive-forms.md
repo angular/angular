@@ -254,7 +254,7 @@ It _styles_ the form but in no way impacts the logic of the form.
 
 ## Import the _ReactiveFormsModule_
 
-The HeroDetailComponent template uses `formControlName`
+The HeroDetailComponent template uses `formControl`
 directive from the `ReactiveFormsModule`.
 
 Do the following two things in `app.module.ts`:
