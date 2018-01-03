@@ -35,7 +35,10 @@ requestAnimationFrame.flush = function() {
 export function resetDOM() {
   requestAnimationFrame.queue = [];
   if (containerEl) {
-    document.body.removeChild(containerEl);
+    try {
+      document.body.removeChild(containerEl);
+    } catch (e) {
+    }
   }
   containerEl = document.createElement('div');
   containerEl.setAttribute('host', '');

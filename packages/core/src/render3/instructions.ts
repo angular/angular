@@ -265,6 +265,14 @@ export function createLNode(
 //////////////////////////
 
 /**
+ * Resets the application state.
+ */
+function resetApplicationState() {
+  isParent = false;
+  previousOrParentNode = null !;
+}
+
+/**
  *
  * @param host Existing node to render into.
  * @param template Template function with the instructions.
@@ -274,6 +282,7 @@ export function renderTemplate<T>(
     hostNode: RElement, template: ComponentTemplate<T>, context: T,
     providedRendererFactory: RendererFactory3, host: LElement | null): LElement {
   if (host == null) {
+    resetApplicationState();
     rendererFactory = providedRendererFactory;
     host = createLNode(
         null, LNodeFlags.Element, hostNode,
@@ -499,6 +508,7 @@ export function locateHostElement(
  * @param rNode Render host element.
  */
 export function hostElement(rNode: RElement | null, def: ComponentDef<any>) {
+  resetApplicationState();
   createLNode(
       0, LNodeFlags.Element, rNode, createViewState(-1, renderer, getTemplateStatic(def.template)));
 }
