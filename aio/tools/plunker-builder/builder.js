@@ -152,6 +152,7 @@ class PlunkerBuilder {
       // Matches main.ts or main.1.ts
       if (/^main(?:[.-]\w+)?\.ts$/.test(relativeFileName)) {
         content = fileTranslator.translate(content, mainTsRules);
+        relativeFileName = 'main.ts';
       }
 
       if (relativeFileName == 'systemjs.config.extras.js') {
