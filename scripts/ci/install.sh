@@ -87,7 +87,9 @@ if [[ ${TRAVIS} &&
 ]]; then
   travisFoldStart "install-chromium"
     (
-      ${thisDir}/install-chromium.sh
+      if [[ ${CI_MODE} != "aio_e2e" ]]; then
+        ${thisDir}/install-chromium.sh
+      fi
 
       # Start xvfb for local Chrome used for testing
       if [[ ${TRAVIS} ]]; then
