@@ -176,7 +176,7 @@ describe('exports', () => {
       }
 
       expect(renderToHtml(Template, {}))
-          .toEqual('<div class="red"></div><input type="checkbox" checked="true">');
+          .toEqual('<div class="red"></div><input checked="true" type="checkbox">');
     });
 
     it('should work with component refs', () => {
