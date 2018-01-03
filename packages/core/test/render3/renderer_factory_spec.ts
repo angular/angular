@@ -14,7 +14,7 @@ import {D, E, L, T, b, defineComponent, detectChanges, e, p} from '../../src/ren
 import {createRendererType2} from '../../src/view/index';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
-import {containerEl, document, renderComponent, renderToHtml} from './render_util';
+import {containerEl, document, renderComponent, renderToHtml, toHtml} from './render_util';
 
 describe('renderer factory lifecycle', () => {
   let logs: string[] = [];
@@ -178,13 +178,13 @@ describe('animation renderer factory', () => {
 
   it('should work with components without animations', () => {
     renderComponent(SomeComponent, getAnimationRendererFactory2(document));
-    expect(containerEl.innerHTML).toEqual('foo');
+    expect(toHtml(containerEl)).toEqual('foo');
   });
 
   it('should work with animated components', (done) => {
     const factory = getAnimationRendererFactory2(document);
     const component = renderComponent(SomeComponentWithAnimation, factory);
-    expect(containerEl.innerHTML)
+    expect(toHtml(containerEl))
         .toMatch(/<div class="ng-tns-c\d+-0 ng-trigger ng-trigger-myAnimation">foo<\/div>/);
 
     component.exp = 'on';

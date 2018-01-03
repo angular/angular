@@ -396,7 +396,7 @@ describe('elementProperty', () => {
         }
       }
 
-      expect(renderToHtml(Template, {})).toEqual(`<div role="button" dir="rtl"></div>`);
+      expect(renderToHtml(Template, {})).toEqual(`<div dir="rtl" role="button"></div>`);
       expect(myDir !.role).toEqual('button');
       expect(myDir !.direction).toEqual('rtl');
     });
@@ -444,7 +444,7 @@ describe('elementProperty', () => {
       }
 
       expect(renderToHtml(Template, {}))
-          .toEqual(`<div role="button" dir="rtl"></div><div role="listbox"></div>`);
+          .toEqual(`<div dir="rtl" role="button"></div><div role="listbox"></div>`);
       expect(myDir !.role).toEqual('button');
       expect(myDir !.direction).toEqual('rtl');
       expect(dirB !.roleB).toEqual('listbox');
