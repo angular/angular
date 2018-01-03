@@ -536,7 +536,7 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          ['[DocViewer]: Error preparing document \'foo\'.', error],
+          [`[DocViewer] Error preparing document 'foo': ${error.stack}`],
         ]);
       });
 
@@ -555,7 +555,7 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          ['[DocViewer]: Error preparing document \'bar\'.', error],
+          [`[DocViewer] Error preparing document 'bar': ${error.stack}`],
         ]);
       });
 
@@ -574,7 +574,7 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          ['[DocViewer]: Error preparing document \'baz\'.', error],
+          [`[DocViewer] Error preparing document 'baz': ${error.stack}`],
         ]);
       });
 
@@ -593,7 +593,23 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).toHaveBeenCalledTimes(1);
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          ['[DocViewer]: Error preparing document \'qux\'.', error],
+          [`[DocViewer] Error preparing document 'qux': ${error.stack}`],
+        ]);
+      });
+
+      it('when something fails with non-Error', async () => {
+        const error = 'Typical string error';
+        swapViewsSpy.and.callFake(() => {
+          expect(docViewer.nextViewContainer.innerHTML).not.toBe('');
+          throw error;
+        });
+
+        await doRender('Some content', 'qux');
+
+        expect(swapViewsSpy).toHaveBeenCalledTimes(1);
+        expect(docViewer.nextViewContainer.innerHTML).toBe('');
+        expect(logger.output.error).toEqual([
+          [`[DocViewer] Error preparing document 'qux': ${error}`],
         ]);
       });
     });
