@@ -1412,6 +1412,7 @@ The first way would be to use a `ControlValueAccessor` to take the file out of a
 
 ### File Upload Component
 Another option would be to make a component which handles all of the file uploading for you. You could then pass it to the `FormControl` and expect the value to be set to the files url rather than the file itself, thus abstracting away the process of uploading it in the view of the form.
+Notice how the component is first setting the value to `null`, this is so that it will remove any old url if the file has been changed and so that the Required validator can be used.
 
 <code-example path="reactive-forms/src/app/file-upload/file-upload.component.ts" region="v1" title="src/app/file-upload/file-upload.component.ts" linenums="false">
 
