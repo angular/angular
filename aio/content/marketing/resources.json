@@ -16,6 +16,12 @@
             "rev": true,
             "title": "Angular Conferences and Angular Camps in Moscow, Russia.",
             "url": "https://angular-ru.github.io/"
+          },
+          "made-with-angular": {
+            "desc": "A showcase of web apps built with Angular.",
+            "rev": true,
+            "title": "Made with Angular",
+            "url": "https://www.madewithangular.com/"
           }
         }
       },
