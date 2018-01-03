@@ -254,6 +254,17 @@ http
 
 In this way, you send the POST request to the URL `/api/items/add?id=3`.
 
+### Upload a file
+
+Another common task is to upload a file to the server. You can achieve this by using a `FormData`:
+
+```javascript
+const formData = new FormData();
+const formData.append('file', file)
+
+http.post('/upload/file', file).subscribe();
+```
+
 ## Advanced usage
 
 The above sections detail how to use the basic HTTP functionality in `@angular/common/http`, but sometimes you need to do more than just make requests and get data back.
