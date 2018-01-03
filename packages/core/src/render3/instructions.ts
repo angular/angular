@@ -596,8 +596,9 @@ export function elementAttribute(index: number, attrName: string, value: any): v
           element.native.removeAttribute(attrName);
     } else {
       (renderer as ProceduralRenderer3).setAttribute ?
-          (renderer as ProceduralRenderer3).setAttribute(element.native, attrName, value) :
-          element.native.setAttribute(attrName, value);
+          (renderer as ProceduralRenderer3)
+              .setAttribute(element.native, attrName, stringify(value)) :
+          element.native.setAttribute(attrName, stringify(value));
     }
   }
 }
