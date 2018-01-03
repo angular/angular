@@ -52,8 +52,8 @@ easily accomplished with `display: flex`:
 ```
 ```scss
 .example-fill-remaining-space {
-  // This fills the remaining space, by using flexbox. 
-  // Every toolbar row uses a flexbox row layout.
+  /* This fills the remaining space, by using flexbox. 
+     Every toolbar row uses a flexbox row layout. */
   flex: 1 1 auto;
 }
 ```
