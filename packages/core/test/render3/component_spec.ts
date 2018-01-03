@@ -8,7 +8,7 @@
 
 import {ViewEncapsulation} from '../../src/core';
 import {D, E, T, b, defineComponent, e, markDirty, t} from '../../src/render3/index';
-import {createRendererType2} from '../../src/view';
+import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {containerEl, renderComponent, requestAnimationFrame} from './render_util';
@@ -117,15 +117,15 @@ describe('encapsulation', () => {
   it('should encapsulate children, but not host nor grand children', () => {
     renderComponent(WrapperComponent, getRendererFactory2(document));
     expect(containerEl.outerHTML)
-        .toEqual(
-            '<div host=""><encapsulated _nghost-c0="">foo<leaf _ngcontent-c0=""><span>bar</span></leaf></encapsulated></div>');
+        .toMatch(
+            /<div host=""><encapsulated _nghost-c(\d+)="">foo<leaf _ngcontent-c\1=""><span>bar<\/span><\/leaf><\/encapsulated><\/div>/);
   });
 
   it('should encapsulate host', () => {
     renderComponent(EncapsulatedComponent, getRendererFactory2(document));
     expect(containerEl.outerHTML)
-        .toEqual(
-            '<div host="" _nghost-c0="">foo<leaf _ngcontent-c0=""><span>bar</span></leaf></div>');
+        .toMatch(
+            /<div host="" _nghost-c(\d+)="">foo<leaf _ngcontent-c\1=""><span>bar<\/span><\/leaf><\/div>/);
   });
 
   it('should encapsulate host and children with different attributes', () => {
@@ -167,7 +167,7 @@ describe('encapsulation', () => {
 
     renderComponent(WrapperComponentWith, getRendererFactory2(document));
     expect(containerEl.outerHTML)
-        .toEqual(
-            '<div host="" _nghost-c2=""><leaf _ngcontent-c2="" _nghost-c3=""><span _ngcontent-c3="">bar</span></leaf></div>');
+        .toMatch(
+            /<div host="" _nghost-c(\d+)=""><leaf _ngcontent-c\1="" _nghost-c(\d+)=""><span _ngcontent-c\2="">bar<\/span><\/leaf><\/div>/);
   });
 });
