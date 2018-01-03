@@ -23,6 +23,7 @@ ts_library(
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
     ],
 )
 
@@ -36,6 +37,8 @@ ts_library(
     tsconfig = "//packages:tsconfig",
     deps = [
         ":render3_lib",
+        "//packages/platform-browser",
+        "//packages/platform-server",
     ],
 )
 

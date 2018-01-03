@@ -11,7 +11,7 @@ import {D, E, T, b, defineComponent, e, markDirty, t} from '../../src/render3/in
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {containerEl, renderComponent, requestAnimationFrame} from './render_util';
+import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
   class CounterComponent {
@@ -37,22 +37,22 @@ describe('component', () => {
   describe('renderComponent', () => {
     it('should render on initial call', () => {
       renderComponent(CounterComponent);
-      expect(containerEl.innerHTML).toEqual('0');
+      expect(toHtml(containerEl)).toEqual('0');
     });
 
     it('should re-render on input change or method invocation', () => {
       const component = renderComponent(CounterComponent);
-      expect(containerEl.innerHTML).toEqual('0');
+      expect(toHtml(containerEl)).toEqual('0');
       component.count = 123;
       markDirty(component, requestAnimationFrame);
-      expect(containerEl.innerHTML).toEqual('0');
+      expect(toHtml(containerEl)).toEqual('0');
       requestAnimationFrame.flush();
-      expect(containerEl.innerHTML).toEqual('123');
+      expect(toHtml(containerEl)).toEqual('123');
       component.increment();
       markDirty(component, requestAnimationFrame);
-      expect(containerEl.innerHTML).toEqual('123');
+      expect(toHtml(containerEl)).toEqual('123');
       requestAnimationFrame.flush();
-      expect(containerEl.innerHTML).toEqual('124');
+      expect(toHtml(containerEl)).toEqual('124');
     });
 
   });

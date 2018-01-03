@@ -11,7 +11,7 @@ import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
 
-describe('iv integration test', () => {
+describe('render3 integration test', () => {
 
   describe('render', () => {
 

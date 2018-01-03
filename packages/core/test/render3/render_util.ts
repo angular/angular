@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, createLNode, createViewState, renderTemplate} from '../../src/render3/instructions';
 import {LElement, LNodeFlags} from '../../src/render3/interfaces';
@@ -66,7 +67,11 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
   if (node) {
     return toHtml(node.native);
   } else {
-    return containerEl.innerHTML.replace(' style=""', '').replace(/<!--[\w]*-->/g, '');
+    return stringifyElement(componentOrElement)
+        .replace(/^<div host="">/, '')
+        .replace(/<\/div>$/, '')
+        .replace(' style=""', '')
+        .replace(/<!--[\w]*-->/g, '');
   }
 }
 
