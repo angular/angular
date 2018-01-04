@@ -1,5 +1,5 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
+import {ENTER, LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed, inject} from '@angular/core/testing';
@@ -7,6 +7,7 @@ import {AbstractControl, AsyncValidatorFn, FormControl, FormGroup, ReactiveForms
   ValidationErrors, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {StepperOrientation} from '@angular/cdk/stepper';
 import {map} from 'rxjs/operators/map';
 import {take} from 'rxjs/operators/take';
 import {Observable} from 'rxjs/Observable';
@@ -89,9 +90,9 @@ describe('MatHorizontalStepper', () => {
       assertCorrectStepAnimationDirection(fixture);
     });
 
-    it('should support keyboard events to move and select focus', () => {
+    it('should support using the left/right arrows to move focus', () => {
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
-      assertCorrectKeyboardInteraction(fixture, stepHeaders);
+      assertCorrectKeyboardInteraction(fixture, stepHeaders, 'horizontal');
     });
 
     it('should not set focus on header of selected step if header is not clicked', () => {
@@ -321,9 +322,14 @@ describe('MatVerticalStepper', () => {
       assertCorrectStepAnimationDirection(fixture);
     });
 
-    it('should support keyboard events to move and select focus', () => {
+    it('should support using the left/right arrows to move focus', () => {
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
-      assertCorrectKeyboardInteraction(fixture, stepHeaders);
+      assertCorrectKeyboardInteraction(fixture, stepHeaders, 'horizontal');
+    });
+
+    it('should support using the up/down arrows to move focus', () => {
+      let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
+      assertCorrectKeyboardInteraction(fixture, stepHeaders, 'vertical');
     });
 
     it('should not set focus on header of selected step if header is not clicked', () => {
@@ -566,20 +572,23 @@ function assertCorrectStepAnimationDirection(fixture: ComponentFixture<any>, rtl
 
 /** Asserts that keyboard interaction works correctly. */
 function assertCorrectKeyboardInteraction(fixture: ComponentFixture<any>,
-                                          stepHeaders: DebugElement[]) {
+                                          stepHeaders: DebugElement[],
+                                          orientation: StepperOrientation) {
   let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+  let nextKey = orientation === 'vertical' ? DOWN_ARROW : RIGHT_ARROW;
+  let prevKey = orientation === 'vertical' ? UP_ARROW : LEFT_ARROW;
 
   expect(stepperComponent._focusIndex).toBe(0);
   expect(stepperComponent.selectedIndex).toBe(0);
 
   let stepHeaderEl = stepHeaders[0].nativeElement;
-  dispatchKeyboardEvent(stepHeaderEl, 'keydown', RIGHT_ARROW);
+  dispatchKeyboardEvent(stepHeaderEl, 'keydown', nextKey);
   fixture.detectChanges();
 
   expect(stepperComponent._focusIndex)
-      .toBe(1, 'Expected index of focused step to increase by 1 after RIGHT_ARROW event.');
+      .toBe(1, 'Expected index of focused step to increase by 1 after pressing the next key.');
   expect(stepperComponent.selectedIndex)
-      .toBe(0, 'Expected index of selected step to remain unchanged after RIGHT_ARROW event.');
+      .toBe(0, 'Expected index of selected step to remain unchanged after pressing the next key.');
 
   stepHeaderEl = stepHeaders[1].nativeElement;
   dispatchKeyboardEvent(stepHeaderEl, 'keydown', ENTER);
@@ -592,26 +601,25 @@ function assertCorrectKeyboardInteraction(fixture: ComponentFixture<any>,
           'Expected index of selected step to change to index of focused step after ENTER event.');
 
   stepHeaderEl = stepHeaders[1].nativeElement;
-  dispatchKeyboardEvent(stepHeaderEl, 'keydown', LEFT_ARROW);
+  dispatchKeyboardEvent(stepHeaderEl, 'keydown', prevKey);
   fixture.detectChanges();
 
   expect(stepperComponent._focusIndex)
-      .toBe(0, 'Expected index of focused step to decrease by 1 after LEFT_ARROW event.');
-  expect(stepperComponent.selectedIndex)
-      .toBe(1, 'Expected index of selected step to remain unchanged after LEFT_ARROW event.');
+      .toBe(0, 'Expected index of focused step to decrease by 1 after pressing the previous key.');
+  expect(stepperComponent.selectedIndex).toBe(1,
+      'Expected index of selected step to remain unchanged after pressing the previous key.');
 
   // When the focus is on the last step and right arrow key is pressed, the focus should cycle
   // through to the first step.
   stepperComponent._focusIndex = 2;
   stepHeaderEl = stepHeaders[2].nativeElement;
-  dispatchKeyboardEvent(stepHeaderEl, 'keydown', RIGHT_ARROW);
+  dispatchKeyboardEvent(stepHeaderEl, 'keydown', nextKey);
   fixture.detectChanges();
 
-  expect(stepperComponent._focusIndex)
-      .toBe(0,
-          'Expected index of focused step to cycle through to index 0 after RIGHT_ARROW event.');
+  expect(stepperComponent._focusIndex).toBe(0,
+      'Expected index of focused step to cycle through to index 0 after pressing the next key.');
   expect(stepperComponent.selectedIndex)
-      .toBe(1, 'Expected index of selected step to remain unchanged after RIGHT_ARROW event.');
+      .toBe(1, 'Expected index of selected step to remain unchanged after pressing the next key.');
 
   stepHeaderEl = stepHeaders[0].nativeElement;
   dispatchKeyboardEvent(stepHeaderEl, 'keydown', SPACE);

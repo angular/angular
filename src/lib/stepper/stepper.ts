@@ -7,6 +7,7 @@
  */
 
 import {CdkStep, CdkStepper} from '@angular/cdk/stepper';
+import {Directionality} from '@angular/cdk/bidi';
 import {
   AfterContentInit,
   Component,
@@ -20,7 +21,9 @@ import {
   SkipSelf,
   ViewChildren,
   ViewEncapsulation,
+  ChangeDetectorRef,
   ChangeDetectionStrategy,
+  Optional,
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {ErrorStateMatcher} from '@angular/material/core';
@@ -115,4 +118,9 @@ export class MatHorizontalStepper extends MatStepper { }
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatVerticalStepper extends MatStepper { }
+export class MatVerticalStepper extends MatStepper {
+  constructor(@Optional() dir: Directionality, changeDetectorRef: ChangeDetectorRef) {
+    super(dir, changeDetectorRef);
+    this._orientation = 'vertical';
+  }
+}
