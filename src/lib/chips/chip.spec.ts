@@ -19,13 +19,9 @@ describe('Chips', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MatChipsModule],
-      declarations: [
-        BasicChip, SingleChip
-      ],
+      declarations: [BasicChip, SingleChip],
       providers: [{
-        provide: Directionality, useFactory: () => {
-          return {value: dir};
-        }
+        provide: Directionality, useFactory: () => ({value: dir})
       }]
     });
 
@@ -279,6 +275,15 @@ describe('Chips', () => {
         fixture.detectChanges();
 
         expect(chipNativeElement.getAttribute('aria-disabled')).toBe('true');
+      });
+
+      it('should make disabled chips non-focusable', () => {
+        expect(chipNativeElement.getAttribute('tabindex')).toBe('-1');
+
+        testComponent.disabled = true;
+        fixture.detectChanges();
+
+        expect(chipNativeElement.getAttribute('tabindex')).toBeFalsy();
       });
 
     });

@@ -68,7 +68,7 @@ export class MatBasicChip {
   exportAs: 'matChip',
   host: {
     'class': 'mat-chip',
-    'tabindex': '-1',
+    '[attr.tabindex]': 'disabled ? null : -1',
     'role': 'option',
     '[class.mat-chip-selected]': 'selected',
     '[attr.disabled]': 'disabled || null',
