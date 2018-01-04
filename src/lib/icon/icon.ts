@@ -78,10 +78,20 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
   @Input() svgIcon: string;
 
   /** Font set that the icon is a part of. */
-  @Input() fontSet: string;
+  @Input()
+  get fontSet(): string { return this._fontSet; }
+  set fontSet(value: string) {
+    this._fontSet = this._cleanupFontValue(value);
+  }
+  private _fontSet: string;
 
   /** Name of an icon within a font set. */
-  @Input() fontIcon: string;
+  @Input()
+  get fontIcon(): string { return this._fontIcon; }
+  set fontIcon(value: string) {
+    this._fontIcon = this._cleanupFontValue(value);
+  }
+  private _fontIcon: string;
 
   private _previousFontSetClass: string;
   private _previousFontIconClass: string;
@@ -201,5 +211,14 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
       }
       this._previousFontIconClass = this.fontIcon;
     }
+  }
+
+  /**
+   * Cleans up a value to be used as a fontIcon or fontSet.
+   * Since the value ends up being assigned as a CSS class, we
+   * have to trim the value and omit space-separated values.
+   */
+  private _cleanupFontValue(value: string) {
+    return typeof value === 'string' ? value.trim().split(' ')[0] : value;
   }
 }
