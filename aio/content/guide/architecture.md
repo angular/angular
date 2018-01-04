@@ -1,17 +1,20 @@
-# 코드 구조
+# Architecture Overview
 
-Angular는 HTML 클라이언트 애플리케이션을 구성할 수 있는 프레임워크이며,
-JavaScript를 직접 사용하거나 TypeScript와 같이 JavaScript로 컴파일되는 언어를 사용할 수 있습니다.
+Angular is a framework for building client applications in HTML and
+either JavaScript or a language like TypeScript that compiles to JavaScript.
 
-Angular 프레임워크는 수많은 라이브러리들로 구성되는데, 이 중 일부는 코어 모듈이고 일부는 옵션 모듈로 나눠볼 수 있습니다.
+The framework consists of several libraries, some of them core and some optional.
 
-Angular 어플리케이션을 개발할 때는 Angular 스타일의 마크업을 사용해서 *템플릿* 을 만들고 이 템플릿을 관리하는 *컴포넌트* 클래스를 작성하며, 공통 로직을 다루는 *서비스* 를 만들기도 하고, 컴포넌트와 서비스들을 묶어서 *모듈* 로 구성하기도 합니다.
+You write Angular applications by composing HTML *templates* with Angularized markup,
+writing *component* classes to manage those templates, adding application logic in *services*,
+and boxing components and services in *modules*.
 
-Angular 애플리케이션은 _최상위 모듈_ 을 *부트스트랩* 하면서 시작됩니다.
-애플리케이션이 시작되고 나면 브라우저에 내용을 표시하거나 사용자의 동작에 반응하는 것은 개발자가 구현한 대로 Angular가 처리합니다.
+Then you launch the app by *bootstrapping* the _root module_.
+Angular takes over, presenting your application content in a browser and
+responding to user interactions according to the instructions you've provided.
 
-물론 이 과정이 간단하게 이루어지지는 않습니다.
-자세한 내용은 이 문서를 진행하면서 차근차근 살펴보도록 하고, 먼저 전체 그림을 보는 것부터 시작합시다.
+Of course, there is more to it than this.
+You'll learn the details in the pages that follow. For now, focus on the big picture.
 
 <figure>
   <img src="generated/images/guide/architecture/overview2.png" alt="overview">
@@ -19,36 +22,38 @@ Angular 애플리케이션은 _최상위 모듈_ 을 *부트스트랩* 하면서
 
 <div class="l-sub-section">
 
-  이 문서에서 설명하는 코드는 <live-example></live-example> 에서 확인하거나 다운받을 수 있습니다.
+  The code referenced on this page is available as a <live-example></live-example>.
 
 </div>
 
-## 모듈
+## Modules
 
 <img src="generated/images/guide/architecture/module.png" alt="Component" class="left">
 
 
-Angular는 _NgModule_ 이라는 모듈 방식을 제공하며, Angular 프레임워크로 만들어진 애플리케이션도 이 방식으로 만들어진 모듈이라고 할 수 있습니다.
+Angular apps are modular and Angular has its own modularity system called _NgModules_.
 
-하지만 NgModule을 간단하게 설명하는 것은 쉽지 않습니다.
-그래서 이 문서에서는 모듈이 어떤 것인지에 대해서만 간단하게 설명하며, NgModule에 대해서는 [NgModules](guide/ngmodule) 페이지에서 자세하게 다루겠습니다.
+NgModules are a big deal.
+This page introduces modules; the [NgModules](guide/ngmodule) page covers them in depth.
 
 <br class="clear">
 
-Angular 앱은 [_최상위 모듈_](guide/bootstrapping "부트스트랩") 부터 애플리케이션을 구성하기 때문에 NgModule이 반드시 하나 이상 있다고 할 수 있으며, 이 모듈을 편의상 `AppModule` 이라고 합니다.
+Every Angular app has at least one NgModule class, [the _root module_](guide/bootstrapping "Bootstrapping"),
+conventionally named `AppModule`.
 
-애플리케이션이 작다면 _최상위 모듈_이 그 앱의 유일한 모듈일 수도 있지만, 대부분의 앱은 애플리케이션 도메인, 동작 흐름, 연관성 등을 고려해서 좀 더 많은 _기능 모듈(feature modules)_ 로 구성할 수도 있습니다.
+While the _root module_ may be the only module in a small application, most apps have many more
+_feature modules_, each a cohesive block of code dedicated to an application domain,
+a workflow, or a closely related set of capabilities.
 
-_최상위_ 모듈이든 _기능_ 모듈이든, Angular 모듈은 `@NgModule` 데코레이터가 붙는 클래스로 선언합니다.
+An NgModule, whether a _root_ or _feature_, is a class with an `@NgModule` decorator.
 
 <div class="l-sub-section">
 
-  데코레이터는 JavaScript 클래스를 변형하는 함수입니다.
-  개발자가 만든 클래스가 Angular 프레임워크 안에서 어떤 의미를 가지며, 어떻게 동작해야 하는지를 지정할 때는
-  Angular에서 제공하는 데코레이터를 사용합니다.
-  ECMAScript에서 정의하는 데코레이터에 대한 내용은
+  Decorators are functions that modify JavaScript classes.
+  Angular has many decorators that attach metadata to classes so that it knows
+  what those classes mean and how they should work.
   <a href="https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841#.x5c2ndtx0">
-  이 링크</a>를 확인하세요.
+  Learn more</a> about decorators on the web.
 
 </div>
 
