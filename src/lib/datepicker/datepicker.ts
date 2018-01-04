@@ -41,6 +41,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {DOCUMENT} from '@angular/common';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
+import {merge} from 'rxjs/observable/merge';
 import {MatCalendar} from './calendar';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatDatepickerInput} from './datepicker-input';
@@ -312,9 +313,13 @@ export class MatDatepicker<D> implements OnDestroy {
     }
 
     const completeClose = () => {
-      this._opened = false;
-      this.closedStream.emit();
-      this._focusedElementBeforeOpen = null;
+      // The `_opened` could've been reset already if
+      // we got two events in quick succession.
+      if (this._opened) {
+        this._opened = false;
+        this.closedStream.emit();
+        this._focusedElementBeforeOpen = null;
+      }
     };
 
     if (this._focusedElementBeforeOpen &&
@@ -376,7 +381,9 @@ export class MatDatepicker<D> implements OnDestroy {
     });
 
     this._popupRef = this._overlay.create(overlayConfig);
-    this._popupRef.backdropClick().subscribe(() => this.close());
+
+    merge(this._popupRef.backdropClick(), this._popupRef.detachments())
+      .subscribe(() => this.close());
   }
 
   /** Create the popup PositionStrategy. */
