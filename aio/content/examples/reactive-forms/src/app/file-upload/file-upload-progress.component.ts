@@ -2,6 +2,7 @@
 import { Injectable, Component, Input } from '@angular/core';
 import { HttpClient, HttpRequest, HttpResponse, HttpEventType, HttpProgressEvent } from '@angular/common/http';
 import { FormControl } from '@angular/forms';
+import { FileUploadService } from './file-upload.service';
 // #enddocregion import
 
 // #docregion v1
@@ -16,19 +17,16 @@ export class FileUploadComponent {
   control: FormControl;
 
   constructor(
-    private readonly httpClient: HttpClient
+    private readonly fileUploadService: FileUploadService
   ) { }
 
   upload(files: FileList) {
     this.control.setValue(null);
 
-    const formData = new FormData();
-    Array.from(files).forEach(file => formData.append(file.name, file))
-
-    this.httpClient.post<{ url: string }>('/file-upload', formData, { reportProgress: true, observe: 'events' })
+    this.fileUploadService.uploadWithProgress(files)
       .subscribe(event => {
         if (event.type === HttpEventType.UploadProgress) {
-          this.progress = Math.round(100 * event.loaded / event.total);
+          this.progress = this.fileUploadService.calculateProgressPercent(event);
         } else if (event instanceof HttpResponse) {
           this.control.setValue(event.body.url);
         }
