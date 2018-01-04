@@ -7,7 +7,7 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, fixUmdModuleDeclarations, parseTsconfig, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -75,15 +75,26 @@ export function relativeToRootDirs(filePath: string, rootDirs: string[]): string
   return filePath;
 }
 
-export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true, compilerOpts,
-                         tsHost, bazelOpts, files, inputs, expectedOuts, gatherDiagnostics}: {
+export function compile({
+  allowNonHermeticReads,
+  allDepsCompiledWithBazel = true,
+  compilerOpts,
+  tsHost,
+  bazelOpts,
+  files,
+  inputs,
+  expectedOuts,
+  gatherDiagnostics
+}: {
   allowNonHermeticReads: boolean,
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
-  tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
+  tsHost: ts.CompilerHost,
+  inputs?: {[path: string]: string},
   bazelOpts: BazelOptions,
   files: string[],
-  expectedOuts: string[], gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics
+  expectedOuts: string[],
+  gatherDiagnostics?: (program: ng.Program) => ng.Diagnostics
 }): {diagnostics: ng.Diagnostics, program: ng.Program} {
   let fileLoader: FileLoader;
 
@@ -173,9 +184,13 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
-      return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
+      return ngHost.amdModuleName({fileName: importedFilePath} as ts.SourceFile)
+          .replace('node_modules/', '');
     }
-    return relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '');
+    let workspaceName: string = bazelOpts.workspaceName.replace('node_modules/', '');
+    return `${
+              workspaceName
+            }/${relativeToRootDirs(importedFilePath, compilerOpts.rootDirs).replace(EXT, '')}`;
   };
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
       relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, '');
@@ -245,9 +260,9 @@ function isCompilationTarget(bazelOpts: BazelOptions, sf: ts.SourceFile): boolea
 
 function gatherDiagnosticsForInputsOnly(
     options: ng.CompilerOptions, bazelOpts: BazelOptions,
-    ngProgram: ng.Program): (ng.Diagnostic | ts.Diagnostic)[] {
+    ngProgram: ng.Program): (ng.Diagnostic|ts.Diagnostic)[] {
   const tsProgram = ngProgram.getTsProgram();
-  const diagnostics: (ng.Diagnostic | ts.Diagnostic)[] = [];
+  const diagnostics: (ng.Diagnostic|ts.Diagnostic)[] = [];
   // These checks mirror ts.getPreEmitDiagnostics, with the important
   // exception of avoiding b/30708240, which is that if you call
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.
