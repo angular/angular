@@ -92,6 +92,7 @@ groups:
       - alexeagle #primary
       - chuckjaz
       - IgorMinar #fallback
+      - mhevery
       - vikerman #fallback
 
   build-and-ci:
