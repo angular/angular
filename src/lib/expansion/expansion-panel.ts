@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, state, style, transition, trigger} from '@angular/animations';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -35,9 +34,7 @@ import {startWith} from 'rxjs/operators/startWith';
 import {MatAccordion} from './accordion';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatExpansionPanelContent} from './expansion-panel-content';
-
-/** Time and timing curve for expansion panel animations. */
-export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,1)';
+import {matExpansionAnimations} from './expansion-animations';
 
 // Boilerplate for applying mixins to MatExpansionPanel.
 /** @docs-private */
@@ -79,6 +76,7 @@ export type MatExpansionPanelState = 'expanded' | 'collapsed';
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['disabled', 'expanded'],
   outputs: ['opened', 'closed'],
+  animations: [matExpansionAnimations.bodyExpansion],
   host: {
     'class': 'mat-expansion-panel',
     '[class.mat-expanded]': 'expanded',
@@ -86,13 +84,6 @@ export type MatExpansionPanelState = 'expanded' | 'collapsed';
   },
   providers: [
     {provide: _MatExpansionPanelMixinBase, useExisting: forwardRef(() => MatExpansionPanel)}
-  ],
-  animations: [
-    trigger('bodyExpansion', [
-      state('collapsed', style({height: '0px', visibility: 'hidden'})),
-      state('expanded', style({height: '*', visibility: 'visible'})),
-      transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
-    ]),
   ],
 })
 export class MatExpansionPanel extends _MatExpansionPanelMixinBase

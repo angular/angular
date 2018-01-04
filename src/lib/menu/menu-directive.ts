@@ -34,7 +34,7 @@ import {
 import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
-import {fadeInItems, transformMenu} from './menu-animations';
+import {matMenuAnimations} from './menu-animations';
 import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu-errors';
 import {MatMenuItem} from './menu-item';
 import {MatMenuPanel} from './menu-panel';
@@ -74,8 +74,8 @@ const MAT_MENU_BASE_ELEVATION = 2;
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   animations: [
-    transformMenu,
-    fadeInItems
+    matMenuAnimations.transformMenu,
+    matMenuAnimations.fadeInItems
   ],
   exportAs: 'matMenu'
 })

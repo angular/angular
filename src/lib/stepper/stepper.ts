@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, state, style, transition, trigger} from '@angular/animations';
 import {CdkStep, CdkStepper} from '@angular/cdk/stepper';
 import {
   AfterContentInit,
@@ -28,6 +27,7 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
 import {takeUntil} from 'rxjs/operators/takeUntil';
+import {matStepperAnimations} from './stepper-animations';
 
 @Component({
   moduleId: module.id,
@@ -89,14 +89,7 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     'aria-orientation': 'horizontal',
     'role': 'tablist',
   },
-  animations: [
-    trigger('stepTransition', [
-      state('previous', style({transform: 'translate3d(-100%, 0, 0)', visibility: 'hidden'})),
-      state('current', style({transform: 'none', visibility: 'visible'})),
-      state('next', style({transform: 'translate3d(100%, 0, 0)', visibility: 'hidden'})),
-      transition('* => *', animate('500ms cubic-bezier(0.35, 0, 0.25, 1)'))
-    ])
-  ],
+  animations: [matStepperAnimations.horizontalStepTransition],
   providers: [{provide: MatStepper, useExisting: MatHorizontalStepper}],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
@@ -116,14 +109,7 @@ export class MatHorizontalStepper extends MatStepper { }
     'aria-orientation': 'vertical',
     'role': 'tablist',
   },
-  animations: [
-    trigger('stepTransition', [
-      state('previous', style({height: '0px', visibility: 'hidden'})),
-      state('next', style({height: '0px', visibility: 'hidden'})),
-      state('current', style({height: '*', visibility: 'visible'})),
-      transition('* <=> current', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
-    ])
-  ],
+  animations: [matStepperAnimations.verticalStepTransition],
   providers: [{provide: MatStepper, useExisting: MatVerticalStepper}],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,

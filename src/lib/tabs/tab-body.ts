@@ -23,17 +23,11 @@ import {
   ViewContainerRef,
   forwardRef,
 } from '@angular/core';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-  AnimationEvent,
-} from '@angular/animations';
+import {AnimationEvent} from '@angular/animations';
 import {TemplatePortal, CdkPortalOutlet} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {Subscription} from 'rxjs/Subscription';
+import {matTabsAnimations} from './tabs-animations';
 
 /**
  * These position states are used internally as animation states for the tab body. Setting the
@@ -118,27 +112,10 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [matTabsAnimations.translateTab],
   host: {
     'class': 'mat-tab-body',
   },
-  animations: [
-    trigger('translateTab', [
-      // Note: transitions to `none` instead of 0, because some browsers might blur the content.
-      state('center, void, left-origin-center, right-origin-center', style({transform: 'none'})),
-      state('left', style({transform: 'translate3d(-100%, 0, 0)'})),
-      state('right', style({transform: 'translate3d(100%, 0, 0)'})),
-      transition('* => left, * => right, left => center, right => center',
-          animate('500ms cubic-bezier(0.35, 0, 0.25, 1)')),
-      transition('void => left-origin-center', [
-        style({transform: 'translate3d(-100%, 0, 0)'}),
-        animate('500ms cubic-bezier(0.35, 0, 0.25, 1)')
-      ]),
-      transition('void => right-origin-center', [
-        style({transform: 'translate3d(100%, 0, 0)'}),
-        animate('500ms cubic-bezier(0.35, 0, 0.25, 1)')
-      ])
-    ])
-  ]
 })
 export class MatTabBody implements OnInit {
   /** Event emitted when the tab begins to animate towards the center as the active tab. */

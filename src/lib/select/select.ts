@@ -77,7 +77,7 @@ import {Observable} from 'rxjs/Observable';
 import {merge} from 'rxjs/observable/merge';
 import {Subject} from 'rxjs/Subject';
 import {defer} from 'rxjs/observable/defer';
-import {fadeInContent, transformPanel} from './select-animations';
+import {matSelectAnimations} from './select-animations';
 import {
   getMatSelectDynamicMultipleError,
   getMatSelectNonArrayValueError,
@@ -201,8 +201,8 @@ export class MatSelectTrigger {}
     '(blur)': '_onBlur()',
   },
   animations: [
-    transformPanel,
-    fadeInContent
+    matSelectAnimations.transformPanel,
+    matSelectAnimations.fadeInContent
   ],
   providers: [
     {provide: MatFormFieldControl, useExisting: MatSelect},

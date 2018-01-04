@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, state, style, transition, trigger} from '@angular/animations';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {take} from 'rxjs/operators/take';
 import {startWith} from 'rxjs/operators/startWith';
@@ -41,6 +40,7 @@ import {MatPlaceholder} from './placeholder';
 import {MatLabel} from './label';
 import {MatPrefix} from './prefix';
 import {MatSuffix} from './suffix';
+import {matFormFieldAnimations} from './form-field-animations';
 
 
 let nextUniqueId = 0;
@@ -57,16 +57,7 @@ let nextUniqueId = 0;
   // The MatInput styles are fairly minimal so it shouldn't be a big deal for people who
   // aren't using MatInput.
   styleUrls: ['form-field.css', '../input/input.css'],
-  animations: [
-    // TODO(mmalerba): Use angular animations for label animation as well.
-    trigger('transitionMessages', [
-      state('enter', style({ opacity: 1, transform: 'translateY(0%)' })),
-      transition('void => enter', [
-        style({ opacity: 0, transform: 'translateY(-100%)' }),
-        animate('300ms cubic-bezier(0.55, 0, 0.55, 0.2)'),
-      ]),
-    ]),
-  ],
+  animations: [matFormFieldAnimations.transitionMessages],
   host: {
     'class': 'mat-input-container mat-form-field',
     '[class.mat-input-invalid]': '_control.errorState',

@@ -20,3 +20,4 @@ export {MatTabLabelWrapper} from './tab-label-wrapper';
 export {MatTab} from './tab';
 export {MatTabLabel} from './tab-label';
 export {MatTabNav, MatTabLink} from './tab-nav-bar/index';
+export * from './tabs-animations';

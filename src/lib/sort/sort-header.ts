@@ -15,26 +15,14 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition,
-  keyframes,
-} from '@angular/animations';
 import {CdkColumnDef} from '@angular/cdk/table';
 import {Subscription} from 'rxjs/Subscription';
 import {merge} from 'rxjs/observable/merge';
 import {MatSort, MatSortable} from './sort';
 import {MatSortHeaderIntl} from './sort-header-intl';
 import {getSortHeaderNotContainedWithinSortError} from './sort-errors';
-import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 import {CanDisable, mixinDisabled} from '@angular/material/core';
-
-
-const SORT_ANIMATION_TRANSITION =
-    AnimationDurations.ENTERING + ' ' + AnimationCurves.STANDARD_CURVE;
+import {matSortAnimations} from './sort-animations';
 
 // Boilerplate for applying mixins to the sort header.
 /** @docs-private */
@@ -67,40 +55,10 @@ export const _MatSortHeaderMixinBase = mixinDisabled(MatSortHeaderBase);
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['disabled'],
   animations: [
-    trigger('indicator', [
-      state('asc', style({transform: 'translateY(0px)'})),
-      // 10px is the height of the sort indicator, minus the width of the pointers
-      state('desc', style({transform: 'translateY(10px)'})),
-      transition('asc <=> desc', animate(SORT_ANIMATION_TRANSITION))
-    ]),
-    trigger('leftPointer', [
-      state('asc', style({transform: 'rotate(-45deg)'})),
-      state('desc', style({transform: 'rotate(45deg)'})),
-      transition('asc <=> desc', animate(SORT_ANIMATION_TRANSITION))
-    ]),
-    trigger('rightPointer', [
-      state('asc', style({transform: 'rotate(45deg)'})),
-      state('desc', style({transform: 'rotate(-45deg)'})),
-      transition('asc <=> desc', animate(SORT_ANIMATION_TRANSITION))
-    ]),
-    trigger('indicatorToggle', [
-      transition('void => asc', animate(SORT_ANIMATION_TRANSITION, keyframes([
-        style({transform: 'translateY(25%)', opacity: 0}),
-        style({transform: 'none', opacity: 1})
-      ]))),
-      transition('asc => void', animate(SORT_ANIMATION_TRANSITION, keyframes([
-        style({transform: 'none', opacity: 1}),
-        style({transform: 'translateY(-25%)', opacity: 0})
-      ]))),
-      transition('void => desc', animate(SORT_ANIMATION_TRANSITION, keyframes([
-        style({transform: 'translateY(-25%)', opacity: 0}),
-        style({transform: 'none', opacity: 1})
-      ]))),
-      transition('desc => void', animate(SORT_ANIMATION_TRANSITION, keyframes([
-        style({transform: 'none', opacity: 1}),
-        style({transform: 'translateY(25%)', opacity: 0})
-      ]))),
-    ])
+    matSortAnimations.indicator,
+    matSortAnimations.leftPointer,
+    matSortAnimations.rightPointer,
+    matSortAnimations.indicatorToggle
   ]
 })
 export class MatSortHeader extends _MatSortHeaderMixinBase implements MatSortable, CanDisable {

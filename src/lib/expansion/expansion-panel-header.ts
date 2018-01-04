@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, state, style, transition, trigger} from '@angular/animations';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {ENTER, SPACE} from '@angular/cdk/keycodes';
 import {filter} from 'rxjs/operators/filter';
@@ -23,7 +22,8 @@ import {
 } from '@angular/core';
 import {merge} from 'rxjs/observable/merge';
 import {Subscription} from 'rxjs/Subscription';
-import {EXPANSION_PANEL_ANIMATION_TIMING, MatExpansionPanel} from './expansion-panel';
+import {MatExpansionPanel} from './expansion-panel';
+import {matExpansionAnimations} from './expansion-animations';
 
 
 /**
@@ -41,6 +41,10 @@ import {EXPANSION_PANEL_ANIMATION_TIMING, MatExpansionPanel} from './expansion-p
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    matExpansionAnimations.indicatorRotate,
+    matExpansionAnimations.expansionHeaderHeight
+  ],
   host: {
     'class': 'mat-expansion-panel-header',
     'role': 'button',
@@ -59,26 +63,6 @@ import {EXPANSION_PANEL_ANIMATION_TIMING, MatExpansionPanel} from './expansion-p
         }
     }`,
   },
-  animations: [
-    trigger('indicatorRotate', [
-      state('collapsed', style({transform: 'rotate(0deg)'})),
-      state('expanded', style({transform: 'rotate(180deg)'})),
-      transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
-    ]),
-    trigger('expansionHeight', [
-      state('collapsed', style({
-        height: '{{collapsedHeight}}',
-      }), {
-        params: {collapsedHeight: '48px'},
-      }),
-      state('expanded', style({
-        height: '{{expandedHeight}}'
-      }), {
-        params: {expandedHeight: '64px'}
-      }),
-      transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
-    ]),
-  ],
 })
 export class MatExpansionPanelHeader implements OnDestroy {
   private _parentChangeSubscription = Subscription.EMPTY;

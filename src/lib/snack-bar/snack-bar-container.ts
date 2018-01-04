@@ -18,30 +18,17 @@ import {
   ViewEncapsulation,
   ChangeDetectorRef,
 } from '@angular/core';
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-  AnimationEvent,
-} from '@angular/animations';
+import {AnimationEvent} from '@angular/animations';
 import {
   BasePortalOutlet,
   ComponentPortal,
   CdkPortalOutlet,
 } from '@angular/cdk/portal';
 import {take} from 'rxjs/operators/take';
-import {AnimationCurves, AnimationDurations} from '@angular/material/core';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {MatSnackBarConfig} from './snack-bar-config';
-
-
-export const SHOW_ANIMATION =
-    `${AnimationDurations.ENTERING} ${AnimationCurves.DECELERATION_CURVE}`;
-export const HIDE_ANIMATION =
-    `${AnimationDurations.EXITING} ${AnimationCurves.ACCELERATION_CURVE}`;
+import {matSnackBarAnimations} from './snack-bar-animations';
 
 /**
  * Internal component that wraps user-provided snack bar content.
@@ -55,20 +42,13 @@ export const HIDE_ANIMATION =
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
+  animations: [matSnackBarAnimations.snackBarState],
   host: {
     'role': 'alert',
     'class': 'mat-snack-bar-container',
     '[@state]': '_animationState',
     '(@state.done)': 'onAnimationEnd($event)'
   },
-  animations: [
-    trigger('state', [
-      state('visible-top, visible-bottom', style({transform: 'translateY(0%)'})),
-      transition('visible-top => hidden-top, visible-bottom => hidden-bottom',
-        animate(HIDE_ANIMATION)),
-      transition('void => visible-top, void => visible-bottom', animate(SHOW_ANIMATION)),
-    ])
-  ],
 })
 export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy {
   /** Whether the component has been destroyed. */
