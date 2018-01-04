@@ -10,7 +10,9 @@ import {
   Directive,
   Output,
   Input,
-  EventEmitter
+  EventEmitter,
+  AfterContentInit,
+  OnDestroy,
 } from '@angular/core';
 
 import {Direction, Directionality} from './directionality';
@@ -27,7 +29,7 @@ import {Direction, Directionality} from './directionality';
   host: {'[dir]': 'dir'},
   exportAs: 'dir',
 })
-export class Dir implements Directionality {
+export class Dir implements Directionality, AfterContentInit, OnDestroy {
   _dir: Direction = 'ltr';
 
   /** Whether the `value` has been set to its initial value. */
@@ -40,7 +42,7 @@ export class Dir implements Directionality {
   @Input('dir')
   get dir(): Direction { return this._dir; }
   set dir(v: Direction) {
-    let old = this._dir;
+    const old = this._dir;
     this._dir = v;
     if (old !== this._dir && this._isInitialized) {
       this.change.emit(this._dir);
@@ -53,6 +55,10 @@ export class Dir implements Directionality {
   /** Initialize once default value has been set. */
   ngAfterContentInit() {
     this._isInitialized = true;
+  }
+
+  ngOnDestroy() {
+    this.change.complete();
   }
 }
 

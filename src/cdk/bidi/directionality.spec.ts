@@ -77,6 +77,19 @@ describe('Directionality', () => {
       expect(injectedDirectionality.value).toBe('ltr');
       expect(fixture.componentInstance.changeCount).toBe(1);
     }));
+
+    it('should complete the change stream on destroy', fakeAsync(() => {
+      const fixture = TestBed.createComponent(ElementWithDir);
+      const dir =
+        fixture.debugElement.query(By.directive(InjectsDirectionality)).componentInstance.dir;
+      const spy = jasmine.createSpy('complete spy');
+      const subscription = dir.change.subscribe(undefined, undefined, spy);
+
+      fixture.destroy();
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    }));
+
   });
 });
 
