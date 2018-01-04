@@ -435,6 +435,68 @@ describe('MatSelect', () => {
               .toBe(false, 'Expected panel to stay closed.');
         }));
 
+        it('should toggle the next option when pressing shift + DOWN_ARROW on a multi-select',
+          fakeAsync(() => {
+            fixture.destroy();
+
+            const multiFixture = TestBed.createComponent(MultiSelect);
+            const event = createKeyboardEvent('keydown', DOWN_ARROW);
+            Object.defineProperty(event, 'shiftKey', {get: () => true});
+
+            multiFixture.detectChanges();
+            select = multiFixture.debugElement.query(By.css('mat-select')).nativeElement;
+
+            multiFixture.componentInstance.select.open();
+            multiFixture.detectChanges();
+            flush();
+
+            expect(multiFixture.componentInstance.select.value).toBeFalsy();
+
+            dispatchEvent(select, event);
+            multiFixture.detectChanges();
+
+            expect(multiFixture.componentInstance.select.value).toEqual(['pizza-1']);
+
+            dispatchEvent(select, event);
+            multiFixture.detectChanges();
+
+            expect(multiFixture.componentInstance.select.value).toEqual(['pizza-1', 'tacos-2']);
+          }));
+
+        it('should toggle the previous option when pressing shift + UP_ARROW on a multi-select',
+          fakeAsync(() => {
+            fixture.destroy();
+
+            const multiFixture = TestBed.createComponent(MultiSelect);
+            const event = createKeyboardEvent('keydown', UP_ARROW);
+            Object.defineProperty(event, 'shiftKey', {get: () => true});
+
+            multiFixture.detectChanges();
+            select = multiFixture.debugElement.query(By.css('mat-select')).nativeElement;
+
+            multiFixture.componentInstance.select.open();
+            multiFixture.detectChanges();
+            flush();
+
+            // Move focus down first.
+            for (let i = 0; i < 5; i++) {
+              dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+              multiFixture.detectChanges();
+            }
+
+            expect(multiFixture.componentInstance.select.value).toBeFalsy();
+
+            dispatchEvent(select, event);
+            multiFixture.detectChanges();
+
+            expect(multiFixture.componentInstance.select.value).toEqual(['chips-4']);
+
+            dispatchEvent(select, event);
+            multiFixture.detectChanges();
+
+            expect(multiFixture.componentInstance.select.value).toEqual(['sandwich-3', 'chips-4']);
+          }));
+
         it('should prevent the default action when pressing space', fakeAsync(() => {
           const event = dispatchKeyboardEvent(select, 'keydown', SPACE);
           expect(event.defaultPrevented).toBe(true);
