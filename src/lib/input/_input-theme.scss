@@ -6,6 +6,9 @@
 
 
 @mixin mat-input-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
   $foreground: map-get($theme, foreground);
 
   .mat-input-element:disabled {
@@ -13,9 +16,20 @@
   }
 
   .mat-input-element {
+    caret-color: mat-color($primary);
+
     @include input-placeholder {
       color: _mat-control-placeholder-color($theme);
     }
+  }
+
+  .mat-accent .mat-input-element {
+    caret-color: mat-color($accent);
+  }
+
+  .mat-warn .mat-input-element,
+  .mat-form-field-invalid .mat-input-element {
+    caret-color: mat-color($warn);
   }
 }
 
