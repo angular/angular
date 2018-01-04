@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {
   AfterContentInit,
   Component,
@@ -21,7 +20,13 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
-import {MatOption, MatOptgroup} from '@angular/material/core';
+import {
+  MatOption,
+  MatOptgroup,
+  MAT_OPTION_PARENT_COMPONENT,
+  mixinDisableRipple,
+  CanDisableRipple,
+} from '@angular/material/core';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 
 
@@ -40,6 +45,11 @@ export class MatAutocompleteSelectedEvent {
     public option: MatOption) { }
 }
 
+// Boilerplate for applying mixins to MatAutocomplete.
+/** @docs-private */
+export class MatAutocompleteBase {}
+export const _MatAutocompleteMixinBase = mixinDisableRipple(MatAutocompleteBase);
+
 
 @Component({
   moduleId: module.id,
@@ -50,11 +60,16 @@ export class MatAutocompleteSelectedEvent {
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'matAutocomplete',
+  inputs: ['disableRipple'],
   host: {
     'class': 'mat-autocomplete'
-  }
+  },
+  providers: [
+    {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatAutocomplete}
+  ]
 })
-export class MatAutocomplete implements AfterContentInit {
+export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterContentInit,
+  CanDisableRipple {
 
   /** Manages active item in option list based on key events. */
   _keyManager: ActiveDescendantKeyManager<MatOption>;
@@ -103,7 +118,9 @@ export class MatAutocomplete implements AfterContentInit {
   /** Unique ID to be used by autocomplete trigger's "aria-owns" property. */
   id: string = `mat-autocomplete-${_uniqueAutocompleteIdCounter++}`;
 
-  constructor(private _changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef) { }
+  constructor(private _changeDetectorRef: ChangeDetectorRef, private _elementRef: ElementRef) {
+    super();
+  }
 
   ngAfterContentInit() {
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options).withWrap();

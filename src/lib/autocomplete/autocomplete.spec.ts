@@ -1521,7 +1521,6 @@ describe('MatAutocomplete', () => {
       expect(panel.classList).toContain('class-two');
     }));
 
-
     it('should reset correctly when closed programmatically', fakeAsync(() => {
       TestBed.overrideProvider(MAT_AUTOCOMPLETE_SCROLL_STRATEGY, {
         useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close(),
@@ -1673,7 +1672,8 @@ describe('MatAutocomplete', () => {
       <input matInput placeholder="State" [matAutocomplete]="auto" [formControl]="stateCtrl">
     </mat-form-field>
 
-    <mat-autocomplete class="class-one class-two" #auto="matAutocomplete" [displayWith]="displayFn">
+    <mat-autocomplete class="class-one class-two" #auto="matAutocomplete"
+      [displayWith]="displayFn" [disableRipple]="disableRipple">
       <mat-option *ngFor="let state of filteredStates" [value]="state">
         <span> {{ state.code }}: {{ state.name }}  </span>
       </mat-option>
@@ -1686,6 +1686,7 @@ class SimpleAutocomplete implements OnDestroy {
   valueSub: Subscription;
   floatLabel = 'auto';
   width: number;
+  disableRipple = false;
 
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   @ViewChild(MatAutocomplete) panel: MatAutocomplete;
