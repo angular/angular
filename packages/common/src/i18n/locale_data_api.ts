@@ -253,7 +253,7 @@ export function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay] {
  */
 export function getLocaleDateFormat(locale: string, width: FormatWidth): string {
   const data = findLocaleData(locale);
-  return data[LocaleDataIndex.DateFormat][width];
+  return getLastDefinedValue(data[LocaleDataIndex.DateFormat], width);
 }
 
 /**
@@ -278,7 +278,7 @@ export function getLocaleDateFormat(locale: string, width: FormatWidth): string 
  */
 export function getLocaleTimeFormat(locale: string, width: FormatWidth): string {
   const data = findLocaleData(locale);
-  return data[LocaleDataIndex.TimeFormat][width];
+  return getLastDefinedValue(data[LocaleDataIndex.TimeFormat], width);
 }
 
 /**
