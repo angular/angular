@@ -54,12 +54,16 @@ There are two button directives to support navigation between different steps:
 
 ### Linear stepper
 The `linear` attribute can be set on `mat-horizontal-stepper` and `mat-vertical-stepper` to create
-a linear stepper that requires the user to complete previous steps before proceeding
-to following steps. For each `mat-step`, the `stepControl` attribute can be set to the top level
+a linear stepper that requires the user to complete previous steps before proceeding to following
+steps. For each `mat-step`, the `stepControl` attribute can be set to the top level
 `AbstractControl` that is used to check the validity of the step.
 
 There are two possible approaches. One is using a single form for stepper, and the other is
 using a different form for each step.
+
+Alternatively, if you don't want to use the Angular forms, you can pass in the `completed` property
+to each of the steps which won't allow the user to continue until it becomes `true`. Note that if
+both `completed` and `stepControl` are set, the `stepControl` will take precedence.
 
 #### Using a single form
 When using a single form for the stepper, `matStepperPrevious` and `matStepperNext` have to be

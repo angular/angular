@@ -297,10 +297,12 @@ export class CdkStepper implements OnDestroy {
     steps[this._selectedIndex].interacted = true;
 
     if (this._linear && index >= 0) {
-      return steps.slice(0, index).some(step =>
-        step.stepControl && (step.stepControl.invalid || step.stepControl.pending)
-      );
+      return steps.slice(0, index).some(step => {
+        const control = step.stepControl;
+        return control ? (control.invalid || control.pending) : !step.completed;
+      });
     }
+
     return false;
   }
 

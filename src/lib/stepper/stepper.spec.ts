@@ -27,7 +27,9 @@ describe('MatHorizontalStepper', () => {
       declarations: [
         SimpleMatHorizontalStepperApp,
         SimplePreselectedMatHorizontalStepperApp,
-        LinearMatHorizontalStepperApp
+        LinearMatHorizontalStepperApp,
+        SimpleStepperWithoutStepControl,
+        SimpleStepperWithStepControlAndCompletedBinding
       ],
       providers: [
         {provide: Directionality, useFactory: () => ({value: dir})}
@@ -199,6 +201,54 @@ describe('MatHorizontalStepper', () => {
       let stepHeaders = debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
       assertSelectionChangeOnHeaderClick(preselectedFixture, stepHeaders);
     });
+
+    it('should not move to the next step if the current one is not completed ' +
+      'and there is no `stepControl`', () => {
+        fixture.destroy();
+
+        const noStepControlFixture = TestBed.createComponent(SimpleStepperWithoutStepControl);
+
+        noStepControlFixture.detectChanges();
+
+        const stepper: MatHorizontalStepper = noStepControlFixture.debugElement
+            .query(By.directive(MatHorizontalStepper)).componentInstance;
+
+        const headers = noStepControlFixture.debugElement
+            .queryAll(By.css('.mat-horizontal-stepper-header'));
+
+        expect(stepper.selectedIndex).toBe(0);
+
+        headers[1].nativeElement.click();
+        noStepControlFixture.detectChanges();
+
+        expect(stepper.selectedIndex).toBe(0);
+      });
+
+      it('should have the `stepControl` take precedence when both `completed` and ' +
+        '`stepControl` are set', () => {
+          fixture.destroy();
+
+          const controlAndBindingFixture =
+              TestBed.createComponent(SimpleStepperWithStepControlAndCompletedBinding);
+
+          controlAndBindingFixture.detectChanges();
+
+          expect(controlAndBindingFixture.componentInstance.steps[0].control.valid).toBe(true);
+          expect(controlAndBindingFixture.componentInstance.steps[0].completed).toBe(false);
+
+          const stepper: MatHorizontalStepper = controlAndBindingFixture.debugElement
+              .query(By.directive(MatHorizontalStepper)).componentInstance;
+
+          const headers = controlAndBindingFixture.debugElement
+              .queryAll(By.css('.mat-horizontal-stepper-header'));
+
+          expect(stepper.selectedIndex).toBe(0);
+
+          headers[1].nativeElement.click();
+          controlAndBindingFixture.detectChanges();
+
+          expect(stepper.selectedIndex).toBe(1);
+        });
   });
 });
 
@@ -987,4 +1037,41 @@ class LinearMatVerticalStepperApp {
 })
 class SimplePreselectedMatHorizontalStepperApp {
   index = 0;
+}
+
+@Component({
+  template: `
+    <mat-horizontal-stepper linear>
+      <mat-step
+        *ngFor="let step of steps"
+        [label]="step.label"
+        [completed]="step.completed"></mat-step>
+    </mat-horizontal-stepper>
+  `
+})
+class SimpleStepperWithoutStepControl {
+  steps = [
+    {label: 'One', completed: false},
+    {label: 'Two', completed: false},
+    {label: 'Three', completed: false}
+  ];
+}
+
+@Component({
+  template: `
+    <mat-horizontal-stepper linear>
+      <mat-step
+        *ngFor="let step of steps"
+        [label]="step.label"
+        [stepControl]="step.control"
+        [completed]="step.completed"></mat-step>
+    </mat-horizontal-stepper>
+  `
+})
+class SimpleStepperWithStepControlAndCompletedBinding {
+  steps = [
+    {label: 'One', completed: false, control: new FormControl()},
+    {label: 'Two', completed: false, control: new FormControl()},
+    {label: 'Three', completed: false, control: new FormControl()}
+  ];
 }
