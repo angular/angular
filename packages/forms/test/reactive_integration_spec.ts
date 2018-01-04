@@ -544,6 +544,28 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         expect(formGroupDir.submitted).toEqual(true);
       });
 
+      it('should mark nested formGroup as submitted on submit event', () => {
+        const fixture = initTest(NestedFormGroupsComp);
+        fixture.componentInstance.form = new FormGroup({
+          'signin': new FormGroup(
+              {'login': new FormControl('loginValue'), 'password': new FormControl('password')})
+        });
+        fixture.detectChanges();
+
+        const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
+        const nestedGroupDir =
+            fixture.debugElement.children[0].children[0].injector.get(FormGroupDirective);
+        expect(formGroupDir.submitted).toBe(false);
+        expect(nestedGroupDir.submitted).toBe(false);
+
+        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        dispatchEvent(formEl, 'submit');
+
+        fixture.detectChanges();
+        expect(formGroupDir.submitted).toEqual(true);
+        expect(nestedGroupDir.submitted).toEqual(true);
+      });
+
       it('should set value in UI when form resets to that value programmatically', () => {
         const fixture = initTest(FormGroupComp);
         const login = new FormControl('some value');
@@ -571,7 +593,6 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         form.reset();
         expect(loginEl.value).toBe('');
       });
-
     });
 
     describe('value changes and status changes', () => {
@@ -2306,6 +2327,20 @@ class FormGroupComp {
     </form>`
 })
 class NestedFormGroupComp {
+  form: FormGroup;
+}
+
+@Component({
+  selector: 'nested-form-groups-comp',
+  template: `
+    <form [formGroup]="form">
+      <div [formGroup]="form.get('signin')" login-is-empty-validator>
+        <input formControlName="login">
+        <input formControlName="password">
+      </div>
+    </form>`
+})
+class NestedFormGroupsComp {
   form: FormGroup;
 }
 

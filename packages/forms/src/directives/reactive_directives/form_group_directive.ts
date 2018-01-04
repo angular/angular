@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EventEmitter, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, forwardRef} from '@angular/core';
+import {Directive, EventEmitter, Inject, Input, OnChanges, Optional, Output, Self, SimpleChanges, SkipSelf, forwardRef} from '@angular/core';
+
 import {FormArray, FormControl, FormGroup} from '../../model';
 import {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from '../../validators';
 import {ControlContainer} from '../control_container';
@@ -76,8 +77,12 @@ export class FormGroupDirective extends ControlContainer implements Form,
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
-      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[],
+      @Optional() @SkipSelf() private parentFormGroupDir: FormGroupDirective) {
     super();
+    if (parentFormGroupDir) {
+      parentFormGroupDir.ngSubmit.subscribe((event: Event) => { this.onSubmit(event); });
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
