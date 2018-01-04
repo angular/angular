@@ -723,14 +723,14 @@ describe('AppComponent', () => {
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
-      it('should redirect to `docs` if deployment mode is `next` and not at a docs page', () => {
+      it('should not redirect if deployment mode is `next`', () => {
         createTestingModule('', 'next');
         initializeTest();
-        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('resources', 'next');
         initializeTest();
-        expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
+        expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('guide/aot-compiler', 'next');
         initializeTest();
@@ -757,7 +757,7 @@ describe('AppComponent', () => {
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
-      it('should not redirect to `docs` if deployment mode is `stable` and not at a docs page', () => {
+      it('should not redirect to `docs` if deployment mode is `stable`', () => {
         createTestingModule('', 'stable');
         initializeTest();
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
