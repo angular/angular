@@ -8,8 +8,10 @@
 
 
 import {OverlayRef, GlobalPositionStrategy, OverlaySizeConfig} from '@angular/cdk/overlay';
+import {ESCAPE} from '@angular/cdk/keycodes';
 import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operators/map';
+import {filter} from 'rxjs/operators/filter';
 import {DialogPosition} from './dialog-config';
 import {CdkDialogContainer} from './dialog-container';
 
@@ -52,6 +54,11 @@ export class DialogRef<T, R = any> {
       this._overlayRef.dispose();
       this.componentInstance = null!;
     });
+
+    // Close when escape keydown event occurs
+    _overlayRef.keydownEvents()
+      .pipe(filter(event => event.keyCode === ESCAPE && !this.disableClose))
+      .subscribe(() => this.close());
   }
 
   /** Gets an observable that emits when the overlay's backdrop has been clicked. */

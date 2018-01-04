@@ -15,7 +15,6 @@ import {
   ComponentRef
 } from '@angular/core';
 import {ComponentPortal, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
-import {ESCAPE} from '@angular/cdk/keycodes';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {DialogRef} from './dialog-ref';
@@ -46,9 +45,6 @@ import {
  * Service to open modal dialogs.
  */
 export class Dialog {
-  /** A the handleKeydown method bound to the class instance.  */
-  private _boundKeydown = this._handleKeydown.bind(this);
-
   /** Stream that emits when all dialogs are closed. */
   get _afterAllClosed(): Observable<void> {
     return this._parentDialog ? this._parentDialog.afterAllClosed : this._afterAllClosedBase;
@@ -83,10 +79,6 @@ export class Dialog {
     if (!_parentDialog && location) {
       location.subscribe(() => this.closeAll());
     }
-
-    this.afterAllClosed.subscribe(() => {
-      document.removeEventListener('keydown', this._boundKeydown);
-    });
   }
 
   /** Gets an open dialog by id. */
@@ -134,18 +126,16 @@ export class Dialog {
   }
 
   /**
-   * Registers a keydown listener, and forwards emitting events for when dialogs are opened and all
-   * dialogs are closed.
+   * Forwards emitting events for when dialogs are opened and all dialogs are closed.
    */
   private registerDialogRef(dialogRef: DialogRef<any>): void {
-    if (!this.openDialogs.length) {
-      document.addEventListener('keydown', this._boundKeydown);
-    }
     this.openDialogs.push(dialogRef);
+
     let dialogOpenSub = dialogRef.afterOpen().subscribe(() => {
       this.afterOpen.next(dialogRef);
       dialogOpenSub.unsubscribe();
     });
+
     let dialogCloseSub = dialogRef.afterClosed().subscribe(() => {
       let dialogIdx = this._openDialogs.indexOf(dialogRef);
       if (dialogIdx !== -1) { this._openDialogs.splice(dialogIdx, 1); }
@@ -156,20 +146,6 @@ export class Dialog {
       }
     });
   }
-
-  /**
-   * Handles global key presses while there are open dialogs. Closes the
-   * top dialog when the user presses escape.
-   */
-  private _handleKeydown(event: KeyboardEvent): void {
-    const topDialog = this.openDialogs[this.openDialogs.length - 1];
-    const canClose = topDialog ? !topDialog.disableClose : false;
-
-    if (event.keyCode === ESCAPE && canClose) {
-      topDialog.close();
-    }
-  }
-
 
   /**
    * Creates an overlay config from a dialog config.

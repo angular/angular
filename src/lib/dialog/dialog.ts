@@ -7,7 +7,6 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {ESCAPE} from '@angular/cdk/keycodes';
 import {
   BlockScrollStrategy,
   Overlay,
@@ -30,7 +29,6 @@ import {
 import {Observable} from 'rxjs/Observable';
 import {defer} from 'rxjs/observable/defer';
 import {of as observableOf} from 'rxjs/observable/of';
-import {filter} from 'rxjs/operators/filter';
 import {startWith} from 'rxjs/operators/startWith';
 import {Subject} from 'rxjs/Subject';
 import {MatDialogConfig} from './dialog-config';
@@ -237,11 +235,6 @@ export class MatDialog {
         }
       });
     }
-
-    // Close when escape keydown event occurs
-    overlayRef.keydownEvents().pipe(
-      filter(event => event.keyCode === ESCAPE && !dialogRef.disableClose)
-    ).subscribe(() => dialogRef.close());
 
     if (componentOrTemplateRef instanceof TemplateRef) {
       dialogContainer.attachTemplatePortal(

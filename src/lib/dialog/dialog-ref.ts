@@ -7,6 +7,7 @@
  */
 
 import {OverlayRef, GlobalPositionStrategy} from '@angular/cdk/overlay';
+import {ESCAPE} from '@angular/cdk/keycodes';
 import {filter} from 'rxjs/operators/filter';
 import {take} from 'rxjs/operators/take';
 import {DialogPosition} from './dialog-config';
@@ -68,6 +69,10 @@ export class MatDialogRef<T, R = any> {
       this._afterClosed.complete();
       this.componentInstance = null!;
     });
+
+    _overlayRef.keydownEvents()
+      .pipe(filter(event => event.keyCode === ESCAPE && !this.disableClose))
+      .subscribe(() => this.close());
   }
 
   /**
