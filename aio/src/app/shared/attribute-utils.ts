@@ -11,8 +11,9 @@ interface StringMap { [index: string]: string; }
 export function getAttrs(el:  HTMLElement | ElementRef): StringMap {
   const attrs: NamedNodeMap = el instanceof ElementRef ? el.nativeElement.attributes : el.attributes;
   const attrMap = {};
-  Object.keys(attrs).forEach(key =>
-    attrMap[(attrs[key] as Attr).name.toLowerCase()] = (attrs[key] as Attr).value);
+  for (const attr of attrs as any /* cast due to https://github.com/Microsoft/TypeScript/issues/2695 */) {
+    attrMap[attr.name.toLowerCase()] = attr.value;
+  }
   return attrMap;
 }
 
