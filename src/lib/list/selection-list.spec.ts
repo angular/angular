@@ -675,6 +675,22 @@ describe('MatSelectionList with forms', () => {
       expect(ngModel.pristine)
         .toBe(false, 'Expected the selection-list to be dirty after state change.');
     }));
+
+    it('should remove a selected option from the value on destroy', fakeAsync(() => {
+      listOptions[1].selected = true;
+      listOptions[2].selected = true;
+
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.selectedOptions).toEqual(['opt2', 'opt3']);
+
+      fixture.componentInstance.renderLastOption = false;
+      fixture.detectChanges();
+      tick();
+
+      expect(fixture.componentInstance.selectedOptions).toEqual(['opt2']);
+    }));
+
   });
 
   describe('and formControl', () => {
@@ -869,11 +885,12 @@ class SelectionListWithTabindexBinding {
     <mat-selection-list [(ngModel)]="selectedOptions">
       <mat-list-option value="opt1">Option 1</mat-list-option>
       <mat-list-option value="opt2">Option 2</mat-list-option>
-      <mat-list-option value="opt3">Option 3</mat-list-option>
+      <mat-list-option value="opt3" *ngIf="renderLastOption">Option 3</mat-list-option>
     </mat-selection-list>`
 })
 class SelectionListWithModel {
   selectedOptions: string[] = [];
+  renderLastOption = true;
 }
 
 @Component({

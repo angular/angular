@@ -178,6 +178,12 @@ export class MatListOption extends _MatListOptionMixinBase
   }
 
   ngOnDestroy(): void {
+    if (this.selected) {
+      // We have to delay this until the next tick in order
+      // to avoid changed after checked errors.
+      Promise.resolve().then(() => this.selected = false);
+    }
+
     this.selectionList._removeOptionFromList(this);
   }
 
