@@ -66,7 +66,7 @@ export class CdkAccordionItem implements OnDestroy {
       this._changeDetectorRef.markForCheck();
     }
   }
-  private _expanded: boolean;
+  private _expanded = false;
 
   /** Unregister function for _expansionDispatcher. */
   private _removeUniqueSelectionListener: () => void = () => {};
