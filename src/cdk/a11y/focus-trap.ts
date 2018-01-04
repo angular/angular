@@ -21,6 +21,12 @@ import {take} from 'rxjs/operators/take';
 import {InteractivityChecker} from './interactivity-checker';
 import {DOCUMENT} from '@angular/common';
 
+/**
+ * Node type of element nodes. Used instead of Node.ELEMENT_NODE
+ * which is unsupported in Universal.
+ * @docs-private
+*/
+const ELEMENT_NODE_TYPE = 1;
 
 /**
  * Class that allows for trapping focus within a DOM element.
@@ -223,7 +229,7 @@ export class FocusTrap {
     let children = root.children || root.childNodes;
 
     for (let i = 0; i < children.length; i++) {
-      let tabbableChild = children[i].nodeType === Node.ELEMENT_NODE ?
+      let tabbableChild = children[i].nodeType === ELEMENT_NODE_TYPE ?
         this._getFirstTabbableElement(children[i] as HTMLElement) :
         null;
 
@@ -245,7 +251,7 @@ export class FocusTrap {
     let children = root.children || root.childNodes;
 
     for (let i = children.length - 1; i >= 0; i--) {
-      let tabbableChild = children[i].nodeType === Node.ELEMENT_NODE ?
+      let tabbableChild = children[i].nodeType === ELEMENT_NODE_TYPE ?
         this._getLastTabbableElement(children[i] as HTMLElement) :
         null;
 
