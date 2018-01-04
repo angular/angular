@@ -572,7 +572,9 @@ describe('MatSelectionList with forms', () => {
       imports: [MatListModule, FormsModule, ReactiveFormsModule],
       declarations: [
         SelectionListWithModel,
-        SelectionListWithFormControl
+        SelectionListWithFormControl,
+        SelectionListWithPreselectedOption,
+        SelectionListWithPreselectedOptionAndModel
       ]
     });
 
@@ -735,6 +737,34 @@ describe('MatSelectionList with forms', () => {
       expect(listOptions[2].selected).toBe(true, 'Expected third option to be selected.');
     });
   });
+
+  describe('preselected values', () => {
+    it('should add preselected options to the model value', fakeAsync(() => {
+      const fixture = TestBed.createComponent(SelectionListWithPreselectedOption);
+      const listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
+          .map(optionDebugEl => optionDebugEl.componentInstance);
+
+      fixture.detectChanges();
+      tick();
+
+      expect(listOptions[1].selected).toBe(true);
+      expect(fixture.componentInstance.selectedOptions).toEqual(['opt2']);
+    }));
+
+    it('should handle preselected option both through the model and the view', fakeAsync(() => {
+      const fixture = TestBed.createComponent(SelectionListWithPreselectedOptionAndModel);
+      const listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
+          .map(optionDebugEl => optionDebugEl.componentInstance);
+
+      fixture.detectChanges();
+      tick();
+
+      expect(listOptions[0].selected).toBe(true);
+      expect(listOptions[1].selected).toBe(true);
+      expect(fixture.componentInstance.selectedOptions).toEqual(['opt1', 'opt2']);
+    }));
+
+  });
 });
 
 
@@ -857,4 +887,28 @@ class SelectionListWithModel {
 })
 class SelectionListWithFormControl {
   formControl = new FormControl();
+}
+
+
+@Component({
+  template: `
+    <mat-selection-list [(ngModel)]="selectedOptions">
+      <mat-list-option value="opt1">Option 1</mat-list-option>
+      <mat-list-option value="opt2" selected>Option 2</mat-list-option>
+    </mat-selection-list>`
+})
+class SelectionListWithPreselectedOption {
+  selectedOptions: string[];
+}
+
+
+@Component({
+  template: `
+    <mat-selection-list [(ngModel)]="selectedOptions">
+      <mat-list-option value="opt1">Option 1</mat-list-option>
+      <mat-list-option value="opt2" selected>Option 2</mat-list-option>
+    </mat-selection-list>`
+})
+class SelectionListWithPreselectedOptionAndModel {
+  selectedOptions = ['opt1'];
 }
