@@ -24,7 +24,7 @@ import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {Directionality} from '@angular/cdk/bidi';
 import {MatDialogContainer} from './dialog-container';
-import {OverlayContainer} from '@angular/cdk/overlay';
+import {OverlayContainer, ScrollStrategy} from '@angular/cdk/overlay';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {
@@ -603,6 +603,17 @@ describe('MatDialog', () => {
 
     // Ensure that the callback actually fires.
     expect(spy).toHaveBeenCalled();
+  }));
+
+  it('should be able to attach a custom scroll strategy', fakeAsync(() => {
+    const scrollStrategy: ScrollStrategy = {
+      attach: () => {},
+      enable: jasmine.createSpy('scroll strategy enable spy'),
+      disable: () => {}
+    };
+
+    dialog.open(PizzaMsg, {scrollStrategy});
+    expect(scrollStrategy.enable).toHaveBeenCalled();
   }));
 
   describe('passing in data', () => {
