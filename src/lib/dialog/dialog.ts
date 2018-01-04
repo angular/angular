@@ -40,6 +40,9 @@ import {MatDialogRef} from './dialog-ref';
 
 export const MAT_DIALOG_DATA = new InjectionToken<any>('MatDialogData');
 
+/** Injection token that can be used to specify default dialog options. */
+export const MAT_DIALOG_DEFAULT_OPTIONS =
+    new InjectionToken<MatDialogConfig>('mat-dialog-default-options');
 
 /** Injection token that determines the scroll handling while the dialog is open. */
 export const MAT_DIALOG_SCROLL_STRATEGY =
@@ -95,6 +98,7 @@ export class MatDialog {
       private _overlay: Overlay,
       private _injector: Injector,
       @Optional() location: Location,
+      @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) private _defaultOptions,
       @Inject(MAT_DIALOG_SCROLL_STRATEGY) private _scrollStrategy,
       @Optional() @SkipSelf() private _parentDialog: MatDialog) {
 
@@ -116,7 +120,7 @@ export class MatDialog {
   open<T, D = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
           config?: MatDialogConfig<D>): MatDialogRef<T> {
 
-    config = _applyConfigDefaults(config);
+    config = _applyConfigDefaults(config, this._defaultOptions || new MatDialogConfig());
 
     if (config.id && this.getDialogById(config.id)) {
       throw Error(`Dialog with id "${config.id}" exists already. The dialog id must be unique.`);
@@ -309,8 +313,10 @@ export class MatDialog {
 /**
  * Applies default options to the dialog config.
  * @param config Config to be modified.
+ * @param defaultOptions Default options provided.
  * @returns The new configuration object.
  */
-function _applyConfigDefaults(config?: MatDialogConfig): MatDialogConfig {
-  return {...new MatDialogConfig(), ...config};
+function _applyConfigDefaults(
+    config?: MatDialogConfig, defaultOptions?: MatDialogConfig): MatDialogConfig {
+  return {...defaultOptions, ...config};
 }
