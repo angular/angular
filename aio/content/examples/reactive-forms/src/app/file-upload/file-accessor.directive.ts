@@ -5,25 +5,25 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from "@angular/forms";
 
 // #docregion v1
 @Directive({
-    selector: "input[type=file]",
-    providers: [
-        { provide: NG_VALUE_ACCESSOR, useExisting: FileValueAccessor, multi: true }
-    ]
+  selector: "input[type=file]",
+  providers: [
+    { provide: NG_VALUE_ACCESSOR, useExisting: FileValueAccessor, multi: true }
+  ]
 })
 export class FileValueAccessor implements ControlValueAccessor {
   value: FileList;
-  onChange = (_) => {};
-  onTouched = () => {};
+  onChange = (_) => { };
+  onTouched = () => { };
 
-  writeValue(value) {}
+  writeValue(value) { }
   registerOnChange(fn: any) { this.onChange = fn; }
   registerOnTouched(fn: any) { this.onTouched = fn; }
 
-  @HostListener('change', ['$event']) onValueChange($event){
+  @HostListener('change', ['$event']) onValueChange($event) {
     this.onChange($event.target.files);
   }
 
-  @HostListener('blur') onBlur(){
+  @HostListener('blur') onBlur() {
     this.onTouched()
   }
 }

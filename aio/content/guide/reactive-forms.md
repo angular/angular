@@ -1402,19 +1402,21 @@ Handling file uploads with Reactive forms has a couple of challenges you can sol
 * Displaying progress to the user.
 
 ### File Upload Accessor
-One way to handle file uploads is to create a `FileAccessor`—this handles retrieving the file from the native UI element and passing it to the form. From there the file must be uploaded along with the rest of the form data to the server.
+One way to handle file uploads is to create a `FileAccessor` that handles retrieving the files from the native UI element and passes the files to the form. From there the file must be uploaded along with the rest of the form data to the server.
 
-The first way would be to use a `ControlValueAccessor` to take the file out of an input with `type=file` and pass it to the form control.
+The first way would be to use a `ControlValueAccessor` to take the file out of an input with `type=file` and pass it to the form control. This will be useful in situations where you api expects the file to be uploaded along with data.
 
 <code-example path="reactive-forms/src/app/file-upload/file-accessor.directive.ts" region="v1" title="src/app/file-upload/file-accessor.directive.ts" linenums="false">
 
 </code-example>
 
 ### File Upload Component
-Another option would be to make a component which handles all of the file uploading for you. You could then pass it to the `FormControl` and expect the value to be set to the files url rather than the file itself, thus abstracting away the process of uploading it in the view of the form.
-Notice how the component is first setting the value to `null`, this is so that it will remove any old url if the file has been changed and so that the Required validator can be used.
+Another option would be to make a component along with a service which handles all of the file uploading for you. You could then pass it to the `FormControl` and expect the value to be set to the files url rather than the file itself, thus abstracting away the process of uploading the file from the form.
+Notice that the component first sets the control value to null, clearing the input box of a previous URL and activating the `required` validator.
 
 <code-example path="reactive-forms/src/app/file-upload/file-upload.service.ts" region="v1" title="src/app/file-upload/file-upload.service.ts" linenums="false">
+
+</code-example>
 
 <code-example path="reactive-forms/src/app/file-upload/file-upload.component.ts" region="v1" title="src/app/file-upload/file-upload.component.ts" linenums="false">
 
@@ -1424,6 +1426,8 @@ Notice how the component is first setting the value to `null`, this is so that i
 To provide feedback to users, you can add a FileUploadComponent that visually indicates file upload progress with the help of the progress events emitted by the [HttpClient](/guide/http).
 
 <code-example path="reactive-forms/src/app/file-upload/file-upload.service.ts" region="v2" title="src/app/file-upload/file-upload.service.ts" linenums="false">
+
+</code-example>
 
 <code-example path="reactive-forms/src/app/file-upload/file-upload-progress.component.ts" region="v1" title="src/app/file-upload/file-upload-progress.component.ts" linenums="false">
 
