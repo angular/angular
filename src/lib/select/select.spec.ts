@@ -1260,7 +1260,7 @@ describe('MatSelect', () => {
             .not.toContain('mat-selected', `Expected option w/ the old value not to be selected.`);
       }));
 
-      it('should set the control to touched when the select is touched', fakeAsync(() => {
+      it('should set the control to touched when the select is blurred', fakeAsync(() => {
         expect(fixture.componentInstance.control.touched)
             .toEqual(false, `Expected the control to start off as untouched.`);
 
@@ -1281,6 +1281,26 @@ describe('MatSelect', () => {
 
         expect(fixture.componentInstance.control.touched)
             .toEqual(true, `Expected the control to be touched as soon as focus left the select.`);
+      }));
+
+      it('should set the control to touched when the panel is closed', fakeAsync(() => {
+        expect(fixture.componentInstance.control.touched)
+            .toBe(false, 'Expected the control to start off as untouched.');
+
+        trigger.click();
+        dispatchFakeEvent(trigger, 'blur');
+        fixture.detectChanges();
+        flush();
+
+        expect(fixture.componentInstance.control.touched)
+            .toBe(false, 'Expected the control to stay untouched when menu opened.');
+
+        fixture.componentInstance.select.close();
+        fixture.detectChanges();
+        flush();
+
+        expect(fixture.componentInstance.control.touched)
+            .toBe(true, 'Expected the control to be touched when the panel was closed.');
       }));
 
       it('should not set touched when a disabled select is touched', fakeAsync(() => {
