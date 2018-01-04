@@ -695,6 +695,22 @@ describe('MatSelectionList with forms', () => {
       expect(listOptions.every(option => !option.selected))
         .toBe(true, 'Expected every list option to be unselected.');
     });
+
+    it('should mark options as selected when the value is set before they are initialized', () => {
+      fixture.destroy();
+      fixture = TestBed.createComponent(SelectionListWithFormControl);
+      selectionListDebug = fixture.debugElement.query(By.directive(MatSelectionList));
+      selectionList = selectionListDebug.componentInstance;
+
+      fixture.componentInstance.formControl.setValue(['opt2', 'opt3']);
+      fixture.detectChanges();
+
+      listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
+        .map(optionDebugEl => optionDebugEl.componentInstance);
+
+      expect(listOptions[1].selected).toBe(true, 'Expected second option to be selected.');
+      expect(listOptions[2].selected).toBe(true, 'Expected third option to be selected.');
+    });
   });
 });
 

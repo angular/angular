@@ -290,6 +290,9 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** View to model callback that should be called whenever the selected options change. */
   private _onChange: (value: any) => void = (_: any) => {};
 
+  /** Used for storing the values that were assigned before the options were initialized. */
+  private _tempValues: string[]|null;
+
   /** View to model callback that should be called if the list or its options lost focus. */
   onTouched: () => void = () => {};
 
@@ -301,6 +304,11 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   ngAfterContentInit(): void {
     this._keyManager = new FocusKeyManager<MatListOption>(this.options).withWrap();
+
+    if (this._tempValues) {
+      this._setOptionsFromValues(this._tempValues);
+      this._tempValues = null;
+    }
   }
 
   /** Focus the selection-list. */
@@ -369,6 +377,8 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   writeValue(values: string[]): void {
     if (this.options) {
       this._setOptionsFromValues(values || []);
+    } else {
+      this._tempValues = values;
     }
   }
 
