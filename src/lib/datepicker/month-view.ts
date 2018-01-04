@@ -34,7 +34,7 @@ const DAYS_PER_WEEK = 7;
   moduleId: module.id,
   selector: 'mat-month-view',
   templateUrl: 'month-view.html',
-  exportAs: 'matMonthVeiw',
+  exportAs: 'matMonthView',
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
