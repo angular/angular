@@ -10,6 +10,7 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatDrawer, MatSidenavModule, MatDrawerContainer} from './index';
+import {Direction} from '@angular/cdk/bidi';
 import {A11yModule} from '@angular/cdk/a11y';
 import {PlatformModule} from '@angular/cdk/platform';
 import {ESCAPE} from '@angular/cdk/keycodes';
@@ -573,6 +574,27 @@ describe('MatDrawerContainer', () => {
     expect(parseInt(contentElement.style.marginLeft)).toBeLessThan(initialMargin);
   }));
 
+  it('should recalculate the margin if the direction has changed', fakeAsync(() => {
+    const fixture = TestBed.createComponent(DrawerContainerStateChangesTestApp);
+
+    fixture.detectChanges();
+    fixture.componentInstance.drawer.open();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const contentElement = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
+    const margin = parseInt(contentElement.style.marginLeft);
+
+    expect(margin).toBeGreaterThan(0);
+
+    fixture.componentInstance.direction = 'rtl';
+    fixture.detectChanges();
+
+    expect(parseInt(contentElement.style.marginLeft)).toBe(0);
+    expect(parseInt(contentElement.style.marginRight)).toBe(margin);
+  }));
+
   it('should not animate when the sidenav is open on load ', fakeAsync(() => {
     const fixture = TestBed.createComponent(DrawerSetToOpenedTrue);
 
@@ -760,7 +782,7 @@ class DrawerDelayed {
 
 @Component({
   template: `
-    <mat-drawer-container>
+    <mat-drawer-container [dir]="direction">
       <mat-drawer *ngIf="renderDrawer" [mode]="mode" style="width:100px"></mat-drawer>
     </mat-drawer-container>`,
 })
@@ -768,6 +790,7 @@ class DrawerContainerStateChangesTestApp {
   @ViewChild(MatDrawer) drawer: MatDrawer;
   @ViewChild(MatDrawerContainer) drawerContainer: MatDrawerContainer;
 
+  direction: Direction = 'ltr';
   mode = 'side';
   renderDrawer = true;
 }

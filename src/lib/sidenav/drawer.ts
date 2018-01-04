@@ -475,10 +475,14 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
               private _ngZone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
               @Inject(MAT_DRAWER_DEFAULT_AUTOSIZE) defaultAutosize = false) {
-    // If a `Dir` directive exists up the tree, listen direction changes and update the left/right
-    // properties to point to the proper start/end.
-    if (_dir != null) {
-      _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => this._validateDrawers());
+
+    // If a `Dir` directive exists up the tree, listen direction changes
+    // and update the left/right properties to point to the proper start/end.
+    if (_dir) {
+      _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => {
+        this._validateDrawers();
+        this._updateContentMargins();
+      });
     }
 
     this._autosize = defaultAutosize;
@@ -619,7 +623,7 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
     this._right = this._left = null;
 
     // Detect if we're LTR or RTL.
-    if (this._dir == null || this._dir.value == 'ltr') {
+    if (!this._dir || this._dir.value == 'ltr') {
       this._left = this._start;
       this._right = this._end;
     } else {
