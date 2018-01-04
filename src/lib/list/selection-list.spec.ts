@@ -1,6 +1,6 @@
-import {DOWN_ARROW, SPACE, ENTER, UP_ARROW} from '@angular/cdk/keycodes';
+import {DOWN_ARROW, SPACE, ENTER, UP_ARROW, HOME, END} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
-import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
+import {createKeyboardEvent, dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -262,6 +262,29 @@ describe('MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       expect(manager.activeItemIndex).toEqual(3);
+    });
+
+    it('should focus the first non-disabled item when pressing HOME', () => {
+      const manager = selectionList.componentInstance._keyManager;
+      expect(manager.activeItemIndex).toBe(-1);
+
+      const event = dispatchKeyboardEvent(selectionList.nativeElement, 'keydown', HOME);
+      fixture.detectChanges();
+
+      // Note that the first item is disabled so we expect the second one to be focused.
+      expect(manager.activeItemIndex).toBe(1);
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should focus the last item when pressing END', () => {
+      const manager = selectionList.componentInstance._keyManager;
+      expect(manager.activeItemIndex).toBe(-1);
+
+      const event = dispatchKeyboardEvent(selectionList.nativeElement, 'keydown', END);
+      fixture.detectChanges();
+
+      expect(manager.activeItemIndex).toBe(3);
+      expect(event.defaultPrevented).toBe(true);
     });
 
     it('should be able to select all options', () => {

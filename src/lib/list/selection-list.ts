@@ -9,7 +9,7 @@
 import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {SPACE, ENTER} from '@angular/cdk/keycodes';
+import {SPACE, ENTER, HOME, END} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   Attribute,
@@ -354,6 +354,12 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
       case ENTER:
         this._toggleSelectOnFocusedOption();
         // Always prevent space from scrolling the page since the list has focus
+        event.preventDefault();
+        break;
+      case HOME:
+      case END:
+        event.keyCode === HOME ? this._keyManager.setFirstItemActive() :
+                                 this._keyManager.setLastItemActive();
         event.preventDefault();
         break;
       default:
