@@ -13,6 +13,7 @@ import {
   OverlayConfig,
   OverlayRef,
   ScrollStrategy,
+  OverlayContainer,
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
 import {Location} from '@angular/common';
@@ -68,6 +69,7 @@ export class MatDialog {
   private _openDialogsAtThisLevel: MatDialogRef<any>[] = [];
   private _afterAllClosedAtThisLevel = new Subject<void>();
   private _afterOpenAtThisLevel = new Subject<MatDialogRef<any>>();
+  private _ariaHiddenElements = new Map<Element, string|null>();
 
   /** Keeps track of the currently-open dialogs. */
   get openDialogs(): MatDialogRef<any>[] {
@@ -98,7 +100,8 @@ export class MatDialog {
       @Optional() location: Location,
       @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) private _defaultOptions,
       @Inject(MAT_DIALOG_SCROLL_STRATEGY) private _scrollStrategy,
-      @Optional() @SkipSelf() private _parentDialog: MatDialog) {
+      @Optional() @SkipSelf() private _parentDialog: MatDialog,
+      private _overlayContainer: OverlayContainer) {
 
     // Close all of the dialogs when the user goes forwards/backwards in history or when the
     // location hash changes. Note that this usually doesn't include clicking on links (unless
@@ -128,6 +131,11 @@ export class MatDialog {
     const dialogContainer = this._attachDialogContainer(overlayRef, config);
     const dialogRef =
         this._attachDialogContent<T>(componentOrTemplateRef, dialogContainer, overlayRef, config);
+
+    // If this is the first dialog that we're opening, hide all the non-overlay content.
+    if (!this.openDialogs.length) {
+      this._hideNonDialogContentFromAssistiveTechnology();
+    }
 
     this.openDialogs.push(dialogRef);
     dialogRef.afterClosed().subscribe(() => this._removeOpenDialog(dialogRef));
@@ -295,12 +303,49 @@ export class MatDialog {
     if (index > -1) {
       this.openDialogs.splice(index, 1);
 
-      // no open dialogs are left, call next on afterAllClosed Subject
+      // If all the dialogs were closed, remove/restore the `aria-hidden`
+      // to a the siblings and emit to the `afterAllClosed` stream.
       if (!this.openDialogs.length) {
+        this._ariaHiddenElements.forEach((previousValue, element) => {
+          if (previousValue) {
+            element.setAttribute('aria-hidden', previousValue);
+          } else {
+            element.removeAttribute('aria-hidden');
+          }
+        });
+
+        this._ariaHiddenElements.clear();
         this._afterAllClosed.next();
       }
     }
   }
+
+  /**
+   * Hides all of the content that isn't an overlay from assistive technology.
+   */
+  private _hideNonDialogContentFromAssistiveTechnology() {
+    const overlayContainer = this._overlayContainer.getContainerElement();
+
+    // Ensure that the overlay container is attached to the DOM.
+    if (overlayContainer.parentElement) {
+      const siblings = overlayContainer.parentElement.children;
+
+      for (let i = siblings.length - 1; i > -1; i--) {
+        let sibling = siblings[i];
+
+        if (sibling !== overlayContainer &&
+          sibling.nodeName !== 'SCRIPT' &&
+          sibling.nodeName !== 'STYLE' &&
+          !sibling.hasAttribute('aria-live')) {
+
+          this._ariaHiddenElements.set(sibling, sibling.getAttribute('aria-hidden'));
+          sibling.setAttribute('aria-hidden', 'true');
+        }
+      }
+    }
+
+  }
+
 }
 
 /**
