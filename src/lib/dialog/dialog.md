@@ -81,7 +81,7 @@ For example:
 <mat-dialog-content>Are you sure?</mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>No</button>
-  <!-- Can optionally provide a result for the closing dialog. -->
+  <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
   <button mat-button [mat-dialog-close]="true">Yes</button>
 </mat-dialog-actions>
 ```
@@ -124,7 +124,7 @@ the `ComponentFactory` for it.
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule() {}
+export class AppModule {}
 ```
 
 ### Accessibility
