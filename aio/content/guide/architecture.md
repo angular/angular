@@ -14,7 +14,7 @@ Angular 애플리케이션은 _최상위 모듈_ 을 *부트스트랩* 하면서
 자세한 내용은 이 문서를 진행하면서 차근차근 살펴보도록 하고, 먼저 전체 그림을 보는 것부터 시작합시다.
 
 <figure>
-  <img src="generated/images/guide/architecture/overview2.png" alt="overview">
+  <img src="generated/images/guide/architecture/overview2.png" alt="개요">
 </figure>
 
 <div class="l-sub-section">
@@ -25,7 +25,7 @@ Angular 애플리케이션은 _최상위 모듈_ 을 *부트스트랩* 하면서
 
 ## Modules
 
-<img src="generated/images/guide/architecture/module.png" alt="Component" class="left">
+<img src="generated/images/guide/architecture/module.png" alt="컴포넌트" class="left">
 
 
 Angular는 _NgModule_ 이라는 모듈 방식을 제공하며, Angular 프레임워크로 만들어진 애플리케이션도 이 방식으로 만들어진 모듈이라고 할 수 있습니다.
@@ -52,89 +52,83 @@ _최상위_ 모듈이든 _기능_ 모듈이든, Angular 모듈은 `@NgModule` �
 
 </div>
 
-`NgModule` is a decorator function that takes a single metadata object whose properties describe the module.
-The most important properties are:
-* `declarations` - the _view classes_ that belong to this module.
-Angular has three kinds of view classes: [components](guide/architecture#components), [directives](guide/architecture#directives), and [pipes](guide/pipes).
+`NgModule` 은 데코레이터 함수이며, 모듈의 특성을 지정하는 메타데이터를 객체 형태의 인자로 받습니다:
+* `declarations` - 모듈에 속하는 _뷰 클래스_ 를 지정합니다.
+Angular에는 3 종류의 뷰 클래스가 있습니다: [컴포넌트](guide/architecture#components), [디렉티브](guide/architecture#directives), [파이프](guide/pipes).
 
-* `exports` - the subset of declarations that should be visible and usable in the component [templates](guide/architecture#templates) of other modules.
+* `exports` - 다른 모듈이 이 모듈을 참조한다면 이 모듈의 `declarations` 항목의 일부를 지정해서 다른 모듈의 [템플릿](guide/architecture#templates)에 사용할 수 있도록 모듈 외부로 공개합니다.
 
-* `imports` - other modules whose exported classes are needed by component templates declared in _this_ module.
+* `imports` - _현재_ 모듈의 컴포넌트 템플릿에서 다른 모듈의 공개된 클래스를 사용할 때 지정합니다.
 
-* `providers` - creators of [services](guide/architecture#services) that this module contributes to
-the global collection of services; they become accessible in all parts of the app.
+* `providers` - [서비스](guide/architecture#services) 프로바이더를 지정합니다.
+모듈에서 사용하는 서비스는 프로바이더에 지정된 방식으로 인스턴스를 생성하며, 이렇게 생성된 서비스는 전역 서비스 풀에 생성되어 앱 어디에서라도 접근할 수 있습니다.
 
-* `bootstrap` - the main application view, called the _root component_,
-that hosts all other app views. Only the _root module_ should set this `bootstrap` property.
+* `bootstrap` - 모듈의 시작 화면이 될 _최상위 컴포넌트_ 를 지정합니다. 모듈의 _최상위 컴포넌트_ 에만 `bootstrap` 프로퍼티를 지정할 수 있습니다.
 
-Here's a simple root module:
+이 내용을 바탕으로 다음과 같이 간단한 최상위 모듈을 만들어 볼 수 있습니다:
 
 <code-example path="architecture/src/app/mini-app.ts" region="module" title="src/app/app.module.ts" linenums="false"></code-example>
 
 <div class="l-sub-section">
 
-  The `export` of `AppComponent` is just to show how to use the `exports` array to export a component; it isn't actually necessary in this example. A root module has no reason to _export_ anything because other components don't need to _import_ the root module.
+  위 코드에서 `exports` 프로퍼티에 사용된 `AppComponent` 는 `exports` 프로퍼티를 어떻게 사용하는지 설명하기 위해 작성했으며, 이 모듈이 동작하기 위해 필요한 내용은 아닙니다. 최상위 모듈은 모듈 트리의 최상단에 존재하기 때문에 다른 컴포넌트가 최상위 모듈을 참조하는 일은 없습니다.
 
 </div>
 
-Launch an application by _bootstrapping_ its root module.
-During development you're likely to bootstrap the `AppModule` in a `main.ts` file like this one.
+애플리케이션은 최상위 모듈을 _부트스트랩_하면서 실행됩니다.
+보통 `AppModule` 은 `main.ts` 파일에 다음과 같이 정의될 것입니다.
 
 <code-example path="architecture/src/main.ts" title="src/main.ts" linenums="false"></code-example>
 
 ### NgModules vs. JavaScript modules
 
-The NgModule &mdash; a class decorated with `@NgModule` &mdash; is a fundamental feature of Angular.
+클래스에 `@NgModule` 데코레이터를 붙여 선언하는 NgModule 은 Angular를 구성하는 기본 단위입니다.
 
-JavaScript also has its own module system for managing collections of JavaScript objects.
-It's completely different and unrelated to the NgModule system.
+그리고 이런 모듈 체계는 JavaScript에도 존재하며, JavaScript 나름의 방법으로 JavaScript 객체를 관리합니다.
+하지만 JavaScript의 모듈 체계는 NgModule 체계와 완전히 다르고 연관성도 없습니다.
 
-In JavaScript each _file_ is a module and all objects defined in the file belong to that module.
-The module declares some objects to be public by marking them with the `export` key word.
-Other JavaScript modules use *import statements* to access public objects from other modules.
+JavaScript에서 _파일_ 하나는 그 자체로 모듈이며, 이 파일에 정의된 모든 객체는 이 모듈에 속한다고 할 수 있습니다.
+이 객체들 중 일부를 모듈 외부로 공개하려면 `export` 키워드를 사용해서 지정할 수 있으며, 다른 모듈에서는 `import` 키워드를 사용해서 이 객체를 가져올 수 있습니다.
 
 <code-example path="architecture/src/app/app.module.ts" region="imports" linenums="false"></code-example>
 
 <code-example path="architecture/src/app/app.module.ts" region="export" linenums="false"></code-example>
 
 <div class="l-sub-section">
-  <a href="http://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
+  <a href="http://exploringjs.com/es6/ch_modules.html">JavaScript의 모듈 체계에 대해 자세히 알아보려면 이 문서를 참고하세요.</a>
 </div>
 
-These are two different and _complementary_ module systems. Use them both to write your apps.
+결국 우리가 작성하는 코드에는 _완전히 다르지만 상호 보완적인_ 2개의 모듈 체계가 있다고 할 수 있습니다. 이 두 방식은 애플리케이션을 개발하면서 각각의 역할에 맞게 모두 사용할 것입니다.
 
 ### Angular libraries
 
-<img src="generated/images/guide/architecture/library-module.png" alt="Component" class="left">
+<img src="generated/images/guide/architecture/library-module.png" alt="컴포넌트" class="left">
 
-Angular ships as a collection of JavaScript modules. You can think of them as library modules.
+Angular는 JavaScript 모듈을 묶어 라이브러리 모듈로 제공하며, `@angular` 라는 접두사가 붙습니다.
 
-Each Angular library name begins with the `@angular` prefix.
-
-You install them with the **npm** package manager and import parts of them with JavaScript `import` statements.
+각각의 라이브러리는 **npm** 패키지 매니저로 설치할 수 있고, JavaScript 코드에서 `import` 키워드를 사용해서 참조할 수 있습니다.
 
 <br class="clear">
 
-For example, import Angular's `Component` decorator from the `@angular/core` library like this:
+예를 들어 Angular의 `Component` 데코레이터를 사용한다면 `@angular/core` 라이브러리를 다음과 같이 사용할 수 있습니다:
 
 <code-example path="architecture/src/app/app.component.ts" region="import" linenums="false"></code-example>
 
-You also import NgModules from Angular _libraries_ using JavaScript import statements:
+라이브러리 뿐 아니라 Angular 모듈을 불러오는 것도 import 구문을 사용합니다:
 
 <code-example path="architecture/src/app/mini-app.ts" region="import-browser-module" linenums="false"></code-example>
 
-In the example of the simple root module above, the application module needs material from within that `BrowserModule`. To access that material, add it to the `@NgModule` metadata `imports` like this.
+위에서 살펴본 최상위 모듈 예제에서 보듯이, 애플리케이션 모듈은 `BrowserModule` 라이브러리 안에 있는 클래스를 사용합니다. 이 클래스에 접근하려면 JavaScript `import` 키워드로 `BrowserModule` 을 참조하고, `@NgModule` 의 메타데이터 중 `imports` 프로퍼티에 다음과 같이 지정합니다.
 
 <code-example path="architecture/src/app/mini-app.ts" region="ngmodule-imports" linenums="false"></code-example>
 
-In this way you're using both the Angular and JavaScript module systems _together_.
+이 코드에서 보듯이, Angular 모듈 체계와 JavaScript 모듈 체계는 _함께_ 사용합니다.
 
-It's easy to confuse the two systems because they share the common vocabulary of "imports" and "exports".
-Hang in there. The confusion yields to clarity with time and experience.
+두 모듈 체계에서 모두 "imports" 라는 용어와 "exports" 라는 용어를 사용하기 때문에 혼동이 생길 수 있겠지만, 이 고민은 시간과 경험이 쌓이면서 자연스럽게 해결될 것입니다.
 
 <div class="l-sub-section">
 
-  Learn more from the [NgModules](guide/ngmodule) page.
+  [NgModule](guide/ngmodule) 에 대해 자세히 알아보기
 
 </div>
 
@@ -144,27 +138,28 @@ Hang in there. The confusion yields to clarity with time and experience.
 
 <img src="generated/images/guide/architecture/hero-component.png" alt="Component" class="left">
 
-A _component_ controls a patch of screen called a *view*.
+_컴포넌트_ 는 화면의 일부 영역인 *뷰* 를 조작합니다.
 
-For example, the following views are controlled by components:
+예를 들어 다음 뷰들은 각각의 컴포넌트에 의해 조작됩니다:
 
-* The app root with the navigation links.
-* The list of heroes.
-* The hero editor.
+* 네비게이션 링크를 표시하는 최상위 뷰.
+* 히어로 목록을 표시하는 뷰.
+* 히어로 에디터.
 
-You define a component's application logic&mdash;what it does to support the view&mdash;inside a class.
-The class interacts with the view through an API of properties and methods.
+컴포넌트 클래스에는 뷰를 조작하는 애플리케이션 로직을 작성합니다.
+그러면 뷰는 클래스에 있는 프로퍼티와 메소드를 사용해서 상호작용 할 수 있습니다.
 
 {@a component-code}
 
-For example, this `HeroListComponent` has a `heroes` property that returns an array of heroes
-that it acquires from a service.
-`HeroListComponent` also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list.
+예를 들어 `HeroListComponent` 에 `heroes` 프로퍼티가 있고, 이 프로퍼티는 서비스에서 받아온 히어로의 배열을 반환한다고 합시다.
+그리고 사용자가 목록에서 선택한 히어로를 `selectedHero` 프로퍼티에 저장하는 `selectHero()` 메소드도 있다고 합시다.
+그러면 다음과 같이 컴포넌트 클래스를 작성할 수 있습니다.
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (class)" region="class"></code-example>
 
-Angular creates, updates, and destroys components as the user moves through the application.
-Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()` declared above.
+Angular는 사용자의 행동에 따라 컴포넌트를 생성하고, 갱신하고, 종료합니다.
+
+컴포넌트가 동작하는 각각의 시점은 생명주기라고 하며, 이 시점을 가로채서 [생명주기 함수](guide/lifecycle-hooks)를 실행시킬 수도 있습니다. 위 코드에서 사용한 `ngOnInit()` 함수가 생명주기 함수 중 하나입니다.
 
 <hr/>
 
@@ -172,26 +167,23 @@ Your app can take action at each moment in this lifecycle through optional [life
 
 <img src="generated/images/guide/architecture/template.png" alt="Template" class="left">
 
-You define a component's view with its companion **template**. A template is a form of HTML
-that tells Angular how to render the component.
+컴포넌트의 뷰는 **템플릿**으로 정의합니다. 이 템플릿에는 Angular가 렌더링할 화면을 HTML 형태로 정의할 수 있습니다.
 
-A template looks like regular HTML, except for a few differences. Here is a
-template for our `HeroListComponent`:
+템플릿은 보통의 HTML과 비슷하게 보이지만, 조금 다릅니다. 예제로 다루고 있는 `HeroListComponent` 의 템플릿을 보면 다음과 같습니다:
 
 <code-example path="architecture/src/app/hero-list.component.html" title="src/app/hero-list.component.html"></code-example>
 
-Although this template uses typical HTML elements like `<h2>` and  `<p>`, it also has some differences. Code like `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<hero-detail>` uses Angular's [template syntax](guide/template-syntax).
+이 템플릿에는 `<h2>`나 `<p>`와 같이 일반적으로 HTML 문서에 사용하던 엘리먼트들이 있지만, 그 외에 다른 요소도 있습니다. `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, `<hero-detail>` 와 같은 표현은 모두 Angular [템플릿 문법](guide/template-syntax)입니다.
 
-In the last line of the template, the `<hero-detail>` tag is a custom element that represents a new component, `HeroDetailComponent`.
+그리고 템플릿의 마지막 줄에 사용된 `<app-hero-detail>` 태그는 커스텀 컴포넌트인 `HeroDetailComponent` 를 표현하는 엘리먼트입니다.
 
-The `HeroDetailComponent` is a *different* component than the `HeroListComponent` you've been reviewing.
-The `HeroDetailComponent` (code not shown) presents facts about a particular hero, the
-hero that the user selects from the list presented by the `HeroListComponent`.
-The `HeroDetailComponent` is a **child** of the `HeroListComponent`.
+이때 `HeroDetailComponent`는 이전에 살펴봤던 `HeroListComponent`와는 *다른* 컴포넌트입니다.
+지금 코드를 살펴보지는 않겠지만, `HeroDetailComponent` 는 `HeroListComponent` 가 표시하는 히어로 목록 중에, 사용자가 선택한 히어로 한 명의 정보를 표시합니다.
+따라서 `HeroDetailComponent`는 `HeroListComponent`의 자식 컴포넌트입니다.
 
 <img src="generated/images/guide/architecture/component-tree.png" alt="Metadata" class="left">
 
-Notice how `<hero-detail>` rests comfortably among native HTML elements. Custom components mix seamlessly with native HTML in the same layouts.
+일반적인 HTML 엘리먼트들 사이에서 `<app-hero-detail>` 태그가 자연스럽게 어울리는 것을 유심히 볼 필요가 있습니다. 코드에서와 마찬가지로 레이아웃에서도 커스텀 컴포넌트는 기본 HTML들과 자연스럽게 어울립니다.
 
 <hr class="clear"/>
 
