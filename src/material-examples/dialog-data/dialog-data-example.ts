@@ -7,6 +7,7 @@ import {MatDialog, MAT_DIALOG_DATA} from '@angular/material';
 @Component({
   selector: 'dialog-data-example',
   templateUrl: 'dialog-data-example.html',
+  styleUrls: ['dialog-data-example.css']
 })
 export class DialogDataExample {
   constructor(public dialog: MatDialog) {}

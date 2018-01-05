@@ -6,5 +6,6 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'tabs-overview-example',
   templateUrl: 'tabs-overview-example.html',
+  styleUrls: ['tabs-overview-example.css'],
 })
 export class TabsOverviewExample {}

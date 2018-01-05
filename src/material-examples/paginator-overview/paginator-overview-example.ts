@@ -6,5 +6,6 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'paginator-overview-example',
   templateUrl: 'paginator-overview-example.html',
+  styleUrls: ['paginator-overview-example.css'],
 })
 export class PaginatorOverviewExample {}

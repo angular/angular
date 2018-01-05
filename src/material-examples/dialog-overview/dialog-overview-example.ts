@@ -6,7 +6,8 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
  */
 @Component({
   selector: 'dialog-overview-example',
-  templateUrl: 'dialog-overview-example.html'
+  templateUrl: 'dialog-overview-example.html',
+  styleUrls: ['dialog-overview-example.css'],
 })
 export class DialogOverviewExample {
 

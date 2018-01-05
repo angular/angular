@@ -7,6 +7,7 @@ import {PageEvent} from '@angular/material';
 @Component({
   selector: 'paginator-configurable-example',
   templateUrl: 'paginator-configurable-example.html',
+  styleUrls: ['paginator-configurable-example.css'],
 })
 export class PaginatorConfigurableExample {
   // MatPaginator Inputs
