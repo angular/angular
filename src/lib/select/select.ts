@@ -861,6 +861,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       this._selectionModel.toggle(option);
       this.stateChanges.next();
       wasSelected ? option.deselect() : option.select();
+      this._keyManager.setActiveItem(this._getOptionIndex(option)!);
       this._sortValues();
     } else {
       this._clearSelection(option.value == null ? undefined : option);

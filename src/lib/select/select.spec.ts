@@ -3540,6 +3540,22 @@ describe('MatSelect', () => {
           'Expected `multiple` to have been set on dynamically-added option.');
     }));
 
+    it('should update the active item index on click', fakeAsync(() => {
+      trigger.click();
+      fixture.detectChanges();
+      flush();
+
+      expect(fixture.componentInstance.select._keyManager.activeItemIndex).toBe(0);
+
+      const options = overlayContainerElement.querySelectorAll('mat-option') as
+          NodeListOf<HTMLElement>;
+
+      options[2].click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.select._keyManager.activeItemIndex).toBe(2);
+    }));
+
   });
 });
 
