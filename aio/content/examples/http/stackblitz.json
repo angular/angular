@@ -3,7 +3,9 @@
   "files":[
     "!**/*.d.ts",
     "!**/*.js",
-    "!**/*.[1].*"
+
+    "!src/testing/*.*",
+    "!src/index-specs.html"
   ],
-  "tags": ["http", "jsonp"]
+  "tags": ["http"]
 }
