@@ -1,0 +1,12 @@
+<h3>Upload file</h3>
+<form enctype="multipart/form-data" method="post">
+  <div>
+    <label for="picked">Choose file to upload</label>
+    <div>
+      <input type="file" id="picked" #picked
+        (click)="message=''"
+        (change)="onPicked(picked)">
+    </div>
+  </div>
+  <p *ngIf="message">{{message}}</p>
+</form>
