@@ -1,11 +1,11 @@
 // #docregion import
 import { Directive, HostListener } from "@angular/core";
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from "@angular/forms";
+import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 // #enddocregion import
 
 // #docregion v1
 @Directive({
-  selector: "input[type=file]",
+  selector: 'input[type=file]',
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: FileValueAccessor, multi: true }
   ]

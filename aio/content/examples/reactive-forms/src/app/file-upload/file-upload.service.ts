@@ -16,7 +16,7 @@ export class FileUploadService {
     const formData = new FormData();
     Array.from(files).forEach(file => formData.append(file.name, file))
 
-    return this.httpClient.post<{ url: string }>('/file-upload', files)
+    return this.httpClient.post<{ url: string }>('/file-upload', formData)
   }
   // #enddocregion v1
 
