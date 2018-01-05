@@ -1739,6 +1739,22 @@ describe('MatSelect', () => {
             .toContain(options[1].id, `Expected aria-owns to contain IDs of its child options.`);
       }));
 
+      it('should remove aria-owns when the options are not visible', fakeAsync(() => {
+        const select = fixture.debugElement.query(By.css('mat-select'));
+
+        expect(select.nativeElement.hasAttribute('aria-owns'))
+            .toBe(true, 'Expected select to have aria-owns while open.');
+
+        const backdrop =
+            overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+        backdrop.click();
+        fixture.detectChanges();
+        flush();
+
+        expect(select.nativeElement.hasAttribute('aria-owns'))
+            .toBe(false, 'Expected select not to have aria-owns when closed.');
+      }));
+
       it('should set the option id properly', fakeAsync(() => {
         let firstOptionID = options[0].id;
 
