@@ -17,7 +17,6 @@ const CLI_SPEC_FILENAME = 'e2e/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const IGNORED_EXAMPLES = [ // temporary ignores
   'quickstart',
-  'http',
   'setup',
   'webpack',
   'upgrade-p'
