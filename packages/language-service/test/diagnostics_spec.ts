@@ -248,7 +248,7 @@ describe('diagnostics', () => {
           template: \`
             <div *ngIf="comps | async; let comps; else loading">
             </div>
-            <ng-template #loading>Loading comps...</ng-template>            
+            <ng-template #loading>Loading comps...</ng-template>
           \`
         })
         export class MyComponent {}
