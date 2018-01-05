@@ -11,13 +11,21 @@ import {tap} from 'rxjs/operators/tap';
 import {finalize} from 'rxjs/operators/finalize';
 import {map} from 'rxjs/operators/map';
 import {share} from 'rxjs/operators/share';
-import {Injectable, Optional, SecurityContext, SkipSelf} from '@angular/core';
+import {
+  Injectable,
+  Inject,
+  InjectionToken,
+  Optional,
+  SecurityContext,
+  SkipSelf,
+} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {Observable} from 'rxjs/Observable';
 import {forkJoin} from 'rxjs/observable/forkJoin';
 import {of as observableOf} from 'rxjs/observable/of';
 import {_throw as observableThrow} from 'rxjs/observable/throw';
+import {DOCUMENT} from '@angular/common';
 
 
 /**
@@ -97,7 +105,12 @@ export class MatIconRegistry {
    */
   private _defaultFontSetClass = 'material-icons';
 
-  constructor(@Optional() private _httpClient: HttpClient, private _sanitizer: DomSanitizer) {}
+  constructor(
+    @Optional() private _httpClient: HttpClient,
+    private _sanitizer: DomSanitizer,
+    @Optional() @Inject(DOCUMENT) private _document?: any) {
+      // TODO(crisbeto): make _document required next major release.
+    }
 
   /**
    * Registers an icon by URL in the default namespace.
@@ -405,13 +418,17 @@ export class MatIconRegistry {
    * Creates a DOM element from the given SVG string.
    */
   private _svgElementFromString(str: string): SVGElement {
-    const div = document.createElement('DIV');
-    div.innerHTML = str;
-    const svg = div.querySelector('svg') as SVGElement;
-    if (!svg) {
-      throw Error('<svg> tag not found');
+    if (this._document || typeof document !== 'undefined') {
+      const div = (this._document || document).createElement('DIV');
+      div.innerHTML = str;
+      const svg = div.querySelector('svg') as SVGElement;
+      if (!svg) {
+        throw Error('<svg> tag not found');
+      }
+      return svg;
     }
-    return svg;
+
+    throw new Error('MatIconRegistry could not resolve document.');
   }
 
   /**
@@ -483,8 +500,11 @@ export class MatIconRegistry {
 
 /** @docs-private */
 export function ICON_REGISTRY_PROVIDER_FACTORY(
-    parentRegistry: MatIconRegistry, httpClient: HttpClient, sanitizer: DomSanitizer) {
-  return parentRegistry || new MatIconRegistry(httpClient, sanitizer);
+  parentRegistry: MatIconRegistry,
+  httpClient: HttpClient,
+  sanitizer: DomSanitizer,
+  document?: any) {
+  return parentRegistry || new MatIconRegistry(httpClient, sanitizer, document);
 }
 
 /** @docs-private */
@@ -494,7 +514,8 @@ export const ICON_REGISTRY_PROVIDER = {
   deps: [
     [new Optional(), new SkipSelf(), MatIconRegistry],
     [new Optional(), HttpClient],
-    DomSanitizer
+    DomSanitizer,
+    [new Optional(), DOCUMENT as InjectionToken<any>]
   ],
   useFactory: ICON_REGISTRY_PROVIDER_FACTORY
 };
