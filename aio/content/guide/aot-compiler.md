@@ -77,6 +77,208 @@ AOT compiles HTML templates and components into JavaScript files long before the
 With no templates to read and no risky client-side HTML or JavaScript evaluation,
 there are fewer opportunities for injection attacks.
 
+{@ angular-compiler-options}
+
+## Angular Compiler Options
+
+Options to the template compiler are provided in the `tsconfig.json` file along side options supplied
+to the TypeScript compiler. The template compiler options are specified as members of
+`"angularCompilerOptions"` object. For example,
+
+```json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    ...
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "preserveWhiteSpace": false,
+    ...
+  }
+}
+```
+
+### `"skipMetadataEmit"`
+
+Do not produce `.metadata.json` files. This option is `false` by default.
+
+`.metadata.json` files contain the infomration needed by the template compiler from a `.ts`
+file that is not included in the `.d.ts` file produced by TypeScript. This contains, for
+example, the content of annotations (such as a component's template) which TypeScript
+emits to the `.js` file but not to the `.d.ts` file.
+
+This option should be set to `true` if using TypeScript's `--outFile` option as the metadata files
+are not valid for this style of TypeScript output. It is not recommeded to use `--outFile` with
+Angular. Use a bundler, such as [webpack](https://webpack.js.org/), instead.
+
+This option can also be set to `true` when using factory summaries as the factory summaries
+include a copy of the information that is in the `.metadata.json` file.
+
+### `"strictMetadataEmit"`
+
+Instruct the Angular template compiler to report an error if errors are written to the `.metadata.json`
+file. This option is `false` by default. This should only be used when `"skipMetadataEmit"` is `false`
+and `"skipTemplateCodeGen"` is `true`. It is intended to validate the `.metadata.json` files
+emitted for bundling with an `npm` package. The validation is overly strict and can emit errors for
+metadata that would never produce an error when used by the template compiler. The error emitted by
+this option can be suppressed for an exported symbol by including `@dynamic` in the comment documenting
+the symbol for which the error is reported.
+
+It is valid for `.metadata.json` files to contain errors. These errors will be reported by the
+template compiler if the metadata is used to determine content of an annotation. The metadata
+collector cannot predict what symbols are designed to be used in an annotation so it will preemptively
+include error nodes in the metadata for these symbol that can then be used by the template compiler to
+report an error if these symbols are used. If an exported symbol is not intended to be used in an
+annotation it is expected for this symbol to contain an error node. However, if a symbol is intended to
+be usable in an annotation by the client of a library, the template compiler will normally not report
+this until the client uses the symbol. This option allows detecting these errors during the build of
+the library and is used, for example, in producing Angular libraries themselves.
+
+### `"skipTemplateCodegen"`
+
+Suppress emitting `.ngfactory.js` and `.ngstyle.js` files. This turns off most of the
+template compiler and disables reporting template diagnostics. This can be used to instruct the
+template compiler to produce `.metadata.json` files for distribution with an `npm` package while
+avoiding the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to
+`npm`.
+
+### `"strictInjectionParameters"`
+
+Always report errors when the type of a parameter supplied whose injection type cannot
+be determined. When this value option is not provided or is `false`, constructor
+parameters of classes marked with `@Injectable` whose type cannot be resolved will
+produce a warning. With this option `true`, they produce an error. When this option is
+not provided is treated as if it were `false`.
+
+This option defaults to `false`. It is recommended to change this option explicitly to
+`true` as this option will be `true` by default in the future.
+
+### `"flatModuleOutFile"`
+
+Setting `"flatModuleOutFile"` instructs the template compiler to generate a flat module
+index of the given name and the corresponding flat module metadata. This option is intended
+to be used when creating flat modules similar to how `@angular/core` and `@angular/common`
+are packaged. When this option is used the `package.json` for the library should refered
+to the generated flat module index instead of the library index file. When using this
+option only one `.metadata.json` file is produced that contains all the metadata necessary
+for symbols exported from the library index. In the generated `.ngfactory.js` files, the flat
+module index is used to import symbols includes both the public API from the library index
+as well as shrowded internal symbols.
+
+By default the `.ts` file supplied in the `files` field is assumed to be library index.
+If more than one is specified, uses `libraryIndex` to select the file to use. If more than
+one `.ts` file is supplied and no `libraryIndex` is supplied an error is produced. A flat module
+index `.d.ts` and `.js` will be created with the given `flatModuleOutFile` name in the same
+location as the library index `.d.ts` file is emitted. For example, if a library uses
+`public_api.ts` file as the library index of the module the `tsconfig.json` `files` field
+would be `["public_api.ts"]`. The `flatModuleOutFile` options could then be set to, for
+example `"index.js"`, which produces `index.d.ts` and  `index.metadata.json` files. The
+library's `package.json`'s `module` field would be `"index.js"` and the `typings` field
+would be `"index.d.ts"`.
+
+### `"flatModuleId"`
+
+Preferred module id to use for importing flat module. References generated by the
+template compiler will use this module name when importing symbols from the flat module.
+This is only meaningful when `flatModuleOutFile` is also supplied. It is otherwise ignored.
+
+### `"generateCodeForLibraries"`
+
+Instructs the template compiler to generate factory files (`.ngfactory.js` and `.ngstyle.js`)
+for `.d.ts` files with a corresponding `.metadata.json` file. This option defaults to
+`true`. When this option is `false`, factory files will only be generated for `.ts` files.
+
+This option should be set to `false` when using factory summaries.
+
+### `"fullTemplateTypeCheck"`
+
+Instructs the compiler to enable the [binding expression validation](#binding-expresion-validation)
+phase of the template compiler which uses TypeScript to validate binding expressions.
+
+This option is `false` by default. It is recommended that this be explicitly set to `true`. This
+option will default to `true` in the future.
+
+### `"annotateForClosureCompiler"`
+
+Instructs the compiler to use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted
+JavaScript with [JsDoc](http://usejsdoc.org/) comments needed by the
+[Closure Compiler](https://github.com/google/closure-compiler). This option defaults to `false`.
+
+### `"annotationsAs"`
+
+Modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
+annotations and decorators are unnaffected. Default is `static fields`.
+
+value           | description
+----------------|-------------------------------------------------------------
+`decorators`    | Leave the Decorators in-place. This makes compilation faster. TypeScript will emit calls to the __decorate helper.  `--emitDecoratorMetadata` can be used for runtime reflection.  However, the resulting code will not properly tree-shake.
+`static fields` | Replace decorators with a static field in the class. Allows advanced tree-shakers like [Closure Compiler](https://github.com/google/closure-compiler) to remove unused classes.
+
+### `"trace"`
+
+Print extra information while compiling templates.
+
+### `"enableLegacyTemplate"`
+
+The use of `<template>` element was deprecated starting in Angular 4.0 in favor of usin
+`<ng-template>` to avoid colliding with the DOM's element of the same name. Use of the
+deprecated `<template>` element can be enabled by setting this option to `true`. This option
+is `false` by default. This option might be required by some third-party Angular libraries.
+
+### `"disableExpressionLowering"`
+
+The Angular template compiler will transform code that is used, or could be used, in an annotation
+to allow it to be imported from template factory modules. See
+[metadata rewriting](#metadata-rewriting) for more information.
+
+Setting this option to `false` disables this rewriting requiring the rewriting to be
+done manually.
+
+`"i18nOutLocale"`
+
+Locale of the application.
+
+`"i18nOutFormat"`
+
+Export format (xlf, xlf2 or xmb).
+
+`"i18nOutFile"`
+
+Path to the extracted message file.
+
+`"i18nInFormat"`
+
+Import format if different from `i18nFormat`.
+
+`"i18nInFile"`
+
+Path to the translation file.
+
+`"i18nInMissingTranslations"`
+
+How to handle missing messages.
+
+| values  |
+| ------- |
+| error   |
+| warning |
+| ignore  |
+
+`"preserveWhitespaces"`
+
+Whether to remove blank text nodes from compiled templates. This option is `true` by default.
+
+It is recommended to set this to explicitly to `false` as it emits smaller template factory modules
+and might be set to `false` by default in the future.
+
+`"allowEmptyCodegenFiles"`
+
+Generate all possible generated files even if they would be empty. This option is
+`false` by default. This is an option used by the `bazel` rule and is needed to simplify
+how `bazel` rules track file dependencies and is not recommended to be used outside of the `bazel`
+rules.
+
 ## Angular Metadata and AOT
 
 The Angular **AOT compiler** extracts and interprets **metadata** about the parts of the application that Angular is supposed to manage.
@@ -212,6 +414,7 @@ export function serverFactory() {
 
 Beginning in version 5, the compiler automatically performs this rewritting while emitting the `.js` file.
 
+{@a function-calls}
 ### Limited function calls
 
 The _collector_ can represent a function call or object creation with `new` as long as the syntax is valid. The _collector_ only cares about proper syntax.
@@ -410,6 +613,8 @@ function; it can only contain a single `return` statement.
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
 Review the [source code](https://github.com/angular/angular/blob/master/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
 for these methods to see how macros can simplify configuration of complex [NgModules](guide/ngmodule).
+
+{@ metadata-rewriting}
 
 ### Metadata rewriting
 
@@ -958,9 +1163,164 @@ This error can occur if you use an expression in the `extends` clause of a class
 
 <!--
 
-Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](https://github.com/angular/angular/pull/17712#discussion_r132025495).
+Chuck: After reviewing your PR comment I'm still at a loss. See [comment there]().
 
 -->
+
+{@a binding-expresion-validation}
+
+## Phase 3: binding expression validation
+
+In the validation phase the Angular template compiler uses the TypeScript compiler to validate the
+binding expressions in templates. This phase needs to be enabled explicity by adding the compiler
+option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json` (see
+[Angular Compiler Options](#angular-compiler-options)).
+
+Template validation produces error messages when a type error is detected in a template binding
+expression similar to how type errors are reported by TypeScript against the code in a `.ts`
+file.
+
+For example, consider the following component,
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: '{{person.addresss.street}}'
+})
+class MyComponent {
+  person?: Person;
+}
+```
+
+This will produce the following error,
+
+```
+my.component.ts.MyComponent.html(1,1): : Property 'addresss' does not exist on type 'Person'. Did you mean 'address'?
+```
+
+The file name reported in the error message, `my.component.ts.MyComponent.html`, is a synthetic file
+generated by the template compiler that holds the content of the template of the `MyComponent` class.
+This file is never written to disk. The line and column numbers are relative to the template string
+in the `@Component` annotation of the class, `MyComponent` in this case. If a component uses
+`templateUrl` instead of `template`, the errors are reported in the HTML file refereneced by the
+`templateUrl` instead of a synthetic file.
+
+The error location is the beginning of the text node that contains the interpolation expression with
+the error. If the error as in an attribute binding such as `[value]="person.address.street"`, the
+location of the attribute that contains the error.
+
+The validation uses the TypeScript type checker and the options supplied to TypeScript to control
+how detailed the type validation is. For example, if the `"strictTypeChecks"` is specified, the
+error,
+
+```
+my.component.ts.MyComponent.html(1,1): : Object is possibly 'undefined'.
+```
+
+is reported as well as the above error message.
+
+### Type narrowing
+
+The expression used in an `ngIf` directive is used in to narrow type unions in the Angular
+template compiler the same way the `if` expression does in TypeScript. For example, to avoid
+`Object is possibly 'undefined'` error in the template above can be modified to only emit the
+interpolation if the value of `person` is initialized.
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: '<span *ngIf="person"> {{person.addresss.street}} </span>'
+})
+class MyComponent {
+  person?: Person;
+}
+```
+
+Using `*ngIf` allows TypeScript to infer the `person` used in the
+binding expression will never be `undefined`.
+
+#### Custom `ngIf` like directives
+
+Directives that behave like `*ngIf` can declare they want the same treatment by including
+a static member marker that is a signal to the template compiler that they should be
+treated like `*ngIf`. This static member for `*ngIf` is
+
+```ts
+  public static ngIfUseIfTypeGuard: void;
+```
+
+This declares that the input property `ngIf` of the `NgIf` directive should be treated as a
+guard to the use of its template implying that the template will only be instantiated if
+the `ngIf` input property is truthy.
+
+
+### Non-null type assertion operator
+
+The [non-null type assertion operator](guide/template-syntax#non-null-assertion-operator) can
+be used to suppress the `Object is possibly 'undefined'` error when it is incovienent to use
+`*ngIf` or when some constraint in the component ensures the expression is always
+non-null when the binding expression is interpolated.
+
+In the following example, the `person` and `address` properties are always set together,
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: '<span *ngIf="person"> {{person.name}} lives on {{address!.street}} </span>'
+})
+class MyComponent {
+  person?: Person;
+  address?: Address;
+
+  setData(person: Person, address: Address) {
+    this.person = person;
+    this.address = address;
+  }
+}
+```
+
+implying that `address` is always non-null if `person` is non-null. There is no convenient
+way to describe this constraint to TypeScript and the template compiler but the error
+is suppressed in the example by using `address!.street`. The non-null assertion operator
+should be used sparingly, however, as a refactoring of the component might break this
+constraint. It is recommended, for this example, to include the checking of `address`
+in the `*ngIf`:
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: '<span *ngIf="person && address"> {{person.name}} lives on {{address.street}} </span>'
+})
+class MyComponent {
+  person?: Person;
+  address?: Address;
+
+  setData(person: Person, address: Address) {
+    this.person = person;
+    this.address = address;
+  }
+}
+```
+
+### Disabling type checking using `$any()`
+
+The checking of a binding expression can be disabled by surrounding the expression
+in a call to the [`$any()` cast pseudo-function](guide/template-syntax).
+This is treated as it was cast to the `any` type just like in TypeScript when a `<any>`
+or `as any` cast is used.
+
+In the following example, the error `Property 'addresss' does not exist` is suppressed
+by casting `person` to the `any` type.
+
+```ts
+@Component({
+  selector: 'my-component',
+  template: '{{$any(person).addresss.street}}'
+})
+class MyComponent {
+  person?: Person;
+}
+```
 
 ## Summary
 
@@ -970,3 +1330,4 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
 * Other restrictions on metadata definition.
 * Macro-functions and macro-static methods.
 * Compiler errors related to metadata.
+* Validation of binding expressions
