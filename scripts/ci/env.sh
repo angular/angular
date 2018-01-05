@@ -42,7 +42,7 @@ setEnvVar CHROMIUM_VERSION 494239 # Chrome 62 linux stable, see https://www.chro
 setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.33"
 setEnvVar BAZEL_VERSION 0.8.1
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
-setEnvVar ANGULAR_CLI_VERSION 1.6.2
+setEnvVar ANGULAR_CLI_VERSION 1.6.3
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
 
 if [[ ${TRAVIS:-} ]]; then
