@@ -57,7 +57,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // Produce an error if the metadata written for a class would produce an error if used.
   strictMetadataEmit?: boolean;
 
-  // Don't produce .ngfactory.ts or .ngstyle.ts files
+  // Don't produce .ngfactory.js or .ngstyle.js files
   skipTemplateCodegen?: boolean;
 
   // Always report errors when the type of a parameter supplied whose injection type cannot
