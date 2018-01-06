@@ -84,7 +84,7 @@
     "rxjs": "^5.5.2",
     "tslib": "^1.7.1",
     "web-animations-js": "^2.2.5",
-    "zone.js": "0.8.16"
+    "zone.js": "^0.8.19"
   },
   "devDependencies": {
     "@angular/cli": "^1.6.0-rc.0",
