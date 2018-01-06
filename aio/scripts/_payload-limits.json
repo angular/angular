@@ -4,17 +4,17 @@
       "gzip7": {
         "inline": 941,
         "main": 116124,
-        "polyfills": 11860
+        "polyfills": 13102
       },
       "gzip9": {
         "inline": 941,
         "main": 115954,
-        "polyfills": 11858
+        "polyfills": 13104
       },
       "uncompressed": {
         "inline": 1558,
         "main": 456432,
-        "polyfills": 37070
+        "polyfills": 40684
       }
     }
   }
