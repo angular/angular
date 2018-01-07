@@ -542,6 +542,8 @@ class AngularCompilerProgram implements Program {
   }
 
   private get tsProgram(): ts.Program {
+    if (this.oldTsProgram)
+      return this.oldTsProgram;  // this sounds weird, however we are in a weird state here
     if (!this._tsProgram) {
       this.initSync();
     }
