@@ -126,7 +126,7 @@
       "children": [
         {
           "url": "guide/architecture",
-          "title": "코드 구조",
+          "title": "아키텍처",
           "tooltip": "Angular 애플리케이션을 구성하는 기본 요소"
         },
         {

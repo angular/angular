@@ -1,4 +1,4 @@
-# 코드 구조
+# 아키텍처
 
 Angular는 HTML 클라이언트 애플리케이션을 구성할 수 있는 프레임워크이며,
 JavaScript를 직접 사용하거나 TypeScript와 같이 JavaScript로 컴파일되는 언어를 사용할 수 있습니다.
@@ -189,56 +189,48 @@ Angular는 사용자의 행동에 따라 컴포넌트를 생성하고, 갱신하
 
 ## Metadata
 
-<img src="generated/images/guide/architecture/metadata.png" alt="Metadata" class="left">
+<img src="generated/images/guide/architecture/metadata.png" alt="메타데이터" class="left">
 
-Metadata tells Angular how to process a class.
+JavaScript 클래스에 메타데이터를 지정하면, 이 클래스는 Angular 프레임워크 안에서 또 다른 역할을 갖도록 변형됩니다.
 
 <br class="clear">
 
-[Looking back at the code](guide/architecture#component-code) for `HeroListComponent`, you can see that it's just a class.
-There is no evidence of a framework, no "Angular" in it at all.
+`HeroListComponent` 의 [코드를 다시 보면](guide/architecture#component-code), 컴포넌트는 단순하게 클래스라는 것을 확인할 수 있습니다.
+이 클래스는 프레임워크에서 만든 것도 아니고, Angular에서 제공하는 기능도 아닙니다.
 
-In fact, `HeroListComponent` really is *just a class*. It's not a component until you *tell Angular about it*.
+사실 `HeroListComponent` 는 *그냥 클래스*일 뿐입니다. *Angular 프레임워크가 이 클래스에 지정된 메타데이터를 처리하기 전까지는* 아직 컴포넌트라고 할 수도 없습니다.
 
-To tell Angular that `HeroListComponent` is a component, attach **metadata** to the class.
+`HeroListComponent` 클래스를 Angular에서 동작하는 컴포넌트로 지정하려면, 이 클래스에 **메타데이터** 를 지정하면 됩니다.
 
-In TypeScript, you attach metadata by using a **decorator**.
-Here's some metadata for `HeroListComponent`:
+TypeScript를 사용할 때는 **데코레이터**로 메타데이터를 지정할 수 있습니다.
+`HeroListComponent`에 메타데이터를 지정할 때는 다음과 같이 사용합니다:
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
 
-Here is the `@Component` decorator, which identifies the class
-immediately below it as a component class.
+이 코드를 보면 클래스를 선언하는 코드 위쪽에 `@Component` 데코레이터가 사용된 것을 확인할 수 있습니다.
 
-The `@Component` decorator takes a required configuration object with the
-information Angular needs to create and present the component and its view.
+`@Component` 데코레이터를 사용할 때는 이 컴포넌트를 뷰에 표시하기 위해 필요한 설정을 객체 형태로 전달합니다.
 
-Here are a few of the most useful `@Component` configuration options:
+이 중에서 자주 쓰는 항목을 몇가지 꼽아보면 다음과 같습니다:
 
-* `selector`: CSS selector that tells Angular to create and insert an instance of this component
-where it finds a `<hero-list>` tag in *parent* HTML.
-For example, if an app's  HTML contains `<hero-list></hero-list>`, then
-Angular inserts an instance of the `HeroListComponent` view between those tags.
+* `selector`: 컴포넌트가 위치할 곳을 CSS 셀렉터 형식으로 지정합니다. 
+예를 들어 부모 HTML에 `<hero-list></hero-list>` 라는 부분이 있으면, Angular가 `HeroListComponent` 컴포넌트의 인스턴스를 생성해서 이 태그 안에 넣습니다.
 
-* `templateUrl`: module-relative address of this component's HTML template, shown [above](guide/architecture#templates).
 
-* `providers`: array of **dependency injection providers** for services that the component requires.
-This is one way to tell Angular that the component's constructor requires a `HeroService`
-so it can get the list of heroes to display.
+* `templateUrl`: 컴포넌트의 HTML 템플릿을 상대주소로 지정합니다. [템플릿](guide/architecture#templates) 부분을 참고하세요.
 
-<img src="generated/images/guide/architecture/template-metadata-component.png" alt="Metadata" class="left">
+* `providers`: 컴포넌트에 **의존성으로 주입할 객체의 프로바이더** 를 배열 형태로 지정합니다.
+튜토리얼에서는 히어로의 목록을 화면에 표시하기 위해 `HeroService` 가 필요하며, 컴포넌트 클래스의 생성자에 의존성을 나열하면 Angular가 알아서 처리합니다.
 
-The metadata in the `@Component` tells Angular where to get the major building blocks you specify for the component.
+<img src="generated/images/guide/architecture/template-metadata-component.png" alt="메타데이터" class="left">
 
-The template, metadata, and component together describe a view.
+이런 메타데이터들을 `@Component` 데코레이터에 전달하면, Angular 프레임워크가 템플릿과 메타데이터, 컴포넌트 클래스를 조합해서 뷰를 구성합니다.
 
-Apply other metadata decorators in a similar fashion to guide Angular behavior.
-`@Injectable`, `@Input`, and `@Output` are a few of the more popular decorators.
+이 방식은 `@Injectable` 이나 `@Input`, `@Output` 과 같은 데코레이터에도 비슷하게 사용합니다.
 
 <br class="clear">
 
-The architectural takeaway is that you must add metadata to your code
-so that Angular knows what to do.
+요약하자면, JavaScript로 만든 클래스를 Angular 프레임워크에서 동작하는 구성요소로 변환하기 위해 메타데이터가 필요하다고 할 수 있습니다.
 
 <hr/>
 
