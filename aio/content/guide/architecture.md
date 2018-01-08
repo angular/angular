@@ -259,30 +259,26 @@ Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터
 
 * `(click)` 과 같이 [*이벤트 바인딩*](guide/user-input#click) 하면 사용자가 히어로의 이름을 클릭했을 때 컴포넌트의 `selectHero` 메소드를 실행합니다.
 
-**Two-way data binding** is an important fourth form
-that combines property and event binding in a single notation, using the `ngModel` directive.
-Here's an example from the `HeroDetailComponent` template:
+그리고 프로퍼티 바인딩과 이벤트 바인딩을 결합한 **양방향 데이터 바인딩** 이 있습니다. 양방향 바인딩은 `ngModel` 디렉티브를 사용하며, `HeroDetailComponent` 코드에서 보듯이 다음과 같이 사용합니다:
 
 <code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
-In two-way binding, a data property value flows to the input box from the component as with property binding.
-The user's changes also flow back to the component, resetting the property to the latest value,
-as with event binding.
+양방향 바인딩을 사용하면 컴포넌트의 프로퍼티 값이 프로퍼티 바인딩 된 것처럼 화면의 입력 컨트롤에 반영됩니다.
+그리고 사용자가 입력 컨트롤의 값을 변경하면 변경된 값이 이벤트 바인딩 된 것처럼 컴포넌트의 프로퍼티 값을 갱신합니다.
 
-Angular processes *all* data bindings once per JavaScript event cycle,
-from the root of the application component tree through all child components.
+이 과정은 JavaScript 이벤트 싸이클이 실행될 때마다 애플리케이션 최상위 컴포넌트부터 트리를 따라 자식 컴포넌트를 순회하면서 Angular가 자동으로 처리합니다.
 
 <figure>
-  <img src="generated/images/guide/architecture/component-databinding.png" alt="Data Binding">
+  <img src="generated/images/guide/architecture/component-databinding.png" alt="데이터 바인딩">
 </figure>
 
-Data binding plays an important role in communication between a template and its component.
+그래서 데이터 바인딩은 템플릿과 컴포넌트 사이에 데이터를 주고 받을 때 자주 사용합니다.
 
 <figure>
-  <img src="generated/images/guide/architecture/parent-child-binding.png" alt="Parent/Child binding">
+  <img src="generated/images/guide/architecture/parent-child-binding.png" alt="부모/자식 바인딩">
 </figure>
 
-Data binding is also important for communication between parent and child components.
+그리고 부모 컴포넌트와 자식 컴포넌트가 데이터를 주고 받을 때도 자주 사용합니다.
 
 <hr/>
 
