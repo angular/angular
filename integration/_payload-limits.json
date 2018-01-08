@@ -3,17 +3,17 @@
     "master": {
       "gzip7": {
         "inline": 847,
-        "main": 43542,
+        "main": 42144,
         "polyfills": 20207
       },
       "gzip9": {
         "inline": 847,
-        "main": 43471,
+        "main": 42083,
         "polyfills": 20204
       },
       "uncompressed": {
         "inline": 1447,
-        "main": 158096,
+        "main": 151639,
         "polyfills": 61254
       }
     }
