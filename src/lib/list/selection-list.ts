@@ -27,6 +27,7 @@ import {
   Optional,
   Output,
   QueryList,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {
@@ -118,6 +119,9 @@ export class MatListOption extends _MatListOptionMixinBase
 
   @ContentChildren(MatLine) _lines: QueryList<MatLine>;
 
+  /** DOM element containing the item's text. */
+  @ViewChild('text') _text: ElementRef;
+
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: 'before' | 'after' = 'after';
 
@@ -195,6 +199,14 @@ export class MatListOption extends _MatListOptionMixinBase
   /** Allows for programmatic focusing of the option. */
   focus(): void {
     this._element.nativeElement.focus();
+  }
+
+  /**
+   * Returns the list item's text label. Implemented as a part of the FocusKeyManager.
+   * @docs-private
+   */
+  getLabel() {
+    return this._text ? this._text.nativeElement.textContent : '';
   }
 
   /** Whether this list item should show a ripple effect when clicked.  */
@@ -309,7 +321,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   }
 
   ngAfterContentInit(): void {
-    this._keyManager = new FocusKeyManager<MatListOption>(this.options).withWrap();
+    this._keyManager = new FocusKeyManager<MatListOption>(this.options).withWrap().withTypeAhead();
 
     if (this._tempValues) {
       this._setOptionsFromValues(this._tempValues);

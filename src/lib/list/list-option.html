@@ -7,10 +7,10 @@
     [matRippleTrigger]="_getHostElement()"
     [matRippleDisabled]="_isRippleDisabled()"></div>
 
-  <mat-pseudo-checkbox #autocheckbox
+  <mat-pseudo-checkbox
     [state]="selected ? 'checked' : 'unchecked'"
     [disabled]="disabled"></mat-pseudo-checkbox>
 
-  <div class="mat-list-text"><ng-content></ng-content></div>
+  <div class="mat-list-text" #text><ng-content></ng-content></div>
 
 </div>

@@ -1,6 +1,11 @@
 import {DOWN_ARROW, SPACE, ENTER, UP_ARROW, HOME, END} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
-import {createKeyboardEvent, dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {
+  createKeyboardEvent,
+  dispatchFakeEvent,
+  dispatchEvent,
+  dispatchKeyboardEvent,
+} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -286,6 +291,25 @@ describe('MatSelectionList without forms', () => {
       expect(manager.activeItemIndex).toBe(3);
       expect(event.defaultPrevented).toBe(true);
     });
+
+    it('should be able to jump focus down to an item by typing', fakeAsync(() => {
+      const listEl = selectionList.nativeElement;
+      const manager = selectionList.componentInstance._keyManager;
+
+      expect(manager.activeItemIndex).toBe(-1);
+
+      dispatchEvent(listEl, createKeyboardEvent('keydown', 83, undefined, 's'));
+      fixture.detectChanges();
+      tick(200);
+
+      expect(manager.activeItemIndex).toBe(1);
+
+      dispatchEvent(listEl, createKeyboardEvent('keydown', 68, undefined, 'd'));
+      fixture.detectChanges();
+      tick(200);
+
+      expect(manager.activeItemIndex).toBe(3);
+    }));
 
     it('should be able to select all options', () => {
       const list: MatSelectionList = selectionList.componentInstance;
