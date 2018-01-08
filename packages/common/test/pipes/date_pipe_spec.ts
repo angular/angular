@@ -263,10 +263,10 @@ import localeTh from '@angular/common/locales/th';
       });
 
       it('should format invalid in IE ISO date',
-         () => expect(pipe.transform('2017-01-11T09:25:14.014-0500')).toEqual('Jan 11, 2017'));
+         () => expect(pipe.transform('2017-01-11T12:00:00.014-0500')).toEqual('Jan 11, 2017'));
 
       it('should format invalid in Safari ISO date',
-         () => expect(pipe.transform('2017-01-20T19:00:00+0000')).toEqual('Jan 20, 2017'));
+         () => expect(pipe.transform('2017-01-20T12:00:00+0000')).toEqual('Jan 20, 2017'));
 
       // test for the following bugs:
       // https://github.com/angular/angular/issues/9524
