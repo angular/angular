@@ -1,11 +1,4 @@
-import {
-  async,
-  ComponentFixture,
-  fakeAsync,
-  flushMicrotasks,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick, flush} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
@@ -13,12 +6,13 @@ import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {MatCheckbox, MatCheckboxChange, MatCheckboxModule} from './index';
 import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '@angular/material/core';
 import {MAT_CHECKBOX_CLICK_ACTION} from './checkbox-config';
+import {MutationObserverFactory} from '@angular/cdk/observers';
 
 
 describe('MatCheckbox', () => {
   let fixture: ComponentFixture<any>;
 
-  beforeEach(async(() => {
+  beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
       declarations: [
@@ -116,7 +110,7 @@ describe('MatCheckbox', () => {
       fixture.detectChanges();
 
       // Flush the microtasks because the forms module updates the model state asynchronously.
-      flushMicrotasks();
+      flush();
 
       // The checked property has been updated from the model and now the view needs
       // to reflect the state change.
@@ -141,7 +135,7 @@ describe('MatCheckbox', () => {
       fixture.detectChanges();
 
       // Flush the microtasks because the forms module updates the model state asynchronously.
-      flushMicrotasks();
+      flush();
 
       // The checked property has been updated from the model and now the view needs
       // to reflect the state change.
@@ -153,7 +147,7 @@ describe('MatCheckbox', () => {
       expect(testComponent.isIndeterminate).toBe(false);
     }));
 
-    it('should not set indeterminate to false when checked is set programmatically', async(() => {
+    it('should not set indeterminate to false when checked is set programmatically', () => {
       testComponent.isIndeterminate = true;
       fixture.detectChanges();
 
@@ -176,7 +170,7 @@ describe('MatCheckbox', () => {
       expect(inputElement.indeterminate).toBe(true);
       expect(inputElement.checked).toBe(false);
       expect(testComponent.isIndeterminate).toBe(true);
-    }));
+    });
 
     it('should change native element checked when check programmatically', () => {
       expect(inputElement.checked).toBe(false);
@@ -212,7 +206,7 @@ describe('MatCheckbox', () => {
       checkboxInstance._onInputClick(<Event>{stopPropagation: () => {}});
 
       // Flush the microtasks because the indeterminate state will be updated in the next tick.
-      flushMicrotasks();
+      flush();
 
       expect(checkboxInstance.checked).toBe(true);
       expect(checkboxInstance.indeterminate).toBe(false);
@@ -262,7 +256,7 @@ describe('MatCheckbox', () => {
       fixture.detectChanges();
 
       // Flush the microtasks because the indeterminate state will be updated in the next tick.
-      flushMicrotasks();
+      flush();
 
       expect(checkboxInstance.checked).toBe(true);
       expect(checkboxInstance.indeterminate).toBe(false);
@@ -317,7 +311,7 @@ describe('MatCheckbox', () => {
       expect(testComponent.onCheckboxClick).toHaveBeenCalledTimes(1);
     });
 
-    it('should trigger a change event when the native input does', async(() => {
+    it('should trigger a change event when the native input does', fakeAsync(() => {
       spyOn(testComponent, 'onCheckboxChange');
 
       expect(inputElement.checked).toBe(false);
@@ -329,16 +323,15 @@ describe('MatCheckbox', () => {
       expect(inputElement.checked).toBe(true);
       expect(checkboxNativeElement.classList).toContain('mat-checkbox-checked');
 
-      // Wait for the fixture to become stable, because the EventEmitter for the change event,
-      // will only fire after the zone async change detection has finished.
-      fixture.whenStable().then(() => {
-        // The change event shouldn't fire, because the value change was not caused
-        // by any interaction.
-        expect(testComponent.onCheckboxChange).toHaveBeenCalledTimes(1);
-      });
+      fixture.detectChanges();
+      flush();
+
+      // The change event shouldn't fire, because the value change was not caused
+      // by any interaction.
+      expect(testComponent.onCheckboxChange).toHaveBeenCalledTimes(1);
     }));
 
-    it('should not trigger the change event by changing the native value', async(() => {
+    it('should not trigger the change event by changing the native value', fakeAsync(() => {
       spyOn(testComponent, 'onCheckboxChange');
 
       expect(inputElement.checked).toBe(false);
@@ -350,14 +343,12 @@ describe('MatCheckbox', () => {
       expect(inputElement.checked).toBe(true);
       expect(checkboxNativeElement.classList).toContain('mat-checkbox-checked');
 
-      // Wait for the fixture to become stable, because the EventEmitter for the change event,
-      // will only fire after the zone async change detection has finished.
-      fixture.whenStable().then(() => {
-        // The change event shouldn't fire, because the value change was not caused
-        // by any interaction.
-        expect(testComponent.onCheckboxChange).not.toHaveBeenCalled();
-      });
+      fixture.detectChanges();
+      flush();
 
+      // The change event shouldn't fire, because the value change was not caused
+      // by any interaction.
+      expect(testComponent.onCheckboxChange).not.toHaveBeenCalled();
     }));
 
     it('should forward the required attribute', () => {
@@ -576,7 +567,7 @@ describe('MatCheckbox', () => {
         inputElement.click();
 
         fixture.detectChanges();
-        flushMicrotasks();
+        flush();
         fixture.detectChanges();
         expect(inputElement.checked).toBe(true);
         expect(checkboxNativeElement.classList).toContain('mat-checkbox-checked');
@@ -614,7 +605,7 @@ describe('MatCheckbox', () => {
         inputElement.click();
 
         fixture.detectChanges();
-        flushMicrotasks();
+        flush();
         fixture.detectChanges();
 
         expect(inputElement.checked).toBe(false);
@@ -630,7 +621,7 @@ describe('MatCheckbox', () => {
         inputElement.click();
 
         fixture.detectChanges();
-        flushMicrotasks();
+        flush();
         fixture.detectChanges();
 
         expect(inputElement.checked).toBe(true);
@@ -642,7 +633,7 @@ describe('MatCheckbox', () => {
         inputElement.click();
 
         fixture.detectChanges();
-        flushMicrotasks();
+        flush();
         fixture.detectChanges();
 
         expect(inputElement.checked).toBe(false);
@@ -689,7 +680,7 @@ describe('MatCheckbox', () => {
       expect(changeSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should not emit a DOM event to the change output', async(() => {
+    it('should not emit a DOM event to the change output', fakeAsync(() => {
       fixture.detectChanges();
       expect(testComponent.lastEvent).toBeUndefined();
 
@@ -697,14 +688,12 @@ describe('MatCheckbox', () => {
       // emit a DOM event to the change output.
       inputElement.click();
       fixture.detectChanges();
+      flush();
 
-      fixture.whenStable().then(() => {
-        // We're checking the arguments type / emitted value to be a boolean, because sometimes the
-        // emitted value can be a DOM Event, which is not valid.
-        // See angular/angular#4059
-        expect(testComponent.lastEvent.checked).toBe(true);
-      });
-
+      // We're checking the arguments type / emitted value to be a boolean, because sometimes the
+      // emitted value can be a DOM Event, which is not valid.
+      // See angular/angular#4059
+      expect(testComponent.lastEvent.checked).toBe(true);
     }));
   });
 
@@ -789,7 +778,7 @@ describe('MatCheckbox', () => {
 
   describe('with native tabindex attribute', () => {
 
-    it('should properly detect native tabindex attribute', async(() => {
+    it('should properly detect native tabindex attribute', fakeAsync(() => {
       fixture = TestBed.createComponent(CheckboxWithTabindexAttr);
       fixture.detectChanges();
 
@@ -835,7 +824,7 @@ describe('MatCheckbox', () => {
     });
 
     it('should be in pristine, untouched, and valid states initially', fakeAsync(() => {
-      flushMicrotasks();
+      flush();
 
       let checkboxElement = fixture.debugElement.query(By.directive(MatCheckbox));
       let ngModel = checkboxElement.injector.get<NgModel>(NgModel);
@@ -968,35 +957,63 @@ describe('MatCheckbox', () => {
         .toContain('mat-checkbox-inner-container-no-side-margin');
     });
 
-    it('should not remove margin if initial label is set through binding', async(() => {
+    it('should not remove margin if initial label is set through binding', () => {
       testComponent.label = 'Some content';
       fixture.detectChanges();
 
       expect(checkboxInnerContainer.classList)
         .not.toContain('mat-checkbox-inner-container-no-side-margin');
-    }));
+    });
 
-    it('should re-add margin if label is added asynchronously', async(() => {
+    it('should re-add margin if label is added asynchronously', () => {
+      fixture.destroy();
+
+      const mutationCallbacks: Function[] = [];
+
+      TestBed
+        .resetTestingModule()
+        .configureTestingModule({
+          imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
+          declarations: [CheckboxWithoutLabel],
+          providers: [{
+            provide: MutationObserverFactory,
+            useValue: {
+              // Stub out the factory that creates mutation observers for the underlying directive
+              // to allows us to flush out the callbacks asynchronously.
+              create: (callback: Function) => {
+                mutationCallbacks.push(callback);
+
+                return {
+                  observe: () => {},
+                  disconnect: () => {}
+                };
+              }
+            }
+          }]
+        })
+        .compileComponents();
+
+      fixture = TestBed.createComponent(CheckboxWithoutLabel);
+      checkboxInnerContainer = fixture.debugElement
+        .query(By.css('.mat-checkbox-inner-container')).nativeElement;
+
       fixture.detectChanges();
 
       expect(checkboxInnerContainer.classList)
         .toContain('mat-checkbox-inner-container-no-side-margin');
 
-      testComponent.label = 'Some content';
+      fixture.componentInstance.label = 'Some content';
+      fixture.detectChanges();
+      mutationCallbacks.forEach(callback => callback());
+
+      // The MutationObserver from the cdkObserveContent directive detected the content change
+      // and notified the checkbox component. The checkbox then marks the component as dirty
+      // by calling `markForCheck()`. This needs to be reflected by the component template then.
       fixture.detectChanges();
 
-      // Wait for the MutationObserver to detect the content change and for the cdkObserveContent
-      // to emit the change event to the checkbox.
-      setTimeout(() => {
-        // The MutationObserver from the cdkObserveContent directive detected the content change
-        // and notified the checkbox component. The checkbox then marks the component as dirty
-        // by calling `markForCheck()`. This needs to be reflected by the component template then.
-        fixture.detectChanges();
-
-        expect(checkboxInnerContainer.classList)
-          .not.toContain('mat-checkbox-inner-container-no-side-margin');
-      }, 1);
-    }));
+      expect(checkboxInnerContainer.classList)
+        .not.toContain('mat-checkbox-inner-container-no-side-margin');
+    });
 
     it('should not add the "name" attribute if it is not passed in', () => {
       fixture.detectChanges();
