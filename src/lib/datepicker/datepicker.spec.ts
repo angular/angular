@@ -1,12 +1,6 @@
 import {ENTER, ESCAPE, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {OverlayContainer, Overlay, ScrollDispatcher} from '@angular/cdk/overlay';
-import {
-  createKeyboardEvent,
-  dispatchEvent,
-  dispatchFakeEvent,
-  dispatchKeyboardEvent,
-  dispatchMouseEvent,
-} from '@angular/cdk/testing';
+import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
 import {Component, ViewChild} from '@angular/core';
 import {fakeAsync, flush, ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -157,26 +151,18 @@ describe('MatDatepicker', () => {
         expect(parseInt(getComputedStyle(popup).height as string)).toBe(0);
       });
 
-      it('should close the popup when pressing ESCAPE', () => {
+      it('should close the popup when pressing ESCAPE', fakeAsync(() => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        let content = document.querySelector('.cdk-overlay-pane mat-datepicker-content')!;
-        expect(content).toBeTruthy('Expected datepicker to be open.');
+        expect(testComponent.datepicker.opened).toBe(true, 'Expected datepicker to be open.');
 
-        const keyboardEvent = createKeyboardEvent('keydown', ESCAPE);
-        const stopPropagationSpy = spyOn(keyboardEvent, 'stopPropagation').and.callThrough();
-
-        dispatchEvent(content, keyboardEvent);
+        dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
         fixture.detectChanges();
+        flush();
 
-        content = document.querySelector('.cdk-overlay-pane mat-datepicker-content')!;
-
-        expect(content).toBeFalsy('Expected datepicker to be closed.');
-        expect(stopPropagationSpy).toHaveBeenCalled();
-        expect(keyboardEvent.defaultPrevented)
-            .toBe(true, 'Expected default ESCAPE action to be prevented.');
-      });
+        expect(testComponent.datepicker.opened).toBe(false, 'Expected datepicker to be closed.');
+      }));
 
       it('close should close dialog', fakeAsync(() => {
         testComponent.touch = true;
