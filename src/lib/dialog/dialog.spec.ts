@@ -582,6 +582,19 @@ describe('MatDialog', () => {
     expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(0);
   }));
 
+  it('should allow the consumer to disable closing a dialog on navigation', fakeAsync(() => {
+    dialog.open(PizzaMsg);
+    dialog.open(PizzaMsg, {closeOnNavigation: false});
+
+    expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(2);
+
+    mockLocation.simulateUrlPop('');
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(1);
+  }));
+
   it('should have the componentInstance available in the afterClosed callback', fakeAsync(() => {
     let dialogRef = dialog.open(PizzaMsg);
     let spy = jasmine.createSpy('afterClosed spy');

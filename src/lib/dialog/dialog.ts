@@ -96,19 +96,11 @@ export class MatDialog {
   constructor(
       private _overlay: Overlay,
       private _injector: Injector,
-      @Optional() location: Location,
+      @Optional() private _location: Location,
       @Optional() @Inject(MAT_DIALOG_DEFAULT_OPTIONS) private _defaultOptions,
       @Inject(MAT_DIALOG_SCROLL_STRATEGY) private _scrollStrategy,
       @Optional() @SkipSelf() private _parentDialog: MatDialog,
-      private _overlayContainer: OverlayContainer) {
-
-    // Close all of the dialogs when the user goes forwards/backwards in history or when the
-    // location hash changes. Note that this usually doesn't include clicking on links (unless
-    // the user is using the `HashLocationStrategy`).
-    if (!_parentDialog && location) {
-      location.subscribe(() => this.closeAll());
-    }
-  }
+      private _overlayContainer: OverlayContainer) {}
 
   /**
    * Opens a modal dialog containing the given component.
@@ -232,7 +224,7 @@ export class MatDialog {
 
     // Create a reference to the dialog we're creating in order to give the user a handle
     // to modify and close it.
-    const dialogRef = new MatDialogRef<T>(overlayRef, dialogContainer, config.id);
+    const dialogRef = new MatDialogRef<T>(overlayRef, dialogContainer, this._location, config.id);
 
     // When the dialog backdrop is clicked, we want to close it.
     if (config.hasBackdrop) {
