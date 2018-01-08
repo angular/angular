@@ -334,52 +334,77 @@ DOM 엘리먼트의 모양을 변경하는 디렉티브([ngStyle](guide/template
 
 ## Services
 
-<img src="generated/images/guide/architecture/service.png" alt="Service" class="left">
+<!--<img src="generated/images/guide/architecture/service.png" alt="Service" class="left">-->
+<img src="generated/images/guide/architecture/service.png" alt="서비스" class="left">
 
-_Service_ is a broad category encompassing any value, function, or feature that your application needs.
+<!-- _Service_ is a broad category encompassing any value, function, or feature that your application needs. -->
+_서비스_ 는 애플리케이션에 필요한 값이나 함수, 기능을 제공하는 객체입니다.
 
-Almost anything can be a service.
-A service is typically a class with a narrow, well-defined purpose. It should do something specific and do it well.
+<!-- Almost anything can be a service. -->
+서비스를 넓은 의미로 보면, 어떠한 것도 서비스라고 할 수 있습니다.
+
+<!-- A service is typically a class with a narrow, well-defined purpose. It should do something specific and do it well. -->
+하지만 용도만을 생각해서 좁은 의미로 보면, 어떤 기능을 제공하는 클래스 하나라고 볼 수 있습니다.
+
 <br class="clear">
 
-Examples include:
+<!-- Examples include: -->
+서비스의 예:
+<!-- * logging service -->
+* 로그 서비스
+<!-- * data service -->
+* 데이터 서비스
+<!-- * message bus -->
+* 메시지 버스
+<!-- * tax calculator -->
+* 세금 계산기
+<!-- * application configuration -->
+* 애플리케이션 설정
 
-* logging service
-* data service
-* message bus
-* tax calculator
-* application configuration
+<!-- There is nothing specifically _Angular_ about services. Angular has no definition of a service. -->
+<!-- There is no service base class, and no place to register a service. -->
+Angular가 서비스에 대해 기준을 정해둔 것은 아무것도 없으며, 한계를 정해두지도 않았습니다.
+그리고 Angular가 서비스 형태로 기능을 제공하는 것도 없습니다.
 
-There is nothing specifically _Angular_ about services. Angular has no definition of a service.
-There is no service base class, and no place to register a service.
+<!-- Yet services are fundamental to any Angular application. Components are big consumers of services. -->
+하지만 서비스는 Angular 애플리케이션을 구성하는 중요한 요소입니다. 아마 컴포넌트를 사용할 때 서비스를 자주 사용하게 될 것입니다.
 
-Yet services are fundamental to any Angular application. Components are big consumers of services.
-
-Here's an example of a service class that logs to the browser console:
+<!-- Here's an example of a service class that logs to the browser console: -->
+예를 들어 브라우저 콘솔에 로그를 출력하는 서비스는 다음과 같이 구현할 수 있습니다:
 
 <code-example path="architecture/src/app/logger.service.ts" linenums="false" title="src/app/logger.service.ts (class)" region="class"></code-example>
 
-Here's a `HeroService` that uses a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to fetch heroes.
-The `HeroService` depends on the `Logger` service and another `BackendService` that handles the server communication grunt work.
+<!-- Here's a `HeroService` that uses a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) to fetch heroes.
+The `HeroService` depends on the `Logger` service and another `BackendService` that handles the server communication grunt work. -->
+그리고 아래 예제는 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) 를 사용해서 히어로의 목록을 가져오는 `HeroService` 코드입니다.
+`HeroService` 는 `Logger` 서비스를 사용하며, 서버에 요청을 보내기 위해 `BackendService` 라는 또 다른 서비스를 사용합니다.
 
 <code-example path="architecture/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (class)" region="class"></code-example>
 
-Services are everywhere.
+<!-- Services are everywhere. -->
+서비스는 어디에라도 사용할 수 있습니다.
 
-Component classes should be lean. They don't fetch data from the server,
+<!-- Component classes should be lean. They don't fetch data from the server,
 validate user input, or log directly to the console.
-They delegate such tasks to services.
+They delegate such tasks to services. -->
+서버에서 데이터를 가져오거나, 사용자의 입력을 검증하고, 로그를 콘솔에 출력하는 로직은 모두 서비스에 맡기고 컴포넌트 클래스에는 간단한 로직만 작성할 수도 있습니다.
 
-A component's job is to enable the user experience and nothing more. It mediates between the view (rendered by the template)
+<!-- A component's job is to enable the user experience and nothing more. It mediates between the view (rendered by the template)
 and the application logic (which often includes some notion of a _model_).
 A good component presents properties and methods for data binding.
-It delegates everything nontrivial to services.
+It delegates everything nontrivial to services. -->
+컴포넌트의 역할은 사용자가 데이터를 보고 조작할 수 있는 화면을 만들어 주는 것 뿐입니다.
+따라서 컴포넌트는 템플릿이 렌더링 된 뷰와 컴포넌트 프로퍼티(_모델_)를 연결하는 중개자라고 할 수 있습니다.
+이런 관점에 보면 컴포넌트에 중요하지 않은 로직은 서비스에 두는 것이 바람직합니다.
 
-Angular doesn't *enforce* these principles.
-It won't complain if you write a "kitchen sink" component with 3000 lines.
+<!-- Angular doesn't *enforce* these principles.
+It won't complain if you write a "kitchen sink" component with 3000 lines. -->
+물론 Angular가 이런 방식을 *강제*하는 것은 아닙니다.
+어떤 컴포넌트를 작성하면서 3000 라인이 넘어가더라도 당연히 아무 문제가 없습니다.
 
-Angular does help you *follow* these principles by making it easy to factor your
-application logic into services and make those services available to components through *dependency injection*.
+<!-- Angular does help you *follow* these principles by making it easy to factor your
+application logic into services and make those services available to components through *dependency injection*. -->
+하지만 Angular가 제공하는 방식을 따른다면 서비스를 *의존성으로 주입* 하는 메커니즘을 활용할 수 있기 때문에, 컴포넌트 코드를 간결하게 유지하고 애플리케이션 로직을 효율적으로 관리할 수 있습니다.
 
 <hr/>
 
