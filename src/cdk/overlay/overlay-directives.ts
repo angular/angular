@@ -35,7 +35,6 @@ import {
 } from './position/connected-position';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
 import {RepositionScrollStrategy, ScrollStrategy} from './scroll/index';
-import {DOCUMENT} from '@angular/common';
 
 
 /** Default set of positions for the overlay. Follows the behavior of a dropdown. */
@@ -238,8 +237,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       templateRef: TemplateRef<any>,
       viewContainerRef: ViewContainerRef,
       @Inject(CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY) private _scrollStrategy,
-      @Optional() private _dir: Directionality,
-      @Optional() @Inject(DOCUMENT) private _document: any) {
+      @Optional() private _dir: Directionality) {
     this._templatePortal = new TemplatePortal(templateRef, viewContainerRef);
   }
 
@@ -336,11 +334,16 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _attachOverlay() {
     if (!this._overlayRef) {
       this._createOverlay();
+
+      this._overlayRef!.keydownEvents().subscribe((event: KeyboardEvent) => {
+        if (event.keyCode === ESCAPE) {
+          this._detachOverlay();
+        }
+      });
     }
 
     this._position.withDirection(this.dir);
     this._overlayRef.setDirection(this.dir);
-    this._document.addEventListener('keydown', this._escapeListener);
 
     if (!this._overlayRef.hasAttached()) {
       this._overlayRef.attach(this._templatePortal);
@@ -362,7 +365,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
     }
 
     this._backdropSubscription.unsubscribe();
-    this._document.removeEventListener('keydown', this._escapeListener);
   }
 
   /** Destroys the overlay created by this directive. */
@@ -373,13 +375,5 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
     this._backdropSubscription.unsubscribe();
     this._positionSubscription.unsubscribe();
-    this._document.removeEventListener('keydown', this._escapeListener);
-  }
-
-  /** Event listener that will close the overlay when the user presses escape. */
-  private _escapeListener = (event: KeyboardEvent) => {
-    if (event.keyCode === ESCAPE) {
-      this._detachOverlay();
-    }
   }
 }

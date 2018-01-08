@@ -110,7 +110,7 @@ describe('Overlay directives', () => {
     fixture.componentInstance.isOpen = true;
     fixture.detectChanges();
 
-    dispatchKeyboardEvent(document, 'keydown', ESCAPE);
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     fixture.detectChanges();
 
     expect(overlayContainerElement.textContent!.trim()).toBe('',
@@ -342,4 +342,3 @@ class ConnectedOverlayPropertyInitOrder {
   @ViewChild(CdkConnectedOverlay) connectedOverlayDirective: CdkConnectedOverlay;
   @ViewChild('trigger') trigger: CdkOverlayOrigin;
 }
-
