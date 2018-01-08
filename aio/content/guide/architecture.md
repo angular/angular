@@ -76,7 +76,7 @@ Angular에는 3 종류의 뷰 클래스가 있습니다: [컴포넌트](guide/ar
 </div>
 
 애플리케이션은 최상위 모듈을 _부트스트랩_하면서 실행됩니다.
-보통 `AppModule` 은 `main.ts` 파일에 다음과 같이 정의될 것입니다.
+보통 `AppModule` 은 `main.ts` 파일에 다음과 같이 정의합니다.
 
 <code-example path="architecture/src/main.ts" title="src/main.ts" linenums="false"></code-example>
 
@@ -236,31 +236,28 @@ TypeScript를 사용할 때는 **데코레이터**로 메타데이터를 지정�
 
 ## Data binding
 
-Without a framework, you would be responsible for pushing data values into the HTML controls and turning user responses
-into actions and value updates. Writing such push/pull logic by hand is tedious, error-prone, and a nightmare to
-read as any experienced jQuery programmer can attest.
+프레임워크를 사용하지 않는다면 컴포넌트 값이 변경됐을 때 필요한 동작을 직접 구현해야 합니다.
+하지만 모든 값을 추적하면서 에러 처리 로직까지 일일이 작성하는 것은 너무나 번거로운 작업이고, 이 과정에서 또 다른 실수가 발생할 수 있습니다.
+jQuery를 사용해봤다면 이 말이 어떤 의미인지 좀 더 이해하기 쉬울 것입니다.
 
-<img src="generated/images/guide/architecture/databinding.png" alt="Data Binding" class="left">
+<img src="generated/images/guide/architecture/databinding.png" alt="데이터 바인딩" class="left">
 
-Angular supports **data binding**,
-a mechanism for coordinating parts of a template with parts of a component.
-Add binding markup to the template HTML to tell Angular how to connect both sides.
+Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터 바인딩** 기능이 있습니다.
+템플릿 HTML에 어떤 항목을 바인딩하겠다고 선언하면, Angular가 해당 항목을 자동으로 처리합니다.
 
-As the diagram shows, there are four forms of data binding syntax. Each form has a direction &mdash; to the DOM, from the DOM, or in both directions.
+옆에 있는 그림에서 보듯이 바인딩 문법은 4종류이며, DOM과 컴포넌트를 단방향/양방향으로 연결할 수 있습니다.
 
 <br class="clear">
 
-The `HeroListComponent` [example](guide/architecture#templates) template has three forms:
+`HeroListComponent` [예제](guide/architecture#templates) 를 보면, 템플릿에 3가지 종류의 데이터 바인딩을 사용하는 것을 확인할 수 있습니다:
 
 <code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (binding)" region="binding"></code-example>
 
-* The `{{hero.name}}` [*interpolation*](guide/displaying-data#interpolation)
-displays the component's `hero.name` property value within the `<li>` element.
+* `{{hero.name}}` 과 같이 [*문자열 바인딩*](guide/displaying-data#interpolation) 하면 컴포넌트의 `hero.name` 프로퍼티 값을 `<li>` 엘리먼트 안에 표시합니다.
 
-* The `[hero]` [*property binding*](guide/template-syntax#property-binding) passes the value of `selectedHero` from
-the parent `HeroListComponent` to the `hero` property of the child `HeroDetailComponent`.
+* `[hero]` 와 같이 [*프로퍼티 바인딩*](guide/template-syntax#property-binding) 하면 부모 컴포넌트 `HeroListComponent` 에 있는 `selectedHero` 값을 자식 컴포넌트 `HeroDetailComponent` 의 `hero` 프로퍼티로 전달합니다.
 
-* The `(click)` [*event binding*](guide/user-input#click) calls the component's `selectHero` method when the user clicks a hero's name.
+* `(click)` 과 같이 [*이벤트 바인딩*](guide/user-input#click) 하면 사용자가 히어로의 이름을 클릭했을 때 컴포넌트의 `selectHero` 메소드를 실행합니다.
 
 **Two-way data binding** is an important fourth form
 that combines property and event binding in a single notation, using the `ngModel` directive.
