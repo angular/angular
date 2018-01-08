@@ -286,51 +286,47 @@ Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터
 
 <img src="generated/images/guide/architecture/directive.png" alt="Parent child" class="left">
 
-Angular templates are *dynamic*. When Angular renders them, it transforms the DOM
-according to the instructions given by **directives**.
+Angular에서 템플릿은 *유동적* 입니다. 템플릿이 DOM으로 렌더링 된 후에라도 **디렉티브**에 의해 변형될 수 있습니다.
 
-A directive is a class with a `@Directive` decorator.
-A component is a *directive-with-a-template*;
-a `@Component` decorator is actually a `@Directive` decorator extended with template-oriented features.
+디렉티브는 클래스에 `@Directive` 데코레이터를 붙여 선언합니다.
+그리고 컴포넌트는 *템플릿이 있는 디렉티브* 라고 할 수 있으며, 실제로 `@Component` 데코레이터는 `@Directive` 데코레이터에 템플릿 관련 기능을 추가한 것입니다.
 
 <div class="l-sub-section">
 
-  While **a component is technically a directive**,
-  components are so distinctive and central to Angular applications that this architectural overview separates components from directives.
+  구현된 원리로는 *컴포넌트가 일종의 디렉티브* 라고 하더라도, 컴포넌트는 아키텍처의 관점에서 Angular 애플리케이션을 구성하는 요소로써 가장 중요하며, 이 문서에서는 디렉티브와 확실하게 구별해서 설명합니다.
 
 </div>
 
-Two *other* kinds of directives exist: _structural_ and _attribute_ directives.
+디렉티브는 _구조(structural) 디렉티브_ 와 _속성(attribute) 디렉티브_ 가 있습니다.
 
-They tend to appear within an element tag as attributes do,
-sometimes by name but more often as the target of an assignment or a binding.
+이 두 종류의 디렉티브는 DOM 엘리먼트 태그에 어트리뷰트처럼 사용하기 때문에 비슷해 보이지만,
+역할은 아주 다릅니다.
 
-**Structural** directives alter layout by adding, removing, and replacing elements in DOM.
+**구조 디렉티브** 는 DOM에 엘리먼트를 추가하거나 제거하는 등 레이아웃을 조작합니다.
 
-The [example template](guide/architecture#templates) uses two built-in structural directives:
+[템플릿 예제 코드](guide/architecture#templates) 를 다시 보면 두 종류의 구조 디렉티브를 사용한 것을 확인할 수 있습니다:
 
 <code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (structural)" region="structural"></code-example>
 
-* [`*ngFor`](guide/displaying-data#ngFor) tells Angular to stamp out one `<li>` per hero in the `heroes` list.
-* [`*ngIf`](guide/displaying-data#ngIf) includes the `HeroDetail` component only if a selected hero exists.
+* [`*ngFor`](guide/displaying-data#ngFor) 는 `heroes` 목록에 있는 히어로마다 `<li>` 태그를 생성합니다.
+* [`*ngIf`](guide/displaying-data#ngIf) 는 히어로가 선택되었을 때 `HeroDetail` 컴포넌트를 DOM에 추가합니다.
 
-**Attribute** directives alter the appearance or behavior of an existing element.
-In templates they look like regular HTML attributes, hence the name.
+**속성 디렉티브** 는 이미 존재하는 엘리먼트의 모양이나 동작을 조작합니다.
+Angular 템플릿에 속성 디렉티브를 사용하는 문법은 DOM 엘리먼트에 HTML 속성을 지정하는 것과 같습니다.
 
-The `ngModel` directive, which implements two-way data binding, is
-an example of an attribute directive. `ngModel` modifies the behavior of
-an existing element (typically an `<input>`)
-by setting its display value property and responding to change events.
+그리고 양방향 데이터 바인딩에서 살펴봤던 `ngModel` 디렉티브도 속성 디렉티브입니다.
+`ngModel` 디렉티브는 엘리먼트에 특정 동작을 추가하며,
+보통 `<input>` 태그에 컴포넌트 프로퍼티의 값을 표시하거나 값이 변경되는 이벤트에 반응하는 용도로 사용합니다.
 
 <code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
-Angular has a few more directives that either alter the layout structure
-(for example, [ngSwitch](guide/template-syntax#ngSwitch))
-or modify aspects of DOM elements and components
-(for example, [ngStyle](guide/template-syntax#ngStyle) and [ngClass](guide/template-syntax#ngClass)).
+Angular에는 이 외에도 여러 개의 레이아웃 중 하나를 표시하거나([ngSwitch](guide/template-syntax#ngSwitch))
+DOM 엘리먼트의 모양을 변경하는 디렉티브([ngStyle](guide/template-syntax#ngStyle), [ngClass](guide/template-syntax#ngClass))도 있습니다.
 
-Of course, you can also write your own directives. Components such as
-`HeroListComponent` are one kind of custom directive.
+그리고 개발자가 커스텀 디렉티브를 만드는 것도 물론 가능합니다.
+컴포넌트와 디렉티브의 관계에서 언급했듯이, `HeroListComponent` 와 같은 커스텀 컴포넌트도 커스텀 디렉티브라고 할 수 있습니다.
+<!-- Of course, you can also write your own directives. Components such as
+`HeroListComponent` are one kind of custom directive. -->
 
 <!-- PENDING: link to where to learn more about other kinds! -->
 
