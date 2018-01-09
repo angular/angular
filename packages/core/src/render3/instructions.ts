@@ -1107,7 +1107,7 @@ export function executeViewHooks(): void {
  * @param attrs The attrs attached to the container, if applicable
  * @param localRefs A set of local reference bindings on the element.
  */
-export function containerStart(
+export function container(
     index: number, directiveTypes?: DirectiveType<any>[], template?: ComponentTemplate<any>,
     tagName?: string, attrs?: string[], localRefs?: string[] | null): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
@@ -1145,15 +1145,8 @@ export function containerStart(
   // because views can be removed and re-inserted.
   addToViewTree(node.data);
   hack_declareDirectives(index, directiveTypes, localRefs);
-}
 
-export function containerEnd() {
-  if (isParent) {
-    isParent = false;
-  } else {
-    ngDevMode && assertHasParent();
-    previousOrParentNode = previousOrParentNode.parent !;
-  }
+  isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   const query = previousOrParentNode.query;
   query && query.addNode(previousOrParentNode);

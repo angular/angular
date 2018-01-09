@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, ComponentDef, ComponentTemplate, D, E, L, LifecycleHook, T, V, b, c, cR, cr, defineComponent, e, l, p, r, v} from '../../src/render3/index';
+import {C, ComponentDef, ComponentTemplate, D, E, L, LifecycleHook, T, V, b, cR, cr, defineComponent, e, l, p, r, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -125,7 +125,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -166,7 +165,6 @@ describe('lifecycles', () => {
           E(0, Comp);
           e();
           C(2);
-          c();
           E(3, Comp);
           e();
         }
@@ -213,7 +211,6 @@ describe('lifecycles', () => {
           E(0, Parent);
           e();
           C(2);
-          c();
           E(3, Parent);
           e();
         }
@@ -700,7 +697,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -733,7 +729,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -773,7 +768,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -817,7 +811,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -854,7 +847,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -863,7 +855,6 @@ describe('lifecycles', () => {
               E(0, Comp);
               e();
               C(2);
-              c();
               E(3, Comp);
               e();
             }
@@ -932,7 +923,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -941,7 +931,6 @@ describe('lifecycles', () => {
               E(0, Comp);
               e();
               C(2);
-              c();
               E(3, Comp);
               e();
             }
@@ -1012,7 +1001,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {

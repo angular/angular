@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, NC, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, c, cR, cr, defineComponent, e, k, p, r, s, t, v} from '../../src/render3/index';
+import {C, D, E, NC, T, V, a, b, b1, b2, b3, b4, b5, b6, b7, b8, bV, cR, cr, defineComponent, e, k, p, r, s, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {containerEl, renderToHtml} from './render_util';
@@ -356,7 +356,6 @@ describe('render3 integration test', () => {
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
               C(0);
-              c();
             }
             cR(0);
             {
@@ -478,7 +477,6 @@ describe('render3 integration test', () => {
           if (cm) {
             E(0, 'span');
             C(1);
-            c();
             e();
           }
           a(0, 'title', b(ctx.title));
@@ -595,7 +593,6 @@ describe('render3 integration test', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {

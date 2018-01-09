@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {C, D, E, Q, QueryList, c, e, m, qR} from '../../src/render3/index';
+import {C, D, E, Q, QueryList, e, m, qR} from '../../src/render3/index';
 import {QueryReadType} from '../../src/render3/interfaces/query';
 
 import {createComponent, createDirective, renderComponent} from './render_util';
@@ -285,7 +285,6 @@ describe('query', () => {
         if (cm) {
           m(0, Q(['foo'], false, QueryReadType.ViewContainerRef));
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
-          c();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
@@ -309,7 +308,6 @@ describe('query', () => {
            if (cm) {
              m(0, Q(['foo'], false, QueryReadType.ElementRef));
              C(1, undefined, undefined, undefined, undefined, ['foo', '']);
-             c();
            }
            qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
          });
@@ -334,7 +332,6 @@ describe('query', () => {
         if (cm) {
           m(0, Q(['foo']));
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
-          c();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
@@ -358,7 +355,6 @@ describe('query', () => {
         if (cm) {
           m(0, Q(['foo'], false, QueryReadType.TemplateRef));
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
-          c();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
       });
