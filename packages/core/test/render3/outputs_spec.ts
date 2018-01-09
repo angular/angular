@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, D, E, L, LifecycleHook, T, V, b, c, cR, cr, defineComponent, defineDirective, e, l, p, v} from '../../src/render3/index';
+import {C, D, E, L, LifecycleHook, T, V, b, cR, cr, defineComponent, defineDirective, e, l, p, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -123,7 +123,6 @@ describe('outputs', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
@@ -168,14 +167,12 @@ describe('outputs', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
         if (ctx.condition) {
           if (V(0)) {
             C(0);
-            c();
           }
           cR(0);
           {
@@ -240,7 +237,6 @@ describe('outputs', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
@@ -399,7 +395,6 @@ describe('outputs', () => {
         }
         e();
         C(2);
-        c();
       }
       cR(2);
       {

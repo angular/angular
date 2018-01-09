@@ -144,7 +144,6 @@ describe('di', () => {
       function Template(ctx: any, cm: any) {
         if (cm) {
           C(0, [Directive, DirectiveSameInstance], function() {});
-          c();
           T(3);
         }
         t(3, b2('', D<Directive>(1).value, '-', D<DirectiveSameInstance>(2).value, ''));
@@ -271,7 +270,6 @@ describe('di', () => {
           E(0, 'div', null, [ParentDirective]);
           {
             C(2);
-            c();
           }
           e();
         }

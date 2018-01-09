@@ -39,8 +39,7 @@ export {
 
   componentRefresh as r,
 
-  containerStart as C,
-  containerEnd as c,
+  container as C,
   containerRefreshStart as cR,
   containerRefreshEnd as cr,
 
