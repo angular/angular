@@ -13,12 +13,11 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
-import {NG_HOST_SYMBOL, createError, createLView, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
+import {NG_HOST_SYMBOL, createError, createLView, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate, directiveCreate} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {notImplemented, stringify} from './util';
-
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -176,7 +175,7 @@ export function renderComponent<T>(
     // Create element node at index 0 in data array
     hostElement(hostNode, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
-    component = directive(1, componentDef.n(), componentDef);
+    component = directiveCreate(1, componentDef.n(), componentDef);
   } finally {
     leaveView(oldView);
   }

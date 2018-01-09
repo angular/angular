@@ -59,11 +59,11 @@ describe('query', () => {
       if (cm) {
         m(0, Q(Child, false));
         m(1, Q(Child, true));
-        E(2, Child.ngComponentDef);
+        E(2, Child);
         {
-          child1 = D(3, Child.ngComponentDef.n(), Child.ngComponentDef);
-          E(4, Child.ngComponentDef);
-          { child2 = D(5, Child.ngComponentDef.n(), Child.ngComponentDef); }
+          child1 = D(3);
+          E(4, Child);
+          { child2 = D(5); }
           e();
         }
         e();
@@ -92,8 +92,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(Child, false, QueryReadType.ElementRef));
-          elToQuery = E(1, 'div');
-          { D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef); }
+          elToQuery = E(1, 'div', null, [Child]);
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -121,11 +120,8 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(Child, false, OtherChild));
-          E(1, 'div');
-          {
-            D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef);
-            D(3, otherChildInstance = OtherChild.ngDirectiveDef.n(), OtherChild.ngDirectiveDef);
-          }
+          E(1, 'div', null, [Child, OtherChild]);
+          { otherChildInstance = D(3); }
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -150,8 +146,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(Child, false, OtherChild));
-          E(1, 'div');
-          { D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef); }
+          E(1, 'div', null, [Child]);
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -179,7 +174,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo']));
-          elToQuery = E(1, 'div', [], 'foo');
+          elToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
           e();
@@ -209,11 +204,11 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo', 'bar']));
-          el1ToQuery = E(1, 'div', null, 'foo');
+          el1ToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
           e();
-          el2ToQuery = E(3, 'div', null, 'bar');
+          el2ToQuery = E(3, 'div', null, null, ['bar', '']);
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -240,7 +235,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo'], false, QueryReadType.ElementRef));
-          elToQuery = E(1, 'div', [], 'foo');
+          elToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
           e();
@@ -266,7 +261,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo'], false, QueryReadType.ViewContainerRef));
-          E(1, 'div', [], 'foo');
+          E(1, 'div', null, null, ['foo', '']);
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -289,7 +284,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo'], false, QueryReadType.ViewContainerRef));
-          C(1, undefined, undefined, undefined, 'foo');
+          C(1, undefined, undefined, undefined, undefined, ['foo', '']);
           c();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -313,7 +308,7 @@ describe('query', () => {
            let tmp: any;
            if (cm) {
              m(0, Q(['foo'], false, QueryReadType.ElementRef));
-             C(1, undefined, undefined, undefined, 'foo');
+             C(1, undefined, undefined, undefined, undefined, ['foo', '']);
              c();
            }
            qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -338,7 +333,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo']));
-          C(1, undefined, undefined, undefined, 'foo');
+          C(1, undefined, undefined, undefined, undefined, ['foo', '']);
           c();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -362,7 +357,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo'], false, QueryReadType.TemplateRef));
-          C(1, undefined, undefined, undefined, 'foo');
+          C(1, undefined, undefined, undefined, undefined, ['foo', '']);
           c();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -388,8 +383,8 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo']));
-          E(1, Child.ngComponentDef, []);
-          { childInstance = D(2, Child.ngComponentDef.n(), Child.ngComponentDef, 'foo'); }
+          E(1, Child, null, null, ['foo', '']);
+          { childInstance = D(2); }
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -403,7 +398,7 @@ describe('query', () => {
 
     it('should read directive instance if element queried for has an exported directive with a matching name',
        () => {
-         const Child = createDirective();
+         const Child = createDirective({exportAs: 'child'});
 
          let childInstance;
          /**
@@ -416,8 +411,8 @@ describe('query', () => {
            let tmp: any;
            if (cm) {
              m(0, Q(['foo']));
-             E(1, 'div');
-             { childInstance = D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef, 'foo'); }
+             E(1, 'div', null, [Child], ['foo', 'child']);
+             childInstance = D(2);
              e();
            }
            qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -430,8 +425,8 @@ describe('query', () => {
        });
 
     it('should read all matching directive instances from a given element', () => {
-      const Child1 = createDirective();
-      const Child2 = createDirective();
+      const Child1 = createDirective({exportAs: 'child1'});
+      const Child2 = createDirective({exportAs: 'child2'});
 
       let child1Instance, child2Instance;
       /**
@@ -444,10 +439,10 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo', 'bar']));
-          E(1, 'div');
+          E(1, 'div', null, [Child1, Child2], ['foo', 'child1', 'bar', 'child2']);
           {
-            child1Instance = D(2, Child1.ngDirectiveDef.n(), Child1.ngDirectiveDef, 'foo');
-            child2Instance = D(3, Child2.ngDirectiveDef.n(), Child2.ngDirectiveDef, 'bar');
+            child1Instance = D(2);
+            child2Instance = D(3);
           }
           e();
         }
@@ -462,7 +457,7 @@ describe('query', () => {
     });
 
     it('should match match on exported directive name and read a requested token', () => {
-      const Child = createDirective();
+      const Child = createDirective({exportAs: 'child'});
 
       let div;
       /**
@@ -475,8 +470,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo'], undefined, QueryReadType.ElementRef));
-          div = E(1, 'div');
-          { D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef, 'foo'); }
+          div = E(1, 'div', null, [Child], ['foo', 'child']);
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -489,7 +483,7 @@ describe('query', () => {
     });
 
     it('should support reading a mix of ElementRef and directive instances', () => {
-      const Child = createDirective();
+      const Child = createDirective({exportAs: 'child'});
 
       let childInstance, div;
       /**
@@ -502,8 +496,8 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo', 'bar']));
-          div = E(1, 'div', [], 'foo');
-          { childInstance = D(2, Child.ngDirectiveDef.n(), Child.ngDirectiveDef, 'bar'); }
+          div = E(1, 'div', null, [Child], ['foo', '', 'bar', 'child']);
+          { childInstance = D(2); }
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -530,7 +524,7 @@ describe('query', () => {
         let tmp: any;
         if (cm) {
           m(0, Q(['foo'], false, Child));
-          div = E(1, 'div', [], 'foo');
+          div = E(1, 'div', null, null, ['foo', '']);
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);

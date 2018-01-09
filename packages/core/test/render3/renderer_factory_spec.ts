@@ -63,8 +63,7 @@ describe('renderer factory lifecycle', () => {
     logs.push('function_with_component');
     if (cm) {
       T(0, 'bar');
-      E(1, SomeComponent.ngComponentDef);
-      { D(2, SomeComponent.ngComponentDef.n(), SomeComponent.ngComponentDef); }
+      E(1, SomeComponent);
       e();
     }
     SomeComponent.ngComponentDef.h(2, 1);

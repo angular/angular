@@ -7,6 +7,7 @@
  */
 
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
+import {DirectiveDefArgs} from '../../src/render3/definition_interfaces';
 import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, createLNode, createLView, renderTemplate} from '../../src/render3/instructions';
 import {LElementNode, LNodeFlags} from '../../src/render3/interfaces/node';
@@ -89,12 +90,13 @@ export function createComponent(
   };
 }
 
-export function createDirective(): DirectiveType<any> {
+export function createDirective({exportAs}: {exportAs?: string} = {}): DirectiveType<any> {
   return class Directive {
     static ngDirectiveDef = defineDirective({
       type: Directive,
       factory: () => new Directive(),
       features: [PublicFeature],
+      exportAs: exportAs,
     });
   };
 }

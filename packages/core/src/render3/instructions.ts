@@ -24,7 +24,7 @@ import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextN
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
 import {InjectFlags, diPublicInInjector, getOrCreateNodeInjectorForNode, getOrCreateElementRef, getOrCreateTemplateRef, getOrCreateContainerRef, getOrCreateInjectable} from './di';
 import {QueryList, LQuery_} from './query';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
@@ -411,29 +411,37 @@ export function injectViewContainerRef(): ViewContainerRef {
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
  *
  * @param index Index of the element in the data array
- * @param nameOrComponentDef Name of the DOM Node or `ComponentDef`.
+ * @param nameOrComponentType Name of the DOM Node or `ComponentType` to create.
  * @param attrs Statically bound set of attributes to be written into the DOM element on creation.
- * @param localName A name under which a given element is exported.
+ * @param directiveTypes A set of directives declared on this element.
+ * @param localRefs A set of local reference bindings on the element.
  *
- * Attributes are passed as an array of strings where elements with an even index hold an attribute
- * name and elements with an odd index hold an attribute value, ex.:
+ * Attributes and localRefs are passed as an array of strings where elements with an even index
+ * hold an attribute name and elements with an odd index hold an attribute value, ex.:
  * ['id', 'warning5', 'class', 'alert']
  */
 export function elementStart(
-    index: number, nameOrComponentDef?: string | ComponentDef<any>, attrs?: string[] | null,
-    localName?: string): RElement {
+    index: number, nameOrComponentType?: string | ComponentType<any>, attrs?: string[] | null,
+    directiveTypes?: DirectiveType<any>[] | null, localRefs?: string[] | null): RElement {
   let node: LElementNode;
   let native: RElement;
 
-  if (nameOrComponentDef == null) {
+  if (nameOrComponentType == null) {
     // native node retrieval - used for exporting elements as tpl local variables (<div #foo>)
     const node = data[index] !;
     native = node && (node as LElementNode).native;
   } else {
     ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
-    const isHostElement = typeof nameOrComponentDef !== 'string';
-    const name = isHostElement ? (nameOrComponentDef as ComponentDef<any>).tag :
-                                 nameOrComponentDef as string;
+    const isHostElement = typeof nameOrComponentType !== 'string';
+    // MEGAMORPHIC: `ngComponentDef` is a megamorphic property access here.
+    // This is OK, since we will refactor this code and store the result in `TView.data`
+    // which means that we will be reading this value only once. We are trading clean/simple
+    // template
+    // code for slight startup(first run) performance. (No impact on subsequent runs)
+    // TODO(misko): refactor this to store the `ComponentDef` in `TView.data`.
+    const hostComponentDef =
+        isHostElement ? (nameOrComponentType as ComponentType<any>).ngComponentDef : null;
+    const name = isHostElement ? hostComponentDef !.tag : nameOrComponentType as string;
     if (name === null) {
       // TODO: future support for nameless components.
       throw 'for now name is required';
@@ -442,10 +450,9 @@ export function elementStart(
 
       let componentView: LView|null = null;
       if (isHostElement) {
-        const ngStaticData = getTemplateStatic((nameOrComponentDef as ComponentDef<any>).template);
+        const ngStaticData = getTemplateStatic(hostComponentDef !.template);
         componentView = addToViewTree(createLView(
-            -1, rendererFactory.createRenderer(
-                    native, (nameOrComponentDef as ComponentDef<any>).rendererType),
+            -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType),
             ngStaticData));
       }
 
@@ -453,17 +460,71 @@ export function elementStart(
       // accessed through their containers because they may be removed / re-added later.
       node = createLNode(index, LNodeFlags.Element, native, componentView);
 
+      // TODO(misko): implement code which caches the local reference resolution
+      const queryName: string|null = hack_findQueryName(hostComponentDef, localRefs, '');
+
       if (node.tNode == null) {
         ngDevMode && assertDataInRange(index - 1);
         node.tNode = ngStaticData[index] =
-            createTNode(name, attrs || null, null, localName || null);
+            createTNode(name, attrs || null, null, hostComponentDef ? null : queryName);
       }
 
       if (attrs) setUpAttributes(native, attrs);
       appendChild(node.parent !, native, currentView);
+
+      if (hostComponentDef) {
+        // TODO(mhevery): This assumes that the directives come in correct order, which
+        // is not guaranteed. Must be refactored to take it into account.
+        directiveCreate(++index, hostComponentDef.n(), hostComponentDef, queryName);
+      }
+      hack_declareDirectives(index, directiveTypes, localRefs);
     }
   }
   return native;
+}
+
+/**
+ * This function instantiates a directive with a correct queryName. It is a hack since we should
+ * compute the query value only once and store it with the template (rather than on each invocation)
+ */
+function hack_declareDirectives(
+    index: number, directiveTypes: DirectiveType<any>[] | null | undefined,
+    localRefs: string[] | null | undefined, ) {
+  if (directiveTypes) {
+    // TODO(mhevery): This assumes that the directives come in correct order, which
+    // is not guaranteed. Must be refactored to take it into account.
+    for (let i = 0; i < directiveTypes.length; i++) {
+      // MEGAMORPHIC: `ngDirectiveDef` is a megamorphic property access here.
+      // This is OK, since we will refactor this code and store the result in `TView.data`
+      // which means that we will be reading this value only once. We are trading clean/simple
+      // template
+      // code for slight startup(first run) performance. (No impact on subsequent runs)
+      // TODO(misko): refactor this to store the `DirectiveDef` in `TView.data`.
+      const directiveDef = directiveTypes[i].ngDirectiveDef;
+      directiveCreate(
+          ++index, directiveDef.n(), directiveDef, hack_findQueryName(directiveDef, localRefs));
+    }
+  }
+}
+
+/**
+ * This function returns the queryName for a directive. It is a hack since we should
+ * compute the query value only once and store it with the template (rather than on each invocation)
+ */
+function hack_findQueryName(
+    directiveDef: DirectiveDef<any>| null, localRefs: string[] | null | undefined,
+    defaultExport?: string, ): string|null {
+  const exportAs = directiveDef && directiveDef.exportAs || defaultExport;
+  if (exportAs != null && localRefs) {
+    for (let i = 0; i < localRefs.length; i = i + 2) {
+      const local = localRefs[i];
+      const toExportAs = localRefs[i | 1];
+      if (toExportAs === exportAs || toExportAs === defaultExport) {
+        return local;
+      }
+    }
+  }
+  return null;
 }
 
 /**
@@ -836,7 +897,21 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 //////////////////////////
 
 /**
- * Create or retrieve the directive.
+ * Retrieve a directive.
+ *
+ * NOTE: directives can be created in order other than the index order. They can also
+ *       be retrieved before they are created in which case the value will be null.
+ *
+ * @param index Each directive in a `View` will have a unique index. Directives can
+ *        be created or retrieved out of order.
+ */
+export function directive<T>(index: number): T {
+  ngDevMode && assertDataInRange(index);
+  return data[index];
+}
+
+/**
+ * Create a directive.
  *
  * NOTE: directives can be created in order other than the index order. They can also
  *       be retrieved before they are created in which case the value will be null.
@@ -845,56 +920,47 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
  *        be created or retrieved out of order.
  * @param directive The directive instance.
  * @param directiveDef DirectiveDef object which contains information about the template.
+ * @param queryName Name under which the query can retrieve the directive instance.
  */
-export function directive<T>(index: number): T;
-export function directive<T>(
-    index: number, directive: T, directiveDef: DirectiveDef<T>, localName?: string): T;
-export function directive<T>(
-    index: number, directive?: T, directiveDef?: DirectiveDef<T>, localName?: string): T {
+export function directiveCreate<T>(
+    index: number, directive: T, directiveDef: DirectiveDef<T>, queryName?: string | null): T {
   let instance;
-  if (directive == null) {
-    // return existing
-    ngDevMode && assertDataInRange(index);
-    instance = data[index];
+  ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
+  ngDevMode && assertPreviousIsParent();
+  let flags = previousOrParentNode !.flags;
+  let size = flags & LNodeFlags.SIZE_MASK;
+  if (size === 0) {
+    flags = (index << LNodeFlags.INDX_SHIFT) | LNodeFlags.SIZE_SKIP | flags & LNodeFlags.TYPE_MASK;
   } else {
-    ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
-    ngDevMode && assertPreviousIsParent();
-    let flags = previousOrParentNode !.flags;
-    let size = flags & LNodeFlags.SIZE_MASK;
-    if (size === 0) {
-      flags =
-          (index << LNodeFlags.INDX_SHIFT) | LNodeFlags.SIZE_SKIP | flags & LNodeFlags.TYPE_MASK;
-    } else {
-      flags += LNodeFlags.SIZE_SKIP;
-    }
-    previousOrParentNode !.flags = flags;
+    flags += LNodeFlags.SIZE_SKIP;
+  }
+  previousOrParentNode !.flags = flags;
 
-    ngDevMode && assertDataInRange(index - 1);
-    Object.defineProperty(
-        directive, NG_HOST_SYMBOL, {enumerable: false, value: previousOrParentNode});
+  ngDevMode && assertDataInRange(index - 1);
+  Object.defineProperty(
+      directive, NG_HOST_SYMBOL, {enumerable: false, value: previousOrParentNode});
 
-    data[index] = instance = directive;
+  data[index] = instance = directive;
 
-    if (index >= ngStaticData.length) {
-      ngStaticData[index] = directiveDef !;
-      if (localName) {
-        ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.staticData');
-        const tNode = previousOrParentNode !.tNode !;
-        (tNode.localNames || (tNode.localNames = [])).push(localName, index);
-      }
-    }
-
-    const diPublic = directiveDef !.diPublic;
-    if (diPublic) {
-      diPublic(directiveDef !);
-    }
-
-    const tNode: TNode|null = previousOrParentNode.tNode !;
-    if (tNode && tNode.attrs) {
-      setInputsFromAttrs<T>(instance, directiveDef !.inputs, tNode);
+  if (index >= ngStaticData.length) {
+    ngStaticData[index] = directiveDef !;
+    if (queryName) {
+      ngDevMode &&
+          assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.staticData');
+      const nodeStaticData = previousOrParentNode !.tNode !;
+      (nodeStaticData.localNames || (nodeStaticData.localNames = [])).push(queryName, index);
     }
   }
 
+  const diPublic = directiveDef !.diPublic;
+  if (diPublic) {
+    diPublic(directiveDef !);
+  }
+
+  const staticData: TNode|null = previousOrParentNode.tNode !;
+  if (staticData && staticData.attrs) {
+    setInputsFromAttrs<T>(instance, directiveDef !.inputs, staticData);
+  }
   return instance;
 }
 
@@ -1039,10 +1105,11 @@ export function executeViewHooks(): void {
  * @param template Optional inline template
  * @param tagName The name of the container element, if applicable
  * @param attrs The attrs attached to the container, if applicable
+ * @param localRefs A set of local reference bindings on the element.
  */
 export function containerStart(
-    index: number, template?: ComponentTemplate<any>, tagName?: string, attrs?: string[],
-    localName?: string): void {
+    index: number, directiveTypes?: DirectiveType<any>[], template?: ComponentTemplate<any>,
+    tagName?: string, attrs?: string[], localRefs?: string[] | null): void {
   ngDevMode && assertEqual(currentView.bindingStartIndex, null, 'bindingStartIndex');
 
   // If the direct parent of the container is a view, its views (including its comment)
@@ -1068,13 +1135,16 @@ export function containerStart(
   });
 
   if (node.tNode == null) {
+    // TODO(misko): implement queryName caching
+    const queryName: string|null = hack_findQueryName(null, localRefs, '');
     node.tNode = ngStaticData[index] =
-        createTNode(tagName || null, attrs || null, [], localName || null);
+        createTNode(tagName || null, attrs || null, [], queryName || null);
   }
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
   addToViewTree(node.data);
+  hack_declareDirectives(index, directiveTypes, localRefs);
 }
 
 export function containerEnd() {

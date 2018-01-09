@@ -68,8 +68,7 @@ describe('encapsulation', () => {
       tag: 'wrapper',
       template: function(ctx: WrapperComponent, cm: boolean) {
         if (cm) {
-          E(0, EncapsulatedComponent.ngComponentDef);
-          { D(1, EncapsulatedComponent.ngComponentDef.n(), EncapsulatedComponent.ngComponentDef); }
+          E(0, EncapsulatedComponent);
           e();
         }
         EncapsulatedComponent.ngComponentDef.h(1, 0);
@@ -86,8 +85,7 @@ describe('encapsulation', () => {
       template: function(ctx: EncapsulatedComponent, cm: boolean) {
         if (cm) {
           T(0, 'foo');
-          E(1, LeafComponent.ngComponentDef);
-          { D(2, LeafComponent.ngComponentDef.n(), LeafComponent.ngComponentDef); }
+          E(1, LeafComponent);
           e();
         }
         LeafComponent.ngComponentDef.h(2, 1);
@@ -135,8 +133,7 @@ describe('encapsulation', () => {
         tag: 'wrapper',
         template: function(ctx: WrapperComponentWith, cm: boolean) {
           if (cm) {
-            E(0, LeafComponentwith.ngComponentDef);
-            { D(1, LeafComponentwith.ngComponentDef.n(), LeafComponentwith.ngComponentDef); }
+            E(0, LeafComponentwith);
             e();
           }
           LeafComponentwith.ngComponentDef.h(1, 0);
