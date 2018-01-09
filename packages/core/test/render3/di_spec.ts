@@ -10,8 +10,8 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {bloomAdd, bloomFindPossibleInjector} from '../../src/render3/di';
 import {C, D, E, PublicFeature, T, V, b, b2, c, cR, cr, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, t, v} from '../../src/render3/index';
-import {createLNode, createViewState, enterView, getOrCreateNodeInjector, leaveView} from '../../src/render3/instructions';
-import {LNodeFlags, LNodeInjector} from '../../src/render3/interfaces';
+import {createLNode, createLView, enterView, getOrCreateNodeInjector, leaveView} from '../../src/render3/instructions';
+import {LInjector, LNodeFlags} from '../../src/render3/interfaces';
 
 import {renderToHtml} from './render_util';
 
@@ -213,7 +213,7 @@ describe('di', () => {
 
   describe('inject', () => {
     describe('bloom filter', () => {
-      let di: LNodeInjector;
+      let di: LInjector;
       beforeEach(() => {
         di = {} as any;
         di.bf0 = 0;
@@ -318,7 +318,7 @@ describe('di', () => {
 
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
-      const contentView = createViewState(-1, null !, []);
+      const contentView = createLView(-1, null !, []);
       const oldView = enterView(contentView, null !);
       try {
         const parent = createLNode(0, LNodeFlags.Element, null, null);
