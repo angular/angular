@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, L, T, V, c, cR, cr, defineComponent, e, v} from '../../src/render3/index';
+import {C, D, E, L, T, V, cR, cr, defineComponent, e, v} from '../../src/render3/index';
 
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 
@@ -137,7 +137,6 @@ describe('event listeners', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
@@ -145,7 +144,6 @@ describe('event listeners', () => {
           if (V(0)) {
             T(0, 'Hello');
             C(1);
-            c();
           }
           cR(1);
           {
@@ -197,7 +195,6 @@ describe('event listeners', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
@@ -254,7 +251,6 @@ describe('event listeners', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
@@ -262,9 +258,7 @@ describe('event listeners', () => {
           if (V(0)) {
             T(0, 'Hello');
             C(1);
-            c();
             C(2);
-            c();
           }
           cR(1);
           {

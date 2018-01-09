@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, D, E, L, T, V, b, b1, c, cR, cr, defineComponent, defineDirective, e, p, t, v} from '../../src/render3/index';
+import {C, D, E, L, T, V, b, b1, cR, cr, defineComponent, defineDirective, e, p, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
@@ -252,7 +252,6 @@ describe('elementProperty', () => {
           { T(2, 'Click me'); }
           e();
           C(3);
-          c();
         }
         p(0, 'id', b(ctx.id1));
         cR(3);
@@ -434,7 +433,6 @@ describe('elementProperty', () => {
           E(0, 'div', ['role', 'listbox'], [MyDir]);
           e();
           C(2);
-          c();
         }
         cR(2);
         {
@@ -495,7 +493,6 @@ describe('elementProperty', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
