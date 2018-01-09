@@ -84,3 +84,4 @@ export {
   defineDirective,
 };
 export {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent};
+export {InjectFlags} from './di';
