@@ -10,7 +10,7 @@ import './ng_dev_mode';
 
 import {assertNotNull} from './assert';
 import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from './interfaces';
-import {LNodeStatic} from './l_node_static';
+import {TNode} from './t_node';
 
 function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
   const nodeClassesLen = nodeClassAttrVal.length;
@@ -33,14 +33,13 @@ function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): 
  * @param selector
  * @returns true if node matches the selector.
  */
-export function isNodeMatchingSimpleSelector(
-    lNodeStaticData: LNodeStatic, selector: SimpleCssSelector): boolean {
+export function isNodeMatchingSimpleSelector(tNode: TNode, selector: SimpleCssSelector): boolean {
   const noOfSelectorParts = selector.length;
   ngDevMode && assertNotNull(selector[0], 'selector[0]');
   const tagNameInSelector = selector[0];
 
   // check tag tame
-  if (tagNameInSelector !== '' && tagNameInSelector !== lNodeStaticData.tagName) {
+  if (tagNameInSelector !== '' && tagNameInSelector !== tNode.tagName) {
     return false;
   }
 
@@ -50,11 +49,11 @@ export function isNodeMatchingSimpleSelector(
   }
 
   // short-circuit case where an element has no attrs but a selector tries to match some
-  if (noOfSelectorParts > 1 && !lNodeStaticData.attrs) {
+  if (noOfSelectorParts > 1 && !tNode.attrs) {
     return false;
   }
 
-  const attrsInNode = lNodeStaticData.attrs !;
+  const attrsInNode = tNode.attrs !;
 
   for (let i = 1; i < noOfSelectorParts; i += 2) {
     const attrNameInSelector = selector[i];
@@ -84,10 +83,9 @@ export function isNodeMatchingSimpleSelector(
 }
 
 export function isNodeMatchingSelectorWithNegations(
-    lNodeStaticData: LNodeStatic, selector: CssSelectorWithNegations): boolean {
+    tNode: TNode, selector: CssSelectorWithNegations): boolean {
   const positiveSelector = selector[0];
-  if (positiveSelector != null &&
-      !isNodeMatchingSimpleSelector(lNodeStaticData, positiveSelector)) {
+  if (positiveSelector != null && !isNodeMatchingSimpleSelector(tNode, positiveSelector)) {
     return false;
   }
 
@@ -96,7 +94,7 @@ export function isNodeMatchingSelectorWithNegations(
   if (negativeSelectors) {
     for (let i = 0; i < negativeSelectors.length; i++) {
       // if one of negative selectors matched than the whole selector doesn't match
-      if (isNodeMatchingSimpleSelector(lNodeStaticData, negativeSelectors[i])) {
+      if (isNodeMatchingSimpleSelector(tNode, negativeSelectors[i])) {
         return false;
       }
     }
@@ -105,10 +103,9 @@ export function isNodeMatchingSelectorWithNegations(
   return true;
 }
 
-export function isNodeMatchingSelector(
-    lNodeStaticData: LNodeStatic, selector: CssSelector): boolean {
+export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boolean {
   for (let i = 0; i < selector.length; i++) {
-    if (isNodeMatchingSelectorWithNegations(lNodeStaticData, selector[i])) {
+    if (isNodeMatchingSelectorWithNegations(tNode, selector[i])) {
       return true;
     }
   }

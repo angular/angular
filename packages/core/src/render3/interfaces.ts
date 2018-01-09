@@ -14,8 +14,8 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {Type} from '../type';
 
 import {ComponentTemplate, DirectiveDef} from './definition_interfaces';
-import {LNodeStatic} from './l_node_static';
 import {RComment, RElement, RText, Renderer3} from './renderer';
+import {TNode} from './t_node';
 
 
 
@@ -100,13 +100,13 @@ export interface LNode {
   next: LNode|null;
 
   /**
-   * If regular LElement, then `data` will be null.
-   * If LElement with component, then `data` contains ViewState.
-   * If LView, then `data` contains the ViewState.
-   * If LContainer, then `data` contains ContainerState.
-   * If LProjection, then `data` contains ProjectionState.
+   * If regular LElementNode, then `data` will be null.
+   * If LElementNode with component, then `data` contains LView.
+   * If LViewNode, then `data` contains the LView.
+   * If LContainerNode, then `data` contains LContainer.
+   * If LProjectionNode, then `data` contains LProjection.
    */
-  readonly data: ViewState|ContainerState|ProjectionState|null;
+  readonly data: LView|LContainer|LProjection|null;
 
 
   /**
@@ -114,70 +114,66 @@ export interface LNode {
    *
    * When the injector is walking up a tree, it needs access to the `directives` (part of view).
    */
-  readonly view: ViewState;
+  readonly view: LView;
 
   /** The injector associated with this node. Necessary for DI. */
-  nodeInjector: LNodeInjector|null;
+  nodeInjector: LInjector|null;
 
   /**
    * Optional `QueryState` used for tracking queries.
    *
    * If present the node creation/updates are reported to the `QueryState`.
    */
-  query: QueryState|null;
+  query: LQuery|null;
 
   /**
-   * Pointer to the corresponding LNodeStatic object, which stores static
+   * Pointer to the corresponding TNode object, which stores static
    * data about this node.
    */
-  staticData: LNodeStatic|null;
+  tNode: TNode|null;
 }
 
 
 /** LNode representing an element. */
-export interface LElement extends LNode {
+export interface LElementNode extends LNode {
   /** The DOM element associated with this node. */
   readonly native: RElement;
 
-  child: LContainer|LElement|LText|LProjection|null;
-  next: LContainer|LElement|LText|LProjection|null;
+  child: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
+  next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
-  /** If Component than data has ViewState (light DOM) */
-  readonly data: ViewState|null;
+  /** If Component then data has LView (light DOM) */
+  readonly data: LView|null;
 
-  /** LElement nodes can be inside other LElement nodes or inside LViews. */
-  readonly parent: LElement|LView;
+  /** LElementNodes can be inside other LElementNodes or inside LViewNodes. */
+  readonly parent: LElementNode|LViewNode;
 }
 
 /** LNode representing a #text node. */
-export interface LText extends LNode {
+export interface LTextNode extends LNode {
   /** The text node associated with this node. */
   native: RText;
   child: null;
-  next: LContainer|LElement|LText|LProjection|null;
+  next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
-  /** LText nodes can be inside LElement nodes or inside LViews. */
-  readonly parent: LElement|LView;
+  /** LTextNodes can be inside LElementNodes or inside LViewNodes. */
+  readonly parent: LElementNode|LViewNode;
   readonly data: null;
 }
 
-/**
- * Abstract node which contains root nodes of a view.
- */
-export interface LView extends LNode {
+/** Abstract node which contains root nodes of a view. */
+export interface LViewNode extends LNode {
   readonly native: null;
-  child: LContainer|LElement|LText|LProjection|null;
-  next: LView|null;
+  child: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
+  next: LViewNode|null;
 
-  /**  LView nodes can only be added to LContainers. */
-  readonly parent: LContainer|null;
-  readonly data: ViewState;
+  /**  LViewNodes can only be added to LContainerNodes. */
+  readonly parent: LContainerNode|null;
+  readonly data: LView;
 }
 
-/**
- * Abstract node container which contains other views.
- */
-export interface LContainer extends LNode {
+/** Abstract node container which contains other views. */
+export interface LContainerNode extends LNode {
   /**
    * This comment node is appended to the container's parent element to mark where
    * in the DOM the container's child views should be added.
@@ -186,24 +182,24 @@ export interface LContainer extends LNode {
    * until the parent view is processed.
    */
   readonly native: RComment;
-  readonly data: ContainerState;
+  readonly data: LContainer;
   child: null;
-  next: LContainer|LElement|LText|LProjection|null;
+  next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
   /** Containers can be added to elements or views. */
-  readonly parent: LElement|LView|null;
+  readonly parent: LElementNode|LViewNode|null;
 }
 
 
-export interface LProjection extends LNode {
+export interface LProjectionNode extends LNode {
   readonly native: null;
   child: null;
-  next: LContainer|LElement|LText|LProjection|null;
+  next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
-  readonly data: ProjectionState;
+  readonly data: LProjection;
 
   /** Projections can be added to elements or views. */
-  readonly parent: LElement|LView;
+  readonly parent: LElementNode|LViewNode;
 }
 
 /**
@@ -220,12 +216,12 @@ export interface LProjection extends LNode {
  * shown here: https://jsperf.com/small-arrays-vs-linked-objects
  */
 
-export interface LNodeInjector {
+export interface LInjector {
   /**
    * We need to store a reference to the injector's parent so DI can keep looking up
    * the injector tree until it finds the dependency it's looking for.
    */
-  readonly parent: LNodeInjector|null;
+  readonly parent: LInjector|null;
 
   /**
    * Allows access to the directives array in that node's static data and to
@@ -233,7 +229,7 @@ export interface LNodeInjector {
    * for DI to retrieve a directive from the data array if injector indicates
    * it is there.
    */
-  readonly node: LElement|LContainer;
+  readonly node: LElementNode|LContainerNode;
 
   /**
    * The following bloom filter determines whether a directive is available
@@ -276,16 +272,16 @@ export interface LNodeInjector {
 }
 
 /**
- * `ViewState` stores all of the information needed to process the instructions as
+ * `LView` stores all of the information needed to process the instructions as
  * they are invoked from the template. Each embedded view and component view has its
- * own `ViewState`. When processing a particular view, we set the `currentView` to that
- * `ViewState`. When that view is done processing, the `currentView` is set back to
- * whatever the original `currentView` was before(the parent `ViewState`).
+ * own `LView`. When processing a particular view, we set the `currentView` to that
+ * `LView`. When that view is done processing, the `currentView` is set back to
+ * whatever the original `currentView` was before(the parent `LView`).
  *
  * Keeping separate state for each view facilities view insertion / deletion, so we
  * don't have to edit the data array based on which views are present.
  */
-export interface ViewState {
+export interface LView {
   /**
    * Whether or not the view is in creationMode.
    *
@@ -301,20 +297,20 @@ export interface ViewState {
 
   /**
    * The parent view is needed when we exit the view and must restore the previous
-   * `ViewState`. Without this, the render method would have to keep a stack of
+   * `LView`. Without this, the render method would have to keep a stack of
    * views as it is recursively rendering templates.
    */
-  readonly parent: ViewState|null;
+  readonly parent: LView|null;
 
   /**
-   * Pointer to the `LView` or `LElement` node which represents the root of the view.
+   * Pointer to the `LViewNode` or `LElementNode` which represents the root of the view.
    *
-   * If `LView`, this is an embedded view of a container. We need this to be able to
-   * efficiently find the `LView` when inserting the view into an anchor.
+   * If `LViewNode`, this is an embedded view of a container. We need this to be able to
+   * efficiently find the `LViewNode` when inserting the view into an anchor.
    *
-   * If `LElement`, this is the ViewState of a component.
+   * If `LElementNode`, this is the LView of a component.
    */
-  readonly node: LView|LElement;
+  readonly node: LViewNode|LElementNode;
 
   /**
    * ID to determine whether this view is the same as the previous view
@@ -323,9 +319,7 @@ export interface ViewState {
    */
   readonly id: number;
 
-  /**
-   * Renderer to be used for this view.
-   */
+  /** Renderer to be used for this view. */
   readonly renderer: Renderer3;
 
   /**
@@ -356,33 +350,33 @@ export interface ViewState {
   cleanup: any[]|null;
 
   /**
-   * The first ViewState or ContainerState beneath this ViewState in the hierarchy.
+   * The first LView or LContainer beneath this LView in the hierarchy.
    *
    * Necessary to store this so views can traverse through their nested views
    * to remove listeners and call onDestroy callbacks.
    *
-   * For embedded views, we store the ContainerState rather than the first ViewState
+   * For embedded views, we store the LContainer rather than the first ViewState
    * to avoid managing splicing when views are added/removed.
    */
-  child: ViewState|ContainerState|null;
+  child: LView|LContainer|null;
 
   /**
-   * The last ViewState or ContainerState beneath this ViewState in the hierarchy.
+   * The last LView or LContainer beneath this LView in the hierarchy.
    *
    * The tail allows us to quickly add a new state to the end of the view list
    * without having to propagate starting from the first child.
    */
-  tail: ViewState|ContainerState|null;
+  tail: LView|LContainer|null;
 
   /**
-   * The next sibling ViewState or ContainerState.
+   * The next sibling LView or LContainer.
    *
    * Allows us to propagate between sibling view states that aren't in the same
    * container. Embedded views already have a node.next, but it is only set for
    * views in the same container. We need a way to link component views and views
    * across containers as well.
    */
-  next: ViewState|ContainerState|null;
+  next: LView|LContainer|null;
 
   /**
    * This array stores all element/text/container nodes created inside this view
@@ -406,12 +400,12 @@ export interface ViewState {
    * can easily walk up the node tree in DI and get the ngStaticData array associated
    * with a node (where the directive defs are stored).
    */
-  ngStaticData: (LNodeStatic|DirectiveDef<any>|null)[];
+  ngStaticData: (TNode|DirectiveDef<any>|null)[];
 }
 
 
 /** The state associated with an LContainer */
-export interface ContainerState {
+export interface LContainer {
   /**
    * The next active index in the views array to read or write to. This helps us
    * keep track of where we are in the views array.
@@ -422,13 +416,13 @@ export interface ContainerState {
    * This allows us to jump from a container to a sibling container or
    * component view with the same parent, so we can remove listeners efficiently.
    */
-  next: ViewState|ContainerState|null;
+  next: LView|LContainer|null;
 
   /**
    * Access to the parent view is necessary so we can propagate back
    * up from inside a container to parent.next.
    */
-  parent: ViewState|null;
+  parent: LView|null;
 
   /**
    * A list of the container's currently active child views. Views will be inserted
@@ -437,29 +431,29 @@ export interface ContainerState {
    * (and don't need to be re-added) and so we can remove views from the DOM when they
    * are no longer required.
    */
-  readonly views: LView[];
+  readonly views: LViewNode[];
 
   /**
    * Parent Element which will contain the location where all of the Views will be
    * inserted into to.
    *
    * If `renderParent` is `null` it is headless. This means that it is contained
-   * in another `LView` which in turn is contained in another `LContainer` and therefore
-   * it does not yet have its own parent.
+   * in another `LViewNode` which in turn is contained in another `LContainerNode` and
+   * therefore it does not yet have its own parent.
    *
    * If `renderParent` is not `null` then it may be:
-   * - same as `LContainer.parent` in which case it is just a normal container.
-   * - different from `LContainer.parent` in which case it has been re-projected.
-   *   In other words `LContainer.parent` is logical parent where as
-   *   `ContainerState.projectedParent` is render parent.
+   * - same as `LContainerNode.parent` in which case it is just a normal container.
+   * - different from `LContainerNode.parent` in which case it has been re-projected.
+   *   In other words `LContainerNode.parent` is logical parent where as
+   *   `LContainer.projectedParent` is render parent.
    *
-   * When views are inserted into `LContainer` then `renderParent` is:
-   * - `null`, we are in `LView` keep going up a hierarchy until actual
+   * When views are inserted into `LContainerNode` then `renderParent` is:
+   * - `null`, we are in `LViewNode` keep going up a hierarchy until actual
    *   `renderParent` is found.
    * - not `null`, then use the `projectedParent.native` as the `RElement` to insert
-   *   `LView`s into.
+   *   `LViewNode`s into.
    */
-  renderParent: LElement|null;
+  renderParent: LElementNode|null;
 
   /**
    * The template extracted from the location of the Container.
@@ -469,35 +463,31 @@ export interface ContainerState {
 
 
 /** Interface necessary to work with view tree traversal */
-export interface ViewOrContainerState {
-  next: ViewState|ContainerState|null;
-  child?: ViewState|ContainerState|null;
-  views?: LView[];
-  parent: ViewState|null;
+export interface LViewOrLContainer {
+  next: LView|LContainer|null;
+  child?: LView|LContainer|null;
+  views?: LViewNode[];
+  parent: LView|null;
 }
 
 /**
- * A projection state is just an array of projected nodes.
+ * An LProjection is just an array of projected nodes.
  *
  * It would be nice if we could not need an array, but since a projected node can be
- * re-projected, the same node can be part of more than one LProjection which makes
+ * re-projected, the same node can be part of more than one LProjectionNode which makes
  * list approach not possible.
  */
-export type ProjectionState = Array<LElement|LText|LContainer>;
+export type LProjection = Array<LElementNode|LTextNode|LContainerNode>;
 
-/**
- * An enum representing possible values of the "read" option for queries.
- */
+/** An enum representing possible values of the "read" option for queries. */
 export const enum QueryReadType {
   ElementRef = 0,
   ViewContainerRef = 1,
   TemplateRef = 2,
 }
 
-/**
- * Used for tracking queries (e.g. ViewChild, ContentChild).
- */
-export interface QueryState {
+/** Used for tracking queries (e.g. ViewChild, ContentChild). */
+export interface LQuery {
   /**
    * Used to ask query if it should be cloned to the child element.
    *
@@ -505,22 +495,22 @@ export interface QueryState {
    * query for the child node. In case of shallow queries it returns
    * `null`.
    */
-  child(): QueryState|null;
+  child(): LQuery|null;
 
   /**
-   * Notify `QueryState` that a  `LNode` has been created.
+   * Notify `LQuery` that a  `LNode` has been created.
    */
   addNode(node: LNode): void;
 
   /**
-   * Notify `QueryState` that a `LView` has been added to `LContainer`.
+   * Notify `LQuery` that an `LViewNode` has been added to `LContainerNode`.
    */
-  insertView(container: LContainer, view: LView, insertIndex: number): void;
+  insertView(container: LContainerNode, view: LViewNode, insertIndex: number): void;
 
   /**
-   * Notify `QueryState` that a `LView` has been removed from `LContainer`.
+   * Notify `LQuery` that an `LViewNode` has been removed from `LContainerNode`.
    */
-  removeView(container: LContainer, view: LView, removeIndex: number): void;
+  removeView(container: LContainerNode, view: LViewNode, removeIndex: number): void;
 
   /**
    * Add additional `QueryList` to track.

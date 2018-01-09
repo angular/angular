@@ -14,8 +14,8 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref'
 
 import {assertNotNull} from './assert';
 import {ComponentDef, ComponentType} from './definition_interfaces';
-import {NG_HOST_SYMBOL, createError, createViewState, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
-import {LElement} from './interfaces';
+import {NG_HOST_SYMBOL, createError, createLView, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
+import {LElementNode} from './interfaces';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './renderer';
 import {notImplemented, stringify} from './util';
 
@@ -170,7 +170,7 @@ export function renderComponent<T>(
   let component: T;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);
   const oldView = enterView(
-      createViewState(-1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), []),
+      createLView(-1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), []),
       null !);
   try {
     // Create element node at index 0 in data array
@@ -188,7 +188,7 @@ export function renderComponent<T>(
 
 export function detectChanges<T>(component: T) {
   ngDevMode && assertNotNull(component, 'component');
-  const hostNode = (component as any)[NG_HOST_SYMBOL] as LElement;
+  const hostNode = (component as any)[NG_HOST_SYMBOL] as LElementNode;
   if (ngDevMode && !hostNode) {
     createError('Not a directive instance', component);
   }
@@ -208,5 +208,5 @@ export function markDirty<T>(
 }
 
 export function getHostElement<T>(component: T): RElement {
-  return ((component as any)[NG_HOST_SYMBOL] as LElement).native;
+  return ((component as any)[NG_HOST_SYMBOL] as LElementNode).native;
 }

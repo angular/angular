@@ -7,7 +7,7 @@
  */
 
 import {assertNotNull} from './assert';
-import {ContainerState, LContainer, LElement, LNode, LNodeFlags, LProjection, LText, LView, ProjectionState, ViewOrContainerState, ViewState} from './interfaces';
+import {LContainer, LContainerNode, LElementNode, LNode, LNodeFlags, LProjection, LProjectionNode, LTextNode, LView, LViewNode, LViewOrLContainer} from './interfaces';
 import {assertNodeType} from './node_assert';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText} from './renderer';
 
@@ -22,15 +22,15 @@ import {ProceduralRenderer3, RComment, RElement, RNode, RText} from './renderer'
  * @param containerNode The container node whose parent must be found
  * @returns Closest DOM node above the container
  */
-export function findNativeParent(containerNode: LContainer): RNode|null {
-  let container: LContainer|null = containerNode;
+export function findNativeParent(containerNode: LContainerNode): RNode|null {
+  let container: LContainerNode|null = containerNode;
   while (container) {
     ngDevMode && assertNodeType(container, LNodeFlags.Container);
     const renderParent = container.data.renderParent;
     if (renderParent !== null) {
       return renderParent.native;
     }
-    const viewOrElement: LView|LElement = container.parent !;
+    const viewOrElement: LViewNode|LElementNode = container.parent !;
     ngDevMode && assertNotNull(viewOrElement, 'container.parent');
     if ((viewOrElement.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
       // we are an LElement, which means we are past the last LContainer.
@@ -38,7 +38,7 @@ export function findNativeParent(containerNode: LContainer): RNode|null {
       return null;
     }
     ngDevMode && assertNodeType(viewOrElement, LNodeFlags.View);
-    container = (viewOrElement as LView).parent;
+    container = (viewOrElement as LViewNode).parent;
   }
   return null;
 }
@@ -52,15 +52,15 @@ export function findNativeParent(containerNode: LContainer): RNode|null {
  * anchor is the marker.
  *
  * @param index The index of the view to check
- * @param state ContainerState of the parent container
+ * @param lContainer parent LContainer
  * @param native Comment anchor for container
  * @returns The DOM element for which the view should insert elements
  */
-function findBeforeNode(index: number, state: ContainerState, native: RNode): RNode {
-  const views = state.views;
+function findBeforeNode(index: number, lContainer: LContainer, native: RNode): RNode {
+  const views = lContainer.views;
   // Find the node to insert in front of
   return index + 1 < views.length ?
-      (views[index + 1].child as LText | LElement | LContainer).native :
+      (views[index + 1].child as LTextNode | LElementNode | LContainerNode).native :
       native;
 }
 
@@ -77,11 +77,13 @@ function findBeforeNode(index: number, state: ContainerState, native: RNode): RN
  * @param beforeNode The node before which elements should be added, if insert mode
  */
 export function addRemoveViewFromContainer(
-    container: LContainer, rootNode: LView, insertMode: true, beforeNode: RNode | null): void;
+    container: LContainerNode, rootNode: LViewNode, insertMode: true,
+    beforeNode: RNode | null): void;
 export function addRemoveViewFromContainer(
-    container: LContainer, rootNode: LView, insertMode: false): void;
+    container: LContainerNode, rootNode: LViewNode, insertMode: false): void;
 export function addRemoveViewFromContainer(
-    container: LContainer, rootNode: LView, insertMode: boolean, beforeNode?: RNode | null): void {
+    container: LContainerNode, rootNode: LViewNode, insertMode: boolean,
+    beforeNode?: RNode | null): void {
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   ngDevMode && assertNodeType(rootNode, LNodeFlags.View);
   const parent = findNativeParent(container);
@@ -105,7 +107,7 @@ export function addRemoveViewFromContainer(
       } else if (type === LNodeFlags.Container) {
         // if we get to a container, it must be a root node of a view because we are only
         // propagating down into child views / containers and not child elements
-        const childContainerData: ContainerState = (node as LContainer).data;
+        const childContainerData: LContainer = (node as LContainerNode).data;
         insertMode ? (isFnRenderer ?
                           (renderer as ProceduralRenderer3)
                               .appendChild !(parent as RElement, node.native !) :
@@ -116,9 +118,9 @@ export function addRemoveViewFromContainer(
                           parent.removeChild(node.native !));
         nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
       } else if (type === LNodeFlags.Projection) {
-        nextNode = (node as LProjection).data[0];
+        nextNode = (node as LProjectionNode).data[0];
       } else {
-        nextNode = (node as LView).child;
+        nextNode = (node as LViewNode).child;
       }
       if (nextNode === null) {
         while (node && !node.next) {
@@ -146,31 +148,31 @@ export function addRemoveViewFromContainer(
  *
  *  @param rootView The view to destroy
  */
-export function destroyViewTree(rootView: ViewState): void {
-  let viewOrContainerState: ViewOrContainerState|null = rootView;
+export function destroyViewTree(rootView: LView): void {
+  let viewOrContainer: LViewOrLContainer|null = rootView;
 
-  while (viewOrContainerState) {
-    let next: ViewOrContainerState|null = null;
+  while (viewOrContainer) {
+    let next: LViewOrLContainer|null = null;
 
-    if (viewOrContainerState.views && viewOrContainerState.views.length) {
-      next = viewOrContainerState.views[0].data;
-    } else if (viewOrContainerState.child) {
-      next = viewOrContainerState.child;
-    } else if (viewOrContainerState.next) {
-      cleanUpView(viewOrContainerState as ViewState);
-      next = viewOrContainerState.next;
+    if (viewOrContainer.views && viewOrContainer.views.length) {
+      next = viewOrContainer.views[0].data;
+    } else if (viewOrContainer.child) {
+      next = viewOrContainer.child;
+    } else if (viewOrContainer.next) {
+      cleanUpView(viewOrContainer as LView);
+      next = viewOrContainer.next;
     }
 
     if (next == null) {
-      while (viewOrContainerState && !viewOrContainerState !.next) {
-        cleanUpView(viewOrContainerState as ViewState);
-        viewOrContainerState = getParentState(viewOrContainerState, rootView);
+      while (viewOrContainer && !viewOrContainer !.next) {
+        cleanUpView(viewOrContainer as LView);
+        viewOrContainer = getParentState(viewOrContainer, rootView);
       }
-      cleanUpView(viewOrContainerState as ViewState || rootView);
+      cleanUpView(viewOrContainer as LView || rootView);
 
-      next = viewOrContainerState && viewOrContainerState.next;
+      next = viewOrContainer && viewOrContainer.next;
     }
-    viewOrContainerState = next;
+    viewOrContainer = next;
   }
 }
 
@@ -187,7 +189,8 @@ export function destroyViewTree(rootView: ViewState): void {
  * @param index The index at which to insert the view
  * @returns The inserted view
  */
-export function insertView(container: LContainer, newView: LView, index: number): LView {
+export function insertView(
+    container: LContainerNode, newView: LViewNode, index: number): LViewNode {
   const state = container.data;
   const views = state.views;
 
@@ -232,7 +235,7 @@ export function insertView(container: LContainer, newView: LView, index: number)
  * @param removeIndex The index of the view to remove
  * @returns The removed view
  */
-export function removeView(container: LContainer, removeIndex: number): LView {
+export function removeView(container: LContainerNode, removeIndex: number): LViewNode {
   const views = container.data.views;
   const viewNode = views[removeIndex];
   if (removeIndex > 0) {
@@ -248,34 +251,32 @@ export function removeView(container: LContainer, removeIndex: number): LView {
 
 /**
  * Sets a next on the view node, so views in for loops can easily jump from
- * one view to the next to add/remove elements. Also adds the ViewState (view.data)
+ * one view to the next to add/remove elements. Also adds the LView (view.data)
  * to the view tree for easy traversal when cleaning up the view.
  *
  * @param view The view to set up
  * @param next The view's new next
  */
-export function setViewNext(view: LView, next: LView | null): void {
+export function setViewNext(view: LViewNode, next: LViewNode | null): void {
   view.next = next;
   view.data.next = next ? next.data : null;
 }
 
 /**
- * Determines which ViewOrContainerState to jump to when traversing back up the
+ * Determines which LViewOrLContainer to jump to when traversing back up the
  * tree in destroyViewTree.
  *
- * Normally, the view's parent ViewState should be checked, but in the case of
+ * Normally, the view's parent LView should be checked, but in the case of
  * embedded views, the container (which is the view node's parent, but not the
- * ViewState's parent) needs to be checked for a possible next property.
+ * LView's parent) needs to be checked for a possible next property.
  *
- * @param state The ViewOrContainerState for which we need a parent state
+ * @param state The LViewOrLContainer for which we need a parent state
  * @param rootView The rootView, so we don't propagate too far up the view tree
- * @returns The correct parent ViewOrContainerState
+ * @returns The correct parent LViewOrLContainer
  */
-export function getParentState(
-    state: ViewOrContainerState, rootView: ViewState): ViewOrContainerState|null {
+export function getParentState(state: LViewOrLContainer, rootView: LView): LViewOrLContainer|null {
   let node;
-  if ((node = (state as ViewState) !.node) &&
-      (node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
+  if ((node = (state as LView) !.node) && (node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.View) {
     // if it's an embedded view, the state needs to go up to the container, in case the
     // container has a next
     return node.parent !.data as any;
@@ -288,11 +289,11 @@ export function getParentState(
 /**
  * Removes all listeners and call all onDestroys in a given view.
  *
- * @param viewState The ViewState of the view to clean up
+ * @param view The LView to clean up
  */
-function cleanUpView(viewState: ViewState): void {
-  if (!viewState.cleanup) return;
-  const cleanup = viewState.cleanup !;
+function cleanUpView(view: LView): void {
+  if (!view.cleanup) return;
+  const cleanup = view.cleanup !;
   for (let i = 0; i < cleanup.length - 1; i += 2) {
     if (typeof cleanup[i] === 'string') {
       cleanup ![i + 1].removeEventListener(cleanup[i], cleanup[i + 2], cleanup[i + 3]);
@@ -301,7 +302,7 @@ function cleanUpView(viewState: ViewState): void {
       cleanup[i].call(cleanup[i + 1]);
     }
   }
-  viewState.cleanup = null;
+  view.cleanup = null;
 }
 
 /**
@@ -314,10 +315,10 @@ function cleanUpView(viewState: ViewState): void {
  *
  * @param parent The parent to which to append the child
  * @param child The child that should be appended
- * @param currentView The current view's ViewState
+ * @param currentView The current LView
  * @returns Whether or not the child was appended
  */
-export function appendChild(parent: LNode, child: RNode | null, currentView: ViewState): boolean {
+export function appendChild(parent: LNode, child: RNode | null, currentView: LView): boolean {
   // Only add native child element to parent element if the parent element is regular Element.
   // If parent is:
   // - Regular element => add child
@@ -350,9 +351,9 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: Vie
  * the content projection system. Otherwise, insertBefore normally.
  *
  * @param node Node to insert
- * @param currentView The current view's ViewState
+ * @param currentView Current LView
  */
-export function insertChild(node: LNode, currentView: ViewState): void {
+export function insertChild(node: LNode, currentView: LView): void {
   const parent = node.parent !;
   // Only add child element to parent element if the parent element is regular Element.
   // If parent is:
@@ -389,11 +390,11 @@ export function insertChild(node: LNode, currentView: ViewState): void {
  * @param projectedNodes Array to store the projected node
  * @param node The node to process
  * @param currentParent The last parent element to be processed
- * @param currentView The current view's ViewState
+ * @param currentView Current LView
  */
 export function processProjectedNode(
-    projectedNodes: ProjectionState, node: LElement | LText | LContainer,
-    currentParent: LView | LElement, currentView: ViewState): void {
+    projectedNodes: LProjection, node: LElementNode | LTextNode | LContainerNode,
+    currentParent: LViewNode | LElementNode, currentView: LView): void {
   if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container &&
       (currentParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element &&
       (currentParent.data === null || currentParent.data === currentView)) {
@@ -402,11 +403,11 @@ export function processProjectedNode(
     // Alternatively a container is projected at the root of a component's template
     // and can't be re-projected (as not content of any component).
     // Assignee the final projection location in those cases.
-    const containerState = (node as LContainer).data;
-    containerState.renderParent = currentParent as LElement;
-    const views = containerState.views;
+    const lContainer = (node as LContainerNode).data;
+    lContainer.renderParent = currentParent as LElementNode;
+    const views = lContainer.views;
     for (let i = 0; i < views.length; i++) {
-      addRemoveViewFromContainer(node as LContainer, views[i], true, null);
+      addRemoveViewFromContainer(node as LContainerNode, views[i], true, null);
     }
   }
   projectedNodes.push(node);

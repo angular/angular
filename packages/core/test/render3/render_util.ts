@@ -8,14 +8,14 @@
 
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent} from '../../src/render3/index';
-import {NG_HOST_SYMBOL, createLNode, createViewState, renderTemplate} from '../../src/render3/instructions';
-import {LElement, LNodeFlags} from '../../src/render3/interfaces';
+import {NG_HOST_SYMBOL, createLNode, createLView, renderTemplate} from '../../src/render3/instructions';
+import {LElementNode, LNodeFlags} from '../../src/render3/interfaces';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/renderer';
 import {getRendererFactory2} from './imported_renderer2';
 
 export const document = ((global || window) as any).document;
 export let containerEl: HTMLElement = null !;
-let host: LElement|null;
+let host: LElementNode|null;
 const isRenderer2 =
     typeof process == 'object' && process.argv[3] && process.argv[3] === '--r=renderer2';
 // tslint:disable-next-line:no-console
@@ -63,7 +63,7 @@ export function renderComponent<T>(type: ComponentType<T>, rendererFactory?: Ren
 }
 
 export function toHtml<T>(componentOrElement: T | RElement): string {
-  const node = (componentOrElement as any)[NG_HOST_SYMBOL] as LElement;
+  const node = (componentOrElement as any)[NG_HOST_SYMBOL] as LElementNode;
   if (node) {
     return toHtml(node.native);
   } else {
