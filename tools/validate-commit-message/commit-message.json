@@ -23,6 +23,7 @@
     "core",
     "forms",
     "http",
+    "ivy",
     "language-service",
     "platform-browser",
     "platform-browser-dynamic",
