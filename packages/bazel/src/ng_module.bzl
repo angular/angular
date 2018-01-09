@@ -240,7 +240,7 @@ NG_MODULE_ATTRIBUTES = {
 
 ng_module = rule(
     implementation = _ng_module_impl,
-    attrs = COMMON_ATTRIBUTES + NG_MODULE_ATTRIBUTES + {
+    attrs = dict(COMMON_ATTRIBUTES.items() + NG_MODULE_ATTRIBUTES.items() + {
         "tsconfig": attr.label(allow_files = True, single_file = True),
 
         # @// is special syntax for the "main" repository
@@ -249,6 +249,6 @@ ng_module = rule(
         "node_modules": attr.label(
             default = Label("@//:node_modules")
         ),
-    },
+    }.items()),
     outputs = COMMON_OUTPUTS,
 )
