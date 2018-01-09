@@ -8,6 +8,7 @@
 
 describe('validate-commit-message.js', function() {
   var validateMessage = require('./validate-commit-message');
+  var SCOPES = validateMessage.config.scopes.join(', ');
   var errors = [];
   var logs = [];
 
@@ -51,22 +52,22 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('refactor(docs): something')).toBe(INVALID);
       ['INVALID COMMIT MSG: "fix(Compiler): something"\n' +
            ' => ERROR: "Compiler" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog',
+           ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "feat(bah): something"\n' +
            ' => ERROR: "bah" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog',
+           ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "style(webworker): something"\n' +
            ' => ERROR: "webworker" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog',
+           ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "refactor(security): something"\n' +
            ' => ERROR: "security" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog',
+           ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "refactor(docs): something"\n' +
            ' => ERROR: "docs" is not an allowed scope.\n' +
-           ' => SCOPES: aio, animations, bazel, benchpress, common, compiler, compiler-cli, core, forms, http, language-service, platform-browser, platform-browser-dynamic, platform-server, platform-webworker, platform-webworker-dynamic, router, service-worker, upgrade, packaging, changelog']
-          .forEach((expectedErrorMessage, index) => {
-            expect(expectedErrorMessage).toEqual(errors[index]);
-          });
+           ' => SCOPES: ' + SCOPES,
+      ].forEach((expectedErrorMessage, index) => {
+        expect(expectedErrorMessage).toEqual(errors[index]);
+      });
       expect(validateMessage('release(angular): something')).toBe(INVALID);
     });
 
