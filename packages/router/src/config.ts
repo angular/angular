@@ -342,7 +342,7 @@ export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange'
  */
 export interface Route {
   path?: string;
-  pathMatch?: string;
+  pathMatch?: 'full'|'prefix';
   matcher?: UrlMatcher;
   component?: Type<any>;
   redirectTo?: string;
