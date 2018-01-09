@@ -6,6 +6,12 @@
     "public": "dist",
     "cleanUrls": true,
     "redirects": [
+      //////////////////////////////////////////////////////////////////////////////////////////////
+      // README:
+      //   Redirects must also be handled by the ServiceWorker. If you add a redirect rule here,
+      //   make sure the routing RegExp in `ngsw-manifest.json` is updated accordingly.
+      //////////////////////////////////////////////////////////////////////////////////////////////
+
       // cli-quickstart.html, glossary.html, quickstart.html, server-communication.html, style-guide.html
       {"type": 301, "source": "/docs/ts/latest/cli-quickstart.html",             "destination": "/guide/quickstart"},
       {"type": 301, "source": "/docs/ts/latest/glossary.html",                   "destination": "/guide/glossary"},
@@ -30,8 +36,9 @@
       // cookbook/*.html
       {"type": 301, "source": "/docs/ts/latest/cookbook/:cookbook.html", "destination": "/guide/:cookbook"},
 
-      // docs/ts/latest/api/*/index/*-type.html
-      {"type": 301, "source": "/docs/ts/latest/api/:package/index/:api-*.html", "destination": "/api/:package/:api"},
+      // docs/ts/latest/api/<package>/index/*-<type>.html (+ special case for `NgFor` which has been renamed)
+      {"type": 301, "source": "/docs/ts/latest/api/common/index/NgFor-directive.html", "destination": "/api/common/NgForOf"},
+      {"type": 301, "source": "/docs/ts/latest/api/:package/index/:api-*.html",        "destination": "/api/:package/:api"},
 
       // docs/ts/latest
       {"type": 301, "source": "/docs/ts/latest", "destination": "/docs"},
