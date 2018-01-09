@@ -35,7 +35,7 @@ fi
 #######################
 
 setEnvVar NODE_VERSION 8.9.1
-setEnvVar YARN_VERSION 1.0.2
+setEnvVar YARN_VERSION 1.3.2
 # Pin to a Chromium version that does not cause the aio e2e tests to flake. (See https://github.com/angular/angular/pull/20403.)
 # Revision 494239 (which was part of Chrome 62.0.3186.0) is the last version that does not cause flakes. (Latest revision checked: 508578)
 setEnvVar CHROMIUM_VERSION 494239 # Chrome 62 linux stable, see https://www.chromium.org/developers/calendar
