@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@angular//:index.bzl", "ng_module")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "forms",
@@ -12,7 +11,6 @@ ng_module(
         ],
     ),
     module_name = "@angular/forms",
-    tsconfig = "//packages:tsconfig",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
