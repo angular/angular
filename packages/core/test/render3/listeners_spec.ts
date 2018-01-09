@@ -204,11 +204,9 @@ describe('event listeners', () => {
         if (ctx.showing) {
           if (V(0)) {
             T(0, 'Hello');
-            E(1, MyComp.ngComponentDef);
-            { D(2, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+            E(1, MyComp);
             e();
-            E(3, MyComp.ngComponentDef);
-            { D(4, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+            E(3, MyComp);
             e();
           }
           MyComp.ngComponentDef.h(2, 1);

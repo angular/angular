@@ -32,8 +32,7 @@ describe('exports', () => {
     /** <comp #myComp></comp> {{ myComp.name }} */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, MyComponent.ngComponentDef);
-        { D(1, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
+        E(0, MyComponent);
         e();
         T(2);
       }
@@ -78,11 +77,9 @@ describe('exports', () => {
     /** <comp #myComp></comp> <div [myDir]="myComp"></div> */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, MyComponent.ngComponentDef);
-        { D(1, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
+        E(0, MyComponent);
         e();
-        E(2, 'div');
-        { D(3, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+        E(2, 'div', null, [MyDir]);
         e();
       }
       p(2, 'myDir', b(D<MyComponent>(1)));
@@ -97,8 +94,7 @@ describe('exports', () => {
     /** <div someDir #myDir="someDir"></div> {{ myDir.name }} */
     function Template(ctx: any, cm: boolean) {
       if (cm) {
-        E(0, 'div');
-        D(1, SomeDirDef.n(), SomeDirDef);
+        E(0, 'div', null, [SomeDir]);
         e();
         T(2);
       }
@@ -107,8 +103,8 @@ describe('exports', () => {
 
     class SomeDir {
       name = 'Drew';
+      static ngDirectiveDef = defineDirective({type: SomeDir, factory: () => new SomeDir});
     }
-    const SomeDirDef = defineDirective({type: SomeDir, factory: () => new SomeDir});
 
     expect(renderToHtml(Template, {})).toEqual('<div></div>Drew');
   });
@@ -207,11 +203,9 @@ describe('exports', () => {
       /** <div [myDir]="myComp"></div><comp #myComp></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div');
-          { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+          E(0, 'div', null, [MyDir]);
           e();
-          E(2, MyComponent.ngComponentDef);
-          { D(3, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
+          E(2, MyComponent);
           e();
         }
         p(0, 'myDir', b(D<MyComponent>(3)));
@@ -228,8 +222,7 @@ describe('exports', () => {
         if (cm) {
           T(0);
           T(1);
-          E(2, 'comp');
-          { D(3, MyComponent.ngComponentDef.n(), MyComponent.ngComponentDef); }
+          E(2, MyComponent);
           e();
           E(4, 'input', ['value', 'one']);
           e();

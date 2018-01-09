@@ -230,8 +230,7 @@ describe('render3 integration test', () => {
     it('should support a basic component template', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent.ngComponentDef);
-          { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          E(0, TodoComponent);
           e();
         }
         TodoComponent.ngComponentDef.h(1, 0);
@@ -244,8 +243,7 @@ describe('render3 integration test', () => {
     it('should support a component template with sibling', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent.ngComponentDef);
-          { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          E(0, TodoComponent);
           e();
           T(2, 'two');
         }
@@ -262,11 +260,9 @@ describe('render3 integration test', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponent.ngComponentDef);
-          { D(1, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          E(0, TodoComponent);
           e();
-          E(2, TodoComponent.ngComponentDef);
-          { D(3, TodoComponent.ngComponentDef.n(), TodoComponent.ngComponentDef); }
+          E(2, TodoComponent);
           e();
         }
         TodoComponent.ngComponentDef.h(1, 0);
@@ -303,11 +299,7 @@ describe('render3 integration test', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, TodoComponentHostBinding.ngComponentDef);
-          {
-            D(1, TodoComponentHostBinding.ngComponentDef.n(),
-              TodoComponentHostBinding.ngComponentDef);
-          }
+          E(0, TodoComponentHostBinding);
           e();
         }
         TodoComponentHostBinding.ngComponentDef.h(1, 0);
@@ -340,8 +332,7 @@ describe('render3 integration test', () => {
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, MyComp.ngComponentDef);
-          { D(1, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+          E(0, MyComp);
           e();
         }
         MyComp.ngComponentDef.h(1, 0);
@@ -388,8 +379,7 @@ describe('render3 integration test', () => {
       /** <comp [condition]="condition"></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, MyComp.ngComponentDef);
-          { D(1, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+          E(0, MyComp);
           e();
         }
         p(0, 'condition', b(ctx.condition));
