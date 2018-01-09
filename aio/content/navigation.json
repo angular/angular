@@ -217,6 +217,38 @@
           ]
         },
         {
+          "title": "Observables & RxJS",
+          "tooltip": "Observables & RxJS",
+          "children": [
+            {
+              "url": "guide/observables",
+              "title": "Observables",
+              "tooltip": ""
+            },
+            {
+              "url": "guide/rx-library",
+              "title": "The RxJS Library",
+              "tooltip": ""
+            },
+            {
+              "url": "guide/observables-in-angular",
+              "title": "Observables in Angular",
+              "tooltip": ""
+            },
+            {
+              "url": "guide/practical-observable-usage",
+              "title": "Practical Usage",
+              "tooltip": ""
+            },
+            {
+              "url": "guide/comparing-observables",
+              "title": "Compare to Other Techniques",
+              "tooltip": ""
+            }
+          ]
+        },
+
+        {
           "url": "guide/bootstrapping",
           "title": "Bootstrapping",
           "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
