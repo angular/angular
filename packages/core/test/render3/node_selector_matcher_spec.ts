@@ -7,10 +7,10 @@
  */
 
 import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from '../../src/render3/interfaces';
-import {LNodeStatic} from '../../src/render3/l_node_static';
 import {isNodeMatchingSelector, isNodeMatchingSelectorWithNegations, isNodeMatchingSimpleSelector} from '../../src/render3/node_selector_matcher';
+import {TNode} from '../../src/render3/t_node';
 
-function testLStaticData(tagName: string, attrs: string[] | null): LNodeStatic {
+function testLStaticData(tagName: string, attrs: string[] | null): TNode {
   return {
     tagName,
     attrs,

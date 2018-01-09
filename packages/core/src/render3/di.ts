@@ -18,7 +18,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Type} from '../type';
 
 import {ComponentTemplate, DirectiveDef} from './definition_interfaces';
-import {LContainer, LElement, LNodeFlags, LNodeInjector} from './interfaces';
+import {LContainerNode, LElementNode, LInjector, LNodeFlags} from './interfaces';
 import {assertNodeType} from './node_assert';
 import {notImplemented, stringify} from './util';
 
@@ -48,7 +48,7 @@ let nextNgElementId = 0;
  * @param injector The node injector in which the directive should be registered
  * @param type The directive to register
  */
-export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
+export function bloomAdd(injector: LInjector, type: Type<any>): void {
   let id: number|undefined = (type as any)[NG_ELEMENT_ID];
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
@@ -92,7 +92,7 @@ export function bloomAdd(injector: LNodeInjector, type: Type<any>): void {
  * @param node for which an injector should be retrieved / created.
  * @returns Node injector
  */
-export function getOrCreateNodeInjectorForNode(node: LElement | LContainer): LNodeInjector {
+export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNode): LInjector {
   const nodeInjector = node.nodeInjector;
   const parentInjector = node.parent && node.parent.nodeInjector;
   if (nodeInjector != parentInjector) {
@@ -146,7 +146,7 @@ function createInjectionError(text: string, token: any) {
  * @param di The node injector in which a directive will be added
  * @param def The definition of the directive to be made public
  */
-export function diPublicInInjector(di: LNodeInjector, def: DirectiveDef<any>): void {
+export function diPublicInInjector(di: LInjector, def: DirectiveDef<any>): void {
   bloomAdd(di, def.type);
 }
 
@@ -167,8 +167,7 @@ export function diPublicInInjector(di: LNodeInjector, def: DirectiveDef<any>): v
  * @param flags Injection flags (e.g. CheckParent)
  * @returns The instance found
  */
-export function getOrCreateInjectable<T>(
-    di: LNodeInjector, token: Type<T>, flags?: InjectFlags): T {
+export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: InjectFlags): T {
   const bloomHash = bloomHashBit(token);
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
@@ -180,7 +179,7 @@ export function getOrCreateInjectable<T>(
     }
     moduleInjector.get(token);
   } else {
-    let injector: LNodeInjector|null = di;
+    let injector: LInjector|null = di;
 
     while (injector) {
       // Get the closest potential matching injector (upwards in the injector tree) that
@@ -265,8 +264,8 @@ function bloomHashBit(type: Type<any>): number|null {
  * @param  bloomBit The bit to check in each injector's bloom filter
  * @returns An injector that might have the directive
  */
-export function bloomFindPossibleInjector(
-    startInjector: LNodeInjector, bloomBit: number): LNodeInjector|null {
+export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: number): LInjector|
+    null {
   // Create a mask that targets the specific bit associated with the directive we're looking for.
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
@@ -274,7 +273,7 @@ export function bloomFindPossibleInjector(
 
   // Traverse up the injector tree until we find a potential match or until we know there *isn't* a
   // match.
-  let injector: LNodeInjector|null = startInjector;
+  let injector: LInjector|null = startInjector;
   while (injector) {
     // Our bloom filter size is 128 bits, which is four 32-bit bloom filter buckets:
     // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127]
@@ -307,7 +306,7 @@ export function bloomFindPossibleInjector(
  * @param di The node injector where we should store a created ElementRef
  * @returns The ElementRef instance to use
  */
-export function getOrCreateElementRef(di: LNodeInjector): viewEngine_ElementRef {
+export function getOrCreateElementRef(di: LInjector): viewEngine_ElementRef {
   return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
 }
 
@@ -324,9 +323,9 @@ class ElementRef implements viewEngine_ElementRef {
  * @param di The node injector where we should store a created TemplateRef
  * @returns The TemplateRef instance to use
  */
-export function getOrCreateTemplateRef<T>(di: LNodeInjector): viewEngine_TemplateRef<T> {
+export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef<T> {
   ngDevMode && assertNodeType(di.node, LNodeFlags.Container);
-  const data = (di.node as LContainer).data;
+  const data = (di.node as LContainerNode).data;
   return di.templateRef ||
       (di.templateRef = new TemplateRef<any>(getOrCreateElementRef(di), data.template));
 }
@@ -348,8 +347,9 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
  *
  * @returns The ViewContainerRef instance to use
  */
-export function getOrCreateContainerRef(di: LNodeInjector): viewEngine_ViewContainerRef {
-  return di.viewContainerRef || (di.viewContainerRef = new ViewContainerRef(di.node as LContainer));
+export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainerRef {
+  return di.viewContainerRef ||
+      (di.viewContainerRef = new ViewContainerRef(di.node as LContainerNode));
 }
 
 /**
@@ -361,7 +361,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   injector: Injector;
   parentInjector: Injector;
 
-  constructor(node: LContainer) {}
+  constructor(node: LContainerNode) {}
 
   clear(): void { throw notImplemented(); }
   get(index: number): viewEngine_ViewRef|null { throw notImplemented(); }

@@ -9,7 +9,7 @@
 import {DirectiveDef} from './definition_interfaces';
 
 /** The type of the global ngStaticData array. */
-export type NgStaticData = (LNodeStatic | DirectiveDef<any>| null)[];
+export type NgStaticData = (TNode | DirectiveDef<any>| null)[];
 
 /**
  * LNode binding data (flyweight) for a particular node that is shared between all templates
@@ -22,7 +22,7 @@ export type NgStaticData = (LNodeStatic | DirectiveDef<any>| null)[];
  *
  * see: https://en.wikipedia.org/wiki/Flyweight_pattern for more on the Flyweight pattern
  */
-export interface LNodeStatic {
+export interface TNode {
   /** The tag name associated with this node. */
   tagName: string|null;
 
@@ -72,7 +72,7 @@ export interface LNodeStatic {
   outputs: PropertyAliases|null|undefined;
 
   /**
-   * If this LNodeStatic corresponds to an LContainer, the container will
+   * If this TNode corresponds to an LContainerNode, the container will
    * need to have nested static data for each of its embedded views.
    * Otherwise, nodes in embedded views with the same index as nodes
    * in their parent views will overwrite each other, as they are in
@@ -86,14 +86,14 @@ export interface LNodeStatic {
    *   [{tagName: 'button', attrs ...}, null]    // V(1) ngData
    * ]
    */
-  containerStatic: (LNodeStatic|null)[][]|null;
+  containerStatic: (TNode|null)[][]|null;
 }
 
-/** Static data for an LElement */
-export interface LElementStatic extends LNodeStatic { containerStatic: null; }
+/** Static data for an LElementNode */
+export interface TElementNode extends TNode { containerStatic: null; }
 
-/** Static data for an LContainer */
-export interface LContainerStatic extends LNodeStatic { containerStatic: (LNodeStatic|null)[][]; }
+/** Static data for an LContainerNode */
+export interface TContainerNode extends TNode { containerStatic: (TNode|null)[][]; }
 
 /**
  * This mapping is necessary so we can set input properties and output listeners
