@@ -58,6 +58,11 @@ export interface DirectiveDef<T> {
   methods: {[P in keyof T]: P};
 
   /**
+   * Name under which the directive is exported (for use with local references in template)
+   */
+  exportAs: string|null;
+
+  /**
    * factory function used to create a new directive instance.
    *
    * NOTE: this property is short (1 char) because it is used in
@@ -131,6 +136,7 @@ export interface DirectiveDefArgs<T> {
   outputs?: {[P in keyof T]?: string};
   methods?: {[P in keyof T]?: string};
   features?: DirectiveDefFeature[];
+  exportAs?: string;
 }
 
 export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {

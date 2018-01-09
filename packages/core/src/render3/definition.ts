@@ -44,6 +44,7 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     outputs: invertObject(componentDefinition.outputs),
     methods: invertObject(componentDefinition.methods),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
+    exportAs: componentDefinition.exportAs,
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));

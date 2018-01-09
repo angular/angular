@@ -56,8 +56,7 @@ export class TreeComponent {
           let cm0 = V(0);
           {
             if (cm0) {
-              E(0, TreeComponent.ngComponentDef);
-              { D(1, TreeComponent.ngComponentDef.n(), TreeComponent.ngComponentDef); }
+              E(0, TreeComponent);
               e();
             }
             p(0, 'data', b(ctx.data.left));
@@ -74,8 +73,7 @@ export class TreeComponent {
           let cm0 = V(0);
           {
             if (cm0) {
-              E(0, TreeComponent.ngComponentDef);
-              { D(1, TreeComponent.ngComponentDef.n(), TreeComponent.ngComponentDef); }
+              E(0, TreeComponent);
               e();
             }
             p(0, 'data', b(ctx.data.right));

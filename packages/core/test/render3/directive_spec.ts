@@ -19,22 +19,21 @@ describe('directive', () => {
 
       class Directive {
         klass = 'foo';
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          factory: () => directiveInstance = new Directive,
+          refresh: (directiveIndex: number, elementIndex: number) => {
+            p(elementIndex, 'className', b(D<Directive>(directiveIndex).klass));
+          }
+        });
       }
-      const DirectiveDef = defineDirective({
-        type: Directive,
-        factory: () => directiveInstance = new Directive,
-        refresh: (directiveIndex: number, elementIndex: number) => {
-          p(elementIndex, 'className', b(D<Directive>(directiveIndex).klass));
-        }
-      });
 
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'span');
-          { D(1, DirectiveDef.n(), DirectiveDef); }
+          E(0, 'span', null, [Directive]);
           e();
         }
-        DirectiveDef.r(1, 0);
+        Directive.ngDirectiveDef.r(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<span class="foo"></span>');
