@@ -12,8 +12,8 @@
 ## IMPORTANT
 # If you change the `docker_image` version, also change the `cache_key` suffix and the version of
 # `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
-var_1: &docker_image angular/ngcontainer:0.0.8
-var_2: &cache_key angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.0.8
+var_1: &docker_image angular/ngcontainer:0.1.0
+var_2: &cache_key angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.1.0
 
 # Settings common to each job
 anchor_1: &job_defaults
@@ -38,7 +38,10 @@ jobs:
       # Then we don't need any exclude pattern to avoid checking those files
       - run: 'buildifier -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD \)) ||
               (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
-
+      # Run the skylark linter to check our Bazel rules
+      - run: 'find . -type f -name "*.bzl" |
+              xargs java -jar /usr/local/bin/Skylint_deploy.jar ||
+              (echo -e "\n.bzl files have lint errors. Please run ''yarn skylint''"; exit 1)'
       - restore_cache:
           key: *cache_key
 
@@ -53,7 +56,7 @@ jobs:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
-      
+
       - run: bazel info release
       - run: bazel run @yarn//:yarn
       # Use bazel query so that we explicitly ask for all buildable targets to be built as well
