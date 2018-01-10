@@ -44,7 +44,7 @@ export class SearchResultsComponent implements OnChanges {
       return [];
     }
     this.notFoundMessage = 'No results found.';
-    const searchAreaMap = {};
+    const searchAreaMap: { [key: string]: SearchResult[] } = {};
     search.results.forEach(result => {
       if (!result.title) { return; } // bad data; should fix
       const areaName = this.computeAreaName(result) || this.defaultArea;

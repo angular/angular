@@ -62,6 +62,6 @@ export class SitePage {
   getSearchResults() {
     const results = element.all(by.css('.search-results li'));
     browser.wait(ExpectedConditions.presenceOf(results.first()), 8000);
-    return results.map(link => link.getText());
+    return results.map(link => link && link.getText());
   }
 }

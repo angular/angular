@@ -35,8 +35,8 @@ describe('ApiService', () => {
       let completed = false;
 
       service.sections.subscribe(
-        null,
-        null,
+        undefined,
+        undefined,
         () => completed = true
       );
 

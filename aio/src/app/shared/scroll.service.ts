@@ -20,7 +20,7 @@ export class ScrollService {
       const toolbar = this.document.querySelector('.app-toolbar');
       this._topOffset = (toolbar && toolbar.clientHeight || 0) + topMargin;
     }
-    return this._topOffset;
+    return this._topOffset!;
   }
 
   get topOfPageElement() {
@@ -54,7 +54,7 @@ export class ScrollService {
    * Scroll to the element.
    * Don't scroll if no element.
    */
-  scrollToElement(element: Element) {
+  scrollToElement(element: Element|null) {
     if (element) {
       element.scrollIntoView();
 

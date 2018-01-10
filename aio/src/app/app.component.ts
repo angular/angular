@@ -152,19 +152,19 @@ export class AppComponent implements OnInit {
       this.navigationService.navigationViews.map(views => views['docVersions']))
       .subscribe(([versionInfo, versions]) => {
         // TODO(pbd): consider whether we can lookup the stable and next versions from the internet
-        const computedVersions = [
+        const computedVersions: NavigationNode[] = [
           { title: 'next', url: 'https://next.angular.io' },
           { title: 'stable', url: 'https://angular.io' },
         ];
         if (this.deployment.mode === 'archive') {
-          computedVersions.push({ title: `v${versionInfo.major}`, url: null });
+          computedVersions.push({ title: `v${versionInfo.major}` });
         }
         this.docVersions = [...computedVersions, ...versions];
 
         // Find the current version - eithers title matches the current deployment mode
         // or its title matches the major version of the current version info
         this.currentDocVersion = this.docVersions.find(version =>
-          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`);
+          version.title === this.deployment.mode || version.title === `v${versionInfo.major}`)!;
         this.currentDocVersion.title += ` (v${versionInfo.raw})`;
       });
 
@@ -232,7 +232,7 @@ export class AppComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
-  onResize(width) {
+  onResize(width: number) {
     this.isSideBySide = width > this.sideBySideWidth;
     this.showFloatingToc.next(width > this.showFloatingTocWidth);
   }
@@ -252,7 +252,7 @@ export class AppComponent implements OnInit {
     }
 
     // Deal with anchor clicks; climb DOM tree until anchor found (or null)
-    let target = eventTarget;
+    let target: HTMLElement|null = eventTarget;
     while (target && !(target instanceof HTMLAnchorElement)) {
       target = target.parentElement;
     }
@@ -335,8 +335,8 @@ export class AppComponent implements OnInit {
       // Must wait until now for mat-toolbar to be measurable.
       const el = this.hostElement.nativeElement as Element;
       this.tocMaxHeightOffset =
-          el.querySelector('footer').clientHeight +
-          el.querySelector('.app-toolbar').clientHeight +
+          el.querySelector('footer')!.clientHeight +
+          el.querySelector('.app-toolbar')!.clientHeight +
           24; //  fudge margin
     }
 
@@ -375,7 +375,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  doSearch(query) {
+  doSearch(query: string) {
     this.searchResults = this.searchService.search(query);
     this.showSearchResults = !!query;
   }
