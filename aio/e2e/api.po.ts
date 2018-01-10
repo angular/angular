@@ -25,7 +25,7 @@ export class ApiPage extends SitePage {
     // and we want to be able to pull out the code elements from only the first level
     // if `onlyDirect` is set to `true`.
     const selector = `.descendants.${docType} ${onlyDirect ? '>' : ''} li > :not(ul) code`;
-    return element.all(by.css(selector)).map<string>(item => item.getText());
+    return element.all(by.css(selector)).map<string>(item => item && item.getText());
   }
 
   getOverview(docType) {
