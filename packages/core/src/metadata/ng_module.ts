@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectorDef, InjectorDefType, Provider, StaticProvider} from '../di';
+import {InjectorDef, InjectorDefType, Provider, StaticProvider, injectArgs} from '../di';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, TypeProvider, ValueProvider} from '../di/provider';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {Type} from '../type';
@@ -205,8 +205,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
           convertStaticProviders(ngModule.providers, reflectionCapabilities);
       const imports = convertImports(ngModule.imports, reflectionCapabilities);
       (type as InjectorDefType<any>).ngInjectorDef = defineInjector({
-        type: type as InjectorDefType<any>,
-        deps: deps,
+        factory: () => new type(...injectArgs(deps)),
         providers: providers,
         imports: imports,
       });

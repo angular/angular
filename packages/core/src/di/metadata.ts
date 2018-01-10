@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectorDefType} from '../di/injector';
+import {InjectorDefType, inject} from '../di/injector';
 import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, ResolvedProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../di/provider';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
 import {getClosureSafeProperty} from '../util/property';
+import { EMPTY_ARRAY } from '../view/util';
 
 const GET_PROPERTY_NAME = {} as any;
 const USE_VALUE = getClosureSafeProperty<ValueProvider>(
@@ -152,58 +153,62 @@ export interface InjectableDecorator {
    * @stable
    */
   (): any;
-  (moduleType: Type<any>, provider?: InjectableProvider): any;
+  ({moduleType, provider}: {moduleType: Type<any>, provider?: InjectableProvider}): any;
   new (): Injectable;
-  new (moduleType: Type<any>, provider?: InjectableProvider): Injectable;
+  new ({moduleType, provider}: {moduleType: Type<any>, provider?: InjectableProvider}): Injectable;
 }
 
 /**
  * Type of the Injectable metadata.
  *
- * @stable
+ * @experimental
  */
 export interface Injectable {
-  moduleType: InjectorDefType<any>;
-  provider: ResolvedProvider;
+  scope?: InjectorDefType<any>;
+  factory: () => any;
 }
 
 /**
- * Type of type with Injectable metadata.
+ * Type representing injectable service.
  *
  * @experimental
  */
 export interface InjectableType<T> extends Type<T> { ngInjectableDef?: Injectable; }
 
-function convertInjectableProviderToStatic(
-    type: Type<any>, provider?: InjectableProvider): ResolvedProvider {
+export function injectArgs(types: any[]): any[] {
+  const args: any[] = [];
+  for(let i = 0; i < types.length; i++) {
+    const arg = args[i];
+    if (Array.isArray(arg)) {
+      // TODO(misko): this needs more work since we have to take care of optional etc...
+      throw new Error('implement me');
+    } else {
+      args.push(inject(arg));
+    }
+  }
+  return args;
+}
+
+function convertInjectableProviderToFactory(
+    type: Type<any>, provider?: InjectableProvider): () => any {
   if (!provider) {
     const reflectionCapabilities = new ReflectionCapabilities();
     const deps = reflectionCapabilities.parameters(type);
-    return <ConstructorProvider>{deps: deps, provide: type};
+    return () => new type(...injectArgs(deps));
   }
 
+  if (provider.multi) {
+    throw new Error('@Injectable() does not supports multi providers');
+  }
   if (USE_VALUE in provider) {
     const valueProvider = (provider as ValueSansProvider);
-    return <ValueProvider>{
-      useValue: valueProvider.useValue,
-      multi: valueProvider.multi,
-      provide: type
-    };
+    return () => valueProvider.useValue;
   } else if ((provider as ExistingSansProvider).useExisting) {
     const existingProvider = (provider as ExistingSansProvider);
-    return <ExistingProvider>{
-      useExisting: existingProvider.useExisting,
-      multi: existingProvider.multi,
-      provide: type
-    };
+    return () => inject(existingProvider.useExisting);
   } else if ((provider as FactorySansProvider).useFactory) {
     const factoryProvider = (provider as FactorySansProvider);
-    return <FactoryProvider>{
-      useFactory: factoryProvider.useFactory,
-      multi: factoryProvider.multi,
-      deps: factoryProvider.deps,
-      provide: type
-    };
+    return () => factoryProvider.useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));
   } else if ((provider as StaticClassSansProvider | ClassSansProvider).useClass) {
     const classProvider = (provider as StaticClassSansProvider | ClassSansProvider);
     let deps = (provider as StaticClassSansProvider).deps;
@@ -211,19 +216,10 @@ function convertInjectableProviderToStatic(
       const reflectionCapabilities = new ReflectionCapabilities();
       deps = reflectionCapabilities.parameters(type);
     }
-    return <StaticClassProvider>{
-      useClass: classProvider.useClass,
-      multi: classProvider.multi,
-      deps: deps,
-      provide: type
-    };
+    return () => new classProvider.useClass(...injectArgs(deps));
   } else {
     const constructorProvider = (provider as ConstructorSansProvider);
-    return <ConstructorProvider>{
-      multi: constructorProvider.multi,
-      deps: constructorProvider.deps,
-      provide: type
-    };
+    return () => new type(...injectArgs(constructorProvider.deps));
   }
 }
 
@@ -247,9 +243,11 @@ export const Injectable: InjectableDecorator = makeDecorator(
     (injectableType: Type<any>, moduleType?: InjectorDefType<any>,
      provider?: InjectableProvider) => {
       if (moduleType) {
-        const staticProvider = convertInjectableProviderToStatic(injectableType, provider);
         (injectableType as InjectableType<any>).ngInjectableDef =
-            defineInjectable(<Injectable>{moduleType: moduleType, provider: staticProvider});
+            defineInjectable({
+              scope: moduleType, 
+              factory: convertInjectableProviderToFactory(injectableType, provider)
+            });
       }
     });
 

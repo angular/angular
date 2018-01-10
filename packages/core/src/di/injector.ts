@@ -14,6 +14,7 @@ import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Inject, InjectableType, Optional, Self, SkipSelf} from './metadata';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, ResolvedProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
+import { EMPTY_ARRAY } from '../view/util';
 
 export const SOURCE = '__source';
 const _THROW_IF_NOT_FOUND = new Object();
@@ -26,16 +27,9 @@ export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
  */
 export interface InjectorDef<T> {
   /**
-   * An Injector initialization class. This class will be eagerly
-   * instantiated when `Injector` is created from `InjectorDef`.
-   * It is the class which was decorated with the `@NgModule`
+   * Factory method which is used to instantiate the Injector definition class.
    */
-  type: InjectorDefType<T>;
-
-  /**
-   * Static constructor dependencies for the `type` class.
-   */
-  deps: any[];
+  factory: () => T;
 
   /**
    * A set of providers extracted from the `@NgModule` definition.
@@ -195,7 +189,7 @@ export class StaticInjector implements Injector {
   get(token: any, notFoundValue?: any): any {
     const record = this._records.get(token);
     try {
-      return tryResolveToken(
+      return tryResolveToken(this, 
           token, record, this._records, this.parent, notFoundValue, this._moduleTypes);
     } catch (e) {
       const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
@@ -213,6 +207,18 @@ export class StaticInjector implements Injector {
     const tokens = <string[]>[], records = this._records;
     records.forEach((v, token) => tokens.push(stringify(token)));
     return `StaticInjector[${tokens.join(', ')}]`;
+  }
+}
+
+let _currentInjector: Injector|null = null;
+
+export function inject(token: any, options?: any, defaultValue?: any) {
+  //TODO(misko): implement the lookup similar to ivy.
+  if (_currentInjector == null) {
+    throw new Error('inject() can not be invoked outside injector context');
+  } else {
+    // TODO(misko): I wonder if there is a more efficient way to do this.
+    return _currentInjector.get(token);
   }
 }
 
@@ -287,12 +293,11 @@ function recursivelyProcessProviders(
       }
 
       // For type and deps
-      const token = resolveForwardRef(providerOrInjectorDefType.ngInjectorDef.type);
-      records.set(token, <Record>{
-        token: providerOrInjectorDefType.ngInjectorDef.type,
-        deps: providerOrInjectorDefType.ngInjectorDef.deps,
-        useNew: true,
-        fn: providerOrInjectorDefType.ngInjectorDef.type,
+      records.set(providerOrInjectorDefType, <Record>{
+        token: providerOrInjectorDefType,
+        deps: EMPTY_ARRAY,
+        useNew: false,
+        fn: providerOrInjectorDefType.ngInjectorDef.factory,
         value: EMPTY
       });
     } else if (typeof providerOrInjectorDefType === 'function') {
@@ -335,11 +340,11 @@ function recursivelyProcessProviders(
   }
 }
 
-function tryResolveToken(
+function tryResolveToken(self: Injector,
     token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
     notFoundValue: any, moduleTypes: InjectorDefType<any>[]): any {
   try {
-    return resolveToken(token, record, records, parent, notFoundValue, moduleTypes);
+    return resolveToken(self, token, record, records, parent, notFoundValue, moduleTypes);
   } catch (e) {
     // ensure that 'e' is of type Error.
     if (!(e instanceof Error)) {
@@ -355,7 +360,7 @@ function tryResolveToken(
   }
 }
 
-function resolveToken(
+function resolveToken(self: Injector,
     token: any, record: Record | undefined, records: Map<any, Record>, parent: Injector,
     notFoundValue: any, moduleTypes: InjectorDefType<any>[]): any {
   let value;
@@ -380,6 +385,7 @@ function resolveToken(
           const childRecord =
               options & OptionFlags.CheckSelf ? records.get(depRecord.token) : undefined;
           deps.push(tryResolveToken(
+              self,
               // Current Token to resolve
               depRecord.token,
               // A record which describes how to resolve the token.
@@ -400,15 +406,17 @@ function resolveToken(
   } else {
     const ngInjectableDef = (token as InjectableType<any>).ngInjectableDef;
     if (ngInjectableDef) {
-      const provider = ngInjectableDef.provider;
-      const moduleType = ngInjectableDef.moduleType;
+      const factory = ngInjectableDef.factory;
+      const moduleType = ngInjectableDef.scope;
+      // TODO(misko): moduleType may bee null, needs special handling.
       for (let i = 0; i < moduleTypes.length; ++i) {
         if (moduleTypes[i] === moduleType) {
-          const resolvedProvider = resolveProvider(provider);
-          records.set(token, resolvedProvider);
-          value =
-              resolveToken(token, resolvedProvider, records, parent, notFoundValue, moduleTypes);
-          return value;
+          try {
+            _currentInjector = self;
+            return factory();
+          } finally {
+            _currentInjector = null;
+          }
         }
       }
     }
@@ -482,3 +490,4 @@ function formatError(text: string, obj: any, source: string | null = null): stri
 function staticError(text: string, obj: any): Error {
   return new Error(formatError(text, obj));
 }
+
