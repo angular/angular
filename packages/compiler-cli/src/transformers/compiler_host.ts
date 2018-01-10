@@ -488,6 +488,10 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     return assert(this.context.readFile(filePath));
   }
 
+  getOutputName(filePath: string): string {
+    return path.relative(this.getCurrentDirectory(), filePath);
+  }
+
   private hasBundleIndex(filePath: string): boolean {
     const checkBundleIndex = (directory: string): boolean => {
       let result = this.flatModuleIndexCache.get(directory);
