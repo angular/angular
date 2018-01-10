@@ -83,6 +83,6 @@ export class ScrollService {
    * Return the hash fragment from the `PlatformLocation`, minus the leading `#`.
    */
   private getCurrentHash() {
-    return this.location.hash.replace(/^#/, '');
+    return decodeURIComponent(this.location.hash.replace(/^#/, ''));
   }
 }
