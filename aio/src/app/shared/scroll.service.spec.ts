@@ -136,6 +136,17 @@ describe('ScrollService', () => {
       expect(element.scrollIntoView).toHaveBeenCalled();
       expect(window.scrollBy).toHaveBeenCalled();
     });
+
+    it('should scroll to the element whose id matches the hash with encoded characters', () => {
+      const element = new MockElement();
+      location.hash = '%F0%9F%91%8D'; // 👍
+      document.getElementById.and.returnValue(element);
+
+      scrollService.scroll();
+      expect(document.getElementById).toHaveBeenCalledWith('👍');
+      expect(element.scrollIntoView).toHaveBeenCalled();
+      expect(window.scrollBy).toHaveBeenCalled();
+    });
   });
 
   describe('#scrollToElement', () => {
