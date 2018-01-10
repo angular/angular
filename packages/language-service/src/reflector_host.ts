@@ -76,4 +76,6 @@ export class ReflectorHost implements StaticSymbolResolverHost {
             .resolvedModule;
     return resolved ? resolved.resolvedFileName : null;
   }
+
+  getOutputName(filePath: string) { return filePath; }
 }
