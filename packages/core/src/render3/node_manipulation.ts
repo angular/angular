@@ -7,9 +7,12 @@
  */
 
 import {assertNotNull} from './assert';
-import {LContainer, LContainerNode, LElementNode, LNode, LNodeFlags, LProjection, LProjectionNode, LTextNode, LView, LViewNode, LViewOrLContainer} from './interfaces';
+import {LContainer} from './interfaces/container';
+import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode} from './interfaces/node';
+import {LProjection} from './interfaces/projection';
+import {ProceduralRenderer3, RComment, RElement, RNode, RText} from './interfaces/renderer';
+import {LView, LViewOrLContainer} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {ProceduralRenderer3, RComment, RElement, RNode, RText} from './renderer';
 
 
 

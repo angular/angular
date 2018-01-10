@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {C, D, E, Q, QueryList, c, e, m, qR} from '../../src/render3/index';
-import {QueryReadType} from '../../src/render3/interfaces';
+import {QueryReadType} from '../../src/render3/interfaces/query';
 
 import {createComponent, createDirective, renderComponent} from './render_util';
 

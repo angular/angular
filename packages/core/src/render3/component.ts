@@ -13,10 +13,10 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
-import {ComponentDef, ComponentType} from './definition_interfaces';
 import {NG_HOST_SYMBOL, createError, createLView, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
-import {LElementNode} from './interfaces';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './renderer';
+import {ComponentDef, ComponentType} from './interfaces/definition';
+import {LElementNode} from './interfaces/node';
+import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {notImplemented, stringify} from './util';
 
 
