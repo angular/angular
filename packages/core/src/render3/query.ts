@@ -17,11 +17,12 @@ import {Type} from '../type';
 
 import {assertNotNull} from './assert';
 import {getOrCreateContainerRef, getOrCreateElementRef, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from './di';
-import {DirectiveDef} from './interfaces/definition';
+import {DirectiveDef, TypedDirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode, TNode} from './interfaces/node';
 import {LQuery, QueryReadType} from './interfaces/query';
 import {assertNodeOfPossibleTypes} from './node_assert';
+
 
 
 /**
@@ -142,7 +143,7 @@ function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   for (let i = flags >> LNodeFlags.INDX_SHIFT,
            ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
        i < ii; i++) {
-    const def = ngStaticData[i] as DirectiveDef<any>;
+    const def = ngStaticData[i] as TypedDirectiveDef<any>;
     if (def.diPublic && def.type === type) {
       return i;
     }

@@ -32,7 +32,6 @@ describe('iv perf test', () => {
       it(`${iteration}. create ${count} divs in Render3`, () => {
         class Component {
           static ngComponentDef = defineComponent({
-            type: Component,
             tag: 'div',
             template: function Template(ctx: any, cm: any) {
               if (cm) {

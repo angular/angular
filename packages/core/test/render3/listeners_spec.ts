@@ -21,7 +21,6 @@ describe('event listeners', () => {
     onClick() { this.counter++; }
 
     static ngComponentDef = defineComponent({
-      type: MyComp,
       tag: 'comp',
       /** <button (click)="onClick()"> Click me </button> */
       template: function CompTemplate(ctx: any, cm: boolean) {

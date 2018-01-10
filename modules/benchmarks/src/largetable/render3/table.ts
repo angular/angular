@@ -16,16 +16,13 @@ export class LargeTableComponent {
 
   /** @nocollapse */
   static ngComponentDef: ComponentDef<LargeTableComponent> = defineComponent({
-    type: LargeTableComponent,
     tag: 'largetable',
     template: function(ctx: LargeTableComponent, cm: boolean) {
       if (cm) {
         E(0, 'table');
         {
           E(1, 'tbody');
-          {
-            C(2);
-          }
+          { C(2); }
           e();
         }
         e();

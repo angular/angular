@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Type, NgModule, Injectable, Optional, TemplateRef} from '../../src/core';
+import {Component, Directive, Injectable, NgModule, Optional, TemplateRef, Type} from '../../src/core';
 import * as r3 from '../../src/render3/index';
 
 import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
@@ -27,7 +27,6 @@ describe('compiler specification', () => {
       class MyComponent {
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
-          type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent(),
           template: function(ctx: MyComponent, cm: boolean) {
@@ -60,7 +59,6 @@ describe('compiler specification', () => {
         constructor() { log.push('ChildComponent'); }
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
-          type: ChildComponent,
           tag: `child`,
           factory: () => new ChildComponent(),
           template: function(ctx: ChildComponent, cm: boolean) {
@@ -79,7 +77,6 @@ describe('compiler specification', () => {
         constructor() { log.push('SomeDirective'); }
         // NORMATIVE
         static ngDirectiveDef = r3.defineDirective({
-          type: ChildComponent,
           factory: () => new SomeDirective(),
         });
         // /NORMATIVE
@@ -121,13 +118,13 @@ describe('compiler specification', () => {
         constructor(template: TemplateRef<any>) { log.push('ifDirective'); }
         // NORMATIVE
         static ngDirectiveDef = r3.defineDirective({
-          type: IfDirective,
           factory: () => new IfDirective(r3.injectTemplateRef()),
         });
         // /NORMATIVE
       }
 
-      @Component({selector: 'my-component', template: `<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>`})
+      @Component(
+          {selector: 'my-component', template: `<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>`})
       class MyComponent {
         salutation = 'Hello';
         // NORMATIVE
@@ -198,7 +195,7 @@ describe('compiler specification', () => {
 
 xdescribe('NgModule', () => {
   interface Injectable {
-    scope?: /*InjectorDefType<any>*/any;
+    scope?: /*InjectorDefType<any>*/ any;
     factory: Function;
   }
 
@@ -237,8 +234,8 @@ xdescribe('NgModule', () => {
       static ngInjectorDef = defineInjector({
         factory: () => new MyModule(inject(Toast)),
         provider: [
-          {provide: Toast, deps: [String]}, // If Toast has matadata generate this line
-          Toast, // If toast has not metadata generate this line.
+          {provide: Toast, deps: [String]},  // If Toast has matadata generate this line
+          Toast,                             // If toast has not metadata generate this line.
           {provide: String, useValue: 'Hello'}
         ],
         imports: [CommonModule]
@@ -247,7 +244,7 @@ xdescribe('NgModule', () => {
     }
 
     @Injectable(/*{MyModule}*/)
-    class BurntToast{
+    class BurntToast {
       constructor(@Optional() toast: Toast|null, name: String) {}
       // NORMATIVE
       static ngInjectableDef = defineInjectable({

@@ -17,9 +17,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        {
-          C(1);
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -67,9 +65,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        {
-          C(1);
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -79,9 +75,7 @@ describe('JS control flow', () => {
           {
             if (cm1) {
               E(0, 'span');
-              {
-                C(1);
-              }
+              { C(1); }
               e();
             }
             cR(1);
@@ -180,9 +174,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'ul');
-        {
-          C(1);
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -228,9 +220,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'ul');
-        {
-          C(1);
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -240,9 +230,7 @@ describe('JS control flow', () => {
           {
             if (cm1) {
               E(0, 'li');
-              {
-                C(1);
-              }
+              { C(1); }
               e();
             }
             cR(1);
@@ -457,9 +445,7 @@ describe('JS control flow', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        {
-          C(1);
-        }
+        { C(1); }
         e();
       }
       cR(1);
@@ -507,9 +493,7 @@ describe('JS for loop', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         E(0, 'div');
-        {
-          C(1);
-        }
+        { C(1); }
         e();
       }
       cR(1);

@@ -38,7 +38,6 @@ describe('lifecycles', () => {
         ngOnInit() { events.push(`${name}${this.val}`); }
 
         static ngComponentDef = defineComponent({
-          type: Component,
           tag: name,
           factory: () => new Component(),
           hostBindings: function(directiveIndex: number, elementIndex: number):
@@ -271,7 +270,6 @@ describe('lifecycles', () => {
         ngOnInit() { allEvents.push('ngOnInit ' + name); }
 
         static ngComponentDef = defineComponent({
-          type: Component,
           tag: name,
           factory: () => new Component(),
           hostBindings: function(
@@ -363,7 +361,6 @@ describe('lifecycles', () => {
         ngAfterViewChecked() { allEvents.push(`${name}${this.val} check`); }
 
         static ngComponentDef = defineComponent({
-          type: Component,
           tag: name,
           factory: () => new Component(),
           refresh: (directiveIndex: number, elementIndex: number) => {
@@ -405,7 +402,6 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
@@ -492,7 +488,6 @@ describe('lifecycles', () => {
           E(0, Comp);
           e();
           C(2);
-          c();
           E(3, Comp);
           e();
         }
@@ -536,7 +531,6 @@ describe('lifecycles', () => {
           E(0, Parent);
           e();
           C(2);
-          c();
           E(3, Parent);
           e();
         }
@@ -621,7 +615,6 @@ describe('lifecycles', () => {
             E(0, Parent);
             e();
             C(2);
-            c();
             E(3, Parent);
             e();
           }
@@ -674,7 +667,6 @@ describe('lifecycles', () => {
         ngOnDestroy() { events.push(`${name}${this.val}`); }
 
         static ngComponentDef = defineComponent({
-          type: Component,
           tag: name,
           factory: () => {
             const comp = new Component();

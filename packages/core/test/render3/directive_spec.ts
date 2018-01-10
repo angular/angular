@@ -20,7 +20,6 @@ describe('directive', () => {
       class Directive {
         klass = 'foo';
         static ngDirectiveDef = defineDirective({
-          type: Directive,
           factory: () => directiveInstance = new Directive,
           refresh: (directiveIndex: number, elementIndex: number) => {
             p(elementIndex, 'className', b(D<Directive>(directiveIndex).klass));
