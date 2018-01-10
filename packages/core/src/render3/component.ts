@@ -13,11 +13,12 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
-import {NG_HOST_SYMBOL, createError, createLView, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate, directiveCreate} from './instructions';
-import {ComponentDef, ComponentType} from './interfaces/definition';
+import {NG_HOST_SYMBOL, createError, createLView, directive, directiveCreate, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
+import {ComponentDef, ComponentType, TypedComponentDef} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
-import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {notImplemented, stringify} from './util';
+
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -165,7 +166,8 @@ export const NULL_INJECTOR: Injector = {
 export function renderComponent<T>(
     componentType: ComponentType<T>, opts: CreateComponentOptions = {}): T {
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
-  const componentDef = componentType.ngComponentDef;
+  const componentDef = componentType.ngComponentDef as TypedComponentDef<T>;
+  if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);
   const oldView = enterView(

@@ -17,7 +17,7 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
-import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
+import {ComponentTemplate, DirectiveDef, TypedDirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNodeFlags} from './interfaces/node';
 import {assertNodeType} from './node_assert';
@@ -147,7 +147,7 @@ function createInjectionError(text: string, token: any) {
  * @param di The node injector in which a directive will be added
  * @param def The definition of the directive to be made public
  */
-export function diPublicInInjector(di: LInjector, def: DirectiveDef<any>): void {
+export function diPublicInInjector(di: LInjector, def: TypedDirectiveDef<any>): void {
   bloomAdd(di, def.type);
 }
 
@@ -211,7 +211,7 @@ export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: 
         for (let i = start, ii = start + size; i < ii; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
-          const directiveDef = ngStaticData[i] as DirectiveDef<any>;
+          const directiveDef = ngStaticData[i] as TypedDirectiveDef<any>;
           if (directiveDef.diPublic && directiveDef.type == token) {
             return node.view.data[i];
           }
