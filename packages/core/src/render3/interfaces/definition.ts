@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RendererType2} from '../render/api';
-import {Type} from '../type';
-import {resolveRendererType2} from '../view/util';
-
-
+import {RendererType2} from '../../render/api';
+import {Type} from '../../type';
+import {resolveRendererType2} from '../../view/util';
 
 /**
  * Definition of what a template rendering function should look like.
@@ -146,3 +144,7 @@ export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
 
 export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
 export type ComponentDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
+
+// Note: This hack is necessary so we don't erroneously get a circular dependency
+// failure based on types.
+export const unusedValueExportToPlacateAjd = 1;

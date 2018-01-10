@@ -17,8 +17,9 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
-import {ComponentTemplate, DirectiveDef} from './definition_interfaces';
-import {LContainerNode, LElementNode, LInjector, LNodeFlags} from './interfaces';
+import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
+import {LInjector} from './interfaces/injector';
+import {LContainerNode, LElementNode, LNodeFlags} from './interfaces/node';
 import {assertNodeType} from './node_assert';
 import {notImplemented, stringify} from './util';
 
