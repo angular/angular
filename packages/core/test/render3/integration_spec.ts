@@ -210,7 +210,6 @@ describe('render3 integration test', () => {
       value = ' one';
 
       static ngComponentDef = defineComponent({
-        type: TodoComponent,
         tag: 'todo',
         template: function TodoTemplate(ctx: any, cm: boolean) {
           if (cm) {
@@ -280,7 +279,6 @@ describe('render3 integration test', () => {
       class TodoComponentHostBinding {
         title = 'one';
         static ngComponentDef = defineComponent({
-          type: TodoComponentHostBinding,
           tag: 'todo',
           template: function TodoComponentHostBindingTemplate(
               ctx: TodoComponentHostBinding, cm: boolean) {
@@ -316,7 +314,6 @@ describe('render3 integration test', () => {
       class MyComp {
         name = 'Bess';
         static ngComponentDef = defineComponent({
-          type: MyComp,
           tag: 'comp',
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
@@ -351,7 +348,6 @@ describe('render3 integration test', () => {
       class MyComp {
         condition: boolean;
         static ngComponentDef = defineComponent({
-          type: MyComp,
           tag: 'comp',
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {

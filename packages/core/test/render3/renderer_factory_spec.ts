@@ -29,7 +29,6 @@ describe('renderer factory lifecycle', () => {
 
   class SomeComponent {
     static ngComponentDef = defineComponent({
-      type: SomeComponent,
       tag: 'some-component',
       template: function(ctx: SomeComponent, cm: boolean) {
         logs.push('component');
@@ -43,7 +42,6 @@ describe('renderer factory lifecycle', () => {
 
   class SomeComponentWhichThrows {
     static ngComponentDef = defineComponent({
-      type: SomeComponentWhichThrows,
       tag: 'some-component-with-Error',
       template: function(ctx: SomeComponentWhichThrows, cm: boolean) {
         throw(new Error('SomeComponentWhichThrows threw'));
@@ -122,7 +120,6 @@ describe('animation renderer factory', () => {
 
   class SomeComponent {
     static ngComponentDef = defineComponent({
-      type: SomeComponent,
       tag: 'some-component',
       template: function(ctx: SomeComponent, cm: boolean) {
         if (cm) {
@@ -139,7 +136,6 @@ describe('animation renderer factory', () => {
       eventLogs.push(`${event.fromState ? event.fromState : event.toState} - ${event.phaseName}`);
     }
     static ngComponentDef = defineComponent({
-      type: SomeComponentWithAnimation,
       tag: 'some-component',
       template: function(ctx: SomeComponentWithAnimation, cm: boolean) {
         if (cm) {

@@ -32,7 +32,6 @@ import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs} from './
  */
 export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): ComponentDef<T> {
   const def = <ComponentDef<any>>{
-    type: componentDefinition.type,
     diPublic: null,
     n: componentDefinition.factory,
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,

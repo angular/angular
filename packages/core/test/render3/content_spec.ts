@@ -151,9 +151,7 @@ describe('content projection', () => {
     const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
       if (cm) {
         E(0, Child);
-        {
-          C(2);
-        }
+        { C(2); }
         e();
       }
       cR(2);
@@ -244,9 +242,7 @@ describe('content projection', () => {
       if (cm) {
         m(0, pD());
         E(1, 'div');
-        {
-          C(2);
-        }
+        { C(2); }
         e();
       }
       cR(2);
@@ -301,9 +297,7 @@ describe('content projection', () => {
          if (cm) {
            m(0, pD());
            E(1, 'div');
-           {
-             C(2);
-           }
+           { C(2); }
            e();
          }
          cR(2);
@@ -398,9 +392,7 @@ describe('content projection', () => {
         m(0, pD());
         P(1, 0);
         E(2, 'div');
-        {
-          C(3);
-        }
+        { C(3); }
         e();
       }
       cR(3);
@@ -816,9 +808,7 @@ describe('content projection', () => {
       const Parent = createComponent('parent', function(ctx: {value: any}, cm: boolean) {
         if (cm) {
           E(0, Child);
-          {
-            C(2, undefined, undefined, 'div');
-          }
+          { C(2, undefined, undefined, 'div'); }
           e();
         }
         cR(2);

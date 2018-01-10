@@ -36,7 +36,6 @@ export class TreeComponent {
 
   /** @nocollapse */
   static ngComponentDef: ComponentDef<TreeComponent> = defineComponent({
-    type: TreeComponent,
     tag: 'tree',
     template: function(ctx: TreeComponent, cm: boolean) {
       if (cm) {
@@ -93,7 +92,6 @@ export class TreeFunction extends TreeComponent {
 
   /** @nocollapse */
   static ngComponentDef: ComponentDef<TreeFunction> = defineComponent({
-    type: TreeFunction,
     tag: 'tree',
     template: function(ctx: TreeFunction, cm: boolean) {
       // bit of a hack

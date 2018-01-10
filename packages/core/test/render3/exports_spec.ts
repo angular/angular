@@ -42,12 +42,8 @@ describe('exports', () => {
     class MyComponent {
       name = 'Nancy';
 
-      static ngComponentDef = defineComponent({
-        type: MyComponent,
-        tag: 'comp',
-        template: function() {},
-        factory: () => new MyComponent
-      });
+      static ngComponentDef =
+          defineComponent({tag: 'comp', template: function() {}, factory: () => new MyComponent});
     }
 
     expect(renderToHtml(Template, {})).toEqual('<comp></comp>Nancy');
@@ -59,19 +55,14 @@ describe('exports', () => {
     let myDir: MyDir;
     class MyComponent {
       constructor() { myComponent = this; }
-      static ngComponentDef = defineComponent({
-        type: MyComponent,
-        tag: 'comp',
-        template: function() {},
-        factory: () => new MyComponent
-      });
+      static ngComponentDef =
+          defineComponent({tag: 'comp', template: function() {}, factory: () => new MyComponent});
     }
 
     class MyDir {
       myDir: MyComponent;
       constructor() { myDir = this; }
-      static ngDirectiveDef =
-          defineDirective({type: MyDir, factory: () => new MyDir, inputs: {myDir: 'myDir'}});
+      static ngDirectiveDef = defineDirective({factory: () => new MyDir, inputs: {myDir: 'myDir'}});
     }
 
     /** <comp #myComp></comp> <div [myDir]="myComp"></div> */
@@ -103,7 +94,7 @@ describe('exports', () => {
 
     class SomeDir {
       name = 'Drew';
-      static ngDirectiveDef = defineDirective({type: SomeDir, factory: () => new SomeDir});
+      static ngDirectiveDef = defineDirective({factory: () => new SomeDir});
     }
 
     expect(renderToHtml(Template, {})).toEqual('<div></div>Drew');
@@ -184,7 +175,6 @@ describe('exports', () => {
         constructor() { myComponent = this; }
 
         static ngComponentDef = defineComponent({
-          type: MyComponent,
           tag: 'comp',
           template: function(ctx: MyComponent, cm: boolean) {},
           factory: () => new MyComponent
@@ -197,7 +187,7 @@ describe('exports', () => {
         constructor() { myDir = this; }
 
         static ngDirectiveDef =
-            defineDirective({type: MyDir, factory: () => new MyDir, inputs: {myDir: 'myDir'}});
+            defineDirective({factory: () => new MyDir, inputs: {myDir: 'myDir'}});
       }
 
       /** <div [myDir]="myComp"></div><comp #myComp></comp> */
@@ -240,12 +230,8 @@ describe('exports', () => {
 
         constructor() { myComponent = this; }
 
-        static ngComponentDef = defineComponent({
-          type: MyComponent,
-          tag: 'comp',
-          template: function() {},
-          factory: () => new MyComponent
-        });
+        static ngComponentDef =
+            defineComponent({tag: 'comp', template: function() {}, factory: () => new MyComponent});
       }
       expect(renderToHtml(Template, {})).toEqual('oneNancy<comp></comp><input value="one">');
     });
@@ -254,9 +240,7 @@ describe('exports', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, 'div');
-          {
-            C(1);
-          }
+          { C(1); }
           e();
         }
         cR(1);

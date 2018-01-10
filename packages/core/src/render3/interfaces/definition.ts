@@ -28,11 +28,6 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  * `DirectiveDef` is a compiled version of the Directive used by the renderer instructions.
  */
 export interface DirectiveDef<T> {
-  /**
-   * Token representing the directive. Used by DI.
-   */
-  type: Type<T>;
-
   /** Function that makes a directive public to the DI system. */
   diPublic: ((def: DirectiveDef<any>) => void)|null;
 
@@ -41,26 +36,26 @@ export interface DirectiveDef<T> {
    *
    * The key is minified property name whereas the value is the original unminified name.
    */
-  inputs: {[P in keyof T]: P};
+  readonly inputs: {[P in keyof T]: P};
 
   /**
    * List of outputs which are part of the components public API.
    *
    * The key is minified property name whereas the value is the original unminified name.=
    */
-  outputs: {[P in keyof T]: P};
+  readonly outputs: {[P in keyof T]: P};
 
   /**
    * List of methods which are part of the components public API.
    *
    * The key is minified property name whereas the value is the original unminified name.
    */
-  methods: {[P in keyof T]: P};
+  readonly methods: {[P in keyof T]: P};
 
   /**
    * Name under which the directive is exported (for use with local references in template)
    */
-  exportAs: string|null;
+  readonly exportAs: string|null;
 
   /**
    * factory function used to create a new directive instance.
@@ -111,25 +106,34 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    *
    * NOTE: only used with component directives.
    */
-  tag: string;
+  readonly tag: string;
 
   /**
    * The View template of the component.
    *
    * NOTE: only used with component directives.
    */
-  template: ComponentTemplate<T>;
+  readonly template: ComponentTemplate<T>;
 
   /**
    * Renderer type data of the component.
    *
    * NOTE: only used with component directives.
    */
-  rendererType: RendererType2|null;
+  readonly rendererType: RendererType2|null;
 }
 
+/**
+ * Private: do not export
+ */
+export interface TypedDirectiveDef<T> extends DirectiveDef<T> { type: DirectiveType<T>; }
+
+/**
+ * Private: do not export
+ */
+export interface TypedComponentDef<T> extends ComponentDef<T> { type: ComponentType<T>; }
+
 export interface DirectiveDefArgs<T> {
-  type: Type<T>;
   factory: () => T;
   refresh?: (directiveIndex: number, elementIndex: number) => void;
   inputs?: {[P in keyof T]?: string};
