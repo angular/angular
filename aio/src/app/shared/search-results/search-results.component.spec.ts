@@ -30,8 +30,8 @@ describe('SearchResultsComponent', () => {
     return take === undefined ? results : results.slice(0, take);
   }
 
-  function compareTitle(l: {title: string}, r: {title: string}) {
-    return l.title.toUpperCase() > r.title.toUpperCase() ? 1 : -1;
+  function compareTitle(l: SearchResult, r: SearchResult) {
+    return l.title!.toUpperCase() > r.title!.toUpperCase() ? 1 : -1;
   }
 
   function setSearchResults(query: string, results: SearchResult[]) {
@@ -117,7 +117,7 @@ describe('SearchResultsComponent', () => {
 
   it('should omit search results with no title', () => {
     const results = [
-      { path: 'news', title: undefined, type: 'marketing', keywords: '', titleWords: '' }
+      { path: 'news', title: '', type: 'marketing', keywords: '', titleWords: '' }
     ];
 
     setSearchResults('something', results);
@@ -131,11 +131,11 @@ describe('SearchResultsComponent', () => {
 
   describe('when a search result anchor is clicked', () => {
     let searchResult: SearchResult;
-    let selected: SearchResult;
+    let selected: SearchResult|null;
     let anchor: DebugElement;
 
     beforeEach(() => {
-      component.resultSelected.subscribe(result => selected = result);
+      component.resultSelected.subscribe((result: SearchResult) => selected = result);
 
       selected = null;
       searchResult = { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' };

@@ -314,7 +314,7 @@ describe('AppComponent', () => {
       it('should not navigate when change to a version without a url', () => {
         setupSelectorForTesting();
         const versionWithoutUrlIndex = component.docVersions.length;
-        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo', url: null };
+        const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo' };
         selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex });
         expect(locationService.go).not.toHaveBeenCalled();
       });
@@ -520,9 +520,9 @@ describe('AppComponent', () => {
 
     describe('aio-toc', () => {
       let tocDebugElement: DebugElement;
-      let tocContainer: DebugElement;
+      let tocContainer: DebugElement|null;
 
-      const setHasFloatingToc = hasFloatingToc => {
+      const setHasFloatingToc = (hasFloatingToc: boolean) => {
         component.hasFloatingToc = hasFloatingToc;
         fixture.detectChanges();
 
@@ -551,12 +551,12 @@ describe('AppComponent', () => {
       });
 
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
-        expect(tocContainer.styles['max-height']).toBeNull();
+        expect(tocContainer!.styles['max-height']).toBeNull();
 
         component.tocMaxHeight = '100';
         fixture.detectChanges();
 
-        expect(tocContainer.styles['max-height']).toBe('100px');
+        expect(tocContainer!.styles['max-height']).toBe('100px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
@@ -565,7 +565,7 @@ describe('AppComponent', () => {
 
         expect(restrainScrolling).not.toHaveBeenCalled();
 
-        tocContainer.triggerEventHandler('mousewheel', evt);
+        tocContainer!.triggerEventHandler('mousewheel', evt);
         expect(restrainScrolling).toHaveBeenCalledWith(evt);
       });
     });
@@ -591,7 +591,7 @@ describe('AppComponent', () => {
         initializeTest();
         fixture.detectChanges();
         const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
-        expect(banner.textContent.trim()).toEqual('');
+        expect(banner.textContent!.trim()).toEqual('');
       });
     });
 
@@ -985,9 +985,9 @@ describe('AppComponent', () => {
         checkHostClass('mode', 'archive');
       });
 
-      function checkHostClass(type, value) {
+      function checkHostClass(type: string, value: string) {
         const host = fixture.debugElement;
-        const classes = host.properties['className'];
+        const classes: string = host.properties['className'];
         const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
         expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
         expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
@@ -1212,10 +1212,10 @@ class TestHttpClient {
     if (/navigation\.json/.test(url)) {
       data = this.navJson;
     } else {
-      const match = /generated\/docs\/(.+)\.json/.exec(url);
-      const id = match[1];
+      const match = /generated\/docs\/(.+)\.json/.exec(url)!;
+      const id = match[1]!;
       // Make up a title for test purposes
-      const title = id.split('/').pop().replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
+      const title = id.split('/').pop()!.replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
       const h1 = (id === 'no-title') ? '' : `<h1>${title}</h1>`;
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };

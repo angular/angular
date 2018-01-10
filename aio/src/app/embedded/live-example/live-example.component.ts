@@ -94,7 +94,7 @@ export class LiveExampleComponent implements OnInit {
     let exampleDir = attrs.name;
     if (!exampleDir) {
       // take last segment, excluding hash fragment and query params
-      exampleDir = location.path(false).match(/[^\/?\#]+(?=\/?(?:$|\#|\?))/)[0];
+      exampleDir = (location.path(false).match(/[^\/?\#]+(?=\/?(?:$|\#|\?))/) || [])[0];
     }
     this.exampleDir = exampleDir.trim();
     this.zipName = exampleDir.indexOf('/') === -1 ? this.exampleDir : exampleDir.split('/')[0];
@@ -150,7 +150,7 @@ export class LiveExampleComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event.target.innerWidth'])
-  onResize(width) {
+  onResize(width: number) {
     if (this.mode !== 'downloadOnly') {
       this.calcPlnkrLink(width);
     }

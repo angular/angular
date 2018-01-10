@@ -37,7 +37,7 @@ export class TocService {
       content: this.extractHeadingSafeHtml(heading),
       href: `${docId}#${this.getId(heading, idMap)}`,
       level: heading.tagName.toLowerCase(),
-      title: heading.textContent.trim(),
+      title: (heading.textContent || '').trim(),
     }));
 
     this.tocList.next(tocList);
@@ -87,7 +87,7 @@ export class TocService {
     if (id) {
       addToMap(id);
     } else {
-      id = h.textContent.trim().toLowerCase().replace(/\W+/g, '-');
+      id = (h.textContent || '').trim().toLowerCase().replace(/\W+/g, '-');
       id = addToMap(id);
       h.id = id;
     }
@@ -95,7 +95,9 @@ export class TocService {
 
     // Map guards against duplicate id creation.
     function addToMap(key: string) {
-      const count = idMap[key] = idMap[key] ? idMap[key] + 1 : 1;
+      const oldCount = idMap.get(key) || 0;
+      const count = oldCount + 1;
+      idMap.set(key, count);
       return count === 1 ? key : `${key}-${count}`;
     }
   }

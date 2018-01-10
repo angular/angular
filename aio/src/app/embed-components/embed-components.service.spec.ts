@@ -127,9 +127,9 @@ describe('EmbedComponentsService', () => {
       const componentRefs = service.createComponents(host);
       componentRefs[0].changeDetectorRef.detectChanges();
 
-      const barEl = host.querySelector('aio-eager-bar');
+      const barEl = host.querySelector('aio-eager-bar')!;
 
-      expect(barEl['aioEagerBarContent']).toBe(projectedContent);
+      expect((barEl as any)['aioEagerBarContent']).toBe(projectedContent);
       expect(barEl.innerHTML).toContain(projectedContent);
     });
 

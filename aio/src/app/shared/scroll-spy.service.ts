@@ -102,7 +102,7 @@ export class ScrollSpiedElementGroup {
    * @param {number} maxScrollTop - The maximum possible `scrollTop` (based on the viewport size).
    */
   onScroll(scrollTop: number, maxScrollTop: number) {
-    let activeItem: ScrollItem;
+    let activeItem: ScrollItem|undefined;
 
     if (scrollTop + 1 >= maxScrollTop) {
       activeItem = this.spiedElements[0];
@@ -112,6 +112,7 @@ export class ScrollSpiedElementGroup {
           activeItem = spiedElem;
           return true;
         }
+        return false;
       });
     }
 
