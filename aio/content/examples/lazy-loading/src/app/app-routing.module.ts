@@ -8,11 +8,11 @@ import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
     path: 'customers',
-    loadChildren: './app/customers/customers.module#CustomersModule'
+    loadChildren: 'app/customers/customers.module#CustomersModule'
   },
   {
     path: 'orders',
-    loadChildren: './app/orders/orders.module#OrdersModule'
+    loadChildren: 'app/orders/orders.module#OrdersModule'
   },
   {
     path: '',
