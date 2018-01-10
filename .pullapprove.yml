@@ -204,6 +204,12 @@ groups:
     conditions:
       files:
         - "packages/forms/*"
+        - "aio/content/guide/forms.md"
+        - "aio/content/guide/form-validation.md"
+        - "aio/content/guide/reactive-forms.md"
+        - "aio/content/examples/forms/*"
+        - "aio/content/examples/form-validation/*"
+        - "aio/content/examples/reactive-forms/*"
     users:
       - kara #primary
       - tinayuangao #secondary
