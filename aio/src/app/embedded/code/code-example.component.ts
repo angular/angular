@@ -41,7 +41,7 @@ export class CodeExampleComponent implements OnInit {
     const element: HTMLElement = this.elementRef.nativeElement;
 
     this.language = element.getAttribute('language') || '';
-    this.linenums = element.getAttribute('linenums');
+    this.linenums = element.getAttribute('linenums') || '';
     this.path = element.getAttribute('path') || '';
     this.region = element.getAttribute('region') || '';
     this.title = element.getAttribute('title') || '';

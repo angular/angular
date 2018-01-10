@@ -43,7 +43,7 @@ describe('DocViewerComponent', () => {
   describe('#doc', () => {
     let renderSpy: jasmine.Spy;
 
-    const setCurrentDoc = (contents, id = 'fizz/buzz') => {
+    const setCurrentDoc = (contents: string|null, id = 'fizz/buzz') => {
       parentComponent.currentDoc = {contents, id};
       parentFixture.detectChanges();
     };
@@ -432,7 +432,7 @@ describe('DocViewerComponent', () => {
       });
 
       it('should store the embedded components', async () => {
-        const embeddedComponents = [];
+        const embeddedComponents: ComponentRef<any>[] = [];
         embedIntoSpy.and.returnValue(of(embeddedComponents));
 
         await doRender('Some content');
@@ -678,7 +678,7 @@ describe('DocViewerComponent', () => {
           describe(`(.${NO_ANIMATIONS}: ${noAnimations})`, () => {
             beforeEach(() => docViewerEl.classList[noAnimations ? 'add' : 'remove'](NO_ANIMATIONS));
 
-            it('should return an observable', done => {
+            it('should return an observable', (done: DoneFn) => {
               docViewer.swapViews().subscribe(done, done.fail);
             });
 

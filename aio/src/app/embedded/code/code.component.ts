@@ -170,7 +170,7 @@ export class CodeComponent implements OnChanges {
   }
 }
 
-function leftAlign(text) {
+function leftAlign(text: string) {
   let indent = Number.MAX_VALUE;
   const lines = text.split('\n');
   lines.forEach(line => {

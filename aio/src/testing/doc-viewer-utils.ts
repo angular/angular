@@ -38,7 +38,7 @@ export class TestDocViewerComponent extends DocViewerComponent {
   template: '<aio-doc-viewer [doc]="currentDoc">Test Component</aio-doc-viewer>',
 })
 export class TestParentComponent {
-  currentDoc: DocumentContents;
+  currentDoc?: DocumentContents|null;
   @ViewChild(DocViewerComponent) docViewer: DocViewerComponent;
 }
 
@@ -77,7 +77,7 @@ export class TestModule { }
 
 export class ObservableWithSubscriptionSpies<T = void> extends Observable<T> {
   unsubscribeSpies: jasmine.Spy[] = [];
-  subscribeSpy = spyOn(this, 'subscribe').and.callFake((...args) => {
+  subscribeSpy = spyOn(this, 'subscribe').and.callFake((...args: any[]) => {
     const subscription = super.subscribe(...args);
     const unsubscribeSpy = spyOn(subscription, 'unsubscribe').and.callThrough();
     this.unsubscribeSpies.push(unsubscribeSpy);

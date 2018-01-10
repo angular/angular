@@ -4,7 +4,7 @@ export class MockLocationService {
   urlSubject = new BehaviorSubject<string>(this.initialUrl);
   currentUrl = this.urlSubject.asObservable().map(url => this.stripSlashes(url));
   // strip off query and hash
-  currentPath = this.currentUrl.map(url => url.match(/[^?#]*/)[0]);
+  currentPath = this.currentUrl.map(url => url.match(/[^?#]*/)![0]);
   search = jasmine.createSpy('search').and.returnValue({});
   setSearch = jasmine.createSpy('setSearch');
   go = jasmine.createSpy('Location.go').and
@@ -14,7 +14,7 @@ export class MockLocationService {
   handleAnchorClick = jasmine.createSpy('Location.handleAnchorClick')
       .and.returnValue(false); // prevent click from causing a browser navigation
 
-  constructor(private initialUrl) {}
+  constructor(private initialUrl: string) {}
 
   private stripSlashes(url: string) {
     return url.replace(/^\/+/, '').replace(/\/+(\?|#|$)/, '$1');
