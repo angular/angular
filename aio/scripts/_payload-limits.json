@@ -2,17 +2,17 @@
   "aio": {
     "master": {
       "gzip7": {
-        "inline": 941,
+        "inline": 961,
         "main": 115381,
         "polyfills": 12962
       },
       "gzip9": {
-        "inline": 941,
+        "inline": 961,
         "main": 115186,
         "polyfills": 12958
       },
       "uncompressed": {
-        "inline": 1558,
+        "inline": 1602,
         "main": 453905,
         "polyfills": 40264
       }
