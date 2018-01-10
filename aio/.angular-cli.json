@@ -62,6 +62,9 @@
     "styleExt": "scss",
     "component": {
       "inlineStyle": true
+    },
+    "build": {
+      "namedChunks": true
     }
   }
 }
