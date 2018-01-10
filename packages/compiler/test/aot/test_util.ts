@@ -386,6 +386,8 @@ export class MockAotCompilerHost implements AotCompilerHost {
     return resolved ? resolved.resolvedFileName : null;
   }
 
+  getOutputName(filePath: string) { return filePath; }
+
   resourceNameToFileName(resourceName: string, containingFile: string) {
     // Note: we convert package paths into relative paths to be compatible with the the
     // previous implementation of UrlResolver.
