@@ -207,11 +207,11 @@ export function getOrCreateInjectable<T>(di: LInjector, token: Type<T>, flags?: 
         // nothing to the "left" of it so it doesn't need a mask.
         const start = flags >> LNodeFlags.INDX_SHIFT;
 
-        const ngStaticData = node.view.ngStaticData;
+        const tData = node.view.tView.data;
         for (let i = start, ii = start + size; i < ii; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
-          const directiveDef = ngStaticData[i] as TypedDirectiveDef<any>;
+          const directiveDef = tData[i] as TypedDirectiveDef<any>;
           if (directiveDef.diPublic && directiveDef.type == token) {
             return node.view.data[i];
           }

@@ -604,22 +604,22 @@ describe('render3 integration test', () => {
         cr();
       }
 
-      expect((Template as any).ngStaticData).toBeUndefined();
+      expect((Template as any).ngPrivateData).toBeUndefined();
 
       renderToHtml(Template, {condition: true});
 
-      const oldTemplateData = (Template as any).ngStaticData;
-      const oldContainerData = (oldTemplateData as any)[0];
-      const oldElementData = oldContainerData.containerStatic[0][0];
+      const oldTemplateData = (Template as any).ngPrivateData;
+      const oldContainerData = (oldTemplateData as any).data[0];
+      const oldElementData = oldContainerData.data[0][0];
       expect(oldContainerData).not.toBeNull();
       expect(oldElementData).not.toBeNull();
 
       renderToHtml(Template, {condition: false});
       renderToHtml(Template, {condition: true});
 
-      const newTemplateData = (Template as any).ngStaticData;
-      const newContainerData = (oldTemplateData as any)[0];
-      const newElementData = oldContainerData.containerStatic[0][0];
+      const newTemplateData = (Template as any).ngPrivateData;
+      const newContainerData = (oldTemplateData as any).data[0];
+      const newElementData = oldContainerData.data[0][0];
       expect(newTemplateData === oldTemplateData).toBe(true);
       expect(newContainerData === oldContainerData).toBe(true);
       expect(newElementData === oldElementData).toBe(true);

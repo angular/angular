@@ -8,7 +8,7 @@
 
 import {ComponentTemplate} from './definition';
 import {LElementNode, LViewNode} from './node';
-import {LView} from './view';
+import {LView, TView} from './view';
 
 
 /** The state associated with an LContainer */
@@ -67,6 +67,24 @@ export interface LContainer {
    */
   readonly template: ComponentTemplate<any>|null;
 }
+
+/**
+ * The static equivalent of LContainer, used in TContainerNode.
+ *
+ * The container needs to store static data for each of its embedded views
+ * (TViews). Otherwise, nodes in embedded views with the same index as nodes
+ * in their parent views will overwrite each other, as they are in
+ * the same template.
+ *
+ * Each index in this array corresponds to the static data for a certain
+ * view. So if you had V(0) and V(1) in a container, you might have:
+ *
+ * [
+ *   [{tagName: 'div', attrs: ...}, null],     // V(0) TView
+ *   [{tagName: 'button', attrs ...}, null]    // V(1) TView
+ * ]
+ */
+export type TContainer = TView[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

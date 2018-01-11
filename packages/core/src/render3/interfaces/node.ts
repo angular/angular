@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LContainer} from './container';
+import {LContainer, TContainer} from './container';
 import {DirectiveDef} from './definition';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
 import {LQuery} from './query';
 import {RComment, RElement, RText} from './renderer';
-import {LView} from './view';
+import {LView, TData, TView} from './view';
 
 
 /**
@@ -198,10 +198,6 @@ export interface LProjectionNode extends LNode {
   readonly parent: LElementNode|LViewNode;
 }
 
-
-/** The type of the global ngStaticData array. */
-export type NgStaticData = (TNode | DirectiveDef<any>| null)[];
-
 /**
  * LNode binding data (flyweight) for a particular node that is shared between all templates
  * of a specific type.
@@ -263,28 +259,21 @@ export interface TNode {
   outputs: PropertyAliases|null|undefined;
 
   /**
+   * The static data equivalent of LNode.data.
+   *
    * If this TNode corresponds to an LContainerNode, the container will
-   * need to have nested static data for each of its embedded views.
-   * Otherwise, nodes in embedded views with the same index as nodes
-   * in their parent views will overwrite each other, as they are in
-   * the same template.
+   * need to store separate static data for each of its views (TContainer).
    *
-   * Each index in this array corresponds to the static data for a certain
-   * view. So if you had V(0) and V(1) in a container, you might have:
-   *
-   * [
-   *   [{tagName: 'div', attrs: ...}, null],     // V(0) ngData
-   *   [{tagName: 'button', attrs ...}, null]    // V(1) ngData
-   * ]
+   * If this TNode corresponds to an LElementNode, data will be null.
    */
-  containerStatic: (TNode|null)[][]|null;
+  data: TContainer|null;
 }
 
-/** Static data for an LElementNode */
-export interface TElementNode extends TNode { containerStatic: null; }
+/** Static data for an LElementNode  */
+export interface TElementNode extends TNode { data: null; }
 
 /** Static data for an LContainerNode */
-export interface TContainerNode extends TNode { containerStatic: (TNode|null)[][]; }
+export interface TContainerNode extends TNode { data: TContainer; }
 
 /**
  * This mapping is necessary so we can set input properties and output listeners

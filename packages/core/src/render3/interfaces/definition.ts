@@ -14,7 +14,7 @@ import {resolveRendererType2} from '../../view/util';
  * Definition of what a template rendering function should look like.
  */
 export type ComponentTemplate<T> = {
-  (ctx: T, creationMode: boolean): void; ngStaticData?: never;
+  (ctx: T, creationMode: boolean): void; ngPrivateData?: never;
 };
 export type EmbeddedTemplate<T> = (ctx: T) => void;
 
