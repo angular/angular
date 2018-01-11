@@ -12,7 +12,6 @@ export {
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
   C as ɵC,
-  D as ɵD,
   E as ɵE,
   T as ɵT,
   V as ɵV,

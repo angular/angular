@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, P, T, V, cR, cr, detectChanges, e, m, pD, v} from '../../src/render3/index';
+import {C, E, P, T, V, cR, cr, detectChanges, e, m, pD, v} from '../../src/render3/index';
 
 import {createComponent, renderComponent, toHtml} from './render_util';
 
@@ -266,7 +266,7 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child);
         {
-          childCmptInstance = D(1);
+          childCmptInstance = m(1);
           T(2, 'content');
         }
         e();
@@ -319,7 +319,7 @@ describe('content projection', () => {
          if (cm) {
            E(0, Child);
            {
-             childCmptInstance = D(1);
+             childCmptInstance = m(1);
              T(2, 'content');
            }
            e();
@@ -414,7 +414,7 @@ describe('content projection', () => {
       if (cm) {
         E(0, Child);
         {
-          childCmptInstance = D(1);
+          childCmptInstance = m(1);
           T(2, 'content');
         }
         e();

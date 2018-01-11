@@ -43,8 +43,6 @@ export {
   containerRefreshStart as cR,
   containerRefreshEnd as cr,
 
-  directive as D,
-
   elementAttribute as a,
   elementClass as k,
   elementEnd as e,

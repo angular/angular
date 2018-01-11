@@ -9,7 +9,7 @@
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {bloomAdd, bloomFindPossibleInjector} from '../../src/render3/di';
-import {C, D, E, PublicFeature, T, V, b, b2, cR, cr, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, t, v} from '../../src/render3/index';
+import {C, E, PublicFeature, T, V, b, b2, cR, cr, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, m, t, v} from '../../src/render3/index';
 import {createLNode, createLView, enterView, getOrCreateNodeInjector, leaveView} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
@@ -30,7 +30,7 @@ describe('di', () => {
           { T(2); }
           e();
         }
-        t(2, b(D<Directive>(1).value));
+        t(2, b(m<Directive>(1).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>Created</div>');
@@ -68,7 +68,7 @@ describe('di', () => {
           }
           e();
         }
-        t(5, b(D<DirectiveC>(4).value));
+        t(5, b(m<DirectiveC>(4).value));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div><span>AB</span></div>');
@@ -101,7 +101,7 @@ describe('di', () => {
           { T(3); }
           e();
         }
-        t(3, b2('', D<Directive>(1).value, '-', D<DirectiveSameInstance>(2).value, ''));
+        t(3, b2('', m<Directive>(1).value, '-', m<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ElementRef-true</div>');
@@ -134,7 +134,7 @@ describe('di', () => {
           C(0, [Directive, DirectiveSameInstance], function() {});
           T(3);
         }
-        t(3, b2('', D<Directive>(1).value, '-', D<DirectiveSameInstance>(2).value, ''));
+        t(3, b2('', m<Directive>(1).value, '-', m<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('TemplateRef-true');
@@ -168,7 +168,7 @@ describe('di', () => {
           { T(3); }
           e();
         }
-        t(3, b2('', D<Directive>(1).value, '-', D<DirectiveSameInstance>(2).value, ''));
+        t(3, b2('', m<Directive>(1).value, '-', m<DirectiveSameInstance>(2).value, ''));
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div>ViewContainerRef-true</div>');
@@ -256,7 +256,7 @@ describe('di', () => {
             { T(3); }
             e();
           }
-          t(3, b2('', D<ChildDirective>(1).value, '-', D<Child2Directive>(2).value, ''));
+          t(3, b2('', m<ChildDirective>(1).value, '-', m<Child2Directive>(2).value, ''));
           v();
         }
         cr();

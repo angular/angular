@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, D, E, L, T, V, b, b1, cR, cr, defineComponent, defineDirective, e, p, t, v} from '../../src/render3/index';
+import {C, E, L, T, V, b, b1, cR, cr, defineComponent, defineDirective, e, m, p, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
@@ -474,7 +474,7 @@ describe('elementProperty', () => {
               e();
               T(2);
             }
-            t(2, b(D<MyDir>(1).role));
+            t(2, b(m<MyDir>(1).role));
           },
           factory: () => new Comp()
         });

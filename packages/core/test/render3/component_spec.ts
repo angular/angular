@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../../src/core';
-import {D, E, T, b, defineComponent, e, markDirty, t} from '../../src/render3/index';
+import {E, T, b, defineComponent, e, markDirty, t} from '../../src/render3/index';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
