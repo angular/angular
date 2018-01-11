@@ -899,20 +899,6 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 //////////////////////////
 
 /**
- * Retrieve a directive.
- *
- * NOTE: directives can be created in order other than the index order. They can also
- *       be retrieved before they are created in which case the value will be null.
- *
- * @param index Each directive in a `View` will have a unique index. Directives can
- *        be created or retrieved out of order.
- */
-export function directive<T>(index: number): T {
-  ngDevMode && assertDataInRange(index);
-  return data[index];
-}
-
-/**
  * Create a directive.
  *
  * NOTE: directives can be created in order other than the index order. They can also

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, L, T, V, cR, cr, defineComponent, e, v} from '../../src/render3/index';
+import {C, E, L, T, V, cR, cr, defineComponent, e, v} from '../../src/render3/index';
 
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, ComponentDef, ComponentTemplate, D, E, L, LifecycleHook, T, V, b, cR, cr, defineComponent, e, l, p, r, v} from '../../src/render3/index';
+import {C, ComponentDef, ComponentTemplate, E, L, LifecycleHook, T, V, b, cR, cr, defineComponent, e, l, m, p, r, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -41,7 +41,7 @@ describe('lifecycles', () => {
           tag: name,
           factory: () => new Component(),
           hostBindings: function(directiveIndex: number, elementIndex: number):
-              void { l(LifecycleHook.ON_INIT) && D<Component>(directiveIndex).ngOnInit(); },
+              void { l(LifecycleHook.ON_INIT) && m<Component>(directiveIndex).ngOnInit(); },
           inputs: {val: 'val'}, template
         });
       };
@@ -274,8 +274,8 @@ describe('lifecycles', () => {
           factory: () => new Component(),
           hostBindings: function(
               this: ComponentDef<Component>, directiveIndex: number, elementIndex: number): void {
-            l(LifecycleHook.ON_INIT) && D<Component>(directiveIndex).ngOnInit();
-            D<Component>(directiveIndex).ngDoCheck();
+            l(LifecycleHook.ON_INIT) && m<Component>(directiveIndex).ngOnInit();
+            m<Component>(directiveIndex).ngDoCheck();
           },
           template
         });
@@ -365,7 +365,7 @@ describe('lifecycles', () => {
           factory: () => new Component(),
           refresh: (directiveIndex: number, elementIndex: number) => {
             r(directiveIndex, elementIndex, template);
-            const comp = D(directiveIndex) as Component;
+            const comp = m(directiveIndex) as Component;
             l(LifecycleHook.AFTER_VIEW_INIT, comp, comp.ngAfterViewInit);
             l(LifecycleHook.AFTER_VIEW_CHECKED, comp, comp.ngAfterViewChecked);
           },

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {C, D, E, Q, QueryList, e, m, qR} from '../../src/render3/index';
+import {C, E, Q, QueryList, e, m, qR} from '../../src/render3/index';
 import {QueryReadType} from '../../src/render3/interfaces/query';
 
 import {createComponent, createDirective, renderComponent} from './render_util';
@@ -61,9 +61,9 @@ describe('query', () => {
         m(1, Q(Child, true));
         E(2, Child);
         {
-          child1 = D(3);
+          child1 = m(3);
           E(4, Child);
-          { child2 = D(5); }
+          { child2 = m(5); }
           e();
         }
         e();
@@ -121,7 +121,7 @@ describe('query', () => {
         if (cm) {
           m(0, Q(Child, false, OtherChild));
           E(1, 'div', null, [Child, OtherChild]);
-          { otherChildInstance = D(3); }
+          { otherChildInstance = m(3); }
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -380,7 +380,7 @@ describe('query', () => {
         if (cm) {
           m(0, Q(['foo']));
           E(1, Child, null, null, ['foo', '']);
-          { childInstance = D(2); }
+          { childInstance = m(2); }
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -408,7 +408,7 @@ describe('query', () => {
            if (cm) {
              m(0, Q(['foo']));
              E(1, 'div', null, [Child], ['foo', 'child']);
-             childInstance = D(2);
+             childInstance = m(2);
              e();
            }
            qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -437,8 +437,8 @@ describe('query', () => {
           m(0, Q(['foo', 'bar']));
           E(1, 'div', null, [Child1, Child2], ['foo', 'child1', 'bar', 'child2']);
           {
-            child1Instance = D(2);
-            child2Instance = D(3);
+            child1Instance = m(2);
+            child2Instance = m(3);
           }
           e();
         }
@@ -493,7 +493,7 @@ describe('query', () => {
         if (cm) {
           m(0, Q(['foo', 'bar']));
           div = E(1, 'div', null, [Child], ['foo', '', 'bar', 'child']);
-          { childInstance = D(2); }
+          { childInstance = m(2); }
           e();
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
