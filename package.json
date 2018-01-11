@@ -36,6 +36,7 @@
     "fsevents": "1.1.2"
   },
   "devDependencies": {
+    "@angular/cli": "^1.6.3",
     "@bazel/ibazel": "^0.1.1",
     "@types/angularjs": "1.5.14-alpha",
     "@types/base64-js": "1.2.5",
