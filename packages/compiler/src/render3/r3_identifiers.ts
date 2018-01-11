@@ -40,6 +40,10 @@ export class Identifiers {
 
   static containerEnd: o.ExternalReference = {name: 'ɵc', moduleName: CORE};
 
+  static containerRefreshStart: o.ExternalReference = {name: 'ɵcR', moduleName: CORE};
+
+  static containerRefreshEnd: o.ExternalReference = {name: 'ɵcr', moduleName: CORE};
+
   static directiveCreate: o.ExternalReference = {name: 'ɵD', moduleName: CORE};
 
   static text: o.ExternalReference = {name: 'ɵT', moduleName: CORE};
@@ -60,6 +64,8 @@ export class Identifiers {
   static bind8: o.ExternalReference = {name: 'ɵb8', moduleName: CORE};
   static bind9: o.ExternalReference = {name: 'ɵb9', moduleName: CORE};
   static bindV: o.ExternalReference = {name: 'ɵbV', moduleName: CORE};
+
+  static memory: o.ExternalReference = {name: 'ɵm', moduleName: CORE};
 
   static refreshComponent: o.ExternalReference = {name: 'ɵr', moduleName: CORE};
 
