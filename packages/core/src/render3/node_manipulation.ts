@@ -7,14 +7,14 @@
  */
 
 import {assertNotNull} from './assert';
-import {LContainer} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode} from './interfaces/node';
-import {LProjection} from './interfaces/projection';
-import {ProceduralRenderer3, RComment, RElement, RNode, RText} from './interfaces/renderer';
-import {LView, LViewOrLContainer} from './interfaces/view';
+import {LContainer, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
+import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {LProjection, unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
+import {ProceduralRenderer3, RComment, RElement, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {LView, LViewOrLContainer, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 
-
+const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
 /**
  * Finds the closest DOM node above a given container in the hierarchy.
