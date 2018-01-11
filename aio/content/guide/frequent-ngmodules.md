@@ -55,7 +55,7 @@ of some of the things they contain:
 
  <tr>
    <td><code>RouterModule</code></td>
-   <td><code>@angular/forms</code></td>
+   <td><code>@angular/router</code></td>
    <td>For Routing and when you want to use <code>RouterLink</code>,<code>.forRoot()</code>, and <code>.forChild()</code></td>
  </tr>
 
