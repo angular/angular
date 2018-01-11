@@ -6,6 +6,7 @@ import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'ap
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { Deployment } from 'app/shared/deployment.service';
 import { LocationService } from 'app/shared/location.service';
+import { NotificationComponent } from 'app/layout/notification/notification.component';
 import { ScrollService } from 'app/shared/scroll.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResults } from 'app/search/interfaces';
@@ -89,6 +90,10 @@ export class AppComponent implements OnInit {
 
   @ViewChild(MatSidenav)
   sidenav: MatSidenav;
+
+  @ViewChild(NotificationComponent)
+  notification: NotificationComponent;
+  notificationAnimating = false;
 
   constructor(
     public deployment: Deployment,
@@ -273,14 +278,33 @@ export class AppComponent implements OnInit {
     this.folderId = (id === 'index') ? 'home' : id.split('/', 1)[0];
   }
 
+  notificationDismissed() {
+    this.notificationAnimating = true;
+      // this should be kept in sync with the animation durations in:
+      // - aio/src/styles/2-modules/_notification.scss
+      // - aio/src/app/layout/notification/notification.component.ts
+      setTimeout(() => this.notificationAnimating = false, 250);
+    this.updateHostClasses();
+  }
+
   updateHostClasses() {
     const mode = `mode-${this.deployment.mode}`;
     const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
     const viewClasses = Object.keys(this.currentNodes || {}).map(view => `view-${view}`).join(' ');
+    const notificationClass = `aio-notification-${this.notification.showNotification}`;
+    const notificationAnimatingClass = this.notificationAnimating ? 'aio-notification-animating' : '';
 
-    this.hostClasses = `${mode} ${sideNavOpen} ${pageClass} ${folderClass} ${viewClasses}`;
+    this.hostClasses = [
+      mode,
+      sideNavOpen,
+      pageClass,
+      folderClass,
+      viewClasses,
+      notificationClass,
+      notificationAnimatingClass
+    ].join(' ');
   }
 
   updateHostClassesForDoc(doc: DocumentContents) {
