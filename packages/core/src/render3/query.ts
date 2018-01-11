@@ -139,12 +139,12 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
  * @returns Index of a found directive or null when none found.
  */
 function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
-  const ngStaticData = node.view.ngStaticData;
+  const tData = node.view.tView.data;
   const flags = node.flags;
   for (let i = flags >> LNodeFlags.INDX_SHIFT,
            ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
        i < ii; i++) {
-    const def = ngStaticData[i] as TypedDirectiveDef<any>;
+    const def = tData[i] as TypedDirectiveDef<any>;
     if (def.diPublic && def.type === type) {
       return i;
     }

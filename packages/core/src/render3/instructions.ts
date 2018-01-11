@@ -14,13 +14,13 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {Type} from '../type';
 
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
-import {LContainer} from './interfaces/container';
+import {LContainer, TContainer} from './interfaces/container';
 import {LInjector} from './interfaces/injector';
 import {CssSelector, LProjection} from './interfaces/projection';
 import {LQuery, QueryReadType} from './interfaces/query';
-import {LView} from './interfaces/view';
+import {LView, TData, TView} from './interfaces/view';
 
-import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, NgStaticData, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
@@ -82,19 +82,19 @@ let previousOrParentNode: LNode;
 let isParent: boolean;
 
 /**
- * The current template's static data (shared between all templates of a
- * given type).
+ * Static data that corresponds to the instance-specific data array on an LView.
  *
- * Each node's static data is stored at the same index that it's stored
- * in the data array. Any nodes that do not have static data store a null
- * value to avoid a sparse array.
+ * Each node's static data is stored in tData at the same index that it's stored
+ * in the data array. Each directive's definition is stored here at the same index
+ * as its directive instance in the data array. Any nodes that do not have static
+ * data store a null value in tData to avoid a sparse array.
  */
-let ngStaticData: NgStaticData;
+let tData: TData;
 
 /** State of the current view being processed. */
 let currentView: LView;
 // The initialization has to be after the `let`, otherwise `createLView` can't see `let`.
-currentView = createLView(null !, null !, []);
+currentView = createLView(null !, null !, {data: []});
 
 let currentQuery: LQuery|null;
 
@@ -151,7 +151,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   const oldView = currentView;
   data = newView.data;
   bindingIndex = newView.bindingStartIndex || 0;
-  ngStaticData = newView.ngStaticData;
+  tData = newView.tView.data;
   creationMode = newView.creationMode;
 
   viewHookStartIndex = newView.viewHookStartIndex;
@@ -176,14 +176,13 @@ export function leaveView(newView: LView): void {
   enterView(newView, null);
 }
 
-export function createLView(
-    viewId: number, renderer: Renderer3, ngStaticData: NgStaticData): LView {
+export function createLView(viewId: number, renderer: Renderer3, tView: TView): LView {
   const newView = {
     parent: currentView,
     id: viewId,    // -1 for component views
     node: null !,  // until we initialize it in createNode.
     data: [],
-    ngStaticData: ngStaticData,
+    tView: tView,
     cleanup: null,
     renderer: renderer,
     child: null,
@@ -246,10 +245,10 @@ export function createLNode(
     data[index] = node;
 
     // Every node adds a value to the static data array to avoid a sparse array
-    if (index >= ngStaticData.length) {
-      ngStaticData[index] = null;
+    if (index >= tData.length) {
+      tData[index] = null;
     } else {
-      node.tNode = ngStaticData[index] as TNode;
+      node.tNode = tData[index] as TNode;
     }
 
     // Now link ourselves into the tree.
@@ -300,24 +299,23 @@ export function renderTemplate<T>(
     rendererFactory = providedRendererFactory;
     host = createLNode(
         null, LNodeFlags.Element, hostNode,
-        createLView(-1, providedRendererFactory.createRenderer(null, null), []));
+        createLView(
+            -1, providedRendererFactory.createRenderer(null, null), getOrCreateTView(template)));
   }
   const hostView = host.data !;
   ngDevMode && assertNotEqual(hostView, null, 'hostView');
-  hostView.ngStaticData = getTemplateStatic(template);
   renderComponentOrTemplate(host, hostView, context, template);
   return host;
 }
 
 export function renderComponentOrTemplate<T>(
-    node: LElementNode, lView: LView, componentOrContext: T, template?: ComponentTemplate<T>) {
-  const oldView = enterView(lView, node);
+    node: LElementNode, hostView: LView, componentOrContext: T, template?: ComponentTemplate<T>) {
+  const oldView = enterView(hostView, node);
   try {
     if (rendererFactory.begin) {
       rendererFactory.begin();
     }
     if (template) {
-      ngStaticData = template.ngStaticData || (template.ngStaticData = [] as never);
       template(componentOrContext !, creationMode);
     } else {
       // Element was stored at 0 and directive was stored at 1 in renderComponent
@@ -328,7 +326,7 @@ export function renderComponentOrTemplate<T>(
     if (rendererFactory.end) {
       rendererFactory.end();
     }
-    lView.creationMode = false;
+    hostView.creationMode = false;
     leaveView(oldView);
   }
 }
@@ -450,10 +448,9 @@ export function elementStart(
 
       let componentView: LView|null = null;
       if (isHostElement) {
-        const ngStaticData = getTemplateStatic(hostComponentDef !.template);
+        const tView = getOrCreateTView(hostComponentDef !.template);
         componentView = addToViewTree(createLView(
-            -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType),
-            ngStaticData));
+            -1, rendererFactory.createRenderer(native, hostComponentDef !.rendererType), tView));
       }
 
       // Only component views should be added to the view tree directly. Embedded views are
@@ -465,7 +462,7 @@ export function elementStart(
 
       if (node.tNode == null) {
         ngDevMode && assertDataInRange(index - 1);
-        node.tNode = ngStaticData[index] =
+        node.tNode = tData[index] =
             createTNode(name, attrs || null, null, hostComponentDef ? null : queryName);
       }
 
@@ -532,14 +529,14 @@ function hack_findQueryName(
 }
 
 /**
- * Gets static data from a template function or creates a new static
- * data array if it doesn't already exist.
+ * Gets TView from a template function or creates a new TView
+ * if it doesn't already exist.
  *
  * @param template The template from which to get static data
- * @returns NgStaticData
+ * @returns TView
  */
-function getTemplateStatic(template: ComponentTemplate<any>): NgStaticData {
-  return template.ngStaticData || (template.ngStaticData = [] as never);
+function getOrCreateTView(template: ComponentTemplate<any>): TView {
+  return template.ngPrivateData || (template.ngPrivateData = { data: [] } as never);
 }
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
@@ -583,14 +580,15 @@ export function locateHostElement(
 }
 
 /**
- * Creates the host LNode..
+ * Creates the host LNode.
  *
  * @param rNode Render host element.
+ * @param def ComponentDef
  */
 export function hostElement(rNode: RElement | null, def: ComponentDef<any>) {
   resetApplicationState();
   createLNode(
-      0, LNodeFlags.Element, rNode, createLView(-1, renderer, getTemplateStatic(def.template)));
+      0, LNodeFlags.Element, rNode, createLView(-1, renderer, getOrCreateTView(def.template)));
 }
 
 
@@ -727,11 +725,11 @@ export function elementProperty<T>(index: number, propName: string, value: T | N
  *
  * @param tagName
  * @param attrs
- * @param containerStatic
+ * @param data
  * @returns the TNode object
  */
 function createTNode(
-    tagName: string | null, attrs: string[] | null, containerStatic: (TNode | null)[][] | null,
+    tagName: string | null, attrs: string[] | null, data: TContainer | null,
     localName: string | null): TNode {
   return {
     tagName: tagName,
@@ -740,7 +738,7 @@ function createTNode(
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
-    containerStatic: containerStatic
+    data: data
   };
 }
 
@@ -757,17 +755,17 @@ function setInputsForProperty(inputs: (number | string)[], value: any): void {
 
 /**
  * This function consolidates all the inputs or outputs defined by directives
- * on this node into one object and stores it in ngStaticData so it can
+ * on this node into one object and stores it in tData so it can
  * be shared between all templates of this type.
  *
- * @param index Index where data should be stored in ngStaticData
+ * @param index Index where data should be stored in tData
  */
 function generatePropertyAliases(flags: number, tNode: TNode, isInputData = false): TNode {
   const start = flags >> LNodeFlags.INDX_SHIFT;
   const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
 
   for (let i = start, ii = start + size; i < ii; i++) {
-    const directiveDef: DirectiveDef<any> = ngStaticData ![i] as DirectiveDef<any>;
+    const directiveDef: DirectiveDef<any> = tData ![i] as DirectiveDef<any>;
     const propertyAliasMap: {[publicName: string]: string} =
         isInputData ? directiveDef.inputs : directiveDef.outputs;
     for (let publicName in propertyAliasMap) {
@@ -946,12 +944,12 @@ export function directiveCreate<T>(
 
   data[index] = instance = directive;
 
-  if (index >= ngStaticData.length) {
-    ngStaticData[index] = directiveDef !;
+  if (index >= tData.length) {
+    tData[index] = directiveDef !;
     if (queryName) {
-      ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.staticData');
-      const nodeStaticData = previousOrParentNode !.tNode !;
-      (nodeStaticData.localNames || (nodeStaticData.localNames = [])).push(queryName, index);
+      ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
+      const tNode = previousOrParentNode !.tNode !;
+      (tNode.localNames || (tNode.localNames = [])).push(queryName, index);
     }
   }
 
@@ -960,9 +958,9 @@ export function directiveCreate<T>(
     diPublic(directiveDef !);
   }
 
-  const staticData: TNode|null = previousOrParentNode.tNode !;
-  if (staticData && staticData.attrs) {
-    setInputsFromAttrs<T>(instance, directiveDef !.inputs, staticData);
+  const tNode: TNode|null = previousOrParentNode.tNode !;
+  if (tNode && tNode.attrs) {
+    setInputsFromAttrs<T>(instance, directiveDef !.inputs, tNode);
   }
   return instance;
 }
@@ -1140,8 +1138,7 @@ export function container(
   if (node.tNode == null) {
     // TODO(misko): implement queryName caching
     const queryName: string|null = hack_findQueryName(null, localRefs, '');
-    node.tNode = ngStaticData[index] =
-        createTNode(tagName || null, attrs || null, [], queryName || null);
+    node.tNode = tData[index] = createTNode(tagName || null, attrs || null, [], queryName || null);
   }
 
   // Containers are added to the current view tree instead of their embedded views
@@ -1215,7 +1212,8 @@ export function viewStart(viewBlockId: number): boolean {
     enterView((existingView as LViewNode).data, previousOrParentNode as LViewNode);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
-    const newView = createLView(viewBlockId, renderer, initViewStaticData(viewBlockId, container));
+    const newView =
+        createLView(viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container));
     enterView(newView, createLNode(null, LNodeFlags.View, null, newView));
     lContainer.nextIndex++;
   }
@@ -1224,24 +1222,24 @@ export function viewStart(viewBlockId: number): boolean {
 }
 
 /**
- * Initialize the static data for the active view.
+ * Initialize the TView (e.g. static data) for the active embedded view.
  *
- * Each embedded view needs to set the global ngStaticData variable to the static data for
+ * Each embedded view needs to set the global tData variable to the static data for
  * that view. Otherwise, the view's static data for a particular node would overwrite
- * the staticdata for a node in the view above it with the same index (since it's in the
+ * the static data for a node in the view above it with the same index (since it's in the
  * same template).
  *
- * @param viewIndex The index of the view's static data in containerStatic
+ * @param viewIndex The index of the TView in TContainer
  * @param parent The parent container in which to look for the view's static data
- * @returns NgStaticData
+ * @returns TView
  */
-function initViewStaticData(viewIndex: number, parent: LContainerNode): NgStaticData {
+function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TView {
   ngDevMode && assertNodeType(parent, LNodeFlags.Container);
-  const containerStatic = (parent !.tNode as TContainerNode).containerStatic;
-  if (viewIndex >= containerStatic.length || containerStatic[viewIndex] == null) {
-    containerStatic[viewIndex] = [];
+  const tContainer = (parent !.tNode as TContainerNode).data;
+  if (viewIndex >= tContainer.length || tContainer[viewIndex] == null) {
+    tContainer[viewIndex] = { data: [] } as TView;
   }
-  return containerStatic[viewIndex];
+  return tContainer[viewIndex];
 }
 
 /** Marks the end of the LViewNode. */
@@ -1900,8 +1898,8 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   } else {
     // We don't store any static data for local variables, so the first time
     // we see the template, we should store as null to avoid a sparse array
-    if (index >= ngStaticData.length) {
-      ngStaticData[index] = null;
+    if (index >= tData.length) {
+      tData[index] = null;
     }
     data[index] = value;
   }
