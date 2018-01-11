@@ -19,6 +19,7 @@
     "test": "yarn check-env && ng test",
     "pree2e": "yarn check-env && yarn ~~update-webdriver",
     "e2e": "ng e2e --no-webdriver-update",
+    "e2e-prod": "yarn e2e --environment=dev --target=production",
     "preinstall": "node ../tools/yarn/check-yarn.js",
     "presetup": "yarn install --frozen-lockfile && yarn ~~check-env && yarn boilerplate:remove",
     "setup": "yarn aio-use-npm && yarn example-use-npm",

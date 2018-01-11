@@ -33,7 +33,8 @@ source ${thisDir}/_travis-fold.sh
 
   # Run e2e tests
   travisFoldStart "test.aio.e2e"
-    yarn e2e
+    # Use `production` mode to catch issues introduced by build optimizations.
+    yarn e2e-prod
   travisFoldEnd "test.aio.e2e"
 
 
