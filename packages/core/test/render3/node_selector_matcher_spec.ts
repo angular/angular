@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TNode} from '../../src/render3/interfaces/node';
-import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from '../../src/render3/interfaces/projection';
+import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from '../../src/render3/interfaces';
 import {isNodeMatchingSelector, isNodeMatchingSelectorWithNegations, isNodeMatchingSimpleSelector} from '../../src/render3/node_selector_matcher';
+import {TNode} from '../../src/render3/t_node';
 
 function testLStaticData(tagName: string, attrs: string[] | null): TNode {
   return {

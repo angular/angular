@@ -14,20 +14,16 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {Type} from '../type';
 
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
-import {LContainer} from './interfaces/container';
-import {LInjector} from './interfaces/injector';
-import {CssSelector, LProjection} from './interfaces/projection';
-import {LQuery, QueryReadType} from './interfaces/query';
-import {LView} from './interfaces/view';
+import {CssSelector, LContainer, LContainerNode, LElementNode, LInjector, LNode, LNodeFlags, LProjection, LProjectionNode, LQuery, LTextNode, LView, LViewNode, QueryReadType} from './interfaces';
 
-import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, NgStaticData, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
+import {NgStaticData, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './t_node';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, TypedDirectiveDef, TypedComponentDef} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, TypedDirectiveDef, TypedComponentDef} from './definition_interfaces';
 import {InjectFlags, diPublicInInjector, getOrCreateNodeInjectorForNode, getOrCreateElementRef, getOrCreateTemplateRef, getOrCreateContainerRef, getOrCreateInjectable} from './di';
 import {QueryList, LQuery_} from './query';
-import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
+import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './renderer';
 import {isDifferent, stringify} from './util';
 
 export {queryRefresh} from './query';
