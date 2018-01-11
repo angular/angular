@@ -45,6 +45,12 @@ import {LowerCasePipe, TitleCasePipe, UpperCasePipe} from '@angular/common';
       expect(pipe.transform('foo')).toEqual('Foo');
     });
 
+    it('should treat special characters and common characters equally', () => {
+      expect(pipe.transform('føderation')).toEqual('Føderation');
+      expect(pipe.transform('bênção')).toEqual('Bênção');
+      expect(pipe.transform('it\'s complicated')).toEqual('It\'s Complicated');
+    });
+
     it('should not support other objects',
        () => { expect(() => pipe.transform(<any>{})).toThrowError(); });
   });

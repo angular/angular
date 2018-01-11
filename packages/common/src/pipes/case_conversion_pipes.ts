@@ -51,7 +51,7 @@ export class TitleCasePipe implements PipeTransform {
       throw invalidPipeArgumentError(TitleCasePipe, value);
     }
 
-    return value.split(/\b/g).map(word => titleCaseWord(word)).join('');
+    return value.replace(/\w\S*/g, (word => titleCaseWord(word)));
   }
 }
 
