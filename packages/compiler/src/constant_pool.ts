@@ -9,6 +9,8 @@
 import * as o from './output/output_ast';
 import {OutputContext, error} from './util';
 
+const CONSTANT_PREFIX = '_c';
+
 export const enum DefinitionKind {Injector, Directive, Component}
 
 /**
@@ -48,29 +50,34 @@ export class ConstantPool {
   private literals = new Map<string, FixupExpression>();
   private injectorDefinitions = new Map<any, FixupExpression>();
   private directiveDefinitions = new Map<any, FixupExpression>();
-  private componentDefintions = new Map<any, FixupExpression>();
+  private componentDefinitions = new Map<any, FixupExpression>();
 
   private nextNameIndex = 0;
 
-  getConstLiteral(literal: o.Expression): o.Expression {
+  getConstLiteral(literal: o.Expression, forceShared?: boolean): o.Expression {
     const key = this.keyOf(literal);
     let fixup = this.literals.get(key);
+    let newValue = false;
     if (!fixup) {
       fixup = new FixupExpression(literal);
       this.literals.set(key, fixup);
-    } else if (!fixup.shared) {
+      newValue = true;
+    }
+
+    if ((!newValue && !fixup.shared) || (newValue && forceShared)) {
       // Replace the expression with a variable
       const name = this.freshName();
       this.statements.push(
           o.variable(name).set(literal).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
       fixup.fixup(o.variable(name));
     }
+
     return fixup;
   }
 
   getDefinition(type: any, kind: DefinitionKind, ctx: OutputContext): o.Expression {
     const declarations = kind == DefinitionKind.Component ?
-        this.componentDefintions :
+        this.componentDefinitions :
         kind == DefinitionKind.Directive ? this.directiveDefinitions : this.injectorDefinitions;
     let fixup = declarations.get(type);
     if (!fixup) {
@@ -97,7 +104,7 @@ export class ConstantPool {
    */
   uniqueName(prefix: string): string { return `${prefix}${this.nextNameIndex++}`; }
 
-  private freshName(): string { return this.uniqueName(`_$`); }
+  private freshName(): string { return this.uniqueName(CONSTANT_PREFIX); }
 
   private keyOf(expression: o.Expression) {
     return expression.visitExpression(new KeyVisitor(), null);
@@ -105,15 +112,22 @@ export class ConstantPool {
 }
 
 class KeyVisitor implements o.ExpressionVisitor {
-  visitLiteralExpr(ast: o.LiteralExpr): string { return `${ast.value}`; }
+  visitLiteralExpr(ast: o.LiteralExpr): string {
+    return `${typeof ast.value === 'string' ? '"' + ast.value + '"' : ast.value}`;
+  }
   visitLiteralArrayExpr(ast: o.LiteralArrayExpr): string {
-    return ast.entries.map(entry => entry.visitExpression(this, null)).join(',');
+    return `[${ast.entries.map(entry => entry.visitExpression(this, null)).join(',')}]`;
   }
 
   visitLiteralMapExpr(ast: o.LiteralMapExpr): string {
-    const entries =
-        ast.entries.map(entry => `${entry.key}:${entry.value.visitExpression(this, null)}`);
-    return `{${entries.join(',')}`;
+    const mapEntry = (entry: o.LiteralMapEntry) =>
+        `${entry.key}:${entry.value.visitExpression(this, null)}`;
+    return `{${ast.entries.map(mapEntry).join(',')}`;
+  }
+
+  visitExternalExpr(ast: o.ExternalExpr): string {
+    return ast.value.moduleName ? `EX:${ast.value.moduleName}:${ast.value.name}` :
+                                  `EX:${ast.value.runtime.name}`;
   }
 
   visitReadVarExpr = invalid;
@@ -123,7 +137,6 @@ class KeyVisitor implements o.ExpressionVisitor {
   visitInvokeMethodExpr = invalid;
   visitInvokeFunctionExpr = invalid;
   visitInstantiateExpr = invalid;
-  visitExternalExpr = invalid;
   visitConditionalExpr = invalid;
   visitNotExpr = invalid;
   visitAssertNotNullExpr = invalid;
