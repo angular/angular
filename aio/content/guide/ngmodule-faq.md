@@ -338,6 +338,7 @@ Define child routes and let the router load module components into that outlet.
 <hr/>
 
 <a id="q-root-component-or-module"></a>
+
 {@ q-root-component-or-module}
 
 ## Should I add application-wide providers to the root `AppModule` or the root `AppComponent`?
@@ -372,6 +373,7 @@ This means that lazy-loaded modules can't reach them.
 
 <hr/>
 <a id="q-component-or-module"></a>
+
 {@ q-component-or-module}
 
 ## Should I add other providers to a module or a component?
@@ -394,6 +396,7 @@ not the root `AppComponent`.
 <hr/>
 
 <a id="q-why-bad"></a>
+
 {@ q-why-bad}
 
 ## Why is it bad if a shared module provides a service to a lazy-loaded module?
