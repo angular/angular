@@ -9,8 +9,10 @@
 import './ng_dev_mode';
 
 import {assertNotNull} from './assert';
-import {TNode} from './interfaces/node';
-import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from './interfaces/projection';
+import {TNode, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
+import {CssSelector, CssSelectorWithNegations, SimpleCssSelector, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
+
+const unusedValueToPlacateAjd = unused1 + unused2;
 
 function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
   const nodeClassesLen = nodeClassAttrVal.length;
