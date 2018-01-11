@@ -9,8 +9,8 @@
 import './ng_dev_mode';
 
 import {assertNotNull} from './assert';
-import {TNode} from './interfaces/node';
-import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from './interfaces/projection';
+import {CssSelector, CssSelectorWithNegations, SimpleCssSelector} from './interfaces';
+import {TNode} from './t_node';
 
 function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
   const nodeClassesLen = nodeClassAttrVal.length;

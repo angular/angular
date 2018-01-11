@@ -16,12 +16,11 @@ import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
 import {Type} from '../type';
 
 import {assertNotNull} from './assert';
+import {DirectiveDef, TypedDirectiveDef} from './definition_interfaces';
 import {getOrCreateContainerRef, getOrCreateElementRef, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from './di';
-import {DirectiveDef, TypedDirectiveDef} from './interfaces/definition';
-import {LInjector} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode, TNode} from './interfaces/node';
-import {LQuery, QueryReadType} from './interfaces/query';
+import {LContainerNode, LElementNode, LInjector, LNode, LNodeFlags, LQuery, LViewNode, QueryReadType} from './interfaces';
 import {assertNodeOfPossibleTypes} from './node_assert';
+import {TNode} from './t_node';
 
 
 

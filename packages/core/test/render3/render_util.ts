@@ -8,11 +8,11 @@
 
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
+import {DirectiveDefArgs} from '../../src/render3/definition_interfaces';
 import {ComponentTemplate, ComponentType, DirectiveType, PublicFeature, defineComponent, defineDirective, renderComponent as _renderComponent} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, createLNode, createLView, renderTemplate} from '../../src/render3/instructions';
-import {DirectiveDefArgs} from '../../src/render3/interfaces/definition';
-import {LElementNode, LNodeFlags} from '../../src/render3/interfaces/node';
-import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {LElementNode, LNodeFlags} from '../../src/render3/interfaces';
+import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/renderer';
 
 import {getRendererFactory2} from './imported_renderer2';
 
