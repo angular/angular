@@ -17,12 +17,13 @@ import {Type} from '../type';
 
 import {assertNotNull} from './assert';
 import {getOrCreateContainerRef, getOrCreateElementRef, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from './di';
-import {DirectiveDef, TypedDirectiveDef} from './interfaces/definition';
-import {LInjector} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode, TNode} from './interfaces/node';
-import {LQuery, QueryReadType} from './interfaces/query';
+import {DirectiveDef, TypedDirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
+import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
+import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode, TNode, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {LQuery, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {assertNodeOfPossibleTypes} from './node_assert';
 
+const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
 
 /**
