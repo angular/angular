@@ -74,6 +74,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
           "generateCodeForLibraries": False,
           "allowEmptyCodegenFiles": True,
           "enableSummariesForJit": True,
+          "fullTemplateTypeCheck": ctx.attr.type_check,
           # FIXME: wrong place to de-dupe
           "expectedOut": depset([o.path for o in expected_outs]).to_list(),
           "preserveWhitespaces": False,
@@ -261,6 +262,8 @@ NG_MODULE_ATTRIBUTES = {
       # TODO(alexeagle): change this to ".ng.html" when usages updated
       ".html",
     ]),
+
+    "type_check": attr.bool(default = True),
 
     "no_i18n": attr.bool(default = False),
 
