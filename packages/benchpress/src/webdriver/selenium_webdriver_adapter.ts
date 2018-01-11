@@ -34,7 +34,7 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
   capabilities(): Promise<{[key: string]: any}> {
     return this._driver.getCapabilities().then((capsObject: any) => {
       const localData: {[key: string]: any} = {};
-      for (const key of capsObject.keys()) {
+      for (const key of Array.from((<Map<string, any>>capsObject).keys())) {
         localData[key] = capsObject.get(key);
       }
       return localData;
