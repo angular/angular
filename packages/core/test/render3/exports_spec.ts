@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, T, V, a, b, cR, cr, defineComponent, defineDirective, e, k, p, t, v} from '../../src/render3/index';
+import {C, E, T, V, a, b, cR, cr, defineComponent, defineDirective, e, k, m, p, t, v} from '../../src/render3/index';
 
 import {renderToHtml} from './render_util';
 
@@ -36,7 +36,7 @@ describe('exports', () => {
         e();
         T(2);
       }
-      t(2, D<MyComponent>(1).name);
+      t(2, m<MyComponent>(1).name);
     }
 
     class MyComponent {
@@ -73,7 +73,7 @@ describe('exports', () => {
         E(2, 'div', null, [MyDir]);
         e();
       }
-      p(2, 'myDir', b(D<MyComponent>(1)));
+      p(2, 'myDir', b(m<MyComponent>(1)));
     }
 
     renderToHtml(Template, {});
@@ -89,7 +89,7 @@ describe('exports', () => {
         e();
         T(2);
       }
-      t(2, D<SomeDir>(1).name);
+      t(2, m<SomeDir>(1).name);
     }
 
     class SomeDir {
@@ -198,7 +198,7 @@ describe('exports', () => {
           E(2, MyComponent);
           e();
         }
-        p(0, 'myDir', b(D<MyComponent>(3)));
+        p(0, 'myDir', b(m<MyComponent>(3)));
       }
 
       renderToHtml(Template, {});
@@ -218,7 +218,7 @@ describe('exports', () => {
           e();
         }
         let myInput = E(4);
-        let myComp = D(3) as MyComponent;
+        let myComp = m(3) as MyComponent;
         t(0, b(myInput && (myInput as any).value));
         t(1, b(myComp && myComp.name));
       }
