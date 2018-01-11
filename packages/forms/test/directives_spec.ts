@@ -128,7 +128,7 @@ function asyncValidator(expected: any, timeout = 0) {
       let loginControlDir: FormControlName;
 
       beforeEach(() => {
-        form = new FormGroupDirective([], []);
+        form = new FormGroupDirective([], [], null !);
         formModel = new FormGroup({
           'login': new FormControl(),
           'passwords': new FormGroup(
@@ -283,7 +283,7 @@ function asyncValidator(expected: any, timeout = 0) {
 
         it('should set up a sync validator', () => {
           const formValidator = (c: AbstractControl) => ({'custom': true});
-          const f = new FormGroupDirective([formValidator], []);
+          const f = new FormGroupDirective([formValidator], [], null !);
           f.form = formModel;
           f.ngOnChanges({'form': new SimpleChange(null, null, false)});
 
@@ -291,7 +291,7 @@ function asyncValidator(expected: any, timeout = 0) {
         });
 
         it('should set up an async validator', fakeAsync(() => {
-             const f = new FormGroupDirective([], [asyncValidator('expected')]);
+             const f = new FormGroupDirective([], [asyncValidator('expected')], null !);
              f.form = formModel;
              f.ngOnChanges({'form': new SimpleChange(null, null, false)});
 
@@ -402,7 +402,7 @@ function asyncValidator(expected: any, timeout = 0) {
       beforeEach(() => {
         formModel = new FormGroup({'login': new FormControl(null)});
 
-        const parent = new FormGroupDirective([], []);
+        const parent = new FormGroupDirective([], [], null !);
         parent.form = new FormGroup({'group': formModel});
         controlGroupDir = new FormGroupName(parent, [], []);
         controlGroupDir.name = 'group';
@@ -441,7 +441,7 @@ function asyncValidator(expected: any, timeout = 0) {
       let formArrayDir: FormArrayName;
 
       beforeEach(() => {
-        const parent = new FormGroupDirective([], []);
+        const parent = new FormGroupDirective([], [], null !);
         formModel = new FormArray([new FormControl('')]);
         parent.form = new FormGroup({'array': formModel});
         formArrayDir = new FormArrayName(parent, [], []);
@@ -646,7 +646,7 @@ function asyncValidator(expected: any, timeout = 0) {
       beforeEach(() => {
         formModel = new FormControl('name');
 
-        const parent = new FormGroupDirective([], []);
+        const parent = new FormGroupDirective([], [], null !);
         parent.form = new FormGroup({'name': formModel});
         controlNameDir = new FormControlName(parent, [], [], [defaultAccessor]);
         controlNameDir.name = 'name';

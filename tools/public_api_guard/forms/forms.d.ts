@@ -316,7 +316,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     ngSubmit: EventEmitter<{}>;
     readonly path: string[];
     readonly submitted: boolean;
-    constructor(_validators: any[], _asyncValidators: any[]);
+    constructor(_validators: any[], _asyncValidators: any[], parentFormGroupDir: FormGroupDirective);
     addControl(dir: FormControlName): FormControl;
     addFormArray(dir: FormArrayName): void;
     addFormGroup(dir: FormGroupName): void;
