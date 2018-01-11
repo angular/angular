@@ -48,7 +48,7 @@ Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@n
 2018-04-11	  | 6.0.2                               | -                                  |
 2018-04-18	  | -                                   | -                                  | [ng-conf](https://www.ng-conf.org/)
 
-## Tentative Schedule After September 2018
+## Tentative Schedule After April 2018
 
  Date                   | Stable Release | Compatibility`*`
  ---------------------- | -------------- | ----------------
