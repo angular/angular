@@ -171,7 +171,8 @@ export function renderComponent<T>(
   let component: T;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);
   const oldView = enterView(
-      createLView(-1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), []),
+      createLView(
+          -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), {data: []}),
       null !);
   try {
     // Create element node at index 0 in data array

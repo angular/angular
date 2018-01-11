@@ -129,19 +129,15 @@ export interface LView {
    * appear in the template, starting with `bindingStartIndex`.
    * We use `bindingIndex` to internally keep track of which binding
    * is currently active.
-   *
-   * NOTE: We also use data == null as a marker for creationMode. We
-   * do this by creating ViewState in incomplete state with nodes == null
-   * and we initialize it on first run.
    */
   readonly data: any[];
 
   /**
-   * The static data array for the current view. We need a reference to this so we
-   * can easily walk up the node tree in DI and get the ngStaticData array associated
-   * with a node (where the directive defs are stored).
+   * The static data for this view. We need a reference to this so we can easily walk up the
+   * node tree in DI and get the TView.data array associated with a node (where the
+   * directive defs are stored).
    */
-  ngStaticData: (TNode|DirectiveDef<any>|null)[];
+  tView: TView;
 }
 
 /** Interface necessary to work with view tree traversal */
@@ -151,6 +147,24 @@ export interface LViewOrLContainer {
   views?: LViewNode[];
   parent: LView|null;
 }
+
+/**
+ * The static data for an LView (shared between all templates of a
+ * given type).
+ *
+ * Stored on the template function as ngPrivateData.
+ */
+export interface TView { data: TData; }
+
+/**
+ * Static data that corresponds to the instance-specific data array on an LView.
+ *
+ * Each node's static data is stored in tData at the same index that it's stored
+ * in the data array. Each directive's definition is stored here at the same index
+ * as its directive instance in the data array. Any nodes that do not have static
+ * data store a null value in tData to avoid a sparse array.
+ */
+export type TData = (TNode | DirectiveDef<any>| null)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
