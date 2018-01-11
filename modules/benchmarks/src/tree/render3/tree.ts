@@ -87,7 +87,7 @@ export class TreeComponent {
   });
 }
 
-export class TreeFunction extends TreeComponent {
+export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
@@ -104,15 +104,19 @@ export class TreeFunction extends TreeComponent {
 
 export function TreeTpl(ctx: TreeNode, cm: boolean) {
   if (cm) {
-    E(0, 'span');
-    { T(1); }
+    E(0, 'tree');
+    {
+      E(1, 'span');
+      { T(2); }
+      e();
+      C(3);
+      C(4);
+    }
     e();
-    C(2);
-    C(3);
   }
-  s(0, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
-  t(1, b1(' ', ctx.value, ' '));
-  cR(2);
+  s(1, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
+  t(2, b1(' ', ctx.value, ' '));
+  cR(3);
   {
     if (ctx.left != null) {
       let cm0 = V(0);
@@ -121,7 +125,7 @@ export function TreeTpl(ctx: TreeNode, cm: boolean) {
     }
   }
   cr();
-  cR(3);
+  cR(4);
   {
     if (ctx.right != null) {
       let cm0 = V(0);
