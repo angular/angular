@@ -23,12 +23,22 @@ describe('tree benchmark perf', () => {
 
   Benchmarks.forEach(benchmark => {
     describe(benchmark.id, () => {
+      // This is actually a destroyOnly benchmark
       it('should work for createOnly', (done) => {
         runTreeBenchmark({
           id: 'createOnly',
           benchmark,
           prepare: () => $(CreateBtn).click(),
           work: () => $(DestroyBtn).click()
+        }).then(done, done.fail);
+      });
+
+      it('should work for createOnlyForReal', (done) => {
+        runTreeBenchmark({
+          id: 'createOnlyForReal',
+          benchmark,
+          prepare: () => $(DestroyBtn).click(),
+          work: () => $(CreateBtn).click()
         }).then(done, done.fail);
       });
 
