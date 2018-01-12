@@ -9,8 +9,11 @@ const package = require('./package.json');
 /** Current version of the project*/
 const buildVersion = package.version;
 
-/** Required Angular version for the project. */
-const angularVersion = package.dependencies['@angular/core'];
+/**
+ * Required Angular version for all Angular Material packages. This version will be used
+ * as the peer dependency version for Angular in all release packages.
+ */
+const angularVersion = '^5.0.0';
 
 /** License that will be placed inside of all created bundles. */
 const buildLicense = `/**
