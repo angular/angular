@@ -11,6 +11,7 @@ import {Constructor} from './constructor';
 
 /** @docs-private */
 export interface CanDisableRipple {
+  /** Whether ripples are disabled. */
   disableRipple: boolean;
 }
 

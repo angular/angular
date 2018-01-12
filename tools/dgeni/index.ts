@@ -2,6 +2,7 @@ import {Package} from 'dgeni';
 import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {Categorizer} from './processors/categorizer';
 import {FilterExportAliases} from './processors/filter-export-aliases';
+import {MergeInheritedProperties} from './processors/merge-inherited-properties';
 import {ComponentGrouper} from './processors/component-grouper';
 import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTypeScriptModules';
 import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
@@ -51,6 +52,9 @@ export const apiDocsPackage = new Package('material2-api-docs', dgeniPackageDeps
 // Processor that filters out aliased exports that should not be shown in the docs.
 apiDocsPackage.processor(new FilterExportAliases());
 
+// Processor that merges inherited properties of a class with the class doc.
+apiDocsPackage.processor(new MergeInheritedProperties());
+
 // Processor that filters out symbols that should not be shown in the docs.
 apiDocsPackage.processor(new DocsPrivateFilter());
 
@@ -99,8 +103,14 @@ apiDocsPackage.config((readTypeScriptModules: ReadTypeScriptModules, tsParser: T
     typescriptPathMap[`@angular/cdk/${packageName}`] = [`./cdk/${packageName}/index.ts`];
   });
 
-  tsParser.options.baseUrl = sourceDir;
+  materialPackages.forEach(packageName => {
+    typescriptPathMap[`@angular/material/${packageName}`] = [`./lib/${packageName}/index.ts`];
+  });
+
+  // Add proper path mappings to the TSParser service of Dgeni. This ensures that properties
+  // from mixins (e.g. color, disabled) are showing up properly in the docs.
   tsParser.options.paths = typescriptPathMap;
+  tsParser.options.baseUrl = sourceDir;
 
   // Entry points for docs generation. All publically exported symbols found through these
   // files will have docs generated.

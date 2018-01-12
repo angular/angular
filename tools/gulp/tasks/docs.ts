@@ -150,7 +150,7 @@ task('api-docs', () => {
  * Minifies all HTML files that have been generated. The HTML files for the
  * highlighted examples can be skipped, because it won't have any effect.
  */
-task('minify-html-files', ['api-docs'], () => {
+task('minify-html-files', () => {
   return src('dist/docs/+(api|markdown)/**/*.html')
     .pipe(htmlmin(htmlMinifierOptions))
     .pipe(dest('dist/docs'));

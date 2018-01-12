@@ -114,6 +114,8 @@ export class Categorizer implements Processor {
   private decoratePropertyDoc(propertyDoc: CategorizedPropertyMemberDoc) {
     decorateDeprecatedDoc(propertyDoc);
 
+    // TODO(devversion): detect inputs based on the `inputs` property in the component metadata.
+
     propertyDoc.isDirectiveInput = isDirectiveInput(propertyDoc);
     propertyDoc.directiveInputAlias = getDirectiveInputAlias(propertyDoc);
 
