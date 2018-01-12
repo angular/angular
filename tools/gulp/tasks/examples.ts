@@ -53,19 +53,24 @@ function buildImportsTemplate(metadata: ExampleMetadata): string {
  * Builds the examples metadata including title, component, etc.
  */
 function buildExamplesTemplate(metadata: ExampleMetadata): string {
+  const fields = [
+    `title: '${metadata.title.trim()}'`,
+    `component: ${metadata.component}`,
+  ];
+
   // if no additional files or selectors were provided,
   // return null since we don't care about if these were not found
-  const additionalFiles = metadata.additionalFiles.length ?
-    JSON.stringify(metadata.additionalFiles) : 'null';
+  if (metadata.additionalFiles.length) {
+    fields.push(`additionalFiles: ${JSON.stringify(metadata.additionalFiles)}`);
+  }
 
-  const selectorName = metadata.selectorName.length ?
-    `'${metadata.selectorName.join(', ')}'` : 'null';
+  if (metadata.selectorName.length) {
+    fields.push(`selectorName: '${metadata.selectorName.join(', ')}'`);
+  }
 
-  return `'${metadata.id}': {
-    title: '${metadata.title}',
-    component: ${metadata.component},
-    additionalFiles: ${additionalFiles},
-    selectorName: ${selectorName}
+  const data = '\n' + fields.map(field => '    ' + field).join(',\n');
+
+  return `'${metadata.id}': {${data}
   },
   `;
 }
@@ -90,6 +95,7 @@ import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {ExampleMaterialModule} from './material-module';
+${extractedMetadata.map(r => buildImportsTemplate(r)).join('').trim()}
 
 export interface LiveExample {
   title: string;
@@ -98,9 +104,7 @@ export interface LiveExample {
   selectorName?: string;
 }
 
-${extractedMetadata.map(r => buildImportsTemplate(r)).join('').trim()}
-
-export const EXAMPLE_COMPONENTS = {
+export const EXAMPLE_COMPONENTS: {[key: string]: LiveExample} = {
   ${extractedMetadata.map(r => buildExamplesTemplate(r)).join('').trim()}
 };
 

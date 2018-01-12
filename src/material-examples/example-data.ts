@@ -18,36 +18,31 @@ export class ExampleData {
   componentName = 'ButtonDemo';
 
   constructor(example: string) {
-    if (example && EXAMPLE_COMPONENTS[example]) {
-      this.examplePath = `/assets/stackblitz/examples/${example}/`;
+    if (!example || !EXAMPLE_COMPONENTS.hasOwnProperty(example)) {
+      return;
+    }
 
-      // TODO(tinayuangao): Do not hard-code extensions
-      this.exampleFiles = ['html', 'ts', 'css']
-          .map((extension) => `${example}-example.${extension}`);
-      let exampleFilesSet = new Set(
-          ['html', 'ts', 'css'].map((extension) => `${example}-example.${extension}`));
-      if (EXAMPLE_COMPONENTS[example].additionalFiles) {
-        for (let file of EXAMPLE_COMPONENTS[example].additionalFiles) {
-          exampleFilesSet.add(file);
-        }
-      }
-      this.exampleFiles = Array.from(exampleFilesSet.values());
+    const exampleConfig = EXAMPLE_COMPONENTS[example];
+    const exampleFilesSet = new Set(['html', 'ts', 'css'].map(extension => {
+      return `${example}-example.${extension}`;
+    }));
 
-      this.selectorName = this.indexFilename = `${example}-example`;
+    // TODO(tinayuangao): Do not hard-code extensions
+    this.exampleFiles = ['html', 'ts', 'css'].map(extension => `${example}-example.${extension}`);
+    this.examplePath = `/assets/stackblitz/examples/${example}/`;
+    this.exampleFiles = Array.from(exampleFilesSet.values());
+    this.selectorName = this.indexFilename = `${example}-example`;
 
-      let exampleName = example.replace(/(?:^\w|\b\w)/g, letter => letter.toUpperCase());
-
-      if (EXAMPLE_COMPONENTS[example].title) {
-        this.description = EXAMPLE_COMPONENTS[example].title;
-      } else {
-        this.description = exampleName.replace(/[\-]+/g, ' ') + ' Example';
-      }
-
-      if (EXAMPLE_COMPONENTS[example].selectorName) {
-        this.componentName = EXAMPLE_COMPONENTS[example].selectorName;
-      } else {
-        this.componentName = exampleName.replace(/[\-]+/g, '') + 'Example';
+    if (exampleConfig.additionalFiles) {
+      for (let file of exampleConfig.additionalFiles) {
+        exampleFilesSet.add(file);
       }
     }
+
+    const exampleName = example.replace(/(?:^\w|\b\w)/g, letter => letter.toUpperCase());
+
+    this.description = exampleConfig.title || exampleName.replace(/[\-]+/g, ' ') + ' Example';
+    this.componentName = exampleConfig.selectorName ||
+                          exampleName.replace(/[\-]+/g, '') + 'Example';
   }
 }
