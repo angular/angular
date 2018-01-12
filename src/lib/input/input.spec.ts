@@ -413,6 +413,18 @@ describe('MatInput without forms', () => {
     expect(el.nativeElement.textContent).toMatch(/hello\s+\*/g);
   }));
 
+  it('should hide the required star if input is disabled', () => {
+    const fixture = TestBed.createComponent(MatInputPlaceholderRequiredTestComponent);
+
+    fixture.componentInstance.disabled = true;
+    fixture.detectChanges();
+
+    const el = fixture.debugElement.query(By.css('label'));
+
+    expect(el).not.toBeNull();
+    expect(el.nativeElement.textContent).toMatch(/^hello$/);
+  });
+
   it('should hide the required star from screen readers', fakeAsync(() => {
     let fixture = TestBed.createComponent(MatInputPlaceholderRequiredTestComponent);
     fixture.detectChanges();
@@ -1151,11 +1163,12 @@ class MatInputWithType {
 
 @Component({
   template: `<mat-form-field [hideRequiredMarker]="hideRequiredMarker">
-                <input matInput required placeholder="hello">
+                <input matInput required [disabled]="disabled" placeholder="hello">
              </mat-form-field>`
 })
 class MatInputPlaceholderRequiredTestComponent {
-  hideRequiredMarker: boolean;
+  hideRequiredMarker: boolean = false;
+  disabled: boolean = false;
 }
 
 @Component({
