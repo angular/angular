@@ -7,7 +7,7 @@
 
   .mat-snack-bar-container {
     background: if($is-dark-theme, map-get($mat-grey, 50), #323232);
-    color: if($is-dark-theme, $black-87-opacity, white);
+    color: if($is-dark-theme, $dark-primary-text, $light-primary-text);
   }
 
   .mat-simple-snackbar-action {
