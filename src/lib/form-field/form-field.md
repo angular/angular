@@ -38,7 +38,7 @@ present in the form field control. It can also be set to `auto` to restore the d
 
 <!-- example(form-field-label) -->
 
-Global default label options can be specified by setting providing a value for
+Global default label options can be specified by providing a value for
 `MAT_LABEL_GLOBAL_OPTIONS` in your application's root module. Like the property, the global
 setting can be either `always`, `never`, or `auto`.
 
