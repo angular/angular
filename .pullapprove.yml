@@ -10,11 +10,11 @@
 # brocco - Mike Brocchi
 # chuckjaz - Chuck Jazdzewski
 # filipesilva - Filipe Silva
-# Foxandxss - Jesús Rodríguez
 # gkalpak - George Kalpakas
 # hansl - Hans Larsen
 # IgorMinar - Igor Minar
 # jasonaden - Jason Aden
+# kapunahelewong - Kapunahele Wong
 # kara - Kara Erickson
 # matsko - Matias Niemelä
 # mhevery - Misko Hevery
@@ -91,7 +91,7 @@ groups:
     users:
       - alexeagle #primary
       - chuckjaz
-      - IgorMinar
+      - IgorMinar #fallback
       - vikerman #fallback
 
   build-and-ci:
@@ -127,8 +127,9 @@ groups:
       files:
         - "packages/core/*"
     users:
-      - chuckjaz #primary
-      - mhevery
+      - mhevery #primary
+      - chuckjaz
+      - kara
       - vicb
       - IgorMinar #fallback
 
@@ -139,7 +140,6 @@ groups:
         - "packages/platform-browser/animations/*"
     users:
       - matsko #primary
-      - chuckjaz #fallback
       - mhevery #fallback
       - IgorMinar #fallback
 
@@ -171,6 +171,7 @@ groups:
       - hansl
       - filipesilva #fallback
       - brocco #fallback
+      - IgorMinar #fallback
 
   compiler-cli:
     conditions:
@@ -222,9 +223,8 @@ groups:
         - "packages/common/http/*"
         - "packages/http/*"
     users:
-      - vikerman #primary
-      - alxhub
-      - IgorMinar #fallback
+      - alxhub #primary
+      - IgorMinar
       - mhevery #fallback
 
   language-service:
@@ -243,7 +243,7 @@ groups:
       files:
         - "packages/router/*"
     users:
-      - jasonaden
+      - jasonaden #primary
       - vicb
       - IgorMinar #fallback
       - mhevery #fallback
@@ -274,8 +274,7 @@ groups:
         - "packages/platform-server/*"
     users:
       - vikerman #primary
-      # needs secondary
-      - alxhub
+      - alxhub #secondary
       - vicb
       - IgorMinar #fallback
       - mhevery #fallback
@@ -333,11 +332,11 @@ groups:
           - "aio/content/navigation.json"
           - "aio/content/license.md"
     users:
+      - kapunahelewong
       - stephenfluin
-      - Foxandxss
       - petebacondarwin
       - gkalpak
-      - IgorMinar #fallback
+      - IgorMinar
       - mhevery #fallback
 
   angular.io-marketing:
@@ -351,5 +350,5 @@ groups:
       - stephenfluin
       - petebacondarwin
       - gkalpak
-      - IgorMinar #fallback
+      - IgorMinar
       - mhevery #fallback
