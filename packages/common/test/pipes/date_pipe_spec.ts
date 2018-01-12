@@ -275,6 +275,16 @@ import localeTh from '@angular/common/locales/th';
          () => expect(pipe.transform('2017-05-07T22:14:39', 'dd-MM-yyyy HH:mm'))
                    .toMatch(/07-05-2017 \d{2}:\d{2}/));
 
+      // test for issue https://github.com/angular/angular/issues/21491
+      it('should not assume UTC for iso strings in Safari if the timezone is not defined', () => {
+        // this test only works if the timezone is not in UTC
+        // which is the case for BrowserStack when we test Safari
+        if (new Date().getTimezoneOffset() !== 0) {
+          expect(pipe.transform('2018-01-11T13:00:00', 'HH'))
+              .not.toEqual(pipe.transform('2018-01-11T13:00:00Z', 'HH'));
+        }
+      });
+
       // test for the following bugs:
       // https://github.com/angular/angular/issues/16624
       // https://github.com/angular/angular/issues/17478
