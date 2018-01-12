@@ -20,6 +20,7 @@ $mat-row-horizontal-padding: 24px;
   border-bottom-style: solid;
   align-items: center;
   padding: 0 $mat-row-horizontal-padding;
+  box-sizing: border-box;
 
   // Workaround for https://goo.gl/pFmjJD in IE 11. Adds a pseudo
   // element that will stretch the row the correct height. See:
