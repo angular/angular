@@ -24,6 +24,7 @@ import {MatDatepickerInput} from './datepicker-input';
 import {MatDatepickerIntl} from './datepicker-intl';
 import {MatDatepickerToggle} from './datepicker-toggle';
 import {MatMonthView} from './month-view';
+import {MatMultiYearView} from './multi-year-view';
 import {MatYearView} from './year-view';
 
 
@@ -45,6 +46,7 @@ import {MatYearView} from './year-view';
     MatDatepickerToggle,
     MatMonthView,
     MatYearView,
+    MatMultiYearView,
   ],
   declarations: [
     MatCalendar,
@@ -55,6 +57,7 @@ import {MatYearView} from './year-view';
     MatDatepickerToggle,
     MatMonthView,
     MatYearView,
+    MatMultiYearView,
   ],
   providers: [
     MatDatepickerIntl,

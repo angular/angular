@@ -106,7 +106,7 @@ export class MatYearView<D> implements AfterContentInit {
         Math.min(this._dateAdapter.getDate(this.activeDate), daysInMonth)));
   }
 
-  /** Initializes this month view. */
+  /** Initializes this year view. */
   _init() {
     this._selectedMonth = this._getMonthInCurrentYear(this.selected);
     this._todayMonth = this._getMonthInCurrentYear(this._dateAdapter.today());

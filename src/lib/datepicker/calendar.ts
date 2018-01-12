@@ -27,13 +27,13 @@ import {
   Inject,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
   Optional,
   Output,
-  ViewEncapsulation,
-  ViewChild,
-  OnChanges,
   SimpleChanges,
+  ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
 import {take} from 'rxjs/operators/take';
@@ -41,6 +41,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {createMissingDateImplError} from './datepicker-errors';
 import {MatDatepickerIntl} from './datepicker-intl';
 import {MatMonthView} from './month-view';
+import {MatMultiYearView, yearsPerPage, yearsPerRow} from './multi-year-view';
 import {MatYearView} from './year-view';
 
 
@@ -73,7 +74,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   private _startAt: D | null;
 
   /** Whether the calendar should be started in month or year view. */
-  @Input() startView: 'month' | 'year' = 'month';
+  @Input() startView: 'month' | 'year' | 'multi-year' = 'month';
 
   /** The currently selected date. */
   @Input()
@@ -114,7 +115,10 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   /** Reference to the current year view component. */
   @ViewChild(MatYearView) yearView: MatYearView<D>;
 
-  /** Date filter for the month and year views. */
+  /** Reference to the current multi-year view component. */
+  @ViewChild(MatMultiYearView) multiYearView: MatMultiYearView<D>;
+
+  /** Date filter for the month, year, and multi-year views. */
   _dateFilterForViews = (date: D) => {
     return !!date &&
         (!this.dateFilter || this.dateFilter(date)) &&
@@ -133,28 +137,46 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   private _clampedActiveDate: D;
 
   /** Whether the calendar is in month view. */
-  _monthView: boolean;
+  _currentView: 'month' | 'year' | 'multi-year';
 
   /** The label for the current calendar view. */
   get _periodButtonText(): string {
-    return this._monthView ?
-        this._dateAdapter.format(this._activeDate, this._dateFormats.display.monthYearLabel)
-            .toLocaleUpperCase() :
-        this._dateAdapter.getYearName(this._activeDate);
+    if (this._currentView == 'month') {
+      return this._dateAdapter.format(this._activeDate, this._dateFormats.display.monthYearLabel)
+          .toLocaleUpperCase();
+    }
+    if (this._currentView == 'year') {
+      return this._dateAdapter.getYearName(this._activeDate);
+    }
+    const activeYear = this._dateAdapter.getYear(this._activeDate);
+    const firstYearInView = this._dateAdapter.getYearName(
+        this._dateAdapter.createDate(activeYear - activeYear % 24, 0, 1));
+    const lastYearInView = this._dateAdapter.getYearName(
+        this._dateAdapter.createDate(activeYear + yearsPerPage - 1 - activeYear % 24, 0, 1));
+    return `${firstYearInView} \u2013 ${lastYearInView}`;
   }
 
   get _periodButtonLabel(): string {
-    return this._monthView ? this._intl.switchToYearViewLabel : this._intl.switchToMonthViewLabel;
+    return this._currentView == 'month' ?
+        this._intl.switchToMultiYearViewLabel : this._intl.switchToMonthViewLabel;
   }
 
   /** The label for the the previous button. */
   get _prevButtonLabel(): string {
-    return this._monthView ? this._intl.prevMonthLabel : this._intl.prevYearLabel;
+    return {
+      'month': this._intl.prevMonthLabel,
+      'year': this._intl.prevYearLabel,
+      'multi-year': this._intl.prevMultiYearLabel
+    }[this._currentView];
   }
 
   /** The label for the the next button. */
   get _nextButtonLabel(): string {
-    return this._monthView ? this._intl.nextMonthLabel : this._intl.nextYearLabel;
+    return {
+      'month': this._intl.nextMonthLabel,
+      'year': this._intl.nextYearLabel,
+      'multi-year': this._intl.nextMultiYearLabel
+    }[this._currentView];
   }
 
   constructor(private _elementRef: ElementRef,
@@ -178,7 +200,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
   ngAfterContentInit() {
     this._activeDate = this.startAt || this._dateAdapter.today();
     this._focusActiveCell();
-    this._monthView = this.startView != 'year';
+    this._currentView = this.startView;
   }
 
   ngOnDestroy() {
@@ -189,7 +211,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
     const change = changes.minDate || changes.maxDate || changes.dateFilter;
 
     if (change && !change.firstChange) {
-      const view = this.monthView || this.yearView;
+      const view = this.monthView || this.yearView || this.multiYearView;
 
       if (view) {
         view._init();
@@ -208,29 +230,31 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
     this._userSelection.emit();
   }
 
-  /** Handles month selection in the year view. */
-  _monthSelected(month: D): void {
-    this._activeDate = month;
-    this._monthView = true;
+  /** Handles month selection in the multi-year view. */
+  _goToDateInView(date: D, view: 'month' | 'year' | 'multi-year'): void {
+    this._activeDate = date;
+    this._currentView = view;
   }
 
   /** Handles user clicks on the period label. */
   _currentPeriodClicked(): void {
-    this._monthView = !this._monthView;
+    this._currentView = this._currentView == 'month' ? 'multi-year' : 'month';
   }
 
   /** Handles user clicks on the previous button. */
   _previousClicked(): void {
-    this._activeDate = this._monthView ?
+    this._activeDate = this._currentView == 'month' ?
         this._dateAdapter.addCalendarMonths(this._activeDate, -1) :
-        this._dateAdapter.addCalendarYears(this._activeDate, -1);
+        this._dateAdapter.addCalendarYears(
+            this._activeDate, this._currentView == 'year' ? -1 : -yearsPerPage);
   }
 
   /** Handles user clicks on the next button. */
   _nextClicked(): void {
-    this._activeDate = this._monthView ?
+    this._activeDate = this._currentView == 'month' ?
         this._dateAdapter.addCalendarMonths(this._activeDate, 1) :
-        this._dateAdapter.addCalendarYears(this._activeDate, 1);
+        this._dateAdapter.addCalendarYears(
+            this._activeDate, this._currentView == 'year' ? 1 : yearsPerPage);
   }
 
   /** Whether the previous period button is enabled. */
@@ -251,10 +275,12 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
     // TODO(mmalerba): We currently allow keyboard navigation to disabled dates, but just prevent
     // disabled ones from being selected. This may not be ideal, we should look into whether
     // navigation should skip over disabled dates, and if so, how to implement that efficiently.
-    if (this._monthView) {
+    if (this._currentView == 'month') {
       this._handleCalendarBodyKeydownInMonthView(event);
-    } else {
+    } else if (this._currentView == 'year') {
       this._handleCalendarBodyKeydownInYearView(event);
+    } else {
+      this._handleCalendarBodyKeydownInMultiYearView(event);
     }
   }
 
@@ -269,10 +295,16 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
 
   /** Whether the two dates represent the same view in the current view mode (month or year). */
   private _isSameView(date1: D, date2: D): boolean {
-    return this._monthView ?
-        this._dateAdapter.getYear(date1) == this._dateAdapter.getYear(date2) &&
-        this._dateAdapter.getMonth(date1) == this._dateAdapter.getMonth(date2) :
-        this._dateAdapter.getYear(date1) == this._dateAdapter.getYear(date2);
+    if (this._currentView == 'month') {
+      return this._dateAdapter.getYear(date1) == this._dateAdapter.getYear(date2) &&
+          this._dateAdapter.getMonth(date1) == this._dateAdapter.getMonth(date2);
+    }
+    if (this._currentView == 'year') {
+      return this._dateAdapter.getYear(date1) == this._dateAdapter.getYear(date2);
+    }
+    // Otherwise we are in 'multi-year' view.
+    return Math.floor(this._dateAdapter.getYear(date1) / yearsPerPage) ==
+        Math.floor(this._dateAdapter.getYear(date2) / yearsPerPage);
   }
 
   /** Handles keydown events on the calendar body when calendar is in month view. */
@@ -337,10 +369,10 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
         this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate, 1);
         break;
       case UP_ARROW:
-        this._activeDate = this._prevMonthInSameCol(this._activeDate);
+        this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate, -4);
         break;
       case DOWN_ARROW:
-        this._activeDate = this._nextMonthInSameCol(this._activeDate);
+        this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate, 4);
         break;
       case HOME:
         this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate,
@@ -359,7 +391,7 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
             this._dateAdapter.addCalendarYears(this._activeDate, event.altKey ? 10 : 1);
         break;
       case ENTER:
-        this._monthSelected(this._activeDate);
+        this._goToDateInView(this._activeDate, 'month');
         break;
       default:
         // Don't prevent default or focus active cell on keys that we don't explicitly handle.
@@ -371,22 +403,50 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
     event.preventDefault();
   }
 
-  /**
-   * Determine the date for the month that comes before the given month in the same column in the
-   * calendar table.
-   */
-  private _prevMonthInSameCol(date: D): D {
-    // Decrement by 4 since there are 4 months per row.
-    return this._dateAdapter.addCalendarMonths(date, -4);
-  }
+  /** Handles keydown events on the calendar body when calendar is in multi-year view. */
+  private _handleCalendarBodyKeydownInMultiYearView(event: KeyboardEvent): void {
+    switch (event.keyCode) {
+      case LEFT_ARROW:
+        this._activeDate = this._dateAdapter.addCalendarYears(this._activeDate, -1);
+        break;
+      case RIGHT_ARROW:
+        this._activeDate = this._dateAdapter.addCalendarYears(this._activeDate, 1);
+        break;
+      case UP_ARROW:
+        this._activeDate = this._dateAdapter.addCalendarYears(this._activeDate, -yearsPerRow);
+        break;
+      case DOWN_ARROW:
+        this._activeDate = this._dateAdapter.addCalendarYears(this._activeDate, yearsPerRow);
+        break;
+      case HOME:
+        this._activeDate = this._dateAdapter.addCalendarYears(this._activeDate,
+            -this._dateAdapter.getYear(this._activeDate) % yearsPerPage);
+        break;
+      case END:
+        this._activeDate = this._dateAdapter.addCalendarYears(this._activeDate,
+            yearsPerPage - this._dateAdapter.getYear(this._activeDate) % yearsPerPage - 1);
+        break;
+      case PAGE_UP:
+        this._activeDate =
+            this._dateAdapter.addCalendarYears(
+                this._activeDate, event.altKey ? -yearsPerPage * 10 : -yearsPerPage);
+        break;
+      case PAGE_DOWN:
+        this._activeDate =
+            this._dateAdapter.addCalendarYears(
+                this._activeDate, event.altKey ? yearsPerPage * 10 : yearsPerPage);
+        break;
+      case ENTER:
+        this._goToDateInView(this._activeDate, 'year');
+        break;
+      default:
+        // Don't prevent default or focus active cell on keys that we don't explicitly handle.
+        return;
+    }
 
-  /**
-   * Determine the date for the month that comes after the given month in the same column in the
-   * calendar table.
-   */
-  private _nextMonthInSameCol(date: D): D {
-    // Increment by 4 since there are 4 months per row.
-    return this._dateAdapter.addCalendarMonths(date, 4);
+    this._focusActiveCell();
+    // Prevent unexpected default actions such as form submission.
+    event.preventDefault();
   }
 
   /**

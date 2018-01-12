@@ -4,14 +4,12 @@
   </thead>
   <tbody mat-calendar-body
          allowDisabledSelection="true"
-         [label]="_yearLabel"
-         [rows]="_months"
-         [todayValue]="_todayMonth"
-         [selectedValue]="_selectedMonth"
-         [labelMinRequiredCells]="2"
+         [rows]="_years"
+         [todayValue]="_todayYear"
+         [selectedValue]="_selectedYear"
          [numCols]="4"
          [cellAspectRatio]="4 / 7"
-         [activeCell]="_dateAdapter.getMonth(activeDate)"
-         (selectedValueChange)="_monthSelected($event)">
+         [activeCell]="_getActiveCell()"
+         (selectedValueChange)="_yearSelected($event)">
   </tbody>
 </table>
