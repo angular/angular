@@ -46,7 +46,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
   top(value: string = ''): this {
     this._bottomOffset = '';
     this._topOffset = value;
-    this._alignItems = 'flex-start';
+    this._justifyContent = 'flex-start';
     return this;
   }
 
@@ -57,7 +57,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
   left(value: string = ''): this {
     this._rightOffset = '';
     this._leftOffset = value;
-    this._justifyContent = 'flex-start';
+    this._alignItems = 'flex-start';
     return this;
   }
 
@@ -68,7 +68,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
   bottom(value: string = ''): this {
     this._topOffset = '';
     this._bottomOffset = value;
-    this._alignItems = 'flex-end';
+    this._justifyContent = 'flex-end';
     return this;
   }
 
@@ -79,7 +79,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
   right(value: string = ''): this {
     this._leftOffset = '';
     this._rightOffset = value;
-    this._justifyContent = 'flex-end';
+    this._alignItems = 'flex-end';
     return this;
   }
 
@@ -123,7 +123,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
    */
   centerHorizontally(offset: string = ''): this {
     this.left(offset);
-    this._justifyContent = 'center';
+    this._alignItems = 'center';
     return this;
   }
 
@@ -135,7 +135,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
    */
   centerVertically(offset: string = ''): this {
     this.top(offset);
-    this._alignItems = 'center';
+    this._justifyContent = 'center';
     return this;
   }
 
