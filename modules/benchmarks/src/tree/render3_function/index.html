@@ -28,6 +28,8 @@
   </div>
 
   <script>
+    // TODO(mlaval): remove once we have a proper solution
+    ngDevMode = false;
     var mainUrl = window.location.search.split(/[?&]main=([^&]+)/)[1]
       || '../../bootstrap_ng2.js';
     document.write('<script src="' + mainUrl + '">\u003c/script>');
