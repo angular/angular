@@ -97,7 +97,7 @@ In fact, many libraries declare and export components you'll never use.
 For example, a material design library will export all components because it doesn’t know which ones you will use. However, it is unlikely that you will use them all.
 For the ones you don't reference, the tree shaker drops these components from the final code package.
 
-If a component isn't an _entry component_ or isn't found in a template,
+If a component isn't an _entry component_ and isn't found in a template,
 the tree shaker will throw it away. So, it's best to add only the components that are truly entry components to help keep your app
 as trim as possible.
 
