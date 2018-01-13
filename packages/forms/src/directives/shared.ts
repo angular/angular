@@ -99,9 +99,9 @@ function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
 }
 
 function updateControl(control: FormControl, dir: NgControl): void {
-  dir.viewToModelUpdate(control._pendingValue);
   if (control._pendingDirty) control.markAsDirty();
   control.setValue(control._pendingValue, {emitModelToViewChange: false});
+  dir.viewToModelUpdate(control._pendingValue);
   control._pendingChange = false;
 }
 

@@ -1472,6 +1472,36 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(required.nativeElement.getAttribute('pattern')).toEqual(null);
          }));
 
+      it('should update control status', fakeAsync(() => {
+           const fixture = initTest(NgModelChangeState);
+           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputNativeEl = inputEl.nativeElement;
+           const onNgModelChange = jasmine.createSpy('onNgModelChange');
+           fixture.componentInstance.onNgModelChange = onNgModelChange;
+           fixture.detectChanges();
+           tick();
+
+           expect(onNgModelChange).not.toHaveBeenCalled();
+
+           inputNativeEl.value = 'updated';
+           onNgModelChange.and.callFake((ngModel: NgModel) => {
+             expect(ngModel.invalid).toBe(true);
+             expect(ngModel.value).toBe('updated');
+           });
+           dispatchEvent(inputNativeEl, 'input');
+           expect(onNgModelChange).toHaveBeenCalled();
+           tick();
+
+           inputNativeEl.value = '333';
+           onNgModelChange.and.callFake((ngModel: NgModel) => {
+             expect(ngModel.invalid).toBe(false);
+             expect(ngModel.value).toBe('333');
+           });
+           dispatchEvent(inputNativeEl, 'input');
+           expect(onNgModelChange).toHaveBeenCalledTimes(2);
+           tick();
+         }));
+
     });
 
     describe('IME events', () => {
@@ -1807,6 +1837,17 @@ class NgModelChangesForm {
   options: any;
 
   log() { this.events.push('fired'); }
+}
+
+@Component({
+  selector: 'ng-model-change-state',
+  template: `
+    <input #ngModel="ngModel" ngModel [maxlength]="4"
+           (ngModelChange)="onNgModelChange(ngModel)">
+  `
+})
+class NgModelChangeState {
+  onNgModelChange = () => {};
 }
 
 function sortedClassList(el: HTMLElement) {
