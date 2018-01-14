@@ -121,8 +121,8 @@
     },
 
     {
-      "title": "심화",
-      "tooltip": "Angular 심화",
+      "title": "기초",
+      "tooltip": "Angular 기초",
       "children": [
         {
           "url": "guide/architecture",

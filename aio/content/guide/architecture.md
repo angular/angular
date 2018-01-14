@@ -410,40 +410,55 @@ application logic into services and make those services available to components 
 
 ## Dependency injection
 
-<img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" class="left">
+<!-- <img src="generated/images/guide/architecture/dependency-injection.png" alt="Service" class="left"> -->
+<img src="generated/images/guide/architecture/dependency-injection.png" alt="서비스" class="left">
 
-_Dependency injection_ is a way to supply a new instance of a class
+<!-- _Dependency injection_ is a way to supply a new instance of a class
 with the fully-formed dependencies it requires. Most dependencies are services.
-Angular uses dependency injection to provide new components with the services they need.
+Angular uses dependency injection to provide new components with the services they need. -->
+어떤 클래스에서 다른 클래스의 기능이 필요할 때, 대상 클래스의 인스턴스를 외부에서 전달받는 방식을 _의존성 주입_ 이라고 합니다.
+이 때 컴포넌트들이 공통으로 사용하는 로직은 서비스에 구현하기 때문에, 주입 받는 대상은 대부분 서비스가 될 것입니다.
+Angular도 컴포넌트에서 서비스의 로직이 필요할 때 의존성 주입 방식을 사용합니다. 
 
 <br class="clear">
 
-Angular can tell which services a component needs by looking at the types of its constructor parameters.
-For example, the constructor of your `HeroListComponent` needs a `HeroService`:
-
+<!-- Angular can tell which services a component needs by looking at the types of its constructor parameters.
+For example, the constructor of your `HeroListComponent` needs a `HeroService`: -->
+컴포넌트에 서비스를 의존성으로 주입하려면 생성자에 인자를 지정하면서 타입을 지정하면 됩니다.
+예를 들어 `HeroListComponent` 에 `HeroService` 가 필요하다면 다음과 같이 지정합니다:
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 
-When Angular creates a component, it first asks an **injector** for
-the services that the component requires.
+<!-- When Angular creates a component, it first asks an **injector** for
+the services that the component requires. -->
+Angular는 컴포넌트를 생성할 때 **인젝터(injector)** 에 의존성으로 주입하는 서비스의 인스턴스가 있는지 먼저 확인합니다.
 
-An injector maintains a container of service instances that it has previously created.
+<!-- An injector maintains a container of service instances that it has previously created.
 If a requested service instance is not in the container, the injector makes one and adds it to the container
 before returning the service to Angular.
 When all requested services have been resolved and returned,
 Angular can call the component's constructor with those services as arguments.
-This is *dependency injection*.
+This is *dependency injection*. -->
+인젝터는 이전에 인스턴스로 생성했던 서비스를 모아서 관리하는 객체입니다.
+컴포넌트에 필요한 서비스가 있을때, 이 서비스의 인스턴스가 인젝터가 관리하는 컨테이너에 있으면 서비스의 인스턴스를 바로 전달하고,
+없으면 새로 생성해서 전달하며 인젝터가 관리하는 컨테이너에도 추가합니다.
+그러면 Angular가 이 서비스를 컴포넌트 생성자에 인자로 전달하는 방식으로 *의존성을 주입* 합니다.
 
-The process of `HeroService` injection looks a bit like this:
+<!-- The process of `HeroService` injection looks a bit like this: -->
+`HeroService` 가 의존성으로 제공되는 흐름을 간단하게 살펴보면 다음과 같습니다:
 
 <figure>
-  <img src="generated/images/guide/architecture/injector-injects.png" alt="Service">
+  <!-- <img src="generated/images/guide/architecture/injector-injects.png" alt="Service"> -->
+  <img src="generated/images/guide/architecture/injector-injects.png" alt="서비스">
 </figure>
 
-If the injector doesn't have a `HeroService`, how does it know how to make one?
+<!-- If the injector doesn't have a `HeroService`, how does it know how to make one? -->
+그런데 인젝터에 `HeroService` 의 인스턴스가 없으면 이 인스턴스는 어떻게 만들어 질까요?
 
-In brief, you must have previously registered a **provider** of the `HeroService` with the injector.
-A provider is something that can create or return a service, typically the service class itself.
+<!-- In brief, you must have previously registered a **provider** of the `HeroService` with the injector.
+A provider is something that can create or return a service, typically the service class itself. -->
+간단하게 설명하면, 인젝터가 `HeroService` 에 해당하는 **프로바이더(provider)** 를 지정해 두어야 인스턴스를 생성할 수 있습니다.
+프로바이더에는 서비스를 생성하는 팩토리 함수를 지정할 수도 있지만, 일반적으로 서비스 클래스를 직접 지정합니다.
 
 You can register providers in modules or in components.
 
