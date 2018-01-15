@@ -153,122 +153,202 @@ describe('AppComponent', () => {
       });
     });
 
-    describe('SideNav when side-by-side (wide)', () => {
+    describe('SideNav', () => {
       const navigateTo = (path: string) => {
         locationService.go(path);
         component.updateSideNav();
         fixture.detectChanges();
       };
-
-      beforeEach(() => {
-        component.onResize(sideBySideBreakPoint + 1); // side-by-side
-      });
-
-      it('should open when nav to a guide page (guide/pipes)', () => {
-        navigateTo('guide/pipes');
-        expect(sidenav.opened).toBe(true);
-      });
-
-      it('should open when nav to an api page', () => {
-        navigateTo('api/a/b/c/d');
-        expect(sidenav.opened).toBe(true);
-      });
-
-      it('should be closed when nav to a marketing page (features)', () => {
-        navigateTo('features');
-        expect(sidenav.opened).toBe(false);
-      });
-
-      describe('when manually closed', () => {
-
-        beforeEach(() => {
-          navigateTo('guide/pipes');
-          hamburger.click();
-          fixture.detectChanges();
-        });
-
-        it('should be closed', () => {
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should stay closed when nav from one guide page to another', () => {
-          navigateTo('guide/bags');
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should stay closed when nav from a guide page to api page', () => {
-          navigateTo('api');
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should reopen when nav to market page and back to guide page', () => {
-          navigateTo('features');
-          navigateTo('guide/bags');
-          expect(sidenav.opened).toBe(true);
-        });
-      });
-    });
-
-    describe('SideNav when NOT side-by-side (narrow)', () => {
-      const navigateTo = (path: string) => {
-        locationService.go(path);
-        component.updateSideNav();
+      const resizeTo = (width: number) => {
+        component.onResize(width);
+        fixture.detectChanges();
+      };
+      const toggleSidenav = () => {
+        hamburger.click();
         fixture.detectChanges();
       };
 
-      beforeEach(() => {
-        component.onResize(sideBySideBreakPoint - 1); // NOT side-by-side
-      });
+      describe('when side-by-side (wide)', () => {
+        beforeEach(() => resizeTo(sideBySideBreakPoint + 1));  // side-by-side
 
-      it('should be closed when nav to a guide page (guide/pipes)', () => {
-        navigateTo('guide/pipes');
-        expect(sidenav.opened).toBe(false);
-      });
-
-      it('should be closed when nav to an api page', () => {
-        navigateTo('api/a/b/c/d');
-        expect(sidenav.opened).toBe(false);
-      });
-
-      it('should be closed when nav to a marketing page (features)', () => {
-        navigateTo('features');
-        expect(sidenav.opened).toBe(false);
-      });
-
-      describe('when manually opened', () => {
-
-        beforeEach(() => {
+        it('should open when navigating to a guide page (guide/pipes)', () => {
           navigateTo('guide/pipes');
-          hamburger.click();
-          fixture.detectChanges();
-        });
-
-        it('should be open', () => {
           expect(sidenav.opened).toBe(true);
         });
 
-        it('should close when click in gray content area overlay', () => {
-          const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement;
-          sidenavBackdrop.click();
-          fixture.detectChanges();
-          expect(sidenav.opened).toBe(false);
+        it('should open when navigating to an api page', () => {
+          navigateTo('api/a/b/c/d');
+          expect(sidenav.opened).toBe(true);
         });
 
-        it('should close when nav to another guide page', () => {
-          navigateTo('guide/bags');
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should close when nav to api page', () => {
-          navigateTo('api');
-          expect(sidenav.opened).toBe(false);
-        });
-
-        it('should close again when nav to market page', () => {
+        it('should be closed when navigating to a marketing page (features)', () => {
           navigateTo('features');
           expect(sidenav.opened).toBe(false);
         });
 
+        describe('when manually closed', () => {
+
+          beforeEach(() => {
+            navigateTo('guide/pipes');
+            toggleSidenav();
+          });
+
+          it('should be closed', () => {
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should stay closed when navigating from one guide page to another', () => {
+            navigateTo('guide/bags');
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should stay closed when navigating from a guide page to api page', () => {
+            navigateTo('api');
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should reopen when navigating to market page and back to guide page', () => {
+            navigateTo('features');
+            navigateTo('guide/bags');
+            expect(sidenav.opened).toBe(true);
+          });
+        });
+      });
+
+      describe('when NOT side-by-side (narrow)', () => {
+        beforeEach(() => resizeTo(sideBySideBreakPoint - 1)); // NOT side-by-side
+
+        it('should be closed when navigating to a guide page (guide/pipes)', () => {
+          navigateTo('guide/pipes');
+          expect(sidenav.opened).toBe(false);
+        });
+
+        it('should be closed when navigating to an api page', () => {
+          navigateTo('api/a/b/c/d');
+          expect(sidenav.opened).toBe(false);
+        });
+
+        it('should be closed when navigating to a marketing page (features)', () => {
+          navigateTo('features');
+          expect(sidenav.opened).toBe(false);
+        });
+
+        describe('when manually opened', () => {
+
+          beforeEach(() => {
+            navigateTo('guide/pipes');
+            toggleSidenav();
+          });
+
+          it('should be open', () => {
+            expect(sidenav.opened).toBe(true);
+          });
+
+          it('should close when clicking in gray content area overlay', () => {
+            const sidenavBackdrop = fixture.debugElement.query(By.css('.mat-drawer-backdrop')).nativeElement;
+            sidenavBackdrop.click();
+            fixture.detectChanges();
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should close when navigating to another guide page', () => {
+            navigateTo('guide/bags');
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should close when navigating to api page', () => {
+            navigateTo('api');
+            expect(sidenav.opened).toBe(false);
+          });
+
+          it('should close again when navigating to market page', () => {
+            navigateTo('features');
+            expect(sidenav.opened).toBe(false);
+          });
+
+        });
+      });
+
+      describe('when changing side-by-side (narrow --> wide)', () => {
+        const sidenavDocs = ['api/a/b/c/d', 'guide/pipes'];
+        const nonSidenavDocs = ['features', 'about'];
+
+        sidenavDocs.forEach(doc => {
+          it(`should open when on a sidenav doc (${doc})`, () => {
+            resizeTo(sideBySideBreakPoint - 1);
+
+            navigateTo(doc);
+            expect(sidenav.opened).toBe(false);
+
+            resizeTo(sideBySideBreakPoint + 1);
+            expect(sidenav.opened).toBe(true);
+          });
+        });
+
+        nonSidenavDocs.forEach(doc => {
+          it(`should remain closed when on a non-sidenav doc (${doc})`, () => {
+            resizeTo(sideBySideBreakPoint - 1);
+
+            navigateTo(doc);
+            expect(sidenav.opened).toBe(false);
+
+            resizeTo(sideBySideBreakPoint + 1);
+            expect(sidenav.opened).toBe(false);
+          });
+        });
+
+        describe('when manually opened', () => {
+          sidenavDocs.forEach(doc => {
+            it(`should remain opened when on a sidenav doc (${doc})`, () => {
+              resizeTo(sideBySideBreakPoint - 1);
+
+              navigateTo(doc);
+              toggleSidenav();
+              expect(sidenav.opened).toBe(true);
+
+              resizeTo(sideBySideBreakPoint + 1);
+              expect(sidenav.opened).toBe(true);
+            });
+          });
+
+          nonSidenavDocs.forEach(doc => {
+            it(`should close when on a non-sidenav doc (${doc})`, () => {
+              resizeTo(sideBySideBreakPoint - 1);
+
+              navigateTo(doc);
+              toggleSidenav();
+              expect(sidenav.opened).toBe(true);
+
+              resizeTo(sideBySideBreakPoint + 1);
+              expect(sidenav.opened).toBe(false);
+            });
+          });
+        });
+      });
+
+      describe('when changing side-by-side (wide --> narrow)', () => {
+        const sidenavDocs = ['api/a/b/c/d', 'guide/pipes'];
+        const nonSidenavDocs = ['features', 'about'];
+
+        sidenavDocs.forEach(doc => {
+          it(`should close when on a sidenav doc (${doc})`, () => {
+            navigateTo(doc);
+            expect(sidenav.opened).toBe(true);
+
+            resizeTo(sideBySideBreakPoint - 1);
+            expect(sidenav.opened).toBe(false);
+          });
+        });
+
+        nonSidenavDocs.forEach(doc => {
+          it(`should remain closed when on a non-sidenav doc (${doc})`, () => {
+            navigateTo(doc);
+            expect(sidenav.opened).toBe(false);
+
+            resizeTo(sideBySideBreakPoint - 1);
+            expect(sidenav.opened).toBe(false);
+          });
+        });
       });
     });
 
@@ -387,14 +467,14 @@ describe('AppComponent', () => {
         expect(scrollSpy).toHaveBeenCalled();
       });
 
-      it('should scroll again when nav to the same hash twice in succession', () => {
+      it('should scroll again when navigating to the same hash twice in succession', () => {
         locationService.go('guide/pipes');
         locationService.go('guide/pipes#somewhere');
         locationService.go('guide/pipes#somewhere');
         expect(scrollSpy.calls.count()).toBe(2);
       });
 
-      it('should scroll when nav to the same path', () => {
+      it('should scroll when navigating to the same path', () => {
         locationService.go('guide/pipes');
         scrollSpy.calls.reset();
 

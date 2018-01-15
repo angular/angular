@@ -235,6 +235,14 @@ export class AppComponent implements OnInit {
   onResize(width: number) {
     this.isSideBySide = width > this.sideBySideWidth;
     this.showFloatingToc.next(width > this.showFloatingTocWidth);
+
+    if (this.isSideBySide && !this.isSideNavDoc) {
+      // If this is a non-sidenav doc and the screen is wide enough so that we can display menu
+      // items in the top-bar, ensure the sidenav is closed.
+      // (This condition can only be met when the resize event changes the value of `isSideBySide`
+      //  from `false` to `true` while on a non-sidenav doc.)
+      this.sideNavToggle(false);
+    }
   }
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
