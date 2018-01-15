@@ -9,6 +9,7 @@ function {$ doc.name $}{$ doc.typeParameters | escape $}{$ params.paramList(doc.
 {% endblock %}
 
 {% block details %}
+{% include "includes/paramTable.html" %}
 {% include "includes/description.html" %}
 {% if doc.overloads.length %}
   <h2>Overloads</h2>{% for overload in doc.overloads %}

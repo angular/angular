@@ -1,0 +1,17 @@
+{% if doc.parameterDocs.length %}
+<h2>Parameters</h2>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+    </tr>
+    {% for param in doc.parameterDocs %}
+    <tr>
+        <td><code-example language="ts" hideCopy="true" class="no-box api-heading">{$ param.name $}</code-example></td>
+        <td><code-example language="ts" hideCopy="true" class="no-box api-heading">{$ param.type $}</code-example></td>
+        <td class="description">{$ param.description | marked $}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
