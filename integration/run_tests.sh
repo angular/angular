@@ -48,7 +48,7 @@ for testDir in $(ls | grep -v node_modules) ; do
     yarn install --cache-folder ../$cache
     yarn test || exit 1
     # Track payload size for cli-hello-world and hello_world__closure
-    if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]]; then
+    if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]] || [[ $testDir == hello_world__render3__closure ]] || [[ $testDir == hello_world__render3__rollup ]]; then
       if [[ $testDir == cli-hello-world ]]; then
         yarn build
       fi
