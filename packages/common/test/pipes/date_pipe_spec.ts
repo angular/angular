@@ -96,6 +96,7 @@ import localeTh from '@angular/common/locales/th';
           W: '3',
           d: '15',
           dd: '15',
+          ddd: '15th',
           E: 'Mon',
           EE: 'Mon',
           EEE: 'Mon',
@@ -154,6 +155,7 @@ import localeTh from '@angular/common/locales/th';
           W: '1',
           d: '1',
           dd: '01',
+          ddd: '1st',
           E: 'Thu',
           EE: 'Thu',
           EEE: 'Thu',
@@ -259,6 +261,21 @@ import localeTh from '@angular/common/locales/th';
 
         Object.keys(dateFixtures).forEach((pattern: string) => {
           expect(pipe.transform(date, pattern)).toMatch(dateFixtures[pattern]);
+        });
+      });
+
+      it('should append proper ordinal suffixes', () => {
+        const dateOrdinals: any = {
+          1: '1st',
+          2: '2nd',
+          3: '3rd',
+          23: '23rd',
+          13: '13th',
+        };
+
+        Object.keys(dateOrdinals).forEach((day: string) => {
+          date = new Date(2015, 5, parseInt(day));
+          expectDateFormatAs(date, 'ddd', dateOrdinals[day]);
         });
       });
 
