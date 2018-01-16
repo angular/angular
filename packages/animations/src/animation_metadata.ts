@@ -325,7 +325,7 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * The `@childAnimation` trigger will not animate because `@.disabled` prevents it from happening
  (when true).
  *
- * Note that `@.disbled` will only disable all animations (this means any animations running on
+ * Note that `@.disabled` will only disable all animations (this means any animations running on
  * the same element will also be disabled).
  *
  * ### Disabling Animations Application-wide
