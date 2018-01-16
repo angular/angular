@@ -13,6 +13,11 @@
       text-decoration: none;
       vertical-align: middle;
       visibility: hidden;
+
+      @media (max-width: 600px) {
+        float: right;
+        margin-left: 0;
+      }
     }
 
     &:hover .header-link {
