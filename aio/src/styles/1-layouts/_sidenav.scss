@@ -128,6 +128,12 @@ button.vertical-menu-item {
   transition-timing-function: ease-out;
 }
 
+.no-animations {
+  .heading-children.expanded, .heading-children.collapsed {
+    transition: none! important;
+  }
+}
+
 .level-1 {
   font-family: $main-font;
   font-size: 14px;
