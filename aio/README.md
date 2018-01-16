@@ -68,6 +68,11 @@ The content is written in markdown.
 All other content is written using markdown in text files, located in the `angular/aio/content` folder.
 More specifically, there are sub-folders that contain particular types of content: guides, tutorial and marketing.
 
+* **Code examples**: code examples need to be testable to ensure their accuracy.
+Also, our examples have a specific look and feel and allow the user to copy the source code. For larger
+examples they are rendered in a tabbed interface (e.g. template, HTML, and TypeScript on separate
+tabs). Additionally, some are live examples, which provide links where the code can be edited, executed, and/or downloaded. For details on working with code examples, please read the [Code snippets](https://angular.io/guide/docs-style-guide#code-snippets), [Source code markup](https://angular.io/guide/docs-style-guide#source-code-markup), and [Live examples](https://angular.io/guide/docs-style-guide#live-examples) pages of the [Authors Style Guide](https://angular.io/guide/docs-style-guide).
+
 We use the [dgeni](https://github.com/angular/dgeni) tool to convert these files into docs that can be viewed in the doc-viewer.
 
 The [Authors Style Guide](https://angular.io/guide/docs-style-guide) prescribes guidelines for
