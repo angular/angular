@@ -21,7 +21,7 @@ import {reduce} from 'rxjs/operator/reduce';
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
 import {ActivationStart, ChildActivationStart, Event} from './events';
 import {ChildrenOutletContexts, OutletContext} from './router_outlet_context';
-import {ActivatedRouteSnapshot, ParamsInheritanceStrategy, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
+import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments, inheritedParamsDataResolve} from './router_state';
 import {andObservables, forEach, shallowEqual, wrapIntoObservable} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
@@ -63,7 +63,7 @@ export class PreActivation {
         (canDeactivate: boolean) => canDeactivate ? this.runCanActivateChecks() : of (false));
   }
 
-  resolveData(paramsInheritanceStrategy: ParamsInheritanceStrategy): Observable<any> {
+  resolveData(paramsInheritanceStrategy: 'emptyOnly'|'always'): Observable<any> {
     if (!this.isActivating()) return of (null);
     const checks$ = from(this.canActivateChecks);
     const runningChecks$ = concatMap.call(
@@ -308,7 +308,7 @@ export class PreActivation {
 
   private runResolve(
       future: ActivatedRouteSnapshot,
-      paramsInheritanceStrategy: ParamsInheritanceStrategy): Observable<any> {
+      paramsInheritanceStrategy: 'emptyOnly'|'always'): Observable<any> {
     const resolve = future._resolve;
     return map.call(this.resolveNode(resolve, future), (resolvedData: any): any => {
       future._resolvedData = resolvedData;
