@@ -125,13 +125,39 @@
       "tooltip": "The fundamentals of Angular",
       "children": [
         {
-          "url": "guide/architecture",
           "title": "Architecture",
-          "tooltip": "The basic building blocks of Angular applications."
+          "tooltip": "The basic building blocks of Angular applications.",
+          "children": [
+            {
+              "url": "guide/architecture",
+              "title": "Architecture Overview",
+              "tooltip": "Basic building blocks of Angular applications."
+            },
+            {
+              "url": "guide/architecture-modules",
+              "title": "Intro to Modules",
+              "tooltip": "About NgModules."
+            },
+            {
+              "url": "guide/architecture-components",
+              "title": "Intro to Components",
+              "tooltip": "About Components, Templates, and Views."
+            },
+            {
+              "url": "guide/architecture-services",
+              "title": "Intro to Services and DI",
+              "tooltip": "About services and dependency injection."
+            },
+            {
+              "url": "guide/architecture-next-steps",
+              "title": "Next Steps",
+              "tooltip": "Beyond the basics."
+            }
+          ]
         },
         {
-          "title": "Template & Data Binding",
-          "tooltip": "Template & Data Binding",
+          "title": "Components & Templates",
+          "tooltip": "Building dynamic views with data binding",
           "children": [
             {
               "url": "guide/displaying-data",
