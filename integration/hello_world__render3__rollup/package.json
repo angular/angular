@@ -1,0 +1,37 @@
+{
+  "name": "angular-integration",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "rxjs": "file:../../node_modules/rxjs",
+    "typescript": "file:../../node_modules/typescript"
+  },
+  "devDependencies": {
+    "@types/jasmine": "2.5.41",
+    "concurrently": "3.4.0",
+    "lite-server": "2.2.2",
+    "protractor": "file:../../node_modules/protractor",
+    "rollup": "0.54.0",
+    "rollup-plugin-commonjs": "8.2.6",
+    "rollup-plugin-node-resolve": "3.0.2",
+    "rollup-plugin-replace": "2.0.0",
+    "rollup-plugin-typescript2": "0.10.0",
+    "rollup-plugin-uglify": "2.0.1"
+  },
+  "scripts": {
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
+    "rollup": "rollup -c rollup.config.js",
+    "test": "yarn run rollup && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "serve": "lite-server -c e2e/browser.config.json",
+    "preprotractor": "tsc -p e2e",
+    "protractor": "protractor e2e/protractor.config.js"
+  }
+}

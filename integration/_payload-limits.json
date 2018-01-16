@@ -30,5 +30,19 @@
         "bundle": 100661
       }
     }
+  },
+  "hello_world__render3__closure": {
+    "master": {
+      "uncompressed": {
+        "bundle": 6671
+      }
+    }
+  },
+  "hello_world__render3__rollup": {
+    "master": {
+      "uncompressed": {
+        "bundle": 56550
+      }
+    }
   }
 }
