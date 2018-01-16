@@ -175,7 +175,6 @@ export class ActivatedRoute {
   }
 }
 
-/** @internal */
 export type ParamsInheritanceStrategy = 'emptyOnly' | 'always';
 
 /** @internal */
