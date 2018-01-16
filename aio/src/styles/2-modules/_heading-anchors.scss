@@ -6,6 +6,7 @@
     }
 
     .header-link {
+      box-sizing: border-box;
       color: $mediumgray;
       display: inline-block;
       margin-left: -42px;
@@ -13,6 +14,7 @@
       text-decoration: none;
       vertical-align: middle;
       visibility: hidden;
+      width: 40px;
 
       @media (max-width: 600px) {
         float: right;
