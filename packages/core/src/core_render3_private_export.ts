@@ -13,6 +13,7 @@ export {
   renderComponent as ɵrenderComponent,
   C as ɵC,
   E as ɵE,
+  L as ɵL,
   T as ɵT,
   V as ɵV,
   b as ɵb,
