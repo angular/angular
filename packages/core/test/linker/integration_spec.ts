@@ -347,17 +347,18 @@ function declareTests({useJit}: {useJit: boolean}) {
       });
 
       it('should display correct error message for uninitialized @Output', () => {
-        @Directive({selector: '[uninitializedOuput]'})
-        class UninitializedOuput {
-          @Output() customEvent;
-          doSomething() {
-          }
+        @Component({selector: 'my-uninitialized-output', template: '<p>It works!</p>'})
+        class UninitializedOutputComp {
+          @Output() customEvent !: EventEmitter<any>;
         }
 
-        TestBed.configureTestingModule({declarations: [MyComp, UninitializedOuput]});
-        const template = '<p (customEvent)="doNothing()"></p>';
+        const template =
+            '<my-uninitialized-output (customEvent)="doNothing()"></my-uninitialized-output>';
         TestBed.overrideComponent(MyComp, {set: {template}});
-        TestBed.createComponent(MyComp).toThrowError('@Output customEvent not initialized in \'UninitializedOuput\'.');
+
+        TestBed.configureTestingModule({declarations: [MyComp, UninitializedOutputComp]});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError('@Output customEvent not initialized in \'UninitializedOutputComp\'.');
       });
 
       it('should read directives metadata from their binding token', () => {
