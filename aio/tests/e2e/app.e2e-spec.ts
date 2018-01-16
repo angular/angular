@@ -1,4 +1,4 @@
-import { browser, by, element } from 'protractor';
+import { browser, by, element, ElementFinder } from 'protractor';
 import { SitePage } from './app.po';
 
 describe('site App', function() {
@@ -26,6 +26,52 @@ describe('site App', function() {
     expect(browser.getTitle()).toBe('Angular');
   });
 
+  it('should not navigate when clicking on nav-item headings (sub-menu toggles)', () => {
+    // Show the sidenav.
+    page.navigateTo('docs');
+    expect(page.locationPath()).toBe('/docs');
+
+    // Get the top-level nav-item headings (sub-menu toggles).
+    const navItemHeadings = page.getNavItemHeadings(page.sidenav, 1);
+
+    // Test all headings (and sub-headings).
+    expect(navItemHeadings.count()).toBeGreaterThan(0);
+    navItemHeadings.each(heading => testNavItemHeading(heading!, 1));
+
+    // Helpers
+    function expectToBeCollapsed(element: ElementFinder) {
+      expect(element.getAttribute('class')).toMatch(/\bcollapsed\b/);
+      expect(element.getAttribute('class')).not.toMatch(/\bexpanded\b/);
+    }
+
+    function expectToBeExpanded(element: ElementFinder) {
+      expect(element.getAttribute('class')).not.toMatch(/\bcollapsed\b/);
+      expect(element.getAttribute('class')).toMatch(/\bexpanded\b/);
+    }
+
+    function testNavItemHeading(heading: ElementFinder, level: number) {
+      const children = page.getNavItemHeadingChildren(heading, level);
+
+      // Headings are initially collapsed.
+      expectToBeCollapsed(children);
+
+      // Ensure heading does not cause navigation when expanding.
+      page.click(heading);
+      expectToBeExpanded(children);
+      expect(page.locationPath()).toBe('/docs');
+
+      // Recursively test child-headings (while this heading is expanded).
+      const nextLevel = level + 1;
+      const childNavItemHeadings = page.getNavItemHeadings(children, nextLevel);
+      childNavItemHeadings.each(childHeading => testNavItemHeading(childHeading!, nextLevel));
+
+      // Ensure heading does not cause navigation when collapsing.
+      page.click(heading);
+      expectToBeCollapsed(children);
+      expect(page.locationPath()).toBe('/docs');
+    }
+  });
+
   it('should show the tutorial index page at `/tutorial` after jitterbugging through features', () => {
     // check that we can navigate directly to the tutorial page
     page.navigateTo('tutorial');
@@ -40,7 +86,7 @@ describe('site App', function() {
 
     // Tutorial folder should still be expanded because this test runs in wide mode
     // Navigate to the tutorial introduction via a link in the sidenav
-    page.getNavItem(/introduction/i).click();
+    page.click(page.getNavItem(/introduction/i));
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
   });
 
@@ -57,8 +103,7 @@ describe('site App', function() {
       page.scrollToBottom();
       expect(page.getScrollTop()).toBeGreaterThan(0);
 
-      page.getNavItem(/api/i).click();
-      browser.waitForAngular();
+      page.click(page.getNavItem(/api/i));
       expect(page.locationPath()).toBe('/api');
       expect(page.getScrollTop()).toBe(0);
     });
@@ -69,8 +114,7 @@ describe('site App', function() {
       page.scrollToBottom();
       expect(page.getScrollTop()).toBeGreaterThan(0);
 
-      page.getNavItem(/security/i).click();
-      browser.waitForAngular();
+      page.click(page.getNavItem(/security/i));
       expect(page.locationPath()).toBe('/guide/security');
       expect(page.getScrollTop()).toBe(0);
     });
