@@ -1878,8 +1878,8 @@ export function memory<T>(index: number, value?: T): T {
 }
 
 function valueInData<T>(data: any[], index: number, value?: T): T {
-  ngDevMode && assertDataInRange(index, data);
   if (value === undefined) {
+    ngDevMode && assertDataInRange(index, data);
     value = data[index];
   } else {
     // We don't store any static data for local variables, so the first time
@@ -1914,5 +1914,5 @@ function assertHasParent() {
 
 function assertDataInRange(index: number, arr?: any[]) {
   if (arr == null) arr = data;
-  assertLessThan(arr ? arr.length : 0, index, 'data.length');
+  assertLessThan(index, arr ? arr.length : 0, 'data.length');
 }
