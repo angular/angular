@@ -1,25 +1,13 @@
-// #docplaster
-// #docregion app-module
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-// CoreModule provides the UserService.
-import { CoreModule } from './core/core.module';
+import { UserService } from './user.service';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpModule,
-    CoreModule
-  ],
-  bootstrap: [AppComponent]
+  imports:      [ BrowserModule ],
+  providers:    [ UserService ],
+  declarations: [ AppComponent ],
+  bootstrap:    [ AppComponent ]
 })
 export class AppModule { }
-// #enddocregion app-module
