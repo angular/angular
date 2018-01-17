@@ -92,37 +92,14 @@ $mat-list-item-inset-divider-offset: 72px;
 
   .mat-list-text {
     @include mat-line-wrapper-base();
+    padding: 0 $mat-list-side-padding;
 
-    // By default, padding will be always added on the start-side of the mat-list-text, because
-    // we assume that there is always a secondary item (e.g. avatar-icon, checkbox). But if the
-    // mat-list-text element is the second element, then there is no secondary item and
-    // the padding can be removed.
+    // We only want to override the padding if there isn't
+    // an avatar or icon before the element. Since the ripple
+    // will always be the first child in the container, we
+    // check whether this element is the second child.
     &:nth-child(2) {
       padding: 0;
-    }
-  }
-
-  // There can be a secondary item (e.g. avatar-icon, checkbox) at the start of the
-  // list-item. This means that there should be a padding for the mat-list-text on the start-side.
-  .mat-list-item-content .mat-list-text {
-    padding-left: $mat-list-side-padding;
-
-    [dir='rtl'] & {
-      padding-right: $mat-list-side-padding;
-      padding-left: 0;
-    }
-  }
-
-  // Reversed content is mainly used by the MatSelectionList for displaying the checkbox at the
-  // end of the list option. Since there is a secondary item (checkbox) at the end of the
-  // option, there needs to be a padding for the mat-list-text on the end-side.
-  .mat-list-item-content-reverse .mat-list-text {
-    padding-left: 0;
-    padding-right: $mat-list-side-padding;
-
-    [dir='rtl'] & {
-      padding-right: 0;
-      padding-left: $mat-list-side-padding;
     }
   }
 
