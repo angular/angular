@@ -106,7 +106,7 @@ _EXTRA_NODE_OPTIONS_FLAGS = [
     "--node_options=--expose-gc"
 ]
 
-def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_path,
+def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
                         locale=None, i18n_args=[]):
   """Helper function to create the ngc action.
 
@@ -119,7 +119,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_pa
     inputs: passed to the ngc action's inputs
     outputs: passed to the ngc action's outputs
     messages_out: produced xmb files
-    config_file_path: path to the tsconfig file
+    tsconfig_file: tsconfig file with settings used for the compilation
     locale: i18n locale, or None
     i18n_args: additional command-line arguments to ngc
 
@@ -143,9 +143,9 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_pa
   # Two at-signs escapes the argument so it's passed through to ngc
   # rather than the contents getting expanded.
   if supports_workers == "1":
-    arguments += ["@@" + config_file_path]
+    arguments += ["@@" + tsconfig_file.path]
   else:
-    arguments += ["-p", config_file_path]
+    arguments += ["-p", tsconfig_file.path]
 
   arguments += i18n_args
 
@@ -166,7 +166,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_pa
                outputs = messages_out,
                executable = ctx.executable._ng_xi18n,
                arguments = (_EXTRA_NODE_OPTIONS_FLAGS +
-                            [config_file_path] +
+                            [tsconfig_file.path] +
                             # The base path is bin_dir because of the way the ngc
                             # compiler host is configured. So we need to explictily
                             # point to genfiles/ to redirect the output.
@@ -177,14 +177,14 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, config_file_pa
   if not locale and not ctx.attr.no_i18n:
     return struct(
         label = label,
-        tsconfig = config_file_path,
+        tsconfig = tsconfig_file,
         inputs = inputs,
         outputs = outputs,
     )
 
   return None
 
-def _compile_action(ctx, inputs, outputs, messages_out, config_file_path):
+def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file):
   # Give the Angular compiler all the user-listed assets
   file_inputs = list(ctx.files.assets)
 
@@ -203,16 +203,17 @@ def _compile_action(ctx, inputs, outputs, messages_out, config_file_path):
       transitive = [inputs] + [dep.collect_summaries_aspect_result for dep in ctx.attr.deps
                     if hasattr(dep, "collect_summaries_aspect_result")])
 
-  return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, config_file_path)
+  return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file)
 
 
-def _prodmode_compile_action(ctx, inputs, outputs, config_file_path):
+def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file):
   outs = _expected_outs(ctx)
-  return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, config_file_path)
+  return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, tsconfig_file)
 
-def _devmode_compile_action(ctx, inputs, outputs, config_file_path):
+def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file):
   outs = _expected_outs(ctx)
-  _compile_action(ctx, inputs, outputs + outs.devmode_js + outs.declarations + outs.summaries, None, config_file_path)
+  compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries
+  _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file)
 
 def _ts_expected_outs(ctx, label):
   # rules_typescript expects a function with two arguments, but our
