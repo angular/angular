@@ -98,22 +98,13 @@ export class Testability implements PublicTestability {
   /** @internal */
   _runCallbacksIfReady(): void {
     if (this.isStable()) {
-      if (this._callbacks.length !== 0) {
-        // Schedules the call backs after a macro task run outside of the angular zone to make sure
-        // no new task are added
-        this._ngZone.runOutsideAngular(() => {
-          setTimeout(() => {
-            if (this.isStable()) {
-              while (this._callbacks.length !== 0) {
-                (this._callbacks.pop() !)(this._didWork);
-              }
-              this._didWork = false;
-            }
-          });
-        });
-      } else {
+      // Schedules the call backs in a new frame so that it is always async.
+      scheduleMicroTask(() => {
+        while (this._callbacks.length !== 0) {
+          (this._callbacks.pop() !)(this._didWork);
+        }
         this._didWork = false;
-      }
+      });
     } else {
       // Not Ready
       this._didWork = true;
