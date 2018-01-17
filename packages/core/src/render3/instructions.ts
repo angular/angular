@@ -21,7 +21,7 @@ import {LQuery, QueryReadType} from './interfaces/query';
 import {LView, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
-import {assertNodeType} from './node_assert';
+import {assertNodeType, assertNodeOfPossibleTypes} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, TypedDirectiveDef, TypedComponentDef} from './interfaces/definition';
@@ -173,7 +173,9 @@ export function leaveView(newView: LView): void {
   enterView(newView, null);
 }
 
-export function createLView(viewId: number, renderer: Renderer3, tView: TView): LView {
+export function createLView(
+    viewId: number, renderer: Renderer3, tView: TView,
+    template: ComponentTemplate<any>| null = null, context: any | null = null): LView {
   const newView = {
     parent: currentView,
     id: viewId,    // -1 for component views
@@ -187,7 +189,10 @@ export function createLView(viewId: number, renderer: Renderer3, tView: TView): 
     next: null,
     bindingStartIndex: null,
     creationMode: true,
-    viewHookStartIndex: null
+    viewHookStartIndex: null,
+    template: template,
+    context: context,
+    dynamicViewCount: 0,
   };
 
   return newView;
@@ -303,6 +308,32 @@ export function renderTemplate<T>(
   ngDevMode && assertNotEqual(hostView, null, 'hostView');
   renderComponentOrTemplate(host, hostView, context, template);
   return host;
+}
+
+export function renderEmbeddedTemplate<T>(
+    viewNode: LViewNode | null, template: ComponentTemplate<T>, context: T,
+    renderer: Renderer3): LViewNode {
+  const _isParent = isParent;
+  const _previousOrParentNode = previousOrParentNode;
+  try {
+    isParent = true;
+    previousOrParentNode = null !;
+    let cm: boolean = false;
+    if (viewNode == null) {
+      const view = createLView(-1, renderer, {data: []}, template, context);
+      viewNode = createLNode(null, LNodeFlags.View, null, view);
+      cm = true;
+    }
+    enterView(viewNode.data, viewNode);
+
+    template(context, cm);
+  } finally {
+    refreshDynamicChildren();
+    leaveView(currentView !.parent !);
+    isParent = _isParent;
+    previousOrParentNode = _previousOrParentNode;
+  }
+  return viewNode;
 }
 
 export function renderComponentOrTemplate<T>(
@@ -1045,7 +1076,8 @@ export function container(
     nextIndex: 0, renderParent,
     template: template == null ? null : template,
     next: null,
-    parent: currentView
+    parent: currentView,
+    dynamicViewCount: 0,
   });
 
   if (node.tNode == null) {
@@ -1098,6 +1130,18 @@ export function containerRefreshEnd(): void {
   while (nextIndex < container.data.views.length) {
     // remove extra view.
     removeView(container, nextIndex);
+  }
+}
+
+function refreshDynamicChildren() {
+  for (let current = currentView.child; current !== null; current = current.next) {
+    if (current.dynamicViewCount !== 0 && (current as LContainer).views) {
+      const container = current as LContainer;
+      for (let i = 0; i < container.views.length; i++) {
+        const view = container.views[i];
+        renderEmbeddedTemplate(view, view.data.template !, view.data.context !, renderer);
+      }
+    }
   }
 }
 
@@ -1160,22 +1204,25 @@ export function viewEnd(): void {
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LViewNode;
   const container = previousOrParentNode.parent as LContainerNode;
-  ngDevMode && assertNodeType(viewNode, LNodeFlags.View);
-  ngDevMode && assertNodeType(container, LNodeFlags.Container);
-  const lContainer = container.data;
-  const previousView = lContainer.nextIndex <= lContainer.views.length ?
-      lContainer.views[lContainer.nextIndex - 1] as LViewNode :
-      null;
-  const viewIdChanged = previousView == null ? true : previousView.data.id !== viewNode.data.id;
+  if (container) {
+    ngDevMode && assertNodeType(viewNode, LNodeFlags.View);
+    ngDevMode && assertNodeType(container, LNodeFlags.Container);
+    const containerState = container.data;
+    const previousView = containerState.nextIndex <= containerState.views.length ?
+        containerState.views[containerState.nextIndex - 1] as LViewNode :
+        null;
+    const viewIdChanged = previousView == null ? true : previousView.data.id !== viewNode.data.id;
 
-  if (viewIdChanged) {
-    insertView(container, viewNode, lContainer.nextIndex - 1);
-    currentView.creationMode = false;
+    if (viewIdChanged) {
+      insertView(container, viewNode, containerState.nextIndex - 1);
+      currentView.creationMode = false;
+    }
   }
   leaveView(currentView !.parent !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.View);
 }
+
 /////////////
 
 /**
@@ -1193,7 +1240,7 @@ export const componentRefresh:
             directiveIndex: number, elementIndex: number, template: ComponentTemplate<T>) {
   ngDevMode && assertDataInRange(elementIndex);
   const element = data ![elementIndex] as LElementNode;
-  ngDevMode && assertNodeType(element, LNodeFlags.Element);
+  ngDevMode && assertNodeOfPossibleTypes(element, LNodeFlags.Element, LNodeFlags.Container);
   ngDevMode && assertNotEqual(element.data, null, 'isComponent');
   ngDevMode && assertDataInRange(directiveIndex);
   const hostView = element.data !;
@@ -1204,6 +1251,7 @@ export const componentRefresh:
     template(directive, creationMode);
   } finally {
     hostView.creationMode = false;
+    refreshDynamicChildren();
     leaveView(oldView);
   }
 };
@@ -1825,6 +1873,10 @@ export function getCurrentQuery(QueryType: {new (): LQuery}): LQuery {
 
 export function getPreviousOrParentNode(): LNode {
   return previousOrParentNode;
+}
+
+export function getRenderer(): Renderer3 {
+  return renderer;
 }
 
 export function assertPreviousIsParent() {

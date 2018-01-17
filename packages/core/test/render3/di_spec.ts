@@ -8,13 +8,14 @@
 
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector} from '../../src/render3/di';
+import {defineComponent} from '../../src/render3/definition';
+import {InjectFlags, bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector} from '../../src/render3/di';
 import {C, E, PublicFeature, T, V, b, b2, cR, cr, defineDirective, e, inject, injectElementRef, injectTemplateRef, injectViewContainerRef, m, t, v} from '../../src/render3/index';
 import {createLNode, createLView, enterView, leaveView} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {LNodeFlags} from '../../src/render3/interfaces/node';
 
-import {renderToHtml} from './render_util';
+import {renderComponent, renderToHtml} from './render_util';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -214,6 +215,23 @@ describe('di', () => {
         expect(bloomFindPossibleInjector(di, 32)).toEqual(di);
         expect(bloomFindPossibleInjector(di, 64)).toEqual(di);
         expect(bloomFindPossibleInjector(di, 96)).toEqual(di);
+      });
+    });
+
+    describe('flags', () => {
+      it('should return defaultValue not found', () => {
+        class MyApp {
+          constructor(public value: string) {}
+
+          static ngComponentDef = defineComponent({
+            // type: MyApp,
+            tag: 'my-app',
+            factory: () => new MyApp(inject(String as any, InjectFlags.Default, 'DefaultValue')),
+            template: () => null
+          });
+        }
+        const myApp = renderComponent(MyApp);
+        expect(myApp.value).toEqual('DefaultValue');
       });
     });
 
