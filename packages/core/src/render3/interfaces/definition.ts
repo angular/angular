@@ -16,7 +16,6 @@ import {resolveRendererType2} from '../../view/util';
 export type ComponentTemplate<T> = {
   (ctx: T, creationMode: boolean): void; ngPrivateData?: never;
 };
-export type EmbeddedTemplate<T> = (ctx: T) => void;
 
 export interface ComponentType<T> extends Type<T> { ngComponentDef: ComponentDef<T>; }
 
