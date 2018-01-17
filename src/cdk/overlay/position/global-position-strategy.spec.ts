@@ -42,8 +42,8 @@ describe('GlobalPositonStrategy', () => {
     expect(elementStyle.marginBottom).toBe('');
     expect(elementStyle.marginRight).toBe('');
 
-    expect(parentStyle.alignItems).toBe('flex-start');
     expect(parentStyle.justifyContent).toBe('flex-start');
+    expect(parentStyle.alignItems).toBe('flex-start');
   });
 
   it('should position the element to the (bottom, right) with an offset', () => {
@@ -57,8 +57,8 @@ describe('GlobalPositonStrategy', () => {
     expect(elementStyle.marginBottom).toBe('70px');
     expect(elementStyle.marginRight).toBe('15em');
 
-    expect(parentStyle.alignItems).toBe('flex-end');
     expect(parentStyle.justifyContent).toBe('flex-end');
+    expect(parentStyle.alignItems).toBe('flex-end');
   });
 
   it('should overwrite previously applied positioning', () => {
@@ -73,8 +73,8 @@ describe('GlobalPositonStrategy', () => {
     expect(elementStyle.marginBottom).toBe('');
     expect(elementStyle.marginRight).toBe('');
 
-    expect(parentStyle.alignItems).toBe('flex-start');
     expect(parentStyle.justifyContent).toBe('flex-start');
+    expect(parentStyle.alignItems).toBe('flex-start');
 
     strategy.bottom('70px').right('15em').apply();
 
@@ -83,8 +83,8 @@ describe('GlobalPositonStrategy', () => {
     expect(element.style.marginBottom).toBe('70px');
     expect(element.style.marginRight).toBe('15em');
 
-    expect(parentStyle.alignItems).toBe('flex-end');
     expect(parentStyle.justifyContent).toBe('flex-end');
+    expect(parentStyle.alignItems).toBe('flex-end');
   });
 
   it('should center the element', () => {
@@ -92,8 +92,8 @@ describe('GlobalPositonStrategy', () => {
 
     let parentStyle = (element.parentNode as HTMLElement).style;
 
-    expect(parentStyle.alignItems).toBe('center');
     expect(parentStyle.justifyContent).toBe('center');
+    expect(parentStyle.alignItems).toBe('center');
   });
 
   it('should center the element with an offset', () => {
@@ -105,8 +105,8 @@ describe('GlobalPositonStrategy', () => {
     expect(elementStyle.marginLeft).toBe('10px');
     expect(elementStyle.marginTop).toBe('15px');
 
-    expect(parentStyle.alignItems).toBe('center');
     expect(parentStyle.justifyContent).toBe('center');
+    expect(parentStyle.alignItems).toBe('center');
   });
 
   it('should make the element position: static', () => {
@@ -150,14 +150,14 @@ describe('GlobalPositonStrategy', () => {
     strategy.centerHorizontally().width('100%').apply();
 
     expect(element.style.marginLeft).toBe('0px');
-    expect((element.parentNode as HTMLElement).style.alignItems).toBe('flex-start');
+    expect((element.parentNode as HTMLElement).style.justifyContent).toBe('flex-start');
   });
 
   it('should reset the vertical position and offset when the height is 100%', () => {
     strategy.centerVertically().height('100%').apply();
 
     expect(element.style.marginTop).toBe('0px');
-    expect((element.parentNode as HTMLElement).style.justifyContent).toBe('flex-start');
+    expect((element.parentNode as HTMLElement).style.alignItems).toBe('flex-start');
   });
 
   it('should not throw when attempting to apply after the overlay has been disposed', () => {

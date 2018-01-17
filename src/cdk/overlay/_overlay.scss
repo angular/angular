@@ -39,9 +39,6 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     display: flex;
     position: absolute;
     z-index: $cdk-z-index-overlay;
-
-    // Fixes issues where overlays are centered on IE when they hit the max-width.
-    flex-direction: column;
   }
 
   // A single overlay pane.
