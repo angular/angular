@@ -4,7 +4,7 @@ Looking for an opinionated guide to Angular syntax, conventions, and application
 Step right in!
 This style guide presents preferred conventions and, as importantly, explains why.
 
-
+<!-- Comment for issue19401. DPB -->
 
 {@a toc}
 
