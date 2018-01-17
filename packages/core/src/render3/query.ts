@@ -16,7 +16,8 @@ import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
 import {Type} from '../type';
 
 import {assertNotNull} from './assert';
-import {getOrCreateContainerRef, getOrCreateElementRef, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from './di';
+import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
+import {assertPreviousIsParent, getCurrentQuery} from './instructions';
 import {DirectiveDef, TypedDirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode, TNode, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
@@ -25,6 +26,20 @@ import {assertNodeOfPossibleTypes} from './node_assert';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
+
+export function query<T>(
+    predicate: Type<any>| string[], descend?: boolean,
+    read?: QueryReadType<T>| Type<T>): QueryList<T> {
+  ngDevMode && assertPreviousIsParent();
+  const queryList = new QueryList<T>();
+  const query = getCurrentQuery(LQuery_);
+  query.track(queryList, predicate, descend, read);
+  return queryList;
+}
+
+export function queryRefresh(query: QueryList<any>): boolean {
+  return (query as any)._refresh();
+}
 
 /**
  * A predicate which determines if a given element/directive should be included in the query
@@ -53,7 +68,7 @@ export interface QueryPredicate<T> {
   /**
    * Indicates which token should be read from DI for this query.
    */
-  read: QueryReadType|null;
+  read: QueryReadType<T>|Type<T>|null;
 
   /**
    * Values which have been located.
@@ -71,7 +86,7 @@ export class LQuery_ implements LQuery {
 
   track<T>(
       queryList: viewEngine_QueryList<T>, predicate: Type<T>|string[], descend?: boolean,
-      read?: QueryReadType): void {
+      read?: QueryReadType<T>|Type<T>): void {
     // TODO(misko): This is not right. In case of inherited state, a calling track will incorrectly
     // mutate parent.
     if (descend) {
@@ -152,26 +167,13 @@ function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   return null;
 }
 
-function readDefaultInjectable(nodeInjector: LInjector, node: LNode): viewEngine_ElementRef|
-    viewEngine_TemplateRef<any>|undefined {
-  ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
-  if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
-    return getOrCreateElementRef(nodeInjector);
-  } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
-    return getOrCreateTemplateRef(nodeInjector);
-  }
-}
-
 function readFromNodeInjector(
-    nodeInjector: LInjector, node: LNode, read: QueryReadType | Type<any>): any {
-  if (read === QueryReadType.ElementRef) {
-    return getOrCreateElementRef(nodeInjector);
-  } else if (read === QueryReadType.ViewContainerRef) {
-    return getOrCreateContainerRef(nodeInjector);
-  } else if (read === QueryReadType.TemplateRef) {
-    return getOrCreateTemplateRef(nodeInjector);
+    nodeInjector: LInjector, node: LNode, read: QueryReadType<any>| Type<any>| null,
+    directiveIdx: number = -1): any {
+  if (read instanceof ReadFromInjectorFn) {
+    return read.read(nodeInjector, node, directiveIdx);
   } else {
-    const matchingIdx = geIdxOfMatchingDirective(node, read);
+    const matchingIdx = geIdxOfMatchingDirective(node, read as Type<any>);
     if (matchingIdx !== null) {
       return node.view.data[matchingIdx];
     }
@@ -203,17 +205,12 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
         // is anything on a node matching a selector?
         if (directiveIdx !== null) {
           if (predicate.read !== null) {
-            const requestedRead = readFromNodeInjector(nodeInjector, node, predicate.read);
-            if (requestedRead !== null) {
-              predicate.values.push(requestedRead);
+            const result = readFromNodeInjector(nodeInjector, node, predicate.read !, directiveIdx);
+            if (result !== null) {
+              predicate.values.push(result);
             }
           } else {
-            // is local name pointing to a directive?
-            if (directiveIdx > -1) {
-              predicate.values.push(node.view.data[directiveIdx]);
-            } else {
-              predicate.values.push(readDefaultInjectable(nodeInjector, node));
-            }
+            predicate.values.push(node.view.data[directiveIdx]);
           }
         }
       }
@@ -224,7 +221,7 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
 
 function createPredicate<T>(
     previous: QueryPredicate<any>| null, queryList: QueryList<T>, predicate: Type<T>| string[],
-    read: QueryReadType | null): QueryPredicate<T> {
+    read: QueryReadType<T>| Type<T>| null): QueryPredicate<T> {
   const isArray = Array.isArray(predicate);
   const values = <any>[];
   if ((queryList as any as QueryList_<T>)._valuesTree === null) {
@@ -309,7 +306,3 @@ class QueryList_<T>/* implements viewEngine_QueryList<T> */ {
 // it can't be implemented only extended.
 export type QueryList<T> = viewEngine_QueryList<T>;
 export const QueryList: typeof viewEngine_QueryList = QueryList_ as any;
-
-export function queryRefresh(query: QueryList<any>): boolean {
-  return (query as any as QueryList_<any>)._refresh();
-}

@@ -25,12 +25,9 @@ import {assertNodeType} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, TypedDirectiveDef, TypedComponentDef} from './interfaces/definition';
-import {InjectFlags, diPublicInInjector, getOrCreateNodeInjectorForNode, getOrCreateElementRef, getOrCreateTemplateRef, getOrCreateContainerRef, getOrCreateInjectable} from './di';
-import {QueryList, LQuery_} from './query';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 
-export {queryRefresh} from './query';
 
 /**
  * Enum used by the lifecycle (l) instruction to determine which lifecycle hook is requesting
@@ -329,76 +326,6 @@ export function renderComponentOrTemplate<T>(
     hostView.creationMode = false;
     leaveView(oldView);
   }
-}
-
-export function getOrCreateNodeInjector(): LInjector {
-  ngDevMode && assertPreviousIsParent();
-  return getOrCreateNodeInjectorForNode(previousOrParentNode as LElementNode | LContainerNode);
-}
-
-/**
- * Makes a directive public to the DI system by adding it to an injector's bloom filter.
- *
- * @param def The definition of the directive to be made public
- */
-export function diPublic(def: TypedDirectiveDef<any>): void {
-  diPublicInInjector(getOrCreateNodeInjector(), def);
-}
-
-/**
- * Searches for an instance of the given directive type up the injector tree and returns
- * that instance if found.
- *
- * If not found, it will propagate up to the next parent injector until the token
- * is found or the top is reached.
- *
- * Usage example (in factory function):
- *
- * class SomeDirective {
- *   constructor(directive: DirectiveA) {}
- *
- *   static ngDirectiveDef = defineDirective({
- *     type: SomeDirective,
- *     factory: () => new SomeDirective(inject(DirectiveA))
- *   });
- * }
- *
- * @param token The directive type to search for
- * @param flags Injection flags (e.g. CheckParent)
- * @returns The instance found
- */
-export function inject<T>(token: Type<T>, flags?: InjectFlags): T {
-  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
-}
-
-/**
- * Creates an ElementRef and stores it on the injector.
- * Or, if the ElementRef already exists, retrieves the existing ElementRef.
- *
- * @returns The ElementRef instance to use
- */
-export function injectElementRef(): ElementRef {
-  return getOrCreateElementRef(getOrCreateNodeInjector());
-}
-
-/**
- * Creates a TemplateRef and stores it on the injector. Or, if the TemplateRef already
- * exists, retrieves the existing TemplateRef.
- *
- * @returns The TemplateRef instance to use
- */
-export function injectTemplateRef<T>(): TemplateRef<T> {
-  return getOrCreateTemplateRef<T>(getOrCreateNodeInjector());
-}
-
-/**
- * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef
- * already exists, retrieves the existing ViewContainerRef.
- *
- * @returns The ViewContainerRef instance to use
- */
-export function injectViewContainerRef(): ViewContainerRef {
-  return getOrCreateContainerRef(getOrCreateNodeInjector());
 }
 
 //////////////////////////
@@ -1892,19 +1819,15 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-export function query<T>(
-    predicate: Type<any>| string[], descend?: boolean,
-    read?: QueryReadType | Type<T>): QueryList<T> {
-  ngDevMode && assertPreviousIsParent();
-  const queryList = new QueryList<T>();
-  const query = currentQuery || (currentQuery = new LQuery_());
-  query.track(queryList, predicate, descend, read);
-  return queryList;
+export function getCurrentQuery(QueryType: {new (): LQuery}): LQuery {
+  return currentQuery || (currentQuery = new QueryType());
 }
 
+export function getPreviousOrParentNode(): LNode {
+  return previousOrParentNode;
+}
 
-
-function assertPreviousIsParent() {
+export function assertPreviousIsParent() {
   assertEqual(isParent, true, 'isParent');
 }
 

@@ -8,7 +8,10 @@
 
 import {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent} from './component';
 import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective} from './definition';
+import {InjectFlags} from './di';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType} from './interfaces/definition';
+
+export {InjectFlags, QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, inject, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
 
 // Naming scheme:
 // - Capital letters are for creating things: T(Text), E(Element), D(Directive), V(View),
@@ -20,7 +23,6 @@ import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveD
 // - lower case for closing: c(containerEnd), e(elementEnd), v(viewEnd)
 // clang-format off
 export {
-  inject, injectElementRef, injectTemplateRef, injectViewContainerRef,
 
   LifecycleHook,
 
@@ -57,17 +59,21 @@ export {
   projection as P,
   projectionDef as pD,
 
-  query as Q,
-  queryRefresh as qR,
-
   text as T,
   textBinding as t,
 
   viewStart as V,
   viewEnd as v,
 } from './instructions';
+
+export {
+  QueryList,
+  
+  query as Q,
+  queryRefresh as qR,
+} from './query';
 // clang-format on
-export {QueryList} from './query';
+
 export {
   ComponentDef,
   ComponentTemplate,
@@ -81,4 +87,3 @@ export {
   defineDirective,
 };
 export {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent};
-export {InjectFlags} from './di';
