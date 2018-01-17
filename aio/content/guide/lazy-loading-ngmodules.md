@@ -5,10 +5,11 @@ A basic understanding of the following:
 * [Feature Modules](guide/feature-modules).
 * [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
 * [Frequently Used Modules](guide/frequent-ngmodules).
-* [Types of Modules](guide/module-types).
+* [Types of Feature Modules](guide/module-types).
 * [Routing and Navigation](guide/router).
 
-For the final sample app with two lazy loaded modules that this page describes, see the <live-example></live-example>.
+For the final sample app with two lazy loaded modules that this page describes, see the
+<live-example></live-example>.
 
 <hr>
 
@@ -33,7 +34,7 @@ ng new customer-app --routing
 
 This creates an app called `customer-app` and the `--routing` flag
 generates a file called `app-routing.module.ts`, which is one of
-the files you need for setting up lazy loading for your feature module. 
+the files you need for setting up lazy loading for your feature module.
 Navigate into the project by issuing the command `cd customer-app`.
 
 ## Create a feature module with routing
@@ -64,7 +65,7 @@ ng generate component customers/customer-list
 ```
 
 This creates a folder inside of `customers` called `customer-list`
-with the four files that make up the component. 
+with the four files that make up the component.
 
 <!-- For more information
 about components, see [Components](). -->
@@ -92,8 +93,8 @@ ng generate component orders/order-list
 ## Set up the UI
 
 Though you can type the URL into the address bar, a nav
-is easier for the user and more common. Replace the default 
-placeholder markup in `app.component.html` with a custom nav 
+is easier for the user and more common. Replace the default
+placeholder markup in `app.component.html` with a custom nav
 so you can easily navigate to your modules in the browser:
 
 
@@ -224,7 +225,4 @@ knows that the route list is only responsible for providing additional routes an
 You may also be interested in the following:
 * [Routing and Navigation](guide/router).
 * [Providers](guide/providers).
-* [Types of NgModules](guide/module-types).
-
-
-
+* [Types of Feature Modules](guide/module-types).

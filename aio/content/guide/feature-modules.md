@@ -36,7 +36,7 @@ pipes that it shares.
 Assuming you already have a CLI generated app, create a feature
 module using the CLI by entering the following command in the
 root project directory. Replace `CustomerDashboard` with the
-name of your module. You can omit the word module because the CLI appends it:
+name of your module. You can omit the "Module" suffix from the name because the CLI appends it:
 
 ```sh
 ng generate module CustomerDashboard
@@ -46,21 +46,17 @@ ng generate module CustomerDashboard
 
 This causes the CLI to create a folder called `customer-dashboard` with a file inside called `customer-dashboard.module.ts` with the following contents:
 
-```ts
-
+```typescript
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
- imports: [
-   CommonModule
- ],
- declarations: []
+  imports: [
+    CommonModule
+  ],
+  declarations: []
 })
-
 export class CustomerDashboardModule { }
-
-
 ```
 
 The structure of an NgModule is the same whether it is a root module or a feature module. In the CLI generated feature module, there are two JavaScript import statements at the top of the file: the first imports `NgModule`, which, like the root module, lets you use the `@NgModule` decorator; the second imports `CommonModule`, which contributes many common directives such as `ngIf` and `ngFor`. Feature modules import `CommonModule` instead of `BrowserModule`, which is only imported once in the root module. `CommonModule` only contains information for common directives such as `ngIf` and `ngFor` which are needed in most templates, whereas `BrowserModule` configures the Angular app for the browser which needs to be done only once.
@@ -76,7 +72,7 @@ ng generate component customer-dashboard/CustomerDashboard
 This generates a folder for the new component within the customer-dashboard folder and updates the feature module with the `CustomerDashboardComponent` info:
 
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="customer-dashboard-component" title="src/app/customer-dashboard.module.ts" linenums="false">
+<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="customer-dashboard-component" title="src/app/customer-dashboard/customer-dashboard.module.ts" linenums="false">
 </code-example>
 
 
@@ -85,7 +81,7 @@ The `CustomerDashboardComponent` is now in the JavaScript import list at the top
 
 ## Importing a feature module
 
-To incorporate the feature module into your app, you have to let the root module, `app.module.ts`, know about it. Notice the `CustomerDashboardModule` export at the bottom of `customer-dashboard.module.ts`. This exposes it so that other modules can get to it. To import it into the AppModule, add it to the imports in `app.module.ts` and to the imports array:
+To incorporate the feature module into your app, you have to let the root module, `app.module.ts`, know about it. Notice the `CustomerDashboardModule` export at the bottom of `customer-dashboard.module.ts`. This exposes it so that other modules can get to it. To import it into the `AppModule`, add it to the imports in `app.module.ts` and to the `imports` array:
 
 <code-example path="feature-modules/src/app/app.module.ts" region="app-module" title="src/app/app.module.ts" linenums="false">
 </code-example>
@@ -104,7 +100,7 @@ When the CLI generated the `CustomerDashboardComponent` for the feature module, 
 
 To see this HTML in the `AppComponent`, you first have to export the `CustomerDashboardComponent` in the `CustomerDashboardModule`. In `customer-dashboard.module.ts`, just beneath the declarations array, add an exports array containing `CustomerDashboardModule`:
 
-<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" title="src/app/customer-dashboard.module.ts" linenums="false">
+<code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" title="src/app/customer-dashboard/customer-dashboard.module.ts" linenums="false">
 </code-example>
 
 
@@ -129,6 +125,4 @@ Now, in addition to the title that renders by default, the `CustomerDashboardCom
 You may also be interested in the following:
 * [Lazy Loading Modules with the Angular Router](guide/lazy-loading-ngmodules).
 * [Providers](guide/providers).
-* [Types of NgModules](guide/module-types).
-
-
+* [Types of Feature Modules](guide/module-types).
