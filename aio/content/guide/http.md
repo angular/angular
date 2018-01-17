@@ -9,7 +9,7 @@ Additional benefits of `HttpClient` include testability support, strong typing o
 
 Before you can use the `HttpClient`, you need to install the `HttpClientModule` which provides it. This can be done in your application module, and is only necessary once.
 
-```javascript
+```typescript
 // app.module.ts:
 
 import {NgModule} from '@angular/core';
@@ -48,7 +48,7 @@ The most common type of request applications make to a backend is to request JSO
 The `get()` method on `HttpClient` makes accessing this data straightforward.
 
 
-```javascript
+```typescript
 @Component(...)
 export class MyComponent implements OnInit {
 
@@ -75,7 +75,7 @@ In the above example, the `data['results']` field access stands out because you 
 You can, however, tell `HttpClient` what type the response will be, which is recommended.
 To do so, first you define an interface with the correct shape:
 
-```javascript
+```typescript
 interface ItemsResponse {
   results: string[];
 }
@@ -83,7 +83,7 @@ interface ItemsResponse {
 
 Then, when you make the `HttpClient.get` call, pass a type parameter:
 
-```javascript
+```typescript
 http.get<ItemsResponse>('/api/items').subscribe(data => {
   // data is now an instance of type ItemsResponse, so you can do this:
   this.results = data.results;
@@ -94,7 +94,7 @@ http.get<ItemsResponse>('/api/items').subscribe(data => {
 
 The response body doesn't return all the data you may need. Sometimes servers return special headers or status codes to indicate certain conditions, and inspecting those can be necessary. To do this, you can tell `HttpClient` you want the full response instead of just the body with the `observe` option:
 
-```javascript
+```typescript
 http
   .get<MyJsonData>('/data.json', {observe: 'response'})
   .subscribe(resp => {
@@ -116,7 +116,7 @@ What happens if the request fails on the server, or if a poor network connection
 
 To handle it, add an error handler to your `.subscribe()` call:
 
-```javascript
+```typescript
 http
   .get<ItemsResponse>('/api/items')
   .subscribe(
@@ -137,7 +137,7 @@ There are two types of errors that can occur. If the backend returns an unsucces
 
 In both cases, you can look at the `HttpErrorResponse` to figure out what happened.
 
-```javascript
+```typescript
 http
   .get<ItemsResponse>('/api/items')
   .subscribe(
@@ -169,7 +169,7 @@ import 'rxjs/add/operator/retry';
 
 Then, you can use it with HTTP Observables like this:
 
-```javascript
+```typescript
 http
   .get<ItemsResponse>('/api/items')
   // Retry this request up to 3 times.
@@ -182,7 +182,7 @@ http
 
 Not all APIs return JSON data. Suppose you want to read a text file on the server. You have to tell `HttpClient` that you expect a textual response:
 
-```javascript
+```typescript
 http
   .get('/textfile.txt', {responseType: 'text'})
   // The Observable returned by get() is of type Observable<string>
@@ -200,7 +200,7 @@ In addition to fetching data from the server, `HttpClient` supports mutating req
 One common operation is to POST data to a server; for example when submitting a form. The code for
 sending a POST request is very similar to the code for GET:
 
-```javascript
+```typescript
 const body = {name: 'Brad'};
 
 http
@@ -212,7 +212,7 @@ http
 
 *Note the `subscribe()` method.* All Observables returned from `HttpClient` are _cold_, which is to say that they are _blueprints_ for making requests. Nothing will happen until you call `subscribe()`, and every such call will make a separate request. For example, this code sends a POST request with the same data twice:
 
-```javascript
+```typescript
 const req = http.post('/api/items/add', body);
 // 0 requests made - .subscribe() not called.
 req.subscribe();
@@ -230,7 +230,7 @@ Besides the URL and a possible request body, there are other aspects of an outgo
 
 One common task is adding an `Authorization` header to outgoing requests. Here's how you do that:
 
-```javascript
+```typescript
 http
   .post('/api/items/add', body, {
     headers: new HttpHeaders().set('Authorization', 'my-auth-token'),
@@ -244,7 +244,7 @@ The `HttpHeaders` class is immutable, so every `set()` returns a new instance an
 
 Adding URL parameters works in the same way. To send a request with the `id` parameter set to `3`, you would do:
 
-```javascript
+```typescript
 http
   .post('/api/items/add', body, {
     params: new HttpParams().set('id', '3'),
@@ -269,7 +269,7 @@ before sending it to the server, and the interceptors can transform the response
 To implement an interceptor, you declare a class that implements `HttpInterceptor`, which
 has a single `intercept()` method. Here is a simple interceptor which does nothing but forward the request through without altering it:
 
-```javascript
+```typescript
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpInterceptor, HttpHandler, HttpRequest} from '@angular/common/http';
 
@@ -295,7 +295,7 @@ This pattern is similar to those in middleware frameworks such as Express.js.
 
 Simply declaring the `NoopInterceptor` above doesn't cause your app to use it. You need to wire it up in your app module by providing it as an interceptor, as follows:
 
-```javascript
+```typescript
 import {NgModule} from '@angular/core';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 
@@ -338,7 +338,7 @@ If you have a need to mutate the request body, you need to copy the request body
 
 Since requests are immutable, they cannot be modified directly. To mutate them, use `clone()`:
 
-```javascript
+```typescript
 intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   // This is a duplicate. It is exactly the same as the original.
   const dupReq = req.clone();
@@ -354,7 +354,7 @@ As you can see, the hash accepted by `clone()` allows you to mutate specific pro
 
 A common use of interceptors is to set default headers on outgoing responses. For example, assuming you have an injectable `AuthService` which can provide an authentication token, here is how you would write an interceptor which adds it to all outgoing requests:
 
-```javascript
+```typescript
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpInterceptor, HttpHandler, HttpRequest} from '@angular/common/http';
 
@@ -375,7 +375,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
 The practice of cloning a request to set new headers is so common that there's actually a shortcut for it:
 
-```javascript
+```typescript
 const authReq = req.clone({setHeaders: {Authorization: authHeader}});
 ```
 
@@ -389,7 +389,7 @@ An interceptor that alters headers can be used for a number of different operati
 
 Because interceptors can process the request and response _together_, they can do things like log or time requests. Consider this interceptor which uses `console.log` to show how long each request takes:
 
-```javascript
+```typescript
 import 'rxjs/add/operator/do';
 
 export class TimingInterceptor implements HttpInterceptor {
@@ -414,7 +414,7 @@ Notice the RxJS `do()` operator&mdash;it adds a side effect to an Observable wit
 
 You can also use interceptors to implement caching. For this example, assume that you've written an HTTP cache with a simple interface:
 
-```javascript
+```typescript
 abstract class HttpCache {
   /**
    * Returns a cached response, if any, or null if not present.
@@ -430,7 +430,7 @@ abstract class HttpCache {
 
 An interceptor can apply this cache to outgoing requests.
 
-```javascript
+```typescript
 @Injectable()
 export class CachingInterceptor implements HttpInterceptor {
   constructor(private cache: HttpCache) {}
@@ -467,7 +467,7 @@ Obviously this example glosses over request matching, cache invalidation, etc., 
 
 To really demonstrate their flexibility, you can change the above example to return _two_ response events if the request exists in cache&mdash;the cached response first, and an updated network response later.
 
-```javascript
+```typescript
 intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   // Still skip non-GET requests.
   if (req.method !== 'GET') {
@@ -507,7 +507,7 @@ Sometimes applications need to transfer large amounts of data, and those transfe
 
 To make a request with progress events enabled, first create an instance of `HttpRequest` with the special `reportProgress` option set:
 
-```javascript
+```typescript
 const req = new HttpRequest('POST', '/upload/file', file, {
   reportProgress: true,
 });
@@ -518,7 +518,7 @@ change detection, so only turn them on if you intend to actually update the UI o
 
 Next, make the request through the `request()` method of `HttpClient`. The result will be an Observable of events, just like with interceptors:
 
-```javascript
+```typescript
 http.request(req).subscribe(event => {
   // Via this API, you get access to the raw event stream.
   // Look for upload progress events.
@@ -553,7 +553,7 @@ In order to prevent collisions in environments where multiple Angular apps share
 
 If your backend service uses different names for the XSRF token cookie or header, use `HttpClientXsrfModule.withOptions()` to override the defaults.
 
-```javascript
+```typescript
 imports: [
   HttpClientModule,
   HttpClientXsrfModule.withOptions({
@@ -575,7 +575,7 @@ Angular's HTTP testing library is designed for a pattern of testing where the ap
 
 To begin testing requests made through `HttpClient`, import `HttpClientTestingModule` and add it to your `TestBed` setup, like so:
 
-```javascript
+```typescript
 
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 
@@ -595,7 +595,7 @@ That's it. Now requests made in the course of your tests will hit the testing ba
 
 With the mock installed via the module, you can write a test that expects a GET Request to occur and provides a mock response. The following example does this by injecting both the `HttpClient` into the test and a class called `HttpTestingController`
 
-```javascript
+```typescript
 it('expects a GET request', inject([HttpClient, HttpTestingController], (http: HttpClient, httpMock: HttpTestingController) => {
   // Make an HTTP GET request, and expect that it return an object
   // of the form {name: 'Test Data'}.
@@ -624,7 +624,7 @@ it('expects a GET request', inject([HttpClient, HttpTestingController], (http: H
 
 The last step, verifying that no requests remain outstanding, is common enough for you to move it into an `afterEach()` step:
 
-```javascript
+```typescript
 afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
   httpMock.verify();
 }));
@@ -634,7 +634,7 @@ afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
 
 If matching by URL isn't sufficient, it's possible to implement your own matching function. For example, you could look for an outgoing request that has an Authorization header:
 
-```javascript
+```typescript
 const req = httpMock.expectOne((req) => req.headers.has('Authorization'));
 ```
 
@@ -644,7 +644,7 @@ Just as with the `expectOne()` by URL in the test above, if 0 or 2+ requests mat
 
 If you need to respond to duplicate requests in your test, use the `match()` API instead of `expectOne()`, which takes the same arguments but returns an array of matching requests. Once returned, these requests are removed from future matching and are your responsibility to verify and flush.
 
-```javascript
+```typescript
 // Expect that 5 pings have been made and flush them.
 const reqs = httpMock.match('/ping');
 expect(reqs.length).toBe(5);
