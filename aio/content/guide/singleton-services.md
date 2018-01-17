@@ -5,10 +5,8 @@
 * A basic understanding of [Bootstrapping](guide/bootstrapping).
 * Familiarity with [Providers](guide/providers).
 
-For a sample app using the app-wide singleton service
-that this page describes, see the
-<live-example name="ngmodules">live example</live-example>
-showcasing all the documented features of NgModules.
+For a sample app using the app-wide singleton service that this page describes, see the
+<live-example name="ngmodules"></live-example> showcasing all the documented features of NgModules.
 
 <hr />
 
@@ -25,7 +23,7 @@ have the same lifetime of the application, hence singleton.
 The following example module is called, as a convention, `CoreModule`. This use of `@NgModule` creates organizational infrastructure and gives you
 a way of providing services from a designated NgModule.
 
-<code-example path="providers/src/app/core/core.module.ts" region="" title="src/app/core/core.module.ts" linenums="false">
+<code-example path="ngmodules/src/app/core/core.module.ts" region="user-service" title="src/app/core/core.module.ts" linenums="false">
 </code-example>
 
 Here, `CoreModule` provides the `UserService`, and because `AppModule`
@@ -66,7 +64,7 @@ If a module provides both providers and declarations (components, directives, pi
 
 <!-- MH: show a simple example how to do that without going to deep into it. -->
 
-To make this more concrete, consider the `RouterModule` as an example. `RouterModule` needs to provide the `Router` service, as well as the `RouterOutlet` directive. `RouterModule` has to be imported by the root application module so that the application has a `Router` and the application has at least one `RouterOutlet`. It also must be imported by the individual route components so that they can place `RouterOutlet` directives into their template for sub-routes. 
+To make this more concrete, consider the `RouterModule` as an example. `RouterModule` needs to provide the `Router` service, as well as the `RouterOutlet` directive. `RouterModule` has to be imported by the root application module so that the application has a `Router` and the application has at least one `RouterOutlet`. It also must be imported by the individual route components so that they can place `RouterOutlet` directives into their template for sub-routes.
 
 If the `RouterModule` didn’t have `forRoot()` then each route component would instantiate a new `Router` instance, which would break the application as there can only be one `Router`. For this reason, the `RouterModule` has the `RouterOutlet` declaration so that it is available everywhere, but the `Router` provider is only in the `forRoot()`. The result is that the root application module imports `RouterModule.forRoot(...)` and gets a `Router`, whereas all route components import `RouterModule` which does not include the `Router`.
 
