@@ -15,8 +15,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
-  providers: []
+  exports: [RouterModule]
 })
 export class CustomersRoutingModule { }
 // #enddocregion customers-routing-module

@@ -14,7 +14,13 @@ showcasing all the documented features of NgModules.
 
 ## Providing a singleton service
 
-An injector created from a module definition will have services which are singletons with respect to that injector. To control the lifetime of services, one controls the creation and destruction of injectors. For example, a route will have an associated module. When the route is activated, an injector is created from that module as a child of the current injector. When you navigate away from the route, the injector is destroyed. This means that services declared in a route module will have a lifetime equal to that of the route. Similarly, services provided in an application module will have the same lifetime of the application, hence singleton. 
+An injector created from a module definition will have services which are singletons with respect to
+that injector. To control the lifetime of services, one controls the creation and destruction of
+injectors. For example, a route will have an associated module. When the route is activated, an
+injector is created from that module as a child of the current injector. When you navigate away from
+the route, the injector is destroyed. This means that services declared in a route module will have
+a lifetime equal to that of the route. Similarly, services provided in an application module will
+have the same lifetime of the application, hence singleton.
 
 The following example module is called, as a convention, `CoreModule`. This use of `@NgModule` creates organizational infrastructure and gives you
 a way of providing services from a designated NgModule.
@@ -47,8 +53,8 @@ As a general rule, import modules with providers _exactly once_,
 preferably in the application's _root module_.
 That's also usually the best place to configure, wrap, and override them.
 
-For more detailed information on services, see
-[part 5](tutorial/toh-pt4) of the [Tour of Heroes tutorial](tutorial).
+For more detailed information on services, see the [Services](tutorial/toh-pt4) chapter of the
+[Tour of Heroes tutorial](tutorial).
 
 
 ## `forRoot()`
@@ -171,9 +177,6 @@ Here are the two files in their entirety for reference:
 ## More on NgModules
 
 You may also be interested in:
-* [Sharing NgModules](guide/singleton-services), which elaborates on the concepts covered on this page.
+* [Sharing Modules](guide/sharing-ngmodules), which elaborates on the concepts covered on this page.
 * [Lazy Loading Modules](guide/lazy-loading-ngmodules).
 * [NgModule FAQ](guide/ngmodule-faq).
-
-
-
