@@ -8,7 +8,9 @@
 
 import {ComponentTemplate} from './definition';
 import {LElementNode, LViewNode} from './node';
+import {LQuery} from './query';
 import {LView, TView} from './view';
+
 
 
 /** The state associated with an LContainer */
@@ -67,12 +69,17 @@ export interface LContainer {
    */
   readonly template: ComponentTemplate<any>|null;
 
-
   /**
    * A count of dynamic views rendered into this container. If this is non-zero, the `views` array
    * will be traversed when refreshing dynamic views on this container.
    */
   dynamicViewCount: number;
+
+  /**
+   * Queries active for this container - all the views inserted to / removed from
+   * this container are reported to queries referenced here.
+   */
+  query: LQuery|null;
 }
 
 /**

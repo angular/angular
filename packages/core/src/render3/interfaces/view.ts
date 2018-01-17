@@ -9,6 +9,7 @@
 import {LContainer} from './container';
 import {ComponentTemplate, DirectiveDef} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
+import {LQuery} from './query';
 import {Renderer3} from './renderer';
 
 
@@ -170,6 +171,11 @@ export interface LView {
    * after refreshing the view itself.
    */
   dynamicViewCount: number;
+
+  /**
+   * Queries active for this view - nodes from a view are reported to those queries
+   */
+  query: LQuery|null;
 }
 
 /** Interface necessary to work with view tree traversal */

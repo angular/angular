@@ -222,8 +222,6 @@ export function insertView(
         container, newView, true, findBeforeNode(index, state, container.native));
   }
 
-  // Notify query that view has been inserted
-  container.query && container.query.insertView(container, newView, index);
   return newView;
 }
 
@@ -248,7 +246,7 @@ export function removeView(container: LContainerNode, removeIndex: number): LVie
   destroyViewTree(viewNode.data);
   addRemoveViewFromContainer(container, viewNode, false);
   // Notify query that view has been removed
-  container.query && container.query.removeView(container, viewNode, removeIndex);
+  container.data.query && container.data.query.removeView(removeIndex);
   return viewNode;
 }
 

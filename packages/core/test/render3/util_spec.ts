@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDifferent} from '../../src/render3/util';
+import {flatten, isDifferent} from '../../src/render3/util';
 
 describe('util', () => {
 
@@ -30,6 +30,22 @@ describe('util', () => {
     it('should mark NaN with other values as different', () => {
       expect(isDifferent(NaN, 'foo')).toBeTruthy();
       expect(isDifferent(5, NaN)).toBeTruthy();
+    });
+  });
+
+  describe('flatten', () => {
+
+    it('should flatten an empty array', () => { expect(flatten([])).toEqual([]); });
+
+    it('should flatten a flat array', () => { expect(flatten([1, 2, 3])).toEqual([1, 2, 3]); });
+
+    it('should flatten a nested array', () => {
+      expect(flatten([1, [2], 3])).toEqual([1, 2, 3]);
+      expect(flatten([[1], 2, [3]])).toEqual([1, 2, 3]);
+      expect(flatten([1, [2, [3]], 4])).toEqual([1, 2, 3, 4]);
+      expect(flatten([1, [2, [3]], [4]])).toEqual([1, 2, 3, 4]);
+      expect(flatten([1, [2, [3]], [[[4]]]])).toEqual([1, 2, 3, 4]);
+      expect(flatten([1, [], 2])).toEqual([1, 2]);
     });
   });
 });
