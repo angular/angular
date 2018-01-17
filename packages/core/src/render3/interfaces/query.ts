@@ -9,6 +9,7 @@
 import {QueryList} from '../../linker';
 import {Type} from '../../type';
 
+import {LInjector} from './injector';
 import {LContainerNode, LNode, LViewNode} from './node';
 
 
@@ -48,15 +49,10 @@ export interface LQuery {
    */
   track<T>(
       queryList: QueryList<T>, predicate: Type<any>|string[], descend?: boolean,
-      read?: QueryReadType|Type<T>): void;
+      read?: QueryReadType<T>|Type<T>): void;
 }
 
-/** An enum representing possible values of the "read" option for queries. */
-export const enum QueryReadType {
-  ElementRef = 0,
-  ViewContainerRef = 1,
-  TemplateRef = 2,
-}
+export class QueryReadType<T> { private defeatStructuralTyping: any; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

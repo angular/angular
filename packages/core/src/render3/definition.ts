@@ -10,7 +10,8 @@ import {RendererType2} from '../render/api';
 import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
-import {componentRefresh, diPublic} from './instructions';
+import {diPublic} from './di';
+import {componentRefresh} from './instructions';
 import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs} from './interfaces/definition';
 
 
