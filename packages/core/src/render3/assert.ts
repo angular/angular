@@ -37,7 +37,7 @@ export function assertEqual<T>(
 }
 
 export function assertLessThan<T>(actual: T, expected: T, name: string) {
-  (actual < expected) && assertThrow(actual, expected, name, '>');
+  (actual >= expected) && assertThrow(actual, expected, name, '<');
 }
 
 export function assertNotNull<T>(actual: T, name: string) {
