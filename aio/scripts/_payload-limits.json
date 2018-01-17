@@ -1,20 +1,12 @@
 {
   "aio": {
     "master": {
-      "gzip7": {
-        "inline": 961,
-        "main": 116924,
-        "polyfills": 12962
-      },
-      "gzip9": {
-        "inline": 961,
-        "main": 116712,
-        "polyfills": 12958
-      },
       "uncompressed": {
         "inline": 1602,
         "main": 459119,
-        "polyfills": 40264
+        "polyfills": 40264,
+        "embedded": 72537,
+        "prettify": 14888
       }
     }
   }
