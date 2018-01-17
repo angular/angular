@@ -1,6 +1,7 @@
 {
   "name": "angular-srcs",
-  "version": "6.0.0-beta.0",
+  "version": "TODO this should be 6.0.0-beta.0, workaround",
+  "version": "5.9.9-6-beta.0",
   "private": true,
   "branchPattern": "2.0.*",
   "description": "Angular - a web framework for modern web apps",
