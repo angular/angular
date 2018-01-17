@@ -496,6 +496,8 @@ export class MockStaticSymbolResolverHost implements StaticSymbolResolverHost {
 
   getMetadataFor(moduleId: string): any { return this._getMetadataFor(moduleId); }
 
+  getOutputName(filePath: string): string { return filePath; }
+
   private _getMetadataFor(filePath: string): any {
     if (this.data[filePath] && filePath.match(TS_EXT)) {
       const text = this.data[filePath];

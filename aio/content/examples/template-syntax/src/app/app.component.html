@@ -821,6 +821,29 @@ The null hero's name is {{nullHero && nullHero.name}}
 
 <a class="to-toc" href="#toc">top</a>
 
+<!-- non-null assertion operator -->
+<hr><h2 id="any-type-cast-function">$any type cast function <i>$any( )</i>.</h2>
+
+<div>
+  <!-- #docregion any-type-cast-function-1 -->
+  <!-- Accessing an undeclared member -->
+  <div>
+    The hero's marker is {{$any(hero).marker}}
+  </div>
+  <!-- #enddocregion any-type-cast-function-1 -->
+</div>
+
+<div>
+  <!-- #docregion any-type-cast-function-2 -->
+  <!-- Accessing an undeclared member -->
+  <div>
+    Undeclared members is {{$any(this).member}}
+  </div>
+  <!-- #enddocregion any-type-cast-function-2 -->
+</div>
+
+<a class="to-toc" href="#toc">top</a>
+
 <!-- TODO: discuss this in the Style binding section -->
 <!-- enums in bindings -->
 <hr><h2 id="enums">Enums in binding</h2>

@@ -34,8 +34,10 @@ import { NavItemComponent } from 'app/layout/nav-item/nav-item.component';
 import { ScrollService } from 'app/shared/scroll.service';
 import { ScrollSpyService } from 'app/shared/scroll-spy.service';
 import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+import { NotificationComponent } from 'app/layout/notification/notification.component';
 import { TocComponent } from 'app/layout/toc/toc.component';
 import { TocService } from 'app/shared/toc.service';
+import { CurrentDateToken, currentDateProvider } from 'app/shared/current-date';
 import { WindowToken, windowProvider } from 'app/shared/window';
 
 import { EmbedComponentsModule } from 'app/embed-components/embed-components.module';
@@ -65,6 +67,30 @@ export const svgIconProviders = [
                  'viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>'
     },
     multi: true
+  },
+  {
+    provide: SVG_ICONS,
+    useValue: {
+      name: 'insert_comment',
+      svgSource:
+      '<svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>' +
+        '<path d="M0 0h24v24H0z" fill="none"/>' +
+      '</svg>'
+    },
+    multi: true
+  },
+  {
+    provide: SVG_ICONS,
+    useValue: {
+      name: 'close',
+      svgSource:
+      '<svg fill="#ffffff" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>' +
+        '<path d="M0 0h24v24H0z" fill="none"/>' +
+      '</svg>'
+    },
+    multi: true
   }
 ];
 
@@ -91,6 +117,7 @@ export const svgIconProviders = [
     NavMenuComponent,
     NavItemComponent,
     SearchBoxComponent,
+    NotificationComponent,
     TocComponent,
     TopMenuComponent,
   ],
@@ -109,6 +136,7 @@ export const svgIconProviders = [
     SearchService,
     svgIconProviders,
     TocService,
+    { provide: CurrentDateToken, useFactory: currentDateProvider },
     { provide: WindowToken, useFactory: windowProvider },
 
     {

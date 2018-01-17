@@ -15,8 +15,8 @@
  * it will be easy to implement such API.
  */
 
-import {ViewEncapsulation} from '../metadata/view';
-import {RendererStyleFlags2, RendererType2} from '../render/api';
+import {ViewEncapsulation} from '../../metadata/view';
+import {RendererStyleFlags2, RendererType2} from '../../render/api';
 
 
 // TODO: cleanup once the code is merged in angular/angular
@@ -139,3 +139,7 @@ export interface RDomTokenList {
 export interface RText extends RNode { textContent: string|null; }
 
 export interface RComment extends RNode {}
+
+// Note: This hack is necessary so we don't erroneously get a circular dependency
+// failure based on types.
+export const unusedValueExportToPlacateAjd = 1;

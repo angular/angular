@@ -107,7 +107,7 @@ The `HeroService` is now ready to plug into the `HeroesComponent`.
 
 <div class="alert is-helpful">
 
-  Learn more about _providers_ in the [NgModules](guide/ngmodule#providers) guide.
+  Learn more about _providers_ in the [Providers](guide/providers) guide.
 
 </div>
 
@@ -121,7 +121,7 @@ Import the `HeroService` instead.
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" title="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
 </code-example>
 
-Replace the the definition of the `heroes` property with a simple declaration.
+Replace the definition of the `heroes` property with a simple declaration.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" region="heroes">
 </code-example>
@@ -232,11 +232,11 @@ Find the `getHeroes` method and replace it with the following code
 
 <code-tabs>
 
-  <code-pane title="hero.component.ts (Observable)" 
+  <code-pane title="heroes.component.ts (Observable)" 
     path="toh-pt4/src/app/heroes/heroes.component.ts" region="getHeroes">
   </code-pane>
 
-  <code-pane title="hero.component.ts (Original)" 
+  <code-pane title="heroes.component.ts (Original)" 
     path="toh-pt4/src/app/heroes/heroes.component.1.ts" region="getHeroes">
   </code-pane>
 

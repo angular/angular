@@ -17,6 +17,7 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
 
   // This processor relies upon the versionInfo. See below...
   .processor(require('./processors/processNavigationMap'))
+  .processor(require('./processors/cleanGeneratedFiles'))
 
   // We don't include this in the angular-base package because the `versionInfo` stuff
   // accesses the file system and git, which is slow.

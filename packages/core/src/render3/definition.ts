@@ -10,8 +10,8 @@ import {RendererType2} from '../render/api';
 import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
-import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs} from './definition_interfaces';
 import {componentRefresh, diPublic} from './instructions';
+import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs} from './interfaces/definition';
 
 
 
@@ -32,17 +32,18 @@ import {componentRefresh, diPublic} from './instructions';
  */
 export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): ComponentDef<T> {
   const def = <ComponentDef<any>>{
-    type: componentDefinition.type,
     diPublic: null,
     n: componentDefinition.factory,
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
     template: (componentDefinition as ComponentDefArgs<T>).template || null !,
     r: componentDefinition.refresh ||
         function(d: number, e: number) { componentRefresh(d, e, componentDefinition.template); },
+    h: componentDefinition.hostBindings || noop,
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
     methods: invertObject(componentDefinition.methods),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
+    exportAs: componentDefinition.exportAs,
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -58,6 +59,8 @@ export function PublicFeature<T>(definition: DirectiveDef<T>) {
 }
 
 const EMPTY = {};
+
+function noop() {}
 
 /** Swaps the keys and values of an object. */
 function invertObject(obj: any): any {

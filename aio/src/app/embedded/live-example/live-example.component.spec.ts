@@ -13,7 +13,7 @@ describe('LiveExampleComponent', () => {
   let liveExampleComponent: LiveExampleComponent;
   let fixture: ComponentFixture<HostComponent>;
   let testPath: string;
-  let liveExampleContent: string;
+  let liveExampleContent: string|null;
 
   //////// test helpers ////////
 
@@ -66,7 +66,7 @@ describe('LiveExampleComponent', () => {
     .overrideComponent(EmbeddedPlunkerComponent, {set: {template: 'NO IFRAME'}});
 
     testPath = defaultTestPath;
-    liveExampleContent = undefined;
+    liveExampleContent = null;
   });
 
   describe('when not embedded', () => {

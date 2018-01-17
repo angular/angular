@@ -45,7 +45,7 @@ class PlunkerBuilder {
   }
 
   _buildCopyrightStrings() {
-    var copyright = 'Copyright 2017 Google Inc. All Rights Reserved.\n'
+    var copyright = 'Copyright 2017-2018 Google Inc. All Rights Reserved.\n'
       + 'Use of this source code is governed by an MIT-style license that\n'
       + 'can be found in the LICENSE file at http://angular.io/license';
     var pad = '\n\n';
@@ -152,6 +152,7 @@ class PlunkerBuilder {
       // Matches main.ts or main.1.ts
       if (/^main(?:[.-]\w+)?\.ts$/.test(relativeFileName)) {
         content = fileTranslator.translate(content, mainTsRules);
+        relativeFileName = 'main.ts';
       }
 
       if (relativeFileName == 'systemjs.config.extras.js') {

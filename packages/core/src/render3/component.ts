@@ -13,10 +13,10 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
-import {ComponentDef, ComponentType} from './definition_interfaces';
-import {NG_HOST_SYMBOL, createError, createViewState, directive, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
-import {LElement} from './interfaces';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './renderer';
+import {NG_HOST_SYMBOL, createError, createLView, directive, directiveCreate, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
+import {ComponentDef, ComponentType, TypedComponentDef} from './interfaces/definition';
+import {LElementNode} from './interfaces/node';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {notImplemented, stringify} from './util';
 
 
@@ -166,17 +166,18 @@ export const NULL_INJECTOR: Injector = {
 export function renderComponent<T>(
     componentType: ComponentType<T>, opts: CreateComponentOptions = {}): T {
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
-  const componentDef = componentType.ngComponentDef;
+  const componentDef = componentType.ngComponentDef as TypedComponentDef<T>;
+  if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);
   const oldView = enterView(
-      createViewState(-1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), []),
+      createLView(-1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), []),
       null !);
   try {
     // Create element node at index 0 in data array
     hostElement(hostNode, componentDef);
     // Create directive instance with n() and store at index 1 in data array (el is 0)
-    component = directive(1, componentDef.n(), componentDef);
+    component = directiveCreate(1, componentDef.n(), componentDef);
   } finally {
     leaveView(oldView);
   }
@@ -188,7 +189,7 @@ export function renderComponent<T>(
 
 export function detectChanges<T>(component: T) {
   ngDevMode && assertNotNull(component, 'component');
-  const hostNode = (component as any)[NG_HOST_SYMBOL] as LElement;
+  const hostNode = (component as any)[NG_HOST_SYMBOL] as LElementNode;
   if (ngDevMode && !hostNode) {
     createError('Not a directive instance', component);
   }
@@ -208,5 +209,5 @@ export function markDirty<T>(
 }
 
 export function getHostElement<T>(component: T): RElement {
-  return ((component as any)[NG_HOST_SYMBOL] as LElement).native;
+  return ((component as any)[NG_HOST_SYMBOL] as LElementNode).native;
 }

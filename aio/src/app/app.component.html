@@ -5,15 +5,29 @@
 </div>
 
 <mat-toolbar color="primary" class="app-toolbar" [class.transitioning]="isTransitioning">
-  <button mat-button class="hamburger" (click)="sidenav.toggle()" title="Docs menu">
-    <mat-icon svgIcon="menu"></mat-icon>
-  </button>
-  <a class="nav-link home" href="/" [ngSwitch]="isSideBySide">
-    <img *ngSwitchCase="true" src="assets/images/logos/angular/logo-nav@2x.png" width="150" height="40" title="Home" alt="Home">
-    <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
-  </a>
-  <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
-  <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
+  <mat-toolbar-row class="notification-container">
+    <aio-notification
+      icon="insert_comment"
+      iconLabel="Survey"
+      buttonText="Go to survey"
+      actionUrl="https://bit.ly/angular-survey-2018"
+      notificationId="survey-january-2018"
+      expirationDate="2018-01-19"
+      (dismissed)="notificationDismissed()">
+      Help Angular by taking a <b>1 minute survey</b>!
+    </aio-notification>
+  </mat-toolbar-row>
+  <mat-toolbar-row>
+    <button mat-button class="hamburger" (click)="sidenav.toggle()" title="Docs menu">
+      <mat-icon svgIcon="menu"></mat-icon>
+    </button>
+    <a class="nav-link home" href="/" [ngSwitch]="isSideBySide">
+      <img *ngSwitchCase="true" src="assets/images/logos/angular/logo-nav@2x.png" width="150" height="40" title="Home" alt="Home">
+      <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
+    </a>
+    <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
+    <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
+  </mat-toolbar-row>
 </mat-toolbar>
 <aio-search-results #searchResultsView *ngIf="showSearchResults" [searchResults]="searchResults | async" (resultSelected)="hideSearchResults()"></aio-search-results>
 

@@ -142,6 +142,7 @@ export class DatePipe implements PipeTransform {
     }
 
     let date: Date;
+    let match: RegExpMatchArray|null;
     if (isDate(value)) {
       date = value;
     } else if (!isNaN(value - parseFloat(value))) {
@@ -158,17 +159,14 @@ export class DatePipe implements PipeTransform {
       */
       const [y, m, d] = value.split('-').map((val: string) => +val);
       date = new Date(y, m - 1, d);
+    } else if ((typeof value === 'string') && (match = value.match(ISO8601_DATE_REGEX))) {
+      date = isoStringToDate(match);
     } else {
       date = new Date(value);
     }
 
     if (!isDate(date)) {
-      let match: RegExpMatchArray|null;
-      if ((typeof value === 'string') && (match = value.match(ISO8601_DATE_REGEX))) {
-        date = isoStringToDate(match);
-      } else {
-        throw invalidPipeArgumentError(DatePipe, value);
-      }
+      throw invalidPipeArgumentError(DatePipe, value);
     }
 
     return formatDate(date, format, locale || this.locale, timezone);
@@ -180,9 +178,12 @@ export function isoStringToDate(match: RegExpMatchArray): Date {
   const date = new Date(0);
   let tzHour = 0;
   let tzMin = 0;
+
+  // match[8] means that the string contains "Z" (UTC) or a timezone like "+01:00" or "+0100"
   const dateSetter = match[8] ? date.setUTCFullYear : date.setFullYear;
   const timeSetter = match[8] ? date.setUTCHours : date.setHours;
 
+  // if there is a timezone defined like "+01:00" or "+0100"
   if (match[9]) {
     tzHour = +(match[9] + match[10]);
     tzMin = +(match[9] + match[11]);

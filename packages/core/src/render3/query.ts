@@ -13,15 +13,17 @@ import {Observable} from 'rxjs/Observable';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList as viewEngine_QueryList} from '../linker/query_list';
 import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
-import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {Type} from '../type';
 
 import {assertNotNull} from './assert';
-import {DirectiveDef} from './definition_interfaces';
 import {getOrCreateContainerRef, getOrCreateElementRef, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from './di';
-import {LContainer, LElement, LNode, LNodeFlags, LNodeInjector, LView, QueryReadType, QueryState} from './interfaces';
+import {DirectiveDef, TypedDirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
+import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
+import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode, TNode, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {LQuery, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {assertNodeOfPossibleTypes} from './node_assert';
 
+const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
 
 /**
@@ -39,7 +41,7 @@ export interface QueryPredicate<T> {
   list: QueryList<T>;
 
   /**
-   * If looking for directives than it contains the directive type.
+   * If looking for directives then it contains the directive type.
    */
   type: Type<T>|null;
 
@@ -61,7 +63,7 @@ export interface QueryPredicate<T> {
   values: any[];
 }
 
-export class QueryState_ implements QueryState {
+export class LQuery_ implements LQuery {
   shallow: QueryPredicate<any>|null = null;
   deep: QueryPredicate<any>|null = null;
 
@@ -80,9 +82,9 @@ export class QueryState_ implements QueryState {
     }
   }
 
-  child(): QueryState|null {
+  child(): LQuery|null {
     if (this.deep === null) {
-      // if we don't have any deep queries than no need to track anything more.
+      // if we don't have any deep queries then no need to track anything more.
       return null;
     }
     if (this.shallow === null) {
@@ -91,7 +93,7 @@ export class QueryState_ implements QueryState {
       return this;
     } else {
       // We need to create new state
-      return new QueryState_(this.deep);
+      return new LQuery_(this.deep);
     }
   }
 
@@ -100,16 +102,57 @@ export class QueryState_ implements QueryState {
     add(this.deep, node);
   }
 
-  insertView(container: LContainer, view: LView, index: number): void {
+  insertView(container: LContainerNode, view: LViewNode, index: number): void {
     throw new Error('Method not implemented.');
   }
 
-  removeView(container: LContainer, view: LView, index: number): void {
+  removeView(container: LContainerNode, view: LViewNode, index: number): void {
     throw new Error('Method not implemented.');
   }
 }
 
-function readDefaultInjectable(nodeInjector: LNodeInjector, node: LNode): viewEngine_ElementRef|
+/**
+ * Iterates over local names for a given node and returns directive index
+ * (or -1 if a local name points to an element).
+ *
+ * @param tNode static data of a node to check
+ * @param selector selector to match
+ * @returns directive index, -1 or null if a selector didn't match any of the local names
+ */
+function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
+  const localNames = tNode.localNames;
+  if (localNames) {
+    for (let i = 0; i < localNames.length; i += 2) {
+      if (localNames[i] === selector) {
+        return localNames[i + 1] as number;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Iterates over all the directives for a node and returns index of a directive for a given type.
+ *
+ * @param node Node on which directives are present.
+ * @param type Type of a directive to look for.
+ * @returns Index of a found directive or null when none found.
+ */
+function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
+  const ngStaticData = node.view.ngStaticData;
+  const flags = node.flags;
+  for (let i = flags >> LNodeFlags.INDX_SHIFT,
+           ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
+       i < ii; i++) {
+    const def = ngStaticData[i] as TypedDirectiveDef<any>;
+    if (def.diPublic && def.type === type) {
+      return i;
+    }
+  }
+  return null;
+}
+
+function readDefaultInjectable(nodeInjector: LInjector, node: LNode): viewEngine_ElementRef|
     viewEngine_TemplateRef<any>|undefined {
   ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
   if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
@@ -119,47 +162,58 @@ function readDefaultInjectable(nodeInjector: LNodeInjector, node: LNode): viewEn
   }
 }
 
-function readFromNodeInjector(nodeInjector: LNodeInjector, node: LNode, read: QueryReadType | null):
-    viewEngine_ElementRef|viewEngine_ViewContainerRef|viewEngine_TemplateRef<any>|undefined {
-  if (read === null) {
-    return readDefaultInjectable(nodeInjector, node);
-  } else if (read === QueryReadType.ElementRef) {
+function readFromNodeInjector(
+    nodeInjector: LInjector, node: LNode, read: QueryReadType | Type<any>): any {
+  if (read === QueryReadType.ElementRef) {
     return getOrCreateElementRef(nodeInjector);
   } else if (read === QueryReadType.ViewContainerRef) {
     return getOrCreateContainerRef(nodeInjector);
   } else if (read === QueryReadType.TemplateRef) {
     return getOrCreateTemplateRef(nodeInjector);
+  } else {
+    const matchingIdx = geIdxOfMatchingDirective(node, read);
+    if (matchingIdx !== null) {
+      return node.view.data[matchingIdx];
+    }
   }
-
-  if (ngDevMode) {
-    throw new Error(`Unrecognised read type for queries: ${read}`);
-  }
+  return null;
 }
 
 function add(predicate: QueryPredicate<any>| null, node: LNode) {
+  const nodeInjector = getOrCreateNodeInjectorForNode(node as LElementNode | LContainerNode);
   while (predicate) {
     const type = predicate.type;
     if (type) {
-      const ngStaticData = node.view.ngStaticData;
-      const flags = node.flags;
-      for (let i = flags >> LNodeFlags.INDX_SHIFT,
-               ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
-           i < ii; i++) {
-        const def = ngStaticData[i] as DirectiveDef<any>;
-        if (def.diPublic && def.type === type) {
-          predicate.values.push(node.view.data[i]);
+      const directiveIdx = geIdxOfMatchingDirective(node, type);
+      if (directiveIdx !== null) {
+        if (predicate.read !== null) {
+          const requestedRead = readFromNodeInjector(nodeInjector, node, predicate.read);
+          if (requestedRead !== null) {
+            predicate.values.push(requestedRead);
+          }
+        } else {
+          predicate.values.push(node.view.data[directiveIdx]);
         }
       }
     } else {
-      const staticData = node.staticData;
-      const nodeInjector = getOrCreateNodeInjectorForNode(node as LElement | LContainer);
-      if (staticData && staticData.localName) {
-        const selector = predicate.selector !;
-        for (let i = 0; i < selector.length; i++) {
-          if (selector[i] === staticData.localName) {
-            const injectable = readFromNodeInjector(nodeInjector, node, predicate.read);
-            assertNotNull(injectable, 'injectable');
-            predicate.values.push(injectable);
+      const selector = predicate.selector !;
+      for (let i = 0; i < selector.length; i++) {
+        ngDevMode && assertNotNull(node.tNode, 'node.tNode');
+        const directiveIdx = getIdxOfMatchingSelector(node.tNode !, selector[i]);
+        // is anything on a node matching a selector?
+        if (directiveIdx !== null) {
+          if (predicate.read !== null) {
+            const requestedRead = readFromNodeInjector(nodeInjector, node, predicate.read);
+            if (requestedRead !== null) {
+              predicate.values.push(requestedRead);
+            }
+          } else {
+            // is local name pointing to a directive?
+            if (directiveIdx > -1) {
+              predicate.values.push(node.view.data[directiveIdx]);
+            } else {
+              predicate.values.push(readDefaultInjectable(nodeInjector, node));
+            }
           }
         }
       }

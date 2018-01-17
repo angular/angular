@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, D, E, L, T, V, b, b1, c, cR, cr, defineComponent, defineDirective, e, p, t, v} from '../../src/render3/index';
+import {C, D, E, L, T, V, b, b1, cR, cr, defineComponent, defineDirective, e, p, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
@@ -69,8 +69,8 @@ describe('elementProperty', () => {
     class MyButton {
       disabled: boolean;
 
-      static ngDirectiveDef = defineDirective(
-          {type: MyButton, factory: () => button = new MyButton(), inputs: {disabled: 'disabled'}});
+      static ngDirectiveDef =
+          defineDirective({factory: () => button = new MyButton(), inputs: {disabled: 'disabled'}});
     }
 
     class OtherDir {
@@ -78,7 +78,6 @@ describe('elementProperty', () => {
       clickStream = new EventEmitter();
 
       static ngDirectiveDef = defineDirective({
-        type: OtherDir,
         factory: () => otherDir = new OtherDir(),
         inputs: {id: 'id'},
         outputs: {clickStream: 'click'}
@@ -90,12 +89,8 @@ describe('elementProperty', () => {
       /** <button myButton [id]="id" [disabled]="isDisabled">Click me</button> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'button');
-          {
-            D(1, MyButton.ngDirectiveDef.n(), MyButton.ngDirectiveDef);
-            D(2, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
-            T(3, 'Click me');
-          }
+          E(0, 'button', null, [MyButton, OtherDir]);
+          { T(3, 'Click me'); }
           e();
         }
 
@@ -120,11 +115,8 @@ describe('elementProperty', () => {
       /** <button myButton [id]="id" [disabled]="isDisabled">Click me</button> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'button');
-          {
-            D(1, MyButton.ngDirectiveDef.n(), MyButton.ngDirectiveDef);
-            T(2, 'Click me');
-          }
+          E(0, 'button', null, [MyButton]);
+          { T(2, 'Click me'); }
           e();
         }
 
@@ -149,7 +141,6 @@ describe('elementProperty', () => {
 
         static ngComponentDef = defineComponent({
           tag: 'comp',
-          type: Comp,
           template: function(ctx: any, cm: boolean) {},
           factory: () => comp = new Comp(),
           inputs: {id: 'id'}
@@ -159,11 +150,11 @@ describe('elementProperty', () => {
       /** <comp [id]="id"></comp> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, Comp.ngComponentDef);
-          { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+          E(0, Comp);
           e();
         }
         p(0, 'id', b(ctx.id));
+        Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.r(1, 0);
       }
 
@@ -181,7 +172,6 @@ describe('elementProperty', () => {
         disabled: boolean;
 
         static ngDirectiveDef = defineDirective({
-          type: OtherDisabledDir,
           factory: () => otherDisabledDir = new OtherDisabledDir(),
           inputs: {disabled: 'disabled'}
         });
@@ -190,12 +180,8 @@ describe('elementProperty', () => {
       /** <button myButton otherDisabledDir [disabled]="isDisabled">Click me</button> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'button');
-          {
-            D(1, MyButton.ngDirectiveDef.n(), MyButton.ngDirectiveDef);
-            D(2, OtherDisabledDir.ngDirectiveDef.n(), OtherDisabledDir.ngDirectiveDef);
-            T(3, 'Click me');
-          }
+          E(0, 'button', null, [MyButton, OtherDisabledDir]);
+          { T(3, 'Click me'); }
           e();
         }
         p(0, 'disabled', b(ctx.isDisabled));
@@ -216,9 +202,8 @@ describe('elementProperty', () => {
       /** <button otherDir [id]="id" (click)="onClick()">Click me</button> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'button');
+          E(0, 'button', null, [OtherDir]);
           {
-            D(1, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
             L('click', ctx.onClick.bind(ctx));
             T(2, 'Click me');
           }
@@ -246,8 +231,8 @@ describe('elementProperty', () => {
       class IdDir {
         idNumber: number;
 
-        static ngDirectiveDef = defineDirective(
-            {type: IdDir, factory: () => idDir = new IdDir(), inputs: {idNumber: 'id'}});
+        static ngDirectiveDef =
+            defineDirective({factory: () => idDir = new IdDir(), inputs: {idNumber: 'id'}});
       }
 
       /**
@@ -260,14 +245,10 @@ describe('elementProperty', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'button');
-          {
-            D(1, IdDir.ngDirectiveDef.n(), IdDir.ngDirectiveDef);
-            T(2, 'Click me');
-          }
+          E(0, 'button', null, [IdDir]);
+          { T(2, 'Click me'); }
           e();
           C(3);
-          c();
         }
         p(0, 'id', b(ctx.id1));
         cR(3);
@@ -282,11 +263,8 @@ describe('elementProperty', () => {
             v();
           } else {
             if (V(1)) {
-              E(0, 'button');
-              {
-                D(1, OtherDir.ngDirectiveDef.n(), OtherDir.ngDirectiveDef);
-                T(2, 'Click me too');
-              }
+              E(0, 'button', null, [OtherDir]);
+              { T(2, 'Click me too'); }
               e();
             }
             p(0, 'id', b(ctx.id3));
@@ -316,7 +294,6 @@ describe('elementProperty', () => {
       changeStream = new EventEmitter();
 
       static ngDirectiveDef = defineDirective({
-        type: MyDir,
         factory: () => myDir = new MyDir(),
         inputs: {role: 'role', direction: 'dir'},
         outputs: {changeStream: 'change'}
@@ -327,8 +304,8 @@ describe('elementProperty', () => {
     class MyDirB {
       roleB: string;
 
-      static ngDirectiveDef = defineDirective(
-          {type: MyDirB, factory: () => dirB = new MyDirB(), inputs: {roleB: 'role'}});
+      static ngDirectiveDef =
+          defineDirective({factory: () => dirB = new MyDirB(), inputs: {roleB: 'role'}});
     }
 
     it('should set input property based on attribute if existing', () => {
@@ -336,8 +313,7 @@ describe('elementProperty', () => {
       /** <div role="button" myDir></div> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', ['role', 'button']);
-          { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+          E(0, 'div', ['role', 'button'], [MyDir]);
           e();
         }
       }
@@ -351,8 +327,7 @@ describe('elementProperty', () => {
       /** <div role="button" [role]="role" myDir></div> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', ['role', 'button']);
-          { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+          E(0, 'div', ['role', 'button'], [MyDir]);
           e();
         }
         p(0, 'role', b(ctx.role));
@@ -370,11 +345,7 @@ describe('elementProperty', () => {
       /** <div role="button" myDir myDirB></div> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', ['role', 'button']);
-          {
-            D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef);
-            D(2, MyDirB.ngDirectiveDef.n(), MyDirB.ngDirectiveDef);
-          }
+          E(0, 'div', ['role', 'button'], [MyDir, MyDirB]);
           e();
         }
       }
@@ -389,13 +360,12 @@ describe('elementProperty', () => {
       /** <div role="button" dir="rtl" myDir></div> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', ['role', 'button', 'dir', 'rtl']);
-          { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+          E(0, 'div', ['role', 'button', 'dir', 'rtl'], [MyDir]);
           e();
         }
       }
 
-      expect(renderToHtml(Template, {})).toEqual(`<div role="button" dir="rtl"></div>`);
+      expect(renderToHtml(Template, {})).toEqual(`<div dir="rtl" role="button"></div>`);
       expect(myDir !.role).toEqual('button');
       expect(myDir !.direction).toEqual('rtl');
     });
@@ -405,11 +375,8 @@ describe('elementProperty', () => {
       /** <div role="button" (change)="onChange()" myDir></div> */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', ['role', 'button']);
-          {
-            D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef);
-            L('change', ctx.onChange.bind(ctx));
-          }
+          E(0, 'div', ['role', 'button'], [MyDir]);
+          { L('change', ctx.onChange.bind(ctx)); }
           e();
         }
       }
@@ -433,17 +400,15 @@ describe('elementProperty', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', ['role', 'button', 'dir', 'rtl']);
-          { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+          E(0, 'div', ['role', 'button', 'dir', 'rtl'], [MyDir]);
           e();
-          E(2, 'div', ['role', 'listbox']);
-          { D(3, MyDirB.ngDirectiveDef.n(), MyDirB.ngDirectiveDef); }
+          E(2, 'div', ['role', 'listbox'], [MyDirB]);
           e();
         }
       }
 
       expect(renderToHtml(Template, {}))
-          .toEqual(`<div role="button" dir="rtl"></div><div role="listbox"></div>`);
+          .toEqual(`<div dir="rtl" role="button"></div><div role="listbox"></div>`);
       expect(myDir !.role).toEqual('button');
       expect(myDir !.direction).toEqual('rtl');
       expect(dirB !.roleB).toEqual('listbox');
@@ -461,18 +426,15 @@ describe('elementProperty', () => {
        */
       function Template(ctx: any, cm: boolean) {
         if (cm) {
-          E(0, 'div', ['role', 'listbox']);
-          { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+          E(0, 'div', ['role', 'listbox'], [MyDir]);
           e();
           C(2);
-          c();
         }
         cR(2);
         {
           if (ctx.condition) {
             if (V(0)) {
-              E(0, 'div', ['role', 'button']);
-              { D(1, MyDirB.ngDirectiveDef.n(), MyDirB.ngDirectiveDef); }
+              E(0, 'div', ['role', 'button'], [MyDirB]);
               e();
             }
             v();
@@ -506,11 +468,9 @@ describe('elementProperty', () => {
       class Comp {
         static ngComponentDef = defineComponent({
           tag: 'comp',
-          type: Comp,
           template: function(ctx: any, cm: boolean) {
             if (cm) {
-              E(0, 'div', ['role', 'button']);
-              { D(1, MyDir.ngDirectiveDef.n(), MyDir.ngDirectiveDef); }
+              E(0, 'div', ['role', 'button'], [MyDir]);
               e();
               T(2);
             }
@@ -528,16 +488,15 @@ describe('elementProperty', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           C(0);
-          c();
         }
         cR(0);
         {
           for (let i = 0; i < 2; i++) {
             if (V(0)) {
-              E(0, Comp.ngComponentDef);
-              { D(1, Comp.ngComponentDef.n(), Comp.ngComponentDef); }
+              E(0, Comp);
               e();
             }
+            Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.r(1, 0);
             v();
           }

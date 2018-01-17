@@ -67,17 +67,20 @@ else
 fi
 
 
-CHERRY_PICK_PR="git cherry-pick upstream/pr/$PR_NUMBER~$PR_SHA_COUNT..upstream/pr/$PR_NUMBER"
+FETCH_PR="git fetch https://github.com/angular/angular.git pull/$PR_NUMBER/head:angular/pr/$PR_NUMBER -f"
+CHERRY_PICK_PR="git cherry-pick angular/pr/$PR_NUMBER~$PR_SHA_COUNT..angular/pr/$PR_NUMBER"
 REWRITE_MESSAGE="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" HEAD~$PR_SHA_COUNT..HEAD"
 
 echo "======================"
 echo "GitHub Merge PR Steps"
 echo "======================"
+echo "   $FETCH_PR"
 echo "   $CHERRY_PICK_PR"
 echo "   $REWRITE_MESSAGE"
 echo "----------------------"
 
 echo ">>> Cherry Pick: $CHERRY_PICK_PR"
+$FETCH_PR
 $CHERRY_PICK_PR
 
 echo

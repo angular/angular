@@ -15,11 +15,6 @@ export declare class AsyncPipe implements OnDestroy, PipeTransform {
 export declare class CommonModule {
 }
 
-/** @experimental */
-export declare const CURRENCIES: {
-    [code: string]: (string | undefined)[];
-};
-
 /** @stable */
 export declare class CurrencyPipe implements PipeTransform {
     constructor(_locale: string);
@@ -82,6 +77,9 @@ export declare enum FormStyle {
     Format = 0,
     Standalone = 1,
 }
+
+/** @experimental */
+export declare function getCurrencySymbol(code: string, format: 'wide' | 'narrow'): string;
 
 /** @experimental */
 export declare function getLocaleCurrencyName(locale: string): string | null;

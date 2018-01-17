@@ -11,7 +11,7 @@ describe('CustomIconRegistry', () => {
       { name: 'test_icon', svgSource: svgSrc }
     ];
     const registry = new CustomIconRegistry(mockHttp, mockSanitizer, svgIcons);
-    let svgElement: SVGElement;
+    let svgElement: SVGElement|undefined;
     registry.getNamedSvgIcon('test_icon').subscribe(el => svgElement = el);
     expect(svgElement).toEqual(createSvg(svgSrc));
   });
@@ -36,8 +36,8 @@ describe('CustomIconRegistry', () => {
   });
 });
 
-function createSvg(svgSrc) {
+function createSvg(svgSrc: string): SVGElement {
   const div = document.createElement('div');
   div.innerHTML = svgSrc;
-  return div.querySelector('svg');
+  return div.querySelector('svg')!;
 }

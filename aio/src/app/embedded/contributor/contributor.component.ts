@@ -40,7 +40,7 @@ export class ContributorComponent {
   noPicture = '_no-one.png';
   pictureBase = CONTENT_URL_PREFIX + 'images/bios/';
 
-  flipCard(person) {
+  flipCard(person: Contributor) {
     person.isFlipped = !person.isFlipped;
   }
 }

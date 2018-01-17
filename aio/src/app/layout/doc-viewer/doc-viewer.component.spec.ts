@@ -43,7 +43,7 @@ describe('DocViewerComponent', () => {
   describe('#doc', () => {
     let renderSpy: jasmine.Spy;
 
-    const setCurrentDoc = (contents, id = 'fizz/buzz') => {
+    const setCurrentDoc = (contents: string|null, id = 'fizz/buzz') => {
       parentComponent.currentDoc = {contents, id};
       parentFixture.detectChanges();
     };
@@ -432,7 +432,7 @@ describe('DocViewerComponent', () => {
       });
 
       it('should store the embedded components', async () => {
-        const embeddedComponents = [];
+        const embeddedComponents: ComponentRef<any>[] = [];
         embedIntoSpy.and.returnValue(of(embeddedComponents));
 
         await doRender('Some content');
@@ -536,7 +536,7 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          ['[DocViewer]: Error preparing document \'foo\'.', error],
+          [`[DocViewer] Error preparing document 'foo': ${error.stack}`],
         ]);
       });
 
@@ -555,7 +555,7 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          ['[DocViewer]: Error preparing document \'bar\'.', error],
+          [`[DocViewer] Error preparing document 'bar': ${error.stack}`],
         ]);
       });
 
@@ -574,7 +574,7 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).not.toHaveBeenCalled();
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          ['[DocViewer]: Error preparing document \'baz\'.', error],
+          [`[DocViewer] Error preparing document 'baz': ${error.stack}`],
         ]);
       });
 
@@ -593,7 +593,23 @@ describe('DocViewerComponent', () => {
         expect(swapViewsSpy).toHaveBeenCalledTimes(1);
         expect(docViewer.nextViewContainer.innerHTML).toBe('');
         expect(logger.output.error).toEqual([
-          ['[DocViewer]: Error preparing document \'qux\'.', error],
+          [`[DocViewer] Error preparing document 'qux': ${error.stack}`],
+        ]);
+      });
+
+      it('when something fails with non-Error', async () => {
+        const error = 'Typical string error';
+        swapViewsSpy.and.callFake(() => {
+          expect(docViewer.nextViewContainer.innerHTML).not.toBe('');
+          throw error;
+        });
+
+        await doRender('Some content', 'qux');
+
+        expect(swapViewsSpy).toHaveBeenCalledTimes(1);
+        expect(docViewer.nextViewContainer.innerHTML).toBe('');
+        expect(logger.output.error).toEqual([
+          [`[DocViewer] Error preparing document 'qux': ${error}`],
         ]);
       });
     });
@@ -662,7 +678,7 @@ describe('DocViewerComponent', () => {
           describe(`(.${NO_ANIMATIONS}: ${noAnimations})`, () => {
             beforeEach(() => docViewerEl.classList[noAnimations ? 'add' : 'remove'](NO_ANIMATIONS));
 
-            it('should return an observable', done => {
+            it('should return an observable', (done: DoneFn) => {
               docViewer.swapViews().subscribe(done, done.fail);
             });
 

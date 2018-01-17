@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
     name = "service-worker",
@@ -11,7 +11,6 @@ ts_library(
         ],
     ),
     module_name = "@angular/service-worker",
-    tsconfig = "//packages:tsconfig",
     deps = [
         "//packages/common",
         "//packages/core",

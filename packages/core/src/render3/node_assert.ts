@@ -7,7 +7,7 @@
  */
 
 import {assertEqual, assertNotEqual} from './assert';
-import {LNode, LNodeFlags} from './interfaces';
+import {LNode, LNodeFlags} from './interfaces/node';
 
 export function assertNodeType(node: LNode, type: LNodeFlags) {
   assertNotEqual(node, null, 'node');

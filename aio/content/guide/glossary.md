@@ -478,8 +478,10 @@ Read more in the [Lifecycle Hooks](guide/lifecycle-hooks) page.
 Angular has the following types of modules:
 
 * [NgModules](guide/glossary#ngmodule).
-For details and examples, see the [NgModules](guide/ngmodule) page.
+For details and examples, see the [NgModules](guide/ngmodules) page. 
 * ES2015 modules, as described in this section.
+
+For a comparison, see [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
 
 
 </div>
@@ -526,7 +528,8 @@ An NgModule identifies the components, directives, and pipes that the applicatio
 Every Angular application has an application root-module class. By convention, the class is
 called `AppModule` and resides in a file named `app.module.ts`.
 
-For details and examples, see [NgModules](guide/ngmodule).
+For details and examples, see [NgModules](guide/ngmodules) and the 
+related files in that section.
 
 
 </div>

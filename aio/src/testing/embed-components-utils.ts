@@ -113,7 +113,7 @@ export class MockNgModuleFactoryLoader implements NgModuleFactoryLoader {
     this.loadedPaths.push(path);
 
     const platformRef = getPlatform();
-    const compilerFactory = platformRef.injector.get(CompilerFactory) as CompilerFactory;
+    const compilerFactory = platformRef!.injector.get(CompilerFactory) as CompilerFactory;
     const compiler = compilerFactory.createCompiler([]);
 
     return compiler.compileModuleAsync(MockEmbeddedModule);

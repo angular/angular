@@ -1,6 +1,6 @@
 const glob = require('glob');
 
-const scopes = ['aio', 'changelog', 'packaging'].concat(getPackages());
+const scopes = ['aio', 'changelog', 'ivy', 'packaging'].concat(getPackages());
 
 module.exports = {
   extends: ['@commitlint/config-angular'],

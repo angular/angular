@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, D, E, L, T, V, c, cR, cr, defineComponent, e, v} from '../../src/render3/index';
+import {C, D, E, L, T, V, cR, cr, defineComponent, e, v} from '../../src/render3/index';
 
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 
@@ -21,7 +21,6 @@ describe('event listeners', () => {
     onClick() { this.counter++; }
 
     static ngComponentDef = defineComponent({
-      type: MyComp,
       tag: 'comp',
       /** <button (click)="onClick()"> Click me </button> */
       template: function CompTemplate(ctx: any, cm: boolean) {
@@ -137,7 +136,6 @@ describe('event listeners', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
@@ -145,7 +143,6 @@ describe('event listeners', () => {
           if (V(0)) {
             T(0, 'Hello');
             C(1);
-            c();
           }
           cR(1);
           {
@@ -197,20 +194,19 @@ describe('event listeners', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
         if (ctx.showing) {
           if (V(0)) {
             T(0, 'Hello');
-            E(1, MyComp.ngComponentDef);
-            { D(2, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+            E(1, MyComp);
             e();
-            E(3, MyComp.ngComponentDef);
-            { D(4, MyComp.ngComponentDef.n(), MyComp.ngComponentDef); }
+            E(3, MyComp);
             e();
           }
+          MyComp.ngComponentDef.h(2, 1);
+          MyComp.ngComponentDef.h(4, 3);
           MyComp.ngComponentDef.r(2, 1);
           MyComp.ngComponentDef.r(4, 3);
           v();
@@ -254,7 +250,6 @@ describe('event listeners', () => {
     function Template(ctx: any, cm: boolean) {
       if (cm) {
         C(0);
-        c();
       }
       cR(0);
       {
@@ -262,9 +257,7 @@ describe('event listeners', () => {
           if (V(0)) {
             T(0, 'Hello');
             C(1);
-            c();
             C(2);
-            c();
           }
           cR(1);
           {

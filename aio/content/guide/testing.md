@@ -415,7 +415,7 @@ and re-attach it to a dynamically-constructed Angular test module
 tailored specifically for this battery of tests.
 
 The `configureTestingModule` method takes an `@NgModule`-like metadata object.
-The metadata object can have most of the properties of a normal [NgModule](guide/ngmodule).
+The metadata object can have most of the properties of a normal [NgModule](guide/ngmodules).
 
 _This metadata object_ simply declares the component to test, `BannerComponent`.
 The metadata lack `imports` because (a) the default testing module configuration already has what `BannerComponent` needs
@@ -1782,7 +1782,7 @@ It's a bit tighter and smaller, with fewer import statements (not shown).
 
 ### Import the feature module
 
-The `HeroDetailComponent` is part of the `HeroModule` [Feature Module](guide/ngmodule#feature-modules) that aggregates more of the interdependent pieces
+The `HeroDetailComponent` is part of the `HeroModule` [Feature Module](guide/feature-modules) that aggregates more of the interdependent pieces
 including the `SharedModule`.
 Try a test configuration that imports the `HeroModule` like this one:
 
