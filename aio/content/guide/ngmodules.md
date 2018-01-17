@@ -8,12 +8,12 @@ A basic understanding of the following concepts:
 
 <hr>
 
-**NgModules** configure the injector and the compiler and help organize related things together
+**NgModules** configure the injector and the compiler and help organize related things together.
 
 An NgModule is a class marked by the `@NgModule` decorator.
-`@NgModule` takes a metadata object that describes how to compile a component's templates and how to create an injector at runtime.
+`@NgModule` takes a metadata object that describes how to compile a component's template and how to create an injector at runtime.
 It identifies the module's own components, directives, and pipes,
-making some of them public, through the 	`exports` property public, so that external components can use them.
+making some of them public, through the `exports` property, so that external components can use them.
 `@NgModule` can also add service providers to the application dependency injectors.
 
 For an example app showcasing all the techniques that NgModules related pages
@@ -25,7 +25,7 @@ section.
 
 Modules are a great way to organize an application and extend it with capabilities from external libraries.
 
-Angular libraries are NgModules, such as `FormsModule`, `HttpModule`, and `RouterModule`.
+Angular libraries are NgModules, such as `FormsModule`, `HttpClientModule`, and `RouterModule`.
 Many third-party libraries are available as NgModules such as
 <a href="https://material.angular.io/">Material Design</a>,
 <a href="http://ionicframework.com/">Ionic</a>, and

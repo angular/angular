@@ -12,14 +12,14 @@ though they organize it differently, Angular apps rely on both.
 
 In JavaScript, modules are individual files with JavaScript code in them. To make what’s in them available, you write an export statement, usually after the relevant code, like this:
 
-```javascript
+```typescript
 export class AppComponent { ... }
 ```
 
 Then, when you need that file’s code in another file, you import it like this:
 
-```javascript
-import { AppComponent }  from './app.component';
+```typescript
+import { AppComponent } from './app.component';
 ```
 
 JavaScript modules help you namespace, preventing accidental global variables.
@@ -31,27 +31,23 @@ NgModules are classes decorated with `@NgModule`. The `@NgModule` decorator’s 
 
 The `AppModule` generated from the Angular CLI demonstrates both kinds of modules in action:
 
-```javascript
+```typescript
 /* These are JavaScript import statements. Angular doesn’t know anything about these. */
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 
 /* The @NgModule decorator lets Angular know that this is an NgModule. */
 @NgModule({
-declarations: [
-  AppComponent
-],
-imports: [     /* These are NgModule imports. */
-  BrowserModule,
-  FormsModule,
-  HttpModule
-],
-providers: [],
-bootstrap: [AppComponent]
+  declarations: [
+    AppComponent
+  ],
+  imports: [     /* These are NgModule imports. */
+    BrowserModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
 ```
@@ -76,5 +72,3 @@ For more information on NgModules, see:
 * [Bootstrapping](guide/bootstrapping).
 * [Frequently used modules](guide/frequent-ngmodules).
 * [Providers](guide/providers).
-
-
