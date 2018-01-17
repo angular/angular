@@ -8,16 +8,10 @@
 
 import './ng_dev_mode';
 
-import {ElementRef} from '../linker/element_ref';
-import {TemplateRef} from '../linker/template_ref';
-import {ViewContainerRef} from '../linker/view_container_ref';
-import {Type} from '../type';
-
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull} from './assert';
 import {LContainer, TContainer} from './interfaces/container';
-import {LInjector} from './interfaces/injector';
 import {CssSelector, LProjection} from './interfaces/projection';
-import {LQuery, QueryReadType} from './interfaces/query';
+import {LQuery} from './interfaces/query';
 import {LView, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
@@ -161,6 +155,8 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   }
 
   currentView = newView;
+  currentQuery = newView.query;
+
   return oldView !;
 }
 
@@ -193,6 +189,7 @@ export function createLView(
     template: template,
     context: context,
     dynamicViewCount: 0,
+    query: null
   };
 
   return newView;
@@ -1071,14 +1068,17 @@ export function container(
     renderParent = currentParent as LElementNode;
   }
 
-  const node = createLNode(index, LNodeFlags.Container, comment, <LContainer>{
+  const lContainer = <LContainer>{
     views: [],
     nextIndex: 0, renderParent,
     template: template == null ? null : template,
     next: null,
     parent: currentView,
     dynamicViewCount: 0,
-  });
+    query: null
+  };
+
+  const node = createLNode(index, LNodeFlags.Container, comment, lContainer);
 
   if (node.tNode == null) {
     // TODO(misko): implement queryName caching
@@ -1093,8 +1093,13 @@ export function container(
 
   isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
-  const query = previousOrParentNode.query;
-  query && query.addNode(previousOrParentNode);
+  const query = node.query;
+  if (query) {
+    // check if a given container node matches
+    query.addNode(node);
+    // prepare place for matching nodes from views inserted into a given container
+    lContainer.query = query.container();
+  }
 }
 
 /**
@@ -1171,6 +1176,10 @@ export function viewStart(viewBlockId: number): boolean {
     // When we create a new LView, we always reset the state of the instructions.
     const newView =
         createLView(viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container));
+    if (lContainer.query) {
+      newView.query = lContainer.query.enterView(lContainer.nextIndex);
+    }
+
     enterView(newView, createLNode(null, LNodeFlags.View, null, newView));
     lContainer.nextIndex++;
   }
