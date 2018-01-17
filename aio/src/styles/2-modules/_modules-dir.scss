@@ -3,7 +3,7 @@
    ============================== */
 
    @import 'alert';
-   @import 'api-info-bar';
+   @import 'api-pages';
    @import 'api-list';
    @import 'banner';
    @import 'buttons';
@@ -12,10 +12,10 @@
    @import 'code';
    @import 'contribute';
    @import 'contributor';
+   @import 'details';
    @import 'edit-page-cta';
    @import 'features';
    @import 'filetree';
-   @import 'hamburger';
    @import 'heading-anchors';
    @import 'hr';
    @import 'images';
@@ -28,3 +28,5 @@
    @import 'subsection';
    @import 'toc';
    @import 'select-menu';
+   @import 'deploy-theme';
+   @import 'notification';

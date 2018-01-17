@@ -14,18 +14,20 @@
 var CIconfiguration = {
   'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  // FirefoxBeta and ChromeBeta should be target:'BS' or target:'SL', and required:true
+  'ChromeBeta': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: false}},
+  'ChromeDev': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  // FirefoxBeta and FirefoxDev should be target:'BS' or target:'SL', and required:true
   // Currently deactivated due to https://github.com/angular/angular/issues/7560
-  'ChromeBeta': {unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
-  'FirefoxBeta': {unitTest: {target: null, required: false}, e2e: {target: null, required: false}},
-  'ChromeDev': {unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
+  'FirefoxBeta': {unitTest: {target: null, required: true}, e2e: {target: null, required: false}},
   'FirefoxDev': {unitTest: {target: null, required: true}, e2e: {target: null, required: true}},
   'IE9': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'IE10': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'IE11': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
-  'Edge': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
+  'Edge': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android4.4': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
   'Android5': {unitTest: {target: 'SL', required: false}, e2e: {target: null, required: true}},
+  'Android6': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
+  'Android7': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Safari7': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari8': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
   'Safari9': {unitTest: {target: 'BS', required: false}, e2e: {target: null, required: true}},
@@ -41,12 +43,14 @@ var customLaunchers = {
   'DartiumWithWebPlatform':
       {base: 'Dartium', flags: ['--enable-experimental-web-platform-features']},
   'ChromeNoSandbox': {base: 'Chrome', flags: ['--no-sandbox']},
-  'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '54'},
+  'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '60'},
   'SL_CHROMEBETA': {base: 'SauceLabs', browserName: 'chrome', version: 'beta'},
   'SL_CHROMEDEV': {base: 'SauceLabs', browserName: 'chrome', version: 'dev'},
-  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '50'},
-  'SL_FIREFOXBETA': {base: 'SauceLabs', browserName: 'firefox', version: 'beta'},
-  'SL_FIREFOXDEV': {base: 'SauceLabs', browserName: 'firefox', version: 'dev'},
+  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '54'},
+  'SL_FIREFOXBETA':
+      {base: 'SauceLabs', platform: 'Windows 10', browserName: 'firefox', version: 'beta'},
+  'SL_FIREFOXDEV':
+      {base: 'SauceLabs', platform: 'Windows 10', browserName: 'firefox', version: 'dev'},
   'SL_SAFARI7': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.9', version: '7.0'},
   'SL_SAFARI8': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.10', version: '8.0'},
   'SL_SAFARI9': {base: 'SauceLabs', browserName: 'safari', platform: 'OS X 10.11', version: '9.0'},
@@ -70,13 +74,27 @@ var customLaunchers = {
     base: 'SauceLabs',
     browserName: 'MicrosoftEdge',
     platform: 'Windows 10',
-    version: '13.10586'
+    version: '14.14393'
   },
   'SL_ANDROID4.1': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.1'},
   'SL_ANDROID4.2': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.2'},
   'SL_ANDROID4.3': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.3'},
   'SL_ANDROID4.4': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '4.4'},
   'SL_ANDROID5': {base: 'SauceLabs', browserName: 'android', platform: 'Linux', version: '5.1'},
+  'SL_ANDROID6': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '6.0',
+    device: 'Android Emulator'
+  },
+  'SL_ANDROID7': {
+    base: 'SauceLabs',
+    browserName: 'Chrome',
+    platform: 'Android',
+    version: '7.1',
+    device: 'Android GoogleAPI Emulator'
+  },
 
   'BS_CHROME': {base: 'BrowserStack', browser: 'chrome', os: 'OS X', os_version: 'Yosemite'},
   'BS_FIREFOX': {base: 'BrowserStack', browser: 'firefox', os: 'Windows', os_version: '10'},
@@ -107,6 +125,8 @@ var customLaunchers = {
   'BS_EDGE': {base: 'BrowserStack', browser: 'edge', os: 'Windows', os_version: '10'},
   'BS_WINDOWSPHONE':
       {base: 'BrowserStack', device: 'Nokia Lumia 930', os: 'winphone', os_version: '8.1'},
+  'BS_ANDROID7': {base: 'BrowserStack', device: 'Google Pixel', os: 'android', os_version: '7.1'},
+  'BS_ANDROID6': {base: 'BrowserStack', device: 'Google Nexus 6', os: 'android', os_version: '6.0'},
   'BS_ANDROID5': {base: 'BrowserStack', device: 'Google Nexus 5', os: 'android', os_version: '5.0'},
   'BS_ANDROID4.4': {base: 'BrowserStack', device: 'HTC One M8', os: 'android', os_version: '4.4'},
   'BS_ANDROID4.3':
@@ -126,10 +146,13 @@ var sauceAliases = {
     'SL_SAFARI8', 'SL_SAFARI9', 'SL_SAFARI10'
   ],
   'MOBILE': [
-    'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5', 'SL_IOS7',
-    'SL_IOS8', 'SL_IOS9', 'SL_IOS10'
+    'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5',
+    'SL_ANDROID6', 'SL_ANDROID7', 'SL_IOS7', 'SL_IOS8', 'SL_IOS9', 'SL_IOS10'
   ],
-  'ANDROID': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5'],
+  'ANDROID': [
+    'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5',
+    'SL_ANDROID6', 'SL_ANDROID7'
+  ],
   'IE': ['SL_IE9', 'SL_IE10', 'SL_IE11'],
   'IOS': ['SL_IOS7', 'SL_IOS8', 'SL_IOS9', 'SL_IOS10'],
   'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9', 'SL_SAFARI10'],
@@ -148,9 +171,10 @@ var browserstackAliases = {
     'BS_SAFARI8', 'BS_SAFARI9', 'BS_SAFARI10'
   ],
   'MOBILE': [
-    'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_IOS10', 'BS_WINDOWSPHONE'
+    'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_ANDROID5', 'BS_ANDROID6', 'BS_ANDROID7', 'BS_IOS7',
+    'BS_IOS8', 'BS_IOS9', 'BS_IOS10', 'BS_WINDOWSPHONE'
   ],
-  'ANDROID': ['BS_ANDROID4.3', 'BS_ANDROID4.4'],
+  'ANDROID': ['BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_ANDROID5', 'BS_ANDROID6', 'BS_ANDROID7'],
   'IE': ['BS_IE9', 'BS_IE10', 'BS_IE11'],
   'IOS': ['BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_IOS10'],
   'SAFARI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_SAFARI10'],

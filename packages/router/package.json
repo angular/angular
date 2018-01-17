@@ -3,8 +3,8 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the routing library",
   "main": "./bundles/router.umd.js",
-  "module": "./@angular/router.es5.js",
-  "es2015": "./@angular/router.js",
+  "module": "./esm5/router.js",
+  "es2015": "./esm2015/router.js",
   "typings": "./router.d.ts",
   "keywords": [
     "angular",
@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/angular/blob/master/modules/%40angular/router/README.md",
+  "homepage": "https://github.com/angular/angular/tree/master/packages/router",
   "dependencies": {
     "tslib": "^1.7.1"
   },
@@ -27,6 +27,6 @@
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "rxjs": "^5.0.1"
+    "rxjs": "^5.5.0"
   }
 }

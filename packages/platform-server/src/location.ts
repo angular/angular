@@ -29,9 +29,9 @@ function parseUrl(urlStr: string): {pathname: string, search: string, hash: stri
  */
 @Injectable()
 export class ServerPlatformLocation implements PlatformLocation {
-  private _path: string = '/';
-  private _search: string = '';
-  private _hash: string = '';
+  public readonly pathname: string = '/';
+  public readonly search: string = '';
+  public readonly hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
 
   constructor(
@@ -39,9 +39,9 @@ export class ServerPlatformLocation implements PlatformLocation {
     const config = _config as PlatformConfig | null;
     if (!!config && !!config.url) {
       const parsedUrl = parseUrl(config.url);
-      this._path = parsedUrl.pathname;
-      this._search = parsedUrl.search;
-      this._hash = parsedUrl.hash;
+      this.pathname = parsedUrl.pathname;
+      this.search = parsedUrl.search;
+      this.hash = parsedUrl.hash;
     }
   }
 
@@ -54,18 +54,14 @@ export class ServerPlatformLocation implements PlatformLocation {
 
   onHashChange(fn: LocationChangeListener): void { this._hashUpdate.subscribe(fn); }
 
-  get pathname(): string { return this._path; }
-  get search(): string { return this._search; }
-  get hash(): string { return this._hash; }
-
   get url(): string { return `${this.pathname}${this.search}${this.hash}`; }
 
   private setHash(value: string, oldUrl: string) {
-    if (this._hash === value) {
+    if (this.hash === value) {
       // Don't fire events if the hash has not changed.
       return;
     }
-    this._hash = value;
+    (this as{hash: string}).hash = value;
     const newUrl = this.url;
     scheduleMicroTask(
         () => this._hashUpdate.next({ type: 'hashchange', oldUrl, newUrl } as LocationChangeEvent));
@@ -74,8 +70,8 @@ export class ServerPlatformLocation implements PlatformLocation {
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
     const parsedUrl = parseUrl(newUrl);
-    this._path = parsedUrl.pathname;
-    this._search = parsedUrl.search;
+    (this as{pathname: string}).pathname = parsedUrl.pathname;
+    (this as{search: string}).search = parsedUrl.search;
     this.setHash(parsedUrl.hash, oldUrl);
   }
 

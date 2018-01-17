@@ -17,7 +17,7 @@ In such case, we'll update this document accordingly.
 
 The dates are just a guidance and might be adjusted slightly if necessary.
 
-## Tentative Schedule Until September 2017
+## Tentative Schedule Until April 2018
 
 <!--
 The table below is formatted so that it's easy to read and edit in both markdown and rendered html form.
@@ -32,37 +32,39 @@ If you see undesirable wrapping issues in the rendered form, please copy&paste t
 
 Week Of       | Stable Release<br>(@latest npm tag) | Beta/RC Release<br>(@next npm tag) | Note
 ------------- | ----------------------------------- | ---------------------------------- | ---------------------
-2017‑05‑01	  | 4.1.1                               | 4.2.0‑beta.0                       |
-2017‑05‑08	  | 4.1.2                               | 4.2.0‑beta.1                       |
-2017‑05‑15	  | 4.1.3                               | 4.2.0‑rc.0                         |
-2017‑05‑26	  | ‑                                   | 4.2.0‑rc.1                         |
-2017‑06‑01    | ‑                                   | 4.2.0‑rc.2                         |
-2017‑06‑05	  | 4.2.0                               | ‑                                  | Minor Version Release
-2017‑06‑12	  | 4.2.1                               | 4.3.0‑beta.0                       |
-2017‑06‑19	  | 4.2.2                               | 4.3.0‑beta.1                       |
-2017‑06‑26	  | 4.2.3                               | 4.3.0‑rc.0                         |
-2017‑07‑03	  | 4.3.0                               | ‑                                  | Minor Version Release
-2017‑07‑10	  | 4.3.1                               | 5.0.0‑beta.0                       |
-2017‑07‑17	  | 4.3.2                               | 5.0.0‑beta.1                       |
-2017‑07‑24	  | 4.3.3                               | 5.0.0‑beta.2                       |
-2017‑07‑31	  | 4.3.4                               | 5.0.0‑beta.3                       |
-2017‑08‑07	  | 4.3.5                               | 5.0.0‑beta.4                       |
-2017‑08‑14    | 4.3.6                               | 5.0.0‑beta.5                       |
-2017‑08‑21	  | 4.3.7                               | 5.0.0‑beta.6                       |
-2017‑08‑28	  | 4.3.10                              | 5.0.0‑rc.0                         |
-2017‑09‑04	  | 4.3.11                              | 5.0.0‑rc.1                         |
-2017‑09‑11	  | 4.3.12                              | 5.0.0‑rc.2                         |
-2017‑09‑18	  | 5.0.0                               | ‑                                  | Major Version Release
+2018-01-10	  | 5.2.0                               | -                                  |
+2018-01-17	  | 5.2.1                               | 6.0.0‑beta.0                       |
+2018-01-24	  | 5.2.2                               | 6.0.0‑beta.1                       |
+2018-01-31	  | 5.2.3                               | 6.0.0‑beta.2                       |
+2018-02-07	  | 5.2.4                               | 6.0.0‑beta.3                       |
+2018-02-14	  | 5.2.5                               | 6.0.0‑beta.4                       |
+2018-02-21	  | 5.2.6                               | 6.0.0‑beta.5                       |
+2018-02-28	  | 5.2.7                               | 6.0.0‑beta.6                       |
+2018-03-07	  | 5.2.8                               | 6.0.0‑rc.0                         |
+2018-03-14	  | 5.2.9                               | 6.0.0‑rc.1                         |
+2018-03-21	  | 5.2.10                              | 6.0.0‑rc.2                         |
+2018-03-28	  | 6.0.0                               | -                                  | Major Release
+2018-04-04	  | 6.0.1                               | -                                  |
+2018-04-11	  | 6.0.2                               | -                                  |
+2018-04-18	  | -                                   | -                                  | [ng-conf](https://www.ng-conf.org/)
 
-## Tentative Schedule After September 2017
+## Tentative Schedule After April 2018
 
  Date                   | Stable Release | Compatibility`*`
  ---------------------- | -------------- | ----------------
- March 2018             | 6.0.0          | ^5.0.0
  September/October 2018 | 7.0.0          | ^6.0.0
+ March/April 2019       | 8.0.0          | ^7.0.0
 
- `*` The goal of the backwards compatibility promise, is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
+ `*` The primary goal of the backwards compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
+## Long-Term Supported (LTS) Versions
+
+ Version     | LTS Start Date | LTS End Date
+ ----------- | -------------- | ------------
+ ^4.0.0      | October 2017   | October 2018
+ ^6.0.0      | October 2018   | October 2019
+
+In the long-term support state, only the critical fixes and security patches will be merged and released.
 
 ## More Info & Resources
 

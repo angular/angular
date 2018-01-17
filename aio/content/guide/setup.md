@@ -34,7 +34,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 
 
 
-`npm start` fails in _Bash for Windows_ which does not support networking to servers as of January, 2017.
+`npm start` fails in _Bash for Windows_ in versions earlier than the Creator's Update (April 2017).
 
 
 </div>
@@ -62,7 +62,7 @@ and unzip it into your project folder. Then perform the remaining steps with the
 
 
 
-`npm start` fails in _Bash for Windows_ which does not support networking to servers as of January, 2017.
+`npm start` fails in _Bash for Windows_ in versions earlier than the Creator's Update (April 2017).
 
 
 </div>
@@ -270,7 +270,7 @@ The following are all in `src/`
 
 
       Compiles the application with the [JIT compiler](guide/glossary#jit) and
-      [bootstraps](guide/bootstrapping#main "bootstrap the application")
+      [bootstraps](guide/bootstrapping)
       the application's main module (`AppModule`) to run in the browser.
       The JIT compiler is a reasonable choice during the development of most projects and
       it's the only viable choice for a sample running in a _live-coding_ environment like Plunker.

@@ -13,7 +13,7 @@ import { useInjector }        from './car-injector';
 
 
 @Component({
-  selector: 'my-car',
+  selector: 'app-car',
   template: `
   <h2>Cars</h2>
   <div id="di">{{car.drive()}}</div>

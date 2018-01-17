@@ -1,9 +1,9 @@
 .toc-container {
   width: 18%;
   position: fixed;
-  top: 96px;
+  top: 76px;
   right: 0;
-  bottom: 32px;
+  bottom: 12px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -59,7 +59,7 @@ aio-toc {
   }
 
   button.toc-heading {
-    md-icon.rotating-icon {
+    mat-icon.rotating-icon {
       height: 18px;
       width: 18px;
       position: relative;

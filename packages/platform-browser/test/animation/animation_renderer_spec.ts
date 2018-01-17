@@ -14,7 +14,8 @@ import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_rendere
 import {InjectableAnimationEngine} from '../../animations/src/providers';
 import {el} from '../../testing/src/browser_util';
 
-export function main() {
+(function() {
+  if (isNode) return;
   describe('AnimationRenderer', () => {
     let element: any;
     beforeEach(() => {
@@ -307,7 +308,7 @@ export function main() {
       expect(renderer.log).toEqual(['begin', 'end']);
     });
   });
-}
+})();
 
 @Injectable()
 class MockAnimationEngine extends InjectableAnimationEngine {
@@ -329,7 +330,7 @@ class MockAnimationEngine extends InjectableAnimationEngine {
     this._capture('onRemove', [element]);
   }
 
-  setProperty(namespaceId: string, element: any, property: string, value: any): boolean {
+  process(namespaceId: string, element: any, property: string, value: any): boolean {
     this._capture('setProperty', [element, property, value]);
     return true;
   }

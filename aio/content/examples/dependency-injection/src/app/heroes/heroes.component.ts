@@ -1,14 +1,13 @@
 // #docregion
 import { Component }          from '@angular/core';
-
 import { heroServiceProvider } from './hero.service.provider';
 
 @Component({
-  selector: 'my-heroes',
+  selector: 'app-heroes',
+  providers: [ heroServiceProvider ],
   template: `
-  <h2>Heroes</h2>
-  <hero-list></hero-list>
-  `,
-  providers: [heroServiceProvider]
+    <h2>Heroes</h2>
+    <app-hero-list></app-hero-list>
+  `
 })
 export class HeroesComponent { }

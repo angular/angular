@@ -83,6 +83,6 @@ function provideHelpers(fn, preInject) {
       $rootRouter: $rootRouter,
       put: put,
       compile: compile
-    })
-  }
+    });
+  };
 }

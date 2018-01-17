@@ -25,7 +25,7 @@ The following commands would create a docker image from GitHub repo `foo/bar` to
     --build-arg AIO_REPO_SLUG=foo/bar \
     --build-arg AIO_DOMAIN_NAME=foobar-builds.io \
     --build-arg AIO_GITHUB_ORGANIZATION=foo \
-    --build-arg AIO_GITHUB_TEMA_SLUGS=bar-core,bar-docs-authors
+    --build-arg AIO_GITHUB_TEAM_SLUGS=bar-core,bar-docs-authors
   ```
 
 A full list of the available environment variables can be found

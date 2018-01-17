@@ -22,7 +22,7 @@ export const TSC = normalize('node_modules/.bin/tsc') + (/^win/.test(platform())
 export type Command = (stdIn: any, stdErr: any) => Promise<number>;
 
 export class TscWatch {
-  private tsconfig: string;
+  private tsconfig: string[];
   private start: string|RegExp;
   private error: string|RegExp;
   private complete: string|RegExp;
@@ -33,13 +33,13 @@ export class TscWatch {
   private runOnce: boolean = false;
 
   constructor({tsconfig, start, error, complete, onStartCmds = null, onChangeCmds = null}: {
-    tsconfig: string,
+    tsconfig: string | string[],
     error: string|RegExp,
     start: string,
     complete: string, onStartCmds?: Array<string[]|Command>, onChangeCmds?: Array<string[]|Command>
   }) {
     console.log('Watching:', tsconfig, 'in', process.cwd());
-    this.tsconfig = tsconfig;
+    this.tsconfig = Array.isArray(tsconfig) ? tsconfig : [tsconfig];
     this.start = start;
     this.error = error;
     this.complete = complete;
@@ -48,10 +48,17 @@ export class TscWatch {
   }
 
   watch() {
-    const args = [TSC, '--emitDecoratorMetadata', '--project', this.tsconfig];
-    if (!this.runOnce) args.push('--watch');
     const tsc =
-        this.runCmd(args, {}, (d) => this.consumeLine(d, false), (d) => this.consumeLine(d, true));
+        Promise
+            .all(this.tsconfig.map(tsconfig => {
+              const args = [TSC, '--emitDecoratorMetadata', '--project', tsconfig];
+              if (!this.runOnce) args.push('--watch');
+              return this.runCmd(
+                  args, {}, (d) => this.consumeLine(d, false), (d) => this.consumeLine(d, true));
+            }))
+            .then(
+                exitCodes =>
+                    exitCodes.reduce((prevValue, currValue) => Math.max(prevValue, currValue), 0));
     if (this.runOnce) {
       tsc.then(() => this.triggerCmds(), code => process.exit(code));
     }

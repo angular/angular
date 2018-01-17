@@ -13,7 +13,7 @@ import {Diagnostics} from '../src/types';
 import {TypeScriptServiceHost} from '../src/typescript_host';
 
 import {toh} from './test_data';
-import {MockTypescriptHost, includeDiagnostic, noDiagnostics} from './test_utils';
+import {MockTypescriptHost, diagnosticMessageContains, findDiagnostic, includeDiagnostic, noDiagnostics} from './test_utils';
 
 describe('diagnostics', () => {
   let documentRegistry = ts.createDocumentRegistry();
@@ -59,6 +59,10 @@ describe('diagnostics', () => {
         (ngHost as any)._reflector = null;
         ngService.getDiagnostics(fileName);
       });
+
+      // #17611
+      it('should not report diagnostic on iteration of any',
+         () => { accept('<div *ngFor="let value of anyValue">{{value.someField}}</div>'); });
     });
 
     describe('with $event', () => {
@@ -119,7 +123,8 @@ describe('diagnostics', () => {
       addCode(code, (fileName, content) => {
         const diagnostics = ngService.getDiagnostics(fileName);
         includeDiagnostic(
-            diagnostics !, 'Function calls are not supported.', '() => \'foo\'', content);
+            diagnostics !, 'Function expressions are not supported in decorators', '() => \'foo\'',
+            content);
       });
     });
 
@@ -164,11 +169,26 @@ describe('diagnostics', () => {
       const code =
           ` @Component({template: '<p> Using an invalid pipe {{data | dat}} </p>'}) export class MyComponent { data = 'some data'; }`;
       addCode(code, fileName => {
-        const diagnostic =
-            ngService.getDiagnostics(fileName) !.filter(d => d.message.indexOf('pipe') > 0)[0];
+        const diagnostic = findDiagnostic(ngService.getDiagnostics(fileName) !, 'pipe') !;
         expect(diagnostic).not.toBeUndefined();
         expect(diagnostic.span.end - diagnostic.span.start).toBeLessThan(11);
       });
+    });
+
+    // Issue #19406
+    it('should allow empty template', () => {
+      const appComponent = `
+        import { Component } from '@angular/core';
+
+        @Component({
+          template : '',
+        })
+        export class AppComponent {}
+      `;
+      const fileName = '/app/app.component.ts';
+      mockHost.override(fileName, appComponent);
+      const diagnostics = ngService.getDiagnostics(fileName);
+      expect(diagnostics).toEqual([]);
     });
 
     // Issue #15460
@@ -212,8 +232,8 @@ describe('diagnostics', () => {
       `,
           fileName => {
             const diagnostics = ngService.getDiagnostics(fileName) !;
-            const expected = diagnostics.find(d => d.message.startsWith('Invalid providers for'));
-            const notExpected = diagnostics.find(d => d.message.startsWith('Cannot read property'));
+            const expected = findDiagnostic(diagnostics, 'Invalid providers for');
+            const notExpected = findDiagnostic(diagnostics, 'Cannot read property');
             expect(expected).toBeDefined();
             expect(notExpected).toBeUndefined();
           });
@@ -228,7 +248,7 @@ describe('diagnostics', () => {
           template: \`
             <div *ngIf="comps | async; let comps; else loading">
             </div>
-            <ng-template #loading>Loading comps...</ng-template>            
+            <ng-template #loading>Loading comps...</ng-template>
           \`
         })
         export class MyComponent {}
@@ -310,6 +330,28 @@ describe('diagnostics', () => {
       expect(diagnostic).toEqual([]);
     });
 
+    it('should not report errors for using the now removed OpaqueToken (support for v4)', () => {
+      const app_component = `
+        import { Component, Inject, OpaqueToken } from '@angular/core';
+        import { NgForm } from '@angular/common';
+
+        export const token = new OpaqueToken();
+
+        @Component({
+          selector: 'example-app',
+          template: '...'
+        })
+        export class AppComponent {
+          constructor (@Inject(token) value: string) {}
+          onSubmit(form: NgForm) {}
+        }
+      `;
+      const fileName = '/app/app.component.ts';
+      mockHost.override(fileName, app_component);
+      const diagnostics = ngService.getDiagnostics(fileName);
+      expect(diagnostics).toEqual([]);
+    });
+
     function addCode(code: string, cb: (fileName: string, content?: string) => void) {
       const fileName = '/app/app.component.ts';
       const originalContent = mockHost.getFileContent(fileName);
@@ -329,12 +371,12 @@ describe('diagnostics', () => {
       expect(diagnostics.length).toBe(1);
       if (diagnostics.length > 1) {
         for (const diagnostic of diagnostics) {
-          if (diagnostic.message.indexOf('MyComponent') >= 0) continue;
+          if (diagnosticMessageContains(diagnostic.message, 'MyComponent')) continue;
           fail(`(${diagnostic.span.start}:${diagnostic.span.end}): ${diagnostic.message}`);
         }
         return;
       }
-      expect(diagnostics[0].message.indexOf('MyComponent') >= 0).toBeTruthy();
+      expect(diagnosticMessageContains(diagnostics[0].message, 'MyComponent')).toBeTruthy();
     }
   });
 });

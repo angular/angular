@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GeneratedFile, toTypeScript} from '@angular/compiler';
+import {AotSummaryResolver, GeneratedFile, StaticSymbolCache, StaticSymbolResolver, toTypeScript} from '@angular/compiler';
+import {MetadataBundler} from '@angular/compiler-cli/src/metadata/bundler';
+import {privateEntriesToIndex} from '@angular/compiler-cli/src/metadata/index_writer';
+import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/src/output/source_map_util';
 import {NodeFlags} from '@angular/core/src/view/index';
-import {MetadataBundler, MetadataCollector, ModuleMetadata, privateEntriesToIndex} from '@angular/tsc-wrapped';
 import * as ts from 'typescript';
 
-import {extractSourceMap, originalPositionFor} from '../output/source_map_util';
-
-import {EmittingCompilerHost, MockData, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, arrayToMockMap, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
+import {EmittingCompilerHost, MockAotCompilerHost, MockCompilerHost, MockDirectory, MockMetadataBundlerHost, arrayToMockDir, compile, expectNoDiagnostics, settings, setup, toMockFileArray} from './test_util';
 
 describe('compiler (unbundled Angular)', () => {
   let angularFiles = setup();
@@ -28,7 +28,7 @@ describe('compiler (unbundled Angular)', () => {
 
   describe('aot source mapping', () => {
     const componentPath = '/app/app.component.ts';
-    const ngComponentPath = 'ng:///app/app.component.ts'
+    const ngFactoryPath = '/app/app.component.ngfactory.ts';
 
     let rootDir: MockDirectory;
     let appDir: MockDirectory;
@@ -82,7 +82,7 @@ describe('compiler (unbundled Angular)', () => {
     }
 
     describe('inline templates', () => {
-      const ngUrl = `${ngComponentPath}.AppComponent.html`;
+      const ngUrl = `${componentPath}.AppComponent.html`;
 
       function templateDecorator(template: string) { return `template: \`${template}\`,`; }
 
@@ -90,7 +90,7 @@ describe('compiler (unbundled Angular)', () => {
     });
 
     describe('external templates', () => {
-      const ngUrl = 'ng:///app/app.component.html';
+      const ngUrl = '/app/app.component.html';
       const templateUrl = '/app/app.component.html';
 
       function templateDecorator(template: string) {
@@ -128,14 +128,14 @@ describe('compiler (unbundled Angular)', () => {
         const sourceMap = extractSourceMap(genSource) !;
         expect(sourceMap.file).toEqual(genFile.genFileUrl);
 
-        // the generated file contains code that is not mapped to
-        // the template but rather to the original source file (e.g. import statements, ...)
+        // Note: the generated file also contains code that is not mapped to
+        // the template (e.g. import statements, ...)
         const templateIndex = sourceMap.sources.indexOf(ngUrl);
         expect(sourceMap.sourcesContent[templateIndex]).toEqual(template);
 
         // for the mapping to the original source file we don't store the source code
         // as we want to keep whatever TypeScript / ... produced for them.
-        const sourceIndex = sourceMap.sources.indexOf(ngComponentPath);
+        const sourceIndex = sourceMap.sources.indexOf(ngFactoryPath);
         expect(sourceMap.sourcesContent[sourceIndex]).toBe(' ');
       });
 
@@ -175,14 +175,14 @@ describe('compiler (unbundled Angular)', () => {
             .toEqual({line: 2, column: 9, source: ngUrl});
       });
 
-      it('should map non template parts to the source file', () => {
+      it('should map non template parts to the factory file', () => {
         appDir['app.component.ts'] = createComponentSource(templateDecorator('Hello World!'));
 
         const genFile = compileApp();
         const genSource = toTypeScript(genFile);
         const sourceMap = extractSourceMap(genSource) !;
         expect(originalPositionFor(sourceMap, {line: 1, column: 0}))
-            .toEqual({line: 1, column: 0, source: ngComponentPath});
+            .toEqual({line: 1, column: 0, source: ngFactoryPath});
       });
     }
   });
@@ -204,11 +204,31 @@ describe('compiler (unbundled Angular)', () => {
       const warnSpy = spyOn(console, 'warn');
       compile([FILES, angularFiles]);
       expect(warnSpy).toHaveBeenCalledWith(
-          `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v5.x`);
+          `Warning: Can't resolve all parameters for MyService in /app/app.ts: (?). This will become an error in Angular v6.x`);
 
     });
 
-    it('should be able to supress a null access', () => {
+    it('should error if not all arguments of an @Injectable class can be resolved if strictInjectionParamters is true',
+       () => {
+         const FILES: MockDirectory = {
+           app: {
+             'app.ts': `
+                import {Injectable} from '@angular/core';
+
+                @Injectable()
+                export class MyService {
+                  constructor(a: boolean) {}
+                }
+              `
+           }
+         };
+         const warnSpy = spyOn(console, 'warn');
+         expect(() => compile([FILES, angularFiles], {strictInjectionParameters: true}))
+             .toThrowError(`Can't resolve all parameters for MyService in /app/app.ts: (?).`);
+         expect(warnSpy).not.toHaveBeenCalled();
+       });
+
+    it('should be able to suppress a null access', () => {
       const FILES: MockDirectory = {
         app: {
           'app.ts': `
@@ -233,6 +253,55 @@ describe('compiler (unbundled Angular)', () => {
       };
       compile([FILES, angularFiles], {postCompile: expectNoDiagnostics});
     });
+
+    it('should not contain a self import in factory', () => {
+      const FILES: MockDirectory = {
+        app: {
+          'app.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                interface Person { name: string; }
+
+                @Component({
+                  selector: 'my-comp',
+                  template: '{{person.name}}'
+                })
+                export class MyComp {
+                  person: Person;
+                }
+
+                @NgModule({
+                  declarations: [MyComp]
+                })
+                export class MyModule {}
+              `
+        }
+      };
+      compile([FILES, angularFiles], {
+        postCompile: program => {
+          const factorySource = program.getSourceFile('/app/app.ngfactory.ts');
+          expect(factorySource.text).not.toContain('\'/app/app.ngfactory\'');
+        }
+      });
+    });
+  });
+
+  it('should report when a component is declared in any module', () => {
+    const FILES: MockDirectory = {
+      app: {
+        'app.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({selector: 'my-comp', template: ''})
+          export class MyComp {}
+
+          @NgModule({})
+          export class MyModule {}
+        `
+      }
+    };
+    expect(() => compile([FILES, angularFiles]))
+        .toThrowError(/Cannot determine the module for class MyComp/);
   });
 
   it('should add the preamble to generated files', () => {
@@ -255,6 +324,93 @@ describe('compiler (unbundled Angular)', () => {
         genFiles.find(gf => gf.srcFileUrl === '/app/app.ts' && gf.genFileUrl.endsWith('.ts'));
     const genSource = toTypeScript(genFile, genFilePreamble);
     expect(genSource.startsWith(genFilePreamble)).toBe(true);
+  });
+
+  it('should be able to use animation macro methods', () => {
+    const FILES = {
+      app: {
+        'app.ts': `
+      import {Component, NgModule} from '@angular/core';
+      import {trigger, state, style, transition, animate} from '@angular/animations';
+
+      export const EXPANSION_PANEL_ANIMATION_TIMING = '225ms cubic-bezier(0.4,0.0,0.2,1)';
+
+      @Component({
+        selector: 'app-component',
+        template: '<div></div>',
+        animations: [
+          trigger('bodyExpansion', [
+            state('collapsed', style({height: '0px'})),
+            state('expanded', style({height: '*'})),
+            transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
+          ]),
+          trigger('displayMode', [
+            state('collapsed', style({margin: '0'})),
+            state('default', style({margin: '16px 0'})),
+            state('flat', style({margin: '0'})),
+            transition('flat <=> collapsed, default <=> collapsed, flat <=> default',
+                      animate(EXPANSION_PANEL_ANIMATION_TIMING)),
+          ]),
+        ],
+      })
+      export class AppComponent { }
+
+      @NgModule({ declarations: [ AppComponent ] })
+      export class AppModule { }
+    `
+      }
+    };
+    compile([FILES, angularFiles]);
+  });
+
+  it('should detect an entry component via an indirection', () => {
+    const FILES = {
+      app: {
+        'app.ts': `
+          import {NgModule, ANALYZE_FOR_ENTRY_COMPONENTS} from '@angular/core';
+          import {AppComponent} from './app.component';
+          import {COMPONENT_VALUE, MyComponent} from './my-component';
+
+          @NgModule({
+            declarations: [ AppComponent, MyComponent ],
+            bootstrap: [ AppComponent ],
+            providers: [{
+              provide: ANALYZE_FOR_ENTRY_COMPONENTS,
+              multi: true,
+              useValue: COMPONENT_VALUE
+            }],
+          })
+          export class AppModule { }
+        `,
+        'app.component.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'app-component',
+            template: '<div></div>',
+          })
+          export class AppComponent { }
+        `,
+        'my-component.ts': `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'my-component',
+            template: '<div></div>',
+          })
+          export class MyComponent {}
+
+          export const COMPONENT_VALUE = [{a: 'b', component: MyComponent}];
+        `
+      }
+    };
+    const result = compile([FILES, angularFiles]);
+    const appModuleFactory =
+        result.genFiles.find(f => /my-component\.ngfactory/.test(f.genFileUrl));
+    expect(appModuleFactory).toBeDefined();
+    if (appModuleFactory) {
+      expect(toTypeScript(appModuleFactory)).toContain('MyComponentNgFactory');
+    }
   });
 
   describe('ComponentFactories', () => {
@@ -322,7 +478,142 @@ describe('compiler (unbundled Angular)', () => {
     });
   });
 
-  describe('inheritance with summaries', () => {
+  describe('summaries', () => {
+    let angularSummaryFiles: MockDirectory;
+    beforeAll(() => {
+      angularSummaryFiles = compile(angularFiles, {useSummaries: false, emit: true}).outDir;
+    });
+
+    inheritanceWithSummariesSpecs(() => angularSummaryFiles);
+
+    it('should not reexport type symbols mentioned in constructors', () => {
+      const libInput: MockDirectory = {
+        'lib': {
+          'base.ts': `
+            export class AValue {}
+            export type AType = {};
+
+            export class AClass {
+              constructor(a: AType, b: AValue) {}
+            }
+          `
+        }
+      };
+      const appInput: MockDirectory = {
+        'app': {
+          'main.ts': `
+            export {AClass} from '../lib/base';
+          `
+        }
+      };
+
+      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
+      const {genFiles: appGenFiles} =
+          compile([appInput, libOutDir, angularSummaryFiles], {useSummaries: true});
+      const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts');
+      const appNgFactoryTs = toTypeScript(appNgFactory);
+      expect(appNgFactoryTs).not.toContain('AType');
+      expect(appNgFactoryTs).toContain('AValue');
+    });
+
+    it('should not reexport complex function calls', () => {
+      const libInput: MockDirectory = {
+        'lib': {
+          'base.ts': `
+            export class AClass {
+              constructor(arg: any) {}
+
+              static create(arg: any = null): AClass { return new AClass(arg); }
+
+              call(arg: any) {}
+            }
+
+            export function simple(arg: any) { return [arg]; }
+
+            export const ctor_arg = {};
+            export const ctor_call = new AClass(ctor_arg);
+
+            export const static_arg = {};
+            export const static_call = AClass.create(static_arg);
+
+            export const complex_arg = {};
+            export const complex_call = AClass.create().call(complex_arg);
+
+            export const simple_arg = {};
+            export const simple_call = simple(simple_arg);
+          `
+        }
+      };
+      const appInput: MockDirectory = {
+        'app': {
+          'main.ts': `
+            import {ctor_call, static_call, complex_call, simple_call} from '../lib/base';
+
+            export const calls = [ctor_call, static_call, complex_call, simple_call];
+          `,
+        }
+      };
+
+      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
+      const {genFiles: appGenFiles} =
+          compile([appInput, libOutDir, angularSummaryFiles], {useSummaries: true});
+      const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts');
+      const appNgFactoryTs = toTypeScript(appNgFactory);
+
+      // metadata of ctor calls is preserved, so we reexport the argument
+      expect(appNgFactoryTs).toContain('ctor_arg');
+      expect(appNgFactoryTs).toContain('ctor_call');
+
+      // metadata of static calls is preserved, so we reexport the argument
+      expect(appNgFactoryTs).toContain('static_arg');
+      expect(appNgFactoryTs).toContain('AClass');
+      expect(appNgFactoryTs).toContain('static_call');
+
+      // metadata of complex calls is elided, so we don't reexport the argument
+      expect(appNgFactoryTs).not.toContain('complex_arg');
+      expect(appNgFactoryTs).toContain('complex_call');
+
+      // metadata of simple calls is preserved, so we reexport the argument
+      expect(appNgFactoryTs).toContain('simple_arg');
+      expect(appNgFactoryTs).toContain('simple_call');
+    });
+
+    it('should not reexport already exported symbols except for lowered symbols', () => {
+      const libInput: MockDirectory = {
+        'lib': {
+          'base.ts': `
+            export const exportedVar = 1;
+
+            // A symbol introduced by lowering expressions
+            export const ɵ1 = 'lowered symbol';
+          `
+        }
+      };
+      const appInput: MockDirectory = {
+        'app': {
+          'main.ts': `export * from '../lib/base';`,
+        }
+      };
+
+      const {outDir: libOutDir} = compile([libInput, angularSummaryFiles], {useSummaries: true});
+      const {genFiles: appGenFiles} =
+          compile([appInput, libOutDir, angularSummaryFiles], {useSummaries: true});
+      const appNgFactory = appGenFiles.find((f) => f.genFileUrl === '/app/main.ngfactory.ts');
+      const appNgFactoryTs = toTypeScript(appNgFactory);
+
+      // we don't need to reexport exported symbols via the .ngfactory
+      // as we can refer to them via the reexport.
+      expect(appNgFactoryTs).not.toContain('exportedVar');
+
+      // although ɵ1 is reexported via `export *`, we still need to reexport it
+      // via the .ngfactory as tsickle expands `export *` into named exports,
+      // and doesn't know about our lowered symbols as we introduce them
+      // after the typecheck phase.
+      expect(appNgFactoryTs).toContain('ɵ1');
+    });
+  });
+
+  function inheritanceWithSummariesSpecs(getAngularSummaryFiles: () => MockDirectory) {
     function compileParentAndChild(
         {parentClassDecorator, parentModuleDecorator, childClassDecorator, childModuleDecorator}: {
           parentClassDecorator: string,
@@ -358,8 +649,10 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
 
-      const {outDir: libOutDir} = compile([libInput, angularFiles], {useSummaries: true});
-      const {genFiles} = compile([libOutDir, appInput, angularFiles], {useSummaries: true});
+      const {outDir: libOutDir} =
+          compile([libInput, getAngularSummaryFiles()], {useSummaries: true});
+      const {genFiles} =
+          compile([libOutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
       return genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
     }
 
@@ -393,8 +686,10 @@ describe('compiler (unbundled Angular)', () => {
         }
       };
 
-      const {outDir: libOutDir} = compile([libInput, angularFiles], {useSummaries: true});
-      const {genFiles} = compile([libOutDir, appInput, angularFiles], {useSummaries: true});
+      const {outDir: libOutDir} =
+          compile([libInput, getAngularSummaryFiles()], {useSummaries: true});
+      const {genFiles} =
+          compile([libOutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
       const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
       const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
       expect(toTypeScript(mainNgFactory))
@@ -442,10 +737,12 @@ describe('compiler (unbundled Angular)', () => {
           `
            }
          };
-         const {outDir: lib1OutDir} = compile([lib1Input, angularFiles], {useSummaries: true});
+         const {outDir: lib1OutDir} =
+             compile([lib1Input, getAngularSummaryFiles()], {useSummaries: true});
          const {outDir: lib2OutDir} =
-             compile([lib1OutDir, lib2Input, angularFiles], {useSummaries: true});
-         const {genFiles} = compile([lib2OutDir, appInput, angularFiles], {useSummaries: true});
+             compile([lib1OutDir, lib2Input, getAngularSummaryFiles()], {useSummaries: true});
+         const {genFiles} =
+             compile([lib2OutDir, appInput, getAngularSummaryFiles()], {useSummaries: true});
          const mainNgFactory = genFiles.find(gf => gf.srcFileUrl === '/app/main.ts');
          const flags = NodeFlags.TypeDirective | NodeFlags.Component | NodeFlags.OnDestroy;
          expect(toTypeScript(mainNgFactory))
@@ -470,9 +767,9 @@ describe('compiler (unbundled Angular)', () => {
                  childClassDecorator: '',
                  childModuleDecorator: '@NgModule({providers: [Extends]})',
                }))
-            .toThrowError(
-                'Class Extends in /app/main.ts extends from a Injectable in another compilation unit without duplicating the decorator. ' +
-                'Please add a Injectable or Pipe or Directive or Component or NgModule decorator to the class.');
+            .toThrowError(`Error during template compile of 'Extends'
+  Class Extends in /app/main.ts extends from a Injectable in another compilation unit without duplicating the decorator
+    Please add a Injectable or Pipe or Directive or Component or NgModule decorator to the class.`);
       });
     });
 
@@ -494,9 +791,9 @@ describe('compiler (unbundled Angular)', () => {
                  childClassDecorator: '',
                  childModuleDecorator: '@NgModule({declarations: [Extends]})',
                }))
-            .toThrowError(
-                'Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator. ' +
-                'Please add a Directive or Component decorator to the class.');
+            .toThrowError(`Error during template compile of 'Extends'
+  Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator
+    Please add a Directive or Component decorator to the class.`);
       });
     });
 
@@ -518,9 +815,9 @@ describe('compiler (unbundled Angular)', () => {
                  childClassDecorator: '',
                  childModuleDecorator: '@NgModule({declarations: [Extends]})',
                }))
-            .toThrowError(
-                'Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator. ' +
-                'Please add a Directive or Component decorator to the class.');
+            .toThrowError(`Error during template compile of 'Extends'
+  Class Extends in /app/main.ts extends from a Directive in another compilation unit without duplicating the decorator
+    Please add a Directive or Component decorator to the class.`);
       });
     });
 
@@ -542,9 +839,9 @@ describe('compiler (unbundled Angular)', () => {
                  childClassDecorator: '',
                  childModuleDecorator: '@NgModule({declarations: [Extends]})',
                }))
-            .toThrowError(
-                'Class Extends in /app/main.ts extends from a Pipe in another compilation unit without duplicating the decorator. ' +
-                'Please add a Pipe decorator to the class.');
+            .toThrowError(`Error during template compile of 'Extends'
+  Class Extends in /app/main.ts extends from a Pipe in another compilation unit without duplicating the decorator
+    Please add a Pipe decorator to the class.`);
       });
     });
 
@@ -566,16 +863,16 @@ describe('compiler (unbundled Angular)', () => {
                  childClassDecorator: '',
                  childModuleDecorator: '',
                }))
-            .toThrowError(
-                'Class Extends in /app/main.ts extends from a NgModule in another compilation unit without duplicating the decorator. ' +
-                'Please add a NgModule decorator to the class.');
+            .toThrowError(`Error during template compile of 'Extends'
+  Class Extends in /app/main.ts extends from a NgModule in another compilation unit without duplicating the decorator
+    Please add a NgModule decorator to the class.`);
       });
     });
-  });
+  }
 });
 
 describe('compiler (bundled Angular)', () => {
-  setup({compileAngular: false});
+  setup({compileAngular: false, compileAnimations: false});
 
   let angularFiles: Map<string, string>;
 
@@ -604,6 +901,14 @@ describe('compiler (bundled Angular)', () => {
   describe('Quickstart', () => {
     it('should compile', () => {
       const {genFiles} = compile([QUICKSTART, angularFiles]);
+      expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+      expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
+    });
+
+    it('should support tsx', () => {
+      const tsOptions = {jsx: ts.JsxEmit.React};
+      const {genFiles} =
+          compile([QUICKSTART_TSX, angularFiles], /* options */ undefined, tsOptions);
       expect(genFiles.find(f => /app\.component\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
       expect(genFiles.find(f => /app\.module\.ngfactory\.ts/.test(f.genFileUrl))).toBeDefined();
     });
@@ -680,11 +985,40 @@ const QUICKSTART: MockDirectory = {
   }
 };
 
+const QUICKSTART_TSX: MockDirectory = {
+  quickstart: {
+    app: {
+      // #20555
+      'app.component.tsx': `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<h1>Hello {{name}}</h1>'
+        })
+        export class AppComponent {
+          name = 'Angular';
+        }
+      `,
+      'app.module.ts': `
+        import { NgModule }      from '@angular/core';
+        import { AppComponent }  from './app.component';
+
+        @NgModule({
+          declarations: [ AppComponent ],
+          bootstrap:    [ AppComponent ]
+        })
+        export class AppModule { }
+      `
+    }
+  }
+};
+
 const LIBRARY: MockDirectory = {
   bolder: {
     'public-api.ts': `
       export * from './src/bolder.component';
       export * from './src/bolder.module';
+      export {BolderModule as ReExportedModule} from './src/bolder.module';
     `,
     src: {
       'bolder.component.ts': `
@@ -715,7 +1049,6 @@ const LIBRARY: MockDirectory = {
   }
 };
 
-const LIBRARY_USING_APP_MODULE = ['/lib-user/app/app.module.ts'];
 const LIBRARY_USING_APP: MockDirectory = {
   'lib-user': {
     app: {

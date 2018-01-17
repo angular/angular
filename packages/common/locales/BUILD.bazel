@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "locales",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["closure-locale.ts"],
+    ),
+    module_name = "@angular/common/locales",
+)

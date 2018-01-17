@@ -9,7 +9,7 @@
 /**
  * @module
  * @description
- * Entry point for all public APIs of the forms package.
+ * Entry point for all public APIs of this package.
  */
 export * from './src/forms';
 

@@ -3,7 +3,7 @@
 set -eux -o pipefail
 exec 3>&1
 
-echo "[`date`] - Updating the preview server..."
+echo "\n\n[`date`] - Updating the preview server..."
 
 # Input
 readonly HOST_REPO_DIR=$1
@@ -37,7 +37,7 @@ readonly CONTAINER_NAME=aio
   fi
 
   # Create and verify a new docker image.
-  aio/aio-builds-setup/scripts/create-image.sh "$PROVISIONAL_IMAGE_NAME"
+  aio/aio-builds-setup/scripts/create-image.sh "$PROVISIONAL_IMAGE_NAME" --no-cache
   readonly imageVerified=$(sudo docker run --dns 127.0.0.1 --rm --volume $HOST_SECRETS_DIR:/aio-secrets:ro "$PROVISIONAL_IMAGE_NAME" /bin/bash -c "aio-init && aio-health-check && aio-verify-setup" >> /dev/fd/3 && echo "true" || echo "false")
 
   if [[ "$imageVerified" != "true" ]]; then

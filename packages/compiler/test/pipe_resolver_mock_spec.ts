@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {JitReflector} from '@angular/compiler';
 import {Injector, Pipe} from '@angular/core';
 import {inject} from '@angular/core/testing';
+import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 import {MockPipeResolver} from '../testing';
 
-export function main() {
+{
   describe('MockPipeResolver', () => {
     let pipeResolver: MockPipeResolver;
 
     beforeEach(inject([Injector], (injector: Injector) => {
-      pipeResolver = new MockPipeResolver(injector, new JitReflector());
+      pipeResolver = new MockPipeResolver(new JitReflector());
     }));
 
     describe('Pipe overriding', () => {

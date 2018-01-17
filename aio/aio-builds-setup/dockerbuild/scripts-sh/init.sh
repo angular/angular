@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e -o pipefail
+set -eu -o pipefail
 
 exec >> /var/log/aio/init.log
 exec 2>&1

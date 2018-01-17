@@ -8,14 +8,14 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {Options, ReflectiveInjector, WebDriverExtension} from '../index';
+import {Injector, Options, WebDriverExtension} from '../index';
 
-export function main() {
+(function() {
   function createExtension(ids: any[], caps: any) {
     return new Promise<any>((res, rej) => {
       try {
-        res(ReflectiveInjector
-                .resolveAndCreate([
+        res(Injector
+                .create([
                   ids.map((id) => ({provide: id, useValue: new MockExtension(id)})),
                   {provide: Options.CAPABILITIES, useValue: caps},
                   WebDriverExtension.provideFirstSupported(ids)
@@ -45,7 +45,7 @@ export function main() {
          });
        }));
   });
-}
+})();
 
 class MockExtension extends WebDriverExtension {
   constructor(public id: string) { super(); }

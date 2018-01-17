@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "core",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/core",
+    deps = [
+        "//packages:types",
+        "@rxjs",
+    ],
+)

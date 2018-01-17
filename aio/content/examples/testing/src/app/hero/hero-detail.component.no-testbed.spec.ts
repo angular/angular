@@ -15,7 +15,7 @@ describe('HeroDetailComponent - no TestBed', () => {
   beforeEach((done: any) => {
     expectedHero = new Hero(42, 'Bubba');
     activatedRoute = new ActivatedRouteStub();
-    activatedRoute.testParams = { id: expectedHero.id };
+    activatedRoute.testParamMap = { id: expectedHero.id };
 
     router = jasmine.createSpyObj('router', ['navigate']);
 

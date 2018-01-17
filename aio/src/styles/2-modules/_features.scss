@@ -1,18 +1,38 @@
-.feature-row {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 24px 0 0;
+// FEATURES MARKETING PAGE SPECIFIC STYLES
 
-  @media (max-width: 600px) {
-    flex-direction: column;
+.feature-section {
+  margin: 0 0 32px;
+
+  .feature-header, .text-headline {
+    text-align: center;
   }
-}
 
-.features-desc {
-  max-width: 920px;
-}
+  .feature-header img {
+    margin: 16px;
+  }
 
-.feature {
-  max-width: 300px;
-  margin: 0 24px 32px 0;  
+  .feature-title {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 8px 0px;
+    clear: both;
+  }
+
+  .feature-row {
+    display: flex;
+    flex-wrap: wrap;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+
+    .feature {
+      max-width: 300px;
+      margin: 0 16px;  
+      
+      @media (max-width: 768px) {
+        max-width: 100%;
+      }
+    }
+  }
 }

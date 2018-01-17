@@ -29,39 +29,62 @@ mkdir -p ${LOGS_DIR}
 #nvm install ${NODE_VERSION}
 
 
-# Install version of npm that we are locked against
-travisFoldStart "install-npm"
-  npm install -g npm@${NPM_VERSION}
-travisFoldEnd "install-npm"
+# Install version of yarn that we are locked against
+travisFoldStart "install-yarn"
+  curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
+travisFoldEnd "install-yarn"
 
 
-# Install all npm dependencies according to shrinkwrap.json
-travisFoldStart "npm-install"
-  node tools/npm/check-node-modules --purge || npm install
-travisFoldEnd "npm-install"
+# Install all npm dependencies according to yarn.lock
+travisFoldStart "yarn-install"
+  (node tools/npm/check-node-modules --purge && yarn update-webdriver) || yarn install --frozen-lockfile --non-interactive
+travisFoldEnd "yarn-install"
 
 
-if [[ ${TRAVIS} && (${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "docs_test") ]]; then
-  # Install version of yarn that we are locked against
-  travisFoldStart "install-yarn"
-    curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version "${YARN_VERSION}"
-  travisFoldEnd "install-yarn"
-fi
+# Install bower packages
+travisFoldStart "bower-install"
+  $(npm bin)/bower install
+travisFoldEnd "bower-install"
 
 
-if [[ ${TRAVIS} && (${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" || ${CI_MODE} == "docs_test") ]]; then
+if [[ ${TRAVIS} &&
+  ${CI_MODE} == "aio" ||
+  ${CI_MODE} == "aio_e2e" ||
+  ${CI_MODE} == "aio_tools_test"
+]]; then
   # angular.io: Install all yarn dependencies according to angular.io/yarn.lock
   travisFoldStart "yarn-install.aio"
     (
       cd ${PROJECT_ROOT}/aio
-      yarn install
+      yarn install --frozen-lockfile --non-interactive
     )
   travisFoldEnd "yarn-install.aio"
 fi
 
+# Install bazel
+if [[ ${TRAVIS} && (${CI_MODE} == "bazel" || ${CI_MODE} == "e2e_2") ]]; then
+  travisFoldStart "bazel-install"
+  (
+    mkdir tmp
+    cd tmp
+    curl --location --compressed https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh > bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
+    chmod +x bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh
+    ./bazel-${BAZEL_VERSION}-installer-linux-x86_64.sh --user
+    cd ..
+    rm -rf tmp
+  )
+  travisFoldEnd "bazel-install"
+fi
+
 
 # Install Chromium
-if [[ ${CI_MODE} == "js" || ${CI_MODE} == "e2e" || ${CI_MODE} == "e2e_2" || ${CI_MODE} == "aio" || ${CI_MODE} == "aio_e2e" ]]; then
+if [[ ${TRAVIS} &&
+  ${CI_MODE} == "js" ||
+  ${CI_MODE} == "e2e" ||
+  ${CI_MODE} == "e2e_2" ||
+  ${CI_MODE} == "aio" ||
+  ${CI_MODE} == "aio_e2e"
+]]; then
   travisFoldStart "install-chromium"
     (
       ${thisDir}/install-chromium.sh
@@ -95,19 +118,6 @@ if [[ ${TRAVIS} && (${CI_MODE} == "browserstack_required" || ${CI_MODE} == "brow
     )
   travisFoldEnd "install-browserstack"
 fi
-
-
-# Install Selenium WebDriver
-travisFoldStart "webdriver-manager-update"
-  $(npm bin)/webdriver-manager update
-travisFoldEnd "webdriver-manager-update"
-
-
-# Install bower packages
-travisFoldStart "bower-install"
-  $(npm bin)/bower install
-travisFoldEnd "bower-install"
-
 
 # Print return arrows as a log separator
 travisFoldReturnArrows

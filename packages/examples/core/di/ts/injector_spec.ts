@@ -8,7 +8,7 @@
 
 import {InjectionToken, Injector, ReflectiveInjector} from '@angular/core';
 
-export function main() {
+{
   describe('injector metadata examples', () => {
     it('works', () => {
       // #docregion Injector

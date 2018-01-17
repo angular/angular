@@ -7,10 +7,10 @@
  */
 
 import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
+import {SOURCE} from '../di/injector';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
 import {looseIdentical, stringify} from '../util';
-
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
 
@@ -28,13 +28,10 @@ export function tokenKey(token: any): string {
 }
 
 export function unwrapValue(view: ViewData, nodeIdx: number, bindingIdx: number, value: any): any {
-  if (value instanceof WrappedValue) {
-    value = value.wrapped;
-    let globalBindingIdx = view.def.nodes[nodeIdx].bindingIndex + bindingIdx;
-    let oldValue = view.oldValues[globalBindingIdx];
-    if (oldValue instanceof WrappedValue) {
-      oldValue = oldValue.wrapped;
-    }
+  if (WrappedValue.isWrapped(value)) {
+    value = WrappedValue.unwrap(value);
+    const globalBindingIdx = view.def.nodes[nodeIdx].bindingIndex + bindingIdx;
+    const oldValue = WrappedValue.unwrap(view.oldValues[globalBindingIdx]);
     view.oldValues[globalBindingIdx] = new WrappedValue(oldValue);
   }
   return value;
@@ -102,9 +99,8 @@ export function checkBindingNoChanges(
   const oldValue = view.oldValues[def.bindingIndex + bindingIdx];
   if ((view.state & ViewState.BeforeFirstCheck) || !devModeEqual(oldValue, value)) {
     throw expressionChangedAfterItHasBeenCheckedError(
-        Services.createDebugContext(view, def.index), oldValue, value,
-        (view.state & ViewState.BeforeFirstCheck) !== 0,
-        def.bindings[def.bindingIndex + bindingIdx].name);
+        Services.createDebugContext(view, def.nodeIndex), oldValue, value,
+        (view.state & ViewState.BeforeFirstCheck) !== 0);
   }
 }
 
@@ -127,18 +123,24 @@ export function markParentViewsForCheckProjectedViews(view: ViewData, endView: V
 }
 
 export function dispatchEvent(
-    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean {
-  const nodeDef = view.def.nodes[nodeIndex];
-  const startView =
-      nodeDef.flags & NodeFlags.ComponentView ? asElementData(view, nodeIndex).componentView : view;
-  markParentViewsForCheck(startView);
-  return Services.handleEvent(view, nodeIndex, eventName, event);
+    view: ViewData, nodeIndex: number, eventName: string, event: any): boolean|undefined {
+  try {
+    const nodeDef = view.def.nodes[nodeIndex];
+    const startView = nodeDef.flags & NodeFlags.ComponentView ?
+        asElementData(view, nodeIndex).componentView :
+        view;
+    markParentViewsForCheck(startView);
+    return Services.handleEvent(view, nodeIndex, eventName, event);
+  } catch (e) {
+    // Attention: Don't rethrow, as it would cancel Observable subscriptions!
+    view.root.errorHandler.handleError(e);
+  }
 }
 
 export function declaredViewContainer(view: ViewData): ElementData|null {
   if (view.parent) {
     const parentView = view.parent;
-    return asElementData(parentView, view.parentNodeDef !.index);
+    return asElementData(parentView, view.parentNodeDef !.nodeIndex);
   }
   return null;
 }
@@ -160,9 +162,9 @@ export function viewParentEl(view: ViewData): NodeDef|null {
 export function renderNode(view: ViewData, def: NodeDef): any {
   switch (def.flags & NodeFlags.Types) {
     case NodeFlags.TypeElement:
-      return asElementData(view, def.index).renderElement;
+      return asElementData(view, def.nodeIndex).renderElement;
     case NodeFlags.TypeText:
-      return asTextData(view, def.index).renderText;
+      return asTextData(view, def.nodeIndex).renderText;
   }
 }
 
@@ -204,7 +206,7 @@ export function splitMatchedQueriesDsl(
   return {matchedQueries, references, matchedQueryIds};
 }
 
-export function splitDepsDsl(deps: ([DepFlags, any] | any)[]): DepDef[] {
+export function splitDepsDsl(deps: ([DepFlags, any] | any)[], sourceName?: string): DepDef[] {
   return deps.map(value => {
     let token: any;
     let flags: DepFlags;
@@ -213,6 +215,9 @@ export function splitDepsDsl(deps: ([DepFlags, any] | any)[]): DepDef[] {
     } else {
       flags = DepFlags.None;
       token = value;
+    }
+    if (token && (typeof token === 'function' || typeof token === 'object') && sourceName) {
+      Object.defineProperty(token, SOURCE, {value: sourceName, configurable: true});
     }
     return {flags, token, tokenKey: tokenKey(token)};
   });
@@ -228,7 +233,7 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
              ViewEncapsulation.Native)) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.
-      return asElementData(view, def.renderParent !.index).renderElement;
+      return asElementData(view, def.renderParent !.nodeIndex).renderElement;
     }
   } else {
     return renderHost;
@@ -287,8 +292,8 @@ export function visitProjectedRenderNodes(
   }
   const hostView = compView !.parent;
   const hostElDef = viewParentEl(compView !);
-  const startIndex = hostElDef !.index + 1;
-  const endIndex = hostElDef !.index + hostElDef !.childCount;
+  const startIndex = hostElDef !.nodeIndex + 1;
+  const endIndex = hostElDef !.nodeIndex + hostElDef !.childCount;
   for (let i = startIndex; i <= endIndex; i++) {
     const nodeDef = hostView !.def.nodes[i];
     if (nodeDef.ngContentIndex === ngContentIndex) {
@@ -323,21 +328,21 @@ function visitRenderNode(
         execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
       }
       if (nodeDef.bindingFlags & (BindingFlags.SyntheticHostProperty)) {
-        const compView = asElementData(view, nodeDef.index).componentView;
+        const compView = asElementData(view, nodeDef.nodeIndex).componentView;
         execRenderNodeAction(compView, rn, action, parentNode, nextSibling, target);
       }
     } else {
       execRenderNodeAction(view, rn, action, parentNode, nextSibling, target);
     }
     if (nodeDef.flags & NodeFlags.EmbeddedViews) {
-      const embeddedViews = asElementData(view, nodeDef.index).viewContainer !._embeddedViews;
+      const embeddedViews = asElementData(view, nodeDef.nodeIndex).viewContainer !._embeddedViews;
       for (let k = 0; k < embeddedViews.length; k++) {
         visitRootRenderNodes(embeddedViews[k], action, parentNode, nextSibling, target);
       }
     }
     if (nodeDef.flags & NodeFlags.TypeElement && !nodeDef.element !.name) {
       visitSiblingRenderNodes(
-          view, action, nodeDef.index + 1, nodeDef.index + nodeDef.childCount, parentNode,
+          view, action, nodeDef.nodeIndex + 1, nodeDef.nodeIndex + nodeDef.childCount, parentNode,
           nextSibling, target);
     }
   }

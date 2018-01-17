@@ -20,22 +20,32 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/mergeDecoratorDocs'))
   .processor(require('./processors/extractDecoratedClasses'))
   .processor(require('./processors/matchUpDirectiveDecorators'))
-  .processor(require('./processors/filterMemberDocs'))
+  .processor(require('./processors/addMetadataAliases'))
+  .processor(require('./processors/filterContainedDocs'))
   .processor(require('./processors/markBarredODocsAsPrivate'))
   .processor(require('./processors/filterPrivateDocs'))
   .processor(require('./processors/computeSearchTitle'))
+  .processor(require('./processors/simplifyMemberAnchors'))
 
   // Where do we get the source files?
-  .config(function(readTypeScriptModules, readFilesProcessor, collectExamples) {
+  .config(function(readTypeScriptModules, readFilesProcessor, collectExamples, tsParser) {
+
+    // Tell TypeScript how to load modules that start with with `@angular`
+    tsParser.options.paths = { '@angular/*': [API_SOURCE_PATH + '/*'] };
+    tsParser.options.baseUrl = '.';
 
     // API files are typescript
     readTypeScriptModules.basePath = API_SOURCE_PATH;
     readTypeScriptModules.ignoreExportsMatching = [/^[_ɵ]|^VERSION$/];
     readTypeScriptModules.hidePrivateMembers = true;
+
+    // NOTE: This list shold be in sync with tools/gulp-tasks/public-api.js
     readTypeScriptModules.sourceFiles = [
       'animations/index.ts',
       'animations/browser/index.ts',
       'animations/browser/testing/index.ts',
+      'common/http/index.ts',
+      'common/http/testing/index.ts',
       'common/index.ts',
       'common/testing/index.ts',
       'core/index.ts',
@@ -55,6 +65,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'router/index.ts',
       'router/testing/index.ts',
       'router/upgrade/index.ts',
+      'service-worker/index.ts',
       'upgrade/index.ts',
       'upgrade/static/index.ts',
     ];
@@ -121,4 +132,5 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     convertToJsonProcessor.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
     postProcessHtml.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
     autoLinkCode.docTypes = DOCS_TO_CONVERT;
+    autoLinkCode.codeElements = ['code', 'code-example', 'code-pane'];
   });

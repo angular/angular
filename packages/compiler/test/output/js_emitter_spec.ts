@@ -13,14 +13,13 @@ import * as o from '@angular/compiler/src/output/output_ast';
 import {stripSourceMapAndNewLine} from './abstract_emitter_spec';
 
 const someGenFilePath = 'somePackage/someGenFile';
-const someSourceFilePath = 'somePackage/someSourceFile';
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
 const sameModuleIdentifier = new o.ExternalReference(null, 'someLocalId', null);
 
 const externalModuleIdentifier = new o.ExternalReference(anotherModuleUrl, 'someExternalId', null);
 
-export function main() {
+{
   // Note supported features of our OutputAstin JavaScript / ES5:
   // - types
   // - declaring fields
@@ -35,7 +34,7 @@ export function main() {
     });
 
     function emitStmt(stmt: o.Statement, preamble?: string): string {
-      const source = emitter.emitStatements(someSourceFilePath, someGenFilePath, [stmt], preamble);
+      const source = emitter.emitStatements(someGenFilePath, [stmt], preamble);
       return stripSourceMapAndNewLine(source);
     }
 
@@ -99,7 +98,13 @@ export function main() {
       expect(emitStmt(o.literal(true).toStmt())).toEqual('true;');
       expect(emitStmt(o.literal('someStr').toStmt())).toEqual(`'someStr';`);
       expect(emitStmt(o.literalArr([o.literal(1)]).toStmt())).toEqual(`[1];`);
-      expect(emitStmt(o.literalMap([['someKey', o.literal(1)]]).toStmt())).toEqual(`{someKey:1};`);
+      expect(emitStmt(o.literalMap([
+                         {key: 'someKey', value: o.literal(1), quoted: false},
+                         {key: 'a', value: o.literal('a'), quoted: false},
+                         {key: '*', value: o.literal('star'), quoted: true},
+                       ]).toStmt())
+                 .replace(/\s+/gm, ''))
+          .toEqual(`{someKey:1,a:'a','*':'star'};`);
     });
 
     it('should break expressions into multiple lines if they are too long', () => {

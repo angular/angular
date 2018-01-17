@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
 import { Hero, heroes } from './hero';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ]
 })

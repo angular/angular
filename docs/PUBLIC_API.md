@@ -2,6 +2,7 @@
 
 Our SemVer, timed-release cycle and deprecation policy currently applies to these npm packages:
 
+- `@angular/animations`
 - `@angular/core`
 - `@angular/common`
 - `@angular/platform-browser`

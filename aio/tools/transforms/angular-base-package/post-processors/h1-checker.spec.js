@@ -23,7 +23,7 @@ describe('h1Checker postprocessor', () => {
         <h1>Heading 1a</h1>
     `
     };
-    expect(() => processor.$process([doc])).toThrowError(createDocMessage('More than one h1 found [<h1>Heading 1, <h1>Heading 1a</h1>]', doc));
+    expect(() => processor.$process([doc])).toThrowError(createDocMessage('More than one h1 found in ' + doc.renderedContent, doc));
   });
 
   it('should not complain if there is exactly one h1 in a document', () => {
@@ -68,5 +68,15 @@ describe('h1Checker postprocessor', () => {
     };
     processor.$process([doc]);
     expect(doc.vFile.title).toEqual('What is Angular?');
+  });
+
+  it('should not break if the h1 is empty (except for an aria-hidden anchor)', () => {
+    const doc = {
+      docType: 'a',
+      renderedContent: `
+        <h1><a aria-hidden="true"></a></h1>
+      `
+    };
+    expect(() => processor.$process([doc])).not.toThrow();
   });
 });

@@ -12,4 +12,4 @@
  * Entry point for all public APIs of the http/testing package.
  */
 
-export * from './src/testing';
+export * from './public_api';

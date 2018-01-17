@@ -67,7 +67,7 @@ class TestObj {
   identity(arg: any) { return arg; }
 }
 
-export function main() {
+{
   describe('Reflector', () => {
     let reflector: Reflector;
 
@@ -383,7 +383,7 @@ export function main() {
 
         class ChildWithCtor extends Parent {
           static ctorParameters =
-              () => [{type: C, decorators: [{type: ParamDecorator, args: ['c']}]}, ];
+              () => [{type: C, decorators: [{type: ParamDecorator, args: ['c']}]}, ]
           constructor() { super(); }
         }
 

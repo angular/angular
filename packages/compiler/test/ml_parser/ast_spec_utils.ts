@@ -37,7 +37,7 @@ class _Humanizer implements html.Visitor {
   result: any[] = [];
   elDepth: number = 0;
 
-  constructor(private includeSourceSpan: boolean){};
+  constructor(private includeSourceSpan: boolean) {}
 
   visitElement(element: html.Element, context: any): any {
     const res = this._appendContext(element, [html.Element, element.name, this.elDepth++]);

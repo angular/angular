@@ -40,10 +40,10 @@ let _inFakeAsyncCall = false;
  *
  * ## Example
  *
- * {@example testing/ts/fake_async.ts region='basic'}
+ * {@example core/testing/ts/fake_async.ts region='basic'}
  *
  * @param fn
- * @returns {Function} The function wrapped to be executed in the fakeAsync zone
+ * @returns The function wrapped to be executed in the fakeAsync zone
  *
  * @experimental
  */
@@ -107,7 +107,7 @@ function _getFakeAsyncZoneSpec(): any {
  *
  * ## Example
  *
- * {@example testing/ts/fake_async.ts region='basic'}
+ * {@example core/testing/ts/fake_async.ts region='basic'}
  *
  * @experimental
  */
@@ -121,7 +121,7 @@ export function tick(millis: number = 0): void {
  * of time that would have been elapsed.
  *
  * @param maxTurns
- * @returns {number} The simulated time elapsed, in millis.
+ * @returns The simulated time elapsed, in millis.
  *
  * @experimental
  */

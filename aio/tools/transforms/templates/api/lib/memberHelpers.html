@@ -1,0 +1,60 @@
+{% import "lib/paramList.html" as params -%}
+
+{%- macro renderHeritage(exportDoc) -%}
+  {%- if exportDoc.extendsClauses.length %} extends {% for clause in exportDoc.extendsClauses -%}
+  <a class="code-anchor" href="{$ clause.doc.path $}">{$ clause.text $}</a>{% if not loop.last %}, {% endif -%}
+  {% endfor %}{% endif %}
+  {%- if exportDoc.implementsClauses.length %} implements {% for clause in exportDoc.implementsClauses -%}
+  <a class="code-anchor" href="{$ clause.doc.path $}">{$ clause.text $}</a>{% if not loop.last %}, {% endif -%}
+  {% endfor %}{% endif %}
+{%- endmacro -%}
+
+{%- macro renderMembers(doc) -%}
+{%- if doc.members.length %}{% for member in doc.members %}{% if not member.internal %}
+  <a class="code-anchor" href="{$ doc.path $}#{$ member.anchor $}">{$ renderMember(member, 1) $}</a>{% endif %}{% endfor %}{% endif %}
+{%- for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
+  // inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a>{$ renderMembers(ancestor.doc) $}{% endif %}{% endfor %}
+{%- endmacro -%}
+
+{%- macro renderMember(member, truncateLines) -%}
+    {%- if member.accessibility !== 'public' %}{$ member.accessibility $} {% endif -%}
+    {%- if (member.isGetAccessor or member.isReadonly) and not member.isSetAccessor %}get {% endif -%}
+    {%- if member.isSetAccessor and not member.isGetAccessor %}set {% endif -%}
+    {%- if member.isStatic  %}static {% endif -%}
+    {$ member.name $}{$ member.typeParameters | escape $}{% if not member.isGetAccessor %}{$ params.paramList(member.parameters, truncateLines) | trim $}{% endif %}
+    {%- if member.isOptional  %}?{% endif -%}
+    {$ params.returnType(member.type) | trim | truncateCode(truncateLines) $}
+{%- endmacro -%}
+
+{%- macro renderMemberDetail(member, cssClass) -%}
+<div class="{$ cssClass $}">
+  <a id="{$ member.anchor $}"></a>
+  <code-example hideCopy="true" class="no-box api-heading">{$ renderMember(member) $}</code-example>
+  {%- if not member.notYetDocumented %}
+  {$ member.description | marked $}
+  {% endif -%}
+</div>
+{% endmacro -%}
+
+{% macro renderMemberDetails(members, containerClass, itemClass, titleText) %}
+{% if members.length %}
+<section class="{$ containerClass $}">
+  <h2>{$ titleText $}</h2>
+  {% for member in members %}{% if not member.internal %}
+    {$ renderMemberDetail(member, itemClass) $}
+    {% if member.overloads.length %}
+    <details class="overloads">
+      <summary>Overloads</summary>
+      <div class="detail-contents">
+        {% for overload in member.overloads %}
+        {$ renderMemberDetail(overload, itemClass + '-overload') $}
+        {% if not loop.last %}<hr>{% endif %}
+        {% endfor %}
+      </div>
+    </details>
+    {% endif %}
+    {% if not loop.last %}<hr class="hr-margin">{% endif %}
+  {% endif %}{% endfor %}
+</section>
+{% endif %}
+{% endmacro %}

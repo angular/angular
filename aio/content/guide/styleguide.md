@@ -2129,12 +2129,12 @@ discourage the `I` prefix.
 <a href="#toc">Back to top</a>
 
 
-## Application structure and Angular modules
+## Application structure and NgModules
 
 Have a near-term view of implementation and a long-term vision. Start small but keep in mind where the app is heading down the road.
 
 All of the app's code goes in a folder named `src`.
-All feature areas are in their own folder, with their own Angular module.
+All feature areas are in their own folder, with their own NgModule.
 
 All content is one asset per file. Each component, service, and pipe is in its own file.
 All third party vendor scripts are stored in another folder and not in the `src` folder.
@@ -2779,7 +2779,7 @@ and more difficult in a flat structure.
 
 
 
-**Do** create an Angular module for each feature area.
+**Do** create an NgModule for each feature area.
 
 
 </div>
@@ -2790,7 +2790,7 @@ and more difficult in a flat structure.
 
 
 
-**Why?** Angular modules make it easy to lazy load routable features.
+**Why?** NgModules make it easy to lazy load routable features.
 
 
 </div>
@@ -2801,7 +2801,7 @@ and more difficult in a flat structure.
 
 
 
-**Why?** Angular modules make it easier to isolate, test, and re-use features.
+**Why?** NgModules make it easier to isolate, test, and re-use features.
 
 
 </div>
@@ -2827,7 +2827,7 @@ and more difficult in a flat structure.
 
 
 
-**Do** create an Angular module in the app's root folder,
+**Do** create an NgModule in the app's root folder,
 for example, in `/src/app`.
 
 
@@ -2839,7 +2839,7 @@ for example, in `/src/app`.
 
 
 
-**Why?** Every app requires at least one root Angular module.
+**Why?** Every app requires at least one root NgModule.
 
 
 </div>
@@ -2888,7 +2888,7 @@ for example, in `/src/app`.
 
 
 
-**Do** create an Angular module for all distinct features in an application;
+**Do** create an NgModule for all distinct features in an application;
 for example, a `Heroes` feature.
 
 
@@ -3127,7 +3127,7 @@ that may need features from another common module; for example,
 
 
 
-**Why?** A lazy loaded feature module that imports that shared module will make its own copy of the service and likely have undesireable results.
+**Why?** A lazy loaded feature module that imports that shared module will make its own copy of the service and likely have undesirable results.
 
 
 </div>
@@ -3377,7 +3377,7 @@ Yet they're too big and messy to leave loose in the root folder.
 
 
 
-**Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesireable results.
+**Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesirable results.
 
 
 </div>
@@ -4502,8 +4502,8 @@ helps instantly identify which members of the component serve which purpose.
 
 **Why?** The property associated with `@HostBinding` or the method associated with `@HostListener`
 can be modified only in a single place&mdash;in the directive's class.
-If you use the `host` metadata property, you must modify both the property declaration inside the controller,
-and the metadata associated with the directive.
+If you use the `host` metadata property, you must modify both the property/method declaration in the 
+directive's class and the metadata in the decorator associated with the directive.
 
 
 </div>

@@ -7,21 +7,24 @@
 #
 # alexeagle - Alex Eagle
 # alxhub - Alex Rickabaugh
+# brocco - Mike Brocchi
 # chuckjaz - Chuck Jazdzewski
+# filipesilva - Filipe Silva
 # gkalpak - George Kalpakas
+# hansl - Hans Larsen
 # IgorMinar - Igor Minar
 # jasonaden - Jason Aden
+# kapunahelewong - Kapunahele Wong
 # kara - Kara Erickson
 # matsko - Matias Niemelä
 # mhevery - Misko Hevery
 # petebacondarwin - Pete Bacon Darwin
 # pkozlowski-opensource - Pawel Kozlowski
 # robwormald - Rob Wormald
-# tbosch - Tobias Bosch
+# tinayuangao - Tina Gao
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
-# wardbell - Ward Bell
-# tinayuangao - Tina Gao
+
 
 version: 2
 
@@ -31,14 +34,33 @@ group_defaults:
     enabled: true
   approve_by_comment:
     enabled: false
+  # see http://docs.pullapprove.com/groups/author_approval/
+  author_approval:
+    # If the author is a reviewer on the PR, they will automatically have an "approved" status.
+    auto: true
 
 groups:
+  # Require all PRs to have at least one approval from *someone*
+  all:
+    users: all
+    required: 1
+    # In this group, your self-approval does not count
+    author_approval:
+      auto: false
+      ignored: true
+    files:
+      include:
+        - "*"
+
   root:
     conditions:
       files:
         include:
           - "*"
         exclude:
+          - "WORKSPACE"
+          - "BUILD.bazel"
+          - ".circleci/*"
           - "aio/*"
           - "integration/*"
           - "modules/*"
@@ -57,6 +79,21 @@ groups:
       - IgorMinar
       - mhevery
 
+  bazel:
+    conditions:
+      files:
+        include:
+          - "WORKSPACE"
+          - "*.bazel"
+          - "*.bzl"
+          - "packages/bazel/*"
+          - "tools/bazel.rc"
+    users:
+      - alexeagle #primary
+      - chuckjaz
+      - IgorMinar #fallback
+      - vikerman #fallback
+
   build-and-ci:
     conditions:
       files:
@@ -66,7 +103,7 @@ groups:
           - "*.lock"
           - "tools/*"
         exclude:
-          - "tools/@angular/tsc-wrapped/*"
+          - "tools/bazel.rc"
           - "tools/public_api_guard/*"
           - "aio/*"
     users:
@@ -82,25 +119,24 @@ groups:
     users:
       - alexeagle
       - mhevery
-      - tbosch
       - vicb
       - IgorMinar #fallback
-
 
   core:
     conditions:
       files:
         - "packages/core/*"
     users:
-      - tbosch #primary
-      - mhevery
+      - mhevery #primary
+      - chuckjaz
+      - kara
       - vicb
       - IgorMinar #fallback
 
   animations:
     conditions:
       files:
-        - "packages/animation/*"
+        - "packages/animations/*"
         - "packages/platform-browser/animations/*"
     users:
       - matsko #primary
@@ -113,7 +149,7 @@ groups:
         - "packages/compiler/src/i18n/*"
     users:
       - vicb #primary
-      - tbosch
+      - chuckjaz
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -122,29 +158,43 @@ groups:
       files:
         - "packages/compiler/*"
     users:
-      - tbosch #primary
+      - chuckjaz #primary
       - vicb
-      - chuckjaz
       - mhevery
+      - IgorMinar #fallback
+
+  compiler-cli/ngtools:
+    conditions:
+      files:
+        - "packages/compiler-cli/src/ngtools*"
+    users:
+      - hansl
+      - filipesilva #fallback
+      - brocco #fallback
       - IgorMinar #fallback
 
   compiler-cli:
     conditions:
       files:
-        - "tools/@angular/tsc-wrapped/*"
-        - "packages/compiler-cli/*"
+        include:
+          - "packages/compiler-cli/*"
+          - "packages/bazel/*"
+        exclude:
+          - "packages/compiler-cli/src/ngtools*"
     users:
       - alexeagle
       - chuckjaz
       - vicb
-      - tbosch
       - IgorMinar #fallback
       - mhevery #fallback
 
   common:
     conditions:
       files:
-        - "packages/common/*"
+        include:
+          - "packages/common/*"
+        exclude:
+          - "packages/common/http/*"
     users:
       - pkozlowski-opensource #primary
       - vicb
@@ -155,6 +205,12 @@ groups:
     conditions:
       files:
         - "packages/forms/*"
+        - "aio/content/guide/forms.md"
+        - "aio/content/guide/form-validation.md"
+        - "aio/content/guide/reactive-forms.md"
+        - "aio/content/examples/forms/*"
+        - "aio/content/examples/form-validation/*"
+        - "aio/content/examples/reactive-forms/*"
     users:
       - kara #primary
       - tinayuangao #secondary
@@ -164,11 +220,11 @@ groups:
   http:
     conditions:
       files:
+        - "packages/common/http/*"
         - "packages/http/*"
     users:
-      - vikerman #primary
-      - alxhub
-      - IgorMinar #fallback
+      - alxhub #primary
+      - IgorMinar
       - mhevery #fallback
 
   language-service:
@@ -177,7 +233,7 @@ groups:
         - "packages/language-service/*"
     users:
       - chuckjaz #primary
-      - tbosch #secondary
+      # needs secondary
       - vicb
       - IgorMinar #fallback
       - mhevery #fallback
@@ -187,7 +243,7 @@ groups:
       files:
         - "packages/router/*"
     users:
-      - jasonaden
+      - jasonaden #primary
       - vicb
       - IgorMinar #fallback
       - mhevery #fallback
@@ -207,8 +263,8 @@ groups:
       files:
         - "packages/platform-browser/*"
     users:
-      - tbosch #primary
-      - vicb #secondary
+      - vicb #primary
+      # needs secondary
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -218,9 +274,8 @@ groups:
         - "packages/platform-server/*"
     users:
       - vikerman #primary
-      - alxhub
+      - alxhub #secondary
       - vicb
-      - tbosch
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -230,18 +285,26 @@ groups:
         - "packages/platform-webworker/*"
     users:
       - vicb #primary
-      - tbosch #secondary
+      # needs secondary
       - IgorMinar #fallback
       - mhevery #fallback
 
-
+  service-worker:
+    conditions:
+      files:
+        - "packages/service-worker/*"
+    users:
+      - alxhub #primary
+      - gkalpak
+      - IgorMinar #fallback
+      - mhevery #fallback
 
   benchpress:
     conditions:
       files:
         - "packages/benchpress/*"
     users:
-      - tbosch #primary
+      - alxhub # primary
       # needs secondary
       - IgorMinar #fallback
       - mhevery #fallback
@@ -249,10 +312,43 @@ groups:
   angular.io:
     conditions:
       files:
-        - "aio/*"
+        include:
+          - "aio/*"
+        exclude:
+          - "aio/content/*"
     users:
-      - IgorMinar #primary
-      - petebacondarwin #secondary
+      - petebacondarwin #primary
+      - IgorMinar
       - gkalpak
-      - wardbell
+      - mhevery #fallback
+
+  angular.io-guide-and-tutorial:
+    conditions:
+      files:
+        include:
+          - "aio/content/*"
+        exclude:
+          - "aio/content/marketing/*"
+          - "aio/content/navigation.json"
+          - "aio/content/license.md"
+    users:
+      - kapunahelewong
+      - stephenfluin
+      - petebacondarwin
+      - gkalpak
+      - IgorMinar
+      - mhevery #fallback
+
+  angular.io-marketing:
+    conditions:
+      files:
+        include:
+          - "aio/content/marketing/*"
+          - "aio/content/navigation.json"
+          - "aio/content/license.md"
+    users:
+      - stephenfluin
+      - petebacondarwin
+      - gkalpak
+      - IgorMinar
       - mhevery #fallback

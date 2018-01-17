@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
-import { AsyncSubject } from 'rxjs/AsyncSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishLast';
 import 'rxjs/add/operator/publishReplay';
 
-import { Logger } from 'app/shared/logger.service';
 import { LocationService } from 'app/shared/location.service';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
@@ -37,7 +35,7 @@ export class NavigationService {
    */
   currentNodes: Observable<CurrentNodes>;
 
-  constructor(private http: Http, private location: LocationService, private logger: Logger) {
+  constructor(private http: HttpClient, private location: LocationService) {
     const navigationInfo = this.fetchNavigationInfo();
     this.navigationViews = this.getNavigationViews(navigationInfo);
 
@@ -58,8 +56,7 @@ export class NavigationService {
    * We are not storing the subscription from connecting as we do not expect this service to be destroyed.
    */
   private fetchNavigationInfo(): Observable<NavigationResponse> {
-    const navigationInfo = this.http.get(navigationPath)
-      .map(res => res.json() as NavigationResponse)
+    const navigationInfo = this.http.get<NavigationResponse>(navigationPath)
       .publishLast();
     navigationInfo.connect();
     return navigationInfo;
@@ -100,7 +97,7 @@ export class NavigationService {
 
       (navMap, url) => {
         const urlKey = url.startsWith('api/') ? 'api' : url;
-        return navMap[urlKey] || { '' : { view: '', url: urlKey, nodes: [] }};
+        return navMap.get(urlKey) || { '' : { view: '', url: urlKey, nodes: [] }};
       })
       .publishReplay(1);
     currentNodes.connect();
@@ -148,7 +145,10 @@ export class NavigationService {
       if (url) {
         // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
         const cleanedUrl = url.replace(/\/$/, '');
-        const navMapItem = navMap[cleanedUrl] = navMap[cleanedUrl] || {};
+        if (!navMap.has(cleanedUrl)) {
+          navMap.set(cleanedUrl, {});
+        }
+        const navMapItem = navMap.get(cleanedUrl)!;
         navMapItem[view] = { url, view, nodes };
       }
 

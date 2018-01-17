@@ -6,8 +6,8 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AboutComponent }   from './about.component';
 import { BannerComponent }  from './banner.component';
-import { HeroService,
-         UserService }      from './model';
+import { UserService }      from './model/user.service';
+import { HeroService } from './model/hero.service';
 import { TwainService }     from './shared/twain.service';
 import { WelcomeComponent } from './welcome.component';
 

@@ -5,7 +5,7 @@ import { FormGroup }        from '@angular/forms';
 import { QuestionBase }     from './question-base';
 
 @Component({
-  selector: 'df-question',
+  selector: 'app-question',
   templateUrl: './dynamic-form-question.component.html'
 })
 export class DynamicFormQuestionComponent {

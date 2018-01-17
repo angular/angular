@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2, forwardRef} from '@angular/core';
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
@@ -105,7 +105,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   @Input() value: any;
 
   constructor(
-      private _renderer: Renderer, private _elementRef: ElementRef,
+      private _renderer: Renderer2, private _elementRef: ElementRef,
       private _registry: RadioControlRegistry, private _injector: Injector) {}
 
   ngOnInit(): void {
@@ -118,7 +118,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
 
   writeValue(value: any): void {
     this._state = value === this.value;
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'checked', this._state);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'checked', this._state);
   }
 
   registerOnChange(fn: (_: any) => {}): void {
@@ -134,7 +134,7 @@ export class RadioControlValueAccessor implements ControlValueAccessor,
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
 
   setDisabledState(isDisabled: boolean): void {
-    this._renderer.setElementProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
   private _checkName(): void {

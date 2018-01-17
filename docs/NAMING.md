@@ -7,7 +7,7 @@ See: https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines
 
 Classes:
   - Example: `Compiler`, `ApplicationMetadata`
-  - Camel case with first letter upper-case
+  - Camel case with first letter uppercase
   - In general prefer single words. (This is so that when appending `Proto` or `Factory` the class 
     is still reasonable to work with.)
   - Should not end with `Impl` or any other word which describes a specific implementation of an 
@@ -21,10 +21,10 @@ Interfaces:
   
 Methods and functions:
   - Example: `bootstrap`, `someMethod`
-  - Should be camel case with first lower case
+  - Should be camel case with first letter lowercase
 
 
-Constants
+Constants:
   - Example: `CORE_DIRECTIVES`
   - Should be all uppercase with SNAKE_CASE
 

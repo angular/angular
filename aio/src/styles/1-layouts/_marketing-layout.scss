@@ -1,21 +1,21 @@
 .hero {
-  width: 100%;
-  min-height: 480px;
-  height: 80vh;
-  max-height: 560px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  box-sizing: border-box;
-  padding: 48px 48px 32px 48px;
   position: absolute;
   width: 100%;
+  min-height: 480px;
+  height: 80vh;
+  max-height: 560px;
+  box-sizing: border-box;
+  padding: 48px 48px 32px 48px;
   overflow: hidden;
   transform: skewY(8deg);
   transform-origin: 100%;
 
   @media (max-width: 480px) {
+    max-height: 486px;
     padding-top: 40px;
     transform: none;
   }
@@ -29,7 +29,7 @@
     font-size: 28px;
     font-weight: 400;
     line-height: 48px;
-    margin: 0 $unit 0 0;
+    margin: 0 8px 0 0;
     text-transform: uppercase;
 
     &.is-standard-case {
@@ -40,20 +40,20 @@
 
 section#intro {
   display: flex;
-  width: 900px;
-  height: 480px;
-  margin: 0 auto;
-  padding: 48px 0 0;
   align-items: center;
   position: relative;
+  width: 900px;
+  height: 480px;
+  margin: 0 auto -32px;
+  padding: 48px 0 0;
   color: white;
 
   @media (max-width: 780px) {
     flex-direction: column;
-    max-width: 100vw;
-    width: 100%;
     justify-content: center;
-    padding: 64px 0 32px;
+    width: 100%;
+    max-width: 100vw;
+    padding: 40px 0 32px;
 
     button {
       margin: 0;
@@ -62,12 +62,12 @@ section#intro {
   }
 
   .homepage-container {
+    width: 100%;
+    max-width: 1040px;
+    margin: 0 auto;
     margin-top: -7%;
     padding-top: 0;
     padding-bottom: 0;
-    max-width: 1040px;
-    width: 100%;
-    margin: 0 auto;
 
     @media  (max-width: 780px) {
       display: flex;
@@ -92,22 +92,27 @@ section#intro {
     @media (max-width: 780px) {
       text-align: center;
     }
+
+    @media (max-width: 575px) {
+      font-size: 32px;
+      line-height: 50px;
+    }
   }
 
   .hero-logo {
-    width: 400px;
     display: flex;
+    width: 400px;
 
     @media (max-width: 780px) {
-      width: 250px;
+      justify-content: center;
     }
 
     img {
-      filter: drop-shadow(0 2px 2px rgba($black, 0.24));
-      margin-bottom: 8px;
-      padding: 0;
       width: 400px;
       height: 400px;
+      margin-bottom: 8px;
+      padding: 0;
+      filter: drop-shadow(0 2px 2px rgba($black, 0.24));
 
       @media (max-width: 780px) {
         width: 250px;
@@ -121,36 +126,44 @@ section#intro {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding: 16px;
-  margin: 0 auto;
+  align-items: center;
   max-width: 50vw;
+  margin: 0 auto;
+  padding: 16px;
   background-color: $white;
   border-radius: 4px;
   box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
   box-sizing: border-box;
-  align-items: center;
   transition: all 0.3s ease-in;
 
-  @media (max-width: 600px) {
+  @media (max-width: 992px) {
     flex-direction: column;
     text-align: center;
-    min-width: 100%;
     padding: 32px 16px;
   }
 
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: none;
+  }
+
+  & > * {
+    margin: 8px;
+  }
+
   .button {
+    display: flex;
+    justify-content: center;
     align-items: center;
+    height: 40px;
+    min-width: 160px;
+    font-size: 16px;
+    color: $white;
     background-color: $blue;
     border-radius: 48px;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
     box-sizing: border-box;
-    color: $white;
     cursor: pointer;
-    display: flex;
-    font-size: 16px;
-    height: 40px;
-    justify-content: center;
-    min-width: 160px;
 
     &:hover {
       color: rgba($white, 0.7);
@@ -158,9 +171,9 @@ section#intro {
   }
 
   .material-icons {
+    display: none;
     right: 0;
     position: static;
-    display: none;
     transition: all 0.3s ease-in;
     font-size: 16px;
   }
@@ -168,6 +181,7 @@ section#intro {
   p {
     font-size: 16px;
     margin: 8px;
+    text-align: center;
   }
 }
 
@@ -180,16 +194,16 @@ section#intro {
 
 .home-row .card {
   @include card(70%, auto);
-  min-width: 350px;
-  width: 70%;
-  height: auto;
-  padding: 24px;
-  margin: auto;
   display: flex;
   flex-direction: row;
   align-items: center;
-  box-shadow: 0 6px 6px rgba(10, 16, 20, 0.15), 0 0 52px rgba(10, 16, 20, 0.12);
   position: relative;
+  width: 70%;
+  min-width: 350px;
+  height: auto;
+  margin: auto;
+  padding: 24px;
+  box-shadow: 0 6px 6px rgba(10, 16, 20, 0.15), 0 0 52px rgba(10, 16, 20, 0.12);
 
   @media (max-width: 600px) {
     margin: 16px auto 0;
@@ -206,8 +220,8 @@ section#intro {
 
   @media (max-width: 1300px) {
     img {
-      max-width: none;
       height: 70px;
+      max-width: none;
     }
   }
 
@@ -220,9 +234,9 @@ section#intro {
 
     p {
       text-align: left;
-      padding: 8px 0;
       color: $darkgray;
       margin: 0;
+      padding: 8px 0;
     }
   }
 
@@ -235,17 +249,20 @@ section#intro {
 }
 
 .button.hero-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 184px;
+  height: 40px;
+  padding: 0 24px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 40px;
   background-color: $white;
   border-radius: 48px;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
   box-sizing: border-box;
   cursor: pointer;
-  font-size: 18px;
-  font-weight: 600;
-  height: 40px;
-  line-height: 40px;
-  padding: 0 24px;
-  text-align: center;
 
   &:hover {
     opacity: 0.9;
@@ -275,6 +292,12 @@ aio-shell {
     }
   }
 
+  &.page-features {
+    article {
+      padding: 0 3rem;
+    }
+  }
+
   &.page-home, &.page-resources, &.page-events, &.page-features {
 
     .content img {
@@ -288,7 +311,7 @@ aio-shell {
     }
 
     @media (max-width: 600px) {
-      md-sidenav-container.sidenav-container {
+      mat-sidenav-container.sidenav-container {
         padding-top: 0;
       }
     }
@@ -306,31 +329,14 @@ aio-shell {
 
 .text-headline {
   font-size: 20px;
+  font-weight: 500;
+  color: $blue;
   margin-top: 10px;
   text-transform: uppercase;
-  color: $blue;
-  font-weight: 500;
-}
-
-.feature-section {
-  .feature-header {
-    text-align: center;
-
-    .text-headline {
-      text-align: center;
-    }
-  }
-
-  .feature-title {
-    font-size: 16px;
-    font-weight: 500;
-    margin: 8px 0px;
-    clear: both;
-  }
 }
 
 aio-shell:not(.view-SideNav) {
-  md-sidenav-container.sidenav-container {
+  mat-sidenav-container.sidenav-container {
     max-width: none;
   }
 }
@@ -338,8 +344,8 @@ aio-shell:not(.view-SideNav) {
 div[layout=row]{
     display: flex;
     justify-content: center;
-    box-sizing: border-box;
     align-items: center;
+    box-sizing: border-box;
 
     @media (max-width: 480px) {
       display: block;
@@ -357,32 +363,26 @@ div[layout=row]{
     }
 }
 
-.home-row .promo-img-container, .home-row .text-container {
-    max-width: 50%;
-}
-
 .background-superhero-paper {
-    background-blend-mode: multiply;
     background-size: 100%;
-}
-
-header.bckground-sky.l-relative {
-    display: flex;
-    flex-direction: column;
+    background-blend-mode: multiply;
 }
 
 .home-row {
   max-width: 920px;
-  margin: 32px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 32px auto;
 
-  @media (max-width: 480px) {
-      display: block;
+  .promo-img-container, .text-container {
+    max-width: 50%;
 
-      .text-headline, .promo-img-container {
-        text-align: center;
+    @media(max-width: 480px) {
+      max-width: 100%;
+      text-align: center;
+
+      &:nth-child(even) {
+        flex-direction: column-reverse;
       }
+    }
   }
 
   .text-block {
@@ -393,20 +393,10 @@ header.bckground-sky.l-relative {
     }
   }
 
-  @media(max-width: 600px) {
-    .promo-img-container, .text-container {
-      max-width: 100%;
-    }
-
-    &:nth-child(even) {
-      flex-direction: column-reverse;
-    }
-  }
-
   .promo-img-container {
 
-    @media (max-width: 375px) {
-      text-align: initial;
+    img {
+      max-width: 90% !important;
     }
 
     p {

@@ -6,7 +6,7 @@ import { AdItem }      from './ad-item';
 import { AdComponent } from './ad.component';
 
 @Component({
-  selector: 'add-banner',
+  selector: 'app-add-banner',
   // #docregion ad-host
   template: `
               <div class="ad-banner">
@@ -24,7 +24,7 @@ export class AdBannerComponent implements AfterViewInit, OnDestroy {
   subscription: any;
   interval: any;
 
-  constructor(private _componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
 
   ngAfterViewInit() {
     this.loadComponent();
@@ -39,7 +39,7 @@ export class AdBannerComponent implements AfterViewInit, OnDestroy {
     this.currentAddIndex = (this.currentAddIndex + 1) % this.ads.length;
     let adItem = this.ads[this.currentAddIndex];
 
-    let componentFactory = this._componentFactoryResolver.resolveComponentFactory(adItem.component);
+    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(adItem.component);
 
     let viewContainerRef = this.adHost.viewContainerRef;
     viewContainerRef.clear();

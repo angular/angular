@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
-import { Hero, HeroService } from '../model';
+import { Hero } from '../model/hero';
+import { HeroService } from '../model/hero.service';
 
 // #docregion prototype
 @Injectable()

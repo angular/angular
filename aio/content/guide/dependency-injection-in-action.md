@@ -5,51 +5,6 @@ Dependency Injection is a powerful pattern for managing code dependencies.
 This cookbook explores many of the features of Dependency Injection (DI) in Angular.
 {@a toc}
 
-<!--
-
-# Contents
-
-* [Application-wide dependencies](guide/dependency-injection-in-action#app-wide-dependencies)
-* [External module configuration](guide/dependency-injection-in-action#external-module-configuration)
-* [`@Injectable()` and nested service dependencies](guide/dependency-injection-in-action#nested-dependencies)
-
-  * [`@Injectable()`](guide/dependency-injection-in-action#injectable-1)
-
-* [Limit service scope to a component subtree](guide/dependency-injection-in-action#service-scope)
-* [Multiple service instances (sandboxing)](guide/dependency-injection-in-action#multiple-service-instances)
-* [Qualify dependency lookup with `@Optional()` and `@Host()`](guide/dependency-injection-in-action#qualify-dependency-lookup)
-
-  * [Demonstration](guide/dependency-injection-in-action#demonstration)
-
-* [Inject the component's DOM element](guide/dependency-injection-in-action#component-element)
-* [Define dependencies with providers](guide/dependency-injection-in-action#providers)
-
-  * [Defining providers](guide/dependency-injection-in-action#defining-providers)
-  * [The *provide* object literal](guide/dependency-injection-in-action#provide)
-  * [`useValue`&mdash;the *value provider*](guide/dependency-injection-in-action#usevalue)
-  * [`useClass`&mdash;the *class provider*](guide/dependency-injection-in-action#useclass)
-  * [`useExisting`&mdash;the *alias provider*](guide/dependency-injection-in-action#useexisting)
-  * [`useFactory`&mdash;the *factory provider*](guide/dependency-injection-in-action#usefactory)
-
-* [Provider token alternatives: the class-interface and `InjectionToken`](guide/dependency-injection-in-action#tokens)
-
-  * [class-interface](guide/dependency-injection-in-action#class-interface)
-  * [`InjectionToken`](guide/dependency-injection-in-action#injection-token)
-
-* [Inject into a derived class](guide/dependency-injection-in-action#di-inheritance)
-* [Find a parent component by injection](guide/dependency-injection-in-action#find-parent)
-
-  * [Find parent with a known component type](guide/dependency-injection-in-action#known-parent)
-  * [Cannot find a parent by its base class](guide/dependency-injection-in-action#base-parent)
-  * [Find a parent by its class-interface](guide/dependency-injection-in-action#class-interface-parent)
-  * [Find a parent in a tree of parents with `@SkipSelf()`](guide/dependency-injection-in-action#parent-tree)
-  * [The `Parent` class-interface](guide/dependency-injection-in-action#parent-token)
-  * [A `provideParent()` helper function](guide/dependency-injection-in-action#provideparent)
-
-* [Break circularities with a forward class reference (*forwardRef*)](guide/dependency-injection-in-action#forwardref)
-
--->
-
 See the <live-example name="dependency-injection-in-action"></live-example>
 of the code in this cookbook.
 
@@ -79,7 +34,7 @@ is all the registration you need.
 
 A *provider* is something that can create or deliver a service.
 Angular creates a service instance from a class provider by using `new`.
-Read more about providers in the [Dependency Injection](guide/dependency-injection#injector-providers)
+Read more about providers in the [Dependency Injection](guide/dependency-injection#register-providers-ngmodule)
 guide.
 
 </div>
@@ -244,7 +199,7 @@ You can limit the scope of an injected service to a *branch* of the application 
 by providing that service *at the sub-root component for that branch*.
 This example shows how similar providing a service to a sub-root component is
 to providing a service in the root `AppComponent`. The syntax is the same.
-Here, the `HeroService` is availble to the `HeroesBaseComponent` because it is in the `providers` array:
+Here, the `HeroService` is available to the `HeroesBaseComponent` because it is in the `providers` array:
 
 <code-example path="dependency-injection-in-action/src/app/sorted-heroes.component.ts" region="injection" title="src/app/sorted-heroes.component.ts (HeroesBaseComponent excerpt)">
 

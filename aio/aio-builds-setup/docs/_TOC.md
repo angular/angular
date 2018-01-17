@@ -4,7 +4,8 @@
 ## Overview
 - [General overview](overview--general.md)
 - [Security model](overview--security-model.md)
-- [Available Commands](overview--scripts-and-commands.md)
+- [Available scripts and commands](overview--scripts-and-commands.md)
+- [HTTP status codes](overview--http-status-codes.md)
 
 
 ## Setting up the VM

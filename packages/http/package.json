@@ -3,8 +3,8 @@
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - the http service",
   "main": "./bundles/http.umd.js",
-  "module": "./@angular/http.es5.js",
-  "es2015": "./@angular/http.js",
+  "module": "./esm5/http.js",
+  "es2015": "./esm2015/http.js",
   "typings": "./http.d.ts",
   "author": "angular",
   "license": "MIT",
@@ -12,7 +12,7 @@
     "tslib": "^1.7.1"
   },
   "peerDependencies": {
-    "rxjs": "^5.0.1",
+    "rxjs": "^5.5.0",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER"
   },

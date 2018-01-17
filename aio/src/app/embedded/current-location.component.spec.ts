@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
 import { CurrentLocationComponent } from './current-location.component';
@@ -25,11 +25,11 @@ describe('CurrentLocationComponent', () => {
 
   it('should render the current location', () => {
     fixture.detectChanges();
-    expect(element.innerText).toEqual('initial/url');
+    expect(element.textContent).toEqual('initial/url');
 
     locationService.urlSubject.next('next/url');
 
     fixture.detectChanges();
-    expect(element.innerText).toEqual('next/url');
+    expect(element.textContent).toEqual('next/url');
   });
 });

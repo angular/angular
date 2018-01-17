@@ -4,7 +4,7 @@ code-example, code-tabs {
 }
 
 code-example,
-code-tabs md-tab-body {
+code-tabs mat-tab-body {
   &:not(.no-box) {
     background-color: rgba($backgroundgray, 0.2);
     border: 0.5px solid $lightgray;
@@ -49,8 +49,8 @@ code-example.avoidFile header {
 
 code-example.avoid,
 code-example.avoidFile,
-code-tabs.avoid md-tab-body,
-code-tabs.avoidFile md-tab-body {
+code-tabs.avoid mat-tab-body,
+code-tabs.avoidFile mat-tab-body {
   border: 0.5px solid $anti-pattern;
 }
 
@@ -58,7 +58,7 @@ code-tabs div .mat-tab-body-content {
   height: auto;
 }
 
-code-tabs .mat-tab-body-wrapper md-tab-body .mat-tab-body {
+code-tabs .mat-tab-body-wrapper mat-tab-body .mat-tab-body {
   overflow-y: hidden;
 }
 
@@ -106,16 +106,15 @@ aio-code pre {
   }
 }
 
-.code-tab-group div.mat-tab-body-content {
+.code-tab-group .mat-tab-label {
+  white-space: nowrap;
+}
+
+.code-tab-group .mat-tab-body-content {
   height: auto;
   transform: none;
 }
 
-
-// REMOVE RIPPLE EFFECT FROM MATERIAL TABS
-code-tabs md-tab-group *.mat-ripple-element, code-tabs md-tab-group *.mat-tab-body-active, code-tabs md-tab-group *.mat-tab-body-content, code-tabs md-tab-group *.mat-tab-body-content {
-  transform: none !important;
-}
 
 [role="tabpanel"] {
     transition: none;

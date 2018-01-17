@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 import { ApiListComponent } from './api-list.component';
@@ -26,10 +26,6 @@ describe('ApiListComponent', () => {
     sections = getApiSections();
   });
 
-  it('should be creatable', () => {
-    expect(component).toBeDefined();
-  });
-
   /**
    * Expectation Utility: Assert that filteredSections has the expected result for this test
    * @param itemTest - return true if the item passes the match test
@@ -38,7 +34,7 @@ describe('ApiListComponent', () => {
    */
   function expectFilteredResult(label: string, itemTest: (item: ApiItem) => boolean) {
     component.filteredSections.subscribe(filtered => {
-      let badItem: ApiItem;
+      let badItem: ApiItem|undefined;
       expect(filtered.length).toBeGreaterThan(0, 'expected something');
       expect(filtered.every(section => section.items.every(
         item => {
@@ -57,7 +53,7 @@ describe('ApiListComponent', () => {
     });
 
     it('should return all complete sections when no criteria', () => {
-      let filtered: ApiSection[];
+      let filtered: ApiSection[]|undefined;
       component.filteredSections.subscribe(f => filtered = f);
       expect(filtered).toEqual(sections);
     });
@@ -72,7 +68,7 @@ describe('ApiListComponent', () => {
       component.filteredSections.subscribe(filtered => {
         expect(filtered.length).toBe(1, 'only one section');
         expect(filtered[0].name).toBe('core');
-        expect(filtered[0].items.every(item => item.show)).toBe(true, 'all core items shown');
+        expect(filtered[0].items.every(item => !!item.show)).toBe(true, 'all core items shown');
       });
     });
 

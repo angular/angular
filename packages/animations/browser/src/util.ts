@@ -5,10 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimateTimings, AnimationMetadata, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
+import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
+import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
 
 export const ONE_SECOND = 1000;
 
+export const SUBSTITUTION_EXPR_START = '{{';
+export const SUBSTITUTION_EXPR_END = '}}';
 export const ENTER_CLASSNAME = 'ng-enter';
 export const LEAVE_CLASSNAME = 'ng-leave';
 export const ENTER_SELECTOR = '.ng-enter';
@@ -151,10 +155,8 @@ export function normalizeAnimationEntry(steps: AnimationMetadata | AnimationMeta
 export function validateStyleParams(
     value: string | number, options: AnimationOptions, errors: any[]) {
   const params = options.params || {};
-  if (typeof value !== 'string') return;
-
-  const matches = value.toString().match(PARAM_REGEX);
-  if (matches) {
+  const matches = extractStyleParams(value);
+  if (matches.length) {
     matches.forEach(varName => {
       if (!params.hasOwnProperty(varName)) {
         errors.push(
@@ -164,7 +166,22 @@ export function validateStyleParams(
   }
 }
 
-const PARAM_REGEX = /\{\{\s*(.+?)\s*\}\}/g;
+const PARAM_REGEX =
+    new RegExp(`${SUBSTITUTION_EXPR_START}\\s*(.+?)\\s*${SUBSTITUTION_EXPR_END}`, 'g');
+export function extractStyleParams(value: string | number): string[] {
+  let params: string[] = [];
+  if (typeof value === 'string') {
+    const val = value.toString();
+
+    let match: any;
+    while (match = PARAM_REGEX.exec(val)) {
+      params.push(match[1] as string);
+    }
+    PARAM_REGEX.lastIndex = 0;
+  }
+  return params;
+}
+
 export function interpolateParams(
     value: string | number, params: {[name: string]: any}, errors: any[]): string|number {
   const original = value.toString();
@@ -212,4 +229,45 @@ export function mergeAnimationOptions(
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
+}
+
+export function allowPreviousPlayerStylesMerge(duration: number, delay: number) {
+  return duration === 0 || delay === 0;
+}
+
+export function visitDslNode(
+    visitor: AnimationDslVisitor, node: AnimationMetadata, context: any): any;
+export function visitDslNode(
+    visitor: AnimationAstVisitor, node: AnimationAst<AnimationMetadataType>, context: any): any;
+export function visitDslNode(visitor: any, node: any, context: any): any {
+  switch (node.type) {
+    case AnimationMetadataType.Trigger:
+      return visitor.visitTrigger(node, context);
+    case AnimationMetadataType.State:
+      return visitor.visitState(node, context);
+    case AnimationMetadataType.Transition:
+      return visitor.visitTransition(node, context);
+    case AnimationMetadataType.Sequence:
+      return visitor.visitSequence(node, context);
+    case AnimationMetadataType.Group:
+      return visitor.visitGroup(node, context);
+    case AnimationMetadataType.Animate:
+      return visitor.visitAnimate(node, context);
+    case AnimationMetadataType.Keyframes:
+      return visitor.visitKeyframes(node, context);
+    case AnimationMetadataType.Style:
+      return visitor.visitStyle(node, context);
+    case AnimationMetadataType.Reference:
+      return visitor.visitReference(node, context);
+    case AnimationMetadataType.AnimateChild:
+      return visitor.visitAnimateChild(node, context);
+    case AnimationMetadataType.AnimateRef:
+      return visitor.visitAnimateRef(node, context);
+    case AnimationMetadataType.Query:
+      return visitor.visitQuery(node, context);
+    case AnimationMetadataType.Stagger:
+      return visitor.visitStagger(node, context);
+    default:
+      throw new Error(`Unable to resolve animation metadata node #${node.type}`);
+  }
 }

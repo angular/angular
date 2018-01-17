@@ -48,9 +48,9 @@ module.exports = function mergeDecoratorDocs(log) {
     $runAfter: ['processing-docs'],
     $runBefore: ['docs-processed'],
     makeDecoratorCalls: [
-      {type: '', description: 'toplevel'},
-      {type: 'Prop', description: 'property'},
-      {type: 'Param', description: 'parameter'},
+      {type: '', description: 'toplevel', functionName: 'makeDecorator'},
+      {type: 'Prop', description: 'property', functionName: 'makePropDecorator'},
+      {type: 'Param', description: 'parameter', functionName: 'makeParamDecorator'},
     ],
     $process: function(docs) {
 
@@ -58,24 +58,25 @@ module.exports = function mergeDecoratorDocs(log) {
       var docsToMerge = Object.create(null);
 
       docs.forEach(function(doc) {
+        const initializer = getInitializer(doc);
+        if (initializer) {
+          makeDecoratorCalls.forEach(function(call) {
+            // find all the decorators, signified by a call to `make...Decorator<Decorator>(metadata)`
+            if (initializer.expression && initializer.expression.text === call.functionName) {
+              log.debug('mergeDecoratorDocs: found decorator', doc.docType, doc.name);
+              doc.docType = 'decorator';
+              doc.decoratorLocation = call.description;
+              // Get the type of the decorator metadata from the first "type" argument of the call.
+              // For example the `X` of `createDecorator<X>(...)`.
+              doc.decoratorType = initializer.arguments[0].text;
+              // clear the symbol type named since it is not needed
+              doc.symbolTypeName = undefined;
 
-        makeDecoratorCalls.forEach(function(call) {
-          // find all the decorators, signified by a call to `make...Decorator<Decorator>(metadata)`
-          var makeDecorator = getMakeDecoratorCall(doc, call.type);
-          if (makeDecorator) {
-            log.debug('mergeDecoratorDocs: found decorator', doc.docType, doc.name);
-            doc.docType = 'decorator';
-            doc.decoratorLocation = call.description;
-            // Get the type of the decorator metadata from the first "type" argument of the call.
-            // For example the `X` of `createDecorator<X>(...)`.
-            doc.decoratorType = makeDecorator.arguments[0].text;
-            // clear the symbol type named since it is not needed
-            doc.symbolTypeName = undefined;
-
-            // keep track of the names of the metadata interface that will need to be merged into this decorator doc
-            docsToMerge[doc.name + 'Decorator'] = doc;
-          }
-        });
+              // keep track of the names of the metadata interface that will need to be merged into this decorator doc
+              docsToMerge[doc.name + 'Decorator'] = doc;
+            }
+          });
+        }
       });
 
       // merge the metadata docs into the decorator docs
@@ -83,13 +84,14 @@ module.exports = function mergeDecoratorDocs(log) {
         if (docsToMerge[doc.name]) {
           // We have found an `XxxDecorator` document that will hold the call signature of the decorator
           var decoratorDoc = docsToMerge[doc.name];
+          var callMember = doc.members.filter(function(member) { return member.isCallMember; })[0];
           log.debug(
               'mergeDecoratorDocs: merging', doc.name, 'into', decoratorDoc.name,
-              doc.callMember.description.substring(0, 50));
+              callMember.description.substring(0, 50));
           // Merge the documentation found in this call signature into the original decorator
-          decoratorDoc.description = doc.callMember.description;
-          decoratorDoc.howToUse = doc.callMember.howToUse;
-          decoratorDoc.whatItDoes = doc.callMember.whatItDoes;
+          decoratorDoc.description = callMember.description;
+          decoratorDoc.howToUse = callMember.howToUse;
+          decoratorDoc.whatItDoes = callMember.whatItDoes;
 
           // remove doc from its module doc's exports
           doc.moduleDoc.exports =
@@ -105,27 +107,19 @@ module.exports = function mergeDecoratorDocs(log) {
   };
 };
 
-function getMakeDecoratorCall(doc, type) {
-  var makeDecoratorFnName = 'make' + (type || '') + 'Decorator';
-
-  var initializer = doc.exportSymbol && doc.exportSymbol.valueDeclaration &&
-      doc.exportSymbol.valueDeclaration.initializer;
-
-  if (initializer) {
-    // There appear to be two forms of initializer:
-    //    export var Injectable: InjectableFactory =
-    //    <InjectableFactory>makeDecorator(InjectableMetadata);
-    // and
-    //    export var RouteConfig: (configs: RouteDefinition[]) => ClassDecorator =
-    //    makeDecorator(RouteConfigAnnotation);
-    // In the first case, the type assertion `<InjectableFactory>` causes the AST to contain an
-    // extra level of expression
-    // to hold the new type of the expression.
-    if (initializer.expression && initializer.expression.expression) {
-      initializer = initializer.expression;
-    }
-    if (initializer.expression && initializer.expression.text === makeDecoratorFnName) {
-      return initializer;
-    }
+function getInitializer(doc) {
+  var initializer = doc.symbol && doc.symbol.valueDeclaration && doc.symbol.valueDeclaration.initializer;
+  // There appear to be two forms of initializer:
+  //    export var Injectable: InjectableFactory =
+  //    <InjectableFactory>makeDecorator(InjectableMetadata);
+  // and
+  //    export var RouteConfig: (configs: RouteDefinition[]) => ClassDecorator =
+  //    makeDecorator(RouteConfigAnnotation);
+  // In the first case, the type assertion `<InjectableFactory>` causes the AST to contain an
+  // extra level of expression
+  // to hold the new type of the expression.
+  if (initializer && initializer.expression && initializer.expression.expression) {
+    initializer = initializer.expression;
   }
+  return initializer;
 }

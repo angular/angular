@@ -22,11 +22,11 @@ aio-nav-menu {
   }
 
   aio-nav-item div a {
-    padding-left: 16px;
+    padding-left: 6px;
   }
 }
 
-md-sidenav.mat-sidenav.sidenav {
+mat-sidenav.mat-sidenav.sidenav {
   position: fixed;
   top: 64px;
   bottom: 0;
@@ -42,7 +42,7 @@ md-sidenav.mat-sidenav.sidenav {
   }
 }
 
-md-sidenav-container.sidenav-container {
+mat-sidenav-container.sidenav-container {
     min-height: 100%;
     height: auto !important;
     max-width: 100%;
@@ -54,7 +54,7 @@ md-sidenav-container.sidenav-container {
     }
 }
 
-md-sidenav-container div.mat-sidenav-content {
+mat-sidenav-container div.mat-sidenav-content {
     height: auto;
 }
 
@@ -67,27 +67,26 @@ md-sidenav-container div.mat-sidenav-content {
   overflow-wrap: break-word;
   padding-top: 4px;
   padding-bottom: 4px;
-  padding-left: 16px;
   text-decoration: none;
   text-align: left;
-  transition-duration: 180ms;
-  transition-property: background-color, color;
-  transition-timing-function: ease-in-out;
-  width: 100%;
+  width: 93%;
   word-wrap: break-word;
-  outline: none;
-  transition: all 0.3s ease-in-out;
 
   &:hover {
-    text-shadow: 0 0 5px #ffffff;
+    background-color: $lightgray;
     color: $blue;
+    text-shadow: 0 0 5px #ffffff;
+  }
+
+  &:focus {
+    outline: $accentblue auto 2px;
   }
 
   //icons _within_ nav
   .mat-icon {
     position: absolute;
     top: 0;
-    right: 8px;
+    right: 0;
     margin: 4px;
   }
 }
@@ -99,11 +98,10 @@ md-sidenav-container div.mat-sidenav-content {
 button.vertical-menu-item {
   border: none;
   background-color: transparent;
-  padding: 8px 0 8px 20px;
-
-  &:focus {
-    color: $black;
-  }
+  margin-right: 0;
+  padding-left: 6px;
+  padding-top: 8px;
+  padding-bottom: 10px;
 }
 
 .heading {
@@ -111,7 +109,6 @@ button.vertical-menu-item {
   cursor: pointer;
   position: relative;
   text-transform: uppercase;
-  width: 100%;
 }
 
 .heading-children.expanded {
@@ -136,25 +133,25 @@ button.vertical-menu-item {
   font-family: $main-font;
   font-size: 14px;
   font-weight: 400;
-  padding-left: 20px;
+  margin-left: 14px;
   transition: background-color 0.2s;
   text-transform: uppercase;
 }
 
 .level-2 {
+  color: $mediumgray;
   font-family: $main-font;
   font-size: 14px;
-  color: $mediumgray;
   font-weight: 400;
-  padding-left: 20px;
+  margin-left: 12px;
   text-transform: none;
 }
 
 .level-3 {
+  color: $mediumgray;
   font-family: $main-font;
   font-size: 14px;
-  color: $mediumgray;
-  padding-left: 8px;
+  margin-left: 10px;
 }
 
 .level-1.expanded .mat-icon, .level-2.expanded .mat-icon {
@@ -163,14 +160,7 @@ button.vertical-menu-item {
 
 .level-1:not(.expanded) .mat-icon, .level-2:not(.expanded) .mat-icon {
   @include rotate(0deg);
-  margin: 4px;
-}
-
-.promo-img-container img {
-  max-width: 90%;
-  @include bp(small) {
-    max-width: 100%;
-  }
+ // margin: 4px;
 }
 
 aio-nav-menu.top-menu {
@@ -186,7 +176,7 @@ aio-nav-menu.top-menu {
 }
 
 // Angular Version Selector
-md-sidenav .doc-version {
+mat-sidenav .doc-version {
   padding: 8px;
   border-top: 1px solid $lightgray;
 

@@ -11,7 +11,7 @@ import {Element} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {PreparsedElement, PreparsedElementType, preparseElement} from '../../src/template_parser/template_preparser';
 
-export function main() {
+{
   describe('preparseElement', () => {
     let htmlParser: HtmlParser;
     beforeEach(inject([HtmlParser], (_htmlParser: HtmlParser) => { htmlParser = _htmlParser; }));

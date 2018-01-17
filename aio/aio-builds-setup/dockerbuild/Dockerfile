@@ -29,6 +29,8 @@ ARG      AIO_NGINX_PORT_HTTPS=443
 ARG TEST_AIO_NGINX_PORT_HTTPS=4433
 ARG      AIO_REPO_SLUG=angular/angular
 ARG TEST_AIO_REPO_SLUG=test-repo/test-slug
+ARG      AIO_TRUSTED_PR_LABEL="aio: preview"
+ARG TEST_AIO_TRUSTED_PR_LABEL="aio: preview"
 ARG      AIO_UPLOAD_HOSTNAME=upload.localhost
 ARG TEST_AIO_UPLOAD_HOSTNAME=upload.localhost
 ARG      AIO_UPLOAD_MAX_SIZE=20971520
@@ -48,6 +50,7 @@ ENV AIO_BUILDS_DIR=$AIO_BUILDS_DIR                     TEST_AIO_BUILDS_DIR=$TEST
     AIO_REPO_SLUG=$AIO_REPO_SLUG                       TEST_AIO_REPO_SLUG=$TEST_AIO_REPO_SLUG                       \
     AIO_SCRIPTS_JS_DIR=/usr/share/aio-scripts-js                                                                    \
     AIO_SCRIPTS_SH_DIR=/usr/share/aio-scripts-sh                                                                    \
+    AIO_TRUSTED_PR_LABEL=$AIO_TRUSTED_PR_LABEL         TEST_AIO_TRUSTED_PR_LABEL=$TEST_AIO_TRUSTED_PR_LABEL         \
     AIO_UPLOAD_HOSTNAME=$AIO_UPLOAD_HOSTNAME           TEST_AIO_UPLOAD_HOSTNAME=$TEST_AIO_UPLOAD_HOSTNAME           \
     AIO_UPLOAD_MAX_SIZE=$AIO_UPLOAD_MAX_SIZE           TEST_AIO_UPLOAD_MAX_SIZE=$TEST_AIO_UPLOAD_MAX_SIZE           \
     AIO_UPLOAD_PORT=$AIO_UPLOAD_PORT                   TEST_AIO_UPLOAD_PORT=$TEST_AIO_UPLOAD_PORT                   \
@@ -153,7 +156,7 @@ RUN find $AIO_SCRIPTS_SH_DIR -maxdepth 1 -type f -printf "%P\n" \
 # Set up the Node.js scripts
 COPY scripts-js/ $AIO_SCRIPTS_JS_DIR/
 WORKDIR $AIO_SCRIPTS_JS_DIR/
-RUN yarn install --production
+RUN yarn install --production --frozen-lockfile
 
 
 # Set up health check

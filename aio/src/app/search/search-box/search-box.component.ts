@@ -26,10 +26,11 @@ import 'rxjs/add/operator/distinctUntilChanged';
 })
 export class SearchBoxComponent implements OnInit {
 
+  private searchDebounce = 300;
   private searchSubject = new Subject<string>();
 
   @ViewChild('searchBox') searchBox: ElementRef;
-  @Output() onSearch = this.searchSubject.distinctUntilChanged();
+  @Output() onSearch = this.searchSubject.distinctUntilChanged().debounceTime(this.searchDebounce);
   @Output() onFocus = new EventEmitter<string>();
 
   constructor(private locationService: LocationService) { }

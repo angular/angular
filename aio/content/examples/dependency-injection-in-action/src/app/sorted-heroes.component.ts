@@ -8,7 +8,7 @@ import { HeroService }       from './hero.service';
 /////// HeroesBaseComponent /////
 // #docregion heroes-base, injection
 @Component({
-  selector: 'unsorted-heroes',
+  selector: 'app-unsorted-heroes',
   template: `<div *ngFor="let hero of heroes">{{hero.name}}</div>`,
   providers: [HeroService]
 })
@@ -33,7 +33,7 @@ export class HeroesBaseComponent implements OnInit {
 /////// SortedHeroesComponent /////
 // #docregion sorted-heroes
 @Component({
-  selector: 'sorted-heroes',
+  selector: 'app-sorted-heroes',
   template: `<div *ngFor="let hero of heroes">{{hero.name}}</div>`,
   providers: [HeroService]
 })

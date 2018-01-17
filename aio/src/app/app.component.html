@@ -1,37 +1,60 @@
 <div id="top-of-page"></div>
 
 <div *ngIf="isFetching" class="progress-bar-container">
-  <md-progress-bar mode="indeterminate" color="warn"></md-progress-bar>
+  <mat-progress-bar mode="indeterminate" color="warn"></mat-progress-bar>
 </div>
 
-<md-toolbar color="primary" class="app-toolbar">
-  <button class="hamburger" [class.starting]="isStarting" md-button
-    (click)="sidenav.toggle()" title="Docs menu">
-    <md-icon [ngClass]="{'sidenav-open': !isSideBySide }" svgIcon="menu"></md-icon>
-  </button>
-  <a class="nav-link home" href="/"><img src="{{ homeImageUrl }}" title="Home" alt="Home"></a>
-  <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
-  <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
-</md-toolbar>
-<aio-search-results #searchResults *ngIf="showSearchResults" (resultSelected)="hideSearchResults()"></aio-search-results>
+<mat-toolbar color="primary" class="app-toolbar" [class.transitioning]="isTransitioning">
+  <mat-toolbar-row class="notification-container">
+    <aio-notification
+      icon="insert_comment"
+      iconLabel="Survey"
+      buttonText="Go to survey"
+      actionUrl="https://bit.ly/angular-survey-2018"
+      notificationId="survey-january-2018"
+      expirationDate="2018-01-19"
+      (dismissed)="notificationDismissed()">
+      Help Angular by taking a <b>1 minute survey</b>!
+    </aio-notification>
+  </mat-toolbar-row>
+  <mat-toolbar-row>
+    <button mat-button class="hamburger" (click)="sidenav.toggle()" title="Docs menu">
+      <mat-icon svgIcon="menu"></mat-icon>
+    </button>
+    <a class="nav-link home" href="/" [ngSwitch]="isSideBySide">
+      <img *ngSwitchCase="true" src="assets/images/logos/angular/logo-nav@2x.png" width="150" height="40" title="Home" alt="Home">
+      <img *ngSwitchDefault src="assets/images/logos/angular/shield-large.svg" width="37" height="40" title="Home" alt="Home">
+    </a>
+    <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
+    <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
+  </mat-toolbar-row>
+</mat-toolbar>
+<aio-search-results #searchResultsView *ngIf="showSearchResults" [searchResults]="searchResults | async" (resultSelected)="hideSearchResults()"></aio-search-results>
 
-<md-sidenav-container class="sidenav-container" [class.starting]="isStarting" [class.has-floating-toc]="hasFloatingToc" role="main">
+<mat-sidenav-container class="sidenav-container" [class.starting]="isStarting" [class.has-floating-toc]="hasFloatingToc" role="main">
 
-  <md-sidenav [ngClass]="{'collapsed': !isSideBySide }" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
+  <mat-sidenav [ngClass]="{'collapsed': !isSideBySide}" #sidenav class="sidenav" [opened]="isOpened" [mode]="mode" (open)="updateHostClasses()" (close)="updateHostClasses()">
     <aio-nav-menu *ngIf="!isSideBySide" [nodes]="topMenuNarrowNodes" [currentNode]="currentNodes?.TopBarNarrow" [isWide]="false"></aio-nav-menu>
     <aio-nav-menu [nodes]="sideNavNodes" [currentNode]="currentNodes?.SideNav" [isWide]="isSideBySide"></aio-nav-menu>
 
-    <div class="doc-version" title="Angular docs version {{currentDocVersion?.title}}">
-      <aio-select (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="docVersions && docVersions[0]"></aio-select>
+    <div class="doc-version">
+      <aio-select (change)="onDocVersionChange($event.index)" [options]="docVersions" [selected]="currentDocVersion"></aio-select>
     </div>
-  </md-sidenav>
+  </mat-sidenav>
 
   <section class="sidenav-content" [id]="pageId" role="content">
-    <aio-doc-viewer [doc]="currentDocument" (docRendered)="onDocRendered()"></aio-doc-viewer>
+    <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
+    <aio-doc-viewer [class.no-animations]="isStarting"
+        [doc]="currentDocument"
+        (docReady)="onDocReady()"
+        (docRemoved)="onDocRemoved()"
+        (docInserted)="onDocInserted()"
+        (docRendered)="onDocRendered()">
+    </aio-doc-viewer>
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
   </section>
 
-</md-sidenav-container>
+</mat-sidenav-container>
 
 <div *ngIf="hasFloatingToc" class="toc-container" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
   <aio-toc></aio-toc>

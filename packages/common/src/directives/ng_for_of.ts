@@ -79,7 +79,6 @@ export class NgForOfContext<T> {
  * ### Syntax
  *
  * - `<li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>`
- * - `<li template="ngFor let item of items; index as i; trackBy: trackByFn">...</li>`
  *
  * With `<ng-template>` element:
  *
@@ -198,16 +197,6 @@ export class NgForOf<T> implements DoCheck, OnChanges {
 class RecordViewTuple<T> {
   constructor(public record: any, public view: EmbeddedViewRef<NgForOfContext<T>>) {}
 }
-
-/**
- * @deprecated from v4.0.0 - Use NgForOf<any> instead.
- */
-export type NgFor = NgForOf<any>;
-
-/**
- * @deprecated from v4.0.0 - Use NgForOf instead.
- */
-export const NgFor = NgForOf;
 
 export function getTypeNameForDebugging(type: any): string {
   return type['name'] || typeof type;

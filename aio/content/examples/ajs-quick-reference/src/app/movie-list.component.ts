@@ -8,7 +8,7 @@ import { MovieService } from './movie.service';
 
 // #docregion component
 @Component({
-  selector: 'movie-list',
+  selector: 'app-movie-list',
   templateUrl: './movie-list.component.html',
 // #docregion style-url
   styleUrls: [ './movie-list.component.css' ],

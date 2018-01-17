@@ -1,10 +1,13 @@
 /* tslint:disable:no-unused-variable member-ordering */
 // #docplaster
+// #docregion imports,
+import { Directive, ElementRef, HostListener } from '@angular/core';
+// #enddocregion imports,
+import { Input } from '@angular/core';
 // #docregion
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 @Directive({
-  selector: '[myHighlight]'
+  selector: '[appHighlight]'
 })
 export class HighlightDirective {
   // #docregion ctor
@@ -35,7 +38,7 @@ export class HighlightDirective {
   // #enddocregion color
 
   // #docregion color-2
-  @Input() myHighlight: string;
+  @Input() appHighlight: string;
   // #enddocregion color-2
 }
 

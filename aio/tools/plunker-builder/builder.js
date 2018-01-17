@@ -11,6 +11,7 @@ var globby = require('globby');
 var fileTranslator = require('./translator/fileTranslator');
 var indexHtmlRules = require('./translator/rules/indexHtml');
 var systemjsConfigExtrasRules = require('./translator/rules/systemjsConfigExtras');
+var mainTsRules = require('./translator/rules/mainTs');
 var regionExtractor = require('../transforms/examples-package/services/region-parser');
 
 class PlunkerBuilder {
@@ -18,7 +19,7 @@ class PlunkerBuilder {
     this.basePath = basePath;
     this.destPath = destPath;
     this.options = options;
-    this.boilerplate = path.join(__dirname, '../examples/shared/boilerplate');
+    this.boilerplate = path.join(__dirname, '../examples/shared/boilerplate/systemjs');
     this.copyrights = {};
 
     this._buildCopyrightStrings();
@@ -44,7 +45,7 @@ class PlunkerBuilder {
   }
 
   _buildCopyrightStrings() {
-    var copyright = 'Copyright 2017 Google Inc. All Rights Reserved.\n'
+    var copyright = 'Copyright 2017-2018 Google Inc. All Rights Reserved.\n'
       + 'Use of this source code is governed by an MIT-style license that\n'
       + 'can be found in the LICENSE file at http://angular.io/license';
     var pad = '\n\n';
@@ -146,6 +147,12 @@ class PlunkerBuilder {
             config.description = matches[1];
           }
         }
+      }
+
+      // Matches main.ts or main.1.ts
+      if (/^main(?:[.-]\w+)?\.ts$/.test(relativeFileName)) {
+        content = fileTranslator.translate(content, mainTsRules);
+        relativeFileName = 'main.ts';
       }
 
       if (relativeFileName == 'systemjs.config.extras.js') {
@@ -288,6 +295,10 @@ class PlunkerBuilder {
       '!**/wallaby.js',
       '!**/karma-test-shim.js',
       '!**/karma.conf.js',
+      '!**/test.ts',
+      '!**/polyfills.ts',
+      '!**/tsconfig.app.json',
+      '!**/environments/**',
       // AoT related files
       '!**/aot/**/*.*',
       '!**/*-aot.*'

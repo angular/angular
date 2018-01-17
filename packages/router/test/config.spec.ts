@@ -45,7 +45,7 @@ describe('config', () => {
       expect(() => {
         validateConfig([
           {path: 'a', component: ComponentA},
-          [{path: 'b', component: ComponentB}, {path: 'c', component: ComponentC}]
+          [{path: 'b', component: ComponentB}, {path: 'c', component: ComponentC}] as any
         ]);
       }).toThrowError(`Invalid configuration of route '': Array cannot be specified`);
     });

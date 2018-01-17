@@ -17,7 +17,7 @@
       "title": "Events"
     },
     {
-      "url": "https://blog.angularjs.org/",
+      "url": "https://blog.angular.io/",
       "title": "Blog"
     }
   ],
@@ -39,7 +39,7 @@
           "title": "Events"
         },
         {
-          "url": "https://blog.angularjs.org/",
+          "url": "https://blog.angular.io/",
           "title": "Blog"
         }
       ]
@@ -55,12 +55,26 @@
     },
 
     {
+      "url": "guide/docs-style-guide",
+      "title": "Doc authors style guide",
+      "tooltip": "Style guide for documentation authors",
+      "hidden": true
+    },
+
+    {
+      "url": "guide/webpack",
+      "title": "Webpack: An Introduction",
+      "hidden": true
+    },
+
+    {
       "url": "guide/quickstart",
       "title": "Getting Started",
       "tooltip": "A gentle introduction to Angular."
     },
 
     {
+      "url": "tutorial",
       "title": "Tutorial",
       "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
       "children": [
@@ -70,39 +84,45 @@
           "tooltip": "Part 1: Introduction to the Tour of Heroes tutorial"
         },
         {
+          "url": "tutorial/toh-pt0",
+          "title": "2. The Application Shell",
+          "tooltip": "Part 2: Creating the application shell"
+        },
+        {
           "url": "tutorial/toh-pt1",
-          "title": "2. The Hero Editor",
-          "tooltip": "Part 2: Build a simple hero editor"
+          "title": "3. The Hero Editor",
+          "tooltip": "Part 3: Build a simple hero editor"
         },
         {
           "url": "tutorial/toh-pt2",
-          "title": "3. Master/Detail",
-          "tooltip": "Part 3: Build a master/detail page with a list of heroes."
+          "title": "4. Displaying a List",
+          "tooltip": "Part 4: Build a master/detail page with a list of heroes."
         },
         {
           "url": "tutorial/toh-pt3",
-          "title": "4. Multiple Components",
-          "tooltip": "Part 4: Refactor the master/detail view into separate components."
+          "title": "5. Master/Detail Components",
+          "tooltip": "Part 5: Refactor the master/detail view into separate components."
         },
         {
           "url": "tutorial/toh-pt4",
-          "title": "5. Services",
-          "tooltip": "Part 5: Create a reusable service to manage hero data."
+          "title": "6. Services",
+          "tooltip": "Part 6: Create a reusable service to manage hero data."
         },
         {
           "url": "tutorial/toh-pt5",
-          "title": "6. Routing",
-          "tooltip": "Part 6: Add the Angular router and navigate among the views."
+          "title": "7. Routing",
+          "tooltip": "Part 7: Add the Angular router and navigate among the views."
         },
         {
           "url": "tutorial/toh-pt6",
-          "title": "7. HTTP",
-          "tooltip": "Part 7: Use HTTP to retrieve and save hero data."
+          "title": "8. HTTP",
+          "tooltip": "Part 8: Use HTTP to retrieve and save hero data."
         }
       ]
     },
 
     {
+      "url": "guide/architecture",
       "title": "Fundamentals",
       "tooltip": "The fundamentals of Angular",
       "children": [
@@ -136,6 +156,11 @@
               "tooltip": "Share information between different directives and components."
             },
             {
+              "url": "guide/component-styles",
+              "title": "Component Styles",
+              "tooltip": "Add CSS styles that are specific to a component."
+            },
+            {
               "url": "guide/dynamic-component-loader",
               "title": "Dynamic Components",
               "tooltip": "Load components dynamically."
@@ -144,11 +169,6 @@
               "url": "guide/attribute-directives",
               "title": "Attribute Directives",
               "tooltip": "Attribute directives attach behavior to elements."
-            },
-            {
-              "url": "guide/structural-directives",
-              "title": "Structural Directives",
-              "tooltip": "Structural directives manipulate the layout of the page."
             },
             {
               "url": "guide/pipes",
@@ -193,26 +213,75 @@
             }
           ]
         },
-
         {
           "url": "guide/bootstrapping",
           "title": "Bootstrapping",
           "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
         },
-
         {
+
           "title": "NgModules",
-          "tooltip": "Learn how to use NgModules to make your apps efficient.",
+          "tooltip": "NgModules.",
           "children": [
             {
-              "url": "guide/ngmodule",
-              "title": "NgModules",
-              "tooltip": "Define application modules with @NgModule."
+              "url": "guide/ngmodules",
+              "title": "NgModules Introduction",
+              "tooltip": "Use NgModules to make your apps efficient."
+            },
+            {
+              "url": "guide/ngmodule-vs-jsmodule",
+              "title": "JS Modules vs NgModules",
+              "tooltip": "Differentiate between JavaScript modules and NgModules."
+            },
+            {
+              "url": "guide/frequent-ngmodules",
+              "title": "Frequently Used NgModules",
+              "tooltip": "Introduction to the most frequently used NgModules."
+            },
+            {
+              "url": "guide/module-types",
+              "title": "Types of NgModules",
+              "tooltip": "Description of the different types of feature module."
+            },
+            {
+              "url": "guide/entry-components",
+              "title": "Entry Components",
+              "tooltip": "All about entry components in Angular."
+            },
+            {
+              "url": "guide/feature-modules",
+              "title": "Feature Modules",
+              "tooltip": "Create feature modules to organize your code."
+            },
+            {
+              "url": "guide/providers",
+              "title": "Providers",
+              "tooltip": "Providers and NgModules."
+            },
+            {
+              "url": "guide/singleton-services",
+              "title": "Singleton Services",
+              "tooltip": "Creating singleton services."
+            },
+            {
+              "url": "guide/lazy-loading-ngmodules",
+              "title": "Lazy Loading Feature Modules",
+              "tooltip": "Lazy load modules to speed up your apps."
+            },
+            {
+              "url": "guide/sharing-ngmodules",
+              "title": "Sharing NgModules",
+              "tooltip": "Share NgModules to streamline your apps."
+            },
+            {
+              "url": "guide/ngmodule-api",
+              "title": "NgModule API",
+              "tooltip": "Understand the details of NgModules."
             },
             {
               "url": "guide/ngmodule-faq",
               "title": "NgModule FAQs",
-              "tooltip": "Answers to frequently asked questions about @NgModule."
+              "tooltip": "Answers to frequently asked questions about NgModules."
             }
         ]},
 
@@ -221,9 +290,14 @@
           "tooltip": "Dependency Injection: creating and injecting services",
           "children": [
             {
+              "url": "guide/dependency-injection-pattern",
+              "title": "The Dependency Injection pattern",
+              "tooltip": "Learn about the dependency injection pattern behind the Angular DI system."
+            },
+            {
               "url": "guide/dependency-injection",
-              "title": "Dependency Injection",
-              "tooltip": "Angular's dependency injection system creates and delivers dependent services \"just-in-time\"."
+              "title": "Angular Dependency Injection",
+              "tooltip": "Angular's dependency injection system creates and delivers dependent services to Angular-created classes."
             },
             {
               "url": "guide/hierarchical-dependency-injection",
@@ -240,7 +314,7 @@
 
         {
           "url": "guide/http",
-          "title": "Server Communication",
+          "title": "HttpClient",
           "tooltip": "Use HTTP to talk to a remote server."
         },
         {
@@ -271,14 +345,14 @@
           "tooltip": "Translate the app's template text into multiple languages."
         },
         {
+          "url": "guide/language-service",
+          "title": "Language Service",
+          "tooltip": "Use Angular Language Service to speed up dev time."
+        },
+        {
           "url": "guide/security",
           "title": "Security",
           "tooltip": "Developing for content security in Angular applications."
-        },
-        {
-          "url": "guide/ts-to-js",
-          "title": "TypeScript to JavaScript",
-          "tooltip": "Convert Angular TypeScript examples into ES6 and ES5 JavaScript."
         },
         {
           "title": "Setup & Deployment",
@@ -322,6 +396,37 @@
             }
           ]
         },
+        {
+          "title": "Service Workers",
+          "tooltip": "Angular service workers: Controlling caching of application resources.",
+          "children": [
+            {
+              "url": "guide/service-worker-intro",
+              "title": "Introduction",
+              "tooltip": "Angular's implementation of service workers improves user experience with slow or unreliable network connectivity."
+            },
+            {
+              "url": "guide/service-worker-getting-started",
+              "title": "Getting Started",
+              "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
+            },
+            {
+              "url": "guide/service-worker-communications",
+              "title": "Service Worker Communication",
+              "tooltip": "Services that enable you to interact with an Angular service worker."
+            },
+            {
+              "url": "guide/service-worker-devops",
+              "title": "Service Worker in Production",
+              "tooltip": "Running applications with service workers, managing application update, debugging, and killing applications."
+            },
+            {
+              "url": "guide/service-worker-config",
+              "title": "Service Worker Configuration",
+              "tooltip": "Configuring service worker caching behavior."
+            }
+          ]
+        },
 
         {
           "title": "Upgrading",
@@ -339,7 +444,11 @@
             }
           ]
         },
-
+        {
+          "url": "guide/universal",
+          "title": "Server-side Rendering",
+          "tooltip": "Render HTML server-side with Angular Universal."
+        },
         {
           "url": "guide/visual-studio-2015",
           "title": "Visual Studio 2015 QuickStart",
@@ -362,6 +471,12 @@
       "title": "API",
       "tooltip": "Details of the Angular classes and values.",
       "url": "api"
+    },
+    {
+      "url": "guide/change-log",
+      "title": "Change Log",
+      "tooltip": "Angular Documentation Change Log",
+      "hidden": true
     }
   ],
 
@@ -385,7 +500,7 @@
           "tooltip": "Press contacts, logos, and branding."
         },
         {
-          "url": "https://blog.angularjs.org/",
+          "url": "https://blog.angular.io/",
           "title": "Blog",
           "tooltip": "Angular Blog"
         }
@@ -395,7 +510,7 @@
       "title": "Help",
       "children": [
         {
-          "url": "http://stackoverflow.com/questions/tagged/angular2",
+          "url": "https://stackoverflow.com/questions/tagged/angular",
           "title": "Stack Overflow",
           "tooltip": "Stack Overflow: where the community answers your technical Angular questions."
         },
@@ -458,6 +573,9 @@
   ],
 
   "docVersions": [
-    { "title": "v2", "url": "https://v2.angular.io" }
+    { "title": "v4 (LTS)", "url": "https://v4.angular.io" },
+    { "title": "v2", "url": "https://v2.angular.io" },
+    { "title": "AngularDart", "url": "https://webdev.dartlang.org/angular" }
+
   ]
 }

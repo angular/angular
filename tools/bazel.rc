@@ -1,0 +1,52 @@
+###############################
+# Typescript / Angular / Sass #
+###############################
+
+# Make compilation fast, by keeping a few copies of the compilers
+# running as daemons, and cache SourceFile AST's to reduce parse time.
+build --strategy=TypeScriptCompile=worker
+build --strategy=AngularTemplateCompile=worker
+
+# Enable debugging tests with --config=debug
+test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test_strategy=exclusive --test_timeout=9999 --nocache_test_results
+
+###############################
+# Filesystem interactions     #
+###############################
+
+# Don't create bazel-* symlinks in the WORKSPACE directory.
+# These require .gitignore and may scare users.
+# Also, it's a workaround for https://github.com/bazelbuild/rules_typescript/issues/12
+# which affects the common case of having `tsconfig.json` in the WORKSPACE directory.
+#
+# Instead, you should run `bazel info bazel-bin` to find out where the outputs went.
+build --symlink_prefix=/
+
+# Performance: avoid stat'ing input files
+build --watchfs
+
+###############################
+# Output                      #
+###############################
+
+# A more useful default output mode for bazel query
+# Prints eg. "ng_module rule //foo:bar" rather than just "//foo:bar"
+query --output=label_kind
+
+# Don't print every dependency in :node_modules, for example
+query --noimplicit_deps
+
+# By default, failing tests don't print any output, it goes to the log file
+test --test_output=errors
+
+# Show which actions are run under workers,
+# and print all the actions running in parallel.
+# Helps to demonstrate that bazel uses all the cores on the machine.
+build --experimental_ui
+test --experimental_ui
+
+# Don't be spammy in the continuous integration logs
+build:ci --noshow_progress
+
+# Don't run manual tests on CI
+test:ci --test_tag_filters=-manual

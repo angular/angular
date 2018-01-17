@@ -4,7 +4,7 @@ import { Directive } from '@angular/core';
 @Directive({
   selector: '[tohValidator2]',
   host: {
-    'attr.role': 'button',
+    '[attr.role]': 'role',
     '(mouseenter)': 'onMouseEnter()'
   }
 })

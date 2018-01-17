@@ -1,14 +1,14 @@
 <!--
 PLEASE HELP US PROCESS GITHUB ISSUES FASTER BY PROVIDING THE FOLLOWING INFORMATION.
 
-ISSUES MISSING IMPORTANT INFORMATION MIGHT BE CLOSED WITHOUT INVESTIGATION.
+ISSUES MISSING IMPORTANT INFORMATION MAY BE CLOSED WITHOUT INVESTIGATION.
 -->
 
-## I'm submitting a ...
+## I'm submitting a...
 <!-- Check one of the following options with "x" -->
 <pre><code>
-[ ] Regression (behavior that used to work and stopped working in a new release)
-[ ] Bug report <!-- Please search github for a similar issue or PR before submitting -->
+[ ] Regression (a behavior that used to work and stopped working in a new release)
+[ ] Bug report  <!-- Please search GitHub for a similar issue or PR before submitting -->
 [ ] Feature request
 [ ] Documentation issue or request
 [ ] Support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
@@ -32,7 +32,7 @@ https://plnkr.co or similar (you can use this template as a starting point: http
 <!-- Describe the motivation or the concrete use case. -->
 
 
-## Please tell us about your environment
+## Environment
 
 <pre><code>
 Angular version: X.Y.Z
@@ -49,8 +49,8 @@ Browser:
 - [ ] Edge version XX
  
 For Tooling issues:
-- Node version: XX <!-- use `node --version` -->
-- Platform: <!-- Mac, Linux, Windows -->
+- Node version: XX  <!-- run `node --version` -->
+- Platform:  <!-- Mac, Linux, Windows -->
 
 Others:
 <!-- Anything else relevant?  Operating system version, IDE, package manager, HTTP server, ... -->

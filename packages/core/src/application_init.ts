@@ -27,11 +27,11 @@ export class ApplicationInitStatus {
   private resolve: Function;
   private reject: Function;
   private initialized = false;
-  private _donePromise: Promise<any>;
-  private _done = false;
+  public readonly donePromise: Promise<any>;
+  public readonly done = false;
 
   constructor(@Inject(APP_INITIALIZER) @Optional() private appInits: (() => any)[]) {
-    this._donePromise = new Promise((res, rej) => {
+    this.donePromise = new Promise((res, rej) => {
       this.resolve = res;
       this.reject = rej;
     });
@@ -45,11 +45,10 @@ export class ApplicationInitStatus {
 
     const asyncInitPromises: Promise<any>[] = [];
 
-    const complete =
-        () => {
-          this._done = true;
-          this.resolve();
-        }
+    const complete = () => {
+      (this as{done: boolean}).done = true;
+      this.resolve();
+    };
 
     if (this.appInits) {
       for (let i = 0; i < this.appInits.length; i++) {
@@ -67,8 +66,4 @@ export class ApplicationInitStatus {
     }
     this.initialized = true;
   }
-
-  get done(): boolean { return this._done; }
-
-  get donePromise(): Promise<any> { return this._donePromise; }
 }

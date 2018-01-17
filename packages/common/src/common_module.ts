@@ -7,9 +7,9 @@
  */
 
 import {NgModule} from '@angular/core';
-
-import {COMMON_DEPRECATED_DIRECTIVES, COMMON_DIRECTIVES} from './directives/index';
-import {NgLocaleLocalization, NgLocalization} from './localization';
+import {COMMON_DIRECTIVES} from './directives/index';
+import {DEPRECATED_PLURAL_FN, NgLocaleLocalization, NgLocalization, getPluralCase} from './i18n/localization';
+import {COMMON_DEPRECATED_I18N_PIPES} from './pipes/deprecated/index';
 import {COMMON_PIPES} from './pipes/index';
 
 
@@ -28,4 +28,17 @@ import {COMMON_PIPES} from './pipes/index';
   ],
 })
 export class CommonModule {
+}
+
+/**
+ * A module that contains the deprecated i18n pipes.
+ *
+ * @deprecated from v5
+ */
+@NgModule({
+  declarations: [COMMON_DEPRECATED_I18N_PIPES],
+  exports: [COMMON_DEPRECATED_I18N_PIPES],
+  providers: [{provide: DEPRECATED_PLURAL_FN, useValue: getPluralCase}],
+})
+export class DeprecatedI18NPipesModule {
 }

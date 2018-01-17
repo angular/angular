@@ -35,10 +35,16 @@ export function convertActionBinding(
           // Note: no caching for literal arrays in actions.
           return (args: o.Expression[]) => o.literalArr(args);
         },
-        createLiteralMapConverter: (keys: string[]) => {
+        createLiteralMapConverter: (keys: {key: string, quoted: boolean}[]) => {
           // Note: no caching for literal maps in actions.
-          return (args: o.Expression[]) =>
-                     o.literalMap(<[string, o.Expression][]>keys.map((key, i) => [key, args[i]]));
+          return (values: o.Expression[]) => {
+            const entries = keys.map((k, i) => ({
+                                       key: k.key,
+                                       value: values[i],
+                                       quoted: k.quoted,
+                                     }));
+            return o.literalMap(entries);
+          };
         },
         createPipeConverter: (name: string) => {
           throw new Error(`Illegal State: Actions are not allowed to contain pipes. Pipe: ${name}`);
@@ -71,7 +77,7 @@ export interface BuiltinConverter { (args: o.Expression[]): o.Expression; }
 
 export interface BuiltinConverterFactory {
   createLiteralArrayConverter(argCount: number): BuiltinConverter;
-  createLiteralMapConverter(keys: string[]): BuiltinConverter;
+  createLiteralMapConverter(keys: {key: string, quoted: boolean}[]): BuiltinConverter;
   createPipeConverter(name: string, argCount: number): BuiltinConverter;
 }
 
@@ -84,6 +90,14 @@ export class ConvertPropertyBindingResult {
   constructor(public stmts: o.Statement[], public currValExpr: o.Expression) {}
 }
 
+export enum BindingForm {
+  // The general form of binding expression, supports all expressions.
+  General,
+
+  // Try to generate a simple binding (no temporaries or statements)
+  // otherise generate a general binding
+  TrySimple,
+}
 /**
  * Converts the given expression AST into an executable output AST, assuming the expression
  * is used in property binding. The expression has to be preprocessed via
@@ -91,7 +105,8 @@ export class ConvertPropertyBindingResult {
  */
 export function convertPropertyBinding(
     localResolver: LocalResolver | null, implicitReceiver: o.Expression,
-    expressionWithoutBuiltins: cdAst.AST, bindingId: string): ConvertPropertyBindingResult {
+    expressionWithoutBuiltins: cdAst.AST, bindingId: string,
+    form: BindingForm): ConvertPropertyBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
@@ -104,9 +119,11 @@ export function convertPropertyBinding(
     for (let i = 0; i < visitor.temporaryCount; i++) {
       stmts.push(temporaryDeclaration(bindingId, i));
     }
+  } else if (form == BindingForm.TrySimple) {
+    return new ConvertPropertyBindingResult([], outputExpr);
   }
 
-  stmts.push(currValExpr.set(outputExpr).toDeclStmt(null, [o.StmtModifier.Final]));
+  stmts.push(currValExpr.set(outputExpr).toDeclStmt(o.DYNAMIC_TYPE, [o.StmtModifier.Final]));
   return new ConvertPropertyBindingResult(stmts, currValExpr);
 }
 
@@ -169,6 +186,7 @@ class _BuiltinAstConverter extends cdAst.AstTransformer {
   }
   visitLiteralMap(ast: cdAst.LiteralMap, context: any): any {
     const args = ast.values.map(ast => ast.visit(this, context));
+
     return new BuiltinFunctionCall(
         ast.span, args, this._converterFactory.createLiteralMapConverter(ast.keys));
   }
@@ -316,12 +334,27 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   visitLiteralPrimitive(ast: cdAst.LiteralPrimitive, mode: _Mode): any {
-    return convertToStatementIfNeeded(mode, o.literal(ast.value));
+    // For literal values of null, undefined, true, or false allow type inteference
+    // to infer the type.
+    const type =
+        ast.value === null || ast.value === undefined || ast.value === true || ast.value === true ?
+        o.INFERRED_TYPE :
+        undefined;
+    return convertToStatementIfNeeded(mode, o.literal(ast.value, type));
   }
 
   private _getLocal(name: string): o.Expression|null { return this._localResolver.getLocal(name); }
 
   visitMethodCall(ast: cdAst.MethodCall, mode: _Mode): any {
+    if (ast.receiver instanceof cdAst.ImplicitReceiver && ast.name == '$any') {
+      const args = this.visitAll(ast.args, _Mode.Expression) as any[];
+      if (args.length != 1) {
+        throw new Error(
+            `Invalid call to $any, expected 1 argument but received ${args.length || 'none'}`);
+      }
+      return (args[0] as o.Expression).cast(o.DYNAMIC_TYPE);
+    }
+
     const leftMostSafe = this.leftMostSafeNode(ast);
     if (leftMostSafe) {
       return this.convertSafeAccess(ast, leftMostSafe, mode);

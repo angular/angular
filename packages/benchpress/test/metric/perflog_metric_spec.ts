@@ -6,24 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '@angular/core';
+import {StaticProvider} from '@angular/core';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, ReflectiveInjector, WebDriverExtension} from '../../index';
+import {Injector, Metric, Options, PerfLogEvent, PerfLogFeatures, PerflogMetric, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
 
-export function main() {
+(function() {
   let commandLog: any[];
   const eventFactory = new TraceEventFactory('timeline', 'pid0');
 
   function createMetric(
       perfLogs: PerfLogEvent[], perfLogFeatures: PerfLogFeatures,
-      {microMetrics, forceGc, captureFrames, receivedData, requestCount}: {
+      {microMetrics, forceGc, captureFrames, receivedData, requestCount, ignoreNavigation}: {
         microMetrics?: {[key: string]: string},
         forceGc?: boolean,
         captureFrames?: boolean,
         receivedData?: boolean,
-        requestCount?: boolean
+        requestCount?: boolean,
+        ignoreNavigation?: boolean
       } = {}): Metric {
     commandLog = [];
     if (!perfLogFeatures) {
@@ -33,7 +34,7 @@ export function main() {
     if (!microMetrics) {
       microMetrics = {};
     }
-    const providers: Provider[] = [
+    const providers: StaticProvider[] = [
       Options.DEFAULT_PROVIDERS, PerflogMetric.PROVIDERS,
       {provide: Options.MICRO_METRICS, useValue: microMetrics}, {
         provide: PerflogMetric.SET_TIMEOUT,
@@ -59,7 +60,10 @@ export function main() {
     if (requestCount != null) {
       providers.push({provide: Options.REQUEST_COUNT, useValue: requestCount});
     }
-    return ReflectiveInjector.resolveAndCreate(providers).get(PerflogMetric);
+    if (ignoreNavigation != null) {
+      providers.push({provide: PerflogMetric.IGNORE_NAVIGATION, useValue: ignoreNavigation});
+    }
+    return Injector.create(providers).get(PerflogMetric);
   }
 
   describe('perflog metric', () => {
@@ -180,6 +184,22 @@ export function main() {
            const metric = createMetric(events, null !);
            metric.beginMeasure().then((_) => metric.endMeasure(false)).then((data) => {
              expect(data['scriptTime']).toBe(1);
+
+             async.done();
+           });
+         }));
+
+      it('should ignore navigationStart if ignoreNavigation is set',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const events = [[
+             eventFactory.markStart('benchpress0', 0), eventFactory.start('script', 4),
+             eventFactory.end('script', 6), eventFactory.instant('navigationStart', 7),
+             eventFactory.start('script', 8), eventFactory.end('script', 9),
+             eventFactory.markEnd('benchpress0', 10)
+           ]];
+           const metric = createMetric(events, null !, {ignoreNavigation: true});
+           metric.beginMeasure().then((_) => metric.endMeasure(false)).then((data) => {
+             expect(data['scriptTime']).toBe(3);
 
              async.done();
            });
@@ -517,6 +537,24 @@ export function main() {
            });
          }));
 
+      it('should mark a run as invalid if the start and end marks are different',
+         inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+           const otherProcessEventFactory = new TraceEventFactory('timeline', 'pid1');
+           const metric = createMetric(
+               [[
+                 eventFactory.markStart('benchpress0', 0), eventFactory.start('script', 0, null),
+                 eventFactory.end('script', 5, null),
+                 otherProcessEventFactory.start('script', 10, null),
+                 otherProcessEventFactory.end('script', 17, null),
+                 otherProcessEventFactory.markEnd('benchpress0', 20)
+               ]],
+               null !);
+           metric.beginMeasure().then((_) => metric.endMeasure(false)).then((data) => {
+             expect(data['invalid']).toBe(1);
+             async.done();
+           });
+         }));
+
       it('should support scriptTime metric',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            aggregate([
@@ -660,7 +698,7 @@ export function main() {
     });
 
   });
-}
+})();
 
 class MockDriverExtension extends WebDriverExtension {
   constructor(

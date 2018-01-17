@@ -5,6 +5,10 @@ function translate(html, rulesFile) {
     var rxRule = rulesFile.rules[rxDatum.pattern];
     // rxFrom is a rexexp
     var rxFrom = rxRule.from;
+    // check if there is an exception
+    if (rxDatum.exceptIf) {
+      if (html.indexOf(rxDatum.exceptIf) !== -1) return;
+    }
     if (rxDatum.from) {
       var from = rxDatum.from.replace('/', '\/');
       var rxTemp = rxFrom.toString();

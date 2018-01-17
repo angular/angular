@@ -31,13 +31,13 @@ class FancyService {
 class ExternalTemplateComp {
 }
 
-@Component({selector: 'bad-template-comp', templateUrl: 'non-existant.html'})
+@Component({selector: 'bad-template-comp', templateUrl: 'non-existent.html'})
 class BadTemplateUrl {
 }
 
 // Tests for angular/testing bundle specific to the browser environment.
 // For general tests, see test/testing/testing_public_spec.ts.
-export function main() {
+{
   describe('test APIs for the browser', () => {
     describe('using the async helper', () => {
       let actuallyDone: boolean;
@@ -110,7 +110,7 @@ export function main() {
             () => { done.fail('Expected test to fail, but it did not'); },
             (err: any) => {
               expect(err.message)
-                  .toEqual('Uncaught (in promise): Failed to load non-existant.html');
+                  .toEqual('Uncaught (in promise): Failed to load non-existent.html');
               done();
             });
         restoreJasmineIt();

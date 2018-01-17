@@ -1,7 +1,7 @@
 {
   "name": "@angular/platform-browser/animations",
-  "typings": "../animations.d.ts",
+  "typings": "./animations.d.ts",
   "main": "../bundles/platform-browser-animations.umd.js",
-  "module": "../@angular/platform-browser/animations.es5.js",
-  "es2015": "../@angular/platform-browser/animations.js"
+  "module": "../esm5/animations.js",
+  "es2015": "../esm2015/animations.js"
 }

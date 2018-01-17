@@ -102,7 +102,7 @@ const HTML_ATTRS = tagSet(
     'scope,scrolling,shape,size,sizes,span,srclang,start,summary,tabindex,target,title,translate,type,usemap,' +
     'valign,value,vspace,width');
 
-// NB: This currently conciously doesn't support SVG. SVG sanitization has had several security
+// NB: This currently consciously doesn't support SVG. SVG sanitization has had several security
 // issues in the past, so it seems safer to leave it out if possible. If support for binding SVG via
 // innerHTML is required, SVG attributes should be added here.
 
@@ -215,7 +215,6 @@ const NON_ALPHANUMERIC_REGEXP = /([^\#-~ |!])/g;
  * resulting string can be safely inserted into attribute or
  * element text.
  * @param value
- * @returns {string} escaped text
  */
 function encodeEntities(value: string) {
   return value.replace(/&/g, '&amp;')

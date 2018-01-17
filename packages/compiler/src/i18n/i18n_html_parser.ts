@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ɵConsole as Console} from '@angular/core';
+import {MissingTranslationStrategy} from '../core';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 import {ParseTreeResult} from '../ml_parser/parser';
+import {Console} from '../util';
+
+import {digest} from './digest';
 import {mergeTranslations} from './extractor_merger';
 import {Serializer} from './serializers/serializer';
 import {Xliff} from './serializers/xliff';
@@ -32,6 +35,9 @@ export class I18NHtmlParser implements HtmlParser {
       const serializer = createSerializer(translationsFormat);
       this._translationBundle =
           TranslationBundle.load(translations, 'i18n', serializer, missingTranslation, console);
+    } else {
+      this._translationBundle =
+          new TranslationBundle({}, null, digest, undefined, missingTranslation, console);
     }
   }
 
@@ -40,11 +46,6 @@ export class I18NHtmlParser implements HtmlParser {
       interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
     const parseResult =
         this._htmlParser.parse(source, url, parseExpansionForms, interpolationConfig);
-
-    if (!this._translationBundle) {
-      // Do not enable i18n when no translation bundle is provided
-      return parseResult;
-    }
 
     if (parseResult.errors.length) {
       return new ParseTreeResult(parseResult.rootNodes, parseResult.errors);

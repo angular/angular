@@ -7,7 +7,7 @@
  */
 import {WebAnimationsStyleNormalizer} from '../../../src/dsl/style_normalization/web_animations_style_normalizer';
 
-export function main() {
+{
   describe('WebAnimationsStyleNormalizer', () => {
     const normalizer = new WebAnimationsStyleNormalizer();
 

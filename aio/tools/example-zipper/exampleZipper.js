@@ -9,12 +9,14 @@ const globby = require('globby');
 const PackageJsonCustomizer = require('./customizer/package-json/packageJsonCustomizer');
 const regionExtractor = require('../transforms/examples-package/services/region-parser');
 
+const EXAMPLE_CONFIG_NAME = 'example-config.json';
+
 class ExampleZipper {
   constructor(sourceDirName, outputDirName) {
     this.examplesPackageJson = path.join(__dirname, '../examples/shared/package.json');
-    this.examplesSystemjsConfig = path.join(__dirname, '../examples/shared/boilerplate/src/systemjs.config.js');
-    this.examplesSystemjsLoaderConfig = path.join(__dirname, '../examples/shared/boilerplate/src/systemjs-angular-loader.js');
-    this.exampleTsconfig = path.join(__dirname, '../examples/shared/boilerplate/src/tsconfig.json');
+    this.examplesSystemjsConfig = path.join(__dirname, '../examples/shared/boilerplate/systemjs/src/systemjs.config.js');
+    this.examplesSystemjsLoaderConfig = path.join(__dirname, '../examples/shared/boilerplate/systemjs/src/systemjs-angular-loader.js');
+    this.exampleTsconfig = path.join(__dirname, '../examples/shared/boilerplate/systemjs/src/tsconfig.json');
     this.customizer = new PackageJsonCustomizer();
 
     let gpathPlnkr = path.join(sourceDirName, '**/*plnkr.json');
@@ -43,16 +45,37 @@ class ExampleZipper {
     return archive;
   }
 
+  _getExampleType(sourceFolder) {
+    const filePath = path.join(sourceFolder, EXAMPLE_CONFIG_NAME);
+    try {
+      return require(filePath, 'utf-8').projectType || 'cli';
+    } catch (err) { // empty file, so it is cli
+      return 'cli';
+    }
+  }
+
+  // rename a custom main.ts or index.html file
+  _renameFile(file) {
+    if (/src\/main[-.]\w+\.ts$/.test(file)) {
+      return 'src/main.ts';
+    }
+
+    if (/src\/index[-.]\w+\.html$/.test(file)) {
+      return 'src/index.html';
+    }
+
+    return file;
+  }
+
   _zipExample(configFileName, sourceDirName, outputDirName) {
     let json = require(configFileName, 'utf-8');
-    const exampleType = json.type || 'systemjs';
     const basePath = json.basePath || '';
     const jsonFileName = configFileName.replace(/^.*[\\\/]/, '');
     let relativeDirName = path.dirname(path.relative(sourceDirName, configFileName));
     let exampleZipName;
-
+    const exampleType = this._getExampleType(path.join(sourceDirName, relativeDirName));
     if (relativeDirName.indexOf('/') !== -1) { // Special example
-      exampleZipName = relativeDirName.split('/')[0];
+      exampleZipName = relativeDirName.split('/').join('-');
     } else {
       exampleZipName = jsonFileName.replace(/(plnkr|zipper).json/, relativeDirName);
     }
@@ -60,8 +83,25 @@ class ExampleZipper {
     const exampleDirName = path.dirname(configFileName);
     const outputFileName = path.join(outputDirName, relativeDirName, exampleZipName + '.zip');
     let defaultIncludes = ['**/*.ts', '**/*.js', '**/*.es6', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png'];
-    let alwaysIncludes = ['bs-config.json', 'tslint.json', 'karma-test-shim.js', 'karma.conf.js', 'src/testing/**/*', 'src/.babelrc'];
-    var defaultExcludes = [
+    let alwaysIncludes = [
+      'bs-config.json',
+      'protractor.conf.js',
+      '.angular-cli.json',
+      '.editorconfig',
+      '.gitignore',
+      'tslint.json',
+      'karma-test-shim.js',
+      'karma.conf.js',
+      'tsconfig.json',
+      'src/testing/**/*',
+      'src/.babelrc',
+      'src/favicon.ico',
+      'src/polyfills.ts',
+      'src/typings.d.ts',
+      'src/environments/**/*',
+      'src/tsconfig.*'
+    ];
+    var alwaysExcludes = [
       '!**/bs-config.e2e.json',
       '!**/*plnkr.*',
       '!**/*zipper.*',
@@ -70,7 +110,6 @@ class ExampleZipper {
       '!**/package.json',
       '!**/example-config.json',
       '!**/wallaby.js',
-      '!**/tsconfig.json',
       '!**/package.webpack.json',
       // AoT related files
       '!**/aot/**/*.*',
@@ -110,13 +149,14 @@ class ExampleZipper {
       }
     });
 
-    Array.prototype.push.apply(gpaths, defaultExcludes);
+    Array.prototype.push.apply(gpaths, alwaysExcludes);
 
     let fileNames = globby.sync(gpaths, { ignore: ['**/node_modules/**']});
 
     let zip = this._createZipArchive(outputFileName);
     fileNames.forEach((fileName) => {
       let relativePath = path.relative(exampleDirName, fileName);
+      relativePath = this._renameFile(relativePath);
       let content = fs.readFileSync(fileName, 'utf8');
       let extn = path.extname(fileName).substr(1);
       // if we don't need to clean up the file then we can do the following.
@@ -129,13 +169,13 @@ class ExampleZipper {
     // we need the package.json from _examples root, not the _boilerplate one
     zip.append(this.customizer.generate(exampleType), { name: 'package.json' });
     // also a systemjs config
-    if (!json.removeSystemJsConfig) {
+    if (exampleType === 'systemjs') {
       zip.append(fs.readFileSync(this.examplesSystemjsConfig, 'utf8'), { name: 'src/systemjs.config.js' });
       zip.append(fs.readFileSync(this.examplesSystemjsLoaderConfig, 'utf8'), { name: 'src/systemjs-angular-loader.js' });
+      // a modified tsconfig
+      let tsconfig = fs.readFileSync(this.exampleTsconfig, 'utf8');
+      zip.append(this._changeTypeRoots(tsconfig), {name: 'src/tsconfig.json'});
     }
-    // a modified tsconfig
-    let tsconfig = fs.readFileSync(this.exampleTsconfig, 'utf8');
-    zip.append(this._changeTypeRoots(tsconfig), {name: 'src/tsconfig.json'});
 
     zip.finalize();
   }

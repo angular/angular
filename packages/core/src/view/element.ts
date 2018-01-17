@@ -13,8 +13,8 @@ import {BindingDef, BindingFlags, ElementData, ElementHandleEventFn, NodeDef, No
 import {NOOP, calcBindingFlags, checkAndUpdateBinding, dispatchEvent, elementEventFullName, getParentRenderElement, resolveDefinition, resolveRendererType2, splitMatchedQueriesDsl, splitNamespace} from './util';
 
 export function anchorDef(
-    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
-    ngContentIndex: number, childCount: number, handleEvent?: ElementHandleEventFn,
+    flags: NodeFlags, matchedQueriesDsl: null | [string | number, QueryValueType][],
+    ngContentIndex: null | number, childCount: number, handleEvent?: null | ElementHandleEventFn,
     templateFactory?: ViewDefinitionFactory): NodeDef {
   flags |= NodeFlags.TypeElement;
   const {matchedQueries, references, matchedQueryIds} = splitMatchedQueriesDsl(matchedQueriesDsl);
@@ -22,13 +22,14 @@ export function anchorDef(
 
   return {
     // will bet set by the view definition
-    index: -1,
+    nodeIndex: -1,
     parent: null,
     renderParent: null,
     bindingIndex: -1,
     outputIndex: -1,
     // regular values
     flags,
+    checkIndex: -1,
     childFlags: 0,
     directChildFlags: 0,
     childMatchedQueries: 0, matchedQueries, matchedQueryIds, references, ngContentIndex, childCount,
@@ -54,11 +55,12 @@ export function anchorDef(
 }
 
 export function elementDef(
-    flags: NodeFlags, matchedQueriesDsl: [string | number, QueryValueType][],
-    ngContentIndex: number, childCount: number, namespaceAndName: string,
-    fixedAttrs: [string, string][] = [],
-    bindings?: [BindingFlags, string, string | SecurityContext][], outputs?: ([string, string])[],
-    handleEvent?: ElementHandleEventFn, componentView?: ViewDefinitionFactory,
+    checkIndex: number, flags: NodeFlags,
+    matchedQueriesDsl: null | [string | number, QueryValueType][], ngContentIndex: null | number,
+    childCount: number, namespaceAndName: string | null, fixedAttrs: null | [string, string][] = [],
+    bindings?: null | [BindingFlags, string, string | SecurityContext | null][],
+    outputs?: null | ([string, string])[], handleEvent?: null | ElementHandleEventFn,
+    componentView?: null | ViewDefinitionFactory,
     componentRendererType?: RendererType2 | null): NodeDef {
   if (!handleEvent) {
     handleEvent = NOOP;
@@ -111,12 +113,13 @@ export function elementDef(
   flags |= NodeFlags.TypeElement;
   return {
     // will bet set by the view definition
-    index: -1,
+    nodeIndex: -1,
     parent: null,
     renderParent: null,
     bindingIndex: -1,
     outputIndex: -1,
     // regular values
+    checkIndex,
     flags,
     childFlags: 0,
     directChildFlags: 0,
@@ -175,7 +178,7 @@ export function listenToElementOutputs(view: ViewData, compView: ViewData, def: 
   for (let i = 0; i < def.outputs.length; i++) {
     const output = def.outputs[i];
     const handleEventClosure = renderEventHandlerClosure(
-        view, def.index, elementEventFullName(output.target, output.eventName));
+        view, def.nodeIndex, elementEventFullName(output.target, output.eventName));
     let listenTarget: 'window'|'document'|'body'|'component'|null = output.target;
     let listenerView = view;
     if (output.target === 'component') {
@@ -189,14 +192,7 @@ export function listenToElementOutputs(view: ViewData, compView: ViewData, def: 
 }
 
 function renderEventHandlerClosure(view: ViewData, index: number, eventName: string) {
-  return (event: any) => {
-    try {
-      return dispatchEvent(view, index, eventName, event);
-    } catch (e) {
-      // Attention: Don't rethrow, to keep in sync with directive events.
-      view.root.errorHandler.handleError(e);
-    }
-  }
+  return (event: any) => dispatchEvent(view, index, eventName, event);
 }
 
 
@@ -231,7 +227,7 @@ function checkAndUpdateElementValue(view: ViewData, def: NodeDef, bindingIdx: nu
     return false;
   }
   const binding = def.bindings[bindingIdx];
-  const elData = asElementData(view, def.index);
+  const elData = asElementData(view, def.nodeIndex);
   const renderNode = elData.renderElement;
   const name = binding.name !;
   switch (binding.flags & BindingFlags.Types) {

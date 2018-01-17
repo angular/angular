@@ -13,7 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('jit', () => { declareTests({useJit: true}); });
 
   describe('no jit', () => { declareTests({useJit: false}); });
@@ -242,14 +242,14 @@ function declareTests({useJit}: {useJit: boolean}) {
         return MyComponent;
       }
       const HeroComponent = ComponentFactory('my-hero', 'my hero');
-      const VillianComponent = ComponentFactory('a-villian', 'a villian');
+      const VillainComponent = ComponentFactory('a-villain', 'a villain');
       const MainComponent = ComponentFactory(
-          'my-app', 'I was saved by <my-hero></my-hero> from <a-villian></a-villian>.');
+          'my-app', 'I was saved by <my-hero></my-hero> from <a-villain></a-villain>.');
 
       TestBed.configureTestingModule(
-          {declarations: [HeroComponent, VillianComponent, MainComponent]});
+          {declarations: [HeroComponent, VillainComponent, MainComponent]});
       const fixture = TestBed.createComponent(MainComponent);
-      expect(fixture.nativeElement).toHaveText('I was saved by my hero from a villian.');
+      expect(fixture.nativeElement).toHaveText('I was saved by my hero from a villain.');
     });
 
     it('should allow to use the renderer outside of views', () => {
@@ -409,7 +409,7 @@ function declareTestsUsingBootstrap() {
 
       logger = new MockConsole();
       errorHandler = new ErrorHandler();
-      errorHandler._console = logger as any;
+      (errorHandler as any)._console = logger as any;
     }));
 
     afterEach(() => { destroyPlatform(); });

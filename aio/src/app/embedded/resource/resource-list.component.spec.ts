@@ -1,7 +1,6 @@
 import { ReflectiveInjector } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
 
-import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 
 import { ResourceListComponent } from './resource-list.component';

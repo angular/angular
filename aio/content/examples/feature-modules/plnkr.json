@@ -1,0 +1,11 @@
+{
+  "description": "Feature Modules",
+  "basePath": "src/",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "open": "app/app.component.ts",
+  "tags": ["feature modules"]
+}

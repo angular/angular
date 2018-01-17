@@ -1,36 +1,27 @@
 {
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": true,
+    "rootDir": ".",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "module": "es2015",
-    "moduleResolution": "node",
-    "noEmitOnError": false,
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "strictNullChecks": true,
-    "outDir": "../../dist/packages/router",
     "paths": {
       "@angular/core": ["../../dist/packages/core"],
       "@angular/common": ["../../dist/packages/common"],
       "@angular/platform-browser": ["../../dist/packages/platform-browser"]
     },
-    "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "lib": ["es2015", "dom"],
-    "target": "es2015",
-    "skipLibCheck": true
+    "outDir": "../../dist/packages/router"
   },
+
   "files": [
     "public_api.ts"
   ],
+
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "router.js",
     "flatModuleId": "@angular/router"
   }
 }

@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
 
 // #docregion click-me-component
 @Component({
-  selector: 'click-me',
+  selector: 'app-click-me',
   template: `
     <button (click)="onClickMe()">Click me!</button>
     {{clickMessage}}`

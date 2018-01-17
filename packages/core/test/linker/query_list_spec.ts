@@ -12,7 +12,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-export function main() {
+{
   describe('QueryList', () => {
     let queryList: QueryList<string>;
     let log: string;

@@ -11,46 +11,26 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
         <div class="card-front" (click)="flipCard(person)">
             <h3>{{person.name}}</h3>
 
-            <div *ngIf="person.picture" class="contributor-image" [style.background-image]="'url('+pictureBase+person.picture+')'">
+            <div class="contributor-image" [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
                 <div class="contributor-info">
-                    <button *ngIf="person.bio" >
-                        <a aria-label="View Bio">View Bio</a>
-                    </button>
-                    <button *ngIf="person.twitter" class="icon">
-                        <a href="https://twitter.com/{{person.twitter}}" target="_blank">
-                            <span class="fa fa-twitter fa-2x"></span>
-                        </a>
-                    </button>
-                    <button *ngIf="person.website" class="icon">
-                        <a href="{{person.website}}" target="_blank">
-                            <span class="fa fa-link fa-2x"></span>
-                        </a>
-                    </button>
-                </div>
-            </div>
-
-            <div *ngIf="!person.picture" class="contributor-image" [style.background-image]="'url('+pictureBase+noPicture+')'">
-                <div class="contributor-info">
-                    <button *ngIf="person.bio">
-                        <a aria-label="View Bio">View Bio</a>
-                    </button>
-                    <button *ngIf="person.twitter" class="icon">
-                        <a href="https://twitter.com/{{person.twitter}}" target="_blank">
-                            <span class="fa fa-twitter fa-2x"></span>
-                        </a>
-                    </button>
-                    <button *ngIf="person.website" class="icon">
-                        <a href="{{person.website}}" target="_blank">
-                            <span class="fa fa-link fa-2x"></span>
-                        </a>
-                    </button>
+                    <a *ngIf="person.bio" mat-button>
+                        View Bio
+                    </a>
+                    <a *ngIf="person.twitter" mat-button class="icon"
+                        href="https://twitter.com/{{person.twitter}}" target="_blank" (click)="$event.stopPropagation()">
+                        <span class="fa fa-twitter fa-2x"></span>
+                    </a>
+                    <a *ngIf="person.website" mat-button class="icon"
+                        href="{{person.website}}" target="_blank" (click)="$event.stopPropagation()">
+                        <span class="fa fa-link fa-2x"></span>
+                    </a>
                 </div>
             </div>
         </div>
 
         <div class="card-back" *ngIf="person.isFlipped" (click)="flipCard(person)">
             <h3>{{person.name}}</h3>
-            <p class="contributor-bio" >{{person.bio}}</p>
+            <p class="contributor-bio">{{person.bio}}</p>
         </div>
     </div>
   `
@@ -60,7 +40,7 @@ export class ContributorComponent {
   noPicture = '_no-one.png';
   pictureBase = CONTENT_URL_PREFIX + 'images/bios/';
 
-  flipCard(person) {
+  flipCard(person: Contributor) {
     person.isFlipped = !person.isFlipped;
   }
 }

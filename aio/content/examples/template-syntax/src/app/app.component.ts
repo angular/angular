@@ -11,7 +11,7 @@ export enum Color {Red, Green, Blue};
  * Giant grab bag of stuff to drive the chapter
  */
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: [ './app.component.css' ]
 })
@@ -93,12 +93,12 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   // heroImageUrl = 'http://www.wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png';
   // Public Domain terms of use: http://www.wpclipart.com/terms.html
-  heroImageUrl = 'images/hero.png';
+  heroImageUrl = 'assets/images/hero.png';
   // villainImageUrl = 'http://www.clker.com/cliparts/u/s/y/L/x/9/villain-man-hi.png'
   // Public Domain terms of use http://www.clker.com/disclaimer.html
-  villainImageUrl = 'images/villain.png';
+  villainImageUrl = 'assets/images/villain.png';
 
-  iconUrl = 'images/ng-logo.png';
+  iconUrl = 'assets/images/ng-logo.png';
   isActive = false;
   isSpecial = true;
   isUnchanged = true;
@@ -111,7 +111,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   }
 
   onSave(event: KeyboardEvent) {
-    let evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).innerText : '';
+    let evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).textContent : '';
     this.alert('Saved.' + evtMsg);
     if (event) { event.stopPropagation(); }
   }
@@ -140,9 +140,9 @@ export class AppComponent implements AfterViewInit, OnInit {
   setCurrentClasses() {
     // CSS classes: added/removed per current state of component properties
     this.currentClasses =  {
-      saveable: this.canSave,
-      modified: !this.isUnchanged,
-      special:  this.isSpecial
+      'saveable': this.canSave,
+      'modified': !this.isUnchanged,
+      'special':  this.isSpecial
     };
   }
   // #enddocregion setClasses

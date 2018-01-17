@@ -208,7 +208,7 @@ aio-resource-list {
     border-color: #2B85E7;
     border-radius: 4px;
     box-shadow: 0 8px 8px rgba(1, 67, 163, .24), 0 0 8px rgba(1, 67, 163, .12), 0 6px 18px rgba(43, 133, 231, .12);
-    transform: translate3d(0, -2px, 0);
+    transform: translateY(-2px);
   }
 
   @media(max-width: 900px) {

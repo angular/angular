@@ -1,17 +1,27 @@
 {
-  "extends": "../tsconfig-build",
+  "extends": "../tsconfig-build.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
-      "@angular/router": ["../../dist/packages/router"],
-      "@angular/upgrade/static": ["../../dist/packages/upgrade/static"]
-    }
+      "@angular/common": ["../../../dist/packages/common"],
+      "@angular/core": ["../../../dist/packages/core"],
+      "@angular/platform-browser": ["../../../dist/packages/platform-browser"],
+      "@angular/router": ["../../../dist/packages/router"],
+      "@angular/upgrade/static": ["../../../dist/packages/upgrade/static"]
+    },
+    "outDir": "../../../dist/packages/router"
   },
+
   "files": [
-    "index.ts"
+    "public_api.ts"
   ],
+
   "angularCompilerOptions": {
-    "strictMetadataEmit": true
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "upgrade.js",
+    "flatModuleId": "@angular/router/upgrade"
   }
 }

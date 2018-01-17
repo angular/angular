@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import resolve from 'rollup-plugin-node-resolve';
+const resolve = require('rollup-plugin-node-resolve');
+const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   '@angular/core': 'ng.core',
@@ -16,13 +17,14 @@ const globals = {
   'rxjs/Subject': 'Rx'
 };
 
-export default {
-  entry: '../../dist/packages-dist/platform-webworker/@angular/platform-webworker.es5.js',
+module.exports = {
+  entry: '../../dist/packages-dist/platform-webworker/esm5/platform-webworker.js',
   dest: '../../dist/packages-dist/platform-webworker/bundles/platform-webworker.umd.js',
   format: 'umd',
   exports: 'named',
+  amd: {id: '@angular/platform-webworker'},
   moduleName: 'ng.platformWebworker',
-  plugins: [resolve()],
+  plugins: [resolve(), sourcemaps()],
   external: Object.keys(globals),
   globals: globals
 };

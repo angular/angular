@@ -1,0 +1,5 @@
+{
+  "compilerOptions": {
+    "lib": ["es5", "es2015.collection", "es2015.core"]
+  }
+}

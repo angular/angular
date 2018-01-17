@@ -4,13 +4,13 @@ import { Component } from '@angular/core';
 import { HEROES } from './hero';
 
 @Component({
-  selector: 'hero-parent',
+  selector: 'app-hero-parent',
   template: `
     <h2>{{master}} controls {{heroes.length}} heroes</h2>
-    <hero-child *ngFor="let hero of heroes"
+    <app-hero-child *ngFor="let hero of heroes"
       [hero]="hero"
       [master]="master">
-    </hero-child>
+    </app-hero-child>
   `
 })
 export class HeroParentComponent {

@@ -9,7 +9,18 @@ var SEARCH_TERMS_URL = '/generated/docs/app/search-data.json';
 importScripts('/assets/js/lunr.min.js');
 
 var index;
-var pages = {};
+var pages /* : SearchInfo */ = {};
+
+// interface SearchInfo {
+//  [key: string]: PageInfo;
+// }
+
+// interface PageInfo {
+//   path: string;
+//   type: string,
+//   titleWords: string;
+//   keyWords: string;
+// }
 
 self.onmessage = handleMessage;
 
@@ -18,7 +29,8 @@ self.onmessage = handleMessage;
 function createIndex(addFn) {
   return lunr(/** @this */function() {
     this.ref('path');
-    this.field('titleWords', {boost: 50});
+    this.field('titleWords', {boost: 100});
+    this.field('headingWords', {boost: 50});
     this.field('members', {boost: 40});
     this.field('keywords', {boost: 20});
     addFn(this);
@@ -48,15 +60,7 @@ function handleMessage(message) {
 // Use XHR to make a request to the server
 function makeRequest(url, callback) {
 
-  // The JSON file that is loaded should be an array of SearchTerms:
-  //
-  // export interface SearchTerms {
-  //   path: string;
-  //   type: string,
-  //   titleWords: string;
-  //   keyWords: string;
-  // }
-
+  // The JSON file that is loaded should be an array of PageInfo:
   var searchDataRequest = new XMLHttpRequest();
   searchDataRequest.onload = function() {
     callback(JSON.parse(this.responseText));
@@ -67,11 +71,11 @@ function makeRequest(url, callback) {
 
 
 // Create the search index from the searchInfo which contains the information about each page to be indexed
-function loadIndex(searchInfo) {
+function loadIndex(searchInfo /*: SearchInfo */) {
   return function(index) {
     // Store the pages data to be used in mapping query results back to pages
     // Add search terms from each page to the search index
-    searchInfo.forEach(function(page) {
+    searchInfo.forEach(function(page /*: PageInfo */) {
       index.add(page);
       pages[page.path] = page;
     });
@@ -80,17 +84,19 @@ function loadIndex(searchInfo) {
 
 // Query the index and return the processed results
 function queryIndex(query) {
-  // The index requires the query to be lowercase
-  var terms = query.toLowerCase().split(/\s+/);
-  var results = index.query(function(qb) {
-    terms.forEach(function(term) {
-      // Only include terms that are longer than 2 characters, if there is more than one term
-      // Add trailing wildcard to each term so that it will match more results
-      if (terms.length === 1 || term.trim().length > 2) {
-        qb.term(term, { wildcard: lunr.Query.wildcard.TRAILING });
-      }
-    });
-  });
-  // Only return the array of paths to pages
-  return results.map(function(hit) { return pages[hit.ref]; });
+  try {
+    if (query.length) {
+      // Add a relaxed search in the title for the first word in the query
+      // E.g. if the search is "ngCont guide" then we search for "ngCont guide titleWords:ngCont*"
+      var titleQuery = 'titleWords:*' + query.split(' ', 1)[0] + '*';
+      var results = index.search(query + ' ' + titleQuery);
+      // Map the hits into info about each page to be returned as results
+      return results.map(function(hit) { return pages[hit.ref]; });
+    }
+  } catch(e) {
+    // If the search query cannot be parsed the index throws an error
+    // Log it and recover
+    console.log(e);
+  }
+  return [];
 }

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Headers} from '../src/headers';
+import {Headers} from '@angular/http/src/headers';
 
-export function main() {
+{
   describe('Headers', () => {
 
     describe('initialization', () => {

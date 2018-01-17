@@ -22,7 +22,11 @@ export class ConsoleReporter extends Reporter {
   static PRINT = new InjectionToken('ConsoleReporter.print');
   static COLUMN_WIDTH = new InjectionToken('ConsoleReporter.columnWidth');
   static PROVIDERS = [
-    ConsoleReporter, {provide: ConsoleReporter.COLUMN_WIDTH, useValue: 18}, {
+    {
+      provide: ConsoleReporter,
+      deps: [ConsoleReporter.COLUMN_WIDTH, SampleDescription, ConsoleReporter.PRINT]
+    },
+    {provide: ConsoleReporter.COLUMN_WIDTH, useValue: 18}, {
       provide: ConsoleReporter.PRINT,
       useValue: function(v: any) {
         // tslint:disable-next-line:no-console

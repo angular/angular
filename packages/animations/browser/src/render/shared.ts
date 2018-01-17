@@ -36,13 +36,22 @@ export function normalizeKeyframes(
     Object.keys(kf).forEach(prop => {
       let normalizedProp = prop;
       let normalizedValue = kf[prop];
-      if (normalizedValue == PRE_STYLE) {
-        normalizedValue = preStyles[prop];
-      } else if (normalizedValue == AUTO_STYLE) {
-        normalizedValue = postStyles[prop];
-      } else if (prop != 'offset') {
-        normalizedProp = normalizer.normalizePropertyName(prop, errors);
-        normalizedValue = normalizer.normalizeStyleValue(prop, normalizedProp, kf[prop], errors);
+      if (prop !== 'offset') {
+        normalizedProp = normalizer.normalizePropertyName(normalizedProp, errors);
+        switch (normalizedValue) {
+          case PRE_STYLE:
+            normalizedValue = preStyles[prop];
+            break;
+
+          case AUTO_STYLE:
+            normalizedValue = postStyles[prop];
+            break;
+
+          default:
+            normalizedValue =
+                normalizer.normalizeStyleValue(prop, normalizedProp, normalizedValue, errors);
+            break;
+        }
       }
       normalizedKeyframe[normalizedProp] = normalizedValue;
     });
@@ -155,6 +164,39 @@ if (typeof Element != 'undefined') {
     }
     return results;
   };
+}
+
+function containsVendorPrefix(prop: string): boolean {
+  // Webkit is the only real popular vendor prefix nowadays
+  // cc: http://shouldiprefix.com/
+  return prop.substring(1, 6) == 'ebkit';  // webkit or Webkit
+}
+
+let _CACHED_BODY: {style: any}|null = null;
+let _IS_WEBKIT = false;
+export function validateStyleProperty(prop: string): boolean {
+  if (!_CACHED_BODY) {
+    _CACHED_BODY = getBodyNode() || {};
+    _IS_WEBKIT = _CACHED_BODY !.style ? ('WebkitAppearance' in _CACHED_BODY !.style) : false;
+  }
+
+  let result = true;
+  if (_CACHED_BODY !.style && !containsVendorPrefix(prop)) {
+    result = prop in _CACHED_BODY !.style;
+    if (!result && _IS_WEBKIT) {
+      const camelProp = 'Webkit' + prop.charAt(0).toUpperCase() + prop.substr(1);
+      result = camelProp in _CACHED_BODY !.style;
+    }
+  }
+
+  return result;
+}
+
+export function getBodyNode(): any|null {
+  if (typeof document != 'undefined') {
+    return document.body;
+  }
+  return null;
 }
 
 export const matchesElement = _matches;

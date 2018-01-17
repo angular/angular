@@ -15,7 +15,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {unparse} from './unparser';
 import {validate} from './validator';
 
-export function main() {
+(function() {
   function createParser() { return new Parser(new Lexer()); }
 
   function parseAction(text: string, location: any = null): ASTWithSource {
@@ -165,7 +165,7 @@ export function main() {
 
         it('should parse map', () => {
           checkAction('{}');
-          checkAction('{a: 1}[2]');
+          checkAction('{a: 1, "b": 2}[2]');
           checkAction('{}["a"]');
         });
 
@@ -263,7 +263,7 @@ export function main() {
           checkBinding('a(b | c)', 'a((b | c))');
           checkBinding('a.b(c.d(e) | f)', 'a.b((c.d(e) | f))');
           checkBinding('[1, 2, 3] | a', '([1, 2, 3] | a)');
-          checkBinding('{a: 1} | b', '({a: 1} | b)');
+          checkBinding('{a: 1, "b": 2} | c', '({a: 1, "b": 2} | c)');
           checkBinding('a[b] | c', '(a[b] | c)');
           checkBinding('a?.b | c', '(a?.b | c)');
           checkBinding('true | a', '(true | a)');
@@ -604,4 +604,4 @@ export function main() {
       });
     });
   });
-}
+})();

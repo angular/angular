@@ -54,7 +54,7 @@ export class ACarComponent {
 }
 ////////// CarsComponent ////////////
 @Component({
-  selector: 'my-cars',
+  selector: 'app-cars',
   template: `
   <h3>Cars</h3>
   <a-car></a-car>`

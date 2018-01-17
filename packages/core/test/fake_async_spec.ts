@@ -12,10 +12,11 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {Parser} from '../../compiler/src/expression_parser/parser';
 
+
 const resolvedPromise = Promise.resolve(null);
 const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'];
 
-export function main() {
+{
   describe('fake async', () => {
     it('should run synchronous code', () => {
       let ran = false;

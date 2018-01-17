@@ -46,24 +46,6 @@ Inside the interpolation expression, you flow the component's `birthday` value t
 function on the right. All pipes work this way.
 
 
-<div class="l-sub-section">
-
-
-
-The `Date` and `Currency` pipes need the *ECMAScript Internationalization API*.
-Safari and other older browsers don't support it. You can add support with a polyfill.
-
-
-<code-example language="html">
-  &lt;script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en"&gt;&lt;/script&gt;
-
-</code-example>
-
-
-
-</div>
-
-
 
 
 ## Built-in pipes
@@ -232,7 +214,6 @@ Note the following:
 * You use your custom pipe the same way you use built-in pipes.
 * You must include your pipe in the `declarations` array of the `AppModule`.
 
-
 <div class="callout is-helpful">
 
 <header>
@@ -240,10 +221,9 @@ Note the following:
 </header>
 
 
-You must manually register custom pipes.
+You must register custom pipes.
 If you don't, Angular reports an error.
-In the previous example, you didn't list the `DatePipe` because all
-Angular built-in pipes are pre-registered.
+Angular CLI's generator registers the pipe automatically.
 
 
 </div>

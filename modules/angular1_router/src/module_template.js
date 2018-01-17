@@ -31,7 +31,7 @@ function $locationHashPrefixProvider($locationProvider) {
       hashPrefix = prefix;
     }
     return hashPrefixFn(prefix);
-  }
+  };
 
   // Return the final hashPrefix as the value of this service
   this.$get = function() { return hashPrefix; };
@@ -110,7 +110,7 @@ function routerFactory($q, $location, $browser, $rootScope, $injector, $routerRo
       }
     }
 
-  }
+  };
 
   var registry = new RouteRegistry($routerRootComponent);
   var location = new Location();

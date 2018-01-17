@@ -1,32 +1,29 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/publishLast';
 
-import { Logger } from 'app/shared/logger.service';
 import { Contributor, ContributorGroup } from './contributors.model';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
 const contributorsPath = CONTENT_URL_PREFIX + 'contributors.json';
-const knownGroups = ['Angular', 'Community'];
+const knownGroups = ['Angular', 'GDE'];
 
 @Injectable()
 export class ContributorService {
   contributors: Observable<ContributorGroup[]>;
 
-  constructor(private http: Http, private logger: Logger) {
+  constructor(private http: HttpClient) {
     this.contributors = this.getContributors();
   }
 
   private getContributors() {
-    const contributors = this.http.get(contributorsPath)
-      .map(res => res.json())
-
+    const contributors = this.http.get<{[key: string]: Contributor}>(contributorsPath)
       // Create group map
       .map(contribs => {
-        const contribMap = new Map<string, Contributor[]>();
+        const contribMap: { [name: string]: Contributor[]} = {};
         Object.keys(contribs).forEach(key => {
           const contributor = contribs[key];
           const group = contributor.group;

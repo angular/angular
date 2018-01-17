@@ -1,36 +1,29 @@
 {
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": true,
-    "experimentalDecorators": true,
-    "strictNullChecks": true,
-    "module": "es2015",
-    "moduleResolution": "node",
-    "outDir": "../../dist/packages/platform-browser",
+    "rootDir": ".",
     "paths": {
       "@angular/core": ["../../dist/packages/core"],
       "@angular/platform-browser/animations": ["../../dist/packages/platform-browser/animations"],
       "@angular/common": ["../../dist/packages/common"]
     },
-    "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es2015",
-    "skipLibCheck": true,
-    "lib": ["es2015", "dom"],
-    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
-    "types": []
+    "outDir": "../../dist/packages/platform-browser"
   },
+
   "files": [
     "public_api.ts",
     "../../node_modules/@types/hammerjs/index.d.ts",
-    "../../node_modules/zone.js/dist/zone.js.d.ts"
+    "../../node_modules/zone.js/dist/zone.js.d.ts",
+    "../goog.d.ts"
   ],
+
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "platform-browser.js",
     "flatModuleId": "@angular/platform-browser"
   }
 }

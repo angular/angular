@@ -9,8 +9,9 @@
 /**
  * @module
  * @description
- * Entry point for all public APIs of the common package.
+ * Entry point for all public APIs of this package.
  */
 export * from './src/common';
+export {registerLocaleData as ɵregisterLocaleData} from './src/i18n/locale_data';
 
 // This file only reexports content of the `src` folder. Keep it that way.

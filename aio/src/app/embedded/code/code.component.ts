@@ -1,11 +1,9 @@
-import { Component, ElementRef, ViewChild, OnChanges, OnDestroy, Input } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnChanges, Input } from '@angular/core';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { CopierService } from 'app/shared/copier.service';
-import { MdSnackBar } from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-const originalLabel = 'Copy Code';
-const copiedLabel = 'Copied!';
 const defaultLineNumsCount = 10; // by default, show linenums over this number
 
 /**
@@ -22,8 +20,8 @@ const defaultLineNumsCount = 10; // by default, show linenums over this number
  *   [code]="variableContainingCode"
  *   [language]="ts"
  *   [linenums]="true"
- *   [path]="ts-to-js/ts/src/app/app.module.ts"
- *   [region]="ng2import">
+ *   [path]="router/src/app/app.module.ts"
+ *   [region]="animations-module">
  * </aio-code>
  * ```
  */
@@ -50,6 +48,11 @@ export class CodeComponent implements OnChanges {
    */
   @Input()
   code: string;
+
+  /**
+   * The code to be copied when clicking the copy button, this should not be HTML encoded
+   */
+  private codeText: string;
 
   /**
    * set to true if the copy button is not to be shown
@@ -97,7 +100,7 @@ export class CodeComponent implements OnChanges {
   @ViewChild('codeContainer') codeContainer: ElementRef;
 
   constructor(
-    private snackbar: MdSnackBar,
+    private snackbar: MatSnackBar,
     private pretty: PrettyPrinter,
     private copier: CopierService,
     private logger: Logger) {}
@@ -108,7 +111,7 @@ export class CodeComponent implements OnChanges {
 
     if (!this.code) {
       const src = this.path ? this.path + (this.region ? '#' + this.region : '') : '';
-      const srcMsg = src ? ` for<br>${src}` : '.';
+      const srcMsg = src ? ` for\n${src}` : '.';
       this.setCodeHtml(`<p class="code-missing">The code sample is missing${srcMsg}</p>`);
       return;
     }
@@ -116,6 +119,7 @@ export class CodeComponent implements OnChanges {
     const linenums = this.getLinenums();
 
     this.setCodeHtml(this.code); // start with unformatted code
+    this.codeText = this.getCodeText(); // store the unformatted code as text (for copying)
     this.pretty.formatCode(this.code, this.language, linenums).subscribe(
       formattedCode => this.setCodeHtml(formattedCode),
       err => { /* ignore failure to format */ }
@@ -128,9 +132,15 @@ export class CodeComponent implements OnChanges {
     this.codeContainer.nativeElement.innerHTML = formattedCode;
   }
 
+  private getCodeText() {
+    // `prettify` may remove newlines, e.g. when `linenums` are on. Retrieve the content of the
+    // container as text, before prettifying it.
+    // We take the textContent because we don't want it to be HTML encoded.
+    return this.codeContainer.nativeElement.textContent;
+  }
+
   doCopy() {
-    // We take the innerText because we don't want it to be HTML encoded
-    const code = this.codeContainer.nativeElement.innerText;
+    const code = this.codeText;
     if (this.copier.copyText(code)) {
       this.logger.log('Copied code to clipboard:', code);
       // success snackbar alert
@@ -160,7 +170,7 @@ export class CodeComponent implements OnChanges {
   }
 }
 
-function leftAlign(text) {
+function leftAlign(text: string) {
   let indent = Number.MAX_VALUE;
   const lines = text.split('\n');
   lines.forEach(line => {

@@ -15,20 +15,7 @@ benefit _every_ Angular project.
 By the end of the chapter, you'll have a basic understanding of development with the CLI
 and a foundation for both these documentation samples and for real world applications.
 
-<!--
-
-You'll pursue these ends in the following high-level steps:
-
-1. [Set up](guide/cli-quickstart#devenv) the development environment.
-2. [Create](guide/cli-quickstart#create-proj) a new project and skeleton application.
-3. [Serve](guide/cli-quickstart#serve) the application.
-4. [Edit](guide/cli-quickstart#first-component) the application.
-
--->
-
 And you can also <a href="generated/zips/cli-quickstart/cli-quickstart.zip" target="_blank">download the example.</a>
-
-
 
 <h2 id='devenv'>
   Step 1. Set up the Development Environment
@@ -87,8 +74,8 @@ Generate a new project and skeleton application by running the following command
 
 
 
-Patience please.
-It takes time to set up a new project, most of it spent installing npm packages.
+Patience, please.
+It takes time to set up a new project; most of it is spent installing npm packages.
 
 
 </div>
@@ -108,7 +95,6 @@ Go to the project directory and launch the server.
 <code-example language="sh" class="code-shell">
   cd my-app
   ng serve --open
-
 </code-example>
 
 
@@ -140,7 +126,7 @@ This is the _root component_ and it is named `app-root`.
 You can find it in `./src/app/app.component.ts`.
 
 
-Open the component file and change the `title` property from _app works!_ to _My First Angular App_:
+Open the component file and change the `title` property from _Welcome to app!!_ to _Welcome to My First Angular App!!_:
 
 
 <code-example path="cli-quickstart/src/app/app.component.ts" region="title" title="src/app/app.component.ts" linenums="false"></code-example>
@@ -331,7 +317,7 @@ Any files outside of this folder are meant to support building your app.
       The main HTML page that is served when someone visits your site.
       Most of the time you'll never need to edit it.
       The CLI automatically adds all `js` and `css` files when building your app so you
-      never need to add any `&lt;script&gt;` or `&lt;link&gt;` tags here manually.
+      never need to add any `<script>` or `<link>` tags here manually.
 
     </td>
   </tr>
@@ -346,8 +332,8 @@ Any files outside of this folder are meant to support building your app.
       The main entry point for your app.
       Compiles the application with the [JIT compiler](guide/glossary#jit)
       and bootstraps the application's root module (`AppModule`) to run in the browser.
-      You can also use the [AOT compiler](guide/glossary#ahead-of-time-aot-compilation)
-      without changing any code by passing in `--aot` to `ng build` or `ng serve`.
+      You can also use the [AOT compiler](guide/aot-compiler)
+      without changing any code by appending the`--aot` flag to the `ng build` and `ng serve` commands.
 
     </td>
   </tr>
@@ -464,7 +450,7 @@ These files go in the root folder next to `src/`.
     </td>
     <td>
 
-      Inside `e2e/` live the End-to-End tests.
+      Inside `e2e/` live the end-to-end tests.
       They shouldn't be inside `src/` because e2e tests are really a separate app that
       just so happens to test your main app.
       That's also why they have their own `tsconfig.e2e.json`.
@@ -493,7 +479,7 @@ These files go in the root folder next to `src/`.
 
       Configuration for Angular CLI.
       In this file you can set several defaults and also configure what files are included
-      when your project is build.
+      when your project is built.
       Check out the official documentation if you want to know more.
 
     </td>

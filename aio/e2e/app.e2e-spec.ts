@@ -1,4 +1,4 @@
-import { browser, element, by, promise } from 'protractor';
+import { browser, by, element } from 'protractor';
 import { SitePage } from './app.po';
 
 describe('site App', function() {
@@ -7,21 +7,32 @@ describe('site App', function() {
   beforeEach(() => {
     SitePage.setWindowWidth(1050);   // Make the window wide enough to show the SideNav side-by-side.
     page = new SitePage();
-    page.navigateTo();
   });
 
   it('should show features text after clicking "Features"', () => {
-    page.getLink('features').click();
+    page.navigateTo('');
+    page.getTopMenuLink('features').click();
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
   });
 
-  it('should show the tutorial index page at `/tutorial/` after jitterbugging through features', () => {
+  it('should set appropriate window titles', () => {
+    page.navigateTo('');
+    expect(browser.getTitle()).toBe('Angular');
+
+    page.getTopMenuLink('features').click();
+    expect(browser.getTitle()).toBe('Angular - FEATURES & BENEFITS');
+
+    page.homeLink.click();
+    expect(browser.getTitle()).toBe('Angular');
+  });
+
+  it('should show the tutorial index page at `/tutorial` after jitterbugging through features', () => {
     // check that we can navigate directly to the tutorial page
-    page.navigateTo('tutorial/');
+    page.navigateTo('tutorial');
     expect(page.getDocViewerText()).toMatch(/Tutorial: Tour of Heroes/i);
 
     // navigate to a different page
-    page.getLink('features').click();
+    page.getTopMenuLink('features').click();
     expect(page.getDocViewerText()).toMatch(/Progressive web apps/i);
 
     // Show the menu
@@ -41,21 +52,27 @@ describe('site App', function() {
 
   describe('scrolling to the top', () => {
     it('should scroll to the top when navigating to another page', () => {
-      page.navigateTo('guide/docs');
-      page.scrollToBottom();
-      page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
+      page.navigateTo('guide/security');
 
-      page.navigateTo('guide/api');
-      page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
+      page.scrollToBottom();
+      expect(page.getScrollTop()).toBeGreaterThan(0);
+
+      page.getNavItem(/api/i).click();
+      browser.waitForAngular();
+      expect(page.locationPath()).toBe('/api');
+      expect(page.getScrollTop()).toBe(0);
     });
 
     it('should scroll to the top when navigating to the same page', () => {
-      page.navigateTo('guide/docs');
-      page.scrollToBottom();
-      page.getScrollTop().then(scrollTop => expect(scrollTop).toBeGreaterThan(0));
+      page.navigateTo('guide/security');
 
-      page.navigateTo('guide/docs');
-      page.getScrollTop().then(scrollTop => expect(scrollTop).toBe(0));
+      page.scrollToBottom();
+      expect(page.getScrollTop()).toBeGreaterThan(0);
+
+      page.getNavItem(/security/i).click();
+      browser.waitForAngular();
+      expect(page.locationPath()).toBe('/guide/security');
+      expect(page.getScrollTop()).toBe(0);
     });
   });
 
@@ -67,29 +84,56 @@ describe('site App', function() {
   });
 
   describe('google analytics', () => {
-    beforeEach(done => page.gaReady.then(done));
 
-    it('should call ga', done => {
-      page.ga()
+    it('should call ga with initial URL', done => {
+      let path: string;
+      page.navigateTo('api');
+      page.locationPath()
+        .then(p => path = p)
+        .then(() => page.ga())
         .then(calls => {
-          expect(calls.length).toBeGreaterThan(2, 'ga calls');
+          // The last call (length-1) will be the `send` command
+          // The second to last call (length-2) will be the command to `set` the page url
+          expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
           done();
         });
     });
 
-    it('should call ga with initial URL', done => {
+    it('should call ga with new URL on navigation', done => {
       let path: string;
-
+      page.navigateTo('');
+      page.getTopMenuLink('features').click();
       page.locationPath()
         .then(p => path = p)
-        .then(() => page.ga().then(calls => {
-          expect(calls.length).toBeGreaterThan(2, 'ga calls');
-          expect(calls[1]).toEqual(['set', 'page', path]);
+        .then(() => page.ga())
+        .then(calls => {
+          // The last call (length-1) will be the `send` command
+          // The second to last call (length-2) will be the command to `set` the page url
+          expect(calls[calls.length - 2]).toEqual(['set', 'page', path]);
           done();
-        }));
+        });
     });
-
-    // Todo: add test to confirm tracking URL when navigate.
   });
 
+  describe('search', () => {
+    it('should find pages when searching by a partial word in the title', () => {
+      page.navigateTo('');
+
+      page.enterSearch('ngCont');
+      expect(page.getSearchResults()).toContain('NgControl');
+
+      page.enterSearch('accessor');
+      expect(page.getSearchResults()).toContain('ControlValueAccessor');
+    });
+  });
+
+  describe('404 page', () => {
+    it('should search the index for words found in the url', () => {
+      page.navigateTo('http/router');
+      const results = page.getSearchResults();
+
+      expect(results).toContain('Http');
+      expect(results).toContain('Router');
+    });
+  });
 });

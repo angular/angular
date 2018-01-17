@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SecurityContext} from '@angular/core';
-
 import {AstPath} from '../ast_path';
 import {CompileDirectiveSummary, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
+import {SecurityContext} from '../core';
 import {AST} from '../expression_parser/ast';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import {ParseSourceSpan} from '../parse_util';
@@ -64,14 +63,17 @@ export class AttrAst implements TemplateAst {
  * `[@trigger]="stateExp"`)
  */
 export class BoundElementPropertyAst implements TemplateAst {
+  public readonly isAnimation: boolean;
+
   constructor(
       public name: string, public type: PropertyBindingType,
       public securityContext: SecurityContext, public value: AST, public unit: string|null,
-      public sourceSpan: ParseSourceSpan) {}
+      public sourceSpan: ParseSourceSpan) {
+    this.isAnimation = this.type === PropertyBindingType.Animation;
+  }
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElementProperty(this, context);
   }
-  get isAnimation(): boolean { return this.type === PropertyBindingType.Animation; }
 }
 
 /**
@@ -89,14 +91,18 @@ export class BoundEventAst implements TemplateAst {
     }
   }
 
+  public readonly fullName: string;
+  public readonly isAnimation: boolean;
+
   constructor(
       public name: string, public target: string|null, public phase: string|null,
-      public handler: AST, public sourceSpan: ParseSourceSpan) {}
+      public handler: AST, public sourceSpan: ParseSourceSpan) {
+    this.fullName = BoundEventAst.calcFullName(this.name, this.target, this.phase);
+    this.isAnimation = !!this.phase;
+  }
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEvent(this, context);
   }
-  get fullName() { return BoundEventAst.calcFullName(this.name, this.target, this.phase); }
-  get isAnimation(): boolean { return !!this.phase; }
 }
 
 /**

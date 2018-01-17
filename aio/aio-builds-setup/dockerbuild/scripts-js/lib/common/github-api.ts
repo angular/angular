@@ -63,7 +63,7 @@ export class GithubApi {
         return items;
       }
 
-      return this.getPaginated(pathname, baseParams, currentPage + 1).then(moreItems => [...items, ...moreItems]);
+      return this.getPaginated<T>(pathname, baseParams, currentPage + 1).then(moreItems => [...items, ...moreItems]);
     });
   }
 

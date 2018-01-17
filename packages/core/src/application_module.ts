@@ -7,7 +7,7 @@
  */
 
 import {ApplicationInitStatus} from './application_init';
-import {ApplicationRef, ApplicationRef_} from './application_ref';
+import {ApplicationRef} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
 import {Inject, Optional, SkipSelf} from './di/metadata';
@@ -35,8 +35,7 @@ export function _localeFactory(locale?: string): string {
  */
 @NgModule({
   providers: [
-    ApplicationRef_,
-    {provide: ApplicationRef, useExisting: ApplicationRef_},
+    ApplicationRef,
     ApplicationInitStatus,
     Compiler,
     APP_ID_RANDOM_PROVIDER,

@@ -53,7 +53,7 @@ function overrideSetup() {
   // #enddocregion hds-spy
 
   // the `id` value is irrelevant because ignored by service stub
-  beforeEach(() => activatedRoute.testParams = { id: 99999 } );
+  beforeEach(() => activatedRoute.testParamMap = { id: 99999 } );
 
   // #docregion setup-override
   beforeEach( async(() => {
@@ -158,7 +158,7 @@ function heroModuleSetup() {
 
     beforeEach( async(() => {
       expectedHero = firstHero;
-      activatedRoute.testParams = { id: expectedHero.id };
+      activatedRoute.testParamMap = { id: expectedHero.id };
       createComponent();
     }));
 
@@ -227,9 +227,9 @@ function heroModuleSetup() {
   // #enddocregion route-no-id
 
   // #docregion route-bad-id
-  describe('when navigate to non-existant hero id', () => {
+  describe('when navigate to non-existent hero id', () => {
     beforeEach( async(() => {
-      activatedRoute.testParams = { id: 99999 };
+      activatedRoute.testParamMap = { id: 99999 };
       createComponent();
     }));
 
@@ -279,7 +279,7 @@ function formsModuleSetup() {
 
   it('should display 1st hero\'s name', fakeAsync(() => {
     const expectedHero = firstHero;
-    activatedRoute.testParams = { id: expectedHero.id };
+    activatedRoute.testParamMap = { id: expectedHero.id };
     createComponent().then(() => {
       expect(page.nameDisplay.textContent).toBe(expectedHero.name);
     });
@@ -307,7 +307,7 @@ function sharedModuleSetup() {
 
   it('should display 1st hero\'s name', fakeAsync(() => {
     const expectedHero = firstHero;
-    activatedRoute.testParams = { id: expectedHero.id };
+    activatedRoute.testParamMap = { id: expectedHero.id };
     createComponent().then(() => {
       expect(page.nameDisplay.textContent).toBe(expectedHero.name);
     });

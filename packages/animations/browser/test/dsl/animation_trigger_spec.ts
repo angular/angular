@@ -10,10 +10,11 @@ import {AnimationOptions, animate, state, style, transition} from '@angular/anim
 import {AnimationTransitionInstruction} from '@angular/animations/browser/src/dsl/animation_transition_instruction';
 import {AnimationTrigger} from '@angular/animations/browser/src/dsl/animation_trigger';
 
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '../../src/util';
 import {MockAnimationDriver} from '../../testing';
 import {makeTrigger} from '../shared';
 
-export function main() {
+{
   describe('AnimationTrigger', () => {
     // these tests are only mean't to be run within the DOM (for now)
     if (typeof Element == 'undefined') return;
@@ -51,12 +52,14 @@ export function main() {
     describe('trigger usage', () => {
       it('should construct a trigger based on the states and transition data', () => {
         const result = makeTrigger('name', [
-          state('on', style({width: 0})), state('off', style({width: 100})),
-          transition('on => off', animate(1000)), transition('off => on', animate(1000))
+          state('on', style({width: 0})),
+          state('off', style({width: 100})),
+          transition('on => off', animate(1000)),
+          transition('off => on', animate(1000)),
         ]);
 
-        expect(result.states).toEqual({'on': {width: 0}, 'off': {width: 100}});
-
+        expect(result.states['on'].buildStyles({}, [])).toEqual({width: 0});
+        expect(result.states['off'].buildStyles({}, [])).toEqual({width: 100});
         expect(result.transitionFactories.length).toEqual(2);
       });
 
@@ -66,7 +69,9 @@ export function main() {
           transition('off => on', animate(1000))
         ]);
 
-        expect(result.states).toEqual({'on': {width: 50}, 'off': {width: 50}});
+
+        expect(result.states['on'].buildStyles({}, [])).toEqual({width: 50});
+        expect(result.states['off'].buildStyles({}, [])).toEqual({width: 50});
       });
 
       it('should find the first transition that matches', () => {
@@ -145,7 +150,7 @@ export function main() {
                   'a => b', [style({height: '{{ a }}'}), animate(1000, style({height: '{{ b }}'}))],
                   buildParams({a: '100px', b: '200px'}))]);
 
-          const trans = buildTransition(result, element, 'a', 'b', buildParams({a: '300px'})) !;
+          const trans = buildTransition(result, element, 'a', 'b', {}, buildParams({a: '300px'})) !;
 
           const keyframes = trans.timelines[0].keyframes;
           expect(keyframes).toEqual([{height: '300px', offset: 0}, {height: '200px', offset: 1}]);
@@ -182,7 +187,7 @@ export function main() {
            const trans = buildTransition(result, element, false, true) !;
            expect(trans.timelines[0].keyframes).toEqual([
              {offset: 0, color: 'red'}, {offset: 1, color: 'green'}
-           ])
+           ]);
          });
 
       it('should match `1` and `0` state styles on a `true <=> false` boolean transition given boolean values',
@@ -195,7 +200,7 @@ export function main() {
            const trans = buildTransition(result, element, false, true) !;
            expect(trans.timelines[0].keyframes).toEqual([
              {offset: 0, color: 'orange'}, {offset: 1, color: 'blue'}
-           ])
+           ]);
          });
 
       describe('aliases', () => {
@@ -219,11 +224,14 @@ export function main() {
 
 function buildTransition(
     trigger: AnimationTrigger, element: any, fromState: any, toState: any,
-    params?: AnimationOptions): AnimationTransitionInstruction|null {
+    fromOptions?: AnimationOptions, toOptions?: AnimationOptions): AnimationTransitionInstruction|
+    null {
   const trans = trigger.matchTransition(fromState, toState) !;
   if (trans) {
     const driver = new MockAnimationDriver();
-    return trans.build(driver, element, fromState, toState, params) !;
+    return trans.build(
+        driver, element, fromState, toState, ENTER_CLASSNAME, LEAVE_CLASSNAME, fromOptions,
+        toOptions) !;
   }
   return null;
 }

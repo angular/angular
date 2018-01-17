@@ -24,6 +24,20 @@ function isEmptyInputValue(value: any): boolean {
  *
  * Provide this using `multi: true` to add validators.
  *
+ * ### Example
+ *
+ * ```typescript
+ * @Directive({
+ *   selector: '[custom-validator]',
+ *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
+ * })
+ * class CustomValidatorDirective implements Validator {
+ *   validate(control: AbstractControl): ValidationErrors | null {
+ *     return {"custom": true};
+ *   }
+ * }
+ * ```
+ *
  * @stable
  */
 export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
@@ -61,6 +75,8 @@ const EMAIL_REGEXP =
 export class Validators {
   /**
    * Validator that requires controls to have a value greater than a number.
+   *`min()` exists only as a function, not as a directive. For example,
+   * `control = new FormControl('', Validators.min(3));`.
    */
   static min(min: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -76,6 +92,8 @@ export class Validators {
 
   /**
    * Validator that requires controls to have a value less than a number.
+   * `max()` exists only as a function, not as a directive. For example,
+   * `control = new FormControl('', Validators.max(15));`.
    */
   static max(max: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -145,7 +163,14 @@ export class Validators {
     let regex: RegExp;
     let regexStr: string;
     if (typeof pattern === 'string') {
-      regexStr = `^${pattern}$`;
+      regexStr = '';
+
+      if (pattern.charAt(0) !== '^') regexStr += '^';
+
+      regexStr += pattern;
+
+      if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
+
       regex = new RegExp(regexStr);
     } else {
       regexStr = pattern.toString();

@@ -1,4 +1,4 @@
-import { ReflectiveInjector, SecurityContext } from '@angular/core';
+import { ReflectiveInjector } from '@angular/core';
 import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subject } from 'rxjs/Subject';
 
@@ -31,16 +31,12 @@ describe('TocService', () => {
     tocService.tocList.subscribe(tocList => lastTocList = tocList);
   });
 
-  it('should be creatable', () => {
-    expect(tocService).toBeTruthy();
-  });
-
   describe('tocList', () => {
     it('should emit the latest value to new subscribers', () => {
       const expectedValue1 = tocItem('Heading A');
       const expectedValue2 = tocItem('Heading B');
-      let value1: TocItem[];
-      let value2: TocItem[];
+      let value1: TocItem[]|undefined;
+      let value2: TocItem[]|undefined;
 
       tocService.tocList.next([]);
       tocService.tocList.subscribe(v => value1 = v);
@@ -239,29 +235,29 @@ describe('TocService', () => {
     });
 
     it('should have href with docId and heading\'s id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Heading one');
+      const tocItem = lastTocList.find(item => item.title === 'Heading one')!;
       expect(tocItem.href).toEqual(`${docId}#heading-one-special-id`);
     });
 
     it('should have level "h1" for an <h1>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Fun with TOC');
+      const tocItem = lastTocList.find(item => item.title === 'Fun with TOC')!;
       expect(tocItem.level).toEqual('h1');
     });
 
     it('should have level "h2" for an <h2>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'Heading one');
+      const tocItem = lastTocList.find(item => item.title === 'Heading one')!;
       expect(tocItem.level).toEqual('h2');
     });
 
     it('should have level "h3" for an <h3>', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H3 3a');
+      const tocItem = lastTocList.find(item => item.title === 'H3 3a')!;
       expect(tocItem.level).toEqual('h3');
     });
 
-    it('should have title which is heading\'s innerText ', () => {
+    it('should have title which is heading\'s textContent ', () => {
       const heading = headings[3];
       const tocItem = lastTocList[3];
-      expect(heading.innerText).toEqual(tocItem.title);
+      expect(heading.textContent).toEqual(tocItem.title);
     });
 
     it('should have "SafeHtml" content which is heading\'s innerHTML ', () => {
@@ -272,13 +268,12 @@ describe('TocService', () => {
     });
 
     it('should calculate and set id of heading without an id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H2 Two');
       const id = headings[2].getAttribute('id');
       expect(id).toEqual('h2-two');
     });
 
     it('should have href with docId and calculated heading id', () => {
-      const tocItem = lastTocList.find(item => item.title === 'H2 Two');
+      const tocItem = lastTocList.find(item => item.title === 'H2 Two')!;
       expect(tocItem.href).toEqual(`${docId}#h2-two`);
     });
 
@@ -348,7 +343,7 @@ interface TestSafeHtml extends SafeHtml {
 
 class TestDomSanitizer {
   bypassSecurityTrustHtml = jasmine.createSpy('bypassSecurityTrustHtml')
-    .and.callFake(html => {
+    .and.callFake((html: string) => {
       return {
         changingThisBreaksApplicationSecurity: html,
         getTypeName: () => 'HTML',

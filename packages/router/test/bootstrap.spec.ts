@@ -15,6 +15,7 @@ import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
 
 
 describe('bootstrap', () => {
+  if (isNode) return;
   let log: any[] = [];
   let testProviders: any[] = null !;
 
@@ -82,8 +83,11 @@ describe('bootstrap', () => {
       const router = res.injector.get(Router);
       const data = router.routerState.snapshot.root.firstChild !.data;
       expect(data['test']).toEqual('test-data');
-      expect(log).toEqual(
-          ['TestModule', 'NavigationStart', 'RoutesRecognized', 'RootCmp', 'NavigationEnd']);
+      expect(log).toEqual([
+        'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
+        'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart', 'ResolveEnd',
+        'RootCmp', 'ActivationEnd', 'ChildActivationEnd', 'NavigationEnd'
+      ]);
       done();
     });
   });
@@ -116,8 +120,11 @@ describe('bootstrap', () => {
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
          const router = res.injector.get(Router);
          expect(router.routerState.snapshot.root.firstChild).toBeNull();
-         // NavigationEnd has not been emitted yet because bootstrap returned too early
-         expect(log).toEqual(['TestModule', 'RootCmp', 'NavigationStart', 'RoutesRecognized']);
+         // ResolveEnd has not been emitted yet because bootstrap returned too early
+         expect(log).toEqual([
+           'TestModule', 'RootCmp', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
+           'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart'
+         ]);
 
          router.events.subscribe((e) => {
            if (e instanceof NavigationEnd) {
@@ -208,7 +215,7 @@ describe('bootstrap', () => {
          const appRef: ApplicationRef = res.injector.get(ApplicationRef);
          appRef.bootstrap(SecondRootCmp);
 
-         expect(router.resetRootComponentType).not.toHaveBeenCalled();
+         expect((router as any).resetRootComponentType).not.toHaveBeenCalled();
 
          done();
        });
@@ -234,7 +241,7 @@ describe('bootstrap', () => {
          const appRef: ApplicationRef = res.injector.get(ApplicationRef);
          appRef.components[0].onDestroy(() => {
            appRef.bootstrap(SecondRootCmp);
-           expect(router.resetRootComponentType).toHaveBeenCalled();
+           expect((router as any).resetRootComponentType).toHaveBeenCalled();
            done();
          });
 

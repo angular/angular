@@ -2,13 +2,13 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 
 export interface TabInfo {
-  class: string;
+  class: string|null;
   code: string;
-  language: string;
+  language: string|null;
   linenums: any;
   path: string;
   region: string;
-  title: string;
+  title: string|null;
 }
 
 /**
@@ -21,16 +21,21 @@ export interface TabInfo {
 @Component({
   selector: 'code-tabs',
   template: `
-  <md-tab-group class="code-tab-group">
-    <md-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
-      <ng-template md-tab-label>
-        <span class="{{tab.class}}">{{ tab.title }}</span>
-      </ng-template>
-      <aio-code [code]="tab.code" [language]="tab.language" [linenums]="tab.linenums"
-      [path]="tab.path" [region]="tab.region" [title]="tab.title"
-      class="{{ tab.class }}"></aio-code>
-    </md-tab>
-  </md-tab-group>
+    <mat-tab-group class="code-tab-group" disableRipple>
+      <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
+        <ng-template mat-tab-label>
+          <span class="{{ tab.class }}">{{ tab.title }}</span>
+        </ng-template>
+        <aio-code class="{{ tab.class }}"
+          [code]="tab.code"
+          [language]="tab.language"
+          [linenums]="tab.linenums"
+          [path]="tab.path"
+          [region]="tab.region"
+          [title]="tab.title">
+        </aio-code>
+      </mat-tab>
+    </mat-tab-group>
   `
 })
 export class CodeTabsComponent implements OnInit {
@@ -52,7 +57,7 @@ export class CodeTabsComponent implements OnInit {
   processContent(content: string) {
     // We add it to an element so that we can easily parse the HTML
     const element = document.createElement('div');
-    // **Security:** `codeTabsContent` is provided by docs authors and as such its considered to
+    // **Security:** `codeTabsContent` is provided by docs authors and as such is considered to
     // be safe for innerHTML purposes.
     element.innerHTML = content;
 
@@ -61,8 +66,8 @@ export class CodeTabsComponent implements OnInit {
     for (let i = 0; i < codeExamples.length; i++) {
       const codeExample = codeExamples.item(i);
       const tab = {
-        code: codeExample.innerHTML,
         class: codeExample.getAttribute('class'),
+        code: codeExample.innerHTML,
         language: codeExample.getAttribute('language'),
         linenums: this.getLinenums(codeExample),
         path: codeExample.getAttribute('path') || '',

@@ -10,7 +10,7 @@ import {Provider} from '@angular/core';
 
 import {NgClass} from './ng_class';
 import {NgComponentOutlet} from './ng_component_outlet';
-import {NgFor, NgForOf, NgForOfContext} from './ng_for_of';
+import {NgForOf, NgForOfContext} from './ng_for_of';
 import {NgIf, NgIfContext} from './ng_if';
 import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
@@ -20,7 +20,6 @@ import {NgTemplateOutlet} from './ng_template_outlet';
 export {
   NgClass,
   NgComponentOutlet,
-  NgFor,
   NgForOf,
   NgForOfContext,
   NgIf,
@@ -53,8 +52,3 @@ export const COMMON_DIRECTIVES: Provider[] = [
   NgPlural,
   NgPluralCase,
 ];
-
-/**
- * A collection of deprecated directives that are no longer part of the core module.
- */
-export const COMMON_DEPRECATED_DIRECTIVES: Provider[] = [NgFor];

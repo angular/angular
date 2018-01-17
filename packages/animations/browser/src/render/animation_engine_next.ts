@@ -25,12 +25,12 @@ export class AnimationEngine {
   // this method is designed to be overridden by the code that uses this engine
   public onRemovalComplete = (element: any, context: any) => {};
 
-  constructor(driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
-    this._transitionEngine = new TransitionAnimationEngine(driver, normalizer);
-    this._timelineEngine = new TimelineAnimationEngine(driver, normalizer);
+  constructor(private _driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
+    this._transitionEngine = new TransitionAnimationEngine(_driver, normalizer);
+    this._timelineEngine = new TimelineAnimationEngine(_driver, normalizer);
 
-    this._transitionEngine.onRemovalComplete =
-        (element: any, context: any) => { this.onRemovalComplete(element, context); }
+    this._transitionEngine.onRemovalComplete = (element: any, context: any) =>
+        this.onRemovalComplete(element, context);
   }
 
   registerTrigger(
@@ -40,7 +40,8 @@ export class AnimationEngine {
     let trigger = this._triggerCache[cacheKey];
     if (!trigger) {
       const errors: any[] = [];
-      const ast = buildAnimationAst(metadata as AnimationMetadata, errors) as TriggerAst;
+      const ast =
+          buildAnimationAst(this._driver, metadata as AnimationMetadata, errors) as TriggerAst;
       if (errors.length) {
         throw new Error(
             `The animation trigger "${name}" has failed to build due to the following errors:\n - ${errors.join("\n - ")}`);
@@ -67,15 +68,18 @@ export class AnimationEngine {
     this._transitionEngine.removeNode(namespaceId, element, context);
   }
 
-  setProperty(namespaceId: string, element: any, property: string, value: any): boolean {
-    // @@property
+  disableAnimations(element: any, disable: boolean) {
+    this._transitionEngine.markElementAsDisabled(element, disable);
+  }
+
+  process(namespaceId: string, element: any, property: string, value: any) {
     if (property.charAt(0) == '@') {
       const [id, action] = parseTimelineCommand(property);
       const args = value as any[];
       this._timelineEngine.command(id, element, action, args);
-      return false;
+    } else {
+      this._transitionEngine.trigger(namespaceId, element, property, value);
     }
-    return this._transitionEngine.trigger(namespaceId, element, property, value);
   }
 
   listen(

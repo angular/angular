@@ -2,13 +2,14 @@
 // Simulate a simple test
 // Reader should look to the testing chapter for the real thing
 
-import { Component }           from '@angular/core';
+import { Component } from '@angular/core';
 
-import { HeroService }         from './heroes/hero.service';
-import { HeroListComponent }   from './heroes/hero-list.component';
+import { Hero  } from './heroes/hero';
+import { HeroService } from './heroes/hero.service';
+import { HeroListComponent } from './heroes/hero-list.component';
 
 @Component({
-  selector: 'my-tests',
+  selector: 'app-tests',
   template: `
     <h2>Tests</h2>
     <p id="tests">Tests {{results.pass}}: {{results.message}}</p>
@@ -22,12 +23,13 @@ export class TestComponent {
 function runTests() {
 
   // #docregion spec
-  let expectedHeroes = [{name: 'A'}, {name: 'B'}]
-  let mockService = <HeroService> {getHeroes: () => expectedHeroes }
+  const expectedHeroes = [{name: 'A'}, {name: 'B'}]
+  const mockService = <HeroService> {getHeroes: () => expectedHeroes }
 
   it('should have heroes when HeroListComponent created', () => {
-    let hlc = new HeroListComponent(mockService);
-    expect(hlc.heroes.length).toEqual(expectedHeroes.length);
+    // Pass the mock to the constructor as the Angular injector would
+    const component = new HeroListComponent(mockService);
+    expect(component.heroes.length).toEqual(expectedHeroes.length);
   });
   // #enddocregion spec
 

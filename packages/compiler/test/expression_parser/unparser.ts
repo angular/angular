@@ -124,7 +124,9 @@ class Unparser implements AstVisitor {
     for (let i = 0; i < ast.keys.length; i++) {
       if (!isFirst) this._expression += ', ';
       isFirst = false;
-      this._expression += `${ast.keys[i]}: `;
+      const key = ast.keys[i];
+      this._expression += key.quoted ? JSON.stringify(key.key) : key.key;
+      this._expression += ': ';
       this._visit(ast.values[i]);
     }
 

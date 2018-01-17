@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver, extractProgramSymbols} from '@angular/compiler';
+import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver} from '@angular/compiler';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
-import {CompilerHostContext} from 'compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -25,7 +24,7 @@ function calcRootPath() {
 
 const realFiles = new Map<string, string>();
 
-export class MockLanguageServiceHost implements ts.LanguageServiceHost, CompilerHostContext {
+export class MockLanguageServiceHost implements ts.LanguageServiceHost {
   private options: ts.CompilerOptions;
   private context: MockAotContext;
   private assumedExist = new Set<string>();
@@ -46,7 +45,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost, Compiler
       lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
       paths: {'@angular/*': [calcRootPath() + '/packages/*']}
     };
-    this.context = new MockAotContext(currentDirectory, files)
+    this.context = new MockAotContext(currentDirectory, files);
   }
 
   getCompilationSettings(): ts.CompilerOptions { return this.options; }
@@ -105,21 +104,24 @@ const summaryResolver = new AotSummaryResolver(
     {
       loadSummary(filePath: string) { return null; },
       isSourceFile(sourceFilePath: string) { return true; },
-      getOutputFileName(sourceFilePath: string) { return sourceFilePath; }
+      toSummaryFileName(sourceFilePath: string) { return sourceFilePath; },
+      fromSummaryFileName(filePath: string): string{return filePath;},
     },
     staticSymbolCache);
 
 export class DiagnosticContext {
+  // tslint:disable
   _analyzedModules: NgAnalyzedModules;
   _staticSymbolResolver: StaticSymbolResolver|undefined;
   _reflector: StaticReflector|undefined;
   _errors: {e: any, path?: string}[] = [];
   _resolver: CompileMetadataResolver|undefined;
   _refletor: StaticReflector;
+  // tslint:enable
 
   constructor(
       public service: ts.LanguageService, public program: ts.Program,
-      public checker: ts.TypeChecker, public host: AotCompilerHost) {}
+      public checker: ts.TypeChecker, public host: StaticSymbolResolverHost) {}
 
   private collectError(e: any, path?: string) { this._errors.push({e, path}); }
 
@@ -172,9 +174,10 @@ export class DiagnosticContext {
           new DirectiveNormalizer(resourceLoader, urlResolver, htmlParser, config);
 
       result = this._resolver = new CompileMetadataResolver(
-          config, moduleResolver, directiveResolver, pipeResolver, new JitSummaryResolver(),
-          elementSchemaRegistry, directiveNormalizer, new Console(), staticSymbolCache,
-          this.reflector, (error, type) => this.collectError(error, type && type.filePath));
+          config, htmlParser, moduleResolver, directiveResolver, pipeResolver,
+          new JitSummaryResolver(), elementSchemaRegistry, directiveNormalizer, new Console(),
+          staticSymbolCache, this.reflector,
+          (error, type) => this.collectError(error, type && type.filePath));
     }
     return result;
   }
@@ -183,12 +186,9 @@ export class DiagnosticContext {
     let analyzedModules = this._analyzedModules;
     if (!analyzedModules) {
       const analyzeHost = {isSourceFile(filePath: string) { return true; }};
-      const programSymbols = extractProgramSymbols(
-          this.staticSymbolResolver, this.program.getSourceFiles().map(sf => sf.fileName),
-          analyzeHost);
-
+      const programFiles = this.program.getSourceFiles().map(sf => sf.fileName);
       analyzedModules = this._analyzedModules =
-          analyzeNgModules(programSymbols, analyzeHost, this.resolver);
+          analyzeNgModules(programFiles, analyzeHost, this.staticSymbolResolver, this.resolver);
     }
     return analyzedModules;
   }

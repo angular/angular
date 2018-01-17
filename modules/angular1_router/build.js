@@ -103,6 +103,7 @@ if (require.main === module) {
     args.shift();  // node
     args.shift();  // scriptfile.js
     if (args.length < 2) {
+      // tslint:disable-next-line:no-console
       console.log("usage: $0 outFile path/to/modules");
       process.exit(1);
     }
@@ -110,6 +111,7 @@ if (require.main === module) {
     var directory = args.shift();
     fs.writeFileSync(outfile, main(directory));
   } catch (e) {
+    // tslint:disable-next-line:no-console
     console.log(e.message);
     process.exit(1);
   }

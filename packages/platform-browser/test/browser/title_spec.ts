@@ -12,11 +12,17 @@ import {BrowserModule, Title} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('title service', () => {
-    const doc = getDOM().createHtmlDocument();
-    const initialTitle = getDOM().getTitle(doc);
-    const titleService = new Title(doc);
+    let doc: Document;
+    let initialTitle: string;
+    let titleService: Title;
+
+    beforeEach(() => {
+      doc = getDOM().createHtmlDocument();
+      initialTitle = getDOM().getTitle(doc);
+      titleService = new Title(doc);
+    });
 
     afterEach(() => { getDOM().setTitle(doc, initialTitle); });
 

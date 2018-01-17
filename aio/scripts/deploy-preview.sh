@@ -9,8 +9,9 @@ readonly INPUT_DIR=dist/
 readonly OUTPUT_FILE=/tmp/snapshot.tar.gz
 readonly AIO_BUILDS_DOMAIN=ngbuilds.io
 readonly UPLOAD_URL=https://$AIO_BUILDS_DOMAIN/create-build/$TRAVIS_PULL_REQUEST/$TRAVIS_PULL_REQUEST_SHA
-readonly DEPLOYED_URL=https://pr$TRAVIS_PULL_REQUEST-$TRAVIS_PULL_REQUEST_SHA.$AIO_BUILDS_DOMAIN
-readonly PREVERIFY_SCRIPT=aio-builds-setup/scripts/travis-preverify-pr.sh
+
+readonly SHORT_SHA=$(echo $TRAVIS_PULL_REQUEST_SHA | cut -c1-7)
+readonly DEPLOYED_URL=https://pr$TRAVIS_PULL_REQUEST-$SHORT_SHA.$AIO_BUILDS_DOMAIN
 
 readonly skipBuild=$([[ "$1" == "--skip-build" ]] && echo "true" || echo "");
 readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -P "^(?:aio|packages)/(?!.*[._]spec\.[jt]s$)" | wc -l)
@@ -24,50 +25,32 @@ readonly relevantChangedFilesCount=$(git diff --name-only $TRAVIS_COMMIT_RANGE |
     exit 0
   fi
 
-  # Do not deploy unless this PR meets certain preconditions.
-  readonly preverifyExitCode=$($PREVERIFY_SCRIPT > /dev/fd/3 && echo 0 || echo $?)
-  case $preverifyExitCode in
-    0)
-      # Preconditions met: Deploy
-      ;;
-    1)
-      # An error occurred: Fail the script
-      exit 1
-      ;;
-    2)
-      # Preconditions not met: Skip deploy
-      echo "Skipping deploy because this PR did not meet the preconditions."
-      exit 0
-      ;;
-    *)
-      # Unexpected exit code: Fail the script
-      echo "Unexpected pre-verification exit code: $preverifyExitCode"
-      exit 1
-      ;;
-  esac
-
   # Build the app
-  if [ "$skipBuild" != "true" ]; then
+  if [[ "$skipBuild" != "true" ]]; then
     yarn build
   fi
   tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
+  yarn payload-size
 
   # Deploy to staging
-  readonly httpCode=$(
+  readonly output=$(
     curl --include --location --request POST --silent --write-out "\nHTTP_CODE: %{http_code}\n" \
         --header "Authorization: Token $NGBUILDS_IO_KEY" --data-binary "@$OUTPUT_FILE" "$UPLOAD_URL" \
     | sed 's/\r\n/\n/' \
-    | tee /dev/fd/3 \
-    | tail -1 \
-    | sed 's/HTTP_CODE: //'
+    | tee /dev/fd/3
   )
+  readonly isHidden=$([[ `echo $output | grep 'non-public'` ]] && echo "true" || echo "")
+  readonly httpCode=$(echo "$output" | tail -1 | sed 's/HTTP_CODE: //')
 
   # Exit with an error if the request failed.
   # (Ignore 409 failures, which mean trying to re-deploy for the same PR/SHA.)
-  if [ $httpCode -lt 200 ] || ([ $httpCode -ge 400 ] && [ $httpCode -ne 409 ]); then
+  if [[ $httpCode -lt 200 ]] || ([[ $httpCode -ge 400 ]] && [[ $httpCode -ne 409 ]]); then
     exit 1
   fi
 
-  # Run PWA-score tests
-  yarn test-pwa-score -- "$DEPLOYED_URL" "$MIN_PWA_SCORE" "$PWA_RESULTS_LOG"
+  # Run PWA-score tests (unless the deployment is not public yet;
+  # i.e. it could not be automatically verified).
+  if [[ $httpCode -ne 202 ]] && [[ "$isHidden" != "true" ]]; then
+    yarn test-pwa-score "$DEPLOYED_URL" "$MIN_PWA_SCORE"
+  fi
 )

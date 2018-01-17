@@ -22,7 +22,13 @@ import {formatStats, sortedProps} from './util';
 @Injectable()
 export class JsonFileReporter extends Reporter {
   static PATH = new InjectionToken('JsonFileReporter.path');
-  static PROVIDERS = [JsonFileReporter, {provide: JsonFileReporter.PATH, useValue: '.'}];
+  static PROVIDERS = [
+    {
+      provide: JsonFileReporter,
+      deps: [SampleDescription, JsonFileReporter.PATH, Options.WRITE_FILE, Options.NOW]
+    },
+    {provide: JsonFileReporter.PATH, useValue: '.'}
+  ];
 
   constructor(
       private _description: SampleDescription, @Inject(JsonFileReporter.PATH) private _path: string,

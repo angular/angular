@@ -9,7 +9,9 @@
 import {Injector} from '../di';
 import {DebugContext} from '../view/index';
 
-export class EventListener { constructor(public name: string, public callback: Function){}; }
+export class EventListener {
+  constructor(public name: string, public callback: Function) {}
+}
 
 /**
  * @experimental All debugging apis are currently experimental.
@@ -38,11 +40,6 @@ export class DebugNode {
   get references(): {[key: string]: any} { return this._debugContext.references; }
 
   get providerTokens(): any[] { return this._debugContext.providerTokens; }
-
-  /**
-   * @deprecated since v4
-   */
-  get source(): string { return 'Deprecated since v4'; }
 }
 
 /**

@@ -55,10 +55,10 @@ describe('addImageDimensions post-processor', () => {
       docType: 'a',
       renderedContent: '<img attr="value">'
     })]);
-    expect(log.warn).toHaveBeenCalled();
+    expect(log.warn).toHaveBeenCalledWith('Missing src in image tag `<img attr="value">` - doc (a) ');
   });
 
-  it('should log a warning for images whose source cannot be loaded', () => {
+  it('should fail for images whose source cannot be loaded', () => {
     getImageDimensionsSpy.and.callFake(() => {
       const error = new Error('no such file or directory');
       error.code = 'ENOENT';
@@ -68,13 +68,8 @@ describe('addImageDimensions post-processor', () => {
       docType: 'a',
       renderedContent: '<img src="missing">'
     }];
-    processor.$process(docs);
-    expect(getImageDimensionsSpy).toHaveBeenCalled();
-    expect(docs).toEqual([jasmine.objectContaining({
-      docType: 'a',
-      renderedContent: '<img src="missing">'
-    })]);
-    expect(log.warn).toHaveBeenCalled();
+    expect(() => processor.$process(docs)).toThrowError('Unable to load src in image tag `<img src="missing">` - doc (a) ');
+    expect(getImageDimensionsSpy).toHaveBeenCalledWith('base/path', 'missing');
   });
 
   it('should ignore images with width or height attributes', () => {
@@ -87,7 +82,6 @@ describe('addImageDimensions post-processor', () => {
       `
     }];
     processor.$process(docs);
-    expect(getImageDimensionsSpy).not.toHaveBeenCalled();
     expect(docs).toEqual([jasmine.objectContaining({
       docType: 'a',
       renderedContent: `

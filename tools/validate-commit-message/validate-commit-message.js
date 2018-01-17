@@ -58,3 +58,5 @@ module.exports = function(commitSubject) {
 function error(errorMessage, commitMessage) {
   console.error(`INVALID COMMIT MSG: "${commitMessage}"\n => ERROR: ${errorMessage}`);
 }
+
+module.exports.config = config;

@@ -21,7 +21,7 @@ module.exports = function() {
             if (newLines.length > 0) {
               newLines.pop();
             } else {
-              // wierd case - first expression in str is an @example
+              // weird case - first expression in str is an @example
               // in this case the :marked appear above the str passed in,
               // so we need to put 'something' into the markdown tag.
               newLines.push(sp + '.');  // '.' is a dummy char

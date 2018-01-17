@@ -1,18 +1,28 @@
 {
-  "extends": "../tsconfig-build",
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../",
     "paths": {
-      "@angular/core": ["../../dist/packages/core"],
-      "@angular/common": ["../../dist/packages/common"],
-      "@angular/common/testing": ["../../dist/packages/common/testing"],
-      "@angular/platform-browser": ["../../dist/packages/platform-browser"],
-      "@angular/router": ["../../dist/packages/router"]
-    }
+      "@angular/core": ["../../../dist/packages/core"],
+      "@angular/common": ["../../../dist/packages/common"],
+      "@angular/common/testing": ["../../../dist/packages/common/testing"],
+      "@angular/platform-browser": ["../../../dist/packages/platform-browser"],
+      "@angular/router": ["../../../dist/packages/router"]
+    },
+    "outDir": "../../../dist/packages/router"
   },
+
   "files": [
-    "index.ts"
+    "public_api.ts"
   ],
+
   "angularCompilerOptions": {
-    "strictMetadataEmit": true
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "testing.js",
+    "flatModuleId": "@angular/router/testing"
   }
 }

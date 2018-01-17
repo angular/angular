@@ -1,29 +1,35 @@
 // #docplaster
 // #docregion
-// #docregion just-get-heroes
 import { Injectable } from '@angular/core';
 
+// #docregion import-observable
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
+// #enddocregion import-observable
+
+// #docregion import-heroes
 import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
+// #enddocregion import-heroes
+// #docregion import-message-service
+import { MessageService } from './message.service';
+// #enddocregion import-message-service
 
 @Injectable()
 export class HeroService {
-  // #docregion get-heroes
-  getHeroes(): Promise<Hero[]> {
-    return Promise.resolve(HEROES);
-  }
-  // #enddocregion get-heroes, just-get-heroes
-  // #enddocregion
 
-  // See the "Take it slow" appendix
-  // #docregion get-heroes-slowly
-  getHeroesSlowly(): Promise<Hero[]> {
-    return new Promise(resolve => {
-      // Simulate server latency with 2 second delay
-      setTimeout(() => resolve(this.getHeroes()), 2000);
-    });
+  // #docregion ctor
+  constructor(private messageService: MessageService) { }
+  // #enddocregion ctor
+
+  // #docregion getHeroes, getHeroes-1
+  getHeroes(): Observable<Hero[]> {
+    // #enddocregion getHeroes-1
+    // Todo: send the message _after_ fetching the heroes
+    this.messageService.add('HeroService: fetched heroes');
+    // #docregion getHeroes-1
+    return of(HEROES);
   }
-  // #enddocregion get-heroes-slowly
-  // #docregion
-  // #docregion just-get-heroes
+  // #enddocregion getHeroes, getHeroes-1
 }
+// #enddocregion

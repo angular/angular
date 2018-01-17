@@ -75,5 +75,5 @@ export abstract class EventManagerPlugin {
       throw new Error(`Unsupported event target ${target} for event ${eventName}`);
     }
     return this.addEventListener(target, eventName, handler);
-  };
+  }
 }

@@ -34,7 +34,7 @@ function watch(globs, opts, tasks) {
       } catch (e) {
         return tasksDone(e);
       }
-    }
+    };
   }
 
   var events = opts.events = opts.events || ['add', 'change', 'unlink'];
@@ -51,8 +51,7 @@ function watch(globs, opts, tasks) {
   var watcher =
       chokidar.watch(globs, opts).on('all', handleEvent).on('error', function(err) { throw err; });
 
-  var log =
-      function watchLogger(triggerCount) {
+  var log = function watchLogger(triggerCount) {
     // Don't report change for initial event
     if (!ignoreInitial && !--triggerCount) return;
 
@@ -68,10 +67,10 @@ function watch(globs, opts, tasks) {
       var now = new Date();
       return now.toLocaleDateString() + ' at ' + now.toLocaleTimeString();
     }
-  }
+  };
 
   if (opts.log !== undefined && !opts.log) {
-    log = function noopLog(triggerCount) {}
+    log = function noopLog(triggerCount) {};
   }
 
   var close = watcher.close.bind(watcher);
@@ -116,6 +115,7 @@ function watch(globs, opts, tasks) {
       timeoutId = null;
     }
     if (!useRunSequence && err) {
+      // tslint:disable-next-line:no-console
       console.log('Watch task error:', err.toString());
     }
   }

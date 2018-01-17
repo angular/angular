@@ -13,7 +13,7 @@ import {MessageBus} from '@angular/platform-webworker/src/web_workers/shared/mes
 
 import {createConnectedMessageBus} from './message_bus_util';
 
-export function main() {
+{
   /**
    * Tests the PostMessageBus
    */
@@ -142,7 +142,7 @@ export function main() {
                }),
        500);
 
-    it('should send messages immediatly when run outside the zone',
+    it('should send messages immediately when run outside the zone',
        inject([AsyncTestCompleter, NgZone], (async: AsyncTestCompleter, zone: MockNgZone) => {
          bus = createConnectedMessageBus();
          setup(false, zone);

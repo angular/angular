@@ -1,0 +1,27 @@
+<!-- #docregion -->
+<h2>My Heroes</h2>
+<ul class="heroes">
+  <!-- #docregion li -->
+  <li *ngFor="let hero of heroes"
+    [class.selected]="hero === selectedHero"
+    (click)="onSelect(hero)">
+    <span class="badge">{{hero.id}}</span> {{hero.name}}
+  </li>
+  <!-- #enddocregion li -->
+</ul>
+
+<!-- #docregion ng-if -->
+<div *ngIf="selectedHero">
+
+  <!-- #docregion selectedHero-details -->
+  <h2>{{ selectedHero.name | uppercase }} Details</h2>
+  <div><span>id: </span>{{selectedHero.id}}</div>
+  <div>
+    <label>name:
+      <input [(ngModel)]="selectedHero.name" placeholder="name">
+    </label>
+  </div>
+  <!-- #enddocregion selectedHero-details -->
+
+</div>
+<!-- #enddocregion ng-if -->

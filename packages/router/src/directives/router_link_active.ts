@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer, SimpleChanges} from '@angular/core';
+import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer2, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs/Subscription';
 import {NavigationEnd} from '../events';
 import {Router} from '../router';
@@ -86,12 +86,12 @@ export class RouterLinkActive implements OnChanges,
 
   private classes: string[] = [];
   private subscription: Subscription;
-  private active: boolean = false;
+  public readonly isActive: boolean = false;
 
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
   constructor(
-      private router: Router, private element: ElementRef, private renderer: Renderer,
+      private router: Router, private element: ElementRef, private renderer: Renderer2,
       private cdr: ChangeDetectorRef) {
     this.subscription = router.events.subscribe(s => {
       if (s instanceof NavigationEnd) {
@@ -100,7 +100,6 @@ export class RouterLinkActive implements OnChanges,
     });
   }
 
-  get isActive(): boolean { return this.active; }
 
   ngAfterContentInit(): void {
     this.links.changes.subscribe(_ => this.update());
@@ -119,14 +118,19 @@ export class RouterLinkActive implements OnChanges,
 
   private update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
-    const hasActiveLinks = this.hasActiveLinks();
-
-    // react only when status has changed to prevent unnecessary dom updates
-    if (this.active !== hasActiveLinks) {
-      this.classes.forEach(
-          c => this.renderer.setElementClass(this.element.nativeElement, c, hasActiveLinks));
-      Promise.resolve(hasActiveLinks).then(active => this.active = active);
-    }
+    Promise.resolve().then(() => {
+      const hasActiveLinks = this.hasActiveLinks();
+      if (this.isActive !== hasActiveLinks) {
+        (this as any).isActive = hasActiveLinks;
+        this.classes.forEach((c) => {
+          if (hasActiveLinks) {
+            this.renderer.addClass(this.element.nativeElement, c);
+          } else {
+            this.renderer.removeClass(this.element.nativeElement, c);
+          }
+        });
+      }
+    });
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {

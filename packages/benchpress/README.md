@@ -235,9 +235,9 @@ To collect these metrics, you need the following corresponding extra providers:
 * Use normalized environments
   - metrics that are dependent on the performance of the execution environment must be executed on a normalized machine
   - e.g. a real mobile device whose cpu frequency is set to a fixed value.
-      * see our [build script](https://github.com/angular/angular/blob/master/scripts/ci/android_cpu.sh)
+      * see our [build script](https://github.com/angular/angular/blob/2.4.9/scripts/ci/android_cpu.sh)
       * this requires root access, e.g. via a userdebug build of Android on a Google Nexus device
-        (see [here](https://source.android.com/source/building-running.html) and [here](https://source.android.com/source/building-devices.html#obtaining-proprietary-binaries))
+        (see [here](https://source.android.com/source/building) and [here](https://source.android.com/source/building#obtaining-proprietary-binaries))
   - e.g. a calibrated machine that does not run background jobs, has a fixed cpu frequency, ...
 
 * Use relative comparisons

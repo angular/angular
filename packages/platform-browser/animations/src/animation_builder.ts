@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationBuilder, AnimationFactory, AnimationMetadata, AnimationOptions, AnimationPlayer, NoopAnimationPlayer, sequence} from '@angular/animations';
-import {Injectable, RendererFactory2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {Inject, Injectable, RendererFactory2, RendererType2, ViewEncapsulation} from '@angular/core';
+import {DOCUMENT} from '@angular/platform-browser';
 
 import {AnimationRenderer} from './animation_renderer';
 
@@ -15,7 +16,7 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
   private _nextAnimationId = 0;
   private _renderer: AnimationRenderer;
 
-  constructor(rootRenderer: RendererFactory2) {
+  constructor(rootRenderer: RendererFactory2, @Inject(DOCUMENT) doc: any) {
     super();
     const typeData = {
       id: '0',
@@ -23,7 +24,7 @@ export class BrowserAnimationBuilder extends AnimationBuilder {
       styles: [],
       data: {animation: []}
     } as RendererType2;
-    this._renderer = rootRenderer.createRenderer(document.body, typeData) as AnimationRenderer;
+    this._renderer = rootRenderer.createRenderer(doc.body, typeData) as AnimationRenderer;
   }
 
   build(animation: AnimationMetadata|AnimationMetadata[]): AnimationFactory {

@@ -36,9 +36,8 @@ describe('template codegen output', () => {
     expect(fs.readFileSync(dtsOutput, {encoding: 'utf-8'})).toContain('Basic');
   });
 
-  it('should write .ngfactory.ts for .d.ts inputs', () => {
-    const factoryOutput =
-        path.join('node_modules', '@angular2-material', 'button', 'button.ngfactory.ts');
+  it('should write .ngfactory.js for .d.ts inputs', () => {
+    const factoryOutput = path.join('node_modules', '@angular', 'common', 'common.ngfactory.js');
     expect(fs.existsSync(factoryOutput)).toBeTruthy();
   });
 
@@ -84,9 +83,15 @@ describe('template codegen output', () => {
 
     it('should support i18n for content tags', () => {
       const containerElement = createComponent(BasicComp).nativeElement;
-      const pElement = containerElement.children.find((c: any) => c.name == 'p');
-      const pText = pElement.children.map((c: any) => c.data).join('').trim();
+      const pElement = containerElement.querySelector('p');
+      const pText = pElement.textContent;
       expect(pText).toBe('tervetuloa');
+    });
+
+    it('should have removed i18n markup', () => {
+      const containerElement = createComponent(BasicComp).debugElement.children[0];
+      expect(containerElement.attributes['title']).toBe('käännä teksti');
+      expect(containerElement.attributes['i18n-title']).toBeUndefined();
     });
   });
 });

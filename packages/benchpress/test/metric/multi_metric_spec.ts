@@ -7,16 +7,17 @@
  */
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-import {Metric, MultiMetric, ReflectiveInjector} from '../../index';
 
-export function main() {
+import {Injector, Metric, MultiMetric} from '../../index';
+
+(function() {
   function createMetric(ids: any[]) {
-    const m = ReflectiveInjector
-                  .resolveAndCreate([
+    const m = Injector
+                  .create([
                     ids.map(id => ({provide: id, useValue: new MockMetric(id)})),
                     MultiMetric.provideWith(ids)
                   ])
-                  .get(MultiMetric);
+                  .get<MultiMetric>(MultiMetric);
     return Promise.resolve(m);
   }
 
@@ -48,7 +49,7 @@ export function main() {
     });
 
   });
-}
+})();
 
 class MockMetric extends Metric {
   constructor(private _id: string) { super(); }

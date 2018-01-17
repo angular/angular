@@ -137,7 +137,7 @@ export class CloneVisitor implements Visitor {
 
 // Visit all the nodes recursively
 export class RecurseVisitor implements Visitor {
-  visitText(text: Text, context?: any): any{};
+  visitText(text: Text, context?: any): any {}
 
   visitContainer(container: Container, context?: any): any {
     container.children.forEach(child => child.visit(this));
@@ -151,7 +151,7 @@ export class RecurseVisitor implements Visitor {
     ph.children.forEach(child => child.visit(this));
   }
 
-  visitPlaceholder(ph: Placeholder, context?: any): any{};
+  visitPlaceholder(ph: Placeholder, context?: any): any {}
 
-  visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any{};
+  visitIcuPlaceholder(ph: IcuPlaceholder, context?: any): any {}
 }

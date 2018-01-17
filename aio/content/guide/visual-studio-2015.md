@@ -243,7 +243,7 @@ Everything seems fine while you move about _within_ the app.
 But you'll see the problem right away if you refresh the browser
 or paste a link to an app page (called a "deep link") into the browser address bar.
 
-You'll most likely get a *404 - Page Not Found* response from the serer
+You'll most likely get a *404 - Page Not Found* response from the server
 for any address other than `/` or `/index.html`.
 
 You have to configure the server to return `index.html` for requests to these "unknown" pages.

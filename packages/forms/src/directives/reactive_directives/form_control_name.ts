@@ -45,7 +45,7 @@ export const controlNameBinding: any = {
  * closest {@link FormGroup} or {@link FormArray} above it.
  *
  * **Access the control**: You can access the {@link FormControl} associated with
- * this directive by using the {@link AbstractControl#get} method.
+ * this directive by using the {@link AbstractControl#get get} method.
  * Ex: `this.form.get('first');`
  *
  * **Get value**: the `value` property is always synced and available on the {@link FormControl}.
@@ -53,11 +53,11 @@ export const controlNameBinding: any = {
  *
  *  **Set value**: You can set an initial value for the control when instantiating the
  *  {@link FormControl}, or you can set it programmatically later using
- *  {@link AbstractControl#setValue} or {@link AbstractControl#patchValue}.
+ *  {@link AbstractControl#setValue setValue} or {@link AbstractControl#patchValue patchValue}.
  *
  * **Listen to value**: If you want to listen to changes in the value of the control, you can
- * subscribe to the {@link AbstractControl#valueChanges} event.  You can also listen to
- * {@link AbstractControl#statusChanges} to be notified when the validation status is
+ * subscribe to the {@link AbstractControl#valueChanges valueChanges} event.  You can also listen to
+ * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
  * re-calculated.
  *
  * ### Example
@@ -82,8 +82,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
   /** @internal */
   viewModel: any;
-  /** @internal */
-  _control: FormControl;
+  readonly control: FormControl;
 
   @Input('formControlName') name: string;
 
@@ -135,8 +134,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
     return composeAsyncValidators(this._rawAsyncValidators) !;
   }
 
-  get control(): FormControl { return this._control; }
-
   private _checkParentType(): void {
     if (!(this._parent instanceof FormGroupName) &&
         this._parent instanceof AbstractFormGroupDirective) {
@@ -150,7 +147,7 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
 
   private _setUpControl() {
     this._checkParentType();
-    this._control = this.formDirective.addControl(this);
+    (this as{control: FormControl}).control = this.formDirective.addControl(this);
     if (this.control.disabled && this.valueAccessor !.setDisabledState) {
       this.valueAccessor !.setDisabledState !(true);
     }

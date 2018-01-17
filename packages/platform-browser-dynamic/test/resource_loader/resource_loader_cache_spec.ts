@@ -15,7 +15,7 @@ import {CachedResourceLoader} from '../../src/resource_loader/resource_loader_ca
 
 import {setTemplateCache} from './resource_loader_cache_setter';
 
-export function main() {
+{
   describe('CachedResourceLoader', () => {
     let resourceLoader: CachedResourceLoader;
 
@@ -26,8 +26,8 @@ export function main() {
     beforeEach(fakeAsync(() => {
       TestBed.configureCompiler({
         providers: [
-          {provide: UrlResolver, useClass: TestUrlResolver},
-          {provide: ResourceLoader, useFactory: createCachedResourceLoader}
+          {provide: UrlResolver, useClass: TestUrlResolver, deps: []},
+          {provide: ResourceLoader, useFactory: createCachedResourceLoader, deps: []}
         ]
       });
 
