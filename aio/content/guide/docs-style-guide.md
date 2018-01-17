@@ -821,7 +821,7 @@ Here's an embedded live example for this guide. It has a custom image created fr
 
 <live-example embedded img="guide/docs-style-guide/docs-style-guide-plunker.png"></live-example>
 
-<a id="anchors"></a>
+{@a anchors}
 
 ## Anchors
 
@@ -861,12 +861,13 @@ Sometimes the section header text makes for an unattractive anchor. [This one](#
 
 The greater danger is that **a future rewording of the header text would break** a link to this section.
 
-For these reasons, it is often wise to add a custom anchor explicitly, just above the heading or text to which it applies, using the special`{@ name}` syntax like this.
+For these reasons, it is often wise to add a custom anchor explicitly, just above the heading or
+text to which it applies, using the special `{@a name}` syntax like this.
 
 <code-example  language="html">
   &#123;@a ugly-anchors&#125;
 
-#### Ugly, long section header anchors
+  #### Ugly, long section header anchors
 </code-example>
 
 Now [link to that custom anchor name](#ugly-anchors) as you did before.
