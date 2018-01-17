@@ -1,26 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 
-import { User } from './core/user';
-import { UserService } from './core/user.service';
+import { User, UserService } from './user.service';
 
+// #docregion component-providers
 @Component({
+  // #enddocregion component-providers
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
+  // #docregion component-providers
   providers: [UserService]
 })
+// #enddocregion component-providers
 export class AppComponent implements OnInit {
   title = 'Users list';
   users: User[];
 
   constructor(private userService: UserService) { }
 
-  getUsers(): void {
-    this.userService.getUsers().then(users => this.users = users);
-  }
-
   ngOnInit(): void {
-    this.getUsers();
+    this.userService.getUsers().then(users => this.users = users);
   }
 
 }
