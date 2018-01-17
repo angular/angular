@@ -17,10 +17,12 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
+import {assertPreviousIsParent, getPreviousOrParentNode} from './instructions';
 import {ComponentTemplate, DirectiveDef, TypedDirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNodeFlags} from './interfaces/node';
-import {assertNodeType} from './node_assert';
+import {LContainerNode, LElementNode, LNode, LNodeFlags} from './interfaces/node';
+import {QueryReadType} from './interfaces/query';
+import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {notImplemented, stringify} from './util';
 
 
@@ -87,6 +89,11 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
   }
 }
 
+export function getOrCreateNodeInjector(): LInjector {
+  ngDevMode && assertPreviousIsParent();
+  return getOrCreateNodeInjectorForNode(getPreviousOrParentNode() as LElementNode | LContainerNode);
+}
+
 /**
  * Creates (or gets an existing) injector for a given element or container.
  *
@@ -149,6 +156,71 @@ function createInjectionError(text: string, token: any) {
  */
 export function diPublicInInjector(di: LInjector, def: TypedDirectiveDef<any>): void {
   bloomAdd(di, def.type);
+}
+
+/**
+ * Makes a directive public to the DI system by adding it to an injector's bloom filter.
+ *
+ * @param def The definition of the directive to be made public
+ */
+export function diPublic(def: TypedDirectiveDef<any>): void {
+  diPublicInInjector(getOrCreateNodeInjector(), def);
+}
+
+/**
+ * Searches for an instance of the given directive type up the injector tree and returns
+ * that instance if found.
+ *
+ * If not found, it will propagate up to the next parent injector until the token
+ * is found or the top is reached.
+ *
+ * Usage example (in factory function):
+ *
+ * class SomeDirective {
+ *   constructor(directive: DirectiveA) {}
+ *
+ *   static ngDirectiveDef = defineDirective({
+ *     type: SomeDirective,
+ *     factory: () => new SomeDirective(inject(DirectiveA))
+ *   });
+ * }
+ *
+ * @param token The directive type to search for
+ * @param flags Injection flags (e.g. CheckParent)
+ * @returns The instance found
+ */
+export function inject<T>(token: Type<T>, flags?: InjectFlags): T {
+  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
+}
+
+/**
+ * Creates an ElementRef and stores it on the injector.
+ * Or, if the ElementRef already exists, retrieves the existing ElementRef.
+ *
+ * @returns The ElementRef instance to use
+ */
+export function injectElementRef(): viewEngine_ElementRef {
+  return getOrCreateElementRef(getOrCreateNodeInjector());
+}
+
+/**
+ * Creates a TemplateRef and stores it on the injector. Or, if the TemplateRef already
+ * exists, retrieves the existing TemplateRef.
+ *
+ * @returns The TemplateRef instance to use
+ */
+export function injectTemplateRef<T>(): viewEngine_TemplateRef<T> {
+  return getOrCreateTemplateRef<T>(getOrCreateNodeInjector());
+}
+
+/**
+ * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef
+ * already exists, retrieves the existing ViewContainerRef.
+ *
+ * @returns The ViewContainerRef instance to use
+ */
+export function injectViewContainerRef(): viewEngine_ViewContainerRef {
+  return getOrCreateContainerRef(getOrCreateNodeInjector());
 }
 
 /**
@@ -300,6 +372,10 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
   return null;
 }
 
+export class ReadFromInjectorFn<T> {
+  constructor(readonly read: (injector: LInjector, node: LNode, directiveIndex?: number) => T) {}
+}
+
 /**
  * Creates an ElementRef for a given node injector and stores it on the injector.
  * Or, if the ElementRef already exists, retrieves the existing ElementRef.
@@ -310,6 +386,31 @@ export function bloomFindPossibleInjector(startInjector: LInjector, bloomBit: nu
 export function getOrCreateElementRef(di: LInjector): viewEngine_ElementRef {
   return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
 }
+
+export const QUERY_READ_TEMPLATE_REF = <QueryReadType<viewEngine_TemplateRef<any>>>(
+    new ReadFromInjectorFn<viewEngine_TemplateRef<any>>(
+        (injector: LInjector) => getOrCreateTemplateRef(injector)) as any);
+
+export const QUERY_READ_CONTAINER_REF = <QueryReadType<viewEngine_ViewContainerRef>>(
+    new ReadFromInjectorFn<viewEngine_ViewContainerRef>(
+        (injector: LInjector) => getOrCreateContainerRef(injector)) as any);
+
+export const QUERY_READ_ELEMENT_REF =
+    <QueryReadType<viewEngine_ElementRef>>(new ReadFromInjectorFn<viewEngine_ElementRef>(
+        (injector: LInjector) => getOrCreateElementRef(injector)) as any);
+
+export const QUERY_READ_FROM_NODE =
+    (new ReadFromInjectorFn<any>((injector: LInjector, node: LNode, directiveIdx: number) => {
+      ngDevMode && assertNodeOfPossibleTypes(node, LNodeFlags.Container, LNodeFlags.Element);
+      if (directiveIdx > -1) {
+        return node.view.data[directiveIdx];
+      } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
+        return getOrCreateElementRef(injector);
+      } else if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container) {
+        return getOrCreateTemplateRef(injector);
+      }
+      throw new Error('fail');
+    }) as any as QueryReadType<any>);
 
 /** A ref to a node's native element. */
 class ElementRef implements viewEngine_ElementRef {
