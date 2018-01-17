@@ -145,7 +145,7 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
       childValue = 'v2';
       expect(() => Services.checkNoChangesView(parentView))
           .toThrowError(
-              `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
+              `ExpressionChangedAfterItHasBeenCheckedError: Expression 'name' has changed after it was checked. Previous value: 'v1'. Current value: 'v2'.`);
     });
 
     it('should destroy embedded views', () => {

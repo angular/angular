@@ -498,7 +498,7 @@ function checkNoChangesQuery(view: ViewData, nodeDef: NodeDef) {
     throw expressionChangedAfterItHasBeenCheckedError(
         Services.createDebugContext(view, nodeDef.nodeIndex),
         `Query ${nodeDef.query!.id} not dirty`, `Query ${nodeDef.query!.id} dirty`,
-        (view.state & ViewState.BeforeFirstCheck) !== 0);
+        (view.state & ViewState.BeforeFirstCheck) !== 0, null);
   }
 }
 
