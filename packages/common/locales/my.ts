@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'my',
   [
@@ -54,6 +58,5 @@ export default [
     '.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞',
     'ဂဏန်းမဟုတ်သော', ':'
   ],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'K', 'မြန်မာ ကျပ်',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'K', 'မြန်မာ ကျပ်', plural
 ];

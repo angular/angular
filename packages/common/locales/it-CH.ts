@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
+  if (i === 1 && v === 0) return 1;
+  return 5;
+}
+
 export default [
   'it-CH',
   [
@@ -39,11 +45,5 @@ export default [
     '{1} {0}',
   ],
   ['.', '’', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤-#,##0.00', '#E0'], 'CHF', 'franco svizzero',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;
-        if (i === 1 && v === 0) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤ #,##0.00;¤-#,##0.00', '#E0'], 'CHF', 'franco svizzero', plural
 ];

@@ -9,6 +9,17 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n % 10 === 1 && !(n % 100 === 11 || n % 100 === 71 || n % 100 === 91)) return 1;
+  if (n % 10 === 2 && !(n % 100 === 12 || n % 100 === 72 || n % 100 === 92)) return 2;
+  if (n % 10 === Math.floor(n % 10) && (n % 10 >= 3 && n % 10 <= 4 || n % 10 === 9) &&
+      !(n % 100 >= 10 && n % 100 <= 19 || n % 100 >= 70 && n % 100 <= 79 ||
+        n % 100 >= 90 && n % 100 <= 99))
+    return 3;
+  if (!(n === 0) && n % 1e6 === 0) return 4;
+  return 5;
+}
+
 export default [
   'br',
   [
@@ -56,16 +67,5 @@ export default [
     '{1} \'da\' {0}',
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        if (n % 10 === 1 && !(n % 100 === 11 || n % 100 === 71 || n % 100 === 91)) return 1;
-        if (n % 10 === 2 && !(n % 100 === 12 || n % 100 === 72 || n % 100 === 92)) return 2;
-        if (n % 10 === Math.floor(n % 10) && (n % 10 >= 3 && n % 10 <= 4 || n % 10 === 9) &&
-            !(n % 100 >= 10 && n % 100 <= 19 || n % 100 >= 70 && n % 100 <= 79 ||
-              n % 100 >= 90 && n % 100 <= 99))
-          return 3;
-        if (!(n === 0) && n % 1e6 === 0) return 4;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural
 ];

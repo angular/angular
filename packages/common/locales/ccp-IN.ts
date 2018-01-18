@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'ccp-IN',
   [
@@ -85,5 +89,5 @@ export default [
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##,##0.###', '#,##,##0%', '#,##,##0.00¤', '#E0'], '₹',
-  '𑄃𑄨𑄚𑄴𑄘𑄨𑄠𑄚𑄴 𑄢𑄪𑄛𑄨', function(n: number): number { return 5;}
+  '𑄃𑄨𑄚𑄴𑄘𑄨𑄠𑄚𑄴 𑄢𑄪𑄛𑄨', plural
 ];
