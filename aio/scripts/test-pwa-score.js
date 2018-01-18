@@ -17,11 +17,15 @@ const printer = require('lighthouse/lighthouse-cli/printer');
 const config = require('lighthouse/lighthouse-core/config/default.js');
 
 // Constants
+const CHROME_LAUNCH_OPTS = {};
+const SKIPPED_HTTPS_AUDITS = ['redirects-http'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 
-// Specify the path to Chrome on Travis
+
+// Specify the path and flags for Chrome on Travis
 if (process.env.TRAVIS) {
   process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
+  CHROME_LAUNCH_OPTS.chromeFlags = ['--no-sandbox'];
 }
 
 // Run
@@ -54,18 +58,8 @@ function evaluateScore(expectedScore, actualScore) {
   }
 }
 
-function skipHttpsAudits(config) {
-  const httpsAudits = [
-    'redirects-http'
-  ];
-
-  console.info(`Skipping HTTPS-related audits (${httpsAudits.join(', ')})...`);
-
-  config.settings.skipAudits = httpsAudits;
-}
-
 function launchChromeAndRunLighthouse(url, flags, config) {
-  return chromeLauncher.launch().then(chrome => {
+  return chromeLauncher.launch(CHROME_LAUNCH_OPTS).then(chrome => {
     flags.port = chrome.port;
     return lighthouse(url, flags, config).
       then(results => chrome.kill().then(() => results)).
@@ -107,4 +101,9 @@ function processResults(results, logFile) {
   }
 
   return promise.then(() => Math.round(results.score));
+}
+
+function skipHttpsAudits(config) {
+  console.info(`Skipping HTTPS-related audits (${SKIPPED_HTTPS_AUDITS.join(', ')})...`);
+  config.settings.skipAudits = SKIPPED_HTTPS_AUDITS;
 }
