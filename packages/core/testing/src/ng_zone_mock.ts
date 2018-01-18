@@ -11,6 +11,8 @@ import {EventEmitter, Injectable, NgZone} from '@angular/core';
 
 /**
  * A mock implementation of {@link NgZone}.
+ *
+ * @experimental
  */
 @Injectable()
 export class MockNgZone extends NgZone {

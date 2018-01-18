@@ -64,6 +64,15 @@ export declare type MetadataOverride<T> = {
 };
 
 /** @experimental */
+export declare class MockNgZone extends NgZone {
+    onStable: EventEmitter<any>;
+    constructor();
+    run(fn: Function): any;
+    runOutsideAngular(fn: Function): any;
+    simulateZoneExit(): void;
+}
+
+/** @experimental */
 export declare function resetFakeAsyncZone(): void;
 
 /** @stable */

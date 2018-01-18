@@ -1083,6 +1083,20 @@ In this case, it waits for the error handler's `setTimeout()`;
 The `tick` function is one of the Angular testing utilities that you import with `TestBed`.
 It's a companion to `fakeAsync` and you can only call it within a `fakeAsync` body.
 
+### fakeAsync with mockNgZone
+Using `mockNgZone`, you can test `NgZone.onStable` with `fakeAsync` function.
+
+<code-tabs>
+  <code-pane
+      path="testing/src/app/shared/zone-stable.component.ts"
+      title="src/app/shared/zone-stable.component.ts" linenums="false">
+  </code-pane>
+  <code-pane
+      path="testing/src/app/shared/zone-stable.component.spec.ts"
+      title="src/app/shared/zone-stable.component.spec.ts (fakeAsync test)" linenums="false">
+  </code-pane>
+</code-tabs>
+
 #### Async observables
 
 You might be satisfied with the test coverage of these tests.

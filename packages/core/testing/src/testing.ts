@@ -20,3 +20,4 @@ export * from './before_each';
 export * from './metadata_override';
 export * from './private_export_testing';
 export * from './render3';
+export * from './ng_zone_mock';
