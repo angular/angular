@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (n === 0 || n === 1 || i === 0 && f === 1) return 1;
+  return 5;
+}
+
 export default [
   'si',
   [
@@ -86,12 +92,5 @@ export default [
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#'], 'රු.',
-  'ශ්\u200dරී ලංකා රුපියල',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)),
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (n === 0 || n === 1 || i === 0 && f === 1) return 1;
-        return 5;
-      }
+  'ශ්\u200dරී ලංකා රුපියල', plural
 ];

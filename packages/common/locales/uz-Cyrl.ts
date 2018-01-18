@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'uz-Cyrl',
   [
@@ -65,6 +69,5 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'ҳақиқий сон эмас', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'сўм', 'Ўзбекистон сўм',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'сўм', 'Ўзбекистон сўм', plural
 ];

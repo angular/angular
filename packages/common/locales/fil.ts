@@ -9,6 +9,16 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (v === 0 && (i === 1 || i === 2 || i === 3) ||
+      v === 0 && !(i % 10 === 4 || i % 10 === 6 || i % 10 === 9) ||
+      !(v === 0) && !(f % 10 === 4 || f % 10 === 6 || f % 10 === 9))
+    return 1;
+  return 5;
+}
+
 export default [
   'fil',
   [
@@ -49,15 +59,5 @@ export default [
     '{1} \'nang\' {0}',
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₱', 'Piso ng Pilipinas',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (v === 0 && (i === 1 || i === 2 || i === 3) ||
-            v === 0 && !(i % 10 === 4 || i % 10 === 6 || i % 10 === 9) ||
-            !(v === 0) && !(f % 10 === 4 || f % 10 === 6 || f % 10 === 9))
-          return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '₱', 'Piso ng Pilipinas', plural
 ];

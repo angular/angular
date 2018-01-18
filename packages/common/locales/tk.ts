@@ -9,6 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
   'tk', [['öň', 'soň'], ['go.öň', 'go.soň'], ['günortadan öň', 'günortadan soň']],
   [['öň', 'soň'], ['g.öň', 'g.soň'], ['günortadan öň', 'günortadan soň']],
@@ -47,10 +52,5 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'san däl', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'TMT', 'Türkmen manady', function(n: number):
-                                                                                  number {
-                                                                                    if (n === 1)
-                                                                                      return 1;
-                                                                                    return 5;
-                                                                                  }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'TMT', 'Türkmen manady', plural
 ];

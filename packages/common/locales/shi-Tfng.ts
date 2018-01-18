@@ -9,6 +9,13 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  if (n === Math.floor(n) && n >= 2 && n <= 10) return 3;
+  return 5;
+}
+
 export default [
   'shi-Tfng',
   [
@@ -58,11 +65,5 @@ export default [
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00¤', '#E0'], 'MAD', 'ⴰⴷⵔⵉⵎ ⵏ ⵍⵎⵖⵔⵉⴱ',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        if (n === Math.floor(n) && n >= 2 && n <= 10) return 3;
-        return 5;
-      }
+  plural
 ];
