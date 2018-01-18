@@ -1,6 +1,6 @@
 {@a glob}
 
-# Service Worker Configuration
+# Service worker configuration
 
 #### Prerequisites
 
