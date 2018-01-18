@@ -12,7 +12,8 @@ exports.config = {
     'browserName': 'chrome',
     // For Travis CI only
     chromeOptions: {
-      binary: process.env.CHROME_BIN
+      binary: process.env.CHROME_BIN,
+      args: ['--no-sandbox']
     }
   },
   directConnect: true,
