@@ -28,7 +28,8 @@ export default [
   [
     ['j', 'f', 'm', 'a', 'm', 'j', 'j', 'a', 's', 'o', 'n', 'd'],
     [
-      'jan.', 'feb.', 'měr.', 'apr.', 'mej.', 'jun.', 'jul.', 'awg.', 'sep.', 'okt.', 'now.', 'dec.'
+      'jan.', 'feb.', 'měr.', 'apr.', 'mej.', 'jun.', 'jul.', 'awg.', 'sep.', 'okt.', 'now.',
+      'dec.'
     ],
     [
       'januara', 'februara', 'měrca', 'apryla', 'meje', 'junija', 'julija', 'awgusta', 'septembra',
@@ -43,8 +44,8 @@ export default [
       'oktober', 'nowember', 'december'
     ]
   ],
-  [['př.Chr.n.', 'po Chr.n.'], , ['před Chrystowym narodźenjom', 'po Chrystowym narodźenju']], 1,
-  [6, 0], ['d.M.yy', 'd.M.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
+  [['př.Chr.n.', 'po Chr.n.'], , ['před Chrystowym narodźenjom', 'po Chrystowym narodźenju']],
+  1, [6, 0], ['d.M.yy', 'd.M.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
   ['H:mm \'hodź\'.', 'H:mm:ss', 'H:mm:ss z', 'H:mm:ss zzzz'],
   [
     '{1} {0}',

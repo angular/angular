@@ -1837,7 +1837,7 @@ export const locale_gsw = [
     ,
     ,
   ],
-  ['.', '’', ';', '%', '+', '���', 'E', '×', '‰', '∞', 'NaN', ':'],
+  ['.', '’', ';', '%', '+', '�����������������������������', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'CHF', 'Schwiizer Franke', function(n: number):
                                                                                 number {
                                                                                   if (n === 1)
@@ -3469,7 +3469,7 @@ export const locale_ro = [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'RON', 'leu românesc',
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'RON', 'leu rom��nesc',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length;

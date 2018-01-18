@@ -39,10 +39,10 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'TSh', 'shilingi ya Tandhania', function(n: number):
-                                                                                    number {
-                                                                                      if (n === 1)
-                                                                                        return 1;
-                                                                                      return 5;
-                                                                                    }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'TSh', 'shilingi ya Tandhania',
+  function(n: number):
+      number {
+        if (n === 1) return 1;
+        return 5;
+      }
 ];
