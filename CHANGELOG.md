@@ -68,7 +68,6 @@
 
 * **autocomplete:** allow option ripples to be disabled ([#8851](https://github.com/angular/material2/issues/8851)) ([ff31ac8](https://github.com/angular/material2/commit/ff31ac8))
 * **close-scroll-strategy:** add scroll threshold option ([#8656](https://github.com/angular/material2/issues/8656)) ([c0ff761](https://github.com/angular/material2/commit/c0ff761))
-* **datepicker:** add animation to calendar popup ([#8542](https://github.com/angular/material2/issues/8542)) ([c3e267f](https://github.com/angular/material2/commit/c3e267f))
 * **datepicker:** add year selection mode ([#8565](https://github.com/angular/material2/issues/8565)) ([cdbabf7](https://github.com/angular/material2/commit/cdbabf7))
 * **dialog:** allow default dialog options to be configurable ([#9113](https://github.com/angular/material2/issues/9113)) ([05304f0](https://github.com/angular/material2/commit/05304f0))
 * **dialog:** allow for closing on navigation to be disabled ([#9024](https://github.com/angular/material2/issues/9024)) ([c349c58](https://github.com/angular/material2/commit/c349c58)), closes [#8983](https://github.com/angular/material2/issues/8983)
