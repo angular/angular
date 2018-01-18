@@ -48,7 +48,7 @@ export class FullscreenOverlayContainer extends OverlayContainer {
   /**
    * When the page is put into fullscreen mode, a specific element is specified.
    * Only that element and its children are visible when in fullscreen mode.
-  */
+   */
   getFullscreenElement(): Element {
     return document.fullscreenElement ||
         document.webkitFullscreenElement ||

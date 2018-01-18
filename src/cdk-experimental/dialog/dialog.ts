@@ -171,8 +171,7 @@ export class Dialog {
     return this.overlay.create(overlayConfig);
   }
 
-
-    /**
+  /**
    * Attaches an MatDialogContainer to a dialog's already-created overlay.
    * @param overlay Reference to the dialog's underlying overlay.
    * @param config The dialog configuration.
@@ -188,7 +187,7 @@ export class Dialog {
   }
 
 
-    /**
+  /**
    * Attaches the user-provided component to the already-created MatDialogContainer.
    * @param componentOrTemplateRef The type of component being loaded into the dialog,
    *     or a TemplateRef to instantiate as the content.
@@ -218,7 +217,7 @@ export class Dialog {
     return dialogRef;
   }
 
-   /**
+  /**
    * Attaches the user-provided component to the already-created MatDialogContainer.
    * @param componentOrTemplateRef The type of component being loaded into the dialog,
    *     or a TemplateRef to instantiate as the content.

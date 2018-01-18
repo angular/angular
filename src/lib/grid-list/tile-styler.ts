@@ -193,7 +193,7 @@ export class FixedTileStyler extends TileStyler {
  */
 export class RatioTileStyler extends TileStyler {
 
-  /** Ratio width:height given by user to determine row height.*/
+  /** Ratio width:height given by user to determine row height. */
   rowHeightRatio: number;
   baseTileHeight: string;
 

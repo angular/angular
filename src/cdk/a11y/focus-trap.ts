@@ -25,7 +25,7 @@ import {DOCUMENT} from '@angular/common';
  * Node type of element nodes. Used instead of Node.ELEMENT_NODE
  * which is unsupported in Universal.
  * @docs-private
-*/
+ */
 const ELEMENT_NODE_TYPE = 1;
 
 /**

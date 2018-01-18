@@ -17,5 +17,5 @@ task('ci:payload', ['payload']);
 /** Task that uploads the coverage results to a firebase database. */
 task('ci:coverage', ['coverage:upload']);
 
-/** Task that verifies if all Material components are working with platform-server.*/
+/** Task that verifies if all Material components are working with platform-server. */
 task('ci:prerender', ['prerender']);

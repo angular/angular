@@ -4,7 +4,7 @@ import * as gulp from 'gulp';
 import * as path from 'path';
 import {buildConfig} from 'material2-build-tools';
 
-/* Those imports lack typings. */
+// Those imports lack typings.
 const gulpClean = require('gulp-clean');
 const gulpConnect = require('gulp-connect');
 

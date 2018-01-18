@@ -789,7 +789,8 @@ class ComponentThatProvidesMatSnackBar {
 }
 
 
-/** Simple component to open snack bars from.
+/**
+ * Simple component to open snack bars from.
  * Create a real (non-test) NgModule as a workaround forRoot
  * https://github.com/angular/angular/issues/10760
  */

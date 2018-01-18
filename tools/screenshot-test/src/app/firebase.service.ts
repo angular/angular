@@ -41,7 +41,8 @@ export class FirebaseService {
     return firebase.storage().ref('goldens').child(filename).getDownloadURL();
   }
 
-  /** Set pull request number. All test information and pull request information will be retrived
+  /**
+   * Set pull request number. All test information and pull request information will be retrived
    * from database
    */
   set prNumber(prNumber: string) {

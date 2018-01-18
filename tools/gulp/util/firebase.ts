@@ -5,7 +5,7 @@ const cloudStorage = require('@google-cloud/storage');
 // Firebase configuration for the Screenshot project. Use the config from the screenshot functions.
 const screenshotFirebaseConfig = require('../../screenshot-test/functions/config.json');
 
-/** Database URL of the dashboard firebase project.*/
+/** Database URL of the dashboard firebase project. */
 const dashboardDatabaseUrl = 'https://material2-board.firebaseio.com';
 
 /** Opens a connection to the Firebase dashboard app using a service account. */

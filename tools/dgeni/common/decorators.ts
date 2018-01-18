@@ -108,7 +108,7 @@ export function hasDecorator(doc: {decorators?: {name: string}[]}, decoratorName
 /**
  * Decorates public exposed docs. Creates a property on the doc that indicates whether
  * the item is deprecated or not.
- **/
+ */
 export function decorateDeprecatedDoc(doc: {isDeprecated: boolean}) {
   doc.isDeprecated = isDeprecatedDoc(doc);
 }

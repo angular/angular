@@ -1,4 +1,4 @@
-/* tslint:disable:no-eval */
+// tslint:disable:no-eval
 
 import {dirname, join} from 'path';
 import {readFileSync, writeFileSync} from 'fs';

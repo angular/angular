@@ -100,7 +100,7 @@ export class PackageBundler {
     await remapSourcemap(config.umdMinDest);
   }
 
-  /** Creates a rollup bundle of a specified JavaScript file.*/
+  /** Creates a rollup bundle of a specified JavaScript file. */
   private async createRollupBundle(config: RollupBundleConfig) {
     const bundleOptions = {
       context: 'this',
