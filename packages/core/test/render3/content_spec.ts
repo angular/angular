@@ -18,7 +18,7 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { P(2, 0); }
         e();
@@ -44,7 +44,7 @@ describe('content projection', () => {
   it('should project content when root.', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         P(1, 0);
       }
     });
@@ -64,7 +64,7 @@ describe('content projection', () => {
   it('should re-project content when root.', () => {
     const GrandChild = createComponent('grand-child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { P(2, 0); }
         e();
@@ -72,7 +72,7 @@ describe('content projection', () => {
     });
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, GrandChild);
         { P(3, 0); }
         e();
@@ -102,7 +102,7 @@ describe('content projection', () => {
   it('should project content with container.', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { P(2, 0); }
         e();
@@ -144,7 +144,7 @@ describe('content projection', () => {
   it('should project content with container into root', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         P(1, 0);
       }
     });
@@ -182,7 +182,7 @@ describe('content projection', () => {
   it('should project content with container and if-else.', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { P(2, 0); }
         e();
@@ -240,7 +240,7 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { C(2); }
         e();
@@ -295,7 +295,7 @@ describe('content projection', () => {
         */
        const Child = createComponent('child', function(ctx: any, cm: boolean) {
          if (cm) {
-           m(0, pD());
+           pD(0);
            E(1, 'div');
            { C(2); }
            e();
@@ -342,7 +342,7 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { P(2, 0); }
         e();
@@ -389,7 +389,7 @@ describe('content projection', () => {
      */
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         P(1, 0);
         E(2, 'div');
         { C(3); }
@@ -439,8 +439,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0,
-            pD([[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]]));
+          pD(0, [[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]]);
           E(1, 'div', ['id', 'first']);
           { P(2, 0, 1); }
           e();
@@ -486,8 +485,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0,
-            pD([[[['span', 'class', 'toFirst'], null]], [[['span', 'class', 'toSecond'], null]]]));
+          pD(0, [[[['span', 'class', 'toFirst'], null]], [[['span', 'class', 'toSecond'], null]]]);
           E(1, 'div', ['id', 'first']);
           { P(2, 0, 1); }
           e();
@@ -533,8 +531,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0,
-            pD([[[['span', 'class', 'toFirst'], null]], [[['span', 'class', 'toSecond'], null]]]));
+          pD(0, [[[['span', 'class', 'toFirst'], null]], [[['span', 'class', 'toSecond'], null]]]);
           E(1, 'div', ['id', 'first']);
           { P(2, 0, 1); }
           e();
@@ -580,7 +577,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0, pD([[[['span'], null]], [[['span', 'class', 'toSecond'], null]]]));
+          pD(0, [[[['span'], null]], [[['span', 'class', 'toSecond'], null]]]);
           E(1, 'div', ['id', 'first']);
           { P(2, 0, 1); }
           e();
@@ -626,7 +623,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0, pD([[[['span', 'class', 'toFirst'], null]]]));
+          pD(0, [[[['span', 'class', 'toFirst'], null]]]);
           E(1, 'div', ['id', 'first']);
           { P(2, 0, 1); }
           e();
@@ -673,7 +670,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0, pD([[[['span', 'class', 'toSecond'], null]]]));
+          pD(0, [[[['span', 'class', 'toSecond'], null]]]);
           E(1, 'div', ['id', 'first']);
           { P(2, 0); }
           e();
@@ -727,7 +724,7 @@ describe('content projection', () => {
        */
       const GrandChild = createComponent('grand-child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0, pD([[[['span'], null]]]));
+          pD(0, [[[['span'], null]]]);
           P(1, 0, 1);
           E(2, 'hr');
           e();
@@ -743,7 +740,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0, pD());
+          pD(0);
           E(1, GrandChild);
           {
             P(3, 0);
@@ -793,7 +790,7 @@ describe('content projection', () => {
        */
       const Child = createComponent('child', function(ctx: any, cm: boolean) {
         if (cm) {
-          m(0, pD([[[['div'], null]]]));
+          pD(0, [[[['div'], null]]]);
           E(1, 'span');
           { P(2, 0, 1); }
           e();

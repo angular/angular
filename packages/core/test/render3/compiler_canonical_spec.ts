@@ -164,6 +164,69 @@ describe('compiler specification', () => {
       expect(renderComp(MyComponent)).toEqual('<child some-directive="">child-view</child>!');
       expect(log).toEqual(['ChildComponent', 'SomeDirective']);
     });
+
+    it('should support content projection', () => {
+      @Component({selector: 'simple', template: `<div><ng-content></ng-content></div>`})
+      class SimpleComponent {
+        static ngComponentDef = r3.defineComponent({
+          tag: 'simple',
+          factory: () => new SimpleComponent(),
+          template: function(ctx: SimpleComponent, cm: boolean) {
+            if (cm) {
+              r3.pD(0);
+              r3.E(0, 'div');
+              r3.P(2, 0);
+              r3.e();
+            }
+          }
+        });
+      }
+
+      @Component({
+        selector: 'complex',
+        template: `
+        <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
+        <div id="second"><ng-content select="span[title=toSecond]"></ng-content></div>`
+      })
+      class ComplexComponent {
+        static ngComponentDef = r3.defineComponent({
+          tag: 'complex',
+          factory: () => new ComplexComponent(),
+          template: function(ctx: ComplexComponent, cm: boolean) {
+            if (cm) {
+              r3.pD(0, pD_0);
+              r3.E(1, 'div', ['id', 'first']);
+              r3.P(2, 0, 1);
+              r3.e();
+              r3.E(3, 'div', ['id', 'second']);
+              r3.P(4, 0, 2);
+              r3.e();
+            }
+          }
+        });
+      }
+      const pD_0: r3.CssSelector[] =
+          [[[['span', 'title', 'toFirst'], null]], [[['span', 'title', 'toSecond'], null]]];
+
+      @Component({
+        selector: 'my-app',
+        template: `<simple>content</simple>
+        <complex></complex>`
+      })
+      class MyApp {
+        static ngComponentDef = r3.defineComponent({
+          tag: 'my-app',
+          factory: () => new MyApp(),
+          template: function(ctx: MyApp, cm: boolean) {
+            if (cm) {
+              r3.E(0, SimpleComponent);
+              r3.T(2, 'content');
+              r3.e();
+            }
+          }
+        });
+      }
+    });
   });
 
   describe('local references', () => {
@@ -424,7 +487,7 @@ xdescribe('NgModule', () => {
         factory: () => new MyModule(inject(Toast)),
         provider: [
           {provide: Toast, deps: [String]},  // If Toast has metadata generate this line
-          Toast,                             // If toast has not metadata generate this line.
+          Toast,                             // If Toast has no metadata generate this line.
           {provide: String, useValue: 'Hello'}
         ],
         imports: [CommonModule]

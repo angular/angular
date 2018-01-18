@@ -87,3 +87,4 @@ export {
   defineDirective,
 };
 export {createComponentRef, detectChanges, getHostElement, markDirty, renderComponent};
+export {CssSelector} from './interfaces/projection';
