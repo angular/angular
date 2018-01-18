@@ -9,6 +9,7 @@
 import localeEn from '@angular/common/locales/en';
 import localeEsUS from '@angular/common/locales/es-US';
 import localeFr from '@angular/common/locales/fr';
+import localeAr from '@angular/common/locales/ar';
 import {registerLocaleData, CurrencyPipe, DecimalPipe, PercentPipe} from '@angular/common';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
@@ -18,6 +19,7 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       registerLocaleData(localeEn);
       registerLocaleData(localeEsUS);
       registerLocaleData(localeFr);
+      registerLocaleData(localeAr);
     });
 
     function isNumeric(value: any): boolean { return !isNaN(value - parseFloat(value)); }
@@ -79,6 +81,7 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
           expect(pipe.transform(1.2, '.2')).toEqual('120.00%');
           expect(pipe.transform(1.2, '4.2')).toEqual('0,120.00%');
           expect(pipe.transform(1.2, '4.2', 'fr')).toEqual('0 120,00 %');
+          expect(pipe.transform(1.2, '4.2', 'ar')).toEqual('0,120.00‎%‎');
           // see issue #20136
           expect(pipe.transform(0.12345674, '0.0-10')).toEqual('12.345674%');
           expect(pipe.transform(0, '0.0-10')).toEqual('0%');

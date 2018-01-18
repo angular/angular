@@ -26,8 +26,8 @@ export default [
     ['i', 'b', 'm', 'i', 'm', 'y', 'y', 'ɣ', 'c', 'k', 'n', 'd'],
     ['inn', 'bṛa', 'maṛ', 'ibr', 'may', 'yun', 'yul', 'ɣuc', 'cut', 'ktu', 'nuw', 'duj'],
     [
-      'innayr', 'bṛayṛ', 'maṛṣ', 'ibrir', 'mayyu', 'yunyu', 'yulyuz', 'ɣuct', 'cutanbir', 'ktubr',
-      'nuwanbir', 'dujanbir'
+      'innayr', 'bṛayṛ', 'maṛṣ', 'ibrir', 'mayyu', 'yunyu', 'yulyuz', 'ɣuct', 'cutanbir',
+      'ktubr', 'nuwanbir', 'dujanbir'
     ]
   ],
   , [['daɛ', 'dfɛ'], , ['dat n ɛisa', 'dffir n ɛisa']], 6, [5, 6],

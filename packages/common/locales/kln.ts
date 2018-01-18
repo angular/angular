@@ -25,8 +25,8 @@ export default [
     ['M', 'N', 'T', 'I', 'M', 'P', 'N', 'R', 'B', 'E', 'K', 'K'],
     ['Mul', 'Ngat', 'Taa', 'Iwo', 'Mam', 'Paa', 'Nge', 'Roo', 'Bur', 'Epe', 'Kpt', 'Kpa'],
     [
-      'Mulgul', 'Ng’atyaato', 'Kiptaamo', 'Iwootkuut', 'Mamuut', 'Paagi', 'Ng’eiyeet', 'Rooptui',
-      'Bureet', 'Epeeso', 'Kipsuunde ne taai', 'Kipsuunde nebo aeng’'
+      'Mulgul', 'Ng’atyaato', 'Kiptaamo', 'Iwootkuut', 'Mamuut', 'Paagi', 'Ng’eiyeet',
+      'Rooptui', 'Bureet', 'Epeeso', 'Kipsuunde ne taai', 'Kipsuunde nebo aeng’'
     ]
   ],
   , [['AM', 'KO'], , ['Amait kesich Jesu', 'Kokakesich Jesu']], 0, [6, 0],

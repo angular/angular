@@ -28,7 +28,10 @@ export default [
   ],
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'O', 'S', 'O', 'N', 'D'],
-    ['Jan.', 'Fäb.', 'Mäz.', 'Apr.', 'Mai', 'Jun.', 'Jul.', 'Ouj.', 'Säp.', 'Okt.', 'Nov.', 'Dez.'],
+    [
+      'Jan.', 'Fäb.', 'Mäz.', 'Apr.', 'Mai', 'Jun.', 'Jul.', 'Ouj.', 'Säp.', 'Okt.', 'Nov.',
+      'Dez.'
+    ],
     [
       'Jannewa', 'Fäbrowa', 'Määz', 'Aprell', 'Mai', 'Juuni', 'Juuli', 'Oujoß', 'Septämber',
       'Oktohber', 'Novämber', 'Dezämber'
@@ -44,9 +47,9 @@ export default [
   ],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', '¤¤¤', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', function(n: number):
-                                                                  number {
-                                                                    if (n === 0) return 0;
-                                                                    if (n === 1) return 1;
-                                                                    return 5;
-                                                                  }
+                                                                       number {
+                                                                         if (n === 0) return 0;
+                                                                         if (n === 1) return 1;
+                                                                         return 5;
+                                                                       }
 ];

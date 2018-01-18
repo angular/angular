@@ -13,7 +13,10 @@ export default [
   [
     ['ky.', 'kp.', 'aamulla', 'ap.', 'ip.', 'illalla', 'yöllä'],
     ['keskiyöllä', 'keskip.', 'aamulla', 'aamup.', 'iltap.', 'illalla', 'yöllä'],
-    ['keskiyöllä', 'keskipäivällä', 'aamulla', 'aamupäivällä', 'iltapäivällä', 'illalla', 'yöllä']
+    [
+      'keskiyöllä', 'keskipäivällä', 'aamulla', 'aamupäivällä', 'iltapäivällä',
+      'illalla', 'yöllä'
+    ]
   ],
   [
     ['ky.', 'kp.', 'aamu', 'ap.', 'ip.', 'ilta', 'yö'],
