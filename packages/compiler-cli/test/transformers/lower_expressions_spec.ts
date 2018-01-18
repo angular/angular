@@ -99,7 +99,17 @@ describe('Expression lowering', () => {
           .toBeTruthy('did not find the data field');
     });
 
-    it('should throw a validation execption for invalid files', () => {
+    it('should not lower a non-module', () => {
+      const collected = collect(`
+          declare const global: any;
+          const ngDevMode: boolean = (function(global: any) {
+            return global.ngDevMode = true;
+          })(typeof window != 'undefined' && window || typeof self != 'undefined' && self || typeof global != 'undefined' && global);
+       `);
+      expect(collected.requests.size).toBe(0, 'unexpected rewriting');
+    });
+
+    it('should throw a validation exception for invalid files', () => {
       const cache = new LowerMetadataCache({}, /* strict */ true);
       const sourceFile = ts.createSourceFile(
           'foo.ts', `
