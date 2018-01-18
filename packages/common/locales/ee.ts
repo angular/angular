@@ -9,6 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
   'ee',
   [
@@ -39,9 +44,5 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'mnn', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'GH₵', 'ghana siɖi', function(n: number):
-                                                                            number {
-                                                                              if (n === 1) return 1;
-                                                                              return 5;
-                                                                            }
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'GH₵', 'ghana siɖi', plural
 ];

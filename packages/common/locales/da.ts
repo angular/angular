@@ -9,6 +9,13 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)),
+      t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
+  if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return 1;
+  return 5;
+}
+
 export default [
   'da',
   [
@@ -50,12 +57,5 @@ export default [
     '{1} \'kl\'. {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', '.'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)),
-            t = parseInt(n.toString().replace(/^[^.]*\.?|0+$/g, ''), 10) || 0;
-        if (n === 1 || !(t === 0) && (i === 0 || i === 1)) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'kr.', 'dansk krone', plural
 ];

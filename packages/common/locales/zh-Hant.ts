@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'zh-Hant',
   [
@@ -43,6 +47,5 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', '非數值', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', '新台幣',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', '新台幣', plural
 ];

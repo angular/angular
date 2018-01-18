@@ -9,6 +9,17 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
+      f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
+  if (v === 0 && i % 100 === 1 || f % 100 === 1) return 1;
+  if (v === 0 && i % 100 === 2 || f % 100 === 2) return 2;
+  if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 ||
+      f % 100 === Math.floor(f % 100) && f % 100 >= 3 && f % 100 <= 4)
+    return 3;
+  return 5;
+}
+
 export default [
   'hsb',
   [
@@ -53,16 +64,5 @@ export default [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
-            f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-        if (v === 0 && i % 100 === 1 || f % 100 === 1) return 1;
-        if (v === 0 && i % 100 === 2 || f % 100 === 2) return 2;
-        if (v === 0 && i % 100 === Math.floor(i % 100) && i % 100 >= 3 && i % 100 <= 4 ||
-            f % 100 === Math.floor(f % 100) && f % 100 >= 3 && f % 100 <= 4)
-          return 3;
-        return 5;
-      }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', plural
 ];

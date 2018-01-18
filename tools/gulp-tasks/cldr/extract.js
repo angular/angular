@@ -101,9 +101,11 @@ function generateLocale(locale, localeData) {
     .replace(/undefined/g, '');
 
   // adding plural function after, because we don't want it as a string
-  data = data.substring(0, data.lastIndexOf(']')) + `, ${getPluralFunction(locale)}]`;
+  data = data.substring(0, data.lastIndexOf(']')) + `, plural]`;
 
   return `${HEADER}
+${getPluralFunction(locale)}
+
 export default ${data};
 `;
 }
@@ -457,7 +459,7 @@ function getPluralFunction(locale) {
   fn = fn
     .replace(
       toRegExp('function anonymous(n\n/*``*/) {\n'),
-      'function(n: number): number {\n  ')
+      'function plural(n: number): number {\n  ')
     .replace(toRegExp('var'), 'let')
     .replace(toRegExp('if(typeof n==="string")n=parseInt(n,10);'), '')
     .replace(toRegExp('\n}'), ';\n}');

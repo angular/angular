@@ -9,6 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
   'ta-SG',
   [
@@ -62,9 +67,5 @@ export default [
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '$',
-  'சிங்கப்பூர் டாலர்', function(n: number):
-                                                           number {
-                                                             if (n === 1) return 1;
-                                                             return 5;
-                                                           }
+  'சிங்கப்பூர் டாலர்', plural
 ];
