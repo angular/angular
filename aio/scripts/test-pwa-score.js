@@ -17,11 +17,14 @@ const printer = require('lighthouse/lighthouse-cli/printer');
 const config = require('lighthouse/lighthouse-core/config/default.js');
 
 // Constants
+const CHROME_LAUNCH_OPTS = {};
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 
-// Specify the path to Chrome on Travis
+
+// Specify the path and flags for Chrome on Travis
 if (process.env.TRAVIS) {
   process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
+  CHROME_LAUNCH_OPTS.chromeFlags = ['--no-sandbox'];
 }
 
 // Run
@@ -71,7 +74,7 @@ function ignoreHttpsAudits(config) {
 }
 
 function launchChromeAndRunLighthouse(url, flags, config) {
-  return chromeLauncher.launch().then(chrome => {
+  return chromeLauncher.launch(CHROME_LAUNCH_OPTS).then(chrome => {
     flags.port = chrome.port;
     return lighthouse(url, flags, config).
       then(results => chrome.kill().then(() => results)).
