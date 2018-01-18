@@ -29,7 +29,7 @@
 {%- macro renderMemberDetail(member, cssClass) -%}
 <div class="{$ cssClass $}">
   <a id="{$ member.anchor $}"></a>
-  <code-example hideCopy="true" class="no-box api-heading">{$ renderMember(member) $}</code-example>
+  <code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMember(member) $}</code-example>
   {%- if not member.notYetDocumented %}
   {$ member.description | marked $}
   {% endif -%}
