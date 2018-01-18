@@ -23,7 +23,6 @@
   "devDependencies": [
     "@types/jasmine",
     "@types/node",
-    "jasmine",
     "jasmine-core",
     "karma",
     "karma-chrome-launcher",
