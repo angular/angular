@@ -91,6 +91,28 @@ export interface LView {
   cleanup: any[]|null;
 
   /**
+   * Array of ngAfterContentInit and ngAfterContentChecked hooks.
+   *
+   * These need to be queued so they can be called all at once after init hooks
+   * and any embedded views are finished processing (to maintain backwards-compatible
+   * order).
+   *
+   * 1st index is: type of hook (afterContentInit or afterContentChecked)
+   * 2nd index is: method to call
+   * 3rd index is: context
+   */
+  contentHooks: any[]|null;
+
+  /**
+   * Whether or not the content hooks have been called in this change detection run.
+   *
+   * Content hooks are executed by the first Comp.r() instruction that runs (to avoid
+   * adding to the code size), so it needs to be able to check whether or not they should
+   * be called.
+   */
+  contentHooksCalled: boolean;
+
+  /**
    * The first LView or LContainer beneath this LView in the hierarchy.
    *
    * Necessary to store this so views can traverse through their nested views
