@@ -10,87 +10,10 @@ This style guide presents preferred conventions and, as importantly, explains wh
 
 ## Style vocabulary
 
-Each guideline describes either a good or bad practice, and all have a consistent presentation.
+Each guideline describes different practices, and all have a consistent presentation.
+
 
 The wording of each guideline indicates how strong the recommendation is.
-
-
-<div class="s-rule do">
-
-
-
-**Do** is one that should always be followed.
-_Always_ might be a bit too strong of a word.
-Guidelines that literally should always be followed are extremely rare.
-On the other hand, you need a really unusual case for breaking a *Do* guideline.
-
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** guidelines should generally be followed.
-If you fully understand the meaning behind the guideline and have a good reason to deviate, then do so. Please strive to be consistent.
-
-
-</div>
-
-
-
-<div class="s-rule avoid">
-
-
-
-**Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakeable red header.
-
-
-</div>
-
-
-
-<div class="s-why">
-
-
-
-**Why?** gives reasons for following the previous recommendations.
-
-
-</div>
-
-
-
-
-## File structure conventions
-
-Some code examples display a file that has one or more similarly named companion files.
-For example, `hero.component.ts` and `hero.component.html`.
-
-The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent those various files. Using this shortcut makes this guide's file structures easier to read and more terse.
-
-
-
-{@a single-responsibility}
-
-
-## Single responsibility
-
-Apply the
-<a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>single responsibility principle</i> (SRP)</a>
-to all components, services, and other symbols.
-This helps make the app cleaner, easier to read and maintain, and more testable.
-
-{@a 01-01}
-
-### Rule of One
-
-#### Style 01-01
-
-
-<div class="s-rule do">
 
 
 
