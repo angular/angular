@@ -47,11 +47,14 @@ export default [
       'marras', 'joulu'
     ],
     [
-      'tammikuu', 'helmikuu', 'maaliskuu', 'huhtikuu', 'toukokuu', 'kesäkuu', 'heinäkuu', 'elokuu',
-      'syyskuu', 'lokakuu', 'marraskuu', 'joulukuu'
+      'tammikuu', 'helmikuu', 'maaliskuu', 'huhtikuu', 'toukokuu', 'kesäkuu', 'heinäkuu',
+      'elokuu', 'syyskuu', 'lokakuu', 'marraskuu', 'joulukuu'
     ]
   ],
-  [['eKr', 'jKr'], ['eKr.', 'jKr.'], ['ennen Kristuksen syntymää', 'jälkeen Kristuksen syntymän']],
+  [
+    ['eKr', 'jKr'], ['eKr.', 'jKr.'],
+    ['ennen Kristuksen syntymää', 'jälkeen Kristuksen syntymän']
+  ],
   1, [6, 0], ['d.M.y', , 'd. MMMM y', 'cccc d. MMMM y'],
   ['H.mm', 'H.mm.ss', 'H.mm.ss z', 'H.mm.ss zzzz'],
   [

@@ -10,7 +10,8 @@
 // See angular/tools/gulp-tasks/cldr/extract.js
 
 export default [
-  'pt-GW', [['a.m.', 'p.m.'], , ['da manhã', 'da tarde']], [['a.m.', 'p.m.'], , ['manhã', 'tarde']],
+  'pt-GW', [['a.m.', 'p.m.'], , ['da manhã', 'da tarde']],
+  [['a.m.', 'p.m.'], , ['manhã', 'tarde']],
   [
     ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
     ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'],

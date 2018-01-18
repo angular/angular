@@ -56,10 +56,10 @@ export default [
     '{1}, {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '¤#,##0.00;¤-#,##0.00', '#E0'], '$', 'Peso chileno', function(n: number):
-                                                                                    number {
-                                                                                      if (n === 1)
-                                                                                        return 1;
-                                                                                      return 5;
-                                                                                    }
+  ['#,##0.###', '#,##0 %', '¤#,##0.00;¤-#,##0.00', '#E0'], '$', 'Peso chileno',
+  function(n: number):
+      number {
+        if (n === 1) return 1;
+        return 5;
+      }
 ];

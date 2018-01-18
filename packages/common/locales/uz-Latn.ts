@@ -47,10 +47,10 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'son emas', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi', function(n: number):
-                                                                                 number {
-                                                                                   if (n === 1)
-                                                                                     return 1;
-                                                                                   return 5;
-                                                                                 }
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'soʻm', 'O‘zbekiston so‘mi',
+  function(n: number):
+      number {
+        if (n === 1) return 1;
+        return 5;
+      }
 ];

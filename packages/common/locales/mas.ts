@@ -24,10 +24,14 @@ export default [
   ,
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-    ['Dal', 'Ará', 'Ɔɛn', 'Doy', 'Lép', 'Rok', 'Sás', 'Bɔ́r', 'Kús', 'Gís', 'Shʉ́', 'Ntʉ́'],
     [
-      'Oladalʉ́', 'Arát', 'Ɔɛnɨ́ɔɨŋɔk', 'Olodoyíóríê inkókúâ', 'Oloilépūnyīē inkókúâ', 'Kújúɔrɔk',
-      'Mórusásin', 'Ɔlɔ́ɨ́bɔ́rárɛ', 'Kúshîn', 'Olgísan', 'Pʉshʉ́ka', 'Ntʉ́ŋʉ́s'
+      'Dal', 'Ará', 'Ɔɛn', 'Doy', 'Lép', 'Rok', 'Sás', 'Bɔ́r', 'Kús', 'Gís', 'Shʉ́',
+      'Ntʉ́'
+    ],
+    [
+      'Oladalʉ́', 'Arát', 'Ɔɛnɨ́ɔɨŋɔk', 'Olodoyíóríê inkókúâ',
+      'Oloilépūnyīē inkókúâ', 'Kújúɔrɔk', 'Mórusásin', 'Ɔlɔ́ɨ́bɔ́rárɛ',
+      'Kúshîn', 'Olgísan', 'Pʉshʉ́ka', 'Ntʉ́ŋʉ́s'
     ]
   ],
   , [['MY', 'EY'], , ['Meínō Yɛ́sʉ', 'Eínō Yɛ́sʉ']], 0, [6, 0],
@@ -40,9 +44,9 @@ export default [
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'Ksh', 'Iropiyianí e Kenya', function(n: number):
-                                                                                number {
-                                                                                  if (n === 1)
-                                                                                    return 1;
-                                                                                  return 5;
-                                                                                }
+                                                                                  number {
+                                                                                    if (n === 1)
+                                                                                      return 1;
+                                                                                    return 5;
+                                                                                  }
 ];

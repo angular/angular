@@ -15,6 +15,7 @@ import localeDe from '@angular/common/locales/de';
 import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
+import localeAr from '@angular/common/locales/ar';
 
 {
   describe('DatePipe', () => {
@@ -33,6 +34,7 @@ import localeTh from '@angular/common/locales/th';
       registerLocaleData(localeHu);
       registerLocaleData(localeSr);
       registerLocaleData(localeTh);
+      registerLocaleData(localeAr);
     });
 
     beforeEach(() => {
@@ -299,6 +301,7 @@ import localeTh from '@angular/common/locales/th';
 
       it(`should format the date correctly in various locales`, () => {
         expect(new DatePipe('de').transform(date, 'short')).toEqual('15.06.15, 09:03');
+        expect(new DatePipe('ar').transform(date, 'short')).toEqual('15‏/6‏/2015 9:03 ص');
         expect(new DatePipe('th').transform(date, 'dd-MM-yy')).toEqual('15-06-15');
         expect(new DatePipe('hu').transform(date, 'a')).toEqual('de.');
         expect(new DatePipe('sr').transform(date, 'a')).toEqual('пре подне');

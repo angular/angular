@@ -39,6 +39,6 @@ export default [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'KM', 'Bosansko-hercegovačka konvertibilna marka',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'KM',
+  'Bosansko-hercegovačka konvertibilna marka', function(n: number): number { return 5;}
 ];

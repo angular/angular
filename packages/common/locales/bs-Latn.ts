@@ -43,7 +43,8 @@ export default [
     '{1} \'u\' {0}',
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'KM', 'Bosanskohercegovačka konvertibilna marka',
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'KM',
+  'Bosanskohercegovačka konvertibilna marka',
   function(n: number):
       number {
         let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,

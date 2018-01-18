@@ -26,16 +26,16 @@ export default [
     ['Ý', 'F', 'M', 'A', 'M', 'I', 'I', 'A', 'S', 'O', 'N', 'D'],
     ['ýan', 'few', 'mart', 'apr', 'maý', 'iýun', 'iýul', 'awg', 'sen', 'okt', 'noý', 'dek'],
     [
-      'ýanwar', 'fewral', 'mart', 'aprel', 'maý', 'iýun', 'iýul', 'awgust', 'sentýabr', 'oktýabr',
-      'noýabr', 'dekabr'
+      'ýanwar', 'fewral', 'mart', 'aprel', 'maý', 'iýun', 'iýul', 'awgust', 'sentýabr',
+      'oktýabr', 'noýabr', 'dekabr'
     ]
   ],
   [
     ['Ý', 'F', 'M', 'A', 'M', 'I', 'I', 'A', 'S', 'O', 'N', 'D'],
     ['Ýan', 'Few', 'Mart', 'Apr', 'Maý', 'Iýun', 'Iýul', 'Awg', 'Sen', 'Okt', 'Noý', 'Dek'],
     [
-      'Ýanwar', 'Fewral', 'Mart', 'Aprel', 'Maý', 'Iýun', 'Iýul', 'Awgust', 'Sentýabr', 'Oktýabr',
-      'Noýabr', 'Dekabr'
+      'Ýanwar', 'Fewral', 'Mart', 'Aprel', 'Maý', 'Iýun', 'Iýul', 'Awgust', 'Sentýabr',
+      'Oktýabr', 'Noýabr', 'Dekabr'
     ]
   ],
   [['B.e.öň', 'B.e.'], , ['Isadan öň', 'Isadan soň']], 1, [6, 0],
@@ -48,9 +48,9 @@ export default [
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'san däl', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], 'TMT', 'Türkmen manady', function(n: number):
-                                                                              number {
-                                                                                if (n === 1)
-                                                                                  return 1;
-                                                                                return 5;
-                                                                              }
+                                                                                  number {
+                                                                                    if (n === 1)
+                                                                                      return 1;
+                                                                                    return 5;
+                                                                                  }
 ];
