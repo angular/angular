@@ -135,8 +135,15 @@ You can add HammerJS to your application via [npm](https://www.npmjs.com/package
 directly from your app.
 
 To install via npm, use the following command:
+
+#### NPM
 ```bash
 npm install --save hammerjs
+```
+
+#### Yarn
+```bash
+yarn add hammerjs
 ```
 
 After installing, import it on your app's entry point (e.g. `src/main.ts`).
