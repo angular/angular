@@ -26,15 +26,15 @@ and which pieces are blocked) and make a comment.
 Also see our [`Good for community contribution`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+for+community+contribution%22)
 label.
 
-High level stuff planned for Q4 2017 (October - December):
-* ~~RC and stable release~~
+High level stuff planned for Q1 2018 (January - March):
 * Research and prototyping for virtual-scroll
 * Research and exploration for data visualization
 * cdkTree and matTree
-* Expanded cdkTable features
 * cdk/dialog
 * Switch build to bazel
 * Overlay positioning improvements
+* Research and prototyping for future Material Design updates
+* Research and prototyping drag/drop features for the CDK
 
 
 #### Available features
@@ -46,15 +46,15 @@ High level stuff planned for Q4 2017 (October - December):
 | button-toggle    |                                                        |   [Docs][15] |
 | cards            |                                                        |   [Docs][2]  |
 | checkbox         |                                                        |   [Docs][3]  |
-| chips            |        Chip-remove, integration with input in-progress |   [Docs][26] |
-| data-table       | Sticky headers & incremental row rendering in-progress |   [Docs][28] |
+| chips            |                                                        |   [Docs][26] |
+| data-table       |                           More features coming in 2018 |   [Docs][28] |
 | datepicker       |                                                        |   [Docs][25] |
 | dialog           |                                                        |   [Docs][22] |
 | expansion-panel  |                                                        |   [Docs][32] |
 | grid-list        |                                                        |   [Docs][9]  |
 | icon             |                                                        |   [Docs][10] |
 | input            |                                                        |   [Docs][5]  |
-| list             |                                 Action list planned Q1 |   [Docs][8]  |
+| list             |                               Action list planned 2018 |   [Docs][8]  |
 | menu             |                                                        |   [Docs][17] |
 | paginator        |                                                        |   [Docs][29] |
 | progress-bar     |                                                        |   [Docs][12] |
@@ -86,7 +86,7 @@ High level stuff planned for Q4 2017 (October - December):
 | tree             |      In-progress ([sneak peek][31]) |           -  |  [#3175][3175] |
 | sticky-header    |        In-progress, planned Q2 2018 |           -  |   [#474][0474] |
 | virtual-repeat   |        Prototyping, planned Q1 2018 |           -  |   [#823][0823] |
-| badge            |        In-progress, planned Q4 2017 |           -  |  [#3085][3058] |
+| badge            |        In-progress, planned Q1 2018 |           -  |  [#3085][3058] |
 | fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
 | fab toolbar      |            Not started, not planned |           -  |              - |
 | bottom-sheet     |            Not started, not planned |           -  |  [#8113][8113] |
