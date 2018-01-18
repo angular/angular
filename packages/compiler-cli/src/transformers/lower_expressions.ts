@@ -325,13 +325,14 @@ export class LowerMetadataCache implements RequestsMap {
     };
 
     // Do not validate or lower metadata in a declaration file. Declaration files are requested
-    // when we need to update the version of the metadata to add informatoin that might be missing
+    // when we need to update the version of the metadata to add information that might be missing
     // in the out-of-date version that can be recovered from the .d.ts file.
     const declarationFile = sourceFile.isDeclarationFile;
+    const moduleFile = ts.isExternalModule(sourceFile);
 
     const metadata = this.collector.getMetadata(
         sourceFile, this.strict && !declarationFile,
-        declarationFile ? undefined : substituteExpression);
+        moduleFile && !declarationFile ? substituteExpression : undefined);
 
     return {metadata, requests};
   }
