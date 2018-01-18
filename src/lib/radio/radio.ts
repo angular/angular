@@ -323,7 +323,7 @@ export const _MatRadioButtonMixinBase =
     mixinColor(mixinDisableRipple(MatRadioButtonBase), 'accent');
 
 /**
- * A radio-button. May be inside of
+ * A Material design radio-button. Typically placed inside of `<mat-radio-group>` elements.
  */
 @Component({
   moduleId: module.id,
