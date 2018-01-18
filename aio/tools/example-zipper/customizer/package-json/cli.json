@@ -13,6 +13,7 @@
   "devDependencies": [
     "@angular/cli",
     "@types/jasminewd2",
+    "jasmine-spec-reporter",
     "karma-coverage-istanbul-reporter",
     "ts-node"
   ]
