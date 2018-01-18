@@ -31,14 +31,13 @@ describe('lifecycles', () => {
     let Comp = createOnInitComponent('comp', (ctx: any, cm: boolean) => {
       if (cm) {
         m(0, pD());
-        E(1, 'div'); {
-          P(2, 0);
-        }
+        E(1, 'div');
+        { P(2, 0); }
         e();
       }
     });
     let Parent = createOnInitComponent('parent', getParentTemplate(Comp));
-    let ProjectedComp = createOnInitComponent('projected', (ctx: any, cm: boolean)=> {
+    let ProjectedComp = createOnInitComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
         T(0, 'content');
       }
@@ -429,9 +428,7 @@ describe('lifecycles', () => {
       if (cm) {
         m(0, pD());
         E(1, Comp);
-        {
-          P(3, 0);
-        }
+        { P(3, 0); }
         e();
       }
       p(1, 'val', b(ctx.val));
@@ -455,12 +452,8 @@ describe('lifecycles', () => {
         }
         ngAfterContentChecked() { allEvents.push(`${name}${this.val} check`); }
 
-        static ngComponentDef = defineComponent({
-          tag: name,
-          factory: () => new Component(),
-          inputs: {val: 'val'},
-          template: template
-        });
+        static ngComponentDef = defineComponent(
+            {tag: name, factory: () => new Component(), inputs: {val: 'val'}, template: template});
       };
     }
 
@@ -469,9 +462,7 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, Comp);
-          {
-            T(2, 'content');
-          }
+          { T(2, 'content'); }
           e();
         }
         Comp.ngComponentDef.h(1, 0);
@@ -495,20 +486,20 @@ describe('lifecycles', () => {
         if (cm) {
           C(0);
         }
-        cR(0); {
+        cR(0);
+        {
           if (ctx.condition) {
             if (V(0)) {
               E(0, Comp);
-              {
-                T(2, 'content');
-              }
+              { T(2, 'content'); }
               e();
             }
             Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.r(1, 0);
             v();
           }
-        } cr();
+        }
+        cr();
       }
 
       renderToHtml(Template, {condition: true});
@@ -523,13 +514,9 @@ describe('lifecycles', () => {
 
     it('should be called on directives after component', () => {
       class Directive {
-        ngAfterContentInit() {
-          events.push('dir');
-        }
+        ngAfterContentInit() { events.push('dir'); }
 
-        static ngDirectiveDef = defineDirective({
-          factory: () => new Directive()
-        });
+        static ngDirectiveDef = defineDirective({factory: () => new Directive()});
       }
 
       function Template(ctx: any, cm: boolean) {
@@ -558,9 +545,7 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, Parent);
-          {
-            T(2, 'content');
-          }
+          { T(2, 'content'); }
           e();
         }
         Parent.ngComponentDef.h(1, 0);
@@ -581,14 +566,10 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, Parent);
-          {
-            T(2, 'content');
-          }
+          { T(2, 'content'); }
           e();
           E(3, Parent);
-          {
-            T(5, 'content');
-          }
+          { T(5, 'content'); }
           e();
         }
         p(0, 'val', 1);
@@ -619,16 +600,14 @@ describe('lifecycles', () => {
           E(0, Parent);
           {
             E(2, ProjectedComp);
-            {
-              T(4, 'content');
-            }
+            { T(4, 'content'); }
             e();
           }
           e();
         }
         Parent.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        ProjectedComp.ngComponentDef.r(3,2);
+        ProjectedComp.ngComponentDef.r(3, 2);
         Parent.ngComponentDef.r(1, 0);
       }
 
@@ -655,18 +634,14 @@ describe('lifecycles', () => {
           E(0, Parent);
           {
             E(2, ProjectedComp);
-            {
-              T(4, 'content');
-            }
+            { T(4, 'content'); }
             e();
           }
           e();
           E(5, Parent);
           {
             E(7, ProjectedComp);
-            {
-              T(9, 'content');
-            }
+            { T(9, 'content'); }
             e();
           }
           e();
@@ -700,28 +675,23 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, Comp);
-          {
-            T(2, 'content');
-          }
+          { T(2, 'content'); }
           e();
           C(3);
           E(4, Comp);
-          {
-            T(6, 'content');
-          }
+          { T(6, 'content'); }
           e();
         }
         p(0, 'val', 1);
         p(4, 'val', 4);
         Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.h(5, 4);
-        cR(3); {
+        cR(3);
+        {
           for (let i = 2; i < 4; i++) {
             if (V(0)) {
               E(0, Comp);
-              {
-                T(2, 'content');
-              }
+              { T(2, 'content'); }
               e();
             }
             p(0, 'val', i);
@@ -729,7 +699,8 @@ describe('lifecycles', () => {
             Comp.ngComponentDef.r(1, 0);
             v();
           }
-        } cr();
+        }
+        cr();
         Comp.ngComponentDef.r(1, 0);
         Comp.ngComponentDef.r(5, 4);
       }
@@ -741,28 +712,23 @@ describe('lifecycles', () => {
     function ForLoopWithChildrenTemplate(ctx: any, cm: boolean) {
       if (cm) {
         E(0, Parent);
-        {
-          T(2, 'content');
-        }
+        { T(2, 'content'); }
         e();
         C(3);
         E(4, Parent);
-        {
-          T(6, 'content');
-        }
+        { T(6, 'content'); }
         e();
       }
       p(0, 'val', 1);
       p(4, 'val', 4);
       Parent.ngComponentDef.h(1, 0);
       Parent.ngComponentDef.h(5, 4);
-      cR(3); {
+      cR(3);
+      {
         for (let i = 2; i < 4; i++) {
           if (V(0)) {
             E(0, Parent);
-            {
-              T(2, 'content');
-            }
+            { T(2, 'content'); }
             e();
           }
           p(0, 'val', i);
@@ -770,12 +736,13 @@ describe('lifecycles', () => {
           Parent.ngComponentDef.r(1, 0);
           v();
         }
-      } cr();
+      }
+      cr();
       Parent.ngComponentDef.r(1, 0);
       Parent.ngComponentDef.r(5, 4);
     }
 
-    it('should be called in correct order in a for loop with children', () =>{
+    it('should be called in correct order in a for loop with children', () => {
       /**
        * <parent [val]="1">content</parent>
        * % for(let i = 2; i < 4; i++) {
@@ -785,8 +752,8 @@ describe('lifecycles', () => {
        */
 
       renderToHtml(ForLoopWithChildrenTemplate, {});
-      expect(events)
-        .toEqual(['parent2', 'comp2', 'parent3', 'comp3', 'parent1', 'parent4', 'comp1', 'comp4']);
+      expect(events).toEqual(
+          ['parent2', 'comp2', 'parent3', 'comp3', 'parent1', 'parent4', 'comp1', 'comp4']);
     });
 
     describe('ngAfterContentChecked', () => {
@@ -796,9 +763,7 @@ describe('lifecycles', () => {
         function Template(ctx: any, cm: boolean) {
           if (cm) {
             E(0, Comp);
-            {
-              T(2, 'content');
-            }
+            { T(2, 'content'); }
             e();
           }
           Comp.ngComponentDef.h(1, 0);
@@ -828,15 +793,14 @@ describe('lifecycles', () => {
     let Comp = createAfterViewInitComponent('comp', (ctx: any, cm: boolean) => {
       if (cm) {
         m(0, pD());
-        E(1, 'div'); {
-          P(2, 0);
-        }
+        E(1, 'div');
+        { P(2, 0); }
         e();
       }
     });
     let Parent = createAfterViewInitComponent('parent', getParentTemplate(Comp));
 
-    let ProjectedComp = createAfterViewInitComponent('projected', (ctx: any, cm: boolean)=> {
+    let ProjectedComp = createAfterViewInitComponent('projected', (ctx: any, cm: boolean) => {
       if (cm) {
         T(0, 'content');
       }
@@ -1250,7 +1214,12 @@ describe('lifecycles', () => {
 
     beforeEach(() => { events = []; });
 
-    let Comp = createOnDestroyComponent('comp', function(ctx: any, cm: boolean) {});
+    let Comp = createOnDestroyComponent('comp', (ctx: any, cm: boolean) => {
+      if (cm) {
+        m(0, pD());
+        P(1, 0);
+      }
+    });
     let Parent = createOnDestroyComponent('parent', getParentTemplate(Comp));
 
     function createOnDestroyComponent(name: string, template: ComponentTemplate<any>) {
@@ -1258,16 +1227,8 @@ describe('lifecycles', () => {
         val: string = '';
         ngOnDestroy() { events.push(`${name}${this.val}`); }
 
-        static ngComponentDef = defineComponent({
-          tag: name,
-          factory: () => {
-            const comp = new Component();
-            l(LifecycleHook.ON_DESTROY, comp, comp.ngOnDestroy);
-            return comp;
-          },
-          inputs: {val: 'val'},
-          template: template
-        });
+        static ngComponentDef = defineComponent(
+            {tag: name, factory: () => new Component(), inputs: {val: 'val'}, template: template});
       };
     }
 
@@ -1414,6 +1375,64 @@ describe('lifecycles', () => {
       renderToHtml(Template, {condition: true});
       renderToHtml(Template, {condition: false});
       expect(events).toEqual(['comp', 'parent', 'grandparent']);
+    });
+
+    it('should be called in projected components before their hosts', () => {
+      const ProjectedComp = createOnDestroyComponent('projected', (ctx: any, cm: boolean) => {});
+
+      /**
+       * % if (showing) {
+       *   <comp [val]="1">
+       *     <projected-comp [val]="1"></projected-comp>
+       *   </comp>
+       *   <comp [val]="2">
+       *     <projected-comp [val]="2"></projected-comp>
+       *   </comp>
+       * }
+       */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          C(0);
+        }
+        cR(0);
+        {
+          if (ctx.showing) {
+            if (V(0)) {
+              E(0, Comp);
+              {
+                E(2, ProjectedComp);
+                e();
+              }
+              e();
+              E(4, Comp);
+              {
+                E(6, ProjectedComp);
+                e();
+              }
+              e();
+            }
+            p(0, 'val', 1);
+            p(2, 'val', 1);
+            p(4, 'val', 2);
+            p(6, 'val', 2);
+            Comp.ngComponentDef.h(1, 0);
+            ProjectedComp.ngComponentDef.h(3, 2);
+            Comp.ngComponentDef.h(5, 4);
+            ProjectedComp.ngComponentDef.h(7, 6);
+            ProjectedComp.ngComponentDef.r(3, 2);
+            Comp.ngComponentDef.r(1, 0);
+            ProjectedComp.ngComponentDef.r(7, 6);
+            Comp.ngComponentDef.r(5, 4);
+            v();
+          }
+        }
+        cr();
+      }
+
+      renderToHtml(Template, {showing: true});
+      renderToHtml(Template, {showing: false});
+
+      expect(events).toEqual(['projected1', 'comp1', 'projected2', 'comp2']);
     });
 
 
@@ -1636,6 +1655,138 @@ describe('lifecycles', () => {
       expect(ctx.counter).toEqual(2);
     });
 
+
+  });
+
+  describe('hook order', () => {
+    let events: string[];
+
+    beforeEach(() => { events = []; });
+
+    function createAllHooksComponent(name: string, template: ComponentTemplate<any>) {
+      return class Component {
+        val: string = '';
+
+        ngOnInit() { events.push(`init ${name}${this.val}`); }
+        ngDoCheck() { events.push(`check ${name}${this.val}`); }
+
+        ngAfterContentInit() { events.push(`contentInit ${name}${this.val}`); }
+        ngAfterContentChecked() { events.push(`contentCheck ${name}${this.val}`); }
+
+        ngAfterViewInit() { events.push(`viewInit ${name}${this.val}`); }
+        ngAfterViewChecked() { events.push(`viewCheck ${name}${this.val}`); }
+
+        static ngComponentDef = defineComponent({
+          tag: name,
+          factory: () => new Component(),
+          hostBindings: function(directiveIndex: number, elementIndex: number): void {
+            const comp = D(directiveIndex) as Component;
+            l(LifecycleHook.ON_INIT) && comp.ngOnInit();
+            comp.ngDoCheck();
+          },
+          refresh: function(directiveIndex: number, elementIndex: number): void {
+            r(directiveIndex, elementIndex, template);
+            const comp = D(directiveIndex) as Component;
+            l(LifecycleHook.AFTER_INIT, comp, comp.ngAfterViewInit);
+            l(LifecycleHook.AFTER_CHECKED, comp, comp.ngAfterViewChecked);
+          },
+          inputs: {val: 'val'}, template
+        });
+      };
+    }
+
+    it('should call all hooks in correct order', () => {
+      const Comp = createAllHooksComponent('comp', (ctx: any, cm: boolean) => {});
+
+
+      /**
+       * <comp [val]="1"></comp>
+       * <comp [val]="2"></comp>
+       */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Comp);
+          e();
+          E(2, Comp);
+          e();
+        }
+        p(0, 'val', 1);
+        p(2, 'val', 2);
+        Comp.ngComponentDef.h(1, 0);
+        Comp.ngComponentDef.h(3, 2);
+        Comp.ngComponentDef.r(1, 0);
+        Comp.ngComponentDef.r(3, 2);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'init comp1', 'check comp1', 'init comp2', 'check comp2', 'contentInit comp1',
+        'contentCheck comp1', 'contentInit comp2', 'contentCheck comp2', 'viewInit comp1',
+        'viewCheck comp1', 'viewInit comp2', 'viewCheck comp2'
+      ]);
+
+      events = [];
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'check comp1', 'check comp2', 'contentCheck comp1', 'contentCheck comp2', 'viewCheck comp1',
+        'viewCheck comp2'
+      ]);
+    });
+
+    it('should call all hooks in correct order with children', () => {
+      const Comp = createAllHooksComponent('comp', (ctx: any, cm: boolean) => {});
+
+      /** <comp [val]="val"></comp> */
+      const Parent = createAllHooksComponent('parent', (ctx: any, cm: boolean) => {
+        if (cm) {
+          E(0, Comp);
+          e();
+        }
+        p(0, 'val', b(ctx.val));
+        Comp.ngComponentDef.h(1, 0);
+        Comp.ngComponentDef.r(1, 0);
+      });
+
+      /**
+       * <parent [val]="1"></parent>
+       * <parent [val]="2"></parent>
+       */
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Parent);
+          e();
+          E(2, Parent);
+          e();
+        }
+        p(0, 'val', 1);
+        p(2, 'val', 2);
+        Parent.ngComponentDef.h(1, 0);
+        Parent.ngComponentDef.h(3, 2);
+        Parent.ngComponentDef.r(1, 0);
+        Parent.ngComponentDef.r(3, 2);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'init parent1',        'check parent1',        'init parent2',
+        'check parent2',       'contentInit parent1',  'contentCheck parent1',
+        'contentInit parent2', 'contentCheck parent2', 'init comp1',
+        'check comp1',         'contentInit comp1',    'contentCheck comp1',
+        'viewInit comp1',      'viewCheck comp1',      'init comp2',
+        'check comp2',         'contentInit comp2',    'contentCheck comp2',
+        'viewInit comp2',      'viewCheck comp2',      'viewInit parent1',
+        'viewCheck parent1',   'viewInit parent2',     'viewCheck parent2'
+      ]);
+
+      events = [];
+      renderToHtml(Template, {});
+      expect(events).toEqual([
+        'check parent1', 'check parent2', 'contentCheck parent1', 'contentCheck parent2',
+        'check comp1', 'contentCheck comp1', 'viewCheck comp1', 'check comp2', 'contentCheck comp2',
+        'viewCheck comp2', 'viewCheck parent1', 'viewCheck parent2'
+      ]);
+
+    });
 
   });
 

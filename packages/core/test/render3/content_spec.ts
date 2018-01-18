@@ -138,7 +138,7 @@ describe('content projection', () => {
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
-      .toEqual('<child><div><projected-comp>content</projected-comp></div></child>');
+        .toEqual('<child><div><projected-comp>content</projected-comp></div></child>');
   });
 
   it('should project content with container.', () => {
