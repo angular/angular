@@ -1,4 +1,4 @@
-# Service Worker Communication
+# Service worker communication
 
 Importing `ServiceWorkerModule` into your `AppModule` doesn't just register the service worker, it also provides a few services you can use to interact with the service worker and control the caching of your app.
 

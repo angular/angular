@@ -1,4 +1,4 @@
-# Angular Service Worker Introduction
+# Angular service worker introduction
 
 Service workers augment the traditional web deployment model and empower applications to deliver a user experience with the reliability and performance on par with natively-installed code.
 
