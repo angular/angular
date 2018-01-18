@@ -298,7 +298,7 @@ we'll use `my-tel-input` as our control type which will result in the form field
 controlType = 'my-tel-input';
 ```
 
-#### `setAriaDescribedByIds(ids: string[])`
+#### `setDescribedByIds(ids: string[])`
 
 This method is used by the `<mat-form-field>` to specify the IDs that should be used for the
 `aria-describedby` attribute of your component. The method has one parameter, the list of IDs, we
