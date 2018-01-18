@@ -50,7 +50,7 @@
       {"type": 301, "source": "/guide/metadata", "destination": "/guide/aot-compiler"},
 
       // ngmodule.md renamed to ngmodules.md
-      {"type": 301, "source": "/guide/ngmodule", "destination": "/guide/ngmodules"}
+      {"type": 301, "source": "/guide/ngmodule", "destination": "/guide/ngmodules"},
 
       // service-worker-getstart.md, service-worker-comm.md, service-worker-configref.md
       {"type": 301, "source": "/guide/service-worker-getstart", "destination": "/guide/service-worker-getting-started"},
