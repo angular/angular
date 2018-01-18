@@ -7,7 +7,7 @@ const messages = stylelint.utils.ruleMessages(ruleName, {
 
 
 /**
- * Stylelint plugin that prevents nesting SASS mixins.
+ * Stylelint plugin that prevents nesting Sass mixins.
  */
 const plugin = stylelint.createPlugin(ruleName, isEnabled => {
   return (root, result) => {

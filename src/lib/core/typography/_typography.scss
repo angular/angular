@@ -53,7 +53,7 @@
   );
 
   // Loop through the levels and set the `font-family` of the ones that don't have one to the base.
-  // Note that SASS can't modify maps in place, which means that we need to merge and re-assign.
+  // Note that Sass can't modify maps in place, which means that we need to merge and re-assign.
   @each $key, $level in $config {
     @if map-get($level, font-family) == null {
       $new-level: map-merge($level, (font-family: $font-family));

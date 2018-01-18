@@ -55,7 +55,7 @@
   @else {
     // Otherwise use the shorthand `font` to represent a typography level, because it's the the
     // least amount of bytes. Note that we need to use interpolation for `font-size/line-height`
-    // in order to prevent SASS from dividing the two values.
+    // in order to prevent Sass from dividing the two values.
     font: $font-weight #{$font-size}/#{$line-height} $font-family;
   }
 }

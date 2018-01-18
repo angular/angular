@@ -62,7 +62,7 @@ const plugin = stylelint.createPlugin(ruleName, browsers => {
 
     // Walk the rules and check if the selector needs prefixes.
     root.walkRules(rule => {
-      // Silence warnings for SASS selectors. Stylelint does this in their own rules as well:
+      // Silence warnings for Sass selectors. Stylelint does this in their own rules as well:
       // https://github.com/stylelint/stylelint/blob/master/lib/utils/isStandardSyntaxSelector.js
       parseSelector(rule.selector, { warn: () => {} }, rule, selectorTree => {
         selectorTree.walkPseudos(pseudoNode => {

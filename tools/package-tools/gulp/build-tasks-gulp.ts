@@ -77,7 +77,7 @@ export function createPackageBuildTasks(buildPackage: BuildPackage) {
   task(`${taskName}:build:bundles`, () => buildPackage.createBundles());
 
   /**
-   * Asset tasks. Building SASS files and inlining CSS, HTML files into the ESM output.
+   * Asset tasks. Building Sass files and inlining CSS, HTML files into the ESM output.
    */
   task(`${taskName}:assets`, [
     `${taskName}:assets:scss`,

@@ -50,7 +50,7 @@ descendant native elements.
 ```
 
 ### Customization
-Typography customization is an extension of Angular Material's SASS-based theming. Similar to
+Typography customization is an extension of Angular Material's Sass-based theming. Similar to
 creating a custom theme, you can create a custom **typography configuration**.
 
 ```scss
@@ -73,7 +73,7 @@ has to be in quotes.
 
 
 Once the custom typography definition is created, it can be consumed to generate styles via
-different SASS mixins.
+different Sass mixins.
 
 ```scss
 // Override typography CSS classes (e.g., mat-h1, mat-display-1, mat-typography, etc.).
