@@ -62,7 +62,7 @@ typical characteristics, in real world apps, you may see hybrids.
 
      A lazy-loaded routed feature module should not be imported by any module. Doing so would trigger an eager load, defeating the purpose of lazy loading.That means you won’t see them mentioned among the `AppModule` imports. An eager loaded routed feature module must be imported by another module so that the compiler learns about its components.
 
-     Routed feature modules rarely have providers for reasons explained in Lazy Loading Feature Modules(page forthcoming). When they do, the lifetime of the provided services should be the same as the lifetime of the module. Don't provide application-wide singleton services in a routed feature module or in a module that the routed module imports.
+     Routed feature modules rarely have providers for reasons explained in [Lazy Loading Feature Modules](/guide/lazy-loading-ngmodules). When they do, the lifetime of the provided services should be the same as the lifetime of the module. Don't provide application-wide singleton services in a routed feature module or in a module that the routed module imports.
    </td>
  </tr>
 
@@ -92,7 +92,7 @@ typical characteristics, in real world apps, you may see hybrids.
    <td>Service</td>
    <td>
 
-     Service modules provide utility services such as data access and messaging. Ideally, they consist entirely of providers and have no declarations. Angular's `HttpModule` is a good example of a service module.
+     Service modules provide utility services such as data access and messaging. Ideally, they consist entirely of providers and have no declarations. Angular's `HttpClientModule` is a good example of a service module.
 
      The root `AppModule` is the only module that should import service modules.
 
@@ -110,7 +110,7 @@ typical characteristics, in real world apps, you may see hybrids.
      A widget module should rarely have providers.
 
      Import widget modules in any module whose component templates need the widgets.
-    
+
    </td>
  </tr>
 
@@ -189,4 +189,3 @@ The following table summarizes the key characteristics of each feature module gr
 You may also be interested in the following:
 * [Lazy Loading Modules with the Angular Router](guide/lazy-loading-ngmodules).
 * [Providers](guide/providers).
-* [Types of NgModules](guide/module-types).
