@@ -42,11 +42,11 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro', function(n: number):
-                                                                  number {
-                                                                    let i = Math.floor(Math.abs(n));
-                                                                    if (i === 0 || i === 1)
-                                                                      return 1;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'euro',
+  function(n: number):
+      number {
+        let i = Math.floor(Math.abs(n));
+        if (i === 0 || i === 1) return 1;
+        return 5;
+      }
 ];

@@ -39,5 +39,6 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '€', 'EUR', function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], '€', 'EUR',
+  function(n: number): number { return 5;}
 ];

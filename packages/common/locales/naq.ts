@@ -29,8 +29,9 @@ export default [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     [
-      'ǃKhanni', 'ǃKhanǀgôab', 'ǀKhuuǁkhâb', 'ǃHôaǂkhaib', 'ǃKhaitsâb', 'Gamaǀaeb', 'ǂKhoesaob',
-      'Aoǁkhuumûǁkhâb', 'Taraǀkhuumûǁkhâb', 'ǂNûǁnâiseb', 'ǀHooǂgaeb', 'Hôasoreǁkhâb'
+      'ǃKhanni', 'ǃKhanǀgôab', 'ǀKhuuǁkhâb', 'ǃHôaǂkhaib', 'ǃKhaitsâb', 'Gamaǀaeb',
+      'ǂKhoesaob', 'Aoǁkhuumûǁkhâb', 'Taraǀkhuumûǁkhâb', 'ǂNûǁnâiseb', 'ǀHooǂgaeb',
+      'Hôasoreǁkhâb'
     ]
   ],
   , [['BC', 'AD'], , ['Xristub aiǃâ', 'Xristub khaoǃgâ']], 1, [6, 0],
@@ -43,11 +44,11 @@ export default [
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'ZAR', 'South African Randi', function(n: number):
-                                                                                 number {
-                                                                                   if (n === 1)
-                                                                                     return 1;
-                                                                                   if (n === 2)
-                                                                                     return 2;
-                                                                                   return 5;
-                                                                                 }
+                                                                                  number {
+                                                                                    if (n === 1)
+                                                                                      return 1;
+                                                                                    if (n === 2)
+                                                                                      return 2;
+                                                                                    return 5;
+                                                                                  }
 ];

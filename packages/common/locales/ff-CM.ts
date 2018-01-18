@@ -26,8 +26,8 @@ export default [
     ['s', 'c', 'm', 's', 'd', 'k', 'm', 'j', 's', 'y', 'j', 'b'],
     ['sii', 'col', 'mbo', 'see', 'duu', 'kor', 'mor', 'juk', 'slt', 'yar', 'jol', 'bow'],
     [
-      'siilo', 'colte', 'mbooy', 'seeɗto', 'duujal', 'korse', 'morso', 'juko', 'siilto', 'yarkomaa',
-      'jolal', 'bowte'
+      'siilo', 'colte', 'mbooy', 'seeɗto', 'duujal', 'korse', 'morso', 'juko', 'siilto',
+      'yarkomaa', 'jolal', 'bowte'
     ]
   ],
   , [['H-I', 'C-I'], , ['Hade Iisa', 'Caggal Iisa']], 1, [6, 0],
