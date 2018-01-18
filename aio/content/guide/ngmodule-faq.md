@@ -338,6 +338,7 @@ Define child routes and let the router load module components into that outlet.
 <hr/>
 
 <a id="q-root-component-or-module"></a>
+
 {@ q-root-component-or-module}
 
 ## Should I add application-wide providers to the root `AppModule` or the root `AppComponent`?
@@ -372,6 +373,7 @@ This means that lazy-loaded modules can't reach them.
 
 <hr/>
 <a id="q-component-or-module"></a>
+
 {@ q-component-or-module}
 
 ## Should I add other providers to a module or a component?
@@ -394,6 +396,7 @@ not the root `AppComponent`.
 <hr/>
 
 <a id="q-why-bad"></a>
+
 {@ q-why-bad}
 
 ## Why is it bad if a shared module provides a service to a lazy-loaded module?
@@ -485,9 +488,9 @@ An entry component is any component that Angular loads _imperatively_ by type.
 
 A component loaded _declaratively_ via its selector is _not_ an entry component.
 
-Most application components are loaded declaratively, which means
-Angular uses the component's selector to locate the element in the template.
-It then creates the HTML representation of the component and inserts it into the DOM at the selected element. These aren't entry components.
+Angular loads a component declaratively when 
+using the component's selector to locate the element in the template.
+Angular then creates the HTML representation of the component and inserts it into the DOM at the selected element. These aren't entry components.
 
 The bootstrapped root `AppComponent` is an _entry component_.
 True, its selector matches an element tag in `index.html`.
