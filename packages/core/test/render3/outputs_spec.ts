@@ -214,11 +214,7 @@ describe('outputs', () => {
       static ngComponentDef = defineComponent({
         tag: 'destroy-comp',
         template: function(ctx: any, cm: boolean) {},
-        factory: () => {
-          destroyComp = new DestroyComp();
-          l(LifecycleHook.ON_DESTROY, destroyComp, destroyComp.ngOnDestroy);
-          return destroyComp;
-        }
+        factory: () => destroyComp = new DestroyComp()
       });
     }
 
