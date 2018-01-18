@@ -271,10 +271,16 @@ import {map} from 'rxjs/operator/map';
       it('should not error on "undefined" pattern',
          () => expect(Validators.pattern(undefined !)(new FormControl('aaAA'))).toBeNull());
 
-      it('should work with string containing line boundary',
+      it('should work with pattern string containing both boundary symbols',
          () => expect(Validators.pattern('^[aA]*$')(new FormControl('aaAA'))).toBeNull());
 
-      it('should work with string not containing line boundary',
+      it('should work with pattern string containing only start boundary symbols',
+         () => expect(Validators.pattern('^[aA]*')(new FormControl('aaAA'))).toBeNull());
+
+      it('should work with pattern string containing only end boundary symbols',
+         () => expect(Validators.pattern('[aA]*$')(new FormControl('aaAA'))).toBeNull());
+
+      it('should work with pattern string not containing any boundary symbols',
          () => expect(Validators.pattern('[aA]*')(new FormControl('aaAA'))).toBeNull());
     });
 
