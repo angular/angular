@@ -152,8 +152,24 @@ To add a divider, use `<mat-divider>`.
 ```
 
 ### Accessibility
+The type of list used in any given situation depends on how the end-user will be interacting with
+the it.
+
+#### Navigation
+When the list-items navigate somewhere, `<mat-nav-list>` should be used with `<a mat-list-item>`
+elements as the list items. The nav-list will be rendered using `role="navigation"` and can be
+given an `aria-label` to give context on the set of navigation options presented. Additional
+interactive content, such as buttons, should _not_ be added inside the anchors.
+
+#### Selection
+When the list is primarily used to select one or more values, a `<mat-selection-list>` should be
+used with `<mat-list-option>`, which map to `role="listbox"` and `role="option"`, respectively. The
+list should be given an `aria-label` that describes the value or values being selected. Each option
+should _not_ contain any additional interactive elements, such as buttons.
+
+#### Custom scenarios
 By default, the list assumes that it will be used in a purely decorative fashion and thus sets no
-roles, ARIA attributes, or keyboard shortcuts. This is equivalent to having a sequence of <div>
+roles, ARIA attributes, or keyboard shortcuts. This is equivalent to having a sequence of `<div>`
 elements on the page. Any interactive content within the list should be given an appropriate
 accessibility treatment based on the specific workflow of your application.
 
