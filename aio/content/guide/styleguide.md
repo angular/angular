@@ -4,12 +4,13 @@ Looking for an opinionated guide to Angular syntax, conventions, and application
 Step right in!
 This style guide presents preferred conventions and, as importantly, explains why.
 
+<!-- Sample comment for test conflict.-->
 
 {@a toc}
 
 ## Style vocabulary
 
-Each guideline describes either a good or bad practice, and all have a consistent presentation.
+Each guideline describes either some practice (good or bad), and all have a consistent presentation.
 
 The wording of each guideline indicates how strong the recommendation is.
 
