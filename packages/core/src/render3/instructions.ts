@@ -630,14 +630,14 @@ export function elementEnd() {
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Element);
   const query = previousOrParentNode.query;
   query && query.addNode(previousOrParentNode);
-  saveContentHooks();
+  queueLifecycleHooks();
 }
 
 /**
- * Loops through the directives on a node and queues their afterContentInit and
- * afterContentChecked hooks, if they exist.
+ * Loops through the directives on a node and queues their afterContentInit,
+ * afterContentChecked, and onDestroy hooks, if they exist.
  */
-function saveContentHooks(): void {
+function queueLifecycleHooks(): void {
   // It's necessary to loop through the directives at elementEnd() (rather than storing
   // the hooks at creation time) so we can preserve the current hook order. All hooks
   // for projected components and directives must be called *before* their hosts.
@@ -648,12 +648,15 @@ function saveContentHooks(): void {
   for (let i = start, end = start + size; i < end; i++) {
     const instance = data[i];
     if (instance.ngAfterContentInit != null) {
-      (contentHooks || (currentView.contentHooks = contentHooks = []))
-        .push(LifecycleHook.AFTER_INIT, instance.ngAfterContentInit, instance);
+      (contentHooks || (currentView.contentHooks = contentHooks = [
+       ])).push(LifecycleHook.AFTER_INIT, instance.ngAfterContentInit, instance);
     }
     if (instance.ngAfterContentChecked != null) {
-      (contentHooks || (currentView.contentHooks = contentHooks = []))
-        .push(LifecycleHook.AFTER_CHECKED, instance.ngAfterContentChecked, instance);
+      (contentHooks || (currentView.contentHooks = contentHooks = [
+       ])).push(LifecycleHook.AFTER_CHECKED, instance.ngAfterContentChecked, instance);
+    }
+    if (instance.ngOnDestroy != null) {
+      (cleanup || (currentView.cleanup = cleanup = [])).push(instance.ngOnDestroy, instance);
     }
   }
 }
@@ -1028,20 +1031,16 @@ function generateInitialInputs(
  * @param self
  * @param method
  */
-export function lifecycle(lifecycle: LifecycleHook.ON_DESTROY, self: any, method: Function): void;
-export function lifecycle(
-    lifecycle: LifecycleHook.AFTER_INIT, self: any, method: Function): void;
+export function lifecycle(lifecycle: LifecycleHook.AFTER_INIT, self: any, method: Function): void;
 export function lifecycle(
     lifecycle: LifecycleHook.AFTER_CHECKED, self: any, method: Function): void;
 export function lifecycle(lifecycle: LifecycleHook): boolean;
 export function lifecycle(lifecycle: LifecycleHook, self?: any, method?: Function): boolean {
   if (lifecycle === LifecycleHook.ON_INIT) {
     return creationMode;
-  } else if (lifecycle === LifecycleHook.ON_DESTROY) {
-    (cleanup || (currentView.cleanup = cleanup = [])).push(method, self);
   } else if (
-      creationMode && (lifecycle === LifecycleHook.AFTER_INIT ||
-                       lifecycle === LifecycleHook.AFTER_CHECKED)) {
+      creationMode &&
+      (lifecycle === LifecycleHook.AFTER_INIT || lifecycle === LifecycleHook.AFTER_CHECKED)) {
     if (viewHookStartIndex == null) {
       currentView.viewHookStartIndex = viewHookStartIndex = data.length;
     }
