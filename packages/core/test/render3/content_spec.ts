@@ -99,6 +99,48 @@ describe('content projection', () => {
         .toEqual('<child><grand-child><div><b>Hello</b>World!</div></grand-child></child>');
   });
 
+  it('should project components', () => {
+
+    /** <div><ng-content></ng-content></div> */
+    const Child = createComponent('child', (ctx: any, cm: boolean) => {
+      if (cm) {
+        m(0, pD());
+        E(1, 'div');
+        { P(2, 0); }
+        e();
+      }
+    });
+
+    const ProjectedComp = createComponent('projected-comp', (ctx: any, cm: boolean) => {
+      if (cm) {
+        T(0, 'content');
+      }
+    });
+
+    /**
+     * <child>
+     *   <projected-comp></projected-comp>
+     * </child>
+     */
+    const Parent = createComponent('parent', (ctx: any, cm: boolean) => {
+      if (cm) {
+        E(0, Child);
+        {
+          E(2, ProjectedComp);
+          e();
+        }
+        e();
+      }
+      Child.ngComponentDef.h(1, 0);
+      ProjectedComp.ngComponentDef.h(3, 2);
+      ProjectedComp.ngComponentDef.r(3, 2);
+      Child.ngComponentDef.r(1, 0);
+    });
+    const parent = renderComponent(Parent);
+    expect(toHtml(parent))
+      .toEqual('<child><div><projected-comp>content</projected-comp></div></child>');
+  });
+
   it('should project content with container.', () => {
     const Child = createComponent('child', function(ctx: any, cm: boolean) {
       if (cm) {
