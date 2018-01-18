@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'to', [['AM', 'PM'], , ['hengihengi', 'efiafi']], [['AM', 'PM'], , ['HH', 'EA']],
   [
@@ -36,6 +40,5 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'TF', ':'],
-  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'T$', 'Paʻanga fakatonga',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'], 'T$', 'Paʻanga fakatonga', plural
 ];

@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  let i = Math.floor(Math.abs(n));
+  if (i === 0 || n === 1) return 1;
+  return 5;
+}
+
 export default [
   'fa', [['ق', 'ب'], ['ق.ظ.', 'ب.ظ.'], ['قبل\u200cازظهر', 'بعدازظهر']],
   [['ق.ظ.', 'ب.ظ.'], , ['قبل\u200cازظهر', 'بعدازظهر']],
@@ -44,11 +50,5 @@ export default [
     '{1}، ساعت {0}',
   ],
   ['.', ',', ';', '%', '\u200e+', '\u200e−', 'E', '×', '‰', '∞', 'ناعدد', ':'],
-  ['#,##0.###', '#,##0%', '\u200e¤ #,##0.00', '#E0'], 'ریال', 'ریال ایران',
-  function(n: number):
-      number {
-        let i = Math.floor(Math.abs(n));
-        if (i === 0 || n === 1) return 1;
-        return 5;
-      }
+  ['#,##0.###', '#,##0%', '\u200e¤ #,##0.00', '#E0'], 'ریال', 'ریال ایران', plural
 ];

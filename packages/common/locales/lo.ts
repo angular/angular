@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'lo',
   [
@@ -61,6 +65,5 @@ export default [
     ',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞',
     'ບໍ່​ແມ່ນ​ໂຕ​ເລກ', ':'
   ],
-  ['#,##0.###', '#,##0%', '¤#,##0.00;¤-#,##0.00', '#'], '₭', 'ລາວ ກີບ',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00;¤-#,##0.00', '#'], '₭', 'ລາວ ກີບ', plural
 ];

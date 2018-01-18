@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'vai',
   [
@@ -49,6 +53,5 @@ export default [
     ,
   ],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'ꕞꔤꔫꕩ ꕜꕞꕌ',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], '$', 'ꕞꔤꔫꕩ ꕜꕞꕌ', plural
 ];
