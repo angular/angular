@@ -45,7 +45,13 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   if (args[0] === '-p') args.shift();
   // Strip leading at-signs, used to indicate a params file
   const project = args[0].replace(/^@+/, '');
-  const [{options: tsOptions, bazelOpts, files, config}] = parseTsconfig(project);
+
+  const [parsedOptions, errors] = parseTsconfig(project);
+  if (errors && errors.length) {
+    console.error(ng.formatDiagnostics(errors));
+    return false;
+  }
+  const {options: tsOptions, bazelOpts, files, config} = parsedOptions;
   const expectedOuts = config['angularCompilerOptions']['expectedOut'];
 
   const {basePath} = ng.calcProjectFileAndBasePath(project);

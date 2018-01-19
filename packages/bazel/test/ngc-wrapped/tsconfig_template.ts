@@ -32,7 +32,7 @@ export function createTsConfig(options: TsConfigOptions) {
   const result = options.defaultTsConfig;
 
   return {
-    'extends': '../angular/test/ngc-wrapped/empty/tsconfig',
+    'extends': '../angular/packages/bazel/test/ngc-wrapped/empty/tsconfig',
     'compilerOptions': {
       ...result.compilerOptions,
       'outDir': options.outDir,
@@ -70,7 +70,7 @@ export function createTsConfig(options: TsConfigOptions) {
       'tsickleExternsPath': '',
       // we don't copy the node_modules into our tmp dir, so we should look in
       // the original workspace directory for it
-      'nodeModulesPrefix': '../angular_src/node_modules',
+      'nodeModulesPrefix': '../angular/node_modules',
     },
     'files': options.files,
     'angularCompilerOptions': {
