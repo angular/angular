@@ -20,13 +20,9 @@ unexpected definitions.
 ## Ahead-of-time (AOT) compilation
 
 You can compile Angular applications at build time.
-By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly
-to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
+By compiling your application using the compiler-cli, `ngc`, you can bootstrap directly to a module factory, meaning you don't need to include the Angular compiler in your JavaScript bundle.
 Ahead-of-time compiled applications also benefit from decreased load time and increased performance.
 
-
-
-</div>
 
 
 ## Annotation
@@ -125,8 +121,6 @@ between a "token"&mdash;also referred to as a "key"&mdash;and a dependency [prov
 
 ## Bootstrap
 
-
-<div class="l-sub-section">
 
 You launch an Angular application by "bootstrapping" it using the application root NgModule (`AppModule`).
 
@@ -643,6 +637,7 @@ A separate [NgModule](guide/glossary#ngmodule) that provides the necessary servi
 
 For more information, see the [Routing & Navigation](guide/router) page.
 
+</div>
 
 ## Routing component
 
