@@ -15,7 +15,7 @@
     "rootDir": ".",
     "rootDirs": [
       ".",
-      "../../dist/packages/material"
+      "../../dist/packages/cdk"
     ],
     "sourceMap": true,
     "inlineSources": true,
