@@ -1,5 +1,5 @@
 import { Component, ComponentRef, DoCheck, ElementRef, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
@@ -9,7 +9,7 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/takeUntil';
 
-import { DocumentContents } from 'app/documents/document.service';
+import { DocumentContents, FILE_NOT_FOUND_ID, FETCHING_ERROR_ID } from 'app/documents/document.service';
 import { EmbedComponentsService } from 'app/embed-components/embed-components.service';
 import { Logger } from 'app/shared/logger.service';
 import { TocService } from 'app/shared/toc.service';
@@ -72,6 +72,7 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
     private embedComponentsService: EmbedComponentsService,
     private logger: Logger,
     private titleService: Title,
+    private metaService: Meta,
     private tocService: TocService
     ) {
     this.hostElement = elementRef.nativeElement;
@@ -141,6 +142,8 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
   protected render(doc: DocumentContents): Observable<void> {
     let addTitleAndToc: () => void;
 
+    this.setNoIndex(doc.id === FILE_NOT_FOUND_ID || doc.id === FETCHING_ERROR_ID);
+
     return this.void$
         // Security: `doc.contents` is always authored by the documentation team
         //           and is considered to be safe.
@@ -156,8 +159,22 @@ export class DocViewerComponent implements DoCheck, OnDestroy {
           const errorMessage = (err instanceof Error) ? err.stack : err;
           this.logger.error(`[DocViewer] Error preparing document '${doc.id}': ${errorMessage}`);
           this.nextViewContainer.innerHTML = '';
+          this.setNoIndex(true);
           return this.void$;
         });
+  }
+
+  /**
+   * Tell search engine crawlers whether to index this page
+   */
+  private setNoIndex(val: boolean) {
+    if (val) {
+      this.metaService.addTag({ name: 'googlebot', content: 'noindex' });
+      this.metaService.addTag({ name: 'robots', content: 'noindex' });
+    } else {
+      this.metaService.removeTag('name="googlebot"');
+      this.metaService.removeTag('name="robots"');
+    }
   }
 
   /**
