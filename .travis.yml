@@ -1,7 +1,5 @@
 language: node_js
-# Work-around for https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524.
-# (Restore `sudo: false` once that is resolved.)
-sudo: required
+sudo: false
 dist: trusty
 node_js:
   - '8.9.1'
