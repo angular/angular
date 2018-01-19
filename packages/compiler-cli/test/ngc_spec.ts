@@ -898,12 +898,12 @@ describe('ngc transformer command-line', () => {
 
           export * from './util';
 
-          // Note: the lamda will be lowered into an exported expression
+          // Note: the lambda will be lowered into an exported expression
           @NgModule({providers: [{provide: 'aToken', useValue: () => 2}]})
           export class MyModule {}
         `);
         write('util.ts', `
-          // Note: The lamda will be lowered into an exported expression
+          // Note: The lambda will be lowered into an exported expression
           const x = () => 2;
 
           export const y = x;
@@ -1144,7 +1144,7 @@ describe('ngc transformer command-line', () => {
       shouldExist('app/main.js');
     });
 
-    it('shoud be able to compile libraries with summaries and flat modules', () => {
+    it('should be able to compile libraries with summaries and flat modules', () => {
       writeFiles();
       compile();
 
@@ -1466,7 +1466,7 @@ describe('ngc transformer command-line', () => {
         `);
        }));
 
-    it('should recomiple when the html file changes',
+    it('should recompile when the html file changes',
        expectRecompile(() => { write('greet.html', '<p> Hello {{name}} again!</p>'); }));
 
     it('should recompile when the css file changes',

@@ -157,8 +157,6 @@ function interpolate(args: o.Expression[]): o.Expression {
       return o.importExpr(R3.bind7).callFn(args);
     case 17:
       return o.importExpr(R3.bind8).callFn(args);
-    case 19:
-      return o.importExpr(R3.bind9).callFn(args);
   }
   (args.length > 19 && args.length % 2 == 1) ||
       error(`Invalid interpolation argument length ${args.length}`);
