@@ -43,84 +43,106 @@ when the user hovers over that element. You can apply it like this:
 
 ### Write the directive code
 
-Create the directive class file in a terminal window with this CLI command.
+Follow the [setup](guide/setup) instructions for creating a new local project
+named <code>attribute-directives</code>.
 
-<code-example language="sh" class="code-shell">
-ng generate directive highlight
-</code-example>
-
-The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`.../spec.ts`, and _declares_ the directive class in the root `AppModule`.
-
-<div class="l-sub-section">
-
-_Directives_ must be declared in [Angular Modules](guide/ngmodules) in the same manner as _components_.
-
-</div >
-
-The generated `src/app/highlight.directive.ts` is as follows:
-
-<code-example path="attribute-directives/src/app/highlight.directive.0.ts" title="src/app/highlight.directive.ts"></code-example>
-
-The imported `Directive` symbol provides the Angular the `@Directive` decorator.
-
-The `@Directive` decorator's lone configuration property specifies the directive's
-[CSS attribute selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors), `[appHighlight]`.
-
-It's the brackets (`[]`) that make it an attribute selector.
-Angular locates each element in the template that has an attribute named `appHighlight` and applies the logic of this directive to that element.
-
-The _attribute selector_ pattern explains the name of this kind of directive.
-
-<div class="l-sub-section">
-
-#### Why not "highlight"?
-
-Though *highlight* would be a more concise selector than *appHighlight* and it would work,
-the best practice is to prefix selector names to ensure
-they don't conflict with standard HTML attributes.
-This also reduces the risk of colliding with third-party directive names.
-The CLI added the `app` prefix for you.
-
-Make sure you do **not** prefix the `highlight` directive name with **`ng`** because
-that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose.
-
-</div>
-
-After the `@Directive` metadata comes the directive's controller class,
-called `HighlightDirective`, which contains the (currently empty) logic for the directive.
-Exporting `HighlightDirective` makes the directive accessible.
-
-Now edit the generated `src/app/highlight.directive.ts` to look as follows:
+Create the following source file in the indicated folder:
 
 <code-example path="attribute-directives/src/app/highlight.directive.1.ts" title="src/app/highlight.directive.ts"></code-example>
 
-The `import` statement specifies an additional `ElementRef` symbol from the Angular `core` library:
+The `import` statement specifies symbols from the Angular `core`:
 
-You use the `ElementRef`in the directive's constructor
-to [inject](guide/dependency-injection) a reference to the host DOM element, 
-the element to which you applied `appHighlight`.
+1. `Directive` provides the functionality of the `@Directive` decorator.
+1. `ElementRef` [injects](guide/dependency-injection) into the directive's constructor
+so the code can access the DOM element.
+1. `Input` allows data to flow from the binding expression into the directive.
 
-`ElementRef` grants direct access to the host DOM element
+Next, the `@Directive` decorator function contains the directive metadata in a configuration object
+as an argument.
+
+`@Directive` requires a CSS selector to identify
+the HTML in the template that is associated with the directive.
+The [CSS selector for an attribute](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors)
+is the attribute name in square brackets.
+Here, the directive's selector is `[appHighlight]`.
+Angular locates all elements in the template that have an attribute named `appHighlight`.
+
+<div class="l-sub-section">
+
+### Why not call it "highlight"?
+
+Though *highlight* is a more concise name than *appHighlight* and would work,
+a best practice is to prefix selector names to ensure
+they don't conflict with standard HTML attributes.
+This also reduces the risk of colliding with third-party directive names.
+
+Make sure you do **not** prefix the `highlight` directive name with **`ng`** because
+that prefix is reserved for Angular and using it could cause bugs that are difficult to diagnose.
+For a simple demo, the short prefix, `app`, helps distinguish your custom directive.
+
+</div>
+
+
+After the `@Directive` metadata comes the directive's controller class,
+called `HighlightDirective`, which contains the logic for the directive.
+Exporting `HighlightDirective` makes it accessible to other components.
+
+Angular creates a new instance of the directive's controller class for
+each matching element, injecting an Angular `ElementRef`
+into the constructor.
+`ElementRef` is a service that grants direct access to the DOM element
 through its `nativeElement` property.
-
-This first implementation sets the background color of the host element to yellow.
 
 {@a apply-directive}
 
 ## Apply the attribute directive
 
-To use the new `HighlightDirective`, add a paragraph (`<p>`) element to the template of the root `AppComponent` and apply the directive as an attribute.
+To use the new `HighlightDirective`, create a template that
+applies the directive as an attribute to a paragraph (`<p>`) element.
+In Angular terms, the `<p>` element is the attribute **host**.
 
-<code-example path="attribute-directives/src/app/app.component.1.html" title="src/app/app.component.html" region="applied"></code-example>
+Put the template in its own <code>app.component.html</code>
+file that looks like this:
 
-Now run the application to see the `HighlightDirective` in action.
+<code-example path="attribute-directives/src/app/app.component.1.html" title="src/app/app.component.html"></code-example>
 
+Now reference this template in the `AppComponent`:
 
-<code-example language="sh" class="code-shell">
-ng serve
+<code-example path="attribute-directives/src/app/app.component.ts" title="src/app/app.component.ts"></code-example>
+
+Next, add an `import` statement to fetch the `Highlight` directive and
+add that class to the `declarations` NgModule metadata. This way Angular
+recognizes the directive when it encounters `appHighlight` in the template.
+
+<code-example path="attribute-directives/src/app/app.module.ts" title="src/app/app.module.ts"></code-example>
+
+Now when the app runs, the `appHighlight` directive highlights the paragraph text.
+
+<figure>
+  <img src="generated/images/guide/attribute-directives/first-highlight.png" alt="First Highlight">
+</figure>
+
+<div class="l-sub-section">
+
+<h3 class="no-toc">Your directive isn't working?</h3>
+
+Did you remember to add the directive to the `declarations` attribute of `@NgModule`?
+It is easy to forget!
+Open the console in the browser tools and look for an error like this:
+
+<code-example format="nocode">
+  EXCEPTION: Template parse errors:
+    Can't bind to 'appHighlight' since it isn't a known property of 'p'.
 </code-example>
 
-To summarize, Angular found the `appHighlight` attribute on the **host** `<p>` element.
+Angular detects that you're trying to bind to *something* but it can't find this directive
+in the module's `declarations` array.
+After specifying `HighlightDirective` in the `declarations` array,
+Angular knows it can apply the directive to components declared in this module.
+
+</div>
+
+To summarize, Angular found the `appHighlight` attribute on the `<p>` element.
 It created an instance of the `HighlightDirective` class and
 injected a reference to the `<p>` element into the directive's constructor
 which sets the `<p>` element's background style to yellow.
@@ -134,9 +156,10 @@ The directive could be more dynamic.
 It could detect when the user mouses into or out of the element
 and respond by setting or clearing the highlight color.
 
-Begin by adding `HostListener` to the list of imported symbols.
+Begin by adding `HostListener` to the list of imported symbols;
+add the `Input` symbol as well because you'll need it soon.
 
-<code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
+<code-example path="attribute-directives/src/app/highlight.directive.ts" linenums="false" title="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
 
 Then add two eventhandlers that respond when the mouse enters or leaves,
 each adorned by the `HostListener` decorator.
@@ -157,10 +180,8 @@ There are at least three problems with _that_ approach:
 
 </div>
 
-The handlers delegate to a helper method that sets the color on the host DOM element, `el`.
-
-The helper method, `highlight`, was extracted from the constructor.
-The revised constructor simply declares the injected `el: ElementRef`.
+The handlers delegate to a helper method that sets the color on the DOM element, `el`,
+which you declare and initialize in the constructor.
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (constructor)" region="ctor"></code-example>
 
@@ -182,10 +203,7 @@ the mouse hovers over the `p` and disappears as it moves out.
 Currently the highlight color is hard-coded _within_ the directive. That's inflexible.
 In this section, you give the developer the power to set the highlight color while applying the directive.
 
-Begin by adding `Input` to the list of symbols imported from `@angular/core`.
-<code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" title="src/app/highlight.directive.ts (imports)" region="imports"></code-example>
-
-Add a `highlightColor` property to the directive class like this:
+Start by adding a `highlightColor` property to the directive class like this:
 
 <code-example path="attribute-directives/src/app/highlight.directive.2.ts" linenums="false" title="src/app/highlight.directive.ts (highlightColor)" region="color"></code-example>
 
@@ -242,8 +260,8 @@ You get the best of both worlds: the property name you want and the binding synt
 
 <code-example path="attribute-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (color)" region="color"></code-example>
 
-Now that you're binding via the alias to the `highlightColor`, modify the `onMouseEnter()` method to use that property.
-If someone neglects to bind to `appHighlightColor`, highlight the host element in red:
+Now that you're binding to `highlightColor`, modify the `onMouseEnter()` method to use it.
+If someone neglects to bind to `highlightColor`, highlight in red:
 
 <code-example path="attribute-directives/src/app/highlight.directive.3.ts" linenums="false" title="src/app/highlight.directive.ts (mouse enter)" region="mouse-enter"></code-example>
 
