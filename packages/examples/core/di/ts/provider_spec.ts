@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from '@angular/core';
+import {Injectable, InjectionToken, Injector, InjectorDefType, NgModule, Optional, ReflectiveInjector} from '@angular/core';
 
 {
   describe('Provider examples', () => {
@@ -23,6 +23,23 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         ]);
 
         expect(injector.get(Greeting).salutation).toBe('Hello');
+        // #enddocregion
+      });
+    });
+
+    describe('ValueSansProvider', () => {
+      it('works', () => {
+        // #docregion ValueSansProvider
+        @NgModule()
+        class MyModule {
+        }
+
+        @Injectable(MyModule, {useValue: 'Hello'})
+        class MyClass {
+        }
+        const injector = Injector.create([MyModule as InjectorDefType<any>]);
+
+        expect(injector.get(MyClass)).toEqual('Hello');
         // #enddocregion
       });
     });
@@ -48,6 +65,57 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
 
         const locales: string[] = injector.get(locale);
         expect(locales).toEqual(['en', 'sk']);
+        // #enddocregion
+      });
+    });
+
+    describe('ClassSansProvider', () => {
+      it('works', () => {
+        // #docregion ClassSansProvider
+        @NgModule()
+        class ShapeModule {
+        }
+
+        @Injectable(ShapeModule)
+        class Square {
+          name = 'square';
+        }
+
+        @Injectable(ShapeModule, {useClass: Square})
+        abstract class Shape {
+          name: string;
+        }
+
+        const injector = Injector.create([ShapeModule as InjectorDefType<any>]);
+
+        const shape: Shape = injector.get(Shape);
+        expect(shape.name).toEqual('square');
+        expect(shape instanceof Square).toBe(true);
+        // #enddocregion
+      });
+
+      it('is different then useExisting', () => {
+        // #docregion ClassSansProviderDifference
+        @NgModule()
+        class SalutationModule {
+        }
+
+
+        @Injectable(SalutationModule)
+        class FormalGreeting {
+          salutation = 'Greetings';
+        }
+
+        @Injectable(SalutationModule, {useClass: FormalGreeting})
+        class Greeting {
+          salutation = 'Hello';
+        }
+
+        const injector = Injector.create([SalutationModule as InjectorDefType<any>]);
+
+        // The injector returns different instances.
+        // See: {provide: ?, useExisting: ?} if you want the same instance.
+        expect(injector.get(FormalGreeting)).not.toBe(injector.get(Greeting));
         // #enddocregion
       });
     });
@@ -85,6 +153,32 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         // The injector returns different instances.
         // See: {provide: ?, useExisting: ?} if you want the same instance.
         expect(injector.get(FormalGreeting)).not.toBe(injector.get(Greeting));
+        // #enddocregion
+      });
+    });
+
+    describe('StaticClassSansProvider', () => {
+      it('works', () => {
+        // #docregion StaticClassSansProvider
+
+        @NgModule()
+        class MyShapeModule {
+        }
+
+        class Square {
+          name = 'square';
+        }
+
+        @Injectable(MyShapeModule, {useClass: Square, deps: []})
+        class Shape {
+          name: string;
+        }
+
+        const injector = Injector.create([MyShapeModule as InjectorDefType<any>]);
+
+        const shape: Shape = injector.get(Shape);
+        expect(shape.name).toEqual('square');
+        expect(shape instanceof Square).toBe(true);
         // #enddocregion
       });
     });
@@ -128,6 +222,27 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
       });
     });
 
+    describe('ConstructorSansProvider', () => {
+      it('works', () => {
+        // #docregion ConstructorSansProvider
+        @NgModule()
+        class MyShapeModule {
+        }
+
+        @Injectable(MyShapeModule, {deps: []})
+        class Square {
+          name = 'square';
+        }
+
+        const injector = Injector.create([MyShapeModule as InjectorDefType<any>]);
+
+        const shape: Square = injector.get(Square);
+        expect(shape.name).toEqual('square');
+        expect(shape instanceof Square).toBe(true);
+        // #enddocregion
+      });
+    });
+
     describe('ConstructorProvider', () => {
       it('works', () => {
         // #docregion ConstructorProvider
@@ -140,6 +255,34 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         const shape: Square = injector.get(Square);
         expect(shape.name).toEqual('square');
         expect(shape instanceof Square).toBe(true);
+        // #enddocregion
+      });
+    });
+
+    describe('ExistingSansProvider', () => {
+      it('works', () => {
+        // #docregion ExistingSansProvider
+        abstract class AbstractGreeting { salutation: string; }
+
+        @NgModule()
+        class MyGreetingModule {
+        }
+
+        @Injectable(MyGreetingModule, {deps: []})
+        class FormalGreeting extends AbstractGreeting {
+          salutation = 'Greetings';
+        }
+
+        @Injectable(MyGreetingModule, {useExisting: FormalGreeting})
+        class Greeting extends AbstractGreeting {
+          salutation = 'Hello';
+        }
+
+        const injector = Injector.create([MyGreetingModule as InjectorDefType<any>]);
+
+        expect(injector.get(Greeting).salutation).toEqual('Greetings');
+        expect(injector.get(FormalGreeting).salutation).toEqual('Greetings');
+        expect(injector.get(FormalGreeting)).toBe(injector.get(Greeting));
         // #enddocregion
       });
     });
@@ -162,6 +305,31 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         expect(injector.get(Greeting).salutation).toEqual('Greetings');
         expect(injector.get(FormalGreeting).salutation).toEqual('Greetings');
         expect(injector.get(FormalGreeting)).toBe(injector.get(Greeting));
+        // #enddocregion
+      });
+    });
+
+    describe('FactorySansProvider', () => {
+      it('works', () => {
+        // #docregion FactorySansProvider
+        @NgModule()
+        class MyLocationModule {
+        }
+
+        @Injectable(MyLocationModule, {useValue: 'http://angular.io/#someLocation'})
+        class Location {
+        }
+
+        @Injectable(
+            MyLocationModule,
+            {useFactory: (location: string) => location.split('#')[1], deps: [Location]})
+        class Hash {
+        }
+
+        const injector = Injector.create([MyLocationModule as InjectorDefType<any>]);
+
+        expect(injector.get(Location)).toEqual('http://angular.io/#someLocation');
+        expect(injector.get(Hash)).toEqual('someLocation');
         // #enddocregion
       });
     });

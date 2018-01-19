@@ -21,13 +21,13 @@
   "hello_world__closure": {
     "master": {
       "gzip7": {
-        "bundle": 32793
+        "bundle": 33880
       },
       "gzip9": {
-        "bundle": 32758
+        "bundle": 33878
       },
       "uncompressed": {
-        "bundle": 100661
+        "bundle": 103755
       }
     }
   },

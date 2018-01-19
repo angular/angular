@@ -43,18 +43,19 @@ export const PROP_METADATA = '__prop__metadata__';
  */
 export function makeDecorator(
     name: string, props?: (...args: any[]) => any, parentClass?: any,
-    chainFn?: (fn: Function) => void):
+    chainFn?: (fn: Function) => void, typeFn?: (type: Type<any>, ...args: any[]) => void):
     {new (...args: any[]): any; (...args: any[]): any; (...args: any[]): (cls: any) => any;} {
   const metaCtor = makeMetadataCtor(props);
 
-  function DecoratorFactory(objOrType: any): (cls: any) => any {
+  function DecoratorFactory(...args: any[]): (cls: any) => any {
     if (this instanceof DecoratorFactory) {
-      metaCtor.call(this, objOrType);
+      metaCtor.call(this, ...args);
       return this;
     }
 
-    const annotationInstance = new (<any>DecoratorFactory)(objOrType);
+    const annotationInstance = new (<any>DecoratorFactory)(...args);
     const TypeDecorator: TypeDecorator = <TypeDecorator>function TypeDecorator(cls: Type<any>) {
+      typeFn && typeFn(cls, ...args);
       // Use of Object.defineProperty is important since it creates non-enumerable property which
       // prevents the property is copied during subclassing.
       const annotations = cls.hasOwnProperty(ANNOTATIONS) ?
