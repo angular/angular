@@ -1,5 +1,5 @@
 import { Component, ComponentRef, NgModule, ViewChild } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -51,6 +51,11 @@ export class MockTitle {
   setTitle = jasmine.createSpy('Title#reset');
 }
 
+export class MockMeta {
+  addTag = jasmine.createSpy('Meta#addTag');
+  removeTag = jasmine.createSpy('Meta#removeTag');
+}
+
 export class MockTocService {
   genToc = jasmine.createSpy('TocService#genToc');
   reset = jasmine.createSpy('TocService#reset');
@@ -65,6 +70,7 @@ export class MockTocService {
     { provide: Logger, useClass: MockLogger },
     { provide: EmbedComponentsService, useClass: MockEmbedComponentsService },
     { provide: Title, useClass: MockTitle },
+    { provide: Meta, useClass: MockMeta },
     { provide: TocService, useClass: MockTocService },
   ],
 })

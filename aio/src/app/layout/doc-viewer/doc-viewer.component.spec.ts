@@ -1,10 +1,11 @@
 import { ComponentRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 
+import { FILE_NOT_FOUND_ID, FETCHING_ERROR_ID } from 'app/documents/document.service';
 import { EmbedComponentsService } from 'app/embed-components/embed-components.service';
 import { Logger } from 'app/shared/logger.service';
 import { TocService } from 'app/shared/toc.service';
@@ -413,6 +414,24 @@ describe('DocViewerComponent', () => {
         await doRender('Qux content');
         expect(addTitleAndTocSpy).toHaveBeenCalledTimes(4);
       });
+
+      it('should remove "noindex" meta tags if the document is valid', async () => {
+        await doRender('foo', 'bar');
+        expect(TestBed.get(Meta).removeTag).toHaveBeenCalledWith('name="googlebot"');
+        expect(TestBed.get(Meta).removeTag).toHaveBeenCalledWith('name="robots"');
+      });
+
+      it('should add "noindex" meta tags if the document is 404', async () => {
+        await doRender('missing', FILE_NOT_FOUND_ID);
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
+      });
+
+      it('should add "noindex" meta tags if the document fetching fails', async () => {
+        await doRender('error', FETCHING_ERROR_ID);
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
+      });
     });
 
     describe('(embedding components)', () => {
@@ -538,6 +557,8 @@ describe('DocViewerComponent', () => {
         expect(logger.output.error).toEqual([
           [`[DocViewer] Error preparing document 'foo': ${error.stack}`],
         ]);
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
       it('when `EmbedComponentsService.embedInto()` fails', async () => {
@@ -557,6 +578,8 @@ describe('DocViewerComponent', () => {
         expect(logger.output.error).toEqual([
           [`[DocViewer] Error preparing document 'bar': ${error.stack}`],
         ]);
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
       it('when `destroyEmbeddedComponents()` fails', async () => {
@@ -576,6 +599,8 @@ describe('DocViewerComponent', () => {
         expect(logger.output.error).toEqual([
           [`[DocViewer] Error preparing document 'baz': ${error.stack}`],
         ]);
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
       it('when `swapViews()` fails', async () => {
@@ -595,6 +620,8 @@ describe('DocViewerComponent', () => {
         expect(logger.output.error).toEqual([
           [`[DocViewer] Error preparing document 'qux': ${error.stack}`],
         ]);
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
 
       it('when something fails with non-Error', async () => {
@@ -611,6 +638,8 @@ describe('DocViewerComponent', () => {
         expect(logger.output.error).toEqual([
           [`[DocViewer] Error preparing document 'qux': ${error}`],
         ]);
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'googlebot', content: 'noindex' });
+        expect(TestBed.get(Meta).addTag).toHaveBeenCalledWith({ name: 'robots', content: 'noindex' });
       });
     });
 
