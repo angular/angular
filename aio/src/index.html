@@ -31,6 +31,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="translucent">
 
+  <!--
+    Initially tell the Google crawler not to index this page.
+    If the page loads correctly will remove this tag (in the DocViewer).
+    Subsequent navigations will update the tag dynamically (i.e. soft 404).
+    Don't do the same for `robots` in general here, since they might not be able to handle the tag changing dynamically.
+  -->
+  <meta name="googlebot" content="noindex">
 
   <!-- Google Analytics -->
   <script>
