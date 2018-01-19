@@ -1081,6 +1081,54 @@ In this case, it waits for the error handler's `setTimeout()`;
 The `tick` function is one of the Angular testing utilities that you import with `TestBed`.
 It's a companion to `fakeAsync` and you can only call it within a `fakeAsync` body.
 
+#### Support more macroTasks
+
+By default `fakeAsync` supports the following `macroTasks`.
+
+- setTimeout
+- setInterval
+- requestAnimationFrame
+- webkitRequestAnimationFrame
+- mozRequestAnimationFrame
+
+If you run other `macroTask` such as `HTMLCanvasElement.toBlob()`, `Unknown macroTask scheduled in fake async test` error will be thrown.
+
+<code-tabs>
+  <code-pane
+    path="testing/src/app/shared/canvas.component.spec.ts"
+    title="src/app/shared/canvas.component.spec.ts" linenums="false">
+  </code-pane>
+  <code-pane
+    path="testing/src/app/shared/canvas.component.ts"
+    title="src/app/shared/canvas.component.ts" linenums="false">
+  </code-pane>
+</code-tabs>
+
+If you want to support such case, you need to define the `macroTask` you want to support in `beforeEach`.
+For example:
+
+```javascript
+beforeEach(() => {
+  window['__zone_symbol__FakeAsyncTestMacroTask'] = [
+    {
+      source: 'HTMLCanvasElement.toBlob',
+      callbackArgs: [{ size: 200 }]
+    }
+  ];
+});
+
+it('toBlob should be able to run in fakeAsync', fakeAsync(() => {
+    const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+    let blob = null;
+    canvas.toBlob(function(b) {
+      blob = b;
+    });
+    tick();
+    expect(blob.size).toBe(200);
+  })
+);
+```
+
 #### Async observables
 
 You might be satisfied with the test coverage of these tests.
