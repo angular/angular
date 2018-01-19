@@ -95,6 +95,7 @@ describe('compiler specification', () => {
               r3.T(3, '!');
             }
             ChildComponent.ngComponentDef.r(1, 0);
+            SomeDirective.ngDirectiveDef.r(2, 0);
           }
         });
         // /NORMATIVE
@@ -112,7 +113,7 @@ describe('compiler specification', () => {
     xit('should support structural directives', () => {
       const log: string[] = [];
       @Directive({
-        selector: 'if',
+        selector: '[if]',
       })
       class IfDirective {
         constructor(template: TemplateRef<any>) { log.push('ifDirective'); }
@@ -180,7 +181,8 @@ describe('compiler specification', () => {
               r3.e();
               r3.T(2);
             }
-            r3.t(2, r3.b1('Hello ', r3.m<any>(1).value, '!'));
+            const l1_user = r3.m<any>(1);
+            r3.t(2, r3.b1('Hello ', l1_user.value, '!'));
           }
         });
         // NORMATIVE
