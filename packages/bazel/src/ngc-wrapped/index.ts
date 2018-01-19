@@ -189,15 +189,18 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     }
     return bazelOpts.workspaceName + '/' + result;
   };
-  ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) =>
-      relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, '');
+  ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.join(
+      bazelOpts.workspaceName,
+      relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, ''));
   if (allDepsCompiledWithBazel) {
     // Note: The default implementation would work as well,
     // but we can be faster as we know how `toSummaryFileName` works.
     // Note: We can't do this if some deps have been compiled with the command line,
     // as that has a different implementation of fromSummaryFileName / toSummaryFileName
-    ngHost.fromSummaryFileName = (fileName: string, referringLibFileName: string) =>
-        path.resolve(bazelBin, fileName) + '.d.ts';
+    ngHost.fromSummaryFileName = (fileName: string, referringLibFileName: string) => {
+      const workspaceRelative = fileName.split('/').splice(1).join('/');
+      return path.resolve(bazelBin, workspaceRelative) + '.d.ts';
+    };
   }
 
   const emitCallback: ng.TsEmitCallback = ({
