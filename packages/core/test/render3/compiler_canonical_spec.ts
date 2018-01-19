@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Injectable, NgModule, Optional, TemplateRef, Type} from '../../src/core';
+import {Component, Directive, Injectable, Input, NgModule, Optional, SimpleChanges, TemplateRef, Type, ViewContainerRef} from '../../src/core';
 import * as r3 from '../../src/render3/index';
 
 import {containerEl, renderComponent, requestAnimationFrame, toHtml} from './render_util';
@@ -193,6 +193,193 @@ describe('compiler specification', () => {
     });
   });
 
+  describe('template variables', () => {
+
+    interface ForOfContext {
+      $implicit: any;
+      index: number;
+      even: boolean;
+      odd: boolean;
+    }
+
+    @Directive({selector: '[forOf]'})
+    class ForOfDirective {
+      private previous: any[];
+
+      constructor(private view: ViewContainerRef, private template: TemplateRef<any>) {}
+
+      @Input() forOf: any[];
+
+      ngOnChanges(simpleChanges: SimpleChanges) {
+        if ('forOf' in simpleChanges) {
+          this.update();
+        }
+      }
+
+      ngDoCheck(): void {
+        const previous = this.previous;
+        const current = this.forOf;
+        if (!previous || previous.length != current.length ||
+            previous.some((value: any, index: number) => current[index] !== previous[index])) {
+          this.update();
+        }
+      }
+
+      private update() {
+        // TODO(chuckj): Not implemented yet
+        // this.view.clear();
+        if (this.forOf) {
+          const current = this.forOf;
+          for (let i = 0; i < current.length; i++) {
+            const context = {$implicit: current[i], index: i, even: i % 2 == 0, odd: i % 2 == 1};
+            // TODO(chuckj): Not implemented yet
+            // this.view.createEmbeddedView(this.template, context);
+          }
+          this.previous = [...this.forOf];
+        }
+      }
+
+      // NORMATIVE
+      static ngDirectiveDef = r3.defineDirective({
+        factory: function ForOfDirective_Factory() {
+          return new ForOfDirective(r3.injectViewContainerRef(), r3.injectTemplateRef());
+        },
+        // TODO(chuckj): Enable when ngForOf enabling lands.
+        // features: [NgOnChangesFeature(NgForOf)],
+        refresh: function ForOfDirective_Refresh(directiveIndex: number, elementIndex: number) {
+          r3.m<ForOfDirective>(directiveIndex).ngDoCheck();
+        },
+        inputs: {forOf: 'forOf'}
+      });
+      // /NORMATIVE
+    }
+
+    it('should support a let variable and reference', () => {
+      interface Item {
+        name: string;
+      }
+
+      const c1_dirs = [ForOfDirective];
+
+      @Component({
+        selector: 'my-component',
+        template: `<ul><li *for="let item of items">{{item.name}}</li></ul>`
+      })
+      class MyComponent {
+        items = [{name: 'one'}, {name: 'two'}];
+
+        // NORMATIVE
+        static ngComponentDef = r3.defineComponent({
+          tag: 'my-component',
+          factory: function MyComponent_Factory() { return new MyComponent(); },
+          template: function MyComponentTemplate(ctx: MyComponent, cm: boolean) {
+            if (cm) {
+              r3.E(0, 'ul');
+              r3.C(1, c1_dirs, MyComponent_ForOfDirective_Template_1);
+              r3.e();
+            }
+            r3.p(1, 'forOf', r3.b(ctx.items));
+            r3.cR(1);
+            ForOfDirective.ngDirectiveDef.r(2, 1);
+            r3.cr();
+
+            function MyComponent_ForOfDirective_Template_1(ctx1: any, cm: boolean) {
+              if (cm) {
+                r3.E(0, 'li');
+                r3.T(1);
+                r3.e();
+              }
+              const l0_item = ctx1.$implicit;
+              r3.t(1, r3.b1('', l0_item.name, ''));
+            }
+          }
+        });
+        // /NORMATIVE
+      }
+
+      // TODO(chuckj): update when the changes to enable ngForOf lands.
+      expect(renderComp(MyComponent)).toEqual('<ul></ul>');
+    });
+
+    it('should support accessing parent template variables', () => {
+      interface Info {
+        description: string;
+      }
+      interface Item {
+        name: string;
+        infos: Info[];
+      }
+
+      const c1_dirs = [ForOfDirective];
+
+      @Component({
+        selector: 'my-component',
+        template: `
+          <ul>
+            <li *for="let item of items">
+              <div>{{item.name}}</div>
+              <ul>
+                <li *for="let info of item.infos">
+                  {{item.name}}: {{info.description}}
+                </li>
+              </ui>
+            </li>
+          </ul>`
+      })
+      class MyComponent {
+        items: Item[] = [
+          {name: 'one', infos: [{description: '11'}, {description: '12'}]},
+          {name: 'two', infos: [{description: '21'}, {description: '22'}]}
+        ];
+
+        // NORMATIVE
+        static ngComponentDef = r3.defineComponent({
+          tag: 'my-component',
+          factory: function MyComponent_Factory() { return new MyComponent(); },
+          template: function MyComponent_Template(ctx: MyComponent, cm: boolean) {
+            if (cm) {
+              r3.E(0, 'ul');
+              r3.C(1, c1_dirs, MyComponent_ForOfDirective_Template_1);
+              r3.e();
+            }
+            r3.p(1, 'forOf', r3.b(ctx.items));
+            r3.cR(1);
+            ForOfDirective.ngDirectiveDef.r(2, 1);
+            r3.cr();
+
+            function MyComponent_ForOfDirective_Template_1(ctx1: any, cm: boolean) {
+              if (cm) {
+                r3.E(0, 'div');
+                r3.T(1);
+                r3.e();
+                r3.E(2, 'ul');
+                r3.C(3, c1_dirs, MyComponent_ForOfDirective_ForOfDirective_Template_3);
+                r3.e();
+              }
+              const l0_item = ctx1.$implicit;
+              r3.t(1, r3.b1('', l0_item.name, ''));
+              r3.p(4, 'forOf', r3.b(ctx.items));
+              r3.cR(3);
+              ForOfDirective.ngDirectiveDef.r(4, 3);
+              r3.cr();
+
+              function MyComponent_ForOfDirective_ForOfDirective_Template_3(
+                  ctx2: any, cm: boolean) {
+                if (cm) {
+                  r3.E(0, 'li');
+                  r3.T(1);
+                  r3.e();
+                }
+                const l0_info = ctx2.info;
+                r3.t(1, r3.b2('', l0_item.name, ': ', l0_info.description, ''));
+              }
+            }
+          }
+        });
+        // /NORMATIVE
+      }
+    });
+  });
 });
 
 xdescribe('NgModule', () => {
@@ -236,7 +423,7 @@ xdescribe('NgModule', () => {
       static ngInjectorDef = defineInjector({
         factory: () => new MyModule(inject(Toast)),
         provider: [
-          {provide: Toast, deps: [String]},  // If Toast has matadata generate this line
+          {provide: Toast, deps: [String]},  // If Toast has metadata generate this line
           Toast,                             // If toast has not metadata generate this line.
           {provide: String, useValue: 'Hello'}
         ],
