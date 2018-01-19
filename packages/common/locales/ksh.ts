@@ -9,6 +9,12 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
   'ksh', [['v.M.', 'n.M.'], , ['Uhr vörmiddaachs', 'Uhr nommendaachs']],
   [['v.M.', 'n.M.'], , ['Vörmeddaach', 'Nommendaach']],
@@ -28,7 +34,10 @@ export default [
   ],
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'O', 'S', 'O', 'N', 'D'],
-    ['Jan.', 'Fäb.', 'Mäz.', 'Apr.', 'Mai', 'Jun.', 'Jul.', 'Ouj.', 'Säp.', 'Okt.', 'Nov.', 'Dez.'],
+    [
+      'Jan.', 'Fäb.', 'Mäz.', 'Apr.', 'Mai', 'Jun.', 'Jul.', 'Ouj.', 'Säp.', 'Okt.', 'Nov.',
+      'Dez.'
+    ],
     [
       'Jannewa', 'Fäbrowa', 'Määz', 'Aprell', 'Mai', 'Juuni', 'Juuli', 'Oujoß', 'Septämber',
       'Oktohber', 'Novämber', 'Dezämber'
@@ -43,10 +52,5 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '−', '×10^', '×', '‰', '∞', '¤¤¤', ':'],
-  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', function(n: number):
-                                                                  number {
-                                                                    if (n === 0) return 0;
-                                                                    if (n === 1) return 1;
-                                                                    return 5;
-                                                                  }
+  ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '€', 'Euro', plural
 ];

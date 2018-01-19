@@ -12,10 +12,16 @@
 export default [
   [
     ['gece', 'ö', 'sabah', 'öğleden önce', 'öğleden sonra', 'akşamüstü', 'akşam', 'gece'],
-    ['gece yarısı', 'öğle', 'sabah', 'öğleden önce', 'öğleden sonra', 'akşamüstü', 'akşam', 'gece'],
+    [
+      'gece yarısı', 'öğle', 'sabah', 'öğleden önce', 'öğleden sonra', 'akşamüstü',
+      'akşam', 'gece'
+    ],
   ],
   [
-    ['gece yarısı', 'öğle', 'sabah', 'öğleden önce', 'öğleden sonra', 'akşamüstü', 'akşam', 'gece'],
+    [
+      'gece yarısı', 'öğle', 'sabah', 'öğleden önce', 'öğleden sonra', 'akşamüstü',
+      'akşam', 'gece'
+    ],
     ,
   ],
   [

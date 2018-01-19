@@ -9,6 +9,10 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  return 5;
+}
+
 export default [
   'yav',
   [
@@ -18,7 +22,10 @@ export default [
   ,
   [
     ['s', 'm', 'm', 'e', 'k', 'f', 's'], ['sd', 'md', 'mw', 'et', 'kl', 'fl', 'ss'],
-    ['sɔ́ndiɛ', 'móndie', 'muányáŋmóndie', 'metúkpíápɛ', 'kúpélimetúkpiapɛ', 'feléte', 'séselé'],
+    [
+      'sɔ́ndiɛ', 'móndie', 'muányáŋmóndie', 'metúkpíápɛ', 'kúpélimetúkpiapɛ',
+      'feléte', 'séselé'
+    ],
     ['sd', 'md', 'mw', 'et', 'kl', 'fl', 'ss']
   ],
   ,
@@ -26,9 +33,10 @@ export default [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     ['o.1', 'o.2', 'o.3', 'o.4', 'o.5', 'o.6', 'o.7', 'o.8', 'o.9', 'o.10', 'o.11', 'o.12'],
     [
-      'pikítíkítie, oólí ú kutúan', 'siɛyɛ́, oóli ú kándíɛ', 'ɔnsúmbɔl, oóli ú kátátúɛ',
-      'mesiŋ, oóli ú kénie', 'ensil, oóli ú kátánuɛ', 'ɔsɔn', 'efute', 'pisuyú', 'imɛŋ i puɔs',
-      'imɛŋ i putúk,oóli ú kátíɛ', 'makandikɛ', 'pilɔndɔ́'
+      'pikítíkítie, oólí ú kutúan', 'siɛyɛ́, oóli ú kándíɛ',
+      'ɔnsúmbɔl, oóli ú kátátúɛ', 'mesiŋ, oóli ú kénie', 'ensil, oóli ú kátánuɛ',
+      'ɔsɔn', 'efute', 'pisuyú', 'imɛŋ i puɔs', 'imɛŋ i putúk,oóli ú kátíɛ',
+      'makandikɛ', 'pilɔndɔ́'
     ]
   ],
   , [['k.Y.', '+J.C.'], , ['katikupíen Yésuse', 'ékélémkúnupíén n']], 1, [6, 0],
@@ -40,6 +48,5 @@ export default [
     ,
   ],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FCFA', 'XAF',
-  function(n: number): number { return 5;}
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'FCFA', 'XAF', plural
 ];

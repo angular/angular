@@ -8,7 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const util = require('util');
+const stringify = require('./util').stringify;
 // used to extract plural rules
 const cldr = require('cldr');
 // used to extract all other cldr data
@@ -21,8 +21,8 @@ const I18N_DATA_EXTRA_FOLDER = `${I18N_DATA_FOLDER}/extra`;
 const RELATIVE_I18N_FOLDER = path.resolve(__dirname, `../../../${I18N_FOLDER}`);
 const RELATIVE_I18N_DATA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_FOLDER}`);
 const RELATIVE_I18N_DATA_EXTRA_FOLDER = path.resolve(__dirname, `../../../${I18N_DATA_EXTRA_FOLDER}`);
-const DEFAULT_RULE = `function anonymous(n\n/**/) {\nreturn"other"\n}`;
-const EMPTY_RULE = `function anonymous(n\n/**/) {\n\n}`;
+const DEFAULT_RULE = 'function anonymous(n\n/*``*/) {\nreturn"other"\n}';
+const EMPTY_RULE = 'function anonymous(n\n/*``*/) {\n\n}';
 const WEEK_DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const HEADER = `/**
  * @license
@@ -101,9 +101,11 @@ function generateLocale(locale, localeData) {
     .replace(/undefined/g, '');
 
   // adding plural function after, because we don't want it as a string
-  data = data.substring(0, data.lastIndexOf(']')) + `, ${getPluralFunction(locale)}]`;
+  data = data.substring(0, data.lastIndexOf(']')) + `, plural]`;
 
   return `${HEADER}
+${getPluralFunction(locale)}
+
 export default ${data};
 `;
 }
@@ -172,7 +174,7 @@ function generateCurrencies() {
   });
 
   return `${HEADER}
-/** @experimental */
+/** @internal */
 export const CURRENCIES: {[code: string]: (string | undefined)[]} = {
 ${currencies.join('')}};
 `;
@@ -456,8 +458,8 @@ function getPluralFunction(locale) {
 
   fn = fn
     .replace(
-      toRegExp('function anonymous(n\n/**/) {\n'),
-      'function(n: number): number {\n  ')
+      toRegExp('function anonymous(n\n/*``*/) {\n'),
+      'function plural(n: number): number {\n  ')
     .replace(toRegExp('var'), 'let')
     .replace(toRegExp('if(typeof n==="string")n=parseInt(n,10);'), '')
     .replace(toRegExp('\n}'), ';\n}');
@@ -478,13 +480,6 @@ function getPluralFunction(locale) {
  */
 function objectValues(obj) {
   return Object.keys(obj).map(key => obj[key]);
-}
-
-/**
- * Like JSON.stringify, but without double quotes around keys, and already formatted for readability
- */
-function stringify(obj) {
-  return util.inspect(obj, {depth: null, maxArrayLength: null});
 }
 
 /**

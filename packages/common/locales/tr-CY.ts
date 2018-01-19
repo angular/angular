@@ -9,6 +9,11 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+function plural(n: number): number {
+  if (n === 1) return 1;
+  return 5;
+}
+
 export default [
   'tr-CY',
   [
@@ -29,8 +34,8 @@ export default [
     ['O', 'Ş', 'M', 'N', 'M', 'H', 'T', 'A', 'E', 'E', 'K', 'A'],
     ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
     [
-      'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim',
-      'Kasım', 'Aralık'
+      'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül',
+      'Ekim', 'Kasım', 'Aralık'
     ]
   ],
   , [['MÖ', 'MS'], , ['Milattan Önce', 'Milattan Sonra']], 1, [6, 0],
@@ -42,9 +47,5 @@ export default [
     ,
   ],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '%#,##0', '¤#,##0.00', '#E0'], '€', 'Euro', function(n: number):
-                                                                number {
-                                                                  if (n === 1) return 1;
-                                                                  return 5;
-                                                                }
+  ['#,##0.###', '%#,##0', '¤#,##0.00', '#E0'], '€', 'Euro', plural
 ];
