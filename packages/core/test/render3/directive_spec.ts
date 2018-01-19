@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {D, E, b, defineDirective, e, p} from '../../src/render3/index';
+import {E, b, defineDirective, e, m, p} from '../../src/render3/index';
 
 import {renderToHtml} from './render_util';
 
@@ -22,7 +22,7 @@ describe('directive', () => {
         static ngDirectiveDef = defineDirective({
           factory: () => directiveInstance = new Directive,
           refresh: (directiveIndex: number, elementIndex: number) => {
-            p(elementIndex, 'className', b(D<Directive>(directiveIndex).klass));
+            p(elementIndex, 'className', b(m<Directive>(directiveIndex).klass));
           }
         });
       }
