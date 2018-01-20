@@ -23,7 +23,6 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
-    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "platform-browser.js",
     "flatModuleId": "@angular/platform-browser"
   }

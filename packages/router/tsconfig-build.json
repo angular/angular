@@ -21,7 +21,6 @@
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
-    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "router.js",
     "flatModuleId": "@angular/router"
   }

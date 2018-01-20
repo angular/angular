@@ -54,11 +54,13 @@ travisFoldStart "tsc tools"
   $(npm bin)/tsc -p tools
   $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
   $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json
+  cp -r packages/compiler-cli/package.json dist/tools/@angular/compiler-cli/
 travisFoldEnd "tsc tools"
 
 
 travisFoldStart "tsc all"
   node dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
+  cp -r packages/compiler-cli/package.json dist/all/@angular/compiler-cli/
   $(npm bin)/tsc -p packages
   $(npm bin)/tsc -p modules
 travisFoldEnd "tsc all"

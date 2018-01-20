@@ -46,6 +46,7 @@
     "@types/jasmine": "2.2.22-alpha",
     "@types/node": "6.0.88",
     "@types/selenium-webdriver": "3.0.7",
+    "@types/semver": "^5.4.0",
     "@types/source-map": "^0.5.1",
     "@types/systemjs": "0.19.32",
     "angular": "1.5.0",

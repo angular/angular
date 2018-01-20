@@ -10,9 +10,6 @@
       "experimentalDecorators": true,
       "types": []
   },
-  "angularCompilerOptions": {
-    "disableTypeScriptVersionCheck": true
-  },
    "include": [
       "node_modules/@angular/**/*"
   ],

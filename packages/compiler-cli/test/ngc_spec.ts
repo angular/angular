@@ -37,12 +37,7 @@ describe('ngc transformer command-line', () => {
     }
   }
 
-  function writeConfig(tsconfig: string = `{
-        "extends": "./tsconfig-base.json",
-        "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-        }
-      }`) {
+  function writeConfig(tsconfig: string = '{"extends": "./tsconfig-base.json"}') {
     write('tsconfig.json', tsconfig);
   }
 
@@ -102,10 +97,7 @@ describe('ngc transformer command-line', () => {
     it('should not print the stack trace if user input file does not exist', () => {
       writeConfig(`{
         "extends": "./tsconfig-base.json",
-        "files": ["test.ts"],
-        "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-        }
+        "files": ["test.ts"]
       }`);
 
       const exitCode = main(['-p', basePath], errorSpy);
@@ -178,9 +170,6 @@ describe('ngc transformer command-line', () => {
     it('should report errors for ngfactory files that are not referenced by root files', () => {
       writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-          },
           "files": ["mymodule.ts"]
         }`);
       write('mymodule.ts', `
@@ -205,10 +194,7 @@ describe('ngc transformer command-line', () => {
     it('should report errors as coming from the html file, not the factory', () => {
       writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"],
-          "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-          }
+          "files": ["mymodule.ts"]
         }`);
       write('my.component.ts', `
         import {Component} from '@angular/core';
@@ -241,10 +227,7 @@ describe('ngc transformer command-line', () => {
     it('should compile ngfactory files that are not referenced by root files', () => {
       writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"],
-          "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-          }
+          "files": ["mymodule.ts"]
         }`);
       write('mymodule.ts', `
         import {CommonModule} from '@angular/common';
@@ -353,10 +336,7 @@ describe('ngc transformer command-line', () => {
     it('should compile with an explicit tsconfig reference', () => {
       writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"],
-          "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-          }
+          "files": ["mymodule.ts"]
         }`);
       write('mymodule.ts', `
         import {CommonModule} from '@angular/common';
@@ -469,8 +449,7 @@ describe('ngc transformer command-line', () => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
-              "enableSummariesForJit": true,
-              "disableTypeScriptVersionCheck": true
+              "enableSummariesForJit": true
             },
             "include": ["src/**/*.ts"]
           }`);
@@ -485,8 +464,7 @@ describe('ngc transformer command-line', () => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
-              "enableSummariesForJit": false,
-              "disableTypeScriptVersionCheck": true
+              "enableSummariesForJit": false
             },
             "include": ["src/**/*.ts"]
           }`);
@@ -502,8 +480,7 @@ describe('ngc transformer command-line', () => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
-              "skipTemplateCodegen": true,
-              "disableTypeScriptVersionCheck": true
+              "skipTemplateCodegen": true
             },
             "compilerOptions": {
               "outDir": "lib"
@@ -534,8 +511,7 @@ describe('ngc transformer command-line', () => {
             "extends": "./tsconfig-base.json",
             "angularCompilerOptions": {
               "skipTemplateCodegen": false,
-              "enableSummariesForJit": true,
-              "disableTypeScriptVersionCheck": true
+              "enableSummariesForJit": true
             },
             "compilerOptions": {
               "outDir": "built"
@@ -555,10 +531,7 @@ describe('ngc transformer command-line', () => {
       it('should not generate closure specific code by default', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"],
-          "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-          }
+          "files": ["mymodule.ts"]
         }`);
         write('mymodule.ts', `
         import {NgModule, Component} from '@angular/core';
@@ -583,8 +556,7 @@ describe('ngc transformer command-line', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
           "angularCompilerOptions": {
-            "annotateForClosureCompiler": true,
-            "disableTypeScriptVersionCheck": true
+            "annotateForClosureCompiler": true
           },
           "files": ["mymodule.ts"]
         }`);
@@ -616,8 +588,7 @@ describe('ngc transformer command-line', () => {
             "emitDecoratorMetadata": true
           },
           "angularCompilerOptions": {
-            "annotationsAs": "decorators",
-            "disableTypeScriptVersionCheck": true
+            "annotationsAs": "decorators"
           },
           "files": ["mymodule.ts"]
         }`);
@@ -651,8 +622,7 @@ describe('ngc transformer command-line', () => {
             "emitDecoratorMetadata": false
           },
           "angularCompilerOptions": {
-            "annotationsAs": "static fields",
-            "disableTypeScriptVersionCheck": true
+            "annotationsAs": "static fields"
           },
           "files": ["mymodule.ts"]
         }`);
@@ -689,8 +659,7 @@ describe('ngc transformer command-line', () => {
           }
         },
         "angularCompilerOptions": {
-          "annotateForClosureCompiler": true,
-          "disableTypeScriptVersionCheck": true
+          "annotateForClosureCompiler": true
         },
         "files": ["mymodule.ts"]
       }`);
@@ -722,10 +691,7 @@ describe('ngc transformer command-line', () => {
       beforeEach(() => {
         writeConfig(`{
             "extends": "./tsconfig-base.json",
-            "files": ["mymodule.ts"],
-            "angularCompilerOptions": {
-              "disableTypeScriptVersionCheck": true
-            }
+            "files": ["mymodule.ts"]
           }`);
       });
 
@@ -863,10 +829,7 @@ describe('ngc transformer command-line', () => {
       it('should be able to lower supported expressions', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["module.ts"],
-          "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-          }
+          "files": ["module.ts"]
         }`);
         write('module.ts', `
           import {NgModule, InjectionToken} from '@angular/core';
@@ -969,8 +932,7 @@ describe('ngc transformer command-line', () => {
         "angularCompilerOptions": {
           "flatModuleId": "flat_module",
           "flatModuleOutFile": "${outFile}",
-          "skipTemplateCodegen": true,
-          "disableTypeScriptVersionCheck": true
+          "skipTemplateCodegen": true
         },
         "files": ["public-api.ts"]
       }
@@ -1062,8 +1024,7 @@ describe('ngc transformer command-line', () => {
           "extends": "./tsconfig-base.json",
           "angularCompilerOptions": {
             "generateCodeForLibraries": true,
-            "enableSummariesForJit": true,
-            "disableTypeScriptVersionCheck": true
+            "enableSummariesForJit": true
           },
           "compilerOptions": {
             "outDir": "."
@@ -1080,8 +1041,7 @@ describe('ngc transformer command-line', () => {
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
             "generateCodeForLibraries": false,
-            "enableSummariesForJit": true,
-            "disableTypeScriptVersionCheck": true
+            "enableSummariesForJit": true
           },
           "compilerOptions": {
             "rootDir": ".",
@@ -1105,8 +1065,7 @@ describe('ngc transformer command-line', () => {
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
             "generateCodeForLibraries": false,
-            "enableSummariesForJit": true,
-            "disableTypeScriptVersionCheck": true
+            "enableSummariesForJit": true
           },
           "compilerOptions": {
             "rootDir": ".",
@@ -1129,8 +1088,7 @@ describe('ngc transformer command-line', () => {
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
             "generateCodeForLibraries": false,
-            "enableSummariesForJit": true,
-            "disableTypeScriptVersionCheck": true
+            "enableSummariesForJit": true
           },
           "compilerOptions": {
             "rootDir": ".",
@@ -1214,8 +1172,7 @@ describe('ngc transformer command-line', () => {
         write('tsconfig-lib.json', `{
           "extends": "./tsconfig-base.json",
           "angularCompilerOptions": {
-            "generateCodeForLibraries": true,
-            "disableTypeScriptVersionCheck": true
+            "generateCodeForLibraries": true
           },
           "compilerOptions": {
             "outDir": "."
@@ -1231,8 +1188,7 @@ describe('ngc transformer command-line', () => {
         write('app/tsconfig-app.json', `{
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
-            "generateCodeForLibraries": false,
-            "disableTypeScriptVersionCheck": true
+            "generateCodeForLibraries": false
           },
           "compilerOptions": {
             "rootDir": ".",
@@ -1300,10 +1256,7 @@ describe('ngc transformer command-line', () => {
     it('should be able to lower supported expressions', () => {
       writeConfig(`{
         "extends": "./tsconfig-base.json",
-        "files": ["module.ts"],
-        "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-        }
+        "files": ["module.ts"]
       }`);
       write('module.ts', `
         import {NgModule, InjectionToken} from '@angular/core';
@@ -1465,9 +1418,6 @@ describe('ngc transformer command-line', () => {
             "extends": "./tsconfig-base.json",
             "compilerOptions": {
               "outDir": "${location}"
-            },
-            "angularCompilerOptions": {
-              "disableTypeScriptVersionCheck": true
             }
           }`);
     }
@@ -1556,10 +1506,7 @@ describe('ngc transformer command-line', () => {
             "../dist"
           ]
         },
-        "files": ["test-module.ts"],
-        "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-        }
+        "files": ["test-module.ts"]
       }`);
       write('src/test.component.ts', `
         import {Component} from '@angular/core';
@@ -1595,10 +1542,7 @@ describe('ngc transformer command-line', () => {
             "../dist"
           ]
         },
-        "files": ["test-module.ts"],
-        "angularCompilerOptions": {
-          "disableTypeScriptVersionCheck": true
-        }
+        "files": ["test-module.ts"]
       }`);
       write('src/lib/test.component.ts', `
         import {Component} from '@angular/core';
@@ -1629,10 +1573,7 @@ describe('ngc transformer command-line', () => {
     it('should emit all structural errors', () => {
       write('src/tsconfig.json', `{
         "extends": "../tsconfig-base.json",
-        "files": ["test-module.ts"],
-        "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-        }
+        "files": ["test-module.ts"]
       }`);
       write('src/lib/indirect2.ts', `
         declare var f: any;
@@ -1669,10 +1610,7 @@ describe('ngc transformer command-line', () => {
     it('should report template error messages', () => {
       write('src/tsconfig.json', `{
         "extends": "../tsconfig-base.json",
-        "files": ["test-module.ts"],
-        "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-        }
+        "files": ["test-module.ts"]
       }`);
       write('src/lib/test.component.ts', `
         import {Component} from '@angular/core';
@@ -1801,9 +1739,6 @@ describe('ngc transformer command-line', () => {
         "compilerOptions": {
           "noEmitOnError": true
         },
-        "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-        },
         "files": ["test-module.ts"]
       }`);
          function writeComp(fileName: string) {
@@ -1866,10 +1801,7 @@ describe('ngc transformer command-line', () => {
     it('should emit a formatted error message for a structural error', () => {
       write('src/tsconfig.json', `{
         "extends": "../tsconfig-base.json",
-        "files": ["test-module.ts"],
-        "angularCompilerOptions": {
-            "disableTypeScriptVersionCheck": true
-        }
+        "files": ["test-module.ts"]
       }`);
       write('src/lib/indirect2.ts', `
         declare var f: any;

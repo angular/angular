@@ -29,6 +29,7 @@ travisFoldEnd "test.unit.node"
 # TODO(tbosch): remove this and teach karma to serve the right files
 travisFoldStart "test.unit.rebuildHack"
   node dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
+  cp -r packages/compiler-cli/package.json dist/all/@angular/compiler-cli/
 travisFoldStart "test.unit.rebuildHack"
 
 

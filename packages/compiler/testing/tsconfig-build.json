@@ -19,7 +19,6 @@
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "skipMetadataEmit": true,
-    "disableTypeScriptVersionCheck": true,
     "skipTemplateCodegen": true
   }
 }

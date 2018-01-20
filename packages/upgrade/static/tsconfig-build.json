@@ -21,7 +21,6 @@
   "angularCompilerOptions": {
     "strictMetadataEmit": false,
     "skipTemplateCodegen": true,
-    "disableTypeScriptVersionCheck": true,
     "flatModuleOutFile": "static.js",
     "flatModuleId": "@angular/upgrade/static"
   }

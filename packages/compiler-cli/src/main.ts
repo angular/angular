@@ -13,6 +13,7 @@ import 'reflect-metadata';
 import * as ts from 'typescript';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as semver from 'semver';
 import * as tsickle from 'tsickle';
 import * as api from './transformers/api';
 import * as ngc from './transformers/entry_points';
@@ -29,9 +30,10 @@ export function main(
   if (configErrors.length) {
     return reportErrorsAndExit(configErrors, /*options*/ undefined, consoleError);
   }
-  const [major, minor] = ts.version.split('.');
-  if (!options.disableTypeScriptVersionCheck && !(Number(major) === 2 && Number(minor) === 4)) {
-    throw new Error('The Angular Compiler requires TypeScript 2.4.');
+  if (!options.disableTypeScriptVersionCheck &&
+      !semver.satisfies(ts.version, readTypescriptVersion())) {
+    throw new Error(
+        `The Angular Compiler requires TypeScript ${readTypescriptVersion()} but ${ts.version} was found instead.`);
   }
   if (watch) {
     const result = watchMode(project, options, consoleError);
@@ -88,6 +90,12 @@ function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|un
 }
 
 export interface NgcParsedConfiguration extends ParsedConfiguration { watch?: boolean; }
+
+function readTypescriptVersion(): string {
+  const packageJson: any =
+      JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
+  return packageJson['peerDependencies']['typescript'];
+}
 
 function readNgcCommandLineAndConfiguration(args: string[]): NgcParsedConfiguration {
   const options: api.CompilerOptions = {};

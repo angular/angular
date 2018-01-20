@@ -24,8 +24,10 @@ else
     echo "Building compiler..."
     $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
     $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json
+    cp -r packages/compiler-cli/package.json dist/tools/@angular/compiler-cli/
     echo "Creating packages .metadata.json files..."
     node --max-old-space-size=3000 dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
+    cp -r packages/compiler-cli/package.json dist/all/@angular/compiler-cli/
   fi
   node dist/tools/tsc-watch/ $1 watch $2
 fi
