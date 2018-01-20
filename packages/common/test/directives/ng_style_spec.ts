@@ -61,6 +61,19 @@ import {ComponentFixture, TestBed, async} from '@angular/core/testing';
          expectNativeEl(fixture).not.toHaveCssStyle('max-width');
        }));
 
+    // https://github.com/angular/angular/issues/21064
+    it('should add and remove styles which names are not dash-cased', async(() => {
+         fixture = createTestComponent(`<div [ngStyle]="{'color': expr}"></div>`);
+
+         getComponent().expr = 'green';
+         fixture.detectChanges();
+         expectNativeEl(fixture).toHaveCssStyle({'color': 'green'});
+
+         getComponent().expr = null;
+         fixture.detectChanges();
+         expectNativeEl(fixture).not.toHaveCssStyle('color');
+       }));
+
     it('should update styles using style.unit notation when unit changes', async(() => {
          const template = `<div [ngStyle]="expr"></div>`;
 
