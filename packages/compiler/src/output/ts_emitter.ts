@@ -40,9 +40,9 @@ export type ReferenceFilter = (reference: o.ExternalReference) => boolean;
 export class TypeScriptEmitter implements OutputEmitter {
   emitStatementsAndContext(
       genFilePath: string, stmts: o.Statement[], preamble: string = '',
-      emitSourceMaps: boolean = true,
-      referenceFilter?: ReferenceFilter): {sourceText: string, context: EmitterVisitorContext} {
-    const converter = new _TsEmitterVisitor(referenceFilter);
+      emitSourceMaps: boolean = true, referenceFilter?: ReferenceFilter,
+      importFilter?: ReferenceFilter): {sourceText: string, context: EmitterVisitorContext} {
+    const converter = new _TsEmitterVisitor(referenceFilter, importFilter);
 
     const ctx = EmitterVisitorContext.createRoot();
 
@@ -83,7 +83,9 @@ export class TypeScriptEmitter implements OutputEmitter {
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
   private typeExpression = 0;
 
-  constructor(private referenceFilter?: ReferenceFilter) { super(false); }
+  constructor(private referenceFilter?: ReferenceFilter, private importFilter?: ReferenceFilter) {
+    super(false);
+  }
 
   importsWithPrefixes = new Map<string, string>();
   reexports = new Map<string, {name: string, as: string}[]>();
@@ -390,7 +392,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       ctx.print(null, '(null as any)');
       return;
     }
-    if (moduleName) {
+    if (moduleName && (!this.importFilter || !this.importFilter(value))) {
       let prefix = this.importsWithPrefixes.get(moduleName);
       if (prefix == null) {
         prefix = `i${this.importsWithPrefixes.size}`;
