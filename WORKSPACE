@@ -23,6 +23,11 @@ load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
 
+load("//packages/bazel:index.bzl", "ng_setup_workspace")
+
+ng_setup_workspace()
+
+
 local_repository(
     name = "rxjs",
     path = "node_modules/rxjs/src",

@@ -293,6 +293,7 @@ ng_module = rule(
         # The default assumes the user specified a target "node_modules" in their
         # root BUILD file.
         "node_modules": attr.label(
+            # TODO(i): I think this one should stay as is, right @alexeagle?
             default = Label("@//:node_modules")
         ),
     }),

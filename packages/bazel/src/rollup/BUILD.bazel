@@ -1,0 +1,8 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "rollup",
+    entry_point = "rollup/bin/rollup",
+    node_modules = "@angular_deps//:node_modules",
+    visibility = ["//visibility:public"],
+)

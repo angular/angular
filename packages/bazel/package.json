@@ -8,9 +8,6 @@
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER",
     "typescript": ">=2.4.2 <2.7"
   },
-  "dependencies": {
-    "@types/node": "6.0.84"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"

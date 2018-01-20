@@ -22,6 +22,12 @@ build --symlink_prefix=dist/
 build --watchfs
 
 ###############################
+# Release support             #
+###############################
+
+build --workspace_status_command=./tools/bazel_stamp_vars.sh
+
+###############################
 # Output                      #
 ###############################
 

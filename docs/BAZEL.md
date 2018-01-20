@@ -17,6 +17,14 @@ you run the first build.
 
 [install]: https://bazel.build/versions/master/docs/install.html
 
+### Installation of ibazel
+
+Install interactive bazel runner / fs watcher via:
+
+```
+yarn global add @bazel/ibazel
+```
+
 ## Configuration
 
 The `WORKSPACE` file indicates that our root directory is a
@@ -111,6 +119,24 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 - Run test: `bazel run packages/core/test:test_web`
 - Open chrome at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open chrome inspector
+
+### Debugging Bazel rules
+
+Open `external` directory which contains everything that bazel downloaded while executing the workspace file:
+```sh
+open $(bazel info output_base)/external
+```
+
+See subcommands that bazel executes (helpful for debugging):
+```sh
+bazel build //packages/core:package -s
+```
+
+To debug nodejs_binary executable paths uncomment `find . -name rollup 1>&2` (~ line 96) in
+```sh
+open $(bazel info output_base)/external/build_bazel_rules_nodejs/internal/node_launcher.sh
+```
+
 
 ## FAQs
 

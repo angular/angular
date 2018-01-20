@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ng_module")
+load("@angular//:index.bzl", "ng_package", "ng_package_entry_point")
 
 ng_module(
     name = "core",
@@ -15,4 +16,31 @@ ng_module(
         "//packages:types",
         "@rxjs",
     ],
+)
+
+ng_package(
+    name = "package",
+    deps = [":core", "//packages/core/testing"],
+    package_json = "package.json",
+    readme_md = "//packages:README.md",
+    license_banner = "//packages:license-banner.txt",
+    globals = {
+        'rxjs/Observable': 'Rx',
+        'rxjs/Subject': 'Rx',
+        'rxjs/Observer': 'Rx',
+        'rxjs/observable/merge': 'Rx.Observable',
+        'rxjs/operator/share': 'Rx.Observable.prototype'
+    },
+    secondary_entry_points = [
+        ":testing"
+    ]
+)
+
+ng_package_entry_point(
+    name = "testing",
+    globals = {
+      '@angular/core': 'ng.core',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Subject': 'Rx',
+    }
 )

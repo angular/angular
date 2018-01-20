@@ -1,8 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "ng_module")
+load("@angular//:index.bzl", "ng_package", "ng_package_entry_point")
 
-ts_library(
+ng_module(
     name = "common",
     srcs = glob(
         [
@@ -15,4 +16,71 @@ ts_library(
         "//packages/core",
         "@rxjs",
     ],
+)
+
+ng_package(
+    name = "package",
+    deps = [
+        "//packages/common",
+        "//packages/common/testing",
+        "//packages/common/http",
+        "//packages/common/http/testing"
+    ],
+    package_json = "package.json",
+    readme_md = "//packages:README.md",
+    license_banner = "//packages:license-banner.txt",
+    globals = {
+      '@angular/core': 'ng.core',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Observer': 'Rx',
+      'rxjs/Subject': 'Rx',
+      'rxjs/Subscription': 'Rx',
+    },
+    secondary_entry_points = [
+        ":testing",
+        ":http",
+        ":http_testing"
+    ]
+)
+
+ng_package_entry_point(
+    name = "testing",
+    globals = {
+      '@angular/core': 'ng.core',
+      '@angular/common': 'ng.common',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Subject': 'Rx',
+      'rxjs/Subscription': 'Rx'
+    }
+)
+
+ng_package_entry_point(
+    name = "http",
+    globals = {
+      '@angular/core': 'ng.core',
+      '@angular/platform-browser': 'ng.platformBrowser',
+      '@angular/common': 'ng.common',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Observer': 'Rx',
+      'rxjs/Subject': 'Rx',
+      'rxjs/observable/of': 'Rx.Observable.prototype',
+      'rxjs/operator/concatMap': 'Rx.Observable.prototype',
+      'rxjs/operator/filter': 'Rx.Observable.prototype',
+      'rxjs/operator/map': 'Rx.Observable.prototype',
+    }
+)
+
+ng_package_entry_point(
+    name = "http_testing",
+    globals = {
+      '@angular/core': 'ng.core',
+      '@angular/platform-browser': 'ng.platformBrowser',
+      '@angular/common': 'ng.common',
+      '@angular/common/http': 'ng.common.http',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Observer': 'Rx',
+      'rxjs/ReplaySubject': 'Rx',
+      'rxjs/Subject': 'Rx',
+      'rxjs/operator/startWith': 'Rx.Observable.prototype',
+    }
 )
