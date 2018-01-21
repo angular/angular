@@ -18,7 +18,7 @@
     </aio-notification>
   </mat-toolbar-row>
   <mat-toolbar-row>
-    <button mat-button class="hamburger" (click)="sidenav.toggle()" title="Docs menu">
+    <button mat-button class="hamburger" [class.starting]="isStarting" (click)="sidenav.toggle()" title="Docs menu">
       <mat-icon svgIcon="menu"></mat-icon>
     </button>
     <a class="nav-link home" href="/" [ngSwitch]="isSideBySide">
