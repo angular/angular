@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
 
   currentDocument: DocumentContents;
   currentDocVersion: NavigationNode;
-  currentNodes: CurrentNodes;
+  currentNodes: CurrentNodes = {};
   currentPath: string;
   docVersions: NavigationNode[];
   dtOn = false;
@@ -57,9 +57,11 @@ export class AppComponent implements OnInit {
   @HostBinding('class')
   hostClasses = '';
 
-  isFetching = false;
+  // Disable all Angular animations for the initial render.
+  @HostBinding('@.disabled')
   isStarting = true;
   isTransitioning = true;
+  isFetching = false;
   isSideBySide = false;
   private isFetchingTimeout: any;
   private isSideNavDoc = false;
@@ -118,12 +120,6 @@ export class AppComponent implements OnInit {
     /* No need to unsubscribe because this root component never dies */
 
     this.documentService.currentDocument.subscribe(doc => this.currentDocument = doc);
-    // Generally, we want to delay updating the host classes for the new document, until after the
-    // leaving document has been removed (to avoid having the styles for the new document applied
-    // prematurely).
-    // On the first document, though, (when we know there is no previous document), we want to
-    // ensure the styles are applied as soon as possible to avoid flicker.
-    this.documentService.currentDocument.first().subscribe(doc => this.updateHostClassesForDoc(doc));
 
     this.locationService.currentPath.subscribe(path => {
       // Redirect to docs if we are in archive mode and are not hitting a docs page
@@ -175,11 +171,22 @@ export class AppComponent implements OnInit {
       this.topMenuNarrowNodes = views['TopBarNarrow'] || this.topMenuNodes;
     });
 
-    this.navigationService.versionInfo.subscribe( vi => this.versionInfo = vi );
+    this.navigationService.versionInfo.subscribe(vi => this.versionInfo = vi);
 
     const hasNonEmptyToc = this.tocService.tocList.map(tocList => tocList.length > 0);
     combineLatest(hasNonEmptyToc, this.showFloatingToc)
         .subscribe(([hasToc, showFloatingToc]) => this.hasFloatingToc = hasToc && showFloatingToc);
+
+    // Generally, we want to delay updating the shell (e.g. host classes, sidenav state) for the new
+    // document, until after the leaving document has been removed (to avoid having the styles for
+    // the new document applied prematurely).
+    // For the first document, though, (when we know there is no previous document), we want to
+    // ensure the styles are applied as soon as possible to avoid flicker.
+    combineLatest(
+      this.documentService.currentDocument,  // ...needed to determine host classes
+      this.navigationService.currentNodes)   // ...needed to determine `sidenav` state
+      .first()
+      .subscribe(() => this.updateShell());
   }
 
   // Scroll to the anchor in the hash fragment or top of doc.
@@ -205,14 +212,11 @@ export class AppComponent implements OnInit {
   }
 
   onDocInserted() {
-    // TODO: Find a better way to avoid `ExpressionChangedAfterItHasBeenChecked` error.
-    setTimeout(() => {
-      // Update the SideNav state (if necessary).
-      this.updateSideNav();
-
-      // Update the host classes to match the new document.
-      this.updateHostClassesForDoc(this.currentDocument);
-    });
+    // Update the shell (host classes, sidenav state) to match the new document.
+    // This may be called as a result of actions initiated by view updates.
+    // In order to avoid errors (e.g. `ExpressionChangedAfterItHasBeenChecked`), updating the view
+    // (e.g. sidenav, host classes) needs to happen asynchronously.
+    setTimeout(() => this.updateShell());
 
     // Scroll 500ms after the new document has been inserted into the doc-viewer.
     // The delay is to allow time for async layout to complete.
@@ -220,7 +224,14 @@ export class AppComponent implements OnInit {
   }
 
   onDocRendered() {
-    this.isStarting = false;
+    if (this.isStarting) {
+      // In order to ensure that the initial sidenav-content left margin
+      // adjustment happens without animation, we need to ensure that
+      // `isStarting` remains `true` until the margin change is triggered.
+      // (Apparently, this happens with a slight delay.)
+      setTimeout(() => this.isStarting = false, 100);
+    }
+
     this.isTransitioning = false;
   }
 
@@ -241,7 +252,7 @@ export class AppComponent implements OnInit {
       // items in the top-bar, ensure the sidenav is closed.
       // (This condition can only be met when the resize event changes the value of `isSideBySide`
       //  from `false` to `true` while on a non-sidenav doc.)
-      this.sideNavToggle(false);
+      this.sidenav.toggle(false);
     }
   }
 
@@ -272,10 +283,6 @@ export class AppComponent implements OnInit {
     return true;
   }
 
-  sideNavToggle(value?: boolean) {
-    this.sidenav.toggle(value);
-  }
-
   setPageId(id: string) {
     // Special case the home page
     this.pageId = (id === 'index') ? 'home' : id.replace('/', '-');
@@ -300,7 +307,7 @@ export class AppComponent implements OnInit {
     const sideNavOpen = `sidenav-${this.sidenav.opened ? 'open' : 'closed'}`;
     const pageClass = `page-${this.pageId}`;
     const folderClass = `folder-${this.folderId}`;
-    const viewClasses = Object.keys(this.currentNodes || {}).map(view => `view-${view}`).join(' ');
+    const viewClasses = Object.keys(this.currentNodes).map(view => `view-${view}`).join(' ');
     const notificationClass = `aio-notification-${this.notification.showNotification}`;
     const notificationAnimatingClass = this.notificationAnimating ? 'aio-notification-animating' : '';
 
@@ -315,9 +322,13 @@ export class AppComponent implements OnInit {
     ].join(' ');
   }
 
-  updateHostClassesForDoc(doc: DocumentContents) {
-    this.setPageId(doc.id);
-    this.setFolderId(doc.id);
+  updateShell() {
+    // Update the SideNav state (if necessary).
+    this.updateSideNav();
+
+    // Update the host classes.
+    this.setPageId(this.currentDocument.id);
+    this.setFolderId(this.currentDocument.id);
     this.updateHostClasses();
   }
 
@@ -333,7 +344,7 @@ export class AppComponent implements OnInit {
     }
 
     // May be open or closed when wide; always closed when narrow.
-    this.sideNavToggle(this.isSideBySide && openSideNav);
+    this.sidenav.toggle(this.isSideBySide && openSideNav);
   }
 
   // Dynamically change height of table of contents container
