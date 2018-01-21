@@ -8,9 +8,12 @@ import { By } from '@angular/platform-browser';
 
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
+import { timer } from 'rxjs/observable/timer';
+import 'rxjs/add/operator/mapTo';
 
 import { AppComponent } from './app.component';
 import { AppModule } from './app.module';
+import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
 import { EmbedComponentsService } from 'app/embed-components/embed-components.service';
@@ -36,13 +39,24 @@ describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
+  let documentService: DocumentService;
   let docViewer: HTMLElement;
+  let docViewerComponent: DocViewerComponent;
   let hamburger: HTMLButtonElement;
   let locationService: MockLocationService;
   let sidenav: MatSidenav;
   let tocService: TocService;
 
-  const initializeTest = () => {
+  async function awaitDocRendered() {
+    const newDocPromise = new Promise(resolve => documentService.currentDocument.subscribe(resolve));
+    const docRenderedPromise = new Promise(resolve => docViewerComponent.docRendered.subscribe(resolve));
+
+    await newDocPromise;       // Wait for the new document to be fetched.
+    fixture.detectChanges();   // Propagate document change to the view (i.e to `DocViewer`).
+    await docRenderedPromise;  // Wait for the `docRendered` event.
+  };
+
+  function initializeTest(waitForDoc = true) {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
 
@@ -50,21 +64,27 @@ describe('AppComponent', () => {
     component.onResize(sideBySideBreakPoint + 1); // wide by default
 
     const de = fixture.debugElement;
-    docViewer = de.query(By.css('aio-doc-viewer')).nativeElement;
+    const docViewerDe = de.query(By.css('aio-doc-viewer'));
+
+    documentService = de.injector.get(DocumentService) as DocumentService;
+    docViewer = docViewerDe.nativeElement;
+    docViewerComponent = docViewerDe.componentInstance;
     hamburger = de.query(By.css('.hamburger')).nativeElement;
-    locationService = de.injector.get(LocationService) as any as MockLocationService;
+    locationService = de.injector.get(LocationService) as any;
     sidenav = de.query(By.directive(MatSidenav)).componentInstance;
     tocService = de.injector.get(TocService);
+
+    return waitForDoc && awaitDocRendered();
   };
 
 
   describe('with proper DocViewer', () => {
 
-    beforeEach(() => {
+    beforeEach(async () => {
       DocViewerComponent.animationsEnabled = false;
 
       createTestingModule('a/b');
-      initializeTest();
+      await initializeTest();
     });
 
     afterEach(() => DocViewerComponent.animationsEnabled = true);
@@ -356,43 +376,43 @@ describe('AppComponent', () => {
       let selectElement: DebugElement;
       let selectComponent: SelectComponent;
 
-      function setupSelectorForTesting(mode?: string) {
+      async function setupSelectorForTesting(mode?: string) {
         createTestingModule('a/b', mode);
-        initializeTest();
+        await initializeTest();
         component.onResize(sideBySideBreakPoint + 1); // side-by-side
         selectElement = fixture.debugElement.query(By.directive(SelectComponent));
         selectComponent = selectElement.componentInstance;
       }
 
-      it('should select the version that matches the deploy mode', () => {
-        setupSelectorForTesting();
+      it('should select the version that matches the deploy mode', async () => {
+        await setupSelectorForTesting();
         expect(selectComponent.selected.title).toContain('stable');
-        setupSelectorForTesting('next');
+        await setupSelectorForTesting('next');
         expect(selectComponent.selected.title).toContain('next');
-        setupSelectorForTesting('archive');
+        await setupSelectorForTesting('archive');
         expect(selectComponent.selected.title).toContain('v4');
       });
 
-      it('should add the current raw version string to the selected version', () => {
-        setupSelectorForTesting();
+      it('should add the current raw version string to the selected version', async () => {
+        await setupSelectorForTesting();
         expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
-        setupSelectorForTesting('next');
+        await setupSelectorForTesting('next');
         expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
-        setupSelectorForTesting('archive');
+        await setupSelectorForTesting('archive');
         expect(selectComponent.selected.title).toContain(`(v${component.versionInfo.raw})`);
       });
 
       // Older docs versions have an href
-      it('should navigate when change to a version with a url', () => {
-        setupSelectorForTesting();
+      it('should navigate when change to a version with a url', async () => {
+        await setupSelectorForTesting();
         const versionWithUrlIndex = component.docVersions.findIndex(v => !!v.url);
         const versionWithUrl = component.docVersions[versionWithUrlIndex];
         selectElement.triggerEventHandler('change', { option: versionWithUrl, index: versionWithUrlIndex});
         expect(locationService.go).toHaveBeenCalledWith(versionWithUrl.url);
       });
 
-      it('should not navigate when change to a version without a url', () => {
-        setupSelectorForTesting();
+      it('should not navigate when change to a version without a url', async () => {
+        await setupSelectorForTesting();
         const versionWithoutUrlIndex = component.docVersions.length;
         const versionWithoutUrl = component.docVersions[versionWithoutUrlIndex] = { title: 'foo' };
         selectElement.triggerEventHandler('change', { option: versionWithoutUrl, index: versionWithoutUrlIndex });
@@ -401,37 +421,39 @@ describe('AppComponent', () => {
     });
 
     describe('currentDocument', () => {
-      it('should display a guide page (guide/pipes)', () => {
-        locationService.go('guide/pipes');
-        fixture.detectChanges();
+      const navigateTo = async (path: string) => {
+        locationService.go(path);
+        await awaitDocRendered();
+      };
+
+      it('should display a guide page (guide/pipes)', async () => {
+        await navigateTo('guide/pipes');
         expect(docViewer.textContent).toMatch(/Pipes/i);
       });
 
-      it('should display the api page', () => {
-        locationService.go('api');
-        fixture.detectChanges();
+      it('should display the api page', async () => {
+        await navigateTo('api');
         expect(docViewer.textContent).toMatch(/API/i);
       });
 
-      it('should display a marketing page', () => {
-        locationService.go('features');
-        fixture.detectChanges();
+      it('should display a marketing page', async () => {
+        await navigateTo('features');
         expect(docViewer.textContent).toMatch(/Features/i);
       });
 
-      it('should update the document title', () => {
+      it('should update the document title', async () => {
         const titleService = TestBed.get(Title);
         spyOn(titleService, 'setTitle');
-        locationService.go('guide/pipes');
-        fixture.detectChanges();
+
+        await navigateTo('guide/pipes');
         expect(titleService.setTitle).toHaveBeenCalledWith('Angular - Pipes');
       });
 
-      it('should update the document title, with a default value if the document has no title', () => {
+      it('should update the document title, with a default value if the document has no title', async () => {
         const titleService = TestBed.get(Title);
         spyOn(titleService, 'setTitle');
-        locationService.go('no-title');
-        fixture.detectChanges();
+
+        await navigateTo('no-title');
         expect(titleService.setTitle).toHaveBeenCalledWith('Angular');
       });
     });
@@ -509,7 +531,9 @@ describe('AppComponent', () => {
         expect(scrollToTopSpy).not.toHaveBeenCalled();
 
         locationService.go('guide/pipes');
+        tick(1);                 // triggers the HTTP response for the document
         fixture.detectChanges(); // triggers the event that calls `onDocInserted`
+
         expect(scrollToTopSpy).toHaveBeenCalled();
         expect(scrollSpy).not.toHaveBeenCalled();
 
@@ -658,18 +682,16 @@ describe('AppComponent', () => {
     });
 
     describe('deployment banner', () => {
-      it('should show a message if the deployment mode is "archive"', () => {
+      it('should show a message if the deployment mode is "archive"', async () => {
         createTestingModule('a/b', 'archive');
-        initializeTest();
-        fixture.detectChanges();
+        await initializeTest();
         const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
         expect(banner.textContent).toContain('archived documentation for Angular v4');
       });
 
-      it('should show no message if the deployment mode is not "archive"', () => {
+      it('should show no message if the deployment mode is not "archive"', async () => {
         createTestingModule('a/b', 'stable');
-        initializeTest();
-        fixture.detectChanges();
+        await initializeTest();
         const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
         expect(banner.textContent!.trim()).toEqual('');
       });
@@ -678,7 +700,6 @@ describe('AppComponent', () => {
     describe('search', () => {
       describe('initialization', () => {
         it('should initialize the search worker', inject([SearchService], (searchService: SearchService) => {
-          fixture.detectChanges(); // triggers ngOnInit
           expect(searchService.initWorker).toHaveBeenCalled();
         }));
       });
@@ -771,103 +792,103 @@ describe('AppComponent', () => {
     describe('archive redirection', () => {
       it('should redirect to `docs` if deployment mode is `archive` and not at a docs page', () => {
         createTestingModule('', 'archive');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
 
         createTestingModule('resources', 'archive');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).toHaveBeenCalledWith('docs');
 
         createTestingModule('guide/aot-compiler', 'archive');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('tutorial', 'archive');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('tutorial/toh-pt1', 'archive');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('docs', 'archive');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('api', 'archive');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('api/core/getPlatform', 'archive');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
       it('should not redirect if deployment mode is `next`', () => {
         createTestingModule('', 'next');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('resources', 'next');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('guide/aot-compiler', 'next');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('tutorial', 'next');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('tutorial/toh-pt1', 'next');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('docs', 'next');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('api', 'next');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('api/core/getPlatform', 'next');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
 
       it('should not redirect to `docs` if deployment mode is `stable`', () => {
         createTestingModule('', 'stable');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('resources', 'stable');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('guide/aot-compiler', 'stable');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('tutorial', 'stable');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('tutorial/toh-pt1', 'stable');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('docs', 'stable');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('api', 'stable');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
 
         createTestingModule('api/core/getPlatform', 'stable');
-        initializeTest();
+        initializeTest(false);
         expect(TestBed.get(LocationService).replace).not.toHaveBeenCalled();
       });
     });
@@ -890,22 +911,31 @@ describe('AppComponent', () => {
 
     describe('initial rendering', () => {
       it('should initially add the starting class until a document is rendered', () => {
-        const getSidenavContainer = () => fixture.debugElement.query(By.css('mat-sidenav-container'));
-
-        initializeTest();
+        initializeTest(false);
+        const sidenavContainer = fixture.debugElement.query(By.css('mat-sidenav-container')).nativeElement;
 
         expect(component.isStarting).toBe(true);
-        expect(getSidenavContainer().classes['starting']).toBe(true);
+        expect(sidenavContainer.classList.contains('starting')).toBe(true);
+
+        triggerDocViewerEvent('docInserted');
+        fixture.detectChanges();
+        expect(component.isStarting).toBe(true);
+        expect(sidenavContainer.classList.contains('starting')).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isStarting).toBe(false);
-        expect(getSidenavContainer().classes['starting']).toBe(false);
+        expect(sidenavContainer.classList.contains('starting')).toBe(false);
       });
 
       it('should initially disable animations on the DocViewer for the first rendering', () => {
-        initializeTest();
+        initializeTest(false);
 
+        expect(component.isStarting).toBe(true);
+        expect(docViewer.classList.contains('no-animations')).toBe(true);
+
+        triggerDocViewerEvent('docInserted');
+        fixture.detectChanges();
         expect(component.isStarting).toBe(true);
         expect(docViewer.classList.contains('no-animations')).toBe(true);
 
@@ -921,50 +951,63 @@ describe('AppComponent', () => {
       afterEach(jasmine.clock().uninstall);
 
       it('should set the transitioning class on `.app-toolbar` while a document is being rendered', () => {
-        const getToolbar = () => fixture.debugElement.query(By.css('.app-toolbar'));
-
-        initializeTest();
+        initializeTest(false);
+        jasmine.clock().tick(1);  // triggers the HTTP response for the document
+        const toolbar = fixture.debugElement.query(By.css('.app-toolbar'));
 
         // Initially, `isTransitoning` is true.
         expect(component.isTransitioning).toBe(true);
-        expect(getToolbar().classes['transitioning']).toBe(true);
+        expect(toolbar.classes['transitioning']).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(getToolbar().classes['transitioning']).toBe(false);
+        expect(toolbar.classes['transitioning']).toBe(false);
 
         // While a document is being rendered, `isTransitoning` is set to true.
         triggerDocViewerEvent('docReady');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(true);
-        expect(getToolbar().classes['transitioning']).toBe(true);
+        expect(toolbar.classes['transitioning']).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(getToolbar().classes['transitioning']).toBe(false);
+        expect(toolbar.classes['transitioning']).toBe(false);
       });
 
-      it('should update the sidenav state as soon as a new document is inserted', () => {
-        initializeTest();
+      it('should update the sidenav state as soon as a new document is inserted (but not before)', () => {
+        initializeTest(false);
+        jasmine.clock().tick(1);  // triggers the HTTP response for the document
+        jasmine.clock().tick(0);  // calls `updateSideNav()` for initial rendering
         const updateSideNavSpy = spyOn(component, 'updateSideNav');
+
+        triggerDocViewerEvent('docReady');
+        jasmine.clock().tick(0);
+        expect(updateSideNavSpy).not.toHaveBeenCalled();
 
         triggerDocViewerEvent('docInserted');
         jasmine.clock().tick(0);
         expect(updateSideNavSpy).toHaveBeenCalledTimes(1);
 
+        updateSideNavSpy.calls.reset();
+
+        triggerDocViewerEvent('docReady');
+        jasmine.clock().tick(0);
+        expect(updateSideNavSpy).not.toHaveBeenCalled();
+
         triggerDocViewerEvent('docInserted');
         jasmine.clock().tick(0);
-        expect(updateSideNavSpy).toHaveBeenCalledTimes(2);
+        expect(updateSideNavSpy).toHaveBeenCalledTimes(1);
       });
     });
 
     describe('pageId', () => {
       const navigateTo = (path: string) => {
         locationService.go(path);
+        jasmine.clock().tick(1);  // triggers the HTTP response for the document
         triggerDocViewerEvent('docInserted');
-        jasmine.clock().tick(0);
+        jasmine.clock().tick(0);  // triggers `updateHostClasses()`
         fixture.detectChanges();
       };
 
@@ -972,7 +1015,7 @@ describe('AppComponent', () => {
       afterEach(jasmine.clock().uninstall);
 
       it('should set the id of the doc viewer container based on the current doc', () => {
-        initializeTest();
+        initializeTest(false);
         const container = fixture.debugElement.query(By.css('section.sidenav-content'));
 
         navigateTo('guide/pipes');
@@ -989,7 +1032,7 @@ describe('AppComponent', () => {
       });
 
       it('should not be affected by changes to the query', () => {
-        initializeTest();
+        initializeTest(false);
         const container = fixture.debugElement.query(By.css('section.sidenav-content'));
 
         navigateTo('guide/pipes');
@@ -1002,8 +1045,9 @@ describe('AppComponent', () => {
 
     describe('hostClasses', () => {
       const triggerUpdateHostClasses = () => {
+        jasmine.clock().tick(1);  // triggers the HTTP response for document
         triggerDocViewerEvent('docInserted');
-        jasmine.clock().tick(0);
+        jasmine.clock().tick(0);  // triggers `updateHostClasses()`
         fixture.detectChanges();
       };
       const navigateTo = (path: string) => {
@@ -1015,7 +1059,7 @@ describe('AppComponent', () => {
       afterEach(jasmine.clock().uninstall);
 
       it('should set the css classes of the host container based on the current doc and navigation view', () => {
-        initializeTest();
+        initializeTest(false);
 
         navigateTo('guide/pipes');
         checkHostClass('page', 'guide-pipes');
@@ -1034,7 +1078,7 @@ describe('AppComponent', () => {
       });
 
       it('should set the css class of the host container based on the open/closed state of the side nav', async () => {
-        initializeTest();
+        initializeTest(false);
 
         navigateTo('guide/pipes');
         checkHostClass('sidenav', 'open');
@@ -1059,7 +1103,7 @@ describe('AppComponent', () => {
 
       it('should set the css class of the host container based on the initial deployment mode', () => {
         createTestingModule('a/b', 'archive');
-        initializeTest();
+        initializeTest(false);
 
         triggerUpdateHostClasses();
         checkHostClass('mode', 'archive');
@@ -1079,13 +1123,13 @@ describe('AppComponent', () => {
       const HIDE_DELAY = 500;
       const getProgressBar = () => fixture.debugElement.query(By.directive(MatProgressBar));
       const initializeAndCompleteNavigation = () => {
-        initializeTest();
+        initializeTest(false);
         triggerDocViewerEvent('docReady');
         tick(HIDE_DELAY);
       };
 
       it('should initially be hidden', () => {
-        initializeTest();
+        initializeTest(false);
         expect(getProgressBar()).toBeFalsy();
       });
 
@@ -1300,6 +1344,8 @@ class TestHttpClient {
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };
     }
-    return of(data);
+
+    // Preserve async nature of `HttpClient`.
+    return timer(1).mapTo(data);
   }
 }
