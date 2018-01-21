@@ -34,6 +34,7 @@ import { TocItem, TocService } from 'app/shared/toc.service';
 
 const sideBySideBreakPoint = 992;
 const hideToCBreakPoint = 800;
+const startedDelay = 100;
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -910,36 +911,68 @@ describe('AppComponent', () => {
     });
 
     describe('initial rendering', () => {
+      beforeEach(jasmine.clock().install);
+      afterEach(jasmine.clock().uninstall);
+
+      it('should initially disable Angular animations until a document is rendered', () => {
+        initializeTest(false);
+        jasmine.clock().tick(1);  // triggers the HTTP response for the document
+
+        expect(component.isStarting).toBe(true);
+        expect(fixture.debugElement.properties['@.disabled']).toBe(true);
+
+        triggerDocViewerEvent('docInserted');
+        jasmine.clock().tick(startedDelay);
+        fixture.detectChanges();
+        expect(component.isStarting).toBe(true);
+        expect(fixture.debugElement.properties['@.disabled']).toBe(true);
+
+        triggerDocViewerEvent('docRendered');
+        jasmine.clock().tick(startedDelay);
+        fixture.detectChanges();
+        expect(component.isStarting).toBe(false);
+        expect(fixture.debugElement.properties['@.disabled']).toBe(false);
+      });
+
       it('should initially add the starting class until a document is rendered', () => {
         initializeTest(false);
+        jasmine.clock().tick(1);  // triggers the HTTP response for the document
         const sidenavContainer = fixture.debugElement.query(By.css('mat-sidenav-container')).nativeElement;
 
         expect(component.isStarting).toBe(true);
+        expect(hamburger.classList.contains('starting')).toBe(true);
         expect(sidenavContainer.classList.contains('starting')).toBe(true);
 
         triggerDocViewerEvent('docInserted');
+        jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
         expect(component.isStarting).toBe(true);
+        expect(hamburger.classList.contains('starting')).toBe(true);
         expect(sidenavContainer.classList.contains('starting')).toBe(true);
 
         triggerDocViewerEvent('docRendered');
+        jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
         expect(component.isStarting).toBe(false);
+        expect(hamburger.classList.contains('starting')).toBe(false);
         expect(sidenavContainer.classList.contains('starting')).toBe(false);
       });
 
       it('should initially disable animations on the DocViewer for the first rendering', () => {
         initializeTest(false);
+        jasmine.clock().tick(1);  // triggers the HTTP response for the document
 
         expect(component.isStarting).toBe(true);
         expect(docViewer.classList.contains('no-animations')).toBe(true);
 
         triggerDocViewerEvent('docInserted');
+        jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
         expect(component.isStarting).toBe(true);
         expect(docViewer.classList.contains('no-animations')).toBe(true);
 
         triggerDocViewerEvent('docRendered');
+        jasmine.clock().tick(startedDelay);
         fixture.detectChanges();
         expect(component.isStarting).toBe(false);
         expect(docViewer.classList.contains('no-animations')).toBe(false);
