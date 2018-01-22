@@ -21,16 +21,13 @@ import {LQuery, QueryReadType} from './interfaces/query';
 import {LView, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
-import {assertNodeType} from './node_assert';
+import {assertNodeType, assertNodeOfPossibleTypes} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, TypedDirectiveDef, TypedComponentDef} from './interfaces/definition';
-import {InjectFlags, diPublicInInjector, getOrCreateNodeInjectorForNode, getOrCreateElementRef, getOrCreateTemplateRef, getOrCreateContainerRef, getOrCreateInjectable} from './di';
-import {QueryList, LQuery_} from './query';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 
-export {queryRefresh} from './query';
 
 /**
  * Enum used by the lifecycle (l) instruction to determine which lifecycle hook is requesting
@@ -176,7 +173,9 @@ export function leaveView(newView: LView): void {
   enterView(newView, null);
 }
 
-export function createLView(viewId: number, renderer: Renderer3, tView: TView): LView {
+export function createLView(
+    viewId: number, renderer: Renderer3, tView: TView,
+    template: ComponentTemplate<any>| null = null, context: any | null = null): LView {
   const newView = {
     parent: currentView,
     id: viewId,    // -1 for component views
@@ -190,7 +189,10 @@ export function createLView(viewId: number, renderer: Renderer3, tView: TView): 
     next: null,
     bindingStartIndex: null,
     creationMode: true,
-    viewHookStartIndex: null
+    viewHookStartIndex: null,
+    template: template,
+    context: context,
+    dynamicViewCount: 0,
   };
 
   return newView;
@@ -308,6 +310,32 @@ export function renderTemplate<T>(
   return host;
 }
 
+export function renderEmbeddedTemplate<T>(
+    viewNode: LViewNode | null, template: ComponentTemplate<T>, context: T,
+    renderer: Renderer3): LViewNode {
+  const _isParent = isParent;
+  const _previousOrParentNode = previousOrParentNode;
+  try {
+    isParent = true;
+    previousOrParentNode = null !;
+    let cm: boolean = false;
+    if (viewNode == null) {
+      const view = createLView(-1, renderer, {data: []}, template, context);
+      viewNode = createLNode(null, LNodeFlags.View, null, view);
+      cm = true;
+    }
+    enterView(viewNode.data, viewNode);
+
+    template(context, cm);
+  } finally {
+    refreshDynamicChildren();
+    leaveView(currentView !.parent !);
+    isParent = _isParent;
+    previousOrParentNode = _previousOrParentNode;
+  }
+  return viewNode;
+}
+
 export function renderComponentOrTemplate<T>(
     node: LElementNode, hostView: LView, componentOrContext: T, template?: ComponentTemplate<T>) {
   const oldView = enterView(hostView, node);
@@ -329,76 +357,6 @@ export function renderComponentOrTemplate<T>(
     hostView.creationMode = false;
     leaveView(oldView);
   }
-}
-
-export function getOrCreateNodeInjector(): LInjector {
-  ngDevMode && assertPreviousIsParent();
-  return getOrCreateNodeInjectorForNode(previousOrParentNode as LElementNode | LContainerNode);
-}
-
-/**
- * Makes a directive public to the DI system by adding it to an injector's bloom filter.
- *
- * @param def The definition of the directive to be made public
- */
-export function diPublic(def: TypedDirectiveDef<any>): void {
-  diPublicInInjector(getOrCreateNodeInjector(), def);
-}
-
-/**
- * Searches for an instance of the given directive type up the injector tree and returns
- * that instance if found.
- *
- * If not found, it will propagate up to the next parent injector until the token
- * is found or the top is reached.
- *
- * Usage example (in factory function):
- *
- * class SomeDirective {
- *   constructor(directive: DirectiveA) {}
- *
- *   static ngDirectiveDef = defineDirective({
- *     type: SomeDirective,
- *     factory: () => new SomeDirective(inject(DirectiveA))
- *   });
- * }
- *
- * @param token The directive type to search for
- * @param flags Injection flags (e.g. CheckParent)
- * @returns The instance found
- */
-export function inject<T>(token: Type<T>, flags?: InjectFlags): T {
-  return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
-}
-
-/**
- * Creates an ElementRef and stores it on the injector.
- * Or, if the ElementRef already exists, retrieves the existing ElementRef.
- *
- * @returns The ElementRef instance to use
- */
-export function injectElementRef(): ElementRef {
-  return getOrCreateElementRef(getOrCreateNodeInjector());
-}
-
-/**
- * Creates a TemplateRef and stores it on the injector. Or, if the TemplateRef already
- * exists, retrieves the existing TemplateRef.
- *
- * @returns The TemplateRef instance to use
- */
-export function injectTemplateRef<T>(): TemplateRef<T> {
-  return getOrCreateTemplateRef<T>(getOrCreateNodeInjector());
-}
-
-/**
- * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef
- * already exists, retrieves the existing ViewContainerRef.
- *
- * @returns The ViewContainerRef instance to use
- */
-export function injectViewContainerRef(): ViewContainerRef {
-  return getOrCreateContainerRef(getOrCreateNodeInjector());
 }
 
 //////////////////////////
@@ -1118,7 +1076,8 @@ export function container(
     nextIndex: 0, renderParent,
     template: template == null ? null : template,
     next: null,
-    parent: currentView
+    parent: currentView,
+    dynamicViewCount: 0,
   });
 
   if (node.tNode == null) {
@@ -1171,6 +1130,18 @@ export function containerRefreshEnd(): void {
   while (nextIndex < container.data.views.length) {
     // remove extra view.
     removeView(container, nextIndex);
+  }
+}
+
+function refreshDynamicChildren() {
+  for (let current = currentView.child; current !== null; current = current.next) {
+    if (current.dynamicViewCount !== 0 && (current as LContainer).views) {
+      const container = current as LContainer;
+      for (let i = 0; i < container.views.length; i++) {
+        const view = container.views[i];
+        renderEmbeddedTemplate(view, view.data.template !, view.data.context !, renderer);
+      }
+    }
   }
 }
 
@@ -1233,22 +1204,25 @@ export function viewEnd(): void {
   isParent = false;
   const viewNode = previousOrParentNode = currentView.node as LViewNode;
   const container = previousOrParentNode.parent as LContainerNode;
-  ngDevMode && assertNodeType(viewNode, LNodeFlags.View);
-  ngDevMode && assertNodeType(container, LNodeFlags.Container);
-  const lContainer = container.data;
-  const previousView = lContainer.nextIndex <= lContainer.views.length ?
-      lContainer.views[lContainer.nextIndex - 1] as LViewNode :
-      null;
-  const viewIdChanged = previousView == null ? true : previousView.data.id !== viewNode.data.id;
+  if (container) {
+    ngDevMode && assertNodeType(viewNode, LNodeFlags.View);
+    ngDevMode && assertNodeType(container, LNodeFlags.Container);
+    const containerState = container.data;
+    const previousView = containerState.nextIndex <= containerState.views.length ?
+        containerState.views[containerState.nextIndex - 1] as LViewNode :
+        null;
+    const viewIdChanged = previousView == null ? true : previousView.data.id !== viewNode.data.id;
 
-  if (viewIdChanged) {
-    insertView(container, viewNode, lContainer.nextIndex - 1);
-    currentView.creationMode = false;
+    if (viewIdChanged) {
+      insertView(container, viewNode, containerState.nextIndex - 1);
+      currentView.creationMode = false;
+    }
   }
   leaveView(currentView !.parent !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.View);
 }
+
 /////////////
 
 /**
@@ -1266,7 +1240,7 @@ export const componentRefresh:
             directiveIndex: number, elementIndex: number, template: ComponentTemplate<T>) {
   ngDevMode && assertDataInRange(elementIndex);
   const element = data ![elementIndex] as LElementNode;
-  ngDevMode && assertNodeType(element, LNodeFlags.Element);
+  ngDevMode && assertNodeOfPossibleTypes(element, LNodeFlags.Element, LNodeFlags.Container);
   ngDevMode && assertNotEqual(element.data, null, 'isComponent');
   ngDevMode && assertDataInRange(directiveIndex);
   const hostView = element.data !;
@@ -1277,6 +1251,7 @@ export const componentRefresh:
     template(directive, creationMode);
   } finally {
     hostView.creationMode = false;
+    refreshDynamicChildren();
     leaveView(oldView);
   }
 };
@@ -1878,8 +1853,8 @@ export function memory<T>(index: number, value?: T): T {
 }
 
 function valueInData<T>(data: any[], index: number, value?: T): T {
-  ngDevMode && assertDataInRange(index, data);
   if (value === undefined) {
+    ngDevMode && assertDataInRange(index, data);
     value = data[index];
   } else {
     // We don't store any static data for local variables, so the first time
@@ -1892,19 +1867,19 @@ function valueInData<T>(data: any[], index: number, value?: T): T {
   return value !;
 }
 
-export function query<T>(
-    predicate: Type<any>| string[], descend?: boolean,
-    read?: QueryReadType | Type<T>): QueryList<T> {
-  ngDevMode && assertPreviousIsParent();
-  const queryList = new QueryList<T>();
-  const query = currentQuery || (currentQuery = new LQuery_());
-  query.track(queryList, predicate, descend, read);
-  return queryList;
+export function getCurrentQuery(QueryType: {new (): LQuery}): LQuery {
+  return currentQuery || (currentQuery = new QueryType());
 }
 
+export function getPreviousOrParentNode(): LNode {
+  return previousOrParentNode;
+}
 
+export function getRenderer(): Renderer3 {
+  return renderer;
+}
 
-function assertPreviousIsParent() {
+export function assertPreviousIsParent() {
   assertEqual(isParent, true, 'isParent');
 }
 
@@ -1914,5 +1889,5 @@ function assertHasParent() {
 
 function assertDataInRange(index: number, arr?: any[]) {
   if (arr == null) arr = data;
-  assertLessThan(arr ? arr.length : 0, index, 'data.length');
+  assertLessThan(index, arr ? arr.length : 0, 'data.length');
 }

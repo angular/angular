@@ -5,10 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF} from '../../src/render3/di';
 import {C, E, Q, QueryList, e, m, qR} from '../../src/render3/index';
 import {QueryReadType} from '../../src/render3/interfaces/query';
 
 import {createComponent, createDirective, renderComponent} from './render_util';
+
 
 
 /**
@@ -91,7 +93,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(Child, false, QueryReadType.ElementRef));
+          m(0, Q(Child, false, QUERY_READ_ELEMENT_REF));
           elToQuery = E(1, 'div', null, [Child]);
           e();
         }
@@ -173,7 +175,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo']));
+          m(0, Q(['foo'], false, QUERY_READ_ELEMENT_REF));
           elToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
@@ -203,7 +205,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo', 'bar']));
+          m(0, Q(['foo', 'bar'], undefined, QUERY_READ_ELEMENT_REF));
           el1ToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
@@ -234,7 +236,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QueryReadType.ElementRef));
+          m(0, Q(['foo'], false, QUERY_READ_ELEMENT_REF));
           elToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
@@ -260,7 +262,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QueryReadType.ViewContainerRef));
+          m(0, Q(['foo'], false, QUERY_READ_CONTAINER_REF));
           E(1, 'div', null, null, ['foo', '']);
           e();
         }
@@ -283,7 +285,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QueryReadType.ViewContainerRef));
+          m(0, Q(['foo'], false, QUERY_READ_CONTAINER_REF));
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -306,7 +308,7 @@ describe('query', () => {
          const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
            let tmp: any;
            if (cm) {
-             m(0, Q(['foo'], false, QueryReadType.ElementRef));
+             m(0, Q(['foo'], false, QUERY_READ_ELEMENT_REF));
              C(1, undefined, undefined, undefined, undefined, ['foo', '']);
            }
            qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -330,7 +332,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo']));
+          m(0, Q(['foo'], undefined, QUERY_READ_TEMPLATE_REF));
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -353,7 +355,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QueryReadType.TemplateRef));
+          m(0, Q(['foo'], false, QUERY_READ_TEMPLATE_REF));
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -465,7 +467,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], undefined, QueryReadType.ElementRef));
+          m(0, Q(['foo'], undefined, QUERY_READ_ELEMENT_REF));
           div = E(1, 'div', null, [Child], ['foo', 'child']);
           e();
         }
@@ -491,7 +493,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo', 'bar']));
+          m(0, Q(['foo', 'bar'], undefined, QUERY_READ_FROM_NODE));
           div = E(1, 'div', null, [Child], ['foo', '', 'bar', 'child']);
           { childInstance = m(2); }
           e();

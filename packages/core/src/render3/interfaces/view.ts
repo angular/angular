@@ -7,7 +7,7 @@
  */
 
 import {LContainer} from './container';
-import {DirectiveDef} from './definition';
+import {ComponentTemplate, DirectiveDef} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
 import {Renderer3} from './renderer';
 
@@ -138,6 +138,24 @@ export interface LView {
    * directive defs are stored).
    */
   tView: TView;
+
+  /**
+   * For dynamically inserted views, the template function to refresh the view.
+   */
+  template: ComponentTemplate<{}>|null;
+
+  /**
+   * For embedded views, the context with which to render the template.
+   */
+  context: {}|null;
+
+  /**
+   * A count of dynamic views that are children of this view (indirectly via containers).
+   *
+   * This is used to decide whether to scan children of this view when refreshing dynamic views
+   * after refreshing the view itself.
+   */
+  dynamicViewCount: number;
 }
 
 /** Interface necessary to work with view tree traversal */
