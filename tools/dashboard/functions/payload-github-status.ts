@@ -38,13 +38,18 @@ export const payloadGithubStatus = https.onRequest(async (request, response) => 
   const diffFormatted = Math.abs(packageDiff).toFixed(2);
   const packageSizeFormatted = packageSize.toFixed(2);
 
-  await setGithubStatus(commitSha, {
-    result: true,
-    name: `${capitalizeFirstLetter(packageName)} Payload Size`,
-    description: `${packageSizeFormatted}kb / ${diffFormatted}kb ${diffMessage} (ES2015 bundle)`
-  });
+  try {
+    await setGithubStatus(commitSha, {
+      result: true,
+      name: `${capitalizeFirstLetter(packageName)} Payload Size`,
+      description: `${packageSizeFormatted}kb / ${diffFormatted}kb ${diffMessage} (ES2015 bundle)`
+    });
 
-  response.json({message: 'Payload Github status successfully set.'});
+    response.json({message: 'Payload Github status successfully set.'});
+  } catch (e) {
+    response.json({message: 'An error occurred while setting the GitHub status.'});
+    console.error('An error occurred while setting Github status.', e);
+  }
 });
 
 /** Capitalizes the first letter of a string. */
