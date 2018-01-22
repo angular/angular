@@ -120,10 +120,12 @@ The documentation for the version prior to v.2.2.0 has been removed.
 
 ## ES6  described in "TypeScript to JavaScript" (2016-11-14)
 
-The updated TypeScript to JavaScript guide (removed August 2017, PR #18694)
-explains how to write apps in ES6/7
+The updated TypeScript to JavaScript guide explains how to write apps in ES6/7
 by translating the common idioms in the TypeScript documentation examples
 (and elsewhere on the web) to ES6/7 and ES5.
+
+This was [removed in August 2017](https://github.com/angular/angular/pull/18694) but can still be
+viewed in the [v2 documentation](https://v2.angular.io/docs/ts/latest/cookbook/ts-to-js.html).
 
 ## Sync with Angular v.2.1.1 (2016-10-21)
 
