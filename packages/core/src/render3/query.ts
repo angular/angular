@@ -18,7 +18,7 @@ import {Type} from '../type';
 import {assertNotNull} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
 import {assertPreviousIsParent, getCurrentQuery} from './instructions';
-import {DirectiveDef, TypedDirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
+import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LViewNode, TNode, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQuery, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
@@ -159,7 +159,7 @@ function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   for (let i = flags >> LNodeFlags.INDX_SHIFT,
            ii = i + ((flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT);
        i < ii; i++) {
-    const def = tData[i] as TypedDirectiveDef<any>;
+    const def = tData[i] as DirectiveDef<any>;
     if (def.diPublic && def.type === type) {
       return i;
     }

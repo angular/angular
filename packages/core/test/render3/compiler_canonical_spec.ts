@@ -27,6 +27,7 @@ describe('compiler specification', () => {
       class MyComponent {
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent(),
           template: function(ctx: MyComponent, cm: boolean) {
@@ -59,6 +60,7 @@ describe('compiler specification', () => {
         constructor() { log.push('ChildComponent'); }
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
+          type: ChildComponent,
           tag: `child`,
           factory: () => new ChildComponent(),
           template: function(ctx: ChildComponent, cm: boolean) {
@@ -77,6 +79,7 @@ describe('compiler specification', () => {
         constructor() { log.push('SomeDirective'); }
         // NORMATIVE
         static ngDirectiveDef = r3.defineDirective({
+          type: SomeDirective,
           factory: () => new SomeDirective(),
         });
         // /NORMATIVE
@@ -86,6 +89,7 @@ describe('compiler specification', () => {
       class MyComponent {
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent(),
           template: function(ctx: MyComponent, cm: boolean) {
@@ -119,6 +123,7 @@ describe('compiler specification', () => {
         constructor(template: TemplateRef<any>) { log.push('ifDirective'); }
         // NORMATIVE
         static ngDirectiveDef = r3.defineDirective({
+          type: IfDirective,
           factory: () => new IfDirective(r3.injectTemplateRef()),
         });
         // /NORMATIVE
@@ -130,6 +135,7 @@ describe('compiler specification', () => {
         salutation = 'Hello';
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent(),
           template: function(ctx: MyComponent, cm: boolean) {
@@ -236,6 +242,7 @@ describe('compiler specification', () => {
       class MyComponent {
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: () => new MyComponent,
           template: function(ctx: MyComponent, cm: boolean) {

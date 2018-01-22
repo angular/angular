@@ -27,6 +27,9 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  * `DirectiveDef` is a compiled version of the Directive used by the renderer instructions.
  */
 export interface DirectiveDef<T> {
+  /** Token representing the directive. Used by DI. */
+  type: Type<T>;
+
   /** Function that makes a directive public to the DI system. */
   diPublic: ((def: DirectiveDef<any>) => void)|null;
 
@@ -85,6 +88,9 @@ export interface DirectiveDef<T> {
   // (for backwards compatibility). Child template processing thus needs to be
   // delayed until all inputs and host bindings in a view have been checked.
   h(directiveIndex: number, elementIndex: number): void;
+
+  /* A map of the lifecycle hooks defined on this directive (key: name, value: fn) */
+  lifecycleHooks: LifecycleHooksMap;
 }
 
 export interface ComponentDef<T> extends DirectiveDef<T> {
@@ -122,17 +128,19 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly rendererType: RendererType2|null;
 }
 
-/**
- * Private: do not export
- */
-export interface TypedDirectiveDef<T> extends DirectiveDef<T> { type: DirectiveType<T>; }
-
-/**
- * Private: do not export
- */
-export interface TypedComponentDef<T> extends ComponentDef<T> { type: ComponentType<T>; }
+/* A map of the lifecycle hooks defined on a directive (key: name, value: fn) */
+export interface LifecycleHooksMap {
+  onInit: () => void | null;
+  doCheck: () => void | null;
+  afterContentInit: () => void | null;
+  afterContentChecked: () => void | null;
+  afterViewInit: () => void | null;
+  afterViewChecked: () => void | null;
+  onDestroy: () => void | null;
+}
 
 export interface DirectiveDefArgs<T> {
+  type: Type<T>;
   factory: () => T;
   refresh?: (directiveIndex: number, elementIndex: number) => void;
   inputs?: {[P in keyof T]?: string};

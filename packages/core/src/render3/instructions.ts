@@ -24,7 +24,7 @@ import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextN
 import {assertNodeType, assertNodeOfPossibleTypes} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, TypedDirectiveDef, TypedComponentDef} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 
@@ -447,8 +447,6 @@ export function elementStart(
       if (hostComponentDef) {
         // TODO(mhevery): This assumes that the directives come in correct order, which
         // is not guaranteed. Must be refactored to take it into account.
-        (hostComponentDef as TypedComponentDef<any>).type =
-            nameOrComponentType as ComponentType<any>;
         directiveCreate(++index, hostComponentDef.n(), hostComponentDef, queryName);
       }
       hack_declareDirectives(index, directiveTypes, localRefs);
@@ -476,7 +474,6 @@ function hack_declareDirectives(
       // TODO(misko): refactor this to store the `DirectiveDef` in `TView.data`.
       const directiveType = directiveTypes[i];
       const directiveDef = directiveType.ngDirectiveDef;
-      (directiveDef as TypedDirectiveDef<any>).type = directiveType;
       directiveCreate(
           ++index, directiveDef.n(), directiveDef, hack_findQueryName(directiveDef, localRefs));
     }
