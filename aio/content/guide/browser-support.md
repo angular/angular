@@ -616,10 +616,19 @@ If you aren't using the CLI, you should add your polyfill scripts directly to th
   &lt;!-- pre-zone polyfills -->
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
+  &lt;script>
+    /**
+     * you can configure some zone flags which can disable zone interception for some
+     * asynchronous activities to improve startup performance - use these options only
+     * if you know what you are doing as it could result in hard to trace down bugs..
+     */
+    // __Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
+    // __Zone_disable_on_property = true; // disable patch onProperty such as onclick
+    // __zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+  &lt;/script>
 
   &lt;!-- zone.js required by Angular -->
   &lt;script src="node_modules/zone.js/dist/zone.js">&lt;/script>
 
   &lt;!-- application polyfills -->
 </code-example>
-
