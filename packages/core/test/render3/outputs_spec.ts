@@ -20,6 +20,7 @@ describe('outputs', () => {
     resetStream = new EventEmitter();
 
     static ngComponentDef = defineComponent({
+      type: ButtonToggle,
       tag: 'button-toggle',
       template: function(ctx: any, cm: boolean) {},
       factory: () => buttonToggle = new ButtonToggle(),
@@ -32,8 +33,11 @@ describe('outputs', () => {
   class OtherDir {
     changeStream = new EventEmitter();
 
-    static ngDirectiveDef = defineDirective(
-        {factory: () => otherDir = new OtherDir, outputs: {changeStream: 'change'}});
+    static ngDirectiveDef = defineDirective({
+      type: OtherDir,
+      factory: () => otherDir = new OtherDir,
+      outputs: {changeStream: 'change'}
+    });
   }
 
   it('should call component output function when event is emitted', () => {
@@ -212,6 +216,7 @@ describe('outputs', () => {
       ngOnDestroy() { this.events.push('destroy'); }
 
       static ngComponentDef = defineComponent({
+        type: DestroyComp,
         tag: 'destroy-comp',
         template: function(ctx: any, cm: boolean) {},
         factory: () => destroyComp = new DestroyComp()
@@ -287,8 +292,8 @@ describe('outputs', () => {
     class MyButton {
       click = new EventEmitter();
 
-      static ngDirectiveDef =
-          defineDirective({factory: () => buttonDir = new MyButton, outputs: {click: 'click'}});
+      static ngDirectiveDef = defineDirective(
+          {type: MyButton, factory: () => buttonDir = new MyButton, outputs: {click: 'click'}});
     }
 
     function Template(ctx: any, cm: boolean) {
@@ -340,8 +345,8 @@ describe('outputs', () => {
     class OtherDir {
       change: boolean;
 
-      static ngDirectiveDef =
-          defineDirective({factory: () => otherDir = new OtherDir, inputs: {change: 'change'}});
+      static ngDirectiveDef = defineDirective(
+          {type: OtherDir, factory: () => otherDir = new OtherDir, inputs: {change: 'change'}});
     }
 
     /** <button-toggle (change)="onChange()" otherDir [change]="change"></button-toggle> */

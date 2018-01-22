@@ -22,7 +22,7 @@ describe('di', () => {
     it('should create directive with no deps', () => {
       class Directive {
         value: string = 'Created';
-        static ngDirectiveDef = defineDirective({factory: () => new Directive});
+        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive});
       }
 
       function Template(ctx: any, cm: boolean) {
@@ -42,21 +42,23 @@ describe('di', () => {
     it('should create directive with inter view dependencies', () => {
       class DirectiveA {
         value: string = 'A';
-        static ngDirectiveDef =
-            defineDirective({factory: () => new DirectiveA, features: [PublicFeature]});
+        static ngDirectiveDef = defineDirective(
+            {type: DirectiveA, factory: () => new DirectiveA, features: [PublicFeature]});
       }
 
       class DirectiveB {
         value: string = 'B';
-        static ngDirectiveDef =
-            defineDirective({factory: () => new DirectiveB, features: [PublicFeature]});
+        static ngDirectiveDef = defineDirective(
+            {type: DirectiveB, factory: () => new DirectiveB, features: [PublicFeature]});
       }
 
       class DirectiveC {
         value: string;
         constructor(a: DirectiveA, b: DirectiveB) { this.value = a.value + b.value; }
-        static ngDirectiveDef = defineDirective(
-            {factory: () => new DirectiveC(inject(DirectiveA), inject(DirectiveB))});
+        static ngDirectiveDef = defineDirective({
+          type: DirectiveC,
+          factory: () => new DirectiveC(inject(DirectiveA), inject(DirectiveB))
+        });
       }
 
       function Template(ctx: any, cm: boolean) {
@@ -83,8 +85,11 @@ describe('di', () => {
         constructor(public elementRef: ElementRef) {
           this.value = (elementRef.constructor as any).name;
         }
-        static ngDirectiveDef = defineDirective(
-            {factory: () => new Directive(injectElementRef()), features: [PublicFeature]});
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          factory: () => new Directive(injectElementRef()),
+          features: [PublicFeature]
+        });
       }
 
       class DirectiveSameInstance {
@@ -92,8 +97,10 @@ describe('di', () => {
         constructor(elementRef: ElementRef, directive: Directive) {
           this.value = elementRef === directive.elementRef;
         }
-        static ngDirectiveDef = defineDirective(
-            {factory: () => new DirectiveSameInstance(injectElementRef(), inject(Directive))});
+        static ngDirectiveDef = defineDirective({
+          type: DirectiveSameInstance,
+          factory: () => new DirectiveSameInstance(injectElementRef(), inject(Directive))
+        });
       }
 
       function Template(ctx: any, cm: boolean) {
@@ -116,8 +123,11 @@ describe('di', () => {
         constructor(public templateRef: TemplateRef<any>) {
           this.value = (templateRef.constructor as any).name;
         }
-        static ngDirectiveDef = defineDirective(
-            {factory: () => new Directive(injectTemplateRef()), features: [PublicFeature]});
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          factory: () => new Directive(injectTemplateRef()),
+          features: [PublicFeature]
+        });
       }
 
       class DirectiveSameInstance {
@@ -125,8 +135,10 @@ describe('di', () => {
         constructor(templateRef: TemplateRef<any>, directive: Directive) {
           this.value = templateRef === directive.templateRef;
         }
-        static ngDirectiveDef = defineDirective(
-            {factory: () => new DirectiveSameInstance(injectTemplateRef(), inject(Directive))});
+        static ngDirectiveDef = defineDirective({
+          type: DirectiveSameInstance,
+          factory: () => new DirectiveSameInstance(injectTemplateRef(), inject(Directive))
+        });
       }
 
 
@@ -149,8 +161,11 @@ describe('di', () => {
         constructor(public viewContainerRef: ViewContainerRef) {
           this.value = (viewContainerRef.constructor as any).name;
         }
-        static ngDirectiveDef = defineDirective(
-            {factory: () => new Directive(injectViewContainerRef()), features: [PublicFeature]});
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          factory: () => new Directive(injectViewContainerRef()),
+          features: [PublicFeature]
+        });
       }
 
       class DirectiveSameInstance {
@@ -159,6 +174,7 @@ describe('di', () => {
           this.value = viewContainerRef === directive.viewContainerRef;
         }
         static ngDirectiveDef = defineDirective({
+          type: DirectiveSameInstance,
           factory: () => new DirectiveSameInstance(injectViewContainerRef(), inject(Directive))
         });
       }
@@ -237,8 +253,11 @@ describe('di', () => {
 
     it('should inject from parent view', () => {
       class ParentDirective {
-        static ngDirectiveDef =
-            defineDirective({factory: () => new ParentDirective(), features: [PublicFeature]});
+        static ngDirectiveDef = defineDirective({
+          type: ParentDirective,
+          factory: () => new ParentDirective(),
+          features: [PublicFeature]
+        });
       }
 
       class ChildDirective {
@@ -247,6 +266,7 @@ describe('di', () => {
           this.value = (parent.constructor as any).name;
         }
         static ngDirectiveDef = defineDirective({
+          type: ChildDirective,
           factory: () => new ChildDirective(inject(ParentDirective)),
           features: [PublicFeature]
         });
@@ -257,8 +277,10 @@ describe('di', () => {
         constructor(parent: ParentDirective, child: ChildDirective) {
           this.value = parent === child.parent;
         }
-        static ngDirectiveDef = defineDirective(
-            {factory: () => new Child2Directive(inject(ParentDirective), inject(ChildDirective))});
+        static ngDirectiveDef = defineDirective({
+          type: Child2Directive,
+          factory: () => new Child2Directive(inject(ParentDirective), inject(ChildDirective))
+        });
       }
 
       function Template(ctx: any, cm: boolean) {

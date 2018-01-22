@@ -49,6 +49,7 @@ describe('lifecycles', () => {
         ngOnInit() { events.push(`${name}${this.val}`); }
 
         static ngComponentDef = defineComponent({
+          type: Component,
           tag: name,
           factory: () => new Component(),
           hostBindings: function(directiveIndex: number, elementIndex: number):
@@ -339,6 +340,7 @@ describe('lifecycles', () => {
         ngOnInit() { allEvents.push('ngOnInit ' + name); }
 
         static ngComponentDef = defineComponent({
+          type: Component,
           tag: name,
           factory: () => new Component(),
           hostBindings: function(
@@ -452,8 +454,13 @@ describe('lifecycles', () => {
         }
         ngAfterContentChecked() { allEvents.push(`${name}${this.val} check`); }
 
-        static ngComponentDef = defineComponent(
-            {tag: name, factory: () => new Component(), inputs: {val: 'val'}, template: template});
+        static ngComponentDef = defineComponent({
+          type: Component,
+          tag: name,
+          factory: () => new Component(),
+          inputs: {val: 'val'},
+          template: template,
+        });
       };
     }
 
@@ -516,7 +523,7 @@ describe('lifecycles', () => {
       class Directive {
         ngAfterContentInit() { events.push('dir'); }
 
-        static ngDirectiveDef = defineDirective({factory: () => new Directive()});
+        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
       }
 
       function Template(ctx: any, cm: boolean) {
@@ -816,6 +823,7 @@ describe('lifecycles', () => {
         ngAfterViewChecked() { allEvents.push(`${name}${this.val} check`); }
 
         static ngComponentDef = defineComponent({
+          type: Component,
           tag: name,
           factory: () => new Component(),
           refresh: (directiveIndex: number, elementIndex: number) => {
@@ -1227,8 +1235,13 @@ describe('lifecycles', () => {
         val: string = '';
         ngOnDestroy() { events.push(`${name}${this.val}`); }
 
-        static ngComponentDef = defineComponent(
-            {tag: name, factory: () => new Component(), inputs: {val: 'val'}, template: template});
+        static ngComponentDef = defineComponent({
+          type: Component,
+          tag: name,
+          factory: () => new Component(),
+          inputs: {val: 'val'},
+          template: template
+        });
       };
     }
 
@@ -1677,6 +1690,7 @@ describe('lifecycles', () => {
         ngAfterViewChecked() { events.push(`viewCheck ${name}${this.val}`); }
 
         static ngComponentDef = defineComponent({
+          type: Component,
           tag: name,
           factory: () => new Component(),
           hostBindings: function(directiveIndex: number, elementIndex: number): void {
