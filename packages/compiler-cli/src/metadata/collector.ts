@@ -289,7 +289,7 @@ export class MetadataCollector {
          ts.TypeAliasDeclaration | ts.EnumDeclaration) => exportedIdentifierName(node.name);
 
 
-    // Predeclare classes and functions
+    // Pre-declare classes and functions
     ts.forEachChild(sourceFile, node => {
       switch (node.kind) {
         case ts.SyntaxKind.ClassDeclaration:
@@ -454,7 +454,7 @@ export class MetadataCollector {
                 };
               } else {
                 nextDefaultValue =
-                    recordEntry(errorSym('Unsuppported enum member name', member.name), node);
+                    recordEntry(errorSym('Unsupported enum member name', member.name), node);
               }
             }
             if (writtenMembers) {

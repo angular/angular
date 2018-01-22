@@ -364,7 +364,8 @@ describe('StaticReflector', () => {
       const classData: any = moduleMetadata['InvalidMetadata'];
       expect(classData).toBeDefined();
       simplify(
-          reflector.getStaticSymbol('/tmp/src/invalid-metadata.ts', ''), classData.decorators[0]);
+          reflector.getStaticSymbol('/tmp/src/invalid-metadata.ts', ''),
+          classData.decorators[0].arguments);
     } catch (e) {
       expect(e.position).toBeDefined();
       threw = true;
