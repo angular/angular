@@ -1,11 +1,6 @@
 language: node_js
 dist: trusty
-
-# Temporary set sudo to required, because in normal container-based Travis jobs, the Chrome
-# binaries seem to be owned by root, and therefore can't be accessed by Karma. To workaround
-# the issue we temporary grant the CI sudo permissions.
-# https://github.com/travis-ci/travis-ci/issues/8836#issuecomment-356362524.
-sudo: required
+sudo: false
 
 node_js:
   # Use the explicit NodeJS LTS version 8.9.4 to avoid any automatic upgrade of the version.

@@ -37,6 +37,7 @@ const config = {
 
 if (process.env['TRAVIS']) {
   const key = require('../scripts/saucelabs/sauce_config');
+
   config.sauceUser = process.env['SAUCE_USERNAME'];
   config.sauceKey = key;
   config.capabilities = {
