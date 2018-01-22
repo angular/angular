@@ -48,23 +48,23 @@
           <context context-type="linenumber">21</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="52515023fc70c216ef291086c1962ff135a9fe13" datatype="html">
-        <source>The author is <x id="ICU" equiv-text="{gender, select, m {...} f {...} o {...}}"/></source>
-        <target>L'auteur est <x id="ICU" equiv-text="{gender, select, m {...} f {...} o {...}}"/></target>
+      <trans-unit id="f99f34ac9bd4606345071bd813858dec29f3b7d1" datatype="html">
+        <source>The author is <x id="ICU" equiv-text="{gender, select, male {...} female {...} other {...}}"/></source>
+        <target>L'auteur est <x id="ICU" equiv-text="{gender, select, male {...} female {...} other {...}}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">app\app.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4e6fd3f2bb3477e8ad2088f03257f6e1b8b515a5" datatype="html">
-        <source>{VAR_SELECT, select, m {male} f {female} o {other} }</source>
-        <target>{VAR_SELECT, select, m {un homme} f {une femme} o {autre} }</target>
+      <trans-unit id="eff74b75ab7364b6fa888f1cbfae901aaaf02295" datatype="html">
+        <source>{VAR_SELECT, select, male {male} female {female} other {other} }</source>
+        <target>{VAR_SELECT, select, male {un homme} female {une femme} other {autre} }</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app\app.component.ts</context>
           <context context-type="linenumber">27</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="f7a55c9ef7c5b37147825a9041263305063e63e9" datatype="html">
+      <trans-unit id="972cb0cf3e442f7b1c00d7dab168ac08d6bdf20c" datatype="html">
         <source>Updated: <x id="ICU" equiv-text="{minutes, plural, =0 {...} =1 {...} other {...}}"/>
 </source>
         <target>Mis à jour: <x id="ICU" equiv-text="{minutes, plural, =0 {...} =1 {...} other {...}}"/>
@@ -74,9 +74,9 @@
           <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="80b5ac44661751e191225c0b1e000bceeeccb52c" datatype="html">
-        <source>{VAR_PLURAL, plural, =0 {just now} =1 {one minute ago} other {<x id="INTERPOLATION" equiv-text="{{minutes}}"/> minutes ago by {VAR_SELECT, select, m {male} f {female} o {other} }} }</source>
-        <target>{VAR_PLURAL, plural, =0 {à l'instant} =1 {il y a une minute} other {il y a <x id="INTERPOLATION" equiv-text="{{minutes}}"/> minutes par {VAR_SELECT, select, m {un homme} f {une femme} o {autre} }} }</target>
+      <trans-unit id="7151c2e67748b726f0864fc443861d45df21d706" datatype="html">
+        <source>{VAR_PLURAL, plural, =0 {just now} =1 {one minute ago} other {<x id="INTERPOLATION" equiv-text="{{minutes}}"/> minutes ago by {VAR_SELECT, select, male {male} female {female} other {other} }} }</source>
+        <target>{VAR_PLURAL, plural, =0 {à l'instant} =1 {il y a une minute} other {il y a <x id="INTERPOLATION" equiv-text="{{minutes}}"/> minutes par {VAR_SELECT, select, male {un homme} female {une femme} other {autre} }} }</target>
         <context-group purpose="location">
           <context context-type="sourcefile">app\app.component.ts</context>
           <context context-type="linenumber">31</context>
