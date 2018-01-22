@@ -29,6 +29,8 @@ class StackblitzBuilder {
   }
 
   build() {
+    this._checkForOutdatedConfig();
+
     // When testing it sometimes helps to look a just one example directory like so:
     // var stackblitzPaths = path.join(this.basePath, '**/testing/*stackblitz.json');
     var stackblitzPaths = path.join(this.basePath, '**/*stackblitz.json');
@@ -62,7 +64,7 @@ class StackblitzBuilder {
   //   description: string - description of this stackblitz - defaults to the title in the index.html page.
   //   tags: string[] - optional array of stackblitz tags (for searchability)
   //   main: string - name of file that will become index.html in the stackblitz - defaults to index.html
-  //   file: string - name of file to display within the stackblitz as in "open": "app/app.module.ts"
+  //   file: string - name of file to display within the stackblitz (e.g. `"file": "app/app.module.ts"`)
   _buildStackblitzFrom(configFileName) {
     // replace ending 'stackblitz.json' with 'stackblitz.no-link.html' to create output file name;
     var outputFileName = `stackblitz.no-link.html`;
@@ -74,7 +76,7 @@ class StackblitzBuilder {
     }
     try {
       var config = this._initConfigAndCollectFileNames(configFileName);
-      var postData = this._createPostData(config);
+      var postData = this._createPostData(config, configFileName);
       this._addDependencies(postData);
       var html = this._createStackblitzHtml(config, postData);
       fs.writeFileSync(outputFileName, html, 'utf-8');
@@ -92,6 +94,24 @@ class StackblitzBuilder {
         fs.unlinkSync(altFileName);
       }
       throw e;
+    }
+  }
+
+  _checkForOutdatedConfig() {
+    // Ensure that nobody is trying to use the old config filenames (i.e. `plnkr.json`).
+    var plunkerPaths = path.join(this.basePath, '**/*plnkr.json');
+    var fileNames = globby.sync(plunkerPaths, { ignore: ['**/node_modules/**'] });
+
+    if (fileNames.length) {
+      const readmePath = path.join(__dirname, 'README.md');
+      const errorMessage =
+          'One or more examples are still trying to use \'plnkr.json\' files for configuring ' +
+          'live examples. This is not supported any more. \'stackblitz.json\' should be used ' +
+          'instead.\n' +
+          `(Slight modifications may be required. See '${readmePath}' for more info.\n\n` +
+          fileNames.map(name => `- ${name}`).join('\n');
+
+      throw Error(errorMessage);
     }
   }
 
@@ -122,8 +142,14 @@ class StackblitzBuilder {
     return html;
   }
 
-  _createPostData(config) {
+  _createPostData(config, configFileName) {
     var postData = {};
+
+    // If `config.main` is specified, ensure that it points to an existing file.
+    if (config.main && !this._existsSync(path.join(config.basePath, config.main))) {
+      throw Error(`The main file ('${config.main}') specified in '${configFileName}' does not exist.`);
+    }
+
     config.fileNames.forEach((fileName) => {
       var content;
       var extn = path.extname(fileName);
