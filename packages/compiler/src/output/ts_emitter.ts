@@ -269,15 +269,23 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
+    if (ast.name) {
+      ctx.print(ast, 'function ');
+      ctx.print(ast, ast.name);
+    }
     ctx.print(ast, `(`);
     this._visitParams(ast.params, ctx);
     ctx.print(ast, `)`);
     this._printColonType(ast.type, ctx, 'void');
-    ctx.println(ast, ` => {`);
+    if (!ast.name) {
+      ctx.print(ast, ` => `);
+    }
+    ctx.println(ast, '{');
     ctx.incIndent();
     this.visitAllStatements(ast.statements, ctx);
     ctx.decIndent();
     ctx.print(ast, `}`);
+
     return null;
   }
 
@@ -314,7 +322,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitBuiltintType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
+  visitBuiltinType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
     let typeStr: string;
     switch (type.name) {
       case o.BuiltinTypeName.Bool:
