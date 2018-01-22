@@ -20,6 +20,7 @@ describe('component', () => {
     increment() { this.count++; }
 
     static ngComponentDef = defineComponent({
+      type: CounterComponent,
       tag: 'counter',
       template: function(ctx: CounterComponent, cm: boolean) {
         if (cm) {
@@ -63,6 +64,7 @@ describe('component', () => {
 describe('encapsulation', () => {
   class WrapperComponent {
     static ngComponentDef = defineComponent({
+      type: WrapperComponent,
       tag: 'wrapper',
       template: function(ctx: WrapperComponent, cm: boolean) {
         if (cm) {
@@ -78,6 +80,7 @@ describe('encapsulation', () => {
 
   class EncapsulatedComponent {
     static ngComponentDef = defineComponent({
+      type: EncapsulatedComponent,
       tag: 'encapsulated',
       template: function(ctx: EncapsulatedComponent, cm: boolean) {
         if (cm) {
@@ -96,6 +99,7 @@ describe('encapsulation', () => {
 
   class LeafComponent {
     static ngComponentDef = defineComponent({
+      type: LeafComponent,
       tag: 'leaf',
       template: function(ctx: LeafComponent, cm: boolean) {
         if (cm) {
@@ -125,6 +129,7 @@ describe('encapsulation', () => {
   it('should encapsulate host and children with different attributes', () => {
     class WrapperComponentWith {
       static ngComponentDef = defineComponent({
+        type: WrapperComponentWith,
         tag: 'wrapper',
         template: function(ctx: WrapperComponentWith, cm: boolean) {
           if (cm) {
@@ -142,6 +147,7 @@ describe('encapsulation', () => {
 
     class LeafComponentwith {
       static ngComponentDef = defineComponent({
+        type: LeafComponentwith,
         tag: 'leaf',
         template: function(ctx: LeafComponentwith, cm: boolean) {
           if (cm) {

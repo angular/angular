@@ -14,7 +14,7 @@ import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
 import {componentRefresh} from './instructions';
-import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, TypedDirectiveDef} from './interfaces/definition';
+import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, LifecycleHooksMap} from './interfaces/definition';
 
 
 
@@ -35,6 +35,7 @@ import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, TypedDir
  */
 export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): ComponentDef<T> {
   const def = <ComponentDef<any>>{
+    type: componentDefinition.type,
     diPublic: null,
     n: componentDefinition.factory,
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
@@ -50,6 +51,7 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     methods: invertObject(componentDefinition.methods),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
     exportAs: componentDefinition.exportAs,
+    lifecycleHooks: getLifecyleHooksMap<T>(componentDefinition.type)
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -65,7 +67,7 @@ type OnChangesExpando = OnChanges & {
 };
 
 export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<any>) => void {
-  return function(definition: DirectiveDef<any>): void {
+  return function (definition: DirectiveDef<any>): void {
     const inputs = definition.inputs;
     const proto = type.prototype;
     // Place where we will store SimpleChanges if there is a change
@@ -80,11 +82,11 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
 
       // create a getter and setter for property
       Object.defineProperty(proto, minKey, {
-        get: function(this: OnChangesExpando) {
+        get: function (this: OnChangesExpando) {
           return (existingDesc && existingDesc.get) ? existingDesc.get.call(this) :
-                                                      this[privateMinKey];
+            this[privateMinKey];
         },
-        set: function(this: OnChangesExpando, value: any) {
+        set: function (this: OnChangesExpando, value: any) {
           let simpleChanges = this[PRIVATE_PREFIX];
           let isFirstChange = simpleChanges === undefined;
           if (simpleChanges == null) {
@@ -92,12 +94,12 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
           }
           simpleChanges[pubKey] = new SimpleChange(this[privateMinKey], value, isFirstChange);
           (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
-                                               this[privateMinKey] = value;
+            this[privateMinKey] = value;
         }
       });
     }
-    proto.ngDoCheck = (function(delegateDoCheck) {
-      return function(this: OnChangesExpando) {
+    proto.ngDoCheck = (function (delegateDoCheck) {
+      return function (this: OnChangesExpando) {
         let simpleChanges = this[PRIVATE_PREFIX];
         if (simpleChanges != null) {
           this.ngOnChanges(simpleChanges);
@@ -108,6 +110,25 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
     })(proto.ngDoCheck);
   };
 }
+
+/**
+ * Takes the component type and returns a formatted map of lifecycle hooks for that
+ * component.
+ *
+ * @param type The component type
+ */
+function getLifecyleHooksMap<T>(type: Type<T>): LifecycleHooksMap {
+  return {
+    onInit: type.prototype.ngOnInit || null,
+    doCheck: type.prototype.ngDoCheck || null,
+    afterContentInit: type.prototype.ngAfterContentInit || null,
+    afterContentChecked: type.prototype.ngAfterContentChecked || null,
+    afterViewInit: type.prototype.ngAfterViewInit || null,
+    afterViewChecked: type.prototype.ngAfterViewChecked || null,
+    onDestroy: type.prototype.ngOnDestroy || null,
+  };
+}
+
 
 export function PublicFeature<T>(definition: DirectiveDef<T>) {
   definition.diPublic = diPublic;
