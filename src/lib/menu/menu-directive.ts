@@ -102,7 +102,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
 
   /** Position of the menu in the X axis. */
   @Input()
-  get xPosition() { return this._xPosition; }
+  get xPosition(): MenuPositionX { return this._xPosition; }
   set xPosition(value: MenuPositionX) {
     if (value !== 'before' && value !== 'after') {
       throwMatMenuInvalidPositionX();
@@ -113,7 +113,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
 
   /** Position of the menu in the Y axis. */
   @Input()
-  get yPosition() { return this._yPosition; }
+  get yPosition(): MenuPositionY { return this._yPosition; }
   set yPosition(value: MenuPositionY) {
     if (value !== 'above' && value !== 'below') {
       throwMatMenuInvalidPositionY();
@@ -168,7 +168,8 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
   get classList(): string { return this.panelClass; }
 
   /** Event emitted when the menu is closed. */
-  @Output() closed = new EventEmitter<void | 'click' | 'keydown'>();
+  @Output() closed: EventEmitter<void | 'click' | 'keydown'>
+      = new EventEmitter<void | 'click' | 'keydown'>();
 
   /**
    * Event emitted when the menu is closed.
@@ -231,7 +232,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
    * Focus the first item in the menu. This method is used by the menu trigger
    * to focus the first item when the menu is opened by the ENTER key.
    */
-  focusFirstItem() {
+  focusFirstItem(): void {
     this._keyManager.setFirstItemActive();
   }
 

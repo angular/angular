@@ -139,7 +139,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   /** The side that the drawer is attached to. */
   @Input()
   get position(): 'start' | 'end' { return this._position; }
-  set position(value) {
+  set position(value: 'start' | 'end') {
     // Make sure we have a valid value.
     value = value === 'end' ? 'end' : 'start';
     if (value != this._position) {
@@ -153,12 +153,12 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   /** @deprecated */
   @Input()
   get align(): 'start' | 'end' { return this.position; }
-  set align(value) { this.position = value; }
+  set align(value: 'start' | 'end') { this.position = value; }
 
   /** Mode of the drawer; one of 'over', 'push' or 'side'. */
   @Input()
   get mode(): 'over' | 'push' | 'side' { return this._mode; }
-  set mode(value) {
+  set mode(value: 'over' | 'push' | 'side') {
     this._mode = value;
     this._modeChanged.next();
   }
@@ -221,19 +221,19 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
    * Event emitted when the drawer is fully opened.
    * @deprecated Use `opened` instead.
    */
-  @Output('open') onOpen = this._openedStream;
+  @Output('open') onOpen: Observable<void> = this._openedStream;
 
   /**
    * Event emitted when the drawer is fully closed.
    * @deprecated Use `closed` instead.
    */
-  @Output('close') onClose = this._closedStream;
+  @Output('close') onClose: Observable<void> = this._closedStream;
 
   /** Event emitted when the drawer's position changes. */
-  @Output('positionChanged') onPositionChanged = new EventEmitter<void>();
+  @Output('positionChanged') onPositionChanged: EventEmitter<void> = new EventEmitter<void>();
 
   /** @deprecated */
-  @Output('align-changed') onAlignChanged = new EventEmitter<void>();
+  @Output('align-changed') onAlignChanged: EventEmitter<void> = new EventEmitter<void>();
 
   /**
    * An observable that emits when the drawer mode changes. This is used by the drawer container to

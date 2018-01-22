@@ -118,26 +118,26 @@ export class MatPaginator implements OnInit, OnDestroy {
   }
 
   /** Advances to the next page if it exists. */
-  nextPage() {
+  nextPage(): void {
     if (!this.hasNextPage()) { return; }
     this.pageIndex++;
     this._emitPageEvent();
   }
 
   /** Move back to the previous page if it exists. */
-  previousPage() {
+  previousPage(): void {
     if (!this.hasPreviousPage()) { return; }
     this.pageIndex--;
     this._emitPageEvent();
   }
 
   /** Whether there is a previous page. */
-  hasPreviousPage() {
+  hasPreviousPage(): boolean {
     return this.pageIndex >= 1 && this.pageSize != 0;
   }
 
   /** Whether there is a next page. */
-  hasNextPage() {
+  hasNextPage(): boolean {
     const numberOfPages = Math.ceil(this.length / this.pageSize) - 1;
     return this.pageIndex < numberOfPages && this.pageSize != 0;
   }

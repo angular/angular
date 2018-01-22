@@ -58,12 +58,10 @@ export const _MatExpansionPanelMixinBase = mixinDisabled(MatExpansionPanelBase);
 export type MatExpansionPanelState = 'expanded' | 'collapsed';
 
 /**
- * <mat-expansion-panel> component.
+ * <mat-expansion-panel>
  *
  * This component can be used as a single element to show expandable content, or as one of
- * multiple children of an element with the MatAccordion directive attached.
- *
- * Please refer to README.md for examples on how to use it.
+ * multiple children of an element with the MdAccordion directive attached.
  */
 @Component({
   moduleId: module.id,

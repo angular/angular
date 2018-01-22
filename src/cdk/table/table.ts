@@ -171,7 +171,7 @@ export class CdkTable<T> implements CollectionViewer, OnInit, AfterContentChecke
    * Stream containing the latest information on what rows are being displayed on screen.
    * Can be used by the data source to as a heuristic of what data should be provided.
    */
-  viewChange =
+  viewChange: BehaviorSubject<{start: number, end: number}> =
       new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
 
   // Placeholders within the table's template where the header and data rows will be inserted.

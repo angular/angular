@@ -326,7 +326,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Placeholder to be shown if no value has been selected. */
   @Input()
-  get placeholder() { return this._placeholder; }
+  get placeholder(): string { return this._placeholder; }
   set placeholder(value: string) {
     this._placeholder = value;
     this.stateChanges.next();
@@ -334,8 +334,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Whether the component is required. */
   @Input()
-  get required() { return this._required; }
-  set required(value: any) {
+  get required(): boolean { return this._required; }
+  set required(value: boolean) {
     this._required = coerceBooleanProperty(value);
     this.stateChanges.next();
   }
@@ -371,7 +371,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Value of the select control. */
   @Input()
-  get value() { return this._value; }
+  get value(): any { return this._value; }
   set value(newValue: any) {
     if (newValue !== this._value) {
       this.writeValue(newValue);
@@ -391,7 +391,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Unique id of the element. */
   @Input()
-  get id() { return this._id; }
+  get id(): string { return this._id; }
   set id(value: string) {
     this._id = value || this._uid;
     this.stateChanges.next();
@@ -450,7 +450,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * to facilitate the two-way binding for the `value` input.
    * @docs-private
    */
-  @Output() valueChange = new EventEmitter<any>();
+  @Output() valueChange: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private _viewportRuler: ViewportRuler,
@@ -1201,19 +1201,28 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     return this._triggerFontSize * SELECT_ITEM_HEIGHT_EM;
   }
 
-  // Implemented as part of MatFormFieldControl.
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   setDescribedByIds(ids: string[]) {
     this._ariaDescribedby = ids.join(' ');
   }
 
-  // Implemented as part of MatFormFieldControl.
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
   onContainerClick() {
     this.focus();
     this.open();
   }
 
-  // Implemented as part of MatFormFieldControl.
-  get shouldLabelFloat(): boolean {
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+  get shouldPlaceholderFloat(): boolean {
     return this._panelOpen || !this.empty;
   }
 }

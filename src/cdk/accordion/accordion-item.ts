@@ -32,13 +32,13 @@ let nextId = 0;
 })
 export class CdkAccordionItem implements OnDestroy {
   /** Event emitted every time the AccordionItem is closed. */
-  @Output() closed = new EventEmitter<void>();
+  @Output() closed: EventEmitter<void> = new EventEmitter<void>();
   /** Event emitted every time the AccordionItem is opened. */
-  @Output() opened = new EventEmitter<void>();
+  @Output() opened: EventEmitter<void> = new EventEmitter<void>();
   /** Event emitted when the AccordionItem is destroyed. */
-  @Output() destroyed = new EventEmitter<void>();
+  @Output() destroyed: EventEmitter<void> = new EventEmitter<void>();
   /** The unique AccordionItem id. */
-  readonly id = `cdk-accordion-child-${nextId++}`;
+  readonly id: string = `cdk-accordion-child-${nextId++}`;
 
   /** Whether the AccordionItem is expanded. */
   @Input()

@@ -96,8 +96,8 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
 
   /** Whether the required marker should be hidden. */
   @Input()
-  get hideRequiredMarker() { return this._hideRequiredMarker; }
-  set hideRequiredMarker(value: any) {
+  get hideRequiredMarker(): boolean { return this._hideRequiredMarker; }
+  set hideRequiredMarker(value: boolean) {
     this._hideRequiredMarker = coerceBooleanProperty(value);
   }
   private _hideRequiredMarker: boolean;
@@ -118,7 +118,7 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
 
   /** Text for the form field hint. */
   @Input()
-  get hintLabel() { return this._hintLabel; }
+  get hintLabel(): string { return this._hintLabel; }
   set hintLabel(value: string) {
     this._hintLabel = value;
     this._processHints();
@@ -133,12 +133,12 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
    * @deprecated Use floatLabel instead.
    */
   @Input()
-  get floatPlaceholder() { return this._floatLabel; }
+  get floatPlaceholder(): FloatLabelType { return this._floatLabel; }
   set floatPlaceholder(value: FloatLabelType) { this.floatLabel = value; }
 
   /** Whether the label should always float, never float or float as the user types. */
   @Input()
-  get floatLabel() { return this._floatLabel; }
+  get floatLabel(): FloatLabelType { return this._floatLabel; }
   set floatLabel(value: FloatLabelType) {
     if (value !== this._floatLabel) {
       this._floatLabel = value || this._labelOptions.float || 'auto';

@@ -20,5 +20,5 @@ export class MatStepperIntl {
   changes: Subject<void> = new Subject<void>();
 
   /** Label that is rendered below optional steps. */
-  optionalLabel = 'Optional';
+  optionalLabel: string = 'Optional';
 }

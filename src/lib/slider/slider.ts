@@ -138,15 +138,15 @@ export class MatSlider extends _MatSliderMixinBase
     implements ControlValueAccessor, OnDestroy, CanDisable, CanColor, OnInit, HasTabIndex {
   /** Whether the slider is inverted. */
   @Input()
-  get invert() { return this._invert; }
-  set invert(value: any) {
+  get invert(): boolean { return this._invert; }
+  set invert(value: boolean) {
     this._invert = coerceBooleanProperty(value);
   }
   private _invert = false;
 
   /** The maximum value that the slider can have. */
   @Input()
-  get max() { return this._max; }
+  get max(): number { return this._max; }
   set max(v: number) {
     this._max = coerceNumberProperty(v, this._max);
     this._percent = this._calculatePercentage(this._value);
@@ -158,7 +158,7 @@ export class MatSlider extends _MatSliderMixinBase
 
   /** The minimum value that the slider can have. */
   @Input()
-  get min() { return this._min; }
+  get min(): number { return this._min; }
   set min(v: number) {
     this._min = coerceNumberProperty(v, this._min);
 
@@ -175,7 +175,7 @@ export class MatSlider extends _MatSliderMixinBase
 
   /** The values at which the thumb will snap. */
   @Input()
-  get step() { return this._step; }
+  get step(): number { return this._step; }
   set step(v: number) {
     this._step = coerceNumberProperty(v, this._step);
 
@@ -191,7 +191,7 @@ export class MatSlider extends _MatSliderMixinBase
   /** Whether or not to show the thumb label. */
   @Input()
   get thumbLabel(): boolean { return this._thumbLabel; }
-  set thumbLabel(value) { this._thumbLabel = coerceBooleanProperty(value); }
+  set thumbLabel(value: boolean) { this._thumbLabel = coerceBooleanProperty(value); }
   private _thumbLabel: boolean = false;
 
   /** @deprecated */
@@ -223,7 +223,7 @@ export class MatSlider extends _MatSliderMixinBase
 
   /** Value of the slider. */
   @Input()
-  get value() {
+  get value(): number | null {
     // If the value needs to be read and it is still uninitialized, initialize it to the min.
     if (this._value === null) {
       this.value = this._min;
@@ -243,17 +243,17 @@ export class MatSlider extends _MatSliderMixinBase
 
   /** Whether the slider is vertical. */
   @Input()
-  get vertical() { return this._vertical; }
-  set vertical(value: any) {
+  get vertical(): boolean { return this._vertical; }
+  set vertical(value: boolean) {
     this._vertical = coerceBooleanProperty(value);
   }
   private _vertical = false;
 
   /** Event emitted when the slider value has changed. */
-  @Output() change = new EventEmitter<MatSliderChange>();
+  @Output() change: EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
 
   /** Event emitted when the slider thumb moves. */
-  @Output() input = new EventEmitter<MatSliderChange>();
+  @Output() input: EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
 
   /** The value to be used for display purposes. */
   get displayValue(): string | number {

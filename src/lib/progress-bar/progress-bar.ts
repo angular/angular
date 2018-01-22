@@ -44,14 +44,14 @@ export class MatProgressBar {
 
   /** Value of the progressbar. Defaults to zero. Mirrored to aria-valuenow. */
   @Input()
-  get value() { return this._value; }
+  get value(): number { return this._value; }
   set value(v: number) { this._value = clamp(v || 0); }
 
   private _bufferValue: number = 0;
 
   /** Buffer value of the progress bar. Defaults to zero. */
   @Input()
-  get bufferValue() { return this._bufferValue; }
+  get bufferValue(): number { return this._bufferValue; }
   set bufferValue(v: number) { this._bufferValue = clamp(v || 0); }
 
   /**

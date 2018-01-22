@@ -171,13 +171,14 @@ export class CdkStepper implements OnDestroy {
 
   /** The step that is selected. */
   @Input()
-  get selected() { return this._steps.toArray()[this.selectedIndex]; }
+  get selected(): CdkStep { return this._steps.toArray()[this.selectedIndex]; }
   set selected(step: CdkStep) {
     this.selectedIndex = this._steps.toArray().indexOf(step);
   }
 
   /** Event emitted when the selected step has changed. */
-  @Output() selectionChange = new EventEmitter<StepperSelectionEvent>();
+  @Output() selectionChange: EventEmitter<StepperSelectionEvent>
+      = new EventEmitter<StepperSelectionEvent>();
 
   /** The index of the step that the focus can be set. */
   _focusIndex: number = 0;

@@ -221,12 +221,12 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   }
 
   /** Focuses the slide-toggle. */
-  focus() {
+  focus(): void {
     this._focusMonitor.focusVia(this._inputElement.nativeElement, 'keyboard');
   }
 
   /** Toggles the checked state of the slide-toggle. */
-  toggle() {
+  toggle(): void {
     this.checked = !this.checked;
   }
 
@@ -326,7 +326,7 @@ class SlideToggleRenderer {
   }
 
   /** Initializes the drag of the slide-toggle. */
-  startThumbDrag(checked: boolean) {
+  startThumbDrag(checked: boolean): void {
     if (this.dragging) { return; }
 
     this._thumbBarWidth = this._thumbBarEl.clientWidth - this._thumbEl.clientWidth;
@@ -350,7 +350,7 @@ class SlideToggleRenderer {
   }
 
   /** Updates the thumb containers position from the specified distance. */
-  updateThumbPosition(distance: number) {
+  updateThumbPosition(distance: number): void {
     this.dragPercentage = this._getDragPercentage(distance);
     // Calculate the moved distance based on the thumb bar width.
     let dragX = (this.dragPercentage / 100) * this._thumbBarWidth;
