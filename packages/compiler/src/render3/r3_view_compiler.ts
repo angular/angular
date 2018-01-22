@@ -20,8 +20,6 @@ import {OutputContext, error} from '../util';
 
 import {Identifiers as R3} from './r3_identifiers';
 
-
-
 /** Name of the context parameter passed into a template function */
 const CONTEXT_NAME = 'ctx';
 
@@ -89,14 +87,17 @@ export function compileComponent(
     }
   }
 
-  // e.g. `factory: () => new MyApp(injectElementRef())`
+  // e.g. `factory: function MyApp_Factory() { return new MyApp(injectElementRef()); }`
   const templateFactory = createFactory(component.type, outputCtx, reflector);
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
 
-  // e.g. `template: function(_ctx, _cm) {...}`
+  // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
+  const templateTypeName = component.type.reference.name;
+  const templateName = templateTypeName ? `${templateTypeName}_Template` : null;
   const templateFunctionExpression =
       new TemplateDefinitionBuilder(
-          outputCtx, outputCtx.constantPool, CONTEXT_NAME, ROOT_SCOPE.nestedScope())
+          outputCtx, outputCtx.constantPool, reflector, CONTEXT_NAME, ROOT_SCOPE.nestedScope(), 0,
+          templateTypeName, templateName)
           .buildTemplateFunction(template);
   definitionMapValues.push({key: 'template', value: templateFunctionExpression, quoted: false});
 
@@ -218,7 +219,9 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
   constructor(
       private outputCtx: OutputContext, private constantPool: ConstantPool,
-      private contextParameter: string, private bindingScope: BindingScope, private level = 0) {}
+      private reflector: CompileReflector, private contextParameter: string,
+      private bindingScope: BindingScope, private level = 0, private contextName: string|null,
+      private templateName: string|null) {}
 
   buildTemplateFunction(asts: TemplateAst[]): o.FunctionExpr {
     templateVisitAll(this, asts);
@@ -246,7 +249,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
           // Nested templates (i.e. function CompTemplate() {})
           ...this._postfix
         ],
-        o.INFERRED_TYPE);
+        o.INFERRED_TYPE, null, this.templateName);
   }
 
   getLocal(name: string): o.Expression|null { return this.bindingScope.get(name); }
@@ -407,7 +410,17 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst) {
     const templateIndex = this.allocateDataSlot();
 
-    const templateName = `C${templateIndex}Template`;
+    const templateRef = this.reflector.resolveExternalReference(Identifiers.TemplateRef);
+    const templateDirective = ast.directives.find(
+        directive => directive.directive.type.diDeps.some(
+            dependency =>
+                dependency.token != null && (tokenReference(dependency.token) == templateRef)));
+    const contextName =
+        this.contextName && templateDirective && templateDirective.directive.type.reference.name ?
+        `${this.contextName}_${templateDirective.directive.type.reference.name}` :
+        null;
+    const templateName =
+        contextName ? `${contextName}_Template_${templateIndex}` : `Template_${templateIndex}`;
     const templateContext = `ctx${this.level}`;
 
     const {directivesArray, directiveIndexMap} = this._computeDirectivesArray(ast.directives);
@@ -430,8 +443,8 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
 
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
-        this.outputCtx, this.constantPool, templateContext, this.bindingScope.nestedScope(),
-        this.level + 1);
+        this.outputCtx, this.constantPool, this.reflector, templateContext,
+        this.bindingScope.nestedScope(), this.level + 1, contextName, templateName);
     const templateFunctionExpr = templateVisitor.buildTemplateFunction(ast.children);
     this._postfix.push(templateFunctionExpr.toDeclStmt(templateName, null));
   }
@@ -539,7 +552,7 @@ function createFactory(
   return o.fn(
       [],
       [new o.ReturnStatement(new o.InstantiateExpr(outputCtx.importExpr(type.reference), args))],
-      o.INFERRED_TYPE);
+      o.INFERRED_TYPE, null, type.reference.name ? `${type.reference.name}_Factory` : null);
 }
 
 function invalid<T>(arg: o.Expression | o.Statement | TemplateAst): never {

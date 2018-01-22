@@ -30,10 +30,10 @@ export class TypeScriptNodeEmitter {
       const commentStmt = this.createCommentStatement(sourceFile, preamble);
       preambleStmts.push(commentStmt);
     }
-    const sourceStatments =
+    const sourceStatements =
         [...preambleStmts, ...converter.getReexports(), ...converter.getImports(), ...statements];
-    converter.updateSourceMap(sourceStatments);
-    const newSourceFile = ts.updateSourceFileNode(sourceFile, sourceStatments);
+    converter.updateSourceMap(sourceStatements);
+    const newSourceFile = ts.updateSourceFileNode(sourceFile, sourceStatements);
     return [newSourceFile, converter.getNodeMap()];
   }
 
@@ -143,7 +143,7 @@ function firstAfter<T>(a: T[], predicate: (value: T) => boolean) {
   return index;
 }
 
-// A recorded node is a subtype of the node that is marked as being recoreded. This is used
+// A recorded node is a subtype of the node that is marked as being recorded. This is used
 // to ensure that NodeEmitterVisitor.record has been called on all nodes returned by the
 // NodeEmitterVisitor
 type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any; }) | null;
@@ -498,7 +498,8 @@ class _NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
   visitFunctionExpr(expr: FunctionExpr) {
     return this.record(
         expr, ts.createFunctionExpression(
-                  /* modifiers */ undefined, /* astriskToken */ undefined, /* name */ undefined,
+                  /* modifiers */ undefined, /* astriskToken */ undefined,
+                  /* name */ expr.name || undefined,
                   /* typeParameters */ undefined,
                   expr.params.map(
                       p => ts.createParameter(
