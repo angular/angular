@@ -1,11 +1,10 @@
 {
   "description": "Lazy Loading Feature Modules",
-  "basePath": "src/",
   "files": [
     "!**/*.d.ts",
     "!**/*.js",
     "!**/*.[1,2].*"
   ],
-  "open": "app/app.component.ts",
+  "file": "src/app/app.component.ts",
   "tags": ["lazy loading"]
 }
