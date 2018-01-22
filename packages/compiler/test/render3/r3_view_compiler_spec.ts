@@ -124,11 +124,11 @@ describe('r3_view_compiler', () => {
         };
 
         // The factory should look like this:
-        const factory = 'factory: () => { return new MyComponent(); }';
+        const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
 
         // The template should look like this (where IDENT is a wild card for an identifier):
         const template = `
-          template: (ctx: IDENT, cm: IDENT) => {
+          template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
               IDENT.ɵE(0, 'div', IDENT);
               IDENT.ɵT(1, 'Hello ');
@@ -179,8 +179,8 @@ describe('r3_view_compiler', () => {
       const ChildComponentDefinition = `
         static ngComponentDef = IDENT.ɵdefineComponent({
           tag: 'child',
-          factory: () => { return new ChildComponent(); },
-          template: (ctx: IDENT, cm: IDENT) => {
+          factory: function ChildComponent_Factory() { return new ChildComponent(); },
+          template: function ChildComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
               IDENT.ɵT(0, 'child-view');
             }
@@ -190,7 +190,7 @@ describe('r3_view_compiler', () => {
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
         static ngDirectiveDef = IDENT.ɵdefineDirective({
-          factory: () => {return new SomeDirective(); }
+          factory: function SomeDirective_Factory() {return new SomeDirective(); }
         });
       `;
 
@@ -198,8 +198,8 @@ describe('r3_view_compiler', () => {
       const MyComponentDefinition = `
         static ngComponentDef = IDENT.ɵdefineComponent({
           tag: 'my-component',
-          factory: () => { return new MyComponent(); },
-          template: (ctx: IDENT, cm: IDENT) => {
+          factory: function MyComponent_Factory() { return new MyComponent(); },
+          template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
               IDENT.ɵE(0, ChildComponent, IDENT, IDENT);
               IDENT.ɵe();
@@ -253,16 +253,16 @@ describe('r3_view_compiler', () => {
 
       const IfDirectiveDefinition = `
         static ngDirectiveDef = IDENT.ɵdefineDirective({
-          factory: () => { return new IfDirective(IDENT.ɵinjectTemplateRef()); }
+          factory: function IfDirective_Factory() { return new IfDirective(IDENT.ɵinjectTemplateRef()); }
         });`;
       const MyComponentDefinition = `
         static ngComponentDef = IDENT.ɵdefineComponent({
           tag: 'my-component',
-          factory: () => { return new MyComponent(); },
-          template: (ctx: IDENT, cm: IDENT) => {
+          factory: function MyComponent_Factory() { return new MyComponent(); },
+          template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
               IDENT.ɵE(0, 'ul', null, null, IDENT);
-              IDENT.ɵC(2, IDENT, C2Template);
+              IDENT.ɵC(2, IDENT, MyComponent_IfDirective_Template_2);
               IDENT.ɵe();
             }
             const IDENT = IDENT.ɵm(1);
@@ -270,7 +270,7 @@ describe('r3_view_compiler', () => {
             IfDirective.ngDirectiveDef.r(3,2);
             IDENT.ɵcr();
 
-            function C2Template(ctx0: IDENT, cm: IDENT) {
+            function MyComponent_IfDirective_Template_2(ctx0: IDENT, cm: IDENT) {
               if (cm) {
                 IDENT.ɵE(0, 'li');
                 IDENT.ɵT(1);
@@ -310,8 +310,8 @@ describe('r3_view_compiler', () => {
       const MyComponentDefinition = `
         static ngComponentDef = IDENT.ɵdefineComponent({
           tag: 'my-component',
-          factory: () => { return new MyComponent(); },
-          template: (ctx: IDENT, cm: IDENT) => {
+          factory: function MyComponent_Factory() { return new MyComponent(); },
+          template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
             if (cm) {
               IDENT.ɵE(0, 'input', null, null, IDENT);
               IDENT.ɵe();
@@ -323,9 +323,7 @@ describe('r3_view_compiler', () => {
         });
       `;
 
-      const locals = `
-        const IDENT = ['user', ''];
-      `;
+      const locals = `const IDENT = ['user', ''];`;
 
       const result = compile(files, angularFiles);
       const source = result.source;
