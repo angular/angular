@@ -41,7 +41,7 @@ export class BuiltinType extends Type {
     super(modifiers);
   }
   visitType(visitor: TypeVisitor, context: any): any {
-    return visitor.visitBuiltintType(this, context);
+    return visitor.visitBuiltinType(this, context);
   }
 }
 
@@ -79,7 +79,7 @@ export const STRING_TYPE = new BuiltinType(BuiltinTypeName.String);
 export const FUNCTION_TYPE = new BuiltinType(BuiltinTypeName.Function);
 
 export interface TypeVisitor {
-  visitBuiltintType(type: BuiltinType, context: any): any;
+  visitBuiltinType(type: BuiltinType, context: any): any;
   visitExpressionType(type: ExpressionType, context: any): any;
   visitArrayType(type: ArrayType, context: any): any;
   visitMapType(type: MapType, context: any): any;
@@ -487,7 +487,7 @@ export class FnParam {
 export class FunctionExpr extends Expression {
   constructor(
       public params: FnParam[], public statements: Statement[], type?: Type|null,
-      sourceSpan?: ParseSourceSpan|null) {
+      sourceSpan?: ParseSourceSpan|null, public name?: string|null) {
     super(type, sourceSpan);
   }
   isEquivalent(e: Expression): boolean {
@@ -1088,7 +1088,7 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     }
     return ast;
   }
-  visitBuiltintType(type: BuiltinType, context: any): any { return this.visitType(type, context); }
+  visitBuiltinType(type: BuiltinType, context: any): any { return this.visitType(type, context); }
   visitExpressionType(type: ExpressionType, context: any): any {
     type.value.visitExpression(this, context);
     return this.visitType(type, context);
@@ -1369,9 +1369,9 @@ export function assertNotNull(
 }
 
 export function fn(
-    params: FnParam[], body: Statement[], type?: Type | null,
-    sourceSpan?: ParseSourceSpan | null): FunctionExpr {
-  return new FunctionExpr(params, body, type, sourceSpan);
+    params: FnParam[], body: Statement[], type?: Type | null, sourceSpan?: ParseSourceSpan | null,
+    name?: string | null): FunctionExpr {
+  return new FunctionExpr(params, body, type, sourceSpan, name);
 }
 
 export function ifStmt(condition: Expression, thenClause: Statement[], elseClause?: Statement[]) {
