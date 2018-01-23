@@ -92,6 +92,9 @@ fi
   # Include any mode-specific files
   cp -rf src/extra-files/$deployEnv/. dist/
 
+  # Check that the redirects are setup correctly
+  yarn redirects-test
+
   # Check payload size
   yarn payload-size
 
