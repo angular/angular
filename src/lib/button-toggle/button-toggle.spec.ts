@@ -578,6 +578,10 @@ describe('MatButtonToggle without forms', () => {
       expect(document.activeElement).toBe(nativeRadioInput);
     });
 
+    it('should not assign a name to the underlying input if one is not passed in', () => {
+      expect(buttonToggleNativeElement.querySelector('input')!.getAttribute('name')).toBeFalsy();
+    });
+
   });
 
   describe('with provided aria-label ', () => {
