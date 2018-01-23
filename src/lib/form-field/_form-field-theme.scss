@@ -146,10 +146,7 @@ $dedupe: 0;
   $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
 
   .mat-form-field {
-    font-family: mat-font-family($config);
-    font-size: inherit;
-    font-weight: mat-font-weight($config, input);
-    line-height: mat-line-height($config, input);
+    @include mat-typography-level-to-styles($config, input);
   }
 
   .mat-form-field-wrapper {

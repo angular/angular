@@ -32,7 +32,7 @@
   $caption:       mat-typography-level(12px, 20px, 400),
   $button:        mat-typography-level(14px, 14px, 500),
   // Line-height must be unit-less fraction of the font-size.
-  $input:         mat-typography-level(16px, 1.125, 400)
+  $input:         mat-typography-level(inherit, 1.125, 400)
 ) {
 
   // Declare an initial map with all of the levels.
