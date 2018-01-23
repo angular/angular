@@ -29,13 +29,15 @@ export class LowerCasePipe implements PipeTransform {
 
 
 /**
- * Helper method to transform a single word to titlecase.
+ * Helper method to capitalize word.
  *
  * @stable
  */
-function titleCaseWord(word: string) {
-  if (!word) return word;
-  return word[0].toUpperCase() + word.substr(1).toLowerCase();
+function capitalize(word: string) {
+  if (word) {
+    return word[0].toUpperCase() + word.substr(1).toLowerCase();
+  }
+  return word;
 }
 
 /**
@@ -50,8 +52,7 @@ export class TitleCasePipe implements PipeTransform {
     if (typeof value !== 'string') {
       throw invalidPipeArgumentError(TitleCasePipe, value);
     }
-
-    return value.split(/\b/g).map(word => titleCaseWord(word)).join('');
+    return value.split(/\b/g).map(capitalize).join('');
   }
 }
 
