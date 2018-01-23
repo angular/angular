@@ -62,7 +62,6 @@ export class Identifiers {
   static bind6: o.ExternalReference = {name: 'ɵb6', moduleName: CORE};
   static bind7: o.ExternalReference = {name: 'ɵb7', moduleName: CORE};
   static bind8: o.ExternalReference = {name: 'ɵb8', moduleName: CORE};
-  static bind9: o.ExternalReference = {name: 'ɵb9', moduleName: CORE};
   static bindV: o.ExternalReference = {name: 'ɵbV', moduleName: CORE};
 
   static memory: o.ExternalReference = {name: 'ɵm', moduleName: CORE};
