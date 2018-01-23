@@ -2,8 +2,13 @@
 .mat-expansion-panel-header {
   display: flex;
   flex-direction: row;
+  height: 48px;
   align-items: center;
   padding: 0 24px;
+
+  &.mat-expanded {
+    height: 64px;
+  }
 
   &:focus,
   &:hover {
