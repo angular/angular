@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../../src/core';
-import {E, T, b, defineComponent, e, markDirty, t} from '../../src/render3/index';
+import {E, T, b, defineComponent, e, markDirty, r, t} from '../../src/render3/index';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -72,7 +72,7 @@ describe('encapsulation', () => {
           e();
         }
         EncapsulatedComponent.ngComponentDef.h(1, 0);
-        EncapsulatedComponent.ngComponentDef.r(1, 0);
+        r(1, 0);
       },
       factory: () => new WrapperComponent,
     });
@@ -89,7 +89,7 @@ describe('encapsulation', () => {
           e();
         }
         LeafComponent.ngComponentDef.h(2, 1);
-        LeafComponent.ngComponentDef.r(2, 1);
+        r(2, 1);
       },
       factory: () => new EncapsulatedComponent,
       rendererType:
@@ -137,7 +137,7 @@ describe('encapsulation', () => {
             e();
           }
           LeafComponentwith.ngComponentDef.h(1, 0);
-          LeafComponentwith.ngComponentDef.r(1, 0);
+          r(1, 0);
         },
         factory: () => new WrapperComponentWith,
         rendererType:

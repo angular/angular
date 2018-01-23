@@ -205,8 +205,8 @@ describe('r3_view_compiler', () => {
               IDENT.ɵe();
               IDENT.ɵT(3, '!');
             }
-            ChildComponent.ngComponentDef.r(1, 0);
-            SomeDirective.ngDirectiveDef.r(2, 0);
+            r(1, 0);
+            r(2, 0);
           }
         });
       `;
@@ -267,7 +267,7 @@ describe('r3_view_compiler', () => {
             }
             const IDENT = IDENT.ɵm(1);
             IDENT.ɵcR(2);
-            IfDirective.ngDirectiveDef.r(3,2);
+            r(3,2);
             IDENT.ɵcr();
 
             function MyComponent_IfDirective_Template_2(ctx0: IDENT, cm: IDENT) {

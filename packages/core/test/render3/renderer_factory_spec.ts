@@ -10,7 +10,7 @@ import {AnimationEvent} from '@angular/animations';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
-import {E, L, T, b, defineComponent, detectChanges, e, p} from '../../src/render3/index';
+import {E, L, T, b, defineComponent, detectChanges, e, p, r} from '../../src/render3/index';
 import {createRendererType2} from '../../src/view/index';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
@@ -67,7 +67,7 @@ describe('renderer factory lifecycle', () => {
       e();
     }
     SomeComponent.ngComponentDef.h(2, 1);
-    SomeComponent.ngComponentDef.r(2, 1);
+    r(2, 1);
   }
 
   beforeEach(() => { logs = []; });

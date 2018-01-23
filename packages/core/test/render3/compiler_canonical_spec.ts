@@ -98,8 +98,8 @@ describe('compiler specification', () => {
               r3.e();
               r3.T(3, '!');
             }
-            ChildComponent.ngComponentDef.r(1, 0);
-            SomeDirective.ngDirectiveDef.r(2, 0);
+            r3.r(1, 0);
+            r3.r(2, 0);
           }
         });
         // /NORMATIVE
@@ -146,7 +146,7 @@ describe('compiler specification', () => {
             }
             let foo = r3.m<any>(1);
             r3.cR(2);
-            IfDirective.ngDirectiveDef.r(3, 2);
+            r3.r(3, 2);
             r3.cr();
 
             function C1(ctx1: any, cm: boolean) {

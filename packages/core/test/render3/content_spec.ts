@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, P, T, V, cR, cr, detectChanges, e, m, pD, v} from '../../src/render3/index';
+import {C, E, P, T, V, cR, cr, detectChanges, e, m, pD, r, v} from '../../src/render3/index';
 
 import {createComponent, renderComponent, toHtml} from './render_util';
 
@@ -35,7 +35,7 @@ describe('content projection', () => {
         e();
       }
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
@@ -55,7 +55,7 @@ describe('content projection', () => {
         e();
       }
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content</child>');
@@ -77,7 +77,7 @@ describe('content projection', () => {
         { P(3, 0); }
         e();
         GrandChild.ngComponentDef.h(2, 1);
-        GrandChild.ngComponentDef.r(2, 1);
+        r(2, 1);
       }
     });
     const Parent = createComponent('parent', function(ctx: any, cm: boolean) {
@@ -92,7 +92,7 @@ describe('content projection', () => {
         e();
       }
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
@@ -133,8 +133,8 @@ describe('content projection', () => {
       }
       Child.ngComponentDef.h(1, 0);
       ProjectedComp.ngComponentDef.h(3, 2);
-      ProjectedComp.ngComponentDef.r(3, 2);
-      Child.ngComponentDef.r(1, 0);
+      r(3, 2);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
@@ -171,7 +171,7 @@ describe('content projection', () => {
       }
       cr();
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>()</div></child>');
@@ -207,7 +207,7 @@ describe('content projection', () => {
       }
       cr();
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child></child>');
@@ -256,7 +256,7 @@ describe('content projection', () => {
       }
       cr();
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>(else)</div></child>');
@@ -314,7 +314,7 @@ describe('content projection', () => {
         e();
       }
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div><span>content</span></div></child>');
@@ -367,7 +367,7 @@ describe('content projection', () => {
            e();
          }
          Child.ngComponentDef.h(1, 0);
-         Child.ngComponentDef.r(1, 0);
+         r(1, 0);
        });
        const parent = renderComponent(Parent);
        expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
@@ -404,7 +404,7 @@ describe('content projection', () => {
         e();
       }
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div></div><span>content</span></child>');
@@ -462,7 +462,7 @@ describe('content projection', () => {
         e();
       }
       Child.ngComponentDef.h(1, 0);
-      Child.ngComponentDef.r(1, 0);
+      r(1, 0);
     });
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content<div></div></child>');
@@ -511,7 +511,7 @@ describe('content projection', () => {
           e();
         }
         Child.ngComponentDef.h(1, 0);
-        Child.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -557,7 +557,7 @@ describe('content projection', () => {
           e();
         }
         Child.ngComponentDef.h(1, 0);
-        Child.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -603,7 +603,7 @@ describe('content projection', () => {
           e();
         }
         Child.ngComponentDef.h(1, 0);
-        Child.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -649,7 +649,7 @@ describe('content projection', () => {
           e();
         }
         Child.ngComponentDef.h(1, 0);
-        Child.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -696,7 +696,7 @@ describe('content projection', () => {
           e();
         }
         Child.ngComponentDef.h(1, 0);
-        Child.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -743,8 +743,8 @@ describe('content projection', () => {
           }
           e();
         }
-        Child.ngComponentDef.h(0, 0);
-        Child.ngComponentDef.r(0, 0);
+        Child.ngComponentDef.h(1, 0);
+        r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -792,7 +792,7 @@ describe('content projection', () => {
           }
           e();
           GrandChild.ngComponentDef.h(2, 1);
-          GrandChild.ngComponentDef.r(2, 1);
+          r(2, 1);
         }
       });
 
@@ -814,7 +814,7 @@ describe('content projection', () => {
           e();
         }
         Child.ngComponentDef.h(1, 0);
-        Child.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
 
       const parent = renderComponent(Parent);
@@ -863,7 +863,7 @@ describe('content projection', () => {
         }
         cr();
         Child.ngComponentDef.h(1, 0);
-        Child.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
       const parent = renderComponent(Parent);
       expect(toHtml(parent)).toEqual('<child><span><div>content</div></span></child>');
