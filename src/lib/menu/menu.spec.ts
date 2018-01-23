@@ -34,9 +34,11 @@ import {
   createKeyboardEvent,
   createMouseEvent,
   dispatchFakeEvent,
+  patchElementFocus,
 } from '@angular/cdk/testing';
 import {Subject} from 'rxjs/Subject';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
+import {FocusMonitor} from '@angular/cdk/a11y';
 
 
 describe('MatMenu', () => {
@@ -141,6 +143,45 @@ describe('MatMenu', () => {
 
     expect(document.activeElement).toBe(triggerEl);
   }));
+
+  it('should set the proper focus origin when restoring focus after opening by keyboard',
+    fakeAsync(inject([FocusMonitor], (focusMonitor: FocusMonitor) => {
+      const fixture = TestBed.createComponent(SimpleMenu);
+      fixture.detectChanges();
+      const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+      patchElementFocus(triggerEl);
+      focusMonitor.monitor(triggerEl, false);
+      triggerEl.click(); // A click without a mousedown before it is considered a keyboard open.
+      fixture.detectChanges();
+      fixture.componentInstance.trigger.closeMenu();
+      fixture.detectChanges();
+      tick(500);
+      fixture.detectChanges();
+
+      expect(triggerEl.classList).toContain('cdk-program-focused');
+      focusMonitor.stopMonitoring(triggerEl);
+    })));
+
+  it('should set the proper focus origin when restoring focus after opening by mouse',
+    fakeAsync(inject([FocusMonitor], (focusMonitor: FocusMonitor) => {
+      const fixture = TestBed.createComponent(SimpleMenu);
+      fixture.detectChanges();
+      const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+      dispatchFakeEvent(triggerEl, 'mousedown');
+      triggerEl.click();
+      fixture.detectChanges();
+      patchElementFocus(triggerEl);
+      focusMonitor.monitor(triggerEl, false);
+      fixture.componentInstance.trigger.closeMenu();
+      fixture.detectChanges();
+      tick(500);
+      fixture.detectChanges();
+
+      expect(triggerEl.classList).toContain('cdk-mouse-focused');
+      focusMonitor.stopMonitoring(triggerEl);
+    })));
 
   it('should close the menu when pressing ESCAPE', fakeAsync(() => {
     const fixture = TestBed.createComponent(SimpleMenu);

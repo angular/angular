@@ -1,5 +1,10 @@
 import {TAB} from '@angular/cdk/keycodes';
-import {dispatchFakeEvent, dispatchKeyboardEvent, dispatchMouseEvent} from '@angular/cdk/testing';
+import {
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+  dispatchMouseEvent,
+  patchElementFocus,
+} from '@angular/cdk/testing';
 import {Component} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -413,14 +418,3 @@ class ComplexComponentWithMonitorElementFocus {}
   template: `<div tabindex="0" cdkMonitorSubtreeFocus><button></button></div>`
 })
 class ComplexComponentWithMonitorSubtreeFocus {}
-
-
-/**
- * Patches an elements focus and blur methods to emit events consistently and predictably.
- * This is necessary, because some browsers, like IE11, will call the focus handlers asynchronously,
- * while others won't fire them at all if the browser window is not focused.
- */
-function patchElementFocus(element: HTMLElement) {
-  element.focus = () => dispatchFakeEvent(element, 'focus');
-  element.blur = () => dispatchFakeEvent(element, 'blur');
-}

@@ -10,6 +10,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
 import {OverlayModule} from '@angular/cdk/overlay';
+import {A11yModule} from '@angular/cdk/a11y';
 import {MatMenu, MAT_MENU_DEFAULT_OPTIONS} from './menu-directive';
 import {MatMenuItem} from './menu-item';
 import {MatMenuTrigger, MAT_MENU_SCROLL_STRATEGY_PROVIDER} from './menu-trigger';
@@ -21,6 +22,7 @@ import {A11yModule} from '@angular/cdk/a11y';
   imports: [
     OverlayModule,
     CommonModule,
+    A11yModule,
     MatRippleModule,
     MatCommonModule,
     A11yModule,

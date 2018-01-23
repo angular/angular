@@ -43,6 +43,7 @@ import {throwMatMenuMissingError} from './menu-errors';
 import {MatMenuItem} from './menu-item';
 import {MatMenuPanel} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
+import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 
 /** Injection token that determines the scroll handling while the menu is open. */
 export const MAT_MENU_SCROLL_STRATEGY =
@@ -130,7 +131,9 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
               @Inject(MAT_MENU_SCROLL_STRATEGY) private _scrollStrategy,
               @Optional() private _parentMenu: MatMenu,
               @Optional() @Self() private _menuItemInstance: MatMenuItem,
-              @Optional() private _dir: Directionality) {
+              @Optional() private _dir: Directionality,
+              // TODO(crisbeto): make the _focusMonitor required when doing breaking changes.
+              private _focusMonitor?: FocusMonitor) {
 
     if (_menuItemInstance) {
       _menuItemInstance._triggersSubmenu = this.triggersSubmenu();
@@ -207,9 +210,16 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     this.menu.close.emit();
   }
 
-  /** Focuses the menu trigger. */
-  focus() {
-    this._element.nativeElement.focus();
+  /**
+   * Focuses the menu trigger.
+   * @param origin Source of the menu trigger's focus.
+   */
+  focus(origin: FocusOrigin = 'program') {
+    if (this._focusMonitor) {
+      this._focusMonitor.focusVia(this._element.nativeElement, origin);
+    } else {
+      this._element.nativeElement.focus();
+    }
   }
 
   /** Closes the menu and does the necessary cleanup. */
@@ -262,8 +272,12 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     // We should reset focus if the user is navigating using a keyboard or
     // if we have a top-level trigger which might cause focus to be lost
     // when clicking on the backdrop.
-    if (!this._openedByMouse || !this.triggersSubmenu()) {
+    if (!this._openedByMouse) {
+      // Note that the focus style will show up both for `program` and
+      // `keyboard` so we don't have to specify which one it is.
       this.focus();
+    } else if (!this.triggersSubmenu()) {
+      this.focus('mouse');
     }
 
     this._openedByMouse = false;
