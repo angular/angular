@@ -50,6 +50,7 @@ High level stuff planned for Q1 2018 (January - March):
 | data-table       |                           More features coming in 2018 |   [Docs][28] |
 | datepicker       |                                                        |   [Docs][25] |
 | dialog           |                                                        |   [Docs][22] |
+| divider          |                                                        |   [Docs][35] |
 | expansion-panel  |                                                        |   [Docs][32] |
 | grid-list        |                                                        |   [Docs][9]  |
 | icon             |                                                        |   [Docs][10] |
@@ -127,6 +128,7 @@ High level stuff planned for Q1 2018 (January - March):
 [32]: https://material.angular.io/components/expansion/overview
 [33]: https://material.angular.io/components/stepper/overview
 [34]: https://material.angular.io/cdk/categories
+[35]: https://material.angular.io/components/component/divider
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
