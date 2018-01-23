@@ -10,6 +10,7 @@ import {ViewContainerRef, InjectionToken} from '@angular/core';
 import {AriaLivePoliteness} from '@angular/cdk/a11y';
 import {Direction} from '@angular/cdk/bidi';
 
+/** Injection token that can be used to access the data that was passed in to a snack bar. */
 export const MAT_SNACK_BAR_DATA = new InjectionToken<any>('MatSnackBarData');
 
 /** Possible values for horizontalPosition on MatSnackBarConfig. */
@@ -21,7 +22,7 @@ export type MatSnackBarVerticalPosition = 'top' | 'bottom';
 /**
  * Configuration used when opening a snack-bar.
  */
-export class MatSnackBarConfig {
+export class MatSnackBarConfig<D = any> {
   /** The politeness level for the MatAriaLiveAnnouncer announcement. */
   politeness?: AriaLivePoliteness = 'assertive';
 
@@ -41,13 +42,13 @@ export class MatSnackBarConfig {
    * Extra CSS classes to be added to the snack bar container.
    * @deprecated Use `panelClass` instead.
    */
- extraClasses?: string | string[];
+  extraClasses?: string | string[];
 
   /** Text layout direction for the snack bar. */
   direction?: Direction = 'ltr';
 
   /** Data being injected into the child component. */
-  data?: any = null;
+  data?: D | null = null;
 
   /** The horizontal position to place the snack bar. */
   horizontalPosition?: MatSnackBarHorizontalPosition = 'center';

@@ -35,7 +35,7 @@ import {MatDialogConfig} from './dialog-config';
 import {MatDialogContainer} from './dialog-container';
 import {MatDialogRef} from './dialog-ref';
 
-
+/** Injection token that can be used to access the data that was passed in to a dialog. */
 export const MAT_DIALOG_DATA = new InjectionToken<any>('MatDialogData');
 
 /** Injection token that can be used to specify default dialog options. */
