@@ -156,7 +156,7 @@ describe('MatTabBody', () => {
   `
 })
 class SimpleTabBodyApp {
-  content: TemplatePortal<any>;
+  content: TemplatePortal;
   position: number;
   origin: number;
 

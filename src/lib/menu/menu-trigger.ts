@@ -83,7 +83,7 @@ export const MENU_PANEL_TOP_PADDING = 8;
   exportAs: 'matMenuTrigger'
 })
 export class MatMenuTrigger implements AfterContentInit, OnDestroy {
-  private _portal: TemplatePortal<any>;
+  private _portal: TemplatePortal;
   private _overlayRef: OverlayRef | null = null;
   private _menuOpen: boolean = false;
   private _closeSubscription = Subscription.EMPTY;

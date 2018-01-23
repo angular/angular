@@ -95,7 +95,7 @@ export class CdkOverlayOrigin {
 })
 export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _overlayRef: OverlayRef;
-  private _templatePortal: TemplatePortal<any>;
+  private _templatePortal: TemplatePortal;
   private _hasBackdrop = false;
   private _backdropSubscription = Subscription.EMPTY;
   private _positionSubscription = Subscription.EMPTY;

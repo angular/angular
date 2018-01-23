@@ -52,10 +52,10 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   @Input('label') textLabel: string = '';
 
   /** The portal that will be the hosted content of the tab */
-  private _contentPortal: TemplatePortal<any> | null = null;
+  private _contentPortal: TemplatePortal | null = null;
 
   /** @docs-private */
-  get content(): TemplatePortal<any> | null {
+  get content(): TemplatePortal | null {
     return this._contentPortal;
   }
 

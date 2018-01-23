@@ -117,7 +117,7 @@ export function getMatAutocompleteMissingPanelError(): Error {
 })
 export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _overlayRef: OverlayRef | null;
-  private _portal: TemplatePortal<any>;
+  private _portal: TemplatePortal;
   private _panelOpen: boolean = false;
 
   /** Strategy that is used to position the panel. */

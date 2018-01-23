@@ -131,7 +131,7 @@ export class MatTabBody implements OnInit {
   @Output() _onCentered: EventEmitter<void> = new EventEmitter<void>(true);
 
   /** The tab body content to display. */
-  @Input('content') _content: TemplatePortal<any>;
+  @Input('content') _content: TemplatePortal;
 
   /** The shifted index position of the tab body, where zero represents the active center tab. */
   @Input()

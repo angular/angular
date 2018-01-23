@@ -31,7 +31,7 @@ import {Portal, TemplatePortal, ComponentPortal, BasePortalOutlet} from './porta
   selector: '[cdk-portal], [cdkPortal], [portal]',
   exportAs: 'cdkPortal',
 })
-export class CdkPortal extends TemplatePortal<any> {
+export class CdkPortal extends TemplatePortal {
   constructor(templateRef: TemplateRef<any>, viewContainerRef: ViewContainerRef) {
     super(templateRef, viewContainerRef);
   }

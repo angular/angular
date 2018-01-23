@@ -20,7 +20,7 @@ import {
 describe('Overlay', () => {
   let overlay: Overlay;
   let componentPortal: ComponentPortal<PizzaMsg>;
-  let templatePortal: TemplatePortal<any>;
+  let templatePortal: TemplatePortal;
   let overlayContainerElement: HTMLElement;
   let overlayContainer: OverlayContainer;
   let viewContainerFixture: ComponentFixture<TestComponentWithTemplatePortals>;
