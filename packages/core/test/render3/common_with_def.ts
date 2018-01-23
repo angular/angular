@@ -15,13 +15,11 @@ import {DirectiveType, InjectFlags, NgOnChangesFeature, defineDirective, inject,
 export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 
 NgForOf.ngDirectiveDef = defineDirective({
+  type: NgForOfDef,
   factory: () => new NgForOfDef(
                injectViewContainerRef(), injectTemplateRef(),
                inject(IterableDiffers, InjectFlags.Default, defaultIterableDiffers)),
   features: [NgOnChangesFeature(NgForOf)],
-  refresh: (directiveIndex: number, elementIndex: number) => {
-    m<NgForOfDef<any>>(directiveIndex).ngDoCheck();
-  },
   inputs: {
     ngForOf: 'ngForOf',
     ngForTrackBy: 'ngForTrackBy',
