@@ -50,7 +50,6 @@ export {
   elementStart as E,
   elementStyle as s,
 
-  lifecycle as l,
   listener as L,
   memory as m,
 

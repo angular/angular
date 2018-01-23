@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, ComponentDef, ComponentTemplate, E, L, LifecycleHook, P, T, V, b, cR, cr, defineComponent, defineDirective, e, l, m, p, pD, r, v} from '../../src/render3/index';
+import {C, ComponentTemplate, E, L, P, T, V, b, cR, cr, defineComponent, defineDirective, e, m, p, pD, r, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -840,12 +840,6 @@ describe('lifecycles', () => {
           type: Component,
           tag: name,
           factory: () => new Component(),
-          refresh: (directiveIndex: number, elementIndex: number) => {
-            r(directiveIndex, elementIndex, template);
-            const comp = m(directiveIndex) as Component;
-            l(LifecycleHook.ON_INIT, comp, comp.ngAfterViewInit);
-            l(LifecycleHook.ON_CHECK, comp, comp.ngAfterViewChecked);
-          },
           inputs: {val: 'val'},
           template: template
         });
@@ -961,7 +955,10 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, Comp);
-          { E(2, ProjectedComp); }
+          {
+            E(2, ProjectedComp);
+            e();
+          }
           e();
         }
         Comp.ngComponentDef.h(1, 0);
@@ -986,10 +983,16 @@ describe('lifecycles', () => {
       function Template(ctx: any, cm: boolean) {
         if (cm) {
           E(0, Comp);
-          { E(2, ProjectedComp); }
+          {
+            E(2, ProjectedComp);
+            e();
+          }
           e();
           E(4, Comp);
-          { E(6, ProjectedComp); }
+          {
+            E(6, ProjectedComp);
+            e();
+          }
           e();
         }
         p(0, 'val', 1);
@@ -1019,7 +1022,10 @@ describe('lifecycles', () => {
       const ParentComp = createAfterViewInitComponent('parent', (ctx: any, cm: boolean) => {
         if (cm) {
           E(0, Comp);
-          { E(2, ProjectedComp); }
+          {
+            E(2, ProjectedComp);
+            e();
+          }
           e();
         }
         p(0, 'val', b(ctx.val));
@@ -1707,12 +1713,6 @@ describe('lifecycles', () => {
           type: Component,
           tag: name,
           factory: () => new Component(),
-          refresh: function(directiveIndex: number, elementIndex: number): void {
-            r(directiveIndex, elementIndex, template);
-            const comp = m(directiveIndex) as Component;
-            l(LifecycleHook.ON_INIT, comp, comp.ngAfterViewInit);
-            l(LifecycleHook.ON_CHECK, comp, comp.ngAfterViewChecked);
-          },
           inputs: {val: 'val'}, template
         });
       };

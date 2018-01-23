@@ -1,18 +1,15 @@
 
-import {LifecycleHooksMap} from './interfaces/definition';
+import {DirectiveDef, LifecycleHooksMap} from './interfaces/definition';
 import {LNodeFlags} from './interfaces/node';
 import {HookData, LView, TView} from './interfaces/view';
+
 
 
 /**
  * Enum used by the lifecycle (l) instruction to determine which lifecycle hook is requesting
  * processing.
  */
-export const enum LifecycleHook {
-  ON_INIT = 0b00,
-  ON_CHECK = 0b01,
-  ON_CHANGES = 0b10
-}
+export const enum LifecycleHook {ON_INIT = 0b00, ON_CHECK = 0b01, ON_CHANGES = 0b10}
 
 /** Constants used by lifecycle hooks to determine when and how a hook should be called. */
 export const enum LifecycleHookUtils {
@@ -24,32 +21,65 @@ export const enum LifecycleHookUtils {
 }
 
 /**
- * Loops through the directives on a node and queues their afterContentInit,
- * afterContentChecked, and onDestroy hooks, if they exist.
+ * Loops through the directives on a node and queues their all hooks except ngOnInit
+ * and ngDoCheck, which are queued separately in E.
  */
 export function queueLifecycleHooks(flags: number, currentView: LView): void {
-  // It's necessary to loop through the directives at elementEnd() (rather than storing
-  // the hooks at creation time) so we can preserve the current hook order. All hooks
-  // for projected components and directives must be called *before* their hosts.
+  const tView = currentView.tView;
+  if (tView.firstTemplatePass === true) {
+    const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
+    const start = flags >> LNodeFlags.INDX_SHIFT;
+
+    // It's necessary to loop through the directives at elementEnd() (rather than storing
+    // the hooks at creation time) so we can preserve the current hook order. All hooks
+    // for projected components and directives must be called *before* their hosts.
+    for (let i = start, end = start + size; i < end; i++) {
+      const hooks = (tView.data[i] as DirectiveDef<any>).lifecycleHooks;
+      queueContentHooks(hooks, tView, i);
+      queueViewHooks(hooks, tView, i);
+    }
+  }
+
   const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
   const start = flags >> LNodeFlags.INDX_SHIFT;
-  let contentHooks = currentView.contentHooks;
   let cleanup = currentView.cleanup;
 
   for (let i = start, end = start + size; i < end; i++) {
     const instance = currentView.data[i];
-    if (instance.ngAfterContentInit != null) {
-      (contentHooks || (currentView.contentHooks = contentHooks = [
-       ])).push(LifecycleHook.ON_INIT, instance.ngAfterContentInit, instance);
-    }
-    if (instance.ngAfterContentChecked != null) {
-      (contentHooks || (currentView.contentHooks = contentHooks = [
-       ])).push(LifecycleHook.ON_CHECK, instance.ngAfterContentChecked, instance);
-    }
     if (instance.ngOnDestroy != null) {
       (cleanup || (currentView.cleanup = cleanup = [])).push(instance.ngOnDestroy, instance);
     }
   }
+}
+
+function queueContentHooks(hooks: LifecycleHooksMap, tView: TView, i: number): void {
+  if (hooks.afterContentInit != null) {
+    (tView.contentHooks || (tView.contentHooks = [])).push(getInitFlags(i), hooks.afterContentInit);
+  }
+
+  if (hooks.afterContentChecked != null) {
+    (tView.contentHooks || (tView.contentHooks = [
+     ])).push(getCheckFlags(i), hooks.afterContentChecked);
+  }
+}
+function queueViewHooks(hooks: LifecycleHooksMap, tView: TView, i: number): void {
+  if (hooks.afterViewInit != null) {
+    (tView.viewHooks || (tView.viewHooks = [])).push(getInitFlags(i), hooks.afterViewInit);
+  }
+
+  if (hooks.afterViewChecked != null) {
+    (tView.viewHooks || (tView.viewHooks = [])).push(getCheckFlags(i), hooks.afterViewChecked);
+  }
+}
+
+/** Generates flags for init-only hooks */
+function getInitFlags(index: number): number {
+  return index << LifecycleHookUtils.INDX_SHIFT;
+}
+
+/** Generates flags for hooks called every change detection run */
+function getCheckFlags(index: number): number {
+  return (index << LifecycleHookUtils.INDX_SHIFT) | LifecycleHook.ON_CHECK;
 }
 
 /**
@@ -65,12 +95,12 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
  * @param tView The current TView
  */
 export function queueInitHooks(index: number, hooks: LifecycleHooksMap, tView: TView): void {
-  if (tView.firstTemplatePass && hooks.onInit != null) {
+  if (tView.firstTemplatePass === true && hooks.onInit != null) {
     const hookFlags = index << LifecycleHookUtils.INDX_SHIFT;
     (tView.initHooks || (tView.initHooks = [])).push(hookFlags, hooks.onInit);
   }
 
-  if (tView.firstTemplatePass && hooks.doCheck != null) {
+  if (tView.firstTemplatePass === true && hooks.doCheck != null) {
     const hookFlags = (index << LifecycleHookUtils.INDX_SHIFT) | LifecycleHook.ON_CHECK;
     (tView.initHooks || (tView.initHooks = [])).push(hookFlags, hooks.doCheck);
   }
@@ -86,26 +116,18 @@ export function executeInitHooks(currentView: LView): void {
   const initHooks = currentView.tView.initHooks;
 
   if (currentView.initHooksCalled === false && initHooks != null) {
-    const data = currentView.data;
-    const creationMode = currentView.creationMode;
-
-    for (let i = 0; i < initHooks.length; i += 2) {
-      const flags = initHooks[i] as number;
-      const hook = initHooks[i | 1] as() => void;
-      const onInit = (flags & LifecycleHookUtils.TYPE_MASK) === LifecycleHook.ON_INIT;
-      const instance = data[flags >> LifecycleHookUtils.INDX_SHIFT];
-      if (onInit === false || creationMode) {
-        hook.call(instance);
-      }
-    }
+    executeLifecycleHooks(currentView, initHooks);
     currentView.initHooksCalled = true;
   }
 }
 
 /** Iterates over view hook functions and calls them. */
-export function executeViewHooks(data: any[], viewHookStartIndex: number | null): void {
-  if (viewHookStartIndex == null) return;
-  executeHooksAndRemoveInits(data, viewHookStartIndex);
+export function executeViewHooks(currentView: LView): void {
+  const viewHooks = currentView.tView.viewHooks;
+
+  if (viewHooks != null) {
+    executeLifecycleHooks(currentView, viewHooks);
+  }
 }
 
 /**
@@ -113,41 +135,32 @@ export function executeViewHooks(data: any[], viewHookStartIndex: number | null)
  * out afterContentInit hooks to prep for the next run in update mode.
  */
 export function executeContentHooks(currentView: LView): void {
-  if (currentView.contentHooks != null && currentView.contentHooksCalled === false) {
-    executeHooksAndRemoveInits(currentView.contentHooks, 0);
+  const contentHooks = currentView.tView.contentHooks;
+
+  if (currentView.contentHooksCalled === false && contentHooks != null) {
+    executeLifecycleHooks(currentView, contentHooks);
     currentView.contentHooksCalled = true;
   }
 }
 
 /**
- * Calls lifecycle hooks with their contexts, then splices out any init-only hooks
- * to prep for the next run in update mode.
+ * Calls lifecycle hooks with their contexts, skipping init hooks if it's not
+ * creation mode.
  *
+ * @param currentView The current view
  * @param arr The array in which the hooks are found
- * @param startIndex The index at which to start calling hooks
  */
-function executeHooksAndRemoveInits(arr: any[], startIndex: number): void {
-  // Instead of using splice to remove init hooks after their first run (expensive), we
-  // shift over the AFTER_CHECKED hooks as we call them and truncate once at the end.
-  let checkIndex = startIndex;
-  let writeIndex = startIndex;
-  while (checkIndex < arr.length) {
-    // Call lifecycle hook with its context
-    arr[checkIndex + 1].call(arr[checkIndex + 2]);
+function executeLifecycleHooks(currentView: LView, arr: HookData): void {
+  const data = currentView.data;
+  const creationMode = currentView.creationMode;
 
-    if (arr[checkIndex] === LifecycleHook.ON_CHECK) {
-      // We know if the writeIndex falls behind that there is an init that needs to
-      // be overwritten.
-      if (writeIndex < checkIndex) {
-        arr[writeIndex] = arr[checkIndex];
-        arr[writeIndex + 1] = arr[checkIndex + 1];
-        arr[writeIndex + 2] = arr[checkIndex + 2];
-      }
-      writeIndex += 3;
+  for (let i = 0; i < arr.length; i += 2) {
+    const flags = arr[i] as number;
+    const hook = arr[i | 1] as() => void;
+    const initOnly = (flags & LifecycleHookUtils.TYPE_MASK) === LifecycleHook.ON_INIT;
+    const instance = data[flags >> LifecycleHookUtils.INDX_SHIFT];
+    if (initOnly === false || creationMode) {
+      hook.call(instance);
     }
-    checkIndex += 3;
   }
-
-  // Truncate once at the writeIndex
-  arr.length = writeIndex;
 }

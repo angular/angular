@@ -27,7 +27,7 @@ import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
-import {LifecycleHook, executeViewHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
+import {executeViewHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 
 
 /**
@@ -118,9 +118,6 @@ let bindingIndex: number;
  */
 let cleanup: any[]|null;
 
-/** Index in the data array at which view hooks begin to be stored. */
-let viewHookStartIndex: number|null;
-
 /**
  * Swap the current state with a new state.
  *
@@ -140,7 +137,6 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   tData = newView.tView.data;
   creationMode = newView.creationMode;
 
-  viewHookStartIndex = newView.viewHookStartIndex;
   cleanup = newView.cleanup;
   renderer = newView.renderer;
 
@@ -158,7 +154,8 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
  * the direction of traversal (up or down the view tree) a bit clearer.
  */
 export function leaveView(newView: LView): void {
-  executeViewHooks(data, viewHookStartIndex);
+  executeViewHooks(currentView);
+  currentView.creationMode = false;
   currentView.initHooksCalled = false;
   currentView.contentHooksCalled = false;
   if (currentView.tView.firstTemplatePass) currentView.tView.firstTemplatePass = false;
@@ -175,14 +172,12 @@ export function createLView(
     data: [],
     tView: tView,
     cleanup: null,
-    contentHooks: null,
     renderer: renderer,
     child: null,
     tail: null,
     next: null,
     bindingStartIndex: null,
     creationMode: true,
-    viewHookStartIndex: null,
     template: template,
     context: context,
     dynamicViewCount: 0,
@@ -349,7 +344,6 @@ export function renderComponentOrTemplate<T>(
     if (rendererFactory.end) {
       rendererFactory.end();
     }
-    hostView.creationMode = false;
     leaveView(oldView);
   }
 }
@@ -490,7 +484,7 @@ function getOrCreateTView(template: ComponentTemplate<any>): TView {
 }
 
 export function createTView(): TView {
-  return {data: [], firstTemplatePass: true, initHooks: null};
+  return {data: [], firstTemplatePass: true, initHooks: null, contentHooks: null, viewHooks: null};
 }
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
@@ -968,25 +962,6 @@ function generateInitialInputs(
   return initialInputData;
 }
 
-/**
- * Accepts a lifecycle hook type and determines when and how the related lifecycle hook
- * callback should run.
- *
- * @param lifecycle
- * @param self
- * @param method
- */
-export function lifecycle(lifecycle: LifecycleHook, self: any, method: Function): boolean {
-  if (creationMode &&
-      (lifecycle === LifecycleHook.ON_INIT || lifecycle === LifecycleHook.ON_CHECK)) {
-    if (viewHookStartIndex == null) {
-      currentView.viewHookStartIndex = viewHookStartIndex = data.length;
-    }
-    data.push(lifecycle, method, self);
-  }
-  return false;
-}
-
 
 //////////////////////////
 //// ViewContainer & View
@@ -1170,7 +1145,6 @@ export function viewEnd(): void {
 
     if (viewIdChanged) {
       insertView(container, viewNode, containerState.nextIndex - 1);
-      currentView.creationMode = false;
     }
   }
   leaveView(currentView !.parent !);
@@ -1207,7 +1181,6 @@ export const componentRefresh:
   try {
     template(directive, creationMode);
   } finally {
-    hostView.creationMode = false;
     refreshDynamicChildren();
     leaveView(oldView);
   }
