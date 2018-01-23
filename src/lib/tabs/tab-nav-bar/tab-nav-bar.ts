@@ -55,7 +55,7 @@ import {MatInkBar} from '../ink-bar';
 export class MatTabNavBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatTabNavMixinBase = mixinDisableRipple(mixinColor(MatTabNavBase, 'primary'));
+export const _MatTabNavMixinBase = mixinColor(MatTabNavBase, 'primary');
 
 /**
  * Navigation component matching the styles of the tab group header.
@@ -65,7 +65,7 @@ export const _MatTabNavMixinBase = mixinDisableRipple(mixinColor(MatTabNavBase, 
   moduleId: module.id,
   selector: '[mat-tab-nav-bar]',
   exportAs: 'matTabNavBar, matTabNav',
-  inputs: ['color', 'disableRipple'],
+  inputs: ['color'],
   templateUrl: 'tab-nav-bar.html',
   styleUrls: ['tab-nav-bar.css'],
   host: {'class': 'mat-tab-nav-bar'},
@@ -74,7 +74,7 @@ export const _MatTabNavMixinBase = mixinDisableRipple(mixinColor(MatTabNavBase, 
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, CanColor,
-    CanDisableRipple, OnDestroy {
+    OnDestroy {
 
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
@@ -105,6 +105,7 @@ export class MatTabNav extends _MatTabNavMixinBase implements AfterContentInit, 
   private _backgroundColor: ThemePalette;
 
   /** Whether ripples should be disabled for all links or not. */
+  @Input()
   get disableRipple() { return this._disableRipple; }
   set disableRipple(value: boolean) {
     this._disableRipple = coerceBooleanProperty(value);
