@@ -902,6 +902,25 @@ describe('MatAutocomplete', () => {
       expect(stopPropagationSpy).toHaveBeenCalled();
     }));
 
+    it('should close the panel when pressing ALT + UP_ARROW', fakeAsync(() => {
+      const trigger = fixture.componentInstance.trigger;
+      const upArrowEvent = createKeyboardEvent('keydown', UP_ARROW);
+      Object.defineProperty(upArrowEvent, 'altKey', {get: () => true});
+
+      input.focus();
+      flush();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(input, 'Expected input to be focused.');
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+
+      trigger._handleKeydown(upArrowEvent);
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
+      expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+    }));
+
     it('should close the panel when tabbing away from a trigger without results', fakeAsync(() => {
       fixture.componentInstance.states = [];
       fixture.componentInstance.filteredStates = [];

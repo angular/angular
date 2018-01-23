@@ -129,8 +129,8 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** The subscription for closing actions (some are bound to document). */
   private _closingActionsSubscription: Subscription;
 
-  /** Stream of escape keyboard events. */
-  private _escapeEventStream = new Subject<void>();
+  /** Stream of keyboard events that can close the panel. */
+  private _closeKeyEventStream = new Subject<void>();
 
   /** View -> model callback called when value changes */
   _onChange: (value: any) => void = () => {};
@@ -152,7 +152,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   ngOnDestroy() {
     this._destroyPanel();
-    this._escapeEventStream.complete();
+    this._closeKeyEventStream.complete();
   }
 
   /** Whether or not the autocomplete panel is open. */
@@ -194,7 +194,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     return merge(
       this.optionSelections,
       this.autocomplete._keyManager.tabOut.pipe(filter(() => this._panelOpen)),
-      this._escapeEventStream,
+      this._closeKeyEventStream,
       this._outsideClickStream,
       this._overlayRef ?
           this._overlayRef.detachments().pipe(filter(() => this._panelOpen)) :
@@ -289,9 +289,11 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   _handleKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
 
-    if (keyCode === ESCAPE && this.panelOpen) {
+    // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
+    // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
+    if (this.panelOpen && (keyCode === ESCAPE || (keyCode === UP_ARROW && event.altKey))) {
       this._resetActiveItem();
-      this._escapeEventStream.next();
+      this._closeKeyEventStream.next();
       event.stopPropagation();
     } else if (this.activeOption && keyCode === ENTER && this.panelOpen) {
       this.activeOption._selectViaInteraction();
