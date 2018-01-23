@@ -267,6 +267,16 @@ export class MatSlider extends _MatSliderMixinBase
     return this.value || 0;
   }
 
+  /** set focus to the host element */
+  focus() {
+    this._focusHostElement();
+  }
+
+  /** blur the host element */
+  blur() {
+    this._blurHostElement();
+  }
+
   /** onTouch function registered via registerOnTouch (ControlValueAccessor). */
   onTouched: () => any = () => {};
 
@@ -689,6 +699,11 @@ export class MatSlider extends _MatSliderMixinBase
    */
   private _focusHostElement() {
     this._elementRef.nativeElement.focus();
+  }
+
+  /** Blurs the native element. */
+  private _blurHostElement() {
+    this._elementRef.nativeElement.blur();
   }
 
   /**

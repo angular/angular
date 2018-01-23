@@ -53,6 +53,11 @@ Label <mat-slider #slidey aria-label="Basic slider"></mat-slider>
            aria-label="Inverted vertical slider">
 </mat-slider>
 
+<h1>Set/lost focus to show thumblabel programmatically</h1>
+<mat-slider #demoSlider="matSlider" thumbLabel aria-label="Slider with thumb label"></mat-slider>
+<button (click)="demoSlider.focus()">Focus Slider</button>
+<button (click)="demoSlider.blur()">Blur Slider</button>
+
 <mat-tab-group>
   <mat-tab label="One">
     <mat-slider min="1" max="5" value="3" aria-label="Slider in a tab"></mat-slider>
