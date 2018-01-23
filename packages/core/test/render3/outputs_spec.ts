@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, E, L, LifecycleHook, T, V, b, cR, cr, defineComponent, defineDirective, e, l, p, v} from '../../src/render3/index';
+import {C, E, L, T, V, b, cR, cr, defineComponent, defineDirective, e, p, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
