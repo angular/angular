@@ -9,7 +9,17 @@
 import {QueryList} from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {UP_ARROW, DOWN_ARROW, TAB, A, Z, ZERO, NINE} from '@angular/cdk/keycodes';
+import {
+  UP_ARROW,
+  DOWN_ARROW,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  TAB,
+  A,
+  Z,
+  ZERO,
+  NINE,
+} from '@angular/cdk/keycodes';
 import {debounceTime} from 'rxjs/operators/debounceTime';
 import {filter} from 'rxjs/operators/filter';
 import {map} from 'rxjs/operators/map';
@@ -34,6 +44,8 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   private _wrap = false;
   private _letterKeyStream = new Subject<string>();
   private _typeaheadSubscription = Subscription.EMPTY;
+  private _vertical = true;
+  private _horizontal: 'ltr' | 'rtl' | null;
 
   // Buffer for the letters that the user has pressed when the typeahead option is turned on.
   private _pressedLetters: string[] = [];
@@ -55,6 +67,25 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    */
   withWrap(): this {
     this._wrap = true;
+    return this;
+  }
+
+  /**
+   * Configures whether the key manager should be able to move the selection vertically.
+   * @param enabled Whether vertical selection should be enabled.
+   */
+  withVerticalOrientation(enabled = true): this {
+    this._vertical = enabled;
+    return this;
+  }
+
+  /**
+   * Configures the key manager to move the selection horizontally.
+   * Passing in `null` will disable horizontal movement.
+   * @param direction Direction in which the selection can be moved.
+   */
+  withHorizontalOrientation(direction: 'ltr' | 'rtl' | null): this {
+    this._horizontal = direction;
     return this;
   }
 
@@ -118,13 +149,44 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * @param event Keyboard event to be used for determining which element should be active.
    */
   onKeydown(event: KeyboardEvent): void {
-    switch (event.keyCode) {
-      case DOWN_ARROW: this.setNextItemActive(); break;
-      case UP_ARROW: this.setPreviousItemActive(); break;
-      case TAB: this.tabOut.next(); return;
-      default:
-        const keyCode = event.keyCode;
+    const keyCode = event.keyCode;
 
+    switch (keyCode) {
+      case TAB:
+        this.tabOut.next();
+        return;
+
+      case DOWN_ARROW:
+        if (this._vertical) {
+          this.setNextItemActive();
+          break;
+        }
+
+      case UP_ARROW:
+        if (this._vertical) {
+          this.setPreviousItemActive();
+          break;
+        }
+
+      case RIGHT_ARROW:
+        if (this._horizontal === 'ltr') {
+          this.setNextItemActive();
+          break;
+        } else if (this._horizontal === 'rtl') {
+          this.setPreviousItemActive();
+          break;
+        }
+
+      case LEFT_ARROW:
+        if (this._horizontal === 'ltr') {
+          this.setPreviousItemActive();
+          break;
+        } else if (this._horizontal === 'rtl') {
+          this.setNextItemActive();
+          break;
+        }
+
+      default:
         // Attempt to use the `event.key` which also maps it to the user's keyboard language,
         // otherwise fall back to resolving alphanumeric characters via the keyCode.
         if (event.key && event.key.length === 1) {
@@ -226,10 +288,12 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   private _setActiveItemByIndex(index: number, fallbackDelta: number,
                                   items = this._items.toArray()): void {
     if (!items[index]) { return; }
+
     while (items[index].disabled) {
       index += fallbackDelta;
       if (!items[index]) { return; }
     }
+
     this.setActiveItem(index);
   }
 }
