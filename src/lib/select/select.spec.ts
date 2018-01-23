@@ -62,34 +62,13 @@ import {
 /** The debounce interval when typing letters to select an option. */
 const LETTER_KEY_DEBOUNCE_INTERVAL = 200;
 
-const platform = new Platform();
-
-
 describe('MatSelect', () => {
   let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let dir: {value: 'ltr'|'rtl'};
   let scrolledSubject = new Subject();
   let viewportRuler: ViewportRuler;
-
-  // Providers used for all mat-select tests
-  const commonProviders = [
-    {provide: Directionality, useFactory: () => dir = {value: 'ltr'}},
-    {
-      provide: ScrollDispatcher, useFactory: () => ({
-        scrolled: () => scrolledSubject.asObservable(),
-      }),
-    },
-  ];
-
-  // NgModule imports used for all mat-select tests.
-  const commonModuleImports = [
-    MatFormFieldModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    FormsModule,
-    NoopAnimationsModule,
-  ];
+  let platform: Platform;
 
   /**
    * Configures the test module for MatSelect with the given declarations. This is broken out so
@@ -99,14 +78,28 @@ describe('MatSelect', () => {
    */
   function configureMatSelectTestingModule(declarations) {
     TestBed.configureTestingModule({
-      imports: commonModuleImports,
+      imports: [
+        MatFormFieldModule,
+        MatSelectModule,
+        ReactiveFormsModule,
+        FormsModule,
+        NoopAnimationsModule,
+      ],
       declarations: declarations,
-      providers: commonProviders,
+      providers: [
+        {provide: Directionality, useFactory: () => dir = {value: 'ltr'}},
+        {
+          provide: ScrollDispatcher, useFactory: () => ({
+            scrolled: () => scrolledSubject.asObservable(),
+          }),
+        },
+      ],
     }).compileComponents();
 
-    inject([OverlayContainer], (oc: OverlayContainer) => {
+    inject([OverlayContainer, Platform], (oc: OverlayContainer, p: Platform) => {
       overlayContainer = oc;
       overlayContainerElement = oc.getContainerElement();
+      platform = p;
     })();
   }
 
@@ -281,6 +274,40 @@ describe('MatSelect', () => {
 
           expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
           expect(formControl.value).toBeFalsy('Expected value not to have changed.');
+        }));
+
+        it('should should close when pressing ALT + DOWN_ARROW', fakeAsync(() => {
+          const {select: selectInstance} = fixture.componentInstance;
+
+          selectInstance.open();
+          fixture.detectChanges();
+
+          expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
+
+          const event = createKeyboardEvent('keydown', DOWN_ARROW);
+          Object.defineProperty(event, 'altKey', {get: () => true});
+
+          dispatchEvent(select, event);
+
+          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed.');
+          expect(event.defaultPrevented).toBe(true, 'Expected default action to be prevented.');
+        }));
+
+        it('should should close when pressing ALT + UP_ARROW', fakeAsync(() => {
+          const {select: selectInstance} = fixture.componentInstance;
+
+          selectInstance.open();
+          fixture.detectChanges();
+
+          expect(selectInstance.panelOpen).toBe(true, 'Expected select to be open.');
+
+          const event = createKeyboardEvent('keydown', UP_ARROW);
+          Object.defineProperty(event, 'altKey', {get: () => true});
+
+          dispatchEvent(select, event);
+
+          expect(selectInstance.panelOpen).toBe(false, 'Expected select to be closed.');
+          expect(event.defaultPrevented).toBe(true, 'Expected default action to be prevented.');
         }));
 
         it('should be able to select options by typing on a closed select', fakeAsync(() => {

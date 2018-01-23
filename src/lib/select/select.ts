@@ -647,6 +647,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW;
     const isOpenKey = keyCode === ENTER || keyCode === SPACE;
 
+    // Open the select on ALT + arrow key to match the native <select>
     if (isOpenKey || ((this.multiple || event.altKey) && isArrowKey)) {
       event.preventDefault(); // prevents the page from scrolling down when pressing space
       this.open();
@@ -658,23 +659,27 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Handles keyboard events when the selected is open. */
   private _handleOpenKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
+    const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW;
+    const manager = this._keyManager;
 
     if (keyCode === HOME || keyCode === END) {
       event.preventDefault();
-      keyCode === HOME ? this._keyManager.setFirstItemActive() :
-                         this._keyManager.setLastItemActive();
-    } else if ((keyCode === ENTER || keyCode === SPACE) && this._keyManager.activeItem) {
+      keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
+    } else if (isArrowKey && event.altKey) {
+      // Close the select on ALT + arrow key to match the native <select>
       event.preventDefault();
-      this._keyManager.activeItem._selectViaInteraction();
+      this.close();
+    } else if ((keyCode === ENTER || keyCode === SPACE) && manager.activeItem) {
+      event.preventDefault();
+      manager.activeItem._selectViaInteraction();
     } else {
-      const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW;
-      const previouslyFocusedIndex = this._keyManager.activeItemIndex;
+      const previouslyFocusedIndex = manager.activeItemIndex;
 
-      this._keyManager.onKeydown(event);
+      manager.onKeydown(event);
 
-      if (this._multiple && isArrowKey && event.shiftKey && this._keyManager.activeItem &&
-          this._keyManager.activeItemIndex !== previouslyFocusedIndex) {
-        this._keyManager.activeItem._selectViaInteraction();
+      if (this._multiple && isArrowKey && event.shiftKey && manager.activeItem &&
+          manager.activeItemIndex !== previouslyFocusedIndex) {
+        manager.activeItem._selectViaInteraction();
       }
     }
   }
