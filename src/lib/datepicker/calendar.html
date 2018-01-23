@@ -21,7 +21,7 @@
 </div>
 
 <div class="mat-calendar-content" (keydown)="_handleCalendarBodyKeydown($event)"
-    [ngSwitch]="_currentView" cdkMonitorSubtreeFocus>
+    [ngSwitch]="_currentView" cdkMonitorSubtreeFocus tabindex="-1">
   <mat-month-view
       *ngSwitchCase="'month'"
       [activeDate]="_activeDate"

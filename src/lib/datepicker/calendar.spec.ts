@@ -220,6 +220,10 @@ describe('MatCalendar', () => {
           expect(calendarInstance._activeDate).toEqual(new Date(2017, JAN, 31));
         });
 
+        it('should make the calendar body focusable', () => {
+          expect(calendarBodyEl.getAttribute('tabindex')).toBe('-1');
+        });
+
         describe('month view', () => {
           it('should decrement date on left arrow press', () => {
             dispatchKeyboardEvent(calendarBodyEl, 'keydown', LEFT_ARROW);
