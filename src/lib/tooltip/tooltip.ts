@@ -217,7 +217,7 @@ export class MatTooltip implements OnDestroy {
       element.style.webkitUserSelect = element.style.userSelect = '';
     }
 
-    _focusMonitor.monitor(element, false).subscribe(origin => {
+    _focusMonitor.monitor(element).subscribe(origin => {
       // Note that the focus monitor runs outside the Angular zone.
       if (!origin) {
         _ngZone.run(() => this.hide(0));

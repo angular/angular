@@ -80,7 +80,7 @@ export class MatExpansionPanelHeader implements OnDestroy {
     )
     .subscribe(() => this._changeDetectorRef.markForCheck());
 
-    _focusMonitor.monitor(_element.nativeElement, false);
+    _focusMonitor.monitor(_element.nativeElement);
   }
 
   /** Height of the header while the panel is expanded. */

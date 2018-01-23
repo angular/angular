@@ -215,7 +215,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
   ngAfterViewInit() {
     this._focusMonitor
-      .monitor(this._inputElement.nativeElement, false)
+      .monitor(this._inputElement.nativeElement)
       .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
   }
 

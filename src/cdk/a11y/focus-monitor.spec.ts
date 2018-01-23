@@ -30,7 +30,7 @@ describe('FocusMonitor', () => {
     focusMonitor = fm;
 
     changeHandler = jasmine.createSpy('focus origin change handler');
-    focusMonitor.monitor(buttonElement, false).subscribe(changeHandler);
+    focusMonitor.monitor(buttonElement).subscribe(changeHandler);
     patchElementFocus(buttonElement);
   }));
 

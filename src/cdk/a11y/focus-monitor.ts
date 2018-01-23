@@ -82,10 +82,10 @@ export class FocusMonitor {
    * @returns An observable that emits when the focus state of the element changes.
    *     When the element is blurred, null will be emitted.
    */
-  monitor(element: HTMLElement, checkChildren: boolean): Observable<FocusOrigin>;
+  monitor(element: HTMLElement, checkChildren?: boolean): Observable<FocusOrigin>;
   monitor(
       element: HTMLElement,
-      renderer: Renderer2 | boolean,
+      renderer?: Renderer2 | boolean,
       checkChildren?: boolean): Observable<FocusOrigin> {
     // TODO(mmalerba): clean up after deprecated signature is removed.
     if (!(renderer instanceof Renderer2)) {
