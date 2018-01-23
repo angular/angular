@@ -130,7 +130,7 @@ export class MatListOption extends _MatListOptionMixinBase
 
   /** Whether the option is disabled. */
   @Input()
-  get disabled() { return (this.selectionList && this.selectionList.disabled) || this._disabled; }
+  get disabled() { return this._disabled || (this.selectionList && this.selectionList.disabled); }
   set disabled(value: any) {
     const newValue = coerceBooleanProperty(value);
 
@@ -161,7 +161,7 @@ export class MatListOption extends _MatListOptionMixinBase
 
   constructor(private _element: ElementRef,
               private _changeDetector: ChangeDetectorRef,
-              @Optional() @Inject(forwardRef(() => MatSelectionList))
+              /** @docs-private */ @Optional() @Inject(forwardRef(() => MatSelectionList))
               public selectionList: MatSelectionList) {
     super();
   }
@@ -233,7 +233,7 @@ export class MatListOption extends _MatListOptionMixinBase
 
   _handleBlur() {
     this._hasFocus = false;
-    this.selectionList.onTouched();
+    this.selectionList._onTouched();
   }
 
   /** Retrieves the DOM element of the component host. */
@@ -279,7 +279,7 @@ export class MatListOption extends _MatListOptionMixinBase
     '[tabIndex]': 'tabIndex',
     'class': 'mat-selection-list',
     '(focus)': 'focus()',
-    '(blur)': 'onTouched()',
+    '(blur)': '_onTouched()',
     '(keydown)': '_keydown($event)',
     '[attr.aria-disabled]': 'disabled.toString()'},
   template: '<ng-content></ng-content>',
@@ -312,7 +312,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   private _tempValues: string[]|null;
 
   /** View to model callback that should be called if the list or its options lost focus. */
-  onTouched: () => void = () => {};
+  _onTouched: () => void = () => {};
 
   constructor(private _element: ElementRef, @Attribute('tabindex') tabIndex: string) {
     super();
@@ -420,7 +420,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Implemented as part of ControlValueAccessor. */
   registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
+    this._onTouched = fn;
   }
 
   /** Returns the option with the specified value. */
