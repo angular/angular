@@ -15,6 +15,7 @@ import {combineLatest} from 'rxjs/operators/combineLatest';
 import {map} from 'rxjs/operators/map';
 import {startWith} from 'rxjs/operators/startWith';
 import {empty} from 'rxjs/observable/empty';
+import {_isNumberValue} from '@angular/cdk/coercion';
 
 /**
  * Data source that accepts a client-side data array and includes native support of filtering,
@@ -88,7 +89,8 @@ export class MatTableDataSource<T> implements DataSource<T> {
   private _paginator: MatPaginator|null;
 
   /**
-   * Data accessor function that is used for accessing data properties for sorting.
+   * Data accessor function that is used for accessing data properties for sorting through
+   * the default sortData function.
    * This default function assumes that the sort header IDs (which defaults to the column name)
    * matches the data's properties (e.g. column Xyz represents data['Xyz']).
    * May be set to a custom function for different behavior.
@@ -98,21 +100,54 @@ export class MatTableDataSource<T> implements DataSource<T> {
   sortingDataAccessor: ((data: T, sortHeaderId: string) => string|number) =
       (data: T, sortHeaderId: string): string|number => {
     const value: any = data[sortHeaderId];
+    return _isNumberValue(value) ? Number(value) : value;
+  }
 
-    // If the value is a string and only whitespace, return the value.
-    // Otherwise +value will convert it to 0.
-    if (typeof value === 'string' && !value.trim()) {
-      return value;
-    }
+  /**
+   * Gets a sorted copy of the data array based on the state of the MatSort. Called
+   * after changes are made to the filtered data or when sort changes are emitted from MatSort.
+   * By default, the function retrieves the active sort and its direction and compares data
+   * by retrieving data using the sortingDataAccessor. May be overridden for a custom implementation
+   * of data ordering.
+   * @param data The array of data that should be sorted.
+   * @param sort The connected MatSort that holds the current sort state.
+   */
+  sortData: ((data: T[], sort: MatSort) => T[]) = (data: T[], sort: MatSort): T[] => {
+    const active = sort.active;
+    const direction = sort.direction;
+    if (!active || direction == '') { return data; }
 
-    return isNaN(+value) ? value : +value;
+    return data.sort((a, b) => {
+      let valueA = this.sortingDataAccessor(a, active);
+      let valueB = this.sortingDataAccessor(b, active);
+
+      // If both valueA and valueB exist (truthy), then compare the two. Otherwise, check if
+      // one value exists while the other doesn't. In this case, existing value should come first.
+      // This avoids inconsistent results when comparing values to undefined/null.
+      // If neither value exists, return 0 (equal).
+      let comparatorResult = 0;
+      if (valueA && valueB) {
+        // Check if one value is greater than the other; if equal, comparatorResult should remain 0.
+        if (valueA > valueB) {
+          comparatorResult = 1;
+        } else if (valueA < valueB) {
+          comparatorResult = -1;
+        }
+      } else if (valueA) {
+        comparatorResult = 1;
+      } else if (valueB) {
+        comparatorResult = -1;
+      }
+
+      return comparatorResult * (direction == 'asc' ? 1 : -1);
+    });
   }
 
   /**
    * Checks if a data object matches the data source's filter string. By default, each data object
    * is converted to a string of its properties and returns true if the filter has
    * at least one occurrence in that string. By default, the filter string has its whitespace
-   * trimmed and the match is case-insensitive. May be overriden for a custom implementation of
+   * trimmed and the match is case-insensitive. May be overridden for a custom implementation of
    * filter matching.
    * @param data Data object used to check against the filter.
    * @param filter Filter string that has been set on the data source.
@@ -172,7 +207,7 @@ export class MatTableDataSource<T> implements DataSource<T> {
   _filterData(data: T[]) {
     // If there is a filter string, filter out data that does not contain it.
     // Each data object is converted to a string using the function defined by filterTermAccessor.
-    // May be overriden for customization.
+    // May be overridden for customization.
     this.filteredData =
         !this.filter ? data : data.filter(obj => this.filterPredicate(obj, this.filter));
 
@@ -188,16 +223,9 @@ export class MatTableDataSource<T> implements DataSource<T> {
    */
   _orderData(data: T[]): T[] {
     // If there is no active sort or direction, return the data without trying to sort.
-    if (!this.sort || !this.sort.active || this.sort.direction == '') { return data; }
+    if (!this.sort) { return data; }
 
-    const active = this.sort.active;
-    const direction = this.sort.direction;
-
-    return data.slice().sort((a, b) => {
-      let valueA = this.sortingDataAccessor(a, active);
-      let valueB = this.sortingDataAccessor(b, active);
-      return (valueA < valueB ? -1 : 1) * (direction == 'asc' ? 1 : -1);
-    });
+    return this.sortData(data.slice(), this.sort);
   }
 
   /**

@@ -209,6 +209,42 @@ describe('MatTable', () => {
         ['a_2', 'b_2', 'c_2'],
         ['a_3', 'b_3', 'c_3'],
       ]);
+
+      // Expect that empty string row comes before the other values
+      component.sort.sort(component.sortHeader);
+      fixture.detectChanges();
+      expectTableToMatchContent(tableElement, [
+        ['Column A\xa0Sorted by a descending', 'Column B', 'Column C'],
+        ['a_3', 'b_3', 'c_3'],
+        ['a_2', 'b_2', 'c_2'],
+        ['', 'b_1', 'c_1'],
+      ]);
+    });
+
+    it('should by default correctly sort undefined values', () => {
+      // Activate column A sort
+      dataSource.data[0].a = undefined;
+
+      // Expect that undefined row comes before the other values
+      component.sort.sort(component.sortHeader);
+      fixture.detectChanges();
+      expectTableToMatchContent(tableElement, [
+        ['Column A\xa0Sorted by a ascending', 'Column B', 'Column C'],
+        ['', 'b_1', 'c_1'],
+        ['a_2', 'b_2', 'c_2'],
+        ['a_3', 'b_3', 'c_3'],
+      ]);
+
+
+      // Expect that undefined row comes after the other values
+      component.sort.sort(component.sortHeader);
+      fixture.detectChanges();
+      expectTableToMatchContent(tableElement, [
+        ['Column A\xa0Sorted by a descending', 'Column B', 'Column C'],
+        ['a_3', 'b_3', 'c_3'],
+        ['a_2', 'b_2', 'c_2'],
+        ['', 'b_1', 'c_1'],
+      ]);
     });
 
     it('should be able to page the table contents', fakeAsync(() => {
@@ -243,9 +279,9 @@ describe('MatTable', () => {
 });
 
 interface TestData {
-  a: string;
-  b: string;
-  c: string;
+  a: string|undefined;
+  b: string|undefined;
+  c: string|undefined;
 }
 
 class FakeDataSource extends DataSource<TestData> {
