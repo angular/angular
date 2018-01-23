@@ -31,6 +31,7 @@ import {
   QueryList,
   ViewEncapsulation,
   InjectionToken,
+  ViewChild,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {merge} from 'rxjs/observable/merge';
@@ -43,6 +44,7 @@ import {map} from 'rxjs/operators/map';
 import {Subject} from 'rxjs/Subject';
 import {Observable} from 'rxjs/Observable';
 import {matDrawerAnimations} from './drawer-animations';
+import {CdkScrollable} from '@angular/cdk/scrolling';
 
 
 /** Throws an exception when two MatDrawer are matching the same position. */
@@ -467,6 +469,9 @@ export class MatDrawerContainer implements AfterContentInit, OnDestroy {
   private _doCheckSubject = new Subject<void>();
 
   _contentMargins = new Subject<{left: number|null, right: number|null}>();
+
+  /** Reference to the CdkScrollable instance that wraps the scrollable content. */
+  @ViewChild(CdkScrollable) scrollable: CdkScrollable;
 
   constructor(@Optional() private _dir: Directionality,
               private _element: ElementRef,

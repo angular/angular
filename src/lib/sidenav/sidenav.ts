@@ -7,10 +7,16 @@
  */
 
 import {
-  ChangeDetectionStrategy, ChangeDetectorRef,
-  Component, ContentChild,
-  ContentChildren, forwardRef, Inject, Input,
-  ViewEncapsulation
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ContentChild,
+  ContentChildren,
+  forwardRef,
+  Inject,
+  Input,
+  ViewEncapsulation,
+  QueryList,
 } from '@angular/core';
 import {MatDrawer, MatDrawerContainer, MatDrawerContent} from './drawer';
 import {matDrawerAnimations} from './drawer-animations';
@@ -107,7 +113,6 @@ export class MatSidenav extends MatDrawer {
   preserveWhitespaces: false,
 })
 export class MatSidenavContainer extends MatDrawerContainer {
-  @ContentChildren(MatSidenav) _drawers;
-
-  @ContentChild(MatSidenavContent) _content;
+  @ContentChildren(MatSidenav) _drawers: QueryList<MatSidenav>;
+  @ContentChild(MatSidenavContent) _content: MatSidenavContent;
 }

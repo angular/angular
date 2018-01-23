@@ -172,6 +172,21 @@ CSS to adjust to either type of device.
 
 <!-- example(sidenav-responsive) -->
 
+### Reacting to scroll events inside the sidenav container
+
+To react to scrolling inside the `<mat-sidenav-container>`, you can get a hold of the underlying
+`CdkScrollable` instance through the `MatSidenavContainer`.
+
+```ts
+class YourComponent {
+  @ViewChild(MatSidenavContainer) sidenavContainer: MatSidenavContainer;
+
+  constructor() {
+    this.sidenavContainer.scrollable.elementScrolled().subscribe(() => /* react to scrolling */);
+  }
+}
+```
+
 ### Accessibility
 
 The `<mat-sidenav>` an `<mat-sidenav-content>` should each be given an appropriate `role` attribute
