@@ -229,11 +229,12 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
       // error triggers that we can't subscribe to (e.g. parent form submissions). This means
       // that whatever logic is in here has to be super lean or we risk destroying the performance.
       this.updateErrorState();
-    } else {
-      // When the input isn't used together with `@angular/forms`, we need to check manually for
-      // changes to the native `value` property in order to update the floating label.
-      this._dirtyCheckNativeValue();
     }
+
+    // We need to dirty-check the native element's value, because there are some cases where
+    // we won't be notified when it changes (e.g. the consumer isn't using forms or they're
+    // updating the value using `emitEvent: false`).
+    this._dirtyCheckNativeValue();
   }
 
   focus() { this._elementRef.nativeElement.focus(); }
