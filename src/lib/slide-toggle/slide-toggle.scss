@@ -2,6 +2,7 @@
 @import '../core/ripple/ripple';
 @import '../core/style/elevation';
 @import '../core/style/vendor-prefixes';
+@import '../core/style/list-common';
 @import '../../cdk/a11y/a11y';
 
 $mat-slide-toggle-thumb-size: 20px !default;
@@ -17,6 +18,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 .mat-slide-toggle {
   display: inline-block;
   height: $mat-slide-toggle-height;
+  max-width: 100%;
 
   line-height: $mat-slide-toggle-height;
 
@@ -51,6 +53,10 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   height: inherit;
 
   cursor: pointer;
+}
+
+.mat-slide-toggle-content {
+  @include mat-truncate-line();
 }
 
 /* If the label should be placed before the thumb then we just change the orders. */
@@ -130,6 +136,10 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 
   width: $mat-slide-toggle-bar-width;
   height: $mat-slide-toggle-bar-height;
+
+  // Prevent shrinking of the bar container. It can happen that the content is long enough to
+  // shrink the bar and the thumb.
+  flex-shrink: 0;
 
   border-radius: $mat-slide-toggle-bar-border-radius;
 
