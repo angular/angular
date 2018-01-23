@@ -224,6 +224,14 @@ describe('MatProgressSpinner', () => {
     expect(svgElement.getAttribute('viewBox')).toBe('0 0 38 38');
   });
 
+  it('should update the element size when changed dynamically', () => {
+    let fixture = TestBed.createComponent(BasicProgressSpinner);
+    let spinner = fixture.debugElement.query(By.directive(MatProgressSpinner));
+    spinner.componentInstance.diameter = 32;
+    fixture.detectChanges();
+    expect(spinner.nativeElement.style.width).toBe('32px');
+    expect(spinner.nativeElement.style.height).toBe('32px');
+  });
 });
 
 
