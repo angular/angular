@@ -24,8 +24,6 @@ export {InjectFlags, QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_REA
 // clang-format off
 export {
 
-  LifecycleHook,
-
   NO_CHANGE as NC,
 
   bind as b,
@@ -68,10 +66,13 @@ export {
 
 export {
   QueryList,
-  
+
   query as Q,
   queryRefresh as qR,
 } from './query';
+
+export {LifecycleHook} from './hooks';
+
 // clang-format on
 
 export {

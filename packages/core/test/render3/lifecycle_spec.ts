@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, ComponentDef, ComponentTemplate, E, L, LifecycleHook, T, V, b, cR, cr, defineComponent, e, l, m, p, r, v, pD, P} from '../../src/render3/index';
+import {C, ComponentDef, ComponentTemplate, E, L, LifecycleHook, P, T, V, b, cR, cr, defineComponent, defineDirective, e, l, m, p, pD, r, v} from '../../src/render3/index';
+
 import {containerEl, renderToHtml} from './render_util';
 
 describe('lifecycles', () => {
@@ -52,8 +53,6 @@ describe('lifecycles', () => {
           type: Component,
           tag: name,
           factory: () => new Component(),
-          hostBindings: function(directiveIndex: number, elementIndex: number):
-              void { l(LifecycleHook.ON_INIT) && m<Component>(directiveIndex).ngOnInit(); },
           inputs: {val: 'val'}, template
         });
       };
@@ -220,6 +219,30 @@ describe('lifecycles', () => {
       expect(events).toEqual(['comp1', 'projected1', 'comp2', 'projected2']);
     });
 
+    it('should be called on directives after component', () => {
+      class Directive {
+        ngOnInit() { events.push('dir'); }
+
+        static ngDirectiveDef = defineDirective({type: Directive, factory: () => new Directive()});
+      }
+
+      function Template(ctx: any, cm: boolean) {
+        if (cm) {
+          E(0, Comp, null, [Directive]);
+          e();
+        }
+        Comp.ngComponentDef.h(1, 0);
+        Comp.ngComponentDef.r(1, 0);
+      }
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['comp', 'dir']);
+
+      renderToHtml(Template, {});
+      expect(events).toEqual(['comp', 'dir']);
+
+    });
+
     it('should call onInit properly in for loop', () => {
       /**
        *  <comp [val]="1"></comp>
@@ -334,22 +357,13 @@ describe('lifecycles', () => {
       return class Component {
         ngDoCheck() {
           events.push(name);
-          allEvents.push('ngDoCheck ' + name);
+          allEvents.push('check ' + name);
         }
 
-        ngOnInit() { allEvents.push('ngOnInit ' + name); }
+        ngOnInit() { allEvents.push('init ' + name); }
 
-        static ngComponentDef = defineComponent({
-          type: Component,
-          tag: name,
-          factory: () => new Component(),
-          hostBindings: function(
-              this: ComponentDef<Component>, directiveIndex: number, elementIndex: number): void {
-            l(LifecycleHook.ON_INIT) && m<Component>(directiveIndex).ngOnInit();
-            m<Component>(directiveIndex).ngDoCheck();
-          },
-          template
-        });
+        static ngComponentDef =
+            defineComponent({type: Component, tag: name, factory: () => new Component(), template});
       };
     }
 
@@ -402,10 +416,10 @@ describe('lifecycles', () => {
       }
 
       renderToHtml(Template, {});
-      expect(allEvents).toEqual(['ngOnInit comp', 'ngDoCheck comp']);
+      expect(allEvents).toEqual(['init comp', 'check comp']);
 
       renderToHtml(Template, {});
-      expect(allEvents).toEqual(['ngOnInit comp', 'ngDoCheck comp', 'ngDoCheck comp']);
+      expect(allEvents).toEqual(['init comp', 'check comp', 'check comp']);
     });
 
   });
@@ -829,8 +843,8 @@ describe('lifecycles', () => {
           refresh: (directiveIndex: number, elementIndex: number) => {
             r(directiveIndex, elementIndex, template);
             const comp = m(directiveIndex) as Component;
-            l(LifecycleHook.AFTER_INIT, comp, comp.ngAfterViewInit);
-            l(LifecycleHook.AFTER_CHECKED, comp, comp.ngAfterViewChecked);
+            l(LifecycleHook.ON_INIT, comp, comp.ngAfterViewInit);
+            l(LifecycleHook.ON_CHECK, comp, comp.ngAfterViewChecked);
           },
           inputs: {val: 'val'},
           template: template
@@ -1693,16 +1707,11 @@ describe('lifecycles', () => {
           type: Component,
           tag: name,
           factory: () => new Component(),
-          hostBindings: function(directiveIndex: number, elementIndex: number): void {
-            const comp = D(directiveIndex) as Component;
-            l(LifecycleHook.ON_INIT) && comp.ngOnInit();
-            comp.ngDoCheck();
-          },
           refresh: function(directiveIndex: number, elementIndex: number): void {
             r(directiveIndex, elementIndex, template);
-            const comp = D(directiveIndex) as Component;
-            l(LifecycleHook.AFTER_INIT, comp, comp.ngAfterViewInit);
-            l(LifecycleHook.AFTER_CHECKED, comp, comp.ngAfterViewChecked);
+            const comp = m(directiveIndex) as Component;
+            l(LifecycleHook.ON_INIT, comp, comp.ngAfterViewInit);
+            l(LifecycleHook.ON_CHECK, comp, comp.ngAfterViewChecked);
           },
           inputs: {val: 'val'}, template
         });

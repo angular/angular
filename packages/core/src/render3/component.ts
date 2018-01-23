@@ -13,8 +13,7 @@ import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_facto
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {assertNotNull} from './assert';
-
-import {NG_HOST_SYMBOL, createError, createLView, directiveCreate, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
+import {NG_HOST_SYMBOL, createError, createLView, createTView, directiveCreate, enterView, hostElement, leaveView, locateHostElement, renderComponentOrTemplate} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -173,7 +172,7 @@ export function renderComponent<T>(
   const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);
   const oldView = enterView(
       createLView(
-          -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), {data: []}),
+          -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView()),
       null !);
   try {
     // Create element node at index 0 in data array
