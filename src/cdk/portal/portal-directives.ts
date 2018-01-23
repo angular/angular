@@ -17,6 +17,8 @@ import {
   OnDestroy,
   OnInit,
   Input,
+  EventEmitter,
+  Output,
 } from '@angular/core';
 import {Portal, TemplatePortal, ComponentPortal, BasePortalOutlet} from './portal';
 
@@ -35,6 +37,11 @@ export class CdkPortal extends TemplatePortal<any> {
   }
 }
 
+/**
+ * Possible attached references to the CdkPortalOutlet.
+ */
+export type CdkPortalOutletAttachedRef = ComponentRef<any> | EmbeddedViewRef<any> | null;
+
 
 /**
  * Directive version of a PortalOutlet. Because the directive *is* a PortalOutlet, portals can be
@@ -51,6 +58,9 @@ export class CdkPortal extends TemplatePortal<any> {
 export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestroy {
   /** Whether the portal component is initialized. */
   private _isInitialized = false;
+
+  /** Reference to the currently-attached component/view ref. */
+  private _attachedRef: CdkPortalOutletAttachedRef;
 
   constructor(
       private _componentFactoryResolver: ComponentFactoryResolver,
@@ -93,6 +103,14 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     this._attachedPortal = portal;
   }
 
+  @Output('attached') attached: EventEmitter<CdkPortalOutletAttachedRef> =
+      new EventEmitter<CdkPortalOutletAttachedRef>();
+
+  /** Component or view reference that is attached to the portal. */
+  get attachedRef(): CdkPortalOutletAttachedRef {
+    return this._attachedRef;
+  }
+
   ngOnInit() {
     this._isInitialized = true;
   }
@@ -100,6 +118,7 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
   ngOnDestroy() {
     super.dispose();
     this._attachedPortal = null;
+    this._attachedRef = null;
   }
 
   /**
@@ -125,6 +144,8 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
 
     super.setDisposeFn(() => ref.destroy());
     this._attachedPortal = portal;
+    this._attachedRef = ref;
+    this.attached.emit(ref);
 
     return ref;
   }
@@ -140,6 +161,8 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     super.setDisposeFn(() => this._viewContainerRef.clear());
 
     this._attachedPortal = portal;
+    this._attachedRef = viewRef;
+    this.attached.emit(viewRef);
 
     return viewRef;
   }

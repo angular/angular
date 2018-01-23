@@ -10,7 +10,8 @@ import {
   Optional,
   Injector,
   ApplicationRef,
-  TemplateRef
+  TemplateRef,
+  ComponentRef,
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CdkPortal, CdkPortalOutlet, PortalModule} from './portal-directives';
@@ -45,6 +46,9 @@ describe('Portals', () => {
       // Expect that the content of the attached portal is present.
       expect(hostContainer.textContent).toContain('Pizza');
       expect(testAppComponent.portalOutlet.portal).toBe(componentPortal);
+      expect(testAppComponent.portalOutlet.attachedRef instanceof ComponentRef).toBe(true);
+      expect(testAppComponent.attachedSpy)
+          .toHaveBeenCalledWith(testAppComponent.portalOutlet.attachedRef);
     });
 
     it('should load a template into the portal', () => {
@@ -58,6 +62,13 @@ describe('Portals', () => {
       // Expect that the content of the attached portal is present and no context is projected
       expect(hostContainer.textContent).toContain('Banana');
       expect(testAppComponent.portalOutlet.portal).toBe(templatePortal);
+
+      // We can't test whether it's an instance of an `EmbeddedViewRef` so
+      // we verify that it's defined and that it's not a ComponentRef.
+      expect(testAppComponent.portalOutlet.attachedRef instanceof ComponentRef).toBe(false);
+      expect(testAppComponent.portalOutlet.attachedRef).toBeTruthy();
+      expect(testAppComponent.attachedSpy)
+          .toHaveBeenCalledWith(testAppComponent.portalOutlet.attachedRef);
     });
 
     it('should project template context bindings in the portal', () => {
@@ -499,7 +510,7 @@ class ArbitraryViewContainerRefComponent {
   selector: 'portal-test',
   template: `
   <div class="portal-container">
-    <ng-template [cdkPortalOutlet]="selectedPortal"></ng-template>
+    <ng-template [cdkPortalOutlet]="selectedPortal" (attached)="attachedSpy($event)"></ng-template>
   </div>
 
   <ng-template cdk-portal>Cake</ng-template>
@@ -524,6 +535,7 @@ class PortalTestApp {
   selectedPortal: Portal<any>|undefined;
   fruit: string = 'Banana';
   fruits = ['Apple', 'Pineapple', 'Durian'];
+  attachedSpy = jasmine.createSpy('attached spy');
 
   constructor(public injector: Injector) { }
 
