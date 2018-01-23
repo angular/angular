@@ -2519,6 +2519,25 @@ describe('MatSelect', () => {
       expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
     }));
 
+    it('should not restore focus to the host element when clicking outside', fakeAsync(() => {
+      const fixture = TestBed.createComponent(BasicSelectWithoutForms);
+      const select = fixture.debugElement.nativeElement.querySelector('mat-select');
+
+      fixture.detectChanges();
+      fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement.click();
+      fixture.detectChanges();
+      flush();
+
+      expect(document.activeElement).toBe(select, 'Expected trigger to be focused.');
+
+      select.blur(); // Blur manually since the programmatic click might not do it.
+      (overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement).click();
+      fixture.detectChanges();
+      flush();
+
+      expect(document.activeElement).not.toBe(select, 'Expected trigger not to be focused.');
+    }));
+
     it('should update the data binding before emitting the change event', fakeAsync(() => {
       const fixture = TestBed.createComponent(BasicSelectWithoutForms);
       const instance = fixture.componentInstance;

@@ -298,7 +298,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   ];
 
   /** Whether the select is focused. */
-  focused = false;
+  focused: boolean = false;
 
   /** A name for this control that can be used by `mat-form-field`. */
   controlType = 'mat-select';
@@ -548,7 +548,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       this._panelOpen = false;
       this._changeDetectorRef.markForCheck();
       this._onTouched();
-      this.focus();
     }
   }
 
@@ -715,8 +714,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * "blur" to the panel when it opens, causing a false positive.
    */
   _onBlur() {
+    this.focused = false;
+
     if (!this.disabled && !this.panelOpen) {
-      this.focused = false;
       this._onTouched();
       this._changeDetectorRef.markForCheck();
       this.stateChanges.next();
@@ -844,8 +844,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     ).subscribe(event => {
       this._onSelect(event.source);
 
-      if (!this.multiple) {
+      if (!this.multiple && this._panelOpen) {
         this.close();
+        this.focus();
       }
     });
 
