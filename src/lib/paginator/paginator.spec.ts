@@ -264,6 +264,19 @@ describe('MatPaginator', () => {
     expect(withStringPaginator.pageSize).toEqual(10);
     expect(withStringPaginator.pageSizeOptions).toEqual([5, 10, 25, 100]);
   });
+
+  it('should be able to hide the page size select', () => {
+    const element = fixture.nativeElement;
+
+    expect(element.querySelector('.mat-paginator-page-size'))
+        .toBeTruthy('Expected select to be rendered.');
+
+    fixture.componentInstance.hidePageSize = true;
+    fixture.detectChanges();
+
+    expect(element.querySelector('.mat-paginator-page-size'))
+        .toBeNull('Expected select to be removed.');
+  });
 });
 
 function getPreviousButton(fixture: ComponentFixture<any>) {
@@ -279,6 +292,7 @@ function getNextButton(fixture: ComponentFixture<any>) {
     <mat-paginator [pageIndex]="pageIndex"
                    [pageSize]="pageSize"
                    [pageSizeOptions]="pageSizeOptions"
+                   [hidePageSize]="hidePageSize"
                    [length]="length"
                    (page)="latestPageEvent = $event">
     </mat-paginator>
@@ -288,6 +302,7 @@ class MatPaginatorApp {
   pageIndex = 0;
   pageSize = 10;
   pageSizeOptions = [5, 10, 25, 100];
+  hidePageSize = false;
   length = 100;
 
   latestPageEvent: PageEvent | null;

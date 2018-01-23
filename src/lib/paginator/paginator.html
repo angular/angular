@@ -1,5 +1,5 @@
 <div class="mat-paginator-container">
-  <div class="mat-paginator-page-size">
+  <div class="mat-paginator-page-size" *ngIf="!hidePageSize">
     <div class="mat-paginator-page-size-label">
       {{_intl.itemsPerPageLabel}}
     </div>
