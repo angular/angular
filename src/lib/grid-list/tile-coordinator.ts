@@ -110,7 +110,10 @@ export class TileCoordinator {
 
       // Continue iterating until we find a gap wide enough for this tile.
     } while (gapEndIndex - gapStartIndex < tileCols);
-    return gapStartIndex;
+
+    // If we still didn't manage to find a gap, ensure that the index is
+    // at least zero so the tile doesn't get pulled out of the grid.
+    return Math.max(gapStartIndex, 0);
   }
 
   /** Move "down" to the next row. */
