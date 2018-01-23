@@ -33,9 +33,6 @@ export interface LView {
    */
   creationMode: boolean;
 
-  /** The index in the data array at which view hooks begin to be stored. */
-  viewHookStartIndex: number|null;
-
   /**
    * The parent view is needed when we exit the view and must restore the previous
    * `LView`. Without this, the render method would have to keep a stack of
@@ -89,19 +86,6 @@ export interface LView {
    * 2nd index is; context for function
    */
   cleanup: any[]|null;
-
-  /**
-   * Array of ngAfterContentInit and ngAfterContentChecked hooks.
-   *
-   * These need to be queued so they can be called all at once after init hooks
-   * and any embedded views are finished processing (to maintain backwards-compatible
-   * order).
-   *
-   * 1st index is: type of hook (afterContentInit or afterContentChecked)
-   * 2nd index is: method to call
-   * 3rd index is: context
-   */
-  contentHooks: any[]|null;
 
   /**
    * Whether or not the ngOnInit and ngDoCheck hooks have been called in this change
@@ -212,12 +196,30 @@ export interface TView {
   firstTemplatePass: boolean;
 
   /**
-   * Array of init hooks that should be executed for this view.
+   * Array of ngOnInit and ngDoCheck hooks that should be executed for this view.
    *
    * Even indices: Flags (1st bit: hook type, remaining: directive index)
    * Odd indices: Hook function
    */
   initHooks: HookData|null;
+
+  /**
+   * Array of ngAfterContentInit and ngAfterContentChecked hooks that should be executed for
+   * this view.
+   *
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
+   * Odd indices: Hook function
+   */
+  contentHooks: HookData|null;
+
+  /**
+   * Array of ngAfterViewInit and ngAfterViewChecked hooks that should be executed for
+   * this view.
+   *
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
+   * Odd indices: Hook function
+   */
+  viewHooks: HookData|null;
 }
 
 /**
