@@ -18,6 +18,7 @@ export {OverlayRef, OverlaySizeConfig} from './overlay-ref';
 export {ViewportRuler} from '@angular/cdk/scrolling';
 export {ComponentType} from '@angular/cdk/portal';
 export {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
+export {OverlayPositionBuilder} from './position/overlay-position-builder';
 
 // Export pre-defined position strategies and interface to build custom ones.
 export {PositionStrategy} from './position/position-strategy';
