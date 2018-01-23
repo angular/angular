@@ -740,6 +740,25 @@ describe('MatDatepicker', () => {
 
           expect(toggle.getAttribute('aria-label')).toBe('Open the calendar, perhaps?');
         }));
+
+      it('should toggle the active state of the datepicker toggle', fakeAsync(() => {
+        const toggle = fixture.debugElement.query(By.css('mat-datepicker-toggle')).nativeElement;
+
+        expect(toggle.classList).not.toContain('mat-datepicker-toggle-active');
+
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+        flush();
+
+        expect(toggle.classList).toContain('mat-datepicker-toggle-active');
+
+        fixture.componentInstance.datepicker.close();
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(toggle.classList).not.toContain('mat-datepicker-toggle-active');
+      }));
     });
 
     describe('datepicker inside mat-form-field', () => {

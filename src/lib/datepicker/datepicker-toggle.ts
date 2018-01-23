@@ -31,6 +31,7 @@ import {MatDatepickerIntl} from './datepicker-intl';
   templateUrl: 'datepicker-toggle.html',
   host: {
     'class': 'mat-datepicker-toggle',
+    '[class.mat-datepicker-toggle-active]': 'datepicker && datepicker.opened',
   },
   exportAs: 'matDatepickerToggle',
   encapsulation: ViewEncapsulation.None,
@@ -80,9 +81,16 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
     const datepickerDisabled = this.datepicker ? this.datepicker._disabledChange : observableOf();
     const inputDisabled = this.datepicker && this.datepicker._datepickerInput ?
         this.datepicker._datepickerInput._disabledChange : observableOf();
+    const datepickerToggled = this.datepicker ?
+        merge(this.datepicker.openedStream, this.datepicker.closedStream) :
+        observableOf();
 
     this._stateChanges.unsubscribe();
-    this._stateChanges = merge(this._intl.changes, datepickerDisabled, inputDisabled)
-        .subscribe(() => this._changeDetectorRef.markForCheck());
+    this._stateChanges = merge(
+      this._intl.changes,
+      datepickerDisabled,
+      inputDisabled,
+      datepickerToggled
+    ).subscribe(() => this._changeDetectorRef.markForCheck());
   }
 }

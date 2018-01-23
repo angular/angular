@@ -84,6 +84,10 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   .mat-calendar-body-disabled > .mat-calendar-body-today:not(.mat-calendar-body-selected) {
     border-color: fade-out(mat-color($foreground, hint-text), $mat-datepicker-today-fade-amount);
   }
+
+  .mat-datepicker-toggle-active {
+    color: mat-color($primary);
+  }
 }
 
 @mixin mat-datepicker-typography($config) {
