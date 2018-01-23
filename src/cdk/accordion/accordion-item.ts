@@ -37,6 +37,14 @@ export class CdkAccordionItem implements OnDestroy {
   @Output() opened: EventEmitter<void> = new EventEmitter<void>();
   /** Event emitted when the AccordionItem is destroyed. */
   @Output() destroyed: EventEmitter<void> = new EventEmitter<void>();
+
+  /**
+   * Emits whenever the expanded state of the accordion changes.
+   * Primarily used to facilitate two-way binding.
+   * @docs-private
+   */
+  @Output() expandedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   /** The unique AccordionItem id. */
   readonly id: string = `cdk-accordion-child-${nextId++}`;
 
@@ -49,6 +57,8 @@ export class CdkAccordionItem implements OnDestroy {
     // Only emit events and update the internal value if the value changes.
     if (this._expanded !== expanded) {
       this._expanded = expanded;
+      this.expandedChange.emit(expanded);
+
       if (expanded) {
         this.opened.emit();
         /**

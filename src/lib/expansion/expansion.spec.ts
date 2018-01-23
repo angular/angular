@@ -18,6 +18,7 @@ describe('MatExpansionPanel', () => {
         PanelWithCustomMargin,
         LazyPanelWithContent,
         LazyPanelOpenOnLoad,
+        PanelWithTwoWayBinding,
       ],
     });
     TestBed.compileComponents();
@@ -165,15 +166,31 @@ describe('MatExpansionPanel', () => {
       expect(arrow.style.transform).toBe('rotate(180deg)', 'Expected 180 degree rotation.');
     }));
 
-    it('make sure accordion item runs ngOnDestroy when expansion panel is destroyed', () => {
-      let fixture = TestBed.createComponent(PanelWithContentInNgIf);
-      fixture.detectChanges();
-      let destroyedOk = false;
-      fixture.componentInstance.panel.destroyed.subscribe(() => destroyedOk = true);
-      fixture.componentInstance.expansionShown = false;
-      fixture.detectChanges();
-      expect(destroyedOk).toBe(true);
-    });
+  it('should make sure accordion item runs ngOnDestroy when expansion panel is destroyed', () => {
+    let fixture = TestBed.createComponent(PanelWithContentInNgIf);
+    fixture.detectChanges();
+    let destroyedOk = false;
+    fixture.componentInstance.panel.destroyed.subscribe(() => destroyedOk = true);
+    fixture.componentInstance.expansionShown = false;
+    fixture.detectChanges();
+    expect(destroyedOk).toBe(true);
+  });
+
+  it('should support two-way binding of the `expanded` property', () => {
+    const fixture = TestBed.createComponent(PanelWithTwoWayBinding);
+    const header = fixture.debugElement.query(By.css('mat-expansion-panel-header')).nativeElement;
+
+    fixture.detectChanges();
+    expect(fixture.componentInstance.expanded).toBe(false);
+
+    header.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.expanded).toBe(true);
+
+    header.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.expanded).toBe(false);
+  });
 
   describe('disabled state', () => {
     let fixture: ComponentFixture<PanelWithContent>;
@@ -313,3 +330,14 @@ class LazyPanelWithContent {
   </mat-expansion-panel>`
 })
 class LazyPanelOpenOnLoad {}
+
+
+@Component({
+  template: `
+  <mat-expansion-panel [(expanded)]="expanded">
+    <mat-expansion-panel-header>Panel Title</mat-expansion-panel-header>
+  </mat-expansion-panel>`
+})
+class PanelWithTwoWayBinding {
+  expanded = false;
+}
