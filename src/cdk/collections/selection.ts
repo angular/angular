@@ -18,13 +18,13 @@ export class SelectionModel<T> {
   /** Keeps track of the deselected options that haven't been emitted by the change event. */
   private _deselectedToEmit: T[] = [];
 
-  /** Keeps track of the selected option that haven't been emitted by the change event. */
+  /** Keeps track of the selected options that haven't been emitted by the change event. */
   private _selectedToEmit: T[] = [];
 
   /** Cache for the array value of the selected items. */
   private _selected: T[] | null;
 
-  /** Selected value(s). */
+  /** Selected values. */
   get selected(): T[] {
     if (!this._selected) {
       this._selected = Array.from(this._selection.values());
@@ -37,12 +37,12 @@ export class SelectionModel<T> {
   onChange: Subject<SelectionChange<T>> | null = this._emitChanges ? new Subject() : null;
 
   constructor(
-    private _isMulti = false,
+    private _multiple = false,
     initiallySelectedValues?: T[],
     private _emitChanges = true) {
 
-    if (initiallySelectedValues) {
-      if (_isMulti) {
+    if (initiallySelectedValues && initiallySelectedValues.length) {
+      if (_multiple) {
         initiallySelectedValues.forEach(value => this._markSelected(value));
       } else {
         this._markSelected(initiallySelectedValues[0]);
@@ -111,7 +111,7 @@ export class SelectionModel<T> {
    * Sorts the selected values based on a predicate function.
    */
   sort(predicate?: (a: T, b: T) => number): void {
-    if (this._isMulti && this._selected) {
+    if (this._multiple && this._selected) {
       this._selected.sort(predicate);
     }
   }
@@ -136,7 +136,7 @@ export class SelectionModel<T> {
   /** Selects a value. */
   private _markSelected(value: T) {
     if (!this.isSelected(value)) {
-      if (!this._isMulti) {
+      if (!this._multiple) {
         this._unmarkAll();
       }
 
@@ -171,7 +171,7 @@ export class SelectionModel<T> {
    * including multiple values while the selection model is not supporting multiple values.
    */
   private _verifyValueAssignment(values: T[]) {
-    if (values.length > 1 && !this._isMulti) {
+    if (values.length > 1 && !this._multiple) {
       throw getMultipleValuesInSingleSelectionError();
     }
   }

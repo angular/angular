@@ -265,4 +265,8 @@ describe('SelectionModel', () => {
     expect(model.selected.length).toBe(0);
     expect(model.isEmpty()).toBe(true);
   });
+
+  it('should be empty if an empty array is passed for the preselected values', () => {
+    expect(new SelectionModel(false, []).selected).toEqual([]);
+  });
 });
