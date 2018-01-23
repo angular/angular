@@ -6,12 +6,13 @@ import {createKeyboardEvent} from '../testing/event-objects';
 import {ActiveDescendantKeyManager} from './activedescendant-key-manager';
 import {FocusKeyManager} from './focus-key-manager';
 import {ListKeyManager} from './list-key-manager';
+import {FocusOrigin} from './focus-monitor';
 
 
 class FakeFocusable {
   constructor(private _label = '') { }
   disabled = false;
-  focus() {}
+  focus(_focusOrigin?: FocusOrigin) {}
   getLabel() { return this._label; }
 }
 
@@ -624,6 +625,21 @@ describe('Key managers', () => {
       expect(keyManager.activeItemIndex)
           .toBe(1, `Expected activeItemIndex to update after calling updateActiveItemIndex().`);
       expect(itemList.items[1].focus).not.toHaveBeenCalledTimes(1);
+    });
+
+    it('should be able to set the focus origin', () => {
+      keyManager.setFocusOrigin('mouse');
+
+      keyManager.onKeydown(fakeKeyEvents.downArrow);
+      expect(itemList.items[1].focus).toHaveBeenCalledWith('mouse');
+
+      keyManager.onKeydown(fakeKeyEvents.downArrow);
+      expect(itemList.items[2].focus).toHaveBeenCalledWith('mouse');
+
+      keyManager.setFocusOrigin('keyboard');
+
+      keyManager.onKeydown(fakeKeyEvents.upArrow);
+      expect(itemList.items[1].focus).toHaveBeenCalledWith('keyboard');
     });
 
   });

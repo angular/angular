@@ -9,6 +9,7 @@
 import {EventEmitter, TemplateRef} from '@angular/core';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
 import {Direction} from '@angular/cdk/bidi';
+import {FocusOrigin} from '@angular/cdk/a11y';
 
 /**
  * Interface for a custom menu panel that can be used with `matMenuTriggerFor`.
@@ -22,7 +23,7 @@ export interface MatMenuPanel {
   close: EventEmitter<void | 'click' | 'keydown'>;
   parentMenu?: MatMenuPanel | undefined;
   direction?: Direction;
-  focusFirstItem: () => void;
+  focusFirstItem: (origin?: FocusOrigin) => void;
   resetActiveItem: () => void;
   setPositionClasses: (x: MenuPositionX, y: MenuPositionY) => void;
   setElevation?(depth: number): void;

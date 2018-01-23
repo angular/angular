@@ -14,6 +14,7 @@ import {MatMenu, MAT_MENU_DEFAULT_OPTIONS} from './menu-directive';
 import {MatMenuItem} from './menu-item';
 import {MatMenuTrigger, MAT_MENU_SCROLL_STRATEGY_PROVIDER} from './menu-trigger';
 import {MatRippleModule} from '@angular/material/core';
+import {A11yModule} from '@angular/cdk/a11y';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import {MatRippleModule} from '@angular/material/core';
     CommonModule,
     MatRippleModule,
     MatCommonModule,
+    A11yModule,
   ],
   exports: [MatMenu, MatMenuItem, MatMenuTrigger, MatCommonModule],
   declarations: [MatMenu, MatMenuItem, MatMenuTrigger],

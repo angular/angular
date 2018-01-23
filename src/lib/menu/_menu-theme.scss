@@ -26,7 +26,8 @@
   }
 
   .mat-menu-item:hover,
-  .mat-menu-item:focus,
+  .mat-menu-item.cdk-program-focused,
+  .mat-menu-item.cdk-keyboard-focused,
   .mat-menu-item-highlighted {
     &:not([disabled]) {
       background: mat-color($background, 'hover');

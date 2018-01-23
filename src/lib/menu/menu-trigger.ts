@@ -234,19 +234,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     this.menu.direction = this.dir;
     this._setMenuElevation();
     this._setIsMenuOpen(true);
-
-    // If the menu was opened by mouse, we focus the root node, which allows for the keyboard
-    // interactions to work. Otherwise, if the menu was opened by keyboard, we focus the first item.
-    if (this._openedByMouse) {
-      let rootNode = this._overlayRef!.overlayElement.firstElementChild as HTMLElement;
-
-      if (rootNode) {
-        this.menu.resetActiveItem();
-        rootNode.focus();
-      }
-    } else {
-      this.menu.focusFirstItem();
-    }
+    this.menu.focusFirstItem(this._openedByMouse ? 'mouse' : 'program');
   }
 
   /** Updates the menu elevation based on the amount of parent menus that it has. */

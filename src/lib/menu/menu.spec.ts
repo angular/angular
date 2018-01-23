@@ -230,22 +230,20 @@ describe('MatMenu', () => {
     expect(fixture.componentInstance.items.last.getLabel()).toBe('Item with an icon');
   });
 
-  it('should focus the menu panel root node when it was opened by mouse', () => {
+  it('should set the proper focus origin when opening by mouse', fakeAsync(() => {
     const fixture = TestBed.createComponent(SimpleMenu);
-
     fixture.detectChanges();
+    spyOn(fixture.componentInstance.items.first, 'focus').and.callThrough();
 
     const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
 
     dispatchFakeEvent(triggerEl, 'mousedown');
     triggerEl.click();
     fixture.detectChanges();
+    tick(500);
 
-    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
-
-    expect(panel).toBeTruthy('Expected the panel to be rendered.');
-    expect(document.activeElement).toBe(panel, 'Expected the panel to be focused.');
-  });
+    expect(fixture.componentInstance.items.first.focus).toHaveBeenCalledWith('mouse');
+  }));
 
   it('should close the menu when using the CloseScrollStrategy', fakeAsync(() => {
     const scrolledSubject = new Subject();
@@ -1068,6 +1066,7 @@ describe('MatMenu', () => {
 
         instance.alternateTrigger.openMenu();
         fixture.detectChanges();
+        tick(500);
 
         lastMenu = overlay.querySelector('.mat-menu-panel') as HTMLElement;
 
@@ -1121,6 +1120,7 @@ describe('MatMenu', () => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.click();
       fixture.detectChanges();
+      tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
 
       instance.showLazy = true;
@@ -1130,6 +1130,8 @@ describe('MatMenu', () => {
 
       dispatchMouseEvent(lazyTrigger, 'mouseenter');
       fixture.detectChanges();
+      tick(500);
+
       expect(lazyTrigger.classList)
           .toContain('mat-menu-item-highlighted', 'Expected the trigger to be highlighted');
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
@@ -1157,10 +1159,12 @@ describe('MatMenu', () => {
 
       repeaterFixture.componentInstance.rootTriggerEl.nativeElement.click();
       repeaterFixture.detectChanges();
+      tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(1, 'Expected one open menu');
 
       dispatchMouseEvent(overlay.querySelector('.level-one-trigger')!, 'mouseenter');
       repeaterFixture.detectChanges();
+      tick(500);
       expect(overlay.querySelectorAll('.mat-menu-panel').length).toBe(2, 'Expected two open menus');
     }));
 

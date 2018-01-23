@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusableOption} from '@angular/cdk/a11y';
+import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -64,16 +64,34 @@ export class MatMenuItem extends _MatMenuItemMixinBase
   /** Whether the menu item acts as a trigger for a sub-menu. */
   _triggersSubmenu: boolean = false;
 
-  constructor(private _elementRef: ElementRef) {
+  constructor(
+    private _elementRef: ElementRef,
+    // TODO(crisbeto): switch to a required param when doing breaking changes.
+    private _focusMonitor?: FocusMonitor) {
     super();
+
+    if (_focusMonitor) {
+      // Start monitoring the element so it gets the appropriate focused classes. We want
+      // to show the focus style for menu items only when the focus was not caused by a
+      // mouse or touch interaction.
+      _focusMonitor.monitor(this._getHostElement(), false);
+    }
   }
 
   /** Focuses the menu item. */
-  focus(): void {
-    this._getHostElement().focus();
+  focus(origin: FocusOrigin = 'program'): void {
+    if (this._focusMonitor) {
+      this._focusMonitor.focusVia(this._getHostElement(), origin);
+    } else {
+      this._getHostElement().focus();
+    }
   }
 
   ngOnDestroy() {
+    if (this._focusMonitor) {
+      this._focusMonitor.stopMonitoring(this._getHostElement());
+    }
+
     this._hovered.complete();
   }
 
