@@ -811,13 +811,14 @@ function assertEditableStepChange(fixture: ComponentFixture<any>) {
 }
 
 /**
- * Asserts that it is possible to skip an optional step in linear stepper if there is no input
- * or the input is valid.
+ * Asserts that it is possible to skip an optional step in linear
+ * stepper if there is no input or the input is invalid.
  */
 function assertOptionalStepValidity(testComponent:
                                         LinearMatHorizontalStepperApp | LinearMatVerticalStepperApp,
                                     fixture: ComponentFixture<any>) {
-  let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+  const stepperComponent: MatStepper = fixture.debugElement
+      .query(By.directive(MatStepper)).componentInstance;
 
   testComponent.oneGroup.get('oneCtrl')!.setValue('input');
   testComponent.twoGroup.get('twoCtrl')!.setValue('input');
@@ -825,10 +826,11 @@ function assertOptionalStepValidity(testComponent:
   stepperComponent.selectedIndex = 2;
   fixture.detectChanges();
 
+  expect(stepperComponent._steps.toArray()[2].optional).toBe(true);
   expect(stepperComponent.selectedIndex).toBe(2);
   expect(testComponent.threeGroup.get('threeCtrl')!.valid).toBe(true);
 
-  let nextButtonNativeEl = fixture.debugElement
+  const nextButtonNativeEl = fixture.debugElement
       .queryAll(By.directive(MatStepperNext))[2].nativeElement;
   nextButtonNativeEl.click();
   fixture.detectChanges();
@@ -843,15 +845,7 @@ function assertOptionalStepValidity(testComponent:
 
   expect(testComponent.threeGroup.get('threeCtrl')!.valid).toBe(false);
   expect(stepperComponent.selectedIndex)
-      .toBe(2, 'Expected selectedIndex to remain unchanged when optional step input is invalid.');
-
-  testComponent.threeGroup.get('threeCtrl')!.setValue('valid');
-  nextButtonNativeEl.click();
-  fixture.detectChanges();
-
-  expect(testComponent.threeGroup.get('threeCtrl')!.valid).toBe(true);
-  expect(stepperComponent.selectedIndex)
-      .toBe(3, 'Expected selectedIndex to change when optional step input is valid.');
+      .toBe(3, 'Expected selectedIndex to change when optional step input is invalid.');
 }
 
 /** Asserts that step header set the correct icon depending on the state of step. */
@@ -872,10 +866,7 @@ function assertCorrectStepIcon(fixture: ComponentFixture<any>,
 function asyncValidator(minLength: number, validationTrigger: Observable<any>): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
     return validationTrigger.pipe(
-      map(() =>  {
-        const success = control.value && control.value.length >= minLength;
-        return success ? null : { 'asyncValidation': {}};
-      }),
+      map(() => control.value && control.value.length >= minLength ? null : {asyncValidation: {}}),
       take(1)
     );
   };
