@@ -23,13 +23,13 @@
 <br><br>
 <button (click)="male()">&#9794;</button> <button (click)="female()">&#9792;</button> <button (click)="other()">&#9895;</button>
 <!--#docregion i18n-select-->
-<span i18n>The author is {gender, select, m {male} f {female} o {other}}</span>
+<span i18n>The author is {gender, select, male {male} female {female} other {other}}</span>
 <!--#enddocregion i18n-select-->
 <br><br>
 <!--#docregion i18n-nested-->
 <span i18n>Updated: {minutes, plural,
   =0 {just now}
   =1 {one minute ago}
-  other {{{minutes}} minutes ago by {gender, select, m {male} f {female} o {other}}}}
+  other {{{minutes}} minutes ago by {gender, select, male {male} female {female} other {other}}}}
 </span>
 <!--#enddocregion i18n-nested-->
