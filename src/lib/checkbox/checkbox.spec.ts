@@ -74,6 +74,10 @@ describe('MatCheckbox', () => {
       expect(inputElement.checked).toBe(false);
     });
 
+    it('should expose the ripple instance', () => {
+      expect(checkboxInstance.ripple).toBeTruthy();
+    });
+
     it('should add and remove indeterminate state', () => {
       expect(checkboxNativeElement.classList).not.toContain('mat-checkbox-checked');
       expect(inputElement.checked).toBe(false);

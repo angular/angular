@@ -177,8 +177,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   /** The native `<input type="checkbox"> element */
   @ViewChild('input') _inputElement: ElementRef;
 
-  /** Called when the checkbox is blurred. Needed to properly implement ControlValueAccessor. */
-  @ViewChild(MatRipple) _ripple: MatRipple;
+  /** Reference to the ripple instance of the checkbox. */
+  @ViewChild(MatRipple) ripple: MatRipple;
 
   /** Ripple configuration for the mouse ripples and focus indicators. */
   _rippleConfig: RippleConfig = {centered: true, radius: 25, speedFactor: 1.5};
@@ -341,7 +341,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   /** Function is called whenever the focus changes for the input element. */
   private _onInputFocusChange(focusOrigin: FocusOrigin) {
     if (!this._focusRipple && focusOrigin === 'keyboard') {
-      this._focusRipple = this._ripple.launch(0, 0, {persistent: true, ...this._rippleConfig});
+      this._focusRipple = this.ripple.launch(0, 0, {persistent: true, ...this._rippleConfig});
     } else if (!focusOrigin) {
       this._removeFocusRipple();
       this.onTouched();
