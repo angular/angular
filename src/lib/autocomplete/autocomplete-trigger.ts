@@ -41,6 +41,7 @@ import {MatFormField} from '@angular/material/form-field';
 import {DOCUMENT} from '@angular/common';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
+import {defer} from 'rxjs/observable/defer';
 import {fromEvent} from 'rxjs/observable/fromEvent';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
@@ -202,9 +203,17 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   /** Stream of autocomplete option selections. */
-  get optionSelections(): Observable<MatOptionSelectionChange> {
-    return merge(...this.autocomplete.options.map(option => option.onSelectionChange));
-  }
+  optionSelections: Observable<MatOptionSelectionChange> = defer(() => {
+    if (this.autocomplete && this.autocomplete.options) {
+     return merge(...this.autocomplete.options.map(option => option.onSelectionChange));
+    }
+
+    // If there are any subscribers before `ngAfterViewInit`, the `autocomplete` will be undefined.
+    // Return a stream that we'll replace with the real one once everything is in place.
+    return this._zone.onStable
+        .asObservable()
+        .pipe(take(1), switchMap(() => this.optionSelections));
+  });
 
   /** The currently active option, coerced to MatOption type. */
   get activeOption(): MatOption | null {
