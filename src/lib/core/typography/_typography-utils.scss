@@ -29,13 +29,9 @@
   @return if($font-family == null, $font-family, unquote($font-family));
 }
 
-// Converts a typography level into CSS styles.
-@mixin mat-typography-level-to-styles($config, $level) {
-  $font-size: mat-font-size($config, $level);
-  $font-weight: mat-font-weight($config, $level);
-  $line-height: mat-line-height($config, $level);
-  $font-family: mat-font-family($config, $level);
-
+// Outputs the shorthand `font` CSS property, based on a set of typography values. Falls back to
+// the individual properties if a value that isn't allowed in the shorthand is passed in.
+@mixin mat-typography-font-shorthand($font-size, $font-weight, $line-height, $font-family) {
   // If any of the values are set to `inherit`, we can't use the shorthand
   // so we fall back to passing in the individual properties.
   @if ($font-size == inherit or
@@ -53,9 +49,19 @@
     font-family: $font-family;
   }
   @else {
-    // Otherwise use the shorthand `font` to represent a typography level, because it's the the
-    // least amount of bytes. Note that we need to use interpolation for `font-size/line-height`
-    // in order to prevent Sass from dividing the two values.
+    // Otherwise use the shorthand `font`, because it's the least amount of bytes. Note
+    // that we need to use interpolation for `font-size/line-height` in order to prevent
+    // Sass from dividing the two values.
     font: $font-weight #{$font-size}/#{$line-height} $font-family;
   }
+}
+
+// Converts a typography level into CSS styles.
+@mixin mat-typography-level-to-styles($config, $level) {
+  $font-size: mat-font-size($config, $level);
+  $font-weight: mat-font-weight($config, $level);
+  $line-height: mat-line-height($config, $level);
+  $font-family: mat-font-family($config, $level);
+
+  @include mat-typography-font-shorthand($font-size, $font-weight, $line-height, $font-family);
 }

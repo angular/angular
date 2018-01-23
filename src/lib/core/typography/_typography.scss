@@ -91,18 +91,24 @@
   // consistency. The font sizes come from the Chrome user agent styles which have h5 at 0.83em
   // and h6 at 0.67em.
   .mat-h5, #{$selector} h5 {
-    font-size: mat-font-size($config, body-1) * 0.83;
-    font-weight: mat-font-weight($config, body-1);
-    font-family: mat-font-family($config, body-1);
-    line-height: mat-line-height($config, body-1);
+    @include mat-typography-font-shorthand(
+      mat-font-size($config, body-1) * 0.83,
+      mat-font-weight($config, body-1),
+      mat-line-height($config, body-1),
+      mat-font-family($config, body-1)
+    );
+
     margin: 0 0 12px;
   }
 
   .mat-h6, #{$selector} h6 {
-    font-size: mat-font-size($config, body-1) * 0.67;
-    font-weight: mat-font-weight($config, body-1);
-    font-family: mat-font-family($config, body-1);
-    line-height: mat-line-height($config, body-1);
+    @include mat-typography-font-shorthand(
+      mat-font-size($config, body-1) * 0.67,
+      mat-font-weight($config, body-1),
+      mat-line-height($config, body-1),
+      mat-font-family($config, body-1)
+    );
+
     margin: 0 0 12px;
   }
 
