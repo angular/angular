@@ -29,6 +29,7 @@ let _uniqueOptgroupIdCounter = 0;
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['disabled'],
+  styleUrls: ['optgroup.css'],
   host: {
     'class': 'mat-optgroup',
     'role': 'group',

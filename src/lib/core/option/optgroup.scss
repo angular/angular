@@ -1,0 +1,8 @@
+@import '../style/menu-common';
+@import '../style/vendor-prefixes';
+
+.mat-optgroup-label {
+  @include mat-menu-item-base();
+  @include user-select(none);
+  cursor: default;
+}

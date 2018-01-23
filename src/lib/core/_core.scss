@@ -6,9 +6,7 @@
 // Core styles that can be used to apply material design treatments to any element.
 @import 'style/elevation';
 @import 'ripple/ripple';
-@import 'option/option';
 @import 'option/option-theme';
-@import 'option/optgroup';
 @import 'option/optgroup-theme';
 @import 'selection/pseudo-checkbox/pseudo-checkbox-theme';
 @import 'typography/all-typography';
@@ -26,8 +24,6 @@
 
   @include angular-material-typography($typography-config);
   @include mat-ripple();
-  @include mat-option();
-  @include mat-optgroup();
   @include cdk-a11y();
   @include cdk-overlay();
 }
