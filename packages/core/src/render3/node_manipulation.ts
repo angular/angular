@@ -121,6 +121,10 @@ export function addRemoveViewFromContainer(
                           parent.removeChild(node.native !));
         nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
       } else if (type === LNodeFlags.Projection) {
+        // Note: when doing this, we loose access to the current node, because a projected node
+        // does not keep the reference to the place where it is inserted (its parent property is
+        // in the light DOM, not in the shadow DOM), and we can never append the following nodes
+        // from the shadow DOM
         nextNode = (node as LProjectionNode).data[0];
       } else {
         nextNode = (node as LViewNode).child;
