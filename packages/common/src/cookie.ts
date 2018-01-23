@@ -13,7 +13,7 @@
  */
 function cookieProperties(cookie: string) {
   const eqIndex = cookie.indexOf('=');
-  if(eqIndex > -1) {
+  if (eqIndex > -1) {
     return [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)]
   }
   return [cookie, ''];
