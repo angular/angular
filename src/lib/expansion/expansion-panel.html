@@ -1,8 +1,10 @@
 <ng-content select="mat-expansion-panel-header"></ng-content>
 <div class="mat-expansion-panel-content"
+     role="region"
      [class.mat-expanded]="expanded"
      [@bodyExpansion]="_getExpandedState()"
-     [id]="id">
+     [id]="id"
+     [attr.aria-labelledby]="_headerId">
   <div class="mat-expansion-panel-body">
     <ng-content></ng-content>
     <ng-template [cdkPortalOutlet]="_portal"></ng-template>

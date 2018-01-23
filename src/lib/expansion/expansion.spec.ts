@@ -3,6 +3,8 @@ import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatExpansionModule, MatExpansionPanel} from './index';
+import {SPACE, ENTER} from '@angular/cdk/keycodes';
+import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 
 
 describe('MatExpansionPanel', () => {
@@ -72,7 +74,7 @@ describe('MatExpansionPanel', () => {
     expect(fixture.componentInstance.closeCallback).toHaveBeenCalled();
   });
 
-  it('creates a unique panel id for each panel', () => {
+  it('should create a unique panel id for each panel', () => {
     const fixtureOne = TestBed.createComponent(PanelWithContent);
     const headerElOne = fixtureOne.nativeElement.querySelector('.mat-expansion-panel-header');
     const fixtureTwo = TestBed.createComponent(PanelWithContent);
@@ -85,9 +87,58 @@ describe('MatExpansionPanel', () => {
     expect(panelIdOne).not.toBe(panelIdTwo);
   });
 
+  it('should set `aria-labelledby` of the content to the header id', () => {
+    const fixture = TestBed.createComponent(PanelWithContent);
+    const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
+    const contentEl = fixture.nativeElement.querySelector('.mat-expansion-panel-content');
+
+    fixture.detectChanges();
+
+    const headerId = headerEl.getAttribute('id');
+    const contentLabel = contentEl.getAttribute('aria-labelledby');
+
+    expect(headerId).toBeTruthy();
+    expect(contentLabel).toBeTruthy();
+    expect(headerId).toBe(contentLabel);
+  });
+
+  it('should set the proper role on the content element', () => {
+    const fixture = TestBed.createComponent(PanelWithContent);
+    const contentEl = fixture.nativeElement.querySelector('.mat-expansion-panel-content');
+
+    expect(contentEl.getAttribute('role')).toBe('region');
+  });
+
+  it('should toggle the panel when pressing SPACE on the header', () => {
+    const fixture = TestBed.createComponent(PanelWithContent);
+    const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
+
+    spyOn(fixture.componentInstance.panel, 'toggle');
+
+    const event = dispatchKeyboardEvent(headerEl, 'keydown', SPACE);
+
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.panel.toggle).toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(true);
+  });
+
+  it('should toggle the panel when pressing ENTER on the header', () => {
+    const fixture = TestBed.createComponent(PanelWithContent);
+    const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
+
+    spyOn(fixture.componentInstance.panel, 'toggle');
+
+    const event = dispatchKeyboardEvent(headerEl, 'keydown', ENTER);
+
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.panel.toggle).toHaveBeenCalled();
+    expect(event.defaultPrevented).toBe(true);
+  });
+
   it('should not be able to focus content while closed', fakeAsync(() => {
     const fixture = TestBed.createComponent(PanelWithContent);
-
     fixture.componentInstance.expanded = true;
     fixture.detectChanges();
     tick(250);
