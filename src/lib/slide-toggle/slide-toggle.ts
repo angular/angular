@@ -52,8 +52,11 @@ export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
 
 /** Change event object emitted by a MatSlideToggle. */
 export class MatSlideToggleChange {
-  source: MatSlideToggle;
-  checked: boolean;
+  constructor(
+    /** The source MatSlideToggle of the event. */
+    public source: MatSlideToggle,
+    /** The new `checked` value of the MatSlideToggle. */
+    public checked: boolean) { }
 }
 
 // Boilerplate for applying mixins to MatSlideToggle.
@@ -250,11 +253,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
    * Emits a change event on the `change` output. Also notifies the FormControl about the change.
    */
   private _emitChangeEvent() {
-    let event = new MatSlideToggleChange();
-    event.source = this;
-    event.checked = this.checked;
     this.onChange(this.checked);
-    this.change.emit(event);
+    this.change.emit(new MatSlideToggleChange(this, this.checked));
   }
 
   _onDragStart() {
@@ -353,7 +353,7 @@ class SlideToggleRenderer {
   updateThumbPosition(distance: number): void {
     this.dragPercentage = this._getDragPercentage(distance);
     // Calculate the moved distance based on the thumb bar width.
-    let dragX = (this.dragPercentage / 100) * this._thumbBarWidth;
+    const dragX = (this.dragPercentage / 100) * this._thumbBarWidth;
     applyCssTransform(this._thumbEl, `translate3d(${dragX}px, 0, 0)`);
   }
 
