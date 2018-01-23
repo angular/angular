@@ -45,6 +45,10 @@ There are two button directives to support navigation between different steps:
 `CdkStepperNext` and `CdkStepperPrevious`. When placed inside of a step, these will automatically
 add click handlers to advance or rewind the workflow, respectively.
 
+### Resetting a stepper
+If you want to reset a stepper to its initial state, you can use the `reset` method. Note that
+resetting it will call `reset` on the underlying form control which clears the value.
+
 ### Keyboard interaction
 - <kbd>LEFT_ARROW</kbd>: Focuses the previous step header
 - <kbd>RIGHT_ARROW</kbd>: Focuses the next step header

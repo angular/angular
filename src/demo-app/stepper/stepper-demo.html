@@ -2,7 +2,7 @@
 
 <h3>Linear Vertical Stepper Demo using a single form</h3>
 <form [formGroup]="formGroup">
-  <mat-vertical-stepper formArrayName="formArray" [linear]="!isNonLinear">
+  <mat-vertical-stepper #linearVerticalStepper="matVerticalStepper" formArrayName="formArray" [linear]="!isNonLinear">
     <mat-step formGroupName="0" [stepControl]="formArray?.get([0])">
       <ng-template matStepLabel>Fill out your name</ng-template>
       <mat-form-field>
@@ -38,13 +38,14 @@
       Everything seems correct.
       <div>
         <button mat-button>Done</button>
+        <button type="button" mat-button (click)="linearVerticalStepper.reset()">Reset</button>
       </div>
     </mat-step>
   </mat-vertical-stepper>
 </form>
 
 <h3>Linear Horizontal Stepper Demo using a different form for each step</h3>
-<mat-horizontal-stepper [linear]="!isNonLinear">
+<mat-horizontal-stepper #linearHorizontalStepper="matHorizontalStepper" [linear]="!isNonLinear">
   <mat-step [stepControl]="nameFormGroup">
     <form [formGroup]="nameFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>
@@ -82,6 +83,7 @@
       Everything seems correct.
       <div>
         <button mat-button>Done</button>
+        <button type="button" mat-button (click)="linearHorizontalStepper.reset()">Reset</button>
       </div>
     </form>
   </mat-step>

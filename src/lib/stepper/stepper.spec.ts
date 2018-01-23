@@ -250,6 +250,10 @@ describe('MatHorizontalStepper', () => {
 
           expect(stepper.selectedIndex).toBe(1);
         });
+
+    it('should be able to reset the stepper to its initial state', () => {
+      assertLinearStepperResetable(fixture);
+    });
   });
 });
 
@@ -412,6 +416,10 @@ describe('MatVerticalStepper', () => {
 
     it('should be able to move to next step even when invalid if current step is optional', () => {
       assertOptionalStepValidity(testComponent, fixture);
+    });
+
+    it('should be able to reset the stepper to its initial state', () => {
+      assertLinearStepperResetable(fixture);
     });
   });
 });
@@ -849,6 +857,49 @@ function asyncValidator(minLength: number, validationTrigger: Observable<any>): 
     );
   };
 }
+
+
+/** Asserts that a stepper can be reset. */
+function assertLinearStepperResetable(
+    fixture: ComponentFixture<LinearMatHorizontalStepperApp|LinearMatVerticalStepperApp>) {
+
+  const testComponent = fixture.componentInstance;
+  const stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+  const steps = stepperComponent._steps.toArray();
+
+  testComponent.oneGroup.get('oneCtrl')!.setValue('value');
+  fixture.detectChanges();
+
+  stepperComponent.next();
+  fixture.detectChanges();
+
+  stepperComponent.next();
+  fixture.detectChanges();
+
+  expect(stepperComponent.selectedIndex).toBe(1);
+  expect(steps[0].interacted).toBe(true);
+  expect(steps[0].completed).toBe(true);
+  expect(testComponent.oneGroup.get('oneCtrl')!.valid).toBe(true);
+  expect(testComponent.oneGroup.get('oneCtrl')!.value).toBe('value');
+
+  expect(steps[1].interacted).toBe(true);
+  expect(steps[1].completed).toBe(false);
+  expect(testComponent.twoGroup.get('twoCtrl')!.valid).toBe(false);
+
+  stepperComponent.reset();
+  fixture.detectChanges();
+
+  expect(stepperComponent.selectedIndex).toBe(0);
+  expect(steps[0].interacted).toBe(false);
+  expect(steps[0].completed).toBe(false);
+  expect(testComponent.oneGroup.get('oneCtrl')!.valid).toBe(false);
+  expect(testComponent.oneGroup.get('oneCtrl')!.value).toBeFalsy();
+
+  expect(steps[1].interacted).toBe(false);
+  expect(steps[1].completed).toBe(false);
+  expect(testComponent.twoGroup.get('twoCtrl')!.valid).toBe(false);
+}
+
 
 @Component({
   template: `

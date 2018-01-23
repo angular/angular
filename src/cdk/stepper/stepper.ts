@@ -123,6 +123,16 @@ export class CdkStep implements OnChanges {
     this._stepper.selected = this;
   }
 
+  /** Resets the step to its initial state. Note that this includes resetting form data. */
+  reset(): void {
+    this.interacted = false;
+    this.completed = false;
+
+    if (this.stepControl) {
+      this.stepControl.reset();
+    }
+  }
+
   ngOnChanges() {
     // Since basically all inputs of the MatStep get proxied through the view down to the
     // underlying MatStepHeader, we have to make sure that change detection runs correctly.
@@ -207,6 +217,13 @@ export class CdkStepper implements OnDestroy {
   /** Selects and focuses the previous step in list. */
   previous(): void {
     this.selectedIndex = Math.max(this._selectedIndex - 1, 0);
+  }
+
+  /** Resets the stepper to its initial state. Note that this includes clearing form data. */
+  reset(): void {
+    this.selectedIndex = 0;
+    this._steps.forEach(step => step.reset());
+    this._stateChanged();
   }
 
   /** Returns a unique id for each step label element. */
