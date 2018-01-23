@@ -65,7 +65,7 @@ $mat-menu-submenu-indicator-size: 10px !default;
   }
 
   [dir='rtl'] & {
-    padding-right: $mat-menu-side-padding / 2;
+    padding-right: $mat-menu-side-padding;
     padding-left: $mat-menu-side-padding * 2;
 
     &::after {
