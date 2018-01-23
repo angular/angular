@@ -469,6 +469,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
           _parentFormGroup, ngControl);
 
     if (this.ngControl) {
+      // Note: we provide the value accessor through here, instead of
+      // the `providers` to avoid running into a circular import.
       this.ngControl.valueAccessor = this;
     }
 

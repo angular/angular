@@ -759,8 +759,6 @@ describe('MatSelect', () => {
         expect(pane.style.minWidth).toBe('200px');
       }));
 
-
-
       it('should not attempt to open a select that does not have any options', fakeAsync(() => {
         fixture.componentInstance.foods = [];
         fixture.detectChanges();
@@ -771,8 +769,6 @@ describe('MatSelect', () => {
         expect(fixture.componentInstance.select.panelOpen).toBe(false);
       }));
 
-
-
       it('should close the panel when tabbing out', fakeAsync(() => {
         trigger.click();
         fixture.detectChanges();
@@ -781,6 +777,21 @@ describe('MatSelect', () => {
         expect(fixture.componentInstance.select.panelOpen).toBe(true);
 
         dispatchKeyboardEvent(trigger, 'keydown', TAB);
+        fixture.detectChanges();
+        flush();
+
+        expect(fixture.componentInstance.select.panelOpen).toBe(false);
+      }));
+
+      it('should close when tabbing out from inside the panel', fakeAsync(() => {
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        expect(fixture.componentInstance.select.panelOpen).toBe(true);
+
+        const panel = overlayContainerElement.querySelector('.mat-select-panel')!;
+        dispatchKeyboardEvent(panel, 'keydown', TAB);
         fixture.detectChanges();
         flush();
 
