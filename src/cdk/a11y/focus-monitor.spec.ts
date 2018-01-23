@@ -186,14 +186,28 @@ describe('FocusMonitor', () => {
     fixture.detectChanges();
     tick();
 
-    expect(buttonElement.classList.length)
-        .toBe(2, 'button should have exactly 2 focus classes');
+    expect(buttonElement.classList.length).toBe(2, 'button should have exactly 2 focus classes');
 
     focusMonitor.stopMonitoring(buttonElement);
     fixture.detectChanges();
 
     expect(buttonElement.classList.length).toBe(0, 'button should not have any focus classes');
   }));
+
+  it('should remove classes when destroyed', fakeAsync(() => {
+    buttonElement.focus();
+    fixture.detectChanges();
+    tick();
+
+    expect(buttonElement.classList.length).toBe(2, 'button should have exactly 2 focus classes');
+
+    // Destroy manually since destroying the fixture won't do it.
+    focusMonitor.ngOnDestroy();
+    fixture.detectChanges();
+
+    expect(buttonElement.classList.length).toBe(0, 'button should not have any focus classes');
+  }));
+
 });
 
 
