@@ -42,7 +42,7 @@ export class SimpleSnackBar {
 
   /** Performs the action on the snack bar. */
   action(): void {
-    this.snackBarRef.closeWithAction();
+    this.snackBarRef.dismissWithAction();
   }
 
   /** If the action button should be shown. */

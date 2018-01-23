@@ -288,7 +288,7 @@ describe('MatSnackBar', () => {
       tick(500);
     }));
 
-  it('should allow manually closing with an action', fakeAsync(() => {
+  it('should allow manually dismissing with an action', fakeAsync(() => {
     const dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
     const actionCompleteSpy = jasmine.createSpy('action complete spy');
     const snackBarRef = snackBar.open('Some content');
@@ -297,13 +297,28 @@ describe('MatSnackBar', () => {
     snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
     snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
 
-    snackBarRef.closeWithAction();
+    snackBarRef.dismissWithAction();
     viewContainerFixture.detectChanges();
     tick();
 
     expect(dismissCompleteSpy).toHaveBeenCalled();
     expect(actionCompleteSpy).toHaveBeenCalled();
 
+    tick(500);
+  }));
+
+  it('should indicate in `afterClosed` whether it was dismissed by an action', fakeAsync(() => {
+    const closeSpy = jasmine.createSpy('dismiss spy');
+    const snackBarRef = snackBar.open('Some content');
+    viewContainerFixture.detectChanges();
+
+    snackBarRef.afterDismissed().subscribe(closeSpy);
+
+    snackBarRef.closeWithAction();
+    viewContainerFixture.detectChanges();
+    tick();
+
+    expect(closeSpy).toHaveBeenCalledWith(jasmine.objectContaining({dismissedByAction: true}));
     tick(500);
   }));
 
@@ -401,7 +416,7 @@ describe('MatSnackBar', () => {
         .toBe('Chimichanga', 'Expected the injected data object to be the one the user provided.');
     });
 
-    it('should allow manually closing with an action', fakeAsync(() => {
+    it('should allow manually dismissing with an action', fakeAsync(() => {
       const dismissCompleteSpy = jasmine.createSpy('dismiss complete spy');
       const actionCompleteSpy = jasmine.createSpy('action complete spy');
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);
@@ -410,7 +425,7 @@ describe('MatSnackBar', () => {
       snackBarRef.afterDismissed().subscribe(undefined, undefined, dismissCompleteSpy);
       snackBarRef.onAction().subscribe(undefined, undefined, actionCompleteSpy);
 
-      snackBarRef.closeWithAction();
+      snackBarRef.dismissWithAction();
       viewContainerFixture.detectChanges();
       tick();
 
