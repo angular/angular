@@ -73,7 +73,13 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
   }
 
   .cdk-overlay-transparent-backdrop {
-    background: none;
+    // Note: as of Firefox 57, having the backdrop be `background: none` will prevent it from
+    // capturing the user's mouse scroll events. Since we also can't use something like
+    // `rgba(0, 0, 0, 0)`, we work around the inconsistency by not setting the background at
+    // all and using `opacity` to make the element transparent.
+    &, &.cdk-overlay-backdrop-showing {
+      opacity: 0;
+    }
   }
 
   // Used when disabling global scrolling.
