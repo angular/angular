@@ -6,12 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/**
+ * Helper method used to extract name and value from cookie string.
+ *
+ * @stable
+ */
+function cookieProperties(cookie: string) {
+  const eqIndex = cookie.indexOf('=');
+  if(eqIndex > -1) {
+    return [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)]
+  }
+  return [cookie, ''];
+}
+
 export function parseCookieValue(cookieStr: string, name: string): string|null {
   name = encodeURIComponent(name);
   for (const cookie of cookieStr.split(';')) {
-    const eqIndex = cookie.indexOf('=');
-    const [cookieName, cookieValue]: string[] =
-        eqIndex == -1 ? [cookie, ''] : [cookie.slice(0, eqIndex), cookie.slice(eqIndex + 1)];
+    const [cookieName, cookieValue]: string[] = cookieProperties(cookie);
     if (cookieName.trim() === name) {
       return decodeURIComponent(cookieValue);
     }
