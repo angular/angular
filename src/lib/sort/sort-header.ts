@@ -74,7 +74,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase implements MatSortabl
   @Input() arrowPosition: 'before' | 'after' = 'after';
 
   /** Overrides the sort start value of the containing MatSort for this MatSortable. */
-  @Input('start') start: 'asc' | 'desc';
+  @Input() start: 'asc' | 'desc';
 
   /** Overrides the disable clear value of the containing MatSort for this MatSortable. */
   @Input()

@@ -86,7 +86,7 @@ export class MatDialogConfig<D = any> {
   /** Layout direction for the dialog's content. */
   direction?: Direction = 'ltr';
 
-  /** ID of the element that describes the dialog.  */
+  /** ID of the element that describes the dialog. */
   ariaDescribedBy?: string | null = null;
 
   /** Aria label to assign to the dialog element */

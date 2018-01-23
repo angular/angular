@@ -155,7 +155,6 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     // label relative to the checkbox. As such, they are inverted.
     return this.labelPosition == 'after' ? 'start' : 'end';
   }
-
   set align(v) {
     this.labelPosition = (v == 'start') ? 'after' : 'before';
   }
@@ -227,10 +226,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   /**
    * Whether the checkbox is checked.
    */
-  @Input() get checked() {
-    return this._checked;
-  }
-
+  @Input()
+  get checked() { return this._checked; }
   set checked(checked: boolean) {
     if (checked != this.checked) {
       this._checked = checked;
@@ -244,10 +241,8 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
    * checkable items. Note that whenever checkbox is manually clicked, indeterminate is immediately
    * set to false.
    */
-  @Input() get indeterminate() {
-    return this._indeterminate;
-  }
-
+  @Input()
+  get indeterminate() { return this._indeterminate; }
   set indeterminate(indeterminate: boolean) {
     let changed =  indeterminate != this._indeterminate;
     this._indeterminate = indeterminate;

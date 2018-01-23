@@ -130,11 +130,9 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
 
   /** Whether the menu should overlap its trigger. */
   @Input()
+  get overlapTrigger(): boolean { return this._overlapTrigger; }
   set overlapTrigger(value: boolean) {
     this._overlapTrigger = coerceBooleanProperty(value);
-  }
-  get overlapTrigger(): boolean {
-    return this._overlapTrigger;
   }
   private _overlapTrigger: boolean = this._defaultOptions.overlapTrigger;
 
@@ -164,8 +162,8 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
    * @deprecated Use `panelClass` instead.
    */
   @Input()
-  set classList(classes: string) { this.panelClass = classes; }
   get classList(): string { return this.panelClass; }
+  set classList(classes: string) { this.panelClass = classes; }
 
   /** Event emitted when the menu is closed. */
   @Output() closed: EventEmitter<void | 'click' | 'keydown'>

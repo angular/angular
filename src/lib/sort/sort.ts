@@ -75,13 +75,13 @@ export class MatSort extends _MatSortMixinBase implements CanDisable, OnChanges,
 
   /** The sort direction of the currently active MatSortable. */
   @Input('matSortDirection')
+  get direction(): SortDirection { return this._direction; }
   set direction(direction: SortDirection) {
     if (isDevMode() && direction && direction !== 'asc' && direction !== 'desc') {
       throw getSortInvalidDirectionError(direction);
     }
     this._direction = direction;
   }
-  get direction(): SortDirection { return this._direction; }
   private _direction: SortDirection = '';
 
   /**

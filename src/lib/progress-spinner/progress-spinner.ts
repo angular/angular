@@ -113,9 +113,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 
   /** The diameter of the progress spinner (will set width and height of svg). */
   @Input()
-  get diameter(): number {
-    return this._diameter;
-  }
+  get diameter(): number { return this._diameter; }
   set diameter(size: number) {
     this._diameter = coerceNumberProperty(size);
 
@@ -130,7 +128,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   get strokeWidth(): number {
     return this._strokeWidth || this.diameter / 10;
   }
-
   set strokeWidth(value: number) {
     this._strokeWidth = coerceNumberProperty(value);
   }

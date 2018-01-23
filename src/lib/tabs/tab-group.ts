@@ -110,10 +110,10 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
 
   /** The index of the active tab. */
   @Input()
+  get selectedIndex(): number | null { return this._selectedIndex; }
   set selectedIndex(value: number | null) {
     this._indexToSelect = coerceNumberProperty(value, null);
   }
-  get selectedIndex(): number | null { return this._selectedIndex; }
   private _selectedIndex: number | null = null;
 
   /** Position of the tab header. */

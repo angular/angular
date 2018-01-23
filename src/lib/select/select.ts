@@ -215,7 +215,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Whether or not the overlay panel is open. */
   private _panelOpen = false;
 
-  /** Whether filling out the select is required in the form.  */
+  /** Whether filling out the select is required in the form. */
   private _required: boolean = false;
 
   /** The scroll position of the overlay panel, calculated to center the selected option. */

@@ -27,12 +27,14 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
 })
 export class MatDivider {
   /** Whether the divider is vertically aligned. */
-  @Input() get vertical(): boolean { return this._vertical; }
+  @Input()
+  get vertical(): boolean { return this._vertical; }
   set vertical(value: boolean) { this._vertical = coerceBooleanProperty(value); }
   private _vertical: boolean = false;
 
   /** Whether the divider is an inset divider. */
-  @Input() get inset(): boolean { return this._inset; }
+  @Input()
+  get inset(): boolean { return this._inset; }
   set inset(value: boolean) { this._inset = coerceBooleanProperty(value); }
   private _inset: boolean = false;
 }

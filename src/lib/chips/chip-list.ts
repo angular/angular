@@ -223,30 +223,28 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
   /** Required for FormFieldControl. The ID of the chip list */
   @Input()
+  get id(): string { return this._id || this._uid; }
   set id(value: string) {
     this._id = value;
     this.stateChanges.next();
   }
-  get id(): string { return this._id || this._uid; }
 
   /** Required for FormFieldControl. Whether the chip list is required. */
   @Input()
+  get required(): boolean { return this._required; }
   set required(value: boolean) {
     this._required = coerceBooleanProperty(value);
     this.stateChanges.next();
   }
-  get required(): boolean {
-    return this._required;
-  }
 
   /** For FormFieldControl. Use chip input's placholder if there's a chip input */
   @Input()
+  get placeholder(): string {
+    return this._chipInput ? this._chipInput.placeholder : this._placeholder;
+  }
   set placeholder(value: string) {
     this._placeholder = value;
     this.stateChanges.next();
-  }
-  get placeholder(): string {
-    return this._chipInput ? this._chipInput.placeholder : this._placeholder;
   }
 
   /** Whether any chips or the matChipInput inside of this chip-list has focus. */
@@ -261,9 +259,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   }
 
   /** @docs-private */
-  get shouldLabelFloat(): boolean {
-    return !this.empty || this.focused;
-  }
+  get shouldLabelFloat(): boolean { return !this.empty || this.focused; }
 
   /** Whether this chip-list is disabled. */
   @Input()

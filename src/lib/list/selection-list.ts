@@ -209,7 +209,7 @@ export class MatListOption extends _MatListOptionMixinBase
     return this._text ? this._text.nativeElement.textContent : '';
   }
 
-  /** Whether this list item should show a ripple effect when clicked.  */
+  /** Whether this list item should show a ripple effect when clicked. */
   _isRippleDisabled() {
     return this.disabled || this.disableRipple || this.selectionList.disableRipple;
   }

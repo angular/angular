@@ -55,14 +55,14 @@ const dataTypes = ['result', 'sha', 'travis'];
 /** The Json Web Token format. The token is stored in data path. */
 const jwtFormat = '{jwtHeader}/{jwtPayload}/{jwtSignature}';
 
-/** The temporary folder name for screenshot data that needs to be validated via JWT.  */
+/** The temporary folder name for screenshot data that needs to be validated via JWT. */
 const tempFolder = '/untrustedInbox';
 
 
 /** Untrusted report data for a PR */
 const reportPath = `${tempFolder}/screenshot/reports/{prNumber}/${jwtFormat}/`;
 /** Untrusted image data for a PR */
-const imagePath =  `${tempFolder}/screenshot/images/{prNumber}/${jwtFormat}/`;
+const imagePath = `${tempFolder}/screenshot/images/{prNumber}/${jwtFormat}/`;
 /** Trusted report data for a PR */
 const trustedReportPath = `screenshot/reports/{prNumber}`;
 

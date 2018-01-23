@@ -14,7 +14,7 @@ describe('MatRipple', () => {
   let originalBodyMargin: string | null;
   let platform: Platform;
 
-  /** Extracts the numeric value of a pixel size string like '123px'.  */
+  /** Extracts the numeric value of a pixel size string like '123px'. */
   const pxStringToFloat = s => parseFloat(s) || 0;
   const startingWindowWidth = window.innerWidth;
   const startingWindowHeight = window.innerHeight;

@@ -22,7 +22,7 @@ export function setGithubStatus(commitSHA: string,
     description: statusData.description
   });
 
-  let headers =  {
+  let headers = {
     'Authorization': `token ${token}`,
     'User-Agent': `${statusData.name}/1.0`,
     'Content-Type': 'application/json'

@@ -310,6 +310,7 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   }
 
   /** Sets the distance in pixels that the tab header should be transformed in the X-axis. */
+  get scrollDistance(): number { return this._scrollDistance; }
   set scrollDistance(v: number) {
     this._scrollDistance = Math.max(0, Math.min(this._getMaxScrollDistance(), v));
 
@@ -318,7 +319,6 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     this._scrollDistanceChanged = true;
     this._checkScrollingControls();
   }
-  get scrollDistance(): number { return this._scrollDistance; }
 
   /**
    * Moves the tab list in the 'before' or 'after' direction (towards the beginning of the list or

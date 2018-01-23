@@ -324,9 +324,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
    */
   @Input()
   get opened(): boolean { return this._opened; }
-  set opened(v: boolean) {
-    this.toggle(coerceBooleanProperty(v));
-  }
+  set opened(v: boolean) { this.toggle(coerceBooleanProperty(v)); }
 
   /**
    * Open the drawer.

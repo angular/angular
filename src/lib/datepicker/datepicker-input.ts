@@ -118,9 +118,7 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
 
   /** The value of the input. */
   @Input()
-  get value(): D | null {
-    return this._value;
-  }
+  get value(): D | null { return this._value; }
   set value(value: D | null) {
     value = this._dateAdapter.deserialize(value);
     this._lastValueValid = !value || this._dateAdapter.isValid(value);

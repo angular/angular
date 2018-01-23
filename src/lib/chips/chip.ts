@@ -97,9 +97,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
 
   /** Whether the chip is selected. */
   @Input()
-  get selected(): boolean {
-    return this._selected;
-  }
+  get selected(): boolean { return this._selected; }
   set selected(value: boolean) {
     this._selected = coerceBooleanProperty(value);
     this.selectionChange.emit({
@@ -123,11 +121,8 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
    * Whether or not the chips are selectable. When a chip is not selectable,
    * changes to it's selected state are always ignored.
    */
-  @Input() get selectable(): boolean {
-    return this._selectable;
-  }
-
-
+  @Input()
+  get selectable(): boolean { return this._selectable; }
   set selectable(value: boolean) {
     this._selectable = coerceBooleanProperty(value);
   }
@@ -135,11 +130,8 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /**
    * Determines whether or not the chip displays the remove styling and emits (remove) events.
    */
-  @Input() get removable(): boolean {
-    return this._removable;
-  }
-
-
+  @Input()
+  get removable(): boolean { return this._removable; }
   set removable(value: boolean) {
     this._removable = coerceBooleanProperty(value);
   }

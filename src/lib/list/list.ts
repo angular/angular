@@ -133,7 +133,7 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
     this._lineSetter = new MatLineSetter(this._lines, this._element);
   }
 
-  /** Whether this list item should show a ripple effect when clicked.  */
+  /** Whether this list item should show a ripple effect when clicked. */
   _isRippleDisabled() {
     return !this._isNavList || this.disableRipple || this._navList.disableRipple;
   }

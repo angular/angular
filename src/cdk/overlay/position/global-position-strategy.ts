@@ -30,7 +30,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
   private _width: string = '';
   private _height: string = '';
 
-  /** A lazily-created wrapper for the overlay element that is used as a flex container.  */
+  /** A lazily-created wrapper for the overlay element that is used as a flex container. */
   private _wrapper: HTMLElement | null = null;
 
   constructor(private _document: any) {}

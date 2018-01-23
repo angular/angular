@@ -20,7 +20,7 @@ export interface HasElementRef {
   _elementRef: ElementRef;
 }
 
-/** Possible color palette values.  */
+/** Possible color palette values. */
 export type ThemePalette = 'primary' | 'accent' | 'warn' | undefined;
 
 /** Mixin to augment a directive with a `color` property. */

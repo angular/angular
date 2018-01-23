@@ -87,7 +87,7 @@ export class Categorizer implements Processor {
     if (isDirective(classDoc)) {
       classDoc.isDirective = true;
       classDoc.directiveExportAs = getMetadataProperty(classDoc, 'exportAs');
-      classDoc.directiveSelectors =  getDirectiveSelectors(classDoc);
+      classDoc.directiveSelectors = getDirectiveSelectors(classDoc);
     } else if (isService(classDoc)) {
       classDoc.isService = true;
     } else if (isNgModule(classDoc)) {

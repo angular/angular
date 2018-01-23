@@ -149,7 +149,6 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
     // label relative to the checkbox. As such, they are inverted.
     return this.labelPosition == 'after' ? 'start' : 'end';
   }
-
   set align(v) {
     this.labelPosition = (v == 'start') ? 'after' : 'before';
   }
@@ -160,7 +159,6 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
   get labelPosition(): 'before' | 'after' {
     return this._labelPosition;
   }
-
   set labelPosition(v) {
     this._labelPosition = (v == 'before') ? 'before' : 'after';
     this._markRadiosForCheck();
@@ -390,10 +388,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
 
   /** The value of this radio button. */
   @Input()
-  get value(): any {
-    return this._value;
-  }
-
+  get value(): any { return this._value; }
   set value(value: any) {
     if (this._value != value) {
       this._value = value;
@@ -419,7 +414,6 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
     // label relative to the checkbox. As such, they are inverted.
     return this.labelPosition == 'after' ? 'start' : 'end';
   }
-
   set align(v) {
     this.labelPosition = (v == 'start') ? 'after' : 'before';
   }
@@ -431,7 +425,6 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   get labelPosition(): 'before' | 'after' {
     return this._labelPosition || (this.radioGroup && this.radioGroup.labelPosition) || 'after';
   }
-
   set labelPosition(value) {
     this._labelPosition = value;
   }

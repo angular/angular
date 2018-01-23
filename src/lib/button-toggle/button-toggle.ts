@@ -100,10 +100,7 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
 
   /** `name` attribute for the underlying `input` element. */
   @Input()
-  get name(): string {
-    return this._name;
-  }
-
+  get name(): string { return this._name; }
   set name(value: string) {
     this._name = value;
     this._updateButtonToggleNames();
@@ -111,19 +108,12 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
 
   /** Whether the toggle group is vertical. */
   @Input()
-  get vertical(): boolean {
-    return this._vertical;
-  }
-
-  set vertical(value: boolean) {
-    this._vertical = coerceBooleanProperty(value);
-  }
+  get vertical(): boolean { return this._vertical; }
+  set vertical(value: boolean) { this._vertical = coerceBooleanProperty(value); }
 
   /** Value of the toggle group. */
   @Input()
-  get value(): any {
-    return this._value;
-  }
+  get value(): any { return this._value; }
   set value(newValue: any) {
     if (this._value != newValue) {
       this._value = newValue;
@@ -141,10 +131,7 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
 
   /** Whether the toggle group is selected. */
   @Input()
-  get selected(): MatButtonToggle | null {
-    return this._selected;
-  }
-
+  get selected(): MatButtonToggle | null { return this._selected; }
   set selected(selected: MatButtonToggle | null) {
     this._selected = selected;
     this.value = selected ? selected.value : null;
@@ -259,10 +246,7 @@ export class MatButtonToggleGroupMultiple extends _MatButtonToggleGroupMixinBase
 
   /** Whether the toggle group is vertical. */
   @Input()
-  get vertical(): boolean {
-    return this._vertical;
-  }
-
+  get vertical(): boolean { return this._vertical; }
   set vertical(value) {
     this._vertical = coerceBooleanProperty(value);
   }
@@ -325,9 +309,7 @@ export class MatButtonToggle implements OnInit, OnDestroy {
   buttonToggleGroupMultiple: MatButtonToggleGroupMultiple;
 
   /** Unique ID for the underlying `input` element. */
-  get inputId(): string {
-    return `${this.id}-input`;
-  }
+  get inputId(): string { return `${this.id}-input`; }
 
   /** The unique ID for this button toggle. */
   @Input() id: string;
@@ -354,10 +336,7 @@ export class MatButtonToggle implements OnInit, OnDestroy {
 
   /** MatButtonToggleGroup reads this to assign its own value. */
   @Input()
-  get value(): any {
-    return this._value;
-  }
-
+  get value(): any { return this._value; }
   set value(value: any) {
     if (this._value != value) {
       if (this.buttonToggleGroup != null && this.checked) {
@@ -373,7 +352,6 @@ export class MatButtonToggle implements OnInit, OnDestroy {
     return this._disabled || (this.buttonToggleGroup != null && this.buttonToggleGroup.disabled) ||
         (this.buttonToggleGroupMultiple != null && this.buttonToggleGroupMultiple.disabled);
   }
-
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
   }

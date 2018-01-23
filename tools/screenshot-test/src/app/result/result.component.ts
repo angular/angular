@@ -32,9 +32,7 @@ export class ResultComponent {
    * Test result, auto set collapse to be the same as the result value
    */
   @Input()
-  get result() {
-    return this._result;
-  }
+  get result() { return this._result; }
   set result(value: boolean) {
     this._result = value;
     this.collapse = value;
@@ -50,9 +48,7 @@ export class ResultComponent {
 
   /** Mode: the result card has three modes, flip, side by side, and diff */
   @Input()
-  get mode() {
-    return this._mode;
-  }
+  get mode() { return this._mode; }
   set mode(value: 'flip' | 'side-by-side' | 'diff') {
     this._mode = value;
     this.modeEvent.emit(value);
@@ -62,10 +58,7 @@ export class ResultComponent {
 
   /** When mode is "flip" whether we show the test image or the golden image */
   @Input()
-  get flipping() {
-    return this._flipping;
-  }
-
+  get flipping() { return this._flipping; }
   set flipping(value: boolean) {
     this._flipping = value;
     this.flippingEvent.emit(value);

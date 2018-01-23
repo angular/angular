@@ -66,7 +66,7 @@ function createEmptyStyleRule(query: string) {
   }
 }
 
-/** No-op matchMedia replacement for non-browser platforms.  */
+/** No-op matchMedia replacement for non-browser platforms. */
 function noopMatchMedia(query: string): MediaQueryList {
   return {
     matches: query === 'all' || query === '',

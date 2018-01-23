@@ -134,8 +134,8 @@ export class MatTabBody implements OnInit {
   @Input('content') _content: TemplatePortal<any>;
 
   /** The shifted index position of the tab body, where zero represents the active center tab. */
-  _position: MatTabBodyPositionState;
-  @Input('position') set position(position: number) {
+  @Input()
+  set position(position: number) {
     if (position < 0) {
       this._position = this._getLayoutDirection() == 'ltr' ? 'left' : 'right';
     } else if (position > 0) {
@@ -144,12 +144,11 @@ export class MatTabBody implements OnInit {
       this._position = 'center';
     }
   }
+  _position: MatTabBodyPositionState;
 
   /** The origin position from which this tab should appear when it is centered into view. */
-  _origin: MatTabBodyOriginState;
-
-  /** The origin position from which this tab should appear when it is centered into view. */
-  @Input('origin') set origin(origin: number) {
+  @Input()
+  set origin(origin: number) {
     if (origin == null) { return; }
 
     const dir = this._getLayoutDirection();
@@ -159,6 +158,7 @@ export class MatTabBody implements OnInit {
       this._origin = 'right';
     }
   }
+  _origin: MatTabBodyOriginState;
 
   constructor(private _elementRef: ElementRef,
               @Optional() private _dir: Directionality) { }
