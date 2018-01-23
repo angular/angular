@@ -60,7 +60,7 @@ export class AriaDescriber {
    * message element.
    */
   describe(hostElement: Element, message: string) {
-    if (!message.trim()) {
+    if (hostElement.nodeType !== this._document.ELEMENT_NODE || !message.trim()) {
       return;
     }
 
@@ -75,7 +75,7 @@ export class AriaDescriber {
 
   /** Removes the host element's aria-describedby reference to the message element. */
   removeDescription(hostElement: Element, message: string) {
-    if (!message.trim()) {
+    if (hostElement.nodeType !== this._document.ELEMENT_NODE || !message.trim()) {
       return;
     }
 

@@ -107,6 +107,11 @@ describe('AriaDescriber', () => {
     expectMessages(['My Message']);
     expectMessage(component.element1, 'My Message');
   });
+
+  it('should not throw when attempting to describe a non-element node', () => {
+    const node: any = document.createComment('Not an element node');
+    expect(() => ariaDescriber.describe(node, 'This looks like an element')).not.toThrow();
+  });
 });
 
 function getMessagesContainer() {

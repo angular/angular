@@ -78,6 +78,8 @@ class SvgIconConfig {
  */
 @Injectable()
 export class MatIconRegistry {
+  private _document: Document;
+
   /**
    * URLs and cached SVG elements for individual icons. Keys are of the format "[namespace]:[icon]".
    */
@@ -108,8 +110,9 @@ export class MatIconRegistry {
   constructor(
     @Optional() private _httpClient: HttpClient,
     private _sanitizer: DomSanitizer,
-    @Optional() @Inject(DOCUMENT) private _document?: any) {
+    @Optional() @Inject(DOCUMENT) document?: any) {
       // TODO(crisbeto): make _document required next major release.
+      this._document = document;
     }
 
   /**
@@ -438,8 +441,7 @@ export class MatIconRegistry {
     let svg = this._svgElementFromString('<svg></svg>');
 
     for (let i = 0; i < element.childNodes.length; i++) {
-      // Note: 1 corresponds to `Node.ELEMENT_NODE` which we can't use in Universal.
-      if (element.childNodes[i].nodeType === 1) {
+      if (element.childNodes[i].nodeType === this._document.ELEMENT_NODE) {
         svg.appendChild(element.childNodes[i].cloneNode(true));
       }
     }
