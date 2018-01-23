@@ -20,7 +20,7 @@ describe('lifecycles', () => {
       }
       p(0, 'val', b(ctx.val));
       type.ngComponentDef.h(1, 0);
-      type.ngComponentDef.r(1, 0);
+      r(1, 0);
     };
   }
 
@@ -68,7 +68,7 @@ describe('lifecycles', () => {
            }
            p(0, 'val', b(ctx.val));
            Comp.ngComponentDef.h(1, 0);
-           Comp.ngComponentDef.r(1, 0);
+           r(1, 0);
          }
 
          renderToHtml(Template, {val: '1'});
@@ -90,7 +90,7 @@ describe('lifecycles', () => {
           e();
         }
         Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -116,8 +116,8 @@ describe('lifecycles', () => {
         p(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        Parent.ngComponentDef.r(1, 0);
-        Parent.ngComponentDef.r(3, 2);
+        r(1, 0);
+        r(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -144,7 +144,7 @@ describe('lifecycles', () => {
               e();
             }
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
@@ -175,8 +175,8 @@ describe('lifecycles', () => {
         }
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        ProjectedComp.ngComponentDef.r(3, 2);
-        Comp.ngComponentDef.r(1, 0);
+        r(3, 2);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -209,10 +209,10 @@ describe('lifecycles', () => {
         ProjectedComp.ngComponentDef.h(3, 2);
         Comp.ngComponentDef.h(5, 4);
         ProjectedComp.ngComponentDef.h(7, 6);
-        ProjectedComp.ngComponentDef.r(3, 2);
-        Comp.ngComponentDef.r(1, 0);
-        ProjectedComp.ngComponentDef.r(7, 6);
-        Comp.ngComponentDef.r(5, 4);
+        r(3, 2);
+        r(1, 0);
+        r(7, 6);
+        r(5, 4);
       }
 
       renderToHtml(Template, {});
@@ -232,7 +232,7 @@ describe('lifecycles', () => {
           e();
         }
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -273,13 +273,13 @@ describe('lifecycles', () => {
             }
             p(0, 'val', j);
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
         cr();
-        Comp.ngComponentDef.r(1, 0);
-        Comp.ngComponentDef.r(4, 3);
+        r(1, 0);
+        r(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -319,13 +319,13 @@ describe('lifecycles', () => {
             }
             p(0, 'val', j);
             Parent.ngComponentDef.h(1, 0);
-            Parent.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
         cr();
-        Parent.ngComponentDef.r(1, 0);
-        Parent.ngComponentDef.r(4, 3);
+        r(1, 0);
+        r(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -375,7 +375,7 @@ describe('lifecycles', () => {
           e();
         }
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -397,7 +397,7 @@ describe('lifecycles', () => {
           e();
         }
         Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -412,7 +412,7 @@ describe('lifecycles', () => {
           e();
         }
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -449,7 +449,7 @@ describe('lifecycles', () => {
       }
       p(1, 'val', b(ctx.val));
       Comp.ngComponentDef.h(2, 1);
-      Comp.ngComponentDef.r(2, 1);
+      r(2, 1);
     });
 
     let ProjectedComp = createAfterContentInitComp('projected', (ctx: any, cm: boolean) => {
@@ -487,7 +487,7 @@ describe('lifecycles', () => {
           e();
         }
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -516,7 +516,7 @@ describe('lifecycles', () => {
               e();
             }
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
@@ -546,7 +546,7 @@ describe('lifecycles', () => {
           e();
         }
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -570,7 +570,7 @@ describe('lifecycles', () => {
           e();
         }
         Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -597,8 +597,8 @@ describe('lifecycles', () => {
         p(3, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(4, 3);
-        Parent.ngComponentDef.r(1, 0);
-        Parent.ngComponentDef.r(4, 3);
+        r(1, 0);
+        r(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -628,8 +628,8 @@ describe('lifecycles', () => {
         }
         Parent.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        ProjectedComp.ngComponentDef.r(3, 2);
-        Parent.ngComponentDef.r(1, 0);
+        r(3, 2);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -675,10 +675,10 @@ describe('lifecycles', () => {
         ProjectedComp.ngComponentDef.h(3, 2);
         Parent.ngComponentDef.h(6, 5);
         ProjectedComp.ngComponentDef.h(8, 7);
-        ProjectedComp.ngComponentDef.r(3, 2);
-        Parent.ngComponentDef.r(1, 0);
-        ProjectedComp.ngComponentDef.r(8, 7);
-        Parent.ngComponentDef.r(6, 5);
+        r(3, 2);
+        r(1, 0);
+        r(8, 7);
+        r(6, 5);
       }
 
       renderToHtml(Template, {});
@@ -717,13 +717,13 @@ describe('lifecycles', () => {
             }
             p(0, 'val', i);
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
         cr();
-        Comp.ngComponentDef.r(1, 0);
-        Comp.ngComponentDef.r(5, 4);
+        r(1, 0);
+        r(5, 4);
       }
 
       renderToHtml(Template, {});
@@ -754,13 +754,13 @@ describe('lifecycles', () => {
           }
           p(0, 'val', i);
           Parent.ngComponentDef.h(1, 0);
-          Parent.ngComponentDef.r(1, 0);
+          r(1, 0);
           v();
         }
       }
       cr();
-      Parent.ngComponentDef.r(1, 0);
-      Parent.ngComponentDef.r(5, 4);
+      r(1, 0);
+      r(5, 4);
     }
 
     it('should be called in correct order in a for loop with children', () => {
@@ -788,7 +788,7 @@ describe('lifecycles', () => {
             e();
           }
           Comp.ngComponentDef.h(1, 0);
-          Comp.ngComponentDef.r(1, 0);
+          r(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -854,7 +854,7 @@ describe('lifecycles', () => {
           e();
         }
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -882,7 +882,7 @@ describe('lifecycles', () => {
               e();
             }
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
@@ -912,7 +912,7 @@ describe('lifecycles', () => {
           e();
         }
         Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -938,8 +938,8 @@ describe('lifecycles', () => {
         p(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        Parent.ngComponentDef.r(1, 0);
-        Parent.ngComponentDef.r(3, 2);
+        r(1, 0);
+        r(3, 2);
       }
       renderToHtml(Template, {});
       expect(events).toEqual(['comp1', 'comp2', 'parent1', 'parent2']);
@@ -963,8 +963,8 @@ describe('lifecycles', () => {
         }
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        ProjectedComp.ngComponentDef.r(3, 2);
-        Comp.ngComponentDef.r(1, 0);
+        r(3, 2);
+        r(1, 0);
       }
 
       renderToHtml(Template, {});
@@ -1003,10 +1003,10 @@ describe('lifecycles', () => {
         ProjectedComp.ngComponentDef.h(3, 2);
         Comp.ngComponentDef.h(5, 4);
         ProjectedComp.ngComponentDef.h(7, 6);
-        ProjectedComp.ngComponentDef.r(3, 2);
-        Comp.ngComponentDef.r(1, 0);
-        ProjectedComp.ngComponentDef.r(7, 6);
-        Comp.ngComponentDef.r(5, 4);
+        r(3, 2);
+        r(1, 0);
+        r(7, 6);
+        r(5, 4);
       }
 
       renderToHtml(Template, {});
@@ -1032,8 +1032,8 @@ describe('lifecycles', () => {
         p(2, 'val', b(ctx.val));
         Comp.ngComponentDef.h(1, 0);
         ProjectedComp.ngComponentDef.h(3, 2);
-        ProjectedComp.ngComponentDef.r(3, 2);
-        Comp.ngComponentDef.r(1, 0);
+        r(3, 2);
+        r(1, 0);
       });
 
       /**
@@ -1051,8 +1051,8 @@ describe('lifecycles', () => {
         p(2, 'val', 2);
         ParentComp.ngComponentDef.h(1, 0);
         ParentComp.ngComponentDef.h(3, 2);
-        ParentComp.ngComponentDef.r(1, 0);
-        ParentComp.ngComponentDef.r(3, 2);
+        r(1, 0);
+        r(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -1088,13 +1088,13 @@ describe('lifecycles', () => {
             }
             p(0, 'val', i);
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
         cr();
-        Comp.ngComponentDef.r(1, 0);
-        Comp.ngComponentDef.r(4, 3);
+        r(1, 0);
+        r(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -1131,13 +1131,13 @@ describe('lifecycles', () => {
             }
             p(0, 'val', i);
             Parent.ngComponentDef.h(1, 0);
-            Parent.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
         cr();
-        Parent.ngComponentDef.r(1, 0);
-        Parent.ngComponentDef.r(4, 3);
+        r(1, 0);
+        r(4, 3);
       }
 
       renderToHtml(Template, {});
@@ -1157,7 +1157,7 @@ describe('lifecycles', () => {
             e();
           }
           Comp.ngComponentDef.h(1, 0);
-          Comp.ngComponentDef.r(1, 0);
+          r(1, 0);
         }
 
         renderToHtml(Template, {});
@@ -1176,7 +1176,7 @@ describe('lifecycles', () => {
           }
           p(0, 'val', b(ctx.myVal));
           Comp.ngComponentDef.h(1, 0);
-          Comp.ngComponentDef.r(1, 0);
+          r(1, 0);
         }
 
         renderToHtml(Template, {myVal: 5});
@@ -1215,13 +1215,13 @@ describe('lifecycles', () => {
               }
               p(0, 'val', i);
               Parent.ngComponentDef.h(1, 0);
-              Parent.ngComponentDef.r(1, 0);
+              r(1, 0);
               v();
             }
           }
           cr();
-          Parent.ngComponentDef.r(1, 0);
-          Parent.ngComponentDef.r(4, 3);
+          r(1, 0);
+          r(4, 3);
         }
 
         renderToHtml(Template, {});
@@ -1284,7 +1284,7 @@ describe('lifecycles', () => {
               e();
             }
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
@@ -1321,8 +1321,8 @@ describe('lifecycles', () => {
             p(2, 'val', b('2'));
             Comp.ngComponentDef.h(1, 0);
             Comp.ngComponentDef.h(3, 2);
-            Comp.ngComponentDef.r(1, 0);
-            Comp.ngComponentDef.r(3, 2);
+            r(1, 0);
+            r(3, 2);
             v();
           }
         }
@@ -1355,7 +1355,7 @@ describe('lifecycles', () => {
               e();
             }
             Parent.ngComponentDef.h(1, 0);
-            Parent.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
@@ -1383,7 +1383,7 @@ describe('lifecycles', () => {
           e();
         }
         Parent.ngComponentDef.h(1, 0);
-        Parent.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
 
       function Template(ctx: any, cm: boolean) {
@@ -1398,7 +1398,7 @@ describe('lifecycles', () => {
               e();
             }
             Grandparent.ngComponentDef.h(1, 0);
-            Grandparent.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }
@@ -1452,10 +1452,10 @@ describe('lifecycles', () => {
             ProjectedComp.ngComponentDef.h(3, 2);
             Comp.ngComponentDef.h(5, 4);
             ProjectedComp.ngComponentDef.h(7, 6);
-            ProjectedComp.ngComponentDef.r(3, 2);
-            Comp.ngComponentDef.r(1, 0);
-            ProjectedComp.ngComponentDef.r(7, 6);
-            Comp.ngComponentDef.r(5, 4);
+            r(3, 2);
+            r(1, 0);
+            r(7, 6);
+            r(5, 4);
             v();
           }
         }
@@ -1507,13 +1507,13 @@ describe('lifecycles', () => {
                 }
                 p(0, 'val', b('2'));
                 Comp.ngComponentDef.h(1, 0);
-                Comp.ngComponentDef.r(1, 0);
+                r(1, 0);
                 v();
               }
             }
             cr();
-            Comp.ngComponentDef.r(1, 0);
-            Comp.ngComponentDef.r(4, 3);
+            r(1, 0);
+            r(4, 3);
             v();
           }
         }
@@ -1583,13 +1583,13 @@ describe('lifecycles', () => {
                 }
                 p(0, 'val', b(j));
                 Comp.ngComponentDef.h(1, 0);
-                Comp.ngComponentDef.r(1, 0);
+                r(1, 0);
                 v();
               }
             }
             cr();
-            Comp.ngComponentDef.r(1, 0);
-            Comp.ngComponentDef.r(4, 3);
+            r(1, 0);
+            r(4, 3);
             v();
           }
         }
@@ -1658,7 +1658,7 @@ describe('lifecycles', () => {
               e();
             }
             Comp.ngComponentDef.h(3, 2);
-            Comp.ngComponentDef.r(3, 2);
+            r(3, 2);
             v();
           }
         }
@@ -1737,8 +1737,8 @@ describe('lifecycles', () => {
         p(2, 'val', 2);
         Comp.ngComponentDef.h(1, 0);
         Comp.ngComponentDef.h(3, 2);
-        Comp.ngComponentDef.r(1, 0);
-        Comp.ngComponentDef.r(3, 2);
+        r(1, 0);
+        r(3, 2);
       }
 
       renderToHtml(Template, {});
@@ -1767,7 +1767,7 @@ describe('lifecycles', () => {
         }
         p(0, 'val', b(ctx.val));
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       });
 
       /**
@@ -1785,8 +1785,8 @@ describe('lifecycles', () => {
         p(2, 'val', 2);
         Parent.ngComponentDef.h(1, 0);
         Parent.ngComponentDef.h(3, 2);
-        Parent.ngComponentDef.r(1, 0);
-        Parent.ngComponentDef.r(3, 2);
+        r(1, 0);
+        r(3, 2);
       }
 
       renderToHtml(Template, {});

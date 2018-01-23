@@ -337,8 +337,8 @@ export function renderComponentOrTemplate<T>(
       template(componentOrContext !, creationMode);
     } else {
       // Element was stored at 0 and directive was stored at 1 in renderComponent
-      // so to refresh the component, r() needs to be called with (1, 0)
-      (componentOrContext.constructor as ComponentType<T>).ngComponentDef.r(1, 0);
+      // so to refresh the component, refresh() needs to be called with (1, 0)
+      componentRefresh(1, 0);
     }
   } finally {
     if (rendererFactory.end) {
@@ -1161,28 +1161,27 @@ export function viewEnd(): void {
  *
  * @param directiveIndex
  * @param elementIndex
- * @param template
  */
-export const componentRefresh:
-    <T>(directiveIndex: number, elementIndex: number, template: ComponentTemplate<T>) =>
-        void = function<T>(
-            directiveIndex: number, elementIndex: number, template: ComponentTemplate<T>) {
-  ngDevMode && assertDataInRange(elementIndex);
-  const element = data ![elementIndex] as LElementNode;
-  ngDevMode && assertNodeOfPossibleTypes(element, LNodeFlags.Element, LNodeFlags.Container);
-  ngDevMode && assertNotEqual(element.data, null, 'isComponent');
-  ngDevMode && assertDataInRange(directiveIndex);
-  const hostView = element.data !;
-  ngDevMode && assertNotEqual(hostView, null, 'hostView');
+export function componentRefresh<T>(directiveIndex: number, elementIndex: number): void {
   executeInitHooks(currentView);
   executeContentHooks(currentView);
-  const directive = data[directiveIndex];
-  const oldView = enterView(hostView, element);
-  try {
-    template(directive, creationMode);
-  } finally {
-    refreshDynamicChildren();
-    leaveView(oldView);
+  const template = (tData[directiveIndex] as ComponentDef<T>).template;
+  if (template != null) {
+    ngDevMode && assertDataInRange(elementIndex);
+    const element = data ![elementIndex] as LElementNode;
+    ngDevMode && assertNodeType(element, LNodeFlags.Element);
+    ngDevMode && assertNotEqual(element.data, null, 'isComponent');
+    ngDevMode && assertDataInRange(directiveIndex);
+    const directive = data[directiveIndex];
+    const hostView = element.data !;
+    ngDevMode && assertNotEqual(hostView, null, 'hostView');
+    const oldView = enterView(hostView, element);
+    try {
+      template(directive, creationMode);
+    } finally {
+      refreshDynamicChildren();
+      leaveView(oldView);
+    }
   }
 };
 

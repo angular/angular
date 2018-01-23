@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, E, L, T, V, b, cR, cr, defineComponent, defineDirective, e, p, v} from '../../src/render3/index';
+import {C, E, L, T, V, b, cR, cr, defineComponent, defineDirective, e, p, r, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -49,7 +49,7 @@ describe('outputs', () => {
         e();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     let counter = 0;
@@ -75,7 +75,7 @@ describe('outputs', () => {
         e();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     let counter = 0;
@@ -99,7 +99,7 @@ describe('outputs', () => {
         e();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     const ctx = {counter: 0};
@@ -133,7 +133,7 @@ describe('outputs', () => {
             e();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
-          ButtonToggle.ngComponentDef.r(1, 0);
+          r(1, 0);
           v();
         }
       }
@@ -183,7 +183,7 @@ describe('outputs', () => {
                 e();
               }
               ButtonToggle.ngComponentDef.h(1, 0);
-              ButtonToggle.ngComponentDef.r(1, 0);
+              r(1, 0);
               v();
             }
           }
@@ -252,8 +252,8 @@ describe('outputs', () => {
           }
           ButtonToggle.ngComponentDef.h(3, 2);
           DestroyComp.ngComponentDef.h(5, 4);
-          ButtonToggle.ngComponentDef.r(3, 2);
-          DestroyComp.ngComponentDef.r(5, 4);
+          r(3, 2);
+          r(5, 4);
           v();
         }
       }
@@ -326,7 +326,7 @@ describe('outputs', () => {
         e();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     let counter = 0;
@@ -358,7 +358,7 @@ describe('outputs', () => {
       }
       p(0, 'change', b(ctx.change));
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     let counter = 0;
@@ -401,7 +401,7 @@ describe('outputs', () => {
             e();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
-          ButtonToggle.ngComponentDef.r(1, 0);
+          r(1, 0);
           v();
         } else {
           if (V(1)) {

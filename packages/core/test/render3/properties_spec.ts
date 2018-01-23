@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, E, L, T, V, b, b1, cR, cr, defineComponent, defineDirective, e, m, p, t, v} from '../../src/render3/index';
+import {C, E, L, T, V, b, b1, cR, cr, defineComponent, defineDirective, e, m, p, r, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
@@ -157,7 +157,7 @@ describe('elementProperty', () => {
         }
         p(0, 'id', b(ctx.id));
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {id: 1})).toEqual(`<comp></comp>`);
@@ -502,7 +502,7 @@ describe('elementProperty', () => {
               e();
             }
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }

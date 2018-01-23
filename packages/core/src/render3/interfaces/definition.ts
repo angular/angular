@@ -68,18 +68,6 @@ export interface DirectiveDef<T> {
   n(): T;
 
   /**
-   * Refreshes the view of the component. Also calls lifecycle hooks like
-   * ngAfterViewInit, if they are defined on the component.
-   *
-   * NOTE: this property is short (1 char) because it is used in component
-   * templates which is sensitive to size.
-   *
-   * @param directiveIndex index of the directive in the containing template
-   * @param elementIndex index of an host element for a given directive.
-   */
-  r(directiveIndex: number, elementIndex: number): void;
-
-  /**
    * Refreshes host bindings on the associated directive. Also calls lifecycle hooks
    * like ngOnInit and ngDoCheck, if they are defined on the directive.
    */
@@ -94,18 +82,6 @@ export interface DirectiveDef<T> {
 }
 
 export interface ComponentDef<T> extends DirectiveDef<T> {
-  /**
-   * Refreshes the view of the component. Also calls lifecycle hooks like
-   * ngAfterViewInit, if they are defined on the component.
-   *
-   * NOTE: this property is short (1 char) because it is used in
-   * component templates which is sensitive to size.
-   *
-   * @param directiveIndex index of the directive in the containing template
-   * @param elementIndex index of an host element for a given component.
-   */
-  r(directiveIndex: number, elementIndex: number): void;
-
   /**
    * The tag name which should be used by the component.
    *
@@ -142,19 +118,17 @@ export interface LifecycleHooksMap {
 export interface DirectiveDefArgs<T> {
   type: Type<T>;
   factory: () => T;
-  refresh?: (directiveIndex: number, elementIndex: number) => void;
   inputs?: {[P in keyof T]?: string};
   outputs?: {[P in keyof T]?: string};
   methods?: {[P in keyof T]?: string};
   features?: DirectiveDefFeature[];
+  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
   exportAs?: string;
 }
 
 export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
   tag: string;
   template: ComponentTemplate<T>;
-  refresh?: (directiveIndex: number, elementIndex: number) => void;
-  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
   features?: ComponentDefFeature[];
   rendererType?: RendererType2;
 }

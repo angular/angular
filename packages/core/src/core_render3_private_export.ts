@@ -34,5 +34,6 @@ export {
   s as ɵs,
   t as ɵt,
   v as ɵv,
+  r as ɵr,
 } from './render3/index';
 // clang-format on
