@@ -337,6 +337,22 @@ describe('InteractivityChecker', () => {
         expect(checker.isTabbable(button)).toBe(true);
       });
 
+      it('should carefully try to access the frame element of an elements window', () => {
+        const iframe = createFromTemplate('<iframe>', true) as HTMLFrameElement;
+        const button = createFromTemplate('<button tabindex="1">Not Tabbable</button>');
+
+        appendElements([iframe]);
+
+        iframe.setAttribute('tabindex', '-1');
+        iframe.contentDocument.body.appendChild(button);
+
+        Object.defineProperty(iframe.contentWindow, 'frameElement', {
+          get: () => { throw 'Access Denied!'; }
+        });
+
+        expect(() => checker.isTabbable(button)).not.toThrow();
+      });
+
       it('should mark elements which are contentEditable as tabbable', () => {
         let editableEl = createFromTemplate('<div contenteditable="true">', true);
 
