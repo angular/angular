@@ -52,7 +52,9 @@ export class OverlayConfig {
 
   constructor(config?: OverlayConfig) {
     if (config) {
-      Object.keys(config).forEach(key => this[key] = config[key]);
+      Object.keys(config)
+        .filter(key => typeof config[key] !== 'undefined')
+        .forEach(key => this[key] = config[key]);
     }
   }
 }

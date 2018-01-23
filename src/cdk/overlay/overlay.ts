@@ -27,10 +27,6 @@ import {DOCUMENT} from '@angular/common';
 /** Next overlay unique ID. */
 let nextUniqueId = 0;
 
-/** The default config for newly created overlays. */
-let defaultConfig = new OverlayConfig();
-
-
 /**
  * Service to create Overlays. Overlays are dynamically added pieces of floating UI, meant to be
  * used as a low-level building building block for other components. Dialogs, tooltips, menus,
@@ -58,10 +54,11 @@ export class Overlay {
    * @param config Configuration applied to the overlay.
    * @returns Reference to the created overlay.
    */
-  create(config: OverlayConfig = defaultConfig): OverlayRef {
+  create(config?: OverlayConfig): OverlayRef {
     const pane = this._createPaneElement();
     const portalOutlet = this._createPortalOutlet(pane);
-    return new OverlayRef(portalOutlet, pane, config, this._ngZone, this._keyboardDispatcher);
+    return new OverlayRef(portalOutlet, pane, new OverlayConfig(config), this._ngZone,
+        this._keyboardDispatcher);
   }
 
   /**

@@ -239,6 +239,16 @@ describe('Overlay', () => {
     expect(callbackOrder).toEqual(['attach', 'detach']);
   });
 
+  it('should default to the ltr direction', () => {
+    const overlayRef = overlay.create({hasBackdrop: true});
+    expect(overlayRef.getConfig().direction).toBe('ltr');
+  });
+
+  it('should skip undefined values when applying the defaults', () => {
+    const overlayRef = overlay.create({direction: undefined});
+    expect(overlayRef.getConfig().direction).toBe('ltr');
+  });
+
   describe('positioning', () => {
     let config: OverlayConfig;
 
