@@ -234,7 +234,7 @@ describe('render3 integration test', () => {
           e();
         }
         TodoComponent.ngComponentDef.h(1, 0);
-        TodoComponent.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>');
@@ -248,7 +248,7 @@ describe('render3 integration test', () => {
           T(2, 'two');
         }
         TodoComponent.ngComponentDef.h(1, 0);
-        TodoComponent.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>two');
     });
@@ -267,8 +267,8 @@ describe('render3 integration test', () => {
         }
         TodoComponent.ngComponentDef.h(1, 0);
         TodoComponent.ngComponentDef.h(3, 2);
-        TodoComponent.ngComponentDef.r(1, 0);
-        TodoComponent.ngComponentDef.r(3, 2);
+        r(1, 0);
+        r(3, 2);
       }
       expect(renderToHtml(Template, null))
           .toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
@@ -303,7 +303,7 @@ describe('render3 integration test', () => {
           e();
         }
         TodoComponentHostBinding.ngComponentDef.h(1, 0);
-        TodoComponentHostBinding.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<todo title="one">one</todo>');
@@ -336,7 +336,7 @@ describe('render3 integration test', () => {
           e();
         }
         MyComp.ngComponentDef.h(1, 0);
-        MyComp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<comp><p>Bess</p></comp>');
@@ -383,7 +383,7 @@ describe('render3 integration test', () => {
         }
         p(0, 'condition', b(ctx.condition));
         MyComp.ngComponentDef.h(1, 0);
-        MyComp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {condition: true})).toEqual('<comp><div>text</div></comp>');

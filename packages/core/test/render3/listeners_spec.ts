@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {C, E, L, T, V, cR, cr, defineComponent, e, v} from '../../src/render3/index';
+import {C, E, L, T, V, cR, cr, defineComponent, e, r, v} from '../../src/render3/index';
 
 import {containerEl, renderComponent, renderToHtml} from './render_util';
 
@@ -208,8 +208,8 @@ describe('event listeners', () => {
           }
           MyComp.ngComponentDef.h(2, 1);
           MyComp.ngComponentDef.h(4, 3);
-          MyComp.ngComponentDef.r(2, 1);
-          MyComp.ngComponentDef.r(4, 3);
+          r(2, 1);
+          r(4, 3);
           v();
         }
       }

@@ -40,11 +40,6 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     n: componentDefinition.factory,
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
     template: (componentDefinition as ComponentDefArgs<T>).template || null !,
-    r: componentDefinition.refresh || (componentDefinition.template ?
-                                           function(d: number, e: number) {
-                                             componentRefresh(d, e, componentDefinition.template);
-                                           } :
-                                           noop),
     h: componentDefinition.hostBindings || noop,
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
