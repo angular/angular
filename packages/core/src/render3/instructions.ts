@@ -101,10 +101,11 @@ let data: any[];
 let bindingIndex: number;
 
 /**
- * When a view is destroyed, listeners need to be released
- * and onDestroy callbacks need to be called. This cleanup array
- * stores both listener data (in chunks of 4) and onDestroy data
- * (in chunks of 2), as they'll be processed at the same time.
+ * When a view is destroyed, listeners need to be released and outputs need to be
+ * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
+ * and output data (in chunks of 2) for a particular view. Combining the arrays
+ * saves on memory (70 bytes per array) and on a few bytes of code size (for two
+ * separate for loops).
  *
  * If it's a listener being stored:
  * 1st index is: event name to remove
@@ -112,8 +113,8 @@ let bindingIndex: number;
  * 3rd index is: listener function
  * 4th index is: useCapture boolean
  *
- * If it's an onDestroy function:
- * 1st index is: onDestroy function
+ * If it's an output subscription:
+ * 1st index is: unsubscribe function
  * 2nd index is: context for function
  */
 let cleanup: any[]|null;
@@ -158,7 +159,7 @@ export function leaveView(newView: LView): void {
   currentView.creationMode = false;
   currentView.initHooksCalled = false;
   currentView.contentHooksCalled = false;
-  if (currentView.tView.firstTemplatePass) currentView.tView.firstTemplatePass = false;
+  currentView.tView.firstTemplatePass = false;
   enterView(newView, null);
 }
 
@@ -181,8 +182,8 @@ export function createLView(
     template: template,
     context: context,
     dynamicViewCount: 0,
-    contentHooksCalled: false,
-    initHooksCalled: false
+    initHooksCalled: false,
+    contentHooksCalled: false
   };
 
   return newView;
@@ -310,7 +311,7 @@ export function renderEmbeddedTemplate<T>(
     previousOrParentNode = null !;
     let cm: boolean = false;
     if (viewNode == null) {
-      const view = createLView(-1, renderer, {data: []}, template, context);
+      const view = createLView(-1, renderer, createTView(), template, context);
       viewNode = createLNode(null, LNodeFlags.View, null, view);
       cm = true;
     }
@@ -483,8 +484,16 @@ function getOrCreateTView(template: ComponentTemplate<any>): TView {
   return template.ngPrivateData || (template.ngPrivateData = createTView() as never);
 }
 
+/** Creates a TView instance */
 export function createTView(): TView {
-  return {data: [], firstTemplatePass: true, initHooks: null, contentHooks: null, viewHooks: null};
+  return {
+    data: [],
+    firstTemplatePass: true,
+    initHooks: null,
+    contentHooks: null,
+    viewHooks: null,
+    destroyHooks: null
+  };
 }
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
@@ -1183,7 +1192,7 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
       leaveView(oldView);
     }
   }
-};
+}
 
 /**
  * Instruction to distribute projectable nodes among <ng-content> occurrences in a given template.

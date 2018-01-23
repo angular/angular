@@ -240,7 +240,7 @@ describe('di', () => {
           constructor(public value: string) {}
 
           static ngComponentDef = defineComponent({
-            // type: MyApp,
+            type: MyApp,
             tag: 'my-app',
             factory: () => new MyApp(inject(String as any, InjectFlags.Default, 'DefaultValue')),
             template: () => null

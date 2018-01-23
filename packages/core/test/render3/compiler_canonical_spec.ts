@@ -311,14 +311,12 @@ describe('compiler specification', () => {
 
       // NORMATIVE
       static ngDirectiveDef = r3.defineDirective({
+        type: ForOfDirective,
         factory: function ForOfDirective_Factory() {
           return new ForOfDirective(r3.injectViewContainerRef(), r3.injectTemplateRef());
         },
         // TODO(chuckj): Enable when ngForOf enabling lands.
         // features: [NgOnChangesFeature(NgForOf)],
-        refresh: function ForOfDirective_Refresh(directiveIndex: number, elementIndex: number) {
-          r3.m<ForOfDirective>(directiveIndex).ngDoCheck();
-        },
         inputs: {forOf: 'forOf'}
       });
       // /NORMATIVE
@@ -340,6 +338,7 @@ describe('compiler specification', () => {
 
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponentTemplate(ctx: MyComponent, cm: boolean) {
@@ -350,7 +349,7 @@ describe('compiler specification', () => {
             }
             r3.p(1, 'forOf', r3.b(ctx.items));
             r3.cR(1);
-            ForOfDirective.ngDirectiveDef.r(2, 1);
+            r3.r(2, 1);
             r3.cr();
 
             function MyComponent_ForOfDirective_Template_1(ctx1: any, cm: boolean) {
@@ -404,6 +403,7 @@ describe('compiler specification', () => {
 
         // NORMATIVE
         static ngComponentDef = r3.defineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: MyComponent, cm: boolean) {
@@ -414,7 +414,7 @@ describe('compiler specification', () => {
             }
             r3.p(1, 'forOf', r3.b(ctx.items));
             r3.cR(1);
-            ForOfDirective.ngDirectiveDef.r(2, 1);
+            r3.r(2, 1);
             r3.cr();
 
             function MyComponent_ForOfDirective_Template_1(ctx1: any, cm: boolean) {
@@ -430,7 +430,7 @@ describe('compiler specification', () => {
               r3.t(1, r3.b1('', l0_item.name, ''));
               r3.p(4, 'forOf', r3.b(ctx.items));
               r3.cR(3);
-              ForOfDirective.ngDirectiveDef.r(4, 3);
+              r3.r(4, 3);
               r3.cr();
 
               function MyComponent_ForOfDirective_ForOfDirective_Template_3(

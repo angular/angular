@@ -46,10 +46,14 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     methods: invertObject(componentDefinition.methods),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
     exportAs: componentDefinition.exportAs,
-    lifecycleHooks: getLifecyleHooksMap<T>(componentDefinition.type)
+    lifecycleHooks: null !
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
+
+  // These must be set after feature functions are run, so ngOnChanges can be
+  // properly set up.
+  def.lifecycleHooks = getLifecyleHooksMap<T>(componentDefinition.type);
   return def;
 }
 
@@ -62,7 +66,7 @@ type OnChangesExpando = OnChanges & {
 };
 
 export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<any>) => void {
-  return function (definition: DirectiveDef<any>): void {
+  return function(definition: DirectiveDef<any>): void {
     const inputs = definition.inputs;
     const proto = type.prototype;
     // Place where we will store SimpleChanges if there is a change
@@ -77,11 +81,11 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
 
       // create a getter and setter for property
       Object.defineProperty(proto, minKey, {
-        get: function (this: OnChangesExpando) {
+        get: function(this: OnChangesExpando) {
           return (existingDesc && existingDesc.get) ? existingDesc.get.call(this) :
-            this[privateMinKey];
+                                                      this[privateMinKey];
         },
-        set: function (this: OnChangesExpando, value: any) {
+        set: function(this: OnChangesExpando, value: any) {
           let simpleChanges = this[PRIVATE_PREFIX];
           let isFirstChange = simpleChanges === undefined;
           if (simpleChanges == null) {
@@ -89,12 +93,12 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
           }
           simpleChanges[pubKey] = new SimpleChange(this[privateMinKey], value, isFirstChange);
           (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
-            this[privateMinKey] = value;
+                                               this[privateMinKey] = value;
         }
       });
     }
-    proto.ngDoCheck = (function (delegateDoCheck) {
-      return function (this: OnChangesExpando) {
+    proto.ngDoCheck = (function(delegateDoCheck) {
+      return function(this: OnChangesExpando) {
         let simpleChanges = this[PRIVATE_PREFIX];
         if (simpleChanges != null) {
           this.ngOnChanges(simpleChanges);
