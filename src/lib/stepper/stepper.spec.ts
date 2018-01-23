@@ -82,8 +82,16 @@ describe('MatHorizontalStepper', () => {
       assertNextStepperButtonClick(fixture);
     });
 
+    it('should set the next stepper button type to "submit"', () => {
+      assertStepperButtonType(fixture, MatStepperNext, 'submit');
+    });
+
     it('should go to previous available step when the previous button is clicked', () => {
       assertPreviousStepperButtonClick(fixture);
+    });
+
+    it('should set the previous stepper button type to "button"', () => {
+      assertStepperButtonType(fixture, MatStepperPrevious, 'button');
     });
 
     it('should set the correct step position for animation', () => {
@@ -318,8 +326,16 @@ describe('MatVerticalStepper', () => {
       assertNextStepperButtonClick(fixture);
     });
 
+    it('should set the next stepper button type to "submit"', () => {
+      assertStepperButtonType(fixture, MatStepperNext, 'submit');
+    });
+
     it('should go to previous available step when the previous button is clicked', () => {
       assertPreviousStepperButtonClick(fixture);
+    });
+
+    it('should set the previous stepper button type to "button"', () => {
+      assertStepperButtonType(fixture, MatStepperPrevious, 'button');
     });
 
     it('should set the correct step position for animation', () => {
@@ -509,6 +525,13 @@ function assertNextStepperButtonClick(fixture: ComponentFixture<any>) {
   fixture.detectChanges();
 
   expect(stepperComponent.selectedIndex).toBe(2);
+}
+
+/** Asserts that the specified type of stepper button has the given type. */
+function assertStepperButtonType(fixture: ComponentFixture<any>, stepperClass: any, type: string) {
+  const buttonElement = fixture.debugElement.query(By.directive(stepperClass)).nativeElement;
+
+  expect(buttonElement.type).toBe(type, `Expected the button to have "${type}" set as type.`);
 }
 
 /** Asserts that clicking on MatStepperPrevious button updates `selectedIndex` correctly. */
