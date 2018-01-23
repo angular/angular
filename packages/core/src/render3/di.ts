@@ -167,7 +167,7 @@ export function diPublicInInjector(di: LInjector, def: DirectiveDef<any>): void 
  *
  * @param def The definition of the directive to be made public
  */
-export function diPublic(def: TypedDirectiveDef<any>): void {
+export function diPublic(def: DirectiveDef<any>): void {
   diPublicInInjector(getOrCreateNodeInjector(), def);
 }
 

@@ -69,9 +69,9 @@ export interface LView {
   bindingStartIndex: number|null;
 
   /**
-   * When a view is destroyed, listeners need to be released and onDestroy callbacks
-   * need to be called. This cleanup array stores both listener data (in chunks of 4)
-   * and onDestroy data (in chunks of 2) for a particular view. Combining the arrays
+   * When a view is destroyed, listeners need to be released and outputs need to be
+   * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
+   * and output data (in chunks of 2) for a particular view. Combining the arrays
    * saves on memory (70 bytes per array) and on a few bytes of code size (for two
    * separate for loops).
    *
@@ -81,9 +81,9 @@ export interface LView {
    * 3rd index is: listener function
    * 4th index is: useCapture boolean
    *
-   * If it's an onDestroy function:
-   * 1st index is: onDestroy function
-   * 2nd index is; context for function
+   * If it's an output subscription:
+   * 1st index is: unsubscribe function
+   * 2nd index is: context for function
    */
   cleanup: any[]|null;
 
@@ -92,13 +92,14 @@ export interface LView {
    * detection run.
    *
    * These two hooks are executed by the first Comp.r() instruction that runs OR the
-   * first cR instruction that runs (so inits are run for the top level view before
+   * first cR() instruction that runs (so inits are run for the top level view before
    * any embedded views). For this reason, the call must be tracked.
    */
   initHooksCalled: boolean;
 
   /**
-   * Whether or not the content hooks have been called in this change detection run.
+   * Whether or not the afterContentInit and afterContentChecked hooks have been called
+   * in this change detection run.
    *
    * Content hooks are executed by the first Comp.r() instruction that runs (to avoid
    * adding to the code size), so it needs to be able to check whether or not they should
@@ -220,10 +221,18 @@ export interface TView {
    * Odd indices: Hook function
    */
   viewHooks: HookData|null;
+
+  /**
+   * Array of ngOnDestroy hooks that should be executed when this view is destroyed.
+   *
+   * Even indices: Directive index
+   * Odd indices: Hook function
+   */
+  destroyHooks: HookData|null;
 }
 
 /**
- * Array of init hooks that should be executed for a view.
+ * Array of hooks that should be executed for a view and their directive indices.
  *
  * Even indices: Flags (1st bit: hook type, remaining: directive index)
  * Odd indices: Hook function

@@ -8,7 +8,7 @@
 
 import {NgForOfContext} from '@angular/common';
 
-import {C, E, T, b, cR, cr, defineComponent, e, p, t} from '../../src/render3/index';
+import {C, E, T, b, cR, cr, defineComponent, e, p, r, t} from '../../src/render3/index';
 
 import {NgForOf} from './common_with_def';
 import {renderComponent, toHtml} from './render_util';
@@ -20,6 +20,7 @@ describe('@angular/common integration', () => {
         items: string[] = ['first', 'second'];
 
         static ngComponentDef = defineComponent({
+          type: MyApp,
           factory: () => new MyApp(),
           tag: 'my-app',
           // <ul>
@@ -33,7 +34,7 @@ describe('@angular/common integration', () => {
             }
             p(1, 'ngForOf', b(myApp.items));
             cR(1);
-            NgForOf.ngDirectiveDef.r(2, 0);
+            r(2, 0);
             cr();
 
             function liTemplate(row: NgForOfContext<string>, cm: boolean) {
