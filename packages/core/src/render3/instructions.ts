@@ -27,19 +27,8 @@ import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
+import {LifecycleHook, executeViewHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 
-
-/**
- * Enum used by the lifecycle (l) instruction to determine which lifecycle hook is requesting
- * processing.
- */
-export const enum LifecycleHook {
-  ON_INIT = 1,
-  ON_DESTROY = 2,
-  ON_CHANGES = 4,
-  AFTER_INIT = 8,
-  AFTER_CHECKED = 16
-}
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -91,7 +80,7 @@ let tData: TData;
 /** State of the current view being processed. */
 let currentView: LView;
 // The initialization has to be after the `let`, otherwise `createLView` can't see `let`.
-currentView = createLView(null !, null !, {data: []});
+currentView = createLView(null !, null !, createTView());
 
 let currentQuery: LQuery|null;
 
@@ -129,19 +118,6 @@ let bindingIndex: number;
  */
 let cleanup: any[]|null;
 
-/**
- * Array of ngAfterContentInit and ngAfterContentChecked hooks.
- *
- * These need to be queued so they can be called all at once after init hooks
- * and any embedded views are finished processing (to maintain backwards-compatible
- * order).
- *
- * 1st index is: type of hook (afterContentInit or afterContentChecked)
- * 2nd index is: method to call
- * 3rd index is: context
- */
-let contentHooks: any[]|null;
-
 /** Index in the data array at which view hooks begin to be stored. */
 let viewHookStartIndex: number|null;
 
@@ -166,7 +142,6 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
 
   viewHookStartIndex = newView.viewHookStartIndex;
   cleanup = newView.cleanup;
-  contentHooks = newView.contentHooks;
   renderer = newView.renderer;
 
   if (host != null) {
@@ -183,8 +158,10 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
  * the direction of traversal (up or down the view tree) a bit clearer.
  */
 export function leaveView(newView: LView): void {
-  executeViewHooks();
+  executeViewHooks(data, viewHookStartIndex);
+  currentView.initHooksCalled = false;
   currentView.contentHooksCalled = false;
+  if (currentView.tView.firstTemplatePass) currentView.tView.firstTemplatePass = false;
   enterView(newView, null);
 }
 
@@ -209,7 +186,8 @@ export function createLView(
     template: template,
     context: context,
     dynamicViewCount: 0,
-    contentHooksCalled: false
+    contentHooksCalled: false,
+    initHooksCalled: false
   };
 
   return newView;
@@ -508,7 +486,11 @@ function hack_findQueryName(
  * @returns TView
  */
 function getOrCreateTView(template: ComponentTemplate<any>): TView {
-  return template.ngPrivateData || (template.ngPrivateData = { data: [] } as never);
+  return template.ngPrivateData || (template.ngPrivateData = createTView() as never);
+}
+
+export function createTView(): TView {
+  return {data: [], firstTemplatePass: true, initHooks: null};
 }
 
 function setUpAttributes(native: RElement, attrs: string[]): void {
@@ -627,35 +609,7 @@ export function elementEnd() {
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Element);
   const query = previousOrParentNode.query;
   query && query.addNode(previousOrParentNode);
-  queueLifecycleHooks();
-}
-
-/**
- * Loops through the directives on a node and queues their afterContentInit,
- * afterContentChecked, and onDestroy hooks, if they exist.
- */
-function queueLifecycleHooks(): void {
-  // It's necessary to loop through the directives at elementEnd() (rather than storing
-  // the hooks at creation time) so we can preserve the current hook order. All hooks
-  // for projected components and directives must be called *before* their hosts.
-  const flags = previousOrParentNode.flags;
-  const size = (flags & LNodeFlags.SIZE_MASK) >> LNodeFlags.SIZE_SHIFT;
-  const start = flags >> LNodeFlags.INDX_SHIFT;
-
-  for (let i = start, end = start + size; i < end; i++) {
-    const instance = data[i];
-    if (instance.ngAfterContentInit != null) {
-      (contentHooks || (currentView.contentHooks = contentHooks = [
-       ])).push(LifecycleHook.AFTER_INIT, instance.ngAfterContentInit, instance);
-    }
-    if (instance.ngAfterContentChecked != null) {
-      (contentHooks || (currentView.contentHooks = contentHooks = [
-       ])).push(LifecycleHook.AFTER_CHECKED, instance.ngAfterContentChecked, instance);
-    }
-    if (instance.ngOnDestroy != null) {
-      (cleanup || (currentView.cleanup = cleanup = [])).push(instance.ngOnDestroy, instance);
-    }
-  }
+  queueLifecycleHooks(previousOrParentNode.flags, currentView);
 }
 
 /**
@@ -949,6 +903,11 @@ export function directiveCreate<T>(
   if (tNode && tNode.attrs) {
     setInputsFromAttrs<T>(instance, directiveDef !.inputs, tNode);
   }
+
+  // Init hooks are queued now so ngOnInit is called in host components before
+  // any projected components.
+  queueInitHooks(index, directiveDef.lifecycleHooks, currentView.tView);
+
   return instance;
 }
 
@@ -1013,43 +972,19 @@ function generateInitialInputs(
  * Accepts a lifecycle hook type and determines when and how the related lifecycle hook
  * callback should run.
  *
- * For the onInit lifecycle hook, it will return whether or not the ngOnInit() function
- * should run. If so, ngOnInit() will be called outside of this function.
- *
- * e.g. l(LifecycleHook.ON_INIT) && ctx.ngOnInit();
- *
- * For the onDestroy lifecycle hook, this instruction also accepts an onDestroy
- * method that should be stored and called internally when the parent view is being
- * cleaned up.
- *
- * e.g.  l(LifecycleHook.ON_DESTROY, ctx, ctx.onDestroy);
- *
  * @param lifecycle
  * @param self
  * @param method
  */
-export function lifecycle(lifecycle: LifecycleHook.AFTER_INIT, self: any, method: Function): void;
-export function lifecycle(
-    lifecycle: LifecycleHook.AFTER_CHECKED, self: any, method: Function): void;
-export function lifecycle(lifecycle: LifecycleHook): boolean;
-export function lifecycle(lifecycle: LifecycleHook, self?: any, method?: Function): boolean {
-  if (lifecycle === LifecycleHook.ON_INIT) {
-    return creationMode;
-  } else if (
-      creationMode &&
-      (lifecycle === LifecycleHook.AFTER_INIT || lifecycle === LifecycleHook.AFTER_CHECKED)) {
+export function lifecycle(lifecycle: LifecycleHook, self: any, method: Function): boolean {
+  if (creationMode &&
+      (lifecycle === LifecycleHook.ON_INIT || lifecycle === LifecycleHook.ON_CHECK)) {
     if (viewHookStartIndex == null) {
       currentView.viewHookStartIndex = viewHookStartIndex = data.length;
     }
     data.push(lifecycle, method, self);
   }
   return false;
-}
-
-/** Iterates over view hook functions and calls them. */
-export function executeViewHooks(): void {
-  if (viewHookStartIndex == null) return;
-  executeHooksAndRemoveInits(data, viewHookStartIndex);
 }
 
 
@@ -1124,6 +1059,10 @@ export function containerRefreshStart(index: number): void {
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   isParent = true;
   (previousOrParentNode as LContainerNode).data.nextIndex = 0;
+
+  // We need to execute init hooks here so ngOnInit hooks are called in top level views
+  // before they are called in embedded views (for backwards compatibility).
+  executeInitHooks(currentView);
 }
 
 /**
@@ -1210,7 +1149,7 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
   ngDevMode && assertNodeType(parent, LNodeFlags.Container);
   const tContainer = (parent !.tNode as TContainerNode).data;
   if (viewIndex >= tContainer.length || tContainer[viewIndex] == null) {
-    tContainer[viewIndex] = { data: [] } as TView;
+    tContainer[viewIndex] = createTView();
   }
   return tContainer[viewIndex];
 }
@@ -1261,7 +1200,8 @@ export const componentRefresh:
   ngDevMode && assertDataInRange(directiveIndex);
   const hostView = element.data !;
   ngDevMode && assertNotEqual(hostView, null, 'hostView');
-  executeContentHooks();
+  executeInitHooks(currentView);
+  executeContentHooks(currentView);
   const directive = data[directiveIndex];
   const oldView = enterView(hostView, element);
   try {
@@ -1272,49 +1212,6 @@ export const componentRefresh:
     leaveView(oldView);
   }
 };
-
-/**
- * Calls all afterContentInit and afterContentChecked hooks for the view, then splices
- * out afterContentInit hooks to prep for the next run in update mode.
- */
-function executeContentHooks(): void {
-  if (contentHooks == null || currentView.contentHooksCalled) return;
-  executeHooksAndRemoveInits(contentHooks, 0);
-  currentView.contentHooksCalled = true;
-}
-
-/**
- * Calls lifecycle hooks with their contexts, then splices out any init-only hooks
- * to prep for the next run in update mode.
- *
- * @param arr The array in which the hooks are found
- * @param startIndex The index at which to start calling hooks
- */
-function executeHooksAndRemoveInits(arr: any[], startIndex: number): void {
-  // Instead of using splice to remove init hooks after their first run (expensive), we
-  // shift over the AFTER_CHECKED hooks as we call them and truncate once at the end.
-  let checkIndex = startIndex;
-  let writeIndex = startIndex;
-  while (checkIndex < arr.length) {
-    // Call lifecycle hook with its context
-    arr[checkIndex + 1].call(arr[checkIndex + 2]);
-
-    if (arr[checkIndex] === LifecycleHook.AFTER_CHECKED) {
-      // We know if the writeIndex falls behind that there is an init that needs to
-      // be overwritten.
-      if (writeIndex < checkIndex) {
-        arr[writeIndex] = arr[checkIndex];
-        arr[writeIndex + 1] = arr[checkIndex + 1];
-        arr[writeIndex + 2] = arr[checkIndex + 2];
-      }
-      writeIndex += 3;
-    }
-    checkIndex += 3;
-  }
-
-  // Truncate once at the writeIndex
-  arr.length = writeIndex;
-}
 
 /**
  * Instruction to distribute projectable nodes among <ng-content> occurrences in a given template.

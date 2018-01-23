@@ -104,6 +104,16 @@ export interface LView {
   contentHooks: any[]|null;
 
   /**
+   * Whether or not the ngOnInit and ngDoCheck hooks have been called in this change
+   * detection run.
+   *
+   * These two hooks are executed by the first Comp.r() instruction that runs OR the
+   * first cR instruction that runs (so inits are run for the top level view before
+   * any embedded views). For this reason, the call must be tracked.
+   */
+  initHooksCalled: boolean;
+
+  /**
    * Whether or not the content hooks have been called in this change detection run.
    *
    * Content hooks are executed by the first Comp.r() instruction that runs (to avoid
@@ -194,7 +204,29 @@ export interface LViewOrLContainer {
  *
  * Stored on the template function as ngPrivateData.
  */
-export interface TView { data: TData; }
+export interface TView {
+  /** Static data equivalent of LView.data[]. Contains TNodes and directive defs. */
+  data: TData;
+
+  /** Whether or not this template has been processed. */
+  firstTemplatePass: boolean;
+
+  /**
+   * Array of init hooks that should be executed for this view.
+   *
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
+   * Odd indices: Hook function
+   */
+  initHooks: HookData|null;
+}
+
+/**
+ * Array of init hooks that should be executed for a view.
+ *
+ * Even indices: Flags (1st bit: hook type, remaining: directive index)
+ * Odd indices: Hook function
+ */
+export type HookData = (number | (() => void))[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.
