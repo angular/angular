@@ -13,8 +13,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {componentRefresh} from './instructions';
-import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, LifecycleHooksMap} from './interfaces/definition';
+import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs} from './interfaces/definition';
 
 
 
@@ -34,8 +33,9 @@ import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, Lifecycl
  * ```
  */
 export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): ComponentDef<T> {
+  const type = componentDefinition.type;
   const def = <ComponentDef<any>>{
-    type: componentDefinition.type,
+    type: type,
     diPublic: null,
     n: componentDefinition.factory,
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
@@ -46,14 +46,16 @@ export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): Co
     methods: invertObject(componentDefinition.methods),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
     exportAs: componentDefinition.exportAs,
-    lifecycleHooks: null !
+    onInit: type.prototype.ngOnInit || null,
+    doCheck: type.prototype.ngDoCheck || null,
+    afterContentInit: type.prototype.ngAfterContentInit || null,
+    afterContentChecked: type.prototype.ngAfterContentChecked || null,
+    afterViewInit: type.prototype.ngAfterViewInit || null,
+    afterViewChecked: type.prototype.ngAfterViewChecked || null,
+    onDestroy: type.prototype.ngOnDestroy || null
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
-
-  // These must be set after feature functions are run, so ngOnChanges can be
-  // properly set up.
-  def.lifecycleHooks = getLifecyleHooksMap<T>(componentDefinition.type);
   return def;
 }
 
@@ -97,7 +99,7 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
         }
       });
     }
-    proto.ngDoCheck = (function(delegateDoCheck) {
+    definition.doCheck = (function(delegateDoCheck) {
       return function(this: OnChangesExpando) {
         let simpleChanges = this[PRIVATE_PREFIX];
         if (simpleChanges != null) {
@@ -107,24 +109,6 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
         delegateDoCheck && delegateDoCheck.apply(this);
       };
     })(proto.ngDoCheck);
-  };
-}
-
-/**
- * Takes the component type and returns a formatted map of lifecycle hooks for that
- * component.
- *
- * @param type The component type
- */
-function getLifecyleHooksMap<T>(type: Type<T>): LifecycleHooksMap {
-  return {
-    onInit: type.prototype.ngOnInit || null,
-    doCheck: type.prototype.ngDoCheck || null,
-    afterContentInit: type.prototype.ngAfterContentInit || null,
-    afterContentChecked: type.prototype.ngAfterContentChecked || null,
-    afterViewInit: type.prototype.ngAfterViewInit || null,
-    afterViewChecked: type.prototype.ngAfterViewChecked || null,
-    onDestroy: type.prototype.ngOnDestroy || null,
   };
 }
 

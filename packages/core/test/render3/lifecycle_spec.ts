@@ -31,7 +31,7 @@ describe('lifecycles', () => {
 
     let Comp = createOnInitComponent('comp', (ctx: any, cm: boolean) => {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { P(2, 0); }
         e();
@@ -435,14 +435,14 @@ describe('lifecycles', () => {
 
     let Comp = createAfterContentInitComp('comp', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         P(1, 0);
       }
     });
 
     let Parent = createAfterContentInitComp('parent', function(ctx: any, cm: boolean) {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, Comp);
         { P(3, 0); }
         e();
@@ -454,7 +454,7 @@ describe('lifecycles', () => {
 
     let ProjectedComp = createAfterContentInitComp('projected', (ctx: any, cm: boolean) => {
       if (cm) {
-        m(0, pD());
+        pD(0);
         P(1, 0);
       }
     });
@@ -813,7 +813,7 @@ describe('lifecycles', () => {
 
     let Comp = createAfterViewInitComponent('comp', (ctx: any, cm: boolean) => {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { P(2, 0); }
         e();
@@ -1244,7 +1244,7 @@ describe('lifecycles', () => {
 
     let Comp = createOnDestroyComponent('comp', (ctx: any, cm: boolean) => {
       if (cm) {
-        m(0, pD());
+        pD(0);
         P(1, 0);
       }
     });
