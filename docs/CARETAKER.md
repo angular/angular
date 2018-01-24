@@ -5,7 +5,7 @@ Caretaker is responsible for merging PRs into the individual branches and intern
 ## Responsibilities
 
 - Draining the queue of PRs ready to be merged. (PRs with [`PR action: merge`](https://github.com/angular/angular/pulls?q=is%3Aopen+is%3Apr+label%3A%22PR+action%3A+merge%22) label)
-- Assigining [new issues](https://github.com/angular/angular/issues?q=is%3Aopen+is%3Aissue+no%3Alabel) to individual component authors.
+- Assigning [new issues](https://github.com/angular/angular/issues?q=is%3Aopen+is%3Aissue+no%3Alabel) to individual component authors.
 
 ## Merging the PR
 
@@ -19,12 +19,12 @@ $ ./scripts/github/merge-pr 1234
 ```
 
 The `merge-pr` script will:
-- Ensure that all approriate labels are on the PR.
-- That the current branch (`master` or `?.?.x` patch) mathches the `PR target: *` label.
+- Ensure that all appropriate labels are on the PR.
 - Fetches the latest PR code from the `angular/angular` repo.
-- It will `cherry-pick` all of the SHAs from the PR into the current branch.
+- It will `cherry-pick` all of the SHAs from the PR into the current corresponding branches `master` and or `?.?.x` (patch).
 - It will rewrite commit history by automatically adding `Close #1234` and `(#1234)` into the commit message.
 
+NOTE: The `merge-pr` will land the PR on `master` and or `?.?.x` (patch) as described by `PR target: *` label.
 
 ### Recovering from failed `merge-pr` due to conflicts
 
