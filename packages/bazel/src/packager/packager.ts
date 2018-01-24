@@ -50,3 +50,23 @@ function main(args: string[]): number {
 if (require.main === module) {
   process.exitCode = main(process.argv.slice(2));
 }
+
+/* /testing.d.ts
+echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/${package_name}'" > ${2}/../${package_name}.d.ts
+//LICENSE
+export * from './testing/testing'
+*/
+
+/* /testing.metadata.json
+{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true}
+ */
+
+/* /testing/package.json
+{
+  "name": "@angular/core/testing",
+  "typings": "./testing.d.ts",
+  "main": "../bundles/core-testing.umd.js",
+  "module": "../esm5/testing.js",
+  "es2015": "../esm2015/testing.js"
+}
+ */

@@ -8,6 +8,7 @@ shx.cd(corePackagePath);
  * Utility functions that allows me to create regular expressions for string containing paths as
  *   r`/some/long/path` rather than as /\/some\/long\/path/ or RegExp('/some/long/path')
  */
+// TODO(i): keep or remove? it's not needed any more...
 function r(templateStringArray: TemplateStringsArray) {
   return new RegExp(templateStringArray.join(''));
 }
@@ -32,8 +33,8 @@ describe("ng_package", () => {
     describe("README.md", () => {
 
       it("should have a README.md file with basic info", () => {
-        expect(shx.cat('README.md')).toMatch(r`Angular`);
-        expect(shx.cat('README.md')).toMatch(r`https://github.com/angular/angular`);
+        expect(shx.cat('README.md')).toContain(`Angular`);
+        expect(shx.cat('README.md')).toContain(`https://github.com/angular/angular`);
       });
     });
   });
@@ -46,7 +47,7 @@ describe("ng_package", () => {
       const packageJson = 'package.json';
 
       it("should have a package.json file", () => {
-        expect(shx.grep('"name":', packageJson)).toMatch(r`@angular/core`);
+        expect(shx.grep('"name":', packageJson)).toContain(`@angular/core`);
       });
 
 
@@ -56,24 +57,70 @@ describe("ng_package", () => {
 
       it("should contain module resolution mappings", () => {
         const packageJson = 'package.json';
-        expect(shx.grep('"main":', packageJson)).toMatch(r`./bundles/core.umd.js`);
-        expect(shx.grep('"module":', packageJson)).toMatch(r`./esm5/core.js`);
-        expect(shx.grep('"es2015":', packageJson)).toMatch(r`./esm2015/core.js`);
-        expect(shx.grep('"typings":', packageJson)).toMatch(r`./core.d.ts`);
+        expect(shx.grep('"main":', packageJson)).toContain(`./bundles/core.umd.js`);
+        expect(shx.grep('"module":', packageJson)).toContain(`./esm5/core.js`);
+        expect(shx.grep('"es2015":', packageJson)).toContain(`./esm2015/core.js`);
+        expect(shx.grep('"typings":', packageJson)).toContain(`./core.d.ts`);
       });
     });
 
 
     describe("typescript support", () => {
+
       it("should have an index.d.ts file", () => {
-        expect(shx.cat('index.d.ts')).toMatch(r`export *`);
+        expect(shx.cat('index.d.ts')).toContain(`export *`);
       });
     });
 
+
     describe("angular metadata", () => {
+
       it("should have metadata.json files", () => {
-        expect(shx.cat('core.metadata.json')).toMatch(r`"__symbolic":"module"`);
-        expect(shx.cat('testing.metadata.json')).toMatch(r`"__symbolic":"module"`);
+        expect(shx.cat('core.metadata.json')).toContain(`"__symbolic":"module"`);
+      });
+    });
+
+
+    describe('fesm15', function () {
+
+      it('should have a fesm15 file in the /ems2015 directory', function () {
+        expect(shx.cat('esm2015/core.js')).toContain(`export {`);
+      });
+
+      it('should have a source map', function () {
+        expect(shx.cat('esm2015/core.js.map')).toContain(`{"version":3,"file":"core.js","sources":`);
+      });
+    });
+
+
+    describe('fesm5', function () {
+
+      it('should have a fesm5 file in the /ems5 directory', function () {
+        expect(shx.cat('esm5/testing.js')).toContain(`export {`);
+      });
+
+      it('should have a source map', function () {
+        expect(shx.cat('esm5/testing.js.map')).toContain(`{"version":3,"file":"testing.js","sources":`);
+      });
+    });
+
+
+    describe('umd', function () {
+
+      it('should have a umd file in the /bundles directory', function () {
+        expect(shx.ls('bundles/core.umd.js').length).toBe(1, "File not found");
+      });
+
+      it('should have a source map next to the umd file', function () {
+        expect(shx.ls('bundles/core.umd.js.map').length).toBe(1, "File not found");
+      });
+
+      it('should have a minified umd file in the /bundles directory', function () {
+        expect(shx.ls('bundles/core.umd.min.js').length).toBe(1, "File not found");
+      });
+
+      it('should have a source map next to the minified umd file', function () {
+        expect(shx.ls('bundles/core.umd.min.js.map').length).toBe(1, "File not found");
       });
     });
   });
@@ -84,17 +131,38 @@ describe("ng_package", () => {
       const packageJson = p`testing/package.json`;
 
       it("should have a package.json file", () => {
-        expect(shx.grep('"name":', packageJson)).toMatch(r`@angular/core/testing`);
+        expect(shx.grep('"name":', packageJson)).toContain(`@angular/core/testing`);
       });
 
-      // TODO(i): generate package.json for secondary-entry point
       it("should have its module resolution mappings defined in the nested package.json", () => {
         const packageJson = p`testing/package.json`;
-        expect(shx.grep('"main":', packageJson)).toMatch(r`./bundles/core.umd.js`);
-        expect(shx.grep('"module":', packageJson)).toMatch(r`./esm5/core.js`);
-        expect(shx.grep('"es2015":', packageJson)).toMatch(r`./esm2015/core.js`);
-        expect(shx.grep('"typings":', packageJson)).toMatch(r`./core.d.ts`);
+        expect(shx.grep('"main":', packageJson)).toContain(`../bundles/core-testing.umd.js`);
+        expect(shx.grep('"module":', packageJson)).toContain(`../esm5/testing.js`);
+        expect(shx.grep('"es2015":', packageJson)).toContain(`../esm2015/testing.js`);
+        expect(shx.grep('"typings":', packageJson)).toContain(`../testing.d.ts`);
       });
     });
+
+    describe("typescript support", () => {
+
+      // TODO(i): why in the parent dir?
+      it("should have an 'redirect' d.ts file in the parent dir", () => {
+        expect(shx.cat('testing/testing.d.ts')).toContain(`export *`);
+      });
+
+      it("should have a 'actual' d.ts file in the parent dir", () => {
+        expect(shx.cat('testing/testing.d.ts')).toContain(`export * from './testing/testing'`);
+      });
+    });
+
+    describe("angular metadata file", () => {
+      it("should have a 'redirect' metadata.json file next to the d.ts file", () => {
+        expect(shx.cat('testing.metadata.json')).toContain(`"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true`);
+      });
+
+      it("should have an 'actual' metadata.json file", () => {
+        expect(shx.cat('core/testing.metadata.json')).toContain(`"metadata":{"async":{"__symbolic":"function"},`);
+      });
+    })
   });
 });
