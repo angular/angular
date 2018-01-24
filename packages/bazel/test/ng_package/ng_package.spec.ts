@@ -129,8 +129,8 @@ describe("ng_package", () => {
     });
   });
 
-  xdescribe("secondary entry-point", () => {
-    describe("package.json", () => {
+  describe("secondary entry-point", () => {
+    xdescribe("package.json", () => {
 
       const packageJson = p`testing/package.json`;
 
@@ -147,7 +147,7 @@ describe("ng_package", () => {
       });
     });
 
-    describe("typescript support", () => {
+    xdescribe("typescript support", () => {
 
       // TODO(i): why in the parent dir?
       it("should have an 'redirect' d.ts file in the parent dir", () => {
@@ -159,7 +159,7 @@ describe("ng_package", () => {
       });
     });
 
-    describe("angular metadata file", () => {
+    xdescribe("angular metadata file", () => {
       it("should have a 'redirect' metadata.json file next to the d.ts file", () => {
         expect(shx.cat('testing.metadata.json')).toContain(`"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true`);
       });
@@ -167,6 +167,25 @@ describe("ng_package", () => {
       it("should have an 'actual' metadata.json file", () => {
         expect(shx.cat('core/testing.metadata.json')).toContain(`"metadata":{"async":{"__symbolic":"function"},`);
       });
-    })
+    });
+
+    describe('umd', () => {
+
+      it('should have a umd file in the /bundles directory', () => {
+        expect(shx.ls('bundles/core-testing.umd.js').length).toBe(1, "File not found");
+      });
+
+      it('should have a source map next to the umd file', () => {
+        expect(shx.ls('bundles/core-testing.umd.js.map').length).toBe(1, "File not found");
+      });
+
+      it('should have a minified umd file in the /bundles directory', () => {
+        expect(shx.ls('bundles/core-testing.umd.min.js').length).toBe(1, "File not found");
+      });
+
+      it('should have a source map next to the minified umd file', () => {
+        expect(shx.ls('bundles/core-testing.umd.min.js.map').length).toBe(1, "File not found");
+      });
+    });
   });
 });
