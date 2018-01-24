@@ -43,6 +43,7 @@ import {MatDatepickerIntl} from './datepicker-intl';
 import {MatMonthView} from './month-view';
 import {MatMultiYearView, yearsPerPage, yearsPerRow} from './multi-year-view';
 import {MatYearView} from './year-view';
+import {Directionality} from '@angular/cdk/bidi';
 
 
 /**
@@ -184,7 +185,8 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
               private _ngZone: NgZone,
               @Optional() private _dateAdapter: DateAdapter<D>,
               @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
-              changeDetectorRef: ChangeDetectorRef) {
+              changeDetectorRef: ChangeDetectorRef,
+              @Optional() private _dir?: Directionality) {
 
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
@@ -309,12 +311,14 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
 
   /** Handles keydown events on the calendar body when calendar is in month view. */
   private _handleCalendarBodyKeydownInMonthView(event: KeyboardEvent): void {
+    const isRtl = this._isRtl();
+
     switch (event.keyCode) {
       case LEFT_ARROW:
-        this._activeDate = this._dateAdapter.addCalendarDays(this._activeDate, -1);
+        this._activeDate = this._dateAdapter.addCalendarDays(this._activeDate, isRtl ? 1 : -1);
         break;
       case RIGHT_ARROW:
-        this._activeDate = this._dateAdapter.addCalendarDays(this._activeDate, 1);
+        this._activeDate = this._dateAdapter.addCalendarDays(this._activeDate, isRtl ? -1 : 1);
         break;
       case UP_ARROW:
         this._activeDate = this._dateAdapter.addCalendarDays(this._activeDate, -7);
@@ -361,12 +365,14 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
 
   /** Handles keydown events on the calendar body when calendar is in year view. */
   private _handleCalendarBodyKeydownInYearView(event: KeyboardEvent): void {
+    const isRtl = this._isRtl();
+
     switch (event.keyCode) {
       case LEFT_ARROW:
-        this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate, -1);
+        this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate, isRtl ? 1 : -1);
         break;
       case RIGHT_ARROW:
-        this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate, 1);
+        this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate, isRtl ? -1 : 1);
         break;
       case UP_ARROW:
         this._activeDate = this._dateAdapter.addCalendarMonths(this._activeDate, -4);
@@ -455,5 +461,10 @@ export class MatCalendar<D> implements AfterContentInit, OnDestroy, OnChanges {
    */
   private _getValidDateOrNull(obj: any): D | null {
     return (this._dateAdapter.isDateInstance(obj) && this._dateAdapter.isValid(obj)) ? obj : null;
+  }
+
+  /** Determines whether the user has the RTL layout direction. */
+  private _isRtl() {
+    return this._dir && this._dir.value === 'rtl';
   }
 }
