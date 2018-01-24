@@ -1,3 +1,14 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+// tslint:disable-next-line:no-require-imports
+require('source-map-support').install();
+
 import './shelljs';
 import * as shx from 'shelljs';
 import * as path from 'path';
@@ -8,8 +19,9 @@ function filter(ext: string): (path: string) => boolean {
 
 function main(args: string[]): number {
   shx.set("-e");
-  const [out, srcdir, packageJson, readmeMd, /*esm2015src,*/ fesms2015asString] = args;
+  const [out, srcdir, packageJson, readmeMd, /*esm2015src,*/ fesms2015asString, fesms5asString] = args;
   const fesms2015 = fesms2015asString.split(',');
+  const fesms5 = fesms5asString.split(',').filter(s => !!s);
 
   shx.mkdir("-p", out);
   shx.cp(packageJson, path.join(out, 'package.json'));
@@ -49,9 +61,15 @@ function main(args: string[]): number {
   const esm2015Dir = path.join(out, 'esm2015');
   shx.mkdir("-p", esm2015Dir);
   fesms2015.forEach(fesm2015 =>
-    shx.cp("-R", fesm2015 + "/*", esm2015Dir)
+    shx.cp("-R", `${fesm2015}/*`, esm2015Dir)
   );
 
+  const esm5Dir = path.join(out, 'esm5');
+  shx.mkdir("-p", esm5Dir);
+  console.error(fesms5);
+  fesms5.forEach(fesm5 => {
+    shx.cp("-R", `${fesm5}/*`, esm5Dir);
+  });
   return 0;
 }
 

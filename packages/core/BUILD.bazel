@@ -19,7 +19,7 @@ ng_module(
 )
 
 ng_package(
-    name = "package",
+    name = "npm_package",
     deps = [":core", "//packages/core/testing"],
     package_json = "package.json",
     readme_md = "//packages:README.md",

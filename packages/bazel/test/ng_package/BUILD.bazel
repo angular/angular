@@ -17,7 +17,7 @@ ts_library(
 jasmine_node_test(
     name = "ng_package",
     srcs = [":spec_lib"],
-    data = ["//packages/core:package"]
+    data = ["//packages/core:npm_package"]
 )
 
 exports_files(["package.json"])

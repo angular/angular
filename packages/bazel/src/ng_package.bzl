@@ -83,31 +83,38 @@ def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_pac
   else:
     input_dir = npm_package_name + "/" + entry_point_name
 
-  ctx.actions.run_shell(
-        progress_message = "Angular Packaging: rolling up %s" % ctx.label.name,
-        mnemonic = "AngularPackageRollup",
-        outputs = [fesm_2015],
-        inputs = esm_2015_files + [ctx.executable._rollup, license_banner_file],
-        command = " ".join([
-          # TODO(i): this feels dirty... is there a better way?
-          ctx.executable._rollup.path,
-          # TODO(i): we probably want to make "index.js" configurable or even better auto-configured
-          #   based on the original tsconfig, since we allow the filename to be adjusted via
-          #   flatModuleOutFile config property https://angular.io/guide/aot-compiler#flatmoduleoutfile
-          # TODO(i): is it ok to rely on the fact that 0-th file in the esm_2015_files is at the root
-          #   of the directory? Is there a better way to get this directory path?
-          "--input " + esm_2015_files[0].dirname + "/" + input_dir + "/index.js",
-          "--output " + fesm_2015.path + "/" + entry_point_name + '.js',
-          "--banner " + "\"$(cat " + license_banner_path + ")\"",
-          "--format es",
-          # TODO(i): consider "--sourcemap", "inline"
-          # Note: if the input has external source maps then we need to also install and use
-          #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
-          #   of command line args
-          "--sourcemap",
-          "--external " + ",".join(externals),
-        ]),
-      )
+  rollup_args = ctx.actions.args()
+  # TODO(i): we probably want to make "index.js" configurable or even better auto-configured
+  #   based on the original tsconfig, since we allow the filename to be adjusted via
+  #   flatModuleOutFile config property https://angular.io/guide/aot-compiler#flatmoduleoutfile
+  # TODO(i): is it ok to rely on the fact that 0-th file in the esm_2015_files is at the root
+  #   of the directory? Is there a better way to get this directory path?
+  rollup_args.add("--input")
+  rollup_args.add([esm_2015_files[0].dirname, input_dir, "index.js"], join_with="/")
+
+  rollup_args.add("--output")
+  rollup_args.add([fesm_2015.path, entry_point_name + ".js"], join_with="/")
+
+  rollup_args.add(["--banner", "\"$(cat " + license_banner_path + ")\""])
+  rollup_args.add(["--format", "es"])
+
+  # TODO(i): consider "--sourcemap", "inline"
+  # Note: if the input has external source maps then we need to also install and use
+  #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
+  #   of command line args
+  rollup_args.add("--sourcemap")
+
+  rollup_args.add("--external")
+  rollup_args.add(externals, join_with=",")
+
+  ctx.actions.run(
+      progress_message = "Angular Packaging: rolling up %s" % ctx.label.name,
+      mnemonic = "AngularPackageRollup",
+      outputs = [fesm_2015],
+      inputs = esm_2015_files + [ctx.executable._rollup, license_banner_file],
+      executable = ctx.executable._rollup,
+      arguments = [rollup_args],
+  )
 
 # ng_package produces package that is npm ready.
 def _ng_package_impl(ctx):
@@ -115,6 +122,8 @@ def _ng_package_impl(ctx):
   npm_package_directory = ctx.actions.declare_directory(ctx.label.name)
   fesm_2015 = ctx.actions.declare_directory("fesm2015-" + npm_package_name)
   fesms_2015 = [fesm_2015]
+  fesms_5 = [] # TODO(alexeagle)
+
   esm_2015_files = collect_es6_sources(ctx).to_list()
   stamped_package_json = ctx.file.package_json
   readme_md = ctx.file.readme_md
@@ -132,8 +141,6 @@ def _ng_package_impl(ctx):
     externals = entry_point.globals.keys()
     _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_package_name, license_banner_path, externals, entry_point_name)
 
-  fesm_2015_paths = [f.path for f in fesms_2015]
-
   esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
                                        for dep in ctx.attr.deps
                                        if ES5_ESM_TypeScript_output in dep])
@@ -145,7 +152,7 @@ def _ng_package_impl(ctx):
     progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
     mnemonic = "AngularPackage",
     outputs = [npm_package_directory],
-    inputs = esm_es5_files.to_list() + fesms_2015 + [
+    inputs = esm_es5_files.to_list() + fesms_2015 + fesms_5 + [
       stamped_package_json, readme_md
       ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + metadata_files.to_list(),
     executable = ctx.executable._packager,
@@ -156,7 +163,8 @@ def _ng_package_impl(ctx):
       readme_md.path,
       # TODO(i): unflattened js files are disabled for now to match the output of build.sh
       #"/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6", ctx.attr.package_json.label.package]),
-      ",".join(fesm_2015_paths)
+      ",".join([f.path for f in fesms_2015]),
+      ",".join([f.path for f in fesms_5]),
     ],
   )
 
