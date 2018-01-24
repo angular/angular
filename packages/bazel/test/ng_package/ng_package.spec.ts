@@ -1,7 +1,7 @@
 import * as shx from 'shelljs';
 import * as path from 'path';
 
-const corePackagePath = path.join(process.env['RUNFILES'], 'angular', 'packages', 'core', 'package');
+const corePackagePath = path.join(process.env['TEST_SRCDIR'], 'angular', 'packages', 'core', 'package');
 shx.cd(corePackagePath);
 
 /**
@@ -67,6 +67,12 @@ describe("ng_package", () => {
     describe("typescript support", () => {
       it("should have an index.d.ts file", () => {
         expect(shx.cat('index.d.ts')).toMatch(r`export *`);
+      });
+    });
+
+    describe("angular metadata", () => {
+      it("should have metadata.json files", () => {
+        expect(shx.cat('core.metadata.json')).toMatch(r`"__symbolic":"module"`);
       });
     });
   });

@@ -61,22 +61,25 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
     ngOptions: CompilerOptions, rootFiles: ReadonlyArray<string>,
     host: H): {host: H, indexName?: string, errors?: ts.Diagnostic[]} {
   const files = rootFiles.filter(f => !DTS.test(f));
-  if (files.length != 1) {
-    return {
-      host,
-      errors: [{
-        file: null as any as ts.SourceFile,
-        start: null as any as number,
-        length: null as any as number,
-        messageText:
-            'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
-        category: ts.DiagnosticCategory.Error,
-        code: 0
-      }]
-    };
-  }
-  const file = files[0];
-  const indexModule = file.replace(/\.ts$/, '');
+  // if (files.length != 1) {
+  //   console.error("erroring")
+  //   return {
+  //     host,
+  //     errors: [{
+  //       file: null as any as ts.SourceFile,
+  //       start: null as any as number,
+  //       length: null as any as number,
+  //       messageText:
+  //           'Angular compiler option "flatModuleIndex" requires one and only one .ts file in the "files" field.',
+  //       category: ts.DiagnosticCategory.Error,
+  //       code: 0
+  //     }]
+  //   };
+  // }
+  const indexFiles = files.filter(f => f.endsWith('index.ts'));
+  if (!indexFiles.length) console.error('no index.js in ', files);
+  const shortestIndex = indexFiles.reduce((a,b) => a.length <= b.length ? a : b);
+  const indexModule = shortestIndex.replace(/\.ts$/, '');
   const bundler =
       new MetadataBundler(indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host));
   const metadataBundle = bundler.getMetadataBundle();

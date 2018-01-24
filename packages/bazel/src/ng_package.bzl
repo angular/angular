@@ -111,7 +111,7 @@ def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_pac
 
 # ng_package produces package that is npm ready.
 def _ng_package_impl(ctx):
-  npm_package_name = ctx.label.package.split("/")[-1];
+  npm_package_name = ctx.label.package.split("/")[-1]
   npm_package_directory = ctx.actions.declare_directory(ctx.label.name)
   fesm_2015 = ctx.actions.declare_directory("fesm2015-" + npm_package_name)
   fesms_2015 = [fesm_2015]
@@ -142,7 +142,13 @@ def _ng_package_impl(ctx):
     progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
     mnemonic = "AngularPackage",
     outputs = [npm_package_directory],
-    inputs = esm_es5_files.to_list() + fesms_2015 + [stamped_package_json, readme_md] + ctx.files.deps + collect_es6_sources(ctx).to_list(),
+    inputs = esm_es5_files.to_list() + fesms_2015 + [
+      stamped_package_json, readme_md
+      ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + [
+        getattr(dep, "angular").flat_module_metadata 
+        for dep in ctx.attr.deps 
+        if hasattr(dep, "angular")
+      ],
     executable = ctx.executable._packager,
     arguments = [
       npm_package_directory.path,

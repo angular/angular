@@ -15,11 +15,13 @@ function main(args: string[]): number {
   shx.cp(packageJson, path.join(out, 'package.json'));
   shx.cp(readmeMd, path.join(out, 'README.md'));
 
-  const typings = shx.find("-R", srcdir);
-  typings.filter(filter(".d.ts"))
-  // TODO(i): this cast to string is here to get around the issue of tsc not being able to find
-  //   the type defs in @types/shelljs for some reason. Alex will need to take a look.
-    .forEach((f: string) => {
+  const allsrcs = shx.find("-R", srcdir);
+  allsrcs.filter(filter(".d.ts")).forEach((f: string) => {
+    const outputPath = path.join(out, path.relative(srcdir, f));
+    shx.mkdir("-p", path.dirname(outputPath));
+    shx.cp(f, outputPath);
+  });
+  allsrcs.filter(filter(".metadata.json")).forEach((f: string) => {
     const outputPath = path.join(out, path.relative(srcdir, f));
     shx.mkdir("-p", path.dirname(outputPath));
     shx.cp(f, outputPath);

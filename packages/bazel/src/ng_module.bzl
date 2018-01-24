@@ -60,6 +60,7 @@ def _expected_outs(ctx):
     declarations = declaration_files,
     summaries = summary_files,
     i18n_messages = i18n_messages_files,
+    flat_module_metadata = ctx.new_file(ctx.bin_dir, ctx.label.name + ".metadata.json")
   )
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
@@ -74,6 +75,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
           "generateCodeForLibraries": False,
           "allowEmptyCodegenFiles": True,
           "enableSummariesForJit": True,
+          "flatModuleOutFile": ctx.label.name,
           "fullTemplateTypeCheck": ctx.attr.type_check,
           # FIXME: wrong place to de-dupe
           "expectedOut": depset([o.path for o in expected_outs]).to_list(),
@@ -213,7 +215,7 @@ def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file):
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file):
   outs = _expected_outs(ctx)
-  compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries
+  compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + [outs.flat_module_metadata]
   _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file)
 
 def _ts_expected_outs(ctx, label):
@@ -245,7 +247,8 @@ def ng_module_impl(ctx, ts_compile_actions):
 
   outs = _expected_outs(ctx)
   providers["angular"] = {
-    "summaries": _expected_outs(ctx).summaries
+    "summaries": _expected_outs(ctx).summaries,
+    "flat_module_metadata": _expected_outs(ctx).flat_module_metadata
   }
   providers["ngc_messages"] = outs.i18n_messages
 
