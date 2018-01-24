@@ -50,7 +50,18 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   // Buffer for the letters that the user has pressed when the typeahead option is turned on.
   private _pressedLetters: string[] = [];
 
-  constructor(private _items: QueryList<T>) { }
+  constructor(private _items: QueryList<T>) {
+    _items.changes.subscribe((newItems: QueryList<T>) => {
+      if (this._activeItem) {
+        const itemArray = newItems.toArray();
+        const newIndex = itemArray.indexOf(this._activeItem);
+
+        if (newIndex > -1 && newIndex !== this._activeItemIndex) {
+          this._activeItemIndex = newIndex;
+        }
+      }
+    });
+  }
 
   /**
    * Stream that emits any time the TAB key is pressed, so components can react
