@@ -13,7 +13,7 @@
       //////////////////////////////////////////////////////////////////////////////////////////////
 
       // A random bad indexed page that used `api/api`
-      {"type": 301, "source": "/api/api/:rest*", "destination": "api/:rest"},
+      {"type": 301, "source": "api/api/:rest*", "destination": "api/:rest"},
 
       // Guide renames
       {"type": 301, "source": "/docs/*/latest/cli-quickstart.html", "destination": "/guide/quickstart"},
@@ -92,7 +92,6 @@
       {"type": 301, "source": "/docs/*/latest/guide/", "destination": "/guide"},
       {"type": 301, "source": "/docs/*/latest/guide/lifecycle-hooks", "destination": "/guide/lifecycle-hooks"},
       {"type": 301, "source": "/docs/*/latest/:any*", "destination": "/:any*"},
-      {"type": 301, "source": "/docs/latest/:any*", "destination": "/:any*"},
       {"type": 301, "source": "/docs/styleguide*", "destination": "/guide/styleguide"},
       {"type": 301, "source": "/guide/metadata", "destination": "/guide/aot-compiler"},
       {"type": 301, "source": "/guide/ngmodule", "destination": "/guide/ngmodules"},
