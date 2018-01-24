@@ -13,6 +13,7 @@ import {
   ElementRef,
   OnDestroy,
   ViewEncapsulation,
+  Inject,
 } from '@angular/core';
 import {
   CanDisable,
@@ -21,6 +22,7 @@ import {
   mixinDisableRipple
 } from '@angular/material/core';
 import {Subject} from 'rxjs/Subject';
+import {DOCUMENT} from '@angular/common';
 
 // Boilerplate for applying mixins to MatMenuItem.
 /** @docs-private */
@@ -55,6 +57,8 @@ export const _MatMenuItemMixinBase = mixinDisableRipple(mixinDisabled(MatMenuIte
 export class MatMenuItem extends _MatMenuItemMixinBase
     implements FocusableOption, CanDisable, CanDisableRipple, OnDestroy {
 
+  private _document: Document;
+
   /** Stream that emits when the menu item is hovered. */
   _hovered: Subject<MatMenuItem> = new Subject<MatMenuItem>();
 
@@ -66,8 +70,10 @@ export class MatMenuItem extends _MatMenuItemMixinBase
 
   constructor(
     private _elementRef: ElementRef,
-    // TODO(crisbeto): switch to a required param when doing breaking changes.
+    @Inject(DOCUMENT) document?: any,
     private _focusMonitor?: FocusMonitor) {
+
+    // @deletion-target 6.0.0 make `_focusMonitor` and `document` required params.
     super();
 
     if (_focusMonitor) {
@@ -76,6 +82,8 @@ export class MatMenuItem extends _MatMenuItemMixinBase
       // mouse or touch interaction.
       _focusMonitor.monitor(this._getHostElement(), false);
     }
+
+    this._document = document;
   }
 
   /** Focuses the menu item. */
@@ -123,6 +131,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
   /** Gets the label to be used when determining whether the option should be focused. */
   getLabel(): string {
     const element: HTMLElement = this._elementRef.nativeElement;
+    const textNodeType = this._document ? this._document.TEXT_NODE : 3;
     let output = '';
 
     if (element.childNodes) {
@@ -132,7 +141,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
       // We skip anything that's not a text node to prevent the text from
       // being thrown off by something like an icon.
       for (let i = 0; i < length; i++) {
-        if (element.childNodes[i].nodeType === Node.TEXT_NODE) {
+        if (element.childNodes[i].nodeType === textNodeType) {
           output += element.childNodes[i].textContent;
         }
       }

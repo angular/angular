@@ -15,10 +15,12 @@ import {
   ElementRef,
   isDevMode,
   QueryList,
-  ViewEncapsulation
+  ViewEncapsulation,
+  Inject,
 } from '@angular/core';
 import {CanColor, mixinColor} from '@angular/material/core';
 import {Platform} from '@angular/cdk/platform';
+import {DOCUMENT} from '@angular/common';
 
 // Boilerplate for applying mixins to MatToolbar.
 /** @docs-private */
@@ -51,12 +53,19 @@ export class MatToolbarRow {}
   preserveWhitespaces: false,
 })
 export class MatToolbar extends _MatToolbarMixinBase implements CanColor, AfterViewInit {
+  private _document: Document;
 
   /** Reference to all toolbar row elements that have been projected. */
   @ContentChildren(MatToolbarRow) _toolbarRows: QueryList<MatToolbarRow>;
 
-  constructor(elementRef: ElementRef, private _platform: Platform) {
+  constructor(
+    elementRef: ElementRef,
+    private _platform: Platform,
+    @Inject(DOCUMENT) document?: any) {
     super(elementRef);
+
+    // TODO: make the document a required param when doing breaking changes.
+    this._document = document;
   }
 
   ngAfterViewInit() {
@@ -80,7 +89,7 @@ export class MatToolbar extends _MatToolbarMixinBase implements CanColor, AfterV
     // a <mat-toolbar-row> element.
     const isCombinedUsage = [].slice.call(this._elementRef.nativeElement.childNodes)
       .filter(node => !(node.classList && node.classList.contains('mat-toolbar-row')))
-      .filter(node => node.nodeType !== Node.COMMENT_NODE)
+      .filter(node => node.nodeType !== (this._document ? this._document.COMMENT_NODE : 8))
       .some(node => node.textContent.trim());
 
     if (isCombinedUsage) {
