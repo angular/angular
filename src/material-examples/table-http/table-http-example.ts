@@ -1,4 +1,4 @@
-import {Component, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 import {Observable} from 'rxjs/Observable';
@@ -17,13 +17,13 @@ import {switchMap} from 'rxjs/operators/switchMap';
   styleUrls: ['table-http-example.css'],
   templateUrl: 'table-http-example.html',
 })
-export class TableHttpExample implements AfterViewInit {
+export class TableHttpExample implements OnInit {
   displayedColumns = ['created', 'state', 'number', 'title'];
   exampleDatabase: ExampleHttpDao | null;
   dataSource = new MatTableDataSource();
 
   resultsLength = 0;
-  isLoadingResults = false;
+  isLoadingResults = true;
   isRateLimitReached = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -31,7 +31,7 @@ export class TableHttpExample implements AfterViewInit {
 
   constructor(private http: HttpClient) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.exampleDatabase = new ExampleHttpDao(this.http);
 
     // If the user changes the sort order, reset back to the first page.
