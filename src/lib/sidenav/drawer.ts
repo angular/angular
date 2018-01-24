@@ -56,6 +56,7 @@ export function throwMatDuplicatedDrawerError(position: string) {
 /**
  * Drawer toggle promise result.
  * @deprecated
+ * @deletion-target 6.0.0
  */
 export class MatDrawerToggleResult {
   constructor(
@@ -152,7 +153,10 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   }
   private _position: 'start' | 'end' = 'start';
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input()
   get align(): 'start' | 'end' { return this.position; }
   set align(value: 'start' | 'end') { this.position = value; }
@@ -222,19 +226,24 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
   /**
    * Event emitted when the drawer is fully opened.
    * @deprecated Use `opened` instead.
+   * @deletion-target 6.0.0
    */
   @Output('open') onOpen: Observable<void> = this._openedStream;
 
   /**
    * Event emitted when the drawer is fully closed.
    * @deprecated Use `closed` instead.
+   * @deletion-target 6.0.0
    */
   @Output('close') onClose: Observable<void> = this._closedStream;
 
   /** Event emitted when the drawer's position changes. */
   @Output('positionChanged') onPositionChanged: EventEmitter<void> = new EventEmitter<void>();
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Output('align-changed') onAlignChanged: EventEmitter<void> = new EventEmitter<void>();
 
   /**
@@ -367,6 +376,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 
     // TODO(crisbeto): This promise is here for backwards-compatibility.
     // It should be removed next time we do breaking changes in the drawer.
+    // @deletion-target 6.0.0
     return new Promise<any>(resolve => {
       this.openedChange.pipe(take(1)).subscribe(open => {
         resolve(new MatDrawerToggleResult(open ? 'open' : 'close', true));

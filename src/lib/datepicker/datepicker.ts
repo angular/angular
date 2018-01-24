@@ -160,6 +160,7 @@ export class MatDatepicker<D> implements OnDestroy {
   /**
    * Emits new selected date when selected date changes.
    * @deprecated Switch to the `dateChange` and `dateInput` binding on the input element.
+   * @deletion-target 6.0.0
    */
   @Output() selectedChanged: EventEmitter<D> = new EventEmitter<D>();
 

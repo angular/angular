@@ -194,7 +194,10 @@ export class MatSlider extends _MatSliderMixinBase
   set thumbLabel(value: boolean) { this._thumbLabel = coerceBooleanProperty(value); }
   private _thumbLabel: boolean = false;
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('thumb-label')
   get _thumbLabelDeprecated(): boolean { return this._thumbLabel; }
   set _thumbLabelDeprecated(value) { this._thumbLabel = value; }
@@ -216,7 +219,10 @@ export class MatSlider extends _MatSliderMixinBase
   }
   private _tickInterval: 'auto' | number = 0;
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('tick-interval')
   get _tickIntervalDeprecated() { return this.tickInterval; }
   set _tickIntervalDeprecated(v) { this.tickInterval = v; }

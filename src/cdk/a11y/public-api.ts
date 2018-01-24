@@ -19,5 +19,8 @@ export * from './live-announcer';
 export * from './focus-monitor';
 export * from './a11y-module';
 
-/** @deprecated Renamed to CdkTrapFocus. */
+/**
+ * @deprecated Renamed to CdkTrapFocus.
+ * @deletion-target 6.0.0
+ */
 export {CdkTrapFocus as FocusTrapDirective};

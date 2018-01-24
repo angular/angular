@@ -66,8 +66,14 @@ export const matMenuAnimations: {
   ])
 };
 
-/** @deprecated */
+/**
+ * @deprecated
+ * @deletion-target 7.0.0
+ */
 export const fadeInItems = matMenuAnimations.fadeInItems;
 
-/** @deprecated */
+/**
+ * @deprecated
+ * @deletion-target 7.0.0
+ */
 export const transformMenu = matMenuAnimations.transformMenu;

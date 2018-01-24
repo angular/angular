@@ -94,7 +94,10 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   // the first item of the list when the menu is opened via the keyboard
   private _openedByMouse: boolean = false;
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('mat-menu-trigger-for')
   get _deprecatedMatMenuTriggerFor(): MatMenuPanel {
     return this.menu;
@@ -113,6 +116,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   /**
    * Event emitted when the associated menu is opened.
    * @deprecated Switch to `menuOpened` instead
+   * @deletion-target 6.0.0
    */
   @Output() onMenuOpen: EventEmitter<void> = this.menuOpened;
 
@@ -122,6 +126,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   /**
    * Event emitted when the associated menu is closed.
    * @deprecated Switch to `menuClosed` instead
+   * @deletion-target 6.0.0
    */
   @Output() onMenuClose: EventEmitter<void> = this.menuClosed;
 

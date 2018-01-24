@@ -143,6 +143,7 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
   /**
    * Alignment of the radio-buttons relative to their labels. Can be 'before' or 'after'.
    * @deprecated
+   * @deletion-target 6.0.0
    */
   @Input()
   get align(): 'start' | 'end' {
@@ -413,6 +414,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   /**
    * Whether or not the radio-button should appear before or after the label.
    * @deprecated
+   * @deletion-target
    */
   @Input()
   get align(): 'start' | 'end' {

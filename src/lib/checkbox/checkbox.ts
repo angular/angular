@@ -147,6 +147,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   /**
    * Whether or not the checkbox should appear before or after the label.
    * @deprecated
+   * @deletion-target 6.0.0
    */
   @Input()
   get align(): 'start' | 'end' {

@@ -89,7 +89,10 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
   /** Color of the form field underline, based on the theme. */
   @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
 
-  /** @deprecated Use `color` instead. */
+  /**
+   * @deprecated Use `color` instead.
+   * @deletion-target 6.0.0
+   */
   @Input()
   get dividerColor(): 'primary' | 'accent' | 'warn' { return this.color; }
   set dividerColor(value) { this.color = value; }
@@ -131,6 +134,7 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
   /**
    * Whether the placeholder should always float, never float or float as the user types.
    * @deprecated Use floatLabel instead.
+   * @deletion-target 6.0.0
    */
   @Input()
   get floatPlaceholder(): FloatLabelType { return this._floatLabel; }

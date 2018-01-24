@@ -19,13 +19,22 @@ export * from './ripple/index';
 export * from './selection/index';
 export * from './style/index';
 
-/** @deprecated */
+/**
+ * @deprecated
+ * @deletion-target 6.0.0
+ */
 export {MAT_LABEL_GLOBAL_OPTIONS as MAT_PLACEHOLDER_GLOBAL_OPTIONS} from './label/label-options';
 
-/** @deprecated */
+/**
+ * @deprecated
+ * @deletion-target 6.0.0
+ */
 export {FloatLabelType as FloatPlaceholderType} from './label/label-options';
 
-/** @deprecated */
+/**
+ * @deprecated
+ * @deletion-target 6.0.0
+ */
 export {LabelOptions as PlaceholderOptions} from './label/label-options';
 
 // TODO: don't have this

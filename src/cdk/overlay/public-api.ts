@@ -26,8 +26,14 @@ export {GlobalPositionStrategy} from './position/global-position-strategy';
 export {ConnectedPositionStrategy} from './position/connected-position-strategy';
 export {VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 
-/** @deprecated Use CdkConnectedOverlay */
+/**
+ * @deprecated Use CdkConnectedOverlay
+ * @deletion-target 6.0.0
+ */
 export {CdkConnectedOverlay as ConnectedOverlayDirective} from './overlay-directives';
 
-/** @deprecated Use CdkOverlayOrigin */
+/**
+ * @deprecated Use CdkOverlayOrigin
+ * @deletion-target 6.0.0
+ */
 export {CdkOverlayOrigin as OverlayOrigin} from './overlay-directives';

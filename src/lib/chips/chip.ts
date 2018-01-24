@@ -152,6 +152,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /**
    * Emitted when the chip is destroyed.
    * @deprecated Use 'destroyed' instead.
+   * @deletion-target 6.0.0
    */
   @Output() destroy: EventEmitter<MatChipEvent> = this.destroyed;
 
@@ -161,6 +162,7 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /**
    * Emitted when a chip is to be removed.
    * @deprecated Use `removed` instead.
+   * @deletion-target 6.0.0
    */
   @Output('remove') onRemove: EventEmitter<MatChipEvent> = this.removed;
 

@@ -68,12 +68,18 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     super();
   }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('portalHost')
   get _deprecatedPortal() { return this.portal; }
   set _deprecatedPortal(v) { this.portal = v; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('cdkPortalHost')
   get _deprecatedPortalHost() { return this.portal; }
   set _deprecatedPortalHost(v) { this.portal = v; }

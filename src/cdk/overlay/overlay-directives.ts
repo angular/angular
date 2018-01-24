@@ -156,64 +156,100 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   get hasBackdrop() { return this._hasBackdrop; }
   set hasBackdrop(value: any) { this._hasBackdrop = coerceBooleanProperty(value); }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('origin')
   get _deprecatedOrigin(): CdkOverlayOrigin { return this.origin; }
   set _deprecatedOrigin(_origin: CdkOverlayOrigin) { this.origin = _origin; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('positions')
   get _deprecatedPositions(): ConnectionPositionPair[] { return this.positions; }
   set _deprecatedPositions(_positions: ConnectionPositionPair[]) { this.positions = _positions; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('offsetX')
   get _deprecatedOffsetX(): number { return this.offsetX; }
   set _deprecatedOffsetX(_offsetX: number) { this.offsetX = _offsetX; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('offsetY')
   get _deprecatedOffsetY(): number { return this.offsetY; }
   set _deprecatedOffsetY(_offsetY: number) { this.offsetY = _offsetY; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('width')
   get _deprecatedWidth(): number | string { return this.width; }
   set _deprecatedWidth(_width: number | string) { this.width = _width; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('height')
   get _deprecatedHeight(): number | string { return this.height; }
   set _deprecatedHeight(_height: number | string) { this.height = _height; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('minWidth')
   get _deprecatedMinWidth(): number | string { return this.minWidth; }
   set _deprecatedMinWidth(_minWidth: number | string) { this.minWidth = _minWidth; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('minHeight')
   get _deprecatedMinHeight(): number | string { return this.minHeight; }
   set _deprecatedMinHeight(_minHeight: number | string) { this.minHeight = _minHeight; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('backdropClass')
   get _deprecatedBackdropClass(): string { return this.backdropClass; }
   set _deprecatedBackdropClass(_backdropClass: string) { this.backdropClass = _backdropClass; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('scrollStrategy')
   get _deprecatedScrollStrategy(): ScrollStrategy { return this.scrollStrategy; }
   set _deprecatedScrollStrategy(_scrollStrategy: ScrollStrategy) {
     this.scrollStrategy = _scrollStrategy;
   }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('open')
   get _deprecatedOpen(): boolean { return this.open; }
   set _deprecatedOpen(_open: boolean) { this.open = _open; }
 
-  /** @deprecated */
+  /**
+   * @deprecated
+   * @deletion-target 6.0.0
+   */
   @Input('hasBackdrop')
   get _deprecatedHasBackdrop() { return this.hasBackdrop; }
   set _deprecatedHasBackdrop(_hasBackdrop: any) { this.hasBackdrop = _hasBackdrop; }
