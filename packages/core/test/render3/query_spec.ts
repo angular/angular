@@ -161,7 +161,7 @@ describe('query', () => {
 
   describe('local names predicate', () => {
 
-    it('should query for a single element and read ElementRef', () => {
+    it('should query for a single element and read ElementRef by default', () => {
 
       let elToQuery;
       /**
@@ -174,7 +174,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], false, QUERY_READ_ELEMENT_REF));
+          m(0, Q(['foo'], false, QUERY_READ_FROM_NODE));
           elToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
@@ -189,7 +189,7 @@ describe('query', () => {
       expect(query.first.nativeElement).toEqual(elToQuery);
     });
 
-    it('should query for multiple elements and read ElementRef', () => {
+    it('should query for multiple elements and read ElementRef by default', () => {
 
       let el1ToQuery;
       let el2ToQuery;
@@ -204,7 +204,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo', 'bar'], undefined, QUERY_READ_ELEMENT_REF));
+          m(0, Q(['foo', 'bar'], undefined, QUERY_READ_FROM_NODE));
           el1ToQuery = E(1, 'div', null, null, ['foo', '']);
           e();
           E(2, 'div');
@@ -330,7 +330,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], undefined, QUERY_READ_TEMPLATE_REF));
+          m(0, Q(['foo'], undefined, QUERY_READ_FROM_NODE));
           C(1, undefined, undefined, undefined, undefined, ['foo', '']);
         }
         qR(tmp = m<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
@@ -378,7 +378,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo']));
+          m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
           E(1, Child, null, null, ['foo', '']);
           { childInstance = m(2); }
           e();
@@ -406,7 +406,7 @@ describe('query', () => {
          const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
            let tmp: any;
            if (cm) {
-             m(0, Q(['foo']));
+             m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
              E(1, 'div', null, [Child], ['foo', 'child']);
              childInstance = m(2);
              e();
@@ -434,7 +434,7 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo', 'bar']));
+          m(0, Q(['foo', 'bar'], true, QUERY_READ_FROM_NODE));
           E(1, 'div', null, [Child1, Child2], ['foo', 'child1', 'bar', 'child2']);
           {
             child1Instance = m(2);
@@ -783,8 +783,8 @@ describe('query', () => {
       const Cmpt = createComponent('cmpt', function(ctx: any, cm: boolean) {
         let tmp: any;
         if (cm) {
-          m(0, Q(['foo'], true));
-          m(1, Q(['foo'], false));
+          m(0, Q(['foo'], true, QUERY_READ_FROM_NODE));
+          m(1, Q(['foo'], false, QUERY_READ_FROM_NODE));
           C(2);
           E(3, 'span', null, null, ['foo', '']);
           e();
