@@ -6,9 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, OnChanges, OnInit, Optional, SimpleChanges} from '@angular/core';
+import {
+  Directive,
+  Input,
+  OnChanges,
+  OnInit,
+  Optional,
+  SimpleChanges,
+  ElementRef,
+} from '@angular/core';
+import {MatDialog} from './dialog';
 import {MatDialogRef} from './dialog-ref';
-import {MatDialogContainer} from './dialog-container';
 
 /** Counter used to generate unique IDs for dialog elements. */
 let dialogElementUid = 0;
@@ -25,7 +33,7 @@ let dialogElementUid = 0;
     'type': 'button', // Prevents accidental form submits.
   }
 })
-export class MatDialogClose implements OnChanges {
+export class MatDialogClose implements OnInit, OnChanges {
   /** Screenreader label for the button. */
   @Input('aria-label') ariaLabel: string = 'Close dialog';
 
@@ -34,7 +42,21 @@ export class MatDialogClose implements OnChanges {
 
   @Input('matDialogClose') _matDialogClose: any;
 
-  constructor(public dialogRef: MatDialogRef<any>) { }
+  constructor(
+    @Optional() public dialogRef: MatDialogRef<any>,
+    private _elementRef: ElementRef,
+    private _dialog: MatDialog) {}
+
+  ngOnInit() {
+    if (!this.dialogRef) {
+      // When this directive is included in a dialog via TemplateRef (rather than being
+      // in a Component), the DialogRef isn't available via injection because embedded
+      // views cannot be given a custom injector. Instead, we look up the DialogRef by
+      // ID. This must occur in `onInit`, as the ID binding for the dialog container won't
+      // be resolved at constructor time.
+      this.dialogRef = getClosestDialog(this._elementRef, this._dialog.openDialogs)!;
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     const proxiedChange = changes._matDialogClose || changes._matDialogCloseResult;
@@ -59,11 +81,24 @@ export class MatDialogClose implements OnChanges {
 export class MatDialogTitle implements OnInit {
   @Input() id = `mat-dialog-title-${dialogElementUid++}`;
 
-  constructor(@Optional() private _container: MatDialogContainer) { }
+  constructor(
+    @Optional() private _dialogRef: MatDialogRef<any>,
+    private _elementRef: ElementRef,
+    private _dialog: MatDialog) {}
 
   ngOnInit() {
-    if (this._container && !this._container._ariaLabelledBy) {
-      Promise.resolve().then(() => this._container._ariaLabelledBy = this.id);
+    if (!this._dialogRef) {
+      this._dialogRef = getClosestDialog(this._elementRef, this._dialog.openDialogs)!;
+    }
+
+    if (this._dialogRef) {
+      Promise.resolve().then(() => {
+        const container = this._dialogRef._containerInstance;
+
+        if (container && !container._ariaLabelledBy) {
+          container._ariaLabelledBy = this.id;
+        }
+      });
     }
   }
 }
@@ -76,7 +111,7 @@ export class MatDialogTitle implements OnInit {
   selector: `[mat-dialog-content], mat-dialog-content, [matDialogContent]`,
   host: {'class': 'mat-dialog-content'}
 })
-export class MatDialogContent { }
+export class MatDialogContent {}
 
 
 /**
@@ -87,4 +122,20 @@ export class MatDialogContent { }
   selector: `[mat-dialog-actions], mat-dialog-actions, [matDialogActions]`,
   host: {'class': 'mat-dialog-actions'}
 })
-export class MatDialogActions { }
+export class MatDialogActions {}
+
+
+/**
+ * Finds the closest MatDialogRef to an element by looking at the DOM.
+ * @param element Element relative to which to look for a dialog.
+ * @param openDialogs References to the currently-open dialogs.
+ */
+function getClosestDialog(element: ElementRef, openDialogs: MatDialogRef<any>[]) {
+  let parent: HTMLElement | null = element.nativeElement.parentElement;
+
+  while (parent && !parent.classList.contains('mat-dialog-container')) {
+    parent = parent.parentElement;
+  }
+
+  return parent ? openDialogs.find(dialog => dialog.id === parent!.id) : null;
+}

@@ -958,72 +958,88 @@ describe('MatDialog', () => {
   });
 
   describe('dialog content elements', () => {
-    let dialogRef: MatDialogRef<ContentElementDialog>;
+    let dialogRef: MatDialogRef<any>;
 
-    beforeEach(fakeAsync(() => {
-      dialogRef = dialog.open(ContentElementDialog, {viewContainerRef: testViewContainerRef});
-      viewContainerFixture.detectChanges();
-      flush();
-    }));
+    describe('inside component dialog', () => {
+      beforeEach(fakeAsync(() => {
+        dialogRef = dialog.open(ContentElementDialog, {viewContainerRef: testViewContainerRef});
+        viewContainerFixture.detectChanges();
+        flush();
+      }));
 
-    it('should close the dialog when clicking on the close button', fakeAsync(() => {
-      expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
-
-      (overlayContainerElement.querySelector('button[mat-dialog-close]') as HTMLElement).click();
-      viewContainerFixture.detectChanges();
-      flush();
-
-      expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(0);
-    }));
-
-    it('should not close the dialog if [mat-dialog-close] is applied on a non-button node', () => {
-      expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
-
-      (overlayContainerElement.querySelector('div[mat-dialog-close]') as HTMLElement).click();
-
-      expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
+      runContentElementTests();
     });
 
-    it('should allow for a user-specified aria-label on the close button', fakeAsync(() => {
-      let button = overlayContainerElement.querySelector('button[mat-dialog-close]')!;
+    describe('inside template portal', () => {
+      beforeEach(fakeAsync(() => {
+        const fixture = TestBed.createComponent(ComponentWithContentElementTemplateRef);
+        fixture.detectChanges();
 
-      dialogRef.componentInstance.closeButtonAriaLabel = 'Best close button ever';
-      viewContainerFixture.detectChanges();
-      flush();
+        dialogRef = dialog.open(fixture.componentInstance.templateRef, {
+          viewContainerRef: testViewContainerRef
+        });
 
-      expect(button.getAttribute('aria-label')).toBe('Best close button ever');
-    }));
+        viewContainerFixture.detectChanges();
+        flush();
+      }));
 
-    it('should override the "type" attribute of the close button', () => {
-      let button = overlayContainerElement.querySelector('button[mat-dialog-close]')!;
-
-      expect(button.getAttribute('type')).toBe('button');
+      runContentElementTests();
     });
 
-    it('should return the [mat-dialog-close] result when clicking the close button',
-      fakeAsync(() => {
-        let afterCloseCallback = jasmine.createSpy('afterClose callback');
-        dialogRef.afterClosed().subscribe(afterCloseCallback);
+    function runContentElementTests() {
+      it('should close the dialog when clicking on the close button', fakeAsync(() => {
+        expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
 
-        (overlayContainerElement.querySelector('button.close-with-true') as HTMLElement).click();
+        (overlayContainerElement.querySelector('button[mat-dialog-close]') as HTMLElement).click();
         viewContainerFixture.detectChanges();
         flush();
 
-        expect(afterCloseCallback).toHaveBeenCalledWith(true);
+        expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(0);
       }));
 
-    it('should set the aria-labelledby attribute to the id of the title', fakeAsync(() => {
-      let title = overlayContainerElement.querySelector('[mat-dialog-title]')!;
-      let container = overlayContainerElement.querySelector('mat-dialog-container')!;
+      it('should not close if [mat-dialog-close] is applied on a non-button node', () => {
+        expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
 
-      flush();
-      viewContainerFixture.detectChanges();
+        (overlayContainerElement.querySelector('div[mat-dialog-close]') as HTMLElement).click();
 
-      expect(title.id).toBeTruthy('Expected title element to have an id.');
-      expect(container.getAttribute('aria-labelledby'))
-          .toBe(title.id, 'Expected the aria-labelledby to match the title id.');
-    }));
+        expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
+      });
 
+      it('should allow for a user-specified aria-label on the close button', fakeAsync(() => {
+        let button = overlayContainerElement.querySelector('.close-with-aria-label')!;
+        expect(button.getAttribute('aria-label')).toBe('Best close button ever');
+      }));
+
+      it('should override the "type" attribute of the close button', () => {
+        let button = overlayContainerElement.querySelector('button[mat-dialog-close]')!;
+
+        expect(button.getAttribute('type')).toBe('button');
+      });
+
+      it('should return the [mat-dialog-close] result when clicking the close button',
+        fakeAsync(() => {
+          let afterCloseCallback = jasmine.createSpy('afterClose callback');
+          dialogRef.afterClosed().subscribe(afterCloseCallback);
+
+          (overlayContainerElement.querySelector('button.close-with-true') as HTMLElement).click();
+          viewContainerFixture.detectChanges();
+          flush();
+
+          expect(afterCloseCallback).toHaveBeenCalledWith(true);
+        }));
+
+      it('should set the aria-labelledby attribute to the id of the title', fakeAsync(() => {
+        let title = overlayContainerElement.querySelector('[mat-dialog-title]')!;
+        let container = overlayContainerElement.querySelector('mat-dialog-container')!;
+
+        flush();
+        viewContainerFixture.detectChanges();
+
+        expect(title.id).toBeTruthy('Expected title element to have an id.');
+        expect(container.getAttribute('aria-labelledby'))
+            .toBe(title.id, 'Expected the aria-labelledby to match the title id.');
+      }));
+    }
   });
 
   describe('aria-label', () => {
@@ -1277,14 +1293,37 @@ class PizzaMsg {
     <h1 mat-dialog-title>This is the title</h1>
     <mat-dialog-content>Lorem ipsum dolor sit amet.</mat-dialog-content>
     <mat-dialog-actions>
-      <button mat-dialog-close [aria-label]="closeButtonAriaLabel">Close</button>
+      <button mat-dialog-close>Close</button>
       <button class="close-with-true" [mat-dialog-close]="true">Close and return true</button>
+      <button
+        class="close-with-aria-label"
+        aria-label="Best close button ever"
+        [mat-dialog-close]="true">Close</button>
       <div mat-dialog-close>Should not close</div>
     </mat-dialog-actions>
   `
 })
-class ContentElementDialog {
-  closeButtonAriaLabel: string;
+class ContentElementDialog {}
+
+@Component({
+  template: `
+    <ng-template>
+      <h1 mat-dialog-title>This is the title</h1>
+      <mat-dialog-content>Lorem ipsum dolor sit amet.</mat-dialog-content>
+      <mat-dialog-actions>
+        <button mat-dialog-close>Close</button>
+        <button class="close-with-true" [mat-dialog-close]="true">Close and return true</button>
+        <button
+          class="close-with-aria-label"
+          aria-label="Best close button ever"
+          [mat-dialog-close]="true">Close</button>
+        <div mat-dialog-close>Should not close</div>
+      </mat-dialog-actions>
+    </ng-template>
+  `
+})
+class ComponentWithContentElementTemplateRef {
+  @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
 }
 
 @Component({
@@ -1314,7 +1353,8 @@ const TEST_DIRECTIVES = [
   ComponentWithOnPushViewContainer,
   ContentElementDialog,
   DialogWithInjectedData,
-  DialogWithoutFocusableElements
+  DialogWithoutFocusableElements,
+  ComponentWithContentElementTemplateRef,
 ];
 
 @NgModule({

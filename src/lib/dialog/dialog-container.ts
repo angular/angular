@@ -60,6 +60,7 @@ export function throwMatDialogContentAlreadyAttachedError() {
   host: {
     'class': 'mat-dialog-container',
     'tabindex': '-1',
+    '[attr.id]': '_id',
     '[attr.role]': '_config?.role',
     '[attr.aria-labelledby]': '_config?.ariaLabel ? null : _ariaLabelledBy',
     '[attr.aria-label]': '_config?.ariaLabel',
@@ -90,6 +91,9 @@ export class MatDialogContainer extends BasePortalOutlet {
 
   /** ID of the element that should be considered as the dialog's label. */
   _ariaLabelledBy: string | null = null;
+
+  /** ID for the container DOM element. */
+  _id: string;
 
   constructor(
     private _elementRef: ElementRef,
