@@ -61,14 +61,16 @@ function main(args: string[]): number {
 
   const esm2015Dir = path.join(out, 'esm2015');
   shx.mkdir("-p", esm2015Dir);
-  fesms2015.forEach(fesm2015 =>
-    shx.cp("-R", `${fesm2015}/*`, esm2015Dir)
+  fesms2015.forEach(fesm2015 => {
+      // TODO(alexeagle): the "packages" here doesn't port to user's projects
+      shx.cp("-R", `${fesm2015}/packages/*`, esm2015Dir);
+    }
   );
 
   const esm5Dir = path.join(out, 'esm5');
   shx.mkdir("-p", esm5Dir);
   fesms5.forEach(fesm5 => {
-    shx.cp("-R", `${fesm5}/*`, esm5Dir);
+    shx.cp("-R", `${fesm5}/packages/*`, esm5Dir);
   });
   return 0;
 }

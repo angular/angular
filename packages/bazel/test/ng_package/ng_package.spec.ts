@@ -97,14 +97,14 @@ describe("ng_package", () => {
     });
 
 
-    xdescribe('fesm5', () => {
+    describe('fesm5', () => {
 
       it('should have a fesm5 file in the /esm5 directory', () => {
-        expect(shx.cat('esm5/testing.js')).toContain(`export {`);
+        expect(shx.cat('esm5/core.js')).toContain(`export {`);
       });
 
       it('should have a source map', () => {
-        expect(shx.cat('esm5/testing.js.map')).toContain(`{"version":3,"file":"testing.js","sources":`);
+        expect(shx.cat('esm5/core.js.map')).toContain(`{"version":3,"file":"core.js","sources":`);
       });
     });
 

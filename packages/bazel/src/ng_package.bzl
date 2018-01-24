@@ -74,15 +74,7 @@ ES5_ESM_outputs_aspect = aspect(
 
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
 
-def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_package_name, externals, entry_point_name):
-  # unescape slashes in entry point names since we are about to create the final fs layout
-  entry_point_name = entry_point_name.replace("_", "/")
-
-  if  (npm_package_name == entry_point_name):
-    input_dir = npm_package_name
-  else:
-    input_dir = npm_package_name + "/" + entry_point_name
-
+def _rollup(ctx, output, inputs, license_banner_file, npm_package_name, externals, entry_point_name, rootdir):
   rollup_config = ctx.actions.declare_file("%s.rollup.conf.js" % ctx.label.name)
   ctx.actions.expand_template(
       output = rollup_config,
@@ -99,13 +91,11 @@ def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_pac
   # TODO(i): we probably want to make "index.js" configurable or even better auto-configured
   #   based on the original tsconfig, since we allow the filename to be adjusted via
   #   flatModuleOutFile config property https://angular.io/guide/aot-compiler#flatmoduleoutfile
-  # TODO(i): is it ok to rely on the fact that 0-th file in the esm_2015_files is at the root
-  #   of the directory? Is there a better way to get this directory path?
   rollup_args.add("--input")
-  rollup_args.add([esm_2015_files[0].dirname, input_dir, "index.js"], join_with="/")
+  rollup_args.add([rootdir, entry_point_name, "index.js"], join_with="/")
 
   rollup_args.add("--output")
-  rollup_args.add([fesm_2015.path, entry_point_name + ".js"], join_with="/")
+  rollup_args.add([output.path, entry_point_name + ".js"], join_with="/")
 
   rollup_args.add(["--format", "es"])
 
@@ -121,8 +111,13 @@ def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_pac
   ctx.actions.run(
       progress_message = "Angular Packaging: rolling up %s" % ctx.label.name,
       mnemonic = "AngularPackageRollup",
-      outputs = [fesm_2015],
-      inputs = esm_2015_files + [ctx.executable._rollup, license_banner_file, rollup_config, ctx.file.stamp_data],
+      outputs = [output],
+      inputs = inputs + [
+          ctx.executable._rollup,
+          license_banner_file,
+          rollup_config,
+          ctx.file.stamp_data,
+      ],
       executable = ctx.executable._rollup,
       arguments = [rollup_args],
   )
@@ -132,26 +127,31 @@ def _ng_package_impl(ctx):
   npm_package_name = ctx.label.package.split("/")[-1]
   npm_package_directory = ctx.actions.declare_directory(ctx.label.name)
   fesm_2015 = ctx.actions.declare_directory("fesm2015-" + npm_package_name)
+  fesm_5 = ctx.actions.declare_directory("fesm5-" + npm_package_name)
   fesms_2015 = [fesm_2015]
-  fesms_5 = [] # TODO(alexeagle)
+  fesms_5 = [fesm_5]
 
   esm_2015_files = collect_es6_sources(ctx).to_list()
+  esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
+                                       for dep in ctx.attr.deps
+                                       if ES5_ESM_TypeScript_output in dep]).to_list()
 
   readme_md = ctx.file.readme_md
   externals = ctx.attr.globals.keys()
 
-  _rollup_esm2015(ctx, fesm_2015, esm_2015_files, ctx.file.license_banner, npm_package_name, externals, npm_package_name)
+  _rollup(ctx, fesm_2015, esm_2015_files, ctx.file.license_banner, npm_package_name, externals,
+      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
+  _rollup(ctx, fesm_5, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+      #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
+      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]))
 
   for entry_point in ctx.attr.secondary_entry_points:
-    entry_point_name = entry_point.name
+    entry_point_name = entry_point.label.package
     fesm_2015 = ctx.actions.declare_directory("fesm2015-" + entry_point_name)
     fesms_2015.append(fesm_2015)
     externals = entry_point.globals.keys()
-    _rollup_esm2015(ctx, fesm_2015, esm_2015_files, ctx.file.license_banner, npm_package_name, externals, entry_point_name)
+    _rollup(ctx, fesm_2015, esm_2015_files, ctx.file.license_banner, npm_package_name, externals, entry_point_name, "bazel-out/k8-fastbuild/bin/packages/core/npm_package.es6")
 
-  esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
-                                       for dep in ctx.attr.deps
-                                       if ES5_ESM_TypeScript_output in dep])
   metadata_files = depset(transitive = [getattr(dep, "angular").flat_module_metadata
                                         for dep in ctx.attr.deps
                                         if hasattr(dep, "angular")])
@@ -169,7 +169,7 @@ def _ng_package_impl(ctx):
   ctx.actions.run(
       progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
       mnemonic = "AngularPackage",
-      inputs = esm_es5_files.to_list() + fesms_2015 + fesms_5 + [
+      inputs = esm_es5_files + fesms_2015 + fesms_5 + [
         ctx.file.stamp_data,
         ctx.file.package_json, readme_md
         ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + metadata_files.to_list(),
@@ -239,8 +239,7 @@ ng_package = rule(
 
 
 def _ng_package_entry_point_impl(ctx):
-  return  struct(
-      name = ctx.attr.name,
+  return struct(
       globals = ctx.attr.globals
   )
 

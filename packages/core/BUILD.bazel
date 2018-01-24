@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ng_module")
-load("@angular//:index.bzl", "ng_package", "ng_package_entry_point")
+load("@angular//:index.bzl", "ng_package")
 
 ng_module(
     name = "core",
@@ -32,15 +32,6 @@ ng_package(
         'rxjs/operator/share': 'Rx.Observable.prototype'
     },
     secondary_entry_points = [
-        ":testing"
+        "//packages/core/testing:entry_point"
     ]
-)
-
-ng_package_entry_point(
-    name = "testing",
-    globals = {
-      '@angular/core': 'ng.core',
-      'rxjs/Observable': 'Rx',
-      'rxjs/Subject': 'Rx',
-    }
 )

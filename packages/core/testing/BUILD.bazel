@@ -1,6 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ng_module")
+load("@angular//:index.bzl", "ng_package_entry_point")
 
 ng_module(
     name = "testing",
@@ -12,4 +13,13 @@ ng_module(
         "//packages:types",
         "//packages/core",
     ],
+)
+
+ng_package_entry_point(
+    name = "entry_point",
+    globals = {
+      '@angular/core': 'ng.core',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Subject': 'Rx',
+    }
 )
