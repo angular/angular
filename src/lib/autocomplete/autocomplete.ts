@@ -36,7 +36,7 @@ import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
  */
 let _uniqueAutocompleteIdCounter = 0;
 
-/** Event object that is emitted when an autocomplete option is selected */
+/** Event object that is emitted when an autocomplete option is selected. */
 export class MatAutocompleteSelectedEvent {
   constructor(
     /** Reference to the autocomplete panel that emitted the event. */

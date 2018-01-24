@@ -1,5 +1,4 @@
 The autocomplete is a normal text input enhanced by a panel of suggested options.
-You can read more about autocompletes in the [Material Design spec](https://material.io/guidelines/components/text-fields.html#text-fields-auto-complete-text-field).
 
 ### Simple autocomplete
 
@@ -14,7 +13,7 @@ forms, you can read more about the subject in the [Angular documentation](https:
 *my-comp.html*
 ```html
 <mat-form-field>
-   <input type="text" matInput [formControl]="myControl">
+  <input type="text" matInput [formControl]="myControl">
 </mat-form-field>
 ```
 
@@ -25,9 +24,9 @@ of the text input to be upon that option's selection.
 *my-comp.html*
 ```html
 <mat-autocomplete>
-   <mat-option *ngFor="let option of options" [value]="option">
-      {{ option }}
-   </mat-option>
+  <mat-option *ngFor="let option of options" [value]="option">
+    {{ option }}
+  </mat-option>
 </mat-autocomplete>
 ```
 
@@ -38,13 +37,13 @@ to the input's `matAutocomplete` property.
 *my-comp.html*
 ```html
 <mat-form-field>
-   <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+  <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
 </mat-form-field>
 
 <mat-autocomplete #auto="matAutocomplete">
-   <mat-option *ngFor="let option of options" [value]="option">
-      {{ option }}
-   </mat-option>
+  <mat-option *ngFor="let option of options" [value]="option">
+    {{ option }}
+  </mat-option>
 </mat-autocomplete>
 ```
 
@@ -55,17 +54,17 @@ to the input's `matAutocomplete` property.
 At this point, the autocomplete panel should be toggleable on focus and options should be
 selectable. But if we want our options to filter when we type, we need to add a custom filter.
 
-You can filter the options in any way you like based on the text input*. Here we will perform a
+You can filter the options in any way you like based on the text input\*. Here we will perform a
 simple string test on the option value to see if it matches the input value, starting from the
-option's first letter. We already have access to the built-in `valueChanges` observable on the
+option's first letter. We already have access to the built-in `valueChanges` Observable on the
 `FormControl`, so we can simply map the text input's values to the suggested options by passing
-them through this filter. The resulting observable (`filteredOptions`) can be added to the
+them through this filter. The resulting Observable, `filteredOptions`, can be added to the
 template in place of the `options` property using the `async` pipe.
 
 Below we are also priming our value change stream with `null` so that the options are filtered by
 that value on init (before there are any value changes).
 
-*For optimal accessibility, you may want to consider adding text guidance on the page to explain
+\*For optimal accessibility, you may want to consider adding text guidance on the page to explain
 filter criteria. This is especially helpful for screenreader users if you're using a non-standard
 filter that doesn't limit matches to the beginning of the string.
 
@@ -74,7 +73,7 @@ filter that doesn't limit matches to the beginning of the string.
 ### Setting separate control and display values
 
 If you want the option's control value (what is saved in the form) to be different than the option's
-display value (what is displayed in the actual text field), you'll need to set the `displayWith`
+display value (what is displayed in the text field), you'll need to set the `displayWith`
 property on your autocomplete element. A common use case for this might be if you want to save your
 data as an object, but display just one of the option's string properties.
 
@@ -88,7 +87,7 @@ desired display value. Then bind it to the autocomplete's `displayWith` property
 - <kbd>UP_ARROW</kbd>: Previous option becomes active.
 - <kbd>ENTER</kbd>: Select currently active item.
 
-#### Option groups
+### Option groups
 `mat-option` can be collected into groups using the `mat-optgroup` element:
 
 ```html
@@ -102,8 +101,8 @@ desired display value. Then bind it to the autocomplete's `displayWith` property
 ```
 
 ### Accessibility
-The input for autocomplete without text or labels should be given a meaningful label via
+The input for an autocomplete without text or labels should be given a meaningful label via
 `aria-label` or `aria-labelledby`.
 
-Autocomplete trigger is given `role="combobox"`. The trigger sets `aria-owns` to the autocomplete's
+The autocomplete trigger is given `role="combobox"`. The trigger sets `aria-owns` to the autocomplete's
 id, and sets `aria-activedescendant` to the active option's id.
