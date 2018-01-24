@@ -20,15 +20,14 @@
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor",
     "rollup": "0.54.0",
+    "rollup-plugin-angular-optimizer": "0.2.0",
     "rollup-plugin-commonjs": "8.2.6",
     "rollup-plugin-node-resolve": "3.0.2",
-    "rollup-plugin-replace": "2.0.0",
-    "rollup-plugin-typescript2": "0.10.0",
     "rollup-plugin-uglify": "2.0.1"
   },
   "scripts": {
     "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
-    "rollup": "rollup -c rollup.config.js",
+    "rollup": "tsc && rollup -c rollup.config.js",
     "test": "yarn run rollup && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
