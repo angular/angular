@@ -60,7 +60,7 @@ def _expected_outs(ctx):
     declarations = declaration_files,
     summaries = summary_files,
     i18n_messages = i18n_messages_files,
-    flat_module_metadata = ctx.new_file(ctx.bin_dir, ctx.label.name + ".metadata.json")
+    flat_module_metadata = ctx.new_file(ctx.bin_dir, getattr(ctx.attr, "flatModuleOutFile") + ".metadata.json") if hasattr(ctx.attr, "flatModuleOutFile") else None
   )
 
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
@@ -70,17 +70,20 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
   else:
     expected_outs = outs.closure_js
 
+  ngOptions = {
+      "generateCodeForLibraries": False,
+      "allowEmptyCodegenFiles": True,
+      "enableSummariesForJit": True,
+      "fullTemplateTypeCheck": ctx.attr.type_check,
+      # FIXME: wrong place to de-dupe
+      "expectedOut": depset([o.path for o in expected_outs]).to_list(),
+      "preserveWhitespaces": False,
+  }
+  if hasattr(ctx.attr, "flatModuleOutFile"):
+    ngOptions["flatModuleOutFile"] = ctx.attr.flatModuleOutFile
+
   return dict(tsc_wrapped_tsconfig(ctx, files, srcs, **kwargs), **{
-      "angularCompilerOptions": {
-          "generateCodeForLibraries": False,
-          "allowEmptyCodegenFiles": True,
-          "enableSummariesForJit": True,
-          "flatModuleOutFile": ctx.label.name,
-          "fullTemplateTypeCheck": ctx.attr.type_check,
-          # FIXME: wrong place to de-dupe
-          "expectedOut": depset([o.path for o in expected_outs]).to_list(),
-          "preserveWhitespaces": False,
-      }
+    "angularCompilerOptions": ngOptions,
   })
 
 def _collect_summaries_aspect_impl(target, ctx):
@@ -303,6 +306,8 @@ ng_module = rule(
             # TODO(i): I think this one should stay as is, right @alexeagle?
             default = Label("@//:node_modules")
         ),
+
+        "flatModuleOutFile": attr.string(),
     }),
     outputs = COMMON_OUTPUTS,
 )

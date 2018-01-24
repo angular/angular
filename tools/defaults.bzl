@@ -9,7 +9,9 @@ def ts_library(tsconfig = None, **kwargs):
     tsconfig = DEFAULT_TSCONFIG
   _ts_library(tsconfig = tsconfig, **kwargs)
 
-def ng_module(tsconfig = None, **kwargs):
+def ng_module(name, tsconfig = None, flatModuleOutFile = None, **kwargs):
   if not tsconfig:
     tsconfig = DEFAULT_TSCONFIG
-  _ng_module(tsconfig = tsconfig, **kwargs)
+  if not flatModuleOutFile:
+    flatModuleOutFile = name
+  _ng_module(name = name, tsconfig = tsconfig, flatModuleOutFile = flatModuleOutFile, **kwargs)

@@ -22,7 +22,15 @@ function main(args: string[]): number {
     shx.cp(f, outputPath);
   });
   allsrcs.filter(filter(".metadata.json")).forEach((f: string) => {
-    const outputPath = path.join(out, path.basename(f));
+    // Leave /foo.metadata.json in place
+    // Hoist /testing/testing.metadata.json to /testing.metadata.json
+    // Hoist /subpkg/testing/testing.metadata to /subpkg/testing.metadata.json
+    const intermediatePaths = path.relative(srcdir, path.dirname(f)).split("/");
+    let metadataDir = "";
+    if (intermediatePaths.length > 1) {
+      metadataDir = path.join(...intermediatePaths.slice(0, -1));
+    }
+    const outputPath = path.join(out, metadataDir, path.basename(f));
     shx.cp(f, outputPath);
   });
 
