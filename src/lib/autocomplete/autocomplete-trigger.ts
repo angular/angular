@@ -305,7 +305,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
       if (this.panelOpen || keyCode === TAB) {
         this.autocomplete._keyManager.onKeydown(event);
-      } else if (isArrowKey) {
+      } else if (isArrowKey && this._canOpen()) {
         this.openPanel();
       }
 
@@ -319,14 +319,14 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     // We need to ensure that the input is focused, because IE will fire the `input`
     // event on focus/blur/load if the input has a placeholder. See:
     // https://connect.microsoft.com/IE/feedback/details/885747/
-    if (document.activeElement === event.target) {
+    if (this._canOpen() && document.activeElement === event.target) {
       this._onChange((event.target as HTMLInputElement).value);
       this.openPanel();
     }
   }
 
   _handleFocus(): void {
-    if (!this._element.nativeElement.readOnly) {
+    if (this._canOpen()) {
       this._attachOverlay();
       this._floatLabel(true);
     }
@@ -522,6 +522,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** Reset active item to -1 so arrow events will activate the correct options. */
   private _resetActiveItem(): void {
     this.autocomplete._keyManager.setActiveItem(-1);
+  }
+
+  /** Determines whether the panel can be opened. */
+  private _canOpen(): boolean {
+    const element: HTMLInputElement = this._element.nativeElement;
+    return !element.readOnly && !element.disabled;
   }
 
 }

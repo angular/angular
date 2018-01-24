@@ -134,6 +134,19 @@ describe('MatAutocomplete', () => {
       expect(trigger.panelOpen).toBe(false, 'Expected panel to stay closed.');
     }));
 
+    it('should not open using the arrow keys when the input is readonly', fakeAsync(() => {
+      const trigger = fixture.componentInstance.trigger;
+      input.readOnly = true;
+      fixture.detectChanges();
+
+      expect(trigger.panelOpen).toBe(false, 'Expected panel state to start out closed.');
+      dispatchKeyboardEvent(input, 'keydown', DOWN_ARROW);
+      flush();
+
+      fixture.detectChanges();
+      expect(trigger.panelOpen).toBe(false, 'Expected panel to stay closed.');
+    }));
+
     it('should open the panel programmatically', () => {
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected panel state to start out closed.`);
