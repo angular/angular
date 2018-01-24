@@ -58,6 +58,9 @@ function range<T>(length: number, valueFunction: (index: number) => T): T[] {
 /** Adapts the native JS Date for use with cdk-based components that work with dates. */
 @Injectable()
 export class NativeDateAdapter extends DateAdapter<Date> {
+  /** Whether to clamp the date between 1 and 9999 to avoid IE and Edge errors. */
+  private readonly _clampDate: boolean;
+
   /**
    * Whether to use `timeZone: 'utc'` with `Intl.DateTimeFormat` when formatting dates.
    * Without this `Intl.DateTimeFormat` sometimes chooses the wrong timeZone, which can throw off
@@ -71,10 +74,13 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     super.setLocale(matDateLocale);
 
     // IE does its own time zone correction, so we disable this on IE.
-    // TODO(mmalerba): replace with !platform.TRIDENT, logic currently duplicated to avoid breaking
-    // change from injecting the Platform.
-    this.useUtcForDisplay = !(typeof document === 'object' && !!document &&
-        /(msie|trident)/i.test(navigator.userAgent));
+    // TODO(mmalerba): replace with checks from PLATFORM, logic currently duplicated to avoid
+    // breaking change from injecting the Platform.
+    const isBrowser = typeof document === 'object' && !!document;
+    const isIE = isBrowser && /(msie|trident)/i.test(navigator.userAgent);
+
+    this.useUtcForDisplay = !isIE;
+    this._clampDate = isIE || (isBrowser && /(edge)/i.test(navigator.userAgent));
   }
 
   getYear(date: Date): number {
@@ -179,14 +185,23 @@ export class NativeDateAdapter extends DateAdapter<Date> {
     if (!this.isValid(date)) {
       throw Error('NativeDateAdapter: Cannot format invalid date.');
     }
+
     if (SUPPORTS_INTL_API) {
+      // On IE and Edge the i18n API will throw a hard error that can crash the entire app
+      // if we attempt to format a date whose year is less than 1 or greater than 9999.
+      if (this._clampDate && (date.getFullYear() < 1 || date.getFullYear() > 9999)) {
+        date = this.clone(date);
+        date.setFullYear(Math.max(1, Math.min(9999, date.getFullYear())));
+      }
+
       if (this.useUtcForDisplay) {
         date = new Date(Date.UTC(
             date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(),
             date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
         displayFormat = {...displayFormat, timeZone: 'utc'};
       }
-      let dtf = new Intl.DateTimeFormat(this.locale, displayFormat);
+
+      const dtf = new Intl.DateTimeFormat(this.locale, displayFormat);
       return this._stripDirectionalityCharacters(dtf.format(date));
     }
     return this._stripDirectionalityCharacters(date.toDateString());

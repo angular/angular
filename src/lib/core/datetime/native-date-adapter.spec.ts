@@ -359,6 +359,14 @@ describe('NativeDateAdapter', () => {
   it('should create an invalid date', () => {
     assertValidDate(adapter.invalid(), false);
   });
+
+  it('should not throw when attempting to format a date with a year less than 1', () => {
+    expect(() => adapter.format(new Date(-1, 1, 1), {})).not.toThrow();
+  });
+
+  it('should not throw when attempting to format a date with a year greater than 9999', () => {
+    expect(() => adapter.format(new Date(10000, 1, 1), {})).not.toThrow();
+  });
 });
 
 
