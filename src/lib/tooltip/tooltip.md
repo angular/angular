@@ -20,22 +20,46 @@ the positions `before` and `after` should be used instead of `left` and `right`,
 | `before`  | Display to the left in left-to-right layout and to the right in right-to-left layout |
 | `after`   | Display to the right in left-to-right layout and to the right in right-to-left layout|
 
+<!-- example(tooltip-position) -->
 
 ### Showing and hiding
 
-The tooltip is immediately shown when the user's mouse hovers over the element and immediately
-hides when the user's mouse leaves. A delay in showing or hiding the tooltip can be added through
-the inputs `matTooltipShowDelay` and `matTooltipHideDelay`. The default show and hide delays can be
-configured through the `MAT_TOOLTIP_DEFAULT_OPTIONS` injection token.
+By default, the tooltip will be immediately shown when the user's mouse hovers over the tooltip's
+trigger element and immediately hides when the user's mouse leaves. 
 
 On mobile, the tooltip is displayed when the user longpresses the element and hides after a
-delay of 1500ms. The longpress behavior requires HammerJS to be loaded on the page.
+delay of 1500ms. The longpress behavior requires HammerJS to be loaded on the page. To learn more
+about adding HammerJS to your app, check out the Gesture Support section of the Getting Started 
+guide.
 
-The tooltip can also be shown and hidden through the `show` and `hide` directive methods,
+#### Show and hide delays
+
+To add a delay before showing or hiding the tooltip, you can use the inputs `matTooltipShowDelay` 
+and `matTooltipHideDelay` to provide a delay time in milliseconds.
+
+The following example has a tooltip that waits one second to display after the user
+hovers over the button, and waits two seconds to hide after the user moves the mouse away.
+
+<!-- example(tooltip-delay) -->
+
+#### Changing the default delay behavior
+
+You can configure your app's tooltip default show/hide delays by configuring and providing
+your options using the `MAT_TOOLTIP_DEFAULT_OPTIONS` injection token.
+
+<!-- example(tooltip-modified-defaults) -->
+
+#### Manually calling show() and hide()
+
+To manually cause the tooltip to show or hide, you can call the `show` and `hide` directive methods,
 which both accept a number in milliseconds to delay before applying the display change.
 
-To turn off the tooltip and prevent it from showing to the user, use the `matTooltipDisabled` input
-flag.
+<!-- example(tooltip-manual) -->
+
+#### Disabling the tooltip from showing
+
+To completely disable a tooltip, set `matTooltipDisabled`. While disabled, a tooltip will never be 
+shown.
 
 ### Accessibility
 
