@@ -331,6 +331,224 @@ describe('r3_view_compiler', () => {
       expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
       expectEmit(source, locals, 'Incorrect locals constant definition');
     });
+
+    describe('template variables', () => {
+      const shared = {
+        shared: {
+          'for_of.ts': `
+            import {Directive, Input, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+
+            export interface ForOfContext {
+              $implicit: any;
+              index: number;
+              even: boolean;
+              odd: boolean;
+            }
+
+            @Directive({selector: '[forOf]'})
+            export class ForOfDirective {
+              private previous: any[];
+
+              constructor(private view: ViewContainerRef, private template: TemplateRef<any>) {}
+
+              @Input() forOf: any[];
+
+              ngOnChanges(simpleChanges: SimpleChanges) {
+                if ('forOf' in simpleChanges) {
+                  this.update();
+                }
+              }
+
+              ngDoCheck(): void {
+                const previous = this.previous;
+                const current = this.forOf;
+                if (!previous || previous.length != current.length ||
+                    previous.some((value: any, index: number) => current[index] !== previous[index])) {
+                  this.update();
+                }
+              }
+
+              private update() {
+                // TODO(chuckj): Not implemented yet
+                // this.view.clear();
+                if (this.forOf) {
+                  const current = this.forOf;
+                  for (let i = 0; i < current.length; i++) {
+                    const context = {$implicit: current[i], index: i, even: i % 2 == 0, odd: i % 2 == 1};
+                    // TODO(chuckj): Not implemented yet
+                    // this.view.createEmbeddedView(this.template, context);
+                  }
+                  this.previous = [...this.forOf];
+                }
+              }
+            }
+          `
+        }
+      };
+
+      it('should support a let variable and reference', () => {
+        const files = {
+          app: {
+            ...shared,
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+              import {ForOfDirective} from './shared/for_of';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<ul><li *for="let item of items">{{item.name}}</li></ul>\`
+              })
+              export class MyComponent {
+                items = [{name: 'one'}, {name: 'two'}];
+              }
+
+              @NgModule({
+                declarations: [MyComponent, ForOfDirective]
+              })
+              export class MyModule {}
+            `
+          }
+        };
+
+        // TODO(chuckj): Enforce this when the directives are specified
+        const ForDirectiveDefinition = `
+          static ngDirectiveDef = IDENT.ɵdefineDirective({
+            factory: function ForOfDirective_Factory() {
+              return new ForOfDirective(IDENT.ɵinjectViewContainerRef(), IDENT.ɵinjectTemplateRef());
+            },
+            features: [IDENT.ɵNgOnChangesFeature(NgForOf)],
+            refresh: function ForOfDirective_Refresh(directiveIndex: IDENT, elementIndex: IDENT) {
+              IDENT.ɵm<ForOfDirective>(directiveIndex).ngDoCheck();
+            },
+            inputs: {forOf: 'forOf'}
+          });
+        `;
+
+        const MyComponentDefinition = `
+          static ngComponentDef = IDENT.ɵdefineComponent({
+            tag: 'my-component',
+            factory: function MyComponent_Factory() { return new MyComponent(); },
+            template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
+              if (cm) {
+                IDENT.ɵE(0, 'ul');
+                IDENT.ɵC(1, IDENT, MyComponent_ForOfDirective_Template_1);
+                IDENT.ɵe();
+              }
+              IDENT.ɵp(1, 'forOf', IDENT.ɵb(ctx.items));
+              IDENT.ɵcR(1);
+              ForOfDirective.ngDirectiveDef.r(2, 1);
+              IDENT.ɵcr();
+
+              function MyComponent_ForOfDirective_Template_1(ctx0: IDENT, cm: IDENT) {
+                if (cm) {
+                  IDENT.ɵE(0, 'li');
+                  IDENT.ɵT(1);
+                  IDENT.ɵe();
+                }
+                const IDENT = ctx0.$implicit;
+                IDENT.ɵt(1, IDENT.ɵb1('', IDENT.name, ''));
+              }
+            }
+          });
+        `;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        // TODO(chuckj): Enforce this when the directives are specified
+        // expectEmit(source, ForDirectiveDefinition, 'Invalid directive definition');
+        expectEmit(source, MyComponentDefinition, 'Invalid component definition');
+      });
+
+      it('should support accessing parent template variables', () => {
+        const files = {
+          app: {
+            ...shared,
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+              import {ForOfDirective} from './shared/for_of';
+
+              @Component({
+                selector: 'my-component',
+                template: \`
+                <ul>
+                  <li *for="let item of items">
+                    <div>{{item.name}}</div>
+                    <ul>
+                      <li *for="let info of item.infos">
+                        {{item.name}}: {{info.description}}
+                      </li>
+                    </ul>
+                  </li>
+                </ul>\`
+              })
+              export class MyComponent {
+                items: Item[] = [
+                  {name: 'one', infos: [{description: '11'}, {description: '12'}]},
+                  {name: 'two', infos: [{description: '21'}, {description: '22'}]}
+                ];
+              }
+
+              @NgModule({
+                declarations: [MyComponent, ForOfDirective]
+              })
+              export class MyModule {}
+            `
+          }
+        };
+
+        const MyComponentDefinition = `
+          static ngComponentDef = IDENT.ɵdefineComponent({
+            tag: 'my-component',
+            factory: function MyComponent_Factory() { return new MyComponent(); },
+            template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
+              if (cm) {
+                IDENT.ɵE(0, 'ul');
+                IDENT.ɵC(1, IDENT, MyComponent_ForOfDirective_Template_1);
+                IDENT.ɵe();
+              }
+              IDENT.ɵp(1, 'forOf', IDENT.ɵb(ctx.items));
+              IDENT.ɵcR(1);
+              IDENT.r(2, 1);
+              IDENT.ɵcr();
+
+              function MyComponent_ForOfDirective_Template_1(ctx0: IDENT, cm: IDENT) {
+                if (cm) {
+                  IDENT.ɵE(0, 'li');
+                  IDENT.ɵE(1, 'div');
+                  IDENT.ɵT(2);
+                  IDENT.ɵe();
+                  IDENT.ɵE(3, 'ul');
+                  IDENT.ɵC(4, IDENT, MyComponent_ForOfDirective_ForOfDirective_Template_4);
+                  IDENT.ɵe();
+                  IDENT.ɵe();
+                }
+                const IDENT = ctx0.$implicit;
+                IDENT.ɵp(4, 'forOf', IDENT.ɵb(IDENT.infos));
+                IDENT.ɵt(2, IDENT.ɵb1('', IDENT.name, ''));
+                IDENT.ɵcR(4);
+                IDENT.r(5, 4);
+                IDENT.ɵcr();
+
+                function MyComponent_ForOfDirective_ForOfDirective_Template_4(
+                    ctx1: IDENT, cm: IDENT) {
+                  if (cm) {
+                    IDENT.ɵE(0, 'li');
+                    IDENT.ɵT(1);
+                    IDENT.ɵe();
+                  }
+                  const IDENT = ctx1.$implicit;
+                  IDENT.ɵt(1, IDENT.ɵb2(' ', IDENT.name, ': ', IDENT.description, ' '));
+                }
+              }
+            }
+          });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+        expectEmit(source, MyComponentDefinition, 'Invalid component definition');
+      });
+    });
   });
 });
 
@@ -389,7 +607,7 @@ function expectEmit(source: string, emitted: string, description: string) {
       if (!m) {
         const contextPieceWidth = contextWidth / 2;
         fail(
-            `${description}: Expected to find ${expected} '${source.substr(0,last)}[<---HERE]${source.substr(last)}'`);
+            `${description}: Expected to find ${expected} '${source.substr(0,last)}[<---HERE expected "${expected}"]${source.substr(last)}'`);
         return;
       } else {
         last = (m.index || 0) + m[0].length;
@@ -401,7 +619,7 @@ function expectEmit(source: string, emitted: string, description: string) {
 }
 
 const IDENT_LIKE = /^[a-z][A-Z]/;
-const SPECIAL_RE_CHAR = /\/|\(|\)|\||\*|\+|\[|\]|\{|\}/g;
+const SPECIAL_RE_CHAR = /\/|\(|\)|\||\*|\+|\[|\]|\{|\}|\$/g;
 function r(...pieces: (string | RegExp)[]): RegExp {
   let results: string[] = [];
   let first = true;
