@@ -42,7 +42,7 @@ describe('HeroListComponent', () => {
   it('1st hero should match 1st test hero', () => {
     const expectedHero = HEROES[0];
     const actualHero = page.heroRows[0].textContent;
-    expect(actualHero).toContain(expectedHero.id, 'hero.id');
+    expect(actualHero).toContain(expectedHero.id.toString(), 'hero.id');
     expect(actualHero).toContain(expectedHero.name, 'hero.name');
   });
 
@@ -118,7 +118,7 @@ class Page {
   /** Hero line elements */
   heroRows: HTMLLIElement[];
 
-  /** Highlighted element */
+  /** Highlighted DebugElement */
   highlightDe: DebugElement;
 
   /** Spy on router navigate method */

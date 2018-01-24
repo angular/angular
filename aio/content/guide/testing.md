@@ -12,13 +12,8 @@ the focus is on testing applications written with Angular.
 This guide presents tests of a sample application that is much like the [_Tour of Heroes_ tutorial](tutorial).
 The sample application and all tests in this guide are available as live examples for inspection, experiment, and download:
 
-* <live-example plnkr="1st-specs" embedded-style>A spec to verify the test environment</live-example>.
-* <live-example plnkr="banner-inline-specs" embedded-style>The first component spec with inline template</live-example>.
-* <live-example plnkr="banner-specs" embedded-style>A component spec with external template</live-example>.
-* <live-example name="setup" plnkr="quickstart-specs" embedded-style>The QuickStart seed's AppComponent spec</live-example>.
 * <live-example embedded-style>The sample application to be tested</live-example>.
-* <live-example plnkr="app-specs" embedded-style>All specs that test the sample application</live-example>.
-* <live-example plnkr="bag-specs" embedded-style>A grab bag of additional specs</live-example>.
+* <live-example stackblitz="specs" embedded-style>All specs that test the sample application</live-example>.
 
 <hr/>
 
@@ -352,15 +347,6 @@ Debug specs in the browser in the same way that you debug an application.
 </figure>
 
 
-
-{@a live-karma-example}
-
-
-### Try the live example
-
-You can also try this test as a <live-example plnkr="1st-specs" title="First spec" embedded-style></live-example> in plunker.
-All of the tests in this guide are available as [live examples](guide/testing#live-examples "Live examples of these tests").
-
 <hr/>
 
 
@@ -554,14 +540,6 @@ It gives the tester an opportunity to inspect or change the state of
 the component _before Angular initiates data binding or calls lifecycle hooks_.
 
 
-{@a try-example}
-
-
-### Try the live example
-Take a moment to explore this component spec as a <live-example plnkr="banner-inline-specs" title="Spec for component with inline template" embedded-style></live-example> and
-lock in these fundamentals of component unit testing.
-
-
 {@a auto-detect-changes}
 
 
@@ -748,20 +726,9 @@ into a `compileComponents().then(...)` callback and write only one `beforeEach`.
 Most developers find that hard to read.
 The two `beforeEach` calls are widely preferred.
 
-{@a live-external-template-example}
-
-### Try the live example
-
-Take a moment to explore this component spec as a <live-example plnkr="banner-specs" title="Spec for component with external template" embedded-style></live-example>.
-
 
 <div class="l-sub-section">
 
-
-
-The [Quickstart seed](guide/setup) provides a similar test of its `AppComponent`
-as you can see in _this_ <live-example name="setup" plnkr="quickstart-specs" title="QuickStart seed spec" embedded-style></live-example>.
-It too calls `compileComponents` although it doesn't have to because the `AppComponent`'s template is inline.
 
 There's no harm in it and you might call `compileComponents` anyway
 in case you decide later to re-factor the template into a separate file.
@@ -1664,7 +1631,8 @@ New heroes have `id=0` and a blank `name`. This test confirms that the component
 
 
 
-Inspect and download _all_ of the guide's application test code with this <live-example plnkr="app-specs" embedded-style>live example</live-example>.
+Inspect and download _all_ of the guide's application test code with this 
+<live-example stackblitz="specs" embedded-style>live example</live-example>.
 
 
 </div>

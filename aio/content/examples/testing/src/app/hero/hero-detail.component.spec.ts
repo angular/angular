@@ -123,7 +123,7 @@ function overrideSetup() {
   it('fixture injected service is not the component injected service',
     inject([HeroDetailService], (service: HeroDetailService) => {
 
-    expect(service).toEqual({}, 'service injected from fixture');
+    expect(service).toEqual(<any> {}, 'service injected from fixture');
     expect(hdsSpy).toBeTruthy('service injected into component');
   }));
 }
