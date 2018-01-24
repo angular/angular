@@ -348,7 +348,7 @@ describe('content projection', () => {
         */
        const Child = createComponent('child', function(ctx: any, cm: boolean) {
          if (cm) {
-           m(0, pD());
+           pD(0);
            E(1, 'div');
            { C(2); }
            e();
