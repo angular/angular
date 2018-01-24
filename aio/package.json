@@ -43,7 +43,6 @@
     "docs-watch": "node tools/transforms/authors-package/watchr.js",
     "docs-lint": "eslint --ignore-path=\"tools/transforms/.eslintignore\" tools/transforms",
     "docs-test": "node tools/transforms/test.js",
-    "redirects-test": "jasmine-ts tools/firebase-test-utils/*.spec.ts",
     "tools-test": "./scripts/deploy-to-firebase.test.sh && yarn docs-test && yarn boilerplate:test && jasmine tools/ng-packages-installer/index.spec.js",
     "serve-and-sync": "concurrently --kill-others \"yarn docs-watch\" \"yarn start\"",
     "boilerplate:add": "node ./tools/examples/example-boilerplate add",
@@ -97,7 +96,6 @@
     "archiver": "^1.3.0",
     "canonical-path": "^0.0.2",
     "chalk": "^2.1.0",
-    "cjson": "^0.5.0",
     "codelyzer": "~2.0.0",
     "concurrently": "^3.4.0",
     "cross-spawn": "^5.1.0",
@@ -118,7 +116,6 @@
     "image-size": "^0.5.1",
     "jasmine-core": "^2.8.0",
     "jasmine-spec-reporter": "^4.1.0",
-    "jasmine-ts": "^0.2.1",
     "jsdom": "^9.12.0",
     "karma": "^1.7.0",
     "karma-chrome-launcher": "^2.1.1",
@@ -148,7 +145,6 @@
     "unist-util-visit-parents": "^1.1.1",
     "vrsource-tslint-rules": "^4.0.1",
     "watchr": "^3.0.1",
-    "xregexp": "^4.0.0",
     "yargs": "^7.0.2"
   }
 }
