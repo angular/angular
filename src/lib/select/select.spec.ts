@@ -1097,6 +1097,18 @@ describe('MatSelect', () => {
             .toBe(fixture.componentInstance.options.last);
       }));
 
+      it('should update the trigger when the selected option label is changed', fakeAsync(() => {
+        fixture.componentInstance.control.setValue('pizza-1');
+        fixture.detectChanges();
+
+        expect(trigger.textContent!.trim()).toBe('Pizza');
+
+        fixture.componentInstance.foods[1].viewValue = 'Calzone';
+        fixture.detectChanges();
+
+        expect(trigger.textContent!.trim()).toBe('Calzone');
+      }));
+
       it('should not select disabled options', fakeAsync(() => {
         trigger.click();
         fixture.detectChanges();

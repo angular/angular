@@ -833,7 +833,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _initKeyManager() {
     this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options).withTypeAhead();
     this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => this.close());
-
     this._keyManager.change.pipe(takeUntil(this._destroy)).subscribe(() => {
       if (this._panelOpen && this.panel) {
         this._scrollActiveOptionIntoView();
@@ -845,17 +844,27 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Drops current option subscriptions and IDs and resets from scratch. */
   private _resetOptions(): void {
-    this.optionSelectionChanges.pipe(
-      takeUntil(merge(this._destroy, this.options.changes)),
-      filter(event => event.isUserInput)
-    ).subscribe(event => {
-      this._onSelect(event.source);
+    const changedOrDestroyed = merge(this.options.changes, this._destroy);
 
-      if (!this.multiple && this._panelOpen) {
-        this.close();
-        this.focus();
-      }
-    });
+    this.optionSelectionChanges
+      .pipe(takeUntil(changedOrDestroyed), filter(event => event.isUserInput))
+      .subscribe(event => {
+        this._onSelect(event.source);
+
+        if (!this.multiple && this._panelOpen) {
+          this.close();
+          this.focus();
+        }
+      });
+
+    // Listen to changes in the internal state of the options and react accordingly.
+    // Handles cases like the labels of the selected options changing.
+    merge(...this.options.map(option => option._stateChanges))
+      .pipe(takeUntil(changedOrDestroyed))
+      .subscribe(() => {
+        this._changeDetectorRef.markForCheck();
+        this.stateChanges.next();
+      });
 
     this._setOptionIds();
   }
