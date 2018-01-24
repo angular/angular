@@ -8,7 +8,7 @@ import {NgModel, FormsModule, ReactiveFormsModule, FormControl} from '@angular/f
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
 import {TestGestureConfig} from '../slider/test-gesture-config';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
-import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '@angular/material/core';
+import {defaultRippleAnimationConfig} from '@angular/material/core';
 
 describe('MatSlideToggle without forms', () => {
   let gestureConfig: TestGestureConfig;
@@ -263,14 +263,14 @@ describe('MatSlideToggle without forms', () => {
       dispatchFakeEvent(inputElement, 'keydown');
       dispatchFakeEvent(inputElement, 'focus');
 
-      tick(RIPPLE_FADE_IN_DURATION);
+      tick(defaultRippleAnimationConfig.enterDuration);
 
       expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length)
           .toBe(1, 'Expected the focus ripple to be showing up.');
 
       dispatchFakeEvent(inputElement, 'blur');
 
-      tick(RIPPLE_FADE_OUT_DURATION);
+      tick(defaultRippleAnimationConfig.exitDuration);
 
       expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length)
           .toBe(0, 'Expected focus ripple to be removed.');

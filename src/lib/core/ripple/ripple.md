@@ -75,8 +75,11 @@ Global ripple options can be specified by setting the `MAT_RIPPLE_GLOBAL_OPTIONS
 ```ts
 const globalRippleConfig: RippleGlobalOptions = {
   disabled: true,
-  baseSpeedFactor: 1.5 // Ripples will animate 50% faster than before.
-}
+  animation: {
+    enterDuration: 300,
+    exitDuration: 0
+  }
+};
 
 @NgModule({
   providers: [
@@ -86,3 +89,23 @@ const globalRippleConfig: RippleGlobalOptions = {
 ```
 
 All available global options can be seen in the `RippleGlobalOptions` interface.
+
+### Disabling animation
+
+The animation of ripples can be disabled by using the `animation` global option. If the 
+`enterDuration` and `exitDuration` is being set to `0`, ripples will just appear without any
+animation.
+
+This is specifically useful in combination with the `disabled` global option, because globally
+disabling ripples won't affect the focus indicator ripples. If someone still wants to disable
+those ripples for performance reasons, the duration can be set to `0`, to remove the ripple feel.
+
+```ts
+const globalRippleConfig: RippleGlobalOptions = {
+  disabled: true,
+  animation: {
+    enterDuration: 0,
+    exitDuration: 0
+  }
+};
+```

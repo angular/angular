@@ -2,11 +2,13 @@ import {TestBed, ComponentFixture, fakeAsync, tick, inject} from '@angular/core/
 import {Component, ViewChild} from '@angular/core';
 import {Platform} from '@angular/cdk/platform';
 import {dispatchMouseEvent, dispatchTouchEvent} from '@angular/cdk/testing';
-import {RIPPLE_FADE_OUT_DURATION, RIPPLE_FADE_IN_DURATION} from './ripple-renderer';
+import {defaultRippleAnimationConfig, RippleAnimationConfig} from './ripple-renderer';
 import {
   MatRipple, MatRippleModule, MAT_RIPPLE_GLOBAL_OPTIONS, RippleState, RippleGlobalOptions
 } from './index';
 
+/** Shorthands for the enter and exit duration of ripples. */
+const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
 
 describe('MatRipple', () => {
   let fixture: ComponentFixture<any>;
@@ -108,12 +110,12 @@ describe('MatRipple', () => {
       dispatchTouchEvent(rippleTarget, 'touchstart');
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
-      tick(RIPPLE_FADE_IN_DURATION);
+      tick(enterDuration);
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
       dispatchTouchEvent(rippleTarget, 'touchend');
 
-      tick(RIPPLE_FADE_OUT_DURATION);
+      tick(exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
@@ -122,12 +124,12 @@ describe('MatRipple', () => {
       dispatchTouchEvent(rippleTarget, 'touchstart');
       dispatchTouchEvent(rippleTarget, 'mousedown');
 
-      tick(RIPPLE_FADE_IN_DURATION);
+      tick(enterDuration);
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
       dispatchTouchEvent(rippleTarget, 'touchend');
 
-      tick(RIPPLE_FADE_OUT_DURATION);
+      tick(exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
@@ -139,7 +141,7 @@ describe('MatRipple', () => {
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
       // Calculates the duration for fading-in and fading-out the ripple.
-      tick(RIPPLE_FADE_IN_DURATION + RIPPLE_FADE_OUT_DURATION);
+      tick(enterDuration + exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
@@ -151,19 +153,19 @@ describe('MatRipple', () => {
 
       // Fakes the duration of fading-in and fading-out normal ripples.
       // The fade-out duration has been added to ensure that didn't start fading out.
-      tick(RIPPLE_FADE_IN_DURATION + RIPPLE_FADE_OUT_DURATION);
+      tick(enterDuration + exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
       dispatchMouseEvent(rippleTarget, 'mouseup');
-      tick(RIPPLE_FADE_OUT_DURATION);
+      tick(exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
 
     it('should not hide ripples while animating.', fakeAsync(() => {
       // Calculates the duration for fading-in and fading-out the ripple.
-      let hideDuration = RIPPLE_FADE_IN_DURATION + RIPPLE_FADE_OUT_DURATION;
+      let hideDuration = enterDuration + exitDuration;
 
       dispatchMouseEvent(rippleTarget, 'mousedown');
       dispatchMouseEvent(rippleTarget, 'mouseup');
@@ -323,13 +325,13 @@ describe('MatRipple', () => {
 
       // Calculates the duration for fading-in and fading-out the ripple. Also adds some
       // extra time to demonstrate that the ripples are persistent.
-      tick(RIPPLE_FADE_IN_DURATION + RIPPLE_FADE_OUT_DURATION + 5000);
+      tick(enterDuration + exitDuration + 5000);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
       rippleRef.fadeOut();
 
-      tick(RIPPLE_FADE_OUT_DURATION);
+      tick(exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
@@ -341,11 +343,11 @@ describe('MatRipple', () => {
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
-      tick(RIPPLE_FADE_IN_DURATION / 2);
+      tick(enterDuration / 2);
 
       rippleDirective.fadeOutAll();
 
-      tick(RIPPLE_FADE_OUT_DURATION);
+      tick(exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .toBe(0, 'Expected no ripples to be active after calling fadeOutAll.');
@@ -359,7 +361,7 @@ describe('MatRipple', () => {
      expect(rippleRef.state).toBe(RippleState.FADING_IN);
      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
-     tick(RIPPLE_FADE_IN_DURATION);
+     tick(enterDuration);
 
      expect(rippleRef.state).toBe(RippleState.VISIBLE);
      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
@@ -369,12 +371,25 @@ describe('MatRipple', () => {
      expect(rippleRef.state).toBe(RippleState.FADING_OUT);
      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
 
-     tick(RIPPLE_FADE_OUT_DURATION);
+     tick(exitDuration);
 
      expect(rippleRef.state).toBe(RippleState.HIDDEN);
      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
    }));
 
+   it('should allow setting a specific animation config for a ripple', fakeAsync(() => {
+     expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+
+     rippleDirective.launch(0, 0, {
+       animation: {enterDuration: 120, exitDuration: 0}
+     });
+
+     expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+     tick(120);
+
+     expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+   }));
   });
 
   describe('global ripple options', () => {
@@ -449,7 +464,7 @@ describe('MatRipple', () => {
       let fadeInFactor = 1 / 0.5;
 
       // Calculates the duration for fading-in and fading-out the ripple.
-      tick(RIPPLE_FADE_IN_DURATION * fadeInFactor + RIPPLE_FADE_OUT_DURATION);
+      tick(enterDuration * fadeInFactor + exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
@@ -466,11 +481,25 @@ describe('MatRipple', () => {
       let fadeInFactor = 1 / (0.5 * 1.5);
 
       // Calculates the duration for fading-in and fading-out the ripple.
-      tick(RIPPLE_FADE_IN_DURATION * fadeInFactor + RIPPLE_FADE_OUT_DURATION);
+      tick(enterDuration * fadeInFactor + exitDuration);
 
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
 
+    it('should support changing the animation duration', fakeAsync(() => {
+      createTestComponent({
+        animation: {enterDuration: 100, exitDuration: 100}
+      });
+
+      rippleDirective.launch(0, 0);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      // Wait the 200ms of the enter duration and exit duration.
+      tick(100 + 100);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    }));
   });
 
   describe('configuring behavior', () => {
@@ -487,7 +516,7 @@ describe('MatRipple', () => {
     });
 
     it('sets ripple color', () => {
-      let backgroundColor = 'rgba(12, 34, 56, 0.8)';
+      const backgroundColor = 'rgba(12, 34, 56, 0.8)';
 
       controller.color = backgroundColor;
       fixture.detectChanges();
@@ -583,6 +612,20 @@ describe('MatRipple', () => {
       expect(pxStringToFloat(ripple.style.width)).toBeCloseTo(2 * customRadius, 1);
       expect(pxStringToFloat(ripple.style.height)).toBeCloseTo(2 * customRadius, 1);
     });
+
+    it('should be able to specify animation config through binding', fakeAsync(() => {
+      controller.animationConfig = {enterDuration: 150, exitDuration: 150};
+      fixture.detectChanges();
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      tick(150 + 150);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    }));
   });
 
 });
@@ -607,12 +650,14 @@ class BasicRippleContainer {
       [matRippleCentered]="centered"
       [matRippleRadius]="radius"
       [matRippleDisabled]="disabled"
+      [matRippleAnimation]="animationConfig"
       [matRippleColor]="color">
     </div>
     <div class="alternateTrigger"></div>
   `,
 })
 class RippleContainerWithInputBindings {
+  animationConfig: RippleAnimationConfig;
   trigger: HTMLElement;
   centered = false;
   disabled = false;

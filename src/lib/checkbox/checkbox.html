@@ -19,9 +19,9 @@
     <div matRipple class="mat-checkbox-ripple"
          [matRippleTrigger]="label"
          [matRippleDisabled]="_isRippleDisabled()"
-         [matRippleRadius]="_rippleConfig.radius"
-         [matRippleSpeedFactor]="_rippleConfig.speedFactor"
-         [matRippleCentered]="_rippleConfig.centered">
+         [matRippleRadius]="25"
+         [matRippleCentered]="true"
+         [matRippleAnimation]="{enterDuration: 300}">
     </div>
     <div class="mat-checkbox-frame"></div>
     <div class="mat-checkbox-background">

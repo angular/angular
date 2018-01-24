@@ -4,7 +4,7 @@ import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {MatCheckbox, MatCheckboxChange, MatCheckboxModule} from './index';
-import {RIPPLE_FADE_IN_DURATION, RIPPLE_FADE_OUT_DURATION} from '@angular/material/core';
+import {defaultRippleAnimationConfig} from '@angular/material/core';
 import {MAT_CHECKBOX_CLICK_ACTION} from './checkbox-config';
 import {MutationObserverFactory} from '@angular/cdk/observers';
 
@@ -390,13 +390,13 @@ describe('MatCheckbox', () => {
       dispatchFakeEvent(inputElement, 'keydown');
       dispatchFakeEvent(inputElement, 'focus');
 
-      tick(RIPPLE_FADE_IN_DURATION);
+      tick(defaultRippleAnimationConfig.enterDuration);
 
       expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
           .toBe(1, 'Expected ripple after element is focused.');
 
       dispatchFakeEvent(checkboxInstance._inputElement.nativeElement, 'blur');
-      tick(RIPPLE_FADE_OUT_DURATION);
+      tick(defaultRippleAnimationConfig.exitDuration);
 
       expect(fixture.nativeElement.querySelectorAll('.mat-ripple-element').length)
           .toBe(0, 'Expected no ripple after element is blurred.');

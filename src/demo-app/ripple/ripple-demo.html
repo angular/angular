@@ -35,9 +35,10 @@
     </mat-form-field>
   </section>
   <section>
-    <button mat-raised-button (click)="launchRipple()">Launch Ripple</button>
-    <button mat-raised-button (click)="launchRipple(true)">Launch Ripple (Persistent)</button>
-    <button mat-raised-button (click)="fadeOutAll()">Fade Out All</button>
+    <button mat-raised-button (click)="launchRipple()" disableRipple>Launch Ripple</button>
+    <button mat-raised-button (click)="launchRipple(true)" disableRipple>Launch Ripple (Persistent)</button>
+    <button mat-raised-button (click)="launchRipple(true, true)" disableRipple>Launch Ripple (No Animation)</button>
+    <button mat-raised-button (click)="fadeOutAll()" disableRipple>Fade Out All</button>
   </section>
   <section>
     <div class="demo-ripple-container"

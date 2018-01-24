@@ -29,10 +29,18 @@ export class RippleDemo {
 
   disableButtonRipples = false;
 
-  launchRipple(persistent = false) {
-    if (this.ripple) {
-      this.ripple.launch(0, 0, { centered: true, persistent });
+  launchRipple(persistent = false, disableAnimation = false) {
+    if (!this.ripple) {
+      return;
     }
+
+    const rippleConfig = {
+      centered: true,
+      persistent: persistent,
+      animation: disableAnimation ? {enterDuration: 0, exitDuration: 0} : undefined
+    };
+
+    this.ripple.launch(0, 0, rippleConfig);
   }
 
   fadeOutAll() {

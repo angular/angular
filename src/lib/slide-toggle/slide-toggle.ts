@@ -37,7 +37,6 @@ import {
   mixinDisabled,
   mixinDisableRipple,
   mixinTabIndex,
-  RippleConfig,
   RippleRef,
 } from '@angular/material/core';
 
@@ -142,9 +141,6 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   /** Reference to the ripple directive on the thumb container. */
   @ViewChild(MatRipple) _ripple: MatRipple;
 
-  /** Ripple configuration for the mouse ripples and focus indicators. */
-  _rippleConfig: RippleConfig = {centered: true, radius: 23, speedFactor: 1.5};
-
   constructor(elementRef: ElementRef,
               private _platform: Platform,
               private _focusMonitor: FocusMonitor,
@@ -237,7 +233,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   private _onInputFocusChange(focusOrigin: FocusOrigin) {
     if (!this._focusRipple && focusOrigin === 'keyboard') {
       // For keyboard focus show a persistent ripple as focus indicator.
-      this._focusRipple = this._ripple.launch(0, 0, {persistent: true, ...this._rippleConfig});
+      this._focusRipple = this._ripple.launch(0, 0, {persistent: true});
     } else if (!focusOrigin) {
       this.onTouched();
 
