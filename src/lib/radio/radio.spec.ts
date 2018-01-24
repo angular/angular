@@ -657,11 +657,25 @@ describe('MatRadio', () => {
       let inputEl = fixture.debugElement.query(By.css('.mat-radio-input')).nativeElement;
 
       radioButtonEl.focus();
-      // Focus events don't always fire in tests, so we needc to fake it.
+      // Focus events don't always fire in tests, so we need to fake it.
       dispatchFakeEvent(radioButtonEl, 'focus');
       fixture.detectChanges();
 
       expect(document.activeElement).toBe(inputEl);
+    });
+
+    it('should allow specifying an explicit tabindex for a single radio-button', () => {
+      const radioButtonInput = fixture.debugElement
+        .query(By.css('.mat-radio-button input')).nativeElement as HTMLInputElement;
+
+      expect(radioButtonInput.tabIndex)
+        .toBe(0, 'Expected the tabindex to be set to "0" by default.');
+
+      fixture.componentInstance.tabIndex = 4;
+      fixture.detectChanges();
+
+      expect(radioButtonInput.tabIndex)
+        .toBe(4, 'Expected the tabindex to be set to "4".');
     });
   });
 
@@ -777,9 +791,11 @@ class RadioGroupWithFormControl {
 }
 
 @Component({
-  template: `<mat-radio-button tabindex="-1"></mat-radio-button>`
+  template: `<mat-radio-button [tabIndex]="tabIndex"></mat-radio-button>`
 })
-class FocusableRadioButton {}
+class FocusableRadioButton {
+  tabIndex: number;
+}
 
 @Component({
   template: `

@@ -34,10 +34,12 @@ import {
   CanColor,
   CanDisable,
   CanDisableRipple,
+  HasTabIndex,
   MatRipple,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
+  mixinTabIndex,
   RippleConfig,
   RippleRef,
 } from '@angular/material/core';
@@ -313,12 +315,17 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
 // Boilerplate for applying mixins to MatRadioButton.
 /** @docs-private */
 export class MatRadioButtonBase {
+  // Since the disabled property is manually defined for the MatRadioButton and isn't set up in
+  // the mixin base class. To be able to use the tabindex mixin, a disabled property must be
+  // defined to properly work.
+  disabled: boolean;
+
   constructor(public _elementRef: ElementRef) {}
 }
 // As per Material design specifications the selection control radio should use the accent color
 // palette by default. https://material.io/guidelines/components/selection-controls.html
 export const _MatRadioButtonMixinBase =
-    mixinColor(mixinDisableRipple(MatRadioButtonBase), 'accent');
+    mixinColor(mixinDisableRipple(mixinTabIndex(MatRadioButtonBase)), 'accent');
 
 /**
  * A Material design radio-button. Typically placed inside of `<mat-radio-group>` elements.
@@ -328,7 +335,7 @@ export const _MatRadioButtonMixinBase =
   selector: 'mat-radio-button',
   templateUrl: 'radio.html',
   styleUrls: ['radio.css'],
-  inputs: ['color', 'disableRipple'],
+  inputs: ['color', 'disableRipple', 'tabIndex'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   exportAs: 'matRadioButton',
@@ -345,7 +352,7 @@ export const _MatRadioButtonMixinBase =
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatRadioButton extends _MatRadioButtonMixinBase
-    implements OnInit, AfterViewInit, OnDestroy, CanColor, CanDisableRipple {
+    implements OnInit, AfterViewInit, OnDestroy, CanColor, CanDisableRipple, HasTabIndex {
 
   private _uniqueId: string = `mat-radio-${++nextUniqueId}`;
 
