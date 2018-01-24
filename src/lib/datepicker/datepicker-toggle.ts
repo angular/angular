@@ -17,12 +17,21 @@ import {
   OnDestroy,
   SimpleChanges,
   ViewEncapsulation,
+  Directive,
+  ContentChild,
 } from '@angular/core';
 import {merge} from 'rxjs/observable/merge';
 import {of as observableOf} from 'rxjs/observable/of';
 import {Subscription} from 'rxjs/Subscription';
 import {MatDatepicker} from './datepicker';
 import {MatDatepickerIntl} from './datepicker-intl';
+
+
+/** Can be used to override the icon of a `matDatepickerToggle`. */
+@Directive({
+  selector: '[matDatepickerToggleIcon]'
+})
+export class MatDatepickerToggleIcon {}
 
 
 @Component({
@@ -53,6 +62,9 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
     this._disabled = coerceBooleanProperty(value);
   }
   private _disabled: boolean;
+
+  /** Custom icon set by the consumer. */
+  @ContentChild(MatDatepickerToggleIcon) _customIcon: MatDatepickerToggleIcon;
 
   constructor(public _intl: MatDatepickerIntl, private _changeDetectorRef: ChangeDetectorRef) {}
 

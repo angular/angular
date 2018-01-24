@@ -32,6 +32,11 @@ can easily be used as a prefix or suffix on the material input:
 </mat-form-field>
 ```
 
+If you want to customize the icon that is rendered inside the `mat-datepicker-toggle`, you can do so
+by using the `matDatepickerToggleIcon` directive:
+
+<!-- example(datepicker-custom-icon) -->
+
 ### Setting the calendar starting view
 
 The `startView` property of `<mat-datepicker>` can be used to set the view that will show up when
@@ -99,7 +104,7 @@ Each validation property has a different error that can be checked:
  * A value that violates the `min` property will have a `matDatepickerMin` error.
  * A value that violates the `max` property will have a `matDatepickerMax` error.
  * A value that violates the `matDatepickerFilter` property will have a `matDatepickerFilter` error.
- 
+
 ### Input and change events
 
 The input's native `(input)` and `(change)` events will only trigger due to user interaction with
@@ -171,7 +176,7 @@ It's also possible to set the locale at runtime using the `setLocale` method of 
 The datepicker was built to be date implementation agnostic. This means that it can be made to work
 with a variety of different date implementations. However it also means that developers need to make
 sure to provide the appropriate pieces for the datepicker to work with their chosen implementation.
-The easiest way to ensure this is just to import one of the pre-made modules: 
+The easiest way to ensure this is just to import one of the pre-made modules:
 
 |Module               |Date type|Supported locales                                                      |Dependencies                      |Import from                       |
 |---------------------|---------|-----------------------------------------------------------------------|----------------------------------|----------------------------------|
@@ -338,7 +343,7 @@ In multi-year view:
 
 This error is thrown if you have not provided all of the injectables the datepicker needs to work.
 The easiest way to resolve this is to import the `MatNativeDateModule` or `MatMomentDateModule` in
-your application's root module. See 
+your application's root module. See
 [_Choosing a date implementation_](#choosing-a-date-implementation-and-date-format-settings)) for
 more information.
 

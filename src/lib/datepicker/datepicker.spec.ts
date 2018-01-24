@@ -49,7 +49,7 @@ describe('MatDatepicker', () => {
   }
 
   afterEach(inject([OverlayContainer], (container: OverlayContainer) => {
-    container.getContainerElement().parentNode!.removeChild(container.getContainerElement());
+    container.ngOnDestroy();
   }));
 
   describe('with MatNativeDateModule', () => {
@@ -761,6 +761,19 @@ describe('MatDatepicker', () => {
       }));
     });
 
+    describe('datepicker with custom mat-datepicker-toggle icon', () => {
+      it('should be able to override the mat-datepicker-toggle icon', fakeAsync(() => {
+        const fixture = createComponent(DatepickerWithCustomIcon, [MatNativeDateModule]);
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('.mat-datepicker-toggle .custom-icon'))
+            .toBeTruthy('Expected custom icon to be rendered.');
+
+        expect(fixture.nativeElement.querySelector('.mat-datepicker-toggle mat-icon'))
+            .toBeFalsy('Expected default icon to be removed.');
+      }));
+    });
+
     describe('datepicker inside mat-form-field', () => {
       let fixture: ComponentFixture<FormFieldDatepicker>;
       let testComponent: FormFieldDatepicker;
@@ -1308,6 +1321,16 @@ class DatepickerWithToggle {
   touchUI = true;
 }
 
+@Component({
+  template: `
+    <input [matDatepicker]="d">
+    <mat-datepicker-toggle [for]="d">
+      <div class="custom-icon" matDatepickerToggleIcon></div>
+    </mat-datepicker-toggle>
+    <mat-datepicker #d></mat-datepicker>
+  `,
+})
+class DatepickerWithCustomIcon {}
 
 @Component({
   template: `
