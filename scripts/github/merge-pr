@@ -6,7 +6,7 @@ BASEDIR=$(dirname "$0")
 BASEDIR=`(cd $BASEDIR; pwd)`
 
 if [ $# -eq 0 ]; then
-  echo "Merge github PR into the current branch"
+  echo "Merge github PR into the target branches"
   echo
   echo "$0 PR_NUMBER"
   echo
@@ -22,9 +22,7 @@ PR_TARGET=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^PR ta
 PR_CLA=`echo "$PR_LABELS"  | node $BASEDIR/utils/json_extract.js "name=^cla"`
 MASTER_BRANCH='master'
 SHA=`git rev-parse HEAD`
-PATCH_BRANCH=`git branch --list '*.x' | cut -d ' ' -f2- | sort -r | head -n1`
-# Trim whitespace
-PATCH_BRANCH=`echo $PATCH_BRANCH`
+PATCH_BRANCH=`git ls-remote --heads  git@github.com:angular/angular.git | grep -E 'refs\/heads\/\d+\.\d+\.x' | cut -d '/' -f3 | sort -r | head -n1`
 
 if [[ "$PR_ACTION" != "PR action: merge" ]]; then
   echo The PR is missing 'PR action: merge' label, found: $PR_ACTION
@@ -51,23 +49,12 @@ else
   exit 1;
 fi
 
-if [[ $CURRENT_BRANCH == $MASTER_BRANCH ]]; then
-  if [[ $MERGE_MASTER == 0 ]]; then
-    echo "This PR is not intended for master branch: $PR_TARGET"
-    exit 1
-  fi
-elif [[ $CURRENT_BRANCH == $PATCH_BRANCH ]]; then
-  if [[ $MERGE_PATCH == 0 ]]; then
-    echo "This PR is not intended for patch branch: $PR_TARGET"
-    exit 1
-  fi
-else
-  echo "Current branch $CURRENT_BRANCH does not match $MASTER_BRANCH or $PATCH_BRANCH."
-  exit 1
-fi
 
-
-FETCH_PR="git fetch https://github.com/angular/angular.git pull/$PR_NUMBER/head:angular/pr/$PR_NUMBER -f"
+CHECKOUT_MASTER="git checkout merge_pr_master"
+CHECKOUT_PATCH="git checkout merge_pr_$PATCH_BRANCH"
+RESTORE_BRANCH="git checkout $CURRENT_BRANCH"
+FETCH_PR="git fetch git@github.com:angular/angular.git pull/$PR_NUMBER/head:angular/pr/$PR_NUMBER heads/master:merge_pr_master heads/$PATCH_BRANCH:merge_pr_$PATCH_BRANCH -f"
+PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:master merge_pr_$PATCH_BRANCH:$PATCH_BRANCH"
 CHERRY_PICK_PR="git cherry-pick angular/pr/$PR_NUMBER~$PR_SHA_COUNT..angular/pr/$PR_NUMBER"
 REWRITE_MESSAGE="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" HEAD~$PR_SHA_COUNT..HEAD"
 
@@ -75,19 +62,52 @@ echo "======================"
 echo "GitHub Merge PR Steps"
 echo "======================"
 echo "   $FETCH_PR"
-echo "   $CHERRY_PICK_PR"
-echo "   $REWRITE_MESSAGE"
+if [[ $MERGE_MASTER == 1 ]]; then
+  echo "   $CHECKOUT_MASTER"
+  echo "   $CHERRY_PICK_PR"
+  echo "   $REWRITE_MESSAGE"
+fi
+if [[ $MERGE_PATCH == 1 ]]; then
+  echo "   $CHECKOUT_PATCH"
+  echo "   $CHERRY_PICK_PR"
+  echo "   $REWRITE_MESSAGE"
+fi
+echo "   $PUSH_BRANCHES"
+echo "   $RESTORE_BRANCH"
 echo "----------------------"
 
-echo ">>> Cherry Pick: $CHERRY_PICK_PR"
 $FETCH_PR
-$CHERRY_PICK_PR
+if [[ $MERGE_MASTER == 1 ]]; then
+  echo
+  echo ">>> Checkout master: $CHECKOUT_MASTER"
+  $CHECKOUT_MASTER
+  echo
+  echo ">>> Cherry pick pr: $CHERRY_PICK_PR"
+  $CHERRY_PICK_PR
+  echo
+  echo ">>> Rewrite message: $REWRITE_MESSAGE"
+  # Next line should work, but it errors, hence copy paste the command.
+  # $REWRITE_MESSAGE
+  git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" HEAD~$PR_SHA_COUNT..HEAD
 
-echo
-echo ">>> Rewrite Messages: $REWRITE_MESSAGE"
-# Next line should work, but it errors, hence copy paste the command.
-# $REWRITE_MESSAGE
-git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" HEAD~$PR_SHA_COUNT..HEAD
+fi
+if [[ $MERGE_PATCH == 1 ]]; then
+  echo
+  echo ">>> Checkout $PATCH_BRANCH: $CHECKOUT_PATCH"
+  $CHECKOUT_PATCH
+  echo
+  echo ">>> Cherry pick pr: $CHERRY_PICK_PR"
+  $CHERRY_PICK_PR
+  echo
+  echo ">>> Rewrite message: $REWRITE_MESSAGE"
+  # Next line should work, but it errors, hence copy paste the command.
+  # $REWRITE_MESSAGE
+  git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" HEAD~$PR_SHA_COUNT..HEAD
+fi
+$RESTORE_BRANCH
 
+echo ">>> Push branches to angular repo"
+$PUSH_BRANCHES
 echo
-echo ">>>>>> SUCCESS <<<<<<"
+echo ">>>>>> SUCCESS <<<<<< PR#$PR_NUMBER merged."
+
