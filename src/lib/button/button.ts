@@ -14,12 +14,14 @@ import {
   Directive,
   ElementRef,
   OnDestroy,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import {
   CanColor,
   CanDisable,
   CanDisableRipple,
+  MatRipple,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple
@@ -117,6 +119,9 @@ export class MatButton extends _MatButtonMixinBase
 
   /** Whether the button is icon button. */
   _isIconButton: boolean = this._hasHostAttributes('mat-icon-button');
+
+  /** Reference to the MatRipple instance of the button. */
+  @ViewChild(MatRipple) ripple: MatRipple;
 
   constructor(elementRef: ElementRef,
               private _platform: Platform,

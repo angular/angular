@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MatButtonModule} from './index';
+import {MatButtonModule, MatButton} from './index';
 import {MatRipple} from '@angular/material/core';
 
 
@@ -39,6 +39,13 @@ describe('MatButton', () => {
 
     expect(buttonDebugElement.nativeElement.classList).not.toContain('mat-accent');
     expect(aDebugElement.nativeElement.classList).not.toContain('mat-accent');
+  });
+
+  it('should expose the ripple instance', () => {
+    const fixture = TestBed.createComponent(TestApp);
+    const button = fixture.debugElement.query(By.css('button')).componentInstance as MatButton;
+
+    expect(button.ripple).toBeTruthy();
   });
 
   it('should should not clear previous defined classes', () => {
