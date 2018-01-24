@@ -57,8 +57,15 @@ export class Overlay {
   create(config?: OverlayConfig): OverlayRef {
     const pane = this._createPaneElement();
     const portalOutlet = this._createPortalOutlet(pane);
-    return new OverlayRef(portalOutlet, pane, new OverlayConfig(config), this._ngZone,
-        this._keyboardDispatcher);
+
+    return new OverlayRef(
+      portalOutlet,
+      pane,
+      new OverlayConfig(config),
+      this._ngZone,
+      this._keyboardDispatcher,
+      this._document
+    );
   }
 
   /**
