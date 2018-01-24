@@ -74,7 +74,7 @@ ES5_ESM_outputs_aspect = aspect(
 
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
 
-def _rollup(ctx, output, inputs, license_banner_file, npm_package_name, externals, entry_point_name, rootdir):
+def _rollup(ctx, output, inputs, license_banner_file, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
   rollup_config = ctx.actions.declare_file("%s.rollup.conf.js" % ctx.label.name)
   ctx.actions.expand_template(
       output = rollup_config,
@@ -95,9 +95,11 @@ def _rollup(ctx, output, inputs, license_banner_file, npm_package_name, external
   rollup_args.add([rootdir, entry_point_name, "index.js"], join_with="/")
 
   rollup_args.add("--output")
-  rollup_args.add([output.path, entry_point_name + ".js"], join_with="/")
+  rollup_args.add([output.path, entry_point_name + (".umd.js" if format == "umd" else ".js")], join_with="/")
 
-  rollup_args.add(["--format", "es"])
+  rollup_args.add(["--format", format])
+  # TODO(alexeagle): don't hard-code this name
+  rollup_args.add(["--name", "@angular/core"])
 
   # TODO(i): consider "--sourcemap", "inline"
   # Note: if the input has external source maps then we need to also install and use
@@ -128,8 +130,10 @@ def _ng_package_impl(ctx):
   npm_package_directory = ctx.actions.declare_directory(ctx.label.name)
   fesm_2015 = ctx.actions.declare_directory("fesm2015-" + npm_package_name)
   fesm_5 = ctx.actions.declare_directory("fesm5-" + npm_package_name)
+  umd = ctx.actions.declare_directory("umd-" + npm_package_name)
   fesms_2015 = [fesm_2015]
   fesms_5 = [fesm_5]
+  umds = [umd]
 
   esm_2015_files = collect_es6_sources(ctx).to_list()
   esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
@@ -144,6 +148,11 @@ def _ng_package_impl(ctx):
   _rollup(ctx, fesm_5, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
       ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]))
+  _rollup(ctx, umd, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+      #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
+      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]),
+      "umd")
+
 
   for entry_point in ctx.attr.secondary_entry_points:
     entry_point_name = entry_point.label.package
@@ -164,12 +173,13 @@ def _ng_package_impl(ctx):
   # packager_args.add([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6", ctx.attr.package_json.label.package], join_with="/")
   packager_args.add([f.path for f in fesms_2015], join_with=",")
   packager_args.add([f.path for f in fesms_5], join_with=",")
+  packager_args.add([f.path for f in umds], join_with=",")
   packager_args.add(ctx.file.stamp_data.path)
 
   ctx.actions.run(
       progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
       mnemonic = "AngularPackage",
-      inputs = esm_es5_files + fesms_2015 + fesms_5 + [
+      inputs = esm_es5_files + fesms_2015 + fesms_5 + umds + [
         ctx.file.stamp_data,
         ctx.file.package_json, readme_md
         ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + metadata_files.to_list(),

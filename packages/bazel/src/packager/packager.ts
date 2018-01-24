@@ -19,9 +19,10 @@ function filter(ext: string): (path: string) => boolean {
 
 function main(args: string[]): number {
   shx.set("-e");
-  const [out, srcdir, packageJson, readmeMd, /*esm2015src,*/ fesms2015asString, fesms5asString, stampData] = args;
+  const [out, srcdir, packageJson, readmeMd, /*esm2015src,*/ fesms2015asString, fesms5asString, umdsasString, stampData] = args;
   const fesms2015 = fesms2015asString.split(',');
   const fesms5 = fesms5asString.split(',').filter(s => !!s);
+  const umds = umdsasString.split(',').filter(s => !!s);
 
   shx.mkdir("-p", out);
   const version = shx.grep('BUILD_SCM_VERSION', stampData).split(' ')[1].trim();
@@ -72,6 +73,13 @@ function main(args: string[]): number {
   fesms5.forEach(fesm5 => {
     shx.cp("-R", `${fesm5}/packages/*`, esm5Dir);
   });
+
+  const umdDir = path.join(out, 'bundles');
+  shx.mkdir("-p", umdDir);
+  umds.forEach(umd => {
+    shx.cp("-R", `${umd}/packages/*`, umdDir);
+  });
+
   return 0;
 }
 
