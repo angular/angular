@@ -243,7 +243,7 @@ export function createLNode(
   }
   if (index != null) {
     // We are Element or Container
-    ngDevMode && assertEqual(data.length, index, 'data.length not in sequence');
+    ngDevMode && assertDataNext(index);
     data[index] = node;
 
     // Every node adds a value to the static data array to avoid a sparse array
@@ -1264,7 +1264,7 @@ export const componentRefresh:
  *
  * @param selectors
  */
-export function projectionDef(selectors?: CssSelector[]): LNode[][] {
+export function projectionDef(index: number, selectors?: CssSelector[]): void {
   const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
   const distributedNodes = new Array<LNode[]>(noOfNodeBuckets);
   for (let i = 0; i < noOfNodeBuckets; i++) {
@@ -1305,7 +1305,8 @@ export function projectionDef(selectors?: CssSelector[]): LNode[][] {
     componentChild = componentChild.next;
   }
 
-  return distributedNodes;
+  ngDevMode && assertDataNext(index);
+  data[index] = distributedNodes;
 }
 
 /**
@@ -1890,4 +1891,8 @@ function assertHasParent() {
 function assertDataInRange(index: number, arr?: any[]) {
   if (arr == null) arr = data;
   assertLessThan(index, arr ? arr.length : 0, 'data.length');
+}
+
+function assertDataNext(index: number) {
+  assertEqual(data.length, index, 'data.length not in sequence');
 }
