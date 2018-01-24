@@ -74,7 +74,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * Configures whether the key manager should be able to move the selection vertically.
    * @param enabled Whether vertical selection should be enabled.
    */
-  withVerticalOrientation(enabled = true): this {
+  withVerticalOrientation(enabled: boolean = true): this {
     this._vertical = enabled;
     return this;
   }
