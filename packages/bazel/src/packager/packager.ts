@@ -22,8 +22,7 @@ function main(args: string[]): number {
     shx.cp(f, outputPath);
   });
   allsrcs.filter(filter(".metadata.json")).forEach((f: string) => {
-    const outputPath = path.join(out, path.relative(srcdir, f));
-    shx.mkdir("-p", path.dirname(outputPath));
+    const outputPath = path.join(out, path.basename(f));
     shx.cp(f, outputPath);
   });
 

@@ -248,7 +248,11 @@ def ng_module_impl(ctx, ts_compile_actions):
   outs = _expected_outs(ctx)
   providers["angular"] = {
     "summaries": _expected_outs(ctx).summaries,
-    "flat_module_metadata": _expected_outs(ctx).flat_module_metadata
+    "flat_module_metadata": depset([_expected_outs(ctx).flat_module_metadata], transitive=[
+      getattr(dep, "angular").flat_module_metadata
+      for dep in ctx.attr.deps
+      if hasattr(dep, "angular")
+    ])
   }
   providers["ngc_messages"] = outs.i18n_messages
 

@@ -73,6 +73,7 @@ describe("ng_package", () => {
     describe("angular metadata", () => {
       it("should have metadata.json files", () => {
         expect(shx.cat('core.metadata.json')).toMatch(r`"__symbolic":"module"`);
+        expect(shx.cat('testing.metadata.json')).toMatch(r`"__symbolic":"module"`);
       });
     });
   });

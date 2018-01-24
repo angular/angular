@@ -137,6 +137,9 @@ def _ng_package_impl(ctx):
   esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
                                        for dep in ctx.attr.deps
                                        if ES5_ESM_TypeScript_output in dep])
+  metadata_files = depset(transitive = [getattr(dep, "angular").flat_module_metadata
+                                        for dep in ctx.attr.deps
+                                        if hasattr(dep, "angular")])
 
   ctx.actions.run(
     progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
@@ -144,11 +147,7 @@ def _ng_package_impl(ctx):
     outputs = [npm_package_directory],
     inputs = esm_es5_files.to_list() + fesms_2015 + [
       stamped_package_json, readme_md
-      ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + [
-        getattr(dep, "angular").flat_module_metadata 
-        for dep in ctx.attr.deps 
-        if hasattr(dep, "angular")
-      ],
+      ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + metadata_files.to_list(),
     executable = ctx.executable._packager,
     arguments = [
       npm_package_directory.path,
