@@ -9,6 +9,16 @@
 import {Route} from './config';
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
 
+/**
+ * @whatItDoes Identifies the trigger of the navigation.
+ *
+ * * 'imperative'--triggered by `router.navigateByUrl` or `router.navigate`.
+ * * 'popstate'--triggered by a popstate event
+ * * 'hashchange'--triggered by a hashchange event
+ *
+ * @experimental
+ */
+export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
 
 /**
  * @whatItDoes Base for events the Router goes through, as opposed to events tied to a specific
@@ -42,6 +52,43 @@ export class RouterEvent {
  * @stable
  */
 export class NavigationStart extends RouterEvent {
+  /**
+   * Identifies the trigger of the navigation.
+   *
+   * * 'imperative'--triggered by `router.navigateByUrl` or `router.navigate`.
+   * * 'popstate'--triggered by a popstate event
+   * * 'hashchange'--triggered by a hashchange event
+   */
+  navigationTrigger?: 'imperative'|'popstate'|'hashchange';
+
+  /**
+   * This contains the navigation id that pushed the history record that the router navigates
+   * back to. This is not null only when the navigation is triggered by a popstate event.
+   *
+   * The router assigns a navigationId to every router transition/navigation. Even when the user
+   * clicks on the back button in the browser, a new navigation id will be created. So from
+   * the perspective of the router, the router never "goes back". By using the `restoredState`
+   * and its navigationId, you can implement behavior that differentiates between creating new
+   * states
+   * and popstate events. In the latter case you can restore some remembered state (e.g., scroll
+   * position).
+   */
+  restoredState?: {navigationId: number}|null;
+
+  constructor(
+      /** @docsNotRequired */
+      id: number,
+      /** @docsNotRequired */
+      url: string,
+      /** @docsNotRequired */
+      navigationTrigger: 'imperative'|'popstate'|'hashchange' = 'imperative',
+      /** @docsNotRequired */
+      restoredState: {navigationId: number}|null = null) {
+    super(id, url);
+    this.navigationTrigger = navigationTrigger;
+    this.restoredState = restoredState;
+  }
+
   /** @docsNotRequired */
   toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
 }
