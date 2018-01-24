@@ -71,14 +71,16 @@ export interface DirectiveDef<T> {
    * Refreshes host bindings on the associated directive. Also calls lifecycle hooks
    * like ngOnInit and ngDoCheck, if they are defined on the directive.
    */
-  // Note: This call must be separate from r() because hooks like ngOnInit need to
-  // be called breadth-first across a view before processing onInits in children
-  // (for backwards compatibility). Child template processing thus needs to be
-  // delayed until all inputs and host bindings in a view have been checked.
   h(directiveIndex: number, elementIndex: number): void;
 
-  /* A map of the lifecycle hooks defined on this directive (key: name, value: fn) */
-  lifecycleHooks: LifecycleHooksMap;
+  /* The following are lifecycle hooks for this component */
+  onInit: (() => void)|null;
+  doCheck: (() => void)|null;
+  afterContentInit: (() => void)|null;
+  afterContentChecked: (() => void)|null;
+  afterViewInit: (() => void)|null;
+  afterViewChecked: (() => void)|null;
+  onDestroy: (() => void)|null;
 }
 
 export interface ComponentDef<T> extends DirectiveDef<T> {
@@ -102,17 +104,6 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * NOTE: only used with component directives.
    */
   readonly rendererType: RendererType2|null;
-}
-
-/* A map of the lifecycle hooks defined on a directive (key: name, value: fn) */
-export interface LifecycleHooksMap {
-  onInit: () => void | null;
-  doCheck: () => void | null;
-  afterContentInit: () => void | null;
-  afterContentChecked: () => void | null;
-  afterViewInit: () => void | null;
-  afterViewChecked: () => void | null;
-  onDestroy: () => void | null;
 }
 
 export interface DirectiveDefArgs<T> {

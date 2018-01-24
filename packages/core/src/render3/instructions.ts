@@ -18,7 +18,7 @@ import {LContainer, TContainer} from './interfaces/container';
 import {LInjector} from './interfaces/injector';
 import {CssSelector, LProjection} from './interfaces/projection';
 import {LQuery, QueryReadType} from './interfaces/query';
-import {LView, TData, TView} from './interfaces/view';
+import {LView, LifecycleStage, TData, TView} from './interfaces/view';
 
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType, assertNodeOfPossibleTypes} from './node_assert';
@@ -157,8 +157,7 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
 export function leaveView(newView: LView): void {
   executeViewHooks(currentView);
   currentView.creationMode = false;
-  currentView.initHooksCalled = false;
-  currentView.contentHooksCalled = false;
+  currentView.lifecycleStage = LifecycleStage.INIT;
   currentView.tView.firstTemplatePass = false;
   enterView(newView, null);
 }
@@ -182,8 +181,7 @@ export function createLView(
     template: template,
     context: context,
     dynamicViewCount: 0,
-    initHooksCalled: false,
-    contentHooksCalled: false
+    lifecycleStage: LifecycleStage.INIT
   };
 
   return newView;
@@ -831,23 +829,22 @@ export function text(index: number, value?: any): void {
  * @param value Stringified value to write.
  */
 export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
-  // TODO(misko): I don't think index < nodes.length check is needed here.
-  let existingNode = index < data.length && data[index] as LTextNode;
-  if (existingNode && existingNode.native) {
+  ngDevMode && assertDataInRange(index);
+  let existingNode = data[index] as LTextNode;
+  ngDevMode && assertNotNull(existingNode, 'existing node');
+  if (existingNode.native) {
     // If DOM node exists and value changed, update textContent
     value !== NO_CHANGE &&
         ((renderer as ProceduralRenderer3).setValue ?
              (renderer as ProceduralRenderer3).setValue(existingNode.native, stringify(value)) :
              existingNode.native.textContent = stringify(value));
-  } else if (existingNode) {
+  } else {
     // Node was created but DOM node creation was delayed. Create and append now.
     existingNode.native =
         ((renderer as ProceduralRenderer3).createText ?
              (renderer as ProceduralRenderer3).createText(stringify(value)) :
              (renderer as ObjectOrientedRenderer3).createTextNode !(stringify(value)));
     insertChild(existingNode, currentView);
-  } else {
-    text(index, value);
   }
 }
 
@@ -909,7 +906,7 @@ export function directiveCreate<T>(
 
   // Init hooks are queued now so ngOnInit is called in host components before
   // any projected components.
-  queueInitHooks(index, directiveDef.lifecycleHooks, currentView.tView);
+  queueInitHooks(index, directiveDef.onInit, directiveDef.doCheck, currentView.tView);
 
   return instance;
 }

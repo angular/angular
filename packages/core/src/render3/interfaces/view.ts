@@ -88,24 +88,21 @@ export interface LView {
   cleanup: any[]|null;
 
   /**
-   * Whether or not the ngOnInit and ngDoCheck hooks have been called in this change
-   * detection run.
+   * This number tracks the next lifecycle hook that needs to be run.
    *
-   * These two hooks are executed by the first Comp.r() instruction that runs OR the
-   * first cR() instruction that runs (so inits are run for the top level view before
-   * any embedded views). For this reason, the call must be tracked.
-   */
-  initHooksCalled: boolean;
-
-  /**
-   * Whether or not the afterContentInit and afterContentChecked hooks have been called
-   * in this change detection run.
+   * If lifecycleStage === LifecycleStage.ON_INIT, the init hooks haven't yet been run
+   * and should be executed by the first r() instruction that runs OR the first
+   * cR() instruction that runs (so inits are run for the top level view before any
+   * embedded views).
    *
-   * Content hooks are executed by the first Comp.r() instruction that runs (to avoid
-   * adding to the code size), so it needs to be able to check whether or not they should
-   * be called.
+   * If lifecycleStage === LifecycleStage.CONTENT_INIT, the init hooks have been run, but
+   * the content hooks have not yet been run. They should be executed on the first
+   * r() instruction that runs.
+   *
+   * If lifecycleStage === LifecycleStage.VIEW_INIT, both the init hooks and content hooks
+   * have already been run.
    */
-  contentHooksCalled: boolean;
+  lifecycleStage: LifecycleStage;
 
   /**
    * The first LView or LContainer beneath this LView in the hierarchy.
@@ -238,6 +235,18 @@ export interface TView {
  * Odd indices: Hook function
  */
 export type HookData = (number | (() => void))[];
+
+/** Possible values of LView.lifecycleStage, used to determine which hooks to run.  */
+export const enum LifecycleStage {
+  /* Init hooks need to be run, if any. */
+  INIT = 1,
+
+  /* Content hooks need to be run, if any. Init hooks have already run. */
+  CONTENT_INIT = 2,
+
+  /* View hooks need to be run, if any. Any init hooks/content hooks have ran. */
+  VIEW_INIT = 3
+}
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.

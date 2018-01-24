@@ -104,7 +104,7 @@ describe('content projection', () => {
     /** <div><ng-content></ng-content></div> */
     const Child = createComponent('child', (ctx: any, cm: boolean) => {
       if (cm) {
-        m(0, pD());
+        pD(0);
         E(1, 'div');
         { P(2, 0); }
         e();

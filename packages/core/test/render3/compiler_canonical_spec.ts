@@ -175,6 +175,7 @@ describe('compiler specification', () => {
       @Component({selector: 'simple', template: `<div><ng-content></ng-content></div>`})
       class SimpleComponent {
         static ngComponentDef = r3.defineComponent({
+          type: SimpleComponent,
           tag: 'simple',
           factory: () => new SimpleComponent(),
           template: function(ctx: SimpleComponent, cm: boolean) {
@@ -196,6 +197,7 @@ describe('compiler specification', () => {
       })
       class ComplexComponent {
         static ngComponentDef = r3.defineComponent({
+          type: ComplexComponent,
           tag: 'complex',
           factory: () => new ComplexComponent(),
           template: function(ctx: ComplexComponent, cm: boolean) {
@@ -221,6 +223,7 @@ describe('compiler specification', () => {
       })
       class MyApp {
         static ngComponentDef = r3.defineComponent({
+          type: MyApp,
           tag: 'my-app',
           factory: () => new MyApp(),
           template: function(ctx: MyApp, cm: boolean) {

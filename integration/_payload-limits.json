@@ -18,14 +18,14 @@
   "hello_world__render3__closure": {
     "master": {
       "uncompressed": {
-        "bundle": 7065
+        "bundle": 7674
       }
     }
   },
   "hello_world__render3__rollup": {
     "master": {
       "uncompressed": {
-        "bundle": 56550
+        "bundle": 58662
       }
     }
   }
