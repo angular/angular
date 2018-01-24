@@ -3461,10 +3461,6 @@ That method could return a `Promise`, an `Observable`, or a synchronous return v
 
 The `CrisisService.getCrisis` method returns an Observable.
 Return that observable to prevent the route from loading until the data is fetched.
-The `Router` guards require an Observable to `complete`, meaning it has emitted all
-of its values. You use the `take` operator with an argument of `1` to ensure that the
-Observable completes after retrieving the first value from the Observable returned by the
-`getCrisis` method.
 If it doesn't return a valid `Crisis`, navigate the user back to the `CrisisListComponent`,
 canceling the previous in-flight navigation to the `CrisisDetailComponent`.
 

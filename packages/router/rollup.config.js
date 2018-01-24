@@ -25,6 +25,8 @@ const globals = {
   'rxjs/observable/fromPromise': 'Rx.Observable',
   'rxjs/observable/forkJoin': 'Rx.Observable',
   'rxjs/observable/of': 'Rx.Observable',
+  'rxjs/observable/merge': 'Rx.Observable',
+  'rxjs/observable/empty': 'Rx.Observable',
 
   'rxjs/operator/toPromise': 'Rx.Observable.prototype',
   'rxjs/operator/map': 'Rx.Observable.prototype',

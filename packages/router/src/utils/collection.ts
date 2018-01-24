@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
+import {Injector, NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import {empty} from 'rxjs/observable/empty';
+import {from} from 'rxjs/observable/from';
 import {fromPromise} from 'rxjs/observable/fromPromise';
 import {of } from 'rxjs/observable/of';
 import {concatAll} from 'rxjs/operator/concatAll';
 import {every} from 'rxjs/operator/every';
+import {first} from 'rxjs/operator/first';
 import * as l from 'rxjs/operator/last';
 import {map} from 'rxjs/operator/map';
-import {mergeAll} from 'rxjs/operator/mergeAll';
+import {mergeMap} from 'rxjs/operator/mergeMap';
+
 import {PRIMARY_OUTLET} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
@@ -95,18 +99,19 @@ export function waitForMap<A, B>(
 }
 
 /**
- * ANDs Observables by merging all input observables, reducing to an Observable verifying all
- * input Observables return `true`.
+ * ANDs Observable values by verifying that all values return `true`.
  */
-export function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {
-  const merged$ = mergeAll.call(observables);
-  return every.call(merged$, (result: any) => result === true);
+export function andObservable(observable: Observable<any>): Observable<boolean> {
+  return every.call(observable, (result: any) => result === true);
 }
 
+/**
+ * Convert the input into a single emit observable.
+ */
 export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>):
     Observable<T> {
   if (isObservable(value)) {
-    return value;
+    return first.call(value);
   }
 
   if (isPromise(value)) {
@@ -117,4 +122,23 @@ export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>|
   }
 
   return of (value as T);
+}
+
+/**
+ * Convert each guard into an observable and return an observable that will emit the first item
+ * emited by each guard's observable.
+ */
+export function runGuards<T>(
+    name: string, guardTokens: any[] | null | undefined, injector: Injector, guardArguments: any[],
+    defaultValue?: T): Observable<T> {
+  if (!guardTokens || guardTokens.length === 0)
+    return defaultValue === undefined ? empty() : of (defaultValue);
+
+  return mergeMap.call(from(guardTokens), (token: any) => {
+    const guard = injector.get(token);
+    const guardResult =
+        guard[name] ? guard[name].apply(guard, guardArguments) : guard.apply(null, guardArguments);
+
+    return wrapIntoObservable(guardResult);
+  });
 }
