@@ -13,7 +13,7 @@
       //////////////////////////////////////////////////////////////////////////////////////////////
 
       // A random bad indexed page that used `api/api`
-      {"type": 301, "source": "/api/api/:rest*", "destination": "/api/:rest"},
+      {"type": 301, "source": "/api/api/:rest*", "destination": "api/:rest"},
 
       // Guide renames
       {"type": 301, "source": "/docs/*/latest/cli-quickstart.html", "destination": "/guide/quickstart"},
