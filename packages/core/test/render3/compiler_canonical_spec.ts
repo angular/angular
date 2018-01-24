@@ -432,7 +432,7 @@ describe('compiler specification', () => {
           type: MyComponent,
           tag: 'my-component',
           factory: function MyComponent_Factory() { return new MyComponent(); },
-          template: function MyComponentTemplate(ctx: MyComponent, cm: boolean) {
+          template: function MyComponent_Template(ctx: MyComponent, cm: boolean) {
             if (cm) {
               r3.E(0, 'ul');
               r3.C(1, c1_dirs, MyComponent_ForOfDirective_Template_1);
@@ -482,7 +482,7 @@ describe('compiler specification', () => {
                 <li *for="let info of item.infos">
                   {{item.name}}: {{info.description}}
                 </li>
-              </ui>
+              </ul>
             </li>
           </ul>`
       })
@@ -510,18 +510,20 @@ describe('compiler specification', () => {
 
             function MyComponent_ForOfDirective_Template_1(ctx1: any, cm: boolean) {
               if (cm) {
-                r3.E(0, 'div');
-                r3.T(1);
+                r3.E(0, 'li');
+                r3.E(1, 'div');
+                r3.T(2);
                 r3.e();
-                r3.E(2, 'ul');
-                r3.C(3, c1_dirs, MyComponent_ForOfDirective_ForOfDirective_Template_3);
+                r3.E(3, 'ul');
+                r3.C(4, c1_dirs, MyComponent_ForOfDirective_ForOfDirective_Template_3);
+                r3.e();
                 r3.e();
               }
               const l0_item = ctx1.$implicit;
-              r3.t(1, r3.b1('', l0_item.name, ''));
-              r3.p(4, 'forOf', r3.b(ctx.items));
-              r3.cR(3);
-              r3.r(4, 3);
+              r3.p(4, 'forOf', r3.b(l0_item.infos));
+              r3.t(2, r3.b1('', l0_item.name, ''));
+              r3.cR(4);
+              r3.r(5, 4);
               r3.cr();
 
               function MyComponent_ForOfDirective_ForOfDirective_Template_3(
@@ -531,8 +533,8 @@ describe('compiler specification', () => {
                   r3.T(1);
                   r3.e();
                 }
-                const l0_info = ctx2.info;
-                r3.t(1, r3.b2('', l0_item.name, ': ', l0_info.description, ''));
+                const l0_info = ctx2.$implicit;
+                r3.t(1, r3.b2(' ', l0_item.name, ': ', l0_info.description, ' '));
               }
             }
           }
