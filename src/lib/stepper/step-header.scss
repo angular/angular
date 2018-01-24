@@ -13,6 +13,7 @@ $mat-step-header-icon-size: 16px !default;
   outline: none;
   cursor: pointer;
   position: relative;
+  box-sizing: content-box;
 }
 
 .mat-step-optional {
