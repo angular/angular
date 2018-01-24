@@ -1,24 +1,28 @@
 # Displaying Data
 
-You can display data by binding controls in an HTML template to properties of an Angular component.
+<!-- You can display data by binding controls in an HTML template to properties of an Angular component. -->
+Angular 컴포넌트에 있는 프로퍼티를 HTML 템플릿에 바인딩하면 화면에 표시할 수 있습니다.
 
-In this page, you'll create a component with a list of heroes.
+<!-- In this page, you'll create a component with a list of heroes.
 You'll display the list of hero names and
-conditionally show a message below the list.
+conditionally show a message below the list.-->
+이 문서에서는 목록에 있는 히어로의 이름과 상태를 표시하는 컴포넌트를 간단하게 만들어 봅니다.
 
-The final UI looks like this:
+<!-- The final UI looks like this: -->
+최종 결과물로 다음과 같은 화면을 만들 것입니다:
 
 
 <figure>
-  <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
+  <!-- <img src="generated/images/guide/displaying-data/final.png" alt="Final UI"> -->
+  <img src="generated/images/guide/displaying-data/final.png" alt="최종 화면">
 </figure>
 
 <div class="l-sub-section">
 
 
-
-The <live-example></live-example> demonstrates all of the syntax and code
-snippets described in this page.
+<!-- The <live-example></live-example> demonstrates all of the syntax and code
+snippets described in this page. -->
+이 문서에서 설명하는 코드는 <live-example></live-example> 에서 확인하거나 다운받을 수 있습니다.
 
 
 </div>
@@ -27,19 +31,25 @@ snippets described in this page.
 {@a interpolation}
 
 ## Showing component properties with interpolation
-The easiest way to display a component property
+<!-- The easiest way to display a component property
 is to bind the property name through interpolation.
-With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.
+With interpolation, you put the property name in the view template, enclosed in double curly braces: `{{myHero}}`.-->
+컴포넌트 프로퍼티를 화면에 표시하는 방법 중 가장 간단한 방법은
+문자열 바인딩(interpolation)을 사용하는 것입니다.
+문자열 바인딩은 프로퍼티 이름을 이중 중괄호로 감싸서 뷰 템플릿에 `{{myHero}}` 와 같은 형태로 넣는 방법입니다.
 
-Follow the [quickstart](guide/quickstart) instructions for creating a new project
-named <code>displaying-data</code>.
+<!-- Follow the [quickstart](guide/quickstart) instructions for creating a new project
+named <code>displaying-data</code>. -->
+먼저, [퀵스타트](guide/quickstart) 문서를 참고하면서 <code>displaying-data</code> 라는 이름으로 새로운 프로젝트를 만듭니다.
 
-Delete the <code>app.component.html</code> file. It is not needed for this example.
+<!-- Delete the <code>app.component.html</code> file. It is not needed for this example. -->
 
-Then modify the <code>app.component.ts</code> file by
-changing the template and the body of the component.
+<!-- Then modify the <code>app.component.ts</code> file by
+changing the template and the body of the component. -->
 
-When you're done, it should look like this:
+<!-- When you're done, it should look like this: -->
+그리고 이번 예제에서는 <code>app.component.html</code> 파일을 사용하지 않으니 삭제하고,
+화면에 히어로의 이름을 표시하도록 <code>app.component.ts</code> 파일을 다음과 같이 작성합니다:
 
 
 <code-example path="displaying-data/src/app/app.component.1.ts" title="src/app/app.component.ts">
@@ -48,10 +58,12 @@ When you're done, it should look like this:
 
 
 
-You added two properties to the formerly empty component: `title` and `myHero`.
+<!-- You added two properties to the formerly empty component: `title` and `myHero`. -->
+이 코드를 보면 컴포넌트 프로퍼티로 `title` 과 `myHero` 를 선언한 것을 확인할 수 있습니다.
 
-The template displays the two component properties using double curly brace
-interpolation:
+<!-- The template displays the two component properties using double curly brace
+interpolation: -->
+그리고 두 프로퍼티 값을 화면에 표시하도록 다음과 같이 템플릿에 문자열 바인딩 합니다:
 
 
 <code-example path="displaying-data/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
@@ -62,61 +74,62 @@ interpolation:
 
 <div class="l-sub-section">
 
-
-
-The template is a multi-line string within ECMAScript 2015 backticks (<code>\`</code>).
+<!-- The template is a multi-line string within ECMAScript 2015 backticks (<code>\`</code>).
 The backtick (<code>\`</code>)&mdash;which is *not* the same character as a single
 quote (`'`)&mdash;allows you to compose a string over several lines, which makes the
-HTML more readable.
-
+HTML more readable. -->
+템플릿에 사용된 역따옴표(<code>\`</code>)는 문자열을 여러 줄에 걸쳐 선언하는 ECMAScript 2015 표준이며,
+역따옴표를 사용하면 HTML 코드의 가독성을 더 높일 수 있습니다.
+역따옴표(<code>\`</code>)와 홑따옴표(`'`)를 혼동하지 않도록 주의하세요.
 
 </div>
 
-
-
-Angular automatically pulls the value of the `title` and `myHero` properties from the component and
+<!-- Angular automatically pulls the value of the `title` and `myHero` properties from the component and
 inserts those values into the browser. Angular updates the display
-when these properties change.
-
+when these properties change. -->
+그러면 컴포넌트에 있는 `title` 과 `myHero` 프로퍼티 값을 Angular가 끌어와서 템플릿에 표시합니다.
+이렇게 바인딩 된 프로퍼티는 값이 변경될 때마다 Angular가 감지해서 화면을 갱신합니다.
 
 <div class="l-sub-section">
 
 
-
-More precisely, the redisplay occurs after some kind of asynchronous event related to
-the view, such as a keystroke, a timer completion, or a response to an HTTP request.
-
+<!-- More precisely, the redisplay occurs after some kind of asynchronous event related to
+the view, such as a keystroke, a timer completion, or a response to an HTTP request. -->
+조금 더 정확하게 얘기하면, 키 입력이나 타이머, HTTP 응답과 같은 비동기 이벤트가 발생했을 때 화면이 갱신됩니다.
 
 </div>
 
 
+<!-- Notice that you don't call **`new`** to create an instance of the `AppComponent` class.
+Angular is creating an instance for you. How? -->
+Angular에서는 `new` 키워드를 사용하지 않아도 알아서 컴포넌트의 인스턴스를 생성하고 DOM에 추가합니다. 이 과정이 어떻게 이루어 질까요?
 
-Notice that you don't call **new** to create an instance of the `AppComponent` class.
-Angular is creating an instance for you. How?
-
-The CSS `selector` in the `@Component` decorator specifies an element named `<app-root>`.
-That element is a placeholder in the body of your `index.html` file:
-
+<!-- The CSS `selector` in the `@Component` decorator specifies an element named `<app-root>`.
+That element is a placeholder in the body of your `index.html` file: -->
+`@Component` 데코레이터에 지정된 메타데이터를 보면 `selector` 항목에 `<app-root>` 가 지정되어 있고,
+`index.html` 파일에는 `<app-root>` 가 다음과 같이 작성되어 있습니다:
 
 <code-example path="displaying-data/src/index.html" linenums="false" title="src/index.html (body)" region="body">
 
 </code-example>
 
 
-
-When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angular looks for a `<app-root>`
+<!-- When you bootstrap with the `AppComponent` class (in <code>main.ts</code>), Angular looks for a `<app-root>`
 in the `index.html`, finds it, instantiates an instance of `AppComponent`, and renders it
-inside the `<app-root>` tag.
+inside the `<app-root>` tag. -->
+그러면 Angular 애플리케이션이 시작되면서 `AppComponent` 클래스가 부트스트랩 될 때, Angular는 `index.html` 파일에서 `<app-root>` 엘리먼트를 찾습니다.
+그리고 이 엘리먼트를 찾은 위치에 `AppComponent` 인스턴스를 생성하고 화면에 렌더링합니다.
 
-Now run the app. It should display the title and hero name:
+<!-- Now run the app. It should display the title and hero name: -->
+여기까지 작성하고 애플리케이션을 시작하면, 페이지 제목과 히어로 이름이 다음과 같이 표시되는 것을 확인할 수 있습니다:
 
 <figure>
-  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero">
+  <!-- <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="Title and Hero"> -->
+  <img src="generated/images/guide/displaying-data/title-and-hero.png" alt="제목과 히어로가 표시된 화면">
 </figure>
 
 
-
-The next few sections review some of the coding choices in the app.
+<!-- The next few sections review some of the coding choices in the app. -->
 
 
 ## Template inline or template file?
