@@ -14,6 +14,7 @@ export class HelloWorld {
 
   /** @nocollapse */
   static ngComponentDef: ComponentDef<HelloWorld> = defineComponent({
+    type: HelloWorld,
     tag: 'hello-world',
     template: function (ctx: HelloWorld, cm: boolean) {
       if (cm) {

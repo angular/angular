@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {DirectiveDef, LifecycleHooksMap} from './interfaces/definition';
+import {DirectiveDef} from './interfaces/definition';
 import {LNodeFlags} from './interfaces/node';
-import {HookData, LView, TView} from './interfaces/view';
+import {HookData, LView, LifecycleStage, TView} from './interfaces/view';
 
 
 
@@ -16,7 +16,6 @@ import {HookData, LView, TView} from './interfaces/view';
 export const enum LifecycleHook {
   ON_INIT = 0b00,
   ON_CHECK = 0b01,
-  ON_CHANGES = 0b10,
 
   /* Mask used to get the type of the lifecycle hook from flags in hook queue */
   TYPE_MASK = 0b00000000000000000000000000000001,
@@ -37,14 +36,16 @@ export const enum LifecycleHook {
  * @param hooks The static hooks map on the directive def
  * @param tView The current TView
  */
-export function queueInitHooks(index: number, hooks: LifecycleHooksMap, tView: TView): void {
-  const firstTemplatePass = tView.firstTemplatePass;
-  if (firstTemplatePass === true && hooks.onInit != null) {
-    (tView.initHooks || (tView.initHooks = [])).push(getInitFlags(index), hooks.onInit);
-  }
+export function queueInitHooks(
+    index: number, onInit: (() => void) | null, doCheck: (() => void) | null, tView: TView): void {
+  if (tView.firstTemplatePass === true) {
+    if (onInit != null) {
+      (tView.initHooks || (tView.initHooks = [])).push(getInitFlags(index), onInit);
+    }
 
-  if (firstTemplatePass === true && hooks.doCheck != null) {
-    (tView.initHooks || (tView.initHooks = [])).push(getCheckFlags(index), hooks.doCheck);
+    if (doCheck != null) {
+      (tView.initHooks || (tView.initHooks = [])).push(getCheckFlags(index), doCheck);
+    }
   }
 }
 
@@ -62,41 +63,41 @@ export function queueLifecycleHooks(flags: number, currentView: LView): void {
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
     for (let i = start, end = start + size; i < end; i++) {
-      const hooks = (tView.data[i] as DirectiveDef<any>).lifecycleHooks;
-      queueContentHooks(hooks, tView, i);
-      queueViewHooks(hooks, tView, i);
-      queueDestroyHooks(hooks, tView, i);
+      const def = (tView.data[i] as DirectiveDef<any>);
+      queueContentHooks(def, tView, i);
+      queueViewHooks(def, tView, i);
+      queueDestroyHooks(def, tView, i);
     }
   }
 }
 
 /** Queues afterContentInit and afterContentChecked hooks on TView */
-function queueContentHooks(hooks: LifecycleHooksMap, tView: TView, i: number): void {
-  if (hooks.afterContentInit != null) {
-    (tView.contentHooks || (tView.contentHooks = [])).push(getInitFlags(i), hooks.afterContentInit);
+function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
+  if (def.afterContentInit != null) {
+    (tView.contentHooks || (tView.contentHooks = [])).push(getInitFlags(i), def.afterContentInit);
   }
 
-  if (hooks.afterContentChecked != null) {
+  if (def.afterContentChecked != null) {
     (tView.contentHooks || (tView.contentHooks = [
-     ])).push(getCheckFlags(i), hooks.afterContentChecked);
+     ])).push(getCheckFlags(i), def.afterContentChecked);
   }
 }
 
 /** Queues afterViewInit and afterViewChecked hooks on TView */
-function queueViewHooks(hooks: LifecycleHooksMap, tView: TView, i: number): void {
-  if (hooks.afterViewInit != null) {
-    (tView.viewHooks || (tView.viewHooks = [])).push(getInitFlags(i), hooks.afterViewInit);
+function queueViewHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
+  if (def.afterViewInit != null) {
+    (tView.viewHooks || (tView.viewHooks = [])).push(getInitFlags(i), def.afterViewInit);
   }
 
-  if (hooks.afterViewChecked != null) {
-    (tView.viewHooks || (tView.viewHooks = [])).push(getCheckFlags(i), hooks.afterViewChecked);
+  if (def.afterViewChecked != null) {
+    (tView.viewHooks || (tView.viewHooks = [])).push(getCheckFlags(i), def.afterViewChecked);
   }
 }
 
 /** Queues onDestroy hooks on TView */
-function queueDestroyHooks(hooks: LifecycleHooksMap, tView: TView, i: number): void {
-  if (hooks.onDestroy != null) {
-    (tView.destroyHooks || (tView.destroyHooks = [])).push(i, hooks.onDestroy);
+function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
+  if (def.onDestroy != null) {
+    (tView.destroyHooks || (tView.destroyHooks = [])).push(i, def.onDestroy);
   }
 }
 
@@ -118,9 +119,24 @@ function getCheckFlags(index: number): number {
 export function executeInitHooks(currentView: LView): void {
   const initHooks = currentView.tView.initHooks;
 
-  if (currentView.initHooksCalled === false && initHooks != null) {
+  if (currentView.lifecycleStage === LifecycleStage.INIT && initHooks != null) {
     executeLifecycleHooks(currentView, initHooks);
-    currentView.initHooksCalled = true;
+    currentView.lifecycleStage = LifecycleStage.CONTENT_INIT;
+  }
+}
+
+/**
+ * Calls all afterContentInit and afterContentChecked hooks for the view, then splices
+ * out afterContentInit hooks to prep for the next run in update mode.
+ *
+ * @param currentView The current view
+ */
+export function executeContentHooks(currentView: LView): void {
+  const contentHooks = currentView.tView.contentHooks;
+
+  if (currentView.lifecycleStage < LifecycleStage.VIEW_INIT && contentHooks != null) {
+    executeLifecycleHooks(currentView, contentHooks);
+    currentView.lifecycleStage = LifecycleStage.VIEW_INIT;
   }
 }
 
@@ -138,21 +154,6 @@ export function executeViewHooks(currentView: LView): void {
 }
 
 /**
- * Calls all afterContentInit and afterContentChecked hooks for the view, then splices
- * out afterContentInit hooks to prep for the next run in update mode.
- *
- * @param currentView The current view
- */
-export function executeContentHooks(currentView: LView): void {
-  const contentHooks = currentView.tView.contentHooks;
-
-  if (currentView.contentHooksCalled === false && contentHooks != null) {
-    executeLifecycleHooks(currentView, contentHooks);
-    currentView.contentHooksCalled = true;
-  }
-}
-
-/**
  * Calls lifecycle hooks with their contexts, skipping init hooks if it's not
  * creation mode.
  *
@@ -165,11 +166,9 @@ function executeLifecycleHooks(currentView: LView, arr: HookData): void {
 
   for (let i = 0; i < arr.length; i += 2) {
     const flags = arr[i] as number;
-    const hook = arr[i | 1] as() => void;
     const initOnly = (flags & LifecycleHook.TYPE_MASK) === LifecycleHook.ON_INIT;
-    const instance = data[flags >> LifecycleHook.INDX_SHIFT];
     if (initOnly === false || creationMode) {
-      hook.call(instance);
+      (arr[i | 1] as() => void).call(data[flags >> LifecycleHook.INDX_SHIFT]);
     }
   }
 }
