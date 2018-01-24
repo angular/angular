@@ -8,8 +8,6 @@
 
 /**
  * Helper method used to extract name and value from cookie string.
- *
- * @stable
  */
 function cookieProperties(cookie: string) {
   const eqIndex = cookie.indexOf('=');
