@@ -1,6 +1,8 @@
 <div>
-  <ng-content select="mat-card-title, mat-card-subtitle, [mat-card-title], [mat-card-subtitle]">
-  </ng-content>
+  <ng-content
+      select="mat-card-title, mat-card-subtitle,
+      [mat-card-title], [mat-card-subtitle],
+      [matCardTitle], [matCardSubtitle]"></ng-content>
 </div>
 <ng-content select="img"></ng-content>
 <ng-content></ng-content>
