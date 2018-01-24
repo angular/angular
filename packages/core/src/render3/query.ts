@@ -226,8 +226,8 @@ function geIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
 }
 
 function readFromNodeInjector(
-    nodeInjector: LInjector, node: LNode, read: QueryReadType<any>| Type<any>| null,
-    directiveIdx: number = -1): any {
+    nodeInjector: LInjector, node: LNode, read: QueryReadType<any>| Type<any>,
+    directiveIdx: number): any {
   if (read instanceof ReadFromInjectorFn) {
     return read.read(nodeInjector, node, directiveIdx);
   } else {
@@ -246,13 +246,12 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
     if (type) {
       const directiveIdx = geIdxOfMatchingDirective(node, type);
       if (directiveIdx !== null) {
-        if (predicate.read !== null) {
-          const requestedRead = readFromNodeInjector(nodeInjector, node, predicate.read);
-          if (requestedRead !== null) {
-            addMatch(predicate, requestedRead);
-          }
-        } else {
-          addMatch(predicate, node.view.data[directiveIdx]);
+        // a node is matching a predicate - determine what to read
+        // if read token and / or strategy is not specified, use type as read token
+        const result =
+            readFromNodeInjector(nodeInjector, node, predicate.read || type, directiveIdx);
+        if (result !== null) {
+          addMatch(predicate, result);
         }
       }
     } else {
@@ -260,15 +259,13 @@ function add(predicate: QueryPredicate<any>| null, node: LNode) {
       for (let i = 0; i < selector.length; i++) {
         ngDevMode && assertNotNull(node.tNode, 'node.tNode');
         const directiveIdx = getIdxOfMatchingSelector(node.tNode !, selector[i]);
-        // is anything on a node matching a selector?
         if (directiveIdx !== null) {
-          if (predicate.read !== null) {
-            const result = readFromNodeInjector(nodeInjector, node, predicate.read !, directiveIdx);
-            if (result !== null) {
-              addMatch(predicate, result);
-            }
-          } else {
-            addMatch(predicate, node.view.data[directiveIdx]);
+          // a node is matching a predicate - determine what to read
+          // note that queries using name selector must specify read strategy
+          ngDevMode && assertNotNull(predicate.read, 'predicate.read');
+          const result = readFromNodeInjector(nodeInjector, node, predicate.read !, directiveIdx);
+          if (result !== null) {
+            addMatch(predicate, result);
           }
         }
       }
