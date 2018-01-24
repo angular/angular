@@ -15,6 +15,7 @@ describe('Form Validation Tests', function () {
     });
 
     tests('Template-Driven Form');
+    bobTests();
   });
 
   describe('Reactive form', () => {
