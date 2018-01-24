@@ -76,7 +76,9 @@ load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es
 
 def _rollup(ctx, output_name, inputs, license_banner_file, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
   rollup_config = ctx.actions.declare_file("%s.rollup.conf.js" % ctx.label.name)
-  output = ctx.actions.declare_directory(output_name + "-" + npm_package_name)
+  ext = ".umd.js" if format == "umd" else ".js"
+  js_output = ctx.actions.declare_file(output_name + ext)
+  map_output = ctx.actions.declare_file(output_name + ext + ".map")
 
   ctx.actions.expand_template(
       output = rollup_config,
@@ -96,8 +98,7 @@ def _rollup(ctx, output_name, inputs, license_banner_file, npm_package_name, ext
   args.add("--input")
   args.add([rootdir, entry_point_name, "index.js"], join_with="/")
 
-  args.add("--output")
-  args.add([output.path, entry_point_name + (".umd.js" if format == "umd" else ".js")], join_with="/")
+  args.add(["--output", js_output.path])
 
   args.add(["--format", format])
   # TODO(alexeagle): don't hard-code this name
@@ -121,57 +122,75 @@ def _rollup(ctx, output_name, inputs, license_banner_file, npm_package_name, ext
           rollup_config,
           ctx.file.stamp_data,
       ],
-      outputs = [output],
+      outputs = [js_output, map_output],
       executable = ctx.executable._rollup,
       arguments = [args],
   )
-  return output
+  return struct(
+      js = js_output,
+      map = map_output,
+  )
 
-def _uglify(ctx, input):
-  output = ctx.actions.declare_directory("umd-min-" + ctx.label.package.split("/")[-1])
+def _uglify(ctx, input, entry_point_name):
+  js_output = ctx.actions.declare_file(entry_point_name + ".umd.min.js")
+  map_output = ctx.actions.declare_file(entry_point_name + ".umd.min.js.map")
   args = ctx.actions.args()
+  args.add(["--compress", "--screw-ie8", "--comments"])
+  args.add(["--prefix", "relative"])
+  args.add(["--output", js_output.path])
+  args.add(["--source-map", map_output.path])
+  args.add(["--source-map-include-sources"])
+  args.add(input.path)
+
   ctx.actions.run(
       progress_message = "Angular Packaging: minifying %s" % ctx.label.name,
       mnemonic = "AngularPackageUglify",
-      inputs = [],
-      outputs = [output],
+      inputs = [input],
+      outputs = [js_output, map_output],
       executable = ctx.executable._uglify,
       arguments = [args],
   )
-  return output
+  return struct(
+      js = js_output,
+      map = map_output,
+  )
 
 # ng_package produces package that is npm ready.
 def _ng_package_impl(ctx):
   npm_package_name = ctx.label.package.split("/")[-1]
   npm_package_directory = ctx.actions.declare_directory(ctx.label.name)
-  fesms_2015 = []
-  fesms_5 = []
-  umds = []
 
   esm_2015_files = collect_es6_sources(ctx).to_list()
   esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
                                        for dep in ctx.attr.deps
                                        if ES5_ESM_TypeScript_output in dep]).to_list()
 
-  readme_md = ctx.file.readme_md
   externals = ctx.attr.globals.keys()
 
-  fesms_2015.append(_rollup(ctx, "fesm_2015", esm_2015_files, ctx.file.license_banner, npm_package_name, externals,
-      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"])))
-  fesms_5.append(_rollup(ctx, "fesm_5", esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+  fesm_2015 = _rollup(ctx, "fesm_2015/" + npm_package_name, esm_2015_files, ctx.file.license_banner, npm_package_name, externals,
+      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
+  fesm_5 = _rollup(ctx, "fesm_5/" + npm_package_name, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
-      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"])))
-  umds.append(_rollup(ctx, "umd", esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]))
+  umd = _rollup(ctx, "umd/" + npm_package_name, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
       ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]),
-      "umd"))
+      "umd")
+  min = _uglify(ctx, umd.js, npm_package_name)
+
+  # These accumulators match the directory names where the files live in the
+  # Angular package format.
+  esm2015 = [fesm_2015.js, fesm_2015.map]
+  esm5 = [fesm_5.js, fesm_5.map]
+  bundles = [umd.js, umd.map, min.js, min.map]
 
   for entry_point in ctx.attr.secondary_entry_points:
     entry_point_name = entry_point.label.package
     externals = entry_point.globals.keys()
-    fesms_2015.append(_rollup(ctx, "fesm_2015-" + entry_point_name, esm_2015_files,
+    secondary_fesm_2015 = _rollup(ctx, "fesm_2015-" + entry_point_name, esm_2015_files,
         ctx.file.license_banner, npm_package_name, externals, entry_point_name,
-       "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"])))
+       "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
+    esm2015.extend([secondary_fesm_2015.js, secondary_fesm_2015.map])
 
   metadata_files = depset(transitive = [getattr(dep, "angular").flat_module_metadata
                                         for dep in ctx.attr.deps
@@ -180,20 +199,21 @@ def _ng_package_impl(ctx):
   args = ctx.actions.args()
   args.add(npm_package_directory.path)
   args.add([ctx.bin_dir.path, ctx.attr.package_json.label.package], join_with="/")
-  args.add([ctx.file.package_json.path, readme_md.path])
+  args.add([ctx.file.package_json.path, ctx.file.readme_md.path])
   # TODO(i): unflattened js files are disabled for now to match the output of build.sh
   # args.add([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6", ctx.attr.package_json.label.package], join_with="/")
-  args.add([f.path for f in fesms_2015], join_with=",")
-  args.add([f.path for f in fesms_5], join_with=",")
-  args.add([f.path for f in umds], join_with=",")
+  args.add([f.path for f in esm2015], join_with=",")
+  args.add([f.path for f in esm5], join_with=",")
+  args.add([f.path for f in bundles], join_with=",")
   args.add(ctx.file.stamp_data.path)
 
   ctx.actions.run(
       progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
       mnemonic = "AngularPackage",
-      inputs = esm_es5_files + fesms_2015 + fesms_5 + umds + [
-        ctx.file.stamp_data,
-        ctx.file.package_json, readme_md
+      inputs = esm_es5_files + esm2015 + esm5 + bundles + [
+            ctx.file.stamp_data,
+            ctx.file.package_json,
+            ctx.file.readme_md,
         ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + metadata_files.to_list(),
       outputs = [npm_package_directory],
       executable = ctx.executable._packager,

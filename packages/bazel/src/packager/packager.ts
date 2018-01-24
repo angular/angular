@@ -19,10 +19,10 @@ function filter(ext: string): (path: string) => boolean {
 
 function main(args: string[]): number {
   shx.set("-e");
-  const [out, srcdir, packageJson, readmeMd, /*esm2015src,*/ fesms2015asString, fesms5asString, umdsasString, stampData] = args;
+  const [out, srcdir, packageJson, readmeMd, /*esm2015src,*/ fesms2015asString, fesms5asString, bundlesasString, stampData] = args;
   const fesms2015 = fesms2015asString.split(',');
   const fesms5 = fesms5asString.split(',').filter(s => !!s);
-  const umds = umdsasString.split(',').filter(s => !!s);
+  const bundles = bundlesasString.split(',').filter(s => !!s);
 
   shx.mkdir("-p", out);
   const version = shx.grep('BUILD_SCM_VERSION', stampData).split(' ')[1].trim();
@@ -55,21 +55,19 @@ function main(args: string[]): number {
   const esm2015Dir = path.join(out, 'esm2015');
   shx.mkdir("-p", esm2015Dir);
   fesms2015.forEach(fesm2015 => {
-      // TODO(alexeagle): the "packages" here doesn't port to user's projects
-      shx.cp("-R", `${fesm2015}/packages/*`, esm2015Dir);
-    }
-  );
+    shx.cp(fesm2015, esm2015Dir);
+  });
 
   const esm5Dir = path.join(out, 'esm5');
   shx.mkdir("-p", esm5Dir);
   fesms5.forEach(fesm5 => {
-    shx.cp("-R", `${fesm5}/packages/*`, esm5Dir);
+    shx.cp(fesm5, esm5Dir);
   });
 
-  const umdDir = path.join(out, 'bundles');
-  shx.mkdir("-p", umdDir);
-  umds.forEach(umd => {
-    shx.cp("-R", `${umd}/packages/*`, umdDir);
+  const bundlesDir = path.join(out, 'bundles');
+  shx.mkdir("-p", bundlesDir);
+  bundles.forEach(bundle => {
+    shx.cp(bundle, bundlesDir);
   });
 
   return 0;

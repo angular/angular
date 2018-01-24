@@ -119,11 +119,11 @@ describe("ng_package", () => {
         expect(shx.ls('bundles/core.umd.js.map').length).toBe(1, "File not found");
       });
 
-      xit('should have a minified umd file in the /bundles directory', () => {
+      it('should have a minified umd file in the /bundles directory', () => {
         expect(shx.ls('bundles/core.umd.min.js').length).toBe(1, "File not found");
       });
 
-      xit('should have a source map next to the minified umd file', () => {
+      it('should have a source map next to the minified umd file', () => {
         expect(shx.ls('bundles/core.umd.min.js.map').length).toBe(1, "File not found");
       });
     });
