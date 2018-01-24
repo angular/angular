@@ -19,12 +19,13 @@ function filter(ext: string): (path: string) => boolean {
 
 function main(args: string[]): number {
   shx.set("-e");
-  const [out, srcdir, packageJson, readmeMd, /*esm2015src,*/ fesms2015asString, fesms5asString] = args;
+  const [out, srcdir, packageJson, readmeMd, /*esm2015src,*/ fesms2015asString, fesms5asString, stampData] = args;
   const fesms2015 = fesms2015asString.split(',');
   const fesms5 = fesms5asString.split(',').filter(s => !!s);
 
   shx.mkdir("-p", out);
-  shx.cp(packageJson, path.join(out, 'package.json'));
+  const version = shx.grep('BUILD_SCM_VERSION', stampData).split(' ')[1].trim();
+  shx.sed(/0.0.0-PLACEHOLDER/, version, packageJson).to(path.join(out, 'package.json'));
   shx.cp(readmeMd, path.join(out, 'README.md'));
 
   const allsrcs = shx.find("-R", srcdir);
@@ -66,7 +67,6 @@ function main(args: string[]): number {
 
   const esm5Dir = path.join(out, 'esm5');
   shx.mkdir("-p", esm5Dir);
-  console.error(fesms5);
   fesms5.forEach(fesm5 => {
     shx.cp("-R", `${fesm5}/*`, esm5Dir);
   });

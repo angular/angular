@@ -6,3 +6,5 @@ nodejs_binary(
     node_modules = "@angular_deps//:node_modules",
     visibility = ["//visibility:public"],
 )
+
+exports_files(["rollup.config.js"])

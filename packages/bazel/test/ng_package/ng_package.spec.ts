@@ -83,12 +83,16 @@ describe("ng_package", () => {
 
     describe('fesm15', () => {
 
-      it('should have a fesm15 file in the /ems2015 directory', () => {
+      it('should have a fesm15 file in the /esm2015 directory', () => {
         expect(shx.cat('esm2015/core.js')).toContain(`export {`);
       });
 
       it('should have a source map', () => {
         expect(shx.cat('esm2015/core.js.map')).toContain(`{"version":3,"file":"core.js","sources":`);
+      });
+
+      it('should have the version info in the header', () => {
+        expect(shx.cat('esm2015/core.js')).toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
     });
 

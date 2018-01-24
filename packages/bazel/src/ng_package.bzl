@@ -74,7 +74,7 @@ ES5_ESM_outputs_aspect = aspect(
 
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
 
-def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_package_name, license_banner_path, externals, entry_point_name):
+def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_package_name, externals, entry_point_name):
   # unescape slashes in entry point names since we are about to create the final fs layout
   entry_point_name = entry_point_name.replace("_", "/")
 
@@ -83,7 +83,19 @@ def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_pac
   else:
     input_dir = npm_package_name + "/" + entry_point_name
 
+  rollup_config = ctx.actions.declare_file("%s.rollup.conf.js" % ctx.label.name)
+  ctx.actions.expand_template(
+      output = rollup_config,
+      template = ctx.file._rollup_config_tmpl,
+      substitutions = {
+          "TMPL_banner_file": license_banner_file.path,
+          "TMPL_stamp_data": ctx.file.stamp_data.path,
+      },
+  )
+
   rollup_args = ctx.actions.args()
+  rollup_args.add(["--config", rollup_config.path])
+
   # TODO(i): we probably want to make "index.js" configurable or even better auto-configured
   #   based on the original tsconfig, since we allow the filename to be adjusted via
   #   flatModuleOutFile config property https://angular.io/guide/aot-compiler#flatmoduleoutfile
@@ -95,7 +107,6 @@ def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_pac
   rollup_args.add("--output")
   rollup_args.add([fesm_2015.path, entry_point_name + ".js"], join_with="/")
 
-  rollup_args.add(["--banner", "\"$(cat " + license_banner_path + ")\""])
   rollup_args.add(["--format", "es"])
 
   # TODO(i): consider "--sourcemap", "inline"
@@ -111,7 +122,7 @@ def _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_pac
       progress_message = "Angular Packaging: rolling up %s" % ctx.label.name,
       mnemonic = "AngularPackageRollup",
       outputs = [fesm_2015],
-      inputs = esm_2015_files + [ctx.executable._rollup, license_banner_file],
+      inputs = esm_2015_files + [ctx.executable._rollup, license_banner_file, rollup_config, ctx.file.stamp_data],
       executable = ctx.executable._rollup,
       arguments = [rollup_args],
   )
@@ -125,21 +136,18 @@ def _ng_package_impl(ctx):
   fesms_5 = [] # TODO(alexeagle)
 
   esm_2015_files = collect_es6_sources(ctx).to_list()
-  stamped_package_json = ctx.file.package_json
+
   readme_md = ctx.file.readme_md
-  license_banner_file = ctx.file.license_banner
   externals = ctx.attr.globals.keys()
 
-  license_banner_path = license_banner_file.path if  (license_banner_file != None) else "/dev/null"
-
-  _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_package_name, license_banner_path, externals, npm_package_name)
+  _rollup_esm2015(ctx, fesm_2015, esm_2015_files, ctx.file.license_banner, npm_package_name, externals, npm_package_name)
 
   for entry_point in ctx.attr.secondary_entry_points:
     entry_point_name = entry_point.name
     fesm_2015 = ctx.actions.declare_directory("fesm2015-" + entry_point_name)
     fesms_2015.append(fesm_2015)
     externals = entry_point.globals.keys()
-    _rollup_esm2015(ctx, fesm_2015, esm_2015_files, license_banner_file, npm_package_name, license_banner_path, externals, entry_point_name)
+    _rollup_esm2015(ctx, fesm_2015, esm_2015_files, ctx.file.license_banner, npm_package_name, externals, entry_point_name)
 
   esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
                                        for dep in ctx.attr.deps
@@ -148,24 +156,26 @@ def _ng_package_impl(ctx):
                                         for dep in ctx.attr.deps
                                         if hasattr(dep, "angular")])
 
+  packager_args = ctx.actions.args()
+  packager_args.add(npm_package_directory.path)
+  packager_args.add([ctx.bin_dir.path, ctx.attr.package_json.label.package], join_with="/")
+  packager_args.add([ctx.file.package_json.path, readme_md.path])
+  # TODO(i): unflattened js files are disabled for now to match the output of build.sh
+  # packager_args.add([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6", ctx.attr.package_json.label.package], join_with="/")
+  packager_args.add([f.path for f in fesms_2015], join_with=",")
+  packager_args.add([f.path for f in fesms_5], join_with=",")
+  packager_args.add(ctx.file.stamp_data.path)
+
   ctx.actions.run(
-    progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
-    mnemonic = "AngularPackage",
-    outputs = [npm_package_directory],
-    inputs = esm_es5_files.to_list() + fesms_2015 + fesms_5 + [
-      stamped_package_json, readme_md
-      ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + metadata_files.to_list(),
-    executable = ctx.executable._packager,
-    arguments = [
-      npm_package_directory.path,
-      ctx.bin_dir.path + "/" + ctx.attr.package_json.label.package,
-      stamped_package_json.path,
-      readme_md.path,
-      # TODO(i): unflattened js files are disabled for now to match the output of build.sh
-      #"/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6", ctx.attr.package_json.label.package]),
-      ",".join([f.path for f in fesms_2015]),
-      ",".join([f.path for f in fesms_5]),
-    ],
+      progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
+      mnemonic = "AngularPackage",
+      inputs = esm_es5_files.to_list() + fesms_2015 + fesms_5 + [
+        ctx.file.stamp_data,
+        ctx.file.package_json, readme_md
+        ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + metadata_files.to_list(),
+      outputs = [npm_package_directory],
+      executable = ctx.executable._packager,
+      arguments = [packager_args],
   )
 
   return struct(
@@ -220,8 +230,10 @@ ng_package = rule(
       "license_banner": attr.label(allow_single_file = FileType([".txt"])),
       "globals": attr.string_dict(default={}),
       "secondary_entry_points": attr.label_list(),
+      "stamp_data": attr.label(mandatory=True, allow_single_file=[".txt"]),
       "_packager": attr.label(default=Label("//packages/bazel/src/packager"), executable=True, cfg="host"),
       "_rollup": attr.label(default=Label("//packages/bazel/src/rollup"), executable=True, cfg="host"),
+      "_rollup_config_tmpl": attr.label(default=Label("//packages/bazel/src/rollup:rollup.config.js"), allow_single_file=True)
     }
 )
 
@@ -239,7 +251,7 @@ ng_package_entry_point = rule(
     }
 )
 
-def ng_package_macro(name, package_json, license_banner, **kwargs):
+def ng_package_macro(name, **kwargs):
   """Wraps the ng_package rule to allow running a genrule before it.
 
   We typically don't use macros because they are a leaky abstraction.
@@ -250,22 +262,13 @@ def ng_package_macro(name, package_json, license_banner, **kwargs):
   their BUILD file.
   """
   native.genrule(
-      name = "%s_package_json" % name,
-      srcs = [package_json],
-      outs = ["%s_package.stamped.json" % name],
+      name = "%s_stamp_data" % name,
+      outs = ["%s_stamp_data.txt" % name],
       stamp = True,
-      cmd = "sed \"s/0.0.0-PLACEHOLDER/$$(grep BUILD_SCM_VERSION bazel-out/volatile-status.txt | cut -d' ' -f 2)/\" $< > $@",
-  )
-  native.genrule(
-      name = "%s_license_banner" % name,
-      srcs = [license_banner],
-      outs = ["%s_license_banner.stamped.txt" % name],
-      stamp = True,
-      cmd = "sed \"s/0.0.0-PLACEHOLDER/$$(grep BUILD_SCM_VERSION bazel-out/volatile-status.txt | cut -d' ' -f 2)/\" $< > $@",
+      cmd = "cat bazel-out/volatile-status.txt > $@",
   )
   ng_package(
       name = name,
-      package_json = ":%s_package.stamped.json" % name,
-      license_banner = "%s_license_banner.stamped.txt" % name,
+      stamp_data = ":%s_stamp_data.txt" % name,
       **kwargs
   )
