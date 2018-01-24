@@ -28,7 +28,14 @@ export class MergeInheritedProperties implements Processor {
 
   private addMemberDocIfNotPresent(destination: ClassExportDoc, memberDoc: MemberDoc) {
     if (!destination.members.find(member => member.name === memberDoc.name)) {
-      destination.members.push(memberDoc);
+      // To be able to differentiate between member docs from the heritage clause and the
+      // member doc for the destination class, we clone the member doc. It's important to keep
+      // the prototype and reference because later, Dgeni identifies members and properties
+      // by using an instance comparison.
+      const newMemberDoc = Object.assign(Object.create(memberDoc), memberDoc);
+      newMemberDoc.containerDoc = destination;
+
+      destination.members.push(newMemberDoc);
     }
   }
 }

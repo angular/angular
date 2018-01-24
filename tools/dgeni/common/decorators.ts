@@ -6,6 +6,7 @@
 import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExportDoc';
 import {PropertyMemberDoc} from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
 import {MemberDoc} from 'dgeni-packages/typescript/api-doc-types/MemberDoc';
+import {CategorizedClassDoc} from './dgeni-definitions';
 
 const SELECTOR_BLACKLIST = new Set([
   '[portal]',
@@ -49,46 +50,22 @@ export function isNgModule(doc: ClassExportDoc) {
   return hasClassDecorator(doc, 'NgModule');
 }
 
-export function isDirectiveOutput(doc: PropertyMemberDoc) {
-  return hasMemberDecorator(doc, 'Output');
-}
-
-export function isDirectiveInput(doc: PropertyMemberDoc) {
-  return hasMemberDecorator(doc, 'Input');
-}
-
 export function isDeprecatedDoc(doc: any) {
   return (doc.tags && doc.tags.tags || []).some((tag: any) => tag.tagName === 'deprecated');
 }
 
-export function getDirectiveInputAlias(doc: PropertyMemberDoc) {
-  return isDirectiveInput(doc) ? doc.decorators!.find(d => d.name == 'Input')!.arguments![0] : '';
-}
+export function getDirectiveSelectors(classDoc: CategorizedClassDoc) {
+  if (!classDoc.directiveMetadata) {
+    return;
+  }
 
-export function getDirectiveOutputAlias(doc: PropertyMemberDoc) {
-  return isDirectiveOutput(doc) ? doc.decorators!.find(d => d.name == 'Output')!.arguments![0] : '';
-}
-
-export function getDirectiveSelectors(classDoc: ClassExportDoc) {
-  const directiveSelectors = getMetadataProperty(classDoc, 'selector');
+  const directiveSelectors: string = classDoc.directiveMetadata.get('selector');
 
   if (directiveSelectors) {
     // Filter blacklisted selectors and remove line-breaks in resolved selectors.
     return directiveSelectors.replace(/[\r\n]/g, '').split(/\s*,\s*/)
       .filter(s => s !== '' && !s.includes('md') && !SELECTOR_BLACKLIST.has(s));
   }
-}
-
-export function getMetadataProperty(doc: ClassExportDoc, property: string) {
-  const metadata = doc.decorators!
-    .find(d => d.name === 'Component' || d.name === 'Directive')!.arguments![0];
-
-  // Use a Regex to determine the given metadata property. This is necessary, because we can't
-  // parse the JSON due to environment variables inside of the JSON (e.g module.id)
-  const matches = new RegExp(`${property}s*:\\s*(?:"|'|\`)((?:.|\\n|\\r)+?)(?:"|'|\`)`)
-    .exec(metadata);
-
-  return matches && matches[1].trim();
 }
 
 export function hasMemberDecorator(doc: MemberDoc, decoratorName: string) {

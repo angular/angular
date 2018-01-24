@@ -17,6 +17,7 @@ export interface CategorizedClassDoc extends ClassExportDoc, CategorizedClassLik
   isNgModule: boolean;
   directiveExportAs?: string | null;
   directiveSelectors?: string[];
+  directiveMetadata: Map<string, any> | null;
   extendedDoc: ClassLikeExportDoc | null;
 }
 

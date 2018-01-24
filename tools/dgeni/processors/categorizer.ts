@@ -1,26 +1,16 @@
 import {DocCollection, Processor} from 'dgeni';
 import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
+import {getDirectiveMetadata} from '../common/directive-metadata';
 import {
-  decorateDeprecatedDoc,
-  getDirectiveInputAlias,
-  getDirectiveOutputAlias,
-  getDirectiveSelectors,
-  getMetadataProperty,
-  isDirective,
-  isDirectiveInput,
-  isDirectiveOutput,
-  isMethod,
-  isNgModule,
-  isProperty,
+  decorateDeprecatedDoc, getDirectiveSelectors, isDirective, isMethod, isNgModule, isProperty,
   isService
 } from '../common/decorators';
 import {
-  CategorizedClassDoc,
-  CategorizedClassLikeDoc,
-  CategorizedMethodMemberDoc,
+  CategorizedClassDoc, CategorizedClassLikeDoc, CategorizedMethodMemberDoc,
   CategorizedPropertyMemberDoc
 } from '../common/dgeni-definitions';
 import {normalizeMethodParameters} from '../common/normalize-method-parameters';
+import {getInputBindingData, getOutputBindingData} from '../common/property-bindings';
 import {sortCategorizedMembers} from '../common/sort-members';
 
 
@@ -56,6 +46,11 @@ export class Categorizer implements Processor {
       .filter(isProperty)
       .filter(filterDuplicateMembers) as CategorizedPropertyMemberDoc[];
 
+    // Special decorations for real class documents that don't apply for interfaces.
+    if (classLikeDoc.docType === 'class') {
+      this.decorateClassDoc(classLikeDoc as CategorizedClassDoc);
+    }
+
     // Call decorate hooks that can modify the method and property docs.
     classLikeDoc.methods.forEach(doc => this.decorateMethodDoc(doc));
     classLikeDoc.properties.forEach(doc => this.decoratePropertyDoc(doc));
@@ -65,11 +60,6 @@ export class Categorizer implements Processor {
     // Sort members
     classLikeDoc.methods.sort(sortCategorizedMembers);
     classLikeDoc.properties.sort(sortCategorizedMembers);
-
-    // Special decorations for real class documents that don't apply for interfaces.
-    if (classLikeDoc.docType === 'class') {
-      this.decorateClassDoc(classLikeDoc as CategorizedClassDoc);
-    }
   }
 
   /**
@@ -82,11 +72,12 @@ export class Categorizer implements Processor {
     // clauses for the Dgeni document. To make the template syntax simpler and more readable,
     // store the extended class in a variable.
     classDoc.extendedDoc = classDoc.extendsClauses[0] ? classDoc.extendsClauses[0].doc! : null;
+    classDoc.directiveMetadata = getDirectiveMetadata(classDoc);
 
     // Categorize the current visited classDoc into its Angular type.
-    if (isDirective(classDoc)) {
+    if (isDirective(classDoc) && classDoc.directiveMetadata) {
       classDoc.isDirective = true;
-      classDoc.directiveExportAs = getMetadataProperty(classDoc, 'exportAs');
+      classDoc.directiveExportAs = classDoc.directiveMetadata.get('exportAs');
       classDoc.directiveSelectors = getDirectiveSelectors(classDoc);
     } else if (isService(classDoc)) {
       classDoc.isService = true;
@@ -114,13 +105,17 @@ export class Categorizer implements Processor {
   private decoratePropertyDoc(propertyDoc: CategorizedPropertyMemberDoc) {
     decorateDeprecatedDoc(propertyDoc);
 
-    // TODO(devversion): detect inputs based on the `inputs` property in the component metadata.
+    const metadata = propertyDoc.containerDoc.docType === 'class' ?
+        (propertyDoc.containerDoc as CategorizedClassDoc).directiveMetadata : null;
 
-    propertyDoc.isDirectiveInput = isDirectiveInput(propertyDoc);
-    propertyDoc.directiveInputAlias = getDirectiveInputAlias(propertyDoc);
+    const inputMetadata = metadata ? getInputBindingData(propertyDoc, metadata) : null;
+    const outputMetadata = metadata ? getOutputBindingData(propertyDoc, metadata) : null;
 
-    propertyDoc.isDirectiveOutput = isDirectiveOutput(propertyDoc);
-    propertyDoc.directiveOutputAlias = getDirectiveOutputAlias(propertyDoc);
+    propertyDoc.isDirectiveInput = !!inputMetadata;
+    propertyDoc.directiveInputAlias = (inputMetadata && inputMetadata.alias) || '';
+
+    propertyDoc.isDirectiveOutput = !!outputMetadata;
+    propertyDoc.directiveOutputAlias = (outputMetadata && outputMetadata.alias) || '';
   }
 }
 
