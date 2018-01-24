@@ -7,4 +7,11 @@ nodejs_binary(
     visibility = ["//visibility:public"],
 )
 
+nodejs_binary(
+    name = "uglify",
+    entry_point = "uglify-js/bin/uglifyjs",
+    node_modules = "@angular_deps//:node_modules",
+    visibility = ["//visibility:public"],
+)
+
 exports_files(["rollup.config.js"])

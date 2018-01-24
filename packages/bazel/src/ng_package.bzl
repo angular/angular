@@ -74,8 +74,10 @@ ES5_ESM_outputs_aspect = aspect(
 
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
 
-def _rollup(ctx, output, inputs, license_banner_file, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
+def _rollup(ctx, output_name, inputs, license_banner_file, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
   rollup_config = ctx.actions.declare_file("%s.rollup.conf.js" % ctx.label.name)
+  output = ctx.actions.declare_directory(output_name + "-" + npm_package_name)
+
   ctx.actions.expand_template(
       output = rollup_config,
       template = ctx.file._rollup_config_tmpl,
@@ -85,55 +87,66 @@ def _rollup(ctx, output, inputs, license_banner_file, npm_package_name, external
       },
   )
 
-  rollup_args = ctx.actions.args()
-  rollup_args.add(["--config", rollup_config.path])
+  args = ctx.actions.args()
+  args.add(["--config", rollup_config.path])
 
   # TODO(i): we probably want to make "index.js" configurable or even better auto-configured
   #   based on the original tsconfig, since we allow the filename to be adjusted via
   #   flatModuleOutFile config property https://angular.io/guide/aot-compiler#flatmoduleoutfile
-  rollup_args.add("--input")
-  rollup_args.add([rootdir, entry_point_name, "index.js"], join_with="/")
+  args.add("--input")
+  args.add([rootdir, entry_point_name, "index.js"], join_with="/")
 
-  rollup_args.add("--output")
-  rollup_args.add([output.path, entry_point_name + (".umd.js" if format == "umd" else ".js")], join_with="/")
+  args.add("--output")
+  args.add([output.path, entry_point_name + (".umd.js" if format == "umd" else ".js")], join_with="/")
 
-  rollup_args.add(["--format", format])
+  args.add(["--format", format])
   # TODO(alexeagle): don't hard-code this name
-  rollup_args.add(["--name", "@angular/core"])
+  args.add(["--name", "@angular/core"])
 
   # TODO(i): consider "--sourcemap", "inline"
   # Note: if the input has external source maps then we need to also install and use
   #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
   #   of command line args
-  rollup_args.add("--sourcemap")
+  args.add("--sourcemap")
 
-  rollup_args.add("--external")
-  rollup_args.add(externals, join_with=",")
+  args.add("--external")
+  args.add(externals, join_with=",")
 
   ctx.actions.run(
       progress_message = "Angular Packaging: rolling up %s" % ctx.label.name,
       mnemonic = "AngularPackageRollup",
-      outputs = [output],
       inputs = inputs + [
           ctx.executable._rollup,
           license_banner_file,
           rollup_config,
           ctx.file.stamp_data,
       ],
+      outputs = [output],
       executable = ctx.executable._rollup,
-      arguments = [rollup_args],
+      arguments = [args],
   )
+  return output
+
+def _uglify(ctx, input):
+  output = ctx.actions.declare_directory("umd-min-" + ctx.label.package.split("/")[-1])
+  args = ctx.actions.args()
+  ctx.actions.run(
+      progress_message = "Angular Packaging: minifying %s" % ctx.label.name,
+      mnemonic = "AngularPackageUglify",
+      inputs = [],
+      outputs = [output],
+      executable = ctx.executable._uglify,
+      arguments = [args],
+  )
+  return output
 
 # ng_package produces package that is npm ready.
 def _ng_package_impl(ctx):
   npm_package_name = ctx.label.package.split("/")[-1]
   npm_package_directory = ctx.actions.declare_directory(ctx.label.name)
-  fesm_2015 = ctx.actions.declare_directory("fesm2015-" + npm_package_name)
-  fesm_5 = ctx.actions.declare_directory("fesm5-" + npm_package_name)
-  umd = ctx.actions.declare_directory("umd-" + npm_package_name)
-  fesms_2015 = [fesm_2015]
-  fesms_5 = [fesm_5]
-  umds = [umd]
+  fesms_2015 = []
+  fesms_5 = []
+  umds = []
 
   esm_2015_files = collect_es6_sources(ctx).to_list()
   esm_es5_files = depset(transitive = [dep[ES5_ESM_TypeScript_output].files
@@ -143,38 +156,37 @@ def _ng_package_impl(ctx):
   readme_md = ctx.file.readme_md
   externals = ctx.attr.globals.keys()
 
-  _rollup(ctx, fesm_2015, esm_2015_files, ctx.file.license_banner, npm_package_name, externals,
-      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
-  _rollup(ctx, fesm_5, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+  fesms_2015.append(_rollup(ctx, "fesm_2015", esm_2015_files, ctx.file.license_banner, npm_package_name, externals,
+      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"])))
+  fesms_5.append(_rollup(ctx, "fesm_5", esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
-      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]))
-  _rollup(ctx, umd, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+      ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"])))
+  umds.append(_rollup(ctx, "umd", esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
       ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]),
-      "umd")
-
+      "umd"))
 
   for entry_point in ctx.attr.secondary_entry_points:
     entry_point_name = entry_point.label.package
-    fesm_2015 = ctx.actions.declare_directory("fesm2015-" + entry_point_name)
-    fesms_2015.append(fesm_2015)
     externals = entry_point.globals.keys()
-    _rollup(ctx, fesm_2015, esm_2015_files, ctx.file.license_banner, npm_package_name, externals, entry_point_name, "bazel-out/k8-fastbuild/bin/packages/core/npm_package.es6")
+    fesms_2015.append(_rollup(ctx, "fesm_2015-" + entry_point_name, esm_2015_files,
+        ctx.file.license_banner, npm_package_name, externals, entry_point_name,
+       "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"])))
 
   metadata_files = depset(transitive = [getattr(dep, "angular").flat_module_metadata
                                         for dep in ctx.attr.deps
                                         if hasattr(dep, "angular")])
 
-  packager_args = ctx.actions.args()
-  packager_args.add(npm_package_directory.path)
-  packager_args.add([ctx.bin_dir.path, ctx.attr.package_json.label.package], join_with="/")
-  packager_args.add([ctx.file.package_json.path, readme_md.path])
+  args = ctx.actions.args()
+  args.add(npm_package_directory.path)
+  args.add([ctx.bin_dir.path, ctx.attr.package_json.label.package], join_with="/")
+  args.add([ctx.file.package_json.path, readme_md.path])
   # TODO(i): unflattened js files are disabled for now to match the output of build.sh
-  # packager_args.add([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6", ctx.attr.package_json.label.package], join_with="/")
-  packager_args.add([f.path for f in fesms_2015], join_with=",")
-  packager_args.add([f.path for f in fesms_5], join_with=",")
-  packager_args.add([f.path for f in umds], join_with=",")
-  packager_args.add(ctx.file.stamp_data.path)
+  # args.add([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6", ctx.attr.package_json.label.package], join_with="/")
+  args.add([f.path for f in fesms_2015], join_with=",")
+  args.add([f.path for f in fesms_5], join_with=",")
+  args.add([f.path for f in umds], join_with=",")
+  args.add(ctx.file.stamp_data.path)
 
   ctx.actions.run(
       progress_message = "Angular Packaging: building npm package for %s" % ctx.label.name,
@@ -185,7 +197,7 @@ def _ng_package_impl(ctx):
         ] + ctx.files.deps + collect_es6_sources(ctx).to_list() + metadata_files.to_list(),
       outputs = [npm_package_directory],
       executable = ctx.executable._packager,
-      arguments = [packager_args],
+      arguments = [args],
   )
 
   return struct(
@@ -243,7 +255,8 @@ ng_package = rule(
       "stamp_data": attr.label(mandatory=True, allow_single_file=[".txt"]),
       "_packager": attr.label(default=Label("//packages/bazel/src/packager"), executable=True, cfg="host"),
       "_rollup": attr.label(default=Label("//packages/bazel/src/rollup"), executable=True, cfg="host"),
-      "_rollup_config_tmpl": attr.label(default=Label("//packages/bazel/src/rollup:rollup.config.js"), allow_single_file=True)
+      "_rollup_config_tmpl": attr.label(default=Label("//packages/bazel/src/rollup:rollup.config.js"), allow_single_file=True),
+      "_uglify": attr.label(default=Label("//packages/bazel/src/rollup:uglify"), executable=True, cfg="host"),
     }
 )
 
