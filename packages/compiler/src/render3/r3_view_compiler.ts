@@ -32,6 +32,9 @@ const TEMPORARY_NAME = '_t';
 /** The prefix reference variables */
 const REFERENCE_PREFIX = '_r';
 
+/** The name of the implicit context reference */
+const IMPLICIT_REFERENCE = '$implicit';
+
 export function compileDirective(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
@@ -98,7 +101,7 @@ export function compileComponent(
       new TemplateDefinitionBuilder(
           outputCtx, outputCtx.constantPool, reflector, CONTEXT_NAME, ROOT_SCOPE.nestedScope(), 0,
           templateTypeName, templateName)
-          .buildTemplateFunction(template);
+          .buildTemplateFunction(template, []);
   definitionMapValues.push({key: 'template', value: templateFunctionExpression, quoted: false});
 
 
@@ -223,7 +226,24 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
       private bindingScope: BindingScope, private level = 0, private contextName: string|null,
       private templateName: string|null) {}
 
-  buildTemplateFunction(asts: TemplateAst[]): o.FunctionExpr {
+  buildTemplateFunction(asts: TemplateAst[], variables: VariableAst[]): o.FunctionExpr {
+    // Create variable bindings
+    for (const variable of variables) {
+      const variableName = variable.name;
+      const expression =
+          o.variable(this.contextParameter).prop(variable.value || IMPLICIT_REFERENCE);
+      const scopedName = this.bindingScope.freshReferenceName();
+      const declaration = o.variable(scopedName).set(expression).toDeclStmt(o.INFERRED_TYPE, [
+        o.StmtModifier.Final
+      ]);
+
+      // Add the reference to the local scope.
+      this.bindingScope.set(variableName, scopedName);
+
+      // Declare the local variable in binding mode
+      this._bindingMode.push(declaration);
+    }
+
     templateVisitAll(this, asts);
 
     return o.fn(
@@ -395,8 +415,9 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
             this, implicit, input.value, this.bindingContext(), BindingForm.TrySimple, interpolate);
         this._bindingMode.push(...convertedBinding.stmts);
         this.instruction(
-            this._bindingMode, directive.sourceSpan, R3.elementProperty,
-            o.literal(input.templateName), o.literal(nodeIndex), convertedBinding.currValExpr);
+            this._bindingMode, directive.sourceSpan, R3.elementProperty, o.literal(nodeIndex),
+            o.literal(input.templateName),
+            o.importExpr(R3.bind).callFn([convertedBinding.currValExpr]));
       }
 
       // e.g. TodoComponentDef.r(0, 0);
@@ -445,7 +466,7 @@ class TemplateDefinitionBuilder implements TemplateAstVisitor, LocalResolver {
     const templateVisitor = new TemplateDefinitionBuilder(
         this.outputCtx, this.constantPool, this.reflector, templateContext,
         this.bindingScope.nestedScope(), this.level + 1, contextName, templateName);
-    const templateFunctionExpr = templateVisitor.buildTemplateFunction(ast.children);
+    const templateFunctionExpr = templateVisitor.buildTemplateFunction(ast.children, ast.variables);
     this._postfix.push(templateFunctionExpr.toDeclStmt(templateName, null));
   }
 
