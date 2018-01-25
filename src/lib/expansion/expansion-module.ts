@@ -16,8 +16,7 @@ import {MatAccordion} from './accordion';
 import {MatExpansionPanelContent} from './expansion-panel-content';
 import {
   MatExpansionPanel,
-  MatExpansionPanelActionRow,
-  MatExpansionPanelBase
+  MatExpansionPanelActionRow
 } from './expansion-panel';
 import {
   MatExpansionPanelDescription,
@@ -38,7 +37,6 @@ import {
     MatExpansionPanelContent,
   ],
   declarations: [
-    MatExpansionPanelBase,
     MatAccordion,
     MatExpansionPanel,
     MatExpansionPanelActionRow,

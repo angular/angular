@@ -92,9 +92,7 @@ export class MatExpansionPanelHeader implements OnDestroy {
 
   /** Toggles the expanded state of the panel. */
   _toggle(): void {
-    if (!this.panel.disabled) {
-      this.panel.toggle();
-    }
+    this.panel.toggle();
   }
 
   /** Gets whether the panel is expanded. */

@@ -78,6 +78,12 @@ export class CdkAccordionItem implements OnDestroy {
   }
   private _expanded = false;
 
+  /** Whether the AccordionItem is disabled. */
+  @Input()
+  get disabled() { return this._disabled; }
+  set disabled(disabled: any) { this._disabled = coerceBooleanProperty(disabled); }
+  private _disabled: boolean = false;
+
   /** Unregister function for _expansionDispatcher. */
   private _removeUniqueSelectionListener: () => void = () => {};
 
@@ -101,16 +107,22 @@ export class CdkAccordionItem implements OnDestroy {
 
   /** Toggles the expanded state of the accordion item. */
   toggle(): void {
-    this.expanded = !this.expanded;
+    if (!this.disabled) {
+      this.expanded = !this.expanded;
+    }
   }
 
   /** Sets the expanded state of the accordion item to false. */
   close(): void {
-    this.expanded = false;
+    if (!this.disabled) {
+      this.expanded = false;
+    }
   }
 
   /** Sets the expanded state of the accordion item to true. */
   open(): void {
-    this.expanded = true;
+    if (!this.disabled) {
+      this.expanded = true;
+    }
   }
 }

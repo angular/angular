@@ -31,55 +31,106 @@ describe('CdkAccordionItem', () => {
         .injector.get(CdkAccordionItem);
     });
 
-    it('should toggle its expanded state', () => {
-      expect(item.expanded).toBe(false);
-      item.toggle();
-      expect(item.expanded).toBe(true);
-      item.toggle();
-      expect(item.expanded).toBe(false);
+    describe('that is not disabled', () => {
+      beforeEach(() => {
+        item.disabled = false;
+      });
+
+      it('should toggle its expanded state', () => {
+        expect(item.expanded).toBe(false);
+        item.toggle();
+        expect(item.expanded).toBe(true);
+        item.toggle();
+        expect(item.expanded).toBe(false);
+      });
+
+      it('should set its expanded state to expanded', () => {
+        item.expanded = false;
+        item.open();
+        expect(item.expanded).toBe(true);
+      });
+
+      it('should set its expanded state to closed', () => {
+        item.expanded = true;
+        item.close();
+        expect(item.expanded).toBe(false);
+      });
+
+      it('should emit a closed event', () => {
+        item.open();
+        fixture.detectChanges();
+        spyOn(item.closed, 'emit');
+        item.close();
+        fixture.detectChanges();
+        expect(item.closed.emit).toHaveBeenCalled();
+      });
+
+      it('should not emit a closed event when the item is closed already', () => {
+        expect(item.expanded).toBe(false);
+        spyOn(item.closed, 'emit');
+        item.close();
+        fixture.detectChanges();
+        expect(item.closed.emit).not.toHaveBeenCalled();
+      });
+
+      it('should emit an opened event', () => {
+        spyOn(item.opened, 'emit');
+        item.open();
+        fixture.detectChanges();
+        expect(item.opened.emit).toHaveBeenCalled();
+      });
+
+      it('should emit a destroyed event', () => {
+        spyOn(item.destroyed, 'emit');
+        item.ngOnDestroy();
+        fixture.detectChanges();
+        expect(item.destroyed.emit).toHaveBeenCalled();
+      });
     });
 
-    it('should set its expanded state to expanded', () => {
-      item.expanded = false;
-      item.open();
-      expect(item.expanded).toBe(true);
-    });
+    describe('that is disabled', () => {
+      beforeEach(() => {
+        item.disabled = true;
+      });
 
-    it('should set its expanded state to closed', () => {
-      item.expanded = true;
-      item.close();
-      expect(item.expanded).toBe(false);
-    });
+      it('should not toggle its expanded state', () => {
+        expect(item.expanded).toBe(false);
+        item.toggle();
+        expect(item.expanded).toBe(false);
+      });
 
-    it('should emit a closed event', () => {
-      item.open();
-      fixture.detectChanges();
-      spyOn(item.closed, 'emit');
-      item.close();
-      fixture.detectChanges();
-      expect(item.closed.emit).toHaveBeenCalled();
-    });
+      it('should not set its expanded state to expanded', () => {
+        item.expanded = false;
+        item.open();
+        expect(item.expanded).toBe(false);
+      });
 
-    it('should not emit a closed event when the item is closed already', () => {
-      expect(item.expanded).toBe(false);
-      spyOn(item.closed, 'emit');
-      item.close();
-      fixture.detectChanges();
-      expect(item.closed.emit).not.toHaveBeenCalled();
-    });
+      it('should not set its expanded state to closed', () => {
+        item.expanded = true;
+        item.close();
+        expect(item.expanded).toBe(true);
+      });
 
-    it('should emit an opened event', () => {
-      spyOn(item.opened, 'emit');
-      item.open();
-      fixture.detectChanges();
-      expect(item.opened.emit).toHaveBeenCalled();
-    });
+      it('should not emit a closed event', () => {
+        spyOn(item.closed, 'emit');
+        item.close();
+        fixture.detectChanges();
+        expect(item.closed.emit).not.toHaveBeenCalled();
+      });
 
-    it('should emit an destroyed event', () => {
-      spyOn(item.destroyed, 'emit');
-      item.ngOnDestroy();
-      fixture.detectChanges();
-      expect(item.destroyed.emit).toHaveBeenCalled();
+      it('should not emit an opened event', () => {
+        spyOn(item.opened, 'emit');
+        item.open();
+        fixture.detectChanges();
+        expect(item.opened.emit).not.toHaveBeenCalled();
+      });
+
+      it('should emit a destroyed event', () => {
+        spyOn(item.destroyed, 'emit');
+        item.ngOnDestroy();
+        fixture.detectChanges();
+        expect(item.destroyed.emit).toHaveBeenCalled();
+      });
     });
   });
 
@@ -107,6 +158,20 @@ describe('CdkAccordionItem', () => {
       secondItem.open();
       fixture.detectChanges();
       expect(firstItem.expanded).toBe(true);
+      expect(secondItem.expanded).toBe(true);
+    });
+
+    it('should not change expanded state for disabled items', () => {
+      firstItem.disabled = true;
+      expect(firstItem.expanded).toBe(false);
+      expect(secondItem.expanded).toBe(false);
+      firstItem.open();
+      fixture.detectChanges();
+      expect(firstItem.expanded).toBe(false);
+      expect(secondItem.expanded).toBe(false);
+      secondItem.open();
+      fixture.detectChanges();
+      expect(firstItem.expanded).toBe(false);
       expect(secondItem.expanded).toBe(true);
     });
   });
