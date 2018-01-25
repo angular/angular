@@ -37,7 +37,7 @@ Toggle `checked` value of the checkbox, ignore `indeterminate` value. If the
 checkbox is in `indeterminate` state, the checkbox will display as an `indeterminate` checkbox
 regardless the `checked` value.
 
-####`check-indeterminate`
+#### `check-indeterminate`
 Default behavior of `mat-checkbox`. Always set `indeterminate` to `false`
 when user click on the `mat-checkbox`.
 This matches the behavior of native `<input type="checkbox">`.
