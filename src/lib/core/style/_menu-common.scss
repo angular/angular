@@ -1,6 +1,7 @@
 @import './variables';
 @import './elevation';
 @import './list-common';
+@import './vendor-prefixes';
 
 /** The mixins below are shared between mat-menu and mat-select */
 
@@ -15,6 +16,10 @@ $mat-menu-icon-margin: 16px !default;
 
 @mixin mat-menu-base($default-elevation) {
   @include mat-overridable-elevation($default-elevation);
+
+  // Prevents the content from repainting on scroll.
+  @include backface-visibility(hidden);
+
   min-width: $mat-menu-overlay-min-width;
   max-width: $mat-menu-overlay-max-width;
   overflow: auto;
