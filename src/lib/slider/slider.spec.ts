@@ -249,6 +249,15 @@ describe('MatSlider without forms', () => {
       expect(sliderInstance.value).toBe(0);
     });
 
+    it('should not emit change when disabled', () => {
+      const onChangeSpy = jasmine.createSpy('slider onChange');
+      sliderInstance.change.subscribe(onChangeSpy);
+
+      dispatchSlideEventSequence(sliderNativeElement, 0, 0.5, gestureConfig);
+
+      expect(onChangeSpy).toHaveBeenCalledTimes(0);
+    });
+
     it('should not add the mat-slider-active class on click when disabled', () => {
       expect(sliderNativeElement.classList).not.toContain('mat-slider-active');
 
