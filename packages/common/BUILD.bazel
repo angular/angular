@@ -19,7 +19,7 @@ ng_module(
 )
 
 ng_package(
-    name = "package",
+    name = "npm_package",
     deps = [
         "//packages/common",
         "//packages/common/testing",
@@ -37,50 +37,8 @@ ng_package(
       'rxjs/Subscription': 'Rx',
     },
     secondary_entry_points = [
-        ":testing",
-        ":http",
-        ":http_testing"
+        "//packages/common/testing:entry_point",
+        "//packages/common/http:entry_point",
+        "//packages/common/http/testing:entry_point",
     ]
-)
-
-ng_package_entry_point(
-    name = "testing",
-    globals = {
-      '@angular/core': 'ng.core',
-      '@angular/common': 'ng.common',
-      'rxjs/Observable': 'Rx',
-      'rxjs/Subject': 'Rx',
-      'rxjs/Subscription': 'Rx'
-    }
-)
-
-ng_package_entry_point(
-    name = "http",
-    globals = {
-      '@angular/core': 'ng.core',
-      '@angular/platform-browser': 'ng.platformBrowser',
-      '@angular/common': 'ng.common',
-      'rxjs/Observable': 'Rx',
-      'rxjs/Observer': 'Rx',
-      'rxjs/Subject': 'Rx',
-      'rxjs/observable/of': 'Rx.Observable.prototype',
-      'rxjs/operator/concatMap': 'Rx.Observable.prototype',
-      'rxjs/operator/filter': 'Rx.Observable.prototype',
-      'rxjs/operator/map': 'Rx.Observable.prototype',
-    }
-)
-
-ng_package_entry_point(
-    name = "http_testing",
-    globals = {
-      '@angular/core': 'ng.core',
-      '@angular/platform-browser': 'ng.platformBrowser',
-      '@angular/common': 'ng.common',
-      '@angular/common/http': 'ng.common.http',
-      'rxjs/Observable': 'Rx',
-      'rxjs/Observer': 'Rx',
-      'rxjs/ReplaySubject': 'Rx',
-      'rxjs/Subject': 'Rx',
-      'rxjs/operator/startWith': 'Rx.Observable.prototype',
-    }
 )

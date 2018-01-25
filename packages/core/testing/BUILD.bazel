@@ -5,8 +5,6 @@ load("@angular//:index.bzl", "ng_package_entry_point")
 
 ng_module(
     name = "testing",
-    # TODO(i): disabled so that ng_package can depend on it
-    # testonly = 1,
     srcs = glob(["**/*.ts"]),
     module_name = "@angular/core/testing",
     deps = [

@@ -74,9 +74,11 @@ ES5_ESM_outputs_aspect = aspect(
 
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
 
-def _rollup(ctx, output_name, inputs, license_banner_file, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
+def _rollup(ctx, output_name, inputs, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
+  print("building rollup to ", output_name)
   rollup_config = ctx.actions.declare_file("%s.rollup.conf.js" % ctx.label.name)
   ext = ".umd.js" if format == "umd" else ".js"
+
   js_output = ctx.actions.declare_file(output_name + ext)
   map_output = ctx.actions.declare_file(output_name + ext + ".map")
 
@@ -84,7 +86,7 @@ def _rollup(ctx, output_name, inputs, license_banner_file, npm_package_name, ext
       output = rollup_config,
       template = ctx.file._rollup_config_tmpl,
       substitutions = {
-          "TMPL_banner_file": license_banner_file.path,
+          "TMPL_banner_file": ctx.file.license_banner.path,
           "TMPL_stamp_data": ctx.file.stamp_data.path,
       },
   )
@@ -118,7 +120,7 @@ def _rollup(ctx, output_name, inputs, license_banner_file, npm_package_name, ext
       mnemonic = "AngularPackageRollup",
       inputs = inputs + [
           ctx.executable._rollup,
-          license_banner_file,
+          ctx.file.license_banner,
           rollup_config,
           ctx.file.stamp_data,
       ],
@@ -167,12 +169,12 @@ def _ng_package_impl(ctx):
 
   externals = ctx.attr.globals.keys()
 
-  fesm_2015 = _rollup(ctx, "fesm_2015/" + npm_package_name, esm_2015_files, ctx.file.license_banner, npm_package_name, externals,
+  fesm_2015 = _rollup(ctx, "fesm_2015/" + npm_package_name, esm_2015_files, npm_package_name, externals,
       ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
-  fesm_5 = _rollup(ctx, "fesm_5/" + npm_package_name, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+  fesm_5 = _rollup(ctx, "fesm_5/" + npm_package_name, esm_es5_files, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
       ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]))
-  umd = _rollup(ctx, "umd/" + npm_package_name, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+  umd = _rollup(ctx, "umd/" + npm_package_name, esm_es5_files, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
       ctx.label.package, "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.package.split("/")[-1] + ".es5_esm"]),
       "umd")
@@ -190,16 +192,17 @@ def _ng_package_impl(ctx):
 
     # TODO jasonaden says there is no particular reason these filenames differ
     umd_output_filename = "-".join(entry_point_name.split("/")[1:])
-    fesm_output_filename = entry_point_name.split("/")[-1]
+    fesm_output_filename = entry_point_name[len(ctx.label.package)+1:].replace("/", "__")
+    print("Try to get right names", fesm_output_filename)
 
     secondary_fesm_2015 = _rollup(ctx,  "fesm_2015/" + fesm_output_filename, esm_2015_files,
-        ctx.file.license_banner, npm_package_name, externals, entry_point_name,
+        npm_package_name, externals, entry_point_name,
        "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
     secondary_fesm_5 = _rollup(ctx, "fesm_5/" + fesm_output_filename, esm_es5_files,
-       ctx.file.license_banner, npm_package_name, externals, entry_point_name,
+       npm_package_name, externals, entry_point_name,
        "/".join([ctx.bin_dir.path, entry_point.label.package, entry_point.label.package.split("/")[-1] + ".es5_esm"]))
 
-    secondary_umd = _rollup(ctx, "umd/" + umd_output_filename, esm_es5_files, ctx.file.license_banner, npm_package_name, externals,
+    secondary_umd = _rollup(ctx, "umd/" + umd_output_filename, esm_es5_files, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
       entry_point_name, "/".join([ctx.bin_dir.path, entry_point.label.package, entry_point.label.package.split("/")[-1] + ".es5_esm"]),
       "umd")

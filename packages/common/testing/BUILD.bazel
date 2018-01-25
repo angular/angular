@@ -1,11 +1,10 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ng_module")
+load("@angular//:index.bzl", "ng_package_entry_point")
 
 ng_module(
     name = "testing",
-    # TODO(i): disabled so that ng_package can depend on it
-    # testonly = 1,
     srcs = glob(["**/*.ts"]),
     module_name = "@angular/common/testing",
     deps = [
@@ -13,4 +12,15 @@ ng_module(
         "//packages/core",
         "@rxjs",
     ],
+)
+
+ng_package_entry_point(
+    name = "entry_point",
+    globals = {
+      '@angular/core': 'ng.core',
+      '@angular/common': 'ng.common',
+      'rxjs/Observable': 'Rx',
+      'rxjs/Subject': 'Rx',
+      'rxjs/Subscription': 'Rx'
+    }
 )

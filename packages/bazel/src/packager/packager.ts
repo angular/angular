@@ -52,17 +52,17 @@ function main(args: string[]): number {
   //
   // shx.cp("-R", fesm2015, out);
 
-  const esm2015Dir = path.join(out, 'esm2015');
-  shx.mkdir("-p", esm2015Dir);
-  fesms2015.forEach(fesm2015 => {
-    shx.cp(fesm2015, esm2015Dir);
-  });
+  function writeFesm(file: string, baseDir: string) {
+    const parts = path.basename(file).split('__');
+    const filename = parts.splice(-1)[0];
+    const dir = path.join(baseDir, ...parts);
+    shx.mkdir("-p", dir);
+    shx.cp(file, dir);
+    shx.mv(path.join(dir, path.basename(file)), path.join(dir, filename));
+  }
 
-  const esm5Dir = path.join(out, 'esm5');
-  shx.mkdir("-p", esm5Dir);
-  fesms5.forEach(fesm5 => {
-    shx.cp(fesm5, esm5Dir);
-  });
+  fesms2015.forEach(fesm2015 => writeFesm(fesm2015, path.join(out, 'esm2015')));
+  fesms5.forEach(fesm5 => writeFesm(fesm5, path.join(out, 'esm5')));
 
   const bundlesDir = path.join(out, 'bundles');
   shx.mkdir("-p", bundlesDir);
