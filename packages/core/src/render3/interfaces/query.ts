@@ -8,9 +8,7 @@
 
 import {QueryList} from '../../linker';
 import {Type} from '../../type';
-
-import {LInjector} from './injector';
-import {LContainerNode, LNode, LViewNode} from './node';
+import {LNode} from './node';
 
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
@@ -25,19 +23,28 @@ export interface LQuery {
   child(): LQuery|null;
 
   /**
-   * Notify `LQuery` that a  `LNode` has been created.
+   * Notify `LQuery` that a new `LNode` has been created and needs to be added to query results
+   * if matching query predicate.
    */
   addNode(node: LNode): void;
 
   /**
-   * Notify `LQuery` that an `LViewNode` has been added to `LContainerNode`.
+   * Notify `LQuery` that a  `LNode` has been created and needs to be added to query results
+   * if matching query predicate.
    */
-  insertView(container: LContainerNode, view: LViewNode, insertIndex: number): void;
+  container(): LQuery|null;
 
   /**
-   * Notify `LQuery` that an `LViewNode` has been removed from `LContainerNode`.
+   * Notify `LQuery` that a new view was created and is being entered in the creation mode.
+   * This allow queries to prepare space for matching nodes from views.
    */
-  removeView(container: LContainerNode, view: LViewNode, removeIndex: number): void;
+  enterView(newViewIndex: number): LQuery|null;
+
+  /**
+   * Notify `LQuery` that an `LViewNode` has been removed from `LContainerNode`. As a result all
+   * the matching nodes from this view should be removed from container's queries.
+   */
+  removeView(removeIndex: number): void;
 
   /**
    * Add additional `QueryList` to track.
