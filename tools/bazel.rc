@@ -41,11 +41,8 @@ test --test_output=errors
 build --experimental_ui
 test --experimental_ui
 
-# Don't be spammy in the continuous integration logs
-build:ci --noshow_progress
+################################
+# Settings for CircleCI        #
+################################
 
-# Don't run manual tests on CI
-test:ci --test_tag_filters=-manual
-
-# Retry in the event of flakes, eg. https://circleci.com/gh/angular/angular/31309
-test:ci --flaky_test_attempts=2
+# Bazel flags for CircleCI are in /.circleci/bazel.rc
