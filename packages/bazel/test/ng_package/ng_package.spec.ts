@@ -130,7 +130,7 @@ describe("ng_package", () => {
   });
 
   describe("secondary entry-point", () => {
-    xdescribe("package.json", () => {
+    describe("package.json", () => {
 
       const packageJson = p`testing/package.json`;
 
@@ -147,11 +147,11 @@ describe("ng_package", () => {
       });
     });
 
-    xdescribe("typescript support", () => {
+    describe("typescript support", () => {
 
       // TODO(i): why in the parent dir?
       it("should have an 'redirect' d.ts file in the parent dir", () => {
-        expect(shx.cat('testing/testing.d.ts')).toContain(`export *`);
+        expect(shx.cat('testing.d.ts')).toContain(`export *`);
       });
 
       it("should have a 'actual' d.ts file in the parent dir", () => {
@@ -159,13 +159,13 @@ describe("ng_package", () => {
       });
     });
 
-    xdescribe("angular metadata file", () => {
+    describe("angular metadata file", () => {
       it("should have a 'redirect' metadata.json file next to the d.ts file", () => {
         expect(shx.cat('testing.metadata.json')).toContain(`"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true`);
       });
 
       it("should have an 'actual' metadata.json file", () => {
-        expect(shx.cat('core/testing.metadata.json')).toContain(`"metadata":{"async":{"__symbolic":"function"},`);
+        expect(shx.cat('testing/testing.metadata.json')).toContain(`"metadata":{"async":{"__symbolic":"function"},`);
       });
     });
 

@@ -8,6 +8,7 @@
 
 // tslint:disable-next-line:no-require-imports
 require('source-map-support').install();
+const fs = require('fs');
 
 import './shelljs';
 import * as shx from 'shelljs';
@@ -52,8 +53,17 @@ function main(args: string[]): number {
   //
   // shx.cp("-R", fesm2015, out);
 
+  let primaryEntryPoint: string|null = null;
+  const secondaryEntryPoints = new Set<string>();
+
   function writeFesm(file: string, baseDir: string) {
     const parts = path.basename(file).split('__');
+    const entryPointName = parts.join('/').replace(/\..*/, '');
+    if (primaryEntryPoint === null || primaryEntryPoint === entryPointName) {
+      primaryEntryPoint = entryPointName;
+    } else {
+      secondaryEntryPoints.add(entryPointName);
+    }
     const filename = parts.splice(-1)[0];
     const dir = path.join(baseDir, ...parts);
     shx.mkdir("-p", dir);
@@ -70,6 +80,26 @@ function main(args: string[]): number {
     shx.cp(bundle, bundlesDir);
   });
 
+  // TODO(i): avoid cast to any
+  for (const secondaryEntryPoint of secondaryEntryPoints.values() as any) {
+    const baseName = secondaryEntryPoint.split('/').pop();
+    const dirName = path.join(...secondaryEntryPoint.split('/').slice(0, -1));
+
+    fs.writeFileSync(path.join(out, dirName, `${baseName}.metadata.json`),
+        JSON.stringify({
+          "__symbolic":"module",
+          "version":3,
+          "metadata":{},
+          "exports":[{"from":`./${baseName}/${baseName}`}],
+          "flatModuleIndexRedirect":true
+        }));
+
+    fs.writeFileSync(path.join(out, dirName, `${baseName}.d.ts`),
+        // TODO(i): add license file
+        `export * from './${baseName}/${baseName}'`
+        );
+  }
+
   return 0;
 }
 
@@ -82,10 +112,6 @@ echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/${package_n
 //LICENSE
 export * from './testing/testing'
 */
-
-/* /testing.metadata.json
-{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true}
- */
 
 /* /testing/package.json
 {

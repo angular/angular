@@ -257,8 +257,8 @@ def _ng_package_impl(ctx):
 #   [x]   README.md
 #   [x]   <primary-entry-point>.d.ts
 #   [x]   <primary-entry-point>.metadata.json
-#   [ ]   <secondary-entry-point>.d.ts
-#   [ ]   <secondary-entry-point>.metadata.json
+#   [x]   <secondary-entry-point>.d.ts
+#   [x]   <secondary-entry-point>.metadata.json
 #   [x]   <secondary-entry-point>/
 #   [ ]     package.json
 #   [x]     <secondary-entry-point>.d.ts
