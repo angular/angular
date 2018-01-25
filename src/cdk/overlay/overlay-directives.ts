@@ -292,11 +292,17 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if ((changes['origin'] || changes['_deprecatedOrigin']) && this._position) {
-      this._position.setOrigin(this.origin.elementRef);
+    if (this._position) {
+      if (changes['positions'] || changes['_deprecatedPositions']) {
+        this._position.withPositions(this.positions);
+      }
 
-      if (this.open) {
-        this._position.apply();
+      if (changes['origin'] || changes['_deprecatedOrigin']) {
+        this._position.setOrigin(this.origin.elementRef);
+
+        if (this.open) {
+          this._position.apply();
+        }
       }
     }
 
@@ -348,21 +354,14 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
   /** Returns the position strategy of the overlay to be set on the overlay config */
   private _createPositionStrategy(): ConnectedPositionStrategy {
-    const pos = this.positions[0];
-    const originPoint = {originX: pos.originX, originY: pos.originY};
-    const overlayPoint = {overlayX: pos.overlayX, overlayY: pos.overlayY};
-
+    const primaryPosition = this.positions[0];
+    const originPoint = {originX: primaryPosition.originX, originY: primaryPosition.originY};
+    const overlayPoint = {overlayX: primaryPosition.overlayX, overlayY: primaryPosition.overlayY};
     const strategy = this._overlay.position()
       .connectedTo(this.origin.elementRef, originPoint, overlayPoint)
       .withOffsetX(this.offsetX)
       .withOffsetY(this.offsetY);
 
-    this._handlePositionChanges(strategy);
-
-    return strategy;
-  }
-
-  private _handlePositionChanges(strategy: ConnectedPositionStrategy): void {
     for (let i = 1; i < this.positions.length; i++) {
       strategy.withFallbackPosition(
           {originX: this.positions[i].originX, originY: this.positions[i].originY},
@@ -370,8 +369,10 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       );
     }
 
-    this._positionSubscription =
-        strategy.onPositionChange.subscribe(pos => this.positionChange.emit(pos));
+    this._positionSubscription = strategy.onPositionChange
+        .subscribe(pos => this.positionChange.emit(pos));
+
+    return strategy;
   }
 
   /** Attaches the overlay and subscribes to backdrop clicks if backdrop exists */

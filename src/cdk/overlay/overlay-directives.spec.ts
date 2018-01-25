@@ -7,7 +7,10 @@ import {ESCAPE} from '@angular/cdk/keycodes';
 import {CdkConnectedOverlay, OverlayModule, CdkOverlayOrigin} from './index';
 import {OverlayContainer} from './overlay-container';
 import {ConnectedPositionStrategy} from './position/connected-position-strategy';
-import {ConnectedOverlayPositionChange} from './position/connected-position';
+import {
+  ConnectedOverlayPositionChange,
+  ConnectionPositionPair,
+} from './position/connected-position';
 
 
 describe('Overlay directives', () => {
@@ -268,6 +271,42 @@ describe('Overlay directives', () => {
       expect(Math.floor(triggerRect.bottom)).toBe(Math.floor(overlayRect.top));
     });
 
+    it('should update the positions if they change after init', () => {
+      const trigger = fixture.nativeElement.querySelector('#trigger');
+
+      trigger.style.position = 'fixed';
+      trigger.style.top = '200px';
+      trigger.style.left = '200px';
+
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      let triggerRect = trigger.getBoundingClientRect();
+      let overlayRect = getPaneElement().getBoundingClientRect();
+
+      expect(Math.floor(triggerRect.left)).toBe(Math.floor(overlayRect.left));
+      expect(Math.floor(triggerRect.bottom)).toBe(Math.floor(overlayRect.top));
+
+      fixture.componentInstance.isOpen = false;
+      fixture.detectChanges();
+
+      fixture.componentInstance.positionOverrides = [{
+        originX: 'end',
+        originY: 'bottom',
+        overlayX: 'start',
+        overlayY: 'top'
+      }];
+
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      triggerRect = trigger.getBoundingClientRect();
+      overlayRect = getPaneElement().getBoundingClientRect();
+
+      expect(Math.floor(triggerRect.right)).toBe(Math.floor(overlayRect.left));
+      expect(Math.floor(triggerRect.bottom)).toBe(Math.floor(overlayRect.top));
+    });
+
   });
 
   describe('outputs', () => {
@@ -328,7 +367,8 @@ describe('Overlay directives', () => {
             [hasBackdrop]="hasBackdrop" backdropClass="mat-test-class"
             (backdropClick)="backdropClicked=true" [offsetX]="offsetX" [offsetY]="offsetY"
             (positionChange)="positionChangeHandler($event)" (attach)="attachHandler()"
-            (detach)="detachHandler()" [minWidth]="minWidth" [minHeight]="minHeight">
+            (detach)="detachHandler()" [minWidth]="minWidth" [minHeight]="minHeight"
+            [cdkConnectedOverlayPositions]="positionOverrides">
     <p>Menu content</p>
   </ng-template>`,
 })
@@ -348,6 +388,7 @@ class ConnectedOverlayDirectiveTest {
   hasBackdrop: boolean;
   backdropClicked = false;
   positionChangeHandler = jasmine.createSpy('positionChangeHandler');
+  positionOverrides: ConnectionPositionPair[];
   attachHandler = jasmine.createSpy('attachHandler').and.callFake(() => {
     this.attachResult =
         this.connectedOverlayDirective.overlayRef.overlayElement.querySelector('p') as HTMLElement;
