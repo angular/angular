@@ -1254,7 +1254,7 @@ also encapsulate a style sheet within a specific component.
 
 
       ### Styles configuration
-      <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles" linenums="false">
+      <code-example hideCopy path="ajs-quick-reference/.angular-cli.1.json" region="styles" linenums="false"></code-example>
 
       With the Angular CLI, you can configure your global styles in the `.angular-cli.json` file.
       You can rename the extension to `.scss` to use sass.
