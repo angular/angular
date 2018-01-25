@@ -66,8 +66,8 @@ export const MAT_DIALOG_SCROLL_STRATEGY_PROVIDER = {
 @Injectable()
 export class MatDialog {
   private _openDialogsAtThisLevel: MatDialogRef<any>[] = [];
-  private _afterAllClosedAtThisLevel = new Subject<void>();
-  private _afterOpenAtThisLevel = new Subject<MatDialogRef<any>>();
+  private readonly _afterAllClosedAtThisLevel = new Subject<void>();
+  private readonly _afterOpenAtThisLevel = new Subject<MatDialogRef<any>>();
   private _ariaHiddenElements = new Map<Element, string|null>();
 
   /** Keeps track of the currently-open dialogs. */
@@ -89,7 +89,7 @@ export class MatDialog {
    * Stream that emits when all open dialog have finished closing.
    * Will emit on subscribe if there are no open dialogs to begin with.
    */
-  afterAllClosed: Observable<void> = defer<void>(() => this.openDialogs.length ?
+  readonly afterAllClosed: Observable<void> = defer<void>(() => this.openDialogs.length ?
       this._afterAllClosed :
       this._afterAllClosed.pipe(startWith(undefined)));
 

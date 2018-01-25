@@ -68,7 +68,7 @@ export class MatMultiYearView<D> implements AfterContentInit {
   @Input() dateFilter: (date: D) => boolean;
 
   /** Emits when a new month is selected. */
-  @Output() selectedChange = new EventEmitter<D>();
+  @Output() readonly selectedChange = new EventEmitter<D>();
 
   /** Grid of calendar cells representing the currently displayed years. */
   _years: MatCalendarCell[][];

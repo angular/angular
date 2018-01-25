@@ -38,7 +38,7 @@ import {Subject} from 'rxjs/Subject';
 export class MatTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   /** Keep track of the previous textarea value to avoid resizing when the value hasn't changed. */
   private _previousValue: string;
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
 
   private _minRows: number;
   private _maxRows: number;

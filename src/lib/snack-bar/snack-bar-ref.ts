@@ -31,13 +31,13 @@ export class MatSnackBarRef<T> {
   containerInstance: MatSnackBarContainer;
 
   /** Subject for notifying the user that the snack bar has been dismissed. */
-  private _afterDismissed = new Subject<MatSnackBarDismiss>();
+  private readonly _afterDismissed = new Subject<MatSnackBarDismiss>();
 
   /** Subject for notifying the user that the snack bar has opened and appeared. */
-  private _afterOpened = new Subject<void>();
+  private readonly _afterOpened = new Subject<void>();
 
   /** Subject for notifying the user that the snack bar action was called. */
-  private _onAction = new Subject<void>();
+  private readonly _onAction = new Subject<void>();
 
   /**
    * Timeout ID for the duration setTimeout call. Used to clear the timeout if the snackbar is

@@ -514,7 +514,7 @@ export class TooltipComponent {
   private _position: TooltipPosition;
 
   /** Subject for notifying that the tooltip has been hidden from the view */
-  private _onHide: Subject<any> = new Subject();
+  private readonly _onHide: Subject<any> = new Subject();
 
   constructor(private _changeDetectorRef: ChangeDetectorRef) {}
 

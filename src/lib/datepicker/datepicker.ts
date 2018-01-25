@@ -162,7 +162,7 @@ export class MatDatepicker<D> implements OnDestroy {
    * @deprecated Switch to the `dateChange` and `dateInput` binding on the input element.
    * @deletion-target 6.0.0
    */
-  @Output() selectedChanged: EventEmitter<D> = new EventEmitter<D>();
+  @Output() readonly selectedChanged: EventEmitter<D> = new EventEmitter<D>();
 
   /** Classes to be passed to the date picker panel. Supports the same syntax as `ngClass`. */
   @Input() panelClass: string | string[];
@@ -219,7 +219,7 @@ export class MatDatepicker<D> implements OnDestroy {
   _datepickerInput: MatDatepickerInput<D>;
 
   /** Emits when the datepicker is disabled. */
-  _disabledChange = new Subject<boolean>();
+  readonly _disabledChange = new Subject<boolean>();
 
   constructor(private _dialog: MatDialog,
               private _overlay: Overlay,

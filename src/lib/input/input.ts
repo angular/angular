@@ -100,7 +100,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
    * Stream that emits whenever the state of the input changes such that the wrapping `MatFormField`
    * needs to run change detection.
    */
-  stateChanges = new Subject<void>();
+  readonly stateChanges = new Subject<void>();
 
   /** A name for this control that can be used by `mat-form-field`. */
   controlType = 'mat-input';

@@ -119,16 +119,16 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
 })
 export class MatTabBody implements OnInit {
   /** Event emitted when the tab begins to animate towards the center as the active tab. */
-  @Output() _onCentering: EventEmitter<number> = new EventEmitter<number>();
+  @Output() readonly _onCentering: EventEmitter<number> = new EventEmitter<number>();
 
   /** Event emitted before the centering of the tab begins. */
-  @Output() _beforeCentering: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() readonly _beforeCentering: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   /** Event emitted before the centering of the tab begins. */
-  @Output() _afterLeavingCenter: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() readonly _afterLeavingCenter: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   /** Event emitted when the tab completes its animation towards the center. */
-  @Output() _onCentered: EventEmitter<void> = new EventEmitter<void>(true);
+  @Output() readonly _onCentered: EventEmitter<void> = new EventEmitter<void>(true);
 
   /** The tab body content to display. */
   @Input('content') _content: TemplatePortal;

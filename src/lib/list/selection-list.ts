@@ -158,7 +158,7 @@ export class MatListOption extends _MatListOptionMixinBase
    * @deprecated Use the `selectionChange` event on the `<mat-selection-list>` instead.
    * @deletion-target 6.0.0
    */
-  @Output() selectionChange: EventEmitter<MatListOptionChange> =
+  @Output() readonly selectionChange: EventEmitter<MatListOptionChange> =
     new EventEmitter<MatListOptionChange>();
 
   constructor(private _element: ElementRef,
@@ -301,7 +301,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   @ContentChildren(MatListOption) options: QueryList<MatListOption>;
 
   /** Emits a change event whenever the selected state of an option changes. */
-  @Output() selectionChange: EventEmitter<MatSelectionListChange> =
+  @Output() readonly selectionChange: EventEmitter<MatSelectionListChange> =
       new EventEmitter<MatSelectionListChange>();
 
   /** The currently selected options. */

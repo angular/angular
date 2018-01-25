@@ -60,7 +60,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
   private _document: Document;
 
   /** Stream that emits when the menu item is hovered. */
-  _hovered: Subject<MatMenuItem> = new Subject<MatMenuItem>();
+  readonly _hovered: Subject<MatMenuItem> = new Subject<MatMenuItem>();
 
   /** Whether the menu item is highlighted. */
   _highlighted: boolean = false;

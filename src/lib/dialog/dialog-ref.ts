@@ -34,13 +34,13 @@ export class MatDialogRef<T, R = any> {
   disableClose: boolean | undefined = this._containerInstance._config.disableClose;
 
   /** Subject for notifying the user that the dialog has finished opening. */
-  private _afterOpen = new Subject<void>();
+  private readonly _afterOpen = new Subject<void>();
 
   /** Subject for notifying the user that the dialog has finished closing. */
-  private _afterClosed = new Subject<R | undefined>();
+  private readonly _afterClosed = new Subject<R | undefined>();
 
   /** Subject for notifying the user that the dialog has started closing. */
-  private _beforeClose = new Subject<R | undefined>();
+  private readonly _beforeClose = new Subject<R | undefined>();
 
   /** Result to be passed to afterClosed. */
   private _result: R | undefined;

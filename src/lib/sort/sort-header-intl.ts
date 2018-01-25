@@ -20,7 +20,7 @@ export class MatSortHeaderIntl {
    * Stream that emits whenever the labels here are changed. Use this to notify
    * components if the labels have changed after initialization.
    */
-  changes: Subject<void> = new Subject<void>();
+  readonly changes: Subject<void> = new Subject<void>();
 
   /** ARIA label for the sorting button. */
   sortButtonLabel = (id: string) => {

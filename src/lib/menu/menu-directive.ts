@@ -176,8 +176,8 @@ export class MatMenu implements AfterContentInit, MatMenuPanel, OnDestroy {
   set classList(classes: string) { this.panelClass = classes; }
 
   /** Event emitted when the menu is closed. */
-  @Output() closed: EventEmitter<void | 'click' | 'keydown'>
-      = new EventEmitter<void | 'click' | 'keydown'>();
+  @Output() readonly closed: EventEmitter<void | 'click' | 'keydown'> =
+      new EventEmitter<void | 'click' | 'keydown'>();
 
   /**
    * Event emitted when the menu is closed.

@@ -114,24 +114,24 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   @Input('matMenuTriggerData') menuData: any;
 
   /** Event emitted when the associated menu is opened. */
-  @Output() menuOpened: EventEmitter<void> = new EventEmitter<void>();
+  @Output() readonly menuOpened: EventEmitter<void> = new EventEmitter<void>();
 
   /**
    * Event emitted when the associated menu is opened.
    * @deprecated Switch to `menuOpened` instead
    * @deletion-target 6.0.0
    */
-  @Output() onMenuOpen: EventEmitter<void> = this.menuOpened;
+  @Output() readonly onMenuOpen: EventEmitter<void> = this.menuOpened;
 
   /** Event emitted when the associated menu is closed. */
-  @Output() menuClosed: EventEmitter<void> = new EventEmitter<void>();
+  @Output() readonly menuClosed: EventEmitter<void> = new EventEmitter<void>();
 
   /**
    * Event emitted when the associated menu is closed.
    * @deprecated Switch to `menuClosed` instead
    * @deletion-target 6.0.0
    */
-  @Output() onMenuClose: EventEmitter<void> = this.menuClosed;
+  @Output() readonly onMenuClose: EventEmitter<void> = this.menuClosed;
 
   constructor(private _overlay: Overlay,
               private _element: ElementRef,

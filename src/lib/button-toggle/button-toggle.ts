@@ -127,7 +127,7 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
    * Used to facilitate two-way data binding.
    * @docs-private
    */
-  @Output() valueChange = new EventEmitter<any>();
+  @Output() readonly valueChange = new EventEmitter<any>();
 
   /** Whether the toggle group is selected. */
   @Input()
@@ -142,7 +142,8 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase
   }
 
   /** Event emitted when the group's value changes. */
-  @Output() change: EventEmitter<MatButtonToggleChange> = new EventEmitter<MatButtonToggleChange>();
+  @Output() readonly change: EventEmitter<MatButtonToggleChange> =
+      new EventEmitter<MatButtonToggleChange>();
 
   constructor(private _changeDetector: ChangeDetectorRef) {
     super();
@@ -357,7 +358,8 @@ export class MatButtonToggle implements OnInit, OnDestroy {
   }
 
   /** Event emitted when the group value changes. */
-  @Output() change: EventEmitter<MatButtonToggleChange> = new EventEmitter<MatButtonToggleChange>();
+  @Output() readonly change: EventEmitter<MatButtonToggleChange> =
+      new EventEmitter<MatButtonToggleChange>();
 
   constructor(@Optional() toggleGroup: MatButtonToggleGroup,
               @Optional() toggleGroupMultiple: MatButtonToggleGroupMultiple,

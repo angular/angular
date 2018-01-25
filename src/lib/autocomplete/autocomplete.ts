@@ -99,7 +99,7 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
   @Input() displayWith: ((value: any) => string) | null = null;
 
   /** Event that is emitted whenever an option from the list is selected. */
-  @Output() optionSelected: EventEmitter<MatAutocompleteSelectedEvent> =
+  @Output() readonly optionSelected: EventEmitter<MatAutocompleteSelectedEvent> =
       new EventEmitter<MatAutocompleteSelectedEvent>();
 
   /**

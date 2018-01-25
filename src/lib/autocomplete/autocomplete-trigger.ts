@@ -131,7 +131,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   private _closingActionsSubscription: Subscription;
 
   /** Stream of keyboard events that can close the panel. */
-  private _closeKeyEventStream = new Subject<void>();
+  private readonly _closeKeyEventStream = new Subject<void>();
 
   /** View -> model callback called when value changes */
   _onChange: (value: any) => void = () => {};
@@ -209,7 +209,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   /** Stream of autocomplete option selections. */
-  optionSelections: Observable<MatOptionSelectionChange> = defer(() => {
+  readonly optionSelections: Observable<MatOptionSelectionChange> = defer(() => {
     if (this.autocomplete && this.autocomplete.options) {
      return merge(...this.autocomplete.options.map(option => option.onSelectionChange));
     }

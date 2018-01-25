@@ -99,7 +99,7 @@ export class MatExpansionPanel extends _MatExpansionPanelMixinBase
   private _hideToggle = false;
 
   /** Stream that emits for changes in `@Input` properties. */
-  _inputChanges = new Subject<SimpleChanges>();
+  readonly _inputChanges = new Subject<SimpleChanges>();
 
   /** Optionally defined accordion the expansion panel belongs to. */
   accordion: MatAccordion;

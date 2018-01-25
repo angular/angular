@@ -60,10 +60,10 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   }
 
   /** Emits whenever the label changes. */
-  _labelChange = new Subject<void>();
+  readonly _labelChange = new Subject<void>();
 
   /** Emits whenever the disable changes */
-  _disableChange = new Subject<void>();
+  readonly _disableChange = new Subject<void>();
 
   /**
    * The relatively indexed position where 0 represents the center, negative is left, and positive

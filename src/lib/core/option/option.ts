@@ -112,10 +112,10 @@ export class MatOption implements AfterViewChecked {
   get disableRipple() { return this._parent && this._parent.disableRipple; }
 
   /** Event emitted when the option is selected or deselected. */
-  @Output() onSelectionChange = new EventEmitter<MatOptionSelectionChange>();
+  @Output() readonly onSelectionChange = new EventEmitter<MatOptionSelectionChange>();
 
   /** Emits when the state of the option changes and any parents have to be notified. */
-  _stateChanges = new Subject<void>();
+  readonly _stateChanges = new Subject<void>();
 
   constructor(
     private _element: ElementRef,

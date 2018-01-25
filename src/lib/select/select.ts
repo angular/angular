@@ -234,7 +234,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _uid = `mat-select-${nextUniqueId++}`;
 
   /** Emits whenever the component is destroyed. */
-  private _destroy = new Subject<void>();
+  private readonly _destroy = new Subject<void>();
 
   /** The last measured value for the trigger's client bounding rect. */
   _triggerRect: ClientRect;
@@ -399,7 +399,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _id: string;
 
   /** Combined stream of all of the child options' change events. */
-  optionSelectionChanges: Observable<MatOptionSelectionChange> = defer(() => {
+  readonly optionSelectionChanges: Observable<MatOptionSelectionChange> = defer(() => {
     if (this.options) {
       return merge(...this.options.map(option => option.onSelectionChange));
     }
@@ -410,7 +410,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   });
 
    /** Event emitted when the select has been opened. */
-   @Output() openedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+   @Output() readonly openedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
 
    /** Event emitted when the select has been opened. */
    @Output('opened')
@@ -429,31 +429,32 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * @deprecated Use `openedChange` instead.
    * @deletion-target 6.0.0
    */
-  @Output() onOpen: Observable<void> = this._openedStream;
+  @Output() readonly onOpen: Observable<void> = this._openedStream;
 
   /**
    * Event emitted when the select has been closed.
    * @deprecated Use `openedChange` instead.
    * @deletion-target 6.0.0
    */
-  @Output() onClose: Observable<void> = this._closedStream;
+  @Output() readonly onClose: Observable<void> = this._closedStream;
 
    /** Event emitted when the selected value has been changed by the user. */
-  @Output() selectionChange: EventEmitter<MatSelectChange> = new EventEmitter<MatSelectChange>();
+  @Output() readonly selectionChange: EventEmitter<MatSelectChange> =
+      new EventEmitter<MatSelectChange>();
 
   /**
    * Event emitted when the selected value has been changed by the user.
    * @deprecated Use `selectionChange` instead.
    * @deletion-target 6.0.0
    */
-  @Output() change: EventEmitter<MatSelectChange> = this.selectionChange;
+  @Output() readonly change: EventEmitter<MatSelectChange> = this.selectionChange;
 
   /**
    * Event that emits whenever the raw value of the select changes. This is here primarily
    * to facilitate the two-way binding for the `value` input.
    * @docs-private
    */
-  @Output() valueChange: EventEmitter<any> = new EventEmitter<any>();
+  @Output() readonly valueChange: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private _viewportRuler: ViewportRuler,

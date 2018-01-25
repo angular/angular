@@ -27,13 +27,13 @@ import {_isNumberValue} from '@angular/cdk/coercion';
  */
 export class MatTableDataSource<T> implements DataSource<T> {
   /** Stream that emits when a new data array is set on the data source. */
-  private _data: BehaviorSubject<T[]>;
+  private readonly _data: BehaviorSubject<T[]>;
 
   /** Stream emitting render data to the table (depends on ordered data changes). */
-  private _renderData = new BehaviorSubject<T[]>([]);
+  private readonly _renderData = new BehaviorSubject<T[]>([]);
 
   /** Stream that emits when a new filter string is set on the data source. */
-  private _filter = new BehaviorSubject<string>('');
+  private readonly _filter = new BehaviorSubject<string>('');
 
   /**
    * Subscription to the changes that should trigger an update to the table's rendered rows, such

@@ -256,10 +256,10 @@ export class MatSlider extends _MatSliderMixinBase
   private _vertical = false;
 
   /** Event emitted when the slider value has changed. */
-  @Output() change: EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
+  @Output() readonly change: EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
 
   /** Event emitted when the slider thumb moves. */
-  @Output() input: EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
+  @Output() readonly input: EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
 
   /** The value to be used for display purposes. */
   get displayValue(): string | number {

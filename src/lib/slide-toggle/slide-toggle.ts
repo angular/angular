@@ -129,7 +129,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     this._changeDetectorRef.markForCheck();
   }
   /** An event will be dispatched each time the slide-toggle changes its value. */
-  @Output() change: EventEmitter<MatSlideToggleChange> = new EventEmitter<MatSlideToggleChange>();
+  @Output() readonly change: EventEmitter<MatSlideToggleChange> =
+      new EventEmitter<MatSlideToggleChange>();
 
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }

@@ -126,7 +126,7 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
    * Change events are only emitted when the value changes due to user interaction with
    * a radio button (the same behavior as `<input type-"radio">`).
    */
-  @Output() change: EventEmitter<MatRadioChange> = new EventEmitter<MatRadioChange>();
+  @Output() readonly change: EventEmitter<MatRadioChange> = new EventEmitter<MatRadioChange>();
 
   /** Child radio buttons. */
   @ContentChildren(forwardRef(() => MatRadioButton), { descendants: true })
@@ -460,7 +460,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
    * Change events are only emitted when the value changes due to user interaction with
    * the radio button (the same behavior as `<input type-"radio">`).
    */
-  @Output() change: EventEmitter<MatRadioChange> = new EventEmitter<MatRadioChange>();
+  @Output() readonly change: EventEmitter<MatRadioChange> = new EventEmitter<MatRadioChange>();
 
   /** The parent radio group. May or may not be present. */
   radioGroup: MatRadioGroup;

@@ -19,7 +19,7 @@ export class MatPaginatorIntl {
    * Stream that emits whenever the labels here are changed. Use this to notify
    * components if the labels have changed after initialization.
    */
-  changes: Subject<void> = new Subject<void>();
+  readonly changes: Subject<void> = new Subject<void>();
 
   /** A label for the page size selector. */
   itemsPerPageLabel: string = 'Items per page:';
