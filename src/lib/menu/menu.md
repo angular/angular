@@ -6,12 +6,12 @@ By itself, the `<mat-menu>` element does not render anything. The menu is attach
 via application of the `matMenuTriggerFor` directive:
 ```html
 <mat-menu #appMenu="matMenu">
-  <button mat-menu-item> Settings </button>
-  <button mat-menu-item> Help </button>
+  <button mat-menu-item>Settings</button>
+  <button mat-menu-item>Help</button>
 </mat-menu>
 
 <button mat-icon-button [matMenuTriggerFor]="appMenu">
-   <mat-icon>more_vert</mat-icon>
+  <mat-icon>more_vert</mat-icon>
 </button>
 ```
 
@@ -36,16 +36,16 @@ Menus support displaying `mat-icon` elements before the menu item text.
 ```html
 <mat-menu #menu="matMenu">
   <button mat-menu-item>
-    <mat-icon> dialpad </mat-icon>
-    <span> Redial </span>
+    <mat-icon>dialpad</mat-icon>
+    <span>Redial</span>
   </button>
   <button mat-menu-item disabled>
-    <mat-icon> voicemail </mat-icon>
-    <span> Check voicemail </span>
+    <mat-icon>voicemail</mat-icon>
+    <span>Check voicemail</span>
   </button>
   <button mat-menu-item>
-    <mat-icon> notifications_off </mat-icon>
-    <span> Disable alerts </span>
+    <mat-icon>notifications_off</mat-icon>
+    <span>Disable alerts</span>
   </button>
 </mat-menu>
 ```
@@ -59,8 +59,8 @@ The position can be changed using the `xPosition` (`before | after`) and `yPosit
 
 ```html
 <mat-menu #appMenu="matMenu" yPosition="above">
-  <button mat-menu-item> Settings </button>
-  <button mat-menu-item> Help </button>
+  <button mat-menu-item>Settings</button>
+  <button mat-menu-item>Help</button>
 </mat-menu>
 
 <button mat-icon-button [matMenuTriggerFor]="appMenu">
@@ -92,6 +92,46 @@ that should trigger the sub-menu:
 ```
 
 <!-- example(nested-menu) -->
+
+### Lazy rendering
+By default, the menu content will be initialized even when the panel is closed. To defer
+initialization until the menu is open, the content can be provided as an `ng-template`
+with the `matMenuContent` attribute:
+
+```html
+<mat-menu #appMenu="matMenu">
+  <ng-template matMenuContent>
+    <button mat-menu-item>Settings</button>
+    <button mat-menu-item>Help</button>
+  </ng-template>
+</mat-menu>
+
+<button mat-icon-button [matMenuTriggerFor]="appMenu">
+  <mat-icon>more_vert</mat-icon>
+</button>
+```
+
+### Passing in data to a menu
+When using lazy rendering, additional context data can be passed to the menu panel via
+the `matMenuTriggerData` input. This allows for a single menu instance to be rendered
+with a different set of data, depending on the trigger that opened it:
+
+```html
+<mat-menu #appMenu="matMenu" let-user="user">
+  <ng-template matMenuContent>
+    <button mat-menu-item>Settings</button>
+    <button mat-menu-item>Log off {{name}}</button>
+  </ng-template>
+</mat-menu>
+
+<button mat-icon-button [matMenuTriggerFor]="appMenu" [matMenuTriggerData]="{name: 'Sally'}">
+  <mat-icon>more_vert</mat-icon>
+</button>
+
+<button mat-icon-button [matMenuTriggerFor]="appMenu" [matMenuTriggerData]="{name: 'Bob'}">
+  <mat-icon>more_vert</mat-icon>
+</button>
+```
 
 ### Keyboard interaction
 - <kbd>DOWN_ARROW</kbd>: Focuses the next menu item

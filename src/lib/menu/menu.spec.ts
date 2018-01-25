@@ -7,6 +7,7 @@ import {
   EventEmitter,
   Input,
   Output,
+  NgZone,
   TemplateRef,
   ViewChild,
   ViewChildren,
@@ -35,6 +36,7 @@ import {
   createMouseEvent,
   dispatchFakeEvent,
   patchElementFocus,
+  MockNgZone,
 } from '@angular/cdk/testing';
 import {Subject} from 'rxjs/Subject';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
@@ -59,7 +61,9 @@ describe('MatMenu', () => {
         NestedMenu,
         NestedMenuCustomElevation,
         NestedMenuRepeater,
-        FakeIcon
+        FakeIcon,
+        SimpleLazyMenu,
+        LazyMenuWithContext,
       ],
       providers: [
         {provide: Directionality, useFactory: () => ({value: dir})}
@@ -319,6 +323,77 @@ describe('MatMenu', () => {
 
     expect(trigger.menuOpen).toBe(false);
   }));
+
+  describe('lazy rendering', () => {
+    it('should be able to render the menu content lazily', fakeAsync(() => {
+      const fixture = TestBed.createComponent(SimpleLazyMenu);
+      fixture.detectChanges();
+
+      fixture.componentInstance.triggerEl.nativeElement.click();
+      fixture.detectChanges();
+      tick(500);
+
+      const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+
+      expect(panel).toBeTruthy('Expected panel to be defined');
+      expect(panel.textContent).toContain('Another item', 'Expected panel to have correct content');
+      expect(fixture.componentInstance.trigger.menuOpen).toBe(true, 'Expected menu to be open');
+    }));
+
+    it('should focus the first menu item when opening a lazy menu via keyboard', fakeAsync(() => {
+      let zone: MockNgZone;
+
+      // Clear out the container since resetting the module won't do it.
+      overlayContainer.ngOnDestroy();
+
+      TestBed
+        .resetTestingModule()
+        .configureTestingModule({
+          imports: [MatMenuModule, NoopAnimationsModule],
+          declarations: [SimpleLazyMenu],
+          providers: [{provide: NgZone, useFactory: () => zone = new MockNgZone()}]
+        })
+        .compileComponents();
+
+      const fixture = TestBed.createComponent(SimpleLazyMenu);
+      fixture.detectChanges();
+
+      // A click without a mousedown before it is considered a keyboard open.
+      fixture.componentInstance.triggerEl.nativeElement.click();
+      fixture.detectChanges();
+      tick(500);
+      zone!.simulateZoneExit();
+      tick();
+
+      const item = document.querySelector('.mat-menu-panel [mat-menu-item]')!;
+
+      expect(document.activeElement).toBe(item, 'Expected first item to be focused');
+    }));
+
+    it('should be able to open the same menu with a different context', fakeAsync(() => {
+      const fixture = TestBed.createComponent(LazyMenuWithContext);
+      fixture.detectChanges();
+
+      fixture.componentInstance.triggerOne.openMenu();
+      fixture.detectChanges();
+      tick(500);
+
+      let item = overlayContainerElement.querySelector('.mat-menu-panel [mat-menu-item]')!;
+
+      expect(item.textContent!.trim()).toBe('one');
+
+      fixture.componentInstance.triggerOne.closeMenu();
+      fixture.detectChanges();
+      tick(500);
+
+      fixture.componentInstance.triggerTwo.openMenu();
+      fixture.detectChanges();
+      tick(500);
+      item = overlayContainerElement.querySelector('.mat-menu-panel [mat-menu-item]')!;
+
+      expect(item.textContent!.trim()).toBe('two');
+    }));
+  });
 
   describe('positions', () => {
     let fixture: ComponentFixture<PositionedMenu>;
@@ -1464,4 +1539,48 @@ class NestedMenuRepeater {
   selector: 'fake-icon',
   template: '<ng-content></ng-content>'
 })
-class FakeIcon { }
+class FakeIcon {}
+
+
+@Component({
+  template: `
+    <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
+
+    <mat-menu #menu="matMenu">
+      <ng-template matMenuContent>
+        <button mat-menu-item>Item</button>
+        <button mat-menu-item>Another item</button>
+      </ng-template>
+    </mat-menu>
+  `
+})
+class SimpleLazyMenu {
+  @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
+  @ViewChild('triggerEl') triggerEl: ElementRef;
+}
+
+
+@Component({
+  template: `
+    <button
+      [matMenuTriggerFor]="menu"
+      [matMenuTriggerData]="{label: 'one'}"
+      #triggerOne="matMenuTrigger">One</button>
+
+    <button
+      [matMenuTriggerFor]="menu"
+      [matMenuTriggerData]="{label: 'two'}"
+      #triggerTwo="matMenuTrigger">Two</button>
+
+    <mat-menu matMenuContent #menu="matMenu">
+      <ng-template let-label="label" matMenuContent>
+        <button mat-menu-item>{{label}}</button>
+      </ng-template>
+    </mat-menu>
+  `
+})
+class LazyMenuWithContext {
+  @ViewChild('triggerOne') triggerOne: MatMenuTrigger;
+  @ViewChild('triggerTwo') triggerTwo: MatMenuTrigger;
+}
+

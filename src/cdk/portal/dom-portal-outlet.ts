@@ -22,7 +22,8 @@ import {BasePortalOutlet, ComponentPortal, TemplatePortal} from './portal';
  */
 export class DomPortalOutlet extends BasePortalOutlet {
   constructor(
-      private _hostDomElement: Element,
+      /** Element into which the content is projected. */
+      public outletElement: Element,
       private _componentFactoryResolver: ComponentFactoryResolver,
       private _appRef: ApplicationRef,
       private _defaultInjector: Injector) {
@@ -59,7 +60,7 @@ export class DomPortalOutlet extends BasePortalOutlet {
     }
     // At this point the component has been instantiated, so we move it to the location in the DOM
     // where we want it to be rendered.
-    this._hostDomElement.appendChild(this._getComponentRootNode(componentRef));
+    this.outletElement.appendChild(this._getComponentRootNode(componentRef));
 
     return componentRef;
   }
@@ -78,7 +79,7 @@ export class DomPortalOutlet extends BasePortalOutlet {
     // But for the DomPortalOutlet the view can be added everywhere in the DOM
     // (e.g Overlay Container) To move the view to the specified host element. We just
     // re-append the existing root nodes.
-    viewRef.rootNodes.forEach(rootNode => this._hostDomElement.appendChild(rootNode));
+    viewRef.rootNodes.forEach(rootNode => this.outletElement.appendChild(rootNode));
 
     this.setDisposeFn((() => {
       let index = viewContainer.indexOf(viewRef);
@@ -96,8 +97,8 @@ export class DomPortalOutlet extends BasePortalOutlet {
    */
   dispose(): void {
     super.dispose();
-    if (this._hostDomElement.parentNode != null) {
-      this._hostDomElement.parentNode.removeChild(this._hostDomElement);
+    if (this.outletElement.parentNode != null) {
+      this.outletElement.parentNode.removeChild(this.outletElement);
     }
   }
 

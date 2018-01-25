@@ -110,6 +110,9 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   /** References the menu instance that the trigger is associated with. */
   @Input('matMenuTriggerFor') menu: MatMenuPanel;
 
+  /** Data to be passed along to any lazily-rendered content. */
+  @Input('matMenuTriggerData') menuData: any;
+
   /** Event emitted when the associated menu is opened. */
   @Output() menuOpened: EventEmitter<void> = new EventEmitter<void>();
 
@@ -199,14 +202,21 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
 
   /** Opens the menu. */
   openMenu(): void {
-    if (!this._menuOpen) {
-      this._createOverlay().attach(this._portal);
-      this._closeSubscription = this._menuClosingActions().subscribe(() => this.closeMenu());
-      this._initMenu();
+    if (this._menuOpen) {
+      return;
+    }
 
-      if (this.menu instanceof MatMenu) {
-        this.menu._startAnimation();
-      }
+    this._createOverlay().attach(this._portal);
+
+    if (this.menu.lazyContent) {
+      this.menu.lazyContent.attach(this.menuData);
+    }
+
+    this._closeSubscription = this._menuClosingActions().subscribe(() => this.closeMenu());
+    this._initMenu();
+
+    if (this.menu instanceof MatMenu) {
+      this.menu._startAnimation();
     }
   }
 

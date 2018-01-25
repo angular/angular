@@ -11,9 +11,11 @@ import {OverlayModule} from '@angular/cdk/overlay';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule, MatRippleModule} from '@angular/material/core';
+import {PortalModule} from '@angular/cdk/portal';
 import {MAT_MENU_DEFAULT_OPTIONS, MatMenu} from './menu-directive';
 import {MatMenuItem} from './menu-item';
 import {MAT_MENU_SCROLL_STRATEGY_PROVIDER, MatMenuTrigger} from './menu-trigger';
+import {MatMenuContent} from './menu-content';
 
 
 @NgModule({
@@ -23,9 +25,10 @@ import {MAT_MENU_SCROLL_STRATEGY_PROVIDER, MatMenuTrigger} from './menu-trigger'
     MatCommonModule,
     MatRippleModule,
     OverlayModule,
+    PortalModule,
   ],
-  exports: [MatMenu, MatMenuItem, MatMenuTrigger, MatCommonModule],
-  declarations: [MatMenu, MatMenuItem, MatMenuTrigger],
+  exports: [MatMenu, MatMenuItem, MatMenuTrigger, MatMenuContent, MatCommonModule],
+  declarations: [MatMenu, MatMenuItem, MatMenuTrigger, MatMenuContent],
   providers: [
     MAT_MENU_SCROLL_STRATEGY_PROVIDER,
     {
