@@ -97,13 +97,13 @@ describe('MatYearView', () => {
       fixture = TestBed.createComponent(YearViewWithDateFilter);
       fixture.detectChanges();
 
-      let yearViewDebugElement = fixture.debugElement.query(By.directive(MatYearView));
+      const yearViewDebugElement = fixture.debugElement.query(By.directive(MatYearView));
       yearViewNativeElement = yearViewDebugElement.nativeElement;
       testComponent = fixture.componentInstance;
     });
 
-    it('should disabled months with no enabled days', () => {
-      let cells = yearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
+    it('should disable months with no enabled days', () => {
+      const cells = yearViewNativeElement.querySelectorAll('.mat-calendar-body-cell');
       expect(cells[0].classList).not.toContain('mat-calendar-body-disabled');
       expect(cells[1].classList).toContain('mat-calendar-body-disabled');
     });

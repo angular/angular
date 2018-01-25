@@ -124,7 +124,26 @@ export class MatMultiYearView<D> implements AfterContentInit {
   /** Creates an MatCalendarCell for the given year. */
   private _createCellForYear(year: number) {
     let yearName = this._dateAdapter.getYearName(this._dateAdapter.createDate(year, 0, 1));
-    return new MatCalendarCell(year, yearName, yearName, true);
+    return new MatCalendarCell(year, yearName, yearName, this._isYearEnabled(year));
+  }
+
+  /** Whether the given year is enabled. */
+  private _isYearEnabled(year: number) {
+    if (!this.dateFilter) {
+      return true;
+    }
+
+    const firstOfYear = this._dateAdapter.createDate(year, 0, 1);
+
+    // If any date in the year is enabled count the year as enabled.
+    for (let date = firstOfYear; this._dateAdapter.getYear(date) == year;
+      date = this._dateAdapter.addCalendarDays(date, 1)) {
+      if (this.dateFilter(date)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
