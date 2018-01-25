@@ -169,6 +169,31 @@ describe("ng_package", () => {
       });
     });
 
+    describe('fesm15', () => {
+
+      it('should have a fesm15 file in the /esm2015 directory', () => {
+        expect(shx.cat('esm2015/testing.js')).toContain(`export {`);
+      });
+
+      it('should have a source map', () => {
+        expect(shx.cat('esm2015/testing.js.map')).toContain(`{"version":3,"file":"testing.js","sources":`);
+      });
+
+      it('should have the version info in the header', () => {
+        expect(shx.cat('esm2015/testing.js')).toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
+      });
+    });
+
+    describe('fesm5', () => {
+      it('should have a fesm5 file in the /esm5 directory', () => {
+        expect(shx.cat('esm5/testing.js')).toContain(`export {`);
+      });
+
+      it('should have a source map', () => {
+        expect(shx.cat('esm5/testing.js.map')).toContain(`{"version":3,"file":"testing.js","sources":`);
+      });
+    });
+
     describe('umd', () => {
 
       it('should have a umd file in the /bundles directory', () => {
