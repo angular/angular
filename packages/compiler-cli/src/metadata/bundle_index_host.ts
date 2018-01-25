@@ -51,7 +51,7 @@ function createSyntheticIndexHost<H extends ts.CompilerHost>(
             path.normalize(sourceFiles[0].fileName) == normalSyntheticIndexName) {
           // If we are writing the synthetic index, write the metadata along side.
           const metadataName = fileName.replace(DTS, '.metadata.json');
-          fs.writeFileSync(metadataName, indexMetadata, {encoding: 'utf8'});
+          delegate.writeFile(metadataName, indexMetadata, writeByteOrderMark, onError, sourceFiles);
         }
       };
   return newHost;
