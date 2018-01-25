@@ -7,8 +7,6 @@
  */
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {take} from 'rxjs/operators/take';
-import {startWith} from 'rxjs/operators/startWith';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -26,9 +24,19 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {FloatLabelType, MAT_LABEL_GLOBAL_OPTIONS, LabelOptions} from '@angular/material/core';
+import {
+  CanColor,
+  FloatLabelType,
+  LabelOptions,
+  MAT_LABEL_GLOBAL_OPTIONS,
+  mixinColor,
+  ThemePalette
+} from '@angular/material/core';
 import {fromEvent} from 'rxjs/observable/fromEvent';
+import {startWith} from 'rxjs/operators/startWith';
+import {take} from 'rxjs/operators/take';
 import {MatError} from './error';
+import {matFormFieldAnimations} from './form-field-animations';
 import {MatFormFieldControl} from './form-field-control';
 import {
   getMatFormFieldDuplicatedHintError,
@@ -36,11 +44,19 @@ import {
   getMatFormFieldPlaceholderConflictError,
 } from './form-field-errors';
 import {MatHint} from './hint';
-import {MatPlaceholder} from './placeholder';
 import {MatLabel} from './label';
+import {MatPlaceholder} from './placeholder';
 import {MatPrefix} from './prefix';
 import {MatSuffix} from './suffix';
-import {matFormFieldAnimations} from './form-field-animations';
+
+
+// Boilerplate for applying mixins to MatFormField.
+/** @docs-private */
+export class MatFormFieldBase {
+  constructor(public _elementRef: ElementRef) { }
+}
+
+export const _MatFormFieldMixinBase = mixinColor(MatFormFieldBase, 'primary');
 
 
 let nextUniqueId = 0;
@@ -67,9 +83,6 @@ let nextUniqueId = 0;
     '[class.mat-form-field-hide-placeholder]': '_hideControlPlaceholder()',
     '[class.mat-form-field-disabled]': '_control.disabled',
     '[class.mat-focused]': '_control.focused',
-    '[class.mat-primary]': 'color == "primary"',
-    '[class.mat-accent]': 'color == "accent"',
-    '[class.mat-warn]': 'color == "warn"',
     '[class.ng-untouched]': '_shouldForward("untouched")',
     '[class.ng-touched]': '_shouldForward("touched")',
     '[class.ng-pristine]': '_shouldForward("pristine")',
@@ -78,24 +91,23 @@ let nextUniqueId = 0;
     '[class.ng-invalid]': '_shouldForward("invalid")',
     '[class.ng-pending]': '_shouldForward("pending")',
   },
+  inputs: ['color'],
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class MatFormField implements AfterViewInit, AfterContentInit, AfterContentChecked {
+export class MatFormField extends _MatFormFieldMixinBase
+    implements AfterContentInit, AfterContentChecked, AfterViewInit, CanColor {
   private _labelOptions: LabelOptions;
-
-  /** Color of the form field underline, based on the theme. */
-  @Input() color: 'primary' | 'accent' | 'warn' = 'primary';
 
   /**
    * @deprecated Use `color` instead.
    * @deletion-target 6.0.0
    */
   @Input()
-  get dividerColor(): 'primary' | 'accent' | 'warn' { return this.color; }
-  set dividerColor(value) { this.color = value; }
+  get dividerColor(): ThemePalette { return this.color; }
+  set dividerColor(value: ThemePalette) { this.color = value; }
 
   /** Whether the required marker should be hidden. */
   @Input()
@@ -168,6 +180,8 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
       public _elementRef: ElementRef,
       private _changeDetectorRef: ChangeDetectorRef,
       @Optional() @Inject(MAT_LABEL_GLOBAL_OPTIONS) labelOptions: LabelOptions) {
+    super(_elementRef);
+
     this._labelOptions = labelOptions ? labelOptions : {};
     this.floatLabel = this._labelOptions.float || 'auto';
   }
@@ -288,12 +302,12 @@ export class MatFormField implements AfterViewInit, AfterContentInit, AfterConte
       let startHint: MatHint;
       let endHint: MatHint;
       this._hintChildren.forEach((hint: MatHint) => {
-        if (hint.align == 'start') {
+        if (hint.align === 'start') {
           if (startHint || this.hintLabel) {
             throw getMatFormFieldDuplicatedHintError('start');
           }
           startHint = hint;
-        } else if (hint.align == 'end') {
+        } else if (hint.align === 'end') {
           if (endHint) {
             throw getMatFormFieldDuplicatedHintError('end');
           }
