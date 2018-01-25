@@ -618,7 +618,11 @@ export function expectNoDiagnostics(program: ts.Program) {
     if (diagnostics && diagnostics.length) {
       throw new Error(
           'Errors from TypeScript:\n' +
-          diagnostics.map(d => `${fileInfo(d)}${d.messageText}${lineInfo(d)}`).join(' \n'));
+          diagnostics
+              .map(
+                  d =>
+                      `${fileInfo(d)}${ts.flattenDiagnosticMessageText(d.messageText, '\n')}${lineInfo(d)}`)
+              .join(' \n'));
     }
   }
   expectNoDiagnostics(program.getOptionsDiagnostics());
