@@ -9,14 +9,13 @@
 import {LContainerNode, LElementNode, LTextNode} from './node';
 
 /**
- * An LProjection is just an array of projected nodes.
- *
- * It would be nice if we could not need an array, but since a projected node can be
- * re-projected, the same node can be part of more than one LProjectionNode which makes
- * list approach not possible.
+ * An LProjection is a pointer to the first and the last projected nodes.
+ * It is a linked list (using the pNextOrParent property).
  */
-export type LProjection = Array<LElementNode|LTextNode|LContainerNode>;
-
+export interface LProjection {
+  first: LElementNode|LTextNode|LContainerNode|null;
+  last: LElementNode|LTextNode|LContainerNode|null;
+}
 
 /**
  * Parsed selector in the following format:
