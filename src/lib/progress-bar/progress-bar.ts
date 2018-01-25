@@ -28,7 +28,7 @@ export const _MatProgressBarMixinBase = mixinColor(MatProgressBarBase, 'primary'
 
 
 /**
- * <mat-progress-bar> component.
+ * `<mat-progress-bar>` component.
  */
 @Component({
   moduleId: module.id,

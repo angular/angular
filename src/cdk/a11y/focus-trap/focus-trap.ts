@@ -27,7 +27,7 @@ import {DOCUMENT} from '@angular/common';
  *
  * This class currently uses a relatively simple approach to focus trapping.
  * It assumes that the tab order is the same as DOM order, which is not necessarily true.
- * Things like tabIndex > 0, flex `order`, and shadow roots can cause to two to misalign.
+ * Things like `tabIndex > 0`, flex `order`, and shadow roots can cause to two to misalign.
  */
 export class FocusTrap {
   private _startAnchor: HTMLElement | null;

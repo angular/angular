@@ -18,9 +18,9 @@ export type MatPseudoCheckboxState = 'unchecked' | 'checked' | 'indeterminate';
  * `mat-primary .mat-pseudo-checkbox`.
  *
  * Note that this component will be completely invisible to screen-reader users. This is *not*
- * interchangeable with <mat-checkbox> and should *not* be used if the user would directly interact
- * with the checkbox. The pseudo-checkbox should only be used as an implementation detail of
- * more complex components that appropriately handle selected / checked state.
+ * interchangeable with `<mat-checkbox>` and should *not* be used if the user would directly
+ * interact with the checkbox. The pseudo-checkbox should only be used as an implementation detail
+ * of more complex components that appropriately handle selected / checked state.
  * @docs-private
  */
 @Component({

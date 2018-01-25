@@ -6,7 +6,7 @@ import * as minimatch from 'minimatch';
 const ERROR_MESSAGE = 'Uses of RxJS patch imports are forbidden.';
 
 /**
- * Rule that prevents uses of RxJS patch imports (e.g. `import 'rxjs/add/operator/map').
+ * Rule that prevents uses of RxJS patch imports (e.g. `import 'rxjs/add/operator/map'`).
  * Supports whitelisting via `"no-patch-imports": [true, "\.spec\.ts$"]`.
  */
 export class Rule extends Lint.Rules.AbstractRule {

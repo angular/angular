@@ -14,7 +14,7 @@ function sortedClassNames(element: Element): string[] {
 }
 
 /**
- * Verifies that an element contains a single <svg> child element, and returns that child.
+ * Verifies that an element contains a single `<svg>` child element, and returns that child.
  */
 function verifyAndGetSingleSvgChild(element: SVGElement): SVGElement {
   expect(element.id).toBeFalsy();
@@ -25,7 +25,7 @@ function verifyAndGetSingleSvgChild(element: SVGElement): SVGElement {
 }
 
 /**
- * Verifies that an element contains a single <path> child element whose "id" attribute has
+ * Verifies that an element contains a single `<path>` child element whose "id" attribute has
  * the specified value.
  */
 function verifyPathChildElement(element: Element, attributeValue: string): void {

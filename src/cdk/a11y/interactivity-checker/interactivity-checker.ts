@@ -172,7 +172,7 @@ function isNativeFormElement(element: Node) {
       nodeName === 'textarea';
 }
 
-/** Gets whether an element is an <input type="hidden">. */
+/** Gets whether an element is an `<input type="hidden">`. */
 function isHiddenInput(element: HTMLElement): boolean {
   return isInputElement(element) && element.type == 'hidden';
 }

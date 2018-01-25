@@ -48,7 +48,7 @@ export type CdkPortalOutletAttachedRef = ComponentRef<any> | EmbeddedViewRef<any
  * directly attached to it, enabling declarative use.
  *
  * Usage:
- * <ng-template [cdkPortalOutlet]="greeting"></ng-template>
+ * `<ng-template [cdkPortalOutlet]="greeting"></ng-template>`
  */
 @Directive({
   selector: '[cdkPortalOutlet], [cdkPortalHost], [portalHost]',

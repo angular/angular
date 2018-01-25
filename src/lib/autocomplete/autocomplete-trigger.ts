@@ -133,10 +133,10 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   /** Stream of keyboard events that can close the panel. */
   private readonly _closeKeyEventStream = new Subject<void>();
 
-  /** View -> model callback called when value changes */
+  /** `View -> model callback called when value changes` */
   _onChange: (value: any) => void = () => {};
 
-  /** View -> model callback called when autocomplete has been touched */
+  /** `View -> model callback called when autocomplete has been touched` */
   _onTouched = () => {};
 
   /** The autocomplete panel to be attached to this trigger. */

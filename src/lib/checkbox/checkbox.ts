@@ -175,7 +175,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   /** The value attribute of the native input element */
   @Input() value: string;
 
-  /** The native `<input type="checkbox"> element */
+  /** The native `<input type="checkbox">` element */
   @ViewChild('input') _inputElement: ElementRef;
 
   /** Reference to the ripple instance of the checkbox. */

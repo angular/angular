@@ -205,8 +205,8 @@ export class MatOption implements AfterViewChecked {
   }
 
   /**
-   * Selects the option while indicating the selection came from the user. Used to
-   * determine if the select's view -> model callback should be invoked.
+   * `Selects the option while indicating the selection came from the user. Used to
+   * determine if the select's view -> model callback should be invoked.`
    */
   _selectViaInteraction(): void {
     if (!this.disabled) {

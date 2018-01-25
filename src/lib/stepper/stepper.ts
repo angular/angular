@@ -43,7 +43,7 @@ import {matStepperAnimations} from './stepper-animations';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatStep extends CdkStep implements ErrorStateMatcher {
-  /** Content for step label given by <ng-template matStepLabel>. */
+  /** Content for step label given by `<ng-template matStepLabel>`. */
   @ContentChild(MatStepLabel) stepLabel: MatStepLabel;
 
   constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,

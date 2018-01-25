@@ -38,8 +38,8 @@ export const _MatIconMixinBase = mixinColor(MatIconBase);
  *   MatIconRegistry. If the svgIcon value contains a colon it is assumed to be in the format
  *   "[namespace]:[name]", if not the value will be the name of an icon in the default namespace.
  *   Examples:
- *     <mat-icon svgIcon="left-arrow"></mat-icon>
- *     <mat-icon svgIcon="animals:cat"></mat-icon>
+ *     `<mat-icon svgIcon="left-arrow"></mat-icon>
+ *     <mat-icon svgIcon="animals:cat"></mat-icon>`
  *
  * - Use a font ligature as an icon by putting the ligature text in the content of the <mat-icon>
  *   component. By default the Material icons font is used as described at
@@ -47,15 +47,15 @@ export const _MatIconMixinBase = mixinColor(MatIconBase);
  *   alternate font by setting the fontSet input to either the CSS class to apply to use the
  *   desired font, or to an alias previously registered with MatIconRegistry.registerFontClassAlias.
  *   Examples:
- *     <mat-icon>home</mat-icon>
- *     <mat-icon fontSet="myfont">sun</mat-icon>
+ *     `<mat-icon>home</mat-icon>
+ *     <mat-icon fontSet="myfont">sun</mat-icon>`
  *
  * - Specify a font glyph to be included via CSS rules by setting the fontSet input to specify the
  *   font, and the fontIcon input to specify the icon. Typically the fontIcon will specify a
  *   CSS class which causes the glyph to be displayed via a :before selector, as in
  *   https://fortawesome.github.io/Font-Awesome/examples/
  *   Example:
- *     <mat-icon fontSet="fa" fontIcon="alarm"></mat-icon>
+ *     `<mat-icon fontSet="fa" fontIcon="alarm"></mat-icon>`
  */
 @Component({
   moduleId: module.id,
@@ -117,10 +117,10 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
    * the icon name. If the argument is falsy, returns an array of two empty strings.
    * Throws an error if the name contains two or more ':' separators.
    * Examples:
-   *   'social:cake' -> ['social', 'cake']
+   *   `'social:cake' -> ['social', 'cake']
    *   'penguin' -> ['', 'penguin']
    *   null -> ['', '']
-   *   'a:b:c' -> (throws Error)
+   *   'a:b:c' -> (throws Error)`
    */
   private _splitIconName(iconName: string): [string, string] {
     if (!iconName) {
