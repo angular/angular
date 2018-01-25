@@ -140,7 +140,7 @@ function unsupported(feature: string): never {
   if (this) {
     throw new Error(`Builder ${this.constructor.name} doesn't support ${feature} yet`);
   }
-  throw new Error(`Feature ${feature} is supported yet`);
+  throw new Error(`Feature ${feature} is not supported yet`);
 }
 
 const BINDING_INSTRUCTION_MAP: {[index: number]: o.ExternalReference | undefined} = {
@@ -571,7 +571,9 @@ function createFactory(
       } else if (tokenRef === viewContainerRef) {
         args.push(o.importExpr(R3.injectViewContainerRef).callFn([]));
       } else {
-        args.push(o.importExpr(R3.inject).callFn([outputCtx.importExpr(token)]));
+        const value =
+            token.identifier != null ? outputCtx.importExpr(tokenRef) : o.literal(tokenRef);
+        args.push(o.importExpr(R3.inject).callFn([value]));
       }
     } else {
       unsupported('dependency without a token');
