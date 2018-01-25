@@ -9,6 +9,7 @@
 describe('validate-commit-message.js', function() {
   var validateMessage = require('./validate-commit-message');
   var SCOPES = validateMessage.config.scopes.join(', ');
+  var TYPES = validateMessage.config.types.join(', ');
   var errors = [];
   var logs = [];
 
@@ -40,6 +41,10 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('test(packaging): something')).toBe(VALID);
       expect(validateMessage('release: something')).toBe(VALID);
       expect(validateMessage('release(packaging): something')).toBe(VALID);
+      expect(validateMessage('release(packaging): something')).toBe(VALID);
+      expect(validateMessage('fixup! release(packaging): something')).toBe(VALID);
+      expect(validateMessage('squash! release(packaging): something')).toBe(VALID);
+      expect(validateMessage('Revert: "release(packaging): something"')).toBe(VALID);
       expect(errors).toEqual([]);
     });
 
@@ -88,21 +93,24 @@ describe('validate-commit-message.js', function() {
 
       expect(validateMessage(msg)).toBe(INVALID);
       expect(errors).toEqual([
-        'INVALID COMMIT MSG: "not correct format"\n => ERROR: The commit message does not match the format of "<type>(<scope>): <subject> OR revert: type(<scope>): <subject>"'
+        'INVALID COMMIT MSG: "not correct format"\n => ERROR: The commit message does not match the format of \'<type>(<scope>): <subject>\' OR \'Revert: "type(<scope>): <subject>"\''
       ]);
     });
 
 
-    it('should support "revert: type(scope):" syntax and reject "revert(scope):" syntax', function() {
-      let correctMsg = 'revert: fix(compiler): reduce generated code payload size by 65%';
-      expect(validateMessage(correctMsg)).toBe(VALID);
+    it('should support "revert: type(scope):" syntax and reject "revert(scope):" syntax',
+       function() {
+         let correctMsg = 'revert: fix(compiler): reduce generated code payload size by 65%';
+         expect(validateMessage(correctMsg)).toBe(VALID);
 
-      let incorretMsg = 'revert(compiler): reduce generated code payload size by 65%';
-      expect(validateMessage(incorretMsg)).toBe(INVALID);
-      expect(errors).toEqual([
-        'INVALID COMMIT MSG: "revert(compiler): reduce generated code payload size by 65%"\n => ERROR: The commit message does not match the format of "<type>(<scope>): <subject> OR revert: type(<scope>): <subject>"'
-      ]);
-    });
+         let incorretMsg = 'revert(compiler): reduce generated code payload size by 65%';
+         expect(validateMessage(incorretMsg)).toBe(INVALID);
+         expect(errors).toEqual([
+           'INVALID COMMIT MSG: "revert(compiler): reduce generated code payload size by 65%"\n' +
+           ' => ERROR: revert is not an allowed type.\n' +
+           ' => TYPES: ' + TYPES
+         ]);
+       });
 
 
     it('should validate type', function() {
@@ -110,7 +118,7 @@ describe('validate-commit-message.js', function() {
       expect(errors).toEqual(
           ['INVALID COMMIT MSG: "weird($filter): something"\n' +
            ' => ERROR: weird is not an allowed type.\n' +
-           ' => TYPES: build, ci, docs, feat, fix, perf, refactor, release, style, test']);
+           ' => TYPES: ' + TYPES]);
     });
 
 
