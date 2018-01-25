@@ -112,6 +112,30 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 - Open chrome at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open chrome inspector
 
+## Remote cache
+
+Bazel supports fetching action results from a cache, allowing a clean build to pick up artifacts from prior builds.
+This makes builds incremental, even on CI.
+It works because Bazel assigns a content-based hash to all action inputs, which is used as the cache key for the action outputs.
+Thanks the the hermeticity property, we can skip executing an action if the inputs hash is already present in the cache.
+
+Of course, non-hermeticity in an action can cause problems.
+At worst, you can fetch a broken artifact from the cache, making your build non-reproducible.
+For this reason, we are careful to implement our Bazel rules to depend only on their inputs.
+
+Currently we only use remote caching on CircleCI.
+We could enable it for developer builds as well, which would make initial builds much faster for developers by fetching already-built artifacts from the cache.
+
+This feature is experimental, and developed by the CircleCI team with guidance from Angular.
+Contact Alex Eagle with questions.
+
+*How it's configured*:
+
+1. In `.circleci/config.yml`, each CircleCI job downloads a proxy binary, which is built from https://github.com/notnoopci/bazel-remote-proxy. The download is done by running `.circleci/setup_cache.sh`. When the feature graduates from experimental, this proxy will be installed by default on every CircleCI worker, and this step will not be needed.
+1. Next, each job runs the `setup-bazel-remote-cache` anchor. This starts up the proxy running in the background. In the CircleCI UI, you'll see this step continues running while later steps run, and you can see logging from the proxy process.
+1. Bazel must be configured to connect to the proxy on a local port. This configuration lives in `.circleci/bazel.rc` and is enabled because we overwrite the system Bazel settings in /etc/bazel.bazelrc with this file.
+1. Each `bazel` command in `.circleci/config.yml` picks up and uses the caching flags.
+
 ## Known issues
 
 ### Xcode
