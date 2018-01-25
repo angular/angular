@@ -59,10 +59,11 @@ export const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any = {
 
 /** Change event object emitted by MatRadio and MatRadioGroup. */
 export class MatRadioChange {
-  /** The MatRadioButton that emits the change event. */
-  source: MatRadioButton | null;
-  /** The value of the MatRadioButton. */
-  value: any;
+  constructor(
+    /** The MatRadioButton that emits the change event. */
+    public source: MatRadioButton,
+    /** The value of the MatRadioButton. */
+    public value: any) {}
 }
 
 
@@ -262,10 +263,7 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
   /** Dispatch change event with current selection and group value. */
   _emitChangeEvent(): void {
     if (this._isInitialized) {
-      const event = new MatRadioChange();
-      event.source = this._selected;
-      event.value = this._value;
-      this.change.emit(event);
+      this.change.emit(new MatRadioChange(this._selected!, this._value));
     }
   }
 
@@ -549,10 +547,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
 
   /** Dispatch change event with current value. */
   private _emitChangeEvent(): void {
-    const event = new MatRadioChange();
-    event.source = this;
-    event.value = this._value;
-    this.change.emit(event);
+    this.change.emit(new MatRadioChange(this, this._value));
   }
 
   _isRippleDisabled() {
