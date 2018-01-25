@@ -27,7 +27,7 @@ class FixupExpression extends o.Expression {
   shared: boolean;
 
   visitExpression(visitor: o.ExpressionVisitor, context: any): any {
-    this.resolved.visitExpression(visitor, context);
+    return this.resolved.visitExpression(visitor, context);
   }
 
   isEquivalent(e: o.Expression): boolean {
