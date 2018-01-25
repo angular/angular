@@ -43,8 +43,8 @@ ng_package(
       'rxjs/operator/map': 'Rx.Observable.prototype',
     },
     secondary_entry_points = [
-        "packages/common/testing",
-        "packages/common/http",
-        "packages/common/http/testing",
+        "testing",
+        "http",
+        "http/testing",
     ]
 )

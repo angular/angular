@@ -186,22 +186,22 @@ def _ng_package_impl(ctx):
   bundles = [umd.js, umd.map, min.js, min.map]
 
   for entry_point in ctx.attr.secondary_entry_points:
-    entry_point_name = entry_point
+    entry_point_name = ctx.label.package + "/" + entry_point
 
     # TODO jasonaden says there is no particular reason these filenames differ
-    umd_output_filename = "-".join(entry_point_name.split("/")[1:])
-    fesm_output_filename = entry_point_name[len(ctx.label.package)+1:].replace("/", "__")
+    umd_output_filename = "-".join([npm_package_name] + entry_point.split("/"))
+    fesm_output_filename = entry_point.replace("/", "__")
 
     secondary_fesm_2015 = _rollup(ctx,  "fesm_2015/" + fesm_output_filename, esm_2015_files,
         npm_package_name, externals, entry_point_name,
        "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
     secondary_fesm_5 = _rollup(ctx, "fesm_5/" + fesm_output_filename, esm_es5_files,
        npm_package_name, externals, entry_point_name,
-       "/".join([ctx.bin_dir.path, entry_point, entry_point.split("/")[-1] + ".es5_esm"]))
+       "/".join([ctx.bin_dir.path, entry_point_name, entry_point.split("/")[-1] + ".es5_esm"]))
 
     secondary_umd = _rollup(ctx, "umd/" + umd_output_filename, esm_es5_files, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
-      entry_point_name, "/".join([ctx.bin_dir.path, entry_point, entry_point.split("/")[-1] + ".es5_esm"]),
+      entry_point_name, "/".join([ctx.bin_dir.path, entry_point_name, entry_point.split("/")[-1] + ".es5_esm"]),
       "umd")
     secondary_min = _uglify(ctx, secondary_umd.js, umd_output_filename)
 
