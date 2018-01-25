@@ -12,6 +12,7 @@ import {Observable} from 'rxjs/Observable';
 
 import {QueryList as viewEngine_QueryList} from '../linker/query_list';
 import {Type} from '../type';
+import {getSymbolIterator} from '../util';
 
 import {assertEqual, assertNotNull} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
@@ -298,57 +299,77 @@ function createPredicate<T>(
 class QueryList_<T>/* implements viewEngine_QueryList<T> */ {
   readonly dirty = true;
   readonly changes: Observable<T>;
-  private _values: T[]|null = null;
+  private _values: T[] = [];
   /** @internal */
   _valuesTree: any[] = [];
 
-  get length(): number {
-    ngDevMode && assertNotNull(this._values, 'refreshed');
-    return this._values !.length;
-  }
+  get length(): number { return this._values.length; }
 
   get first(): T|null {
-    ngDevMode && assertNotNull(this._values, 'refreshed');
-    let values = this._values !;
+    let values = this._values;
     return values.length ? values[0] : null;
   }
 
   get last(): T|null {
-    ngDevMode && assertNotNull(this._values, 'refreshed');
-    let values = this._values !;
+    let values = this._values;
     return values.length ? values[values.length - 1] : null;
   }
 
-  map<U>(fn: (item: T, index: number, array: T[]) => U): U[] {
-    throw new Error('Method not implemented.');
-  }
+  /**
+   * See
+   * [Array.map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+   */
+  map<U>(fn: (item: T, index: number, array: T[]) => U): U[] { return this._values.map(fn); }
+
+  /**
+   * See
+   * [Array.filter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
+   */
   filter(fn: (item: T, index: number, array: T[]) => boolean): T[] {
-    throw new Error('Method not implemented.');
+    return this._values.filter(fn);
   }
+
+  /**
+   * See
+   * [Array.find](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
+   */
   find(fn: (item: T, index: number, array: T[]) => boolean): T|undefined {
-    throw new Error('Method not implemented.');
+    return this._values.find(fn);
   }
+
+  /**
+   * See
+   * [Array.reduce](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
+   */
   reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U {
-    throw new Error('Method not implemented.');
+    return this._values.reduce(fn, init);
   }
-  forEach(fn: (item: T, index: number, array: T[]) => void): void {
-    throw new Error('Method not implemented.');
-  }
+
+  /**
+   * See
+   * [Array.forEach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
+   */
+  forEach(fn: (item: T, index: number, array: T[]) => void): void { this._values.forEach(fn); }
+
+  /**
+   * See
+   * [Array.some](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)
+   */
   some(fn: (value: T, index: number, array: T[]) => boolean): boolean {
-    throw new Error('Method not implemented.');
+    return this._values.some(fn);
   }
-  toArray(): T[] {
-    ngDevMode && assertNotNull(this._values, 'refreshed');
-    return this._values !;
-  }
-  toString(): string {
-    ngDevMode && assertNotNull(this._values, 'refreshed');
-    return this._values !.toString();
-  }
+
+  toArray(): T[] { return this._values.slice(0); }
+
+  [getSymbolIterator()](): Iterator<T> { return (this._values as any)[getSymbolIterator()](); }
+
+  toString(): string { return this._values.toString(); }
+
   reset(res: (any[]|T)[]): void {
     this._values = flatten(res);
     (this as{dirty: boolean}).dirty = false;
   }
+
   notifyOnChanges(): void { throw new Error('Method not implemented.'); }
   setDirty(): void { (this as{dirty: boolean}).dirty = true; }
   destroy(): void { throw new Error('Method not implemented.'); }
