@@ -1,0 +1,25 @@
+# These options are enabled when running on CI
+# We do this by copying this file to /etc/bazel.bazelrc at the start of the build.
+# See remote cache documentation in /docs/BAZEL.md
+
+# Don't be spammy in the logs
+build --noshow_progress
+
+# Don't run manual tests
+test --test_tag_filters=-manual
+
+# Enable experimental CircleCI bazel remote cache proxy
+# See remote cache documentation in /docs/BAZEL.md
+build --experimental_remote_spawn_cache --remote_rest_cache=http://localhost:7643
+
+# Prevent unstable environment variables from tainting cache keys
+build --experimental_strict_action_env
+
+# Workaround https://github.com/bazelbuild/bazel/issues/3645
+# Bazel doesn't calculate the memory ceiling correctly when running under Docker.
+# Limit Bazel to consuming resources that fit in CircleCI "medium" class which is the default:
+# https://circleci.com/docs/2.0/configuration-reference/#resource_class
+build --local_resources=3072,2.0,1.0
+
+# Retry in the event of flakes, eg. https://circleci.com/gh/angular/angular/31309
+test --flaky_test_attempts=2
