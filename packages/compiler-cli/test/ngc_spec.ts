@@ -1878,5 +1878,68 @@ describe('ngc transformer command-line', () => {
       expect(exitCode).toBe(0, 'Compile failed');
       expect(emittedFile('hello-world.js')).toContain('ngComponentDef');
     });
+
+    it('should emit an injection of a string token', () => {
+      write('tsconfig.json', `{
+        "extends": "./tsconfig-base.json",
+        "files": ["hello-world.ts"],
+        "angularCompilerOptions": {
+          "enableIvy": true
+        }
+      }`);
+
+      write('hello-world.ts', `
+        import {Component, Inject, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'hello-world',
+          template: 'Hello, world!'
+        })
+        export class HelloWorldComponent {
+          constructor (@Inject('test') private test: string) {}
+        }
+
+        @NgModule({
+          declarations: [HelloWorldComponent],
+          providers: [
+            {provide: 'test', useValue: 'test'}
+          ]
+        })
+        export class HelloWorldModule {}
+      `);
+      const errors: string[] = [];
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], msg => errors.push(msg));
+      expect(exitCode).toBe(0, `Compile failed:\n${errors.join('\n  ')}`);
+      expect(emittedFile('hello-world.js')).toContain('ngComponentDef');
+    });
+
+    it('should emit an example that uses the E() instruction', () => {
+      write('tsconfig.json', `{
+        "extends": "./tsconfig-base.json",
+        "files": ["hello-world.ts"],
+        "angularCompilerOptions": {
+          "enableIvy": true
+        }
+      }`);
+
+      write('hello-world.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'hello-world',
+          template: '<h1><div style="text-align:center"> Hello, {{name}}! </div></h1> '
+        })
+        export class HelloWorldComponent {
+          name = 'World';
+        }
+
+        @NgModule({declarations: [HelloWorldComponent]})
+        export class HelloWorldModule {}
+      `);
+      const errors: string[] = [];
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], msg => errors.push(msg));
+      expect(exitCode).toBe(0, `Compile failed:\n${errors.join('\n  ')}`);
+      expect(emittedFile('hello-world.js')).toContain('ngComponentDef');
+    });
   });
 });
