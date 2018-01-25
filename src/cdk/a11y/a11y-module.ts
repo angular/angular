@@ -9,11 +9,15 @@
 import {PlatformModule} from '@angular/cdk/platform';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {ARIA_DESCRIBER_PROVIDER, AriaDescriber} from './aria-describer';
-import {CdkMonitorFocus, FOCUS_MONITOR_PROVIDER} from './focus-monitor';
-import {CdkTrapFocus, FocusTrapDeprecatedDirective, FocusTrapFactory} from './focus-trap';
-import {InteractivityChecker} from './interactivity-checker';
-import {LIVE_ANNOUNCER_PROVIDER} from './live-announcer';
+import {ARIA_DESCRIBER_PROVIDER, AriaDescriber} from './aria-describer/aria-describer';
+import {CdkMonitorFocus, FOCUS_MONITOR_PROVIDER} from './focus-monitor/focus-monitor';
+import {
+  CdkTrapFocus,
+  FocusTrapDeprecatedDirective,
+  FocusTrapFactory,
+} from './focus-trap/focus-trap';
+import {InteractivityChecker} from './interactivity-checker/interactivity-checker';
+import {LIVE_ANNOUNCER_PROVIDER} from './live-announcer/live-announcer';
 
 @NgModule({
   imports: [CommonModule, PlatformModule],

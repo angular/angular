@@ -5,18 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CdkTrapFocus} from './focus-trap';
+import {CdkTrapFocus} from './focus-trap/focus-trap';
 
 
-export * from './activedescendant-key-manager';
-export * from './aria-describer';
+export * from './aria-describer/aria-describer';
+export * from './key-manager/activedescendant-key-manager';
+export * from './key-manager/focus-key-manager';
+export * from './key-manager/list-key-manager';
+export * from './focus-trap/focus-trap';
+export * from './interactivity-checker/interactivity-checker';
+export * from './live-announcer/live-announcer';
+export * from './focus-monitor/focus-monitor';
 export * from './fake-mousedown';
-export * from './focus-key-manager';
-export * from './focus-trap';
-export * from './interactivity-checker';
-export * from './list-key-manager';
-export * from './live-announcer';
-export * from './focus-monitor';
 export * from './a11y-module';
 
 /**

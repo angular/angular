@@ -9,7 +9,7 @@ import {Component} from '@angular/core';
 import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {FocusMonitor, FocusOrigin, TOUCH_BUFFER_MS} from './focus-monitor';
-import {A11yModule} from './index';
+import {A11yModule} from '../index';
 
 
 describe('FocusMonitor', () => {

@@ -1,4 +1,4 @@
-import {A11yModule, CDK_DESCRIBEDBY_HOST_ATTRIBUTE} from './index';
+import {A11yModule, CDK_DESCRIBEDBY_HOST_ATTRIBUTE} from '../index';
 import {AriaDescriber, MESSAGES_CONTAINER_ID} from './aria-describer';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ElementRef, ViewChild} from '@angular/core';

@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {take} from 'rxjs/operators/take';
-import {InteractivityChecker} from './interactivity-checker';
+import {InteractivityChecker} from '../interactivity-checker/interactivity-checker';
 import {DOCUMENT} from '@angular/common';
 
 

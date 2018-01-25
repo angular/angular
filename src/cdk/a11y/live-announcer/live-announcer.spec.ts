@@ -2,7 +2,7 @@ import {inject, fakeAsync, tick, ComponentFixture, TestBed} from '@angular/core/
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {LiveAnnouncer, LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer';
-import {A11yModule} from './index';
+import {A11yModule} from '../index';
 
 
 describe('LiveAnnouncer', () => {

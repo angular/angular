@@ -7,7 +7,7 @@
  */
 
 import {ListKeyManager, ListKeyManagerOption} from './list-key-manager';
-import {FocusOrigin} from './focus-monitor';
+import {FocusOrigin} from '../focus-monitor/focus-monitor';
 
 /**
  * This is the interface for focusable items (used by the FocusKeyManager).
