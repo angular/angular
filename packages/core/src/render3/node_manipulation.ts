@@ -6,65 +6,135 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertNotNull} from './assert';
+import {assertNotEqual, assertNotNull} from './assert';
 import {LContainer, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementNode, LNode, LNodeFlags, LProjectionNode, LTextNode, LViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
-import {LProjection, unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {ProceduralRenderer3, RComment, RElement, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
+import {ProceduralRenderer3, RElement, RNode, RText, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {HookData, LView, LViewOrLContainer, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
 /**
- * Finds the closest DOM node above a given container in the hierarchy.
+ * Returns the first DOM node following the given logical node in the same parent DOM element.
  *
- * This is necessary to add or remove elements from the DOM when a view
- * is added or removed from the container. e.g. parent.removeChild(...)
+ * This is needed in order to insert the given node with insertBefore.
  *
- * @param containerNode The container node whose parent must be found
- * @returns Closest DOM node above the container
+ * @param node The node whose following DOM node must be found.
+ * @param stopNode A parent node at which the lookup in the tree should be stopped, or null if the
+ * lookup should not be stopped until the result is found.
+ * @returns Node before which the provided node should be inserted or null if the lookup was stopped
+ * or if there is no native node after the given logical node in the same native parent.
  */
-export function findNativeParent(containerNode: LContainerNode): RNode|null {
-  let container: LContainerNode|null = containerNode;
-  while (container) {
-    ngDevMode && assertNodeType(container, LNodeFlags.Container);
-    const renderParent = container.data.renderParent;
-    if (renderParent !== null) {
-      return renderParent.native;
+function findBeforeNode(node: LNode | null, stopNode: LNode | null): RNode|null {
+  let currentNode = node;
+  while (currentNode && currentNode !== stopNode) {
+    const currentNodeType = currentNode.flags && LNodeFlags.TYPE_MASK;
+    let pNextOrParent = currentNode.pNextOrParent;
+    if (pNextOrParent) {
+      let pNextOrParentType = pNextOrParent.flags & LNodeFlags.TYPE_MASK;
+      while (pNextOrParentType !== LNodeFlags.Projection) {
+        const nativeNode = findFirstNativeNode(pNextOrParent);
+        if (nativeNode) {
+          return nativeNode;
+        }
+        pNextOrParent = pNextOrParent.pNextOrParent !;
+      }
+      currentNode = pNextOrParent;
+    } else {
+      let currentSibling = currentNode.next;
+      while (currentSibling) {
+        const nativeNode = findFirstNativeNode(currentSibling);
+        if (nativeNode) {
+          return nativeNode;
+        }
+        currentSibling = currentSibling.next;
+      }
+      const parentNode = currentNode.parent;
+      currentNode = null;
+      if (parentNode) {
+        const parentType = parentNode.flags & LNodeFlags.TYPE_MASK;
+        if (parentType === LNodeFlags.Container || parentType === LNodeFlags.View) {
+          currentNode = parentNode;
+        }
+      }
     }
-    const viewOrElement: LViewNode|LElementNode = container.parent !;
-    ngDevMode && assertNotNull(viewOrElement, 'container.parent');
-    if ((viewOrElement.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element) {
-      // we are an LElement, which means we are past the last LContainer.
-      // This means than we have not been projected so just ignore.
-      return null;
-    }
-    ngDevMode && assertNodeType(viewOrElement, LNodeFlags.View);
-    container = (viewOrElement as LViewNode).parent;
   }
   return null;
 }
 
 /**
- * Finds the DOM element before which a certain view should be inserting its
- * child elements.
- *
- * If the view has a next (e.g. for loop), elements should be inserted before
- * the next view's first child element. Otherwise, the container's comment
- * anchor is the marker.
- *
- * @param index The index of the view to check
- * @param lContainer parent LContainer
- * @param native Comment anchor for container
- * @returns The DOM element for which the view should insert elements
+ * Get the next node in the LNode tree, taking into account the place where a node is
+ * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
+ * If the node is not projected, the return value is simply node.next.
+ * If the node is projected, the return value is node.pNextOrParent if node.pNextOrParent is
+ * not a projection node (which marks the end of the linked list).
+ * Otherwise the return value is null.
+ * @param node The node whose next node in the LNode tree must be found.
+ * @return The next sibling in the LNode tree.
  */
-function findBeforeNode(index: number, lContainer: LContainer, native: RNode): RNode {
-  const views = lContainer.views;
-  // Find the node to insert in front of
-  return index + 1 < views.length ?
-      (views[index + 1].child as LTextNode | LElementNode | LContainerNode).native :
-      native;
+function getNextNode(node: LNode): LNode|null {
+  const pNextOrParent = node.pNextOrParent;
+  if (pNextOrParent) {
+    const type = pNextOrParent.flags & LNodeFlags.TYPE_MASK;
+    return type === LNodeFlags.Projection ? null : pNextOrParent;
+  } else {
+    return node.next;
+  }
+}
+
+/**
+ * Find the next node in the LNode tree, taking into account the place where a node is
+ * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
+ * If there is no sibling node, this function goes to the next sibling of the parent node...
+ * until it reaches rootNode (at which point null is returned).
+ *
+ * @param initialNode The node whose following node in the LNode tree must be found.
+ * @param rootNode The root node at which the lookup should stop.
+ * @return The following node in the LNode tree.
+ */
+function findFollowingNode(initialNode: LNode, rootNode: LNode): LNode|null {
+  let node: LNode|null = initialNode;
+  let nextNode = getNextNode(node);
+  while (node && !nextNode) {
+    // if node.pNextOrParent is not null here, it is not the next node
+    // (because, at this point, nextNode is null, so it is the parent)
+    node = node.pNextOrParent || node.parent;
+    if (node === rootNode) node = null;
+    nextNode = node && getNextNode(node);
+  }
+  return nextNode;
+}
+
+/**
+ * Returns the first DOM node inside the given logical node.
+ *
+ * @param node The node whose first DOM node must be found
+ * @returns The first native node of the given logical node or null if there is none.
+ */
+function findFirstNativeNode(rootNode: LNode): RNode|null {
+  let node: LNode|null = rootNode;
+  while (node) {
+    const type = node.flags & LNodeFlags.TYPE_MASK;
+    let nextNode: LNode|null = null;
+    if (type === LNodeFlags.Element) {
+      return node.native;
+    } else if (type === LNodeFlags.Container) {
+      const childContainerData: LContainer = (node as LContainerNode).data;
+      nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
+    } else if (type === LNodeFlags.Projection) {
+      nextNode = (node as LProjectionNode).data.first;
+    } else {
+      nextNode = (node as LViewNode).child;
+    }
+    if (nextNode === null) {
+      node = findFollowingNode(node, rootNode);
+    } else {
+      node = nextNode;
+    }
+  }
+  return null;
 }
 
 /**
@@ -89,7 +159,8 @@ export function addRemoveViewFromContainer(
     beforeNode?: RNode | null): void {
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   ngDevMode && assertNodeType(rootNode, LNodeFlags.View);
-  const parent = findNativeParent(container);
+  const parentNode = container.data.renderParent;
+  const parent = parentNode ? parentNode.native : null;
   let node: LNode|null = rootNode.child;
   if (parent) {
     while (node) {
@@ -111,26 +182,15 @@ export function addRemoveViewFromContainer(
         // if we get to a container, it must be a root node of a view because we are only
         // propagating down into child views / containers and not child elements
         const childContainerData: LContainer = (node as LContainerNode).data;
-        insertMode ? (isFnRenderer ?
-                          (renderer as ProceduralRenderer3)
-                              .appendChild !(parent as RElement, node.native !) :
-                          parent.appendChild(node.native !)) :
-                     (isFnRenderer ?
-                          (renderer as ProceduralRenderer3)
-                              .removeChild !(parent as RElement, node.native !) :
-                          parent.removeChild(node.native !));
+        childContainerData.renderParent = parentNode;
         nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
       } else if (type === LNodeFlags.Projection) {
-        nextNode = (node as LProjectionNode).data[0];
+        nextNode = (node as LProjectionNode).data.first;
       } else {
         nextNode = (node as LViewNode).child;
       }
       if (nextNode === null) {
-        while (node && !node.next) {
-          node = node.parent;
-          if (node === rootNode) node = null;
-        }
-        node = node && node.next;
+        node = findFollowingNode(node, rootNode);
       } else {
         node = nextNode;
       }
@@ -218,8 +278,15 @@ export function insertView(
   // and we should wait until that parent processes its nodes (otherwise, we will insert this view's
   // nodes twice - once now and once when its parent inserts its views).
   if (container.data.renderParent !== null) {
-    addRemoveViewFromContainer(
-        container, newView, true, findBeforeNode(index, state, container.native));
+    let beforeNode = findBeforeNode(newView, container);
+    if (!beforeNode) {
+      let containerNextNativeNode = container.data.nextNative;
+      if (containerNextNativeNode === undefined) {
+        containerNextNativeNode = container.data.nextNative = findBeforeNode(container, null);
+      }
+      beforeNode = containerNextNativeNode;
+    }
+    addRemoveViewFromContainer(container, newView, true, beforeNode);
   }
 
   return newView;
@@ -389,11 +456,7 @@ export function insertChild(node: LNode, currentView: LView): void {
        || parent.data === null /* Regular Element. */)) {
     // We only add element if not in View or not projected.
 
-    let sibling = node.next;
-    let nativeSibling: RNode|null = null;
-    while (sibling && (nativeSibling = sibling.native) === null) {
-      sibling = sibling.next;
-    }
+    let nativeSibling: RNode|null = findBeforeNode(node, null);
     const renderer = currentView.renderer;
     (renderer as ProceduralRenderer3).listen ?
         (renderer as ProceduralRenderer3)
@@ -407,14 +470,13 @@ export function insertChild(node: LNode, currentView: LView): void {
  * appends the nodes from all of the container's active views to the DOM. Also stores the
  * node in the given projectedNodes array.
  *
- * @param projectedNodes Array to store the projected node
  * @param node The node to process
  * @param currentParent The last parent element to be processed
  * @param currentView Current LView
  */
 export function processProjectedNode(
-    projectedNodes: LProjection, node: LElementNode | LTextNode | LContainerNode,
-    currentParent: LViewNode | LElementNode, currentView: LView): void {
+    node: LElementNode | LTextNode | LContainerNode, currentParent: LViewNode | LElementNode,
+    currentView: LView): void {
   if ((node.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Container &&
       (currentParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element &&
       (currentParent.data === null || currentParent.data === currentView)) {
@@ -430,6 +492,5 @@ export function processProjectedNode(
       addRemoveViewFromContainer(node as LContainerNode, views[i], true, null);
     }
   }
-  projectedNodes.push(node);
   appendChild(currentParent, node.native, currentView);
 }

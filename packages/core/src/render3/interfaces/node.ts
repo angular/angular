@@ -11,7 +11,7 @@ import {DirectiveDef} from './definition';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
 import {LQuery} from './query';
-import {RComment, RElement, RText} from './renderer';
+import {RElement, RText} from './renderer';
 import {LView, TData, TView} from './view';
 
 
@@ -74,9 +74,8 @@ export interface LNode {
    * The associated DOM node. Storing this allows us to:
    *  - append children to their element parents in the DOM (e.g. `parent.native.appendChild(...)`)
    *  - retrieve the sibling elements of text nodes whose creation / insertion has been delayed
-   *  - mark locations where child views should be inserted (for containers)
    */
-  readonly native: RElement|RText|RComment|null;
+  readonly native: RElement|RText|null;
 
   /**
    * We need a reference to a node's parent so we can append the node to its parent's native
@@ -121,6 +120,14 @@ export interface LNode {
    * If present the node creation/updates are reported to the `QueryState`.
    */
   query: LQuery|null;
+
+  /**
+   * If this node is projected, pointer to the next node in the same projection parent
+   * (which is a container, an element, or a text node), or to the parent projection node
+   * if this is the last node in the projection.
+   * If this node is not projected, this field is null.
+   */
+  pNextOrParent: LNode|null;
 
   /**
    * Pointer to the corresponding TNode object, which stores static
@@ -170,14 +177,7 @@ export interface LViewNode extends LNode {
 
 /** Abstract node container which contains other views. */
 export interface LContainerNode extends LNode {
-  /**
-   * This comment node is appended to the container's parent element to mark where
-   * in the DOM the container's child views should be added.
-   *
-   * If the container is a root node of a view, this comment will not be appended
-   * until the parent view is processed.
-   */
-  readonly native: RComment;
+  readonly native: null;
   readonly data: LContainer;
   child: null;
   next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
