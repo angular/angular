@@ -19,7 +19,7 @@ import {assertNodeType, assertNodeOfPossibleTypes} from './node_assert';
 import {appendChild, insertChild, insertView, processProjectedNode, removeView} from './node_manipulation';
 import {isNodeMatchingSelector} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType} from './interfaces/definition';
-import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
+import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, ObjectOrientedRenderer3, RendererStyleFlags3} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {executeViewHooks, executeContentHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 
@@ -194,15 +194,14 @@ export function createLNode(
 export function createLNode(
     index: null, type: LNodeFlags.View, native: null, lView: LView): LViewNode;
 export function createLNode(
-    index: number, type: LNodeFlags.Container, native: RComment,
+    index: number, type: LNodeFlags.Container, native: null,
     lContainer: LContainer): LContainerNode;
 export function createLNode(
     index: number, type: LNodeFlags.Projection, native: null,
     lProjection: LProjection): LProjectionNode;
 export function createLNode(
-    index: number | null, type: LNodeFlags, native: RText | RElement | RComment | null,
-    state?: null | LView | LContainer | LProjection): LElementNode&LTextNode&LViewNode&
-    LContainerNode&LProjectionNode {
+    index: number | null, type: LNodeFlags, native: RText | RElement | null, state?: null | LView |
+        LContainer | LProjection): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && previousOrParentNode.parent as LNode;
   let query = (isParent ? currentQuery : previousOrParentNode && previousOrParentNode.query) ||
@@ -218,7 +217,8 @@ export function createLNode(
     nodeInjector: parent ? parent.nodeInjector : null,
     data: isState ? state as any : null,
     query: query,
-    tNode: null
+    tNode: null,
+    pNextOrParent: null
   };
 
   if ((type & LNodeFlags.ViewOrElement) === LNodeFlags.ViewOrElement && isState) {
@@ -989,11 +989,14 @@ export function container(
   // If the direct parent of the container is a view, its views (including its comment)
   // will need to be added through insertView() when its parent view is being inserted.
   // For now, it is marked "headless" so we know to append its views later.
-  let comment = renderer.createComment(ngDevMode ? 'container' : '');
   let renderParent: LElementNode|null = null;
   const currentParent = isParent ? previousOrParentNode : previousOrParentNode.parent !;
   ngDevMode && assertNotEqual(currentParent, null, 'currentParent');
-  if (appendChild(currentParent, comment, currentView)) {
+
+  if ((currentParent.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Element &&
+      (currentParent.view !==
+           currentView /* Crossing View Boundaries, it is Component, but add Element of View */
+       || currentParent.data === null /* Regular Element. */)) {
     // we are adding to an Element which is either:
     // - Not a component (will not be re-projected, just added)
     // - View of the Component
@@ -1007,10 +1010,11 @@ export function container(
     next: null,
     parent: currentView,
     dynamicViewCount: 0,
-    query: null
+    query: null,
+    nextNative: undefined
   };
 
-  const node = createLNode(index, LNodeFlags.Container, comment, lContainer);
+  const node = createLNode(index, LNodeFlags.Container, null, lContainer);
 
   if (node.tNode == null) {
     // TODO(misko): implement queryName caching
@@ -1044,7 +1048,11 @@ export function containerRefreshStart(index: number): void {
   previousOrParentNode = data[index] as LNode;
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   isParent = true;
-  (previousOrParentNode as LContainerNode).data.nextIndex = 0;
+  const container = previousOrParentNode as LContainerNode;
+  container.data.nextIndex = 0;
+  ngDevMode &&
+      assertEqual(
+          container.data.nextNative === undefined, true, 'container.data.nextNative === undefined');
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
@@ -1066,6 +1074,7 @@ export function containerRefreshEnd(): void {
   }
   ngDevMode && assertNodeType(previousOrParentNode, LNodeFlags.Container);
   const container = previousOrParentNode as LContainerNode;
+  container.data.nextNative = undefined;
   ngDevMode && assertNodeType(container, LNodeFlags.Container);
   const nextIndex = container.data.nextIndex;
   while (nextIndex < container.data.views.length) {
@@ -1254,6 +1263,34 @@ export function projectionDef(index: number, selectors?: CssSelector[]): void {
 }
 
 /**
+ * Updates the linked list of a projection node, by appending another linked list.
+ *
+ * @param projectionNode Projection node whose projected nodes linked list has to be updated
+ * @param appendedFirst First node of the linked list to append.
+ * @param appendedLast Last node of the linked list to append.
+ */
+function appendToProjectionNode(
+    projectionNode: LProjectionNode,
+    appendedFirst: LElementNode | LTextNode | LContainerNode | null,
+    appendedLast: LElementNode | LTextNode | LContainerNode | null) {
+  // appendedFirst can be null if and only if appendedLast is also null
+  ngDevMode &&
+      assertEqual(!appendedFirst === !appendedLast, true, '!appendedFirst === !appendedLast');
+  if (!appendedLast) {
+    // nothing to append
+    return;
+  }
+  const projectionNodeData = projectionNode.data;
+  if (projectionNodeData.last) {
+    projectionNodeData.last.pNextOrParent = appendedFirst;
+  } else {
+    projectionNodeData.first = appendedFirst;
+  }
+  projectionNodeData.last = appendedLast;
+  appendedLast.pNextOrParent = projectionNode;
+}
+
+/**
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
  * to the projectionDef instruction.
  *
@@ -1262,8 +1299,7 @@ export function projectionDef(index: number, selectors?: CssSelector[]): void {
  * @param selectorIndex - 0 means <ng-content> without any selector
  */
 export function projection(nodeIndex: number, localIndex: number, selectorIndex: number = 0): void {
-  const projectedNodes: LProjection = [];
-  const node = createLNode(nodeIndex, LNodeFlags.Projection, null, projectedNodes);
+  const node = createLNode(nodeIndex, LNodeFlags.Projection, null, {first: null, last: null});
   isParent = false;  // self closing
   const currentParent = node.parent;
 
@@ -1274,19 +1310,26 @@ export function projection(nodeIndex: number, localIndex: number, selectorIndex:
   const nodesForSelector =
       valueInData<LNode[][]>(componentNode.data !.data !, localIndex)[selectorIndex];
 
+  // build the linked list of projected nodes:
   for (let i = 0; i < nodesForSelector.length; i++) {
     const nodeToProject = nodesForSelector[i];
     if ((nodeToProject.flags & LNodeFlags.TYPE_MASK) === LNodeFlags.Projection) {
-      const previouslyProjectedNodes = (nodeToProject as LProjectionNode).data;
-      for (let j = 0; j < previouslyProjectedNodes.length; j++) {
-        processProjectedNode(
-            projectedNodes, previouslyProjectedNodes[j], currentParent, currentView);
-      }
+      const previouslyProjected = (nodeToProject as LProjectionNode).data;
+      appendToProjectionNode(node, previouslyProjected.first, previouslyProjected.last);
     } else {
-      processProjectedNode(
-          projectedNodes, nodeToProject as LElementNode | LTextNode | LContainerNode, currentParent,
-          currentView);
+      appendToProjectionNode(
+          node, nodeToProject as LTextNode | LElementNode | LContainerNode,
+          nodeToProject as LTextNode | LElementNode | LContainerNode);
     }
+  }
+
+  // process each node in the list of projected nodes:
+  let nodeToProject: LNode|null = node.data.first;
+  const lastNodeToProject = node.data.last;
+  while (nodeToProject) {
+    processProjectedNode(
+        nodeToProject as LTextNode | LElementNode | LContainerNode, currentParent, currentView);
+    nodeToProject = nodeToProject === lastNodeToProject ? null : nodeToProject.pNextOrParent;
   }
 }
 
