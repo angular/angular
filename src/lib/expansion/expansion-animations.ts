@@ -35,12 +35,12 @@ export const matExpansionAnimations: {
     state('collapsed', style({
       height: '{{collapsedHeight}}',
     }), {
-      params: {collapsedHeight: '*'},
+      params: {collapsedHeight: '48px'},
     }),
     state('expanded', style({
       height: '{{expandedHeight}}'
     }), {
-      params: {expandedHeight: '*'}
+      params: {expandedHeight: '64px'}
     }),
     transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
   ]),
