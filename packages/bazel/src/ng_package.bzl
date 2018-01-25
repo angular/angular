@@ -186,8 +186,7 @@ def _ng_package_impl(ctx):
   bundles = [umd.js, umd.map, min.js, min.map]
 
   for entry_point in ctx.attr.secondary_entry_points:
-    entry_point_name = entry_point.label.package
-    externals = entry_point.globals.keys()
+    entry_point_name = entry_point
 
     # TODO jasonaden says there is no particular reason these filenames differ
     umd_output_filename = "-".join(entry_point_name.split("/")[1:])
@@ -198,11 +197,11 @@ def _ng_package_impl(ctx):
        "/".join([ctx.bin_dir.path, ctx.label.package, ctx.label.name + ".es6"]))
     secondary_fesm_5 = _rollup(ctx, "fesm_5/" + fesm_output_filename, esm_es5_files,
        npm_package_name, externals, entry_point_name,
-       "/".join([ctx.bin_dir.path, entry_point.label.package, entry_point.label.package.split("/")[-1] + ".es5_esm"]))
+       "/".join([ctx.bin_dir.path, entry_point, entry_point.split("/")[-1] + ".es5_esm"]))
 
     secondary_umd = _rollup(ctx, "umd/" + umd_output_filename, esm_es5_files, npm_package_name, externals,
       #FIXME(alexeagle): why is it /core.es5_esm rather than /npm_package.es5_esm? should be more similar to es6 above
-      entry_point_name, "/".join([ctx.bin_dir.path, entry_point.label.package, entry_point.label.package.split("/")[-1] + ".es5_esm"]),
+      entry_point_name, "/".join([ctx.bin_dir.path, entry_point, entry_point.split("/")[-1] + ".es5_esm"]),
       "umd")
     secondary_min = _uglify(ctx, secondary_umd.js, umd_output_filename)
 
@@ -289,25 +288,12 @@ ng_package = rule(
       "readme_md": attr.label(allow_single_file = FileType([".md"])),
       "license_banner": attr.label(allow_single_file = FileType([".txt"])),
       "globals": attr.string_dict(default={}),
-      "secondary_entry_points": attr.label_list(),
+      "secondary_entry_points": attr.string_list(),
       "stamp_data": attr.label(mandatory=True, allow_single_file=[".txt"]),
       "_packager": attr.label(default=Label("//packages/bazel/src/packager"), executable=True, cfg="host"),
       "_rollup": attr.label(default=Label("//packages/bazel/src/rollup"), executable=True, cfg="host"),
       "_rollup_config_tmpl": attr.label(default=Label("//packages/bazel/src/rollup:rollup.config.js"), allow_single_file=True),
       "_uglify": attr.label(default=Label("//packages/bazel/src/rollup:uglify"), executable=True, cfg="host"),
-    }
-)
-
-
-def _ng_package_entry_point_impl(ctx):
-  return struct(
-      globals = ctx.attr.globals
-  )
-
-ng_package_entry_point = rule(
-    implementation = _ng_package_entry_point_impl,
-    attrs = {
-        "globals": attr.string_dict(default={})
     }
 )
 

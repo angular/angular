@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "ng_module")
-load("@angular//:index.bzl", "ng_package_entry_point")
 
 ng_module(
     name = "http",
@@ -17,20 +16,4 @@ ng_module(
         "//packages/core",
         "@rxjs",
     ],
-)
-
-ng_package_entry_point(
-    name = "entry_point",
-    globals = {
-      '@angular/core': 'ng.core',
-      '@angular/platform-browser': 'ng.platformBrowser',
-      '@angular/common': 'ng.common',
-      'rxjs/Observable': 'Rx',
-      'rxjs/Observer': 'Rx',
-      'rxjs/Subject': 'Rx',
-      'rxjs/observable/of': 'Rx.Observable.prototype',
-      'rxjs/operator/concatMap': 'Rx.Observable.prototype',
-      'rxjs/operator/filter': 'Rx.Observable.prototype',
-      'rxjs/operator/map': 'Rx.Observable.prototype',
-    }
 )

@@ -1,1 +1,1 @@
-load("//packages/bazel:index.bzl", "ng_module", "ng_package", "ng_package_entry_point")
+load("//packages/bazel:index.bzl", "ng_module", "ng_package")
