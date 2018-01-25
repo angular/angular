@@ -22,11 +22,11 @@ describe('Observe content', () => {
 
       // If the hint label is empty, expect no label.
       const spy = spyOn(fixture.componentInstance, 'doSomething').and.callFake(() => {
-        expect(spy.calls.any()).toBe(true);
+        expect(spy).toHaveBeenCalled();
         done();
       });
 
-      expect(spy.calls.any()).toBe(false);
+      expect(spy).not.toHaveBeenCalled();
 
       fixture.componentInstance.text = 'text';
       fixture.detectChanges();
@@ -38,15 +38,43 @@ describe('Observe content', () => {
 
       // If the hint label is empty, expect no label.
       const spy = spyOn(fixture.componentInstance, 'doSomething').and.callFake(() => {
-        expect(spy.calls.any()).toBe(true);
+        expect(spy).toHaveBeenCalled();
         done();
       });
 
-      expect(spy.calls.any()).toBe(false);
+      expect(spy).not.toHaveBeenCalled();
 
       fixture.componentInstance.text = 'text';
       fixture.detectChanges();
     });
+
+    it('should disconnect the MutationObserver when the directive is disabled', () => {
+      const observeSpy = jasmine.createSpy('observe spy');
+      const disconnectSpy = jasmine.createSpy('disconnect spy');
+
+      // Note: since we can't know exactly when the native MutationObserver will emit, we can't
+      // test this scenario reliably without risking flaky tests, which is why we supply a mock
+      // MutationObserver and check that the methods are called at the right time.
+      TestBed.overrideProvider(MutationObserverFactory, {
+        deps: [],
+        useFactory: () => ({
+          create: () => ({observe: observeSpy, disconnect: disconnectSpy})
+        })
+      });
+
+      const fixture = TestBed.createComponent(ComponentWithTextContent);
+      fixture.detectChanges();
+
+      expect(observeSpy).toHaveBeenCalledTimes(1);
+      expect(disconnectSpy).not.toHaveBeenCalled();
+
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      expect(observeSpy).toHaveBeenCalledTimes(1);
+      expect(disconnectSpy).toHaveBeenCalledTimes(1);
+    });
+
   });
 
   describe('debounced', () => {
@@ -93,9 +121,16 @@ describe('Observe content', () => {
 });
 
 
-@Component({ template: `<div (cdkObserveContent)="doSomething()">{{text}}</div>` })
+@Component({
+  template: `
+    <div
+      (cdkObserveContent)="doSomething()"
+      [cdkObserveContentDisabled]="disabled">{{text}}</div>
+  `
+})
 class ComponentWithTextContent {
   text = '';
+  disabled = false;
   doSomething() {}
 }
 

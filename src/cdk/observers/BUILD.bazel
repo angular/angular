@@ -5,6 +5,6 @@ ng_module(
   name = "observers",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/observers",
-  deps = ["@rxjs"],
+  deps = ["@rxjs", "//src/cdk/coercion"],
   tsconfig = ":tsconfig-build.json",
 )
