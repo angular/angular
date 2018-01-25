@@ -125,17 +125,17 @@ describe('MatPaginator', () => {
       expect(component.latestPageEvent ? component.latestPageEvent.pageIndex : null).toBe(0);
     });
 
-    it('should disable navigating to the next page if at first page', () => {
+    it('should disable navigating to the next page if at last page', () => {
       component.goToLastPage();
       fixture.detectChanges();
-      expect(paginator.pageIndex).toBe(10);
+      expect(paginator.pageIndex).toBe(9);
       expect(paginator.hasNextPage()).toBe(false);
 
       component.latestPageEvent = null;
       dispatchMouseEvent(getNextButton(fixture), 'click');
 
       expect(component.latestPageEvent).toBe(null);
-      expect(paginator.pageIndex).toBe(10);
+      expect(paginator.pageIndex).toBe(9);
     });
 
     it('should disable navigating to the previous page if at first page', () => {
@@ -310,7 +310,7 @@ class MatPaginatorApp {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   goToLastPage() {
-    this.pageIndex = Math.ceil(this.length / this.pageSize);
+    this.pageIndex = Math.ceil(this.length / this.pageSize) - 1;
   }
 }
 
