@@ -10,7 +10,7 @@ import {AnimationEvent} from '@angular/animations';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
-import {E, L, T, b, defineComponent, detectChanges, e, p} from '../../src/render3/index';
+import {E, L, T, b, defineComponent, detectChanges, e, p, r} from '../../src/render3/index';
 import {createRendererType2} from '../../src/view/index';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
@@ -29,6 +29,7 @@ describe('renderer factory lifecycle', () => {
 
   class SomeComponent {
     static ngComponentDef = defineComponent({
+      type: SomeComponent,
       tag: 'some-component',
       template: function(ctx: SomeComponent, cm: boolean) {
         logs.push('component');
@@ -42,6 +43,7 @@ describe('renderer factory lifecycle', () => {
 
   class SomeComponentWhichThrows {
     static ngComponentDef = defineComponent({
+      type: SomeComponentWhichThrows,
       tag: 'some-component-with-Error',
       template: function(ctx: SomeComponentWhichThrows, cm: boolean) {
         throw(new Error('SomeComponentWhichThrows threw'));
@@ -65,7 +67,7 @@ describe('renderer factory lifecycle', () => {
       e();
     }
     SomeComponent.ngComponentDef.h(2, 1);
-    SomeComponent.ngComponentDef.r(2, 1);
+    r(2, 1);
   }
 
   beforeEach(() => { logs = []; });
@@ -120,6 +122,7 @@ describe('animation renderer factory', () => {
 
   class SomeComponent {
     static ngComponentDef = defineComponent({
+      type: SomeComponent,
       tag: 'some-component',
       template: function(ctx: SomeComponent, cm: boolean) {
         if (cm) {
@@ -136,6 +139,7 @@ describe('animation renderer factory', () => {
       eventLogs.push(`${event.fromState ? event.fromState : event.toState} - ${event.phaseName}`);
     }
     static ngComponentDef = defineComponent({
+      type: SomeComponentWithAnimation,
       tag: 'some-component',
       template: function(ctx: SomeComponentWithAnimation, cm: boolean) {
         if (cm) {

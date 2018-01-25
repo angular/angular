@@ -27,6 +27,9 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
  * `DirectiveDef` is a compiled version of the Directive used by the renderer instructions.
  */
 export interface DirectiveDef<T> {
+  /** Token representing the directive. Used by DI. */
+  type: Type<T>;
+
   /** Function that makes a directive public to the DI system. */
   diPublic: ((def: DirectiveDef<any>) => void)|null;
 
@@ -65,41 +68,22 @@ export interface DirectiveDef<T> {
   n(): T;
 
   /**
-   * Refreshes the view of the component. Also calls lifecycle hooks like
-   * ngAfterViewInit, if they are defined on the component.
-   *
-   * NOTE: this property is short (1 char) because it is used in component
-   * templates which is sensitive to size.
-   *
-   * @param directiveIndex index of the directive in the containing template
-   * @param elementIndex index of an host element for a given directive.
-   */
-  r(directiveIndex: number, elementIndex: number): void;
-
-  /**
    * Refreshes host bindings on the associated directive. Also calls lifecycle hooks
    * like ngOnInit and ngDoCheck, if they are defined on the directive.
    */
-  // Note: This call must be separate from r() because hooks like ngOnInit need to
-  // be called breadth-first across a view before processing onInits in children
-  // (for backwards compatibility). Child template processing thus needs to be
-  // delayed until all inputs and host bindings in a view have been checked.
   h(directiveIndex: number, elementIndex: number): void;
+
+  /* The following are lifecycle hooks for this component */
+  onInit: (() => void)|null;
+  doCheck: (() => void)|null;
+  afterContentInit: (() => void)|null;
+  afterContentChecked: (() => void)|null;
+  afterViewInit: (() => void)|null;
+  afterViewChecked: (() => void)|null;
+  onDestroy: (() => void)|null;
 }
 
 export interface ComponentDef<T> extends DirectiveDef<T> {
-  /**
-   * Refreshes the view of the component. Also calls lifecycle hooks like
-   * ngAfterViewInit, if they are defined on the component.
-   *
-   * NOTE: this property is short (1 char) because it is used in
-   * component templates which is sensitive to size.
-   *
-   * @param directiveIndex index of the directive in the containing template
-   * @param elementIndex index of an host element for a given component.
-   */
-  r(directiveIndex: number, elementIndex: number): void;
-
   /**
    * The tag name which should be used by the component.
    *
@@ -122,31 +106,20 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly rendererType: RendererType2|null;
 }
 
-/**
- * Private: do not export
- */
-export interface TypedDirectiveDef<T> extends DirectiveDef<T> { type: DirectiveType<T>; }
-
-/**
- * Private: do not export
- */
-export interface TypedComponentDef<T> extends ComponentDef<T> { type: ComponentType<T>; }
-
 export interface DirectiveDefArgs<T> {
+  type: Type<T>;
   factory: () => T;
-  refresh?: (directiveIndex: number, elementIndex: number) => void;
   inputs?: {[P in keyof T]?: string};
   outputs?: {[P in keyof T]?: string};
   methods?: {[P in keyof T]?: string};
   features?: DirectiveDefFeature[];
+  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
   exportAs?: string;
 }
 
 export interface ComponentDefArgs<T> extends DirectiveDefArgs<T> {
   tag: string;
   template: ComponentTemplate<T>;
-  refresh?: (directiveIndex: number, elementIndex: number) => void;
-  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
   features?: ComponentDefFeature[];
   rendererType?: RendererType2;
 }

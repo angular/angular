@@ -13,8 +13,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {componentRefresh} from './instructions';
-import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, TypedDirectiveDef} from './interfaces/definition';
+import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs} from './interfaces/definition';
 
 
 
@@ -34,22 +33,26 @@ import {ComponentDef, ComponentDefArgs, DirectiveDef, DirectiveDefArgs, TypedDir
  * ```
  */
 export function defineComponent<T>(componentDefinition: ComponentDefArgs<T>): ComponentDef<T> {
+  const type = componentDefinition.type;
   const def = <ComponentDef<any>>{
+    type: type,
     diPublic: null,
     n: componentDefinition.factory,
     tag: (componentDefinition as ComponentDefArgs<T>).tag || null !,
     template: (componentDefinition as ComponentDefArgs<T>).template || null !,
-    r: componentDefinition.refresh || (componentDefinition.template ?
-                                           function(d: number, e: number) {
-                                             componentRefresh(d, e, componentDefinition.template);
-                                           } :
-                                           noop),
     h: componentDefinition.hostBindings || noop,
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
     methods: invertObject(componentDefinition.methods),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
     exportAs: componentDefinition.exportAs,
+    onInit: type.prototype.ngOnInit || null,
+    doCheck: type.prototype.ngDoCheck || null,
+    afterContentInit: type.prototype.ngAfterContentInit || null,
+    afterContentChecked: type.prototype.ngAfterContentChecked || null,
+    afterViewInit: type.prototype.ngAfterViewInit || null,
+    afterViewChecked: type.prototype.ngAfterViewChecked || null,
+    onDestroy: type.prototype.ngOnDestroy || null
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -96,7 +99,7 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
         }
       });
     }
-    proto.ngDoCheck = (function(delegateDoCheck) {
+    definition.doCheck = (function(delegateDoCheck) {
       return function(this: OnChangesExpando) {
         let simpleChanges = this[PRIVATE_PREFIX];
         if (simpleChanges != null) {
@@ -108,6 +111,7 @@ export function NgOnChangesFeature<T>(type: Type<T>): (definition: DirectiveDef<
     })(proto.ngDoCheck);
   };
 }
+
 
 export function PublicFeature<T>(definition: DirectiveDef<T>) {
   definition.diPublic = diPublic;

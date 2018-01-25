@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, E, L, T, V, b, b1, cR, cr, defineComponent, defineDirective, e, m, p, t, v} from '../../src/render3/index';
+import {C, E, L, T, V, b, b1, cR, cr, defineComponent, defineDirective, e, m, p, r, t, v} from '../../src/render3/index';
 import {NO_CHANGE} from '../../src/render3/instructions';
 
 import {renderToHtml} from './render_util';
@@ -69,8 +69,8 @@ describe('elementProperty', () => {
     class MyButton {
       disabled: boolean;
 
-      static ngDirectiveDef =
-          defineDirective({factory: () => button = new MyButton(), inputs: {disabled: 'disabled'}});
+      static ngDirectiveDef = defineDirective(
+          {type: MyButton, factory: () => button = new MyButton(), inputs: {disabled: 'disabled'}});
     }
 
     class OtherDir {
@@ -78,6 +78,7 @@ describe('elementProperty', () => {
       clickStream = new EventEmitter();
 
       static ngDirectiveDef = defineDirective({
+        type: OtherDir,
         factory: () => otherDir = new OtherDir(),
         inputs: {id: 'id'},
         outputs: {clickStream: 'click'}
@@ -140,6 +141,7 @@ describe('elementProperty', () => {
         id: number;
 
         static ngComponentDef = defineComponent({
+          type: Comp,
           tag: 'comp',
           template: function(ctx: any, cm: boolean) {},
           factory: () => comp = new Comp(),
@@ -155,7 +157,7 @@ describe('elementProperty', () => {
         }
         p(0, 'id', b(ctx.id));
         Comp.ngComponentDef.h(1, 0);
-        Comp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {id: 1})).toEqual(`<comp></comp>`);
@@ -172,6 +174,7 @@ describe('elementProperty', () => {
         disabled: boolean;
 
         static ngDirectiveDef = defineDirective({
+          type: OtherDisabledDir,
           factory: () => otherDisabledDir = new OtherDisabledDir(),
           inputs: {disabled: 'disabled'}
         });
@@ -231,8 +234,8 @@ describe('elementProperty', () => {
       class IdDir {
         idNumber: number;
 
-        static ngDirectiveDef =
-            defineDirective({factory: () => idDir = new IdDir(), inputs: {idNumber: 'id'}});
+        static ngDirectiveDef = defineDirective(
+            {type: IdDir, factory: () => idDir = new IdDir(), inputs: {idNumber: 'id'}});
       }
 
       /**
@@ -294,6 +297,7 @@ describe('elementProperty', () => {
       changeStream = new EventEmitter();
 
       static ngDirectiveDef = defineDirective({
+        type: MyDir,
         factory: () => myDir = new MyDir(),
         inputs: {role: 'role', direction: 'dir'},
         outputs: {changeStream: 'change'}
@@ -304,8 +308,8 @@ describe('elementProperty', () => {
     class MyDirB {
       roleB: string;
 
-      static ngDirectiveDef =
-          defineDirective({factory: () => dirB = new MyDirB(), inputs: {roleB: 'role'}});
+      static ngDirectiveDef = defineDirective(
+          {type: MyDirB, factory: () => dirB = new MyDirB(), inputs: {roleB: 'role'}});
     }
 
     it('should set input property based on attribute if existing', () => {
@@ -467,6 +471,7 @@ describe('elementProperty', () => {
 
       class Comp {
         static ngComponentDef = defineComponent({
+          type: Comp,
           tag: 'comp',
           template: function(ctx: any, cm: boolean) {
             if (cm) {
@@ -497,7 +502,7 @@ describe('elementProperty', () => {
               e();
             }
             Comp.ngComponentDef.h(1, 0);
-            Comp.ngComponentDef.r(1, 0);
+            r(1, 0);
             v();
           }
         }

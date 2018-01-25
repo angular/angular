@@ -8,7 +8,7 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {C, E, L, LifecycleHook, T, V, b, cR, cr, defineComponent, defineDirective, e, l, p, v} from '../../src/render3/index';
+import {C, E, L, T, V, b, cR, cr, defineComponent, defineDirective, e, p, r, v} from '../../src/render3/index';
 
 import {containerEl, renderToHtml} from './render_util';
 
@@ -20,6 +20,7 @@ describe('outputs', () => {
     resetStream = new EventEmitter();
 
     static ngComponentDef = defineComponent({
+      type: ButtonToggle,
       tag: 'button-toggle',
       template: function(ctx: any, cm: boolean) {},
       factory: () => buttonToggle = new ButtonToggle(),
@@ -32,8 +33,11 @@ describe('outputs', () => {
   class OtherDir {
     changeStream = new EventEmitter();
 
-    static ngDirectiveDef = defineDirective(
-        {factory: () => otherDir = new OtherDir, outputs: {changeStream: 'change'}});
+    static ngDirectiveDef = defineDirective({
+      type: OtherDir,
+      factory: () => otherDir = new OtherDir,
+      outputs: {changeStream: 'change'}
+    });
   }
 
   it('should call component output function when event is emitted', () => {
@@ -45,7 +49,7 @@ describe('outputs', () => {
         e();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     let counter = 0;
@@ -71,7 +75,7 @@ describe('outputs', () => {
         e();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     let counter = 0;
@@ -95,7 +99,7 @@ describe('outputs', () => {
         e();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     const ctx = {counter: 0};
@@ -129,7 +133,7 @@ describe('outputs', () => {
             e();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
-          ButtonToggle.ngComponentDef.r(1, 0);
+          r(1, 0);
           v();
         }
       }
@@ -179,7 +183,7 @@ describe('outputs', () => {
                 e();
               }
               ButtonToggle.ngComponentDef.h(1, 0);
-              ButtonToggle.ngComponentDef.r(1, 0);
+              r(1, 0);
               v();
             }
           }
@@ -212,13 +216,10 @@ describe('outputs', () => {
       ngOnDestroy() { this.events.push('destroy'); }
 
       static ngComponentDef = defineComponent({
+        type: DestroyComp,
         tag: 'destroy-comp',
         template: function(ctx: any, cm: boolean) {},
-        factory: () => {
-          destroyComp = new DestroyComp();
-          l(LifecycleHook.ON_DESTROY, destroyComp, destroyComp.ngOnDestroy);
-          return destroyComp;
-        }
+        factory: () => destroyComp = new DestroyComp()
       });
     }
 
@@ -251,8 +252,8 @@ describe('outputs', () => {
           }
           ButtonToggle.ngComponentDef.h(3, 2);
           DestroyComp.ngComponentDef.h(5, 4);
-          ButtonToggle.ngComponentDef.r(3, 2);
-          DestroyComp.ngComponentDef.r(5, 4);
+          r(3, 2);
+          r(5, 4);
           v();
         }
       }
@@ -291,8 +292,8 @@ describe('outputs', () => {
     class MyButton {
       click = new EventEmitter();
 
-      static ngDirectiveDef =
-          defineDirective({factory: () => buttonDir = new MyButton, outputs: {click: 'click'}});
+      static ngDirectiveDef = defineDirective(
+          {type: MyButton, factory: () => buttonDir = new MyButton, outputs: {click: 'click'}});
     }
 
     function Template(ctx: any, cm: boolean) {
@@ -325,7 +326,7 @@ describe('outputs', () => {
         e();
       }
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     let counter = 0;
@@ -344,8 +345,8 @@ describe('outputs', () => {
     class OtherDir {
       change: boolean;
 
-      static ngDirectiveDef =
-          defineDirective({factory: () => otherDir = new OtherDir, inputs: {change: 'change'}});
+      static ngDirectiveDef = defineDirective(
+          {type: OtherDir, factory: () => otherDir = new OtherDir, inputs: {change: 'change'}});
     }
 
     /** <button-toggle (change)="onChange()" otherDir [change]="change"></button-toggle> */
@@ -357,7 +358,7 @@ describe('outputs', () => {
       }
       p(0, 'change', b(ctx.change));
       ButtonToggle.ngComponentDef.h(1, 0);
-      ButtonToggle.ngComponentDef.r(1, 0);
+      r(1, 0);
     }
 
     let counter = 0;
@@ -400,7 +401,7 @@ describe('outputs', () => {
             e();
           }
           ButtonToggle.ngComponentDef.h(1, 0);
-          ButtonToggle.ngComponentDef.r(1, 0);
+          r(1, 0);
           v();
         } else {
           if (V(1)) {

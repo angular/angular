@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../../src/core';
-import {E, T, b, defineComponent, e, markDirty, t} from '../../src/render3/index';
+import {E, T, b, defineComponent, e, markDirty, r, t} from '../../src/render3/index';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -20,6 +20,7 @@ describe('component', () => {
     increment() { this.count++; }
 
     static ngComponentDef = defineComponent({
+      type: CounterComponent,
       tag: 'counter',
       template: function(ctx: CounterComponent, cm: boolean) {
         if (cm) {
@@ -63,6 +64,7 @@ describe('component', () => {
 describe('encapsulation', () => {
   class WrapperComponent {
     static ngComponentDef = defineComponent({
+      type: WrapperComponent,
       tag: 'wrapper',
       template: function(ctx: WrapperComponent, cm: boolean) {
         if (cm) {
@@ -70,7 +72,7 @@ describe('encapsulation', () => {
           e();
         }
         EncapsulatedComponent.ngComponentDef.h(1, 0);
-        EncapsulatedComponent.ngComponentDef.r(1, 0);
+        r(1, 0);
       },
       factory: () => new WrapperComponent,
     });
@@ -78,6 +80,7 @@ describe('encapsulation', () => {
 
   class EncapsulatedComponent {
     static ngComponentDef = defineComponent({
+      type: EncapsulatedComponent,
       tag: 'encapsulated',
       template: function(ctx: EncapsulatedComponent, cm: boolean) {
         if (cm) {
@@ -86,7 +89,7 @@ describe('encapsulation', () => {
           e();
         }
         LeafComponent.ngComponentDef.h(2, 1);
-        LeafComponent.ngComponentDef.r(2, 1);
+        r(2, 1);
       },
       factory: () => new EncapsulatedComponent,
       rendererType:
@@ -96,6 +99,7 @@ describe('encapsulation', () => {
 
   class LeafComponent {
     static ngComponentDef = defineComponent({
+      type: LeafComponent,
       tag: 'leaf',
       template: function(ctx: LeafComponent, cm: boolean) {
         if (cm) {
@@ -125,6 +129,7 @@ describe('encapsulation', () => {
   it('should encapsulate host and children with different attributes', () => {
     class WrapperComponentWith {
       static ngComponentDef = defineComponent({
+        type: WrapperComponentWith,
         tag: 'wrapper',
         template: function(ctx: WrapperComponentWith, cm: boolean) {
           if (cm) {
@@ -132,7 +137,7 @@ describe('encapsulation', () => {
             e();
           }
           LeafComponentwith.ngComponentDef.h(1, 0);
-          LeafComponentwith.ngComponentDef.r(1, 0);
+          r(1, 0);
         },
         factory: () => new WrapperComponentWith,
         rendererType:
@@ -142,6 +147,7 @@ describe('encapsulation', () => {
 
     class LeafComponentwith {
       static ngComponentDef = defineComponent({
+        type: LeafComponentwith,
         tag: 'leaf',
         template: function(ctx: LeafComponentwith, cm: boolean) {
           if (cm) {

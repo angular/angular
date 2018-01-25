@@ -7,7 +7,7 @@
  */
 
 import {TemplateRef, ViewContainerRef} from '../../src/core';
-import {C, T, b, cR, cr, defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef, m, t} from '../../src/render3/index';
+import {C, T, b, cR, cr, defineComponent, defineDirective, injectTemplateRef, injectViewContainerRef, m, r, t} from '../../src/render3/index';
 
 import {renderComponent, toHtml} from './render_util';
 
@@ -16,6 +16,7 @@ describe('ViewContainerRef', () => {
     constructor(public viewContainer: ViewContainerRef, public template: TemplateRef<any>, ) {}
 
     static ngDirectiveDef = defineDirective({
+      type: TestDirective,
       factory: () => new TestDirective(injectViewContainerRef(), injectTemplateRef(), ),
     });
   }
@@ -24,6 +25,7 @@ describe('ViewContainerRef', () => {
     testDir: TestDirective;
 
     static ngComponentDef = defineComponent({
+      type: TestComponent,
       tag: 'test-cmp',
       factory: () => new TestComponent(),
       template: (cmp: TestComponent, cm: boolean) => {
@@ -38,7 +40,8 @@ describe('ViewContainerRef', () => {
         }
         cR(0);
         cmp.testDir = m(1) as TestDirective;
-        TestDirective.ngDirectiveDef.r(1, 0);
+        TestDirective.ngDirectiveDef.h(1, 0);
+        r(1, 0);
         cr();
       },
     });

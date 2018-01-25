@@ -28,6 +28,7 @@ describe('define', () => {
           }
 
           static ngDirectiveDef = defineDirective({
+            type: MyDirective,
             factory: () => new MyDirective(),
             features: [NgOnChangesFeature(MyDirective)],
             inputs: {valA: 'valA', valB: 'valB'}
@@ -41,7 +42,7 @@ describe('define', () => {
         expect(myDir.log).toEqual(['second']);
         expect(myDir.valB).toEqual('works');
         myDir.log.length = 0;
-        myDir.ngDoCheck();
+        MyDirective.ngDirectiveDef.doCheck !.call(myDir);
         expect(myDir.log).toEqual([
           'ngOnChanges', 'valA', 'initValue', 'first', 'valB', undefined, 'second', 'ngDoCheck'
         ]);

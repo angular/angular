@@ -33,9 +33,6 @@ export interface LView {
    */
   creationMode: boolean;
 
-  /** The index in the data array at which view hooks begin to be stored. */
-  viewHookStartIndex: number|null;
-
   /**
    * The parent view is needed when we exit the view and must restore the previous
    * `LView`. Without this, the render method would have to keep a stack of
@@ -72,9 +69,9 @@ export interface LView {
   bindingStartIndex: number|null;
 
   /**
-   * When a view is destroyed, listeners need to be released and onDestroy callbacks
-   * need to be called. This cleanup array stores both listener data (in chunks of 4)
-   * and onDestroy data (in chunks of 2) for a particular view. Combining the arrays
+   * When a view is destroyed, listeners need to be released and outputs need to be
+   * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
+   * and output data (in chunks of 2) for a particular view. Combining the arrays
    * saves on memory (70 bytes per array) and on a few bytes of code size (for two
    * separate for loops).
    *
@@ -84,11 +81,28 @@ export interface LView {
    * 3rd index is: listener function
    * 4th index is: useCapture boolean
    *
-   * If it's an onDestroy function:
-   * 1st index is: onDestroy function
-   * 2nd index is; context for function
+   * If it's an output subscription:
+   * 1st index is: unsubscribe function
+   * 2nd index is: context for function
    */
   cleanup: any[]|null;
+
+  /**
+   * This number tracks the next lifecycle hook that needs to be run.
+   *
+   * If lifecycleStage === LifecycleStage.ON_INIT, the init hooks haven't yet been run
+   * and should be executed by the first r() instruction that runs OR the first
+   * cR() instruction that runs (so inits are run for the top level view before any
+   * embedded views).
+   *
+   * If lifecycleStage === LifecycleStage.CONTENT_INIT, the init hooks have been run, but
+   * the content hooks have not yet been run. They should be executed on the first
+   * r() instruction that runs.
+   *
+   * If lifecycleStage === LifecycleStage.VIEW_INIT, both the init hooks and content hooks
+   * have already been run.
+   */
+  lifecycleStage: LifecycleStage;
 
   /**
    * The first LView or LContainer beneath this LView in the hierarchy.
@@ -172,7 +186,67 @@ export interface LViewOrLContainer {
  *
  * Stored on the template function as ngPrivateData.
  */
-export interface TView { data: TData; }
+export interface TView {
+  /** Static data equivalent of LView.data[]. Contains TNodes and directive defs. */
+  data: TData;
+
+  /** Whether or not this template has been processed. */
+  firstTemplatePass: boolean;
+
+  /**
+   * Array of ngOnInit and ngDoCheck hooks that should be executed for this view.
+   *
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
+   * Odd indices: Hook function
+   */
+  initHooks: HookData|null;
+
+  /**
+   * Array of ngAfterContentInit and ngAfterContentChecked hooks that should be executed for
+   * this view.
+   *
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
+   * Odd indices: Hook function
+   */
+  contentHooks: HookData|null;
+
+  /**
+   * Array of ngAfterViewInit and ngAfterViewChecked hooks that should be executed for
+   * this view.
+   *
+   * Even indices: Flags (1st bit: hook type, remaining: directive index)
+   * Odd indices: Hook function
+   */
+  viewHooks: HookData|null;
+
+  /**
+   * Array of ngOnDestroy hooks that should be executed when this view is destroyed.
+   *
+   * Even indices: Directive index
+   * Odd indices: Hook function
+   */
+  destroyHooks: HookData|null;
+}
+
+/**
+ * Array of hooks that should be executed for a view and their directive indices.
+ *
+ * Even indices: Flags (1st bit: hook type, remaining: directive index)
+ * Odd indices: Hook function
+ */
+export type HookData = (number | (() => void))[];
+
+/** Possible values of LView.lifecycleStage, used to determine which hooks to run.  */
+export const enum LifecycleStage {
+  /* Init hooks need to be run, if any. */
+  INIT = 1,
+
+  /* Content hooks need to be run, if any. Init hooks have already run. */
+  CONTENT_INIT = 2,
+
+  /* View hooks need to be run, if any. Any init hooks/content hooks have ran. */
+  VIEW_INIT = 3
+}
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.

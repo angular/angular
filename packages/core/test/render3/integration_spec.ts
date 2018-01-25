@@ -210,6 +210,7 @@ describe('render3 integration test', () => {
       value = ' one';
 
       static ngComponentDef = defineComponent({
+        type: TodoComponent,
         tag: 'todo',
         template: function TodoTemplate(ctx: any, cm: boolean) {
           if (cm) {
@@ -233,7 +234,7 @@ describe('render3 integration test', () => {
           e();
         }
         TodoComponent.ngComponentDef.h(1, 0);
-        TodoComponent.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>');
@@ -247,7 +248,7 @@ describe('render3 integration test', () => {
           T(2, 'two');
         }
         TodoComponent.ngComponentDef.h(1, 0);
-        TodoComponent.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
       expect(renderToHtml(Template, null)).toEqual('<todo><p>Todo one</p></todo>two');
     });
@@ -266,8 +267,8 @@ describe('render3 integration test', () => {
         }
         TodoComponent.ngComponentDef.h(1, 0);
         TodoComponent.ngComponentDef.h(3, 2);
-        TodoComponent.ngComponentDef.r(1, 0);
-        TodoComponent.ngComponentDef.r(3, 2);
+        r(1, 0);
+        r(3, 2);
       }
       expect(renderToHtml(Template, null))
           .toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
@@ -279,6 +280,7 @@ describe('render3 integration test', () => {
       class TodoComponentHostBinding {
         title = 'one';
         static ngComponentDef = defineComponent({
+          type: TodoComponentHostBinding,
           tag: 'todo',
           template: function TodoComponentHostBindingTemplate(
               ctx: TodoComponentHostBinding, cm: boolean) {
@@ -301,7 +303,7 @@ describe('render3 integration test', () => {
           e();
         }
         TodoComponentHostBinding.ngComponentDef.h(1, 0);
-        TodoComponentHostBinding.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {})).toEqual('<todo title="one">one</todo>');
@@ -314,6 +316,7 @@ describe('render3 integration test', () => {
       class MyComp {
         name = 'Bess';
         static ngComponentDef = defineComponent({
+          type: MyComp,
           tag: 'comp',
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
@@ -333,7 +336,7 @@ describe('render3 integration test', () => {
           e();
         }
         MyComp.ngComponentDef.h(1, 0);
-        MyComp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, null)).toEqual('<comp><p>Bess</p></comp>');
@@ -348,6 +351,7 @@ describe('render3 integration test', () => {
       class MyComp {
         condition: boolean;
         static ngComponentDef = defineComponent({
+          type: MyComp,
           tag: 'comp',
           template: function MyCompTemplate(ctx: any, cm: boolean) {
             if (cm) {
@@ -379,7 +383,7 @@ describe('render3 integration test', () => {
         }
         p(0, 'condition', b(ctx.condition));
         MyComp.ngComponentDef.h(1, 0);
-        MyComp.ngComponentDef.r(1, 0);
+        r(1, 0);
       }
 
       expect(renderToHtml(Template, {condition: true})).toEqual('<comp><div>text</div></comp>');
