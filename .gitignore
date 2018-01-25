@@ -6,6 +6,9 @@
 /deploy
 /screenshots
 
+# Example module file will be auto-generated.
+/src/material-examples/example-module.ts
+
 # dependencies
 node_modules
 /bower_components

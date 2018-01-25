@@ -12,7 +12,7 @@ createPackageBuildTasks(cdkPackage);
 createPackageBuildTasks(cdkExperimentalPackage);
 createPackageBuildTasks(materialPackage);
 createPackageBuildTasks(materialExperimentalPackage);
-createPackageBuildTasks(examplesPackage);
+createPackageBuildTasks(examplesPackage, ['build-examples-module']);
 createPackageBuildTasks(momentAdapterPackage);
 
 import './tasks/aot';
@@ -24,7 +24,7 @@ import './tasks/default';
 import './tasks/development';
 import './tasks/docs';
 import './tasks/e2e';
-import './tasks/examples';
+import './tasks/example-module';
 import './tasks/lint';
 import './tasks/material-release';
 import './tasks/payload';

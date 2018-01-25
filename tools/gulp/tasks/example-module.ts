@@ -1,9 +1,10 @@
 import {task} from 'gulp';
 import {sync as glob} from 'glob';
+import {buildConfig} from 'material2-build-tools';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
-import {buildConfig} from 'material2-build-tools';
+
 const {packagesDir} = buildConfig;
 
 interface ExampleMetadata {

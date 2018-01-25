@@ -1,5 +1,6 @@
+// The example-module file will be auto-generated. As soon as the
+// examples are being compiled, the module file will be generated.
 import {EXAMPLE_COMPONENTS} from './example-module';
-
 
 /**
  * Example data
