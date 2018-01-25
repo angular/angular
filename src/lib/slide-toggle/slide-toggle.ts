@@ -26,7 +26,6 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
-  applyCssTransform,
   CanColor,
   CanDisable,
   CanDisableRipple,
@@ -340,7 +339,7 @@ class SlideToggleRenderer {
     this._thumbEl.classList.remove('mat-dragging');
 
     // Reset the transform because the component will take care of the thumb position after drag.
-    applyCssTransform(this._thumbEl, '');
+    this._thumbEl.style.transform = '';
 
     return this.dragPercentage > 50;
   }
@@ -350,7 +349,7 @@ class SlideToggleRenderer {
     this.dragPercentage = this._getDragPercentage(distance);
     // Calculate the moved distance based on the thumb bar width.
     const dragX = (this.dragPercentage / 100) * this._thumbBarWidth;
-    applyCssTransform(this._thumbEl, `translate3d(${dragX}px, 0, 0)`);
+    this._thumbEl.style.transform = `translate3d(${dragX}px, 0, 0)`;
   }
 
   /** Retrieves the percentage of thumb from the moved distance. Percentage as fraction of 100. */
