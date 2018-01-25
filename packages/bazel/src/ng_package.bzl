@@ -75,7 +75,6 @@ ES5_ESM_outputs_aspect = aspect(
 load("@build_bazel_rules_nodejs//:internal/collect_es6_sources.bzl", "collect_es6_sources")
 
 def _rollup(ctx, output_name, inputs, npm_package_name, externals, entry_point_name, rootdir, format = "es"):
-  print("building rollup to ", output_name)
   rollup_config = ctx.actions.declare_file("%s.rollup.conf.js" % ctx.label.name)
   ext = ".umd.js" if format == "umd" else ".js"
 
@@ -193,7 +192,6 @@ def _ng_package_impl(ctx):
     # TODO jasonaden says there is no particular reason these filenames differ
     umd_output_filename = "-".join(entry_point_name.split("/")[1:])
     fesm_output_filename = entry_point_name[len(ctx.label.package)+1:].replace("/", "__")
-    print("Try to get right names", fesm_output_filename)
 
     secondary_fesm_2015 = _rollup(ctx,  "fesm_2015/" + fesm_output_filename, esm_2015_files,
         npm_package_name, externals, entry_point_name,

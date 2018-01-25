@@ -106,6 +106,10 @@ describe("ng_package", () => {
       it('should have a source map', () => {
         expect(shx.cat('esm5/core.js.map')).toContain(`{"version":3,"file":"core.js","sources":`);
       });
+
+      it('should not be processed by tsickle', () => {
+        expect(shx.cat('esm5/core.js')).not.toContain('@fileoverview added by tsickle');
+      });
     });
 
 
@@ -130,7 +134,7 @@ describe("ng_package", () => {
   });
 
   describe("secondary entry-point", () => {
-    describe("package.json", () => {
+    xdescribe("package.json", () => {
 
       const packageJson = p`testing/package.json`;
 
@@ -154,7 +158,7 @@ describe("ng_package", () => {
         expect(shx.cat('testing.d.ts')).toContain(`export *`);
       });
 
-      it("should have a 'actual' d.ts file in the parent dir", () => {
+      xit("should have a 'actual' d.ts file in the parent dir", () => {
         expect(shx.cat('testing/testing.d.ts')).toContain(`export * from './testing/testing'`);
       });
     });
