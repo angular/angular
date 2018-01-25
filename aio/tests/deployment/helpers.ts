@@ -27,3 +27,23 @@ export function loadLegacyUrls() {
   const urls = readFileSync(pathToLegacyUrls, 'utf8').split('\n').map(line => line.split('\t'));
   return urls;
 }
+
+export function loadSWRoutes() {
+  const pathToSWManifest = path.resolve(__dirname, '../../ngsw-manifest.json');
+  const contents = cjson.load(pathToSWManifest);
+  const routes = contents.routing.routes;
+  return Object.keys(routes).map(route => {
+    const routeConfig = routes[route];
+    switch (routeConfig.match) {
+      case 'exact':
+        return (url) => url === route;
+      case 'prefix':
+        return (url) => url.startsWith(route);
+      case 'regex':
+        const regex = new RegExp(route);
+        return (url) => regex.test(url);
+      default:
+        throw new Error(`unknown route config: ${route} - ${routeConfig.match}`);
+    }
+  });
+}
