@@ -265,6 +265,22 @@ describe('Overlay', () => {
 
       expect(overlayContainerElement.querySelectorAll('.fake-positioned').length).toBe(1);
     }));
+
+    it('should not apply the position if it detaches before the zone stabilizes', fakeAsync(() => {
+      config.positionStrategy = new FakePositionStrategy();
+
+      const overlayRef = overlay.create(config);
+
+      spyOn(config.positionStrategy, 'apply');
+
+      overlayRef.attach(componentPortal);
+      overlayRef.detach();
+      viewContainerFixture.detectChanges();
+      tick();
+
+      expect(config.positionStrategy.apply).not.toHaveBeenCalled();
+    }));
+
   });
 
   describe('size', () => {

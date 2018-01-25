@@ -83,7 +83,10 @@ export class OverlayRef implements PortalOutlet {
     // before attempting to position it, as the position may depend on the size of the rendered
     // content.
     this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
-      this.updatePosition();
+      // The overlay could've been detached before the zone has stabilized.
+      if (this.hasAttached()) {
+        this.updatePosition();
+      }
     });
 
     // Enable pointer events for the overlay pane element.
