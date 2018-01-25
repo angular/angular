@@ -1,5 +1,15 @@
 import {Directionality} from '@angular/cdk/bidi';
-import {DOWN_ARROW, END, ENTER, HOME, SPACE, TAB, UP_ARROW} from '@angular/cdk/keycodes';
+import {
+  DOWN_ARROW,
+  END,
+  ENTER,
+  HOME,
+  SPACE,
+  TAB,
+  UP_ARROW,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+} from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
@@ -219,7 +229,7 @@ describe('MatSelect', () => {
           expect(select.getAttribute('tabindex')).toEqual('0');
         }));
 
-        it('should select options via the arrow keys on a closed select', fakeAsync(() => {
+        it('should select options via the UP/DOWN arrow keys on a closed select', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();
 
@@ -240,6 +250,33 @@ describe('MatSelect', () => {
               'Expected value from fourth option to have been set on the model.');
 
           dispatchKeyboardEvent(select, 'keydown', UP_ARROW);
+
+          expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
+          expect(formControl.value).toBe(options[1].value,
+              'Expected value from second option to have been set on the model.');
+        }));
+
+        it('should select options via LEFT/RIGHT arrow keys on a closed select', fakeAsync(() => {
+          const formControl = fixture.componentInstance.control;
+          const options = fixture.componentInstance.options.toArray();
+
+          expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+          dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
+
+          expect(options[0].selected).toBe(true, 'Expected first option to be selected.');
+          expect(formControl.value).toBe(options[0].value,
+              'Expected value from first option to have been set on the model.');
+
+          dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
+          dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
+
+          // Note that the third option is skipped, because it is disabled.
+          expect(options[3].selected).toBe(true, 'Expected fourth option to be selected.');
+          expect(formControl.value).toBe(options[3].value,
+              'Expected value from fourth option to have been set on the model.');
+
+          dispatchKeyboardEvent(select, 'keydown', LEFT_ARROW);
 
           expect(options[1].selected).toBe(true, 'Expected second option to be selected.');
           expect(formControl.value).toBe(options[1].value,
@@ -331,26 +368,47 @@ describe('MatSelect', () => {
             'Expected value from sixth option to have been set on the model.');
         }));
 
-        it('should open the panel when pressing the arrow keys on a closed multiple select',
-            fakeAsync(() => {
-              fixture.destroy();
+        it('should open the panel when pressing a vertical arrow key on a closed multiple select',
+          fakeAsync(() => {
+            fixture.destroy();
 
-              const multiFixture = TestBed.createComponent(MultiSelect);
-              const instance = multiFixture.componentInstance;
+            const multiFixture = TestBed.createComponent(MultiSelect);
+            const instance = multiFixture.componentInstance;
 
-              multiFixture.detectChanges();
-              select = multiFixture.debugElement.query(By.css('mat-select')).nativeElement;
+            multiFixture.detectChanges();
+            select = multiFixture.debugElement.query(By.css('mat-select')).nativeElement;
 
-              const initialValue = instance.control.value;
+            const initialValue = instance.control.value;
 
-              expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
+            expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
 
-              const event = dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+            const event = dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
 
-              expect(instance.select.panelOpen).toBe(true, 'Expected panel to be open.');
-              expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
-              expect(event.defaultPrevented).toBe(true, 'Expected default to be prevented.');
-            }));
+            expect(instance.select.panelOpen).toBe(true, 'Expected panel to be open.');
+            expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
+            expect(event.defaultPrevented).toBe(true, 'Expected default to be prevented.');
+          }));
+
+        it('should open the panel when pressing a horizontal arrow key on closed multiple select',
+          fakeAsync(() => {
+            fixture.destroy();
+
+            const multiFixture = TestBed.createComponent(MultiSelect);
+            const instance = multiFixture.componentInstance;
+
+            multiFixture.detectChanges();
+            select = multiFixture.debugElement.query(By.css('mat-select')).nativeElement;
+
+            const initialValue = instance.control.value;
+
+            expect(instance.select.panelOpen).toBe(false, 'Expected panel to be closed.');
+
+            const event = dispatchKeyboardEvent(select, 'keydown', RIGHT_ARROW);
+
+            expect(instance.select.panelOpen).toBe(true, 'Expected panel to be open.');
+            expect(instance.control.value).toBe(initialValue, 'Expected value to stay the same.');
+            expect(event.defaultPrevented).toBe(true, 'Expected default to be prevented.');
+          }));
 
         it('should do nothing when typing on a closed multi-select', fakeAsync(() => {
           fixture.destroy();
@@ -622,6 +680,26 @@ describe('MatSelect', () => {
 
           expect(host.getAttribute('aria-activedescendant')).toBe(options[3].id);
         }));
+
+        it('should not change the aria-activedescendant using the horizontal arrow keys',
+          fakeAsync(() => {
+            const host = fixture.debugElement.query(By.css('mat-select')).nativeElement;
+
+            fixture.componentInstance.select.open();
+            fixture.detectChanges();
+            flush();
+
+            const options = overlayContainerElement.querySelectorAll('mat-option');
+
+            expect(host.getAttribute('aria-activedescendant')).toBe(options[0].id);
+
+            [1, 2, 3].forEach(() => {
+              dispatchKeyboardEvent(host, 'keydown', RIGHT_ARROW);
+              fixture.detectChanges();
+            });
+
+            expect(host.getAttribute('aria-activedescendant')).toBe(options[0].id);
+          }));
 
       });
 

@@ -9,7 +9,16 @@ import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {DOWN_ARROW, END, ENTER, HOME, SPACE, UP_ARROW} from '@angular/cdk/keycodes';
+import {
+  DOWN_ARROW,
+  END,
+  ENTER,
+  HOME,
+  SPACE,
+  UP_ARROW,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+} from '@angular/cdk/keycodes';
 import {
   CdkConnectedOverlay,
   Overlay,
@@ -535,6 +544,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     this._triggerFontSize = parseInt(getComputedStyle(this.trigger.nativeElement)['font-size']);
 
     this._panelOpen = true;
+    this._keyManager.withHorizontalOrientation(null);
     this._calculateOverlayPosition();
     this._highlightCorrectOption();
     this._changeDetectorRef.markForCheck();
@@ -552,6 +562,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   close(): void {
     if (this._panelOpen) {
       this._panelOpen = false;
+      this._keyManager.withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr');
       this._changeDetectorRef.markForCheck();
       this._onTouched();
     }
@@ -648,7 +659,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Handles keyboard events while the select is closed. */
   private _handleClosedKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
-    const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW;
+    const isArrowKey = keyCode === DOWN_ARROW || keyCode === UP_ARROW ||
+        keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW;
     const isOpenKey = keyCode === ENTER || keyCode === SPACE;
 
     // Open the select on ALT + arrow key to match the native <select>
@@ -835,8 +847,12 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
   private _initKeyManager() {
-    this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options).withTypeAhead();
-    this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => this.close());
+    this._keyManager = new ActiveDescendantKeyManager<MatOption>(this.options)
+      .withTypeAhead()
+      .withVerticalOrientation()
+      .withHorizontalOrientation(this._isRtl() ? 'rtl' : 'ltr');
+
+      this._keyManager.tabOut.pipe(takeUntil(this._destroy)).subscribe(() => this.close());
     this._keyManager.change.pipe(takeUntil(this._destroy)).subscribe(() => {
       if (this._panelOpen && this.panel) {
         this._scrollActiveOptionIntoView();
