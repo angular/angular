@@ -39,6 +39,10 @@ export function compileDirective(
     outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
+  // e.g. 'type: MyDirective`
+  definitionMapValues.push(
+      {key: 'type', value: outputCtx.importExpr(directive.type.reference), quoted: false});
+
   // e.g. `factory: () => new MyApp(injectElementRef())`
   const templateFactory = createFactory(directive.type, outputCtx, reflector);
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
@@ -66,7 +70,11 @@ export function compileComponent(
     reflector: CompileReflector) {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
-  // e.g. `tag: 'my-app'
+  // e.g. `type: MyApp`
+  definitionMapValues.push(
+      {key: 'type', value: outputCtx.importExpr(component.type.reference), quoted: false});
+
+  // e.g. `tag: 'my-app'`
   // This is optional and only included if the first selector of a component has element.
   const selector = component.selector && CssSelector.parse(component.selector);
   const firstSelector = selector && selector[0];

@@ -178,6 +178,7 @@ describe('r3_view_compiler', () => {
       // ChildComponent definition should be:
       const ChildComponentDefinition = `
         static ngComponentDef = IDENT.ɵdefineComponent({
+          type: ChildComponent,
           tag: 'child',
           factory: function ChildComponent_Factory() { return new ChildComponent(); },
           template: function ChildComponent_Template(ctx: IDENT, cm: IDENT) {
@@ -190,6 +191,7 @@ describe('r3_view_compiler', () => {
       // SomeDirective definition should be:
       const SomeDirectiveDefinition = `
         static ngDirectiveDef = IDENT.ɵdefineDirective({
+          type: SomeDirective,
           factory: function SomeDirective_Factory() {return new SomeDirective(); }
         });
       `;
@@ -197,6 +199,7 @@ describe('r3_view_compiler', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
         static ngComponentDef = IDENT.ɵdefineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
@@ -253,10 +256,12 @@ describe('r3_view_compiler', () => {
 
       const IfDirectiveDefinition = `
         static ngDirectiveDef = IDENT.ɵdefineDirective({
+          type: IfDirective,
           factory: function IfDirective_Factory() { return new IfDirective(IDENT.ɵinjectTemplateRef()); }
         });`;
       const MyComponentDefinition = `
         static ngComponentDef = IDENT.ɵdefineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
@@ -309,6 +314,7 @@ describe('r3_view_compiler', () => {
 
       const MyComponentDefinition = `
         static ngComponentDef = IDENT.ɵdefineComponent({
+          type: MyComponent,
           tag: 'my-component',
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(ctx: IDENT, cm: IDENT) {
