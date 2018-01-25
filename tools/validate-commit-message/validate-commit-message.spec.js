@@ -40,6 +40,9 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('test(packaging): something')).toBe(VALID);
       expect(validateMessage('release: something')).toBe(VALID);
       expect(validateMessage('release(packaging): something')).toBe(VALID);
+      expect(validateMessage('release(packaging): something')).toBe(VALID);
+      expect(validateMessage('fixup! release(packaging): something')).toBe(VALID);
+      expect(validateMessage('squash! release(packaging): something')).toBe(VALID);
       expect(errors).toEqual([]);
     });
 
@@ -50,6 +53,8 @@ describe('validate-commit-message.js', function() {
       expect(validateMessage('style(webworker): something')).toBe(INVALID);
       expect(validateMessage('refactor(security): something')).toBe(INVALID);
       expect(validateMessage('refactor(docs): something')).toBe(INVALID);
+      expect(validateMessage('fixup! refactor(docs): something')).toBe(INVALID);
+      expect(validateMessage('squash! refactor(docs): something')).toBe(INVALID);
       ['INVALID COMMIT MSG: "fix(Compiler): something"\n' +
            ' => ERROR: "Compiler" is not an allowed scope.\n' +
            ' => SCOPES: ' + SCOPES,
@@ -61,6 +66,12 @@ describe('validate-commit-message.js', function() {
            ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "refactor(security): something"\n' +
            ' => ERROR: "security" is not an allowed scope.\n' +
+           ' => SCOPES: ' + SCOPES,
+       'INVALID COMMIT MSG: "refactor(docs): something"\n' +
+           ' => ERROR: "docs" is not an allowed scope.\n' +
+           ' => SCOPES: ' + SCOPES,
+       'INVALID COMMIT MSG: "refactor(docs): something"\n' +
+           ' => ERROR: "docs" is not an allowed scope.\n' +
            ' => SCOPES: ' + SCOPES,
        'INVALID COMMIT MSG: "refactor(docs): something"\n' +
            ' => ERROR: "docs" is not an allowed scope.\n' +

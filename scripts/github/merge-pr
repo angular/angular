@@ -5,15 +5,32 @@ set -u -e -o pipefail
 BASEDIR=$(dirname "$0")
 BASEDIR=`(cd $BASEDIR; pwd)`
 
-if [ $# -eq 0 ]; then
+PR_NUMBER=0
+PUSH_UPSTREAM=1
+while [[ $# -gt 0 ]]
+do
+  key="$1"
+
+  case $key in
+      --dryrun)
+      PUSH_UPSTREAM=0
+      shift # past argument
+      ;;
+      *)    # unknown option
+      PR_NUMBER="$1" # save it in an array for later
+      shift # past argument
+      ;;
+  esac
+done
+
+if [ "$PR_NUMBER" -eq 0 ]; then
   echo "Merge github PR into the target branches"
   echo
-  echo "$0 PR_NUMBER"
+  echo "$0 PR_NUMBER [--dryrun]"
   echo
   exit 0
 fi
 
-PR_NUMBER="$1"
 CURRENT_BRANCH=`git rev-parse --abbrev-ref HEAD`
 PR_SHA_COUNT=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER | node $BASEDIR/utils/json_extract.js commits`
 PR_LABELS=`curl -s https://api.github.com/repos/angular/angular/issues/$PR_NUMBER/labels`
@@ -53,30 +70,36 @@ fi
 CHECKOUT_MASTER="git checkout merge_pr_master"
 CHECKOUT_PATCH="git checkout merge_pr_$PATCH_BRANCH"
 RESTORE_BRANCH="git checkout $CURRENT_BRANCH"
-FETCH_PR="git fetch git@github.com:angular/angular.git pull/$PR_NUMBER/head:angular/pr/$PR_NUMBER heads/master:merge_pr_master heads/$PATCH_BRANCH:merge_pr_$PATCH_BRANCH -f"
-PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:master merge_pr_$PATCH_BRANCH:$PATCH_BRANCH"
-CHERRY_PICK_PR="git cherry-pick angular/pr/$PR_NUMBER~$PR_SHA_COUNT..angular/pr/$PR_NUMBER"
-REWRITE_MESSAGE="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" HEAD~$PR_SHA_COUNT..HEAD"
+FETCH_PR="git fetch git@github.com:angular/angular.git pull/$PR_NUMBER/head:merge_pr heads/master:merge_pr_master heads/master:merge_pr_master_base heads/$PATCH_BRANCH:merge_pr_patch  heads/$PATCH_BRANCH:merge_pr_patch_base -f"
+BASE_PR="git co HEAD~$PR_SHA_COUNT -B merge_pr_base"
+PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:master merge_pr_patch:$PATCH_BRANCH"
+SQUASH_PR="git rebase --autosquash merge_pr_base merge_pr"
+CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
+REWRITE_MESSAGE_MASTER="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" merge_pr_master_base..merge_pr_master --"
+REWRITE_MESSAGE_PATCH="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" merge_pr_patch_base..merge_pr_patch --"
 
 echo "======================"
 echo "GitHub Merge PR Steps"
 echo "======================"
 echo "   $FETCH_PR"
+echo "   $BASE_PR"
+echo "   $SQUASH_PR"
 if [[ $MERGE_MASTER == 1 ]]; then
   echo "   $CHECKOUT_MASTER"
   echo "   $CHERRY_PICK_PR"
-  echo "   $REWRITE_MESSAGE"
+  echo "   $REWRITE_MESSAGE_MASTER"
 fi
 if [[ $MERGE_PATCH == 1 ]]; then
   echo "   $CHECKOUT_PATCH"
   echo "   $CHERRY_PICK_PR"
-  echo "   $REWRITE_MESSAGE"
+  echo "   $REWRITE_MESSAGE_PATCH"
 fi
-echo "   $PUSH_BRANCHES"
 echo "   $RESTORE_BRANCH"
+echo "   $PUSH_BRANCHES"
 echo "----------------------"
-
 $FETCH_PR
+$BASE_PR
+GIT_EDITOR=echo $SQUASH_PR
 if [[ $MERGE_MASTER == 1 ]]; then
   echo
   echo ">>> Checkout master: $CHECKOUT_MASTER"
@@ -85,11 +108,10 @@ if [[ $MERGE_MASTER == 1 ]]; then
   echo ">>> Cherry pick pr: $CHERRY_PICK_PR"
   $CHERRY_PICK_PR
   echo
-  echo ">>> Rewrite message: $REWRITE_MESSAGE"
+  echo ">>> Rewrite message: $REWRITE_MESSAGE_MASTER"
   # Next line should work, but it errors, hence copy paste the command.
-  # $REWRITE_MESSAGE
-  git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" HEAD~$PR_SHA_COUNT..HEAD
-
+  # $REWRITE_MESSAGE_MASTER
+  echo git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" merge_pr_master_base..merge_pr_master --
 fi
 if [[ $MERGE_PATCH == 1 ]]; then
   echo
@@ -99,15 +121,18 @@ if [[ $MERGE_PATCH == 1 ]]; then
   echo ">>> Cherry pick pr: $CHERRY_PICK_PR"
   $CHERRY_PICK_PR
   echo
-  echo ">>> Rewrite message: $REWRITE_MESSAGE"
+  echo ">>> Rewrite message: $REWRITE_MESSAGE_PATCH"
   # Next line should work, but it errors, hence copy paste the command.
-  # $REWRITE_MESSAGE
-  git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" HEAD~$PR_SHA_COUNT..HEAD
+  # $REWRITE_MESSAGE_PATCH
+  git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" merge_pr_patch_base..merge_pr_patch --
 fi
 $RESTORE_BRANCH
 
 echo ">>> Push branches to angular repo"
-$PUSH_BRANCHES
+if [[ $PUSH_UPSTREAM == 0 ]]; then
+  exit
+  $PUSH_BRANCHES
+fi
 echo
 echo ">>>>>> SUCCESS <<<<<< PR#$PR_NUMBER merged."
 

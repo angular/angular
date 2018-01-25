@@ -23,6 +23,7 @@ const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 const PATTERN = /^(revert\: )?(\w+)(?:\(([^)]+)\))?\: (.+)$/;
 
 module.exports = function(commitSubject) {
+  commitSubject = commitSubject.replace(/^(fixup|squash)\! /, '')
   if (commitSubject.length > config['maxLength']) {
     error(`The commit message is longer than ${config['maxLength']} characters`, commitSubject);
     return false;
