@@ -346,9 +346,12 @@ describe('InteractivityChecker', () => {
         iframe.setAttribute('tabindex', '-1');
         iframe.contentDocument.body.appendChild(button);
 
-        Object.defineProperty(iframe.contentWindow, 'frameElement', {
-          get: () => { throw 'Access Denied!'; }
-        });
+        // Some browsers explicitly prevent overwriting of properties on a `Window` object.
+        if (!platform.SAFARI) {
+          Object.defineProperty(iframe.contentWindow, 'frameElement', {
+            get: () => { throw 'Access Denied!'; }
+          });
+        }
 
         expect(() => checker.isTabbable(button)).not.toThrow();
       });
