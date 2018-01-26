@@ -93,7 +93,7 @@ fi
 echo "   $PUSH_BRANCHES"
 echo "   $RESTORE_BRANCH"
 echo "----------------------"
-echo ">>> Fetch: $FETCH_PR"
+echo ">>> Fetch PR: $FETCH_PR"
 $FETCH_PR
 echo ">>> Mark base: $BASE_PR"
 $BASE_PR
@@ -105,18 +105,14 @@ echo ">>> Rewrite message: $REWRITE_MESSAGE"
 git filter-branch -f --msg-filter "$BASEDIR/utils/github_closes.js $PR_NUMBER" merge_pr_base..merge_pr
 if [[ $MERGE_MASTER == 1 ]]; then
   echo
-  echo ">>> Checkout master: $CHECKOUT_MASTER"
+  echo ">>> Cherry pick to master: $CHECKOUT_MASTER && $CHERRY_PICK_PR"
   $CHECKOUT_MASTER
-  echo
-  echo ">>> Cherry pick pr: $CHERRY_PICK_PR"
   $CHERRY_PICK_PR
 fi
 if [[ $MERGE_PATCH == 1 ]]; then
   echo
-  echo ">>> Checkout $PATCH_BRANCH: $CHECKOUT_PATCH"
+  echo ">>> Cherry pick to path: $CHECKOUT_PATCH && $CHERRY_PICK_PR"
   $CHECKOUT_PATCH
-  echo
-  echo ">>> Cherry pick pr: $CHERRY_PICK_PR"
   $CHERRY_PICK_PR
 fi
 $RESTORE_BRANCH
