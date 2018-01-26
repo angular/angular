@@ -91,4 +91,7 @@ Tabs without text or labels should be given a meaningful label via `aria-label` 
 |----------------------|----------------------------|
 | `LEFT_ARROW`         | Move focus to previous tab |
 | `RIGHT_ARROW`        | Move focus to next tab     |
+| `HOME`               | Move focus to first tab    |
+| `END`                | Move focus to last tab     |
+| `RIGHT_ARROW`        | Move focus to next tab     |
 | `SPACE` or `ENTER`   | Switch to focused tab      |

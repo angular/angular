@@ -7,7 +7,7 @@
  */
 
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
+import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, HOME, END} from '@angular/cdk/keycodes';
 import {
   AfterContentChecked,
   AfterContentInit,
@@ -173,6 +173,14 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
       case LEFT_ARROW:
         this._focusPreviousTab();
         break;
+      case HOME:
+        this._focusFirstTab();
+        event.preventDefault();
+        break;
+      case END:
+        this._focusLastTab();
+        event.preventDefault();
+        break;
       case ENTER:
       case SPACE:
         this.selectFocusedIndex.emit(this.focusIndex);
@@ -294,6 +302,26 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   /** Decrement the focus index by 1 until a valid tab is found. */
   _focusPreviousTab(): void {
     this._moveFocus(this._getLayoutDirection() == 'ltr' ? -1 : 1);
+  }
+
+  /** Focuses the first tab. */
+  private _focusFirstTab(): void {
+    for (let i = 0; i < this._labelWrappers.length; i++) {
+      if (this._isValidIndex(i)) {
+        this.focusIndex = i;
+        break;
+      }
+    }
+  }
+
+  /** Focuses the last tab. */
+  private _focusLastTab(): void {
+    for (let i = this._labelWrappers.length - 1; i > -1; i--) {
+      if (this._isValidIndex(i)) {
+        this.focusIndex = i;
+        break;
+      }
+    }
   }
 
   /** The layout direction of the containing app. */

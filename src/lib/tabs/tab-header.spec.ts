@@ -1,10 +1,15 @@
 import {
-  async, ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks
+  async,
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+  discardPeriodicTasks,
 } from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {By} from '@angular/platform-browser';
-import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
+import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, HOME, END} from '@angular/cdk/keycodes';
 import {PortalModule} from '@angular/cdk/portal';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
@@ -136,6 +141,60 @@ describe('MatTabHeader', () => {
       expect(appComponent.selectedIndex).toBe(0);
       expect(spaceEvent.defaultPrevented).toBe(true);
     });
+
+    it('should move focus to the first tab when pressing HOME', () => {
+      appComponent.tabHeader.focusIndex = 3;
+      fixture.detectChanges();
+      expect(appComponent.tabHeader.focusIndex).toBe(3);
+
+      const tabListContainer = appComponent.tabHeader._tabListContainer.nativeElement;
+      const event = dispatchKeyboardEvent(tabListContainer, 'keydown', HOME);
+      fixture.detectChanges();
+
+      expect(appComponent.tabHeader.focusIndex).toBe(0);
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should skip disabled items when moving focus using HOME', () => {
+      appComponent.tabHeader.focusIndex = 3;
+      appComponent.tabs[0].disabled = true;
+      fixture.detectChanges();
+      expect(appComponent.tabHeader.focusIndex).toBe(3);
+
+      const tabListContainer = appComponent.tabHeader._tabListContainer.nativeElement;
+      dispatchKeyboardEvent(tabListContainer, 'keydown', HOME);
+      fixture.detectChanges();
+
+      // Note that the second tab is disabled by default already.
+      expect(appComponent.tabHeader.focusIndex).toBe(2);
+    });
+
+    it('should move focus to the last tab when pressing END', () => {
+      appComponent.tabHeader.focusIndex = 0;
+      fixture.detectChanges();
+      expect(appComponent.tabHeader.focusIndex).toBe(0);
+
+      const tabListContainer = appComponent.tabHeader._tabListContainer.nativeElement;
+      const event = dispatchKeyboardEvent(tabListContainer, 'keydown', END);
+      fixture.detectChanges();
+
+      expect(appComponent.tabHeader.focusIndex).toBe(3);
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should skip disabled items when moving focus using END', () => {
+      appComponent.tabHeader.focusIndex = 0;
+      appComponent.tabs[3].disabled = true;
+      fixture.detectChanges();
+      expect(appComponent.tabHeader.focusIndex).toBe(0);
+
+      const tabListContainer = appComponent.tabHeader._tabListContainer.nativeElement;
+      dispatchKeyboardEvent(tabListContainer, 'keydown', END);
+      fixture.detectChanges();
+
+      expect(appComponent.tabHeader.focusIndex).toBe(2);
+    });
+
   });
 
   describe('pagination', () => {
