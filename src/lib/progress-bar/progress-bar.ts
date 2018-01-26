@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {
   Component,
   ChangeDetectionStrategy,
@@ -26,6 +25,8 @@ export class MatProgressBarBase {
 
 export const _MatProgressBarMixinBase = mixinColor(MatProgressBarBase, 'primary');
 
+/** Counter used to generate unique IDs for progress bars. */
+let progressbarId = 0;
 
 /**
  * `<mat-progress-bar>` component.
@@ -75,6 +76,9 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
    * Mirrored to mode attribute.
    */
   @Input() mode: 'determinate' | 'indeterminate' | 'buffer' | 'query' = 'determinate';
+
+  /** The id of the progress bar. */
+  progressbarId = `mat-progress-bar-${progressbarId++}`;
 
   /** Gets the current transform value for the progress bar's primary indicator. */
   _primaryTransform() {

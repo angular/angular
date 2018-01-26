@@ -1,5 +1,15 @@
-<!-- The background div is named as such because it appears below the other divs and is not sized based on values. -->
-<div class="mat-progress-bar-background mat-progress-bar-element"></div>
+<!--
+  The background div is named as such because it appears below the other divs and is not sized based
+  on values.
+-->
+<svg width="100%" height="5" class="mat-progress-bar-background mat-progress-bar-element">
+  <defs>
+    <pattern [id]="progressbarId" x="5" y="0" width="10" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="2.5" cy="2.5" r="2.5"/>
+    </pattern>
+  </defs>
+  <rect [attr.fill]="'url(#' + progressbarId + ')'" width="100%" height="100%"/>
+</svg>
 <div class="mat-progress-bar-buffer mat-progress-bar-element" [ngStyle]="_bufferTransform()"></div>
 <div class="mat-progress-bar-primary mat-progress-bar-fill mat-progress-bar-element" [ngStyle]="_primaryTransform()"></div>
 <div class="mat-progress-bar-secondary mat-progress-bar-fill mat-progress-bar-element"></div>

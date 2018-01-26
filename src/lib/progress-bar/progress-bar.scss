@@ -25,9 +25,9 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
   // The progress bar background is used to show the bubble animation scrolling behind a
   // buffering progress bar.
   .mat-progress-bar-background {
-    background-repeat: repeat-x;
-    background-size: 10px 4px;
-    display: none;
+    // The width is set to be 10px longer than the container as it will be translated 10px
+    // during the background scroll animation.
+    width: calc(100% + 10px);
   }
 
   // The progress bar buffer is the bar indicator showing the buffer value and is only visible
@@ -113,7 +113,6 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
       @include backface-visibility(hidden);
       animation: mat-progress-bar-background-scroll
           $mat-progress-bar-piece-animation-duration infinite linear;
-      display: block;
     }
   }
 }
