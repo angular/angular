@@ -72,7 +72,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
 1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
-  We cannot accept code without this.
+  We cannot accept code without this. Make sure you sign with the primary email address of the Git identity that has been granted access to the Angular repository.
 1. Fork the angular/angular repo.
 1. Make your changes in a new git branch:
 
@@ -258,6 +258,19 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
 * For individuals we have a [simple click-through form][individual-cla].
 * For corporations we'll need you to
   [print, sign and one of scan+email, fax or mail the form][corporate-cla].
+
+<hr>
+
+  If you have more than one Git identity, you must make sure that you sign the CLA using the primary email address associated with the ID that has been granted access to the Angular repository. Git identities can be associated with more than one email address, and only one is primary. Here are some links to help you sort out multiple Git identities and email addresses:
+
+  * https://help.github.com/articles/setting-your-commit-email-address-in-git/
+  * https://stackoverflow.com/questions/37245303/what-does-usera-committed-with-userb-13-days-ago-on-github-mean
+  * https://help.github.com/articles/about-commit-email-addresses/
+  * https://help.github.com/articles/blocking-command-line-pushes-that-expose-your-personal-email-address/ 
+
+  Note that if you have more than one Git identity, it is important to verify that you are logged in with the same ID with which you signed the CLA, before you commit changes. If not, your PR will fail the CLA check.  
+
+<hr>
 
 
 [angular-group]: https://groups.google.com/forum/#!forum/angular
